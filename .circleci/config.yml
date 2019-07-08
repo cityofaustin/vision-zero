@@ -1,0 +1,26 @@
+# Javascript Node CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-javascript/ for more details
+#
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/python:3.7
+
+    # Our build steps
+    steps:
+      # Get out scripts
+      - checkout
+
+      # We need docker enabled
+      - setup_remote_docker:
+          version: 18.09.3
+          docker_layer_caching: true
+
+      # We are simply going to source our docker helper script and run our build process.
+      - run:
+          name: "Building Packages"
+          command: |
+            source .circleci/docker-helper.sh
+            build_containers
