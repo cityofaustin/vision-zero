@@ -1,4 +1,4 @@
-# atd-cris-request-automator
+# atd-cris-capybara
 
 This is a tool that automates the requests to CRIS's website.
 
