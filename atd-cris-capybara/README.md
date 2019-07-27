@@ -139,3 +139,107 @@ irb(main):085:0> session.find('input[ng-value="shareConstants.LOCATION_TYPE_IDS.
 ```
 
 You are literally browsing a website using Ruby
+
+## Data Request
+
+The data request is a separate process, this process is written in the `request.rb` file using the capybara framework
+following a series of instructions to fill in data in the CRIS website.
+
+To visualize the execution chain, it runs as follows:
+
+`[scripts/run-request.sh]` -> `[app/app-run-request.sh]` -> `[xvfb-run]` -> `[ruby request.rb]`
+
+`run-request.sh` has the main function of loading the environment variables into the docker container, and running the container.
+
+`app-run-request.sh` has the main task to simplify the execution and the order of the execution of tasks. In this case we only run xvfb but the processing runs two or three separate commands.
+
+`xvfb-run` Xvfb (short for X virtual framebuffer) is an in-memory display server for UNIX-like operating system (e.g., Linux). It enables you to run graphical applications without a display. The Capybara webkit driver needs this application in order to work.
+
+`ruby request.rb` Runs the capybara instructions to log in to the CRIS site and to make a dataset request to be sent by email.  
+   
+
+## Data Processing
+
+The data processing is accomplished in Python, this is because most of our processing (if not all) is written in Python. 
+
+The processing begins in the `app-run-process.sh` file, which should be run once a day. The script will run two files,
+first the `download.rb` script, which will login to the CRIS site and then download the zip files, and runs the zip
+extraction commands. Secondly, it runs the `process.py` script, which will read the extracted csv files and use the
+existing [knackpy](https://github.com/cityofaustin/knackpy) library.
+
+`[scripts/run-process.sh]` -> `[app/app-run-process.sh]` -> `[xvfb-run]` -> `[ruby download.rb]` + `[python3 process.py]`
+
+`run-request.sh` has the main function of loading the environment variables into the docker container, and running the container.
+
+`app-run-request.sh` has the main task to simplify the execution and the order of the execution of tasks. In this case we only run xvfb but the processing runs two or three separate commands.
+
+`xvfb-run` Xvfb (short for X virtual framebuffer) is an in-memory display server for UNIX-like operating system (e.g., Linux). It enables you to run graphical applications without a display. The Capybara webkit driver needs this application in order to work.
+
+`ruby download.rb` Runs the capybara instructions to log in to the CRIS site to download the zip file with the csv dataset, it will also extract the data into the `tmp/` folder.
+
+`python3 process.py` Runs the processing instructions to load the CSV into knack. 
+
+##### *IMPORTANT: The `process.py` script requires python 3.6 or higher, if you are looking to run it locally make sure that your environment has the right version.*
+
+## Template Models & Template Indexes
+
+Template models and indexes are located in the file `process_templates.py`, they are a mechanism by which we can parse a csv and map it into a knack raw json object that can be inserted via the knack api.
+
+##### *IMPORTANT: As of the time of writing, template models and indexes are written manually. Any change made to the Knack tables will require to implement the same changes in the template models.*
+
+
+##### What are Template Models?
+
+A template is a python dictionary object that mimics the data structure of a knack table. Their main role is to convert a row of CSV data into a knack-insertable raw json data with knack field id's.
+
+
+##### What are Template Indexes?
+The CSV file will contain columns delimited by a comma, each of these columns may or may not be in the order we want.
+
+##### Example Use:
+
+The CSV structure
+
+```
+crash_id,unit_id,useless_column_here,lat,long
+1234,5678,'Useless Data Here',30.1234,-90.5678
+```
+
+Example Template Model:
+
+```python
+crash_data_model = {
+    "crash_id": "field_256",
+    "unit_id": "field_257",
+    "lat": "field_258",
+    "long": "field_259"
+}
+```
+
+They key-pair format is: `"<unique_field_key>"` : `"<knack field_id>"`. The `unique_field_key` can be anything as long as it has a matching key in the index template.
+
+Notice how `useless_column_here` was not included in the model, if the key is not included, then it will not be inserted into knack.
+
+The data is populated (hydrated) into the model sequentially, the script will iterate through each key-pair value in the dictionary. 
+ 
+
+Example Template index:
+
+```python
+crash_data_index = {
+    "crash_id": 0,
+    "unit_id": 1,
+    "lat": 3,
+    "long": 4
+}
+```
+
+They key-pair format is: `"<unique_field_key>"` : `"<csv array index>"`. The `unique_field_key` can be anything as long as it has a matching key in the model template.
+
+##### Why are the index and models separate? 
+
+Because we may want to spend time in a way to gather the schema automatically, which should be relatively easy and it would follow the same structure as the model. That way the schema would be loaded automatically, there would be no need to change the file every time there is a change in the knack table structure.
+
+##### Couldn't the index and field_id live within the same key as an array?
+
+Yes, that is also an option to have it look like this: `"crash_id": ["field_256", 0]` and that would help get rid of the index dictionary. But we would then need to think of how to load the schema automatically if that is what we wanted to do. 
