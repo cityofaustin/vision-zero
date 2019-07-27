@@ -9,6 +9,9 @@
 /test/tmp/
 /test/version_tmp/
 /tmp/
+tmp/
+venv/
+*.env
 
 # Used by dotenv library to load environment variables.
 # .env
@@ -56,3 +59,4 @@ build-iPhoneSimulator/
 # IDEs
 .code/
 .idea/
+.DS_Store
