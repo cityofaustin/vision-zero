@@ -12,17 +12,17 @@ Docker allows us to have a fully built container with everything already built a
 
 ### Usage
 
-##### 1. Get the image:
+#### 1. Get the image:
 
 Depending on your broadband speed, you may want to avoid building the image, it can take a while to build. Instead it is suggested you download it via docker-pull.
 
-Method A (Pull already built image, it's large):
+Method A (Pull pre-built image, it's large):
 
 ```bash
 docker pull atddocker/atd-cris-capybara
 ```
 
-Method B (Build image, takes very long to build)
+Method B (Build image, it takes very long)
 
 ```bash
 docker build -f Dockerfile -t atddocker/atd-cris-capybara .
@@ -30,17 +30,80 @@ docker build -f Dockerfile -t atddocker/atd-cris-capybara .
 
 Be sure to have the source code cloned in your computer before you can build the Dockerfile.
 
-##### 2. We run the image:
+#### 2. Set up the `config.env` file
 
-Run:
+The ETL process relies on a few variables to access API services.
+This file can be found in the atd-data production/tests servers with protected access.
+(Only the service user account should have read-access, ie. root or any other service user name)
 
-You can either:
+Once you create this file, be sure to restrict access to it, example:  `chmod 400 config.env`
+which should give read-only access to the current session user.  
+
+These are the environment variables it needs:
+
+```bash
+# First your AWS Access Credentials
+AWS_ACCESS_KEY_ID=... 
+AWS_SECRET_ACCESS_KEY=...
+AWS_BUCKET_NAME=...
+
+# PostgreSQL Access
+ATD_CRIS_POSTGRES_HOST=...
+ATD_CRIS_POSTGRES_DB=...
+ATD_CRIS_POSTGRES_USER=...
+ATD_CRIS_POSTGRES_PASS=...
+ATD_CRIS_POSTGRES_CERT=... (the path to the pem file, /app/rds-combined-ca-bundle.pem by default)
+
+# SQL Tables 
+ATD_CRIS_PROSTGRES_TABLE_CRASHES=...
+ATD_CRIS_PROSTGRES_TABLE_CHARGES=...
+ATD_CRIS_PROSTGRES_TABLE_PEOPLE=...
+ATD_CRIS_PROSTGRES_TABLE_UNITS=...
+
+# Knack Access
+ATD_KNACK_APP_ID=...
+ATD_KNACK_API_KEY=...
+
+# CRIS access
+ATD_CRIS_USERNAME=...
+ATD_CRIS_PASSWORD=...
+
+# GeoCode access
+ATD_CRIS_HERE_APP_ID=...
+ATD_CRIS_HERE_APP_CODE=...
+```
+
+Alternatively, you can export each one of those variables to your console via a custom *.sh
+file and source the file. For example, you would create a `custom_variables.sh` file, and then
+source it: `source custom_variables.sh`. Once sources you would run the command 
+
+The last thing you will need, is 
+
+
+#### 3. We run the image:
+
+Option 1:
+
+Set up an environment variable `ATD_CRIS_CONFIG` with the location to your env-file and run:
 
 ```bash
 ./scripts/run.sh
 ```
 
-Or you can try to run the docker command on your end:
+Option 2:
+
+Run with Docker:
+
+```bash
+docker run -it --rm \
+--env-file ~/location/to/env-file.env
+atddocker/atd-cris-capybara \
+sh -c "xvfb-run --server-args=\"-screen 0 1024x768x24\" ruby main.rb"
+```
+
+Option 3:
+
+Run without env-file, but providing the required variables through the console:
 
 ```bash
 docker run -it --rm \
@@ -48,8 +111,7 @@ docker run -it --rm \
 --env ATD_CRIS_PASSWORD=$ATD_CRIS_PASSWORD \
 --env ATD_CRIS_REPORT_DATE_START="01/01/2019" \
 --env ATD_CRIS_REPORT_DATE_END=`date +%m/%d/%Y` \
-atddocker/atd-cris-capybara \
-sh -c "xvfb-run --server-args=\"-screen 0 1024x768x24\" ruby main.rb"
+atddocker/atd-cris-capybara bash
 ```
 
 
