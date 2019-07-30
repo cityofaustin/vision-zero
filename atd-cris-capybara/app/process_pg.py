@@ -4,6 +4,21 @@ import os
 
 from process_config import *
 
+def build_connection():
+    """
+    Builds a connection with our environment variables
+    :return:
+    """
+    return psycopg2.connect(
+        host=ATD_CRIS_DATABASE_CONFIG['host'],
+        port=ATD_CRIS_DATABASE_CONFIG['port'],
+        user=ATD_CRIS_DATABASE_CONFIG['user'],
+        password=ATD_CRIS_DATABASE_CONFIG['pass'],
+        sslmode=ATD_CRIS_DATABASE_CONFIG['sslmode'],
+        sslrootcert=ATD_CRIS_DATABASE_CONFIG['sslrootcert'],
+        database=ATD_CRIS_DATABASE_CONFIG['database']
+    )
+
 def run_query(sql):
     """
     Connects to the database as specified in ATD_CRIS_DATABASE_CONFIG,
@@ -11,15 +26,7 @@ def run_query(sql):
     """
     records = None
     try:
-        connection = psycopg2.connect(
-            host = ATD_CRIS_DATABASE_CONFIG['host'],
-            port = ATD_CRIS_DATABASE_CONFIG['port'],
-            user = ATD_CRIS_DATABASE_CONFIG['user'],
-            password = ATD_CRIS_DATABASE_CONFIG['pass'],
-            sslmode = ATD_CRIS_DATABASE_CONFIG['sslmode'],
-            sslrootcert = ATD_CRIS_DATABASE_CONFIG['sslrootcert'],
-            database = ATD_CRIS_DATABASE_CONFIG['database']
-        )
+        connection = build_connection()
         cursor = connection.cursor()
 
         cursor.execute(sql)

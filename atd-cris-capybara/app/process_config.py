@@ -1,13 +1,13 @@
 import os
 
 ATD_CRIS_DATABASE_CONFIG = {
-    "host": os.getenv("ATD_KNACK_POSTGRES_HOST"),
+    "host": os.getenv("ATD_CRIS_POSTGRES_HOST"),
     "port": 5432,
-    "user": os.getenv("ATD_KNACK_POSTGRES_USER"),
-    "pass": os.getenv("ATD_KNACK_POSTGRES_PASS"),
+    "user": os.getenv("ATD_CRIS_POSTGRES_USER"),
+    "pass": os.getenv("ATD_CRIS_POSTGRES_PASS"),
     "sslmode": "require",
-    "sslrootcert": os.getenv("ATD_KNACK_POSTGRES_CERT"),
-    "database": os.getenv("ATD_KNACK_POSTGRES_DB")
+    "sslrootcert": os.getenv("ATD_CRIS_POSTGRES_CERT"),
+    "database": os.getenv("ATD_CRIS_POSTGRES_DB")
 }
 
 ATD_CRIS_DATABASE_TABLES = {
