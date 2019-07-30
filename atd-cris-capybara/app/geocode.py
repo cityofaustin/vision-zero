@@ -25,7 +25,7 @@ def get_array_item(array, index):
 sql_query = """
     SELECT
            t.crash_id,
-           (
+           concat((
                CASE
                    -- If neither address is empty, return primary
                    WHEN (t.ADDR_PRIM <> '' AND t.ADDR_SEC <> '') THEN t.ADDR_PRIM
@@ -36,7 +36,7 @@ sql_query = """
                    -- If Secondar is empty, return primary
                    WHEN (t.ADDR_SEC = '') THEN t.ADDR_PRIM
                END
-           ) AS ADDRESS
+           ), ', Austin, TX') AS ADDRESS
     FROM(
         SELECT
             crash_id,
@@ -49,6 +49,7 @@ sql_query = """
               1=1
               AND city_id = 22
               AND (latitude IS NULL OR longitude IS NULL)
+              AND geocode_status = 'NA'
               -- It has a primary or secondary address
               AND ( -- The primary address must be actionable (block number and street name)
                 (rpt_block_num is not null AND rpt_street_name is not null AND rpt_street_name NOT LIKE '%NOT REPORTED%')
@@ -59,24 +60,24 @@ sql_query = """
 """
 
 
-
-
 try:
     pg_connection = build_connection()
-    pg_cursor = build_cursor(pg_connection)
+    pg_cursor = pg_connection.cursor()
 except Exception as e:
     print("Closing script, problem with PostgreSQL: " + str(e))
     exit(1)
 
+
 # We will need some loop control variables
 errors = []
 current_iteration = 0
-stop_at_iteration = 1
+stop_at_iteration = 0
 
 # Instantiate a permanent loop
 while True:
     records = None
     try:
+        print("Gathering more data (please wait)")
         pg_cursor.execute(sql_query)
         records = pg_cursor.fetchall()
     except Exception as e:
@@ -85,6 +86,7 @@ while True:
 
     # Stop whenever records is empty...
     if len(records) == 0:
+        print("No more records available. Ending loop.")
         break
 
     # Increment current iteration
@@ -115,17 +117,23 @@ while True:
             request = requests.get(ATD_HERE_API_ENDPOINT, params=parameters)
             coordinates = request.json()['Response']['View'][0]['Result'][0]['Location']['DisplayPosition']
 
+            print("%s > %s > %s" % (row[0], address, str(coordinates)))
+
             sql_update = "UPDATE %s SET geocoded = 'Y', geocode_status = '%s', latitude = %f, longitude = %f WHERE crash_id = %i;" % \
             (ATD_CRIS_DATABASE_TABLES['crashes'], 'SUCCESS', coordinates['Latitude'], coordinates['Longitude'], row[0])
 
         except Exception as e:
+            errors.append(row[0])
+
             sql_update = "UPDATE %s SET geocoded = 'N', geocode_status = '%s' WHERE crash_id = %i;" % \
                          (ATD_CRIS_DATABASE_TABLES['crashes'], 'FAILED', row[0])
 
             print("Failed to geocode for '%s', error: %s" %(address, str(e)))
 
+
+
         print(sql_update)
-        pg_cursor.execute(sql_update)
+        pg_cursor.execute("%s; COMMIT;" % sql_update)
 
 
 # Close our open connections and open cursors
