@@ -22,9 +22,14 @@ const propTypes = {
 const defaultProps = {};
 
 class DefaultHeader extends Component {
+  constructor(props) {
+    super(props);
+  }
+
   render() {
     // eslint-disable-next-line
     const { children, ...attributes } = this.props;
+    const { isAuthenticated, login, logout } = this.props.auth;
 
     return (
       <React.Fragment>
@@ -60,6 +65,25 @@ class DefaultHeader extends Component {
               <DropdownItem header tag="div" className="text-center">
                 <strong>Account</strong>
               </DropdownItem>
+              <DropdownItem href="#/profile">
+                <i className="fa fa-user" /> Profile
+              </DropdownItem>
+              <DropdownItem onClick={logout}>
+                <i className="fa fa-lock" /> Log Out
+              </DropdownItem>
+            </DropdownMenu>
+          </UncontrolledDropdown>
+        </Nav>
+      </React.Fragment>
+    );
+  }
+}
+
+DefaultHeader.propTypes = propTypes;
+DefaultHeader.defaultProps = defaultProps;
+
+export default DefaultHeader;
+/*
               <DropdownItem>
                 <i className="fa fa-bell-o" /> Updates
                 <Badge color="info">42</Badge>
@@ -80,9 +104,6 @@ class DefaultHeader extends Component {
                 <strong>Settings</strong>
               </DropdownItem>
               <DropdownItem>
-                <i className="fa fa-user" /> Profile
-              </DropdownItem>
-              <DropdownItem>
                 <i className="fa fa-wrench" /> Settings
               </DropdownItem>
               <DropdownItem>
@@ -100,15 +121,4 @@ class DefaultHeader extends Component {
               <DropdownItem onClick={e => this.props.onLogout(e)}>
                 <i className="fa fa-lock" /> Logout
               </DropdownItem>
-            </DropdownMenu>
-          </UncontrolledDropdown>
-        </Nav>
-      </React.Fragment>
-    );
-  }
-}
-
-DefaultHeader.propTypes = propTypes;
-DefaultHeader.defaultProps = defaultProps;
-
-export default DefaultHeader;
+*/
