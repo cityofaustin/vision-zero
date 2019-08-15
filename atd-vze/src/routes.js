@@ -40,6 +40,7 @@ const Widgets = React.lazy(() => import("./views/Widgets/Widgets"));
 const Users = React.lazy(() => import("./views/Users/Users"));
 const User = React.lazy(() => import("./views/Users/User"));
 const Crashes = React.lazy(() => import("./views/Crashes/Crashes"));
+const Profile = React.lazy(() => import("./views/Profile/Profile"));
 
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 const routes = [
@@ -103,6 +104,7 @@ const routes = [
   { path: "/notifications/modals", name: "Modals", component: Modals },
   { path: "/widgets", name: "Widgets", component: Widgets },
   { path: "/charts", name: "Charts", component: Charts },
+  { path: "/profile", name: "Profile", component: Profile },
   { path: "/users", exact: true, name: "Users", component: Users },
   { path: "/users/:id", exact: true, name: "User Details", component: User },
   { path: "/crashes", exact: true, name: "Crashes", component: Crashes }
