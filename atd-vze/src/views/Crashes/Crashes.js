@@ -1,5 +1,6 @@
 import React from "react";
 import { Badge, Card, CardBody, CardHeader, Col, Row, Table } from "reactstrap";
+import { Link } from "react-router-dom";
 
 import { useQuery } from "@apollo/react-hooks";
 import { gql } from "apollo-boost";
@@ -26,8 +27,8 @@ const GET_CRASHES = gql`
 
 const columns = [
   "Crash Id",
-  "Address",
   "Crash Date",
+  "Address",
   "Total Injury Count",
   "Death Count"
 ];
@@ -58,7 +59,11 @@ function Crashes() {
                 <tbody>
                   {data.atd_txdot_crashes.map(crash => (
                     <tr key={crash.crash_id}>
-                      <td>{crash.crash_id}</td>
+                      <td>
+                        <Link to={`crashes/${crash.crash_id}`}>
+                          {crash.crash_id}
+                        </Link>
+                      </td>
                       <td>{crash.crash_date}</td>
                       <td>{`${crash.rpt_street_pfx} ${crash.rpt_street_name} ${
                         crash.rpt_street_sfx
