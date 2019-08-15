@@ -1,4 +1,4 @@
 [build]
   base    = "atd-vze"
   command = "npm run build"
-  publish = "atd-vze/public"
+  publish = "atd-vze/build"
