@@ -18,6 +18,7 @@ export default class Auth {
     };
 
     handleAuthentication = () => {
+        console.log("Handle Authentication");
         this.auth0.parseHash((err, authResult) => {
             if (authResult && authResult.accessToken && authResult.idToken) {
                 this.setSession(authResult);
@@ -31,7 +32,6 @@ export default class Auth {
     };
 
     setSession = authResult => {
-        console.log(authResult);
         // set the time that the access token will expire
         const expiresAt = JSON.stringify(
             authResult.expiresIn * 1000 + new Date().getTime()
@@ -44,13 +44,21 @@ export default class Auth {
 
     isAuthenticated() {
         const expiresAt = JSON.parse(localStorage.getItem("expires_at"));
-        return new Date().getTime() < expiresAt;
+        const currentTime = new Date().getTime();
+        let isAuth = currentTime < expiresAt;
+
+        // console.log("Expires At: " + expiresAt);
+        // console.log("currentTime: " + currentTime);
+        // console.log(`${currentTime} < ${expiresAt}`);
+        // console.log("isAuth: " + isAuth);
+        return isAuth;
     }
 
     logout = () => {
         localStorage.removeItem("access_token");
         localStorage.removeItem("id_token");
         localStorage.removeItem("expires_at");
+        localStorage.removeItem("hasura_user_role");
         this.userProfile = null;
         this.auth0.logout({
             clientID: process.env.REACT_APP_AUTH0_CLIENT_ID,
