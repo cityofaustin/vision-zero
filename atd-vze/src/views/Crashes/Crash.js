@@ -5,6 +5,8 @@ import { useQuery } from "@apollo/react-hooks";
 import { gql } from "apollo-boost";
 import crashDataMap from "./crashDataMap";
 import CrashCollapses from "./CrashCollapses";
+import ReactMapGL, { Marker } from "react-map-gl";
+import CrashMap from "./CrashMap";
 
 const GET_CRASH = gql`
   query FindCrash($crashId: Int) {
@@ -153,7 +155,16 @@ function Crash(props) {
             );
           })}
         </Col>
+
         <Col lg={6}>
+          <div className="mb-4">
+            <Card>
+              <CardHeader>Crash Location</CardHeader>
+              <CardBody>
+                <CrashMap data={data.atd_txdot_crashes[0]} />
+              </CardBody>
+            </Card>
+          </div>
           <CrashCollapses data={data} />
         </Col>
       </Row>
