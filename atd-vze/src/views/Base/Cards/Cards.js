@@ -457,7 +457,7 @@ class Cards extends Component {
                   Card actions
                   <div className="card-header-actions">
                     {/*eslint-disable-next-line*/}
-                    <a href="#" className="card-header-action btn btn-setting">
+                    <a href="/#/dashboard" className="card-header-action btn btn-setting">
                       <i className="icon-settings"></i>
                     </a>
                     {/*eslint-disable-next-line*/}

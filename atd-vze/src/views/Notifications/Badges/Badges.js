@@ -132,28 +132,28 @@ class Badges extends Component {
                 <strong>Badges</strong> <small>links</small>
               </CardHeader>
               <CardBody>
-                <Badge className="mr-1" href="#" color="primary">
+                <Badge className="mr-1" href="/#/dashboard" color="primary">
                   Primary
                 </Badge>
-                <Badge className="mr-1" href="#" color="secondary">
+                <Badge className="mr-1" href="/#/dashboard" color="secondary">
                   Secondary
                 </Badge>
-                <Badge className="mr-1" href="#" color="success">
+                <Badge className="mr-1" href="/#/dashboard" color="success">
                   Success
                 </Badge>
-                <Badge className="mr-1" href="#" color="danger">
+                <Badge className="mr-1" href="/#/dashboard" color="danger">
                   Danger
                 </Badge>
-                <Badge className="mr-1" href="#" color="warning">
+                <Badge className="mr-1" href="/#/dashboard" color="warning">
                   Warning
                 </Badge>
-                <Badge className="mr-1" href="#" color="info">
+                <Badge className="mr-1" href="/#/dashboard" color="info">
                   Info
                 </Badge>
-                <Badge className="mr-1" href="#" color="light">
+                <Badge className="mr-1" href="/#/dashboard" color="light">
                   Light
                 </Badge>
-                <Badge className="mr-1" href="#" color="dark" pill>
+                <Badge className="mr-1" href="/#/dashboard" color="dark" pill>
                   Dark
                 </Badge>
               </CardBody>

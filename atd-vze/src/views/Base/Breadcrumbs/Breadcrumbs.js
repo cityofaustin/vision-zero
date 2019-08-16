@@ -37,29 +37,29 @@ class Breadcrumbs extends Component {
                 <Breadcrumb>
                   {/*eslint-disable-next-line*/}
                   <BreadcrumbItem>
-                    <a href="#">Home</a>
+                    <a href="/#/dashboard">Home</a>
                   </BreadcrumbItem>
                   <BreadcrumbItem active>Library</BreadcrumbItem>
                 </Breadcrumb>
                 <Breadcrumb>
                   {/*eslint-disable-next-line*/}
                   <BreadcrumbItem>
-                    <a href="#">Home</a>
+                    <a href="/#/dashboard">Home</a>
                   </BreadcrumbItem>
                   {/* eslint-disable-next-line*/}
                   <BreadcrumbItem>
-                    <a href="#">Library</a>
+                    <a href="/#/dashboard">Library</a>
                   </BreadcrumbItem>
                   <BreadcrumbItem active>Data</BreadcrumbItem>
                 </Breadcrumb>
                 <Breadcrumb tag="nav">
-                  <BreadcrumbItem tag="a" href="#">
+                  <BreadcrumbItem tag="a" href="/#/dashboard">
                     Home
                   </BreadcrumbItem>
-                  <BreadcrumbItem tag="a" href="#">
+                  <BreadcrumbItem tag="a" href="/#/dashboard">
                     Library
                   </BreadcrumbItem>
-                  <BreadcrumbItem tag="a" href="#">
+                  <BreadcrumbItem tag="a" href="/#/dashboard">
                     Data
                   </BreadcrumbItem>
                   <BreadcrumbItem active tag="span">

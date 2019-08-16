@@ -106,7 +106,7 @@ class Tooltips extends Component {
             {/*eslint-disable-next-line*/}
             <p>
               Somewhere in here is a{" "}
-              <a href="#" id="TooltipExample">
+              <a href="/#/dashboard" id="TooltipExample">
                 tooltip
               </a>
               .
@@ -133,7 +133,7 @@ class Tooltips extends Component {
             {/*eslint-disable-next-line*/}
             <p>
               Sometimes you need to allow users to select text within a{" "}
-              <a href="#" id="DisabledAutoHideExample">
+              <a href="/#/dashboard" id="DisabledAutoHideExample">
                 tooltip
               </a>
               .
@@ -173,7 +173,7 @@ class Tooltips extends Component {
             {/*eslint-disable-next-line*/}
             <p>
               Somewhere in here is a{" "}
-              <a href="#" id="UncontrolledTooltipExample">
+              <a href="/#/dashboard" id="UncontrolledTooltipExample">
                 tooltip
               </a>
               .

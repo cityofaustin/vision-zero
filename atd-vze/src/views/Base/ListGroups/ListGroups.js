@@ -105,19 +105,19 @@ class ListGroups extends Component {
               </CardHeader>
               <CardBody>
                 <ListGroup>
-                  <ListGroupItem disabled tag="a" href="#">
+                  <ListGroupItem disabled tag="a" href="/#/dashboard">
                     Cras justo odio
                   </ListGroupItem>
-                  <ListGroupItem tag="a" href="#">
+                  <ListGroupItem tag="a" href="/#/dashboard">
                     Dapibus ac facilisis in
                   </ListGroupItem>
-                  <ListGroupItem disabled tag="a" href="#">
+                  <ListGroupItem disabled tag="a" href="/#/dashboard">
                     Morbi leo risus
                   </ListGroupItem>
-                  <ListGroupItem tag="a" href="#">
+                  <ListGroupItem tag="a" href="/#/dashboard">
                     Porta ac consectetur ac
                   </ListGroupItem>
-                  <ListGroupItem tag="a" href="#">
+                  <ListGroupItem tag="a" href="/#/dashboard">
                     Vestibulum at eros
                   </ListGroupItem>
                 </ListGroup>
@@ -167,19 +167,19 @@ class ListGroups extends Component {
                   .
                 </p>
                 <ListGroup>
-                  <ListGroupItem active tag="a" href="#" action>
+                  <ListGroupItem active tag="a" href="/#/dashboard" action>
                     Cras justo odio
                   </ListGroupItem>
-                  <ListGroupItem tag="a" href="#" action>
+                  <ListGroupItem tag="a" href="/#/dashboard" action>
                     Dapibus ac facilisis in
                   </ListGroupItem>
-                  <ListGroupItem tag="a" href="#" action>
+                  <ListGroupItem tag="a" href="/#/dashboard" action>
                     Morbi leo risus
                   </ListGroupItem>
-                  <ListGroupItem tag="a" href="#" action>
+                  <ListGroupItem tag="a" href="/#/dashboard" action>
                     Porta ac consectetur ac
                   </ListGroupItem>
-                  <ListGroupItem disabled tag="a" href="#" action>
+                  <ListGroupItem disabled tag="a" href="/#/dashboard" action>
                     Vestibulum at eros
                   </ListGroupItem>
                 </ListGroup>

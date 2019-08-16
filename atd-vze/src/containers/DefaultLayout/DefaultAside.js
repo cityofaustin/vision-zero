@@ -84,7 +84,7 @@ class DefaultAside extends Component {
               <ListGroupItem
                 action
                 tag="a"
-                href="#"
+                href="/#/dashboard"
                 className="list-group-item-accent-warning list-group-item-divider"
               >
                 <div className="avatar float-right">
@@ -107,7 +107,7 @@ class DefaultAside extends Component {
               <ListGroupItem
                 action
                 tag="a"
-                href="#"
+                href="/#/dashboard"
                 className="list-group-item-accent-info list-group-item-divider"
               >
                 <div className="avatar float-right">
@@ -133,7 +133,7 @@ class DefaultAside extends Component {
               <ListGroupItem
                 action
                 tag="a"
-                href="#"
+                href="/#/dashboard"
                 className="list-group-item-accent-danger list-group-item-divider"
               >
                 <div>
@@ -186,7 +186,7 @@ class DefaultAside extends Component {
               <ListGroupItem
                 action
                 tag="a"
-                href="#"
+                href="/#/dashboard"
                 className="list-group-item-accent-success list-group-item-divider"
               >
                 <div>
@@ -202,7 +202,7 @@ class DefaultAside extends Component {
               <ListGroupItem
                 action
                 tag="a"
-                href="#"
+                href="/#/dashboard"
                 className="list-group-item-accent-primary list-group-item-divider"
               >
                 <div>
