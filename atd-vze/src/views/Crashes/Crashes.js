@@ -1,5 +1,19 @@
 import React from "react";
-import { Badge, Card, CardBody, CardHeader, Col, Row, Table } from "reactstrap";
+import {
+  Badge,
+  Card,
+  CardBody,
+  CardHeader,
+  Col,
+  Row,
+  Table,
+  Button,
+  Form,
+  FormGroup,
+  Input,
+  InputGroup,
+  InputGroupAddon
+} from "reactstrap";
 import { Link } from "react-router-dom";
 
 import { useQuery } from "@apollo/react-hooks";
@@ -47,6 +61,25 @@ function Crashes() {
               <i className="fa fa-car" /> Crashes
             </CardHeader>
             <CardBody>
+              <Form className="form-horizontal">
+                <FormGroup row>
+                  <Col md="6">
+                    <InputGroup>
+                      <Input
+                        type="text"
+                        id="input1-group2"
+                        name="input1-group2"
+                        placeholder=""
+                      />
+                      <InputGroupAddon addonType="append">
+                        <Button type="button" color="primary">
+                          <i className="fa fa-search" /> Search
+                        </Button>
+                      </InputGroupAddon>
+                    </InputGroup>
+                  </Col>
+                </FormGroup>
+              </Form>
               <Table responsive>
                 <thead>
                   <tr>
