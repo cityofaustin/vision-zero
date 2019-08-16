@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Badge,
   Card,
@@ -39,6 +39,26 @@ const GET_CRASHES = gql`
   }
 `;
 
+// TODO make query dynamic
+const SEARCH_CRASHES = gql`
+  {
+    atd_txdot_crashes(
+      limit: 100
+      where: { rpt_street_name: { _like: "LAMAR" } }
+      order_by: { crash_date: desc }
+    ) {
+      crash_id
+      death_cnt
+      tot_injry_cnt
+      crash_fatal_fl
+      rpt_street_pfx
+      rpt_street_sfx
+      rpt_street_name
+      crash_date
+    }
+  }
+`;
+
 const columns = [
   "Crash Id",
   "Crash Date",
@@ -49,8 +69,22 @@ const columns = [
 
 function Crashes() {
   const { loading, error, data } = useQuery(GET_CRASHES);
+  const {
+    loading: searchLoading,
+    error: searchError,
+    data: searchData
+  } = useQuery(SEARCH_CRASHES);
+
+  const [searchValue, setSearchValue] = useState("");
+
   if (loading) return "Loading...";
   if (error) return `Error! ${error.message}`;
+
+  const handleSearchSubmission = (e, searchValue) => {
+    e.preventDefault();
+    console.log(searchData, e, searchValue);
+    // TODO populate search results in table
+  };
 
   return (
     <div className="animated fadeIn">
@@ -61,7 +95,10 @@ function Crashes() {
               <i className="fa fa-car" /> Crashes
             </CardHeader>
             <CardBody>
-              <Form className="form-horizontal">
+              <Form
+                className="form-horizontal"
+                onSubmit={e => handleSearchSubmission(e, searchValue)}
+              >
                 <FormGroup row>
                   <Col md="6">
                     <InputGroup>
@@ -70,9 +107,11 @@ function Crashes() {
                         id="input1-group2"
                         name="input1-group2"
                         placeholder=""
+                        value={searchValue}
+                        onChange={e => setSearchValue(e.target.value)}
                       />
                       <InputGroupAddon addonType="append">
-                        <Button type="button" color="primary">
+                        <Button type="submit" color="primary">
                           <i className="fa fa-search" /> Search
                         </Button>
                       </InputGroupAddon>
