@@ -98,7 +98,9 @@ class CrashCollapses extends Component {
                         aria-expanded={this.state.accordion[0]}
                         aria-controls="collapseOne"
                       >
-                        <h5 className="m-0 p-0">People</h5>
+                        <h5 className="m-0 p-0">
+                          <i className="fa fa-group" /> People
+                        </h5>
                       </Button>
                     </CardHeader>
                     <Collapse
@@ -181,7 +183,9 @@ class CrashCollapses extends Component {
                         aria-expanded={this.state.accordion[1]}
                         aria-controls="collapseTwo"
                       >
-                        <h5 className="m-0 p-0">Units</h5>
+                        <h5 className="m-0 p-0">
+                          <i className="fa fa-car" /> Units
+                        </h5>
                       </Button>
                     </CardHeader>
                     <Collapse
@@ -224,7 +228,9 @@ class CrashCollapses extends Component {
                         aria-expanded={this.state.accordion[2]}
                         aria-controls="collapseThree"
                       >
-                        <h5 className="m-0 p-0">Charges</h5>
+                        <h5 className="m-0 p-0">
+                          <i className="fa fa-legal" /> Charges
+                        </h5>
                       </Button>
                     </CardHeader>
                     <Collapse

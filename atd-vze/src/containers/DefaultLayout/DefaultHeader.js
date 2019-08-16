@@ -35,8 +35,13 @@ class DefaultHeader extends Component {
       <React.Fragment>
         <AppSidebarToggler className="d-lg-none" display="md" mobile />
         <AppNavbarBrand
-          full={{ src: logo, width: 140, height: 30, alt: "CoreUI Logo" }}
-          minimized={{ src: sygnet, width: 30, height: 30, alt: "CoreUI Logo" }}
+          full={{
+            src: logo,
+            width: 140,
+            height: 25,
+            alt: "Vision Zero Austin"
+          }}
+          // minimized={{ src: sygnet, width: 30, height: 30, alt: "CoreUI Logo" }}
         />
         <AppSidebarToggler className="d-md-down-none" display="lg" />
 
