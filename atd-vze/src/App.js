@@ -34,7 +34,7 @@ class App extends Component {
 
     this.state = {
       token: this.getToken(),
-      role: this.getRole()
+      role: this.getRole(),
     };
 
     // We first instantiate our auth helper class
@@ -86,8 +86,8 @@ class App extends Component {
           uri: "https://vzd.austintexas.io/v1/graphql",
           headers: {
             Authorization: `Bearer ${this.state.token}`,
-            "x-hasura-allowed-roles": this.state.role
-          }
+            "x-hasura-allowed-roles": this.state.role,
+          },
         });
         console.log("Client Initialized");
       } else {

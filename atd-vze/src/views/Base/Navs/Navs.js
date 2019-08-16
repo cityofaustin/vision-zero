@@ -1,8 +1,18 @@
-import React, { Component } from 'react';
-import { Card, CardBody, CardHeader, Dropdown, DropdownItem, DropdownMenu, DropdownToggle, Nav, NavItem, NavLink } from 'reactstrap';
+import React, { Component } from "react";
+import {
+  Card,
+  CardBody,
+  CardHeader,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownToggle,
+  Nav,
+  NavItem,
+  NavLink,
+} from "reactstrap";
 
 class Navs extends Component {
-
   constructor(props) {
     super(props);
 
@@ -14,7 +24,7 @@ class Navs extends Component {
 
   toggle(i) {
     const newArray = this.state.dropdownOpen.map((element, index) => {
-      return (index === i ? !element : false);
+      return index === i ? !element : false;
     });
     this.setState({
       dropdownOpen: newArray,
@@ -26,9 +36,15 @@ class Navs extends Component {
       <div className="animated fadeIn">
         <Card>
           <CardHeader>
-            <i className="fa fa-align-justify"></i><strong>Navs</strong>
+            <i className="fa fa-align-justify"></i>
+            <strong>Navs</strong>
             <div className="card-header-actions">
-              <a href="https://reactstrap.github.io/components/navs/" rel="noreferrer noopener" target="_blank" className="card-header-action">
+              <a
+                href="https://reactstrap.github.io/components/navs/"
+                rel="noreferrer noopener"
+                target="_blank"
+                className="card-header-action"
+              >
                 <small className="text-muted">docs</small>
               </a>
             </div>
@@ -46,27 +62,41 @@ class Navs extends Component {
                 <NavLink href="#">Another Link</NavLink>
               </NavItem>
               <NavItem>
-                <NavLink disabled href="#">Disabled Link</NavLink>
+                <NavLink disabled href="#">
+                  Disabled Link
+                </NavLink>
               </NavItem>
             </Nav>
             <hr />
             <p>Link Based</p>
             <Nav>
-              <NavLink href="#">Link</NavLink> <NavLink href="#">Link</NavLink> <NavLink href="#">Another Link</NavLink> <NavLink disabled href="#">Disabled
-              Link</NavLink>
+              <NavLink href="#">Link</NavLink> <NavLink href="#">Link</NavLink>{" "}
+              <NavLink href="#">Another Link</NavLink>{" "}
+              <NavLink disabled href="#">
+                Disabled Link
+              </NavLink>
             </Nav>
           </CardBody>
         </Card>
         <Card>
           <CardHeader>
-            <i className="fa fa-align-justify"></i><strong>Navs Tabs</strong>
+            <i className="fa fa-align-justify"></i>
+            <strong>Navs Tabs</strong>
           </CardHeader>
           <CardBody>
             <Nav tabs>
               <NavItem>
-                <NavLink href="#" active>Link</NavLink>
+                <NavLink href="#" active>
+                  Link
+                </NavLink>
               </NavItem>
-              <Dropdown nav isOpen={this.state.dropdownOpen[0]} toggle={() => {this.toggle(0);}}>
+              <Dropdown
+                nav
+                isOpen={this.state.dropdownOpen[0]}
+                toggle={() => {
+                  this.toggle(0);
+                }}
+              >
                 <DropdownToggle nav caret>
                   Dropdown
                 </DropdownToggle>
@@ -85,21 +115,32 @@ class Navs extends Component {
                 <NavLink href="#">Another Link</NavLink>
               </NavItem>
               <NavItem>
-                <NavLink disabled href="#">Disabled Link</NavLink>
+                <NavLink disabled href="#">
+                  Disabled Link
+                </NavLink>
               </NavItem>
             </Nav>
           </CardBody>
         </Card>
         <Card>
           <CardHeader>
-            <i className="fa fa-align-justify"></i><strong>Navs Pills</strong>
+            <i className="fa fa-align-justify"></i>
+            <strong>Navs Pills</strong>
           </CardHeader>
           <CardBody>
             <Nav pills>
               <NavItem>
-                <NavLink href="#" active>Link</NavLink>
+                <NavLink href="#" active>
+                  Link
+                </NavLink>
               </NavItem>
-              <Dropdown nav isOpen={this.state.dropdownOpen[1]} toggle={() => {this.toggle(1);}}>
+              <Dropdown
+                nav
+                isOpen={this.state.dropdownOpen[1]}
+                toggle={() => {
+                  this.toggle(1);
+                }}
+              >
                 <DropdownToggle nav caret>
                   Dropdown
                 </DropdownToggle>
@@ -118,14 +159,17 @@ class Navs extends Component {
                 <NavLink href="#">Another Link</NavLink>
               </NavItem>
               <NavItem>
-                <NavLink disabled href="#">Disabled Link</NavLink>
+                <NavLink disabled href="#">
+                  Disabled Link
+                </NavLink>
               </NavItem>
             </Nav>
           </CardBody>
         </Card>
         <Card>
           <CardHeader>
-            <i className="fa fa-align-justify"></i><strong>Navs Vertical</strong>
+            <i className="fa fa-align-justify"></i>
+            <strong>Navs Vertical</strong>
           </CardHeader>
           <CardBody>
             <p>List Based</p>
@@ -140,14 +184,19 @@ class Navs extends Component {
                 <NavLink href="#">Another Link</NavLink>
               </NavItem>
               <NavItem>
-                <NavLink disabled href="#">Disabled Link</NavLink>
+                <NavLink disabled href="#">
+                  Disabled Link
+                </NavLink>
               </NavItem>
             </Nav>
             <hr />
             <p>Link based</p>
             <Nav vertical>
-              <NavLink href="#">Link</NavLink> <NavLink href="#">Link</NavLink> <NavLink href="#">Another Link</NavLink> <NavLink disabled href="#">Disabled
-              Link</NavLink>
+              <NavLink href="#">Link</NavLink> <NavLink href="#">Link</NavLink>{" "}
+              <NavLink href="#">Another Link</NavLink>{" "}
+              <NavLink disabled href="#">
+                Disabled Link
+              </NavLink>
             </Nav>
           </CardBody>
         </Card>

@@ -9,7 +9,7 @@ import {
   Container,
   Form,
   InputGroup,
-  Row
+  Row,
 } from "reactstrap";
 
 class Login extends Component {

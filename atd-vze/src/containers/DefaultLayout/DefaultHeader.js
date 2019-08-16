@@ -6,7 +6,7 @@ import {
   DropdownMenu,
   DropdownToggle,
   Nav,
-  NavItem
+  NavItem,
 } from "reactstrap";
 import PropTypes from "prop-types";
 
@@ -14,7 +14,7 @@ import { AppNavbarBrand, AppSidebarToggler } from "@coreui/react";
 import logo from "../../assets/img/brand/visionzerotext.png";
 
 const propTypes = {
-  children: PropTypes.node
+  children: PropTypes.node,
 };
 
 const defaultProps = {};
@@ -33,7 +33,7 @@ class DefaultHeader extends Component {
             src: logo,
             width: 140,
             height: 25,
-            alt: "Vision Zero Austin"
+            alt: "Vision Zero Austin",
           }}
           // minimized={{ src: sygnet, width: 30, height: 30, alt: "CoreUI Logo" }}
         />

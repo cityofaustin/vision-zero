@@ -8,7 +8,7 @@ import {
   Col,
   Collapse,
   Table,
-  Row
+  Row,
 } from "reactstrap";
 
 class CrashCollapses extends Component {
@@ -28,7 +28,7 @@ class CrashCollapses extends Component {
       custom: [true, false],
       status: "Closed",
       fadeIn: true,
-      timeout: 300
+      timeout: 300,
     };
   }
 
@@ -57,7 +57,7 @@ class CrashCollapses extends Component {
     const state = prevState.map((x, index) => (tab === index ? !x : false));
 
     this.setState({
-      accordion: state
+      accordion: state,
     });
   }
 
@@ -66,7 +66,7 @@ class CrashCollapses extends Component {
     const state = prevState.map((x, index) => (tab === index ? !x : false));
 
     this.setState({
-      custom: state
+      custom: state,
     });
   }
 

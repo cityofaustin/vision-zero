@@ -116,7 +116,7 @@ const GET_CRASH = gql`
 function Crash(props) {
   const crashId = props.match.params.id;
   const { loading, error, data } = useQuery(GET_CRASH, {
-    variables: { crashId }
+    variables: { crashId },
   });
 
   if (loading) return "Loading...";
