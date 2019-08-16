@@ -38,7 +38,6 @@ function Crashes() {
   if (loading) return "Loading...";
   if (error) return `Error! ${error.message}`;
 
-  console.log("Crashes:", data);
   return (
     <div className="animated fadeIn">
       <Row>
