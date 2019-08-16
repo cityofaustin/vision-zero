@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { Link, NavLink } from "react-router-dom";
 import {
-  Badge,
   UncontrolledDropdown,
   DropdownItem,
   DropdownMenu,
@@ -13,7 +12,6 @@ import PropTypes from "prop-types";
 
 import { AppNavbarBrand, AppSidebarToggler } from "@coreui/react";
 import logo from "../../assets/img/brand/visionzerotext.png";
-import sygnet from "../../assets/img/brand/sygnet.svg";
 
 const propTypes = {
   children: PropTypes.node
@@ -22,14 +20,10 @@ const propTypes = {
 const defaultProps = {};
 
 class DefaultHeader extends Component {
-  constructor(props) {
-    super(props);
-  }
-
   render() {
     // eslint-disable-next-line
     const { children, ...attributes } = this.props;
-    const { isAuthenticated, login, logout } = this.props.auth;
+    const { logout } = this.props.auth;
 
     return (
       <React.Fragment>
@@ -88,42 +82,3 @@ DefaultHeader.propTypes = propTypes;
 DefaultHeader.defaultProps = defaultProps;
 
 export default DefaultHeader;
-/*
-              <DropdownItem>
-                <i className="fa fa-bell-o" /> Updates
-                <Badge color="info">42</Badge>
-              </DropdownItem>
-              <DropdownItem>
-                <i className="fa fa-envelope-o" /> Messages
-                <Badge color="success">42</Badge>
-              </DropdownItem>
-              <DropdownItem>
-                <i className="fa fa-tasks" /> Tasks
-                <Badge color="danger">42</Badge>
-              </DropdownItem>
-              <DropdownItem>
-                <i className="fa fa-comments" /> Comments
-                <Badge color="warning">42</Badge>
-              </DropdownItem>
-              <DropdownItem header tag="div" className="text-center">
-                <strong>Settings</strong>
-              </DropdownItem>
-              <DropdownItem>
-                <i className="fa fa-wrench" /> Settings
-              </DropdownItem>
-              <DropdownItem>
-                <i className="fa fa-usd" /> Payments
-                <Badge color="secondary">42</Badge>
-              </DropdownItem>
-              <DropdownItem>
-                <i className="fa fa-file" /> Projects
-                <Badge color="primary">42</Badge>
-              </DropdownItem>
-              <DropdownItem divider />
-              <DropdownItem>
-                <i className="fa fa-shield" /> Lock Account
-              </DropdownItem>
-              <DropdownItem onClick={e => this.props.onLogout(e)}>
-                <i className="fa fa-lock" /> Logout
-              </DropdownItem>
-*/

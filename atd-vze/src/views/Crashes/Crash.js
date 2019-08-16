@@ -1,11 +1,10 @@
-import React, { Component } from "react";
+import React from "react";
 import { Card, CardBody, CardHeader, Col, Row, Table } from "reactstrap";
 import { withApollo } from "react-apollo";
 import { useQuery } from "@apollo/react-hooks";
 import { gql } from "apollo-boost";
 import crashDataMap from "./crashDataMap";
 import CrashCollapses from "./CrashCollapses";
-import ReactMapGL, { Marker } from "react-map-gl";
 import CrashMap from "./CrashMap";
 
 const GET_CRASH = gql`
@@ -119,8 +118,6 @@ function Crash(props) {
   const { loading, error, data } = useQuery(GET_CRASH, {
     variables: { crashId }
   });
-
-  console.log(data);
 
   if (loading) return "Loading...";
   if (error) return `Error! ${error.message}`;

@@ -1,8 +1,6 @@
 import React, { Component } from "react";
-import { render } from "react-dom";
 import MapGL, {
   Marker,
-  Popup,
   NavigationControl,
   FullscreenControl
 } from "react-map-gl";

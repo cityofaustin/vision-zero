@@ -4,11 +4,9 @@ import {
   Button,
   Card,
   CardBody,
-  CardFooter,
   CardHeader,
   Col,
   Collapse,
-  Fade,
   Table,
   Row
 } from "reactstrap";
@@ -77,7 +75,6 @@ class CrashCollapses extends Component {
   }
 
   render() {
-    console.log(this.props);
     return (
       <div className="animated fadeIn">
         <Row>
@@ -123,8 +120,8 @@ class CrashCollapses extends Component {
                           </thead>
                           <tbody>
                             {this.props.data.atd_txdot_primaryperson.map(
-                              person => (
-                                <tr>
+                              (person, i) => (
+                                <tr key={`person-${i}`}>
                                   <td>{person.drvr_city_name}</td>
                                   <td>{person.drvr_zip}</td>
                                   <td>{person.prsn_age}</td>
@@ -203,8 +200,8 @@ class CrashCollapses extends Component {
                             </tr>
                           </thead>
                           <tbody>
-                            {this.props.data.atd_txdot_units.map(unit => (
-                              <tr>
+                            {this.props.data.atd_txdot_units.map((unit, i) => (
+                              <tr key={`person-${i}`}>
                                 <td>{unit.unit_desc_id}</td>
                                 <td>{unit.contrib_factr_1_id}</td>
                                 <td>
@@ -247,12 +244,14 @@ class CrashCollapses extends Component {
                             </tr>
                           </thead>
                           <tbody>
-                            {this.props.data.atd_txdot_charges.map(charges => (
-                              <tr>
-                                <td>{charges.charge}</td>
-                                <td>{charges.charge_cat_id}</td>
-                              </tr>
-                            ))}
+                            {this.props.data.atd_txdot_charges.map(
+                              (charges, i) => (
+                                <tr key={`charges-${i}`}>
+                                  <td>{charges.charge}</td>
+                                  <td>{charges.charge_cat_id}</td>
+                                </tr>
+                              )
+                            )}
                           </tbody>
                         </Table>
                       </CardBody>

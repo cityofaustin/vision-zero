@@ -1,11 +1,9 @@
 import React, { Component } from "react";
 import { HashRouter, Route, Switch, Redirect } from "react-router-dom";
-// import { renderRoutes } from 'react-router-config';
-import auth0 from "auth0-js";
 
 // Authentication
 import Auth from "./auth/Auth";
-import Callback from "./auth/Callback";
+// import Callback from "./auth/Callback";
 
 // Apollo GraphQL Client
 import ApolloClient from "apollo-boost";
@@ -59,40 +57,41 @@ class App extends Component {
 
   initializeProfile() {
     // If we already have a role, then let's not worry about it...
-    if(this.getRole() !== null) return;
+    if (this.getRole() !== null) return;
 
     // Else, we need to initialize it if we are authenticated
-    if(this.auth.isAuthenticated()) {
+    if (this.auth.isAuthenticated()) {
       this.auth.getProfile((profile, error) => {
-            try {
-              const role = profile["https://hasura.io/jwt/claims"]["x-hasura-allowed-roles"][0];
-              localStorage.setItem("hasura_user_role", role);
-              console.log("Role initialized: " + role);
-              this.setState({role: role});
-              this.initializeClient();
-            } catch (error) {
-              console.log(error);
-            }
-            this.setState({profile, error})
-          }
-      );
+        try {
+          const role =
+            profile["https://hasura.io/jwt/claims"][
+              "x-hasura-allowed-roles"
+            ][0];
+          localStorage.setItem("hasura_user_role", role);
+          console.log("Role initialized: " + role);
+          this.setState({ role: role });
+          this.initializeClient();
+        } catch (error) {
+          console.log(error);
+        }
+        this.setState({ profile, error });
+      });
     }
   }
 
   initializeClient() {
-    if(this.auth.isAuthenticated()) {
-
-      if(this.state.role !== null) {
+    if (this.auth.isAuthenticated()) {
+      if (this.state.role !== null) {
         client = new ApolloClient({
           uri: "https://vzd.austintexas.io/v1/graphql",
           headers: {
-            "Authorization": `Bearer ${this.state.token}`,
+            Authorization: `Bearer ${this.state.token}`,
             "x-hasura-allowed-roles": this.state.role
           }
         });
         console.log("Client Initialized");
       } else {
-        console.log("Client not yet initialized, no role available.")
+        console.log("Client not yet initialized, no role available.");
       }
     } else {
       console.log("Client not initialized, not authenticated.");
@@ -104,7 +103,7 @@ class App extends Component {
       This seems to work for now, let's see if we can make the router take care
       of this at some point.
     */
-    if(window.location.pathname.startsWith("/callback")) {
+    if (window.location.pathname.startsWith("/callback")) {
       // Handle authentication if expected values are in the URL.
       if (/access_token|id_token|error/.test(window.location.hash)) {
         this.handleAuthentication();
@@ -119,16 +118,15 @@ class App extends Component {
     console.log(authResult);
     // set the time that the access token will expire
     const expiresAt = JSON.stringify(
-        authResult.expiresIn * 1000 + new Date().getTime()
+      authResult.expiresIn * 1000 + new Date().getTime()
     );
 
     localStorage.setItem("access_token", authResult.accessToken);
     localStorage.setItem("id_token", authResult.idToken);
     localStorage.setItem("expires_at", expiresAt);
 
-    this.setState({token: authResult.idToken, })
+    this.setState({ token: authResult.idToken });
   };
-
 
   handleAuthentication() {
     this.auth.auth0.parseHash((err, authResult) => {
@@ -148,9 +146,8 @@ class App extends Component {
         <HashRouter>
           <React.Suspense fallback={loading()}>
             <Switch>
-              /*
-                Uncomment these whenever we find a way to implement the /callback route.
-              */
+              {/* Uncomment these whenever we find a way to implement the
+              /callback route. */}
               {/*<Route*/}
               {/*  exact*/}
               {/*  path="/callback"*/}
@@ -184,16 +181,16 @@ class App extends Component {
               <Route
                 path="/"
                 name="Home"
-                    // If authenticated, render, if not log in.
-                    render={props =>
-                        this.auth.isAuthenticated() ? (
-                            <DefaultLayout auth={this.auth} {...props} />
-                        ) : (
-                            <Redirect to="/login" />
-                        )
-                    }
-                />}
+                // If authenticated, render, if not log in.
+                render={props =>
+                  this.auth.isAuthenticated() ? (
+                    <DefaultLayout auth={this.auth} {...props} />
+                  ) : (
+                    <Redirect to="/login" />
+                  )
+                }
               />
+              } />
             </Switch>
           </React.Suspense>
         </HashRouter>
