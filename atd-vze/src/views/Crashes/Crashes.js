@@ -1,24 +1,11 @@
-import React, { useState } from "react";
-import {
-  Badge,
-  Card,
-  CardBody,
-  CardHeader,
-  Col,
-  Row,
-  Table,
-  Button,
-  Form,
-  FormGroup,
-  Input,
-  InputGroup,
-  InputGroupAddon
-} from "reactstrap";
+import React from "react";
+import { Badge, Card, CardBody, CardHeader, Col, Row, Table } from "reactstrap";
 import { Link } from "react-router-dom";
 
 import { useQuery } from "@apollo/react-hooks";
 import { gql } from "apollo-boost";
 import { withApollo } from "react-apollo";
+import TableSearchBar from "../../Components/TableSearchBar";
 
 const GET_CRASHES = gql`
   {
@@ -68,25 +55,9 @@ const columns = [
 ];
 
 function Crashes() {
-  const [searchFieldValue, setSearchFieldValue] = useState("");
-  const [searchValue, setSearchValue] = useState("");
   const { loading, error, data } = useQuery(GET_CRASHES);
-  const {
-    loading: searchLoading,
-    error: searchError,
-    data: searchData
-  } = useQuery(SEARCH_CRASHES, { variables: { searchValue: searchValue } });
-  console.log(searchData);
-
   if (loading) return "Loading...";
   if (error) return `Error! ${error.message}`;
-
-  const handleSearchSubmission = (e, searchValue) => {
-    e.preventDefault();
-    console.log(searchData, e, searchValue);
-    setSearchValue(searchFieldValue);
-    // TODO populate search results in table
-  };
 
   return (
     <div className="animated fadeIn">
@@ -97,30 +68,7 @@ function Crashes() {
               <i className="fa fa-car" /> Crashes
             </CardHeader>
             <CardBody>
-              <Form
-                className="form-horizontal"
-                onSubmit={e => handleSearchSubmission(e, searchFieldValue)}
-              >
-                <FormGroup row>
-                  <Col md="6">
-                    <InputGroup>
-                      <Input
-                        type="text"
-                        id="input1-group2"
-                        name="input1-group2"
-                        placeholder=""
-                        value={searchFieldValue}
-                        onChange={e => setSearchFieldValue(e.target.value)}
-                      />
-                      <InputGroupAddon addonType="append">
-                        <Button type="submit" color="primary">
-                          <i className="fa fa-search" /> Search
-                        </Button>
-                      </InputGroupAddon>
-                    </InputGroup>
-                  </Col>
-                </FormGroup>
-              </Form>
+              <TableSearchBar query={SEARCH_CRASHES} />
               <Table responsive>
                 <thead>
                   <tr>
