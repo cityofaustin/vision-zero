@@ -30,7 +30,7 @@ const columns = [
   "Crash Date",
   "Address",
   "Total Injury Count",
-  "Death Count"
+  "Death Count",
 ];
 
 function Crashes() {
@@ -64,9 +64,7 @@ function Crashes() {
                         </Link>
                       </td>
                       <td>{crash.crash_date}</td>
-                      <td>{`${crash.rpt_street_pfx} ${crash.rpt_street_name} ${
-                        crash.rpt_street_sfx
-                      }`}</td>
+                      <td>{`${crash.rpt_street_pfx} ${crash.rpt_street_name} ${crash.rpt_street_sfx}`}</td>
                       <td>
                         <Badge color="warning">{crash.tot_injry_cnt}</Badge>
                       </td>
