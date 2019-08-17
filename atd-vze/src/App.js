@@ -86,7 +86,7 @@ class App extends Component {
           uri: "https://vzd.austintexas.io/v1/graphql",
           headers: {
             Authorization: `Bearer ${this.state.token}`,
-            "x-hasura-allowed-roles": this.state.role,
+            "x-hasura-role": this.state.role,
           },
         });
         console.log("Client Initialized");
