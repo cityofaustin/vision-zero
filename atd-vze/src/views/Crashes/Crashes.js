@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Badge, Card, CardBody, CardHeader, Col, Row, Table } from "reactstrap";
 import { Link } from "react-router-dom";
 
@@ -55,9 +55,19 @@ const columns = [
 ];
 
 function Crashes() {
-  const { loading, error, data } = useQuery(GET_CRASHES);
+  const [tableData, setTableData] = useState("");
+  const [hasSearchResults, setHasSearchResults] = useState(false);
+  const { loading, error, data } = useQuery(GET_CRASHES, {
+    onCompleted: !hasSearchResults && (data => setTableData(data))
+  });
+
   if (loading) return "Loading...";
   if (error) return `Error! ${error.message}`;
+
+  const updateCrashTableData = (data, hasSearchResults) => {
+    setHasSearchResults(hasSearchResults);
+    setTableData(data);
+  };
 
   return (
     <div className="animated fadeIn">
@@ -68,7 +78,11 @@ function Crashes() {
               <i className="fa fa-car" /> Crashes
             </CardHeader>
             <CardBody>
-              <TableSearchBar query={SEARCH_CRASHES} />
+              <TableSearchBar
+                query={SEARCH_CRASHES}
+                updateResults={updateCrashTableData}
+                hasSearchResults={setHasSearchResults}
+              />
               <Table responsive>
                 <thead>
                   <tr>
@@ -78,25 +92,26 @@ function Crashes() {
                   </tr>
                 </thead>
                 <tbody>
-                  {data.atd_txdot_crashes.map(crash => (
-                    <tr key={crash.crash_id}>
-                      <td>
-                        <Link to={`crashes/${crash.crash_id}`}>
-                          {crash.crash_id}
-                        </Link>
-                      </td>
-                      <td>{crash.crash_date}</td>
-                      <td>{`${crash.rpt_street_pfx} ${crash.rpt_street_name} ${
-                        crash.rpt_street_sfx
-                      }`}</td>
-                      <td>
-                        <Badge color="warning">{crash.tot_injry_cnt}</Badge>
-                      </td>
-                      <td>
-                        <Badge color="danger">{crash.death_cnt}</Badge>
-                      </td>
-                    </tr>
-                  ))}
+                  {tableData &&
+                    tableData.atd_txdot_crashes.map(crash => (
+                      <tr key={crash.crash_id}>
+                        <td>
+                          <Link to={`crashes/${crash.crash_id}`}>
+                            {crash.crash_id}
+                          </Link>
+                        </td>
+                        <td>{crash.crash_date}</td>
+                        <td>{`${crash.rpt_street_pfx} ${
+                          crash.rpt_street_name
+                        } ${crash.rpt_street_sfx}`}</td>
+                        <td>
+                          <Badge color="warning">{crash.tot_injry_cnt}</Badge>
+                        </td>
+                        <td>
+                          <Badge color="danger">{crash.death_cnt}</Badge>
+                        </td>
+                      </tr>
+                    ))}
                 </tbody>
               </Table>
             </CardBody>

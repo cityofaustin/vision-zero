@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Col,
   Button,
@@ -25,11 +25,18 @@ const TableSearchBar = props => {
   });
   console.log(searchData);
 
+  useEffect(() => {
+    searchValue !== "" && props.updateResults(searchData, true);
+  }, [searchData]);
+
   const handleSearchSubmission = (e, searchValue) => {
     e.preventDefault();
     console.log(searchData, e, searchValue);
     setSearchValue(searchFieldValue);
-    // TODO populate search results in table
+  };
+
+  const handleClearSearchResults = () => {
+    props.updateResults("", false);
   };
 
   return (
@@ -51,6 +58,13 @@ const TableSearchBar = props => {
             <InputGroupAddon addonType="append">
               <Button type="submit" color="primary">
                 <i className="fa fa-search" /> Search
+              </Button>
+              <Button
+                type="button"
+                color="danger"
+                onClick={handleClearSearchResults}
+              >
+                <i className="fa fa-ban" /> Clear
               </Button>
             </InputGroupAddon>
           </InputGroup>
