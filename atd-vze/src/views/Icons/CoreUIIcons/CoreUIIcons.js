@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { Badge, Card, CardBody, CardHeader, Col, Row } from 'reactstrap';
+import React, { Component } from "react";
+import { Badge, Card, CardBody, CardHeader, Col, Row } from "reactstrap";
 
 class CoreUIIcons extends Component {
   render() {
@@ -7,9 +7,15 @@ class CoreUIIcons extends Component {
       <div className="animated fadeIn">
         <Card>
           <CardHeader>
-            <i className="fa fa-picture-o"></i>CoreUI Icons{' '} <Badge color={'info'}>New</Badge>
+            <i className="fa fa-picture-o"></i>CoreUI Icons{" "}
+            <Badge color={"info"}>New</Badge>
             <div className="card-header-actions">
-              <a href="https://github.com/coreui/coreui-icons" rel="noreferrer noopener" target="_blank" className="card-header-action">
+              <a
+                href="https://github.com/coreui/coreui-icons"
+                rel="noreferrer noopener"
+                target="_blank"
+                className="card-header-action"
+              >
                 <small className="text-muted">Github</small>
               </a>
             </div>
@@ -425,4 +431,3 @@ class CoreUIIcons extends Component {
 }
 
 export default CoreUIIcons;
-

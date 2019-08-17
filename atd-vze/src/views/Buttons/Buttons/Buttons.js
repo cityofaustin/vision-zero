@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { Button, Card, CardBody, CardHeader, Col, Row } from 'reactstrap';
+import React, { Component } from "react";
+import { Button, Card, CardBody, CardHeader, Col, Row } from "reactstrap";
 
 class Buttons extends Component {
   render() {
@@ -15,31 +15,49 @@ class Buttons extends Component {
                 Normal
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block color="primary">Primary</Button>
+                <Button block color="primary">
+                  Primary
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block color="secondary">Secondary</Button>
+                <Button block color="secondary">
+                  Secondary
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block color="success">Success</Button>
+                <Button block color="success">
+                  Success
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block color="warning">Warning</Button>
+                <Button block color="warning">
+                  Warning
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block color="danger">Danger</Button>
+                <Button block color="danger">
+                  Danger
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block color="info">Info</Button>
+                <Button block color="info">
+                  Info
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block color="light">Light</Button>
+                <Button block color="light">
+                  Light
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block color="dark">Dark</Button>
+                <Button block color="dark">
+                  Dark
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block color="link">Link</Button>
+                <Button block color="link">
+                  Link
+                </Button>
               </Col>
             </Row>
             <Row className="align-items-center mt-3">
@@ -47,31 +65,49 @@ class Buttons extends Component {
                 Active State
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button active block color="primary" aria-pressed="true">Primary</Button>
+                <Button active block color="primary" aria-pressed="true">
+                  Primary
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button active block color="secondary" aria-pressed="true">Secondary</Button>
+                <Button active block color="secondary" aria-pressed="true">
+                  Secondary
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button active block color="success" aria-pressed="true">Success</Button>
+                <Button active block color="success" aria-pressed="true">
+                  Success
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button active block color="warning" aria-pressed="true">Warning</Button>
+                <Button active block color="warning" aria-pressed="true">
+                  Warning
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button active block color="danger" aria-pressed="true">Danger</Button>
+                <Button active block color="danger" aria-pressed="true">
+                  Danger
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button active block color="info" aria-pressed="true">Info</Button>
+                <Button active block color="info" aria-pressed="true">
+                  Info
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button active block color="light" aria-pressed="true">Light</Button>
+                <Button active block color="light" aria-pressed="true">
+                  Light
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button active block color="dark" aria-pressed="true">Dark</Button>
+                <Button active block color="dark" aria-pressed="true">
+                  Dark
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button active block color="link" aria-pressed="true">Link</Button>
+                <Button active block color="link" aria-pressed="true">
+                  Link
+                </Button>
               </Col>
             </Row>
             <Row className="align-items-center mt-3">
@@ -79,31 +115,49 @@ class Buttons extends Component {
                 Disabled
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block color="primary" disabled>Primary</Button>
+                <Button block color="primary" disabled>
+                  Primary
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block color="secondary" disabled>Secondary</Button>
+                <Button block color="secondary" disabled>
+                  Secondary
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block color="success" disabled>Success</Button>
+                <Button block color="success" disabled>
+                  Success
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block color="warning" disabled>Warning</Button>
+                <Button block color="warning" disabled>
+                  Warning
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block color="danger" disabled>Danger</Button>
+                <Button block color="danger" disabled>
+                  Danger
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block color="info" disabled>Info</Button>
+                <Button block color="info" disabled>
+                  Info
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block color="light" disabled>Light</Button>
+                <Button block color="light" disabled>
+                  Light
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block color="dark" disabled>Dark</Button>
+                <Button block color="dark" disabled>
+                  Dark
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block color="link" disabled>Link</Button>
+                <Button block color="link" disabled>
+                  Link
+                </Button>
               </Col>
             </Row>
           </CardBody>
@@ -121,28 +175,44 @@ class Buttons extends Component {
                 Normal
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block outline color="primary">Primary</Button>
+                <Button block outline color="primary">
+                  Primary
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block outline color="secondary">Secondary</Button>
+                <Button block outline color="secondary">
+                  Secondary
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block outline color="success">Success</Button>
+                <Button block outline color="success">
+                  Success
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block outline color="warning">Warning</Button>
+                <Button block outline color="warning">
+                  Warning
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block outline color="danger">Danger</Button>
+                <Button block outline color="danger">
+                  Danger
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block outline color="info">Info</Button>
+                <Button block outline color="info">
+                  Info
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block outline color="light">Light</Button>
+                <Button block outline color="light">
+                  Light
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block outline color="dark">Dark</Button>
+                <Button block outline color="dark">
+                  Dark
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0"></Col>
             </Row>
@@ -151,28 +221,68 @@ class Buttons extends Component {
                 Active State
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block outline active color="primary" aria-pressed="true">Primary</Button>
+                <Button
+                  block
+                  outline
+                  active
+                  color="primary"
+                  aria-pressed="true"
+                >
+                  Primary
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block outline active color="secondary" aria-pressed="true">Secondary</Button>
+                <Button
+                  block
+                  outline
+                  active
+                  color="secondary"
+                  aria-pressed="true"
+                >
+                  Secondary
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block outline active color="success" aria-pressed="true">Success</Button>
+                <Button
+                  block
+                  outline
+                  active
+                  color="success"
+                  aria-pressed="true"
+                >
+                  Success
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block outline active color="warning" aria-pressed="true">Warning</Button>
+                <Button
+                  block
+                  outline
+                  active
+                  color="warning"
+                  aria-pressed="true"
+                >
+                  Warning
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block outline active color="danger" aria-pressed="true">Danger</Button>
+                <Button block outline active color="danger" aria-pressed="true">
+                  Danger
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block outline active color="info" aria-pressed="true">Info</Button>
+                <Button block outline active color="info" aria-pressed="true">
+                  Info
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block outline active color="light" aria-pressed="true">Light</Button>
+                <Button block outline active color="light" aria-pressed="true">
+                  Light
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block outline active color="dark" aria-pressed="true">Dark</Button>
+                <Button block outline active color="dark" aria-pressed="true">
+                  Dark
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0"></Col>
             </Row>
@@ -181,28 +291,44 @@ class Buttons extends Component {
                 Disabled
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block outline color="primary" disabled>Primary</Button>
+                <Button block outline color="primary" disabled>
+                  Primary
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block outline color="secondary" disabled>Secondary</Button>
+                <Button block outline color="secondary" disabled>
+                  Secondary
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block outline color="success" disabled>Success</Button>
+                <Button block outline color="success" disabled>
+                  Success
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block outline color="warning" disabled>Warning</Button>
+                <Button block outline color="warning" disabled>
+                  Warning
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block outline color="danger" disabled>Danger</Button>
+                <Button block outline color="danger" disabled>
+                  Danger
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block outline color="info" disabled>Info</Button>
+                <Button block outline color="info" disabled>
+                  Info
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block outline color="light" disabled>Light</Button>
+                <Button block outline color="light" disabled>
+                  Light
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block outline color="dark" disabled>Dark</Button>
+                <Button block outline color="dark" disabled>
+                  Dark
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0"></Col>
             </Row>
@@ -222,28 +348,44 @@ class Buttons extends Component {
                 Normal
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block color="ghost-primary">Primary</Button>
+                <Button block color="ghost-primary">
+                  Primary
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block color="ghost-secondary">Secondary</Button>
+                <Button block color="ghost-secondary">
+                  Secondary
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block color="ghost-success">Success</Button>
+                <Button block color="ghost-success">
+                  Success
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block color="ghost-warning">Warning</Button>
+                <Button block color="ghost-warning">
+                  Warning
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block color="ghost-danger">Danger</Button>
+                <Button block color="ghost-danger">
+                  Danger
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block color="ghost-info">Info</Button>
+                <Button block color="ghost-info">
+                  Info
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block color="ghost-light">Light</Button>
+                <Button block color="ghost-light">
+                  Light
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block color="ghost-dark">Dark</Button>
+                <Button block color="ghost-dark">
+                  Dark
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0"></Col>
             </Row>
@@ -252,28 +394,49 @@ class Buttons extends Component {
                 Active State
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block active color="ghost-primary" aria-pressed="true">Primary</Button>
+                <Button block active color="ghost-primary" aria-pressed="true">
+                  Primary
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block active color="ghost-secondary" aria-pressed="true">Secondary</Button>
+                <Button
+                  block
+                  active
+                  color="ghost-secondary"
+                  aria-pressed="true"
+                >
+                  Secondary
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block active color="ghost-success" aria-pressed="true">Success</Button>
+                <Button block active color="ghost-success" aria-pressed="true">
+                  Success
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block active color="ghost-warning" aria-pressed="true">Warning</Button>
+                <Button block active color="ghost-warning" aria-pressed="true">
+                  Warning
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block active color="ghost-danger" aria-pressed="true">Danger</Button>
+                <Button block active color="ghost-danger" aria-pressed="true">
+                  Danger
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block active color="ghost-info" aria-pressed="true">Info</Button>
+                <Button block active color="ghost-info" aria-pressed="true">
+                  Info
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block active color="ghost-light" aria-pressed="true">Light</Button>
+                <Button block active color="ghost-light" aria-pressed="true">
+                  Light
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block active color="ghost-dark" aria-pressed="true">Dark</Button>
+                <Button block active color="ghost-dark" aria-pressed="true">
+                  Dark
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0"></Col>
             </Row>
@@ -282,28 +445,44 @@ class Buttons extends Component {
                 Disabled
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block color="ghost-primary" disabled>Primary</Button>
+                <Button block color="ghost-primary" disabled>
+                  Primary
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block color="ghost-secondary" disabled>Secondary</Button>
+                <Button block color="ghost-secondary" disabled>
+                  Secondary
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block color="ghost-success" disabled>Success</Button>
+                <Button block color="ghost-success" disabled>
+                  Success
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block color="ghost-warning" disabled>Warning</Button>
+                <Button block color="ghost-warning" disabled>
+                  Warning
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block color="ghost-danger" disabled>Danger</Button>
+                <Button block color="ghost-danger" disabled>
+                  Danger
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block color="ghost-info" disabled>Info</Button>
+                <Button block color="ghost-info" disabled>
+                  Info
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block color="ghost-light" disabled>Light</Button>
+                <Button block color="ghost-light" disabled>
+                  Light
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block color="ghost-dark" disabled>Dark</Button>
+                <Button block color="ghost-dark" disabled>
+                  Dark
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0"></Col>
             </Row>
@@ -323,31 +502,49 @@ class Buttons extends Component {
                 Normal
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block color="primary" className="btn-square">Primary</Button>
+                <Button block color="primary" className="btn-square">
+                  Primary
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block color="secondary" className="btn-square">Secondary</Button>
+                <Button block color="secondary" className="btn-square">
+                  Secondary
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block color="success" className="btn-square">Success</Button>
+                <Button block color="success" className="btn-square">
+                  Success
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block color="warning" className="btn-square">Warning</Button>
+                <Button block color="warning" className="btn-square">
+                  Warning
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block color="danger" className="btn-square">Danger</Button>
+                <Button block color="danger" className="btn-square">
+                  Danger
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block color="info" className="btn-square">Info</Button>
+                <Button block color="info" className="btn-square">
+                  Info
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block color="light" className="btn-square">Light</Button>
+                <Button block color="light" className="btn-square">
+                  Light
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block color="dark" className="btn-square">Dark</Button>
+                <Button block color="dark" className="btn-square">
+                  Dark
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block color="link" className="btn-square">Link</Button>
+                <Button block color="link" className="btn-square">
+                  Link
+                </Button>
               </Col>
             </Row>
             <Row className="align-items-center mt-3">
@@ -355,31 +552,103 @@ class Buttons extends Component {
                 Active State
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button active block color="primary" className="btn-square" aria-pressed="true">Primary</Button>
+                <Button
+                  active
+                  block
+                  color="primary"
+                  className="btn-square"
+                  aria-pressed="true"
+                >
+                  Primary
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button active block color="secondary" className="btn-square" aria-pressed="true">Secondary</Button>
+                <Button
+                  active
+                  block
+                  color="secondary"
+                  className="btn-square"
+                  aria-pressed="true"
+                >
+                  Secondary
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button active block color="success" className="btn-square" aria-pressed="true">Success</Button>
+                <Button
+                  active
+                  block
+                  color="success"
+                  className="btn-square"
+                  aria-pressed="true"
+                >
+                  Success
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button active block color="warning" className="btn-square" aria-pressed="true">Warning</Button>
+                <Button
+                  active
+                  block
+                  color="warning"
+                  className="btn-square"
+                  aria-pressed="true"
+                >
+                  Warning
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button active block color="danger" className="btn-square" aria-pressed="true">Danger</Button>
+                <Button
+                  active
+                  block
+                  color="danger"
+                  className="btn-square"
+                  aria-pressed="true"
+                >
+                  Danger
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button active block color="info" className="btn-square" aria-pressed="true">Info</Button>
+                <Button
+                  active
+                  block
+                  color="info"
+                  className="btn-square"
+                  aria-pressed="true"
+                >
+                  Info
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button active block color="light" className="btn-square" aria-pressed="true">Light</Button>
+                <Button
+                  active
+                  block
+                  color="light"
+                  className="btn-square"
+                  aria-pressed="true"
+                >
+                  Light
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button active block color="dark" className="btn-square" aria-pressed="true">Dark</Button>
+                <Button
+                  active
+                  block
+                  color="dark"
+                  className="btn-square"
+                  aria-pressed="true"
+                >
+                  Dark
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button active block color="link" className="btn-square" aria-pressed="true">Link</Button>
+                <Button
+                  active
+                  block
+                  color="link"
+                  className="btn-square"
+                  aria-pressed="true"
+                >
+                  Link
+                </Button>
               </Col>
             </Row>
             <Row className="align-items-center mt-3">
@@ -387,31 +656,49 @@ class Buttons extends Component {
                 Disabled
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block color="primary" className="btn-square" disabled>Primary</Button>
+                <Button block color="primary" className="btn-square" disabled>
+                  Primary
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block color="secondary" className="btn-square" disabled>Secondary</Button>
+                <Button block color="secondary" className="btn-square" disabled>
+                  Secondary
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block color="success" className="btn-square" disabled>Success</Button>
+                <Button block color="success" className="btn-square" disabled>
+                  Success
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block color="warning" className="btn-square" disabled>Warning</Button>
+                <Button block color="warning" className="btn-square" disabled>
+                  Warning
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block color="danger" className="btn-square" disabled>Danger</Button>
+                <Button block color="danger" className="btn-square" disabled>
+                  Danger
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block color="info" className="btn-square" disabled>Info</Button>
+                <Button block color="info" className="btn-square" disabled>
+                  Info
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block color="light" className="btn-square" disabled>Light</Button>
+                <Button block color="light" className="btn-square" disabled>
+                  Light
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block color="dark" className="btn-square" disabled>Dark</Button>
+                <Button block color="dark" className="btn-square" disabled>
+                  Dark
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block color="link" className="btn-square" disabled>Link</Button>
+                <Button block color="link" className="btn-square" disabled>
+                  Link
+                </Button>
               </Col>
             </Row>
           </CardBody>
@@ -430,31 +717,49 @@ class Buttons extends Component {
                 Normal
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block color="primary" className="btn-pill">Primary</Button>
+                <Button block color="primary" className="btn-pill">
+                  Primary
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block color="secondary" className="btn-pill">Secondary</Button>
+                <Button block color="secondary" className="btn-pill">
+                  Secondary
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block color="success" className="btn-pill">Success</Button>
+                <Button block color="success" className="btn-pill">
+                  Success
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block color="warning" className="btn-pill">Warning</Button>
+                <Button block color="warning" className="btn-pill">
+                  Warning
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block color="danger" className="btn-pill">Danger</Button>
+                <Button block color="danger" className="btn-pill">
+                  Danger
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block color="info" className="btn-pill">Info</Button>
+                <Button block color="info" className="btn-pill">
+                  Info
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block color="light" className="btn-pill">Light</Button>
+                <Button block color="light" className="btn-pill">
+                  Light
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block color="dark" className="btn-pill">Dark</Button>
+                <Button block color="dark" className="btn-pill">
+                  Dark
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block color="link" className="btn-pill">Link</Button>
+                <Button block color="link" className="btn-pill">
+                  Link
+                </Button>
               </Col>
             </Row>
             <Row className="align-items-center mt-3">
@@ -462,31 +767,103 @@ class Buttons extends Component {
                 Active State
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button active block color="primary" className="btn-pill" aria-pressed="true">Primary</Button>
+                <Button
+                  active
+                  block
+                  color="primary"
+                  className="btn-pill"
+                  aria-pressed="true"
+                >
+                  Primary
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button active block color="secondary" className="btn-pill" aria-pressed="true">Secondary</Button>
+                <Button
+                  active
+                  block
+                  color="secondary"
+                  className="btn-pill"
+                  aria-pressed="true"
+                >
+                  Secondary
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button active block color="success" className="btn-pill" aria-pressed="true">Success</Button>
+                <Button
+                  active
+                  block
+                  color="success"
+                  className="btn-pill"
+                  aria-pressed="true"
+                >
+                  Success
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button active block color="warning" className="btn-pill" aria-pressed="true">Warning</Button>
+                <Button
+                  active
+                  block
+                  color="warning"
+                  className="btn-pill"
+                  aria-pressed="true"
+                >
+                  Warning
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button active block color="danger" className="btn-pill" aria-pressed="true">Danger</Button>
+                <Button
+                  active
+                  block
+                  color="danger"
+                  className="btn-pill"
+                  aria-pressed="true"
+                >
+                  Danger
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button active block color="info" className="btn-pill" aria-pressed="true">Info</Button>
+                <Button
+                  active
+                  block
+                  color="info"
+                  className="btn-pill"
+                  aria-pressed="true"
+                >
+                  Info
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button active block color="light" className="btn-pill" aria-pressed="true">Light</Button>
+                <Button
+                  active
+                  block
+                  color="light"
+                  className="btn-pill"
+                  aria-pressed="true"
+                >
+                  Light
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button active block color="dark" className="btn-pill" aria-pressed="true">Dark</Button>
+                <Button
+                  active
+                  block
+                  color="dark"
+                  className="btn-pill"
+                  aria-pressed="true"
+                >
+                  Dark
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button active block color="link" className="btn-pill" aria-pressed="true">Link</Button>
+                <Button
+                  active
+                  block
+                  color="link"
+                  className="btn-pill"
+                  aria-pressed="true"
+                >
+                  Link
+                </Button>
               </Col>
             </Row>
             <Row className="align-items-center mt-3">
@@ -494,31 +871,49 @@ class Buttons extends Component {
                 Disabled
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block color="primary" className="btn-pill" disabled>Primary</Button>
+                <Button block color="primary" className="btn-pill" disabled>
+                  Primary
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block color="secondary" className="btn-pill" disabled>Secondary</Button>
+                <Button block color="secondary" className="btn-pill" disabled>
+                  Secondary
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block color="success" className="btn-pill" disabled>Success</Button>
+                <Button block color="success" className="btn-pill" disabled>
+                  Success
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block color="warning" className="btn-pill" disabled>Warning</Button>
+                <Button block color="warning" className="btn-pill" disabled>
+                  Warning
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block color="danger" className="btn-pill" disabled>Danger</Button>
+                <Button block color="danger" className="btn-pill" disabled>
+                  Danger
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block color="info" className="btn-pill" disabled>Info</Button>
+                <Button block color="info" className="btn-pill" disabled>
+                  Info
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block color="light" className="btn-pill" disabled>Light</Button>
+                <Button block color="light" className="btn-pill" disabled>
+                  Light
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block color="dark" className="btn-pill" disabled>Dark</Button>
+                <Button block color="dark" className="btn-pill" disabled>
+                  Dark
+                </Button>
               </Col>
               <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                <Button block color="link" className="btn-pill" disabled>Link</Button>
+                <Button block color="link" className="btn-pill" disabled>
+                  Link
+                </Button>
               </Col>
             </Row>
           </CardBody>
@@ -528,25 +923,38 @@ class Buttons extends Component {
             <strong>Sizes</strong>
           </CardHeader>
           <CardBody>
-            <p>Fancy larger or smaller buttons? Add <code>size="lg"</code> or <code>size="sm"</code> for additional sizes.</p>
+            <p>
+              Fancy larger or smaller buttons? Add <code>size="lg"</code> or{" "}
+              <code>size="sm"</code> for additional sizes.
+            </p>
             <Row className="align-items-center">
               <Col col="2" xl className="mb-3 mb-xl-0">
                 Small
               </Col>
               <Col col="2" className="mb-3 mb-xl-0 text-center">
-                <Button color="primary" size="sm">Standard Button</Button>
+                <Button color="primary" size="sm">
+                  Standard Button
+                </Button>
               </Col>
               <Col col="2" className="mb-3 mb-xl-0 text-center">
-                <Button color="secondary" outline size="sm">Outline Button</Button>
+                <Button color="secondary" outline size="sm">
+                  Outline Button
+                </Button>
               </Col>
               <Col col="2" className="mb-3 mb-xl-0 text-center">
-                <Button size="sm" color="ghost-success">Ghost Button</Button>
+                <Button size="sm" color="ghost-success">
+                  Ghost Button
+                </Button>
               </Col>
               <Col col="2" className="mb-3 mb-xl-0 text-center">
-                <Button color="warning" size="sm" className="btn-square">Square Button</Button>
+                <Button color="warning" size="sm" className="btn-square">
+                  Square Button
+                </Button>
               </Col>
               <Col col="2" className="mb-3 mb-xl-0 text-center">
-                <Button color="danger" size="sm" className="btn-pill">Pill Button</Button>
+                <Button color="danger" size="sm" className="btn-pill">
+                  Pill Button
+                </Button>
               </Col>
             </Row>
             <Row className="align-items-center mt-3">
@@ -557,16 +965,22 @@ class Buttons extends Component {
                 <Button color="primary">Standard Button</Button>
               </Col>
               <Col col="2" className="mb-3 mb-xl-0 text-center">
-                <Button outline color="secondary" >Outline Button</Button>
+                <Button outline color="secondary">
+                  Outline Button
+                </Button>
               </Col>
               <Col col="2" className="mb-3 mb-xl-0 text-center">
                 <Button color="ghost-success">Ghost Button</Button>
               </Col>
               <Col col="2" className="mb-3 mb-xl-0 text-center">
-                <Button color="warning" className="btn-square">Square Button</Button>
+                <Button color="warning" className="btn-square">
+                  Square Button
+                </Button>
               </Col>
               <Col col="2" className="mb-3 mb-xl-0 text-center">
-                <Button color="danger" className="btn-pill">Pill Button</Button>
+                <Button color="danger" className="btn-pill">
+                  Pill Button
+                </Button>
               </Col>
             </Row>
             <Row className="align-items-center mt-3">
@@ -574,19 +988,29 @@ class Buttons extends Component {
                 Large
               </Col>
               <Col col="2" className="mb-3 mb-xl-0 text-center">
-                <Button color="primary" size="lg">Standard Button</Button>
-              </Col>
-              <Col col="2"className="mb-3 mb-xl-0 text-center">
-                <Button outline color="secondary" size="lg">Outline Button</Button>
-              </Col>
-              <Col col="2" className="mb-3 mb-xl-0 text-center">
-                <Button color="ghost-success" size="lg">Ghost Button</Button>
+                <Button color="primary" size="lg">
+                  Standard Button
+                </Button>
               </Col>
               <Col col="2" className="mb-3 mb-xl-0 text-center">
-                <Button color="warning" size="lg" className="btn-square">Square Button</Button>
+                <Button outline color="secondary" size="lg">
+                  Outline Button
+                </Button>
               </Col>
               <Col col="2" className="mb-3 mb-xl-0 text-center">
-                <Button color="danger" size="lg" className="btn-pill">Pill Button</Button>
+                <Button color="ghost-success" size="lg">
+                  Ghost Button
+                </Button>
+              </Col>
+              <Col col="2" className="mb-3 mb-xl-0 text-center">
+                <Button color="warning" size="lg" className="btn-square">
+                  Square Button
+                </Button>
+              </Col>
+              <Col col="2" className="mb-3 mb-xl-0 text-center">
+                <Button color="danger" size="lg" className="btn-pill">
+                  Pill Button
+                </Button>
               </Col>
             </Row>
           </CardBody>
@@ -632,14 +1056,30 @@ class Buttons extends Component {
                 <strong>Block Level Buttons</strong>
               </CardHeader>
               <CardBody>
-                <p>Add prop <code>block</code></p>
-                <Button color="secondary" size="lg" block>Block level button</Button>
-                <Button color="primary" size="lg" block>Block level button</Button>
-                <Button color="success" size="lg" block>Block level button</Button>
-                <Button color="info" size="lg" block>Block level button</Button>
-                <Button color="warning" size="lg" block>Block level button</Button>
-                <Button color="danger" size="lg" block>Block level button</Button>
-                <Button color="link" size="lg" block>Block level button</Button>
+                <p>
+                  Add prop <code>block</code>
+                </p>
+                <Button color="secondary" size="lg" block>
+                  Block level button
+                </Button>
+                <Button color="primary" size="lg" block>
+                  Block level button
+                </Button>
+                <Button color="success" size="lg" block>
+                  Block level button
+                </Button>
+                <Button color="info" size="lg" block>
+                  Block level button
+                </Button>
+                <Button color="warning" size="lg" block>
+                  Block level button
+                </Button>
+                <Button color="danger" size="lg" block>
+                  Block level button
+                </Button>
+                <Button color="link" size="lg" block>
+                  Block level button
+                </Button>
               </CardBody>
             </Card>
           </Col>
@@ -649,14 +1089,30 @@ class Buttons extends Component {
                 <strong>Block Level Buttons</strong>
               </CardHeader>
               <CardBody>
-                <p>Add prop <code>block</code></p>
-                <Button outline color="secondary" size="lg" block>Block level button</Button>
-                <Button outline color="primary" size="lg" block>Block level button</Button>
-                <Button outline color="success" size="lg" block>Block level button</Button>
-                <Button outline color="info" size="lg" block>Block level button</Button>
-                <Button outline color="warning" size="lg" block>Block level button</Button>
-                <Button outline color="danger" size="lg" block>Block level button</Button>
-                <Button color="ghost-info" size="lg" block>Block level button</Button>
+                <p>
+                  Add prop <code>block</code>
+                </p>
+                <Button outline color="secondary" size="lg" block>
+                  Block level button
+                </Button>
+                <Button outline color="primary" size="lg" block>
+                  Block level button
+                </Button>
+                <Button outline color="success" size="lg" block>
+                  Block level button
+                </Button>
+                <Button outline color="info" size="lg" block>
+                  Block level button
+                </Button>
+                <Button outline color="warning" size="lg" block>
+                  Block level button
+                </Button>
+                <Button outline color="danger" size="lg" block>
+                  Block level button
+                </Button>
+                <Button color="ghost-info" size="lg" block>
+                  Block level button
+                </Button>
               </CardBody>
             </Card>
           </Col>

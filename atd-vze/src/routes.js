@@ -40,6 +40,7 @@ const Widgets = React.lazy(() => import("./views/Widgets/Widgets"));
 const Users = React.lazy(() => import("./views/Users/Users"));
 const User = React.lazy(() => import("./views/Users/User"));
 const Crashes = React.lazy(() => import("./views/Crashes/Crashes"));
+const Crash = React.lazy(() => import("./views/Crashes/Crash"));
 const Profile = React.lazy(() => import("./views/Profile/Profile"));
 
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
@@ -72,17 +73,17 @@ const routes = [
   {
     path: "/buttons/button-dropdowns",
     name: "Button Dropdowns",
-    component: ButtonDropdowns
+    component: ButtonDropdowns,
   },
   {
     path: "/buttons/button-groups",
     name: "Button Groups",
-    component: ButtonGroups
+    component: ButtonGroups,
   },
   {
     path: "/buttons/brand-buttons",
     name: "Brand Buttons",
-    component: BrandButtons
+    component: BrandButtons,
   },
   { path: "/icons", exact: true, name: "Icons", component: CoreUIIcons },
   { path: "/icons/coreui-icons", name: "CoreUI Icons", component: CoreUIIcons },
@@ -91,13 +92,13 @@ const routes = [
   {
     path: "/icons/simple-line-icons",
     name: "Simple Line Icons",
-    component: SimpleLineIcons
+    component: SimpleLineIcons,
   },
   {
     path: "/notifications",
     exact: true,
     name: "Notifications",
-    component: Alerts
+    component: Alerts,
   },
   { path: "/notifications/alerts", name: "Alerts", component: Alerts },
   { path: "/notifications/badges", name: "Badges", component: Badges },
@@ -107,7 +108,13 @@ const routes = [
   { path: "/profile", name: "Profile", component: Profile },
   { path: "/users", exact: true, name: "Users", component: Users },
   { path: "/users/:id", exact: true, name: "User Details", component: User },
-  { path: "/crashes", exact: true, name: "Crashes", component: Crashes }
+  { path: "/crashes", exact: true, name: "Crashes", component: Crashes },
+  {
+    path: "/crashes/:id",
+    exact: true,
+    name: "Crash Details",
+    component: Crash,
+  },
 ];
 
 export default routes;
