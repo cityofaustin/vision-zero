@@ -5,11 +5,26 @@ import { useQuery } from "@apollo/react-hooks";
 import crashDataMap from "./crashDataMap";
 import CrashCollapses from "./CrashCollapses";
 import CrashMap from "./CrashMap";
+import Widget02 from "../Widgets/Widget02";
 
 import { GET_CRASH } from "../../queries/crashes";
+
+const calculateYearsLifeLost = people => {
+  // Assume 75 year life expectancy,
+  // Find the differance between person.prsn_age & 75
+  // Sum over the list of ppl with .reduce
+  return people.reduce((accumulator, person) => {
+    let yearsLifeLost = 0;
+    if (person.injury_severity.injry_sev_desc === "KILLED") {
+      let yearsLifeLost = 75 - Number(person.prsn_age);
+      // What if the person is older than 75?
+      // For now, so we don't have negative numbers,
+      // Assume years of life lost is 0
+      yearsLifeLost = yearsLifeLost < 0 ? 0 : yearsLifeLost;
     }
-  }
-`;
+    return accumulator + yearsLifeLost;
+  }, 0); // start with a count at 0 years
+};
 
 function Crash(props) {
   const crashId = props.match.params.id;
@@ -20,8 +35,41 @@ function Crash(props) {
   if (loading) return "Loading...";
   if (error) return `Error! ${error.message}`;
 
+  const deathCount = data.atd_txdot_crashes[0].death_cnt;
+  const injuryCount = data.atd_txdot_crashes[0].tot_injry_cnt;
+
+  const yearsLifeLostCount = calculateYearsLifeLost(
+    data.atd_txdot_primaryperson.concat(data.atd_txdot_person)
+  );
+
   return (
     <div className="animated fadeIn">
+      <Row>
+        <Col xs="12" sm="6" md="4">
+          <Widget02
+            header={deathCount + ""}
+            mainText="Fatalities"
+            icon="fa fa-heartbeat"
+            color="danger"
+          />
+        </Col>
+        <Col xs="12" sm="6" md="4">
+          <Widget02
+            header={injuryCount + ""}
+            mainText="Serious Injuries"
+            icon="fa fa-medkit"
+            color="warning"
+          />
+        </Col>
+        <Col xs="12" sm="6" md="4">
+          <Widget02
+            header={yearsLifeLostCount + ""}
+            mainText="Years of Life Lost"
+            icon="fa fa-hourglass-end"
+            color="info"
+          />
+        </Col>
+      </Row>
       <Row>
         <Col lg={6}>
           {crashDataMap.map(section => {
