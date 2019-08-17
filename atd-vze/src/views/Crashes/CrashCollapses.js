@@ -138,7 +138,14 @@ class CrashCollapses extends Component {
                         aria-controls="collapseOne"
                       >
                         <h5 className="m-0 p-0">
-                          <i className="fa fa-group" /> People
+                          <i className="fa fa-group" /> People{" "}
+                          <Badge color="secondary float-right">
+                            {
+                              this.props.data.atd_txdot_primaryperson.concat(
+                                this.props.data.atd_txdot_person
+                              ).length
+                            }
+                          </Badge>
                         </h5>
                       </Button>
                     </CardHeader>
@@ -236,6 +243,9 @@ class CrashCollapses extends Component {
                       >
                         <h5 className="m-0 p-0">
                           <i className="fa fa-car" /> Units
+                          <Badge color="secondary float-right">
+                            {this.props.data.atd_txdot_units.length}
+                          </Badge>
                         </h5>
                       </Button>
                     </CardHeader>
@@ -289,6 +299,13 @@ class CrashCollapses extends Component {
                       >
                         <h5 className="m-0 p-0">
                           <i className="fa fa-legal" /> Charges
+                          <Badge color="secondary float-right">
+                            {
+                              this.props.data.atd_txdot_charges.filter(
+                                charge => charge.charge_cat_id !== 0
+                              ).length
+                            }
+                          </Badge>
                         </h5>
                       </Button>
                     </CardHeader>
