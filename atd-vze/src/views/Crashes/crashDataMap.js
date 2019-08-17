@@ -15,9 +15,9 @@ const crashDataMap = [
       obj_struck_id: "Object Struck ID",
       road_type_id: "Roadway Type ID",
       traffic_cntl_id: "Traffic Control ID",
-      wthr_cond_id: "Weather Condition ID"
+      wthr_cond_id: "Weather Condition ID",
       // is_retired: "Is Retired", // All these return false, why?
-    }
+    },
   },
   {
     title: "Fatalities/Injuries",
@@ -30,8 +30,8 @@ const crashDataMap = [
       poss_injry_cnt: "Possible Injury Count",
       sus_serious_injry_cnt: "Suspected Serious Injury Count",
       tot_injry_cnt: "Total Injury Count",
-      unkn_injry_cnt: "Unknown Injury Count"
-    }
+      unkn_injry_cnt: "Unknown Injury Count",
+    },
   },
   {
     title: "Address/Geo",
@@ -74,8 +74,8 @@ const crashDataMap = [
       street_name: "Street Name",
       street_name_2: "Street Name 2",
       street_nbr: "Street Number",
-      street_nbr_2: "Street Number 2"
-    }
+      street_nbr_2: "Street Number 2",
+    },
   },
   {
     title: "Flags",
@@ -88,17 +88,17 @@ const crashDataMap = [
       rpt_outside_city_limit_fl: "Outside City Limit Flag",
       rr_relat_fl: "Railroad Related Flag",
       schl_bus_fl: "School Bus Flag",
-      toll_road_fl: "Toll Road/Lane Flag"
-    }
+      toll_road_fl: "Toll Road/Lane Flag",
+    },
   },
   {
     title: "QA",
     fields: {
       approval_date: "Approval Date",
       approved_by: "Approved By",
-      qa_status: "QA Status"
-    }
-  }
+      qa_status: "QA Status",
+    },
+  },
 ];
 
 export default crashDataMap;

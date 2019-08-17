@@ -1,5 +1,13 @@
-import React, { Component } from 'react';
-import { Breadcrumb, BreadcrumbItem, Card, CardBody, CardHeader, Col, Row } from 'reactstrap';
+import React, { Component } from "react";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  Card,
+  CardBody,
+  CardHeader,
+  Col,
+  Row,
+} from "reactstrap";
 
 class Breadcrumbs extends Component {
   render() {
@@ -9,9 +17,15 @@ class Breadcrumbs extends Component {
           <Col xs="12">
             <Card>
               <CardHeader>
-                <i className="fa fa-align-justify"></i><strong>Breadcrumbs</strong>
+                <i className="fa fa-align-justify"></i>
+                <strong>Breadcrumbs</strong>
                 <div className="card-header-actions">
-                  <a href="https://reactstrap.github.io/components/breadcrumbs/" rel="noreferrer noopener" target="_blank" className="card-header-action">
+                  <a
+                    href="https://reactstrap.github.io/components/breadcrumbs/"
+                    rel="noreferrer noopener"
+                    target="_blank"
+                    className="card-header-action"
+                  >
                     <small className="text-muted">docs</small>
                   </a>
                 </div>
@@ -22,21 +36,35 @@ class Breadcrumbs extends Component {
                 </Breadcrumb>
                 <Breadcrumb>
                   {/*eslint-disable-next-line*/}
-                  <BreadcrumbItem><a href="#">Home</a></BreadcrumbItem>
+                  <BreadcrumbItem>
+                    <a href="/#/dashboard">Home</a>
+                  </BreadcrumbItem>
                   <BreadcrumbItem active>Library</BreadcrumbItem>
                 </Breadcrumb>
                 <Breadcrumb>
                   {/*eslint-disable-next-line*/}
-                  <BreadcrumbItem><a href="#">Home</a></BreadcrumbItem>
+                  <BreadcrumbItem>
+                    <a href="/#/dashboard">Home</a>
+                  </BreadcrumbItem>
                   {/* eslint-disable-next-line*/}
-                  <BreadcrumbItem><a href="#">Library</a></BreadcrumbItem>
+                  <BreadcrumbItem>
+                    <a href="/#/dashboard">Library</a>
+                  </BreadcrumbItem>
                   <BreadcrumbItem active>Data</BreadcrumbItem>
                 </Breadcrumb>
                 <Breadcrumb tag="nav">
-                  <BreadcrumbItem tag="a" href="#">Home</BreadcrumbItem>
-                  <BreadcrumbItem tag="a" href="#">Library</BreadcrumbItem>
-                  <BreadcrumbItem tag="a" href="#">Data</BreadcrumbItem>
-                  <BreadcrumbItem active tag="span">Bootstrap</BreadcrumbItem>
+                  <BreadcrumbItem tag="a" href="/#/dashboard">
+                    Home
+                  </BreadcrumbItem>
+                  <BreadcrumbItem tag="a" href="/#/dashboard">
+                    Library
+                  </BreadcrumbItem>
+                  <BreadcrumbItem tag="a" href="/#/dashboard">
+                    Data
+                  </BreadcrumbItem>
+                  <BreadcrumbItem active tag="span">
+                    Bootstrap
+                  </BreadcrumbItem>
                 </Breadcrumb>
               </CardBody>
             </Card>

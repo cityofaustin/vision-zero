@@ -1,10 +1,8 @@
 import React, { Component } from "react";
-import { render } from "react-dom";
 import MapGL, {
   Marker,
-  Popup,
   NavigationControl,
-  FullscreenControl
+  FullscreenControl,
 } from "react-map-gl";
 
 // import ControlPanel from "./control-panel";
@@ -16,14 +14,14 @@ const fullscreenControlStyle = {
   position: "absolute",
   top: 0,
   left: 0,
-  padding: "10px"
+  padding: "10px",
 };
 
 const navStyle = {
   position: "absolute",
   top: 36,
   left: 0,
-  padding: "10px"
+  padding: "10px",
 };
 
 export default class CrashMap extends Component {
@@ -35,9 +33,9 @@ export default class CrashMap extends Component {
         longitude: this.props.data.longitude,
         zoom: 17,
         bearing: 0,
-        pitch: 0
+        pitch: 0,
       },
-      popupInfo: null
+      popupInfo: null,
     };
   }
 

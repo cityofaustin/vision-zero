@@ -4,7 +4,7 @@ const ICON = `M50,93.5c0,0,31.1-30.5,31.1-56C81.1,20.4,67.2,6.5,50,6.5c-17.2,0-3
 
 const pinStyle = {
   fill: "#ffe300",
-  stroke: "#ffe300"
+  stroke: "#ffe300",
 };
 
 export default class Pin extends PureComponent {

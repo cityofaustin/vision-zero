@@ -1,7 +1,7 @@
-import React from 'react';
-import Colors from './Colors';
-import { mount } from 'enzyme'
+import React from "react";
+import Colors from "./Colors";
+import { mount } from "enzyme";
 
-it('renders without crashing', () => {
+it("renders without crashing", () => {
   mount(<Colors />);
 });
