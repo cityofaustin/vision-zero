@@ -39,12 +39,12 @@ const GET_CRASHES = gql`
   }
 `;
 
-// TODO make query dynamic
+// TODO decide what fields to search? dropdown with column names? Search all?
 const SEARCH_CRASHES = gql`
-  {
+  query($searchValue: String) {
     atd_txdot_crashes(
       limit: 100
-      where: { rpt_street_name: { _like: "LAMAR" } }
+      where: { rpt_street_name: { _like: $searchValue } }
       order_by: { crash_date: desc }
     ) {
       crash_id
@@ -68,14 +68,15 @@ const columns = [
 ];
 
 function Crashes() {
+  const [searchFieldValue, setSearchFieldValue] = useState("");
+  const [searchValue, setSearchValue] = useState("");
   const { loading, error, data } = useQuery(GET_CRASHES);
   const {
     loading: searchLoading,
     error: searchError,
     data: searchData
-  } = useQuery(SEARCH_CRASHES);
-
-  const [searchValue, setSearchValue] = useState("");
+  } = useQuery(SEARCH_CRASHES, { variables: { searchValue: searchValue } });
+  console.log(searchData);
 
   if (loading) return "Loading...";
   if (error) return `Error! ${error.message}`;
@@ -83,6 +84,7 @@ function Crashes() {
   const handleSearchSubmission = (e, searchValue) => {
     e.preventDefault();
     console.log(searchData, e, searchValue);
+    setSearchValue(searchFieldValue);
     // TODO populate search results in table
   };
 
@@ -97,7 +99,7 @@ function Crashes() {
             <CardBody>
               <Form
                 className="form-horizontal"
-                onSubmit={e => handleSearchSubmission(e, searchValue)}
+                onSubmit={e => handleSearchSubmission(e, searchFieldValue)}
               >
                 <FormGroup row>
                   <Col md="6">
@@ -107,8 +109,8 @@ function Crashes() {
                         id="input1-group2"
                         name="input1-group2"
                         placeholder=""
-                        value={searchValue}
-                        onChange={e => setSearchValue(e.target.value)}
+                        value={searchFieldValue}
+                        onChange={e => setSearchFieldValue(e.target.value)}
                       />
                       <InputGroupAddon addonType="append">
                         <Button type="submit" color="primary">
