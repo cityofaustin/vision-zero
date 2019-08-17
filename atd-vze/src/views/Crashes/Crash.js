@@ -14,15 +14,15 @@ const calculateYearsLifeLost = people => {
   // Find the differance between person.prsn_age & 75
   // Sum over the list of ppl with .reduce
   return people.reduce((accumulator, person) => {
-    let yearsLifeLost = 0;
+    let years = 0;
     if (person.injury_severity.injry_sev_desc === "KILLED") {
       let yearsLifeLost = 75 - Number(person.prsn_age);
       // What if the person is older than 75?
       // For now, so we don't have negative numbers,
       // Assume years of life lost is 0
-      yearsLifeLost = yearsLifeLost < 0 ? 0 : yearsLifeLost;
+      years = yearsLifeLost < 0 ? 0 : yearsLifeLost;
     }
-    return accumulator + yearsLifeLost;
+    return accumulator + years;
   }, 0); // start with a count at 0 years
 };
 
