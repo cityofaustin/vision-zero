@@ -151,8 +151,7 @@ class CrashChangeLog extends Component {
                     {this.state.modalBody}
                 </ModalBody>
                 <ModalFooter>
-                    <Button color="primary" onClick={this.showModal}>Do Something</Button>{' '}
-                    <Button color="secondary" onClick={this.closeModal}>Cancel</Button>
+                    <Button color="secondary" onClick={this.closeModal}>Close</Button>
                 </ModalFooter>
             </Modal>;
             content = <>
