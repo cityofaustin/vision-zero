@@ -16,17 +16,22 @@ import {
 import { useQuery } from "@apollo/react-hooks";
 import { withApollo } from "react-apollo";
 
+const fieldsToSearch = [{ case_id: "Case ID" }];
+
 const TableSearchBar = props => {
   const [searchFieldValue, setSearchFieldValue] = useState("");
   const [searchValue, setSearchValue] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [fieldToSearch, setFieldToSearch] = useState("");
 
   const {
     loading: searchLoading,
     error: searchError,
     data: searchData,
   } = useQuery(props.query, {
-    variables: { searchValue: searchValue },
+    variables: {
+      searchValue: searchValue,
+    },
   });
   console.log(searchData);
 
@@ -43,10 +48,15 @@ const TableSearchBar = props => {
   const handleClearSearchResults = () => {
     props.updateResults("", false);
     setSearchFieldValue("");
+    setFieldToSearch("");
   };
 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
+  };
+
+  const handleFieldSelect = e => {
+    setFieldToSearch(e.target.innerText);
   };
 
   return (
@@ -72,12 +82,17 @@ const TableSearchBar = props => {
               toggle={toggleDropdown}
             >
               <DropdownToggle caret color="secondary">
-                Field
+                {fieldToSearch === "" ? "Field" : fieldToSearch}
               </DropdownToggle>
               <DropdownMenu>
-                <DropdownItem>Action</DropdownItem>
-                <DropdownItem>Another Action</DropdownItem>
-                <DropdownItem>Something else here</DropdownItem>
+                {fieldsToSearch.map(field => (
+                  <DropdownItem
+                    value={Object.keys(field)}
+                    onClick={handleFieldSelect}
+                  >
+                    {Object.values(field)}
+                  </DropdownItem>
+                ))}
               </DropdownMenu>
             </InputGroupButtonDropdown>
             <InputGroupAddon addonType="append">
