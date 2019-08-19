@@ -6,7 +6,11 @@ import {
   FormGroup,
   Input,
   InputGroup,
-  InputGroupAddon
+  InputGroupAddon,
+  InputGroupButtonDropdown,
+  DropdownToggle,
+  DropdownItem,
+  DropdownMenu
 } from "reactstrap";
 
 import { useQuery } from "@apollo/react-hooks";
@@ -15,6 +19,7 @@ import { withApollo } from "react-apollo";
 const TableSearchBar = props => {
   const [searchFieldValue, setSearchFieldValue] = useState("");
   const [searchValue, setSearchValue] = useState("");
+  //   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const {
     loading: searchLoading,
@@ -37,7 +42,13 @@ const TableSearchBar = props => {
 
   const handleClearSearchResults = () => {
     props.updateResults("", false);
+    setSearchFieldValue("");
   };
+
+  //   Toggle dropdown
+  //   const toggleDropdown = () => {
+  //     setIsDropdownOpen(!isDropdownOpen);
+  //   };
 
   return (
     <Form
@@ -55,6 +66,21 @@ const TableSearchBar = props => {
               value={searchFieldValue}
               onChange={e => setSearchFieldValue(e.target.value)}
             />
+            {/* TODO Add field choice to dynamic query */}
+            {/* <InputGroupButtonDropdown
+              addonType="prepend"
+              isOpen={isDropdownOpen}
+              toggle={toggleDropdown}
+            >
+              <DropdownToggle caret color="secondary">
+                Field
+              </DropdownToggle>
+              <DropdownMenu>
+                <DropdownItem>Action</DropdownItem>
+                <DropdownItem>Another Action</DropdownItem>
+                <DropdownItem>Something else here</DropdownItem>
+              </DropdownMenu>
+            </InputGroupButtonDropdown> */}
             <InputGroupAddon addonType="append">
               <Button type="submit" color="primary">
                 <i className="fa fa-search" /> Search
