@@ -1,10 +1,11 @@
-import React, { Component } from "react";
+import React from "react";
 import { Card, CardBody, CardHeader, Col, Row, Table } from "reactstrap";
 import { withApollo } from "react-apollo";
 import { useQuery } from "@apollo/react-hooks";
 import { gql } from "apollo-boost";
 import crashDataMap from "./crashDataMap";
 import CrashCollapses from "./CrashCollapses";
+import CrashMap from "./CrashMap";
 
 const GET_CRASH = gql`
   query FindCrash($crashId: Int) {
@@ -107,7 +108,7 @@ const GET_CRASH = gql`
       citation_nbr
       charge_cat_id
       charge
-      id
+      unique_id
     }
   }
 `;
@@ -115,10 +116,8 @@ const GET_CRASH = gql`
 function Crash(props) {
   const crashId = props.match.params.id;
   const { loading, error, data } = useQuery(GET_CRASH, {
-    variables: { crashId }
+    variables: { crashId },
   });
-
-  console.log(data);
 
   if (loading) return "Loading...";
   if (error) return `Error! ${error.message}`;
@@ -153,7 +152,16 @@ function Crash(props) {
             );
           })}
         </Col>
+
         <Col lg={6}>
+          <div className="mb-4">
+            <Card>
+              <CardHeader>Crash Location</CardHeader>
+              <CardBody>
+                <CrashMap data={data.atd_txdot_crashes[0]} />
+              </CardBody>
+            </Card>
+          </div>
           <CrashCollapses data={data} />
         </Col>
       </Row>

@@ -51,14 +51,14 @@ const columns = [
   "Crash Date",
   "Address",
   "Total Injury Count",
-  "Death Count"
+  "Death Count",
 ];
 
 function Crashes() {
   const [tableData, setTableData] = useState("");
   const [hasSearchResults, setHasSearchResults] = useState(false);
   const { loading, error, data } = useQuery(GET_CRASHES, {
-    onCompleted: !hasSearchResults && (data => setTableData(data))
+    onCompleted: !hasSearchResults && (data => setTableData(data)),
   });
 
   if (loading) return "Loading...";

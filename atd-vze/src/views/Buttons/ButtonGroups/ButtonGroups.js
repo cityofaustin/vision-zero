@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
 import {
   Button,
   ButtonDropdown,
@@ -16,10 +16,9 @@ import {
   InputGroupAddon,
   InputGroupText,
   Row,
-} from 'reactstrap';
+} from "reactstrap";
 
 class ButtonGroups extends Component {
-
   constructor(props) {
     super(props);
 
@@ -30,7 +29,9 @@ class ButtonGroups extends Component {
   }
 
   toggle(i) {
-    const newArray = this.state.dropdownOpen.map((element, index) => { return (index === i ? !element : false); });
+    const newArray = this.state.dropdownOpen.map((element, index) => {
+      return index === i ? !element : false;
+    });
     this.setState({
       dropdownOpen: newArray,
     });
@@ -43,9 +44,15 @@ class ButtonGroups extends Component {
           <Col md="6">
             <Card>
               <CardHeader>
-                <i className="fa fa-align-justify"></i><strong>Button Group</strong>
+                <i className="fa fa-align-justify"></i>
+                <strong>Button Group</strong>
                 <div className="card-header-actions">
-                  <a href="https://reactstrap.github.io/components/button-group/" rel="noreferrer noopener" target="_blank" className="card-header-action">
+                  <a
+                    href="https://reactstrap.github.io/components/button-group/"
+                    rel="noreferrer noopener"
+                    target="_blank"
+                    className="card-header-action"
+                  >
                     <small className="text-muted">docs</small>
                   </a>
                 </div>
@@ -60,16 +67,20 @@ class ButtonGroups extends Component {
             </Card>
             <Card>
               <CardHeader>
-                <i className="fa fa-align-justify"></i><strong>Vertical variation</strong>
+                <i className="fa fa-align-justify"></i>
+                <strong>Vertical variation</strong>
               </CardHeader>
               <CardBody>
                 <ButtonGroup vertical>
                   <Button>1</Button>
                   <Button>2</Button>
-                  <ButtonDropdown isOpen={this.state.dropdownOpen[0]} toggle={() => { this.toggle(0); }}>
-                    <DropdownToggle caret>
-                      Dropdown
-                    </DropdownToggle>
+                  <ButtonDropdown
+                    isOpen={this.state.dropdownOpen[0]}
+                    toggle={() => {
+                      this.toggle(0);
+                    }}
+                  >
+                    <DropdownToggle caret>Dropdown</DropdownToggle>
                     <DropdownMenu>
                       <DropdownItem>Dropdown Link</DropdownItem>
                       <DropdownItem>Dropdown Link</DropdownItem>
@@ -80,7 +91,8 @@ class ButtonGroups extends Component {
             </Card>
             <Card>
               <CardHeader>
-                <i className="fa fa-align-justify"></i><strong>Button Toolbar</strong>
+                <i className="fa fa-align-justify"></i>
+                <strong>Button Toolbar</strong>
               </CardHeader>
               <CardBody>
                 <ButtonToolbar>
@@ -105,7 +117,8 @@ class ButtonGroups extends Component {
           <Col md={6}>
             <Card>
               <CardHeader>
-                <i className="fa fa-align-justify"></i><strong>Sizing</strong>
+                <i className="fa fa-align-justify"></i>
+                <strong>Sizing</strong>
               </CardHeader>
               <CardBody>
                 <ButtonGroup size="lg">
@@ -129,16 +142,20 @@ class ButtonGroups extends Component {
             </Card>
             <Card>
               <CardHeader>
-                <i className="fa fa-align-justify"></i><strong>Nesting</strong>
+                <i className="fa fa-align-justify"></i>
+                <strong>Nesting</strong>
               </CardHeader>
               <CardBody>
                 <ButtonGroup>
                   <Button>1</Button>
                   <Button>2</Button>
-                  <ButtonDropdown isOpen={this.state.dropdownOpen[1]} toggle={() => { this.toggle(1); }}>
-                    <DropdownToggle caret>
-                      Dropdown
-                    </DropdownToggle>
+                  <ButtonDropdown
+                    isOpen={this.state.dropdownOpen[1]}
+                    toggle={() => {
+                      this.toggle(1);
+                    }}
+                  >
+                    <DropdownToggle caret>Dropdown</DropdownToggle>
                     <DropdownMenu>
                       <DropdownItem>Dropdown Link</DropdownItem>
                       <DropdownItem>Dropdown Link</DropdownItem>
@@ -153,7 +170,8 @@ class ButtonGroups extends Component {
           <Col>
             <Card>
               <CardHeader>
-                <i className="fa fa-align-justify"></i><strong>Button Toolbar</strong> <small>with input groups</small>
+                <i className="fa fa-align-justify"></i>
+                <strong>Button Toolbar</strong> <small>with input groups</small>
               </CardHeader>
               <CardBody>
                 <ButtonToolbar className="mb-3">
@@ -164,7 +182,9 @@ class ButtonGroups extends Component {
                     <Button>4</Button>
                   </ButtonGroup>
                   <InputGroup>
-                    <InputGroupAddon addonType="prepend"><InputGroupText>@</InputGroupText></InputGroupAddon>
+                    <InputGroupAddon addonType="prepend">
+                      <InputGroupText>@</InputGroupText>
+                    </InputGroupAddon>
                     <Input placeholder="Input group example" />
                   </InputGroup>
                 </ButtonToolbar>
@@ -176,7 +196,9 @@ class ButtonGroups extends Component {
                     <Button>4</Button>
                   </ButtonGroup>
                   <InputGroup>
-                    <InputGroupAddon addonType="prepend"><InputGroupText>@</InputGroupText></InputGroupAddon>
+                    <InputGroupAddon addonType="prepend">
+                      <InputGroupText>@</InputGroupText>
+                    </InputGroupAddon>
                     <Input placeholder="Input group example" />
                   </InputGroup>
                 </ButtonToolbar>
