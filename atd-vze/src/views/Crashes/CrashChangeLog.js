@@ -7,10 +7,8 @@ import {
     CardBody,
     CardHeader,
     Col,
-    Collapse,
     Table,
     Row,
-    FormGroup, Label, Input,
     Modal, ModalHeader, ModalBody, ModalFooter
 } from "reactstrap";
 
