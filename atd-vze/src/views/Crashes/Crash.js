@@ -7,6 +7,8 @@ import crashDataMap from "./crashDataMap";
 import CrashCollapses from "./CrashCollapses";
 import CrashMap from "./CrashMap";
 
+import CrashChangeLog from "./CrashChangeLog";
+
 const GET_CRASH = gql`
   query FindCrash($crashId: Int) {
     atd_txdot_crashes(where: { crash_id: { _eq: $crashId } }) {
@@ -84,6 +86,7 @@ const GET_CRASH = gql`
       tot_injry_cnt
       traffic_cntl_id
       unkn_injry_cnt
+      updated_by
       wthr_cond_id
     }
     atd_txdot_primaryperson(where: { crash_id: { _eq: $crashId } }) {
@@ -108,7 +111,14 @@ const GET_CRASH = gql`
       citation_nbr
       charge_cat_id
       charge
+      unique_id
+    }
+    atd_txdot_change_log(where: {record_type: {_eq: "crashes"}, record_id: {_eq: $crashId}}, order_by: {record_type: asc}) {
       id
+      record_id
+      record_crash_id
+      record_json
+      update_timestamp
     }
   }
 `;
@@ -163,6 +173,7 @@ function Crash(props) {
             </Card>
           </div>
           <CrashCollapses data={data} />
+          <CrashChangeLog data={data} />
         </Col>
       </Row>
     </div>
