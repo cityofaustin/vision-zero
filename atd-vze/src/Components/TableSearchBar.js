@@ -15,8 +15,9 @@ import {
 
 import { useQuery } from "@apollo/react-hooks";
 import { withApollo } from "react-apollo";
+import { gql } from "apollo-boost";
 
-const fieldsToSearch = [{ case_id: "Case ID" }];
+const fieldsToSearch = [{ rpt_street_name: "Reported Street Name" }];
 
 const TableSearchBar = props => {
   const [searchFieldValue, setSearchFieldValue] = useState("");
@@ -24,30 +25,38 @@ const TableSearchBar = props => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [fieldToSearch, setFieldToSearch] = useState("");
 
+  const addFiltersToQuery = () => {
+    let queryWithFilters =
+      fieldToSearch !== "" && searchValue !== ""
+        ? props.queryString.replace(
+            "FILTER",
+            `where: { ${fieldToSearch}: { _like: "${searchValue}" } }`
+          )
+        : props.queryString.replace("FILTER", "");
+    return gql`
+      ${queryWithFilters}
+    `;
+  };
+
   const {
     loading: searchLoading,
     error: searchError,
     data: searchData,
-  } = useQuery(props.query, {
-    variables: {
-      searchValue: searchValue,
-    },
-  });
-  console.log(searchData);
+  } = useQuery(addFiltersToQuery());
 
   useEffect(() => {
     searchValue !== "" && props.updateResults(searchData, true);
   }, [searchData]);
 
-  const handleSearchSubmission = (e, searchValue) => {
+  const handleSearchSubmission = e => {
     e.preventDefault();
-    console.log(searchData, e, searchValue);
     setSearchValue(searchFieldValue);
   };
 
   const handleClearSearchResults = () => {
     props.updateResults("", false);
     setSearchFieldValue("");
+    setSearchValue("");
     setFieldToSearch("");
   };
 
@@ -56,14 +65,11 @@ const TableSearchBar = props => {
   };
 
   const handleFieldSelect = e => {
-    setFieldToSearch(e.target.innerText);
+    setFieldToSearch(e.target.value);
   };
 
   return (
-    <Form
-      className="form-horizontal"
-      onSubmit={e => handleSearchSubmission(e, searchFieldValue)}
-    >
+    <Form className="form-horizontal" onSubmit={handleSearchSubmission}>
       <FormGroup row>
         <Col md="6">
           <InputGroup>
@@ -75,7 +81,6 @@ const TableSearchBar = props => {
               value={searchFieldValue}
               onChange={e => setSearchFieldValue(e.target.value)}
             />
-            {/* TODO Add field choice to dynamic query */}
             <InputGroupButtonDropdown
               addonType="prepend"
               isOpen={isDropdownOpen}

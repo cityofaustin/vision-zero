@@ -27,11 +27,11 @@ const GET_CRASHES = gql`
 `;
 
 // TODO decide what fields to search? dropdown with column names? Search all?
-const SEARCH_CRASHES = gql`
-  query($searchValue: String) {
+const SEARCH_CRASHES = `
+  query {
     atd_txdot_crashes(
       limit: 100
-      where: { rpt_street_name: { _like: $searchValue } }
+      FILTER
       order_by: { crash_date: desc }
     ) {
       crash_id
@@ -79,7 +79,7 @@ function Crashes() {
             </CardHeader>
             <CardBody>
               <TableSearchBar
-                query={SEARCH_CRASHES}
+                queryString={SEARCH_CRASHES}
                 updateResults={updateCrashTableData}
                 hasSearchResults={setHasSearchResults}
               />
