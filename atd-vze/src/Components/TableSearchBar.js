@@ -68,6 +68,11 @@ const TableSearchBar = props => {
     setFieldToSearch(e.target.value);
   };
 
+  const getFieldName = fieldKey =>
+    Object.values(
+      fieldsToSearch.find(field => Object.keys(field)[0] === fieldKey)
+    );
+
   return (
     <Form className="form-horizontal" onSubmit={handleSearchSubmission}>
       <FormGroup row>
@@ -87,7 +92,7 @@ const TableSearchBar = props => {
               toggle={toggleDropdown}
             >
               <DropdownToggle caret color="secondary">
-                {fieldToSearch === "" ? "Field" : fieldToSearch}
+                {fieldToSearch === "" ? "Field" : getFieldName(fieldToSearch)}
               </DropdownToggle>
               <DropdownMenu>
                 {fieldsToSearch.map(field => (
