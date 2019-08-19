@@ -17,7 +17,11 @@ import { useQuery } from "@apollo/react-hooks";
 import { withApollo } from "react-apollo";
 import { gql } from "apollo-boost";
 
-const fieldsToSearch = [{ rpt_street_name: "Reported Street Name" }];
+// TODO add query operators to each field to better fit data types (_eq, etc.)?
+const fieldsToSearch = [
+  { rpt_street_name: "Reported Street Name" },
+  { crash_id: "Crash ID" },
+];
 
 const TableSearchBar = props => {
   const [searchFieldValue, setSearchFieldValue] = useState("");
@@ -30,7 +34,7 @@ const TableSearchBar = props => {
       fieldToSearch !== "" && searchValue !== ""
         ? props.queryString.replace(
             "FILTER",
-            `where: { ${fieldToSearch}: { _like: "${searchValue}" } }`
+            `where: { ${fieldToSearch}: { _in: "${searchValue}" } }`
           )
         : props.queryString.replace("FILTER", "");
     return gql`
