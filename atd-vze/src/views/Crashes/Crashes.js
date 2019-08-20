@@ -5,8 +5,9 @@ import { Link } from "react-router-dom";
 import { useQuery } from "@apollo/react-hooks";
 import { gql } from "apollo-boost";
 import { withApollo } from "react-apollo";
-import crashDataMap from "./crashDataMap";
 import TableSearchBar from "../../Components/TableSearchBar";
+import TableSortHeader from "../../Components/TableSortHeader";
+import crashDataMap from "./crashDataMap";
 
 const GET_CRASHES = gql`
   {
@@ -75,67 +76,12 @@ const columns = [
 ];
 
 function Crashes() {
-  const [sortColumn, setSortColumn] = useState("");
-  const [sortOrder, setSortOrder] = useState("");
-
-  const handleTableHeaderClick = col => {
-    if (sortOrder === "" && sortColumn === "") {
-      // First time sort is applied
-      setSortOrder("asc");
-      setSortColumn(col);
-    } else if (sortColumn === col) {
-      // Repeat sort on column
-      sortOrder === "desc" ? setSortOrder("asc") : setSortOrder("desc");
-    } else if (sortColumn !== col) {
-      // Sort different column after initial sort
-      setSortOrder("desc");
-      setSortColumn(col);
-    }
-    setTableData(sortData);
-  };
-
-  const addSortToQuery = () => {
-    let queryWithSort =
-      sortColumn !== ""
-        ? SORT_CRASHES.replace(
-            "ORDER_BY",
-            `order_by: { ${sortColumn}: ${sortOrder} }`
-          )
-        : SORT_CRASHES.replace("ORDER_BY", "");
-    return gql`
-      ${queryWithSort}
-    `;
-  };
-
-  const { loading: sortLoading, error: sortError, data: sortData } = useQuery(
-    addSortToQuery()
-  );
-
-  useEffect(() => {
-    setTableData(sortData);
-  }, [sortData]);
-
-  // Add greyed-out arrow to indicate that sort is possible
-  const renderSortArrow = col =>
-    sortColumn === col ? (
-      <i
-        className={`fa fa-arrow-circle-${sortOrder === "asc" ? "up" : "down"}`}
-      />
-    ) : null;
-
-  const convertFieldNameToTitle = (col, fieldMap) => {
-    let title = "";
-    fieldMap.map(field => {
-      title = field.fields[col] ? field.fields[col] : title;
-    });
-    return title;
-  };
-
   const [tableData, setTableData] = useState("");
   const [hasSearchResults, setHasSearchResults] = useState(false);
+  const [hasSortOrder, setHasSortOrder] = useState(false);
   const { loading, error, data } = useQuery(GET_CRASHES, {
     onCompleted:
-      !hasSearchResults && sortOrder === "" && (data => setTableData(data)),
+      !hasSearchResults && !hasSortOrder && (data => setTableData(data)),
   });
 
   if (loading) return "Loading...";
@@ -143,6 +89,11 @@ function Crashes() {
 
   const updateCrashTableData = (data, hasSearchResults) => {
     setHasSearchResults(hasSearchResults);
+    setTableData(data);
+  };
+
+  const updateSortCrashTableData = (data, hasSortOrder) => {
+    setHasSearchResults(hasSortOrder);
     setTableData(data);
   };
 
@@ -161,7 +112,13 @@ function Crashes() {
                 hasSearchResults={setHasSearchResults}
               />
               <Table responsive>
-                <thead>
+                <TableSortHeader
+                  queryString={SORT_CRASHES}
+                  columns={columns}
+                  updateTableData={updateSortCrashTableData}
+                  fieldMap={crashDataMap}
+                />
+                {/* <thead>
                   <tr>
                     {columns.map((col, i) => (
                       <th
@@ -173,7 +130,7 @@ function Crashes() {
                       </th>
                     ))}
                   </tr>
-                </thead>
+                </thead> */}
                 <tbody>
                   {tableData &&
                     tableData.atd_txdot_crashes.map(crash => (
