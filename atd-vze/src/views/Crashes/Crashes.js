@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Badge, Card, CardBody, CardHeader, Col, Row, Table } from "reactstrap";
 import { Link } from "react-router-dom";
 
@@ -87,13 +87,15 @@ function Crashes() {
   if (loading) return "Loading...";
   if (error) return `Error! ${error.message}`;
 
-  const updateCrashTableData = (data, hasSearchResults) => {
+  const updateSearchCrashTableData = (data, hasSearchResults) => {
     setHasSearchResults(hasSearchResults);
     setTableData(data);
+    // Use Search Clear button to clear sort order as well/show unfiltered query data
+    setHasSortOrder(false);
   };
 
   const updateSortCrashTableData = (data, hasSortOrder) => {
-    setHasSearchResults(hasSortOrder);
+    setHasSortOrder(hasSortOrder);
     setTableData(data);
   };
 
@@ -108,7 +110,7 @@ function Crashes() {
             <CardBody>
               <TableSearchBar
                 queryString={SEARCH_CRASHES}
-                updateResults={updateCrashTableData}
+                updateResults={updateSearchCrashTableData}
                 hasSearchResults={setHasSearchResults}
               />
               <Table responsive>
@@ -117,20 +119,8 @@ function Crashes() {
                   columns={columns}
                   updateTableData={updateSortCrashTableData}
                   fieldMap={crashDataMap}
+                  hasSortOrder={hasSortOrder}
                 />
-                {/* <thead>
-                  <tr>
-                    {columns.map((col, i) => (
-                      <th
-                        onClick={e => handleTableHeaderClick(col)}
-                        key={`th-${i}`}
-                      >
-                        {renderSortArrow(col)}{" "}
-                        {convertFieldNameToTitle(col, crashDataMap)}
-                      </th>
-                    ))}
-                  </tr>
-                </thead> */}
                 <tbody>
                   {tableData &&
                     tableData.atd_txdot_crashes.map(crash => (

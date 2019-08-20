@@ -53,7 +53,7 @@ const TableSortHeader = props => {
 
   // Add greyed-out arrow to indicate that sort is possible
   const renderSortArrow = col =>
-    sortColumn === col ? (
+    sortColumn === col && props.hasSortOrder ? (
       <i
         className={`fa fa-arrow-circle-${sortOrder === "asc" ? "up" : "down"}`}
       />
