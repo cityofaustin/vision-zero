@@ -108,7 +108,7 @@ const GET_CRASH = gql`
       citation_nbr
       charge_cat_id
       charge
-      id
+      unique_id
     }
   }
 `;
