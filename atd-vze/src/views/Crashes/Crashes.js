@@ -94,14 +94,6 @@ function Crashes() {
     setTableData(sortData);
   };
 
-  const convertFieldNameToTitle = col => {
-    let title = "";
-    crashDataMap.map(field => {
-      title = field.fields[col] ? field.fields[col] : title;
-    });
-    return title;
-  };
-
   const addSortToQuery = () => {
     let queryWithSort =
       sortColumn !== ""
@@ -115,13 +107,6 @@ function Crashes() {
     `;
   };
 
-  const [tableData, setTableData] = useState("");
-  const [hasSearchResults, setHasSearchResults] = useState(false);
-  const { loading, error, data } = useQuery(GET_CRASHES, {
-    onCompleted:
-      !hasSearchResults && sortOrder === "" && (data => setTableData(data)),
-  });
-
   const { loading: sortLoading, error: sortError, data: sortData } = useQuery(
     addSortToQuery()
   );
@@ -130,14 +115,6 @@ function Crashes() {
     setTableData(sortData);
   }, [sortData]);
 
-  if (loading) return "Loading...";
-  if (error) return `Error! ${error.message}`;
-
-  const updateCrashTableData = (data, hasSearchResults) => {
-    setHasSearchResults(hasSearchResults);
-    setTableData(data);
-  };
-
   // Add greyed-out arrow to indicate that sort is possible
   const renderSortArrow = col =>
     sortColumn === col ? (
@@ -145,6 +122,29 @@ function Crashes() {
         className={`fa fa-arrow-circle-${sortOrder === "asc" ? "up" : "down"}`}
       />
     ) : null;
+
+  const convertFieldNameToTitle = (col, fieldMap) => {
+    let title = "";
+    fieldMap.map(field => {
+      title = field.fields[col] ? field.fields[col] : title;
+    });
+    return title;
+  };
+
+  const [tableData, setTableData] = useState("");
+  const [hasSearchResults, setHasSearchResults] = useState(false);
+  const { loading, error, data } = useQuery(GET_CRASHES, {
+    onCompleted:
+      !hasSearchResults && sortOrder === "" && (data => setTableData(data)),
+  });
+
+  if (loading) return "Loading...";
+  if (error) return `Error! ${error.message}`;
+
+  const updateCrashTableData = (data, hasSearchResults) => {
+    setHasSearchResults(hasSearchResults);
+    setTableData(data);
+  };
 
   return (
     <div className="animated fadeIn">
@@ -168,7 +168,8 @@ function Crashes() {
                         onClick={e => handleTableHeaderClick(col)}
                         key={`th-${i}`}
                       >
-                        {renderSortArrow(col)} {convertFieldNameToTitle(col)}
+                        {renderSortArrow(col)}{" "}
+                        {convertFieldNameToTitle(col, crashDataMap)}
                       </th>
                     ))}
                   </tr>
