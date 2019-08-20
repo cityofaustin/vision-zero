@@ -74,6 +74,48 @@ class CrashCollapses extends Component {
     this.setState({ fadeIn: !this.state.fadeIn });
   }
 
+  getInjurySeverityColor(desc) {
+    switch (desc) {
+      case "UNKNOWN":
+        return "muted";
+      case "NOT INJURED":
+        return "primary";
+      case "INCAPACITATING INJURY":
+        return "warning";
+      case "NON-INCAPACITATING INJURY":
+        return "warning";
+      case "POSSIBLE INJURY":
+        return "warning";
+      case "KILLED":
+        return "danger";
+      default:
+        break;
+    }
+  }
+
+  getUnitType(type) {
+    switch (type) {
+      case "MOTOR VEHICLE":
+        return <i className="fa fa-car" />;
+      case "TRAIN":
+        return <i className="fa fa-train" />;
+      case "PEDALCYCLIST":
+        return <i className="fa fa-bicycle" />;
+      case "PEDESTRIAN":
+        return <i className="fa fa-child" />;
+      case "MOTORIZED CONVEYANCE":
+        return "MOTORIZED CONVEYANCE";
+      case "TOWED/PUSHED/TRAILER":
+        return "TOWED/PUSHED/TRAILER";
+      case "NON-CONTACT":
+        return "NON-CONTACT";
+      case "OTHER (EXPLAIN IN NARRATIVE)":
+        return "Other";
+      default:
+        break;
+    }
+  }
+
   render() {
     return (
       <div className="animated fadeIn">
@@ -96,7 +138,14 @@ class CrashCollapses extends Component {
                         aria-controls="collapseOne"
                       >
                         <h5 className="m-0 p-0">
-                          <i className="fa fa-group" /> People
+                          <i className="fa fa-group" /> People{" "}
+                          <Badge color="secondary float-right">
+                            {
+                              this.props.data.atd_txdot_primaryperson.concat(
+                                this.props.data.atd_txdot_person
+                              ).length
+                            }
+                          </Badge>
                         </h5>
                       </Button>
                     </CardHeader>
@@ -112,6 +161,7 @@ class CrashCollapses extends Component {
                         <Table responsive>
                           <thead>
                             <tr>
+                              <th>Unit</th>
                               <th>City</th>
                               <th>ZIP</th>
                               <th>Age</th>
@@ -122,12 +172,17 @@ class CrashCollapses extends Component {
                             {this.props.data.atd_txdot_primaryperson.map(
                               (person, i) => (
                                 <tr key={`person-${i}`}>
+                                  <td>{person.unit_nbr}</td>
                                   <td>{person.drvr_city_name}</td>
                                   <td>{person.drvr_zip}</td>
                                   <td>{person.prsn_age}</td>
                                   <td>
-                                    <Badge color="success">
-                                      {person.prsn_injry_sev_id}
+                                    <Badge
+                                      color={this.getInjurySeverityColor(
+                                        person.injury_severity.injry_sev_desc
+                                      )}
+                                    >
+                                      {person.injury_severity.injry_sev_desc}
                                     </Badge>
                                   </td>
                                 </tr>
@@ -137,36 +192,42 @@ class CrashCollapses extends Component {
                         </Table>
 
                         {this.props.data.atd_txdot_person.length > 0 && (
-                          <h5>Other People</h5>
+                          <>
+                            <h5>Other People</h5>
+                            <Table responsive>
+                              <thead>
+                                <tr>
+                                  <th>Unit</th>
+                                  <th>Age</th>
+                                  <th>Injury Severity</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {this.props.data.atd_txdot_person.map(
+                                  person => (
+                                    <tr>
+                                      <td>{person.unit_nbr}</td>
+                                      <td>{person.prsn_age}</td>
+                                      <td>
+                                        <Badge
+                                          color={this.getInjurySeverityColor(
+                                            person.injury_severity
+                                              .injry_sev_desc
+                                          )}
+                                        >
+                                          {
+                                            person.injury_severity
+                                              .injry_sev_desc
+                                          }
+                                        </Badge>
+                                      </td>
+                                    </tr>
+                                  )
+                                )}
+                              </tbody>
+                            </Table>
+                          </>
                         )}
-                        {this.props.data.atd_txdot_person.map(person => (
-                          <Table responsive>
-                            <thead>
-                              <tr>
-                                <th>City</th>
-                                <th>ZIP</th>
-                                <th>Age</th>
-                                <th>Injury Severity</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {this.props.data.atd_txdot_primaryperson.map(
-                                person => (
-                                  <tr>
-                                    <td>{person.drvr_city_name}</td>
-                                    <td>{person.drvr_zip}</td>
-                                    <td>{person.prsn_age}</td>
-                                    <td>
-                                      <Badge color="success">
-                                        {person.prsn_injry_sev_id}
-                                      </Badge>
-                                    </td>
-                                  </tr>
-                                )
-                              )}
-                            </tbody>
-                          </Table>
-                        ))}
                       </CardBody>
                     </Collapse>
                   </Card>
@@ -182,6 +243,9 @@ class CrashCollapses extends Component {
                       >
                         <h5 className="m-0 p-0">
                           <i className="fa fa-car" /> Units
+                          <Badge color="secondary float-right">
+                            {this.props.data.atd_txdot_units.length}
+                          </Badge>
                         </h5>
                       </Button>
                     </CardHeader>
@@ -194,7 +258,9 @@ class CrashCollapses extends Component {
                         <Table responsive>
                           <thead>
                             <tr>
-                              <th>Unit Type</th>
+                              <th>Unit</th>
+                              <th>Type</th>
+                              <th>Body Style</th>
                               <th>Factor 1</th>
                               <th>Make/Model</th>
                             </tr>
@@ -202,11 +268,17 @@ class CrashCollapses extends Component {
                           <tbody>
                             {this.props.data.atd_txdot_units.map((unit, i) => (
                               <tr key={`person-${i}`}>
-                                <td>{unit.unit_desc_id}</td>
+                                <td>{unit.unit_nbr}</td>
+                                <td>
+                                  {this.getUnitType(
+                                    unit.unit_description.veh_unit_desc_desc
+                                  )}
+                                </td>
+                                <td>{unit.body_style.veh_body_styl_desc}</td>
                                 <td>{unit.contrib_factr_1_id}</td>
                                 <td>
-                                  {unit.veh_mod_year} {unit.veh_make_id}{" "}
-                                  {unit.veh_mod_id}
+                                  {unit.veh_mod_year} {unit.make.veh_make_desc}{" "}
+                                  {unit.model.veh_mod_desc}
                                 </td>
                               </tr>
                             ))}
@@ -227,6 +299,13 @@ class CrashCollapses extends Component {
                       >
                         <h5 className="m-0 p-0">
                           <i className="fa fa-legal" /> Charges
+                          <Badge color="secondary float-right">
+                            {
+                              this.props.data.atd_txdot_charges.filter(
+                                charge => charge.charge_cat_id !== 0
+                              ).length
+                            }
+                          </Badge>
                         </h5>
                       </Button>
                     </CardHeader>
