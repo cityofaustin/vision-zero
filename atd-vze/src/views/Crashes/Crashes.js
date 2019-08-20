@@ -79,19 +79,19 @@ function Crashes() {
   const [sortOrder, setSortOrder] = useState("");
 
   const handleTableHeaderClick = col => {
-    // First time sort is applied
     if (sortOrder === "" && sortColumn === "") {
+      // First time sort is applied
       setSortOrder("asc");
       setSortColumn(col);
     } else if (sortColumn === col) {
+      // Repeat sort on column
       sortOrder === "desc" ? setSortOrder("asc") : setSortOrder("desc");
     } else if (sortColumn !== col) {
+      // Sort different column after initial sort
       setSortOrder("desc");
       setSortColumn(col);
     }
-    console.log("You clicky the text", col);
     setTableData(sortData);
-    console.log(sortData);
   };
 
   const convertFieldNameToTitle = col => {
@@ -138,6 +138,14 @@ function Crashes() {
     setTableData(data);
   };
 
+  // Add greyed-out arrow to indicate that sort is possible
+  const renderSortArrow = col =>
+    sortColumn === col ? (
+      <i
+        className={`fa fa-arrow-circle-${sortOrder === "asc" ? "up" : "down"}`}
+      />
+    ) : null;
+
   return (
     <div className="animated fadeIn">
       <Row>
@@ -160,7 +168,7 @@ function Crashes() {
                         onClick={e => handleTableHeaderClick(col)}
                         key={`th-${i}`}
                       >
-                        {convertFieldNameToTitle(col)}
+                        {renderSortArrow(col)} {convertFieldNameToTitle(col)}
                       </th>
                     ))}
                   </tr>
