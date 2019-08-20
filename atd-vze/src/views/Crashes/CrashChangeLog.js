@@ -38,15 +38,9 @@ class CrashChangeLog extends Component {
      * @param {String} the timestamp as provided by postgres
      */
     timeConverter(UNIX_timestamp){
-        var a = new Date(`${UNIX_timestamp}`.replace(' ', 'T'));
-        var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-        var year = a.getFullYear();
-        var month = months[a.getMonth()];
-        var date = a.getDate();
-        var hour = a.getHours();
-        var min = a.getMinutes();
-        var time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min;
-        return time;
+        let a = new Date(`${UNIX_timestamp}`.replace(' ', 'T'));
+        let months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        return a.getDate() + ' ' + months[a.getMonth()] + ' ' + a.getFullYear() + ' ' + a.getHours() + ':' + a.getMinutes();
     }
 
     /**
