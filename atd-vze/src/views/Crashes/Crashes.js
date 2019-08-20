@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Badge, Card, CardBody, CardHeader, Col, Row, Table } from "reactstrap";
 import { Link } from "react-router-dom";
 
@@ -32,7 +32,7 @@ const SORT_CRASHES = `
     atd_txdot_crashes(
       limit: 100
       where: { crash_fatal_fl: { _eq: "Y" } }
-      order_by: { ORDER_BY }
+      ORDER_BY
       ) {
         crash_id
         death_cnt
@@ -75,13 +75,21 @@ const columns = [
 ];
 
 function Crashes() {
-  const [sortColumn, setSortColumn] = useState("crash_id");
-  const [sortOrder, setSortOrder] = useState("desc");
+  const [sortColumn, setSortColumn] = useState("");
+  const [sortOrder, setSortOrder] = useState("");
 
   const handleTableHeaderClick = col => {
+    // First time sort is applied
+    if (sortOrder === "" && sortColumn === "") {
+      setSortOrder("asc");
+      setSortColumn(col);
+    } else if (sortColumn === col) {
+      sortOrder === "desc" ? setSortOrder("asc") : setSortOrder("desc");
+    } else if (sortColumn !== col) {
+      setSortOrder("desc");
+      setSortColumn(col);
+    }
     console.log("You clicky the text", col);
-    setSortColumn(col);
-    sortOrder === "desc" ? setSortOrder("asc") : setSortOrder("desc");
     setTableData(sortData);
     console.log(sortData);
   };
@@ -95,10 +103,13 @@ function Crashes() {
   };
 
   const addSortToQuery = () => {
-    let queryWithSort = SORT_CRASHES.replace(
-      "ORDER_BY",
-      `${sortColumn}: ${sortOrder}`
-    );
+    let queryWithSort =
+      sortColumn !== ""
+        ? SORT_CRASHES.replace(
+            "ORDER_BY",
+            `order_by: { ${sortColumn}: ${sortOrder} }`
+          )
+        : SORT_CRASHES.replace("ORDER_BY", "");
     return gql`
       ${queryWithSort}
     `;
@@ -107,12 +118,18 @@ function Crashes() {
   const [tableData, setTableData] = useState("");
   const [hasSearchResults, setHasSearchResults] = useState(false);
   const { loading, error, data } = useQuery(GET_CRASHES, {
-    onCompleted: !hasSearchResults && (data => setTableData(data)),
+    onCompleted:
+      !hasSearchResults && sortOrder === "" && (data => setTableData(data)),
   });
 
   const { loading: sortLoading, error: sortError, data: sortData } = useQuery(
     addSortToQuery()
   );
+
+  useEffect(() => {
+    setTableData(sortData);
+  }, [sortData]);
+
   if (loading) return "Loading...";
   if (error) return `Error! ${error.message}`;
 

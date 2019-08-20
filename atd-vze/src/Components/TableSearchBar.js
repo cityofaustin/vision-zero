@@ -99,8 +99,9 @@ const TableSearchBar = props => {
                 {fieldToSearch === "" ? "Field" : getFieldName(fieldToSearch)}
               </DropdownToggle>
               <DropdownMenu>
-                {fieldsToSearch.map(field => (
+                {fieldsToSearch.map((field, i) => (
                   <DropdownItem
+                    key={i}
                     value={Object.keys(field)}
                     onClick={handleFieldSelect}
                   >
