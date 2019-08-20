@@ -48,7 +48,7 @@
   },
   "scripts": {
     "start": "export HTTPS=true && react-scripts start",
-    "build": "react-scripts build",
+    "build": "react-scripts build && cp _redirects build",
     "test": "react-scripts test",
     "test:cov": "npm test -- --coverage --watchAll=false",
     "test:debug": "react-scripts --inspect-brk test --runInBand",
