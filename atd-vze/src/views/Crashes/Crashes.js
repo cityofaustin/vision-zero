@@ -45,7 +45,7 @@ const SORT_CRASHES = `
       }
     }
   `;
-  
+
 // TODO decide what fields to search? dropdown with column names? Search all?
 const SEARCH_CRASHES = `
   query {
@@ -75,16 +75,15 @@ const columns = [
 ];
 
 function Crashes() {
-  const { loading, error, data } = useQuery(GET_CRASHES);
   const [sortColumn, setSortColumn] = useState("crash_id");
-  const [sortOrder, setSortOrder] = useState("asc");
-  if (loading) return "Loading...";
-  if (error) return `Error! ${error.message}`;
+  const [sortOrder, setSortOrder] = useState("desc");
 
   const handleTableHeaderClick = col => {
     console.log("You clicky the text", col);
-    sortOrder === "desc" ? setSortOrder("asc") : setSortOrder("asc");
     setSortColumn(col);
+    sortOrder === "desc" ? setSortOrder("asc") : setSortOrder("desc");
+    setTableData(sortData);
+    console.log(sortData);
   };
 
   const convertFieldNameToTitle = col => {
@@ -103,13 +102,17 @@ function Crashes() {
     return gql`
       ${queryWithSort}
     `;
-  }
+  };
+
   const [tableData, setTableData] = useState("");
   const [hasSearchResults, setHasSearchResults] = useState(false);
   const { loading, error, data } = useQuery(GET_CRASHES, {
     onCompleted: !hasSearchResults && (data => setTableData(data)),
   });
 
+  const { loading: sortLoading, error: sortError, data: sortData } = useQuery(
+    addSortToQuery()
+  );
   if (loading) return "Loading...";
   if (error) return `Error! ${error.message}`;
 
@@ -146,27 +149,6 @@ function Crashes() {
                   </tr>
                 </thead>
                 <tbody>
-<<<<<<< HEAD
-                  {data.atd_txdot_crashes.map(crash => (
-                    <tr key={crash.crash_id}>
-                      <td>
-                        <Link to={`crashes/${crash.crash_id}`}>
-                          {crash.crash_id}
-                        </Link>
-                      </td>
-                      <td>{crash.crash_date}</td>
-                      <td>{`${crash.rpt_street_pfx} ${crash.rpt_street_name} ${
-                        crash.rpt_street_sfx
-                      }`}</td>
-                      <td>
-                        <Badge color="warning">{crash.tot_injry_cnt}</Badge>
-                      </td>
-                      <td>
-                        <Badge color="danger">{crash.death_cnt}</Badge>
-                      </td>
-                    </tr>
-                  ))}
-=======
                   {tableData &&
                     tableData.atd_txdot_crashes.map(crash => (
                       <tr key={crash.crash_id}>
@@ -187,7 +169,6 @@ function Crashes() {
                         </td>
                       </tr>
                     ))}
->>>>>>> 3f3debd0e52d2830b49b378cbf89ede15dbc98aa
                 </tbody>
               </Table>
             </CardBody>
