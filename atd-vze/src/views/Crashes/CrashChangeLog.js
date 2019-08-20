@@ -36,6 +36,10 @@ class CrashChangeLog extends Component {
         };
     }
 
+    /**
+     * Converts a PostgreSQL Timestamp string into a human readable date-time
+     * @param {String} the timestamp as provided by postgres
+     */
     timeConverter(UNIX_timestamp){
         var a = new Date(`${UNIX_timestamp}`.replace(' ', 'T'));
         var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
@@ -48,12 +52,18 @@ class CrashChangeLog extends Component {
         return time;
     }
 
+    /**
+     * Shows the modal box by changing the state, does not alter the body.
+     */
     showModal() {
         this.setState({
             modal: true
         });
     }
 
+    /**
+     * Closes the modal box by changing the state and emptying the modal body.
+     */
     closeModal() {
         this.setState({
             modal: false,
@@ -61,41 +71,40 @@ class CrashChangeLog extends Component {
         });
     }
 
-    setCompareFrom(event) {
-        this.setState({dataFrom: event.target.value});
-    }
-
-    setCompareTo(event) {
-        this.setState({dataTo: event.target.value});
-    }
-
+    /**
+     * Compares the archived json object against the current data object as populated via props.
+     * @param {Object} record's json
+     */
     compare(record) {
-
+        // Holds only the keys
         let diff = [];
 
+        // Holds the html for our modal box
         let modalBody = null;
 
+        // Iterate through our record's key & values
         for (let [key, value] of Object.entries(this.props.data.atd_txdot_crashes[0])) {
+            // Let's get rid of typename
             if(key === "__typename") continue;
+
             try {
+                // Gather the archived value for the current field
                 let archivedRecordValue = record.record_json[key];
 
+                // If the value is different from the current value, then put it in the diff array.
                 if(archivedRecordValue !== value) {
                     diff.push({
                         'original_record_key': key,
                         'original_record_value': value,
                         'archived_record_value': archivedRecordValue
                     });
-                } else {
-                    console.log(`${key} -- ${value} -- ${archivedRecordValue}`);
                 }
-
             } catch (error) {
                 console.log(error);
             }
         }
 
-
+        // For each entry created in the diff array, generate an HTML table row.
         let modalItems = diff.map(item => (
             <tr key={record.id}>
                 <td>
@@ -110,8 +119,7 @@ class CrashChangeLog extends Component {
             </tr>
         ));
 
-
-
+        // Generate the body of the modal box
         modalBody = <section>
             <h6>Crash ID: <Badge color={"secondary"} className={"float-right"}>{record.record_crash_id}</Badge></h6>
             <h6>Archive Date: <Badge color={"secondary"} className={"float-right"}>{record.update_timestamp}</Badge></h6>
@@ -132,9 +140,9 @@ class CrashChangeLog extends Component {
             </Table>
         </section>;
 
-        this.setState({
-            modalBody: modalBody
-        });
+        // Set the state of the modal box to contain the body
+        this.setState({ modalBody: modalBody });
+        // Show the modal
         this.showModal();
     }
 
