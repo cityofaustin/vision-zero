@@ -1,5 +1,16 @@
 import React, { useState } from "react";
-import { Badge, Card, CardBody, CardHeader, Col, Row, Table } from "reactstrap";
+import {
+  Badge,
+  Card,
+  CardBody,
+  CardHeader,
+  Col,
+  Row,
+  Table,
+  Button,
+  ButtonToolbar,
+  ButtonGroup,
+} from "reactstrap";
 import { Link } from "react-router-dom";
 
 import { useQuery } from "@apollo/react-hooks";
@@ -79,6 +90,7 @@ function Crashes() {
   const [tableData, setTableData] = useState("");
   const [hasSearchResults, setHasSearchResults] = useState(false);
   const [hasSortOrder, setHasSortOrder] = useState(false);
+  const [offset, setOffset] = useState(0);
   const { loading, error, data } = useQuery(GET_CRASHES, {
     onCompleted:
       !hasSearchResults && !hasSortOrder && (data => setTableData(data)),
@@ -99,6 +111,19 @@ function Crashes() {
     setTableData(data);
   };
 
+  const updatePage = e => {
+    const pageOption = e.target.innerText;
+    if (offset !== 0 && pageOption === "Prev") {
+      // subtract limit from offset
+    }
+    if (offset === 0 && pageOption === "Prev") {
+      // do nothing
+    }
+    if (pageOption === "Next") {
+      // add limit to offset
+    }
+  };
+
   return (
     <div className="animated fadeIn">
       <Row>
@@ -113,6 +138,14 @@ function Crashes() {
                 updateResults={updateSearchCrashTableData}
                 hasSearchResults={setHasSearchResults}
               />
+              <ButtonToolbar className="justify-content-between">
+                <ButtonGroup>
+                  <Button onClick={updatePage}>Prev</Button>
+                </ButtonGroup>
+                <ButtonGroup>
+                  <Button onClick={updatePage}>Next</Button>
+                </ButtonGroup>
+              </ButtonToolbar>
               <Table responsive>
                 <TableSortHeader
                   queryString={SORT_CRASHES}
