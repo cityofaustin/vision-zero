@@ -22,9 +22,6 @@ class CrashChangeLog extends Component {
         this.closeModal = this.closeModal.bind(this);
         this.showModal = this.showModal.bind(this);
 
-        this.setCompareFrom = this.setCompareTo.bind(this);
-        this.setCompareTo = this.setCompareTo.bind(this);
-
         this.compare = this.compare.bind(this);
 
         this.state = {
