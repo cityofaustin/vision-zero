@@ -1,4 +1,4 @@
-const crashDataMap = [
+export const crashDataMap = [
   {
     title: "Details",
     fields: {
@@ -16,7 +16,6 @@ const crashDataMap = [
       road_type_id: "Roadway Type ID",
       traffic_cntl_id: "Traffic Control ID",
       wthr_cond_id: "Weather Condition ID",
-      // is_retired: "Is Retired", // All these return false, why?
     },
   },
   {
@@ -101,4 +100,11 @@ const crashDataMap = [
   },
 ];
 
-export default crashDataMap;
+export const geoFields = {
+  title: "Geo Data",
+  fields: [
+    { label: "City", data: ["city"] },
+    { label: "Latitude", data: ["latitude"] },
+    { label: "Longitude", data: ["longitude"], editable: true },
+  ],
+};

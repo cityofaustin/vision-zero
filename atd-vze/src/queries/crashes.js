@@ -8,6 +8,9 @@ export const GET_CRASH = gql`
       approved_by
       at_intrsct_fl
       case_id
+      city {
+        city_desc
+      }
       crash_date
       crash_fatal_fl
       crash_id

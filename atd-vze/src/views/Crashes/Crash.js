@@ -2,7 +2,7 @@ import React from "react";
 import { Card, CardBody, CardHeader, Col, Row, Table } from "reactstrap";
 import { withApollo } from "react-apollo";
 import { useQuery } from "@apollo/react-hooks";
-import crashDataMap from "./crashDataMap";
+import { crashDataMap, geoFields } from "./crashDataMap";
 import CrashCollapses from "./CrashCollapses";
 import CrashMap from "./CrashMap";
 import Widget02 from "../Widgets/Widget02";
@@ -72,7 +72,36 @@ function Crash(props) {
       </Row>
       <Row>
         <Col lg={6}>
+          <div className="mb-4">
+            <Card>
+              <CardHeader>Crash Location</CardHeader>
+              <CardBody>
+                <CrashMap data={data.atd_txdot_crashes[0]} />
+                <Table>
+                  <tbody>
+                    {geoFields.fields.map(field => {
+                      return (
+                        <tr>
+                          <td>{field.label}</td>
+                          <td>
+                            {data.atd_txdot_crashes[0][field.data][
+                              `${field.data}_desc`
+                            ] || data.atd_txdot_crashes[0][field.data]}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </Table>
+              </CardBody>
+            </Card>
+          </div>
+          <CrashCollapses data={data} />
+        </Col>
+        <Col lg={6}>
           {crashDataMap.map(section => {
+            console.log(section);
+            console.log(data.atd_txdot_crashes[0]);
             return (
               <Card key={section.title}>
                 <CardHeader>{section.title}</CardHeader>
@@ -97,18 +126,6 @@ function Crash(props) {
               </Card>
             );
           })}
-        </Col>
-
-        <Col lg={6}>
-          <div className="mb-4">
-            <Card>
-              <CardHeader>Crash Location</CardHeader>
-              <CardBody>
-                <CrashMap data={data.atd_txdot_crashes[0]} />
-              </CardBody>
-            </Card>
-          </div>
-          <CrashCollapses data={data} />
         </Col>
       </Row>
     </div>
