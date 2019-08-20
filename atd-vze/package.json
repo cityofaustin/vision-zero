@@ -47,8 +47,9 @@
     "react-scripts": "^3.0.1"
   },
   "scripts": {
-    "start": "export HTTPS=true && react-scripts start",
-    "build": "react-scripts build",
+    "start": "HTTPS=true REACT_APP_ENV=local react-scripts start",
+    "build": "REACT_APP_ENV=local react-scripts build",
+    "build:production": "react-scripts build",
     "test": "react-scripts test",
     "test:cov": "npm test -- --coverage --watchAll=false",
     "test:debug": "react-scripts --inspect-brk test --runInBand",
