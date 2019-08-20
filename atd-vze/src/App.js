@@ -64,9 +64,7 @@ class App extends Component {
       this.auth.getProfile((profile, error) => {
         try {
           const role =
-            profile["https://hasura.io/jwt/claims"][
-              "x-hasura-allowed-roles"
-            ][0];
+            profile["https://hasura.io/jwt/claims"]["x-hasura-role"][0];
           localStorage.setItem("hasura_user_role", role);
           console.log("Role initialized: " + role);
           this.setState({ role: role });
