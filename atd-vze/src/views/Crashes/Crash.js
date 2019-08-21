@@ -6,6 +6,7 @@ import crashDataMap from "./crashDataMap";
 import CrashCollapses from "./CrashCollapses";
 import CrashMap from "./CrashMap";
 import Widget02 from "../Widgets/Widget02";
+import CrashChangeLog from "./CrashChangeLog";
 
 import { GET_CRASH } from "../../queries/crashes";
 
