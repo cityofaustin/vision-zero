@@ -13,6 +13,7 @@ const StyledIcon = styled.i`
 const TablePaginationControl = props => {
   const [offset, setOffset] = useState(0);
   const [limit, setLimit] = useState(100);
+  const [pageNumber, setPageNumber] = useState(1);
 
   const pageQuery = () => {
     let queryWithPage = props.queryString.replace("LIMIT", `limit: ${limit}`);
@@ -28,6 +29,7 @@ const TablePaginationControl = props => {
 
   useEffect(() => {
     props.updateResults(pageData);
+    updatePageNumber();
   }, [pageData]);
 
   const updatePage = e => {
@@ -48,14 +50,15 @@ const TablePaginationControl = props => {
     }
   };
 
-  const showPageNumber = currentOffset => {
+  const updatePageNumber = () => {
     let pageNumber = "";
     if (offset === 0) {
-      pageNumber = "1";
+      pageNumber = 1;
+      setPageNumber(pageNumber);
     } else {
-      pageNumber = offset / limit;
+      pageNumber = offset / limit + 1;
+      setPageNumber(pageNumber);
     }
-    return pageNumber;
   };
 
   return (
@@ -70,7 +73,7 @@ const TablePaginationControl = props => {
           </Button>
         </ButtonGroup>
         <ButtonGroup>
-          <Button>Page {showPageNumber(offset)}</Button>
+          <Button>Page {pageNumber}</Button>
         </ButtonGroup>
         <ButtonGroup>
           <Button onClick={updatePage}>
