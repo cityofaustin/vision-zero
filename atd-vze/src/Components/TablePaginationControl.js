@@ -39,10 +39,23 @@ const TablePaginationControl = props => {
     if (offset === 0 && pageOption.match("Prev")) {
       return null;
     }
-    if (pageOption.match("Next")) {
+    if (
+      pageOption.match("Next") &&
+      pageData[props.responseDataSet].length === 100
+    ) {
       const increasedOffset = offset + limit;
       setOffset(increasedOffset);
     }
+  };
+
+  const showPageNumber = currentOffset => {
+    let pageNumber = "";
+    if (offset === 0) {
+      pageNumber = "1";
+    } else {
+      pageNumber = offset / limit;
+    }
+    return pageNumber;
   };
 
   return (
@@ -55,6 +68,9 @@ const TablePaginationControl = props => {
             </StyledIcon>{" "}
             Prev
           </Button>
+        </ButtonGroup>
+        <ButtonGroup>
+          <Button>Page {showPageNumber(offset)}</Button>
         </ButtonGroup>
         <ButtonGroup>
           <Button onClick={updatePage}>
