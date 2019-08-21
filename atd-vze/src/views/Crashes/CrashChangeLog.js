@@ -142,7 +142,7 @@ class CrashChangeLog extends Component {
             <tr>
               <td>Field</td>
               <td>Current Value</td>
-              <td>Archived Value</td>
+              <td>Previous Value</td>
               <td></td>
             </tr>
           </thead>
