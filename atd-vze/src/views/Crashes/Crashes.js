@@ -5,10 +5,13 @@ import { Link } from "react-router-dom";
 import { useQuery } from "@apollo/react-hooks";
 import { gql } from "apollo-boost";
 import { withApollo } from "react-apollo";
+import { CSVLink } from "react-csv";
 import TableSearchBar from "../../Components/TableSearchBar";
 import TableSortHeader from "../../Components/TableSortHeader";
 import crashDataMap from "./crashDataMap";
 import TablePaginationControl from "../../Components/TablePaginationControl";
+
+const dataKey = "atd_txdot_crashes";
 
 const GET_CRASHES = gql`
   {
@@ -133,6 +136,14 @@ function Crashes() {
             <CardHeader>
               <i className="fa fa-car" /> Crashes
             </CardHeader>
+            {/* TODO Float icon right and format data in filename */}
+            <CSVLink
+              className="mt-2 mr-2 float-right"
+              data={tableData && tableData[dataKey]}
+              filename={dataKey + Date.now()}
+            >
+              <i className="fa fa-save fa-2x" /> Export .csv
+            </CSVLink>
             <CardBody>
               <TableSearchBar
                 queryString={SEARCH_CRASHES}
@@ -154,7 +165,7 @@ function Crashes() {
                 />
                 <tbody>
                   {tableData &&
-                    tableData.atd_txdot_crashes.map(crash => (
+                    tableData[dataKey].map(crash => (
                       <tr key={crash.crash_id}>
                         <td>
                           <Link to={`crashes/${crash.crash_id}`}>
