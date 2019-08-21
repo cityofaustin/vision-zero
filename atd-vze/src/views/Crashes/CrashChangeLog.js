@@ -138,24 +138,9 @@ class CrashChangeLog extends Component {
     // Generate the body of the modal box
     modalBody = (
       <section>
-        <h6>
-          Crash ID:{" "}
-          <Badge color={"secondary"} className={"float-right"}>
-            {record.record_crash_id}
-          </Badge>
-        </h6>
-        <h6>
-          Archive Date:{" "}
-          <Badge color={"secondary"} className={"float-right"}>
-            {record.update_timestamp}
-          </Badge>
-        </h6>
-        <h6>
-          Created by:{" "}
-          <Badge color={"secondary"} className={"float-right"}>
-            {record.record_json.updated_by}
-          </Badge>
-        </h6>
+        <h6>Crash ID: {record.record_crash_id}</h6>
+        <h6>Archive Date: {record.update_timestamp}</h6>
+        <h6>Created by: {record.record_json.updated_by}</h6>
         &nbsp;
         <Table responsive>
           <thead>
@@ -183,7 +168,7 @@ class CrashChangeLog extends Component {
     // If there are no records, let's not render anything...
     if (this.props.data.atd_txdot_change_log.length === 0) {
       modal = null;
-      content = <h4>No changes found for this record.</h4>;
+      content = <p>No changes found for this record.</p>;
     } else {
       modal = (
         <Modal isOpen={this.state.modal} className={this.props.className}>
