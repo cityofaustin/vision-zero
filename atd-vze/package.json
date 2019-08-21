@@ -38,7 +38,8 @@
     "react-router-dom": "^5.0.1",
     "react-test-renderer": "^16.8.6",
     "reactstrap": "^8.0.0",
-    "simple-line-icons": "^2.4.1"
+    "simple-line-icons": "^2.4.1",
+    "styled-components": "^4.3.2"
   },
   "devDependencies": {
     "eslint-config-prettier": "^6.0.0",
