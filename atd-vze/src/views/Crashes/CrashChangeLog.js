@@ -21,11 +21,6 @@ class CrashChangeLog extends Component {
   constructor(props) {
     super(props);
 
-    this.closeModal = this.closeModal.bind(this);
-    this.showModal = this.showModal.bind(this);
-
-    this.compare = this.compare.bind(this);
-
     this.state = {
       modal: false,
       modalBody: null,
@@ -71,7 +66,7 @@ class CrashChangeLog extends Component {
   /**
    * Shows the modal box by changing the state, does not alter the body.
    */
-  showModal() {
+  showModal = () => {
     this.setState({
       modal: true
     });
@@ -80,7 +75,7 @@ class CrashChangeLog extends Component {
   /**
    * Closes the modal box by changing the state and emptying the modal body.
    */
-  closeModal() {
+  closeModal = () => {
     this.setState({
       modal: false,
       modalBody: null
@@ -91,7 +86,7 @@ class CrashChangeLog extends Component {
    * Compares the archived json object against the current data object as populated via props.
    * @param {Object} record's json
    */
-  compare(record) {
+  compare = (record) => {
     // Holds only the keys
     let diff = [];
 
