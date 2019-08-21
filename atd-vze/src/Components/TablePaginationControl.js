@@ -6,7 +6,7 @@ import { withApollo } from "react-apollo";
 import { gql } from "apollo-boost";
 import styled from "styled-components";
 
-const StyledIcon = styled.i`
+const StyledDisableClick = styled.i`
   pointer-events: none;
 `;
 
@@ -66,21 +66,23 @@ const TablePaginationControl = props => {
       <ButtonToolbar className="justify-content-between">
         <ButtonGroup>
           <Button onClick={updatePage}>
-            <StyledIcon>
+            <StyledDisableClick>
               <i className="fa fa-arrow-circle-left" />
-            </StyledIcon>{" "}
+            </StyledDisableClick>{" "}
             Prev
           </Button>
         </ButtonGroup>
         <ButtonGroup>
-          <Button>Page {pageNumber}</Button>
+          <StyledDisableClick>
+            <Button>Page {pageNumber}</Button>
+          </StyledDisableClick>
         </ButtonGroup>
         <ButtonGroup>
           <Button onClick={updatePage}>
             Next{" "}
-            <StyledIcon>
+            <StyledDisableClick>
               <i className="fa fa-arrow-circle-right" />
-            </StyledIcon>
+            </StyledDisableClick>
           </Button>
         </ButtonGroup>
       </ButtonToolbar>
