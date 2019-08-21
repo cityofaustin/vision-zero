@@ -19,6 +19,7 @@ import { withApollo } from "react-apollo";
 import TableSearchBar from "../../Components/TableSearchBar";
 import TableSortHeader from "../../Components/TableSortHeader";
 import crashDataMap from "./crashDataMap";
+import TablePaginationControl from "../../Components/TablePaginationControl";
 
 const GET_CRASHES = gql`
   {
@@ -110,32 +111,11 @@ function Crashes() {
   const [tableData, setTableData] = useState("");
   const [hasSearchResults, setHasSearchResults] = useState(false);
   const [hasSortOrder, setHasSortOrder] = useState(false);
-  const [offset, setOffset] = useState(0);
-  const [limit, setLimit] = useState(100);
+
   const { loading, error, data } = useQuery(GET_CRASHES, {
     onCompleted:
       !hasSearchResults && !hasSortOrder && (data => setTableData(data)),
   });
-
-  const pageQuery = () => {
-    let queryWithPage = PAGE_CRASHES.replace("LIMIT", `limit: ${limit}`);
-    queryWithPage = queryWithPage.replace("OFFSET", `offset: ${offset}`);
-    return gql`
-      ${queryWithPage}
-    `;
-  };
-
-  const { loading: pageLoading, error: pageError, data: pageData } = useQuery(
-    pageQuery()
-  );
-
-  const updatePageCrashTableData = () => {
-    setTableData(pageData);
-  };
-
-  useEffect(() => {
-    tableData !== "" && updatePageCrashTableData(pageData);
-  }, [pageData]);
 
   if (loading) return "Loading...";
   if (error) return `Error! ${error.message}`;
@@ -152,19 +132,8 @@ function Crashes() {
     setTableData(data);
   };
 
-  const updatePage = e => {
-    const pageOption = e.target.innerText;
-    if (offset !== 0 && pageOption === "Prev") {
-      const decreasedOffset = offset - limit;
-      setOffset(decreasedOffset);
-    }
-    if (offset === 0 && pageOption === "Prev") {
-      return null;
-    }
-    if (pageOption === "Next") {
-      const increasedOffset = offset + limit;
-      setOffset(increasedOffset);
-    }
+  const updatePageCrashTableData = data => {
+    setTableData(data);
   };
 
   return (
@@ -181,14 +150,10 @@ function Crashes() {
                 updateResults={updateSearchCrashTableData}
                 hasSearchResults={setHasSearchResults}
               />
-              <ButtonToolbar className="justify-content-between">
-                <ButtonGroup>
-                  <Button onClick={updatePage}>Prev</Button>
-                </ButtonGroup>
-                <ButtonGroup>
-                  <Button onClick={updatePage}>Next</Button>
-                </ButtonGroup>
-              </ButtonToolbar>
+              <TablePaginationControl
+                queryString={PAGE_CRASHES}
+                updateResults={updatePageCrashTableData}
+              />
               <Table responsive>
                 <TableSortHeader
                   queryString={SORT_CRASHES}
