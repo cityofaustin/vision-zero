@@ -183,8 +183,7 @@ class CrashChangeLog extends Component {
           <Table responsive>
             <thead>
               <tr>
-                <td>ChangeLog ID</td>
-                <td>Date Archived</td>
+                <td>Date Edited</td>
                 <td>Updated by</td>
                 <td></td>
               </tr>
@@ -192,9 +191,6 @@ class CrashChangeLog extends Component {
             <tbody>
               {this.props.data.atd_txdot_change_log.map(record => (
                 <tr key={record.id}>
-                  <td>
-                    <Link to={`crashes/${record.id}`}>{record.id}</Link>
-                  </td>
                   <td>
                     <Badge color="warning">
                       {this.timeConverter(record.update_timestamp)}
