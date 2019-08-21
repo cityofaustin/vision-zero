@@ -103,8 +103,13 @@ export const crashDataMap = [
 export const geoFields = {
   title: "Geo Data",
   fields: [
-    { label: "City", data: ["city"] },
-    { label: "Latitude", data: ["latitude"] },
-    { label: "Longitude", data: ["longitude"], editable: true },
+    { label: "City", data: "city" },
+    { label: "Latitude", data: "latitude", editable: true },
+    { label: "Longitude", data: "longitude", editable: true },
+    {
+      label: "Narrative",
+      data: "investigator_narrative",
+      editable: true,
+    },
   ],
 };

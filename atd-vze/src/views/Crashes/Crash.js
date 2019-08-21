@@ -1,13 +1,14 @@
-import React from "react";
+import React, { useState, setState } from "react";
 import { Card, CardBody, CardHeader, Col, Row, Table } from "reactstrap";
-import { withApollo } from "react-apollo";
+import { withApollo, Mutation } from "react-apollo";
 import { useQuery } from "@apollo/react-hooks";
 import { crashDataMap, geoFields } from "./crashDataMap";
 import CrashCollapses from "./CrashCollapses";
 import CrashMap from "./CrashMap";
 import Widget02 from "../Widgets/Widget02";
 
-import { GET_CRASH } from "../../queries/crashes";
+import { GET_CRASH, UPDATE_CRASH } from "../../queries/crashes";
+import "./crash.scss";
 
 const calculateYearsLifeLost = people => {
   // Assume 75 year life expectancy,
@@ -31,6 +32,8 @@ function Crash(props) {
   const { loading, error, data } = useQuery(GET_CRASH, {
     variables: { crashId },
   });
+  const [editField, setEditField] = useState("");
+  const [formData, setFormData] = useState({});
 
   if (loading) return "Loading...";
   if (error) return `Error! ${error.message}`;
@@ -41,6 +44,13 @@ function Crash(props) {
   const yearsLifeLostCount = calculateYearsLifeLost(
     data.atd_txdot_primaryperson.concat(data.atd_txdot_person)
   );
+
+  const handleInputChange = e => {
+    const newFormState = Object.assign(formData, {
+      [editField]: e.target.value,
+    });
+    setFormData(newFormState);
+  };
 
   return (
     <div className="animated fadeIn">
@@ -77,16 +87,65 @@ function Crash(props) {
               <CardHeader>Crash Location</CardHeader>
               <CardBody>
                 <CrashMap data={data.atd_txdot_crashes[0]} />
-                <Table>
+                <Table responsive striped hover>
                   <tbody>
                     {geoFields.fields.map(field => {
+                      const value =
+                        data.atd_txdot_crashes[0][field.data][
+                          `${field.data}_desc`
+                        ] || data.atd_txdot_crashes[0][field.data];
+                      const isEditing = field.data === editField;
                       return (
                         <tr>
                           <td>{field.label}</td>
                           <td>
-                            {data.atd_txdot_crashes[0][field.data][
-                              `${field.data}_desc`
-                            ] || data.atd_txdot_crashes[0][field.data]}
+                            {isEditing ? (
+                              <Mutation mutation={UPDATE_CRASH}>
+                                {(updateCrash, { loading, data }) => {
+                                  return (
+                                    <form
+                                      onSubmit={e => {
+                                        e.preventDefault();
+                                        debugger;
+                                        updateCrash({
+                                          variables: { changes: formData },
+                                        });
+                                        setEditField("");
+                                      }}
+                                    >
+                                      <input
+                                        type="text"
+                                        defaultValue={
+                                          (formData && formData[field.data]) ||
+                                          value
+                                        }
+                                        onChange={e => handleInputChange(e)}
+                                        // ref={n => (input = n)}
+                                      />
+
+                                      {isEditing && (
+                                        <button type="submit">
+                                          <i
+                                            className="fa fa-check edit-toggle"
+                                            // onClick={e => handleCheckClick(e)}
+                                          />
+                                        </button>
+                                      )}
+                                    </form>
+                                  );
+                                }}
+                              </Mutation>
+                            ) : (
+                              (formData && formData[field.data]) || value
+                            )}
+                          </td>
+                          <td>
+                            {field.editable && !isEditing && (
+                              <i
+                                className="fa fa-pencil edit-toggle"
+                                onClick={() => setEditField(field.data)}
+                              />
+                            )}
                           </td>
                         </tr>
                       );
@@ -100,8 +159,6 @@ function Crash(props) {
         </Col>
         <Col lg={6}>
           {crashDataMap.map(section => {
-            console.log(section);
-            console.log(data.atd_txdot_crashes[0]);
             return (
               <Card key={section.title}>
                 <CardHeader>{section.title}</CardHeader>
