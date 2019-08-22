@@ -136,20 +136,20 @@ function Crashes() {
             <CardHeader>
               <i className="fa fa-car" /> Crashes
             </CardHeader>
-            {/* TODO Float icon right and format data in filename */}
-            <CSVLink
-              className="mt-2 mr-2 float-right"
-              data={tableData && tableData[dataKey]}
-              filename={dataKey + Date.now()}
-            >
-              <i className="fa fa-save fa-2x" /> Export .csv
-            </CSVLink>
             <CardBody>
+              {/* TODO format date in filename */}
               <TableSearchBar
                 queryString={SEARCH_CRASHES}
                 updateResults={updateSearchCrashTableData}
                 hasSearchResults={setHasSearchResults}
               />
+              <CSVLink
+                className="mt-2 mr-2"
+                data={tableData && tableData[dataKey]}
+                filename={dataKey + Date.now()}
+              >
+                <i className="fa fa-save fa-2x" /> Export .csv
+              </CSVLink>
               <TablePaginationControl
                 queryString={PAGE_CRASHES}
                 updateResults={updatePageCrashTableData}

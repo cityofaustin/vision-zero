@@ -11,6 +11,8 @@ const StyledDisableClick = styled.i`
 `;
 
 const TablePaginationControl = props => {
+  const updateResults = props.updateResults;
+
   const [offset, setOffset] = useState(0);
   const [limit, setLimit] = useState(100);
   const [pageNumber, setPageNumber] = useState(1);
@@ -28,9 +30,19 @@ const TablePaginationControl = props => {
   );
 
   useEffect(() => {
-    props.updateResults(pageData);
+    updateResults(pageData);
+    const updatePageNumber = () => {
+      let pageNumber = "";
+      if (offset === 0) {
+        pageNumber = 1;
+        setPageNumber(pageNumber);
+      } else {
+        pageNumber = offset / limit + 1;
+        setPageNumber(pageNumber);
+      }
+    };
     updatePageNumber();
-  }, [pageData]);
+  }, [pageData, limit, offset, updateResults]);
 
   const updatePage = e => {
     const pageOption = e.target.innerText;
@@ -43,27 +55,16 @@ const TablePaginationControl = props => {
     }
     if (
       pageOption.match("Next") &&
-      pageData[props.responseDataSet].length === 100
+      pageData[props.responseDataSet].length === limit
     ) {
       const increasedOffset = offset + limit;
       setOffset(increasedOffset);
     }
   };
 
-  const updatePageNumber = () => {
-    let pageNumber = "";
-    if (offset === 0) {
-      pageNumber = 1;
-      setPageNumber(pageNumber);
-    } else {
-      pageNumber = offset / limit + 1;
-      setPageNumber(pageNumber);
-    }
-  };
-
   return (
     <>
-      <ButtonToolbar className="justify-content-between">
+      <ButtonToolbar className="">
         <ButtonGroup>
           <Button onClick={updatePage}>
             <StyledDisableClick>

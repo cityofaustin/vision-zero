@@ -4,6 +4,8 @@ import { withApollo } from "react-apollo";
 import { gql } from "apollo-boost";
 
 const TableSortHeader = props => {
+  const updateTableData = props.updateTableData;
+
   const [sortColumn, setSortColumn] = useState("");
   const [sortOrder, setSortOrder] = useState("");
 
@@ -25,8 +27,8 @@ const TableSortHeader = props => {
   );
 
   useEffect(() => {
-    props.updateTableData(sortData, true);
-  }, [sortData]);
+    updateTableData(sortData, true);
+  }, [sortData, updateTableData]);
 
   const handleTableHeaderClick = col => {
     if (sortOrder === "" && sortColumn === "") {
@@ -45,9 +47,9 @@ const TableSortHeader = props => {
 
   const convertFieldNameToTitle = col => {
     let title = "";
-    props.fieldMap.map(field => {
-      title = field.fields[col] ? field.fields[col] : title;
-    });
+    props.fieldMap.map(
+      field => (title = field.fields[col] ? field.fields[col] : title)
+    );
     return title;
   };
 

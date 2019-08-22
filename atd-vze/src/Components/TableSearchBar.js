@@ -24,6 +24,8 @@ const fieldsToSearch = [
 ];
 
 const TableSearchBar = props => {
+  const updateResults = props.updateResults;
+
   const [searchFieldValue, setSearchFieldValue] = useState("");
   const [searchValue, setSearchValue] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -49,8 +51,8 @@ const TableSearchBar = props => {
   } = useQuery(addFiltersToQuery());
 
   useEffect(() => {
-    searchValue !== "" && props.updateResults(searchData, true);
-  }, [searchData]);
+    searchValue !== "" && updateResults(searchData, true);
+  }, [searchData, searchValue, updateResults]);
 
   const handleSearchSubmission = e => {
     e.preventDefault();
