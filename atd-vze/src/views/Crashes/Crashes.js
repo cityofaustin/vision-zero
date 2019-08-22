@@ -101,31 +101,31 @@ const columns = [
 
 function Crashes() {
   const [tableData, setTableData] = useState("");
-  const [hasSearchResults, setHasSearchResults] = useState(false);
-  const [hasSortOrder, setHasSortOrder] = useState(false);
+  const [hasFilters, setHasFilters] = useState(false);
 
   const { loading, error, data } = useQuery(GET_CRASHES, {
-    onCompleted:
-      !hasSearchResults && !hasSortOrder && (data => setTableData(data)),
+    onCompleted: !hasFilters && (data => setTableData(data)),
   });
 
   if (loading) return "Loading...";
   if (error) return `Error! ${error.message}`;
 
-  const updateSearchCrashTableData = (data, hasSearchResults) => {
-    setHasSearchResults(hasSearchResults);
-    setTableData(data);
-    // Use Search Clear button to clear sort order as well/show unfiltered query data
-    setHasSortOrder(false);
+  const updateSearchCrashTableData = data => {
+    data[dataKey] && setHasFilters(true);
+    data[dataKey] && setTableData(data);
   };
 
-  const updateSortCrashTableData = (data, hasSortOrder) => {
-    setHasSortOrder(hasSortOrder);
-    setTableData(data);
+  const updateSortCrashTableData = data => {
+    // data[dataKey] && setHasFilters(true);
+    // data[dataKey] && setTableData(data);
   };
 
   const updatePageCrashTableData = data => {
-    setTableData(data);
+    // data[dataKey] && setTableData(data);
+  };
+
+  const clearFilters = () => {
+    setHasFilters(false);
   };
 
   return (
@@ -141,7 +141,7 @@ function Crashes() {
               <TableSearchBar
                 queryString={SEARCH_CRASHES}
                 updateResults={updateSearchCrashTableData}
-                hasSearchResults={setHasSearchResults}
+                clearFilters={clearFilters}
               />
               <CSVLink
                 className="mt-2 mr-2"
@@ -161,7 +161,6 @@ function Crashes() {
                   columns={columns}
                   updateTableData={updateSortCrashTableData}
                   fieldMap={crashDataMap}
-                  hasSortOrder={hasSortOrder}
                 />
                 <tbody>
                   {tableData &&

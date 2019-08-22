@@ -51,7 +51,7 @@ const TableSearchBar = props => {
   } = useQuery(addFiltersToQuery());
 
   useEffect(() => {
-    searchValue !== "" && updateResults(searchData, true);
+    searchValue !== "" && updateResults(searchData);
   }, [searchData, searchValue, updateResults]);
 
   const handleSearchSubmission = e => {
@@ -60,7 +60,7 @@ const TableSearchBar = props => {
   };
 
   const handleClearSearchResults = () => {
-    props.updateResults("", false);
+    props.clearFilters();
     setSearchFieldValue("");
     setSearchValue("");
     setFieldToSearch("");

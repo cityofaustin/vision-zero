@@ -27,7 +27,7 @@ const TableSortHeader = props => {
   );
 
   useEffect(() => {
-    updateTableData(sortData, true);
+    updateTableData(sortData);
   }, [sortData, updateTableData]);
 
   const handleTableHeaderClick = col => {
@@ -55,7 +55,7 @@ const TableSortHeader = props => {
 
   // Add greyed-out arrow to indicate that sort is possible
   const renderSortArrow = col =>
-    sortColumn === col && props.hasSortOrder ? (
+    sortColumn === col ? (
       <i
         className={`fa fa-arrow-circle-${sortOrder === "asc" ? "up" : "down"}`}
       />
