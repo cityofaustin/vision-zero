@@ -70,7 +70,7 @@ class CrashChangeLog extends Component {
     this.setState({
       modal: true
     });
-  }
+  };
 
   /**
    * Closes the modal box by changing the state and emptying the modal body.
@@ -80,13 +80,13 @@ class CrashChangeLog extends Component {
       modal: false,
       modalBody: null
     });
-  }
+  };
 
   /**
    * Compares the archived json object against the current data object as populated via props.
    * @param {Object} record's json
    */
-  compare = (record) => {
+  compare = record => {
     // Holds only the keys
     let diff = [];
 
@@ -119,7 +119,7 @@ class CrashChangeLog extends Component {
 
     // For each entry created in the diff array, generate an HTML table row.
     let modalItems = diff.map(item => (
-      <tr key={record.id}>
+      <tr key={`recordHistory-${record.id}`}>
         <td>{item.original_record_key}</td>
         <td>
           <Badge color="primary">{String(item.original_record_value)}</Badge>
@@ -155,7 +155,7 @@ class CrashChangeLog extends Component {
     this.setState({ modalBody: modalBody });
     // Show the modal
     this.showModal();
-  }
+  };
 
   render() {
     let modal = null,
