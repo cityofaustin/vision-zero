@@ -12,7 +12,7 @@ import {
   Modal,
   ModalHeader,
   ModalBody,
-  ModalFooter
+  ModalFooter,
 } from "reactstrap";
 
 import { Link } from "react-router-dom";
@@ -26,7 +26,7 @@ class CrashChangeLog extends Component {
       modalBody: null,
       dataFrom: null,
       dataTo: null,
-      data: this.props.data
+      data: this.props.data,
     };
   }
 
@@ -48,7 +48,7 @@ class CrashChangeLog extends Component {
       "Sep",
       "Oct",
       "Nov",
-      "Dec"
+      "Dec",
     ];
     return (
       a.getDate() +
@@ -68,7 +68,7 @@ class CrashChangeLog extends Component {
    */
   showModal = () => {
     this.setState({
-      modal: true
+      modal: true,
     });
   };
 
@@ -78,7 +78,7 @@ class CrashChangeLog extends Component {
   closeModal = () => {
     this.setState({
       modal: false,
-      modalBody: null
+      modalBody: null,
     });
   };
 
@@ -109,7 +109,7 @@ class CrashChangeLog extends Component {
           diff.push({
             original_record_key: key,
             original_record_value: value,
-            archived_record_value: archivedRecordValue
+            archived_record_value: archivedRecordValue,
           });
         }
       } catch (error) {
@@ -134,7 +134,7 @@ class CrashChangeLog extends Component {
     modalBody = (
       <section>
         <h6>Crash ID: {record.record_crash_id}</h6>
-        <h6>Archive Date: {record.update_timestamp}</h6>
+        <h6>Edited Date: {record.update_timestamp}</h6>
         <h6>Created by: {record.record_json.updated_by}</h6>
         &nbsp;
         <Table responsive>
