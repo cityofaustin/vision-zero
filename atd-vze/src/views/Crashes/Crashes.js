@@ -43,26 +43,7 @@ const GET_CRASHES = gql`
   }
 `;
 
-const SORT_CRASHES = `
-  {
-    atd_txdot_crashes(
-      limit: 100
-      where: { crash_fatal_fl: { _eq: "Y" } }
-      ORDER_BY
-      ) {
-        crash_id
-        death_cnt
-        tot_injry_cnt
-        crash_fatal_fl
-        rpt_street_pfx
-        rpt_street_sfx
-        rpt_street_name
-        crash_date
-      }
-    }
-  `;
-
-// TODO decide what fields to search? dropdown with column names? Search all?
+// TODO decide what fields to search? Search all?
 const SEARCH_CRASHES = `
   query {
     atd_txdot_crashes(
@@ -88,7 +69,6 @@ const FILTER_CRASHES = `
       OFFSET
       LIMIT
       where: { crash_fatal_fl: { _eq: "Y" } }
-      order_by: { crash_date: desc }
     ) {
       crash_id
       death_cnt
@@ -112,9 +92,6 @@ const columns = [
 
 function Crashes() {
   const [tableQuery, setTableQuery] = useState(GET_CRASHES);
-  const [hasSearchFilter, setHasSearchFilter] = useState(false);
-  const [hasSortFilter, setHasSortFilter] = useState(false);
-  const [hasPageFilter, setHasPageFilter] = useState(false);
   const [pageFilter, setPageFilter] = useState("");
   const [orderFilter, setOrderFilter] = useState("");
 
@@ -150,6 +127,7 @@ function Crashes() {
 
   const clearFilters = () => {
     setPageFilter("");
+    setOrderFilter("");
   };
 
   return (
@@ -168,7 +146,6 @@ function Crashes() {
               />
               <ButtonGroup className="mb-2 float-right">
                 <TablePaginationControl
-                  queryString={FILTER_CRASHES}
                   responseDataSet={"atd_txdot_crashes"}
                   setPageFilter={setPageFilter}
                 />{" "}
@@ -184,7 +161,6 @@ function Crashes() {
               </ButtonGroup>
               <Table responsive>
                 <TableSortHeader
-                  queryString={SORT_CRASHES}
                   columns={columns}
                   setOrderFilter={setOrderFilter}
                   fieldMap={crashDataMap}
