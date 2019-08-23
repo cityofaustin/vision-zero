@@ -151,15 +151,8 @@ function Crashes() {
     // data[dataKey] && setTableData(data);
   };
 
-  const updatePageCrashTableData = data => {
-    // data[dataKey] && setHasPageFilter(true);
-    // data[dataKey] && setTableData(data);
-  };
-
   const clearFilters = () => {
-    setHasSearchFilter(false);
-    setHasSortFilter(false);
-    setHasPageFilter(false);
+    setPageFilter("");
   };
 
   return (
@@ -179,7 +172,6 @@ function Crashes() {
               <ButtonGroup className="mb-2 float-right">
                 <TablePaginationControl
                   queryString={FILTER_CRASHES}
-                  updateResults={updatePageCrashTableData}
                   responseDataSet={"atd_txdot_crashes"}
                   setPageFilter={setPageFilter}
                 />{" "}

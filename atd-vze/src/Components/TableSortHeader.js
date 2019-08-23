@@ -27,7 +27,7 @@ const TableSortHeader = props => {
   );
 
   useEffect(() => {
-    updateTableData(sortData);
+    // TODO Send array of query strings here
   }, [sortData, updateTableData]);
 
   const handleTableHeaderClick = col => {
