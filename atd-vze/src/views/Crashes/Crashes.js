@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Badge,
   Card,
@@ -111,46 +111,33 @@ const columns = [
 ];
 
 function Crashes() {
-  const [tableData, setTableData] = useState("");
   const [tableQuery, setTableQuery] = useState(GET_CRASHES);
   const [hasSearchFilter, setHasSearchFilter] = useState(false);
   const [hasSortFilter, setHasSortFilter] = useState(false);
   const [hasPageFilter, setHasPageFilter] = useState(false);
+  const [pageFilter, setPageFilter] = useState("");
 
-  const createQuery = queryStringArray => {
-    if (!hasPageFilter && typeof queryStringArray === "undefined") {
-      setTableQuery(GET_CRASHES);
-    } else if (!hasPageFilter && typeof queryStringArray !== "undefined") {
-      setHasPageFilter(true);
-      let queryWithPage = FILTER_CRASHES;
-      queryStringArray.forEach(query => {
-        queryWithPage = queryWithPage.replace(
-          Object.keys(query),
-          Object.values(query)
-        );
-      });
-      const query = gql`
-        ${queryWithPage}
-      `;
-      setTableQuery(query);
-    } else if (hasPageFilter && typeof queryStringArray !== "undefined") {
-      let queryWithPage = FILTER_CRASHES;
-      queryStringArray.forEach(query => {
-        queryWithPage = queryWithPage.replace(
-          Object.keys(query),
-          Object.values(query)
-        );
-      });
-      const query = gql`
-        ${queryWithPage}
-      `;
-      setTableQuery(query);
-    }
-  };
+  useEffect(() => {
+    const createQuery = () => {
+      if (pageFilter === "") {
+        setTableQuery(GET_CRASHES);
+      } else if (pageFilter !== "") {
+        let queryWithPage = FILTER_CRASHES;
+        pageFilter.forEach(query => {
+          queryWithPage = queryWithPage.replace(
+            Object.keys(query),
+            Object.values(query)
+          );
+        });
+        setTableQuery(gql`
+          ${queryWithPage}
+        `);
+      }
+    };
+    createQuery();
+  }, [pageFilter]);
 
-  const { loading, error, data } = useQuery(tableQuery, {
-    onCompleted: data => setTableData(data),
-  });
+  const { loading, error, data } = useQuery(tableQuery);
 
   if (error) return `Error! ${error.message}`;
 
@@ -165,8 +152,8 @@ function Crashes() {
   };
 
   const updatePageCrashTableData = data => {
-    data[dataKey] && setHasPageFilter(true);
-    data[dataKey] && setTableData(data);
+    // data[dataKey] && setHasPageFilter(true);
+    // data[dataKey] && setTableData(data);
   };
 
   const clearFilters = () => {
@@ -194,15 +181,17 @@ function Crashes() {
                   queryString={FILTER_CRASHES}
                   updateResults={updatePageCrashTableData}
                   responseDataSet={"atd_txdot_crashes"}
-                  createQuery={createQuery}
+                  setPageFilter={setPageFilter}
                 />{" "}
-                <CSVLink
-                  className=""
-                  data={tableData && tableData[dataKey]}
-                  filename={dataKey + Date.now()}
-                >
-                  <i className="fa fa-save fa-2x ml-2 mt-1" />
-                </CSVLink>
+                {data[dataKey] && (
+                  <CSVLink
+                    className=""
+                    data={data[dataKey]}
+                    filename={dataKey + Date.now()}
+                  >
+                    <i className="fa fa-save fa-2x ml-2 mt-1" />
+                  </CSVLink>
+                )}
               </ButtonGroup>
               <Table responsive>
                 <TableSortHeader
@@ -215,8 +204,8 @@ function Crashes() {
                   {loading ? (
                     <Spinner className="mt-2" color="primary" />
                   ) : (
-                    tableData &&
-                    tableData[dataKey].map(crash => (
+                    data &&
+                    data[dataKey].map(crash => (
                       <tr key={crash.crash_id}>
                         <td>
                           <Link to={`crashes/${crash.crash_id}`}>

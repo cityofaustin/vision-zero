@@ -1,18 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { ButtonToolbar, Button, ButtonGroup } from "reactstrap";
-
-import { useQuery } from "@apollo/react-hooks";
 import { withApollo } from "react-apollo";
-import { gql } from "apollo-boost";
 import styled from "styled-components";
 
 const StyledDisableClick = styled.i`
   pointer-events: none;
 `;
 
-const TablePaginationControl = props => {
-  const createQuery = props.createQuery;
-
+const TablePaginationControl = ({ setPageFilter }) => {
   const [offset, setOffset] = useState(0);
   const [limit, setLimit] = useState(100);
   const [pageNumber, setPageNumber] = useState(1);
@@ -36,8 +31,9 @@ const TablePaginationControl = props => {
       }
     };
     updatePageNumber();
-    createQuery(pageQuery());
-  }, [limit, offset, createQuery]);
+    const queryStringArray = pageQuery();
+    setPageFilter(queryStringArray);
+  }, [limit, offset, setPageFilter]);
 
   const updatePage = e => {
     const pageOption = e.target.innerText;
