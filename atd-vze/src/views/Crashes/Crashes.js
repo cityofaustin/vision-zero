@@ -119,6 +119,7 @@ function Crashes() {
   const [orderFilter, setOrderFilter] = useState("");
 
   useEffect(() => {
+    // TODO Add sort params to query
     const createQuery = () => {
       if (pageFilter === "") {
         setTableQuery(GET_CRASHES);
@@ -136,7 +137,7 @@ function Crashes() {
       }
     };
     createQuery();
-  }, [pageFilter]);
+  }, [pageFilter, orderFilter]);
 
   const { loading, error, data } = useQuery(tableQuery);
 

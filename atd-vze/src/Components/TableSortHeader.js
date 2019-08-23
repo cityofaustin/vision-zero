@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useQuery } from "@apollo/react-hooks";
 import { withApollo } from "react-apollo";
-import { gql } from "apollo-boost";
 
 const TableSortHeader = ({ setOrderFilter, fieldMap, columns }) => {
   const [sortColumn, setSortColumn] = useState("");
