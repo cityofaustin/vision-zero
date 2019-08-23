@@ -116,6 +116,7 @@ function Crashes() {
   const [hasSortFilter, setHasSortFilter] = useState(false);
   const [hasPageFilter, setHasPageFilter] = useState(false);
   const [pageFilter, setPageFilter] = useState("");
+  const [orderFilter, setOrderFilter] = useState("");
 
   useEffect(() => {
     const createQuery = () => {
@@ -143,11 +144,6 @@ function Crashes() {
 
   const updateSearchCrashTableData = data => {
     // data[dataKey] && setHasSearchFilter(true);
-    // data[dataKey] && setTableData(data);
-  };
-
-  const updateSortCrashTableData = data => {
-    // data[dataKey] && setHasSortFilter(true);
     // data[dataKey] && setTableData(data);
   };
 
@@ -189,7 +185,7 @@ function Crashes() {
                 <TableSortHeader
                   queryString={SORT_CRASHES}
                   columns={columns}
-                  updateTableData={updateSortCrashTableData}
+                  setOrderFilter={setOrderFilter}
                   fieldMap={crashDataMap}
                 />
                 <tbody>

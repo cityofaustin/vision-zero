@@ -3,32 +3,22 @@ import { useQuery } from "@apollo/react-hooks";
 import { withApollo } from "react-apollo";
 import { gql } from "apollo-boost";
 
-const TableSortHeader = props => {
-  const updateTableData = props.updateTableData;
-
+const TableSortHeader = ({ setOrderFilter, fieldMap, columns }) => {
   const [sortColumn, setSortColumn] = useState("");
   const [sortOrder, setSortOrder] = useState("");
 
-  const addSortToQuery = () => {
-    let queryWithSort =
-      sortColumn !== ""
-        ? props.queryString.replace(
-            "ORDER_BY",
-            `order_by: { ${sortColumn}: ${sortOrder} }`
-          )
-        : props.queryString.replace("ORDER_BY", "");
-    return gql`
-      ${queryWithSort}
-    `;
-  };
-
-  const { loading: sortLoading, error: sortError, data: sortData } = useQuery(
-    addSortToQuery()
-  );
-
   useEffect(() => {
-    // TODO Send array of query strings here
-  }, [sortData, updateTableData]);
+    const orderQuery = () => {
+      let queryStringArray = [];
+      queryStringArray.push({
+        ORDER_BY: `order_by: { ${sortColumn}: ${sortOrder} }`,
+      });
+      queryStringArray.push({ type: `Order` });
+      return queryStringArray;
+    };
+    const queryStringArray = orderQuery();
+    setOrderFilter(queryStringArray);
+  }, [sortColumn, sortOrder, setOrderFilter]);
 
   const handleTableHeaderClick = col => {
     if (sortOrder === "" && sortColumn === "") {
@@ -47,7 +37,7 @@ const TableSortHeader = props => {
 
   const convertFieldNameToTitle = col => {
     let title = "";
-    props.fieldMap.map(
+    fieldMap.map(
       field => (title = field.fields[col] ? field.fields[col] : title)
     );
     return title;
@@ -64,7 +54,7 @@ const TableSortHeader = props => {
   return (
     <thead>
       <tr>
-        {props.columns.map((col, i) => (
+        {columns.map((col, i) => (
           <th onClick={e => handleTableHeaderClick(col)} key={`th-${i}`}>
             {renderSortArrow(col)} {convertFieldNameToTitle(col)}
           </th>
