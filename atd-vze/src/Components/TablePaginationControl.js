@@ -75,7 +75,7 @@ const TablePaginationControl = props => {
         </ButtonGroup>
         <ButtonGroup>
           <StyledDisableClick>
-            <Button>Page {pageNumber}</Button>
+            <Button color="light">Page {pageNumber}</Button>
           </StyledDisableClick>
         </ButtonGroup>
         <ButtonGroup>

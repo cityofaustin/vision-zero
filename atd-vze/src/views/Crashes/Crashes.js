@@ -1,5 +1,14 @@
 import React, { useState } from "react";
-import { Badge, Card, CardBody, CardHeader, Col, Row, Table } from "reactstrap";
+import {
+  Badge,
+  Card,
+  CardBody,
+  CardHeader,
+  Col,
+  Row,
+  Table,
+  ButtonGroup,
+} from "reactstrap";
 import { Link } from "react-router-dom";
 
 import { useQuery } from "@apollo/react-hooks";
@@ -101,31 +110,36 @@ const columns = [
 
 function Crashes() {
   const [tableData, setTableData] = useState("");
-  const [hasFilters, setHasFilters] = useState(false);
+  const [hasSearchFilter, setHasSearchFilter] = useState(false);
+  const [hasSortFilter, setHasSortFilter] = useState(false);
+  const [hasPageFilter, setHasPageFilter] = useState(false);
 
   const { loading, error, data } = useQuery(GET_CRASHES, {
-    onCompleted: !hasFilters && (data => setTableData(data)),
+    onCompleted: !hasPageFilter && (data => setTableData(data)),
   });
 
   if (loading) return "Loading...";
   if (error) return `Error! ${error.message}`;
 
   const updateSearchCrashTableData = data => {
-    data[dataKey] && setHasFilters(true);
-    data[dataKey] && setTableData(data);
+    // data[dataKey] && setHasSearchFilter(true);
+    // data[dataKey] && setTableData(data);
   };
 
   const updateSortCrashTableData = data => {
-    // data[dataKey] && setHasFilters(true);
+    // data[dataKey] && setHasSortFilter(true);
     // data[dataKey] && setTableData(data);
   };
 
   const updatePageCrashTableData = data => {
-    // data[dataKey] && setTableData(data);
+    data[dataKey] && setHasPageFilter(true);
+    data[dataKey] && setTableData(data);
   };
 
   const clearFilters = () => {
-    setHasFilters(false);
+    setHasSearchFilter(false);
+    setHasSortFilter(false);
+    setHasPageFilter(false);
   };
 
   return (
@@ -137,24 +151,25 @@ function Crashes() {
               <i className="fa fa-car" /> Crashes
             </CardHeader>
             <CardBody>
-              {/* TODO format date in filename */}
               <TableSearchBar
                 queryString={SEARCH_CRASHES}
                 updateResults={updateSearchCrashTableData}
                 clearFilters={clearFilters}
               />
-              <CSVLink
-                className="mt-2 mr-2"
-                data={tableData && tableData[dataKey]}
-                filename={dataKey + Date.now()}
-              >
-                <i className="fa fa-save fa-2x" /> Export .csv
-              </CSVLink>
-              <TablePaginationControl
-                queryString={PAGE_CRASHES}
-                updateResults={updatePageCrashTableData}
-                responseDataSet={"atd_txdot_crashes"}
-              />
+              <ButtonGroup className="mb-2 float-right">
+                <TablePaginationControl
+                  queryString={PAGE_CRASHES}
+                  updateResults={updatePageCrashTableData}
+                  responseDataSet={"atd_txdot_crashes"}
+                />{" "}
+                <CSVLink
+                  className=""
+                  data={tableData && tableData[dataKey]}
+                  filename={dataKey + Date.now()}
+                >
+                  <i className="fa fa-save fa-2x ml-2 mt-1" />
+                </CSVLink>
+              </ButtonGroup>
               <Table responsive>
                 <TableSortHeader
                   queryString={SORT_CRASHES}
