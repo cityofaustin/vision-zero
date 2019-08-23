@@ -80,7 +80,7 @@ const SEARCH_CRASHES = `
   }
 `;
 
-const PAGE_CRASHES = `
+const FILTER_CRASHES = `
   {
     atd_txdot_crashes(
       LIMIT
@@ -110,15 +110,45 @@ const columns = [
 
 function Crashes() {
   const [tableData, setTableData] = useState("");
+  const [tableQuery, setTableQuery] = useState(GET_CRASHES);
   const [hasSearchFilter, setHasSearchFilter] = useState(false);
   const [hasSortFilter, setHasSortFilter] = useState(false);
   const [hasPageFilter, setHasPageFilter] = useState(false);
 
-  const { loading, error, data } = useQuery(GET_CRASHES, {
-    onCompleted: !hasPageFilter && (data => setTableData(data)),
+  const createQuery = queryObject => {
+    if (!hasPageFilter && typeof queryObject === "undefined") {
+      setTableQuery(GET_CRASHES);
+    } else if (!hasPageFilter && typeof queryObject !== "undefined") {
+      setHasPageFilter(true);
+      let queryWithPage = FILTER_CRASHES.replace("LIMIT", queryObject["LIMIT"]);
+      queryWithPage = queryWithPage.replace("OFFSET", queryObject["OFFSET"]);
+      const query = gql`
+        ${queryWithPage}
+      `;
+      setTableQuery(query);
+    } else if (hasPageFilter && typeof queryObject !== "undefined") {
+      let queryWithPage = FILTER_CRASHES.replace("LIMIT", queryObject["LIMIT"]);
+      queryWithPage = queryWithPage.replace("OFFSET", queryObject["OFFSET"]);
+      const query = gql`
+        ${queryWithPage}
+      `;
+      setTableQuery(query);
+    }
+    // Needs to construct query from scratch EACH TIME to ensure all filters are applied at once
+    // Accepts object with filter key and filter string value
+    // { query: {"LIMIT": "`limit: 100", "OFFSET": "offset: 0"}}
+    // let queryWithPage = props.queryString.replace("LIMIT", `limit: ${limit}`);
+    // queryWithPage = queryWithPage.replace("OFFSET", `offset: ${offset}`);
+    // return gql`
+    //   ${queryWithPage}
+    // `;
+  };
+
+  const { loading, error, data } = useQuery(tableQuery, {
+    onCompleted: data => setTableData(data),
   });
 
-  if (loading) return "Loading...";
+  // if (loading) return "Loading...";
   if (error) return `Error! ${error.message}`;
 
   const updateSearchCrashTableData = data => {
@@ -158,9 +188,10 @@ function Crashes() {
               />
               <ButtonGroup className="mb-2 float-right">
                 <TablePaginationControl
-                  queryString={PAGE_CRASHES}
+                  queryString={FILTER_CRASHES}
                   updateResults={updatePageCrashTableData}
                   responseDataSet={"atd_txdot_crashes"}
+                  createQuery={createQuery}
                 />{" "}
                 <CSVLink
                   className=""

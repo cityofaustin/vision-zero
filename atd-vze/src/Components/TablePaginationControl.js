@@ -11,26 +11,13 @@ const StyledDisableClick = styled.i`
 `;
 
 const TablePaginationControl = props => {
-  const updateResults = props.updateResults;
+  const createQuery = props.createQuery;
 
   const [offset, setOffset] = useState(0);
   const [limit, setLimit] = useState(100);
   const [pageNumber, setPageNumber] = useState(1);
 
-  const pageQuery = () => {
-    let queryWithPage = props.queryString.replace("LIMIT", `limit: ${limit}`);
-    queryWithPage = queryWithPage.replace("OFFSET", `offset: ${offset}`);
-    return gql`
-      ${queryWithPage}
-    `;
-  };
-
-  const { loading: pageLoading, error: pageError, data: pageData } = useQuery(
-    pageQuery()
-  );
-
   useEffect(() => {
-    updateResults(pageData);
     const updatePageNumber = () => {
       let pageNumber = "";
       if (offset === 0) {
@@ -42,7 +29,14 @@ const TablePaginationControl = props => {
       }
     };
     updatePageNumber();
-  }, [pageData, limit, offset, updateResults]);
+  }, [limit, offset]);
+
+  const pageQuery = () => {
+    let queryObject = {};
+    queryObject["LIMIT"] = `limit: ${limit}`;
+    queryObject["OFFSET"] = `offset: ${offset}`;
+    return queryObject;
+  };
 
   const updatePage = e => {
     const pageOption = e.target.innerText;
@@ -54,12 +48,13 @@ const TablePaginationControl = props => {
       return null;
     }
     if (
-      pageOption.match("Next") &&
-      pageData[props.responseDataSet].length === limit
+      pageOption.match("Next")
+      // TODO find way to stop at last page
     ) {
       const increasedOffset = offset + limit;
       setOffset(increasedOffset);
     }
+    createQuery(pageQuery());
   };
 
   return (
