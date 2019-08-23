@@ -18,6 +18,13 @@ const TablePaginationControl = props => {
   const [pageNumber, setPageNumber] = useState(1);
 
   useEffect(() => {
+    const pageQuery = () => {
+      let queryStringArray = [];
+      queryStringArray.push({ LIMIT: `limit: ${limit}` });
+      queryStringArray.push({ OFFSET: `offset: ${offset}` });
+      queryStringArray.push({ type: `Page` });
+      return queryStringArray;
+    };
     const updatePageNumber = () => {
       let pageNumber = "";
       if (offset === 0) {
@@ -29,14 +36,8 @@ const TablePaginationControl = props => {
       }
     };
     updatePageNumber();
-  }, [limit, offset]);
-
-  const pageQuery = () => {
-    let queryObject = {};
-    queryObject["LIMIT"] = `limit: ${limit}`;
-    queryObject["OFFSET"] = `offset: ${offset}`;
-    return queryObject;
-  };
+    createQuery(pageQuery());
+  }, [limit, offset, createQuery]);
 
   const updatePage = e => {
     const pageOption = e.target.innerText;
@@ -54,7 +55,6 @@ const TablePaginationControl = props => {
       const increasedOffset = offset + limit;
       setOffset(increasedOffset);
     }
-    createQuery(pageQuery());
   };
 
   return (

@@ -8,6 +8,7 @@ import {
   Row,
   Table,
   ButtonGroup,
+  Spinner,
 } from "reactstrap";
 import { Link } from "react-router-dom";
 
@@ -25,6 +26,7 @@ const dataKey = "atd_txdot_crashes";
 const GET_CRASHES = gql`
   {
     atd_txdot_crashes(
+      offset: 0
       limit: 100
       where: { crash_fatal_fl: { _eq: "Y" } }
       order_by: { crash_date: desc }
@@ -83,8 +85,8 @@ const SEARCH_CRASHES = `
 const FILTER_CRASHES = `
   {
     atd_txdot_crashes(
-      LIMIT
       OFFSET
+      LIMIT
       where: { crash_fatal_fl: { _eq: "Y" } }
       order_by: { crash_date: desc }
     ) {
@@ -115,40 +117,41 @@ function Crashes() {
   const [hasSortFilter, setHasSortFilter] = useState(false);
   const [hasPageFilter, setHasPageFilter] = useState(false);
 
-  const createQuery = queryObject => {
-    if (!hasPageFilter && typeof queryObject === "undefined") {
+  const createQuery = queryStringArray => {
+    if (!hasPageFilter && typeof queryStringArray === "undefined") {
       setTableQuery(GET_CRASHES);
-    } else if (!hasPageFilter && typeof queryObject !== "undefined") {
+    } else if (!hasPageFilter && typeof queryStringArray !== "undefined") {
       setHasPageFilter(true);
-      let queryWithPage = FILTER_CRASHES.replace("LIMIT", queryObject["LIMIT"]);
-      queryWithPage = queryWithPage.replace("OFFSET", queryObject["OFFSET"]);
+      let queryWithPage = FILTER_CRASHES;
+      queryStringArray.forEach(query => {
+        queryWithPage = queryWithPage.replace(
+          Object.keys(query),
+          Object.values(query)
+        );
+      });
       const query = gql`
         ${queryWithPage}
       `;
       setTableQuery(query);
-    } else if (hasPageFilter && typeof queryObject !== "undefined") {
-      let queryWithPage = FILTER_CRASHES.replace("LIMIT", queryObject["LIMIT"]);
-      queryWithPage = queryWithPage.replace("OFFSET", queryObject["OFFSET"]);
+    } else if (hasPageFilter && typeof queryStringArray !== "undefined") {
+      let queryWithPage = FILTER_CRASHES;
+      queryStringArray.forEach(query => {
+        queryWithPage = queryWithPage.replace(
+          Object.keys(query),
+          Object.values(query)
+        );
+      });
       const query = gql`
         ${queryWithPage}
       `;
       setTableQuery(query);
     }
-    // Needs to construct query from scratch EACH TIME to ensure all filters are applied at once
-    // Accepts object with filter key and filter string value
-    // { query: {"LIMIT": "`limit: 100", "OFFSET": "offset: 0"}}
-    // let queryWithPage = props.queryString.replace("LIMIT", `limit: ${limit}`);
-    // queryWithPage = queryWithPage.replace("OFFSET", `offset: ${offset}`);
-    // return gql`
-    //   ${queryWithPage}
-    // `;
   };
 
   const { loading, error, data } = useQuery(tableQuery, {
     onCompleted: data => setTableData(data),
   });
 
-  // if (loading) return "Loading...";
   if (error) return `Error! ${error.message}`;
 
   const updateSearchCrashTableData = data => {
@@ -209,7 +212,10 @@ function Crashes() {
                   fieldMap={crashDataMap}
                 />
                 <tbody>
-                  {tableData &&
+                  {loading ? (
+                    <Spinner className="mt-2" color="primary" />
+                  ) : (
+                    tableData &&
                     tableData[dataKey].map(crash => (
                       <tr key={crash.crash_id}>
                         <td>
@@ -226,7 +232,8 @@ function Crashes() {
                           <Badge color="danger">{crash.death_cnt}</Badge>
                         </td>
                       </tr>
-                    ))}
+                    ))
+                  )}
                 </tbody>
               </Table>
             </CardBody>
