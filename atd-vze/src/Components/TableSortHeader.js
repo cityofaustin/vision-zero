@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import { withApollo } from "react-apollo";
 
 const TableSortHeader = ({ setOrderFilter, fieldMap, columns }) => {
-  const [sortColumn, setSortColumn] = useState("");
-  const [sortOrder, setSortOrder] = useState("");
+  const [sortColumn, setSortColumn] = useState("crash_id");
+  const [sortOrder, setSortOrder] = useState("desc");
 
   useEffect(() => {
     const orderQuery = () => {

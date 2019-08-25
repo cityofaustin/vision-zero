@@ -23,13 +23,11 @@ import TablePaginationControl from "../../Components/TablePaginationControl";
 
 const dataKey = "atd_txdot_crashes";
 
-const GET_CRASHES = gql`
+const GET_CRASHES = `
   {
     atd_txdot_crashes(
       offset: 0
-      limit: 100
       where: { crash_fatal_fl: { _eq: "Y" } }
-      order_by: { crash_date: desc }
     ) {
       crash_id
       death_cnt
@@ -68,6 +66,7 @@ const FILTER_CRASHES = `
     atd_txdot_crashes(
       OFFSET
       LIMIT
+      ORDER_BY
       where: { crash_fatal_fl: { _eq: "Y" } }
     ) {
       crash_id
@@ -96,27 +95,53 @@ function Crashes() {
   const [orderFilter, setOrderFilter] = useState("");
 
   useEffect(() => {
-    // TODO Add sort params to query
-    const createQuery = () => {
+    const removeFiltersNotSet = queryWithFilters => {
+      let queryWithFiltersCleared = queryWithFilters;
       if (pageFilter === "") {
+        queryWithFiltersCleared = queryWithFiltersCleared.replace("OFFSET", "");
+        queryWithFiltersCleared = queryWithFiltersCleared.replace("LIMIT", "");
+      }
+      if (orderFilter === "") {
+        queryWithFiltersCleared = queryWithFiltersCleared.replace(
+          "ORDER_BY",
+          ""
+        );
+      }
+      return queryWithFiltersCleared;
+    };
+    const createQuery = () => {
+      let queryWithFilters = FILTER_CRASHES;
+      queryWithFilters = removeFiltersNotSet(queryWithFilters);
+      if (pageFilter === "" && orderFilter === "") {
         setTableQuery(GET_CRASHES);
-      } else if (pageFilter !== "") {
-        let queryWithPage = FILTER_CRASHES;
-        pageFilter.forEach(query => {
-          queryWithPage = queryWithPage.replace(
-            Object.keys(query),
-            Object.values(query)
-          );
-        });
-        setTableQuery(gql`
-          ${queryWithPage}
-        `);
+      } else {
+        if (pageFilter !== "") {
+          pageFilter.forEach(query => {
+            queryWithFilters = queryWithFilters.replace(
+              Object.keys(query),
+              Object.values(query)
+            );
+          });
+        }
+        if (orderFilter !== "") {
+          orderFilter.forEach(query => {
+            queryWithFilters = queryWithFilters.replace(
+              Object.keys(query),
+              Object.values(query)
+            );
+          });
+        }
+        setTableQuery(queryWithFilters);
       }
     };
     createQuery();
   }, [pageFilter, orderFilter]);
 
-  const { loading, error, data } = useQuery(tableQuery);
+  const { loading, error, data } = useQuery(
+    gql`
+      ${tableQuery}
+    `
+  );
 
   if (error) return `Error! ${error.message}`;
 
