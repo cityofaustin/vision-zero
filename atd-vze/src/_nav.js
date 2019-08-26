@@ -21,8 +21,20 @@ export default {
     },
     {
       name: "Crashes",
-      url: "/crashes",
+      url: "#",
       icon: "icon-shield",
+      children: [
+        {
+          name: "Crashes",
+          url: "/crashes",
+          icon: "icon-puzzle",
+        },
+        {
+          name: "Q/A Deaths & Injuries",
+          url: "/crashes/qa",
+          icon: "icon-puzzle",
+        }
+      ]
     },
     {
       divider: true,
