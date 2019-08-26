@@ -41,26 +41,6 @@ const GET_CRASHES = `
   }
 `;
 
-// TODO decide what fields to search? Search all?
-const SEARCH_CRASHES = `
-  query {
-    atd_txdot_crashes(
-      limit: 100
-      FILTER
-      order_by: { crash_date: desc }
-    ) {
-      crash_id
-      death_cnt
-      tot_injry_cnt
-      crash_fatal_fl
-      rpt_street_pfx
-      rpt_street_sfx
-      rpt_street_name
-      crash_date
-    }
-  }
-`;
-
 const FILTER_CRASHES = `
   {
     atd_txdot_crashes(
@@ -87,6 +67,11 @@ const columns = [
   "rpt_street_name",
   "tot_injry_cnt",
   "death_cnt",
+];
+
+const fieldsToSearch = [
+  { rpt_street_name: "Reported Street Name" },
+  { crash_id: "Crash ID" },
 ];
 
 function Crashes() {
@@ -162,6 +147,7 @@ function Crashes() {
             </CardHeader>
             <CardBody>
               <TableSearchBar
+                fieldsToSearch={fieldsToSearch}
                 setSearchFilter={setSearchFilter}
                 clearFilters={clearFilters}
               />

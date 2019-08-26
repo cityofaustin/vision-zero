@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { withApollo } from "react-apollo";
 import {
   Col,
   Button,
@@ -13,17 +14,8 @@ import {
   DropdownMenu,
 } from "reactstrap";
 
-import { useQuery } from "@apollo/react-hooks";
-import { withApollo } from "react-apollo";
-import { gql } from "apollo-boost";
-
 // TODO add query operators to each field to better fit data types (_eq, etc.)?
-const fieldsToSearch = [
-  { rpt_street_name: "Reported Street Name" },
-  { crash_id: "Crash ID" },
-];
-
-const TableSearchBar = ({ setSearchFilter, clearFilters }) => {
+const TableSearchBar = ({ setSearchFilter, clearFilters, fieldsToSearch }) => {
   const [searchFieldValue, setSearchFieldValue] = useState("");
   const [searchValue, setSearchValue] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -39,7 +31,8 @@ const TableSearchBar = ({ setSearchFilter, clearFilters }) => {
       return queryStringArray;
     };
     const queryStringArray = searchQuery();
-  }, [searchFieldValue]);
+    setSearchFilter(queryStringArray);
+  }, [searchValue, setSearchFilter]);
 
   const handleSearchSubmission = e => {
     e.preventDefault();
