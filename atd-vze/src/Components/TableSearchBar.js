@@ -23,26 +23,11 @@ const fieldsToSearch = [
   { crash_id: "Crash ID" },
 ];
 
-const TableSearchBar = props => {
-  const updateResults = props.updateResults;
-
+const TableSearchBar = ({ setSearchFilter, clearFilters }) => {
   const [searchFieldValue, setSearchFieldValue] = useState("");
   const [searchValue, setSearchValue] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [fieldToSearch, setFieldToSearch] = useState("");
-
-  const addFiltersToQuery = () => {
-    let queryWithFilters =
-      fieldToSearch !== "" && searchValue !== ""
-        ? props.queryString.replace(
-            "FILTER",
-            `where: { ${fieldToSearch}: { _in: "${searchValue}" } }`
-          )
-        : props.queryString.replace("FILTER", "");
-    return gql`
-      ${queryWithFilters}
-    `;
-  };
 
   useEffect(() => {
     const searchQuery = () => {
@@ -62,7 +47,7 @@ const TableSearchBar = props => {
   };
 
   const handleClearSearchResults = () => {
-    props.clearFilters();
+    clearFilters();
     setSearchFieldValue("");
     setSearchValue("");
     setFieldToSearch("");

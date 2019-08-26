@@ -149,6 +149,7 @@ function Crashes() {
   const clearFilters = () => {
     setPageFilter("");
     setOrderFilter("");
+    setSearchFilter("");
   };
 
   return (
