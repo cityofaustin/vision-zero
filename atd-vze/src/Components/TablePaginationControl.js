@@ -38,7 +38,7 @@ const TablePaginationControl = ({ setPageFilter }) => {
         pageNumber = 1;
         setPageNumber(pageNumber);
       } else {
-        pageNumber = offset / limit + 1;
+        pageNumber = Math.floor(offset / limit) + 1;
         setPageNumber(pageNumber);
       }
     };
@@ -52,7 +52,11 @@ const TablePaginationControl = ({ setPageFilter }) => {
     const pageOption = e.target.innerText;
     if (offset !== 0 && pageOption.match("Prev")) {
       const decreasedOffset = offset - limit;
-      setOffset(decreasedOffset);
+      // Prevent offset from being set between 0 and the limit
+      // so that Page 1 always starts with first record after chaning rows per page
+      decreasedOffset >= 0 && offset % limit === 0
+        ? setOffset(decreasedOffset)
+        : setOffset(0);
     }
     if (offset === 0 && pageOption.match("Prev")) {
       return null;

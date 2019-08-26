@@ -34,7 +34,7 @@ const TableSearchBar = ({ setSearchFilter, clearFilters, fieldsToSearch }) => {
     searchValue !== "" &&
       searchFieldValue !== "" &&
       setSearchFilter(queryStringArray);
-  }, [searchValue, setSearchFilter]);
+  }, [searchValue, setSearchFilter, fieldToSearch, searchFieldValue]);
 
   const handleSearchSubmission = e => {
     e.preventDefault();

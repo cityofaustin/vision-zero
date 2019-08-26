@@ -1,4 +1,10 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { useQuery } from "@apollo/react-hooks";
+import { gql } from "apollo-boost";
+import { withApollo } from "react-apollo";
+import { CSVLink } from "react-csv";
+
 import {
   Badge,
   Card,
@@ -10,12 +16,6 @@ import {
   ButtonGroup,
   Spinner,
 } from "reactstrap";
-import { Link } from "react-router-dom";
-
-import { useQuery } from "@apollo/react-hooks";
-import { gql } from "apollo-boost";
-import { withApollo } from "react-apollo";
-import { CSVLink } from "react-csv";
 import TableSearchBar from "./TableSearchBar";
 import TableSortHeader from "./TableSortHeader";
 import TablePaginationControl from "./TablePaginationControl";
@@ -30,12 +30,15 @@ const TableWithFilters = ({
   fieldMap,
 }) => {
   const [tableQuery, setTableQuery] = useState(defaultQuery);
+  // Filter states hold array of objects, { KEYWORD: `string that replaces keyword`}
   const [pageFilter, setPageFilter] = useState("");
   const [orderFilter, setOrderFilter] = useState("");
   const [searchFilter, setSearchFilter] = useState("");
   console.log(tableQuery);
 
   useEffect(() => {
+    // On every render, filterQuery is copied, unset filters are removed, set filters replace keywords in filterQuery
+    // Then, a GraphQL query is made from the string and return from DB populates table
     const removeFiltersNotSet = queryWithFilters => {
       let queryWithFiltersCleared = queryWithFilters;
       if (pageFilter === "") {
@@ -53,6 +56,7 @@ const TableWithFilters = ({
       }
       return queryWithFiltersCleared;
     };
+
     const createQuery = () => {
       let queryWithFilters = filterQuery;
       queryWithFilters = removeFiltersNotSet(queryWithFilters);
@@ -86,8 +90,16 @@ const TableWithFilters = ({
         setTableQuery(queryWithFilters);
       }
     };
+
     createQuery();
-  }, [pageFilter, orderFilter, searchFilter, tableQuery]);
+  }, [
+    pageFilter,
+    orderFilter,
+    searchFilter,
+    tableQuery,
+    defaultQuery,
+    filterQuery,
+  ]);
 
   const { loading, error, data } = useQuery(
     gql`
