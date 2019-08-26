@@ -93,6 +93,7 @@ function Crashes() {
   const [tableQuery, setTableQuery] = useState(GET_CRASHES);
   const [pageFilter, setPageFilter] = useState("");
   const [orderFilter, setOrderFilter] = useState("");
+  const [searchFilter, setSearchFilter] = useState("");
 
   useEffect(() => {
     const removeFiltersNotSet = queryWithFilters => {
@@ -145,11 +146,6 @@ function Crashes() {
 
   if (error) return `Error! ${error.message}`;
 
-  const updateSearchCrashTableData = data => {
-    // data[dataKey] && setHasSearchFilter(true);
-    // data[dataKey] && setTableData(data);
-  };
-
   const clearFilters = () => {
     setPageFilter("");
     setOrderFilter("");
@@ -165,8 +161,7 @@ function Crashes() {
             </CardHeader>
             <CardBody>
               <TableSearchBar
-                queryString={SEARCH_CRASHES}
-                updateResults={updateSearchCrashTableData}
+                setSearchFilter={setSearchFilter}
                 clearFilters={clearFilters}
               />
               <ButtonGroup className="mb-2 float-right">

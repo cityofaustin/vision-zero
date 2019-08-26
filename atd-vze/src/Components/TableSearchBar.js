@@ -44,15 +44,17 @@ const TableSearchBar = props => {
     `;
   };
 
-  const {
-    loading: searchLoading,
-    error: searchError,
-    data: searchData,
-  } = useQuery(addFiltersToQuery());
-
   useEffect(() => {
-    searchValue !== "" && updateResults(searchData);
-  }, [searchData, searchValue, updateResults]);
+    const searchQuery = () => {
+      let queryStringArray = [];
+      queryStringArray.push(
+        `where: { ${fieldToSearch}: { _in: "${searchValue}" } }`
+      );
+      queryStringArray.push({ type: `Search` });
+      return queryStringArray;
+    };
+    const queryStringArray = searchQuery();
+  }, [searchFieldValue]);
 
   const handleSearchSubmission = e => {
     e.preventDefault();
