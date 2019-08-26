@@ -53,7 +53,7 @@ const TablePaginationControl = ({ setPageFilter }) => {
     if (offset !== 0 && pageOption.match("Prev")) {
       const decreasedOffset = offset - limit;
       // Prevent offset from being set between 0 and the limit
-      // so that Page 1 always starts with first record after chaning rows per page
+      // so that Page 1 always starts with first record after changing rows per page
       decreasedOffset >= 0 && offset % limit === 0
         ? setOffset(decreasedOffset)
         : setOffset(0);

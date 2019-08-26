@@ -3,6 +3,7 @@ import { withApollo } from "react-apollo";
 import TableWithFilters from "../../Components/TableWithFilters";
 import crashDataMap from "./crashDataMap";
 
+// Key for data response array from DB
 const dataKey = "atd_txdot_crashes";
 
 const GET_CRASHES = `

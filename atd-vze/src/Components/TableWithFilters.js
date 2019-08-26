@@ -30,7 +30,7 @@ const TableWithFilters = ({
   fieldMap,
 }) => {
   const [tableQuery, setTableQuery] = useState(defaultQuery);
-  // Filter states hold array of objects, { KEYWORD: `string that replaces keyword`}
+  // Filter states hold array of objects, [{ KEYWORD: `string that replaces keyword`}]
   const [pageFilter, setPageFilter] = useState("");
   const [orderFilter, setOrderFilter] = useState("");
   const [searchFilter, setSearchFilter] = useState("");
@@ -38,7 +38,7 @@ const TableWithFilters = ({
 
   useEffect(() => {
     // On every render, filterQuery is copied, unset filters are removed, set filters replace keywords in filterQuery
-    // Then, a GraphQL query is made from the string and return from DB populates table
+    // Then, a GraphQL query is made from the string and response from DB populates table
     const removeFiltersNotSet = queryWithFilters => {
       let queryWithFiltersCleared = queryWithFilters;
       if (pageFilter === "") {
@@ -90,7 +90,6 @@ const TableWithFilters = ({
         setTableQuery(queryWithFilters);
       }
     };
-
     createQuery();
   }, [
     pageFilter,

@@ -4,11 +4,16 @@ import styled from "styled-components";
 
 const StyledGreyArrow = styled.i`
   color: #c8ced3;
+  cursor: pointer;
+`;
+
+const StyledArrow = styled.i`
+  cursor: pointer;
 `;
 
 const TableSortHeader = ({ setOrderFilter, fieldMap, columns }) => {
-  const [sortColumn, setSortColumn] = useState("crash_id");
-  const [sortOrder, setSortOrder] = useState("desc");
+  const [sortColumn, setSortColumn] = useState("");
+  const [sortOrder, setSortOrder] = useState("");
 
   useEffect(() => {
     const orderQuery = () => {
@@ -20,7 +25,7 @@ const TableSortHeader = ({ setOrderFilter, fieldMap, columns }) => {
       return queryStringArray;
     };
     const queryStringArray = orderQuery();
-    setOrderFilter(queryStringArray);
+    sortColumn !== "" && sortOrder !== "" && setOrderFilter(queryStringArray);
   }, [sortColumn, sortOrder, setOrderFilter]);
 
   const handleTableHeaderClick = col => {
@@ -48,9 +53,13 @@ const TableSortHeader = ({ setOrderFilter, fieldMap, columns }) => {
 
   const renderSortArrow = col =>
     sortColumn === col ? (
-      <i
-        className={`fa fa-arrow-circle-${sortOrder === "asc" ? "up" : "down"}`}
-      />
+      <StyledArrow>
+        <i
+          className={`fa fa-arrow-circle-${
+            sortOrder === "asc" ? "up" : "down"
+          }`}
+        />
+      </StyledArrow>
     ) : (
       <StyledGreyArrow>
         <i className={`fa fa-arrow-circle-up`} />
