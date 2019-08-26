@@ -1,5 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { withApollo } from "react-apollo";
+import styled from "styled-components";
+
+const StyledGreyArrow = styled.i`
+  color: #c8ced3;
+`;
 
 const TableSortHeader = ({ setOrderFilter, fieldMap, columns }) => {
   const [sortColumn, setSortColumn] = useState("crash_id");
@@ -41,13 +46,16 @@ const TableSortHeader = ({ setOrderFilter, fieldMap, columns }) => {
     return title;
   };
 
-  // Add greyed-out arrow to indicate that sort is possible
   const renderSortArrow = col =>
     sortColumn === col ? (
       <i
         className={`fa fa-arrow-circle-${sortOrder === "asc" ? "up" : "down"}`}
       />
-    ) : null;
+    ) : (
+      <StyledGreyArrow>
+        <i className={`fa fa-arrow-circle-up`} />
+      </StyledGreyArrow>
+    );
 
   return (
     <thead>
