@@ -47,7 +47,7 @@ const FILTER_CRASHES = `
       OFFSET
       LIMIT
       ORDER_BY
-      where: { crash_fatal_fl: { _eq: "Y" } }
+      SEARCH
     ) {
       crash_id
       death_cnt
@@ -79,7 +79,7 @@ function Crashes() {
   const [pageFilter, setPageFilter] = useState("");
   const [orderFilter, setOrderFilter] = useState("");
   const [searchFilter, setSearchFilter] = useState("");
-
+  console.log(tableQuery);
   useEffect(() => {
     const removeFiltersNotSet = queryWithFilters => {
       let queryWithFiltersCleared = queryWithFilters;
@@ -92,6 +92,9 @@ function Crashes() {
           "ORDER_BY",
           ""
         );
+      }
+      if (searchFilter === "") {
+        queryWithFiltersCleared = queryWithFiltersCleared.replace("SEARCH", "");
       }
       return queryWithFiltersCleared;
     };
@@ -117,11 +120,19 @@ function Crashes() {
             );
           });
         }
+        if (searchFilter !== "") {
+          searchFilter.forEach(query => {
+            queryWithFilters = queryWithFilters.replace(
+              Object.keys(query),
+              Object.values(query)
+            );
+          });
+        }
         setTableQuery(queryWithFilters);
       }
     };
     createQuery();
-  }, [pageFilter, orderFilter]);
+  }, [pageFilter, orderFilter, searchFilter, tableQuery]);
 
   const { loading, error, data } = useQuery(
     gql`

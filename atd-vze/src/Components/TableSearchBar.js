@@ -24,14 +24,16 @@ const TableSearchBar = ({ setSearchFilter, clearFilters, fieldsToSearch }) => {
   useEffect(() => {
     const searchQuery = () => {
       let queryStringArray = [];
-      queryStringArray.push(
-        `where: { ${fieldToSearch}: { _in: "${searchValue}" } }`
-      );
+      queryStringArray.push({
+        SEARCH: `where: { ${fieldToSearch}: { _in: "${searchValue}" } }`,
+      });
       queryStringArray.push({ type: `Search` });
       return queryStringArray;
     };
     const queryStringArray = searchQuery();
-    setSearchFilter(queryStringArray);
+    searchValue !== "" &&
+      searchFieldValue !== "" &&
+      setSearchFilter(queryStringArray);
   }, [searchValue, setSearchFilter]);
 
   const handleSearchSubmission = e => {
