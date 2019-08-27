@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, CardBody, CardHeader, Col, Row, Table } from "reactstrap";
+import { Card, CardBody, CardHeader, Col, Row, Table, Alert } from "reactstrap";
 import { withApollo } from "react-apollo";
 import { useQuery } from "@apollo/react-hooks";
 import crashDataMap from "./crashDataMap";
@@ -105,8 +105,13 @@ function Crash(props) {
             <Card>
               <CardHeader>Crash Location</CardHeader>
               <CardBody>
-                {latitude && longitude && (
+                {latitude && longitude ? (
                   <CrashMap data={data.atd_txdot_crashes[0]} />
+                ) : (
+                  <Alert color="warning">
+                    Crash record is missing latitude and longitude to display
+                    map.
+                  </Alert>
                 )}
               </CardBody>
             </Card>
