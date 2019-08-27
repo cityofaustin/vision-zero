@@ -224,7 +224,7 @@ class CrashChangeLog extends Component {
           <Col>
             <Card>
               <CardHeader>
-                <i className="fa fa-align-justify" /> Change Log
+                <i className="fa fa-history" /> Change Log
               </CardHeader>
               <CardBody>{content}</CardBody>
             </Card>
