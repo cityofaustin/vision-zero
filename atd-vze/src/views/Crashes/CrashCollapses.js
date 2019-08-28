@@ -276,7 +276,6 @@ class CrashCollapses extends Component {
                                 make,
                                 model,
                               } = unit;
-                              console.log(unit);
                               return (
                                 <tr key={`person-${i}`}>
                                   <td>{unit_nbr && unit_nbr}</td>
