@@ -29,11 +29,11 @@ export const GET_CRASH = gql`
       is_retired
       last_update
       latitude
-      latitude_confirmed
+      latitude_primary
       latitude_geocoded
       light_cond_id
       longitude
-      longitude_confirmed
+      longitude_primary
       longitude_geocoded
       non_injry_cnt
       nonincap_injry_cnt
@@ -123,7 +123,10 @@ export const GET_CRASH = gql`
       charge_cat_id
       charge
     }
-    atd_txdot_change_log(where: {record_type: {_eq: "crashes"}, record_id: {_eq: $crashId}}, order_by: {record_type: asc}) {
+    atd_txdot_change_log(
+      where: { record_type: { _eq: "crashes" }, record_id: { _eq: $crashId } }
+      order_by: { record_type: asc }
+    ) {
       id
       record_id
       record_crash_id
