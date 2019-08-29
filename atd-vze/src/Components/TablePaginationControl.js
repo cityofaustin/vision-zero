@@ -86,13 +86,9 @@ const TablePaginationControl = ({ setPageFilter }) => {
             </StyledDisableClick>{" "}
             Prev
           </Button>
-        </ButtonGroup>
-        <ButtonGroup>
           <StyledDisableClick>
             <Button color="light">Page {pageNumber}</Button>
           </StyledDisableClick>
-        </ButtonGroup>
-        <ButtonGroup>
           <Button onClick={updatePage}>
             Next{" "}
             <StyledDisableClick>
