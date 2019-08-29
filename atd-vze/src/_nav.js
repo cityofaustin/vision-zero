@@ -37,6 +37,23 @@ export default {
       ]
     },
     {
+      name: "Locations",
+      url: "#",
+      icon: "icon-shield",
+      children: [
+        {
+          name: "All locations",
+          url: "/locations",
+          icon: "icon-puzzle",
+        },
+        {
+          name: "Locations Q/A",
+          url: "/locations/qa",
+          icon: "icon-puzzle",
+        }
+      ]
+    },
+    {
       divider: true,
     },
     {
