@@ -14,7 +14,6 @@ import {
   DropdownMenu,
   Alert,
 } from "reactstrap";
-import { isField } from "apollo-utilities";
 
 // TODO add query operators to each field to better fit data types (_eq, etc.)?
 const TableSearchBar = ({ setSearchFilter, clearFilters, fieldsToSearch }) => {
