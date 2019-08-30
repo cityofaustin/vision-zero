@@ -30,16 +30,3 @@ export const GET_LOCATION = gql`
     }
 
 `;
-
-/*
-{
-  atd_txdot_crash_locations(where: {location_id: {_eq: "5554229"}}) {
-    location_crashes {
-      crash_id,
-      crash_date
-      death_cnt
-      sus_serious_injry_cnt
-    }
-  }
-}
-*/
