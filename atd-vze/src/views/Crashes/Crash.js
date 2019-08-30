@@ -5,6 +5,7 @@ import { useQuery } from "@apollo/react-hooks";
 import crashDataMap from "./crashDataMap";
 import CrashCollapses from "./CrashCollapses";
 import CrashMap from "./CrashMap";
+import CrashQAMap from "./CrashQAMap";
 import Widget02 from "../Widgets/Widget02";
 import CrashChangeLog from "./CrashChangeLog";
 
@@ -109,10 +110,7 @@ function Crash(props) {
                 {latitude && longitude ? (
                   <CrashMap data={data.atd_txdot_crashes[0]} />
                 ) : (
-                  <Alert color="warning">
-                    Crash record is missing latitude and longitude values
-                    required for map display.
-                  </Alert>
+                  <CrashQAMap />
                 )}
               </CardBody>
             </Card>
