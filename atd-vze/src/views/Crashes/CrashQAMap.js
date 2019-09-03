@@ -55,11 +55,12 @@ export default class CrashQAMap extends Component {
 
     return (
       <div>
+        {/* TODO: add address search bar, use reported street name as initial address */}
         <MapGL
           {...viewport}
           width="100%"
           height="350px"
-          mapStyle="mapbox://styles/mapbox/streets-v9"
+          mapStyle="mapbox://styles/mapbox/satellite-streets-v9"
           onViewportChange={this._updateViewport}
           mapboxApiAccessToken={TOKEN}
         >
@@ -73,7 +74,7 @@ export default class CrashQAMap extends Component {
             latitude={this.state.markerLatitude}
             longitude={this.state.markerLongitude}
           >
-            <Pin size={40} />
+            <Pin size={40} color={"warning"} />
           </Marker>
         </MapGL>
         <Form className="form-horizontal mt-3">
