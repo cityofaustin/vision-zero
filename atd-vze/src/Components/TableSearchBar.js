@@ -12,6 +12,7 @@ import {
   DropdownToggle,
   DropdownItem,
   DropdownMenu,
+  Alert,
 } from "reactstrap";
 
 // TODO add query operators to each field to better fit data types (_eq, etc.)?
@@ -20,6 +21,7 @@ const TableSearchBar = ({ setSearchFilter, clearFilters, fieldsToSearch }) => {
   const [searchValue, setSearchValue] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [fieldToSearch, setFieldToSearch] = useState("");
+  const [isFieldSelected, setIsFieldSelected] = useState(false);
 
   useEffect(() => {
     const searchQuery = () => {
@@ -32,13 +34,16 @@ const TableSearchBar = ({ setSearchFilter, clearFilters, fieldsToSearch }) => {
     };
     const queryStringArray = searchQuery();
     searchValue !== "" &&
-      searchFieldValue !== "" &&
+      fieldToSearch !== "" &&
       setSearchFilter(queryStringArray);
   }, [searchValue, setSearchFilter, fieldToSearch, searchFieldValue]);
 
   const handleSearchSubmission = e => {
     e.preventDefault();
-    setSearchValue(searchFieldValue);
+    if (isFieldSelected) {
+      const uppercaseSearchValue = searchFieldValue.toUpperCase();
+      fieldToSearch !== "" && setSearchValue(uppercaseSearchValue);
+    }
   };
 
   const handleClearSearchResults = () => {
@@ -46,6 +51,7 @@ const TableSearchBar = ({ setSearchFilter, clearFilters, fieldsToSearch }) => {
     setSearchFieldValue("");
     setSearchValue("");
     setFieldToSearch("");
+    setIsFieldSelected(false);
   };
 
   const toggleDropdown = () => {
@@ -53,6 +59,7 @@ const TableSearchBar = ({ setSearchFilter, clearFilters, fieldsToSearch }) => {
   };
 
   const handleFieldSelect = e => {
+    setIsFieldSelected(true);
     setFieldToSearch(e.target.value);
   };
 
@@ -63,6 +70,9 @@ const TableSearchBar = ({ setSearchFilter, clearFilters, fieldsToSearch }) => {
 
   return (
     <Form className="form-horizontal" onSubmit={handleSearchSubmission}>
+      {!isFieldSelected && searchFieldValue && (
+        <Alert color="warning">Please provide a field to search.</Alert>
+      )}
       <FormGroup row>
         <Col md="6">
           <InputGroup>
