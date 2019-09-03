@@ -49,18 +49,6 @@ export default class CrashQAMap extends Component {
     });
   };
 
-  _renderCityMarker = (city, index) => {
-    return (
-      <Marker
-        key={`marker-${index}`}
-        longitude={city.longitude}
-        latitude={city.latitude}
-      >
-        <Pin size={30} onClick={() => this.setState({ popupInfo: city })} />
-      </Marker>
-    );
-  };
-
   render() {
     const { viewport } = this.state;
 
@@ -78,7 +66,7 @@ export default class CrashQAMap extends Component {
             <FullscreenControl />
           </div>
           <div className="nav" style={navStyle}>
-            <NavigationControl />
+            <NavigationControl showCompass={false} />
           </div>
           <Marker
             latitude={this.state.markerLatitude}
