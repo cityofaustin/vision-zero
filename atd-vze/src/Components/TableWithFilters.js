@@ -109,7 +109,6 @@ const TableWithFilters = ({
   if (error) return `Error! ${error.message}`;
 
   const clearFilters = () => {
-    setPageFilter("");
     setOrderFilter("");
     setSearchFilter("");
   };

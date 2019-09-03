@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { withApollo } from "react-apollo";
 import styled from "styled-components";
+import { colors } from "../styles/colors";
 
 const StyledGreyArrow = styled.i`
-  color: #c8ced3;
+  color: ${colors.light};
   cursor: pointer;
 `;
 
