@@ -39,8 +39,8 @@ const TableSearchBar = ({ setSearchFilter, clearFilters, fieldsToSearch }) => {
   }, [searchValue, setSearchFilter, fieldToSearch, searchFieldValue]);
 
   const handleSearchSubmission = e => {
+    e.preventDefault();
     if (isFieldSelected) {
-      e.preventDefault();
       const uppercaseSearchValue = searchFieldValue.toUpperCase();
       fieldToSearch !== "" && setSearchValue(uppercaseSearchValue);
     }
