@@ -4,6 +4,7 @@ import MapGL, {
   NavigationControl,
   FullscreenControl,
 } from "react-map-gl";
+import { Button, Col, Form, FormGroup, Input, Label } from "reactstrap";
 
 // import ControlPanel from "./control-panel";
 import Pin from "./Pin";
@@ -75,7 +76,47 @@ export default class CrashQAMap extends Component {
             <Pin size={40} />
           </Marker>
         </MapGL>
-        <span>{`Latitude: ${this.state.markerLatitude} Longitude: ${this.state.markerLongitude}`}</span>
+        <Form className="form-horizontal mt-3">
+          <FormGroup row>
+            <Col md="3">
+              <Label htmlFor="qa-latitude">Latitude</Label>
+            </Col>
+            <Col xs="12" md="9">
+              <Input
+                type="text"
+                id="qa-latitude"
+                name="qa-latitude"
+                placeholder=""
+                value={this.state.markerLatitude}
+              />
+            </Col>
+          </FormGroup>
+          <FormGroup row>
+            <Col md="3">
+              <Label htmlFor="qa-longitude">Longitude</Label>
+            </Col>
+            <Col xs="12" md="9">
+              <Input
+                type="text"
+                id="qa-longtiude"
+                name="qa-longitude"
+                placeholder=""
+                value={this.state.markerLongitude}
+              />
+            </Col>
+            <Col
+              className="mt-3
+            "
+            >
+              <Button className="mr-3" type="submit" size="sm" color="primary">
+                <i className="fa fa-dot-circle-o"></i> Submit
+              </Button>
+              <Button type="reset" size="sm" color="danger">
+                <i className="fa fa-ban"></i> Reset
+              </Button>
+            </Col>
+          </FormGroup>
+        </Form>
       </div>
     );
   }

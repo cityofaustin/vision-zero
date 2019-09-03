@@ -110,7 +110,13 @@ function Crash(props) {
                 {latitude && longitude ? (
                   <CrashMap data={data.atd_txdot_crashes[0]} />
                 ) : (
-                  <CrashQAMap />
+                  <>
+                    <Alert color="warning">
+                      Crash record is missing latitude and longitude values
+                      required for map display.
+                    </Alert>
+                    <CrashQAMap />
+                  </>
                 )}
               </CardBody>
             </Card>
