@@ -13,19 +13,11 @@ import {
   Input,
   Label,
 } from "reactstrap";
-import { colors } from "../../styles/colors";
-import styled from "styled-components";
 
 // import ControlPanel from "./control-panel";
 import Pin from "./Pin";
 
 const TOKEN = process.env.REACT_APP_MAPBOX_TOKEN;
-
-const MapboxButtons = styled.button`
-  .button-secondary {
-    background-color: ${colors.mapboxControl};
-  }
-`;
 
 const fullscreenControlStyle = {
   position: "absolute",
@@ -53,8 +45,8 @@ export default class CrashQAMap extends Component {
         pitch: 0,
       },
       popupInfo: null,
-      markerLatitude: null,
-      markerLongitude: null,
+      markerLatitude: 0,
+      markerLongitude: 0,
       mapStyle: "satellite-streets",
       pinColor: "warning",
     };
@@ -106,6 +98,7 @@ export default class CrashQAMap extends Component {
               active={this.state.mapStyle === "satellite-streets"}
               id="satellite-streets"
               onClick={this._handleMapStyleChange}
+              color="light"
             >
               Satellite
             </Button>
@@ -113,6 +106,7 @@ export default class CrashQAMap extends Component {
               active={this.state.mapStyle === "streets"}
               id="streets"
               onClick={this._handleMapStyleChange}
+              color="light"
             >
               Street
             </Button>
@@ -130,6 +124,7 @@ export default class CrashQAMap extends Component {
                 name="qa-latitude"
                 placeholder=""
                 value={this.state.markerLatitude}
+                readOnly
               />
             </Col>
           </FormGroup>
@@ -144,6 +139,7 @@ export default class CrashQAMap extends Component {
                 name="qa-longitude"
                 placeholder=""
                 value={this.state.markerLongitude}
+                readOnly
               />
             </Col>
             <Col
