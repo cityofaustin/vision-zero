@@ -56,6 +56,7 @@ export default class CrashQAMap extends Component {
       markerLatitude: null,
       markerLongitude: null,
       mapStyle: "satellite-streets",
+      pinColor: "warning",
     };
   }
 
@@ -65,6 +66,13 @@ export default class CrashQAMap extends Component {
       markerLatitude: viewport.latitude,
       markerLongitude: viewport.longitude,
     });
+  };
+
+  _handleMapStyleChange = e => {
+    const style = e.target.id;
+    // Set pin color to red on street view, yellow on satellite
+    const pinColor = style === "streets" ? "danger" : "warning";
+    this.setState({ mapStyle: style, pinColor });
   };
 
   render() {
@@ -91,11 +99,23 @@ export default class CrashQAMap extends Component {
             latitude={this.state.markerLatitude}
             longitude={this.state.markerLongitude}
           >
-            <Pin size={40} color={"warning"} />
+            <Pin size={40} color={this.state.pinColor} />
           </Marker>
           <ButtonGroup className="float-right mt-2 mr-2">
-            <Button id="streets">Street</Button>
-            <Button id="satellite-streets">Satellite</Button>
+            <Button
+              active={this.state.mapStyle === "satellite-streets"}
+              id="satellite-streets"
+              onClick={this._handleMapStyleChange}
+            >
+              Satellite
+            </Button>
+            <Button
+              active={this.state.mapStyle === "streets"}
+              id="streets"
+              onClick={this._handleMapStyleChange}
+            >
+              Street
+            </Button>
           </ButtonGroup>
         </MapGL>
         <Form className="form-horizontal mt-3">
