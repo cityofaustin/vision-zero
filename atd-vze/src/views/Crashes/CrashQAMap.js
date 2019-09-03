@@ -4,12 +4,28 @@ import MapGL, {
   NavigationControl,
   FullscreenControl,
 } from "react-map-gl";
-import { Button, Col, Form, FormGroup, Input, Label } from "reactstrap";
+import {
+  Button,
+  ButtonGroup,
+  Col,
+  Form,
+  FormGroup,
+  Input,
+  Label,
+} from "reactstrap";
+import { colors } from "../../styles/colors";
+import styled from "styled-components";
 
 // import ControlPanel from "./control-panel";
 import Pin from "./Pin";
 
 const TOKEN = process.env.REACT_APP_MAPBOX_TOKEN;
+
+const MapboxButtons = styled.button`
+  .button-secondary {
+    background-color: ${colors.mapboxControl};
+  }
+`;
 
 const fullscreenControlStyle = {
   position: "absolute",
@@ -39,6 +55,7 @@ export default class CrashQAMap extends Component {
       popupInfo: null,
       markerLatitude: null,
       markerLongitude: null,
+      mapStyle: "satellite-streets",
     };
   }
 
@@ -60,7 +77,7 @@ export default class CrashQAMap extends Component {
           {...viewport}
           width="100%"
           height="350px"
-          mapStyle="mapbox://styles/mapbox/satellite-streets-v9"
+          mapStyle={`mapbox://styles/mapbox/${this.state.mapStyle}-v9`}
           onViewportChange={this._updateViewport}
           mapboxApiAccessToken={TOKEN}
         >
@@ -76,6 +93,10 @@ export default class CrashQAMap extends Component {
           >
             <Pin size={40} color={"warning"} />
           </Marker>
+          <ButtonGroup className="float-right mt-2 mr-2">
+            <Button id="streets">Street</Button>
+            <Button id="satellite-streets">Satellite</Button>
+          </ButtonGroup>
         </MapGL>
         <Form className="form-horizontal mt-3">
           <FormGroup row>
