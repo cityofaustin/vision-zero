@@ -1,7 +1,7 @@
 import React, { PureComponent } from "react";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import { colors } from "../../styles/colors";
-import { pinStyles } from "../../styles/mapPinStyles";
+import { pinStyles, PIN_ICON } from "../../styles/mapPinStyles";
 export default class Pin extends PureComponent {
   render() {
     const color = this.props.color;
@@ -12,6 +12,20 @@ export default class Pin extends PureComponent {
       stroke: pinStyles["stroke"],
       strokeWidth: pinStyles["strokeWidth"],
     };
+
+    const pulsate = keyframes`
+      0% {
+        transform: scale(0.1, 0.1);
+        opacity: 0;
+      }
+      50% {
+        opacity: 1;
+      }
+      100% {
+        transform: scale(1.2, 1.2);
+        opacity: 0;
+      }
+    `;
 
     const Shadow = styled.div`
       background: ${colors[color]};
@@ -24,16 +38,27 @@ export default class Pin extends PureComponent {
       margin: 11px 0px 0px -12px;
       transform: rotateX(55deg);
       z-index: -2;
-    `;
 
-    const ICON = `M50,93.5c0,0,31.1-30.5,31.1-56C81.1,20.4,67.2,6.5,50,6.5c-17.2,0-31.1,13.9-31.1,31.1C18.9,63.1,50,93.5,50,93.5z   M35.2,37.6c0-8.2,6.6-14.8,14.8-14.8c8.2,0,14.8,6.6,14.8,14.8c0,8.2-6.6,14.8-14.8,14.8C41.8,52.4,35.2,45.8,35.2,37.6z`;
+      &:after {
+        content: "";
+        border-radius: 50%;
+        height: 40px;
+        width: 40px;
+        position: absolute;
+        margin: -13px 0 0 -15px;
+        animation: ${pulsate} 1.2s ease-out;
+        animation-iteration-count: infinite;
+        box-shadow: 0 0 2px 2px ${colors[color]};
+        animation-delay: 1.1s;
+      }
+    `;
 
     return (
       <>
         <svg height={size} viewBox="0 0 100 125" style={pinStyle}>
-          <path d={ICON} />
+          <path d={PIN_ICON} />
         </svg>
-        <Shadow />
+        <Shadow color={color} />
       </>
     );
   }
