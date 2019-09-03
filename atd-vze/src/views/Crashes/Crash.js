@@ -111,7 +111,7 @@ function Crash(props) {
                   <CrashMap data={data.atd_txdot_crashes[0]} />
                 ) : (
                   <>
-                    <Alert color="warning">
+                    <Alert color="danger">
                       Crash record is missing latitude and longitude values
                       required for map display.
                     </Alert>

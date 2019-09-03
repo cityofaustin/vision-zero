@@ -59,7 +59,7 @@ export default class CrashQAMap extends Component {
           {...viewport}
           width="100%"
           height="350px"
-          mapStyle="mapbox://styles/mapbox/satellite-streets-v9"
+          mapStyle="mapbox://styles/mapbox/streets-v9"
           onViewportChange={this._updateViewport}
           mapboxApiAccessToken={TOKEN}
         >
@@ -108,6 +108,7 @@ export default class CrashQAMap extends Component {
               className="mt-3
             "
             >
+              {/* Records to update on submit qa status #3 (Crash status table), lat/lon confirmed, geocode source #5 (Geocoder table)*/}
               <Button className="mr-3" type="submit" size="sm" color="primary">
                 <i className="fa fa-dot-circle-o"></i> Submit
               </Button>
