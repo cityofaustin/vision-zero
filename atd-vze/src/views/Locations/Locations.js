@@ -33,11 +33,9 @@ let queryConf = {
 
     },
     "order_by": {
-        "unique_id": "desc"
+        "unique_id": "desc" // Unique ID desc by default
     },
-    "where": {
-        "description": "_like: \"%TRINITY%\""
-    },
+    "where": {},
     "limit": 25,
     "offset": 0
 };
