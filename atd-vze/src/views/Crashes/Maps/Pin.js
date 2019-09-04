@@ -48,7 +48,7 @@ export default class Pin extends PureComponent {
       height: 10px;
       width: 10px;
       position: absolute;
-      left: 74%;
+      left: 72%;
       top: 34%;
       margin: 11px 0px 0px -12px;
       transform: rotateX(55deg);

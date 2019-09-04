@@ -7,15 +7,7 @@ import MapGL, {
 import Geocoder from "react-map-gl-geocoder";
 import "react-map-gl-geocoder/dist/mapbox-gl-geocoder.css";
 
-import {
-  Button,
-  ButtonGroup,
-  Col,
-  Form,
-  FormGroup,
-  Input,
-  Label,
-} from "reactstrap";
+import { Button, ButtonGroup } from "reactstrap";
 
 // import ControlPanel from "./control-panel";
 import Pin from "./Pin";
@@ -38,13 +30,16 @@ const navStyle = {
   padding: "10px",
 };
 
+// Default map center
+const initialMapCenter = { latitude: 30.26714, longitude: -97.743192 };
+
 export default class CrashQAMap extends Component {
   constructor(props) {
     super(props);
     this.state = {
       viewport: {
-        latitude: 30.26714,
-        longitude: -97.743192,
+        latitude: initialMapCenter.latitude,
+        longitude: initialMapCenter.longitude,
         zoom: 17,
         bearing: 0,
         pitch: 0,
@@ -95,6 +90,7 @@ export default class CrashQAMap extends Component {
       pinColor,
       isDragging,
     } = this.state;
+    const geocoderAddress = this.props.mapGeocoderAddress;
 
     return (
       <div>
@@ -108,11 +104,13 @@ export default class CrashQAMap extends Component {
           getCursor={this.getCursor}
           mapboxApiAccessToken={TOKEN}
         >
-          {/* TODO: use reported street name as initial address */}
           <Geocoder
             mapRef={this.mapRef}
             onViewportChange={this._handleViewportChange}
             mapboxApiAccessToken={TOKEN}
+            inputValue={geocoderAddress}
+            // Bounding box for auto-populated results in the search bar
+            bbox={[-98.22464, 29.959694, -97.226257, 30.687526]}
           />
           <div className="fullscreen" style={fullscreenControlStyle}>
             <FullscreenControl />

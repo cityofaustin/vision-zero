@@ -37,10 +37,29 @@ function Crash(props) {
   if (loading) return "Loading...";
   if (error) return `Error! ${error.message}`;
 
+  const createGeocoderAddressString = data => {
+    const geocoderAddressFields = [
+      "rpt_block_num",
+      "rpt_street_pfx",
+      "street_name",
+      "rpt_street_pfx",
+    ];
+    let geocoderAddressString = "";
+    geocoderAddressFields.map(field => {
+      if (data.atd_txdot_crashes[0][field] !== null) {
+        geocoderAddressString = geocoderAddressString.concat(
+          data.atd_txdot_crashes[0][field] + " "
+        );
+      }
+    });
+    return geocoderAddressString;
+  };
+
   const deathCount = data.atd_txdot_crashes[0].death_cnt;
   const injuryCount = data.atd_txdot_crashes[0].tot_injry_cnt;
   const latitude = data.atd_txdot_crashes[0].latitude;
   const longitude = data.atd_txdot_crashes[0].longitude;
+  const mapGeocoderAddress = createGeocoderAddressString(data);
   const yearsLifeLostCount = calculateYearsLifeLost(
     data.atd_txdot_primaryperson.concat(data.atd_txdot_person)
   );
@@ -115,7 +134,7 @@ function Crash(props) {
                       Crash record is missing latitude and longitude values
                       required for map display.
                     </Alert>
-                    <CrashQAMap />
+                    <CrashQAMap mapGeocoderAddress={mapGeocoderAddress} />
                   </>
                 )}
               </CardBody>
