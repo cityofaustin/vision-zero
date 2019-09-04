@@ -1,7 +1,7 @@
 import React, { PureComponent } from "react";
 import styled, { keyframes, css } from "styled-components";
-import { colors } from "../../styles/colors";
-import { pinStyles, PIN_ICON } from "../../styles/mapPinStyles";
+import { colors } from "../../../styles/colors";
+import { pinStyles, PIN_ICON } from "../../../styles/mapPinStyles";
 export default class Pin extends PureComponent {
   render() {
     const { color = "warning", size = 40, isDragging = true } = this.props;

@@ -4,8 +4,8 @@ import { withApollo } from "react-apollo";
 import { useQuery } from "@apollo/react-hooks";
 import crashDataMap from "./crashDataMap";
 import CrashCollapses from "./CrashCollapses";
-import CrashMap from "./CrashMap";
-import CrashQAMap from "./CrashQAMap";
+import CrashMap from "./Maps/CrashMap";
+import CrashQAMap from "./Maps/CrashQAMap";
 import Widget02 from "../Widgets/Widget02";
 import CrashChangeLog from "./CrashChangeLog";
 

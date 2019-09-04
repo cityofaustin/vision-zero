@@ -19,7 +19,8 @@ import {
 
 // import ControlPanel from "./control-panel";
 import Pin from "./Pin";
-import { setPinColor } from "../../styles/mapPinStyles";
+import { setPinColor } from "../../../styles/mapPinStyles";
+import { CrashQALatLonFrom } from "./CrashQALatLonForm";
 
 const TOKEN = process.env.REACT_APP_MAPBOX_TOKEN;
 
@@ -86,7 +87,14 @@ export default class CrashQAMap extends Component {
   };
 
   render() {
-    const { viewport } = this.state;
+    const {
+      viewport,
+      mapStyle,
+      markerLatitude,
+      markerLongitude,
+      pinColor,
+      isDragging,
+    } = this.state;
 
     return (
       <div>
@@ -95,7 +103,7 @@ export default class CrashQAMap extends Component {
           ref={this.mapRef}
           width="100%"
           height="350px"
-          mapStyle={`mapbox://styles/mapbox/${this.state.mapStyle}-v9`}
+          mapStyle={`mapbox://styles/mapbox/${mapStyle}-v9`}
           onViewportChange={this._updateViewport}
           getCursor={this.getCursor}
           mapboxApiAccessToken={TOKEN}
@@ -112,19 +120,12 @@ export default class CrashQAMap extends Component {
           <div className="nav" style={navStyle}>
             <NavigationControl showCompass={false} />
           </div>
-          <Marker
-            latitude={this.state.markerLatitude}
-            longitude={this.state.markerLongitude}
-          >
-            <Pin
-              size={40}
-              color={this.state.pinColor}
-              isDragging={this.state.isDragging}
-            />
+          <Marker latitude={markerLatitude} longitude={markerLongitude}>
+            <Pin size={40} color={pinColor} isDragging={isDragging} />
           </Marker>
-          <ButtonGroup className="float-right mt-2 mr-2">
+          <ButtonGroup className="float-right mt-5 mr-2">
             <Button
-              active={this.state.mapStyle === "satellite-streets"}
+              active={mapStyle === "satellite-streets"}
               id="satellite-streets"
               onClick={this._handleMapStyleChange}
               color="light"
@@ -132,7 +133,7 @@ export default class CrashQAMap extends Component {
               Satellite
             </Button>
             <Button
-              active={this.state.mapStyle === "streets"}
+              active={mapStyle === "streets"}
               id="streets"
               onClick={this._handleMapStyleChange}
               color="light"
@@ -141,50 +142,11 @@ export default class CrashQAMap extends Component {
             </Button>
           </ButtonGroup>
         </MapGL>
-        <Form className="form-horizontal mt-3">
-          <FormGroup row>
-            <Col md="3">
-              <Label htmlFor="qa-latitude">Latitude</Label>
-            </Col>
-            <Col xs="12" md="9">
-              <Input
-                type="text"
-                id="qa-latitude"
-                name="qa-latitude"
-                placeholder=""
-                value={this.state.markerLatitude}
-                readOnly
-              />
-            </Col>
-          </FormGroup>
-          <FormGroup row>
-            <Col md="3">
-              <Label htmlFor="qa-longitude">Longitude</Label>
-            </Col>
-            <Col xs="12" md="9">
-              <Input
-                type="text"
-                id="qa-longtiude"
-                name="qa-longitude"
-                placeholder=""
-                value={this.state.markerLongitude}
-                readOnly
-              />
-            </Col>
-            <Col
-              className="mt-3
-            "
-            >
-              {/* Records to update on submit qa status #3 (Crash status table), lat/lon confirmed, geocode source #5 (Geocoder table)*/}
-              <Button className="mr-3" type="submit" size="sm" color="primary">
-                <i className="fa fa-dot-circle-o"></i> Submit
-              </Button>
-              <Button type="reset" size="sm" color="danger">
-                <i className="fa fa-ban"></i> Reset
-              </Button>
-            </Col>
-          </FormGroup>
-        </Form>
+        {/* Records to update on submit qa status #3 (Crash status table), lat/lon confirmed, geocode source #5 (Geocoder table)*/}
+        <CrashQALatLonFrom
+          latitude={markerLatitude}
+          longitude={markerLongitude}
+        />
       </div>
     );
   }
