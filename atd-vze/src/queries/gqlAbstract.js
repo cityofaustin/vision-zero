@@ -48,22 +48,42 @@ gqlAbstractTableAggregateName (
         this.config['table'] = val;
     }
 
+    /**
+     * Sets the limit of the current query
+     * @param {integer} limit - the numer you want to use for a limit
+     */
     set limit(limit) {
         this.config['limit'] = limit;
     }
 
+    /**
+     * Returns the current limit of the current configuration
+     * @returns {integer}
+     */
     get limit() {
         return this.config['limit'];
     }
 
+    /**
+     * Sets the offset of the current configuration
+     * @param {integer} offset - the number you want to use as offset
+     */
     set offset(offset) {
         this.config['offset'] = offset;
     }
 
+    /**
+     * Returns the offset of the current configuration
+     * @returns {integer}
+     */
     get offset() {
         return this.config['offset'];
     }
 
+    /**
+     * Returns an array of searchable columns
+     * @returns {Array}
+     */
     get searchableFields() {
         let columns = [];
         for (let [key, value] of this.getEntries('columns')) {
@@ -72,6 +92,9 @@ gqlAbstractTableAggregateName (
         return columns;
     }
 
+    /**
+     * Resets the value of where to empty
+     */
     cleanWhere() {
         this.config['where'] = null;
     }
@@ -164,6 +187,10 @@ gqlAbstractTableAggregateName (
         return columns;
     }
 
+    /**
+     * Returns the url path for a single item, or null if ot does not exist.
+     * @returns {string|null}
+     */
     get singleItem() {
         return this.config['single_item'] || null;
     }
