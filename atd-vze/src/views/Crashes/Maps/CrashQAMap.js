@@ -13,6 +13,7 @@ import { Button, ButtonGroup } from "reactstrap";
 import Pin from "./Pin";
 import { setPinColor } from "../../../styles/mapPinStyles";
 import { CrashQALatLonFrom } from "./CrashQALatLonForm";
+import { Mutation } from "react-apollo";
 
 const TOKEN = process.env.REACT_APP_MAPBOX_TOKEN;
 
@@ -81,6 +82,16 @@ export default class CrashQAMap extends Component {
     isDragging !== this.state.isDragging && this.setState({ isDragging });
   };
 
+  handleMapFormSubmit = () => {
+    // Records to update on submit qa status #3 (Crash status table), lat/lon confirmed, geocode source #5 (Geocoder table)
+    // Sample GraphQL mutation
+    // mutation {
+    //   update_atd_txdot_crashes(where: {crash_id: {_eq: 17168817}}, _set: {qa_status: 3, geocode_provider: 5}){
+    //     returning
+    //   }
+    // }
+  };
+
   render() {
     const {
       viewport,
@@ -140,10 +151,10 @@ export default class CrashQAMap extends Component {
             </Button>
           </ButtonGroup>
         </MapGL>
-        {/* Records to update on submit qa status #3 (Crash status table), lat/lon confirmed, geocode source #5 (Geocoder table)*/}
         <CrashQALatLonFrom
           latitude={markerLatitude}
           longitude={markerLongitude}
+          handleFormSubmit={this.handleMapFormSubmit}
         />
       </div>
     );

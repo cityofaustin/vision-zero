@@ -1,8 +1,12 @@
 import React from "react";
 import { Button, Col, Form, FormGroup, Input, Label } from "reactstrap";
 
-export const CrashQALatLonFrom = ({ latitude, longitude }) => (
-  <Form className="form-horizontal mt-3">
+export const CrashQALatLonFrom = ({
+  latitude,
+  longitude,
+  handleFormSubmit,
+}) => (
+  <Form onSubmit={handleFormSubmit} className="form-horizontal mt-3">
     <FormGroup row>
       <Col md="3">
         <Label htmlFor="qa-latitude">Latitude</Label>
