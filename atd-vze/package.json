@@ -32,13 +32,15 @@
     "react-apollo": "^3.0.0",
     "react-app-polyfill": "^1.0.1",
     "react-chartjs-2": "^2.7.6",
+    "react-csv": "^1.1.1",
     "react-dom": "^16.8.6",
     "react-map-gl": "^5.0.10",
     "react-router-config": "^5.0.1",
     "react-router-dom": "^5.0.1",
     "react-test-renderer": "^16.8.6",
     "reactstrap": "^8.0.0",
-    "simple-line-icons": "^2.4.1"
+    "simple-line-icons": "^2.4.1",
+    "styled-components": "^4.3.2"
   },
   "devDependencies": {
     "eslint-config-prettier": "^6.0.0",
@@ -48,7 +50,7 @@
   },
   "scripts": {
     "start": "export HTTPS=true && react-scripts start",
-    "build": "react-scripts build",
+    "build": "react-scripts build && cp _redirects build",
     "test": "react-scripts test",
     "test:cov": "npm test -- --coverage --watchAll=false",
     "test:debug": "react-scripts --inspect-brk test --runInBand",

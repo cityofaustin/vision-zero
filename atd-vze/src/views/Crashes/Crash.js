@@ -1,18 +1,19 @@
 import React, { useState, setState } from "react";
-import { Card, CardBody, CardHeader, Col, Row, Table } from "reactstrap";
 import { withApollo, Mutation } from "react-apollo";
+import { Card, CardBody, CardHeader, Col, Row, Table, Alert } from "reactstrap";
 import { useQuery } from "@apollo/react-hooks";
-import { crashDataMap, geoFields } from "./crashDataMap";
+import { crashDataMap, geoFields } from "./crashDataMap.js";
 import CrashCollapses from "./CrashCollapses";
 import CrashMap from "./CrashMap";
 import Widget02 from "../Widgets/Widget02";
+import CrashChangeLog from "./CrashChangeLog";
 
 import { GET_CRASH, UPDATE_CRASH } from "../../queries/crashes";
 import "./crash.scss";
 
 const calculateYearsLifeLost = people => {
   // Assume 75 year life expectancy,
-  // Find the differance between person.prsn_age & 75
+  // Find the difference between person.prsn_age & 75
   // Sum over the list of ppl with .reduce
   return people.reduce((accumulator, person) => {
     let years = 0;
@@ -40,7 +41,8 @@ function Crash(props) {
 
   const deathCount = data.atd_txdot_crashes[0].death_cnt;
   const injuryCount = data.atd_txdot_crashes[0].tot_injry_cnt;
-
+  const latitude = data.atd_txdot_crashes[0].latitude;
+  const longitude = data.atd_txdot_crashes[0].longitude;
   const yearsLifeLostCount = calculateYearsLifeLost(
     data.atd_txdot_primaryperson.concat(data.atd_txdot_person)
   );
@@ -90,53 +92,62 @@ function Crash(props) {
                 <Table responsive striped hover>
                   <tbody>
                     {geoFields.fields.map(field => {
-                      const value =
-                        data.atd_txdot_crashes[0][field.data][
-                          `${field.data}_desc`
-                        ] || data.atd_txdot_crashes[0][field.data];
+                      let fieldValue = "";
+
+                      if (data.atd_txdot_crashes[0][field.data] === null) {
+                        // If the value is null, coerce it to an empty string
+                        fieldValue = "";
+                      } else if (
+                        typeof data.atd_txdot_crashes[0][field.data] ===
+                        "object"
+                      ) {
+                        // If its is an object, that means it is coming via a
+                        // nested GraphQL query and uses the `_desc` in the lookup table
+                        fieldValue =
+                          data.atd_txdot_crashes[0][field.data][
+                            `${field.data}_desc`
+                          ];
+                      } else {
+                        fieldValue =
+                          // otherwise, just assign the plain value
+                          data.atd_txdot_crashes[0][field.data];
+                      }
+
                       const isEditing = field.data === editField;
                       return (
-                        <tr>
+                        <tr key={`${field.label}_key`}>
                           <td>{field.label}</td>
                           <td>
                             {isEditing ? (
-                              <Mutation mutation={UPDATE_CRASH}>
-                                {(updateCrash, { loading, data }) => {
-                                  return (
-                                    <form
-                                      onSubmit={e => {
-                                        e.preventDefault();
-                                        debugger;
-                                        updateCrash({
-                                          variables: { changes: formData },
-                                        });
-                                        setEditField("");
-                                      }}
-                                    >
-                                      <input
-                                        type="text"
-                                        defaultValue={
-                                          (formData && formData[field.data]) ||
-                                          value
-                                        }
-                                        onChange={e => handleInputChange(e)}
-                                        // ref={n => (input = n)}
-                                      />
-
-                                      {isEditing && (
-                                        <button type="submit">
-                                          <i
-                                            className="fa fa-check edit-toggle"
-                                            // onClick={e => handleCheckClick(e)}
-                                          />
-                                        </button>
-                                      )}
-                                    </form>
-                                  );
+                              <form
+                                onSubmit={e => {
+                                  e.preventDefault();
+                                  debugger;
+                                  // updateCrash({
+                                  //   variables: { changes: formData },
+                                  // });
+                                  setEditField("");
                                 }}
-                              </Mutation>
+                              >
+                                <input
+                                  type="text"
+                                  defaultValue={
+                                    (formData && formData[field.data]) ||
+                                    fieldValue
+                                  }
+                                  onChange={e => handleInputChange(e)}
+                                  // ref={n => (input = n)}
+                                />
+
+                                <button type="submit">
+                                  <i
+                                    className="fa fa-check edit-toggle"
+                                    // onClick={e => handleCheckClick(e)}
+                                  />
+                                </button>
+                              </form>
                             ) : (
-                              (formData && formData[field.data]) || value
+                              (formData && formData[field.data]) || fieldValue
                             )}
                           </td>
                           <td>
@@ -183,6 +194,26 @@ function Crash(props) {
               </Card>
             );
           })}
+        </Col>
+
+        <Col lg={6}>
+          <div className="mb-4">
+            <Card>
+              <CardHeader>Crash Location</CardHeader>
+              <CardBody>
+                {latitude && longitude ? (
+                  <CrashMap data={data.atd_txdot_crashes[0]} />
+                ) : (
+                  <Alert color="warning">
+                    Crash record is missing latitude and longitude values
+                    required for map display.
+                  </Alert>
+                )}
+              </CardBody>
+            </Card>
+          </div>
+          <CrashCollapses data={data} />
+          <CrashChangeLog data={data} />
         </Col>
       </Row>
     </div>
