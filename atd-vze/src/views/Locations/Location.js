@@ -16,8 +16,6 @@ function Location(props) {
   if (loading) return "Loading...";
   if (error) return `Error! ${error.message}`;
 
-
-
   return (
     <div className="animated fadeIn">
       <Row>
@@ -43,7 +41,9 @@ function Location(props) {
                       })}
                     </tbody>
                   </Table>
-                  <button onClick={api.updateLocationMarkStudyLoc()}>Mark as a Study Location</button>
+                  <button onClick={api.updateLocationMarkStudyLoc()}>
+                    Mark as a Study Location
+                  </button>
                 </CardBody>
               </Card>
             );
