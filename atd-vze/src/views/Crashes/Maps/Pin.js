@@ -4,14 +4,19 @@ import { colors } from "../../../styles/colors";
 import { pinStyles, PIN_ICON } from "../../../styles/mapPinStyles";
 export default class Pin extends PureComponent {
   render() {
-    const { color = "warning", size = 40, isDragging = true } = this.props;
+    const {
+      color = "warning",
+      size = 40,
+      isDragging,
+      animated = false,
+    } = this.props;
 
     const pinStyle = {
       fill: colors[color],
       stroke: pinStyles["stroke"],
       strokeWidth: pinStyles["strokeWidth"],
       // Move pin up on drag and down when dropped
-      transform: `translate(0px, ${isDragging ? `-30px` : `0px`})`,
+      transform: `translate(0px, ${isDragging && animated ? `-30px` : `0px`})`,
     };
 
     const pulsate = keyframes`
@@ -55,7 +60,7 @@ export default class Pin extends PureComponent {
       z-index: -2;
 
       /* Disable pulse animation while dragging map */
-      ${!isDragging && pulseMixin}
+      ${!isDragging && animated && pulseMixin}
     `;
 
     return (

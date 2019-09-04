@@ -11,6 +11,7 @@ import axios from "axios";
 
 import { Button, ButtonGroup } from "reactstrap";
 
+// TODO maybe use Control Panel to show address info in Full Screen mode?
 // import ControlPanel from "./control-panel";
 import Pin from "./Pin";
 import { setPinColor } from "../../../styles/mapPinStyles";
@@ -120,6 +121,20 @@ export default class CrashQAMap extends Component {
     });
   };
 
+  handleMapFormReset = e => {
+    e.preventDefault();
+    const updatedViewport = {
+      ...this.state.viewport,
+      latitude: initialMapCenter.latitude,
+      longitude: initialMapCenter.longitude,
+    };
+    this.setState({
+      viewport: updatedViewport,
+      markerLatitude: updatedViewport.latitude,
+      markerLongitude: updatedViewport.longitude,
+    });
+  };
+
   render() {
     const {
       viewport,
@@ -158,7 +173,7 @@ export default class CrashQAMap extends Component {
             <NavigationControl showCompass={false} />
           </div>
           <Marker latitude={markerLatitude} longitude={markerLongitude}>
-            <Pin size={40} color={pinColor} isDragging={isDragging} />
+            <Pin size={40} color={pinColor} isDragging={isDragging} animated />
           </Marker>
           <MapStyleSelector>
             <ButtonGroup className="float-right">
@@ -185,6 +200,7 @@ export default class CrashQAMap extends Component {
           latitude={markerLatitude}
           longitude={markerLongitude}
           handleFormSubmit={this.handleMapFormSubmit}
+          handleFormReset={this.handleMapFormReset}
         />
       </div>
     );
