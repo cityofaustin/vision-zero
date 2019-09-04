@@ -4,9 +4,7 @@ import { colors } from "../../styles/colors";
 import { pinStyles, PIN_ICON } from "../../styles/mapPinStyles";
 export default class Pin extends PureComponent {
   render() {
-    const color = this.props.color;
-    const size = this.props.size;
-    const isDragging = this.props.isDragging;
+    const { color = "warning", size = 40, isDragging = true } = this.props;
 
     const pinStyle = {
       fill: colors[color],
