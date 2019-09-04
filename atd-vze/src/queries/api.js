@@ -29,33 +29,29 @@ const api = {
         `;
 
         return axios.post(config.apiEndpoint, {
-            query: print(QUERY_LOCATIONS),
+            query: QUERY_LOCATIONS,
             headers: getHeaders()
         })
         .then(res => console.log(res))
         .catch(err => console.log(err));
     },
     updateLocationMarkStudyLoc(id) {
-        const ADD_SKILL = gql`
-            mutation addSkill($id:String!, $name:String!, $level:Float!, $type:String!) {
-                addSkill(id:$id, name:$name, level:$level, type:$type) {
-                    status
-                    id
-                    name
-                    level
-                    type
+        const UPDATE_LOCATION_MARKSTUDYLOC = gql`
+            mutation updateLocationMarkStudyLocation($id: String, $address:String, $studyloc: Boolean) {
+                update_atd_txdot_locations(where: {unique_id: {_eq: $id}}, _set: {address: $address, is_studylocation: $studyloc}) {
+                    affected_rows
                 }
             }
-        `
+        `;
 
         axios.post(config.apiEndpoint, {
-            query: print(ADD_SKILL),
+            query: UPDATE_LOCATION_MARKSTUDYLOC,
             variables: {
-                id: 1,
-                name: "Hello",
-                level: 123,
-                type: "TheType",
+                id: "0",
+                address: "Mutated from VZE",
+                is_studylocation: true
             },
+            headers: getHeaders()
         })
         .then(res => console.log(res))
         .catch(err => console.log(err))
