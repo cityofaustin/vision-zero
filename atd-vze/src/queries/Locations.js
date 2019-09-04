@@ -1,8 +1,28 @@
 import { gql } from "apollo-boost";
 
-export const GET_LOCATIONS = gql`
-    query GetLocations($recordLimit: Int, $recordOffset: Int) {
-        atd_txdot_locations(limit: $recordLimit, offset: $recordOffset) {
+export const GET_LOCATIONS = `
+    {
+        atd_txdot_locations(limit: 25, offset: 0) {
+            unique_id,
+            description,
+            last_update,
+        },
+        atd_txdot_locations_aggregate {
+            aggregate {
+                count
+            }
+        }
+    }
+`;
+
+export const FILTER_LOCATIONS = `
+    {
+        atd_txdot_locations (
+            OFFSET
+            LIMIT
+            ORDER_BY
+            SEARCH
+        ) {
             unique_id,
             description,
             last_update,
