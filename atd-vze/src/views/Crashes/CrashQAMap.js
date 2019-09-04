@@ -16,6 +16,7 @@ import {
 
 // import ControlPanel from "./control-panel";
 import Pin from "./Pin";
+import { setPinColor } from "../../styles/mapPinStyles";
 
 const TOKEN = process.env.REACT_APP_MAPBOX_TOKEN;
 
@@ -63,8 +64,8 @@ export default class CrashQAMap extends Component {
 
   _handleMapStyleChange = e => {
     const style = e.target.id;
-    // Set pin color to red on street view, yellow on satellite
-    const pinColor = style === "streets" ? "danger" : "warning";
+    // Set pin color based on map layer for visibility
+    const pinColor = setPinColor(style);
     this.setState({ mapStyle: style, pinColor });
   };
 
