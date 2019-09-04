@@ -5,6 +5,7 @@ import { useQuery } from "@apollo/react-hooks";
 import locationDataMap from "./locationDataMap";
 
 import { GET_LOCATION } from "../../queries/Locations";
+import api from "../../queries/api";
 
 function Location(props) {
   const locationId = props.match.params.id;
@@ -14,6 +15,8 @@ function Location(props) {
 
   if (loading) return "Loading...";
   if (error) return `Error! ${error.message}`;
+
+
 
   return (
     <div className="animated fadeIn">
@@ -40,6 +43,7 @@ function Location(props) {
                       })}
                     </tbody>
                   </Table>
+                  <button onClick={api.updateLocationMarkStudyLoc()}>Mark as a Study Location</button>
                 </CardBody>
               </Card>
             );
