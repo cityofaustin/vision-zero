@@ -4,6 +4,9 @@ import MapGL, {
   NavigationControl,
   FullscreenControl,
 } from "react-map-gl";
+import Geocoder from "react-map-gl-geocoder";
+import "react-map-gl-geocoder/dist/mapbox-gl-geocoder.css";
+
 import {
   Button,
   ButtonGroup,
@@ -54,6 +57,15 @@ export default class CrashQAMap extends Component {
     };
   }
 
+  // Tie map and geocoder control together
+  mapRef = React.createRef();
+
+  _handleViewportChange = viewport => {
+    this.setState({
+      viewport: { ...this.state.viewport, ...viewport },
+    });
+  };
+
   _updateViewport = viewport => {
     this.setState({
       viewport,
@@ -78,9 +90,9 @@ export default class CrashQAMap extends Component {
 
     return (
       <div>
-        {/* TODO: add address search bar, use reported street name as initial address */}
         <MapGL
           {...viewport}
+          ref={this.mapRef}
           width="100%"
           height="350px"
           mapStyle={`mapbox://styles/mapbox/${this.state.mapStyle}-v9`}
@@ -88,6 +100,12 @@ export default class CrashQAMap extends Component {
           getCursor={this.getCursor}
           mapboxApiAccessToken={TOKEN}
         >
+          {/* TODO: use reported street name as initial address */}
+          <Geocoder
+            mapRef={this.mapRef}
+            onViewportChange={this._handleViewportChange}
+            mapboxApiAccessToken={TOKEN}
+          />
           <div className="fullscreen" style={fullscreenControlStyle}>
             <FullscreenControl />
           </div>
