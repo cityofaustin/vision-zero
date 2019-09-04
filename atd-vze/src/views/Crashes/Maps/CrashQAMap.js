@@ -6,6 +6,8 @@ import MapGL, {
 } from "react-map-gl";
 import Geocoder from "react-map-gl-geocoder";
 import "react-map-gl-geocoder/dist/mapbox-gl-geocoder.css";
+import styled from "styled-components";
+import axios from "axios";
 
 import { Button, ButtonGroup } from "reactstrap";
 
@@ -13,9 +15,13 @@ import { Button, ButtonGroup } from "reactstrap";
 import Pin from "./Pin";
 import { setPinColor } from "../../../styles/mapPinStyles";
 import { CrashQALatLonFrom } from "./CrashQALatLonForm";
-import { Mutation } from "react-apollo";
 
 const TOKEN = process.env.REACT_APP_MAPBOX_TOKEN;
+
+const MapStyleSelector = styled.div`
+  margin-top: 55px;
+  margin-right: 10px;
+`;
 
 const fullscreenControlStyle = {
   position: "absolute",
@@ -82,7 +88,8 @@ export default class CrashQAMap extends Component {
     isDragging !== this.state.isDragging && this.setState({ isDragging });
   };
 
-  handleMapFormSubmit = () => {
+  handleMapFormSubmit = e => {
+    e.preventDefault();
     // Records to update on submit qa status #3 (Crash status table), lat/lon confirmed, geocode source #5 (Geocoder table)
     // Sample GraphQL mutation
     // mutation {
@@ -90,6 +97,27 @@ export default class CrashQAMap extends Component {
     //     returning
     //   }
     // }
+    // TODO: Need to add header
+    axios({
+      url: "https://vzd.austintexas.io/v1/graphql",
+      method: "post",
+      data: {
+        query: `
+          mutation update_atd_txdot_crashes($crash_id: crash_id, $qa_status: qa_status, $geocode_provider: geocode_provider){
+               update_atd_txdot_crashes(where: {crash_id: {_eq: $crash_id}}, _set: {qa_status: $qa_status, geocode_provider: $geocode_provider}){
+                 returning
+               }
+             }`,
+        variables: {
+          qa_status: 3,
+          geocode_provider: 5,
+          crash_id: 17168817,
+        },
+      },
+    }).then(result => {
+      debugger;
+      console.log(result.data);
+    });
   };
 
   render() {
@@ -132,24 +160,26 @@ export default class CrashQAMap extends Component {
           <Marker latitude={markerLatitude} longitude={markerLongitude}>
             <Pin size={40} color={pinColor} isDragging={isDragging} />
           </Marker>
-          <ButtonGroup className="float-right mt-5 mr-2">
-            <Button
-              active={mapStyle === "satellite-streets"}
-              id="satellite-streets"
-              onClick={this._handleMapStyleChange}
-              color="light"
-            >
-              Satellite
-            </Button>
-            <Button
-              active={mapStyle === "streets"}
-              id="streets"
-              onClick={this._handleMapStyleChange}
-              color="light"
-            >
-              Street
-            </Button>
-          </ButtonGroup>
+          <MapStyleSelector>
+            <ButtonGroup className="float-right">
+              <Button
+                active={mapStyle === "satellite-streets"}
+                id="satellite-streets"
+                onClick={this._handleMapStyleChange}
+                color="light"
+              >
+                Satellite
+              </Button>
+              <Button
+                active={mapStyle === "streets"}
+                id="streets"
+                onClick={this._handleMapStyleChange}
+                color="light"
+              >
+                Street
+              </Button>
+            </ButtonGroup>
+          </MapStyleSelector>
         </MapGL>
         <CrashQALatLonFrom
           latitude={markerLatitude}

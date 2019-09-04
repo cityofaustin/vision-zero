@@ -45,7 +45,7 @@ function Crash(props) {
       "rpt_street_pfx",
     ];
     let geocoderAddressString = "";
-    geocoderAddressFields.map(field => {
+    geocoderAddressFields.forEach(field => {
       if (data.atd_txdot_crashes[0][field] !== null) {
         geocoderAddressString = geocoderAddressString.concat(
           data.atd_txdot_crashes[0][field] + " "
