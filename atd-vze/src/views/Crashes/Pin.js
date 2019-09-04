@@ -1,11 +1,12 @@
 import React, { PureComponent } from "react";
-import styled, { keyframes } from "styled-components";
+import styled, { keyframes, css } from "styled-components";
 import { colors } from "../../styles/colors";
 import { pinStyles, PIN_ICON } from "../../styles/mapPinStyles";
 export default class Pin extends PureComponent {
   render() {
     const color = this.props.color;
     const size = this.props.size;
+    const isDragging = this.props.isDragging;
 
     const pinStyle = {
       fill: colors[color],
@@ -27,6 +28,20 @@ export default class Pin extends PureComponent {
       }
     `;
 
+    const pulseMixin = css`
+      &:after {
+        content: "";
+        border-radius: 50%;
+        height: 40px;
+        width: 40px;
+        position: absolute;
+        margin: -13px 0 0 -15px;
+        animation: ${pulsate} 1.2s ease-out;
+        animation-iteration-count: infinite;
+        box-shadow: 0 0 2px 2px ${colors[color]};
+      }
+    `;
+
     const Shadow = styled.div`
       background: ${colors[color]};
       border-radius: 50%;
@@ -39,18 +54,8 @@ export default class Pin extends PureComponent {
       transform: rotateX(55deg);
       z-index: -2;
 
-      &:after {
-        content: "";
-        border-radius: 50%;
-        height: 40px;
-        width: 40px;
-        position: absolute;
-        margin: -13px 0 0 -15px;
-        animation: ${pulsate} 1.2s ease-out;
-        animation-iteration-count: infinite;
-        box-shadow: 0 0 2px 2px ${colors[color]};
-        animation-delay: 1.1s;
-      }
+      /* Disable pulse animation while dragging map */
+      ${!isDragging && pulseMixin}
     `;
 
     return (

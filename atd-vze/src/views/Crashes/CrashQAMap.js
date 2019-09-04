@@ -49,6 +49,7 @@ export default class CrashQAMap extends Component {
       markerLongitude: 0,
       mapStyle: "satellite-streets",
       pinColor: "warning",
+      isDragging: false,
     };
   }
 
@@ -67,6 +68,10 @@ export default class CrashQAMap extends Component {
     this.setState({ mapStyle: style, pinColor });
   };
 
+  getCursor = ({ isDragging }) => {
+    isDragging !== this.state.isDragging && this.setState({ isDragging });
+  };
+
   render() {
     const { viewport } = this.state;
 
@@ -79,6 +84,7 @@ export default class CrashQAMap extends Component {
           height="350px"
           mapStyle={`mapbox://styles/mapbox/${this.state.mapStyle}-v9`}
           onViewportChange={this._updateViewport}
+          getCursor={this.getCursor}
           mapboxApiAccessToken={TOKEN}
         >
           <div className="fullscreen" style={fullscreenControlStyle}>
@@ -91,7 +97,11 @@ export default class CrashQAMap extends Component {
             latitude={this.state.markerLatitude}
             longitude={this.state.markerLongitude}
           >
-            <Pin size={40} color={this.state.pinColor} />
+            <Pin
+              size={40}
+              color={this.state.pinColor}
+              isDragging={this.state.isDragging}
+            />
           </Marker>
           <ButtonGroup className="float-right mt-2 mr-2">
             <Button
