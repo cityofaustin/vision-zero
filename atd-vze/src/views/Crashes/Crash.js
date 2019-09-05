@@ -60,6 +60,7 @@ function Crash(props) {
   const latitude = data.atd_txdot_crashes[0].latitude;
   const longitude = data.atd_txdot_crashes[0].longitude;
   const mapGeocoderAddress = createGeocoderAddressString(data);
+  const crashID = data.atd_txdot_crashes[0].crash_id;
   const yearsLifeLostCount = calculateYearsLifeLost(
     data.atd_txdot_primaryperson.concat(data.atd_txdot_person)
   );
@@ -134,7 +135,10 @@ function Crash(props) {
                       Crash record is missing latitude and longitude values
                       required for map display.
                     </Alert>
-                    <CrashQAMap mapGeocoderAddress={mapGeocoderAddress} />
+                    <CrashQAMap
+                      mapGeocoderAddress={mapGeocoderAddress}
+                      crashID={crashID}
+                    />
                   </>
                 )}
               </CardBody>

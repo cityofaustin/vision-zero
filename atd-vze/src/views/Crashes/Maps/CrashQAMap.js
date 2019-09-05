@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { withApollo } from "react-apollo";
 import MapGL, {
   Marker,
   NavigationControl,
@@ -7,7 +8,7 @@ import MapGL, {
 import Geocoder from "react-map-gl-geocoder";
 import "react-map-gl-geocoder/dist/mapbox-gl-geocoder.css";
 import styled from "styled-components";
-import axios from "axios";
+import api from "../../../queries/api";
 
 import { Button, ButtonGroup } from "reactstrap";
 
@@ -41,7 +42,7 @@ const navStyle = {
 // Default map center
 const initialMapCenter = { latitude: 30.26714, longitude: -97.743192 };
 
-export default class CrashQAMap extends Component {
+class CrashQAMap extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -78,7 +79,8 @@ export default class CrashQAMap extends Component {
     });
   };
 
-  _handleMapStyleChange = e => {
+  handleMapStyleChange = e => {
+    debugger;
     const style = e.target.id;
     // Set pin color based on map layer for visibility
     const pinColor = setPinColor(style);
@@ -91,40 +93,17 @@ export default class CrashQAMap extends Component {
 
   handleMapFormSubmit = e => {
     e.preventDefault();
-    // Records to update on submit qa status #3 (Crash status table), lat/lon confirmed, geocode source #5 (Geocoder table)
-    // Sample GraphQL mutation
-    // mutation {
-    //   update_atd_txdot_crashes(where: {crash_id: {_eq: 17168817}}, _set: {qa_status: 3, geocode_provider: 5}){
-    //     returning
-    //   }
-    // }
-    axios({
-      url: "https://vzd.austintexas.io/v1/graphql",
-      method: "post",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer ", // Add JWT here
-        "x-hasura-role": "editor",
-      },
-      data: {
-        query: `
-          mutation update_atd_txdot_crashes($crash_id: Int, $qa_status: Int, $geocode_provider: Int) {
-               update_atd_txdot_crashes(where: {crash_id: {_eq: $crash_id}}, _set: {qa_status: $qa_status, geocode_provider: $geocode_provider}){
-                 returning {
-                   crash_id
-                 }
-               }
-             }`,
-        variables: {
-          qa_status: 0,
-          geocode_provider: 0,
-          crash_id: 17168817,
-        },
-      },
-    }).then(result => {
-      debugger;
-      console.log(result.data);
-    });
+    const data = {
+      qa_status: 1,
+      geocode_provider: 1,
+      crash_id: 17168817,
+    };
+    api
+      .crash()
+      .editCoordinates(data)
+      .then(result => {
+        console.log(result.data);
+      });
   };
 
   handleMapFormReset = e => {
@@ -194,7 +173,7 @@ export default class CrashQAMap extends Component {
               <Button
                 active={mapStyle === "streets"}
                 id="streets"
-                onClick={this._handleMapStyleChange}
+                onClick={this.handleMapStyleChange}
                 color="light"
               >
                 Street
@@ -212,3 +191,5 @@ export default class CrashQAMap extends Component {
     );
   }
 }
+
+export default withApollo(CrashQAMap);
