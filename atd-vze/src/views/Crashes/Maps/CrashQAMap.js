@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import { withApollo } from "react-apollo";
-import { gql } from "apollo-boost";
 import { UPDATE_COORDS } from "../../../queries/crashes";
 
 import MapGL, {
@@ -11,7 +10,6 @@ import MapGL, {
 import Geocoder from "react-map-gl-geocoder";
 import "react-map-gl-geocoder/dist/mapbox-gl-geocoder.css";
 import styled from "styled-components";
-import api from "../../../queries/api";
 
 import { Button, ButtonGroup } from "reactstrap";
 
@@ -156,6 +154,7 @@ class CrashQAMap extends Component {
             onViewportChange={this._handleViewportChange}
             mapboxApiAccessToken={TOKEN}
             inputValue={geocoderAddress}
+            options={{ flyTo: false }}
             // Bounding box for auto-populated results in the search bar
             bbox={[-98.22464, 29.959694, -97.226257, 30.687526]}
           />
