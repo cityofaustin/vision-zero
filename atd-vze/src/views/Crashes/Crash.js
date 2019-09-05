@@ -57,10 +57,9 @@ function Crash(props) {
 
   const deathCount = data.atd_txdot_crashes[0].death_cnt;
   const injuryCount = data.atd_txdot_crashes[0].tot_injry_cnt;
-  const latitude = data.atd_txdot_crashes[0].latitude;
-  const longitude = data.atd_txdot_crashes[0].longitude;
+  const latitude = data.atd_txdot_crashes[0].latitude_primary;
+  const longitude = data.atd_txdot_crashes[0].longitude_primary;
   const mapGeocoderAddress = createGeocoderAddressString(data);
-  const crashID = data.atd_txdot_crashes[0].crash_id;
   const yearsLifeLostCount = calculateYearsLifeLost(
     data.atd_txdot_primaryperson.concat(data.atd_txdot_person)
   );
@@ -137,7 +136,7 @@ function Crash(props) {
                     </Alert>
                     <CrashQAMap
                       mapGeocoderAddress={mapGeocoderAddress}
-                      crashID={crashID}
+                      crashId={crashId}
                       refetchCrashData={refetch}
                     />
                   </>

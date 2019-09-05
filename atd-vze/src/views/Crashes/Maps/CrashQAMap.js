@@ -83,7 +83,6 @@ class CrashQAMap extends Component {
   };
 
   handleMapStyleChange = e => {
-    debugger;
     const style = e.target.id;
     // Set pin color based on map layer for visibility
     const pinColor = setPinColor(style);
@@ -96,12 +95,14 @@ class CrashQAMap extends Component {
 
   handleMapFormSubmit = e => {
     e.preventDefault();
+
     const variables = {
       qaStatus: 3, // Lat/Long entered manually to Primary
       geocodeProvider: 5, // Manual Q/A
       crashId: this.props.crashId,
+      latitude: this.state.markerLatitude,
+      longitude: this.state.markerLongitude,
     };
-
     this.props.client
       .mutate({
         mutation: UPDATE_COORDS,

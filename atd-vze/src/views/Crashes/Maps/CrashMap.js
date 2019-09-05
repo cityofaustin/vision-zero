@@ -29,8 +29,8 @@ export default class CrashMap extends Component {
     super(props);
     this.state = {
       viewport: {
-        latitude: this.props.data.latitude,
-        longitude: this.props.data.longitude,
+        latitude: this.props.data.latitude_primary,
+        longitude: this.props.data.longitude_primary,
         zoom: 17,
         bearing: 0,
         pitch: 0,
@@ -75,8 +75,8 @@ export default class CrashMap extends Component {
         </div>
 
         <Marker
-          latitude={this.props.data.latitude}
-          longitude={this.props.data.longitude}
+          latitude={this.props.data.latitude_primary}
+          longitude={this.props.data.longitude_primary}
           offsetLeft={-20}
           offsetTop={-10}
         >
