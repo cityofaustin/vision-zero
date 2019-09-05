@@ -98,20 +98,26 @@ export default class CrashQAMap extends Component {
     //     returning
     //   }
     // }
-    // TODO: Need to add header
     axios({
       url: "https://vzd.austintexas.io/v1/graphql",
       method: "post",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer ", // Add JWT here
+        "x-hasura-role": "editor",
+      },
       data: {
         query: `
-          mutation update_atd_txdot_crashes($crash_id: crash_id, $qa_status: qa_status, $geocode_provider: geocode_provider){
+          mutation update_atd_txdot_crashes($crash_id: Int, $qa_status: Int, $geocode_provider: Int) {
                update_atd_txdot_crashes(where: {crash_id: {_eq: $crash_id}}, _set: {qa_status: $qa_status, geocode_provider: $geocode_provider}){
-                 returning
+                 returning {
+                   crash_id
+                 }
                }
              }`,
         variables: {
-          qa_status: 3,
-          geocode_provider: 5,
+          qa_status: 0,
+          geocode_provider: 0,
           crash_id: 17168817,
         },
       },
