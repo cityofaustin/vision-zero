@@ -135,3 +135,20 @@ export const GET_CRASH = gql`
     }
   }
 `;
+
+export const UPDATE_COORDS = gql`
+  mutation update_atd_txdot_crashes(
+    $crashId: Int
+    $qaStatus: Int
+    $geocodeProvider: Int
+  ) {
+    update_atd_txdot_crashes(
+      where: { crash_id: { _eq: $crashId } }
+      _set: { qa_status: $qaStatus, geocode_provider: $geocodeProvider }
+    ) {
+      returning {
+        crash_id
+      }
+    }
+  }
+`;

@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { withApollo } from "react-apollo";
 import { gql } from "apollo-boost";
-import { GET_CRASH } from "../../../queries/crashes";
+import { UPDATE_COORDS } from "../../../queries/crashes";
 
 import MapGL, {
   Marker,
@@ -97,60 +97,20 @@ class CrashQAMap extends Component {
   handleMapFormSubmit = e => {
     e.preventDefault();
     const variables = {
-      qa_status: 0,
-      geocode_provider: 0,
-      crash_id: 17168817,
+      qaStatus: 3, // Lat/Long entered manually to Primary
+      geocodeProvider: 5, // Manual Q/A
+      crashId: this.props.crashId,
     };
-    // **Axios method**
-    // api
-    //   .crash()
-    //   .editCoordinates(data)
-    //   .then(result => {
-    //     console.log(result.data);
-    //   });
-    const UPDATE_COORDS = gql`
-      mutation update_atd_txdot_crashes(
-        $crash_id: Int
-        $qa_status: Int
-        $geocode_provider: Int
-      ) {
-        update_atd_txdot_crashes(
-          where: { crash_id: { _eq: $crash_id } }
-          _set: { qa_status: $qa_status, geocode_provider: $geocode_provider }
-        ) {
-          returning {
-            crash_id
-          }
-        }
-      }
-    `;
+
     this.props.client
       .mutate({
         mutation: UPDATE_COORDS,
         variables: variables,
-    // **RefetchQueries**
-    refetchQueries: [
-      { query: GET_CRASH, variables: { crashId: 17168817 } },
-    ],
-    // **Update method**
-    // update: (store, { data: { updatedCoords } }) => {
-    //   debugger;
-    //   const updatedData = store.readQuery({
-    //     query: GET_CRASH,
-    //     variables: { crashId: 17168817 },
-    //   });
-    //   debugger;
-    // },
-    // })
-    // .then(res => {
-    //   console.log(res);
-    // });
-    // **useMutation only**
-    // const [editCoordinates] = useMutation(
-    //   UPDATE_COORDS, {
-    //     update(cache, { data: editCoordinates } })
-    //   }
-    // );
+      })
+      .then(res => {
+        console.log(res);
+        this.props.refetchCrashData();
+      });
   };
 
   handleMapFormReset = e => {

@@ -30,7 +30,7 @@ const calculateYearsLifeLost = people => {
 
 function Crash(props) {
   const crashId = props.match.params.id;
-  const { loading, error, data } = useQuery(GET_CRASH, {
+  const { loading, error, data, refetch } = useQuery(GET_CRASH, {
     variables: { crashId },
   });
 
@@ -138,6 +138,7 @@ function Crash(props) {
                     <CrashQAMap
                       mapGeocoderAddress={mapGeocoderAddress}
                       crashID={crashID}
+                      refetchCrashData={refetch}
                     />
                   </>
                 )}
