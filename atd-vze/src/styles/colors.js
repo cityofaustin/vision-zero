@@ -2,6 +2,7 @@
 export const colors = {
   // Bootstrap color: hex value
   light: "#f0f3f5",
+  dark: "#2f353a",
   secondary: "#c8ced3",
   primary: "#20a8d8",
 };

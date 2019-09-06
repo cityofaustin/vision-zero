@@ -6,6 +6,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { colors } from "../styles/colors";
 
 const StyledDatePicker = styled.div`
+  /* Add Bootstrap styles to picker inputs */
   .react-datepicker__input-container > input {
     height: calc(1.5em + 0.75rem + 2px);
     padding: 0.375rem 0.75rem;
@@ -33,7 +34,7 @@ const StyledDatePicker = styled.div`
 
   .react-datepicker__day--in-selecting-range {
     background-color: ${colors.light};
-    color: black;
+    color: ${colors.dark};
   }
 
   .react-datepicker__day.react-datepicker__day--in-range {
@@ -47,12 +48,13 @@ const StyledDatePicker = styled.div`
 
 // TODO add query operators to each field to better fit data types (_eq, etc.)?
 const TableDateRange = ({ setSearchFilter, clearFilters, fieldsToSearch }) => {
+  const minDate = new Date("2010/01/01"); // TODO add programatic way to insert earliest crash record in DB
   const [searchFieldValue, setSearchFieldValue] = useState("");
   const [searchValue, setSearchValue] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [fieldToSearch, setFieldToSearch] = useState("");
   const [isFieldSelected, setIsFieldSelected] = useState(false);
-  const [startDate, setStartDate] = useState(new Date("2010/01/01")); // TODO add programatic way to insert earliest crash record in DB
+  const [startDate, setStartDate] = useState(minDate);
   const [endDate, setEndDate] = useState(new Date());
 
   useEffect(() => {
@@ -107,6 +109,7 @@ const TableDateRange = ({ setSearchFilter, clearFilters, fieldsToSearch }) => {
           selected={startDate}
           onChange={date => setStartDate(date)}
           selectsStart
+          minDate={minDate}
           startDate={startDate}
           endDate={endDate}
         />
