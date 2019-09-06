@@ -13,6 +13,7 @@ import {
   Col,
   Row,
   Table,
+  ButtonToolbar,
   ButtonGroup,
   Spinner,
 } from "reactstrap";
@@ -128,22 +129,27 @@ const TableWithFilters = ({
                 setSearchFilter={setSearchFilter}
                 clearFilters={clearFilters}
               />
-              <TableDateRange />
-              <ButtonGroup className="mb-2 float-right">
-                <TablePaginationControl
-                  responseDataSet={"atd_txdot_crashes"}
-                  setPageFilter={setPageFilter}
-                />{" "}
-                {data[dataKey] && (
-                  <CSVLink
-                    className=""
-                    data={data[dataKey]}
-                    filename={dataKey + Date.now()}
-                  >
-                    <i className="fa fa-save fa-2x ml-2 mt-1" />
-                  </CSVLink>
-                )}
-              </ButtonGroup>
+              <ButtonToolbar className="mb-3 justify-content-between">
+                <ButtonGroup>
+                  <TableDateRange />
+                </ButtonGroup>
+                <ButtonGroup>
+                  <TablePaginationControl
+                    className="float-right"
+                    responseDataSet={"atd_txdot_crashes"}
+                    setPageFilter={setPageFilter}
+                  />{" "}
+                  {data[dataKey] && (
+                    <CSVLink
+                      className=""
+                      data={data[dataKey]}
+                      filename={dataKey + Date.now()}
+                    >
+                      <i className="fa fa-save fa-2x ml-2 mt-1" />
+                    </CSVLink>
+                  )}
+                </ButtonGroup>
+              </ButtonToolbar>
               <Table responsive>
                 <TableSortHeader
                   columns={columns}
