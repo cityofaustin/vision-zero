@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { withApollo } from "react-apollo";
 import styled from "styled-components";
+import moment from "moment";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { colors } from "../styles/colors";
@@ -53,10 +54,14 @@ const TableDateRange = ({ setDateRangeFilter, databaseDateColumnName }) => {
   const [endDate, setEndDate] = useState(maxDate);
 
   useEffect(() => {
+    const formatDate = date => moment(date).format("YYYY-MM-DD");
+
     const searchQuery = () => {
       let queryStringArray = [];
+      const formattedStartDate = formatDate(startDate);
+      const formattedEndDate = formatDate(endDate);
       queryStringArray.push({
-        SEARCH: `where: { ${databaseDateColumnName}: { _gte: "${startDate}", _lte: "${endDate}" } }`,
+        SEARCH: `where: { ${databaseDateColumnName}: { _gte: "${formattedStartDate}", _lte: "${formattedEndDate}" } }`,
       });
       queryStringArray.push({ type: `Search` });
       return queryStringArray;
