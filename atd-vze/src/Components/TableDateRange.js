@@ -46,61 +46,24 @@ const StyledDatePicker = styled.div`
   }
 `;
 
-// TODO add query operators to each field to better fit data types (_eq, etc.)?
-const TableDateRange = ({ setSearchFilter, clearFilters, fieldsToSearch }) => {
+const TableDateRange = ({ setDateRangeFilter, databaseDateColumnName }) => {
   const minDate = new Date("2010/01/01"); // TODO add programatic way to insert earliest crash record in DB
-  const [searchFieldValue, setSearchFieldValue] = useState("");
-  const [searchValue, setSearchValue] = useState("");
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [fieldToSearch, setFieldToSearch] = useState("");
-  const [isFieldSelected, setIsFieldSelected] = useState(false);
+  const maxDate = new Date();
   const [startDate, setStartDate] = useState(minDate);
-  const [endDate, setEndDate] = useState(new Date());
+  const [endDate, setEndDate] = useState(maxDate);
 
   useEffect(() => {
     const searchQuery = () => {
       let queryStringArray = [];
       queryStringArray.push({
-        SEARCH: `where: { ${fieldToSearch}: { _in: "${searchValue}" } }`,
+        SEARCH: `where: { ${databaseDateColumnName}: { _gte: "${startDate}", _lte: "${endDate}" } }`,
       });
       queryStringArray.push({ type: `Search` });
       return queryStringArray;
     };
     const queryStringArray = searchQuery();
-    searchValue !== "" &&
-      fieldToSearch !== "" &&
-      setSearchFilter(queryStringArray);
-  }, [searchValue, setSearchFilter, fieldToSearch, searchFieldValue]);
-
-  const handleSearchSubmission = e => {
-    e.preventDefault();
-    if (isFieldSelected) {
-      const uppercaseSearchValue = searchFieldValue.toUpperCase();
-      fieldToSearch !== "" && setSearchValue(uppercaseSearchValue);
-    }
-  };
-
-  const handleClearSearchResults = () => {
-    clearFilters();
-    setSearchFieldValue("");
-    setSearchValue("");
-    setFieldToSearch("");
-    setIsFieldSelected(false);
-  };
-
-  const toggleDropdown = () => {
-    setIsDropdownOpen(!isDropdownOpen);
-  };
-
-  const handleFieldSelect = e => {
-    setIsFieldSelected(true);
-    setFieldToSearch(e.target.value);
-  };
-
-  const getFieldName = fieldKey =>
-    Object.values(
-      fieldsToSearch.find(field => Object.keys(field)[0] === fieldKey)
-    );
+    setDateRangeFilter(queryStringArray);
+  }, [startDate, endDate, setDateRangeFilter]);
 
   return (
     <>
@@ -121,6 +84,7 @@ const TableDateRange = ({ setSearchFilter, clearFilters, fieldsToSearch }) => {
           startDate={startDate}
           endDate={endDate}
           minDate={startDate}
+          maxDate={maxDate}
         />
       </StyledDatePicker>
     </>

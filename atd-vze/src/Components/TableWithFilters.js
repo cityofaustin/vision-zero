@@ -21,7 +21,6 @@ import TableSearchBar from "./TableSearchBar";
 import TableSortHeader from "./TableSortHeader";
 import TablePaginationControl from "./TablePaginationControl";
 import TableDateRange from "./TableDateRange";
-import { setDate } from "date-fns/esm";
 
 const TableWithFilters = ({
   title,
@@ -31,6 +30,7 @@ const TableWithFilters = ({
   columns,
   dataKey,
   fieldMap,
+  databaseDateColumnName,
 }) => {
   const [tableQuery, setTableQuery] = useState(defaultQuery);
   // Filter states hold array of objects, [{ KEYWORD: `string that replaces keyword`}]
@@ -55,7 +55,7 @@ const TableWithFilters = ({
           ""
         );
       }
-      if (searchFilter === "") {
+      if (searchFilter === "" && dateRangeFilter === "") {
         queryWithFiltersCleared = queryWithFiltersCleared.replace("SEARCH", "");
       }
       return queryWithFiltersCleared;
@@ -125,7 +125,6 @@ const TableWithFilters = ({
   const clearFilters = () => {
     setOrderFilter("");
     setSearchFilter("");
-    setDateRangeFilter("");
   };
 
   return (
@@ -144,7 +143,10 @@ const TableWithFilters = ({
               />
               <ButtonToolbar className="mb-3 justify-content-between">
                 <ButtonGroup>
-                  <TableDateRange setDateRangeFilter={setDateRangeFilter} />
+                  <TableDateRange
+                    setDateRangeFilter={setDateRangeFilter}
+                    databaseDateColumnName={databaseDateColumnName}
+                  />
                 </ButtonGroup>
                 <ButtonGroup>
                   <TablePaginationControl
