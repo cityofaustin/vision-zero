@@ -19,6 +19,7 @@ import {
 import TableSearchBar from "./TableSearchBar";
 import TableSortHeader from "./TableSortHeader";
 import TablePaginationControl from "./TablePaginationControl";
+import TableDateRange from "./TableDateRange";
 
 const TableWithFilters = ({
   title,
@@ -127,6 +128,7 @@ const TableWithFilters = ({
                 setSearchFilter={setSearchFilter}
                 clearFilters={clearFilters}
               />
+              <TableDateRange />
               <ButtonGroup className="mb-2 float-right">
                 <TablePaginationControl
                   responseDataSet={"atd_txdot_crashes"}
