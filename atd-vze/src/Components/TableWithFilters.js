@@ -83,7 +83,25 @@ const TableWithFilters = ({
             );
           });
         }
-        if (searchFilter !== "") {
+        if (dateRangeFilter !== "" && searchFilter !== "") {
+          const dateRangeQueryComponent = Object.values(
+            dateRangeFilter[0]
+          )[0].replace("where: {", ",");
+          const searchQueryComponent = Object.values(searchFilter[0])[0].slice(
+            0,
+            -2
+          );
+          const combinedFilterString = searchQueryComponent.concat(
+            dateRangeQueryComponent
+          );
+          dateRangeFilter.forEach(query => {
+            queryWithFilters = queryWithFilters.replace(
+              Object.keys(query),
+              combinedFilterString
+            );
+          });
+        }
+        if (searchFilter !== "" && dateRangeFilter === "") {
           searchFilter.forEach(query => {
             queryWithFilters = queryWithFilters.replace(
               Object.keys(query),
@@ -91,7 +109,7 @@ const TableWithFilters = ({
             );
           });
         }
-        if (dateRangeFilter !== "") {
+        if (dateRangeFilter !== "" && searchFilter === "") {
           dateRangeFilter.forEach(query => {
             queryWithFilters = queryWithFilters.replace(
               Object.keys(query),
