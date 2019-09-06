@@ -21,6 +21,7 @@ import TableSearchBar from "./TableSearchBar";
 import TableSortHeader from "./TableSortHeader";
 import TablePaginationControl from "./TablePaginationControl";
 import TableDateRange from "./TableDateRange";
+import { setDate } from "date-fns/esm";
 
 const TableWithFilters = ({
   title,
@@ -36,6 +37,7 @@ const TableWithFilters = ({
   const [pageFilter, setPageFilter] = useState("");
   const [orderFilter, setOrderFilter] = useState("");
   const [searchFilter, setSearchFilter] = useState("");
+  const [dateRangeFilter, setDateRangeFilter] = useState("");
   console.log(tableQuery);
 
   useEffect(() => {
@@ -89,6 +91,15 @@ const TableWithFilters = ({
             );
           });
         }
+        if (dateRangeFilter !== "") {
+          dateRangeFilter.forEach(query => {
+            queryWithFilters = queryWithFilters.replace(
+              Object.keys(query),
+              Object.values(query)
+            );
+          });
+        }
+        // TODO handle date range filter + search filter
         setTableQuery(queryWithFilters);
       }
     };
@@ -100,6 +111,7 @@ const TableWithFilters = ({
     tableQuery,
     defaultQuery,
     filterQuery,
+    dateRangeFilter,
   ]);
 
   const { loading, error, data } = useQuery(
@@ -113,6 +125,7 @@ const TableWithFilters = ({
   const clearFilters = () => {
     setOrderFilter("");
     setSearchFilter("");
+    setDateRangeFilter("");
   };
 
   return (
@@ -131,7 +144,7 @@ const TableWithFilters = ({
               />
               <ButtonToolbar className="mb-3 justify-content-between">
                 <ButtonGroup>
-                  <TableDateRange />
+                  <TableDateRange setDateRangeFilter={setDateRangeFilter} />
                 </ButtonGroup>
                 <ButtonGroup>
                   <TablePaginationControl
