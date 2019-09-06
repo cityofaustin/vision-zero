@@ -24,6 +24,10 @@ const GridTableSearch = ({ query, clearFilters, setSearchParameters }) => {
 
   const fieldsToSearch = query.searchableFields;
 
+  /**
+   * Handles the submission of our search form
+   * @param {object} e - the event object
+   */
   const handleSearchSubmission = e => {
     e.preventDefault();
 
@@ -33,6 +37,9 @@ const GridTableSearch = ({ query, clearFilters, setSearchParameters }) => {
     });
   };
 
+  /**
+   * Clears the search results
+   */
   const handleClearSearchResults = () => {
     clearFilters();
     setSearchFieldValue("");
@@ -40,15 +47,27 @@ const GridTableSearch = ({ query, clearFilters, setSearchParameters }) => {
     setIsFieldSelected(false);
   };
 
+  /**
+   * Toggles the dropdown options
+   */
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
 
+  /**
+   * Handles the selection of our search mode in the dropdown
+   * @param {object} e - the event object
+   */
   const handleFieldSelect = e => {
     setIsFieldSelected(true);
     setFieldToSearch(e.target.value);
   };
 
+  /**
+   * Returns a human-readable label for a specific column
+   * @param {string} fieldKey - the raw column name from the database
+   * @returns {string}
+   */
   const getFieldName = fieldKey => {
     return query.getLabel(fieldKey, "search");
   };

@@ -29,7 +29,7 @@ const GridTable = ({ title, query, fieldMap }) => {
    *      page {int} - Contains the current page number (1 by default)
    *      sortColumn {string} - Contains the name of the column being used to sort the data
    *      sortOrder {string} - Contains either 'asc' or 'desc'
-   *      searchString {string} - Contains the string to search for in searchable columns.
+   *      searchParameters {object} - Contains the parameters for the text search
    */
   const [limit, setLimit] = useState(25);
   const [offset, setOffset] = useState(0);
@@ -39,7 +39,7 @@ const GridTable = ({ title, query, fieldMap }) => {
   const [searchParameters, setSearchParameters] = useState({});
 
   /**
-   * Handles the
+   * Handles the header click for sorting asc/desc.
    * @param {string} col - The name of the column
    **/
   const handleTableHeaderClick = col => {
@@ -57,25 +57,42 @@ const GridTable = ({ title, query, fieldMap }) => {
     }
   };
 
+  /**
+   * Changes the state of the current page, and offset limit.
+   * @param {integer} n - the page we need to change it to
+   */
   const changePage = n => {
     console.log("Changing page to: " + n);
     setPage(n);
     setOffset(n * limit - limit);
   };
 
+  /**
+   * Moves to the next page of results, by changing the state to current page plus one.
+   */
   const moveNextPage = () => {
     changePage(page + 1);
   };
 
+  /**
+   * Moves to the previous page of results, by substracting 1 to the current page.
+   */
   const moveBackPage = () => {
     changePage(page - 1);
   };
 
+  /**
+   * Handles a click on the limit dropdown menu.
+   * @param {object} e - the event parameter
+   */
   const handleRowClick = e => {
     const rowNumber = parseInt(e.target.value);
     setLimit(rowNumber);
   };
 
+  /**
+   * Clears all filters
+   */
   const clearFilters = () => {
     setSearchParameters({});
   };
@@ -86,7 +103,7 @@ const GridTable = ({ title, query, fieldMap }) => {
    *
    **/
 
-  // Where
+  // Manage the WHERE clause of our query
   query.cleanWhere(); // Clean slate
   if (searchParameters["column"] && searchParameters["value"]) {
     query.setWhere(
@@ -95,15 +112,13 @@ const GridTable = ({ title, query, fieldMap }) => {
     );
   }
 
-  // Order By
-
-  // Query Management
+  // Manage the ORDER BY clause of our query
   if (sortColumn !== "" && sortOrder !== "") {
     console.log("Changing order...");
     query.setOrder(sortColumn, sortOrder);
   }
 
-  // Limit & Offset
+  // Mange LIMIT & OFFSET
   query.limit = limit;
   query.offset = offset;
 

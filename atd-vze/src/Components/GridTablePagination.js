@@ -28,6 +28,9 @@ const GridTablePagination = ({
 }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
+  /**
+   * Toggles our limit dropdown
+   */
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };

@@ -14,6 +14,13 @@ const StyledArrow = styled.i`
 
 const GridTableHeader = ({query, handleTableHeaderClick, sortColumn, sortOrder}) => {
 
+    /**
+     * Renders a label with sorting icons going up or down
+     * @param {string} col - the name of the column (label)
+     * @param {boolean} sortable - true if the column is sortable
+     * @param {boolean} ascending - true if ordering in ascending mode
+     * @returns {object} jsx component
+     */
     const renderLabel = (col, sortable=false, ascending=false) => {
         if(sortable) {
             return(<StyledArrow>
