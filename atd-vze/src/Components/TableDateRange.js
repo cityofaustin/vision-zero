@@ -6,6 +6,19 @@ import "react-datepicker/dist/react-datepicker.css";
 import { colors } from "../styles/colors";
 
 const StyledDatePicker = styled.div`
+  .react-datepicker__input-container > input {
+    height: calc(1.5em + 0.75rem + 2px);
+    padding: 0.375rem 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #5c6873;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #e4e7ea;
+    border-radius: 0.25rem;
+  }
+
   .react-datepicker__day--selecting-range-start {
     background-color: ${colors.primary} !important;
   }
