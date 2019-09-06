@@ -5,4 +5,7 @@ export const colors = {
   dark: "#2f353a",
   secondary: "#c8ced3",
   primary: "#20a8d8",
+  white: "#ffffff",
+  grey200: "#e4e7ea",
+  grey700: "#5c6873",
 };

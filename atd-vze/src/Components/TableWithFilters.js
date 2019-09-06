@@ -84,6 +84,7 @@ const TableWithFilters = ({
           });
         }
         if (dateRangeFilter !== "" && searchFilter !== "") {
+          // Combine both 'where' queries into one argument and replace in queryWithFilters
           const dateRangeQueryComponent = Object.values(
             dateRangeFilter[0]
           )[0].replace("where: {", ",");
@@ -117,7 +118,6 @@ const TableWithFilters = ({
             );
           });
         }
-        // TODO handle date range filter + search filter
         setTableQuery(queryWithFilters);
       }
     };

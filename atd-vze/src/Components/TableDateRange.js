@@ -14,10 +14,10 @@ const StyledDatePicker = styled.div`
     font-size: 0.875rem;
     font-weight: 400;
     line-height: 1.5;
-    color: #5c6873;
-    background-color: #fff;
+    color: ${colors.grey700};
+    background-color: ${colors.white};
     background-clip: padding-box;
-    border: 1px solid #e4e7ea;
+    border: 1px solid ${colors.grey200};
     border-radius: 0.25rem;
   }
 
