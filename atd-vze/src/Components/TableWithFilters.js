@@ -135,7 +135,8 @@ const TableWithFilters = ({
   const { loading, error, data } = useQuery(
     gql`
       ${tableQuery}
-    `
+    `,
+    { fetchPolicy: "no-cache" }
   );
 
   if (error) return `Error! ${error.message}`;

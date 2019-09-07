@@ -68,7 +68,7 @@ const TableDateRange = ({ setDateRangeFilter, databaseDateColumnName }) => {
     };
     const queryStringArray = searchQuery();
     setDateRangeFilter(queryStringArray);
-  }, [startDate, endDate, setDateRangeFilter]);
+  }, [startDate, endDate, setDateRangeFilter, databaseDateColumnName]);
 
   return (
     <>
