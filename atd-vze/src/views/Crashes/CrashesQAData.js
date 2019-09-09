@@ -7,7 +7,7 @@ import {
   CardHeader,
   Col,
   Row,
-  Table
+  Table,
 } from "reactstrap";
 import { Link } from "react-router-dom";
 
@@ -21,15 +21,15 @@ const columns = [
   "Crash Date",
   "Address",
   "Total Injury Count",
-  "Death Count"
+  "Death Count",
 ];
 
 function CrashesQAData(props) {
   const { loading, error, data } = useQuery(GET_CRASHES_QA, {
     variables: {
       recordLimit: props.state.limit,
-      recordOffset: props.state.offset
-    }
+      recordOffset: props.state.offset,
+    },
   });
   if (loading) return "Loading...";
   if (error) return `Error! ${error.message}`;
@@ -39,7 +39,7 @@ function CrashesQAData(props) {
 
   let pagesList = [];
   for (let i = 1; i <= totalPages; i++) {
-    if (i == props.state.page) {
+    if (i === props.state.page) {
       pagesList.push(
         <option selected="selected" key={i} value={i}>
           {i}

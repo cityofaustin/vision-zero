@@ -1,11 +1,12 @@
 import React from "react";
-import { Card, CardBody, CardHeader, Col, Row, Table } from "reactstrap";
+import { Card, CardBody, CardHeader, Col, Row, Table, Alert } from "reactstrap";
 import { withApollo } from "react-apollo";
 import { useQuery } from "@apollo/react-hooks";
 import crashDataMap from "./crashDataMap";
 import CrashCollapses from "./CrashCollapses";
 import CrashMap from "./CrashMap";
 import Widget02 from "../Widgets/Widget02";
+import CrashChangeLog from "./CrashChangeLog";
 
 import { GET_CRASH } from "../../queries/crashes";
 
@@ -37,7 +38,8 @@ function Crash(props) {
 
   const deathCount = data.atd_txdot_crashes[0].death_cnt;
   const injuryCount = data.atd_txdot_crashes[0].tot_injry_cnt;
-
+  const latitude = data.atd_txdot_crashes[0].latitude;
+  const longitude = data.atd_txdot_crashes[0].longitude;
   const yearsLifeLostCount = calculateYearsLifeLost(
     data.atd_txdot_primaryperson.concat(data.atd_txdot_person)
   );
@@ -104,11 +106,19 @@ function Crash(props) {
             <Card>
               <CardHeader>Crash Location</CardHeader>
               <CardBody>
-                <CrashMap data={data.atd_txdot_crashes[0]} />
+                {latitude && longitude ? (
+                  <CrashMap data={data.atd_txdot_crashes[0]} />
+                ) : (
+                  <Alert color="warning">
+                    Crash record is missing latitude and longitude values
+                    required for map display.
+                  </Alert>
+                )}
               </CardBody>
             </Card>
           </div>
           <CrashCollapses data={data} />
+          <CrashChangeLog data={data} />
         </Col>
       </Row>
     </div>

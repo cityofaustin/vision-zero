@@ -1,15 +1,4 @@
 import React, { Component } from "react";
-import {
-  Button,
-  Badge,
-  Card,
-  CardBody,
-  CardHeader,
-  Col,
-  Row,
-  Table
-} from "reactstrap";
-import { Link } from "react-router-dom";
 
 import CrashesQAData from "./CrashesQAData";
 
@@ -19,7 +8,7 @@ class CrashesQA extends Component {
     this.state = {
       page: 1,
       limit: 25,
-      offset: 0
+      offset: 0,
     };
   }
 
@@ -38,7 +27,7 @@ class CrashesQA extends Component {
     console.log("PageNum: " + pagenum);
     this.setState({
       page: pagenum,
-      offset: newOffset
+      offset: newOffset,
     });
 
     console.log("oldOffset: " + oldOffset);
