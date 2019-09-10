@@ -136,6 +136,9 @@ const TableWithFilters = ({
     gql`
       ${tableQuery}
     `,
+    // Disables cache as a workaround for loading never returning to false
+    // after queries with long time spans
+    // https://github.com/apollographql/react-apollo/issues/3361
     { fetchPolicy: "no-cache" }
   );
 
