@@ -21,7 +21,7 @@ import GridTableHeader from "./GridTableHeader";
 import GridTablePagination from "./GridTablePagination";
 import GridTableSearch from "./GridTableSearch";
 
-const GridTable = ({ title, query, fieldMap }) => {
+const GridTable = ({ title, query }) => {
   /**
    * State management:
    *      limit {int} - Contains the current limit of results in a page
