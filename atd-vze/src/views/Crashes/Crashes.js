@@ -66,6 +66,7 @@ const Crashes = () => (
     fieldsToSearch={fieldsToSearch}
     columns={columns}
     fieldMap={crashDataMap}
+    databaseDateColumnName={"crash_date"}
   />
 );
 

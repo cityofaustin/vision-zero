@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { colors } from "../styles/colors";
 
 const StyledGreyArrow = styled.i`
-  color: ${colors.light};
+  color: ${colors.secondary};
   cursor: pointer;
 `;
 
