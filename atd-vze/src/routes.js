@@ -45,7 +45,7 @@ const CrashesQA = React.lazy(() => import("./views/Crashes/CrashesQA"));
 const Profile = React.lazy(() => import("./views/Profile/Profile"));
 const Locations = React.lazy(() => import("./views/Locations/Locations"));
 const Location = React.lazy(() => import("./views/Locations/Location"));
-const LocationQA = React.lazy(() => import("./views/Locations/LocationQA"));
+const LocationsQA = React.lazy(() => import("./views/Locations/LocationsQA"));
 
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 const routes = [
