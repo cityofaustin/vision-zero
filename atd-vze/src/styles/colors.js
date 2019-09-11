@@ -8,4 +8,6 @@ export const colors = {
   white: "#ffffff",
   grey200: "#e4e7ea",
   grey700: "#5c6873",
+  warning: "#f9c10a",
+  danger: "#f86c6b",
 };
