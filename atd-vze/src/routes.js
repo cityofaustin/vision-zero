@@ -115,18 +115,17 @@ const routes = [
 
   { path: "/locations", exact: true, name: "Locations", component: Locations },
   {
-    path: "/locations/:id",
-    exact: true,
-    name: "Location Details",
-    component: Location,
-  },
-  {
     path: "/locations/qa",
     exact: true,
     name: "Location QA",
     component: LocationsQA,
   },
-
+  {
+    path: "/locations/:id",
+    exact: true,
+    name: "Location Details",
+    component: Location,
+  },
   { path: "/crashes", exact: true, name: "Crashes", component: Crashes },
   {
     path: "/crashes/qa",
