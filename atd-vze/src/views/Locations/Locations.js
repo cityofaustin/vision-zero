@@ -3,8 +3,6 @@ import { withApollo } from "react-apollo";
 
 import GridTable from "../../Components/GridTable";
 
-import locationDataMap from "./locationDataMap";
-
 import gqlAbstract from "../../queries/gqlAbstract";
 
 // Our initial query configuration
@@ -39,11 +37,7 @@ let queryConf = {
 let locationsQuery = new gqlAbstract(queryConf);
 
 const Locations = () => (
-  <GridTable
-    query={locationsQuery}
-    title={"Locations"}
-    fieldMap={locationDataMap}
-  />
+  <GridTable query={locationsQuery} title={"Locations"} />
 );
 
 export default withApollo(Locations);

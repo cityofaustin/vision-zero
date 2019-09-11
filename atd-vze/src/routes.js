@@ -114,11 +114,26 @@ const routes = [
   { path: "/users/:id", exact: true, name: "User Details", component: User },
 
   { path: "/locations", exact: true, name: "Locations", component: Locations },
-  { path: "/locations/:id", exact: true, name: "Location Details", component: Location},
-  { path: "/locations/qa", exact: true, name: "Location QA", component: LocationsQA},
+  {
+    path: "/locations/:id",
+    exact: true,
+    name: "Location Details",
+    component: Location,
+  },
+  {
+    path: "/locations/qa",
+    exact: true,
+    name: "Location QA",
+    component: LocationsQA,
+  },
 
   { path: "/crashes", exact: true, name: "Crashes", component: Crashes },
-  { path: "/crashes/qa", exact: true, name: "Crashes Q/A", component: CrashesQA },
+  {
+    path: "/crashes/qa",
+    exact: true,
+    name: "Crashes Q/A",
+    component: CrashesQA,
+  },
   {
     path: "/crashes/:id",
     exact: true,

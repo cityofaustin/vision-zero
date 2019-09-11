@@ -2,10 +2,10 @@ import React from "react";
 import { Card, CardBody, CardHeader, Col, Row, Table, Alert } from "reactstrap";
 import { withApollo } from "react-apollo";
 import { useQuery } from "@apollo/react-hooks";
+
 import locationDataMap from "./locationDataMap";
 
 import { GET_LOCATION } from "../../queries/Locations";
-import api from "../../queries/api";
 
 function Location(props) {
   const locationId = props.match.params.id;
@@ -41,9 +41,6 @@ function Location(props) {
                       })}
                     </tbody>
                   </Table>
-                  <button onClick={api.updateLocationMarkStudyLoc()}>
-                    Mark as a Study Location
-                  </button>
                 </CardBody>
               </Card>
             );

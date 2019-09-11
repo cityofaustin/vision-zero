@@ -33,8 +33,8 @@ export default {
           name: "Q/A Deaths & Injuries",
           url: "/crashes/qa",
           icon: "icon-puzzle",
-        }
-      ]
+        },
+      ],
     },
     {
       name: "Locations",
@@ -50,8 +50,8 @@ export default {
           name: "Locations Q/A",
           url: "/locations/qa",
           icon: "icon-compass",
-        }
-      ]
+        },
+      ],
     },
     {
       divider: true,
