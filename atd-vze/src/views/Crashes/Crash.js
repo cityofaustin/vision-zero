@@ -4,7 +4,8 @@ import { withApollo } from "react-apollo";
 import { useQuery } from "@apollo/react-hooks";
 import crashDataMap from "./crashDataMap";
 import CrashCollapses from "./CrashCollapses";
-import CrashMap from "./CrashMap";
+import CrashMap from "./Maps/CrashMap";
+import CrashQAMap from "./Maps/CrashQAMap";
 import Widget02 from "../Widgets/Widget02";
 import CrashChangeLog from "./CrashChangeLog";
 
@@ -29,17 +30,36 @@ const calculateYearsLifeLost = people => {
 
 function Crash(props) {
   const crashId = props.match.params.id;
-  const { loading, error, data } = useQuery(GET_CRASH, {
+  const { loading, error, data, refetch } = useQuery(GET_CRASH, {
     variables: { crashId },
   });
 
   if (loading) return "Loading...";
   if (error) return `Error! ${error.message}`;
 
+  const createGeocoderAddressString = data => {
+    const geocoderAddressFields = [
+      "rpt_block_num",
+      "rpt_street_pfx",
+      "street_name",
+      "rpt_street_pfx",
+    ];
+    let geocoderAddressString = "";
+    geocoderAddressFields.forEach(field => {
+      if (data.atd_txdot_crashes[0][field] !== null) {
+        geocoderAddressString = geocoderAddressString.concat(
+          data.atd_txdot_crashes[0][field] + " "
+        );
+      }
+    });
+    return geocoderAddressString;
+  };
+
   const deathCount = data.atd_txdot_crashes[0].death_cnt;
   const injuryCount = data.atd_txdot_crashes[0].tot_injry_cnt;
   const latitude = data.atd_txdot_crashes[0].latitude;
   const longitude = data.atd_txdot_crashes[0].longitude;
+  const mapGeocoderAddress = createGeocoderAddressString(data);
   const yearsLifeLostCount = calculateYearsLifeLost(
     data.atd_txdot_primaryperson.concat(data.atd_txdot_person)
   );
@@ -109,10 +129,17 @@ function Crash(props) {
                 {latitude && longitude ? (
                   <CrashMap data={data.atd_txdot_crashes[0]} />
                 ) : (
-                  <Alert color="warning">
-                    Crash record is missing latitude and longitude values
-                    required for map display.
-                  </Alert>
+                  <>
+                    <Alert color="danger">
+                      Crash record is missing latitude and longitude values
+                      required for map display.
+                    </Alert>
+                    <CrashQAMap
+                      mapGeocoderAddress={mapGeocoderAddress}
+                      crashId={crashId}
+                      refetchCrashData={refetch}
+                    />
+                  </>
                 )}
               </CardBody>
             </Card>

@@ -80,7 +80,7 @@ export default class CrashMap extends Component {
           offsetLeft={-20}
           offsetTop={-10}
         >
-          <Pin size={40} />
+          <Pin size={40} color={"warning"} />
         </Marker>
       </MapGL>
     );
