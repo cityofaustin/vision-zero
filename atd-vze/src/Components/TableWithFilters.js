@@ -142,6 +142,12 @@ const TableWithFilters = ({
     { fetchPolicy: "no-cache" }
   );
 
+  // Alternate workaround but spinner does not appear between queries
+  // Change const on line 135 to let
+  // if (data[dataKey]) {
+  //   loading = false;
+  // }
+
   if (error) return `Error! ${error.message}`;
 
   const clearFilters = () => {

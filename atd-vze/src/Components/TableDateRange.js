@@ -48,7 +48,11 @@ const StyledDatePicker = styled.div`
 `;
 
 const TableDateRange = ({ setDateRangeFilter, databaseDateColumnName }) => {
-  const minDate = new Date("2010/01/01"); // TODO add programatic way to insert earliest crash record in DB
+  const minDate = new Date(
+    moment()
+      .subtract(1, "year")
+      .format()
+  );
   const maxDate = new Date();
   const [startDate, setStartDate] = useState(minDate);
   const [endDate, setEndDate] = useState(maxDate);
@@ -77,7 +81,6 @@ const TableDateRange = ({ setDateRangeFilter, databaseDateColumnName }) => {
           selected={startDate}
           onChange={date => setStartDate(date)}
           selectsStart
-          minDate={minDate}
           startDate={startDate}
           endDate={endDate}
         />
