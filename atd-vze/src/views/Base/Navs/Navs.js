@@ -70,7 +70,8 @@ class Navs extends Component {
             <hr />
             <p>Link Based</p>
             <Nav>
-              <NavLink href="/#/dashboard">Link</NavLink> <NavLink href="/#/dashboard">Link</NavLink>{" "}
+              <NavLink href="/#/dashboard">Link</NavLink>{" "}
+              <NavLink href="/#/dashboard">Link</NavLink>{" "}
               <NavLink href="/#/dashboard">Another Link</NavLink>{" "}
               <NavLink disabled href="/#/dashboard">
                 Disabled Link
@@ -192,7 +193,8 @@ class Navs extends Component {
             <hr />
             <p>Link based</p>
             <Nav vertical>
-              <NavLink href="/#/dashboard">Link</NavLink> <NavLink href="/#/dashboard">Link</NavLink>{" "}
+              <NavLink href="/#/dashboard">Link</NavLink>{" "}
+              <NavLink href="/#/dashboard">Link</NavLink>{" "}
               <NavLink href="/#/dashboard">Another Link</NavLink>{" "}
               <NavLink disabled href="/#/dashboard">
                 Disabled Link
