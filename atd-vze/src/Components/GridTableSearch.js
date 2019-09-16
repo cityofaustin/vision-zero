@@ -16,7 +16,7 @@ import {
 } from "reactstrap";
 
 // TODO add query operators to each field to better fit data types (_eq, etc.)?
-const GridTableSearch = ({ query, clearFilters, setSearchParameters }) => {
+const GridTableSearch = ({ query, clearFilters, setSearchParameters, resetPage }) => {
   const [searchFieldValue, setSearchFieldValue] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [fieldToSearch, setFieldToSearch] = useState("");
@@ -35,6 +35,8 @@ const GridTableSearch = ({ query, clearFilters, setSearchParameters }) => {
       column: fieldToSearch,
       value: searchFieldValue,
     });
+
+    resetPage();
   };
 
   /**
