@@ -81,6 +81,10 @@ const GridTable = ({ title, query }) => {
     changePage(page - 1);
   };
 
+  const resetPageOnSearch = () => {
+    changePage(1);
+  };
+
   /**
    * Handles a click on the limit dropdown menu.
    * @param {object} e - the event parameter
@@ -108,7 +112,7 @@ const GridTable = ({ title, query }) => {
   if (searchParameters["column"] && searchParameters["value"]) {
     query.setWhere(
       searchParameters["column"],
-      `_like: "%${searchParameters["value"]}%"`
+      `_ilike: "%${searchParameters["value"]}%"`
     );
   }
 
@@ -178,6 +182,7 @@ const GridTable = ({ title, query }) => {
                 query={query}
                 clearFilters={clearFilters}
                 setSearchParameters={setSearchParameters}
+                resetPage={resetPageOnSearch}
               />
               <ButtonGroup className="mb-2 float-right">
                 <GridTablePagination
