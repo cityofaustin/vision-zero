@@ -88,11 +88,7 @@ class App extends Component {
             "x-hasura-role": this.state.role,
           },
         });
-      } else {
-        alert("Client not yet initialized, no role available.");
       }
-    } else {
-      alert("Client not initialized, not authenticated.");
     }
   }
 
