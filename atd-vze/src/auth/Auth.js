@@ -18,7 +18,6 @@ export default class Auth {
   };
 
   handleAuthentication = () => {
-    console.log("Handle Authentication");
     this.auth0.parseHash((err, authResult) => {
       if (authResult && authResult.accessToken && authResult.idToken) {
         this.setSession(authResult);
@@ -26,7 +25,6 @@ export default class Auth {
       } else if (err) {
         this.history.push("/");
         alert(`Error: ${err.error}. Check the console for further details.`);
-        console.log(err);
       }
     });
   };
@@ -46,11 +44,6 @@ export default class Auth {
     const expiresAt = JSON.parse(localStorage.getItem("expires_at"));
     const currentTime = new Date().getTime();
     let isAuth = currentTime < expiresAt;
-
-    // console.log("Expires At: " + expiresAt);
-    // console.log("currentTime: " + currentTime);
-    // console.log(`${currentTime} < ${expiresAt}`);
-    // console.log("isAuth: " + isAuth);
     return isAuth;
   }
 

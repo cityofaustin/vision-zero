@@ -62,7 +62,6 @@ const GridTable = ({ title, query }) => {
    * @param {integer} n - the page we need to change it to
    */
   const changePage = n => {
-    console.log("Changing page to: " + n);
     setPage(n);
     setOffset(n * limit - limit);
   };
@@ -118,7 +117,6 @@ const GridTable = ({ title, query }) => {
 
   // Manage the ORDER BY clause of our query
   if (sortColumn !== "" && sortOrder !== "") {
-    console.log("Changing order...");
     query.setOrder(sortColumn, sortOrder);
   }
 
@@ -133,7 +131,6 @@ const GridTable = ({ title, query }) => {
    **/
 
   // Make Query && Error handling
-  console.log(query.query);
   let { loading, error, data } = useQuery(query.gql);
   if (error) return `Error! ${error.message}`;
 
@@ -144,8 +141,6 @@ const GridTable = ({ title, query }) => {
   // If we have data
   if (data[query.table]) {
     loading = false;
-    console.log("Got a response: ");
-    console.log(data[query.table]);
     totalRecords = data[query.table + "_aggregate"]["aggregate"]["count"];
     totalPages = Math.ceil(totalRecords / limit);
 

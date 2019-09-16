@@ -68,11 +68,10 @@ class App extends Component {
               "x-hasura-allowed-roles"
             ][0];
           localStorage.setItem("hasura_user_role", role);
-          console.log("Role initialized: " + role);
           this.setState({ role: role });
           this.initializeClient();
         } catch (error) {
-          console.log(error);
+          alert("Error: " + error);
         }
         this.setState({ profile, error });
       });
@@ -89,12 +88,11 @@ class App extends Component {
             "x-hasura-role": this.state.role,
           },
         });
-        console.log("Client Initialized");
       } else {
-        console.log("Client not yet initialized, no role available.");
+        alert("Client not yet initialized, no role available.");
       }
     } else {
-      console.log("Client not initialized, not authenticated.");
+      alert("Client not initialized, not authenticated.");
     }
   }
 
@@ -114,8 +112,6 @@ class App extends Component {
   }
 
   setSession = authResult => {
-    console.log("Auth Result:");
-    console.log(authResult);
     // set the time that the access token will expire
     const expiresAt = JSON.stringify(
       authResult.expiresIn * 1000 + new Date().getTime()
@@ -135,7 +131,6 @@ class App extends Component {
         window.location = "/#/dashboard";
       } else if (err) {
         alert(`Error: ${err.error}. Check the console for further details.`);
-        console.log(err);
       }
     });
   }
