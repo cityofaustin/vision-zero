@@ -107,7 +107,6 @@ class CrashQAMap extends Component {
         variables: variables,
       })
       .then(res => {
-        console.log(res);
         this.props.refetchCrashData();
       });
   };

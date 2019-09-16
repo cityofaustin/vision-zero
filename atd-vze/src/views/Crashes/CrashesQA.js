@@ -24,14 +24,10 @@ class CrashesQA extends Component {
     // If we do, then go ahead
     const oldOffset = this.state.offset;
     const newOffset = pagenum * this.state.limit - this.state.limit;
-    console.log("PageNum: " + pagenum);
     this.setState({
       page: pagenum,
       offset: newOffset,
     });
-
-    console.log("oldOffset: " + oldOffset);
-    console.log("newOffset: " + newOffset);
   };
 
   changePage = event => {

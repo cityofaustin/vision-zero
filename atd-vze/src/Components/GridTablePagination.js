@@ -50,7 +50,7 @@ const GridTablePagination = ({
           </Button>
           <StyledDisableClick>
             <Button color="light">
-              Page {pageNumber}/{totalPages}
+              Page {pageNumber}/{totalPages == 0 ? 1 : totalPages}
             </Button>
             <Button color="light">Results: {totalRecords}</Button>
           </StyledDisableClick>

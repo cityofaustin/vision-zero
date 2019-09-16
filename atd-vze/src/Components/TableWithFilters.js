@@ -38,7 +38,6 @@ const TableWithFilters = ({
   const [orderFilter, setOrderFilter] = useState("");
   const [searchFilter, setSearchFilter] = useState("");
   const [dateRangeFilter, setDateRangeFilter] = useState("");
-  console.log(tableQuery);
 
   useEffect(() => {
     // On every render, filterQuery is copied, unset filters are removed, set filters replace keywords in filterQuery
