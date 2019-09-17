@@ -192,28 +192,26 @@ const pages = [
 
 const Dev = () => (
   <ul>
-    {pages.map(section => {
-      return (
-        <li>
-          {!!section.children ? (
-            <>
-              <Link to={section.url}>{section.name}</Link>
-              <ul>
-                {section.children.map(page => {
-                  return (
-                    <li>
-                      <Link to={page.url}>{page.name}</Link>
-                    </li>
-                  );
-                })}
-              </ul>
-            </>
-          ) : (
+    {pages.map(section => (
+      <li>
+        {/* If there are children show the item and the nested list */}
+        {!!section.children ? (
+          <>
             <Link to={section.url}>{section.name}</Link>
-          )}
-        </li>
-      );
-    })}
+            <ul>
+              {section.children.map(page => (
+                <li>
+                  <Link to={page.url}>{page.name}</Link>
+                </li>
+              ))}
+            </ul>
+          </>
+        ) : (
+          // Else just the one item
+          <Link to={section.url}>{section.name}</Link>
+        )}
+      </li>
+    ))}
   </ul>
 );
 
