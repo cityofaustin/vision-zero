@@ -20,8 +20,9 @@ import {
 import GridTableHeader from "./GridTableHeader";
 import GridTablePagination from "./GridTablePagination";
 import GridTableSearch from "./GridTableSearch";
+import GridFilters from "./GridFilters";
 
-const GridTable = ({ title, query }) => {
+const GridTable = ({ title, query, filters }) => {
   /**
    * State management:
    *      limit {int} - Contains the current limit of results in a page
@@ -37,6 +38,15 @@ const GridTable = ({ title, query }) => {
   const [sortColumn, setSortColumn] = useState("");
   const [sortOrder, setSortOrder] = useState("");
   const [searchParameters, setSearchParameters] = useState({});
+  const [collapseAdvancedFilters, setCollapseAdvacedFilters] = useState(false);
+  const [filterOptions, setFilterOptions] = useState({});
+
+  /**
+   * Shows or hides advanced filters
+   */
+  const toggleAdvancedFilters = () => {
+    setCollapseAdvacedFilters(!collapseAdvancedFilters);
+  };
 
   /**
    * Handles the header click for sorting asc/desc.
@@ -80,6 +90,9 @@ const GridTable = ({ title, query }) => {
     changePage(page - 1);
   };
 
+  /**
+   * Resets the page number whenever it starts a new search
+   */
   const resetPageOnSearch = () => {
     changePage(1);
   };
@@ -98,6 +111,7 @@ const GridTable = ({ title, query }) => {
    */
   const clearFilters = () => {
     setSearchParameters({});
+    setFilterOptions({});
   };
 
   /**
@@ -106,13 +120,26 @@ const GridTable = ({ title, query }) => {
    *
    **/
 
+  // First initialize the filters
+  query.loadFilters(filters, filterOptions);
+
   // Manage the WHERE clause of our query
-  query.cleanWhere(); // Clean slate
   if (searchParameters["column"] && searchParameters["value"]) {
-    query.setWhere(
-      searchParameters["column"],
-      `_ilike: "%${searchParameters["value"]}%"`
-    );
+    // We will need to be careful which operator we will be using depending
+    // on whether the column is an integer or a string, etc.
+    if (searchParameters["column"] === "crash_id") {
+      // Search Integer for exact value
+      query.setWhere(
+        searchParameters["column"],
+        `_eq: ${searchParameters["value"]}`
+      );
+    } else {
+      // Search Case-Insensitive String
+      query.setWhere(
+        searchParameters["column"],
+        `_ilike: "%${searchParameters["value"]}%"`
+      );
+    }
   }
 
   // Manage the ORDER BY clause of our query
@@ -151,7 +178,7 @@ const GridTable = ({ title, query }) => {
           {query.columns.map(column => (
             <td>
               {query.isPK(column) ? (
-                <Link to={`${query.singleItem}/${row[column]}`}>
+                <Link to={`/${query.singleItem}/${row[column]}`}>
                   {row[column]}
                 </Link>
               ) : (
@@ -173,12 +200,22 @@ const GridTable = ({ title, query }) => {
               <i className="fa fa-car" /> {title}
             </CardHeader>
             <CardBody>
-              <GridTableSearch
-                query={query}
-                clearFilters={clearFilters}
-                setSearchParameters={setSearchParameters}
-                resetPage={resetPageOnSearch}
-              />
+              <Row>
+                <GridTableSearch
+                  query={query}
+                  clearFilters={clearFilters}
+                  setSearchParameters={setSearchParameters}
+                  resetPage={resetPageOnSearch}
+                  filters={filters}
+                  toggleAdvancedFilters={toggleAdvancedFilters}
+                />
+                <GridFilters
+                  isCollapsed={collapseAdvancedFilters}
+                  filters={filters}
+                  filterOptionsState={filterOptions}
+                  setFilterOptions={setFilterOptions}
+                />
+              </Row>
               <ButtonGroup className="mb-2 float-right">
                 <GridTablePagination
                   moveNext={moveNextPage}
