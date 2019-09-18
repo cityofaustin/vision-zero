@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { withApollo } from "react-apollo";
 import {
+  Row,
   Col,
   Button,
   Form,
@@ -16,7 +17,14 @@ import {
 } from "reactstrap";
 
 // TODO add query operators to each field to better fit data types (_eq, etc.)?
-const GridTableSearch = ({ query, clearFilters, setSearchParameters, resetPage }) => {
+const GridTableSearch = ({
+  query,
+  clearFilters,
+  setSearchParameters,
+  resetPage,
+  filters,
+  toggleAdvancedFilters,
+}) => {
   const [searchFieldValue, setSearchFieldValue] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [fieldToSearch, setFieldToSearch] = useState("");
@@ -75,12 +83,12 @@ const GridTableSearch = ({ query, clearFilters, setSearchParameters, resetPage }
   };
 
   return (
-    <Form className="form-horizontal" onSubmit={handleSearchSubmission}>
-      {!isFieldSelected && searchFieldValue && (
-        <Alert color="warning">Please provide a field to search.</Alert>
-      )}
-      <FormGroup row>
-        <Col md="6">
+    <Col md={12}>
+      <Form className="form-horizontal" onSubmit={handleSearchSubmission}>
+        {!isFieldSelected && searchFieldValue && (
+          <Alert color="warning">Please provide a field to search.</Alert>
+        )}
+        <FormGroup>
           <InputGroup>
             <Input
               type="text"
@@ -121,11 +129,20 @@ const GridTableSearch = ({ query, clearFilters, setSearchParameters, resetPage }
               >
                 <i className="fa fa-ban" /> Clear
               </Button>
+              {(filters || null) !== null && (
+                <Button
+                  color="dark"
+                  onClick={toggleAdvancedFilters}
+                  className={"float-right"}
+                >
+                  <i className="fa fa-cog" /> Advanced Filters
+                </Button>
+              )}
             </InputGroupAddon>
           </InputGroup>
-        </Col>
-      </FormGroup>
-    </Form>
+        </FormGroup>
+      </Form>
+    </Col>
   );
 };
 
