@@ -21,6 +21,9 @@ import GridTableHeader from "./GridTableHeader";
 import GridTablePagination from "./GridTablePagination";
 import GridTableSearch from "./GridTableSearch";
 import GridFilters from "./GridFilters";
+import GridDateRange from "./GridDateRange";
+import ButtonToolbar from "reactstrap/es/ButtonToolbar";
+import TableDateRange from "./TableDateRange";
 
 const GridTable = ({ title, query, filters }) => {
   /**
@@ -31,6 +34,9 @@ const GridTable = ({ title, query, filters }) => {
    *      sortColumn {string} - Contains the name of the column being used to sort the data
    *      sortOrder {string} - Contains either 'asc' or 'desc'
    *      searchParameters {object} - Contains the parameters for the text search
+   *      collapseAdvancedFilters {bool} - Contains the filters section status (hidden, display)
+   *      filterOptions {object} - Contains a list of filters and each individual status (enabled, disabled)
+   *      dateRangeFilter {object} - Contains the date range (startDate, and endDate)
    */
   const [limit, setLimit] = useState(25);
   const [offset, setOffset] = useState(0);
@@ -40,6 +46,7 @@ const GridTable = ({ title, query, filters }) => {
   const [searchParameters, setSearchParameters] = useState({});
   const [collapseAdvancedFilters, setCollapseAdvacedFilters] = useState(false);
   const [filterOptions, setFilterOptions] = useState({});
+  const [dateRangeFilter, setDateRangeFilter] = useState({});
 
   /**
    * Shows or hides advanced filters
@@ -120,6 +127,11 @@ const GridTable = ({ title, query, filters }) => {
    *
    **/
 
+  // Handle Date Range (only if available)
+  if(dateRangeFilter['startDate'] && dateRangeFilter['endDate']) {
+    query.setWhere("crash_date", `_gte: \"${dateRangeFilter['startDate']}\", _lte: \"${dateRangeFilter['endDate']}\"`);
+  }
+
   // First initialize the filters
   query.loadFilters(filters, filterOptions);
 
@@ -150,6 +162,10 @@ const GridTable = ({ title, query, filters }) => {
   // Mange LIMIT & OFFSET
   query.limit = limit;
   query.offset = offset;
+
+  // Show us the current state of the query in the console!
+  console.log(query.query);
+
 
   /**
    *
@@ -216,26 +232,32 @@ const GridTable = ({ title, query, filters }) => {
                   setFilterOptions={setFilterOptions}
                 />
               </Row>
-              <ButtonGroup className="mb-2 float-right">
-                <GridTablePagination
-                  moveNext={moveNextPage}
-                  moveBack={moveBackPage}
-                  pageNumber={page}
-                  limit={limit}
-                  totalRecords={totalRecords}
-                  totalPages={totalPages}
-                  handleRowClick={handleRowClick}
-                />
-                {data[query.table] && (
-                  <CSVLink
-                    className=""
-                    data={data[query.table]}
-                    filename={query.table + Date.now()}
-                  >
-                    <i className="fa fa-save fa-2x ml-2 mt-1" />
-                  </CSVLink>
-                )}
-              </ButtonGroup>
+              <ButtonToolbar className="mb-3 justify-content-between">
+                <ButtonGroup>
+                  <GridDateRange setDateRangeFilter={setDateRangeFilter} />
+                </ButtonGroup>
+
+                <ButtonGroup className="mb-2 float-right">
+                  <GridTablePagination
+                    moveNext={moveNextPage}
+                    moveBack={moveBackPage}
+                    pageNumber={page}
+                    limit={limit}
+                    totalRecords={totalRecords}
+                    totalPages={totalPages}
+                    handleRowClick={handleRowClick}
+                  />
+                  {data[query.table] && (
+                    <CSVLink
+                      className=""
+                      data={data[query.table]}
+                      filename={query.table + Date.now()}
+                    >
+                      <i className="fa fa-save fa-2x ml-2 mt-1" />
+                    </CSVLink>
+                  )}
+                </ButtonGroup>
+              </ButtonToolbar>
               <Table responsive>
                 <GridTableHeader
                   query={query}
