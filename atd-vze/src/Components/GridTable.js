@@ -127,9 +127,20 @@ const GridTable = ({ title, query, filters }) => {
    *
    **/
 
+  const isCrashesPage = query.table === "atd_txdot_crashes";
+
   // Handle Date Range (only if available)
-  if(dateRangeFilter['startDate'] && dateRangeFilter['endDate']) {
-    query.setWhere("crash_date", `_gte: \"${dateRangeFilter['startDate']}\", _lte: \"${dateRangeFilter['endDate']}\"`);
+  if (
+    isCrashesPage &&
+    dateRangeFilter["startDate"] &&
+    dateRangeFilter["endDate"]
+  ) {
+    query.setWhere(
+      "crash_date",
+      `_gte: \"${dateRangeFilter["startDate"]}\", _lte: \"${
+        dateRangeFilter["endDate"]
+      }\"`
+    );
   }
 
   // First initialize the filters
@@ -165,7 +176,6 @@ const GridTable = ({ title, query, filters }) => {
 
   // Show us the current state of the query in the console!
   console.log(query.query);
-
 
   /**
    *
@@ -233,9 +243,9 @@ const GridTable = ({ title, query, filters }) => {
                 />
               </Row>
               <ButtonToolbar className="mb-3 justify-content-between">
-                <ButtonGroup>
+                {isCrashesPage && <ButtonGroup>
                   <GridDateRange setDateRangeFilter={setDateRangeFilter} />
-                </ButtonGroup>
+                </ButtonGroup>}
 
                 <ButtonGroup className="mb-2 float-right">
                   <GridTablePagination
