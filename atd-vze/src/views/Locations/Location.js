@@ -8,7 +8,7 @@ import {
   Row,
   Table,
   Button,
-  Badge,
+  Badge, Alert,
 } from "reactstrap";
 
 import { withApollo } from "react-apollo";
@@ -153,17 +153,25 @@ function Location(props) {
           <Card>
             <CardHeader>Types of Vehicles - Count Distribution</CardHeader>
             <CardBody>
-              <div className="chart-wrapper" style={{ padding: "2rem 0" }}>
-                <Badge
-                  color="dark"
-                  className="float-right"
-                  style={{ padding: "4px" }}
-                >
-                  <i class="fa fa-mouse-pointer" />
-                  &nbsp; Click On Labels
-                </Badge>
-                <Doughnut data={doughnut} />
-              </div>
+              {data.atd_txdot_crashes_aggregate.aggregate.count === 0 && (
+                <Alert color="warning">
+                  No crashes at this particular location
+                </Alert>
+              )}
+
+              {data.atd_txdot_crashes_aggregate.aggregate.count > 0 && (
+                <div className="chart-wrapper" style={{ padding: "1.5rem 0" }}>
+                  <Badge
+                    color="dark"
+                    className="float-right"
+                    style={{ padding: "4px" }}
+                  >
+                    <i class="fa fa-mouse-pointer" />
+                    &nbsp; Click On Labels
+                  </Badge>
+                  <Doughnut data={doughnut} />
+                </div>
+              )}
             </CardBody>
           </Card>
         </Col>
