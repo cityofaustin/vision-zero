@@ -47,49 +47,67 @@ const StyledDatePicker = styled.div`
   }
 `;
 
-const GridDateRange = ({ setDateRangeFilter }) => {
-    const minDate = new Date(
+const GridDateRange = ({ setDateRangeFilter, initStartDate, initEndDate }) => {
+  /**
+   * Parses a string into proper format
+   * @param {string} date - date string to be formatted
+   * @returns {Date}
+   */
+  const parseDate = date => new Date(moment(date).format());
+
+  /**
+   * Returns a date in a valid SQL format.
+   * @param {string} date - The string to be transformed
+   * @returns {string}
+   */
+  const formatDate = date => moment(date).format("YYYY-MM-DD");
+
+  /**
+   * Returns a date one year ago from today
+   * @type {Date}
+   */
+  const minDate = initStartDate
+    ? parseDate(initStartDate)
+    : new Date(
         moment()
-            .subtract(1, "year")
-            .format()
-    );
-    const maxDate = new Date();
-    const [startDate, setStartDate] = useState(minDate);
-    const [endDate, setEndDate] = useState(maxDate);
+          .subtract(1, "year")
+          .format()
+      );
 
-    useEffect(() => {
-        const formatDate = date => moment(date).format("YYYY-MM-DD");
+  const maxDate = initEndDate ? parseDate(initEndDate) : new Date();
+  const [startDate, setStartDate] = useState(minDate);
+  const [endDate, setEndDate] = useState(maxDate);
 
-        setDateRangeFilter({
-            "startDate": formatDate(startDate),
-            "endDate": formatDate(endDate)
-        });
+  useEffect(() => {
+    setDateRangeFilter({
+      startDate: formatDate(startDate),
+      endDate: formatDate(endDate),
+    });
+  }, [startDate, endDate, setDateRangeFilter]);
 
-    }, [startDate, endDate, setDateRangeFilter]);
-
-    return (
-        <>
-            <StyledDatePicker>
-                <DatePicker
-                    selected={startDate}
-                    onChange={date => setStartDate(date)}
-                    selectsStart
-                    startDate={startDate}
-                    endDate={endDate}
-                />
-                <span>{" to "}</span>
-                <DatePicker
-                    selected={endDate}
-                    onChange={date => setEndDate(date)}
-                    selectsEnd
-                    startDate={startDate}
-                    endDate={endDate}
-                    minDate={startDate}
-                    maxDate={maxDate}
-                />
-            </StyledDatePicker>
-        </>
-    );
+  return (
+    <>
+      <StyledDatePicker>
+        <DatePicker
+          selected={startDate}
+          onChange={date => setStartDate(date)}
+          selectsStart
+          startDate={startDate}
+          endDate={endDate}
+        />
+        <span>{" to "}</span>
+        <DatePicker
+          selected={endDate}
+          onChange={date => setEndDate(date)}
+          selectsEnd
+          startDate={startDate}
+          endDate={endDate}
+          minDate={startDate}
+          maxDate={maxDate}
+        />
+      </StyledDatePicker>
+    </>
+  );
 };
 
 export default withApollo(GridDateRange);
