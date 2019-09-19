@@ -50,6 +50,13 @@ let queryConf = {
       label_table: "Death Count",
       type: "Date",
     },
+    "units { body_style { veh_body_styl_desc } }": {
+      searchable: false,
+      sortable: false,
+      summary: true,
+      label_table: "Unit Body Type",
+      type: "String",
+    },
   },
   order_by: {},
   where: {
