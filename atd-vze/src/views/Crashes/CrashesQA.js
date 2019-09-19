@@ -31,11 +31,18 @@ let queryConf = {
       label_table: "Crash Date",
       type: "Date",
     },
-    rpt_street_name: {
+    address_confirmed_primary: {
       searchable: true,
       sortable: true,
-      label_search: "Search by Street Name",
-      label_table: "Street Name",
+      label_search: "Search by Primary Address",
+      label_table: "Primary Address",
+      type: "String",
+    },
+    address_confirmed_secondary: {
+      searchable: true,
+      sortable: true,
+      label_search: "Search by Secondary Address",
+      label_table: "Secondary Address",
       type: "String",
     },
     tot_injry_cnt: {
@@ -50,11 +57,22 @@ let queryConf = {
       label_table: "Death Count",
       type: "Date",
     },
+    "collision { collsn_desc } ": {
+      searchable: false,
+      sortable: false,
+      label_table: "Collision Description",
+      type: "String",
+    },
     "units { body_style { veh_body_styl_desc } }": {
       searchable: false,
       sortable: false,
-      summary: true,
       label_table: "Unit Body Type",
+      type: "String",
+    },
+    "units { unit_description { veh_unit_desc_desc } }": {
+      searchable: false,
+      sortable: false,
+      label_table: "Unit Description",
       type: "String",
     },
   },
