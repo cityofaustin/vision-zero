@@ -46,7 +46,10 @@ const GridTable = ({ title, query, filters }) => {
   const [searchParameters, setSearchParameters] = useState({});
   const [collapseAdvancedFilters, setCollapseAdvacedFilters] = useState(false);
   const [filterOptions, setFilterOptions] = useState({});
-  const [dateRangeFilter, setDateRangeFilter] = useState({});
+  const [dateRangeFilter, setDateRangeFilter] = useState({
+    startDate: query.config.initStartDate || null,
+    endDate: query.config.initEndDate || null,
+  });
 
   /**
    * Shows or hides advanced filters
@@ -119,6 +122,67 @@ const GridTable = ({ title, query, filters }) => {
   const clearFilters = () => {
     setSearchParameters({});
     setFilterOptions({});
+  };
+
+  /**
+   * Returns true if the input string is a valid alphanumeric object key
+   * @param {string} input - The string to be tested
+   * @returns {boolean}
+   */
+  const isAlphanumeric = input =>
+    input.match(/^[0-9a-zA-Z\-\_]+$/) === null ? false : true;
+
+  /**
+   * Extracts a list of keys in a graphql expression
+   * @param {string} exp - The expression
+   * @returns {Array}
+   */
+  const listKeys = exp => exp.split(/[\{\} ]+/).filter(n => isAlphanumeric(n) && n !== "");
+
+  /**
+   * Returns the value of a data structure based on the list of keys provided
+   * @param {object} obj - the object in question
+   * @param {Array} keys - the list of keys
+   * @returns {*}
+   */
+  const resVal = (obj, keys) => {
+    for(let k = 1; k < keys.length; k++)
+      obj = obj ? obj[keys[k]] || null : null;
+
+    return(obj);
+  };
+
+  /**
+   * Extracts the value (or summary of values)
+   * @param {object} obj - The dataset current object
+   * @param {string} exp - The graphql expression
+   * @returns {string}
+   */
+  const getSummary = (obj, exp) => {
+    let result = [];
+    let map = new Map();
+    let keys = listKeys(exp);
+
+    // First we need to get to the specific section of the object we need
+    let section = obj[keys[0]];
+
+    // If not an array, resolve its value
+    if(!Array.isArray(section)) {
+      // Return direct value
+      return resVal(section, keys);
+    }
+
+    // If it is an array, resolve each and aggregate
+    for(let item of section) {
+      let val = resVal(item, keys);
+
+      if(val !== null && map.has(val) === false) {
+        map.set(val, true);
+        result.push(val);
+      }
+    }
+    // Merge all into a string
+    return result.join(",");
   };
 
   /**
@@ -201,14 +265,16 @@ const GridTable = ({ title, query, filters }) => {
     data[query.table].map((row, index) =>
       dataEntries.push(
         <tr key={index}>
-          {query.columns.map(column => (
-            <td>
+          {query.columns.map((column, ci) => (
+            <td key={ci}>
               {query.isPK(column) ? (
                 <Link to={`/${query.singleItem}/${row[column]}`}>
                   {row[column]}
                 </Link>
+              ) : isAlphanumeric(column) ? (
+                  row[column]
               ) : (
-                row[column]
+                  getSummary(row, column.trim())
               )}
             </td>
           ))}
@@ -243,9 +309,15 @@ const GridTable = ({ title, query, filters }) => {
                 />
               </Row>
               <ButtonToolbar className="mb-3 justify-content-between">
-                {isCrashesPage && <ButtonGroup>
-                  <GridDateRange setDateRangeFilter={setDateRangeFilter} />
-                </ButtonGroup>}
+                {isCrashesPage && (
+                  <ButtonGroup>
+                    <GridDateRange
+                      setDateRangeFilter={setDateRangeFilter}
+                      initStartDate={query.config.initStartDate}
+                      initEndDate={query.config.initEndDate}
+                    />
+                  </ButtonGroup>
+                )}
 
                 <ButtonGroup className="mb-2 float-right">
                   <GridTablePagination
