@@ -60,7 +60,7 @@ let queryConf = {
   },
   order_by: {},
   where: {
-    city_id: "_eq: 22"
+    city_id: "_eq: 22",
   },
   limit: 25,
   offset: 0,
@@ -77,30 +77,24 @@ let customFilters = {
         id: "dni_deaths",
         label: "Deaths",
         filter: {
-          where: [
-            {death_cnt: "_gt: 0"}
-          ]
-        }
+          where: [{ death_cnt: "_gt: 0" }],
+        },
       },
       {
         id: "dni_serious_injuries",
         label: "Serious Injuries",
         filter: {
-          where: [
-            {sus_serious_injry_cnt: "_gt: 0"}
-          ]
-        }
+          where: [{ sus_serious_injry_cnt: "_gt: 0" }],
+        },
       },
       {
         id: "dni_non_fatal",
         label: "Non-Fatal Injuries",
         filter: {
-          where: [
-            {nonincap_injry_cnt: "_gt: 0"}
-          ]
-        }
+          where: [{ nonincap_injry_cnt: "_gt: 0" }],
+        },
       },
-    ]
+    ],
   },
   grp_geograph: {
     icon: "map-marker",
@@ -111,31 +105,29 @@ let customFilters = {
         label: "No Latitude and Longitude provided",
         filter: {
           where: [
-            {latitude: "_is_null: true"},
-            {longitude: "_is_null: true"}
-          ]
-        }
+            { latitude: "_is_null: true" },
+            { longitude: "_is_null: true" },
+          ],
+        },
       },
       {
         id: "geo_geocoded",
         label: "Has been Geo-Coded",
         filter: {
-          where: [
-            {geocoded: "_eq: \"Y\""}
-          ]
-        }
+          where: [{ geocoded: '_eq: "Y"' }],
+        },
       },
       {
         id: "geo_confirmed_coordinates",
         label: "Confirmed Coordinates",
         filter: {
           where: [
-            {latitude_primary: "_is_null: false"},
-            {longitude_primary: "_is_null: false"}
-          ]
-        }
-      }
-    ]
+            { latitude_primary: "_is_null: false" },
+            { longitude_primary: "_is_null: false" },
+          ],
+        },
+      },
+    ],
   },
   grp_case: {
     icon: "vcard-o",
@@ -145,18 +137,19 @@ let customFilters = {
         id: "int_nocasenumber",
         label: "No Case Number",
         filter: {
-          where: [
-            {case_id: "_is_null: true"}
-          ]
-        }
-      }
-    ]
-  }
+          where: [{ case_id: "_is_null: true" }],
+        },
+      },
+    ],
+  },
 };
 
-
 const CrashesQA = () => (
-    <GridTable query={crashesQuery} title={"Crashes Q/A"} filters={customFilters} />
+  <GridTable
+    query={crashesQuery}
+    title={"Crashes Q/A"}
+    filters={customFilters}
+  />
 );
 
 export default withApollo(CrashesQA);

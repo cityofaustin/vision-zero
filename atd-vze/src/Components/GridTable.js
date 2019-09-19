@@ -137,7 +137,8 @@ const GridTable = ({ title, query, filters }) => {
    * @param {string} exp - The expression
    * @returns {Array}
    */
-  const listKeys = exp => exp.split(/[\{\} ]+/).filter(n => isAlphanumeric(n) && n !== "");
+  const listKeys = exp =>
+    exp.split(/[\{\} ]+/).filter(n => isAlphanumeric(n) && n !== "");
 
   /**
    * Returns the value of a data structure based on the list of keys provided
@@ -146,10 +147,10 @@ const GridTable = ({ title, query, filters }) => {
    * @returns {*}
    */
   const resVal = (obj, keys) => {
-    for(let k = 1; k < keys.length; k++)
+    for (let k = 1; k < keys.length; k++)
       obj = obj ? obj[keys[k]] || null : null;
 
-    return(obj);
+    return obj;
   };
 
   /**
@@ -167,16 +168,16 @@ const GridTable = ({ title, query, filters }) => {
     let section = obj[keys[0]];
 
     // If not an array, resolve its value
-    if(!Array.isArray(section)) {
+    if (!Array.isArray(section)) {
       // Return direct value
       return resVal(section, keys);
     }
 
     // If it is an array, resolve each and aggregate
-    for(let item of section) {
+    for (let item of section) {
       let val = resVal(item, keys);
 
-      if(val !== null && map.has(val) === false) {
+      if (val !== null && map.has(val) === false) {
         map.set(val, true);
         result.push(val);
       }
@@ -272,9 +273,9 @@ const GridTable = ({ title, query, filters }) => {
                   {row[column]}
                 </Link>
               ) : isAlphanumeric(column) ? (
-                  row[column]
+                row[column]
               ) : (
-                  getSummary(row, column.trim())
+                getSummary(row, column.trim())
               )}
             </td>
           ))}
