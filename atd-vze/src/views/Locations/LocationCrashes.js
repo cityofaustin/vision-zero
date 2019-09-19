@@ -6,7 +6,6 @@ import GridTable from "../../Components/GridTable";
 import gqlAbstract from "../../queries/gqlAbstract";
 
 function LocationCrashes(props) {
-    console.log(props.locationId);
     // Our initial query configuration
     let queryConf = {
         table: "atd_txdot_crashes",
@@ -19,6 +18,12 @@ function LocationCrashes(props) {
                 label_search: "Search by Crash ID",
                 label_table: "Crash ID",
                 type: "Int",
+            },
+            "location { location_id }": {
+                searchable: false,
+                sortable: true,
+                label_table: "Location ID",
+                type: "String",
             },
             case_id: {
                 searchable: true,
@@ -52,6 +57,12 @@ function LocationCrashes(props) {
                 label_table: "Death Count",
                 type: "Date",
             },
+            "units { body_style { veh_body_styl_desc } }": {
+                searchable: false,
+                sortable: false,
+                label_table: "Unit Body Type",
+                type: "String",
+            },
         },
         order_by: {},
         where: {
@@ -60,6 +71,8 @@ function LocationCrashes(props) {
         },
         limit: 25,
         offset: 0,
+
+        initStartDate: '01/01/2000',
     };
 
     let crashesQuery = new gqlAbstract(queryConf);
