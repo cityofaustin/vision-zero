@@ -1,6 +1,6 @@
 # atd-cris-capybara
 
-This is a tool that automates the requests to CRIS's website.
+This is an ETL tool that automates the making of requests, downloads and processing of crash data from the C.R.I.S. website. It utilizes Capybara with Ruby to emulate browser behavior, Python, and Docker. It requires setting up environment variables on your system to run, these can be fund in the `./scripts/run.sh` file.
 
 ### Why using docker?
 
