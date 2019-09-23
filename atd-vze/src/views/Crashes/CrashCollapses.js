@@ -166,6 +166,7 @@ class CrashCollapses extends Component {
                               <th>ZIP</th>
                               <th>Age</th>
                               <th>Injury Severity</th>
+                              <th>Type</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -185,6 +186,7 @@ class CrashCollapses extends Component {
                                       {person.injury_severity.injry_sev_desc}
                                     </Badge>
                                   </td>
+                                  <td>{person.person_type.prsn_type_desc}</td>
                                 </tr>
                               )
                             )}
@@ -200,6 +202,7 @@ class CrashCollapses extends Component {
                                   <th>Unit</th>
                                   <th>Age</th>
                                   <th>Injury Severity</th>
+                                  <th>Type</th>
                                 </tr>
                               </thead>
                               <tbody>
@@ -220,6 +223,9 @@ class CrashCollapses extends Component {
                                               .injry_sev_desc
                                           }
                                         </Badge>
+                                      </td>
+                                      <td>
+                                        {person.person_type.prsn_type_desc}
                                       </td>
                                     </tr>
                                   )
