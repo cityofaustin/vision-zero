@@ -35,7 +35,7 @@ In development, this project uses [Prettier](https://prettier.io/) for code form
 
 Our ETL process uses capybara to request, download and process data. The environment in which our capybara script runs is very specific to our needs, so we built a docker container which has all the requirements pre-built. There are also certain variables that are needed in order for capybara to run.
 
-For step-by-step details on how to prepare your environment and how to execute this process, please refer to the documentation in the [atd-cris-capybara folder,](https://github.com/cityofaustin/atd-vz-data/tree/master/atd-cris-capybara)
+For step-by-step details on how to prepare your environment and how to execute this process, please refer to the documentation in the [atd-cris-capybara folder.](https://github.com/cityofaustin/atd-vz-data/tree/master/atd-cris-capybara)
 
 TODO
 
