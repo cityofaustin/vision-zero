@@ -2,70 +2,57 @@ import React, { Component } from "react";
 import MapGL from "react-map-gl";
 import { Editor, EditorModes } from "react-map-gl-draw";
 
-import Toolbar from "./mapToolbar";
+const MODES = [
+  { id: EditorModes.EDITING, text: "Select and Edit Feature" },
+  { id: EditorModes.DRAW_POINT, text: "Draw Point" },
+  { id: EditorModes.DRAW_PATH, text: "Draw Polyline" },
+  { id: EditorModes.DRAW_POLYGON, text: "Draw Polygon" },
+  { id: EditorModes.DRAW_RECTANGLE, text: "Draw Rectangle" },
+];
 
-// eslint-disable-next-line no-process-env, no-undef
-const MAP_STYLE = process.env.MapStyle || "mapbox://styles/mapbox/light-v9";
+const DEFAULT_VIEWPORT = {
+  width: 800,
+  height: 600,
+  longitude: -122.45,
+  latitude: 37.78,
+  zoom: 14,
+};
+
 const TOKEN = process.env.REACT_APP_MAPBOX_TOKEN;
 
-// const DEFAULT_VIEWPORT = {
-//   width: 800,
-//   height: 600,
-//   longitude: ,
-//   latitude: ,
-//   zoom: 14,
-// };
-
-export default class LocationMap extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      // map
-      viewport: {
-        latitude: 37.78,
-        longitude: -122.45,
-        zoom: 17,
-        bearing: 0,
-        pitch: 0,
-      }, // editor
-      selectedMode: EditorModes.READ_ONLY,
-      features: [],
-      selectedFeatureIndex: null,
-    };
-    this._mapRef = null;
-    this._editorRef = null;
-  }
-
-  _onDelete = () => {
-    const { selectedFeatureIndex } = this.state;
-    if (selectedFeatureIndex === null || selectedFeatureIndex === undefined) {
-      return;
-    }
-
-    this._editorRef.deleteFeatures(selectedFeatureIndex);
+class LocationMap extends Component {
+  state = {
+    // map
+    viewport: DEFAULT_VIEWPORT,
+    // editor
+    selectedMode: EditorModes.READ_ONLY,
   };
 
   _switchMode = evt => {
-    let selectedMode = evt.target.id;
-    if (selectedMode === this.state.selectedMode) {
-      selectedMode = null;
-    }
-
-    this.setState({ selectedMode });
-  };
-
-  _updateViewport = viewport => {
-    this.setState({ viewport });
+    const selectedMode = evt.target.id;
+    this.setState({
+      selectedMode:
+        selectedMode === this.state.selectedMode ? null : selectedMode,
+    });
   };
 
   _renderToolbar = () => {
     return (
-      <Toolbar
-        selectedMode={this.state.selectedMode}
-        onSwitchMode={this._switchMode}
-        onDelete={this._onDelete}
-      />
+      <div
+        style={{ position: "absolute", top: 0, right: 0, maxWidth: "320px" }}
+      >
+        <select onChange={this._switchMode}>
+          <option value="">--Please choose a mode--</option>
+          {MODES.map(mode => (
+            <option value={mode.id}>{mode.text}</option>
+          ))}
+        </select>
+      </div>
     );
+  };
+
+  _updateViewport = viewport => {
+    this.setState({ viewport });
   };
 
   render() {
@@ -73,27 +60,17 @@ export default class LocationMap extends Component {
     return (
       <MapGL
         {...viewport}
-        ref={_ => (this._mapRef = _)}
         width="100%"
-        height="350px"
-        mapStyle={MAP_STYLE}
+        height="500px"
+        mapStyle={"mapbox://styles/mapbox/light-v9"}
         onViewportChange={this._updateViewport}
         mapboxApiAccessToken={TOKEN}
       >
-                
-        <Editor
-          ref={_ => (this._editorRef = _)}
-          clickRadius={12}
-          onSelect={selected => {
-            this.setState({
-              selectedFeatureIndex: selected && selected.selectedFeatureIndex,
-            });
-          }}
-          mode={selectedMode}
-        />
-                {this._renderToolbar()}
-              
+        <Editor clickRadius={12} mode={selectedMode} />
+        {this._renderToolbar()}
       </MapGL>
     );
   }
 }
+
+export default LocationMap;
