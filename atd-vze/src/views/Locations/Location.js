@@ -1,4 +1,5 @@
 import React from "react";
+import LocationMap from "./LocationMap";
 import { Card, CardBody, CardHeader, Col, Row, Table, Alert } from "reactstrap";
 import { withApollo } from "react-apollo";
 import { useQuery } from "@apollo/react-hooks";
@@ -49,6 +50,7 @@ function Location(props) {
 
         <Col lg={6}>{/*ADD A FEATURE SOON!*/}</Col>
       </Row>
+      <LocationMap />
     </div>
   );
 }
