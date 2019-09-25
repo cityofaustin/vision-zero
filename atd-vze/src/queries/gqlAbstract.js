@@ -192,11 +192,7 @@ gqlAbstractTableAggregateName (
    * @returns {Array}
    */
   get columns() {
-    let columns = [];
-    for (let [key, value] of this.getEntries("columns")) {
-      columns.push(key);
-    }
-    return columns;
+    return this.getEntries("columns").map(k => k[0]);
   }
 
   /**
@@ -250,11 +246,7 @@ gqlAbstractTableAggregateName (
    * @returns {string}
    */
   generateColumns() {
-    let output = [];
-    for (let [key, value] of Object.entries(this.config["columns"])) {
-      output.push(key);
-    }
-    return output.join("\n");
+    return this.columns.join("\n");
   }
 
   /**
