@@ -148,7 +148,7 @@ const GridTable = ({ title, query, filters }) => {
    * @param {Array} keys - the list of keys
    * @returns {*}
    */
-  const resVal = (obj, keys) => {
+  const responseValue = (obj, keys) => {
     for (let k = 1; k < keys.length; k++)
       obj = obj ? obj[keys[k]] || null : null;
 
@@ -172,12 +172,12 @@ const GridTable = ({ title, query, filters }) => {
     // If not an array, resolve its value
     if (!Array.isArray(section)) {
       // Return direct value
-      return resVal(section, keys);
+      return responseValue(section, keys);
     }
 
     // If it is an array, resolve each and aggregate
     for (let item of section) {
-      let val = resVal(item, keys);
+      let val = responseValue(item, keys);
 
       if (val !== null && map.has(val) === false) {
         map.set(val, true);
