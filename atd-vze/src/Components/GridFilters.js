@@ -17,46 +17,64 @@ const GridFilters = ({
   filterOptionsState,
   setFilterOptions,
 }) => {
-  //
-  let groups = [];
-  let groupFilters = [];
+  // Filter options serves as a helper to load and stage the options from filterOptionsState
   let filterOptions = [];
 
-  const filterList = () => {
-    let filtersList = [];
-    for (let group in filters) {
-      for (let filter of filters[group]["filters"]) {
-        filtersList.push(filter.id);
-      }
-    }
-    return filtersList;
+  /**
+   * Returns an array with the names of each filter in the filter configuration.
+   * The map function produces a 2D array, concat.apply will flatten it to a 1D array.
+   * @param {object} filterConf - the filter configuration.
+   * @returns {string[]}
+   */
+  const filterList = filterConf => {
+    return [].concat.apply(
+      [],
+      Object.keys(filterConf).map(groupName => {
+        return filterConf[groupName]["filters"].map(item => item.id);
+      })
+    );
   };
 
+  /**
+   * Initializes the filter state, if the filter state is initialized then
+   * it loads it into the container.
+   * @param {object} filters - the filter settings
+   */
   const initializeFilterState = filters => {
     if (Object.keys(filterOptionsState).length === 0) {
+      // We need to build an object, from an array:
       let initFilterOpts = [];
-      for (let filter of filterList(filters)) {
-        initFilterOpts[filter] = false;
-      }
+
+      // We will iterate through each key, and build the object:
+      filterList(filters).forEach(filterName => {
+        initFilterOpts[filterName] = false;
+      });
+
+      // The object is then passed to the state:
       setFilterOptions(initFilterOpts);
     } else {
+      // Load the existing sate to our filterOptions variable
       Object.assign(filterOptions, filterOptionsState);
     }
   };
 
-  const handleChange = e => {
-    filterOptions[e.target.id] = e.target.checked;
+  /**
+   * Toggles any filter to ON or OFF (true, false), then passes the change to the state.
+   * @param {object} event - the DOM event
+   */
+  const handleChange = event => {
+    filterOptions[event.target.id] = event.target.checked;
     setFilterOptions(filterOptions);
   };
 
-  // If there are filters, then initialize
-  if ((filters || null) !== null) initializeFilterState(filters);
+  // If there are filters, then initialize.
+  if (!!filters) initializeFilterState(filters);
 
-  for (let group in filters) {
-    for (let filter in filters[group]["filters"]) {
-      let currentFilter = filters[group]["filters"][filter];
+  let groups = Object.keys(filters).map(groupName => {
+    let group = filters[groupName];
 
-      groupFilters.push(
+    let groupFilters = group["filters"].map(currentFilter => {
+      return (
         <Row>
           <AppSwitch
             id={currentFilter.id}
@@ -71,16 +89,16 @@ const GridFilters = ({
           </Label>
         </Row>
       );
-    }
+    });
 
-    groups.push(
-      <Col md="6" id={group}>
+    return (
+      <Col md="6" id={groupName}>
         <Collapse isOpen={isCollapsed}>
           <div>
             <Card>
               <CardHeader>
-                <i className={"fa fa-" + filters[group]["icon"]} />
-                <b>{filters[group]["label"]} </b>
+                <i className={"fa fa-" + group["icon"]} />
+                <b>{group["label"]} </b>
               </CardHeader>
               <CardBody>{groupFilters}</CardBody>
             </Card>
@@ -88,9 +106,7 @@ const GridFilters = ({
         </Collapse>
       </Col>
     );
-    // Clean the current group for the next one:
-    groupFilters = [];
-  }
+  });
 
   return <>{groups}</>;
 };
