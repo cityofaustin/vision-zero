@@ -15,12 +15,19 @@ const DEFAULT_VIEWPORT = {
 const TOKEN = process.env.REACT_APP_MAPBOX_TOKEN;
 
 class LocationMap extends Component {
-  state = {
-    // map
-    viewport: DEFAULT_VIEWPORT,
-    // editor
-    selectedMode: EditorModes.READ_ONLY,
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      // map
+      viewport: DEFAULT_VIEWPORT,
+      // editor
+      selectedMode: EditorModes.READ_ONLY,
+      features: [],
+      selectedFeatureIndex: null,
+    };
+    this._mapRef = null;
+    this._editorRef = null;
+  }
 
   _switchMode = evt => {
     const selectedMode = evt.target.id;
@@ -44,18 +51,37 @@ class LocationMap extends Component {
     this.setState({ viewport });
   };
 
+  _onDelete = () => {
+    const { selectedFeatureIndex } = this.state;
+    if (selectedFeatureIndex === null || selectedFeatureIndex === undefined) {
+      return;
+    }
+
+    this._editorRef.deleteFeatures(selectedFeatureIndex);
+  };
+
   render() {
     const { viewport, selectedMode } = this.state;
     return (
       <MapGL
         {...viewport}
+        ref={_ => (this._mapRef = _)}
         width="100%"
         height="500px"
         mapStyle={"mapbox://styles/mapbox/light-v9"}
         onViewportChange={this._updateViewport}
         mapboxApiAccessToken={TOKEN}
       >
-        <Editor clickRadius={12} mode={selectedMode} />
+        <Editor
+          ref={_ => (this._editorRef = _)}
+          clickRadius={12}
+          onSelect={selected => {
+            this.setState({
+              selectedFeatureIndex: selected && selected.selectedFeatureIndex,
+            });
+          }}
+          mode={selectedMode}
+        />
         {this._renderToolbar()}
       </MapGL>
     );

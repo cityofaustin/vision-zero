@@ -33,8 +33,8 @@ const Container = styled.div`
 `;
 
 const Row = styled.div`
-  height: 34px;
-  padding: 7px;
+  height: 48px;
+  padding: 0px;
   display: flex;
   justify-content: left;
   color: ${props => (props.selected ? "#ffffff" : "inherit")};
