@@ -70,7 +70,7 @@ const GridFilters = ({
   // If there are filters, then initialize.
   if (!!filters) initializeFilterState(filters);
 
-  let groups = Object.keys(filters).map(groupName => {
+  let groups = Object.keys(filters || {}).map(groupName => {
     let group = filters[groupName];
 
     let groupFilters = group["filters"].map(currentFilter => {
