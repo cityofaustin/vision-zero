@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@apollo/react-hooks";
 
@@ -6,7 +6,6 @@ import { withApollo } from "react-apollo";
 import { CSVLink } from "react-csv";
 
 import {
-  Badge,
   Card,
   CardBody,
   CardHeader,
@@ -17,13 +16,16 @@ import {
   Spinner,
 } from "reactstrap";
 
+// React Strap
+import ButtonToolbar from "reactstrap/es/ButtonToolbar";
+
+// GridTable
 import GridTableHeader from "./GridTableHeader";
 import GridTablePagination from "./GridTablePagination";
 import GridTableSearch from "./GridTableSearch";
 import GridFilters from "./GridFilters";
 import GridDateRange from "./GridDateRange";
-import ButtonToolbar from "reactstrap/es/ButtonToolbar";
-import TableDateRange from "./TableDateRange";
+
 
 const GridTable = ({ title, query, filters }) => {
   /**
@@ -130,7 +132,7 @@ const GridTable = ({ title, query, filters }) => {
    * @returns {boolean}
    */
   const isAlphanumeric = input =>
-    input.match(/^[0-9a-zA-Z\-\_]+$/) === null ? false : true;
+    input.match(/^[0-9a-zA-Z\-_]+$/) === null ? false : true;
 
   /**
    * Extracts a list of keys in a graphql expression
@@ -138,7 +140,7 @@ const GridTable = ({ title, query, filters }) => {
    * @returns {Array}
    */
   const listKeys = exp =>
-    exp.split(/[\{\} ]+/).filter(n => isAlphanumeric(n) && n !== "");
+    exp.split(/[{} ]+/).filter(n => isAlphanumeric(n) && n !== "");
 
   /**
    * Returns the value of a data structure based on the list of keys provided
@@ -202,9 +204,9 @@ const GridTable = ({ title, query, filters }) => {
   ) {
     query.setWhere(
       "crash_date",
-      `_gte: \"${dateRangeFilter["startDate"]}\", _lte: \"${
+      `_gte: "${dateRangeFilter["startDate"]}", _lte: "${
         dateRangeFilter["endDate"]
-      }\"`
+      }"`
     );
   }
 
