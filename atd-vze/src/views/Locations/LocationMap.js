@@ -14,6 +14,28 @@ const DEFAULT_VIEWPORT = {
 
 const TOKEN = process.env.REACT_APP_MAPBOX_TOKEN;
 
+const featuresArray = [
+  {
+    type: "Feature",
+    properties: {
+      id: "b4e68a40-dfab-11e9-9f9b-bf6c791c15a7",
+      renderType: "Rectangle",
+    },
+    geometry: {
+      type: "Polygon",
+      coordinates: [
+        [
+          [-97.74806289156764, 30.271142973914532],
+          [-97.74806289156764, 30.266806411475525],
+          [-97.73952273806294, 30.266806411475525],
+          [-97.73952273806294, 30.271142973914532],
+          [-97.74806289156764, 30.271142973914532],
+        ],
+      ],
+    },
+  },
+];
+
 class LocationMap extends Component {
   constructor(props) {
     super(props);
@@ -22,7 +44,6 @@ class LocationMap extends Component {
       viewport: DEFAULT_VIEWPORT,
       // editor
       selectedMode: EditorModes.READ_ONLY,
-      features: [],
       selectedFeatureIndex: null,
     };
     this._mapRef = null;
@@ -69,6 +90,7 @@ class LocationMap extends Component {
 
   render() {
     const { viewport, selectedMode } = this.state;
+
     return (
       <MapGL
         {...viewport}
