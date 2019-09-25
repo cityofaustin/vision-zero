@@ -1,12 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { withApollo } from "react-apollo";
 import styled from "styled-components";
-import { colors } from "../styles/colors";
-
-const StyledGreyArrow = styled.i`
-  color: ${colors.light};
-  cursor: pointer;
-`;
 
 const StyledArrow = styled.i`
   cursor: pointer;
