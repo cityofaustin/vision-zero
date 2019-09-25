@@ -7,8 +7,8 @@ import Toolbar from "./toolbar";
 const DEFAULT_VIEWPORT = {
   width: 800,
   height: 600,
-  longitude: -122.45,
-  latitude: 37.78,
+  longitude: -97.743192,
+  latitude: 30.26714,
   zoom: 14,
 };
 
@@ -51,6 +51,13 @@ class LocationMap extends Component {
     this.setState({ viewport });
   };
 
+  _onSelect = selected => {
+    // debugger;
+    this.setState({
+      selectedFeatureIndex: selected && selected.selectedFeatureIndex,
+    });
+  };
+
   _onDelete = () => {
     const { selectedFeatureIndex } = this.state;
     if (selectedFeatureIndex === null || selectedFeatureIndex === undefined) {
@@ -68,18 +75,14 @@ class LocationMap extends Component {
         ref={_ => (this._mapRef = _)}
         width="100%"
         height="500px"
-        mapStyle={"mapbox://styles/mapbox/light-v9"}
+        mapStyle={"mapbox://styles/mapbox/streets-v9"}
         onViewportChange={this._updateViewport}
         mapboxApiAccessToken={TOKEN}
       >
         <Editor
           ref={_ => (this._editorRef = _)}
           clickRadius={12}
-          onSelect={selected => {
-            this.setState({
-              selectedFeatureIndex: selected && selected.selectedFeatureIndex,
-            });
-          }}
+          onSelect={this._onSelect}
           mode={selectedMode}
         />
         {this._renderToolbar()}

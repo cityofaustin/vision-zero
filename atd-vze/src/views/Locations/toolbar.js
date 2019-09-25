@@ -22,7 +22,7 @@ const MODES = [
 const Container = styled.div`
   position: absolute;
   width: 48px;
-  left: 24px;
+  right: 24px;
   top: 24px;
   background: #fff;
   box-shadow: 0 0 4px rgba(0, 0, 0, 0.15);
@@ -49,7 +49,7 @@ const Img = styled.img`
 
 const Tooltip = styled.div`
   position: absolute;
-  left: 52px;
+  right: 52px;
   padding: 4px;
   background: rgba(0, 0, 0, 0.8);
   color: #fff;
