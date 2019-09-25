@@ -88,6 +88,9 @@ export const GET_CRASH = gql`
       injury_severity {
         injry_sev_desc
       }
+      person_type {
+        prsn_type_desc
+      }
       unit_nbr
     }
     atd_txdot_person(where: { crash_id: { _eq: $crashId } }) {
@@ -95,6 +98,9 @@ export const GET_CRASH = gql`
       prsn_injry_sev_id
       injury_severity {
         injry_sev_desc
+      }
+      person_type {
+        prsn_type_desc
       }
       unit_nbr
     }
