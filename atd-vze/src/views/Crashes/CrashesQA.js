@@ -116,7 +116,7 @@ let customFilters = {
   },
   grp_geograph: {
     icon: "map-marker",
-    label: "GeoGraphy",
+    label: "Geography",
     filters: [
       {
         id: "geo_no_coordinates",
@@ -130,7 +130,7 @@ let customFilters = {
       },
       {
         id: "geo_geocoded",
-        label: "Has been Geo-Coded",
+        label: "Has been Geocoded",
         filter: {
           where: [{ geocoded: '_eq: "Y"' }],
         },
