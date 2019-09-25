@@ -14,27 +14,34 @@ const DEFAULT_VIEWPORT = {
 
 const TOKEN = process.env.REACT_APP_MAPBOX_TOKEN;
 
-const featuresArray = [
-  {
-    type: "Feature",
-    properties: {
-      id: "b4e68a40-dfab-11e9-9f9b-bf6c791c15a7",
-      renderType: "Rectangle",
-    },
-    geometry: {
-      type: "Polygon",
-      coordinates: [
-        [
-          [-97.74806289156764, 30.271142973914532],
-          [-97.74806289156764, 30.266806411475525],
-          [-97.73952273806294, 30.266806411475525],
-          [-97.73952273806294, 30.271142973914532],
-          [-97.74806289156764, 30.271142973914532],
+const featuresObject = {
+  features: [
+    {
+      type: "Feature",
+      properties: {},
+      geometry: {
+        type: "Polygon",
+        coordinates: [
+          [
+            [-97.74458348751068, 30.263638090982525],
+            [-97.74461299180984, 30.263494457605205],
+            [-97.74470686912537, 30.26352920763512],
+            [-97.74479001760483, 30.26337399073966],
+            [-97.74466127157211, 30.26333924065481],
+            [-97.74470418691635, 30.263209506896086],
+            [-97.74454057216644, 30.263158540015407],
+            [-97.74447083473206, 30.26329290718922],
+            [-97.74432867765427, 30.263258157075697],
+            [-97.74425357580185, 30.263413374154254],
+            [-97.74441182613373, 30.26346665757242],
+            [-97.74437427520752, 30.263582490990412],
+            [-97.74458348751068, 30.263638090982525],
+          ],
         ],
-      ],
+      },
     },
-  },
-];
+  ],
+};
 
 class LocationMap extends Component {
   constructor(props) {
@@ -74,9 +81,14 @@ class LocationMap extends Component {
 
   _onSelect = selected => {
     // debugger;
+    console.log(JSON.stringify(selected));
     this.setState({
       selectedFeatureIndex: selected && selected.selectedFeatureIndex,
     });
+  };
+
+  _onUpdate = () => {
+    // Add logic to capture updated GeoJSON of polygon here
   };
 
   _onDelete = () => {
@@ -105,7 +117,9 @@ class LocationMap extends Component {
           ref={_ => (this._editorRef = _)}
           clickRadius={12}
           onSelect={this._onSelect}
+          onUpdate={this._onUpdate}
           mode={selectedMode}
+          //   features={featuresObject}
         />
         {this._renderToolbar()}
       </MapGL>
