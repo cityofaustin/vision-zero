@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { withApollo } from "react-apollo";
 import {
-  Row,
   Col,
   Button,
   Form,
