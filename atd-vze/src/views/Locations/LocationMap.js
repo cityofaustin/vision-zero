@@ -2,13 +2,7 @@ import React, { Component } from "react";
 import MapGL from "react-map-gl";
 import { Editor, EditorModes } from "react-map-gl-draw";
 
-const MODES = [
-  { id: EditorModes.EDITING, text: "Select and Edit Feature" },
-  { id: EditorModes.DRAW_POINT, text: "Draw Point" },
-  { id: EditorModes.DRAW_PATH, text: "Draw Polyline" },
-  { id: EditorModes.DRAW_POLYGON, text: "Draw Polygon" },
-  { id: EditorModes.DRAW_RECTANGLE, text: "Draw Rectangle" },
-];
+import Toolbar from "./toolbar";
 
 const DEFAULT_VIEWPORT = {
   width: 800,
@@ -38,16 +32,11 @@ class LocationMap extends Component {
 
   _renderToolbar = () => {
     return (
-      <div
-        style={{ position: "absolute", top: 0, right: 0, maxWidth: "320px" }}
-      >
-        <select onChange={this._switchMode}>
-          <option value="">--Please choose a mode--</option>
-          {MODES.map(mode => (
-            <option value={mode.id}>{mode.text}</option>
-          ))}
-        </select>
-      </div>
+      <Toolbar
+        selectedMode={this.state.selectedMode}
+        onSwitchMode={this._switchMode}
+        onDelete={this._onDelete}
+      />
     );
   };
 
