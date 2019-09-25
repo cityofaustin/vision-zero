@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 
 import {
   Card,
@@ -7,8 +7,8 @@ import {
   Col,
   Row,
   Table,
-  Button,
-  Badge, Alert,
+  Badge,
+  Alert,
 } from "reactstrap";
 
 import { withApollo } from "react-apollo";
@@ -21,7 +21,6 @@ import LocationCrashes from "./LocationCrashes";
 import { GET_LOCATION } from "../../queries/Locations";
 import Widget02 from "../Widgets/Widget02";
 import { Doughnut } from "react-chartjs-2";
-import { CustomTooltips } from "@coreui/coreui-plugin-chartjs-custom-tooltips";
 
 function Location(props) {
   const locationId = props.match.params.id;
