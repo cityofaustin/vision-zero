@@ -1,6 +1,6 @@
 import { MapController } from "react-map-gl";
 
-export class CustomGeocoderController extends MapController {
+export class CustomGeocoderMapController extends MapController {
   _onPan(event) {
     // ignore pan on geocoder input
     if (this._isGeocoderInputNode(event.target)) {
