@@ -5,7 +5,7 @@ const locationDataMap = [
       unique_id: "Location ID",
       address: "Address",
       description: "Crash ID",
-      geometry: "Geometry",
+      // shape: "Shape",
       metadata: "Metadata",
       last_update: "Last Update",
     },
