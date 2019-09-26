@@ -66,6 +66,22 @@ function Crash(props) {
     setFormData(newFormState);
   };
 
+  const handleFieldUpdate = e => {
+    e.preventDefault();
+
+    props.client
+      .mutate({
+        mutation: UPDATE_CRASH,
+        variables: {
+          crashId: crashId,
+          changes: formData,
+        },
+      })
+      .then(res => refetch());
+
+    setEditField("");
+  };
+
   const deathCount = data.atd_txdot_crashes[0].death_cnt;
   const injuryCount = data.atd_txdot_crashes[0].tot_injry_cnt;
   const latitude = data.atd_txdot_crashes[0].latitude;
@@ -113,16 +129,51 @@ function Crash(props) {
                   <Table responsive striped hover>
                     <tbody>
                       {Object.keys(section.fields).map((field, i) => {
-                        return (
-                          <tr key={i}>
-                            <td>{`${section.fields[field]}:`}</td>
-                            <td>
-                              <strong>
-                                {data.atd_txdot_crashes[0][field]}
-                              </strong>
-                            </td>
-                          </tr>
-                        );
+                        const isEditing = field === editField;
+
+                        if (typeof section.fields[field] === "object") {
+                          return (
+                            <tr key={i}>
+                              <td>
+                                <strong>{section.fields[field].label}</strong>
+                              </td>
+                              <td>
+                                {isEditing ? (
+                                  <form onSubmit={e => handleFieldUpdate(e)}>
+                                    <input
+                                      type="text"
+                                      defaultValue={
+                                        (formData && formData[field.data]) ||
+                                        data.atd_txdot_crashes[0][field]
+                                      }
+                                      onChange={e => handleInputChange(e)}
+                                      // ref={n => (input = n)}
+                                    />
+
+                                    <button type="submit">
+                                      <i
+                                        className="fa fa-check edit-toggle"
+                                        // onClick={e => handleCheckClick(e)}
+                                      />
+                                    </button>
+                                  </form>
+                                ) : (
+                                  (formData && formData[field.data]) ||
+                                  data.atd_txdot_crashes[0][field]
+                                )}
+                              </td>
+                              <td>
+                                {section.fields[field].editable &&
+                                  !isEditing && (
+                                    <i
+                                      className="fa fa-pencil edit-toggle"
+                                      onClick={() => setEditField(field)}
+                                    />
+                                  )}
+                              </td>
+                            </tr>
+                          );
+                        }
                       })}
                     </tbody>
                   </Table>
@@ -141,89 +192,7 @@ function Crash(props) {
                   <>
                     <CrashMap data={data.atd_txdot_crashes[0]} />
                     <Table responsive striped hover>
-                      <tbody>
-                        {geoFields.fields.map(field => {
-                          let fieldValue = "";
-
-                          if (data.atd_txdot_crashes[0][field.data] === null) {
-                            // If the value is null, coerce it to an empty string
-                            fieldValue = "";
-                          } else if (
-                            typeof data.atd_txdot_crashes[0][field.data] ===
-                            "object"
-                          ) {
-                            // If its is an object, that means it is coming via a
-                            // nested GraphQL query and uses the `_desc` in the lookup table
-                            fieldValue =
-                              data.atd_txdot_crashes[0][field.data][
-                                `${field.data}_desc`
-                              ];
-                          } else {
-                            fieldValue =
-                              // otherwise, just assign the plain value
-                              data.atd_txdot_crashes[0][field.data];
-                          }
-
-                          const isEditing = field.data === editField;
-                          return (
-                            <tr key={`${field.label}_key`}>
-                              <td>{field.label}</td>
-                              <td>
-                                {isEditing ? (
-                                  <form
-                                    onSubmit={e => {
-                                      e.preventDefault();
-                                      debugger;
-
-                                      props.client
-                                        .mutate({
-                                          mutation: UPDATE_CRASH,
-                                          variables: {
-                                            crashId: crashId,
-                                            changes: formData,
-                                          },
-                                        })
-                                        .then(res => {
-                                          refetch();
-                                        });
-
-                                      setEditField("");
-                                    }}
-                                  >
-                                    <input
-                                      type="text"
-                                      defaultValue={
-                                        (formData && formData[field.data]) ||
-                                        fieldValue
-                                      }
-                                      onChange={e => handleInputChange(e)}
-                                      // ref={n => (input = n)}
-                                    />
-
-                                    <button type="submit">
-                                      <i
-                                        className="fa fa-check edit-toggle"
-                                        // onClick={e => handleCheckClick(e)}
-                                      />
-                                    </button>
-                                  </form>
-                                ) : (
-                                  (formData && formData[field.data]) ||
-                                  fieldValue
-                                )}
-                              </td>
-                              <td>
-                                {field.editable && !isEditing && (
-                                  <i
-                                    className="fa fa-pencil edit-toggle"
-                                    onClick={() => setEditField(field.data)}
-                                  />
-                                )}
-                              </td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
+                      <tbody></tbody>
                     </Table>
                   </>
                 ) : (
