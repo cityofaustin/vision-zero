@@ -28,7 +28,9 @@ export const crashDataMap = [
       },
       fhe_collsn_id: {
         label: "Manner of Collision ID",
-        editable: false,
+        editable: true,
+        uiType: "select",
+        lookupOptions: "",
       },
       last_update: {
         label: "Last Updated",
@@ -37,7 +39,7 @@ export const crashDataMap = [
       investigator_narrative: {
         label: "Investigator Narrative",
         editable: true,
-        dataType: "string",
+        uiType: "text",
       },
       light_cond_id: {
         label: "Light Condition",

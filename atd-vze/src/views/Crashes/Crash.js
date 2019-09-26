@@ -140,15 +140,24 @@ function Crash(props) {
                               <td>
                                 {isEditing ? (
                                   <form onSubmit={e => handleFieldUpdate(e)}>
-                                    <input
-                                      type="text"
-                                      defaultValue={
-                                        (formData && formData[field.data]) ||
-                                        data.atd_txdot_crashes[0][field]
-                                      }
-                                      onChange={e => handleInputChange(e)}
-                                      // ref={n => (input = n)}
-                                    />
+                                    {section.fields[field].uiType ===
+                                      "select" && (
+                                      <select name={field} id={field}>
+                                        <option value=""></option>
+                                      </select>
+                                    )}
+                                    {section.fields[field].uiType ===
+                                      "text" && (
+                                      <input
+                                        type="text"
+                                        defaultValue={
+                                          (formData && formData[field.data]) ||
+                                          data.atd_txdot_crashes[0][field]
+                                        }
+                                        onChange={e => handleInputChange(e)}
+                                        // ref={n => (input = n)}
+                                      />
+                                    )}
 
                                     <button type="submit">
                                       <i
