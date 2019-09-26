@@ -175,6 +175,7 @@ class CrashQAMap extends Component {
               <Button
                 active={mapStyle === "satellite-streets"}
                 id="satellite-streets"
+                className="map-style-selector"
                 onClick={this.handleMapStyleChange}
                 color="light"
               >
@@ -183,6 +184,7 @@ class CrashQAMap extends Component {
               <Button
                 active={mapStyle === "streets"}
                 id="streets"
+                className="map-style-selector"
                 onClick={this.handleMapStyleChange}
                 color="light"
               >

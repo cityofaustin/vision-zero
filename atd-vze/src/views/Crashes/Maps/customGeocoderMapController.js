@@ -3,7 +3,10 @@ import { MapController } from "react-map-gl";
 export class CustomGeocoderMapController extends MapController {
   _onPan(event) {
     // ignore pan on geocoder input
-    if (this._isGeocoderInputNode(event.target)) {
+    if (
+      this._isGeocoderInputNode(event.target) ||
+      this._isMapStyleInputNode(event.target)
+    ) {
       return;
     }
 
@@ -12,7 +15,10 @@ export class CustomGeocoderMapController extends MapController {
 
   _onDoubleTap(event) {
     // ignore double taps on geocoder input
-    if (this._isGeocoderInputNode(event.target)) {
+    if (
+      this._isGeocoderInputNode(event.target) ||
+      this._isMapStyleInputNode(event.target)
+    ) {
       return;
     }
 
@@ -21,5 +27,8 @@ export class CustomGeocoderMapController extends MapController {
 
   _isGeocoderInputNode(node) {
     return node.classList.contains("mapboxgl-ctrl-geocoder--input");
+  }
+  _isMapStyleInputNode(node) {
+    return node.classList.contains("map-style-selector");
   }
 }
