@@ -25,6 +25,18 @@ export class CustomGeocoderMapController extends MapController {
     super._onDoubleTap(event);
   }
 
+  _onPanStart(event) {
+    // ignore double taps on geocoder input
+    if (
+      this._isGeocoderInputNode(event.target) ||
+      this._isMapStyleInputNode(event.target)
+    ) {
+      return;
+    }
+
+    super._onPanStart(event);
+  }
+
   _isGeocoderInputNode(node) {
     return node.classList.contains("mapboxgl-ctrl-geocoder--input");
   }
