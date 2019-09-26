@@ -1,4 +1,4 @@
-const crashDataMap = [
+export const crashDataMap = [
   {
     title: "Details",
     fields: {
@@ -101,4 +101,16 @@ const crashDataMap = [
   },
 ];
 
-export default crashDataMap;
+export const geoFields = {
+  title: "Geo Data",
+  fields: [
+    { label: "City", data: "city" },
+    { label: "Latitude", data: "latitude", editable: true },
+    { label: "Longitude", data: "longitude", editable: true },
+    {
+      label: "Narrative",
+      data: "investigator_narrative",
+      editable: true,
+    },
+  ],
+};

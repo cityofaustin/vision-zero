@@ -1,19 +1,20 @@
-import React from "react";
+import React, { useState, setState } from "react";
 import { Card, CardBody, CardHeader, Col, Row, Table, Alert } from "reactstrap";
 import { withApollo } from "react-apollo";
 import { useQuery } from "@apollo/react-hooks";
-import crashDataMap from "./crashDataMap";
+import { crashDataMap, geoFields } from "./crashDataMap";
 import CrashCollapses from "./CrashCollapses";
 import CrashMap from "./Maps/CrashMap";
 import CrashQAMap from "./Maps/CrashQAMap";
 import Widget02 from "../Widgets/Widget02";
 import CrashChangeLog from "./CrashChangeLog";
+import "./crash.scss";
 
-import { GET_CRASH } from "../../queries/crashes";
+import { GET_CRASH, UPDATE_CRASH } from "../../queries/crashes";
 
 const calculateYearsLifeLost = people => {
   // Assume 75 year life expectancy,
-  // Find the differance between person.prsn_age & 75
+  // Find the difference between person.prsn_age & 75
   // Sum over the list of ppl with .reduce
   return people.reduce((accumulator, person) => {
     let years = 0;
@@ -34,6 +35,9 @@ function Crash(props) {
     variables: { crashId },
   });
 
+  const [editField, setEditField] = useState("");
+  const [formData, setFormData] = useState({});
+
   if (loading) return "Loading...";
   if (error) return `Error! ${error.message}`;
 
@@ -53,6 +57,13 @@ function Crash(props) {
       }
     });
     return geocoderAddressString;
+  };
+
+  const handleInputChange = e => {
+    const newFormState = Object.assign(formData, {
+      [editField]: e.target.value,
+    });
+    setFormData(newFormState);
   };
 
   const deathCount = data.atd_txdot_crashes[0].death_cnt;
@@ -127,7 +138,94 @@ function Crash(props) {
               <CardHeader>Crash Location</CardHeader>
               <CardBody>
                 {latitude && longitude ? (
-                  <CrashMap data={data.atd_txdot_crashes[0]} />
+                  <>
+                    <CrashMap data={data.atd_txdot_crashes[0]} />
+                    <Table responsive striped hover>
+                      <tbody>
+                        {geoFields.fields.map(field => {
+                          let fieldValue = "";
+
+                          if (data.atd_txdot_crashes[0][field.data] === null) {
+                            // If the value is null, coerce it to an empty string
+                            fieldValue = "";
+                          } else if (
+                            typeof data.atd_txdot_crashes[0][field.data] ===
+                            "object"
+                          ) {
+                            // If its is an object, that means it is coming via a
+                            // nested GraphQL query and uses the `_desc` in the lookup table
+                            fieldValue =
+                              data.atd_txdot_crashes[0][field.data][
+                                `${field.data}_desc`
+                              ];
+                          } else {
+                            fieldValue =
+                              // otherwise, just assign the plain value
+                              data.atd_txdot_crashes[0][field.data];
+                          }
+
+                          const isEditing = field.data === editField;
+                          return (
+                            <tr key={`${field.label}_key`}>
+                              <td>{field.label}</td>
+                              <td>
+                                {isEditing ? (
+                                  <form
+                                    onSubmit={e => {
+                                      e.preventDefault();
+                                      debugger;
+
+                                      props.client
+                                        .mutate({
+                                          mutation: UPDATE_CRASH,
+                                          variables: {
+                                            crashId: crashId,
+                                            changes: formData,
+                                          },
+                                        })
+                                        .then(res => {
+                                          refetch();
+                                        });
+
+                                      setEditField("");
+                                    }}
+                                  >
+                                    <input
+                                      type="text"
+                                      defaultValue={
+                                        (formData && formData[field.data]) ||
+                                        fieldValue
+                                      }
+                                      onChange={e => handleInputChange(e)}
+                                      // ref={n => (input = n)}
+                                    />
+
+                                    <button type="submit">
+                                      <i
+                                        className="fa fa-check edit-toggle"
+                                        // onClick={e => handleCheckClick(e)}
+                                      />
+                                    </button>
+                                  </form>
+                                ) : (
+                                  (formData && formData[field.data]) ||
+                                  fieldValue
+                                )}
+                              </td>
+                              <td>
+                                {field.editable && !isEditing && (
+                                  <i
+                                    className="fa fa-pencil edit-toggle"
+                                    onClick={() => setEditField(field.data)}
+                                  />
+                                )}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </Table>
+                  </>
                 ) : (
                   <>
                     <Alert color="danger">
