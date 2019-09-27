@@ -2,30 +2,23 @@
 import React, { PureComponent } from "react";
 import styled from "styled-components";
 import { EditorModes } from "react-map-gl-draw";
+import { colors } from "../../styles/colors";
 
 const MODES = [
-  { id: EditorModes.SELECT, text: "Select Feature", icon: "icon-select.svg" },
   { id: EditorModes.EDITING, text: "Edit Feature", icon: "icon-select.svg" },
-  { id: EditorModes.DRAW_POINT, text: "Draw Point", icon: "icon-point.svg" },
-  { id: EditorModes.DRAW_PATH, text: "Draw Polyline", icon: "icon-path.svg" },
   {
     id: EditorModes.DRAW_POLYGON,
     text: "Draw Polygon",
     icon: "icon-polygon.svg",
   },
-  {
-    id: EditorModes.DRAW_RECTANGLE,
-    text: "Draw Rectangle",
-    icon: "icon-rectangle.svg",
-  },
 ];
 
 const Container = styled.div`
   position: absolute;
-  width: 48px;
+  width: 36px;
   right: 24px;
   top: 24px;
-  background: #fff;
+  background: ${colors.white};
   box-shadow: 0 0 4px rgba(0, 0, 0, 0.15);
   outline: none;
   display: flex;
@@ -34,13 +27,17 @@ const Container = styled.div`
 `;
 
 const Row = styled.div`
-  height: 48px;
+  height: 36px;
   padding: 0px;
   display: flex;
   justify-content: left;
   color: ${props => (props.selected ? "#ffffff" : "inherit")};
   background: ${props =>
-    props.selected ? "#0071bc" : props.hovered ? "#e6e6e6" : "inherit"};
+    props.selected
+      ? `${colors.primary}`
+      : props.hovered
+      ? `${colors.secondary}`
+      : "inherit"};
 `;
 
 const Img = styled.img`
@@ -53,7 +50,7 @@ const Tooltip = styled.div`
   right: 52px;
   padding: 4px;
   background: rgba(0, 0, 0, 0.8);
-  color: #fff;
+  color: ${colors.white};
   min-width: 100px;
   max-width: 300px;
   height: 24px;
@@ -67,7 +64,8 @@ const Tooltip = styled.div`
 
 const Delete = styled(Row)`
   &:hover {
-    background: ${props => (props.selected ? "#0071bc" : "#e6e6e6")};
+    background: ${props =>
+      props.selected ? `${colors.primary}` : `${colors.secondary}`};
   }
   &:active: {
     background: ${props => (props.selected ? "#0071bc" : "inherit")};
