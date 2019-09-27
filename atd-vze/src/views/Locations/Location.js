@@ -50,7 +50,7 @@ function Location(props) {
 
         <Col lg={6}>{/*ADD A FEATURE SOON!*/}</Col>
       </Row>
-      <LocationMap />
+      {data && <LocationMap data={data} />}
     </div>
   );
 }

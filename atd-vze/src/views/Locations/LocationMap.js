@@ -4,80 +4,24 @@ import { Editor, EditorModes } from "react-map-gl-draw";
 
 import Toolbar from "./toolbar";
 
-const DEFAULT_VIEWPORT = {
-  width: 800,
-  height: 600,
-  longitude: -97.743192,
-  latitude: 30.26714,
-  zoom: 14,
-};
-
 const TOKEN = process.env.REACT_APP_MAPBOX_TOKEN;
-
-const featuresArray = [
-  //   {
-  //     type: "Feature",
-  //     properties: {
-  //       renderType: "Rectangle",
-  //     },
-  //     geometry: {
-  //       type: "Polygon",
-  //       coordinates: [
-  //         [
-  //           [-97.74458348751068, 30.263638090982525],
-  //           [-97.74461299180984, 30.263494457605205],
-  //           [-97.74470686912537, 30.26352920763512],
-  //           [-97.74479001760483, 30.26337399073966],
-  //           [-97.74466127157211, 30.26333924065481],
-  //           [-97.74470418691635, 30.263209506896086],
-  //           [-97.74454057216644, 30.263158540015407],
-  //           [-97.74447083473206, 30.26329290718922],
-  //           [-97.74432867765427, 30.263258157075697],
-  //           [-97.74425357580185, 30.263413374154254],
-  //           [-97.74441182613373, 30.26346665757242],
-  //           [-97.74437427520752, 30.263582490990412],
-  //           [-97.74458348751068, 30.263638090982525],
-  //         ],
-  //       ],
-  //     },
-  //   },
-  // ];
-  //   {
-  //     feature: {
-  //       type: "Feature",
-  //       properties: {
-  //         id: "ec5064b0-dfbf-11e9-b05f-2931428b29aa",
-  //         renderType: "Rectangle",
-  //       },
-  //       geometry: {
-  //         type: "Polygon",
-  //         coordinates: [
-  //           [
-  //             [-97.74870662173122, 30.271142973914532],
-  //             [-97.74870662173122, 30.266991738570454],
-  //             [-97.74029521425923, 30.266991738570454],
-  //             [-97.74029521425923, 30.271142973914532],
-  //             [-97.74870662173122, 30.271142973914532],
-  //           ],
-  //         ],
-  //       },
-  //     },
-  //     selectedFeatureIndex: 0,
-  //     selectedEditHandleIndex: null,
-  //     mapCoords: [-97.74295596560073, 30.26936389454907],
-  //     screenCoords: [373, 190],
-  //   },
-];
 
 class LocationMap extends Component {
   constructor(props) {
     super(props);
     this.state = {
       // map
-      viewport: DEFAULT_VIEWPORT,
+      viewport: {
+        width: 800,
+        height: 600,
+        longitude: this.props.data.atd_txdot_locations[0].longitude,
+        latitude: this.props.data.atd_txdot_locations[0].latitude,
+        zoom: 17,
+      },
       // editor
       selectedMode: EditorModes.READ_ONLY,
-      selectedFeatureIndex: 0,
+      selectedFeatureIndex: null,
+      isFeatureAdded: false,
     };
     this._mapRef = null;
     this._editorRef = null;
@@ -106,8 +50,7 @@ class LocationMap extends Component {
   };
 
   _onSelect = selected => {
-    // debugger;
-    console.log(JSON.stringify(selected));
+    console.log(this._editorRef.getFeatures());
     this.setState({
       selectedFeatureIndex: selected && selected.selectedFeatureIndex,
     });
@@ -127,8 +70,31 @@ class LocationMap extends Component {
     this._editorRef.deleteFeatures(selectedFeatureIndex);
   };
 
+  addFeatureDelay = () => {
+    setTimeout(() => {
+      this._editorRef.addFeatures([
+        {
+          type: "Feature",
+          properties: {
+            renderType: this.props.data.atd_txdot_locations[0].shape.type,
+            id: this.props.data.atd_txdot_locations[0].unique_id,
+          },
+          geometry: {
+            coordinates: this.props.data.atd_txdot_locations[0].shape
+              .coordinates,
+            type: this.props.data.atd_txdot_locations[0].shape.type,
+          },
+        },
+      ]);
+      console.log(this._editorRef.getFeatures());
+    }, 500);
+  };
+
   componentDidMount() {
-    this._editorRef && console.log("features", this._editorRef.getFeatures());
+    !this.state.isFeatureAdded &&
+      this.setState({ isFeatureAdded: true }, () => {
+        this.addFeatureDelay();
+      });
   }
 
   render() {
@@ -142,6 +108,7 @@ class LocationMap extends Component {
         height="500px"
         mapStyle={"mapbox://styles/mapbox/light-v9"}
         onViewportChange={this._updateViewport}
+        selectedFeatureIndex={0}
         mapboxApiAccessToken={TOKEN}
       >
         <Editor
@@ -150,8 +117,8 @@ class LocationMap extends Component {
           onSelect={this._onSelect}
           onUpdate={this._onUpdate}
           mode={selectedMode}
-          // features={featuresArray}
         />
+
         {this._renderToolbar()}
       </MapGL>
     );
