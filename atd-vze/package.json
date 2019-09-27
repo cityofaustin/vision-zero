@@ -10,6 +10,7 @@
     "url": "git@github.com:cityofaustin/atd-vz-data.git"
   },
   "dependencies": {
+    "@turf/difference": "6.0.1",
     "@apollo/react-hooks": "^3.0.0",
     "@coreui/coreui": "^2.1.12",
     "@coreui/coreui-plugin-chartjs-custom-tooltips": "^1.3.1",

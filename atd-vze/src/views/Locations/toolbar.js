@@ -17,7 +17,7 @@ const Container = styled.div`
   position: absolute;
   width: 36px;
   right: 24px;
-  top: 24px;
+  top: 72px;
   background: ${colors.white};
   box-shadow: 0 0 4px rgba(0, 0, 0, 0.15);
   outline: none;
