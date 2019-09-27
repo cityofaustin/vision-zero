@@ -67,10 +67,10 @@ class LocationMap extends Component {
     });
   };
 
-  _onUpdate = (features, editType, editContext) => {
+  onUpdate = (features, editType, editContext) => {
     // TODO Add logic to capture updated GeoJSON of polygon here
-    // debugger;
-    console.log(features);
+    const editor = this._editorRef;
+    console.log(features, editType, editContext);
   };
 
   _onDelete = () => {
@@ -107,19 +107,21 @@ class LocationMap extends Component {
         width="100%"
         height="500px"
         mapStyle={"mapbox://styles/mapbox/light-v9"}
-        onViewportChange={this._updateViewport} // selectedFeatureIndex={0}
+        onViewportChange={this._updateViewport}
         mapboxApiAccessToken={TOKEN}
       >
-                
+              
         <Editor
           ref={_ => (this._editorRef = _)}
           clickRadius={12}
           onSelect={this._onSelect}
-          onUpdate={this._onUpdate}
           mode={selectedMode}
+          onUpdate={this.onUpdate}
+          onDrag={() => {
+            return;
+          }}
         />
-                {this._renderToolbar()}
-              
+        {this._renderToolbar()}       
       </MapGL>
     );
   }

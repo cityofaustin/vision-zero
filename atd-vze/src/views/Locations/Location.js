@@ -1,6 +1,6 @@
 import React from "react";
 import LocationMap from "./LocationMap";
-import { Card, CardBody, CardHeader, Col, Row, Table, Alert } from "reactstrap";
+import { Card, CardBody, CardHeader, Col, Row, Table } from "reactstrap";
 import { withApollo } from "react-apollo";
 import { useQuery } from "@apollo/react-hooks";
 
