@@ -2,22 +2,17 @@
 require 'capybara'
 require 'capybara/webkit'
 
+Capybara.default_driver = :webkit
 
+AWS_BUCKET = ENV["AWS_BUCKET_NAME"]
+AWS_DOWNLOAD_PATH = "./tmp"
 
 #
 # We need to allow certain urls
 #
 
 Capybara::Webkit.configure do |config|
-  config.allow_url("cris.dot.state.tx.us")
-  config.allow_url("www.enterice.com")
-  config.allow_url("www.google.com")
-  config.allow_url("ssl.gstatic.com")
-  config.allow_url("clients1.google.com")
-  config.allow_url("www.google-analytics.com")
-  config.allow_url("www.googletagmanager.com")
-  config.allow_url("fonts.gstatic.com")
-  config.allow_url("fonts.googleapis.com")
+  config.allow_unknown_urls
 end
 
 
@@ -31,6 +26,8 @@ CRIS_WEBSITE_REQUEST = {
     "date" => "https://cris.dot.state.tx.us/secure/Share/app/home/request/date",
     "summary" => "https://cris.dot.state.tx.us/secure/Share/app/home/request/summary"
 }
+
+CRIS_WEBSITE_USERAGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36"
 
 #
 # This is the payload anatomy, leaving here in case we need to use it in the future.
