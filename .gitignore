@@ -11,9 +11,9 @@
 /tmp/
 tmp/
 venv/
-*.env
 
 __pycache__/
+/node_modules/
 
 # Used by dotenv library to load environment variables.
 # .env
@@ -61,4 +61,9 @@ build-iPhoneSimulator/
 # IDEs
 .code/
 .idea/
+
+# node_modules
+/atd-vze/node_modules
+
+
 .DS_Store
