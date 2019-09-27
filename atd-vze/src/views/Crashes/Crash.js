@@ -66,6 +66,12 @@ function Crash(props) {
     setFormData(newFormState);
   };
 
+  const handleCancelClick = e => {
+    e.preventDefault();
+
+    setEditField("");
+  };
+
   const handleFieldUpdate = e => {
     e.preventDefault();
 
@@ -160,10 +166,13 @@ function Crash(props) {
                                     )}
 
                                     <button type="submit">
+                                      <i className="fa fa-check edit-toggle" />
+                                    </button>
+                                    <button type="cancel">
                                       <i
-                                        className="fa fa-check edit-toggle"
-                                        // onClick={e => handleCheckClick(e)}
-                                      />
+                                        className="fa fa-times edit-toggle"
+                                        onClick={e => handleCancelClick(e)}
+                                      ></i>
                                     </button>
                                   </form>
                                 ) : (
