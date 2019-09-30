@@ -9,6 +9,11 @@ class gqlAbstract {
    */
   constructor(initConfig) {
     this.config = initConfig;
+    this.configInit = JSON.stringify(initConfig);
+    this.config["filterStack"] = {
+      where: [],
+      order_by: [],
+    };
   }
 
   /**
@@ -105,9 +110,16 @@ gqlAbstractTableAggregateName (
    * @param {string} syntax - the graphql syntax for the where condition
    */
   setWhere(key, syntax) {
-    this.config["where"] = {
-      [key]: syntax,
-    };
+    if (!this.config["where"]) this.config["where"] = {};
+    this.config["where"][key] = syntax;
+  }
+
+  /**
+   * Removes a column from the where condition
+   * @param {string} key - The name of the column
+   */
+  deleteWhere(key) {
+    delete this.config["where"][key];
   }
 
   /**
@@ -172,7 +184,7 @@ gqlAbstractTableAggregateName (
    * @returns {[string, any][]}
    */
   getEntries(section) {
-    return Object.entries(this.config[section]);
+    return Object.entries(this.config[section] || section);
   }
 
   /**
@@ -180,11 +192,7 @@ gqlAbstractTableAggregateName (
    * @returns {Array}
    */
   get columns() {
-    let columns = [];
-    for (let [key, value] of this.getEntries("columns")) {
-      columns.push(key);
-    }
-    return columns;
+    return this.getEntries("columns").map(k => k[0]);
   }
 
   /**
@@ -222,7 +230,7 @@ gqlAbstractTableAggregateName (
       output.push(`where: {${where.join(", ")}}`);
     }
 
-    if (this.config["order_by"] !== null) {
+    if (this.config["order_by"]) {
       let order_by = [];
       for (let [key, value] of this.getEntries("order_by")) {
         order_by.push(`${key}: ${value}`);
@@ -238,11 +246,30 @@ gqlAbstractTableAggregateName (
    * @returns {string}
    */
   generateColumns() {
-    let output = [];
-    for (let [key, value] of Object.entries(this.config["columns"])) {
-      output.push(key);
+    return this.columns.join("\n");
+  }
+
+  /**
+   * Generates a series of 'where' clauses in GraphQL for each filter setting provided in the configuration
+   * and the current state of the app.
+   * @param {object} filters - The filters configuration
+   * @param {object} filtersState - The current filter's state
+   */
+  loadFilters(filters, filtersState) {
+    for (let group in filters) {
+      for (let filter of filters[group]["filters"]) {
+        for (let filterItem of filter.filter["where"]) {
+          for (let [key, syntax] of this.getEntries(filterItem)) {
+            // If enabled, add to the list or remove it from the query.
+            if (filtersState[filter.id]) {
+              this.setWhere(key, syntax);
+            } else {
+              this.deleteWhere(key);
+            }
+          }
+        }
+      }
     }
-    return output.join("\n");
   }
 
   /**

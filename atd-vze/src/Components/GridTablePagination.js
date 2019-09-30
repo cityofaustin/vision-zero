@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   ButtonToolbar,
   Button,
@@ -50,7 +50,7 @@ const GridTablePagination = ({
           </Button>
           <StyledDisableClick>
             <Button color="light">
-              Page {pageNumber}/{totalPages == 0 ? 1 : totalPages}
+              Page {pageNumber}/{totalPages === 0 ? 1 : totalPages}
             </Button>
             <Button color="light">Results: {totalRecords}</Button>
           </StyledDisableClick>

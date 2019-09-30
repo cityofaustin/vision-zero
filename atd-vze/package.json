@@ -26,6 +26,7 @@
     "enzyme-adapter-react-16": "^1.14.0",
     "flag-icon-css": "^3.3.0",
     "font-awesome": "^4.7.0",
+    "google-palette": "^1.1.0",
     "graphql": "^14.4.2",
     "moment": "^2.24.0",
     "nebula.gl": "^0.15.0",

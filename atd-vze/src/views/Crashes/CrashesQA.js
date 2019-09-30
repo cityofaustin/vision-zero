@@ -1,49 +1,173 @@
-import React, { Component } from "react";
+import React from "react";
+import { withApollo } from "react-apollo";
 
-import CrashesQAData from "./CrashesQAData";
+import GridTable from "../../Components/GridTable";
 
-class CrashesQA extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      page: 1,
-      limit: 25,
-      offset: 0,
-    };
-  }
+import gqlAbstract from "../../queries/gqlAbstract";
 
-  moveNext = () => {
-    this.setPage(Number(this.state.page) + 1);
-  };
+// Our initial query configuration
+let queryConf = {
+  table: "atd_txdot_crashes",
+  single_item: "crashes",
+  columns: {
+    crash_id: {
+      primary_key: true,
+      searchable: true,
+      sortable: true,
+      label_search: "Search by Crash ID",
+      label_table: "Crash ID",
+      type: "Int",
+    },
+    case_id: {
+      searchable: true,
+      sortable: true,
+      label_search: "Search by Case Number",
+      label_table: "Case Number",
+      type: "String",
+    },
+    crash_date: {
+      searchable: false,
+      sortable: true,
+      label_table: "Crash Date",
+      type: "Date",
+    },
+    address_confirmed_primary: {
+      searchable: true,
+      sortable: true,
+      label_search: "Search by Primary Address",
+      label_table: "Primary Address",
+      type: "String",
+    },
+    address_confirmed_secondary: {
+      searchable: true,
+      sortable: true,
+      label_search: "Search by Secondary Address",
+      label_table: "Secondary Address",
+      type: "String",
+    },
+    tot_injry_cnt: {
+      searchable: false,
+      sortable: true,
+      label_table: "Injury Count",
+      type: "Int",
+    },
+    death_cnt: {
+      searchable: false,
+      sortable: true,
+      label_table: "Death Count",
+      type: "Date",
+    },
+    "collision { collsn_desc } ": {
+      searchable: false,
+      sortable: false,
+      label_table: "Collision Description",
+      type: "String",
+    },
+    "units { body_style { veh_body_styl_desc } }": {
+      searchable: false,
+      sortable: false,
+      label_table: "Unit Body Type",
+      type: "String",
+    },
+    "units { unit_description { veh_unit_desc_desc } }": {
+      searchable: false,
+      sortable: false,
+      label_table: "Unit Description",
+      type: "String",
+    },
+  },
+  order_by: {},
+  where: {
+    city_id: "_eq: 22",
+  },
+  limit: 25,
+  offset: 0,
+};
 
-  moveBack = () => {
-    this.setPage(Number(this.state.page) - 1);
-  };
+let crashesQuery = new gqlAbstract(queryConf);
 
-  setPage = pagenum => {
-    // If we do, then go ahead
-    const oldOffset = this.state.offset;
-    const newOffset = pagenum * this.state.limit - this.state.limit;
-    this.setState({
-      page: pagenum,
-      offset: newOffset,
-    });
-  };
+let customFilters = {
+  grp_injuries: {
+    icon: "cab",
+    label: "Deaths & Injuries",
+    filters: [
+      {
+        id: "dni_deaths",
+        label: "Deaths",
+        filter: {
+          where: [{ death_cnt: "_gt: 0" }],
+        },
+      },
+      {
+        id: "dni_serious_injuries",
+        label: "Serious Injuries",
+        filter: {
+          where: [{ sus_serious_injry_cnt: "_gt: 0" }],
+        },
+      },
+      {
+        id: "dni_non_fatal",
+        label: "Non-Fatal Injuries",
+        filter: {
+          where: [{ nonincap_injry_cnt: "_gt: 0" }],
+        },
+      },
+    ],
+  },
+  grp_geograph: {
+    icon: "map-marker",
+    label: "Geography",
+    filters: [
+      {
+        id: "geo_no_coordinates",
+        label: "No Latitude and Longitude provided",
+        filter: {
+          where: [
+            { latitude: "_is_null: true" },
+            { longitude: "_is_null: true" },
+          ],
+        },
+      },
+      {
+        id: "geo_geocoded",
+        label: "Has been Geocoded",
+        filter: {
+          where: [{ geocoded: '_eq: "Y"' }],
+        },
+      },
+      {
+        id: "geo_confirmed_coordinates",
+        label: "Confirmed Coordinates",
+        filter: {
+          where: [
+            { latitude_primary: "_is_null: false" },
+            { longitude_primary: "_is_null: false" },
+          ],
+        },
+      },
+    ],
+  },
+  grp_case: {
+    icon: "vcard-o",
+    label: "Internal",
+    filters: [
+      {
+        id: "int_nocasenumber",
+        label: "No Case Number",
+        filter: {
+          where: [{ case_id: "_is_null: true" }],
+        },
+      },
+    ],
+  },
+};
 
-  changePage = event => {
-    this.setPage(event.target.value);
-  };
+const CrashesQA = () => (
+  <GridTable
+    query={crashesQuery}
+    title={"Crashes Q/A"}
+    filters={customFilters}
+  />
+);
 
-  render() {
-    return (
-      <CrashesQAData
-        state={this.state}
-        moveNext={this.moveNext}
-        moveBack={this.moveBack}
-        changePage={this.changePage}
-      />
-    );
-  }
-}
-
-export default CrashesQA;
+export default withApollo(CrashesQA);
