@@ -65,3 +65,17 @@ export const GET_LOCATION = gql`
     }
   }
 `;
+
+export const GET_LOCATION = gql`
+  mutation update_atd_txdot_locations($uniqueId: Int, $shape: geometry!){
+    update_atd_txdot_locations(
+      where: {unique_id: { _eq: $uniqueId } } 
+      objects: [{ shape: $shape }] 
+    ) {
+      affected_rows
+      returning (
+        shape
+      )
+    }     
+  }
+`;
