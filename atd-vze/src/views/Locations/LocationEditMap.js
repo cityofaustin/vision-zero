@@ -28,7 +28,7 @@ const navStyle = {
   padding: "10px",
 };
 
-class LocationMap extends Component {
+class LocationEditMap extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -192,4 +192,4 @@ class LocationMap extends Component {
   }
 }
 
-export default LocationMap;
+export default LocationEditMap;
