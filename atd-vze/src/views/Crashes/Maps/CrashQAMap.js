@@ -8,6 +8,7 @@ import MapGL, {
   FullscreenControl,
 } from "react-map-gl";
 import Geocoder from "react-map-gl-geocoder";
+import { CustomGeocoderMapController } from "./customGeocoderMapController";
 import "react-map-gl-geocoder/dist/mapbox-gl-geocoder.css";
 import styled from "styled-components";
 
@@ -42,6 +43,8 @@ const navStyle = {
 
 // Default map center
 const initialMapCenter = { latitude: 30.26714, longitude: -97.743192 };
+
+const customGeocoderMapController = new CustomGeocoderMapController();
 
 class CrashQAMap extends Component {
   constructor(props) {
@@ -146,6 +149,7 @@ class CrashQAMap extends Component {
           mapStyle={`mapbox://styles/mapbox/${mapStyle}-v9`}
           onViewportChange={this._updateViewport}
           getCursor={this.getCursor}
+          controller={customGeocoderMapController}
           mapboxApiAccessToken={TOKEN}
         >
           <Geocoder
@@ -171,6 +175,7 @@ class CrashQAMap extends Component {
               <Button
                 active={mapStyle === "satellite-streets"}
                 id="satellite-streets"
+                className="map-style-selector"
                 onClick={this.handleMapStyleChange}
                 color="light"
               >
@@ -179,6 +184,7 @@ class CrashQAMap extends Component {
               <Button
                 active={mapStyle === "streets"}
                 id="streets"
+                className="map-style-selector"
                 onClick={this.handleMapStyleChange}
                 color="light"
               >
