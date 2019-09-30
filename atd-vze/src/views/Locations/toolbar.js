@@ -136,7 +136,6 @@ export default class Toolbar extends PureComponent {
         })}
         <Reset
           selected={this.state.resetting}
-          // onClick={this._onReset}
           onMouseOver={this._onHover}
           onMouseOut={_ => this._onHover(null)}
         >
@@ -144,7 +143,7 @@ export default class Toolbar extends PureComponent {
             id={"reset"}
             onMouseOver={this._onHover}
             onClick={this._onReset}
-            src={"/assets/img/icon-delete.svg"}
+            src={"/assets/img/icon-refresh.svg"}
           />
           {hoveredId === "reset" && <Tooltip>{"Reset Polygon"}</Tooltip>}
         </Reset>
