@@ -27,7 +27,7 @@ import { Doughnut } from "react-chartjs-2";
 function Location(props) {
   const locationId = props.match.params.id;
   const [mapSelected, setMapSelected] = useState("aerial");
-  const { loading, error, data } = useQuery(GET_LOCATION, {
+  const { loading, error, data, refetch } = useQuery(GET_LOCATION, {
     variables: { id: locationId },
   });
 
@@ -214,7 +214,7 @@ function Location(props) {
             </CardHeader>
             <CardBody>
               {data && mapSelected === "edit" && (
-                <LocationEditMap data={data} />
+                <LocationEditMap data={data} refetch={refetch} />
               )}
             </CardBody>
           </Card>

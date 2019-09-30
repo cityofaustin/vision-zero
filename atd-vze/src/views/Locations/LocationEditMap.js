@@ -1,10 +1,12 @@
 import React, { Component } from "react";
 import MapGL, { NavigationControl, FullscreenControl } from "react-map-gl";
 import { Editor, EditorModes } from "react-map-gl-draw";
+import { withApollo } from "react-apollo";
 import styled from "styled-components";
 
 import Toolbar from "./toolbar";
 import { Button, ButtonGroup } from "reactstrap";
+import { UPDATE_LOCATION } from "../../queries/Locations";
 
 const TOKEN = process.env.REACT_APP_MAPBOX_TOKEN;
 
@@ -78,6 +80,7 @@ class LocationEditMap extends Component {
         onSwitchMode={this._switchMode}
         onReset={this._onReset}
         onDelete={this._onDelete}
+        onSubmit={this.handleEditSubmit}
       />
     );
   };
@@ -122,6 +125,22 @@ class LocationEditMap extends Component {
   handleMapStyleChange = e => {
     const style = e.target.id;
     this.setState({ mapStyle: style });
+  };
+
+  handleEditSubmit = e => {
+    e.preventDefault();
+    const feature = this._editorRef.getFeatures();
+    const featureDataForEditSubmit = feature[0].geometry;
+
+    this.props.client
+      .mutate({
+        mutation: UPDATE_LOCATION,
+        variables: {
+          uniqueId: "1",
+          updatedPolygon: featureDataForEditSubmit,
+        },
+      })
+      .then(res => this.props.refetch());
   };
 
   componentDidMount() {
@@ -197,4 +216,4 @@ class LocationEditMap extends Component {
   }
 }
 
-export default LocationEditMap;
+export default withApollo(LocationEditMap);

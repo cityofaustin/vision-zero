@@ -171,7 +171,7 @@ export default class Toolbar extends PureComponent {
           </Delete>
         </Container>
         <SubmitButton>
-          <Button block color="success">
+          <Button onClick={this.props.onSubmit} block color="success">
             Submit Changes
           </Button>
         </SubmitButton>
