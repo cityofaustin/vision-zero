@@ -62,13 +62,23 @@ const Tooltip = styled.div`
   align-items: center;
 `;
 
+const Reset = styled(Row)`
+  &:hover {
+    background: ${props =>
+      props.selected ? `${colors.primary}` : `${colors.secondary}`};
+  }
+  &:active: {
+    background: ${props => (props.selected ? `${colors.primary}` : "inherit")};
+  }
+`;
+
 const Delete = styled(Row)`
   &:hover {
     background: ${props =>
       props.selected ? `${colors.primary}` : `${colors.secondary}`};
   }
   &:active: {
-    background: ${props => (props.selected ? "#0071bc" : "inherit")};
+    background: ${props => (props.selected ? `${colors.primary}` : "inherit")};
   }
 `;
 
@@ -77,12 +87,19 @@ export default class Toolbar extends PureComponent {
     super(props);
     this.state = {
       deleting: false,
+      resetting: false,
       hoveredId: null,
     };
   }
 
   _onHover = evt => {
     this.setState({ hoveredId: evt && evt.target.id });
+  };
+
+  _onReset = evt => {
+    this.props.onReset();
+    this.setState({ resetting: true });
+    setTimeout(() => this.setState({ resetting: false }), 500);
   };
 
   _onDelete = evt => {
@@ -117,6 +134,20 @@ export default class Toolbar extends PureComponent {
             </Row>
           );
         })}
+        <Reset
+          selected={this.state.resetting}
+          // onClick={this._onReset}
+          onMouseOver={this._onHover}
+          onMouseOut={_ => this._onHover(null)}
+        >
+          <Img
+            id={"reset"}
+            onMouseOver={this._onHover}
+            onClick={this._onReset}
+            src={"/assets/img/icon-delete.svg"}
+          />
+          {hoveredId === "reset" && <Tooltip>{"Reset Polygon"}</Tooltip>}
+        </Reset>
         <Delete
           selected={this.state.deleting}
           onClick={this._onDelete}

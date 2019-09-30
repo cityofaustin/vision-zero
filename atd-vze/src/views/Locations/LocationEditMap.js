@@ -76,6 +76,7 @@ class LocationEditMap extends Component {
       <Toolbar
         selectedMode={this.state.selectedMode}
         onSwitchMode={this._switchMode}
+        onReset={this._onReset}
         onDelete={this._onDelete}
       />
     );
@@ -97,6 +98,11 @@ class LocationEditMap extends Component {
     console.log(features, editType, editContext);
   };
 
+  _onReset = () => {
+    this._editorRef.deleteFeatures(0);
+    this.addFeatureDelay();
+  };
+
   _onDelete = () => {
     const { selectedFeatureIndex } = this.state;
     if (selectedFeatureIndex === null || selectedFeatureIndex === undefined) {
@@ -110,7 +116,6 @@ class LocationEditMap extends Component {
     // TODO find a better way to delay addition of feature here besides setTimeout()?
     setTimeout(() => {
       this._editorRef.addFeatures(this.featureGeoJson);
-      console.log(this._editorRef.getFeatures());
     }, 500);
   };
 
