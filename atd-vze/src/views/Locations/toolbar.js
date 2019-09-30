@@ -2,6 +2,7 @@
 import React, { PureComponent } from "react";
 import styled from "styled-components";
 import { EditorModes } from "react-map-gl-draw";
+import { Button } from "reactstrap";
 import { colors } from "../../styles/colors";
 
 const MODES = [
@@ -62,6 +63,12 @@ const Tooltip = styled.div`
   align-items: center;
 `;
 
+const SubmitButton = styled.div`
+  position: absolute;
+  right: 24px;
+  bottom: 24px;
+`;
+
 const Reset = styled(Row)`
   &:hover {
     background: ${props =>
@@ -113,55 +120,62 @@ export default class Toolbar extends PureComponent {
     const { hoveredId } = this.state;
 
     return (
-      <Container>
-        {MODES.map(m => {
-          return (
-            <Row
-              onClick={this.props.onSwitchMode}
-              onMouseOver={this._onHover}
-              onMouseOut={_ => this._onHover(null)}
-              selected={m.id === selectedMode}
-              hovered={m.id === hoveredId}
-              key={m.id}
-              id={m.id}
-            >
-              <Img
-                id={m.id}
+      <>
+        <Container>
+          {MODES.map(m => {
+            return (
+              <Row
+                onClick={this.props.onSwitchMode}
                 onMouseOver={this._onHover}
-                src={`/assets/img/${m.icon}`}
-              />
-              {hoveredId === m.id && <Tooltip>{m.text}</Tooltip>}
-            </Row>
-          );
-        })}
-        <Reset
-          selected={this.state.resetting}
-          onMouseOver={this._onHover}
-          onMouseOut={_ => this._onHover(null)}
-        >
-          <Img
-            id={"reset"}
+                onMouseOut={_ => this._onHover(null)}
+                selected={m.id === selectedMode}
+                hovered={m.id === hoveredId}
+                key={m.id}
+                id={m.id}
+              >
+                <Img
+                  id={m.id}
+                  onMouseOver={this._onHover}
+                  src={`/assets/img/${m.icon}`}
+                />
+                {hoveredId === m.id && <Tooltip>{m.text}</Tooltip>}
+              </Row>
+            );
+          })}
+          <Reset
+            selected={this.state.resetting}
             onMouseOver={this._onHover}
-            onClick={this._onReset}
-            src={"/assets/img/icon-refresh.svg"}
-          />
-          {hoveredId === "reset" && <Tooltip>{"Reset Polygon"}</Tooltip>}
-        </Reset>
-        <Delete
-          selected={this.state.deleting}
-          onClick={this._onDelete}
-          onMouseOver={this._onHover}
-          onMouseOut={_ => this._onHover(null)}
-        >
-          <Img
-            id={"delete"}
-            onMouseOver={this._onHover}
+            onMouseOut={_ => this._onHover(null)}
+          >
+            <Img
+              id={"reset"}
+              onMouseOver={this._onHover}
+              onClick={this._onReset}
+              src={"/assets/img/icon-refresh.svg"}
+            />
+            {hoveredId === "reset" && <Tooltip>{"Reset Polygon"}</Tooltip>}
+          </Reset>
+          <Delete
+            selected={this.state.deleting}
             onClick={this._onDelete}
-            src={"/assets/img/icon-delete.svg"}
-          />
-          {hoveredId === "delete" && <Tooltip>{"Delete"}</Tooltip>}
-        </Delete>
-      </Container>
+            onMouseOver={this._onHover}
+            onMouseOut={_ => this._onHover(null)}
+          >
+            <Img
+              id={"delete"}
+              onMouseOver={this._onHover}
+              onClick={this._onDelete}
+              src={"/assets/img/icon-delete.svg"}
+            />
+            {hoveredId === "delete" && <Tooltip>{"Delete"}</Tooltip>}
+          </Delete>
+        </Container>
+        <SubmitButton>
+          <Button block color="success">
+            Submit Changes
+          </Button>
+        </SubmitButton>
+      </>
     );
   }
 }
