@@ -30,7 +30,8 @@ export const crashDataMap = [
         label: "Manner of Collision ID",
         editable: true,
         uiType: "select",
-        lookupOptions: "",
+        lookupOptions: "atd_txdot__collsn_lkp",
+        lookupPrefix: "collsn", // We need this field so we can reference the collsn_id & collsn_desc fields in the lookup table
       },
       last_update: {
         label: "Last Updated",

@@ -260,3 +260,12 @@ export const UPDATE_CRASH = gql`
     }
   }
 `;
+
+export const GET_CRASH_MANNER = gql`
+  {
+    atd_txdot__collsn_lkp {
+      collsn_id
+      collsn_desc
+    }
+  }
+`;

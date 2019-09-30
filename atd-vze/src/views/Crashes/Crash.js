@@ -1,5 +1,14 @@
 import React, { useState, setState } from "react";
-import { Card, CardBody, CardHeader, Col, Row, Table, Alert } from "reactstrap";
+import {
+  Card,
+  CardBody,
+  CardHeader,
+  Col,
+  Row,
+  Table,
+  Alert,
+  Input,
+} from "reactstrap";
 import { withApollo } from "react-apollo";
 import { useQuery } from "@apollo/react-hooks";
 import { crashDataMap, geoFields } from "./crashDataMap";
@@ -10,7 +19,11 @@ import Widget02 from "../Widgets/Widget02";
 import CrashChangeLog from "./CrashChangeLog";
 import "./crash.scss";
 
-import { GET_CRASH, UPDATE_CRASH } from "../../queries/crashes";
+import {
+  GET_CRASH,
+  UPDATE_CRASH,
+  GET_CRASH_MANNER,
+} from "../../queries/crashes";
 
 const calculateYearsLifeLost = people => {
   // Assume 75 year life expectancy,
@@ -34,6 +47,12 @@ function Crash(props) {
   const { loading, error, data, refetch } = useQuery(GET_CRASH, {
     variables: { crashId },
   });
+
+  // Import Lookup tables and aggregate an object of uiType= "select" options
+  const { atd_txdot__collsn_lkp } = useQuery(GET_CRASH_MANNER).data;
+  const lookupSelectOptions = {
+    atd_txdot__collsn_lkp,
+  };
 
   const [editField, setEditField] = useState("");
   const [formData, setFormData] = useState({});
@@ -136,62 +155,96 @@ function Crash(props) {
                     <tbody>
                       {Object.keys(section.fields).map((field, i) => {
                         const isEditing = field === editField;
+                        const fieldConfigObject = section.fields[field];
 
-                        if (typeof section.fields[field] === "object") {
-                          return (
-                            <tr key={i}>
-                              <td>
-                                <strong>{section.fields[field].label}</strong>
-                              </td>
-                              <td>
-                                {isEditing ? (
-                                  <form onSubmit={e => handleFieldUpdate(e)}>
-                                    {section.fields[field].uiType ===
-                                      "select" && (
-                                      <select name={field} id={field}>
-                                        <option value=""></option>
-                                      </select>
-                                    )}
-                                    {section.fields[field].uiType ===
-                                      "text" && (
-                                      <input
-                                        type="text"
-                                        defaultValue={
-                                          (formData && formData[field.data]) ||
-                                          data.atd_txdot_crashes[0][field]
-                                        }
-                                        onChange={e => handleInputChange(e)}
-                                        // ref={n => (input = n)}
-                                      />
-                                    )}
+                        const fieldLabel = fieldConfigObject.label;
 
-                                    <button type="submit">
-                                      <i className="fa fa-check edit-toggle" />
-                                    </button>
-                                    <button type="cancel">
-                                      <i
-                                        className="fa fa-times edit-toggle"
-                                        onClick={e => handleCancelClick(e)}
-                                      ></i>
-                                    </button>
-                                  </form>
-                                ) : (
-                                  (formData && formData[field.data]) ||
-                                  data.atd_txdot_crashes[0][field]
-                                )}
-                              </td>
-                              <td>
-                                {section.fields[field].editable &&
-                                  !isEditing && (
-                                    <i
-                                      className="fa fa-pencil edit-toggle"
-                                      onClick={() => setEditField(field)}
+                        const fieldValue =
+                          (formData && formData[field.data]) ||
+                          data.atd_txdot_crashes[0][field];
+
+                        const fieldUiType = fieldConfigObject.uiType;
+
+                        // If there is no lookup options, we can assume the field value can be displayed as is.
+                        // If there is a lookup, then the value is an ID to be referenced in a lookup table.
+                        const fieldValueDisplay = !!fieldConfigObject.lookupOptions
+                          ? lookupSelectOptions[
+                              fieldConfigObject.lookupOptions
+                            ].find(
+                              item =>
+                                item[`${fieldConfigObject.lookupPrefix}_id`] ===
+                                fieldValue
+                            )[`${fieldConfigObject.lookupPrefix}_desc`]
+                          : fieldValue;
+
+                        const selectOptions =
+                          lookupSelectOptions[fieldConfigObject.lookupOptions];
+
+                        return (
+                          <tr key={i}>
+                            <td>
+                              <strong>{fieldLabel}</strong>
+                            </td>
+                            <td>
+                              {isEditing ? (
+                                <form onSubmit={e => handleFieldUpdate(e)}>
+                                  {fieldUiType === "select" && (
+                                    <Input
+                                      name={field}
+                                      id={field}
+                                      onChange={e => handleInputChange(e)}
+                                      defaultValue={fieldValue}
+                                      type="select"
+                                    >
+                                      {selectOptions.map(option => (
+                                        <option
+                                          value={
+                                            option[
+                                              `${fieldConfigObject.lookupPrefix}_id`
+                                            ]
+                                          }
+                                        >
+                                          {
+                                            option[
+                                              `${fieldConfigObject.lookupPrefix}_desc`
+                                            ]
+                                          }
+                                        </option>
+                                      ))}
+                                    </Input>
+                                  )}
+                                  {fieldUiType === "text" && (
+                                    <input
+                                      type="text"
+                                      defaultValue={fieldValue}
+                                      onChange={e => handleInputChange(e)}
                                     />
                                   )}
-                              </td>
-                            </tr>
-                          );
-                        }
+
+                                  <button type="submit">
+                                    <i className="fa fa-check edit-toggle" />
+                                  </button>
+                                  <button type="cancel">
+                                    <i
+                                      className="fa fa-times edit-toggle"
+                                      onClick={e => handleCancelClick(e)}
+                                    ></i>
+                                  </button>
+                                </form>
+                              ) : (
+                                fieldValueDisplay
+                              )}
+                            </td>
+                            <td>
+                              {fieldConfigObject.editable && !isEditing && (
+                                <i
+                                  className="fa fa-pencil edit-toggle"
+                                  onClick={() => setEditField(field)}
+                                />
+                              )}
+                            </td>
+                          </tr>
+                        );
                       })}
                     </tbody>
                   </Table>
