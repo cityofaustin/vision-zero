@@ -1,5 +1,9 @@
 import { MapController } from "react-map-gl";
 
+// This custom controller fixes the issue where mouse events were propagating through
+// the geocoder control to the map below. The code below ignores these events for specific classes.
+// https://github.com/uber/react-map-gl/blob/master/docs/advanced/custom-map-controller.md
+
 export class CustomGeocoderMapController extends MapController {
   _onPan(event) {
     // ignore pan (drag) on geocoder and map style inputs
