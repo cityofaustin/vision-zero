@@ -71,6 +71,7 @@ class LocationMap extends Component {
   };
 
   _renderToolbar = () => {
+    // TODO add onReset() and button in toolbar to reset map to this.featureGeoJson
     return (
       <Toolbar
         selectedMode={this.state.selectedMode}
@@ -106,6 +107,7 @@ class LocationMap extends Component {
   };
 
   addFeatureDelay = () => {
+    // TODO find a better way to delay addition of feature here besides setTimeout()?
     setTimeout(() => {
       this._editorRef.addFeatures(this.featureGeoJson);
       console.log(this._editorRef.getFeatures());

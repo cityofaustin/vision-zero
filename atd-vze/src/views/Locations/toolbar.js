@@ -31,7 +31,7 @@ const Row = styled.div`
   padding: 0px;
   display: flex;
   justify-content: left;
-  color: ${props => (props.selected ? "#ffffff" : "inherit")};
+  color: ${props => (props.selected ? `${colors.white}` : "inherit")};
   background: ${props =>
     props.selected
       ? `${colors.primary}`
