@@ -2,8 +2,8 @@ import { gql } from "apollo-boost";
 
 export const GET_LOCATION = gql`
   query GetLocation($id: String) {
-    atd_txdot_locations(where: { unique_id: { _eq: $id } }) {
-      unique_id
+    atd_txdot_locations(where: { location_id: { _eq: $id } }) {
+      location_id
       address
       description
       geometry
@@ -55,7 +55,7 @@ export const GET_LOCATION = gql`
         count
       }
     }
-    atd_txdot_locations(where: { unique_id: { _eq: $id } }) {
+    atd_txdot_locations(where: { location_id: { _eq: $id } }) {
       crashes_by_veh_body_style {
         veh_body_styl_desc
         count
