@@ -6,7 +6,6 @@ export const GET_LOCATION = gql`
       location_id
       address
       description
-      geometry
       metadata
       last_update
       is_retired
