@@ -2,8 +2,8 @@ import React, { Component } from "react";
 import MapGL, { NavigationControl, FullscreenControl } from "react-map-gl";
 import axios from "axios";
 import moment from "moment";
-import styled from "styled-components";
 
+import styled from "styled-components";
 import { Button } from "reactstrap";
 
 const TOKEN = process.env.REACT_APP_MAPBOX_TOKEN;
@@ -46,6 +46,9 @@ const TimestampDisplay = styled.div`
   top: 24px;
   right: 24px;
   position: absolute;
+  #timestamp-display:hover {
+    cursor: grab;
+  }
 `;
 
 export default class LocationMap extends Component {
@@ -104,7 +107,13 @@ export default class LocationMap extends Component {
           <NavigationControl showCompass={false} />
         </div>
         <TimestampDisplay>
-          <Button block outline active color="primary" aria-pressed="true">
+          <Button
+            id="timestamp-display"
+            block
+            active
+            color="ghost-light"
+            aria-pressed="true"
+          >
             Imagery captured on {this.state.aerialTimestamp}
           </Button>
         </TimestampDisplay>
