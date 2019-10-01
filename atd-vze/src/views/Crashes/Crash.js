@@ -104,10 +104,18 @@ function Crash(props) {
                       {Object.keys(section.fields).map((field, i) => {
                         return (
                           <tr key={i}>
-                            <td>{`${section.fields[field]}:`}</td>
+                            <td>
+                              {console.log(section.fields[field]) ||
+                                `${section.fields[field]}:`}
+                            </td>
                             <td>
                               <strong>
-                                {data.atd_txdot_crashes[0][field]}
+                                {typeof data.atd_txdot_crashes[0][field] ===
+                                "object"
+                                  ? JSON.stringify(
+                                      data.atd_txdot_crashes[0][field]
+                                    )
+                                  : data.atd_txdot_crashes[0][field]}
                               </strong>
                             </td>
                           </tr>
