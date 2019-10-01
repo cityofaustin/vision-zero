@@ -23,11 +23,10 @@ const rasterStyle = {
     "raster-tiles": {
       type: "raster",
       tiles: [
-        "https://stamen-tiles.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.jpg",
+        `https://api.nearmap.com/tiles/v3/Vert/{z}/{x}/{y}.jpg?apikey=`,
+        // "https://stamen-tiles.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.jpg",
       ],
       tileSize: 256,
-      attribution:
-        'Map tiles by <a target="_top" rel="noopener" href="http://stamen.com">Stamen Design</a>, under <a target="_top" rel="noopener" href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a target="_top" rel="noopener" href="http://openstreetmap.org">OpenStreetMap</a>, under <a target="_top" rel="noopener" href="http://creativecommons.org/licenses/by-sa/3.0">CC BY SA</a>',
     },
   },
   layers: [
@@ -40,6 +39,7 @@ const rasterStyle = {
     },
   ],
 };
+
 export default class LocationMap extends Component {
   constructor(props) {
     super(props);
@@ -66,9 +66,8 @@ export default class LocationMap extends Component {
       <MapGL
         {...viewport}
         width="100%"
-        height="350px"
+        height="500px"
         mapStyle={rasterStyle}
-        // mapStyle="mapbox://styles/mapbox/satellite-streets-v9"
         onViewportChange={this._updateViewport}
         mapboxApiAccessToken={TOKEN}
       >
