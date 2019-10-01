@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import LocationMap from "./LocationMap";
 import LocationEditMap from "./LocationEditMap";
 import {
   Card,
@@ -213,6 +214,7 @@ function Location(props) {
               </ButtonGroup>
             </CardHeader>
             <CardBody>
+              {data && mapSelected === "aerial" && <LocationMap data={data} />}
               {data && mapSelected === "edit" && (
                 <LocationEditMap data={data} refetch={refetch} />
               )}
