@@ -193,7 +193,7 @@ function Location(props) {
         <Col>
           <Card>
             <CardHeader>
-              View or Edit Location
+              <i className="fa fa-map fa-lg mt-3"></i> View or Edit Location
               <ButtonGroup className="float-right">
                 <Button
                   active={mapSelected === "aerial"}

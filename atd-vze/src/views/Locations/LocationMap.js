@@ -22,6 +22,7 @@ const navStyle = {
   padding: "10px",
 };
 
+// Provide style parameters to render Nearmap tiles in react-map-gl
 const rasterStyle = {
   version: 8,
   sources: {
@@ -76,6 +77,8 @@ export default class LocationMap extends Component {
   convertNearMapTimeFormat = date => moment(date).format("MM/DD/YYYY");
 
   componentDidMount() {
+    // Get all available aerial capture dates and set and format latest to state
+    // Tiles from API default to latest capture
     axios
       .get(
         `https://us0.nearmap.com/maps?ll=${this.state.viewport.latitude},${this.state.viewport.longitude}&nmq=INFO&nmf=json&zoom=17&httpauth=false&apikey=`
@@ -114,7 +117,7 @@ export default class LocationMap extends Component {
             color="ghost-light"
             aria-pressed="true"
           >
-            Imagery captured on {this.state.aerialTimestamp}
+            Captured on {this.state.aerialTimestamp}
           </Button>
         </TimestampDisplay>
       </MapGL>
