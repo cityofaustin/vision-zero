@@ -10,7 +10,7 @@ let queryConf = {
   table: "atd_txdot_locations",
   single_item: "locations",
   columns: {
-    unique_id: {
+    location_id: {
       primary_key: true,
       searchable: true,
       sortable: true,
@@ -27,7 +27,7 @@ let queryConf = {
     },
   },
   order_by: {
-    unique_id: "desc", // Unique ID desc by default
+    location_id: "desc", // Unique ID desc by default
   },
   where: {},
   limit: 25,
