@@ -23,6 +23,7 @@ const navStyle = {
 };
 
 // Provide style parameters to render Nearmap tiles in react-map-gl
+// https://docs.mapbox.com/mapbox-gl-js/example/map-tiles/
 const rasterStyle = {
   version: 8,
   sources: {
