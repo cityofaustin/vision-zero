@@ -1,4 +1,4 @@
-import React, { useState, setState } from "react";
+import React, { useState } from "react";
 import {
   Card,
   CardBody,
@@ -11,7 +11,7 @@ import {
 } from "reactstrap";
 import { withApollo } from "react-apollo";
 import { useQuery } from "@apollo/react-hooks";
-import { crashDataMap, geoFields } from "./crashDataMap";
+import { crashDataMap } from "./crashDataMap";
 import CrashCollapses from "./CrashCollapses";
 import CrashMap from "./Maps/CrashMap";
 import CrashQAMap from "./Maps/CrashQAMap";
@@ -19,11 +19,7 @@ import Widget02 from "../Widgets/Widget02";
 import CrashChangeLog from "./CrashChangeLog";
 import "./crash.scss";
 
-import {
-  GET_CRASH,
-  UPDATE_CRASH,
-  GET_CRASH_MANNER,
-} from "../../queries/crashes";
+import { GET_CRASH, UPDATE_CRASH, GET_LOOKUPS } from "../../queries/crashes";
 
 const calculateYearsLifeLost = people => {
   // Assume 75 year life expectancy,
@@ -49,10 +45,7 @@ function Crash(props) {
   });
 
   // Import Lookup tables and aggregate an object of uiType= "select" options
-  const { atd_txdot__collsn_lkp } = useQuery(GET_CRASH_MANNER).data;
-  const lookupSelectOptions = {
-    atd_txdot__collsn_lkp,
-  };
+  const { data: lookupSelectOptions } = useQuery(GET_LOOKUPS);
 
   const [editField, setEditField] = useState("");
   const [formData, setFormData] = useState({});
@@ -165,17 +158,26 @@ function Crash(props) {
 
                         const fieldUiType = fieldConfigObject.uiType;
 
+                        const lookupPrefix = fieldConfigObject.lookupPrefix
+                          ? fieldConfigObject.lookupPrefix
+                          : field.split("_id")[0];
+
                         // If there is no lookup options, we can assume the field value can be displayed as is.
-                        // If there is a lookup, then the value is an ID to be referenced in a lookup table.
-                        const fieldValueDisplay = !!fieldConfigObject.lookupOptions
-                          ? lookupSelectOptions[
-                              fieldConfigObject.lookupOptions
-                            ].find(
-                              item =>
-                                item[`${fieldConfigObject.lookupPrefix}_id`] ===
-                                fieldValue
-                            )[`${fieldConfigObject.lookupPrefix}_desc`]
-                          : fieldValue;
+                        // If there is a lookup option, then the value is an ID to be referenced in a lookup table.
+                        const fieldValueDisplay =
+                          // make sure the value isn't null blank
+                          fieldValue &&
+                          // make sure there is a lookup object in the config
+                          !!fieldConfigObject.lookupOptions &&
+                          // make sure the config lookup object matches with lookup queries
+                          lookupSelectOptions[fieldConfigObject.lookupOptions]
+                            ? lookupSelectOptions[
+                                fieldConfigObject.lookupOptions
+                              ].find(
+                                item =>
+                                  item[`${lookupPrefix}_id`] === fieldValue
+                              )[`${lookupPrefix}_desc`]
+                            : fieldValue;
 
                         const selectOptions =
                           lookupSelectOptions[fieldConfigObject.lookupOptions];
@@ -198,17 +200,9 @@ function Crash(props) {
                                     >
                                       {selectOptions.map(option => (
                                         <option
-                                          value={
-                                            option[
-                                              `${fieldConfigObject.lookupPrefix}_id`
-                                            ]
-                                          }
+                                          value={option[`${lookupPrefix}_id`]}
                                         >
-                                          {
-                                            option[
-                                              `${fieldConfigObject.lookupPrefix}_desc`
-                                            ]
-                                          }
+                                          {option[`${lookupPrefix}_desc`]}
                                         </option>
                                       ))}
                                     </Input>
