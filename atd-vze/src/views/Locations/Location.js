@@ -199,7 +199,8 @@ function Location(props) {
                   active={mapSelected === "aerial"}
                   id="aerial"
                   onClick={handleMapChange}
-                  color="light"
+                  color="dark"
+                  outline
                 >
                   Aerial Map
                 </Button>
@@ -207,7 +208,8 @@ function Location(props) {
                   active={mapSelected === "edit"}
                   id="edit"
                   onClick={handleMapChange}
-                  color="light"
+                  color="dark"
+                  outline
                 >
                   Edit Polygon
                 </Button>
