@@ -5,6 +5,8 @@ import { EditorModes } from "react-map-gl-draw";
 import { Button } from "reactstrap";
 import { colors } from "../../styles/colors";
 
+// Add or remove editor modes here
+// https://github.com/uber/nebula.gl/tree/master/modules/react-map-gl-draw
 const MODES = [
   { id: EditorModes.EDITING, text: "Edit Feature", icon: "icon-select.svg" },
   {

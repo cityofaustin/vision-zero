@@ -49,12 +49,13 @@ class LocationEditMap extends Component {
     };
     this._mapRef = null;
     this._editorRef = null;
+    // Format existing polygon as GeoJSON to render in editor
     this.featureGeoJson = [
       {
         type: "Feature",
         properties: {
           renderType: this.props.data.atd_txdot_locations[0].shape.type,
-          id: this.props.data.atd_txdot_locations[0].unique_id,
+          id: this.props.data.atd_txdot_locations[0].location_id,
         },
         geometry: {
           coordinates: this.props.data.atd_txdot_locations[0].shape.coordinates,
@@ -65,6 +66,7 @@ class LocationEditMap extends Component {
   }
 
   _switchMode = evt => {
+    // Switch editing mode
     const selectedMode = evt.target.id;
     this.setState({
       selectedMode:
@@ -73,7 +75,6 @@ class LocationEditMap extends Component {
   };
 
   _renderToolbar = () => {
-    // TODO add onReset() and button in toolbar to reset map to this.featureGeoJson
     return (
       <Toolbar
         selectedMode={this.state.selectedMode}
@@ -96,12 +97,11 @@ class LocationEditMap extends Component {
   };
 
   onUpdate = (features, editType, editContext) => {
-    // TODO Add logic to capture updated GeoJSON of polygon here
-    const editor = this._editorRef;
-    console.log(features, editType, editContext);
+    // Does not fire on polygon drag and drop...
   };
 
   _onReset = () => {
+    // Delete the first feature (index 0) of features array
     this._editorRef.deleteFeatures(0);
     this.addFeatureDelay();
   };
@@ -116,7 +116,7 @@ class LocationEditMap extends Component {
   };
 
   addFeatureDelay = () => {
-    // TODO find a better way to delay addition of feature here besides setTimeout()?
+    // Delay addition of feature to happen after map renders
     setTimeout(() => {
       this._editorRef.addFeatures(this.featureGeoJson);
     }, 500);
@@ -128,22 +128,27 @@ class LocationEditMap extends Component {
   };
 
   handleEditSubmit = e => {
+    // Get first feature in features array and submit to DB
     e.preventDefault();
     const feature = this._editorRef.getFeatures();
     const featureDataForEditSubmit = feature[0].geometry;
+    const featureId = this.props.data.atd_txdot_locations[0].location_id;
 
     this.props.client
       .mutate({
         mutation: UPDATE_LOCATION,
         variables: {
-          uniqueId: "1",
+          locationId: featureId,
           updatedPolygon: featureDataForEditSubmit,
         },
       })
-      .then(res => this.props.refetch());
+      .then(res => {
+        this.props.refetch();
+      });
   };
 
   componentDidMount() {
+    // Prevent existing feature from being added on each render
     !this.state.isFeatureAdded &&
       this.setState({ isFeatureAdded: true }, () => {
         this.addFeatureDelay();

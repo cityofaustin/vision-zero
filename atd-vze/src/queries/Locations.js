@@ -3,7 +3,7 @@ import { gql } from "apollo-boost";
 export const GET_LOCATION = gql`
   query GetLocation($id: String) {
     atd_txdot_locations(where: { unique_id: { _eq: $id } }) {
-      unique_id
+      location_id
       address
       description
       shape
@@ -67,9 +67,9 @@ export const GET_LOCATION = gql`
 `;
 
 export const UPDATE_LOCATION = gql`
-  mutation UpdateLocation($uniqueId: String, $updatedPolygon: geometry!) {
+  mutation UpdateLocation($locationId: String, $updatedPolygon: geometry!) {
     update_atd_txdot_locations(
-      where: { unique_id: { _eq: $uniqueId } }
+      where: { location_id: { _eq: $locationId } }
       _set: { shape: $updatedPolygon }
     ) {
       returning {
