@@ -77,12 +77,13 @@ export default class LocationMap extends Component {
 
   convertNearMapTimeFormat = date => moment(date).format("MM/DD/YYYY");
 
-  componentDidMount() {
+  getAerialTimestamps = () => {
     // Get all available aerial capture dates and set and format latest to state
     // Tiles from API default to latest capture
+    const { latitude, longitude, zoom } = this.state.viewport;
     axios
       .get(
-        `https://us0.nearmap.com/maps?ll=${this.state.viewport.latitude},${this.state.viewport.longitude}&nmq=INFO&nmf=json&zoom=17&httpauth=false&apikey=`
+        `https://us0.nearmap.com/maps?ll=${latitude},${longitude}&nmq=INFO&nmf=json&zoom=${zoom}&httpauth=false&apikey=`
       )
       .then(res => {
         const aerialTimestamp = this.convertNearMapTimeFormat(
@@ -90,6 +91,10 @@ export default class LocationMap extends Component {
         );
         this.setState({ aerialTimestamp });
       });
+  };
+
+  componentDidMount() {
+    this.getAerialTimestamps();
   }
 
   render() {
