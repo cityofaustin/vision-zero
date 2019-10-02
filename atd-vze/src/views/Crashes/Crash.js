@@ -107,7 +107,12 @@ function Crash(props) {
                             <td>{`${section.fields[field]}:`}</td>
                             <td>
                               <strong>
-                                {data.atd_txdot_crashes[0][field]}
+                                {typeof data.atd_txdot_crashes[0][field] ===
+                                "object"
+                                  ? JSON.stringify(
+                                      data.atd_txdot_crashes[0][field]
+                                    )
+                                  : data.atd_txdot_crashes[0][field]}
                               </strong>
                             </td>
                           </tr>
