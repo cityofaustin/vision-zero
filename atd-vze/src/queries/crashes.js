@@ -134,7 +134,7 @@ export const GET_CRASH = gql`
       where: { record_type: { _eq: "crashes" }, record_id: { _eq: $crashId } }
       order_by: { record_type: asc }
     ) {
-      id
+      change_log_id
       record_id
       record_crash_id
       record_json
