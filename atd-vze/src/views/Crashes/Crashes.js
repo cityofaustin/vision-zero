@@ -1,7 +1,7 @@
 import React from "react";
 import { withApollo } from "react-apollo";
 import TableWithFilters from "../../Components/TableWithFilters";
-import crashDataMap from "./crashDataMap";
+import { crashDataMap } from "./crashDataMap";
 
 // Key for data response array from DB
 const dataKey = "atd_txdot_crashes";

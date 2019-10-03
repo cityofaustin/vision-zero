@@ -1,19 +1,29 @@
-import React from "react";
-import { Card, CardBody, CardHeader, Col, Row, Table, Alert } from "reactstrap";
+import React, { useState } from "react";
+import {
+  Card,
+  CardBody,
+  CardHeader,
+  Col,
+  Row,
+  Table,
+  Alert,
+  Input,
+} from "reactstrap";
 import { withApollo } from "react-apollo";
 import { useQuery } from "@apollo/react-hooks";
-import crashDataMap from "./crashDataMap";
+import { crashDataMap } from "./crashDataMap";
 import CrashCollapses from "./CrashCollapses";
 import CrashMap from "./Maps/CrashMap";
 import CrashQAMap from "./Maps/CrashQAMap";
 import Widget02 from "../Widgets/Widget02";
 import CrashChangeLog from "./CrashChangeLog";
+import "./crash.scss";
 
-import { GET_CRASH } from "../../queries/crashes";
+import { GET_CRASH, UPDATE_CRASH, GET_LOOKUPS } from "../../queries/crashes";
 
 const calculateYearsLifeLost = people => {
   // Assume 75 year life expectancy,
-  // Find the differance between person.prsn_age & 75
+  // Find the difference between person.prsn_age & 75
   // Sum over the list of ppl with .reduce
   return people.reduce((accumulator, person) => {
     let years = 0;
@@ -34,6 +44,12 @@ function Crash(props) {
     variables: { crashId },
   });
 
+  // Import Lookup tables and aggregate an object of uiType= "select" options
+  const { data: lookupSelectOptions } = useQuery(GET_LOOKUPS);
+
+  const [editField, setEditField] = useState("");
+  const [formData, setFormData] = useState({});
+
   if (loading) return "Loading...";
   if (error) return `Error! ${error.message}`;
 
@@ -53,6 +69,35 @@ function Crash(props) {
       }
     });
     return geocoderAddressString;
+  };
+
+  const handleInputChange = e => {
+    const newFormState = Object.assign(formData, {
+      [editField]: e.target.value,
+    });
+    setFormData(newFormState);
+  };
+
+  const handleCancelClick = e => {
+    e.preventDefault();
+
+    setEditField("");
+  };
+
+  const handleFieldUpdate = e => {
+    e.preventDefault();
+
+    props.client
+      .mutate({
+        mutation: UPDATE_CRASH,
+        variables: {
+          crashId: crashId,
+          changes: formData,
+        },
+      })
+      .then(res => refetch());
+
+    setEditField("");
   };
 
   const deathCount = data.atd_txdot_crashes[0].death_cnt;
@@ -102,18 +147,95 @@ function Crash(props) {
                   <Table responsive striped hover>
                     <tbody>
                       {Object.keys(section.fields).map((field, i) => {
+                        const isEditing = field === editField;
+                        const fieldConfigObject = section.fields[field];
+
+                        const fieldLabel = fieldConfigObject.label;
+
+                        const fieldValue =
+                          (formData && formData[field.data]) ||
+                          data.atd_txdot_crashes[0][field];
+
+                        const fieldUiType = fieldConfigObject.uiType;
+
+                        const lookupPrefix = fieldConfigObject.lookupPrefix
+                          ? fieldConfigObject.lookupPrefix
+                          : field.split("_id")[0];
+
+                        // If there is no lookup options, we can assume the field value can be displayed as is.
+                        // If there is a lookup option, then the value is an ID to be referenced in a lookup table.
+                        const fieldValueDisplay =
+                          // make sure the value isn't null blank
+                          fieldValue &&
+                          // make sure there is a lookup object in the config
+                          !!fieldConfigObject.lookupOptions &&
+                          // make sure the config lookup object matches with lookup queries
+                          lookupSelectOptions[fieldConfigObject.lookupOptions]
+                            ? lookupSelectOptions[
+                                fieldConfigObject.lookupOptions
+                              ].find(
+                                item =>
+                                  item[`${lookupPrefix}_id`] === fieldValue
+                              )[`${lookupPrefix}_desc`]
+                            : fieldValue;
+
+                        const selectOptions =
+                          lookupSelectOptions[fieldConfigObject.lookupOptions];
+
                         return (
                           <tr key={i}>
-                            <td>{`${section.fields[field]}:`}</td>
                             <td>
-                              <strong>
-                                {typeof data.atd_txdot_crashes[0][field] ===
-                                "object"
-                                  ? JSON.stringify(
-                                      data.atd_txdot_crashes[0][field]
-                                    )
-                                  : data.atd_txdot_crashes[0][field]}
-                              </strong>
+                              <strong>{fieldLabel}</strong>
+                            </td>
+                            <td>
+                              {isEditing ? (
+                                <form onSubmit={e => handleFieldUpdate(e)}>
+                                  {fieldUiType === "select" && (
+                                    <Input
+                                      name={field}
+                                      id={field}
+                                      onChange={e => handleInputChange(e)}
+                                      defaultValue={fieldValue}
+                                      type="select"
+                                    >
+                                      {selectOptions.map(option => (
+                                        <option
+                                          value={option[`${lookupPrefix}_id`]}
+                                        >
+                                          {option[`${lookupPrefix}_desc`]}
+                                        </option>
+                                      ))}
+                                    </Input>
+                                  )}
+                                  {fieldUiType === "text" && (
+                                    <input
+                                      type="text"
+                                      defaultValue={fieldValue}
+                                      onChange={e => handleInputChange(e)}
+                                    />
+                                  )}
+
+                                  <button type="submit">
+                                    <i className="fa fa-check edit-toggle" />
+                                  </button>
+                                  <button type="cancel">
+                                    <i
+                                      className="fa fa-times edit-toggle"
+                                      onClick={e => handleCancelClick(e)}
+                                    ></i>
+                                  </button>
+                                </form>
+                              ) : (
+                                fieldValueDisplay
+                              )}
+                            </td>
+                            <td>
+                              {fieldConfigObject.editable && !isEditing && (
+                                <i
+                                  className="fa fa-pencil edit-toggle"
+                                  onClick={() => setEditField(field)}
+                                />
+                              )}
                             </td>
                           </tr>
                         );
@@ -132,7 +254,12 @@ function Crash(props) {
               <CardHeader>Crash Location</CardHeader>
               <CardBody>
                 {latitude && longitude ? (
-                  <CrashMap data={data.atd_txdot_crashes[0]} />
+                  <>
+                    <CrashMap data={data.atd_txdot_crashes[0]} />
+                    <Table responsive striped hover>
+                      <tbody></tbody>
+                    </Table>
+                  </>
                 ) : (
                   <>
                     <Alert color="danger">

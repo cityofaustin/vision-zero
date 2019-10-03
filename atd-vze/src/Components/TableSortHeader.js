@@ -46,8 +46,10 @@ const TableSortHeader = ({ setOrderFilter, fieldMap, columns }) => {
 
   const convertFieldNameToTitle = col => {
     let title = "";
+
+    // loop through the crash data sections and find the label for the column
     fieldMap.map(
-      field => (title = field.fields[col] ? field.fields[col] : title)
+      field => (title = field.fields[col] ? field.fields[col].label : title)
     );
     return title;
   };
