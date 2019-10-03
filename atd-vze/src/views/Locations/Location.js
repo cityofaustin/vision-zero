@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import LocationMap from "./LocationMap";
 import LocationEditMap from "./LocationEditMap";
 import {
   Card,
@@ -192,13 +193,14 @@ function Location(props) {
         <Col>
           <Card>
             <CardHeader>
-              View or Edit Location
+              <i className="fa fa-map fa-lg mt-3"></i> View or Edit Location
               <ButtonGroup className="float-right">
                 <Button
                   active={mapSelected === "aerial"}
                   id="aerial"
                   onClick={handleMapChange}
-                  color="light"
+                  color="dark"
+                  outline
                 >
                   Aerial Map
                 </Button>
@@ -206,13 +208,15 @@ function Location(props) {
                   active={mapSelected === "edit"}
                   id="edit"
                   onClick={handleMapChange}
-                  color="light"
+                  color="dark"
+                  outline
                 >
                   Edit Polygon
                 </Button>
               </ButtonGroup>
             </CardHeader>
             <CardBody>
+              {data && mapSelected === "aerial" && <LocationMap data={data} />}
               {data && mapSelected === "edit" && (
                 <LocationEditMap data={data} refetch={refetch} />
               )}
