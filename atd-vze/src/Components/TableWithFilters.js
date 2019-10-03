@@ -13,12 +13,14 @@ import {
   Col,
   Row,
   Table,
+  ButtonToolbar,
   ButtonGroup,
   Spinner,
 } from "reactstrap";
 import TableSearchBar from "./TableSearchBar";
 import TableSortHeader from "./TableSortHeader";
 import TablePaginationControl from "./TablePaginationControl";
+import TableDateRange from "./TableDateRange";
 
 const TableWithFilters = ({
   title,
@@ -28,13 +30,14 @@ const TableWithFilters = ({
   columns,
   dataKey,
   fieldMap,
+  databaseDateColumnName,
 }) => {
   const [tableQuery, setTableQuery] = useState(defaultQuery);
   // Filter states hold array of objects, [{ KEYWORD: `string that replaces keyword`}]
   const [pageFilter, setPageFilter] = useState("");
   const [orderFilter, setOrderFilter] = useState("");
   const [searchFilter, setSearchFilter] = useState("");
-  console.log(tableQuery);
+  const [dateRangeFilter, setDateRangeFilter] = useState("");
 
   useEffect(() => {
     // On every render, filterQuery is copied, unset filters are removed, set filters replace keywords in filterQuery
@@ -51,7 +54,7 @@ const TableWithFilters = ({
           ""
         );
       }
-      if (searchFilter === "") {
+      if (searchFilter === "" && dateRangeFilter === "") {
         queryWithFiltersCleared = queryWithFiltersCleared.replace("SEARCH", "");
       }
       return queryWithFiltersCleared;
@@ -79,8 +82,35 @@ const TableWithFilters = ({
             );
           });
         }
-        if (searchFilter !== "") {
+        if (dateRangeFilter !== "" && searchFilter !== "") {
+          // Combine both 'where' queries into one argument and replace in queryWithFilters
+          const dateRangeQueryComponent = Object.values(
+            dateRangeFilter[0]
+          )[0].replace("where: {", ",");
+          const searchQueryComponent = Object.values(searchFilter[0])[0].slice(
+            0,
+            -2
+          );
+          const combinedFilterString = searchQueryComponent.concat(
+            dateRangeQueryComponent
+          );
+          dateRangeFilter.forEach(query => {
+            queryWithFilters = queryWithFilters.replace(
+              Object.keys(query),
+              combinedFilterString
+            );
+          });
+        }
+        if (searchFilter !== "" && dateRangeFilter === "") {
           searchFilter.forEach(query => {
+            queryWithFilters = queryWithFilters.replace(
+              Object.keys(query),
+              Object.values(query)
+            );
+          });
+        }
+        if (dateRangeFilter !== "" && searchFilter === "") {
+          dateRangeFilter.forEach(query => {
             queryWithFilters = queryWithFilters.replace(
               Object.keys(query),
               Object.values(query)
@@ -98,13 +128,24 @@ const TableWithFilters = ({
     tableQuery,
     defaultQuery,
     filterQuery,
+    dateRangeFilter,
   ]);
 
   const { loading, error, data } = useQuery(
     gql`
       ${tableQuery}
-    `
+    `,
+    // Disables cache as a workaround for loading never returning to false
+    // after queries with long time spans
+    // https://github.com/apollographql/react-apollo/issues/3361
+    { fetchPolicy: "no-cache" }
   );
+
+  // Alternate workaround but spinner does not appear between queries
+  // Change const on line 135 to let
+  // if (data[dataKey]) {
+  //   loading = false;
+  // }
 
   if (error) return `Error! ${error.message}`;
 
@@ -127,21 +168,30 @@ const TableWithFilters = ({
                 setSearchFilter={setSearchFilter}
                 clearFilters={clearFilters}
               />
-              <ButtonGroup className="mb-2 float-right">
-                <TablePaginationControl
-                  responseDataSet={"atd_txdot_crashes"}
-                  setPageFilter={setPageFilter}
-                />{" "}
-                {data[dataKey] && (
-                  <CSVLink
-                    className=""
-                    data={data[dataKey]}
-                    filename={dataKey + Date.now()}
-                  >
-                    <i className="fa fa-save fa-2x ml-2 mt-1" />
-                  </CSVLink>
-                )}
-              </ButtonGroup>
+              <ButtonToolbar className="mb-3 justify-content-between">
+                <ButtonGroup>
+                  <TableDateRange
+                    setDateRangeFilter={setDateRangeFilter}
+                    databaseDateColumnName={databaseDateColumnName}
+                  />
+                </ButtonGroup>
+                <ButtonGroup>
+                  <TablePaginationControl
+                    className="float-right"
+                    responseDataSet={"atd_txdot_crashes"}
+                    setPageFilter={setPageFilter}
+                  />{" "}
+                  {data[dataKey] && (
+                    <CSVLink
+                      className=""
+                      data={data[dataKey]}
+                      filename={dataKey + Date.now()}
+                    >
+                      <i className="fa fa-save fa-2x ml-2 mt-1" />
+                    </CSVLink>
+                  )}
+                </ButtonGroup>
+              </ButtonToolbar>
               <Table responsive>
                 <TableSortHeader
                   columns={columns}

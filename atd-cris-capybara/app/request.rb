@@ -10,10 +10,8 @@ require './config'
 require './helpers'
 
 # We need to initialize the session using the webkit driver
-Capybara.default_driver = :webkit
 session = Capybara::Session.new(:webkit)
-# Fake it 'till you make it! Otherwise the wizard will not proceed.
-session.driver.header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36")
+session.driver.header("User-Agent", CRIS_WEBSITE_USERAGENT)
 session.visit CRIS_WEBSITE
 
 
@@ -45,18 +43,12 @@ else
 end
 
 
-#
-# At this point you may want to submit a payload through javascript,
-# or proceed with capybara steps:
-# payload = generate_payload()
-# session.evaluate_script(payload)
-# Example output: # session.evaluate_script('$.ajax({type:"post",url:"https://cris.dot.state.tx.us/secure/Share/rest/saveextractrequest",data:JSON.stringify({locationFilterTypeId:2,dateFilterTypeId:2,outputFormatId:0,requestModeId:1,deliveryOptionId:2,beginCrashDate:"2019-07-01T05:00:00.000Z",endCrashDate:"2019-07-06T05:00:00.000Z",requestUserId:59113,extractTypeId:14,reportedAgencyIds:[],reportedCountyIds:[105,227,246],reportedCityIds:[22],mpoIds:[],crashYearList:[]}),contentType:"application/json; charset=utf-8",traditional:!0}).done(function(e){console.log(e),console.log(e.getElementsByTagName("success")[0])});')
-#
+
 
 
 
 # ====================================
-# Fill out request
+# MAKE THE REQUEST
 # ====================================
 session.save_screenshot
 session.click_button("Create Data Extract Request")
@@ -108,11 +100,11 @@ else
   puts("Session Url Now: #{session.current_url}")
 end
 # session.find('input[ng-value="shareConstants.DATE_TYPE_IDS.CRASH"]').click
-# session.fill_in 'requestDateCrashBegin', with: ENV['ATD_CRIS_REPORT_DATE_START']
-# session.fill_in 'requestDateCrashEnd', with: ENV['ATD_CRIS_REPORT_DATE_END']
+# session.fill_in 'requestDateCrashBegin', with: get_request_start_date()
+# session.fill_in 'requestDateCrashEnd', with: get_request_end_date()
 session.find('input[ng-value="shareConstants.DATE_TYPE_IDS.PROCESS"]').click
-session.fill_in 'requestDateProcessBegin', with: ENV['ATD_CRIS_REPORT_DATE_START']
-session.fill_in 'requestDateProcessEnd', with: ENV['ATD_CRIS_REPORT_DATE_END']
+session.fill_in 'requestDateProcessBegin', with: get_request_start_date()
+session.fill_in 'requestDateProcessEnd', with: get_request_end_date()
 
 session.save_screenshot
 session.click_button("Continue")

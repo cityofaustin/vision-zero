@@ -15,8 +15,6 @@ import {
   ModalFooter,
 } from "reactstrap";
 
-import { Link } from "react-router-dom";
-
 class CrashChangeLog extends Component {
   constructor(props) {
     super(props);
@@ -113,7 +111,7 @@ class CrashChangeLog extends Component {
           });
         }
       } catch (error) {
-        console.log(error);
+        alert("Error: " + error);
       }
     }
 
