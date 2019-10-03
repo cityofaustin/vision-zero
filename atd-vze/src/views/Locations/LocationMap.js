@@ -7,6 +7,7 @@ import styled from "styled-components";
 import { Button } from "reactstrap";
 
 const TOKEN = process.env.REACT_APP_MAPBOX_TOKEN;
+const NEARMAP_KEY = process.env.REACT_APP_NEARMAP_KEY;
 
 const fullscreenControlStyle = {
   position: "absolute",
@@ -29,7 +30,9 @@ const rasterStyle = {
   sources: {
     "raster-tiles": {
       type: "raster",
-      tiles: [`https://api.nearmap.com/tiles/v3/Vert/{z}/{x}/{y}.jpg?apikey=`],
+      tiles: [
+        `https://api.nearmap.com/tiles/v3/Vert/{z}/{x}/{y}.jpg?apikey=${NEARMAP_KEY}`,
+      ],
       tileSize: 256,
     },
   },
@@ -83,7 +86,7 @@ export default class LocationMap extends Component {
     const { latitude, longitude, zoom } = this.state.viewport;
     axios
       .get(
-        `https://us0.nearmap.com/maps?ll=${latitude},${longitude}&nmq=INFO&nmf=json&zoom=${zoom}&httpauth=false&apikey=`
+        `https://us0.nearmap.com/maps?ll=${latitude},${longitude}&nmq=INFO&nmf=json&zoom=${zoom}&httpauth=false&apikey=${NEARMAP_KEY}`
       )
       .then(res => {
         const aerialTimestamp = this.convertNearMapTimeFormat(
