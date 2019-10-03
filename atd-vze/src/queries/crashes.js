@@ -8,9 +8,7 @@ export const GET_CRASH = gql`
       approved_by
       at_intrsct_fl
       case_id
-      city {
-        city_desc
-      }
+      city_id
       crash_date
       crash_fatal_fl
       crash_id
@@ -27,6 +25,7 @@ export const GET_CRASH = gql`
       hwy_nbr
       hwy_sfx
       hwy_sys
+      hwy_sys_2
       intrsct_relat_id
       investigator_narrative
       is_retired
@@ -50,7 +49,6 @@ export const GET_CRASH = gql`
       rpt_block_num
       rpt_city_id
       rpt_hwy_num
-      rpt_hwy_sfx
       rpt_latitude
       rpt_longitude
       rpt_outside_city_limit_fl
@@ -68,6 +66,7 @@ export const GET_CRASH = gql`
       rpt_street_name
       rpt_street_pfx
       rpt_street_sfx
+      rpt_street_desc
       rr_relat_fl
       schl_bus_fl
       street_name
@@ -184,9 +183,7 @@ export const UPDATE_CRASH = gql`
         approved_by
         at_intrsct_fl
         case_id
-        city {
-          city_desc
-        }
+        city_id
         crash_date
         crash_fatal_fl
         crash_id
@@ -203,6 +200,7 @@ export const UPDATE_CRASH = gql`
         hwy_nbr
         hwy_sfx
         hwy_sys
+        hwy_sys_2
         intrsct_relat_id
         investigator_narrative
         is_retired
@@ -224,9 +222,7 @@ export const UPDATE_CRASH = gql`
         road_constr_zone_fl
         road_type_id
         rpt_block_num
-        rpt_city_id
         rpt_hwy_num
-        rpt_hwy_sfx
         rpt_latitude
         rpt_longitude
         rpt_outside_city_limit_fl
@@ -241,6 +237,7 @@ export const UPDATE_CRASH = gql`
         rpt_sec_street_name
         rpt_sec_street_pfx
         rpt_sec_street_sfx
+        rpt_street_desc
         rpt_street_name
         rpt_street_pfx
         rpt_street_sfx
@@ -261,11 +258,55 @@ export const UPDATE_CRASH = gql`
   }
 `;
 
-export const GET_CRASH_MANNER = gql`
+export const GET_LOOKUPS = gql`
   {
+    atd_txdot__city_lkp {
+      city_id
+      city_desc
+    }
     atd_txdot__collsn_lkp {
       collsn_id
       collsn_desc
+    }
+    atd_txdot__light_cond_lkp {
+      light_cond_id
+      light_cond_desc
+    }
+    atd_txdot__injry_sev_lkp {
+      injry_sev_id
+      injry_sev_desc
+    }
+    atd_txdot__intrsct_relat_lkp {
+      intrsct_relat_id
+      intrsct_relat_desc
+    }
+    atd_txdot__obj_struck_lkp {
+      obj_struck_desc
+      obj_struck_id
+    }
+    atd_txdot__road_part_lkp {
+      road_part_id
+      road_part_desc
+    }
+    atd_txdot__road_type_lkp {
+      road_type_id
+      road_type_desc
+    }
+    atd_txdot__rwy_sys_lkp {
+      rwy_sys_id
+      rwy_sys_desc
+    }
+    atd_txdot__traffic_cntl_lkp {
+      traffic_cntl_id
+      traffic_cntl_desc
+    }
+    atd_txdot__wthr_cond_lkp {
+      wthr_cond_id
+      wthr_cond_desc
+    }
+    atd_txdot__y_n_lkp {
+      y_n_id
+      y_n_desc
     }
   }
 `;
