@@ -10,15 +10,15 @@ export default {
       },
       class: "", // optional class names space delimited list for title item ex: "text-center"
     },
-    // {
-    //   name: "VZDashboard",
-    //   url: "/vzdashboard",
-    //   icon: "icon-speedometer",
-    //   // badge: {
-    //   //   variant: "info",
-    //   //   text: "NEW"
-    //   // }
-    // },
+    {
+      name: "Dashboard",
+      url: "/dashboard",
+      icon: "icon-speedometer",
+      // badge: {
+      //   variant: "info",
+      //   text: "NEW"
+      // },
+    },
     {
       name: "Crashes",
       url: "#",
