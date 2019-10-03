@@ -33,19 +33,21 @@ const navStyle = {
 class LocationEditMap extends Component {
   constructor(props) {
     super(props);
+    this.polygon = this.props.data.atd_txdot_locations[0];
     this.state = {
       // map
       viewport: {
         width: 800,
         height: 600,
-        longitude: this.props.data.atd_txdot_locations[0].longitude,
-        latitude: this.props.data.atd_txdot_locations[0].latitude,
+        longitude: this.polygon.longitude,
+        latitude: this.polygon.latitude,
         zoom: 17,
       }, // editor
       selectedMode: EditorModes.READ_ONLY,
       selectedFeatureIndex: null,
       isFeatureAdded: false,
       mapStyle: "light",
+      isSubmitting: false,
     };
     this._mapRef = null;
     this._editorRef = null;
@@ -54,12 +56,12 @@ class LocationEditMap extends Component {
       {
         type: "Feature",
         properties: {
-          renderType: this.props.data.atd_txdot_locations[0].shape.type,
-          id: this.props.data.atd_txdot_locations[0].location_id,
+          renderType: this.polygon.shape.type,
+          id: this.polygon.location_id,
         },
         geometry: {
-          coordinates: this.props.data.atd_txdot_locations[0].shape.coordinates,
-          type: this.props.data.atd_txdot_locations[0].shape.type,
+          coordinates: this.polygon.shape.coordinates,
+          type: this.polygon.shape.type,
         },
       },
     ];
@@ -82,6 +84,7 @@ class LocationEditMap extends Component {
         onReset={this._onReset}
         onDelete={this._onDelete}
         onSubmit={this.handleEditSubmit}
+        isSubmitting={this.state.isSubmitting}
       />
     );
   };
@@ -132,8 +135,8 @@ class LocationEditMap extends Component {
     e.preventDefault();
     const feature = this._editorRef.getFeatures();
     const featureDataForEditSubmit = feature[0].geometry;
-    const featureId = this.props.data.atd_txdot_locations[0].location_id;
-
+    const featureId = this.polygon.location_id;
+    this.setState({ isSubmitting: true });
     this.props.client
       .mutate({
         mutation: UPDATE_LOCATION,
@@ -144,6 +147,7 @@ class LocationEditMap extends Component {
       })
       .then(res => {
         this.props.refetch();
+        this.setState({ isSubmitting: false });
       });
   };
 
