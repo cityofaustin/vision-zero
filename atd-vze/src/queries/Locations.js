@@ -6,6 +6,9 @@ export const GET_LOCATION = gql`
       location_id
       address
       description
+      shape
+      latitude
+      longitude
       metadata
       last_update
       is_retired
@@ -58,6 +61,19 @@ export const GET_LOCATION = gql`
       crashes_by_veh_body_style {
         veh_body_styl_desc
         count
+      }
+    }
+  }
+`;
+
+export const UPDATE_LOCATION = gql`
+  mutation UpdateLocation($locationId: String, $updatedPolygon: geometry!) {
+    update_atd_txdot_locations(
+      where: { location_id: { _eq: $locationId } }
+      _set: { shape: $updatedPolygon }
+    ) {
+      returning {
+        shape
       }
     }
   }

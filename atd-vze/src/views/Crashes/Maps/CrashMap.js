@@ -71,7 +71,7 @@ export default class CrashMap extends Component {
           <FullscreenControl />
         </div>
         <div className="nav" style={navStyle}>
-          <NavigationControl />
+          <NavigationControl showCompass={false} />
         </div>
 
         <Marker
