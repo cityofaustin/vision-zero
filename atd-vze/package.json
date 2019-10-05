@@ -60,7 +60,7 @@
     "start": "export HTTPS=true && react-scripts start",
     "build": "react-scripts build && cp _redirects build",
     "build:production": "sh -ac '. .env.production; react-scripts build && cp _redirects build'",
-    "build:staging": "sh -ac '. .env.staging; react-scripts build && cp _redirects build'",
+    "build:staging": "sh -ac 'source ./.env.staging && react-scripts build && cp _redirects build'",
     "test": "react-scripts test",
     "test:cov": "npm test -- --coverage --watchAll=false",
     "test:debug": "react-scripts --inspect-brk test --runInBand",
