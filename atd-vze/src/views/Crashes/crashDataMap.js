@@ -25,6 +25,7 @@ export const crashDataMap = [
       est_comp_cost: {
         label: "Est. Comprehensive Cost",
         editable: false,
+        format: "dollars",
       },
       fhe_collsn_id: {
         label: "Manner of Collision ID",

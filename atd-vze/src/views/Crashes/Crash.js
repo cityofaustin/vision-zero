@@ -100,6 +100,8 @@ function Crash(props) {
     setEditField("");
   };
 
+  const formatCostToDollars = cost => `$${cost.toLocaleString()}`;
+
   const deathCount = data.atd_txdot_crashes[0].death_cnt;
   const injuryCount = data.atd_txdot_crashes[0].tot_injry_cnt;
   const latitude = data.atd_txdot_crashes[0].latitude;
@@ -152,7 +154,12 @@ function Crash(props) {
 
                         const fieldLabel = fieldConfigObject.label;
 
+                        const formattedDollarValue =
+                          fieldConfigObject.format === "dollars" &&
+                          formatCostToDollars(data.atd_txdot_crashes[0][field]);
+
                         const fieldValue =
+                          formattedDollarValue ||
                           (formData && formData[field.data]) ||
                           data.atd_txdot_crashes[0][field];
 

@@ -20,7 +20,6 @@ const GET_CRASHES = `
       rpt_street_sfx
       rpt_street_name
       crash_date
-      est_comp_cost
     }
   }
 `;
@@ -41,7 +40,6 @@ const FILTER_CRASHES = `
       rpt_street_sfx
       rpt_street_name
       crash_date
-      est_comp_cost
     }
   }
 `;
@@ -52,7 +50,6 @@ const columns = [
   "rpt_street_name",
   "tot_injry_cnt",
   "death_cnt",
-  "est_comp_cost",
 ];
 
 const fieldsToSearch = [
