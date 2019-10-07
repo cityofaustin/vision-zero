@@ -96,6 +96,22 @@ function LocationCrashes(props) {
 
   let crashesQuery = new gqlAbstract(queryConf);
 
+  // TODO: Add handling of _or
+  // {
+  //   atd_txdot_crashes(limit: 25, offset: 0, where: {city_id: {_eq: 22}, crash_date: {_gte: "2000-01-01", _lte: "2019-10-07"}, _or: [{ death_cnt: {_gt: 3}} , {sus_serious_injry_cnt: {_gt: 13}}]}, order_by: { sus_serious_injry_cnt: desc}) {
+  //     crash_id
+  //     location {
+  //       location_id
+  //     }
+  //     tot_injry_cnt
+  //     death_cnt
+  //     sus_serious_injry_cnt
+  //     collision {
+  //       collsn_desc
+  //     }
+  //   }
+  // }
+
   let customFilters = {
     grp_injuries: {
       icon: "cab",
