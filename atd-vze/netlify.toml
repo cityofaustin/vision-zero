@@ -8,11 +8,6 @@
   NODE_ENV = "staging"
   command = "npm run build:staging"
 
-# Specific branch context: all deploys from this specific branch will inherit these settings.
-[context.216-sg-devenv] # 'master' is a branch name
-  NODE_ENV = "staging"
-  command = "npm run build:staging"
-
 # Production context: all deploys from the Production branch set in your site's
 # deploy contexts will inherit these settings.
 [context.production]
