@@ -166,6 +166,7 @@ class CrashCollapses extends Component {
                               <th>ZIP</th>
                               <th>Age</th>
                               <th>Injury Severity</th>
+                              <th>Type</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -185,6 +186,7 @@ class CrashCollapses extends Component {
                                       {person.injury_severity.injry_sev_desc}
                                     </Badge>
                                   </td>
+                                  <td>{person.person_type.prsn_type_desc}</td>
                                 </tr>
                               )
                             )}
@@ -200,6 +202,7 @@ class CrashCollapses extends Component {
                                   <th>Unit</th>
                                   <th>Age</th>
                                   <th>Injury Severity</th>
+                                  <th>Type</th>
                                 </tr>
                               </thead>
                               <tbody>
@@ -220,6 +223,9 @@ class CrashCollapses extends Component {
                                               .injry_sev_desc
                                           }
                                         </Badge>
+                                      </td>
+                                      <td>
+                                        {person.person_type.prsn_type_desc}
                                       </td>
                                     </tr>
                                   )
@@ -266,22 +272,40 @@ class CrashCollapses extends Component {
                             </tr>
                           </thead>
                           <tbody>
-                            {this.props.data.atd_txdot_units.map((unit, i) => (
-                              <tr key={`person-${i}`}>
-                                <td>{unit.unit_nbr}</td>
-                                <td>
-                                  {this.getUnitType(
-                                    unit.unit_description.veh_unit_desc_desc
-                                  )}
-                                </td>
-                                <td>{unit.body_style.veh_body_styl_desc}</td>
-                                <td>{unit.contrib_factr_1_id}</td>
-                                <td>
-                                  {unit.veh_mod_year} {unit.make.veh_make_desc}{" "}
-                                  {unit.model.veh_mod_desc}
-                                </td>
-                              </tr>
-                            ))}
+                            {this.props.data.atd_txdot_units.map((unit, i) => {
+                              const {
+                                unit_nbr,
+                                unit_description,
+                                body_style,
+                                contrib_factr_1_id,
+                                veh_mod_year,
+                                make,
+                                model,
+                              } = unit;
+                              return (
+                                <tr key={`person-${i}`}>
+                                  <td>{unit_nbr && unit_nbr}</td>
+                                  <td>
+                                    {this.getUnitType(
+                                      unit_description &&
+                                        unit_description.veh_unit_desc_desc
+                                    )}
+                                  </td>
+                                  <td>
+                                    {body_style &&
+                                      body_style.veh_body_styl_desc}
+                                  </td>
+                                  <td>
+                                    {contrib_factr_1_id && contrib_factr_1_id}
+                                  </td>
+                                  <td>
+                                    {veh_mod_year && veh_mod_year}{" "}
+                                    {make && make.veh_make_desc}{" "}
+                                    {model && model.veh_mod_desc}
+                                  </td>
+                                </tr>
+                              );
+                            })}
                           </tbody>
                         </Table>
                       </CardBody>

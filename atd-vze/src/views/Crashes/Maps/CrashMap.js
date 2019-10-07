@@ -71,7 +71,7 @@ export default class CrashMap extends Component {
           <FullscreenControl />
         </div>
         <div className="nav" style={navStyle}>
-          <NavigationControl />
+          <NavigationControl showCompass={false} />
         </div>
 
         <Marker
@@ -80,7 +80,7 @@ export default class CrashMap extends Component {
           offsetLeft={-20}
           offsetTop={-10}
         >
-          <Pin size={40} />
+          <Pin size={40} color={"warning"} />
         </Marker>
       </MapGL>
     );
