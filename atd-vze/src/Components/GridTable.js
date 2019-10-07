@@ -26,7 +26,6 @@ import GridTableSearch from "./GridTableSearch";
 import GridFilters from "./GridFilters";
 import GridDateRange from "./GridDateRange";
 
-
 const GridTable = ({ title, query, filters }) => {
   /**
    * State management:
@@ -286,6 +285,10 @@ const GridTable = ({ title, query, filters }) => {
     );
   }
 
+  const handleSaveClick = (event, done) => {
+    debugger;
+  };
+
   return (
     <div className="animated fadeIn">
       <Row>
@@ -335,8 +338,10 @@ const GridTable = ({ title, query, filters }) => {
                   {data[query.table] && (
                     <CSVLink
                       className=""
-                      data={data[query.table]}
+                      data={query.queryCSV("You injected a string!!!")}
                       filename={query.table + Date.now()}
+                      asyncOnClick={true}
+                      onClick={handleSaveClick}
                     >
                       <i className="fa fa-save fa-2x ml-2 mt-1" />
                     </CSVLink>
