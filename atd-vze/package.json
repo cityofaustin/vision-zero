@@ -60,8 +60,8 @@
   "scripts": {
     "start": "export HTTPS=true && react-scripts start",
     "build": "react-scripts build && cp _redirects build",
-    "build:production": "./node_modules/.bin/env-cmd .env.production; react-scripts build && cp _redirects build",
-    "build:staging": "./node_modules/.bin/env-cmd .env.staging && react-scripts build && cp _redirects build",
+    "build:production": "env-cmd -f .env.production npm run build",
+    "build:staging": "env-cmd -f .env.staging npm run build",
     "test": "react-scripts test",
     "test:cov": "npm test -- --coverage --watchAll=false",
     "test:debug": "react-scripts --inspect-brk test --runInBand",
