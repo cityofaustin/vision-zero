@@ -26,6 +26,9 @@ let queryConf = {
       type: "String",
     },
   },
+  // TODO: Add CSV export columns and then add handling in gqlAbstract
+  // Idea is to call method on query that returns gql string to req from DB
+  // Handle with async CSVLink from react-csv library
   order_by: {
     location_id: "desc", // Unique ID desc by default
   },
