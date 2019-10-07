@@ -25,6 +25,7 @@ const ButtonGroups = React.lazy(() => import("./views/Buttons/ButtonGroups"));
 const Buttons = React.lazy(() => import("./views/Buttons/Buttons"));
 const Charts = React.lazy(() => import("./views/Charts"));
 const Dashboard = React.lazy(() => import("./views/Dashboard"));
+const VZDashboard = React.lazy(() => import("./views/VZDashboard"));
 const CoreUIIcons = React.lazy(() => import("./views/Icons/CoreUIIcons"));
 const Flags = React.lazy(() => import("./views/Icons/Flags"));
 const FontAwesome = React.lazy(() => import("./views/Icons/FontAwesome"));
@@ -51,7 +52,7 @@ const LocationsQA = React.lazy(() => import("./views/Locations/LocationsQA"));
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 const routes = [
   { path: "/", exact: true, name: "Home" },
-  { path: "/dashboard", name: "Dashboard", component: Dashboard },
+  { path: "/dev/dashboard", name: "Dashboard", component: Dashboard },
   { path: "/dev/theme", exact: true, name: "Theme", component: Colors },
   { path: "/dev/theme/colors", name: "Colors", component: Colors },
   { path: "/dev/theme/typography", name: "Typography", component: Typography },
@@ -133,7 +134,7 @@ const routes = [
   { path: "/profile", name: "Profile", component: Profile },
   { path: "/users", exact: true, name: "Users", component: Users },
   { path: "/users/:id", exact: true, name: "User Details", component: User },
-
+  { path: "/dashboard", name: "Dashboard", component: VZDashboard },
   { path: "/locations", exact: true, name: "Locations", component: Locations },
   {
     path: "/locations/qa",

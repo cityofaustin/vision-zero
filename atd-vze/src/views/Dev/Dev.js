@@ -3,6 +3,11 @@ import { Link } from "react-router-dom";
 
 const pages = [
   {
+    name: "Dashboard",
+    url: "/dev/dashboard",
+    icon: "icon-speedometer",
+  },
+  {
     name: "Colors",
     url: "/dev/theme/colors",
     icon: "icon-drop",
