@@ -6,10 +6,6 @@ const pages = [
     name: "Dashboard",
     url: "/dev/dashboard",
     icon: "icon-speedometer",
-    // badge: {
-    //   variant: "info",
-    //   text: "NEW"
-    // }
   },
   {
     name: "Colors",
