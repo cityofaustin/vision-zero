@@ -218,6 +218,7 @@ const TableWithFilters = ({
                         <td>
                           <Badge color="danger">{crash.death_cnt}</Badge>
                         </td>
+                        <td>{crash.est_comp_cost}</td>
                       </tr>
                     ))
                   )}

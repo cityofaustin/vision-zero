@@ -50,6 +50,7 @@ const columns = [
   "rpt_street_name",
   "tot_injry_cnt",
   "death_cnt",
+  "est_comp_cost",
 ];
 
 const fieldsToSearch = [
