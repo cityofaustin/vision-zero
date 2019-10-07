@@ -20,6 +20,7 @@ const GET_CRASHES = `
       rpt_street_sfx
       rpt_street_name
       crash_date
+      est_comp_cost
     }
   }
 `;
@@ -40,6 +41,7 @@ const FILTER_CRASHES = `
       rpt_street_sfx
       rpt_street_name
       crash_date
+      est_comp_cost
     }
   }
 `;

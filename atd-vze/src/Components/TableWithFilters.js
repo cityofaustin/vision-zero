@@ -154,6 +154,8 @@ const TableWithFilters = ({
     setSearchFilter("");
   };
 
+  const formatCostToDollars = cost => `$${cost.toLocaleString()}`;
+
   return (
     <div className="animated fadeIn">
       <Row>
@@ -218,7 +220,7 @@ const TableWithFilters = ({
                         <td>
                           <Badge color="danger">{crash.death_cnt}</Badge>
                         </td>
-                        <td>{crash.est_comp_cost}</td>
+                        <td>{formatCostToDollars(crash.est_comp_cost)}</td>
                       </tr>
                     ))
                   )}
