@@ -227,7 +227,11 @@ gqlAbstractTableAggregateName (
       for (let [key, value] of this.getEntries("where")) {
         where.push(`${key}: {${value}}`);
       }
-      output.push(`where: {${where.join(", ")}}`);
+      if (this.config["_or"] !== null) {
+        // push where and _or within
+      } else {
+        output.push(`where: {${where.join(", ")}}`);
+      }
     }
 
     if (this.config["order_by"]) {

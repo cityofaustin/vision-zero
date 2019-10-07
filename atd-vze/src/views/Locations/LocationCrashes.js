@@ -121,6 +121,7 @@ function LocationCrashes(props) {
           id: "dni_deaths",
           label: "Deaths",
           filter: {
+            // TODO add _or here?
             where: [{ death_cnt: "_gt: 0" }],
           },
         },
