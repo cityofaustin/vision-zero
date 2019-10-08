@@ -116,12 +116,6 @@ function Location(props) {
     ],
   };
 
-  const test = data.atd_txdot_locations[0].crashes_by_manner_collision.map(
-    a => a.collsn_desc
-  );
-  const testB = test.map(a => formatLabel(a));
-  console.log(test, testB);
-
   const horizontalBar = {
     labels: data.atd_txdot_locations[0].crashes_by_manner_collision
       .map((a, index) => `${index + 1}. ${a.collsn_desc}`)
