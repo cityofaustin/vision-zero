@@ -67,7 +67,7 @@ function Location(props) {
           sections.push(temp);
           temp = "";
         } else {
-          if (index == words.length - 1) {
+          if (index === words.length - 1) {
             sections.push(concat);
             return;
           } else {
@@ -77,7 +77,7 @@ function Location(props) {
         }
       }
 
-      if (index == words.length - 1) {
+      if (index === words.length - 1) {
         sections.push(item);
         return;
       }
