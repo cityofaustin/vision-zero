@@ -154,6 +154,12 @@ const TableWithFilters = ({
     setSearchFilter("");
   };
 
+  const exportCSV = (event, done) => {
+    // coolAsyncStuff.then(() => {
+    //   done(); // REQUIRED to invoke the logic of component
+    // });
+  };
+
   return (
     <div className="animated fadeIn">
       <Row>
@@ -186,6 +192,8 @@ const TableWithFilters = ({
                       className=""
                       data={data[dataKey]}
                       filename={dataKey + Date.now()}
+                      asyncOnClick={true}
+                      onClick={exportCSV}
                     >
                       <i className="fa fa-save fa-2x ml-2 mt-1" />
                     </CSVLink>
