@@ -28,7 +28,7 @@ const TablePaginationControl = ({ setPageFilter }) => {
       let queryStringArray = [];
       queryStringArray.push({ LIMIT: `limit: ${limit}` });
       queryStringArray.push({ OFFSET: `offset: ${offset}` });
-      queryStringArray.push({ type: `Page` });
+      queryStringArray.push({ filter: `Page` });
       return queryStringArray;
     };
 

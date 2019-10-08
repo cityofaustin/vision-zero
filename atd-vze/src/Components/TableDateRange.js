@@ -67,7 +67,7 @@ const TableDateRange = ({ setDateRangeFilter, databaseDateColumnName }) => {
       queryStringArray.push({
         SEARCH: `where: { ${databaseDateColumnName}: { _gte: "${formattedStartDate}", _lte: "${formattedEndDate}" } }`,
       });
-      queryStringArray.push({ type: `Search` });
+      queryStringArray.push({ filter: `Search` });
       return queryStringArray;
     };
     const queryStringArray = searchQuery();

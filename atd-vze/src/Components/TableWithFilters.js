@@ -38,6 +38,7 @@ const TableWithFilters = ({
   const [orderFilter, setOrderFilter] = useState("");
   const [searchFilter, setSearchFilter] = useState("");
   const [dateRangeFilter, setDateRangeFilter] = useState("");
+  const [exportData, setExportData] = useState("");
 
   useEffect(() => {
     // On every render, filterQuery is copied, unset filters are removed, set filters replace keywords in filterQuery
@@ -140,7 +141,7 @@ const TableWithFilters = ({
     // https://github.com/apollographql/react-apollo/issues/3361
     { fetchPolicy: "no-cache" }
   );
-
+  console.log(tableQuery);
   // Alternate workaround but spinner does not appear between queries
   // Change const on line 135 to let
   // if (data[dataKey]) {
@@ -158,6 +159,12 @@ const TableWithFilters = ({
     // coolAsyncStuff.then(() => {
     //   done(); // REQUIRED to invoke the logic of component
     // });
+    setExportData([
+      { label: "First Name", key: "firstname" },
+      { label: "Last Name", key: "lastname" },
+      { label: "Email", key: "email" },
+    ]);
+    done();
   };
 
   return (
@@ -187,17 +194,15 @@ const TableWithFilters = ({
                     responseDataSet={"atd_txdot_crashes"}
                     setPageFilter={setPageFilter}
                   />{" "}
-                  {data[dataKey] && (
-                    <CSVLink
-                      className=""
-                      data={data[dataKey]}
-                      filename={dataKey + Date.now()}
-                      asyncOnClick={true}
-                      onClick={exportCSV}
-                    >
-                      <i className="fa fa-save fa-2x ml-2 mt-1" />
-                    </CSVLink>
-                  )}
+                  <CSVLink
+                    className=""
+                    data={exportData}
+                    filename={dataKey + Date.now()}
+                    asyncOnClick={true}
+                    onClick={exportCSV}
+                  >
+                    <i className="fa fa-save fa-2x ml-2 mt-1" />
+                  </CSVLink>
                 </ButtonGroup>
               </ButtonToolbar>
               <Table responsive>

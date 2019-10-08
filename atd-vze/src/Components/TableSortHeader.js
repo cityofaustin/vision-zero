@@ -22,7 +22,7 @@ const TableSortHeader = ({ setOrderFilter, fieldMap, columns }) => {
       queryStringArray.push({
         ORDER_BY: `order_by: { ${sortColumn}: ${sortOrder} }`,
       });
-      queryStringArray.push({ type: `Order` });
+      queryStringArray.push({ filter: `Order` });
       return queryStringArray;
     };
     const queryStringArray = orderQuery();

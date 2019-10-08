@@ -29,7 +29,7 @@ const TableSearchBar = ({ setSearchFilter, clearFilters, fieldsToSearch }) => {
       queryStringArray.push({
         SEARCH: `where: { ${fieldToSearch}: { _in: "${searchValue}" } }`,
       });
-      queryStringArray.push({ type: `Search` });
+      queryStringArray.push({ filter: `Search` });
       return queryStringArray;
     };
     const queryStringArray = searchQuery();
