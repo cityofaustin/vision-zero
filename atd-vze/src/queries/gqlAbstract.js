@@ -122,7 +122,7 @@ gqlAbstractTableAggregateName (
    */
   setOr(key, syntax) {
     if (!this.config["or"]) this.config["or"] = {};
-    this.config["or"][key] = syntax;
+    this.config["or"][key[0]] = syntax[0];
   }
 
   /**
@@ -239,8 +239,10 @@ gqlAbstractTableAggregateName (
       for (let [key, value] of this.getEntries("where")) {
         where.push(`${key}: {${value}}`);
       }
-      for (let [key, value] of this.getEntries("or")) {
-        _or.push(`{${Object.keys(value)}: {${Object.values(value)}}}`);
+      if (this.config["or"] && this.config["or"] !== null) {
+        for (let [key, value] of this.getEntries("or")) {
+          _or.push(`{${key}: {${value}}}`);
+        }
       }
       if (_or.length > 0) {
         output.push(`where: {${where.join(", ")}, _or: [${_or.join(", ")}]}`);
@@ -281,9 +283,9 @@ gqlAbstractTableAggregateName (
           for (let [key, syntax] of this.getEntries(filterItem)) {
             // If enabled, add to the list or remove it from the query.
             if (filtersState[filter.id]) {
-              key === "where"
-                ? this.setWhere(key, syntax)
-                : this.setOr(Object.keys(syntax), Object.values(syntax));
+              key === "where" && this.setWhere(key, syntax);
+              key === "_or" &&
+                this.setOr(Object.keys(syntax), Object.values(syntax));
             } else {
               this.deleteWhere(key);
             }
