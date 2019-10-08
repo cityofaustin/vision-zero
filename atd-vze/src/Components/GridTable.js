@@ -26,7 +26,6 @@ import GridTableSearch from "./GridTableSearch";
 import GridFilters from "./GridFilters";
 import GridDateRange from "./GridDateRange";
 
-
 const GridTable = ({ title, query, filters }) => {
   /**
    * State management:
@@ -52,7 +51,7 @@ const GridTable = ({ title, query, filters }) => {
     startDate: query.config.initStartDate || null,
     endDate: query.config.initEndDate || null,
   });
-
+  console.log(filterOptions);
   /**
    * Shows or hides advanced filters
    */
