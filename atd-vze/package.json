@@ -23,6 +23,7 @@
     "chart.js": "^2.8.0",
     "classnames": "^2.2.6",
     "core-js": "^3.1.4",
+    "env-cmd": "^10.0.1",
     "enzyme": "^3.10.0",
     "enzyme-adapter-react-16": "^1.14.0",
     "flag-icon-css": "^3.3.0",
@@ -59,6 +60,8 @@
   "scripts": {
     "start": "export HTTPS=true && react-scripts start",
     "build": "react-scripts build && cp _redirects build",
+    "build:production": "env-cmd -f .env.production npm run build",
+    "build:staging": "env-cmd -f .env.staging npm run build",
     "test": "react-scripts test",
     "test:cov": "npm test -- --coverage --watchAll=false",
     "test:debug": "react-scripts --inspect-brk test --runInBand",

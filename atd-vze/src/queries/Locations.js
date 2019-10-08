@@ -12,6 +12,10 @@ export const GET_LOCATION = gql`
       metadata
       last_update
       is_retired
+      crashes_by_manner_collision(order_by: {count: desc}, limit: 5) {
+        collsn_desc
+        count
+      }
     }
     atd_txdot_crashes_aggregate(
       where: { city_id: { _eq: 22 }, location: { location_id: { _eq: $id } } }
