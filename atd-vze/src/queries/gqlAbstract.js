@@ -134,6 +134,15 @@ gqlAbstractTableAggregateName (
   }
 
   /**
+   * Removes a column from the or condition
+   * @param {string} key - The name of the column
+   */
+  deleteOr(syntax) {
+    const keyToDelete = Object.keys(syntax)[0];
+    this.config["or"] && delete this.config["or"][keyToDelete];
+  }
+
+  /**
    * Replaces or creates an 'order_by' condition in graphql syntax.
    * @param {string} key - The name of the column
    * @param {string} syntax - either 'asc' or 'desc'
@@ -282,12 +291,13 @@ gqlAbstractTableAggregateName (
         for (let filterItem of filter.filter["where"]) {
           for (let [key, syntax] of this.getEntries(filterItem)) {
             // If enabled, add to the list or remove it from the query.
+
             if (filtersState[filter.id]) {
-              key === "where" && this.setWhere(key, syntax);
-              key === "_or" &&
-                this.setOr(Object.keys(syntax), Object.values(syntax));
+              key === "_or"
+                ? this.setOr(Object.keys(syntax), Object.values(syntax))
+                : this.setWhere(key, syntax);
             } else {
-              this.deleteWhere(key);
+              key === "_or" ? this.deleteOr(syntax) : this.deleteWhere(key);
             }
           }
         }
