@@ -51,7 +51,7 @@ const GridTable = ({ title, query, filters }) => {
     startDate: query.config.initStartDate || null,
     endDate: query.config.initEndDate || null,
   });
-  console.log("Query Config", query.config);
+
   /**
    * Shows or hides advanced filters
    */
