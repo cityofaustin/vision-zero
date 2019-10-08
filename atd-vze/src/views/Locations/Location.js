@@ -23,7 +23,7 @@ import LocationCrashes from "./LocationCrashes";
 
 import { GET_LOCATION } from "../../queries/Locations";
 import Widget02 from "../Widgets/Widget02";
-import { Doughnut } from "react-chartjs-2";
+import { Doughnut, HorizontalBar } from "react-chartjs-2";
 
 function Location(props) {
   const locationId = props.match.params.id;
@@ -41,10 +41,55 @@ function Location(props) {
   if (error) return `Error! ${error.message}`;
 
   const getAggregatePersonsSum = (data, field) => {
+    console.log(
+      data.atd_txdot_locations[0],
+      data.atd_txdot_locations[0].crashes_by_manner_collision.map(
+        a => a.collsn_desc
+      )
+    );
     return (
       data.atd_txdot_primaryperson_aggregate.aggregate.sum[field] +
       data.atd_txdot_person_aggregate.aggregate.sum[field]
     );
+  };
+
+  const formatLabel = str => {
+    var maxwidth = parseInt(str.length / 1.75);
+    var sections = [];
+    var words = str.split(" ");
+    var temp = "";
+
+    words.forEach(function(item, index) {
+      if (temp.length > 0) {
+        var concat = temp + " " + item;
+
+        if (concat.length > maxwidth) {
+          sections.push(temp);
+          temp = "";
+        } else {
+          if (index == words.length - 1) {
+            sections.push(concat);
+            return;
+          } else {
+            temp = concat;
+            return;
+          }
+        }
+      }
+
+      if (index == words.length - 1) {
+        sections.push(item);
+        return;
+      }
+
+      if (item.length < maxwidth) {
+        temp = item;
+      } else {
+        sections.push(item);
+      }
+    });
+
+    return sections;
   };
 
   const vehBodyGraphConfig = {
@@ -67,6 +112,31 @@ function Location(props) {
         data: vehBodyGraphConfig.data,
         backgroundColor: vehBodyGraphConfig.palette,
         hoverBackgroundColor: ["#000"],
+      },
+    ],
+  };
+
+  const test = data.atd_txdot_locations[0].crashes_by_manner_collision.map(
+    a => a.collsn_desc
+  );
+  const testB = test.map(a => formatLabel(a));
+  console.log(test, testB);
+
+  const horizontalBar = {
+    labels: data.atd_txdot_locations[0].crashes_by_manner_collision
+      .map((a, index) => `${index + 1}. ${a.collsn_desc}`)
+      .map(a => formatLabel(a)),
+    datasets: [
+      {
+        label: "Number of Collisions",
+        backgroundColor: "rgba(255,99,132,0.2)",
+        borderColor: "rgba(255,99,132,1)",
+        borderWidth: 1,
+        hoverBackgroundColor: "rgba(255,99,132,0.4)",
+        hoverBorderColor: "rgba(255,99,132,1)",
+        data: data.atd_txdot_locations[0].crashes_by_manner_collision.map(
+          a => a.count
+        ),
       },
     ],
   };
@@ -130,6 +200,66 @@ function Location(props) {
       )}
       <Row>
         <Col lg={6}>
+          <Card>
+            <CardHeader>Types of Vehicles - Count Distribution</CardHeader>
+            <CardBody>
+              {data.atd_txdot_crashes_aggregate.aggregate.count === 0 && (
+                <Alert color="warning">
+                  No crashes at this particular location
+                </Alert>
+              )}
+
+              {data.atd_txdot_crashes_aggregate.aggregate.count > 0 && (
+                <div className="chart-wrapper" style={{ padding: "1.5rem 0" }}>
+                  <Badge
+                    color="dark"
+                    className="float-right"
+                    style={{ padding: "4px" }}
+                  >
+                    <i class="fa fa-mouse-pointer" />
+                    &nbsp; Click On Labels
+                  </Badge>
+                  <Doughnut data={doughnut} />
+                </div>
+              )}
+            </CardBody>
+          </Card>
+        </Col>
+        <Col lg={6}>
+          <Card>
+            <CardHeader>Manner of Collisions - Most Frequent</CardHeader>
+            <CardBody>
+              {data.atd_txdot_crashes_aggregate.aggregate.count === 0 && (
+                <Alert color="warning">
+                  No crashes at this particular location
+                </Alert>
+              )}
+
+              {data.atd_txdot_crashes_aggregate.aggregate.count > 0 && (
+                <div className="chart-wrapper" style={{ padding: "1.5rem 0" }}>
+                  <HorizontalBar
+                    data={horizontalBar}
+                    options={{
+                      scales: {
+                        xAxes: [
+                          {
+                            ticks: {
+                              beginAtZero: true,
+                              precision: 0,
+                            },
+                          },
+                        ],
+                      },
+                    }}
+                  />
+                </div>
+              )}
+            </CardBody>
+          </Card>
+        </Col>
+      </Row>
+      <Row>
+        <Col>
           {locationDataMap.map(section => {
             return (
               <Card key={section.title}>
@@ -155,33 +285,6 @@ function Location(props) {
               </Card>
             );
           })}
-        </Col>
-
-        <Col lg={6}>
-          <Card>
-            <CardHeader>Types of Vehicles - Count Distribution</CardHeader>
-            <CardBody>
-              {data.atd_txdot_crashes_aggregate.aggregate.count === 0 && (
-                <Alert color="warning">
-                  No crashes at this particular location
-                </Alert>
-              )}
-
-              {data.atd_txdot_crashes_aggregate.aggregate.count > 0 && (
-                <div className="chart-wrapper" style={{ padding: "1.5rem 0" }}>
-                  <Badge
-                    color="dark"
-                    className="float-right"
-                    style={{ padding: "4px" }}
-                  >
-                    <i class="fa fa-mouse-pointer" />
-                    &nbsp; Click On Labels
-                  </Badge>
-                  <Doughnut data={doughnut} />
-                </div>
-              )}
-            </CardBody>
-          </Card>
         </Col>
       </Row>
       <Row>
