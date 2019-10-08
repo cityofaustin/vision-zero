@@ -67,6 +67,7 @@ class App extends Component {
             profile["https://hasura.io/jwt/claims"][
               "x-hasura-allowed-roles"
             ][0];
+          localStorage.setItem("hasura_user_email", profile["email"]);
           localStorage.setItem("hasura_user_role", role);
           this.setState({ role: role });
           this.initializeClient();
