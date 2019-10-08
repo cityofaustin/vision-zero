@@ -1,6 +1,3 @@
-[build]
-  command = "npm run build"
-
 # Specific branch context: all deploys from this specific branch will inherit these settings.
 [context.master] # 'master' is a branch name
   NODE_ENV = "staging"
