@@ -116,7 +116,7 @@ gqlAbstractTableAggregateName (
   }
 
   /**
-   * Replaces or creates a 'or' condition in graphql syntax.
+   * Replaces or creates an 'or' condition in graphql syntax.
    * @param {string} key - The name of the column
    * @param {string} syntax - the graphql syntax for the where condition
    */
@@ -137,7 +137,7 @@ gqlAbstractTableAggregateName (
    * Removes a column from the or condition
    * @param {string} key - The name of the column
    */
-  deleteOr(syntax) {
+  deleteOr(orObject) {
     const keyToDelete = Object.keys(syntax)[0];
     this.config["or"] && delete this.config["or"][keyToDelete];
   }
