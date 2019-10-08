@@ -27,7 +27,8 @@ const TableWithFilters = ({
   defaultQuery,
   filterQuery,
   fieldsToSearch,
-  columns,
+  columnsToDisplay,
+  columnsToQuery,
   dataKey,
   fieldMap,
   databaseDateColumnName,
@@ -39,6 +40,7 @@ const TableWithFilters = ({
   const [searchFilter, setSearchFilter] = useState("");
   const [dateRangeFilter, setDateRangeFilter] = useState("");
   const [exportData, setExportData] = useState("");
+  const [CSVQuery, setCSVQuery] = useState("");
 
   useEffect(() => {
     // On every render, filterQuery is copied, unset filters are removed, set filters replace keywords in filterQuery
@@ -118,6 +120,10 @@ const TableWithFilters = ({
             );
           });
         }
+        // set query without columns replaced to use in CSVLink
+        setCSVQuery(queryWithFilters);
+        // replace columns placeholder with columns pass in props
+        queryWithFilters = queryWithFilters.replace("COLUMNS", columnsToQuery);
         setTableQuery(queryWithFilters);
       }
     };
@@ -207,7 +213,7 @@ const TableWithFilters = ({
               </ButtonToolbar>
               <Table responsive>
                 <TableSortHeader
-                  columns={columns}
+                  columns={columnsToDisplay}
                   setOrderFilter={setOrderFilter}
                   fieldMap={fieldMap}
                 />
