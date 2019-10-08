@@ -10,5 +10,5 @@
 [context.production]
   NODE_ENV = "production"
   base    = "atd-vze"
-  publish = "build"
+  publish = "atd-vze/build"
   command = "npm run build:production"
