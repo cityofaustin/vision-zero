@@ -98,10 +98,11 @@ gqlAbstractTableAggregateName (
   }
 
   /**
-   * Resets the value of where to empty
+   * Resets the value of where and or to empty
    */
   cleanWhere() {
     this.config["where"] = null;
+    this.config["or"] = null;
   }
 
   /**
@@ -112,6 +113,16 @@ gqlAbstractTableAggregateName (
   setWhere(key, syntax) {
     if (!this.config["where"]) this.config["where"] = {};
     this.config["where"][key] = syntax;
+  }
+
+  /**
+   * Replaces or creates a 'or' condition in graphql syntax.
+   * @param {string} key - The name of the column
+   * @param {string} syntax - the graphql syntax for the where condition
+   */
+  setOr(key, syntax) {
+    if (!this.config["or"]) this.config["or"] = {};
+    this.config["or"][key] = syntax;
   }
 
   /**
@@ -226,13 +237,13 @@ gqlAbstractTableAggregateName (
       let where = [];
       let _or = [];
       for (let [key, value] of this.getEntries("where")) {
-        key === "_or"
-          ? _or.push(`${Object.keys(value)}: {${Object.values(value)}}`)
-          : where.push(`${key}: {${value}}`);
+        where.push(`${key}: {${value}}`);
       }
-      debugger;
-      if (this.config["where"]["_or"] && this.config["where"]["_or"] !== null) {
-        debugger;
+      for (let [key, value] of this.getEntries("or")) {
+        _or.push(`{${Object.keys(value)}: {${Object.values(value)}}}`);
+      }
+      if (_or.length > 0) {
+        output.push(`where: {${where.join(", ")}, _or: [${_or.join(", ")}]}`);
       } else {
         output.push(`where: {${where.join(", ")}}`);
       }
@@ -270,7 +281,9 @@ gqlAbstractTableAggregateName (
           for (let [key, syntax] of this.getEntries(filterItem)) {
             // If enabled, add to the list or remove it from the query.
             if (filtersState[filter.id]) {
-              this.setWhere(key, syntax);
+              key === "where"
+                ? this.setWhere(key, syntax)
+                : this.setOr(Object.keys(syntax), Object.values(syntax));
             } else {
               this.deleteWhere(key);
             }
