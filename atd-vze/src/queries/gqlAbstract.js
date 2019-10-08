@@ -138,7 +138,7 @@ gqlAbstractTableAggregateName (
    * @param {string} key - The name of the column
    */
   deleteOr(orObject) {
-    const keyToDelete = Object.keys(syntax)[0];
+    const keyToDelete = Object.keys(orObject)[0];
     this.config["or"] && delete this.config["or"][keyToDelete];
   }
 
