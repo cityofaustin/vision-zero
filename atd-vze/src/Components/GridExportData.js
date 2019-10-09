@@ -18,6 +18,14 @@ const GridExportData = ({ exportData, query }) => {
 
   const toggleModal = () => setIsModalOpen(!isModalOpen);
 
+  const setLimit = () => {
+    // Create a copy of query, change limit, and then useLazyQuery in this component
+    const queryToModify = query;
+    queryToModify.limit = 30;
+    console.log(query, queryToModify);
+    debugger;
+  };
+
   return (
     <>
       <StyledSaveLink>
@@ -26,7 +34,12 @@ const GridExportData = ({ exportData, query }) => {
 
       <Modal isOpen={isModalOpen} toggle={toggleModal} className={"modal-sm "}>
         <ModalHeader toggle={toggleModal}>Export to .csv</ModalHeader>
-        <ModalBody>Put save options here</ModalBody>
+        <ModalBody>
+          Put save options here
+          <Button color="primary" onClick={setLimit}>
+            Debug
+          </Button>
+        </ModalBody>
         <ModalFooter>
           <CSVLink
             className=""

@@ -254,8 +254,6 @@ const GridTable = ({ title, query, filters, columnsToExport }) => {
   let { loading, error, data } = useQuery(query.gql);
 
   // Make CSV Query && Error handling
-  // TODO add modal, lazy load query onClick to open modal, modal has options for limit which call lazy load onChange
-  // Export onClick Save button (or similar)
   let {
     loading: exportLoading,
     error: exportError,
