@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import {
   Card,
   CardBody,
@@ -259,7 +260,23 @@ function Crash(props) {
         <Col lg={6}>
           <div className="mb-4">
             <Card>
-              <CardHeader>Crash Location</CardHeader>
+              <CardHeader>
+                Crash Location{" "}
+                {(data && data.atd_txdot_crash_locations.length > 0 && (
+                  <>
+                    (ID:&nbsp;
+                    <Link
+                      to={`/locations/${
+                        data.atd_txdot_crash_locations[0]["location_id"]
+                      }`}
+                    >
+                      {data.atd_txdot_crash_locations[0]["location_id"]}
+                    </Link>
+                    )
+                  </>
+                )) ||
+                  "(Unassigned)"}
+              </CardHeader>
               <CardBody>
                 {latitude && longitude ? (
                   <>
