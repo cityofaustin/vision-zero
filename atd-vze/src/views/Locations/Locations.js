@@ -25,6 +25,34 @@ let queryConf = {
       label_table: "Intersection",
       type: "String",
     },
+    "crashes_count_cost_summary { total_crashes }": {
+      searchable: false,
+      sortable: true,
+      label_search: null,
+      label_table: "Total Crashes",
+      type: "Number",
+    },
+    "crashes_count_cost_summary { total_deaths }": {
+      searchable: false,
+      sortable: true,
+      label_search: null,
+      label_table: "Total Deaths",
+      type: "Number",
+    },
+    "crashes_count_cost_summary { total_serious_injuries }": {
+      searchable: false,
+      sortable: true,
+      label_search: null,
+      label_table: "Total Serious Injry.",
+      type: "Number",
+    },
+    "crashes_count_cost_summary { est_comp_cost }": {
+      searchable: false,
+      sortable: true,
+      label_search: null,
+      label_table: "Comp. Cost",
+      type: "Number",
+    },
   },
   order_by: {
     location_id: "desc", // Unique ID desc by default
