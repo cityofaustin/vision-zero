@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { useQuery, useLazyQuery } from "@apollo/react-hooks";
 
 import { withApollo } from "react-apollo";
-import { CSVLink } from "react-csv";
 
 import {
   Card,
@@ -25,6 +24,7 @@ import GridTablePagination from "./GridTablePagination";
 import GridTableSearch from "./GridTableSearch";
 import GridFilters from "./GridFilters";
 import GridDateRange from "./GridDateRange";
+import GridExportData from "./GridExportData";
 
 const GridTable = ({ title, query, filters, columnsToExport }) => {
   /**
@@ -345,13 +345,7 @@ const GridTable = ({ title, query, filters, columnsToExport }) => {
                     handleRowClick={handleRowClick}
                   />
                   {exportData[query.table] && (
-                    <CSVLink
-                      className=""
-                      data={exportData[query.table]}
-                      filename={query.table + Date.now()}
-                    >
-                      <i className="fa fa-save fa-2x ml-2 mt-1" />
-                    </CSVLink>
+                    <GridExportData exportData={exportData} query={query} />
                   )}
                 </ButtonGroup>
               </ButtonToolbar>
