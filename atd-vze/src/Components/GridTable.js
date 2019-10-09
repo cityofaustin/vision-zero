@@ -64,15 +64,20 @@ const GridTable = ({ title, query, filters }) => {
    * @param {string} col - The name of the column
    **/
   const handleTableHeaderClick = col => {
+    // Before anything, let's clear all current conditions
+    query.clearOrderBy();
+
+    // If both column and order are empty...
     if (sortOrder === "" && sortColumn === "") {
       // First time sort is applied
       setSortOrder("asc");
       setSortColumn(col);
     } else if (sortColumn === col) {
-      // Repeat sort on column
+      // Else if the current sortColumn is the same as the new
+      // then invert values and repeat sort on column
       sortOrder === "desc" ? setSortOrder("asc") : setSortOrder("desc");
     } else if (sortColumn !== col) {
-      // Sort different column after initial sort
+      // Sort different column after initial sort, then reset
       setSortOrder("desc");
       setSortColumn(col);
     }
@@ -121,6 +126,7 @@ const GridTable = ({ title, query, filters }) => {
    * Clears all filters
    */
   const clearFilters = () => {
+    query.resetOrderBy();
     query.deleteWhere(searchParameters.column);
     setSearchParameters({});
     setFilterOptions({});
@@ -131,8 +137,7 @@ const GridTable = ({ title, query, filters }) => {
    * @param {string} input - The string to be tested
    * @returns {boolean}
    */
-  const isAlphanumeric = input =>
-    input.match(/^[0-9a-zA-Z\-_]+$/) === null ? false : true;
+  const isAlphanumeric = input => input.match(/^[0-9a-zA-Z\-_]+$/) !== null;
 
   /**
    * Extracts a list of keys in a graphql expression
@@ -156,7 +161,7 @@ const GridTable = ({ title, query, filters }) => {
   };
 
   /**
-   * Extracts the value (or summary of values)
+   * Extracts the value (or summary of values) for nested field names
    * @param {object} obj - The dataset current object
    * @param {string} exp - The graphql expression
    * @returns {string}
@@ -275,9 +280,9 @@ const GridTable = ({ title, query, filters }) => {
                   {row[column]}
                 </Link>
               ) : isAlphanumeric(column) ? (
-                row[column]
+                query.getFormattedValue(column, row[column])
               ) : (
-                getSummary(row, column.trim())
+                query.getFormattedValue(column, getSummary(row, column.trim()))
               )}
             </td>
           ))}
