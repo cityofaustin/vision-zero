@@ -28,6 +28,9 @@ const Register = React.lazy(() => import("./views/Pages/Register"));
 const Page404 = React.lazy(() => import("./views/Pages/Page404"));
 const Page500 = React.lazy(() => import("./views/Pages/Page500"));
 
+// Hasura Endpoint
+const HASURA_ENDPOINT = process.env.REACT_APP_HASURA_ENDPOINT;
+
 class App extends Component {
   constructor(props) {
     super(props);
@@ -67,6 +70,7 @@ class App extends Component {
             profile["https://hasura.io/jwt/claims"][
               "x-hasura-allowed-roles"
             ][0];
+          localStorage.setItem("hasura_user_email", profile["email"]);
           localStorage.setItem("hasura_user_role", role);
           this.setState({ role: role });
           this.initializeClient();
@@ -82,7 +86,7 @@ class App extends Component {
     if (this.auth.isAuthenticated()) {
       if (this.state.role !== null) {
         client = new ApolloClient({
-          uri: "https://vzd.austintexas.io/v1/graphql",
+          uri: HASURA_ENDPOINT,
           headers: {
             Authorization: `Bearer ${this.state.token}`,
             "x-hasura-role": this.state.role,

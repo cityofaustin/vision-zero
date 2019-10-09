@@ -21,13 +21,8 @@ export default {
       icon: "icon-shield",
       children: [
         {
-          name: "Crashes",
+          name: "All Crashes",
           url: "/crashes",
-          icon: "icon-puzzle",
-        },
-        {
-          name: "Q/A Deaths & Injuries",
-          url: "/crashes/qa",
           icon: "icon-puzzle",
         },
       ],
@@ -41,11 +36,6 @@ export default {
           name: "All locations",
           url: "/locations",
           icon: "icon-map",
-        },
-        {
-          name: "Locations Q/A",
-          url: "/locations/qa",
-          icon: "icon-compass",
         },
       ],
     },

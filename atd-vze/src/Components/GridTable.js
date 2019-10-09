@@ -121,6 +121,7 @@ const GridTable = ({ title, query, filters }) => {
    * Clears all filters
    */
   const clearFilters = () => {
+    query.deleteWhere(searchParameters.column);
     setSearchParameters({});
     setFilterOptions({});
   };

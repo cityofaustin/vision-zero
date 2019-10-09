@@ -17,6 +17,7 @@ export const GET_CRASH = gql`
       crash_time
       day_of_week
       death_cnt
+      est_comp_cost
       fhe_collsn_id
       geocode_date
       geocode_provider
@@ -253,6 +254,7 @@ export const UPDATE_CRASH = gql`
         traffic_cntl_id
         unkn_injry_cnt
         wthr_cond_id
+        updated_by
       }
     }
   }
