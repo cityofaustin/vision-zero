@@ -98,10 +98,11 @@ gqlAbstractTableAggregateName (
   }
 
   /**
-   * Resets the value of where to empty
+   * Resets the value of where and or to empty
    */
   cleanWhere() {
     this.config["where"] = null;
+    this.config["or"] = null;
   }
 
   /**
@@ -115,11 +116,30 @@ gqlAbstractTableAggregateName (
   }
 
   /**
+   * Replaces or creates an 'or' condition in graphql syntax.
+   * @param {string} key - The name of the column
+   * @param {string} syntax - the graphql syntax for the where condition
+   */
+  setOr(key, syntax) {
+    if (!this.config["or"]) this.config["or"] = {};
+    this.config["or"][key[0]] = syntax[0];
+  }
+
+  /**
    * Removes a column from the where condition
    * @param {string} key - The name of the column
    */
   deleteWhere(key) {
     delete this.config["where"][key];
+  }
+
+  /**
+   * Removes a column from the or condition
+   * @param {object} orObject - The object to be deleted
+   */
+  deleteOr(orObject) {
+    const keyToDelete = Object.keys(orObject)[0];
+    this.config["or"] && delete this.config["or"][keyToDelete];
   }
 
   /**
@@ -224,10 +244,20 @@ gqlAbstractTableAggregateName (
 
     if (this.config["where"] !== null) {
       let where = [];
+      let or = [];
       for (let [key, value] of this.getEntries("where")) {
         where.push(`${key}: {${value}}`);
       }
-      output.push(`where: {${where.join(", ")}}`);
+      if (!!this.config["or"]) {
+        for (let [key, value] of this.getEntries("or")) {
+          or.push(`{${key}: {${value}}}`);
+        }
+      }
+      if (or.length > 0) {
+        output.push(`where: {${where.join(", ")}, _or: [${or.join(", ")}]}`);
+      } else {
+        output.push(`where: {${where.join(", ")}}`);
+      }
     }
 
     if (this.config["order_by"]) {
@@ -261,10 +291,13 @@ gqlAbstractTableAggregateName (
         for (let filterItem of filter.filter["where"]) {
           for (let [key, syntax] of this.getEntries(filterItem)) {
             // If enabled, add to the list or remove it from the query.
+
             if (filtersState[filter.id]) {
-              this.setWhere(key, syntax);
+              key === "or"
+                ? this.setOr(Object.keys(syntax), Object.values(syntax))
+                : this.setWhere(key, syntax);
             } else {
-              this.deleteWhere(key);
+              key === "or" ? this.deleteOr(syntax) : this.deleteWhere(key);
             }
           }
         }
