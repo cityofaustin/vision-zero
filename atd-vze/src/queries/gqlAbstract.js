@@ -253,7 +253,7 @@ gqlAbstractTableAggregateName (
    * @returns {string}
    */
   getDefault(columnName) {
-    return this.config["columns"][columnName]["default"] || "-";
+    return `${this.config["columns"][columnName]["default"] || "-"}`;
   }
 
   /**
