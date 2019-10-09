@@ -139,6 +139,9 @@ export const GET_CRASH = gql`
       record_crash_id
       record_json
       update_timestamp
+    },
+    atd_txdot_crash_locations(where: {crash_id: {_eq: $crashId}}) {
+      location_id
     }
   }
 `;
