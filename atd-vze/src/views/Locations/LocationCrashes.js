@@ -117,7 +117,7 @@ function LocationCrashes(props) {
         },
         {
           id: "dni_non_fatal",
-          label: "Non-Fatal Injuries",
+          label: "Non-serious Injuries",
           filter: {
             where: [{ or: { nonincap_injry_cnt: "_gt: 0" } }],
           },

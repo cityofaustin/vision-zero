@@ -1,15 +1,14 @@
-[build]
-  base    = "atd-vze"
-  command = "npm run build"
-  publish = "atd-vze/build"
-
 # Specific branch context: all deploys from this specific branch will inherit these settings.
 [context.master] # 'master' is a branch name
   NODE_ENV = "staging"
+  base    = "atd-vze"
+  publish = "build"
   command = "npm run build:staging"
 
 # Production context: all deploys from the Production branch set in your site's
 # deploy contexts will inherit these settings.
 [context.production]
   NODE_ENV = "production"
+  base    = "atd-vze"
+  publish = "atd-vze/build"
   command = "npm run build:production"
