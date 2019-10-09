@@ -52,6 +52,7 @@ export default class Auth {
     localStorage.removeItem("id_token");
     localStorage.removeItem("expires_at");
     localStorage.removeItem("hasura_user_role");
+    localStorage.removeItem("hasura_user_email");
     this.userProfile = null;
     this.auth0.logout({
       clientID: process.env.REACT_APP_AUTH0_CLIENT_ID,

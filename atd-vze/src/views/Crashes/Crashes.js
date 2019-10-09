@@ -1,78 +1,167 @@
 import React from "react";
 import { withApollo } from "react-apollo";
-import TableWithFilters from "../../Components/TableWithFilters";
-import { crashDataMap } from "./crashDataMap";
+
+import GridTable from "../../Components/GridTable";
+import gqlAbstract from "../../queries/gqlAbstract";
 import { crashQueryExportFields } from "../../queries/crashes";
 
-// Key for data response array from DB
-const dataKey = "atd_txdot_crashes";
+// Our initial query configuration
+let queryConf = {
+  table: "atd_txdot_crashes",
+  single_item: "crashes",
+  columns: {
+    crash_id: {
+      primary_key: true,
+      searchable: true,
+      sortable: true,
+      label_search: "Search by Crash ID",
+      label_table: "Crash ID",
+      type: "Int",
+    },
+    case_id: {
+      searchable: true,
+      sortable: true,
+      label_search: "Search by Case Number",
+      label_table: "Case Number",
+      type: "String",
+    },
+    crash_date: {
+      searchable: false,
+      sortable: true,
+      label_table: "Crash Date",
+      type: "Date",
+    },
+    address_confirmed_primary: {
+      searchable: true,
+      sortable: true,
+      label_search: "Search by Primary Address",
+      label_table: "Primary Address",
+      type: "String",
+    },
+    address_confirmed_secondary: {
+      searchable: true,
+      sortable: true,
+      label_search: "Search by Secondary Address",
+      label_table: "Secondary Address",
+      type: "String",
+    },
+    tot_injry_cnt: {
+      searchable: false,
+      sortable: true,
+      label_table: "Injury Count",
+      type: "Int",
+    },
+    death_cnt: {
+      searchable: false,
+      sortable: true,
+      label_table: "Death Count",
+      type: "Date",
+    },
+    "collision { collsn_desc } ": {
+      searchable: false,
+      sortable: false,
+      label_table: "Collision Description",
+      type: "String",
+    },
+    "units { unit_description { veh_unit_desc_desc } }": {
+      searchable: false,
+      sortable: false,
+      label_table: "Unit Description",
+      type: "String",
+    },
+  },
+  order_by: {},
+  where: {
+    city_id: "_eq: 22",
+  },
+  limit: 25,
+  offset: 0,
+};
 
-const GET_CRASHES = `
-  {
-    atd_txdot_crashes(
-      offset: 0
-      where: { crash_fatal_fl: { _eq: "Y" } }
-    ) {
-      crash_id
-      death_cnt
-      tot_injry_cnt
-      crash_fatal_fl
-      rpt_street_pfx
-      rpt_street_sfx
-      rpt_street_name
-      crash_date
-    }
-  }
-`;
+let crashesQuery = new gqlAbstract(queryConf);
 
-const FILTER_CRASHES = `
-  {
-    atd_txdot_crashes(
-      OFFSET
-      LIMIT
-      ORDER_BY
-      SEARCH
-    ) {
-      COLUMNS
-    }
-  }
-`;
-
-const columnsToDisplay = [
-  "crash_id",
-  "crash_date",
-  "rpt_street_name",
-  "tot_injry_cnt",
-  "death_cnt",
-];
-
-const columnsToQuery = `
-      crash_id
-      death_cnt
-      tot_injry_cnt
-      crash_fatal_fl
-      rpt_street_pfx
-      rpt_street_sfx
-      rpt_street_name
-      crash_date`;
-
-const fieldsToSearch = [
-  { rpt_street_name: "Reported Street Name" },
-  { crash_id: "Crash ID" },
-];
+let customFilters = {
+  grp_injuries: {
+    icon: "cab",
+    label: "Deaths & Injuries",
+    filters: [
+      {
+        id: "dni_deaths",
+        label: "Deaths",
+        filter: {
+          where: [{ death_cnt: "_gt: 0" }],
+        },
+      },
+      {
+        id: "dni_serious_injuries",
+        label: "Serious Injuries",
+        filter: {
+          where: [{ sus_serious_injry_cnt: "_gt: 0" }],
+        },
+      },
+      {
+        id: "dni_non_fatal",
+        label: "Non-Fatal Injuries",
+        filter: {
+          where: [{ nonincap_injry_cnt: "_gt: 0" }],
+        },
+      },
+    ],
+  },
+  grp_geograph: {
+    icon: "map-marker",
+    label: "Geography",
+    filters: [
+      {
+        id: "geo_no_coordinates",
+        label: "No Latitude and Longitude provided",
+        filter: {
+          where: [
+            { latitude: "_is_null: true" },
+            { longitude: "_is_null: true" },
+          ],
+        },
+      },
+      {
+        id: "geo_geocoded",
+        label: "Has been Geocoded",
+        filter: {
+          where: [{ geocoded: '_eq: "Y"' }],
+        },
+      },
+      {
+        id: "geo_confirmed_coordinates",
+        label: "Confirmed Coordinates",
+        filter: {
+          where: [
+            { latitude_primary: "_is_null: false" },
+            { longitude_primary: "_is_null: false" },
+          ],
+        },
+      },
+    ],
+  },
+  grp_case: {
+    icon: "vcard-o",
+    label: "Internal",
+    filters: [
+      {
+        id: "int_nocasenumber",
+        label: "No Case Number",
+        filter: {
+          where: [{ case_id: "_is_null: true" }],
+        },
+      },
+    ],
+  },
+};
 
 const Crashes = () => (
-  <TableWithFilters
-    dataKey={dataKey}
-    title={"Crashes"}
-    defaultQuery={GET_CRASHES}
-    filterQuery={FILTER_CRASHES}
-    fieldsToSearch={fieldsToSearch}
-    columnsToDisplay={columnsToDisplay}
-    columnsToQuery={columnsToQuery}
+  <GridTable
+    query={crashesQuery}
+    title={"Crashes Q/A"}
+    filters={customFilters}
     columnsToExport={crashQueryExportFields}
-    fieldMap={crashDataMap}
-    databaseDateColumnName={"crash_date"}
   />
 );
 

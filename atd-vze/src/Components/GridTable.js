@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { useQuery } from "@apollo/react-hooks";
+import { useQuery, useLazyQuery } from "@apollo/react-hooks";
 
 import { withApollo } from "react-apollo";
 import { CSVLink } from "react-csv";
@@ -121,6 +121,7 @@ const GridTable = ({ title, query, filters, columnsToExport }) => {
    * Clears all filters
    */
   const clearFilters = () => {
+    query.deleteWhere(searchParameters.column);
     setSearchParameters({});
     setFilterOptions({});
   };
@@ -251,6 +252,16 @@ const GridTable = ({ title, query, filters, columnsToExport }) => {
 
   // Make Query && Error handling
   let { loading, error, data } = useQuery(query.gql);
+
+  // Make CSV Query && Error handling
+  let {
+    loading: exportLoading,
+    error: exportError,
+    data: exportData,
+  } = useQuery(query.queryCSV(columnsToExport));
+
+  console.log("the data", exportData);
+
   if (error) return `Error! ${error.message}`;
 
   let dataEntries = [];
@@ -286,7 +297,10 @@ const GridTable = ({ title, query, filters, columnsToExport }) => {
   }
 
   const handleSaveClick = (event, done) => {
-    debugger;
+    // debugger;
+    // this.data
+    console.log(exportData);
+    done();
     // TODO call useLazyQuery to update csv data using query.queryCSV(columnsToExport)
   };
 
@@ -339,7 +353,7 @@ const GridTable = ({ title, query, filters, columnsToExport }) => {
                   {data[query.table] && (
                     <CSVLink
                       className=""
-                      data={query.queryCSV("You injected a string!!!")}
+                      data={"You injected a string!!!"}
                       filename={query.table + Date.now()}
                       asyncOnClick={true}
                       onClick={handleSaveClick}
