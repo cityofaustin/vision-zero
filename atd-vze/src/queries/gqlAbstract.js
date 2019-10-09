@@ -135,7 +135,7 @@ gqlAbstractTableAggregateName (
 
   /**
    * Removes a column from the or condition
-   * @param {string} key - The name of the column
+   * @param {object} orObject - The object to be deleted
    */
   deleteOr(orObject) {
     const keyToDelete = Object.keys(orObject)[0];
@@ -244,17 +244,17 @@ gqlAbstractTableAggregateName (
 
     if (this.config["where"] !== null) {
       let where = [];
-      let _or = [];
+      let or = [];
       for (let [key, value] of this.getEntries("where")) {
         where.push(`${key}: {${value}}`);
       }
-      if (this.config["or"] && this.config["or"] !== null) {
+      if (!!this.config["or"]) {
         for (let [key, value] of this.getEntries("or")) {
-          _or.push(`{${key}: {${value}}}`);
+          or.push(`{${key}: {${value}}}`);
         }
       }
-      if (_or.length > 0) {
-        output.push(`where: {${where.join(", ")}, _or: [${_or.join(", ")}]}`);
+      if (or.length > 0) {
+        output.push(`where: {${where.join(", ")}, _or: [${or.join(", ")}]}`);
       } else {
         output.push(`where: {${where.join(", ")}}`);
       }
@@ -293,11 +293,11 @@ gqlAbstractTableAggregateName (
             // If enabled, add to the list or remove it from the query.
 
             if (filtersState[filter.id]) {
-              key === "_or"
+              key === "or"
                 ? this.setOr(Object.keys(syntax), Object.values(syntax))
                 : this.setWhere(key, syntax);
             } else {
-              key === "_or" ? this.deleteOr(syntax) : this.deleteWhere(key);
+              key === "or" ? this.deleteOr(syntax) : this.deleteWhere(key);
             }
           }
         }
