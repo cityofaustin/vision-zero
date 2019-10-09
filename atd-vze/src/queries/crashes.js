@@ -326,6 +326,7 @@ crash_speed_limit
 crash_time
 day_of_week
 death_cnt
+est_comp_cost
 fhe_collsn_id
 geocode_date
 geocode_provider

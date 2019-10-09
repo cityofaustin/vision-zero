@@ -26,7 +26,7 @@ import GridTableSearch from "./GridTableSearch";
 import GridFilters from "./GridFilters";
 import GridDateRange from "./GridDateRange";
 
-const GridTable = ({ title, query, filters }) => {
+const GridTable = ({ title, query, filters, columnsToExport }) => {
   /**
    * State management:
    *      limit {int} - Contains the current limit of results in a page
@@ -287,6 +287,7 @@ const GridTable = ({ title, query, filters }) => {
 
   const handleSaveClick = (event, done) => {
     debugger;
+    // TODO call useLazyQuery to update csv data using query.queryCSV(columnsToExport)
   };
 
   return (

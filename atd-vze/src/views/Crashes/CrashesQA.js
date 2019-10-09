@@ -2,8 +2,8 @@ import React from "react";
 import { withApollo } from "react-apollo";
 
 import GridTable from "../../Components/GridTable";
-
 import gqlAbstract from "../../queries/gqlAbstract";
+import { crashQueryExportFields } from "../../queries/crashes";
 
 // Our initial query configuration
 let queryConf = {
@@ -167,6 +167,7 @@ const CrashesQA = () => (
     query={crashesQuery}
     title={"Crashes Q/A"}
     filters={customFilters}
+    columnsToExport={crashQueryExportFields}
   />
 );
 
