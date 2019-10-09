@@ -254,6 +254,7 @@ export const UPDATE_CRASH = gql`
         traffic_cntl_id
         unkn_injry_cnt
         wthr_cond_id
+        updated_by
       }
     }
   }
