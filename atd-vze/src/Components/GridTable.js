@@ -254,6 +254,8 @@ const GridTable = ({ title, query, filters, columnsToExport }) => {
   let { loading, error, data } = useQuery(query.gql);
 
   // Make CSV Query && Error handling
+  // TODO add modal, lazy load query onClick to open modal, modal has options for limit which call lazy load onChange
+  // Export onClick Save button (or similar)
   let {
     loading: exportLoading,
     error: exportError,
@@ -295,14 +297,6 @@ const GridTable = ({ title, query, filters, columnsToExport }) => {
       )
     );
   }
-
-  const handleSaveClick = (event, done) => {
-    // debugger;
-    // this.data
-    console.log(exportData);
-    done();
-    // TODO call useLazyQuery to update csv data using query.queryCSV(columnsToExport)
-  };
 
   return (
     <div className="animated fadeIn">
@@ -350,13 +344,11 @@ const GridTable = ({ title, query, filters, columnsToExport }) => {
                     totalPages={totalPages}
                     handleRowClick={handleRowClick}
                   />
-                  {data[query.table] && (
+                  {exportData[query.table] && (
                     <CSVLink
                       className=""
-                      data={"You injected a string!!!"}
+                      data={exportData[query.table]}
                       filename={query.table + Date.now()}
-                      asyncOnClick={true}
-                      onClick={handleSaveClick}
                     >
                       <i className="fa fa-save fa-2x ml-2 mt-1" />
                     </CSVLink>
