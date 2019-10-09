@@ -2,6 +2,7 @@ import React from "react";
 import { withApollo } from "react-apollo";
 import TableWithFilters from "../../Components/TableWithFilters";
 import { crashDataMap } from "./crashDataMap";
+import { crashQueryExportFields } from "../../queries/crashes";
 
 // Key for data response array from DB
 const dataKey = "atd_txdot_crashes";
@@ -69,6 +70,7 @@ const Crashes = () => (
     fieldsToSearch={fieldsToSearch}
     columnsToDisplay={columnsToDisplay}
     columnsToQuery={columnsToQuery}
+    columnsToExport={crashQueryExportFields}
     fieldMap={crashDataMap}
     databaseDateColumnName={"crash_date"}
   />

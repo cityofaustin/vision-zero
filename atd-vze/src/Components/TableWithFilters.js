@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { useQuery } from "@apollo/react-hooks";
+import { useQuery, useLazyQuery } from "@apollo/react-hooks";
 import { gql } from "apollo-boost";
 import { withApollo } from "react-apollo";
 import { CSVLink } from "react-csv";
@@ -29,6 +29,7 @@ const TableWithFilters = ({
   fieldsToSearch,
   columnsToDisplay,
   columnsToQuery,
+  columnsToExport,
   dataKey,
   fieldMap,
   databaseDateColumnName,
@@ -40,7 +41,7 @@ const TableWithFilters = ({
   const [searchFilter, setSearchFilter] = useState("");
   const [dateRangeFilter, setDateRangeFilter] = useState("");
   const [exportData, setExportData] = useState("");
-  const [CSVQuery, setCSVQuery] = useState("");
+  const [CSVQuery, setCSVQuery] = useState(defaultQuery);
 
   useEffect(() => {
     // On every render, filterQuery is copied, unset filters are removed, set filters replace keywords in filterQuery
@@ -121,8 +122,12 @@ const TableWithFilters = ({
           });
         }
         // set query without columns replaced to use in CSVLink
-        setCSVQuery(queryWithFilters);
-        // replace columns placeholder with columns pass in props
+        const exportQueryWithFilters = queryWithFilters.replace(
+          "COLUMNS",
+          columnsToExport
+        );
+        setCSVQuery(exportQueryWithFilters);
+        // replace columns placeholder with columns passed in props
         queryWithFilters = queryWithFilters.replace("COLUMNS", columnsToQuery);
         setTableQuery(queryWithFilters);
       }
@@ -154,23 +159,17 @@ const TableWithFilters = ({
   //   loading = false;
   // }
 
+  const { exportCSVLoading, exportCSVError, exportCSVData } = useQuery(
+    gql`
+      ${CSVQuery}
+    `
+  );
+
   if (error) return `Error! ${error.message}`;
 
   const clearFilters = () => {
     setOrderFilter("");
     setSearchFilter("");
-  };
-
-  const exportCSV = (event, done) => {
-    // coolAsyncStuff.then(() => {
-    //   done(); // REQUIRED to invoke the logic of component
-    // });
-    setExportData([
-      { label: "First Name", key: "firstname" },
-      { label: "Last Name", key: "lastname" },
-      { label: "Email", key: "email" },
-    ]);
-    done();
   };
 
   return (
@@ -200,15 +199,15 @@ const TableWithFilters = ({
                     responseDataSet={"atd_txdot_crashes"}
                     setPageFilter={setPageFilter}
                   />{" "}
-                  <CSVLink
-                    className=""
-                    data={exportData}
-                    filename={dataKey + Date.now()}
-                    asyncOnClick={true}
-                    onClick={exportCSV}
-                  >
-                    <i className="fa fa-save fa-2x ml-2 mt-1" />
-                  </CSVLink>
+                  {exportCSVData && (
+                    <CSVLink
+                      className=""
+                      data={exportCSVData[dataKey]}
+                      filename={dataKey + Date.now()}
+                    >
+                      <i className="fa fa-save fa-2x ml-2 mt-1" />
+                    </CSVLink>
+                  )}
                 </ButtonGroup>
               </ButtonToolbar>
               <Table responsive>
