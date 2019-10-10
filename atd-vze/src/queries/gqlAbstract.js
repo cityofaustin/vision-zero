@@ -9,7 +9,7 @@ class gqlAbstract {
    */
   constructor(initConfig) {
     this.config = initConfig;
-    this.configInit = JSON.stringify(initConfig);
+    this.configInit = JSON.parse(JSON.stringify(initConfig));
     this.config["filterStack"] = {
       where: [],
       order_by: [],
@@ -36,6 +36,43 @@ gqlAbstractTableAggregateName (
   }
 }`;
   }
+
+  /**
+   * Returns true if the input string is a valid alphanumeric object key
+   * @param {string} input - The string to be tested
+   * @returns {boolean}
+   */
+  isNestedKey(input) {
+    return input.match(/^[0-9a-zA-Z\-_]+$/) === null;
+  }
+
+  /**
+   * Returns the key for a nested expression
+   * @param {string} exp - The GraphQL expression
+   * @returns {string}
+   */
+  getExpKey = exp => exp.split(/[{} ]+/, 1)[0].trim();
+
+  /**
+   * Returns the value of a nested expression, usually another expression.
+   * @param {string} exp - The GraphQL expressoin
+   * @returns {string}
+   */
+  getExpValue = exp =>
+    exp.substring(exp.indexOf("{") + 1, exp.lastIndexOf("}")).trim();
+
+  /**
+   * Refactors a nested key into `sort` format
+   * @param {string} exp - The nested key (usually a graphql expression)
+   * @returns {string}
+   */
+  sortifyNestedKey = (exp, val) =>
+    this.isNestedKey(exp)
+      ? `${this.getExpKey(exp)}: { ${this.sortifyNestedKey(
+          this.getExpValue(exp),
+          val
+        )} }`
+      : `${exp}: ${val}`;
 
   /**
    * Returns the name of the table
@@ -103,6 +140,27 @@ gqlAbstractTableAggregateName (
   cleanWhere() {
     this.config["where"] = null;
     this.config["or"] = null;
+  }
+
+  /**
+   * Removes all conditions that will be used for ordering.
+   */
+  clearOrderBy() {
+    this.config["order_by"] = [];
+  }
+
+  /**
+   * Resets original conditions used for ordering
+   */
+  resetOrderBy() {
+    this.config["order_by"] = this.configInit["order_by"];
+  }
+
+  /**
+   * Full reset of all conditions
+   */
+  resetFull() {
+    this.config = JSON.parse(JSON.stringify(this.configInit));
   }
 
   /**
@@ -181,10 +239,50 @@ gqlAbstractTableAggregateName (
   /**
    * Returns the type of a column as defined in the config, assumes string if not found.
    * @param {string} columnName - The name of the column in the config
-   * @returns {boolean}
+   * @returns {string}
    */
   getType(columnName) {
-    return this.config["columns"][columnName]["type"] || "String";
+    return (
+      this.config["columns"][columnName]["type"] || "string"
+    ).toLowerCase();
+  }
+
+  /**
+   * Returns the default value when value is null
+   * @param {string} columnName - The name of the column in the config
+   * @returns {string}
+   */
+  getDefault(columnName) {
+    return `${this.config["columns"][columnName]["default"] || "-"}`;
+  }
+
+  /**
+   * Attempts to format value based on configuration specification `format`
+   * @param {string} columnName - The column to read the configuration from
+   * @param {object} value - The actual value to be presented to the component
+   */
+  getFormattedValue(columnName, value) {
+    const type = this.getType(columnName);
+    const defaultValue = this.getDefault(columnName);
+
+    if (!value) return defaultValue;
+
+    switch (type) {
+      case "string": {
+        if (typeof value === "object") return JSON.stringify(value);
+        else return `${value}`;
+      }
+      case "currency": {
+        return `$${value.toLocaleString()}`;
+      }
+      case "boolean": {
+        return value ? "True" : "False";
+      }
+      // Integers, Decimals
+      default: {
+        return `${value}`;
+      }
+    }
   }
 
   /**
@@ -263,7 +361,11 @@ gqlAbstractTableAggregateName (
     if (this.config["order_by"]) {
       let order_by = [];
       for (let [key, value] of this.getEntries("order_by")) {
-        order_by.push(`${key}: ${value}`);
+        order_by.push(
+          this.isNestedKey(key)
+            ? this.sortifyNestedKey(key, value)
+            : `${key}: ${value}`
+        );
       }
       output.push(`order_by: {${order_by.join(", ")}}`);
     }
