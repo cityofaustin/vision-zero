@@ -26,23 +26,15 @@ const StyledSaveLink = styled.i`
 `;
 
 const GridExportData = ({ query, columnsToExport, totalRecords }) => {
-  // Copy query instance to modify config for CSV export only and retain table filters
-  const queryCSV = query;
-
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Make CSV Query && Error handling
   // Use .queryCSV to insert columnsToExport passed to GridTable component into query
   let [getExport, { loading, data }] = useLazyQuery(
-    queryCSV.queryCSV(columnsToExport)
+    query.queryCSV(columnsToExport)
   );
 
   const toggleModal = () => setIsModalOpen(!isModalOpen);
-
-  const toggleModalAndResetLimit = () => {
-    queryCSV.limit = query.limit;
-    toggleModal();
-  };
 
   const toggleModalAndExport = () => {
     setIsModalOpen(!isModalOpen);
@@ -50,10 +42,11 @@ const GridExportData = ({ query, columnsToExport, totalRecords }) => {
   };
 
   const setExportLimit = event => {
+    // Limit set to 1 so that query doesn't include all records and hang
     if (event.target.id === "csv-number-input") {
-      queryCSV.limit = event.target.value;
+      query.limit = event.target.value !== "" ? event.target.value : 1;
     } else if ((event.target.id = "csv-checkbox-input")) {
-      queryCSV.limit = event.target.checked ? totalRecords : 0;
+      query.limit = event.target.checked ? totalRecords : 1;
     }
     getExport();
   };
@@ -69,7 +62,7 @@ const GridExportData = ({ query, columnsToExport, totalRecords }) => {
       </StyledSaveLink>
       <Modal isOpen={isModalOpen} toggle={toggleModal} className={"modal-sm "}>
         <ModalHeader toggle={toggleModal}>
-          Export to .csv ({queryCSV.limit} rows)
+          Export to .csv ({query.limit} rows)
         </ModalHeader>
         <ModalBody>
           <FormGroup row>
@@ -97,7 +90,7 @@ const GridExportData = ({ query, columnsToExport, totalRecords }) => {
                 check
                 htmlFor="inline-checkbox1"
               >
-                All
+                All ({totalRecords})
               </Label>
             </Col>
           </FormGroup>
@@ -109,7 +102,7 @@ const GridExportData = ({ query, columnsToExport, totalRecords }) => {
               data={data[query.table]}
               filename={query.table + Date.now()}
             >
-              <Button color="primary" onClick={toggleModalAndResetLimit}>
+              <Button color="primary" onClick={toggleModal}>
                 Save
               </Button>
             </CSVLink>
