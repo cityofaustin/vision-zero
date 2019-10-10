@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { useQuery, useLazyQuery } from "@apollo/react-hooks";
+import { useQuery } from "@apollo/react-hooks";
 
 import { withApollo } from "react-apollo";
 
@@ -337,6 +337,7 @@ const GridTable = ({ title, query, filters, columnsToExport }) => {
                   <GridExportData
                     query={query}
                     columnsToExport={columnsToExport}
+                    totalRecords={totalRecords}
                   />
                 </ButtonGroup>
               </ButtonToolbar>

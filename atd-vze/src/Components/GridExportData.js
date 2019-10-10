@@ -11,6 +11,10 @@ import {
   ModalFooter,
   ModalHeader,
   Spinner,
+  Col,
+  FormGroup,
+  Input,
+  Label,
 } from "reactstrap";
 
 const StyledSaveLink = styled.i`
@@ -21,8 +25,8 @@ const StyledSaveLink = styled.i`
   }
 `;
 
-const GridExportData = ({ query, columnsToExport }) => {
-  // Copy query instance to modify config for CSV export only
+const GridExportData = ({ query, columnsToExport, totalRecords }) => {
+  // Copy query instance to modify config for CSV export only and retain table filters
   const queryCSV = query;
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -41,8 +45,9 @@ const GridExportData = ({ query, columnsToExport }) => {
   };
 
   const setExportLimit = () => {
-    queryCSV.limit = 2000;
-    getExport();
+    // TODO set limit based on type of input and then export
+    // queryCSV.limit = 10;
+    // getExport();
   };
   console.log(data);
   return (
@@ -53,13 +58,42 @@ const GridExportData = ({ query, columnsToExport }) => {
           onClick={toggleModalAndExport}
         />
       </StyledSaveLink>
-
       <Modal isOpen={isModalOpen} toggle={toggleModal} className={"modal-sm "}>
-        <ModalHeader toggle={toggleModal}>Export to .csv</ModalHeader>
+        <ModalHeader toggle={toggleModal}>
+          Export to .csv ({queryCSV.limit} rows)
+        </ModalHeader>
         <ModalBody>
-          Put save options here
+          <FormGroup row>
+            <Col sm="8">
+              <Input
+                id="inline-input1"
+                type="number"
+                placeholder="Number of rows"
+                min={0}
+                max={totalRecords}
+                onChange={setExportLimit}
+              />
+            </Col>
+            <Col sm="4">
+              <Input
+                className="form-check-input"
+                type="checkbox"
+                id="inline-checkbox1"
+                name="inline-checkbox1"
+                value="option1"
+                onChange={setExportLimit}
+              />
+              <Label
+                className="form-check-label"
+                check
+                htmlFor="inline-checkbox1"
+              >
+                All
+              </Label>
+            </Col>
+          </FormGroup>
           <Button color="primary" onClick={setExportLimit}>
-            Debug
+            Set Limit
           </Button>
         </ModalBody>
         <ModalFooter>
