@@ -39,16 +39,25 @@ const GridExportData = ({ query, columnsToExport, totalRecords }) => {
 
   const toggleModal = () => setIsModalOpen(!isModalOpen);
 
+  const toggleModalAndResetLimit = () => {
+    queryCSV.limit = query.limit;
+    toggleModal();
+  };
+
   const toggleModalAndExport = () => {
     setIsModalOpen(!isModalOpen);
     getExport();
   };
 
-  const setExportLimit = () => {
-    // TODO set limit based on type of input and then export
-    // queryCSV.limit = 10;
-    // getExport();
+  const setExportLimit = event => {
+    if (event.target.id === "csv-number-input") {
+      queryCSV.limit = event.target.value;
+    } else if ((event.target.id = "csv-checkbox-input")) {
+      queryCSV.limit = event.target.checked ? totalRecords : 0;
+    }
+    getExport();
   };
+
   console.log(data);
   return (
     <>
@@ -66,7 +75,7 @@ const GridExportData = ({ query, columnsToExport, totalRecords }) => {
           <FormGroup row>
             <Col sm="8">
               <Input
-                id="inline-input1"
+                id="csv-number-input"
                 type="number"
                 placeholder="Number of rows"
                 min={0}
@@ -78,7 +87,7 @@ const GridExportData = ({ query, columnsToExport, totalRecords }) => {
               <Input
                 className="form-check-input"
                 type="checkbox"
-                id="inline-checkbox1"
+                id="csv-checkbox-input"
                 name="inline-checkbox1"
                 value="option1"
                 onChange={setExportLimit}
@@ -92,9 +101,6 @@ const GridExportData = ({ query, columnsToExport, totalRecords }) => {
               </Label>
             </Col>
           </FormGroup>
-          <Button color="primary" onClick={setExportLimit}>
-            Set Limit
-          </Button>
         </ModalBody>
         <ModalFooter>
           {!loading && data ? (
@@ -103,7 +109,7 @@ const GridExportData = ({ query, columnsToExport, totalRecords }) => {
               data={data[query.table]}
               filename={query.table + Date.now()}
             >
-              <Button color="primary" onClick={toggleModal}>
+              <Button color="primary" onClick={toggleModalAndResetLimit}>
                 Save
               </Button>
             </CSVLink>
