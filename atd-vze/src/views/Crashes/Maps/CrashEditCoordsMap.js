@@ -18,7 +18,7 @@ import { Button, ButtonGroup } from "reactstrap";
 // import ControlPanel from "./control-panel";
 import Pin from "./Pin";
 import { setPinColor } from "../../../styles/mapPinStyles";
-import { CrashQALatLonFrom } from "./CrashQALatLonForm";
+import { CrashEditLatLonForm } from "./CrashEditLatLonForm";
 
 const TOKEN = process.env.REACT_APP_MAPBOX_TOKEN;
 
@@ -46,13 +46,14 @@ const initialMapCenter = { latitude: 30.26714, longitude: -97.743192 };
 
 const customGeocoderMapController = new CustomGeocoderMapController();
 
-class CrashQAMap extends Component {
+class CrashEditCoordsMap extends Component {
   constructor(props) {
     super(props);
     this.state = {
       viewport: {
-        latitude: initialMapCenter.latitude,
-        longitude: initialMapCenter.longitude,
+        latitude: this.props.data.latitude_primary || initialMapCenter.latitude,
+        longitude:
+          this.props.data.longitude_primary || initialMapCenter.longitude,
         zoom: 17,
         bearing: 0,
         pitch: 0,
@@ -111,6 +112,7 @@ class CrashQAMap extends Component {
       })
       .then(res => {
         this.props.refetchCrashData();
+        this.props.setIsEditingCoords(false);
       });
   };
 
@@ -126,6 +128,11 @@ class CrashQAMap extends Component {
       markerLatitude: updatedViewport.latitude,
       markerLongitude: updatedViewport.longitude,
     });
+  };
+
+  handleMapFormCancel = e => {
+    e.preventDefault();
+    this.props.setIsEditingCoords(false);
   };
 
   render() {
@@ -193,15 +200,16 @@ class CrashQAMap extends Component {
             </ButtonGroup>
           </MapStyleSelector>
         </MapGL>
-        <CrashQALatLonFrom
+        <CrashEditLatLonForm
           latitude={markerLatitude}
           longitude={markerLongitude}
           handleFormSubmit={this.handleMapFormSubmit}
           handleFormReset={this.handleMapFormReset}
+          handleCancel={this.handleMapFormCancel}
         />
       </div>
     );
   }
 }
 
-export default withApollo(CrashQAMap);
+export default withApollo(CrashEditCoordsMap);
