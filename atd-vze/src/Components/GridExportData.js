@@ -1,10 +1,17 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { withApollo } from "react-apollo";
 import { useLazyQuery } from "@apollo/react-hooks";
 import { CSVLink } from "react-csv";
 import styled from "styled-components";
 import { colors } from "../styles/colors";
-import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
+import {
+  Button,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+  Spinner,
+} from "reactstrap";
 
 const StyledSaveLink = styled.i`
   color: ${colors.info};
@@ -21,7 +28,8 @@ const GridExportData = ({ query, columnsToExport }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Make CSV Query && Error handling
-  let [getExport, { called, loading, data }] = useLazyQuery(
+  // Use .queryCSV to insert columnsToExport passed to GridTable component into query
+  let [getExport, { loading, data }] = useLazyQuery(
     queryCSV.queryCSV(columnsToExport)
   );
 
@@ -32,12 +40,9 @@ const GridExportData = ({ query, columnsToExport }) => {
     getExport();
   };
 
-  const setLimit = () => {
-    // Create a copy of query, change limit, and then useLazyQuery in this component
-    const queryToModify = query;
-    queryToModify.limit = 30;
-    console.log(query, queryToModify);
-    debugger;
+  const setExportLimit = () => {
+    queryCSV.limit = 2000;
+    getExport();
   };
   console.log(data);
   return (
@@ -53,12 +58,12 @@ const GridExportData = ({ query, columnsToExport }) => {
         <ModalHeader toggle={toggleModal}>Export to .csv</ModalHeader>
         <ModalBody>
           Put save options here
-          <Button color="primary" onClick={setLimit}>
+          <Button color="primary" onClick={setExportLimit}>
             Debug
           </Button>
         </ModalBody>
         <ModalFooter>
-          {!loading && data && (
+          {!loading && data ? (
             <CSVLink
               className=""
               data={data[query.table]}
@@ -68,6 +73,8 @@ const GridExportData = ({ query, columnsToExport }) => {
                 Save
               </Button>
             </CSVLink>
+          ) : (
+            <Spinner className="mt-2" color="primary" />
           )}{" "}
           <Button color="secondary" onClick={toggleModal}>
             Cancel
