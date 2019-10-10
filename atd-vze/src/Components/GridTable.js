@@ -334,11 +334,13 @@ const GridTable = ({ title, query, filters, columnsToExport }) => {
                     handleRowClick={handleRowClick}
                   />
 
-                  <GridExportData
-                    query={query}
-                    columnsToExport={columnsToExport}
-                    totalRecords={totalRecords}
-                  />
+                  {columnsToExport && (
+                    <GridExportData
+                      query={query}
+                      columnsToExport={columnsToExport}
+                      totalRecords={totalRecords}
+                    />
+                  )}
                 </ButtonGroup>
               </ButtonToolbar>
               <Table responsive>

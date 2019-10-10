@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { withApollo } from "react-apollo";
 import { useLazyQuery } from "@apollo/react-hooks";
+import moment from "moment";
 import { CSVLink } from "react-csv";
 import styled from "styled-components";
 import { colors } from "../styles/colors";
@@ -100,7 +101,7 @@ const GridExportData = ({ query, columnsToExport, totalRecords }) => {
             <CSVLink
               className=""
               data={data[query.table]}
-              filename={query.table + Date.now()}
+              filename={query.table + moment(Date.now()).format()}
             >
               <Button color="primary" onClick={toggleModal}>
                 Save

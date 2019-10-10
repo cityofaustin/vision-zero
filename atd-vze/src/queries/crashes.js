@@ -392,3 +392,16 @@ traffic_cntl_id
 unkn_injry_cnt
 updated_by
 wthr_cond_id`;
+
+export const locationCrashesQueryExportFields = `
+crash_id
+location { location_id }
+case_id
+crash_date
+address_confirmed_primary
+address_confirmed_secondary
+tot_injry_cnt
+death_cnt
+collision { collsn_desc }
+units { body_style { veh_body_styl_desc } }
+units { unit_description { veh_unit_desc_desc } }`;
