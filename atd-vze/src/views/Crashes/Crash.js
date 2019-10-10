@@ -75,7 +75,7 @@ function Crash(props) {
   const handleInputChange = e => {
     const newFormState = Object.assign(formData, {
       [editField]: e.target.value,
-      "updated_by": localStorage.getItem("hasura_user_email")
+      updated_by: localStorage.getItem("hasura_user_email"),
     });
     setFormData(newFormState);
   };
@@ -104,10 +104,14 @@ function Crash(props) {
 
   const formatCostToDollars = cost => `$${cost.toLocaleString()}`;
 
-  const deathCount = data.atd_txdot_crashes[0].death_cnt;
-  const injuryCount = data.atd_txdot_crashes[0].tot_injry_cnt;
-  const latitude = data.atd_txdot_crashes[0].latitude;
-  const longitude = data.atd_txdot_crashes[0].longitude;
+  const {
+    death_cnt: deathCount,
+    tot_injry_cnt: injuryCount,
+    latitude_primary: latitude,
+    longitude_primary: longitude,
+  } = data.atd_txdot_crashes[0];
+
+  console.log(longitude);
   const mapGeocoderAddress = createGeocoderAddressString(data);
   const yearsLifeLostCount = calculateYearsLifeLost(
     data.atd_txdot_primaryperson.concat(data.atd_txdot_person)

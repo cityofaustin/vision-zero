@@ -229,7 +229,6 @@ export const crashDataMap = [
   {
     title: "Geocoding",
     fields: {
-      //  TODO: Update how we edit lat/lon to use Mike's UI
       latitude_primary: {
         label: "Latitude",
         editable: true,
