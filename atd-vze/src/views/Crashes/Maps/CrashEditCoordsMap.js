@@ -41,19 +41,22 @@ const navStyle = {
   padding: "10px",
 };
 
-// Default map center
-const initialMapCenter = { latitude: 30.26714, longitude: -97.743192 };
-
 const customGeocoderMapController = new CustomGeocoderMapController();
 
 class CrashEditCoordsMap extends Component {
   constructor(props) {
     super(props);
+
+    // Default map center
+    this.initialMapCenter = {
+      latitude: this.props.data.latitude_primary || 30.26714,
+      longitude: this.props.data.longitude_primary || -97.743192,
+    };
+
     this.state = {
       viewport: {
-        latitude: this.props.data.latitude_primary || initialMapCenter.latitude,
-        longitude:
-          this.props.data.longitude_primary || initialMapCenter.longitude,
+        latitude: this.initialMapCenter.latitude,
+        longitude: this.initialMapCenter.longitude,
         zoom: 17,
         bearing: 0,
         pitch: 0,
@@ -120,8 +123,8 @@ class CrashEditCoordsMap extends Component {
     e.preventDefault();
     const updatedViewport = {
       ...this.state.viewport,
-      latitude: initialMapCenter.latitude,
-      longitude: initialMapCenter.longitude,
+      latitude: this.initialMapCenter.latitude,
+      longitude: this.initialMapCenter.longitude,
     };
     this.setState({
       viewport: updatedViewport,
