@@ -253,15 +253,6 @@ const GridTable = ({ title, query, filters, columnsToExport }) => {
   // Make Query && Error handling
   let { loading, error, data } = useQuery(query.gql);
 
-  // Make CSV Query && Error handling
-  let {
-    loading: exportLoading,
-    error: exportError,
-    data: exportData,
-  } = useQuery(query.queryCSV(columnsToExport));
-
-  console.log("the data", exportData);
-
   if (error) return `Error! ${error.message}`;
 
   let dataEntries = [];
@@ -342,9 +333,11 @@ const GridTable = ({ title, query, filters, columnsToExport }) => {
                     totalPages={totalPages}
                     handleRowClick={handleRowClick}
                   />
-                  {exportData[query.table] && (
-                    <GridExportData exportData={exportData} query={query} />
-                  )}
+
+                  <GridExportData
+                    query={query}
+                    columnsToExport={columnsToExport}
+                  />
                 </ButtonGroup>
               </ButtonToolbar>
               <Table responsive>

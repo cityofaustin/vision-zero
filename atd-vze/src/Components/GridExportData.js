@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { withApollo } from "react-apollo";
+import { useLazyQuery } from "@apollo/react-hooks";
 import { CSVLink } from "react-csv";
 import styled from "styled-components";
 import { colors } from "../styles/colors";
@@ -13,10 +14,23 @@ const StyledSaveLink = styled.i`
   }
 `;
 
-const GridExportData = ({ exportData, query }) => {
+const GridExportData = ({ query, columnsToExport }) => {
+  // Copy query instance to modify config for CSV export only
+  const queryCSV = query;
+
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  // Make CSV Query && Error handling
+  let [getExport, { called, loading, data }] = useLazyQuery(
+    queryCSV.queryCSV(columnsToExport)
+  );
+
   const toggleModal = () => setIsModalOpen(!isModalOpen);
+
+  const toggleModalAndExport = () => {
+    setIsModalOpen(!isModalOpen);
+    getExport();
+  };
 
   const setLimit = () => {
     // Create a copy of query, change limit, and then useLazyQuery in this component
@@ -25,11 +39,14 @@ const GridExportData = ({ exportData, query }) => {
     console.log(query, queryToModify);
     debugger;
   };
-
+  console.log(data);
   return (
     <>
       <StyledSaveLink>
-        <i className="fa fa-save fa-2x ml-2 mt-1" onClick={toggleModal} />
+        <i
+          className="fa fa-save fa-2x ml-2 mt-1"
+          onClick={toggleModalAndExport}
+        />
       </StyledSaveLink>
 
       <Modal isOpen={isModalOpen} toggle={toggleModal} className={"modal-sm "}>
@@ -41,15 +58,17 @@ const GridExportData = ({ exportData, query }) => {
           </Button>
         </ModalBody>
         <ModalFooter>
-          <CSVLink
-            className=""
-            data={exportData[query.table]}
-            filename={query.table + Date.now()}
-          >
-            <Button color="primary" onClick={toggleModal}>
-              Save
-            </Button>
-          </CSVLink>{" "}
+          {!loading && data && (
+            <CSVLink
+              className=""
+              data={data[query.table]}
+              filename={query.table + Date.now()}
+            >
+              <Button color="primary" onClick={toggleModal}>
+                Save
+              </Button>
+            </CSVLink>
+          )}{" "}
           <Button color="secondary" onClick={toggleModal}>
             Cancel
           </Button>
