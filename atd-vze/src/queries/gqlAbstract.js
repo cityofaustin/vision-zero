@@ -336,7 +336,7 @@ gqlAbstractTableAggregateName (
   }
 
   /**
-   * Generates a GraphQL query based on columns passed in for export.
+   * Generates a GraphQL query based on columns passed in for export feature.
    * @params {string} - String containing columns to return in query.
    * @returns {Object} gql Object
    */
@@ -361,8 +361,7 @@ gqlAbstractTableAggregateName (
     // Generate Columns
     query = query.replace("gqlAbastractColumns", string);
 
-    // Aggregate Tables
-
+    // Return GraphQL query
     return gql`
       ${query}
     `;

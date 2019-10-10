@@ -29,21 +29,22 @@ const StyledSaveLink = styled.i`
 const GridExportData = ({ query, columnsToExport, totalRecords }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Make CSV Query && Error handling
-  // Use .queryCSV to insert columnsToExport passed to GridTable component into query
+  // Use .queryCSV to insert columnsToExport prop into query
   let [getExport, { loading, data }] = useLazyQuery(
     query.queryCSV(columnsToExport)
   );
 
   const toggleModal = () => setIsModalOpen(!isModalOpen);
 
+  // Open modal and execute initial query
   const toggleModalAndExport = () => {
     setIsModalOpen(!isModalOpen);
     getExport();
   };
 
+  // Set query limit from inputs and then execute query
   const setExportLimit = event => {
-    // Limit set to 1 so that query doesn't include all records and hang
+    // Limit set to 1 so that query doesn't include all records unintentionally
     if (event.target.id === "csv-number-input") {
       query.limit = event.target.value !== "" ? event.target.value : 1;
     } else if ((event.target.id = "csv-checkbox-input")) {
@@ -52,7 +53,6 @@ const GridExportData = ({ query, columnsToExport, totalRecords }) => {
     getExport();
   };
 
-  console.log(data);
   return (
     <>
       <StyledSaveLink>
