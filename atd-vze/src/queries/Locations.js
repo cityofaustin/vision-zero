@@ -12,7 +12,7 @@ export const GET_LOCATION = gql`
       metadata
       last_update
       is_retired
-      crashes_by_manner_collision(order_by: {count: desc}, limit: 5) {
+      crashes_by_manner_collision(order_by: { count: desc }, limit: 5) {
         collsn_desc
         count
       }
@@ -81,4 +81,9 @@ export const UPDATE_LOCATION = gql`
       }
     }
   }
+`;
+
+export const locationQueryExportFields = `
+location_id
+description
 `;

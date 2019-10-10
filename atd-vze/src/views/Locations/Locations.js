@@ -2,8 +2,8 @@ import React from "react";
 import { withApollo } from "react-apollo";
 
 import GridTable from "../../Components/GridTable";
-
 import gqlAbstract from "../../queries/gqlAbstract";
+import { locationQueryExportFields } from "../../queries/Locations";
 
 // Our initial query configuration
 let queryConf = {
@@ -26,9 +26,6 @@ let queryConf = {
       type: "String",
     },
   },
-  // TODO: Add CSV export columns and then add handling in gqlAbstract
-  // Idea is to call method on query that returns gql string to req from DB
-  // Handle with async CSVLink from react-csv library
   order_by: {
     location_id: "desc", // Unique ID desc by default
   },
@@ -40,7 +37,11 @@ let queryConf = {
 let locationsQuery = new gqlAbstract(queryConf);
 
 const Locations = () => (
-  <GridTable query={locationsQuery} title={"Locations"} />
+  <GridTable
+    query={locationsQuery}
+    title={"Locations"}
+    columnsToExport={locationQueryExportFields}
+  />
 );
 
 export default withApollo(Locations);
