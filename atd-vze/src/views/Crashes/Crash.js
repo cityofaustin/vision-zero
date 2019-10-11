@@ -9,13 +9,14 @@ import {
   Table,
   Alert,
   Input,
+  Button,
 } from "reactstrap";
 import { withApollo } from "react-apollo";
 import { useQuery } from "@apollo/react-hooks";
 import { crashDataMap } from "./crashDataMap";
 import CrashCollapses from "./CrashCollapses";
 import CrashMap from "./Maps/CrashMap";
-import CrashQAMap from "./Maps/CrashQAMap";
+import CrashEditCoordsMap from "./Maps/CrashEditCoordsMap";
 import Widget02 from "../Widgets/Widget02";
 import CrashChangeLog from "./CrashChangeLog";
 import "./crash.scss";
@@ -50,6 +51,7 @@ function Crash(props) {
 
   const [editField, setEditField] = useState("");
   const [formData, setFormData] = useState({});
+  const [isEditingCoords, setIsEditingCoords] = useState(false);
 
   if (loading) return "Loading...";
   if (error) return `Error! ${error.message}`;
@@ -75,7 +77,7 @@ function Crash(props) {
   const handleInputChange = e => {
     const newFormState = Object.assign(formData, {
       [editField]: e.target.value,
-      "updated_by": localStorage.getItem("hasura_user_email")
+      updated_by: localStorage.getItem("hasura_user_email"),
     });
     setFormData(newFormState);
   };
@@ -104,10 +106,13 @@ function Crash(props) {
 
   const formatCostToDollars = cost => `$${cost.toLocaleString()}`;
 
-  const deathCount = data.atd_txdot_crashes[0].death_cnt;
-  const injuryCount = data.atd_txdot_crashes[0].tot_injry_cnt;
-  const latitude = data.atd_txdot_crashes[0].latitude;
-  const longitude = data.atd_txdot_crashes[0].longitude;
+  const {
+    death_cnt: deathCount,
+    tot_injry_cnt: injuryCount,
+    latitude_primary: latitude,
+    longitude_primary: longitude,
+  } = data.atd_txdot_crashes[0];
+
   const mapGeocoderAddress = createGeocoderAddressString(data);
   const yearsLifeLostCount = calculateYearsLifeLost(
     data.atd_txdot_primaryperson.concat(data.atd_txdot_person)
@@ -261,24 +266,45 @@ function Crash(props) {
           <div className="mb-4">
             <Card>
               <CardHeader>
-                Crash Location{" "}
-                {(data && data.atd_txdot_crash_locations.length > 0 && (
-                  <>
-                    (ID:&nbsp;
-                    <Link
-                      to={`/locations/${
-                        data.atd_txdot_crash_locations[0]["location_id"]
-                      }`}
-                    >
-                      {data.atd_txdot_crash_locations[0]["location_id"]}
-                    </Link>
-                    )
-                  </>
-                )) ||
-                  "(Unassigned)"}
+                <Row>
+                  <Col>
+                    Crash Location{" "}
+                    {(data && data.atd_txdot_crash_locations.length > 0 && (
+                      <>
+                        (ID:&nbsp;
+                        <Link
+                          to={`/locations/${
+                            data.atd_txdot_crash_locations[0]["location_id"]
+                          }`}
+                        >
+                          {data.atd_txdot_crash_locations[0]["location_id"]}
+                        </Link>
+                        )
+                      </>
+                    )) ||
+                      "(Unassigned)"}
+                  </Col>
+                  <Col>
+                    {!isEditingCoords && (
+                      <Button
+                        color="primary"
+                        style={{ float: "right" }}
+                        onClick={e => setIsEditingCoords(!isEditingCoords)}
+                      >
+                        Edit Coordinates
+                      </Button>
+                    )}
+                  </Col>
+                </Row>
               </CardHeader>
               <CardBody>
-                {latitude && longitude ? (
+                {(!latitude || !longitude) && (
+                  <Alert color="danger">
+                    Crash record is missing latitude and longitude values
+                    required for map display.
+                  </Alert>
+                )}
+                {!isEditingCoords && latitude && longitude ? (
                   <>
                     <CrashMap data={data.atd_txdot_crashes[0]} />
                     <Table responsive striped hover>
@@ -287,14 +313,12 @@ function Crash(props) {
                   </>
                 ) : (
                   <>
-                    <Alert color="danger">
-                      Crash record is missing latitude and longitude values
-                      required for map display.
-                    </Alert>
-                    <CrashQAMap
+                    <CrashEditCoordsMap
+                      data={data.atd_txdot_crashes[0]}
                       mapGeocoderAddress={mapGeocoderAddress}
                       crashId={crashId}
                       refetchCrashData={refetch}
+                      setIsEditingCoords={setIsEditingCoords}
                     />
                   </>
                 )}
