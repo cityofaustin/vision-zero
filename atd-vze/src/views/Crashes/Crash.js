@@ -113,7 +113,6 @@ function Crash(props) {
     longitude_primary: longitude,
   } = data.atd_txdot_crashes[0];
 
-  console.log(longitude);
   const mapGeocoderAddress = createGeocoderAddressString(data);
   const yearsLifeLostCount = calculateYearsLifeLost(
     data.atd_txdot_primaryperson.concat(data.atd_txdot_person)
