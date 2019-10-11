@@ -5,6 +5,7 @@ import moment from "moment";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { colors } from "../styles/colors";
+import { parse } from "@babel/parser";
 
 const StyledDatePicker = styled.div`
   /* Add Bootstrap styles to picker inputs */
@@ -63,7 +64,7 @@ const GridDateRange = ({ setDateRangeFilter, initStartDate, initEndDate }) => {
   const formatDate = date => moment(date).format("YYYY-MM-DD");
 
   /**
-   * Returns a date one year ago from today
+   * Returns existing selection or date one year ago from today
    * @type {Date}
    */
   const minDate = initStartDate
@@ -74,9 +75,14 @@ const GridDateRange = ({ setDateRangeFilter, initStartDate, initEndDate }) => {
           .format()
       );
 
-  const maxDate = new Date();
+  /**
+   * Returns existing selection or today
+   * @type {Date}
+   */
+  const maxDate = initEndDate ? parseDate(initEndDate) : new Date();
+
   const [startDate, setStartDate] = useState(minDate);
-  const [endDate, setEndDate] = useState(parseDate(initEndDate));
+  const [endDate, setEndDate] = useState(maxDate);
 
   useEffect(() => {
     setDateRangeFilter({
@@ -103,7 +109,7 @@ const GridDateRange = ({ setDateRangeFilter, initStartDate, initEndDate }) => {
           startDate={startDate}
           endDate={endDate}
           minDate={startDate}
-          maxDate={maxDate}
+          maxDate={new Date()}
         />
       </StyledDatePicker>
     </>

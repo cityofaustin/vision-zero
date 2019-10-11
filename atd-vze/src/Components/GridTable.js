@@ -27,13 +27,15 @@ import GridFilters from "./GridFilters";
 import GridDateRange from "./GridDateRange";
 
 const GridTable = ({ title, query, filters }) => {
-  // If config exists in localStorage, write to current query
+  // Load table filters from localStorage by title
   const savedFilterState = JSON.parse(
     localStorage.getItem(`saved${title}Config`)
   );
 
+  // Return saved filters if they exist
   const getSavedState = stateName =>
     (savedFilterState && savedFilterState[`${stateName}`]) || false;
+
   /**
    * State management:
    *      limit {int} - Contains the current limit of results in a page
@@ -47,7 +49,7 @@ const GridTable = ({ title, query, filters }) => {
    *      dateRangeFilter {object} - Contains the date range (startDate, and endDate)
    */
 
-  // (savedQuery && savedQuery.limit) ||
+  // Use saved filter as default if it exists
   const [limit, setLimit] = useState(getSavedState("limit") || 25);
   const [offset, setOffset] = useState(getSavedState("offset") || 0);
   const [page, setPage] = useState(getSavedState("page") || 1);
@@ -72,9 +74,7 @@ const GridTable = ({ title, query, filters }) => {
   );
 
   useEffect(() => {
-    // Save query config each time query is updated
-    const filters = filterOptions;
-
+    // Save query config by title to localStorage each time component renders
     const stateForFilters = {
       limit,
       offset,
@@ -90,7 +90,6 @@ const GridTable = ({ title, query, filters }) => {
       `saved${title}Config`,
       JSON.stringify(stateForFilters)
     );
-    console.log(filterOptions, JSON.stringify(stateForFilters));
   });
 
   /**
