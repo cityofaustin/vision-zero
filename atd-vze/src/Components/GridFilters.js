@@ -18,7 +18,7 @@ const GridFilters = ({
   setFilterOptions,
 }) => {
   // Filter options serves as a helper to load and stage the options from filterOptionsState
-  let filterOptions = [];
+  let filterOptions = {};
 
   /**
    * Returns an array with the names of each filter in the filter configuration.
@@ -43,7 +43,7 @@ const GridFilters = ({
   const initializeFilterState = filters => {
     if (Object.keys(filterOptionsState).length === 0) {
       // We need to build an object, from an array:
-      let initFilterOpts = [];
+      let initFilterOpts = {};
 
       // We will iterate through each key, and build the object:
       filterList(filters).forEach(filterName => {

@@ -73,6 +73,8 @@ const GridTable = ({ title, query, filters }) => {
 
   useEffect(() => {
     // Save query config each time query is updated
+    const filters = filterOptions;
+
     const stateForFilters = {
       limit,
       offset,
@@ -88,7 +90,7 @@ const GridTable = ({ title, query, filters }) => {
       `saved${title}Config`,
       JSON.stringify(stateForFilters)
     );
-    console.log(filterOptions);
+    console.log(filterOptions, JSON.stringify(stateForFilters));
   });
 
   /**
@@ -362,8 +364,8 @@ const GridTable = ({ title, query, filters }) => {
                   <ButtonGroup>
                     <GridDateRange
                       setDateRangeFilter={setDateRangeFilter}
-                      initStartDate={query.config.initStartDate}
-                      initEndDate={query.config.initEndDate}
+                      initStartDate={dateRangeFilter.startDate}
+                      initEndDate={dateRangeFilter.endDate}
                     />
                   </ButtonGroup>
                 )}
