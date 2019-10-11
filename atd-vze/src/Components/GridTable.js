@@ -27,6 +27,12 @@ import GridFilters from "./GridFilters";
 import GridDateRange from "./GridDateRange";
 
 const GridTable = ({ title, query, filters }) => {
+  // If config exists in localStorage, write to current query
+  const savedFilterState = JSON.parse(
+    localStorage.getItem(`saved${title}Config`)
+  );
+
+  const getSavedState = stateName => savedFilterState[`${stateName}`] || false;
   /**
    * State management:
    *      limit {int} - Contains the current limit of results in a page
@@ -41,7 +47,7 @@ const GridTable = ({ title, query, filters }) => {
    */
 
   // (savedQuery && savedQuery.limit) ||
-  const [limit, setLimit] = useState(25);
+  const [limit, setLimit] = useState(getSavedState("limit") || 25);
   const [offset, setOffset] = useState(0);
   const [page, setPage] = useState(1);
   const [sortColumn, setSortColumn] = useState("");
