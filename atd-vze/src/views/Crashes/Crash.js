@@ -159,9 +159,78 @@ function Crash(props) {
         </Col>
       </Row>
       <Row>
-        <Col lg={6}>
-          {crashDataMap.map(section => {
-            return (
+        <Col xs="12" md="6">
+          <div className="mb-4">
+            <Card>
+              <CardHeader>
+                <Row>
+                  <Col>
+                    Crash Location{" "}
+                    {(data && data.atd_txdot_crash_locations.length > 0 && (
+                      <>
+                        (ID:&nbsp;
+                        <Link
+                          to={`/locations/${
+                            data.atd_txdot_crash_locations[0]["location_id"]
+                          }`}
+                        >
+                          {data.atd_txdot_crash_locations[0]["location_id"]}
+                        </Link>
+                        )
+                      </>
+                    )) ||
+                      "(Unassigned)"}
+                  </Col>
+                  <Col>
+                    {!isEditingCoords && (
+                      <Button
+                        color="primary"
+                        style={{ float: "right" }}
+                        onClick={e => setIsEditingCoords(!isEditingCoords)}
+                      >
+                        Edit Coordinates
+                      </Button>
+                    )}
+                  </Col>
+                </Row>
+              </CardHeader>
+              <CardBody>
+                {(!latitude || !longitude) && (
+                  <Alert color="danger">
+                    Crash record is missing latitude and longitude values
+                    required for map display.
+                  </Alert>
+                )}
+                {!isEditingCoords && latitude && longitude ? (
+                  <>
+                    <CrashMap data={data.atd_txdot_crashes[0]} />
+                    <Table responsive striped hover>
+                      <tbody></tbody>
+                    </Table>
+                  </>
+                ) : (
+                  <>
+                    <CrashEditCoordsMap
+                      data={data.atd_txdot_crashes[0]}
+                      mapGeocoderAddress={mapGeocoderAddress}
+                      crashId={crashId}
+                      refetchCrashData={refetch}
+                      setIsEditingCoords={setIsEditingCoords}
+                    />
+                  </>
+                )}
+              </CardBody>
+            </Card>
+          </div>
+        </Col>
+        <Col>
+          <CrashCollapses data={data} />
+        </Col>
+      </Row>
+      <Row>
+        {crashDataMap.map(section => {
+          return (
+            <Col xs="12" md="6">
               <Card key={section.title}>
                 <CardHeader>{section.title}</CardHeader>
                 <CardBody>
@@ -277,74 +346,11 @@ function Crash(props) {
                   </Table>
                 </CardBody>
               </Card>
-            );
-          })}
-        </Col>
+            </Col>
+          );
+        })}
 
         <Col lg={6}>
-          <div className="mb-4">
-            <Card>
-              <CardHeader>
-                <Row>
-                  <Col>
-                    Crash Location{" "}
-                    {(data && data.atd_txdot_crash_locations.length > 0 && (
-                      <>
-                        (ID:&nbsp;
-                        <Link
-                          to={`/locations/${
-                            data.atd_txdot_crash_locations[0]["location_id"]
-                          }`}
-                        >
-                          {data.atd_txdot_crash_locations[0]["location_id"]}
-                        </Link>
-                        )
-                      </>
-                    )) ||
-                      "(Unassigned)"}
-                  </Col>
-                  <Col>
-                    {!isEditingCoords && (
-                      <Button
-                        color="primary"
-                        style={{ float: "right" }}
-                        onClick={e => setIsEditingCoords(!isEditingCoords)}
-                      >
-                        Edit Coordinates
-                      </Button>
-                    )}
-                  </Col>
-                </Row>
-              </CardHeader>
-              <CardBody>
-                {(!latitude || !longitude) && (
-                  <Alert color="danger">
-                    Crash record is missing latitude and longitude values
-                    required for map display.
-                  </Alert>
-                )}
-                {!isEditingCoords && latitude && longitude ? (
-                  <>
-                    <CrashMap data={data.atd_txdot_crashes[0]} />
-                    <Table responsive striped hover>
-                      <tbody></tbody>
-                    </Table>
-                  </>
-                ) : (
-                  <>
-                    <CrashEditCoordsMap
-                      data={data.atd_txdot_crashes[0]}
-                      mapGeocoderAddress={mapGeocoderAddress}
-                      crashId={crashId}
-                      refetchCrashData={refetch}
-                      setIsEditingCoords={setIsEditingCoords}
-                    />
-                  </>
-                )}
-              </CardBody>
-            </Card>
-          </div>
-          <CrashCollapses data={data} />
           <CrashChangeLog data={data} />
         </Col>
       </Row>
