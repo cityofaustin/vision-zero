@@ -5,7 +5,6 @@ import moment from "moment";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { colors } from "../styles/colors";
-import { parse } from "@babel/parser";
 
 const StyledDatePicker = styled.div`
   /* Add Bootstrap styles to picker inputs */
