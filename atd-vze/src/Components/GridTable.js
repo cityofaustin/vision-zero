@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@apollo/react-hooks";
 
@@ -39,6 +39,8 @@ const GridTable = ({ title, query, filters }) => {
    *      filterOptions {object} - Contains a list of filters and each individual status (enabled, disabled)
    *      dateRangeFilter {object} - Contains the date range (startDate, and endDate)
    */
+
+  // (savedQuery && savedQuery.limit) ||
   const [limit, setLimit] = useState(25);
   const [offset, setOffset] = useState(0);
   const [page, setPage] = useState(1);
@@ -50,6 +52,25 @@ const GridTable = ({ title, query, filters }) => {
   const [dateRangeFilter, setDateRangeFilter] = useState({
     startDate: query.config.initStartDate || null,
     endDate: query.config.initEndDate || null,
+  });
+
+  useEffect(() => {
+    // Save query config each time query is updated
+    const stateForFilters = {
+      limit,
+      offset,
+      page,
+      sortColumn,
+      sortOrder,
+      searchParameters,
+      collapseAdvancedFilters,
+      filterOptions,
+      dateRangeFilter,
+    };
+    localStorage.setItem(
+      `saved${title}Config`,
+      JSON.stringify(stateForFilters)
+    );
   });
 
   /**
@@ -265,6 +286,7 @@ const GridTable = ({ title, query, filters }) => {
 
   // If we have data
   if (data[query.table]) {
+    console.log(data[query.table]);
     loading = false;
     totalRecords = data[query.table + "_aggregate"]["aggregate"]["count"];
     totalPages = Math.ceil(totalRecords / limit);
