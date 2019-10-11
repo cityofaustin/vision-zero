@@ -74,9 +74,9 @@ const GridDateRange = ({ setDateRangeFilter, initStartDate, initEndDate }) => {
           .format()
       );
 
-  const maxDate = initEndDate ? parseDate(initEndDate) : new Date();
+  const maxDate = new Date();
   const [startDate, setStartDate] = useState(minDate);
-  const [endDate, setEndDate] = useState(maxDate);
+  const [endDate, setEndDate] = useState(parseDate(initEndDate));
 
   useEffect(() => {
     setDateRangeFilter({
