@@ -48,17 +48,27 @@ const GridTable = ({ title, query, filters }) => {
 
   // (savedQuery && savedQuery.limit) ||
   const [limit, setLimit] = useState(getSavedState("limit") || 25);
-  const [offset, setOffset] = useState(0);
-  const [page, setPage] = useState(1);
-  const [sortColumn, setSortColumn] = useState("");
-  const [sortOrder, setSortOrder] = useState("");
-  const [searchParameters, setSearchParameters] = useState({});
-  const [collapseAdvancedFilters, setCollapseAdvacedFilters] = useState(false);
-  const [filterOptions, setFilterOptions] = useState({});
-  const [dateRangeFilter, setDateRangeFilter] = useState({
-    startDate: query.config.initStartDate || null,
-    endDate: query.config.initEndDate || null,
-  });
+  const [offset, setOffset] = useState(getSavedState("offset") || 0);
+  const [page, setPage] = useState(getSavedState("page") || 1);
+  const [sortColumn, setSortColumn] = useState(
+    getSavedState("sortColumn") || ""
+  );
+  const [sortOrder, setSortOrder] = useState(getSavedState("sortOrder") || "");
+  const [searchParameters, setSearchParameters] = useState(
+    getSavedState("searchParameters") || {}
+  );
+  const [collapseAdvancedFilters, setCollapseAdvacedFilters] = useState(
+    getSavedState("collapseAdvancedFilters") || false
+  );
+  const [filterOptions, setFilterOptions] = useState(
+    getSavedState("filterOptions") || {}
+  );
+  const [dateRangeFilter, setDateRangeFilter] = useState(
+    getSavedState("dateRangeFilter") || {
+      startDate: query.config.initStartDate || null,
+      endDate: query.config.initEndDate || null,
+    }
+  );
 
   useEffect(() => {
     // Save query config each time query is updated
