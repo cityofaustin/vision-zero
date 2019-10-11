@@ -154,9 +154,13 @@ const GridTable = ({ title, query, filters }) => {
    * @returns {*}
    */
   const responseValue = (obj, keys) => {
-    for (let k = 1; k < keys.length; k++)
-      obj = obj ? obj[keys[k]] || null : null;
-
+    for (let k = 1; k < keys.length; k++) {
+      try {
+        obj = obj[keys[k]];
+      } catch {
+        obj = null;
+      }
+    }
     return obj;
   };
 
