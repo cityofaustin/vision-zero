@@ -116,6 +116,8 @@ function Crash(props) {
     sus_serious_injry_cnt: seriousInjuryCount,
     latitude_primary: latitude,
     longitude_primary: longitude,
+    address_confirmed_primary: primaryAddress,
+    address_confirmed_secondary: secondaryAddress,
   } = data.atd_txdot_crashes[0];
 
   const mapGeocoderAddress = createGeocoderAddressString(data);
@@ -125,6 +127,11 @@ function Crash(props) {
 
   return (
     <div className="animated fadeIn">
+      <Row>
+        <Col>
+          <h2 className="h2 mb-3">{`${primaryAddress} & ${secondaryAddress}`}</h2>
+        </Col>
+      </Row>
       <Row>
         <Col xs="12" sm="6" md="4">
           <Widget02
