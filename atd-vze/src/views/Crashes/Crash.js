@@ -108,7 +108,7 @@ function Crash(props) {
 
   const {
     death_cnt: deathCount,
-    tot_injry_cnt: injuryCount,
+    sus_serious_injry_cnt: seriousInjuryCount,
     latitude_primary: latitude,
     longitude_primary: longitude,
   } = data.atd_txdot_crashes[0];
@@ -123,7 +123,7 @@ function Crash(props) {
       <Row>
         <Col xs="12" sm="6" md="4">
           <Widget02
-            header={deathCount + ""}
+            header={`${deathCount}`}
             mainText="Fatalities"
             icon="fa fa-heartbeat"
             color="danger"
@@ -131,7 +131,7 @@ function Crash(props) {
         </Col>
         <Col xs="12" sm="6" md="4">
           <Widget02
-            header={injuryCount + ""}
+            header={`${seriousInjuryCount}`}
             mainText="Serious Injuries"
             icon="fa fa-medkit"
             color="warning"
@@ -139,7 +139,7 @@ function Crash(props) {
         </Col>
         <Col xs="12" sm="6" md="4">
           <Widget02
-            header={yearsLifeLostCount + ""}
+            header={`${yearsLifeLostCount}`}
             mainText="Years of Life Lost"
             icon="fa fa-hourglass-end"
             color="info"
