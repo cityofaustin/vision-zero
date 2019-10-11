@@ -114,11 +114,11 @@ let customFilters = {
     filters: [
       {
         id: "geo_no_coordinates",
-        label: "No Latitude and Longitude provided",
+        label: "No Latitude and Longitude",
         filter: {
           where: [
-            { latitude: "_is_null: true" },
-            { longitude: "_is_null: true" },
+            { latitude_primary: "_is_null: true" },
+            { longitude_primary: "_is_null: true" },
           ],
         },
       },
@@ -127,16 +127,6 @@ let customFilters = {
         label: "Has been Geocoded",
         filter: {
           where: [{ geocoded: '_eq: "Y"' }],
-        },
-      },
-      {
-        id: "geo_confirmed_coordinates",
-        label: "Confirmed Coordinates",
-        filter: {
-          where: [
-            { latitude_primary: "_is_null: false" },
-            { longitude_primary: "_is_null: false" },
-          ],
         },
       },
     ],

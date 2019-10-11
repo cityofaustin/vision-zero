@@ -264,10 +264,10 @@ const GridTable = ({ title, query, filters }) => {
     // on whether the column is an integer or a string, etc.
     if (searchParameters["column"] === "crash_id") {
       // Search Integer for exact value
-      query.setWhere(
-        searchParameters["column"],
-        `_eq: ${searchParameters["value"]}`
-      );
+      // If string contains integers, insert in gql query, if not insert 0 to return no matches
+      const parsedValue = parseInt(searchParameters["value"]);
+      const value = isNaN(parsedValue) ? 0 : parsedValue;
+      query.setWhere(searchParameters["column"], `_eq: ${value}`);
     } else {
       // Search Case-Insensitive String
       query.setWhere(
