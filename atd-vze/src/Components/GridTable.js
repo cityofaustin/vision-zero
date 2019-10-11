@@ -32,7 +32,8 @@ const GridTable = ({ title, query, filters }) => {
     localStorage.getItem(`saved${title}Config`)
   );
 
-  const getSavedState = stateName => savedFilterState[`${stateName}`] || false;
+  const getSavedState = stateName =>
+    (savedFilterState && savedFilterState[`${stateName}`]) || false;
   /**
    * State management:
    *      limit {int} - Contains the current limit of results in a page
@@ -87,6 +88,7 @@ const GridTable = ({ title, query, filters }) => {
       `saved${title}Config`,
       JSON.stringify(stateForFilters)
     );
+    console.log(filterOptions);
   });
 
   /**
@@ -342,6 +344,7 @@ const GridTable = ({ title, query, filters }) => {
                 <GridTableSearch
                   query={query}
                   clearFilters={clearFilters}
+                  searchParameters={searchParameters}
                   setSearchParameters={setSearchParameters}
                   resetPage={resetPageOnSearch}
                   filters={filters}
