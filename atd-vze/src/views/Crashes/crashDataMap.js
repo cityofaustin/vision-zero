@@ -6,6 +6,11 @@ export const crashDataMap = [
         label: "Crash ID",
         editable: false,
       },
+      last_update: {
+        label: "Last Updated",
+        editable: false,
+        format: "datetime",
+      },
       case_id: {
         label: "Case ID",
         editable: false,
@@ -370,10 +375,6 @@ export const crashDataMap = [
   {
     title: "QA",
     fields: {
-      last_update: {
-        label: "Last Updated",
-        editable: false,
-      },
       approval_date: {
         label: "Approval Date",
         editable: false,

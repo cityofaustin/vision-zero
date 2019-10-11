@@ -13,12 +13,14 @@ import {
 } from "reactstrap";
 import { withApollo } from "react-apollo";
 import { useQuery } from "@apollo/react-hooks";
-import { crashDataMap } from "./crashDataMap";
+import moment from "moment";
+
 import CrashCollapses from "./CrashCollapses";
 import CrashMap from "./Maps/CrashMap";
 import CrashEditCoordsMap from "./Maps/CrashEditCoordsMap";
 import Widget02 from "../Widgets/Widget02";
 import CrashChangeLog from "./CrashChangeLog";
+import { crashDataMap } from "./crashDataMap";
 import "./crash.scss";
 
 import { GET_CRASH, UPDATE_CRASH, GET_LOOKUPS } from "../../queries/crashes";
@@ -106,6 +108,9 @@ function Crash(props) {
 
   const formatCostToDollars = cost => `$${cost.toLocaleString()}`;
 
+  const formatDateTimeString = datetime =>
+    moment(datetime).format("YYYY-MM-DD hh:mm:ss a");
+
   const {
     death_cnt: deathCount,
     sus_serious_injry_cnt: seriousInjuryCount,
@@ -165,8 +170,15 @@ function Crash(props) {
                           fieldConfigObject.format === "dollars" &&
                           formatCostToDollars(data.atd_txdot_crashes[0][field]);
 
+                        const formatDateTimeValue =
+                          fieldConfigObject.format === "datetime" &&
+                          formatDateTimeString(
+                            data.atd_txdot_crashes[0][field]
+                          );
+
                         const fieldValue =
                           formattedDollarValue ||
+                          formatDateTimeValue ||
                           (formData && formData[field.data]) ||
                           data.atd_txdot_crashes[0][field];
 
