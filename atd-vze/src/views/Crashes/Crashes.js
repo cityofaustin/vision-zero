@@ -81,7 +81,7 @@ let queryConf = {
 let crashesQuery = new gqlAbstract(queryConf);
 
 let customFilters = {
-  grp_injuries: {
+  groupInjuries: {
     icon: "cab",
     label: "Deaths & Injuries",
     filters: [
@@ -108,7 +108,7 @@ let customFilters = {
       },
     ],
   },
-  grp_geograph: {
+  groupGeography: {
     icon: "map-marker",
     label: "Geography",
     filters: [
@@ -131,7 +131,49 @@ let customFilters = {
       },
     ],
   },
-  grp_case: {
+  groupUnitTypes: {
+    icon: "bicycle",
+    label: "Units Involved",
+    filters: [
+      {
+        id: "pedestrian",
+        label: "Pedestrian Involved",
+        filter: {
+          where: [
+            {
+              units:
+                'unit_description: { veh_unit_desc_desc: { _eq: "PEDESTRIAN" } }',
+            },
+          ],
+        },
+      },
+      // {
+      //   id: "bicycle",
+      //   label: "Cyclist Involved",
+      //   filter: {
+      //     where: [
+      //       {
+      //         units:
+      //           'unit_description: { veh_unit_desc_desc: { _eq: "PEDALCYCLIST" } }',
+      //       },
+      //     ],
+      //   },
+      // },
+      // {
+      //   id: "motorized_conveyance",
+      //   label: "Motorized Conveyance Involved",
+      //   filter: {
+      //     where: [
+      //       {
+      //         units:
+      //           'unit_description: { veh_unit_desc_desc: { _eq: "MOTORIZED CONVEYANCE" } }',
+      //       },
+      //     ],
+      //   },
+      // },
+    ],
+  },
+  groupCase: {
     icon: "vcard-o",
     label: "Internal",
     filters: [
