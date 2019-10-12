@@ -53,28 +53,42 @@ const GridExportData = ({ query, columnsToExport, totalRecords }) => {
     getExport();
   };
 
-  // Turn objects in data into strings
-  const formatData = data => {
-    debugger;
-    // Headers that are needed
-    // [address_confirmed_primary, address_confirmed_secondary, case_id, collsn_desc, crash_date, crash_id, death_cnt, location_id, tot_injry_cnt, veh_body_styl_desc(multiple), veh_unit_desc_desc(multiple)]
-    // There are:
-    // 1. Records that have a nest objects containing a key-value pair (location_id)
-    // 2. Records that have an array of objects (collision and units)
-    data.forEach(column => {
+  const formatExportData = data => {
+    // Handles:
+    // 1. Keys with values that are objects
+    // 2. Keys with values that are an array of objects
+    const newData = data.map(column => {
+      // Look through each column for nested object and move all to top level
       Object.entries(column).forEach(([key, value]) => {
-        if (Array.isArray(value)) {
-          console.log(value);
-        } else if (typeof value === "object") {
-          if (value.__typename) {
-            console.log(value);
-          }
-          debugger;
-          delete value.__typename;
+        // Remove __typename from export (contains table name which is already in filename)
+        if (key === "__typename") {
+          delete column["__typename"];
+        } else if (Array.isArray(value)) {
+          // If value is array, recursive call and handle objects in array
+          value = formatExportData(value);
+          value.forEach(obj => {
+            Object.entries(obj).forEach(([key, value]) => {
+              if (column[key]) {
+                // If top level already has this key, concat
+                column[key] = `${column[key]}, ${value}`;
+              } else {
+                // Else use spread to add to top level
+                column = { ...column, ...obj };
+              }
+            });
+            // Delete nested data after added to top level
+            delete column[key];
+          });
+        } else if (typeof value === "object" && value !== null) {
+          // If value is object, remove __typename and move to top level, then delete
+          "__typename" in value && delete value["__typename"];
+          column = { ...column, ...value };
+          delete column[key];
         }
       });
+      return column;
     });
-    debugger;
+    return newData;
   };
 
   return (
@@ -124,7 +138,7 @@ const GridExportData = ({ query, columnsToExport, totalRecords }) => {
           {!loading && data ? (
             <CSVLink
               className=""
-              data={formatData(data[query.table])}
+              data={formatExportData(data[query.table])}
               filename={query.table + moment(Date.now()).format()}
             >
               <Button color="primary" onClick={toggleModal}>
