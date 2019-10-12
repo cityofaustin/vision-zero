@@ -32,7 +32,7 @@ export const GET_LOCATION = gql`
       aggregate {
         count
         sum {
-          apd_confirmed_death_count
+          death_cnt
           sus_serious_injry_cnt
           years_of_life_lost
         }
@@ -46,7 +46,7 @@ export const GET_LOCATION = gql`
       aggregate {
         count
         sum {
-          apd_confirmed_death_count
+          death_cnt
           sus_serious_injry_cnt
           years_of_life_lost
         }
