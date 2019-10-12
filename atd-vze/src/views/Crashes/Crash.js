@@ -107,7 +107,7 @@ function Crash(props) {
   const formatCostToDollars = cost => `$${cost.toLocaleString()}`;
 
   const {
-    death_cnt: deathCount,
+    apd_confirmed_death_count: deathCount,
     tot_injry_cnt: injuryCount,
     latitude_primary: latitude,
     longitude_primary: longitude,

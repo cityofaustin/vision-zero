@@ -268,7 +268,7 @@ export const crashDataMap = [
         lookupOptions: "atd_txdot__y_n_lkp",
         lookupPrefix: "y_n",
       },
-      death_cnt: {
+      apd_confirmed_death_count: {
         label: "Death Count",
         editable: false,
       },
