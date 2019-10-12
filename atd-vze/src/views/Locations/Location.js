@@ -16,6 +16,7 @@ import {
 
 import { withApollo } from "react-apollo";
 import { useQuery } from "@apollo/react-hooks";
+import { colors } from "../../styles/colors";
 import palette from "google-palette";
 
 import locationDataMap from "./locationDataMap";
@@ -41,12 +42,6 @@ function Location(props) {
   if (error) return `Error! ${error.message}`;
 
   const getAggregatePersonsSum = (data, field) => {
-    console.log(
-      data.atd_txdot_locations[0],
-      data.atd_txdot_locations[0].crashes_by_manner_collision.map(
-        a => a.collsn_desc
-      )
-    );
     return (
       data.atd_txdot_primaryperson_aggregate.aggregate.sum[field] +
       data.atd_txdot_person_aggregate.aggregate.sum[field]
@@ -54,40 +49,20 @@ function Location(props) {
   };
 
   const formatLabel = str => {
-    var maxwidth = parseInt(str.length / 1.75);
-    var sections = [];
-    var words = str.split(" ");
-    var temp = "";
+    let sections = [];
 
-    words.forEach(function(item, index) {
-      if (temp.length > 0) {
-        var concat = temp + " " + item;
+    // Get the approximate midpoint of the string
+    let splitPoint = Math.floor(str.length / 2);
 
-        if (concat.length > maxwidth) {
-          sections.push(temp);
-          temp = "";
-        } else {
-          if (index === words.length - 1) {
-            sections.push(concat);
-            return;
-          } else {
-            temp = concat;
-            return;
-          }
-        }
-      }
+    // If the midpoint is not a space,
+    // find the closest " " to the left of the midpoint
+    // and split there instead
+    if (str.charAt(splitPoint) !== " ") {
+      splitPoint = str.substring(0, splitPoint).lastIndexOf(" ");
+    }
 
-      if (index === words.length - 1) {
-        sections.push(item);
-        return;
-      }
-
-      if (item.length < maxwidth) {
-        temp = item;
-      } else {
-        sections.push(item);
-      }
-    });
+    sections.push(str.substring(0, splitPoint));
+    sections.push(str.substring(splitPoint));
 
     return sections;
   };
@@ -123,17 +98,19 @@ function Location(props) {
     datasets: [
       {
         label: "Number of Collisions",
-        backgroundColor: "rgba(255,99,132,0.2)",
-        borderColor: "rgba(255,99,132,1)",
+        backgroundColor: colors.success,
+        borderColor: colors.grey200,
         borderWidth: 1,
-        hoverBackgroundColor: "rgba(255,99,132,0.4)",
-        hoverBorderColor: "rgba(255,99,132,1)",
+        hoverBackgroundColor: colors.darkgreen,
+        hoverBorderColor: colors.grey700,
         data: data.atd_txdot_locations[0].crashes_by_manner_collision.map(
           a => a.count
         ),
       },
     ],
   };
+
+  const { count: crashCount } = data.atd_txdot_crashes_aggregate.aggregate;
 
   return (
     <div className="animated fadeIn">
@@ -184,7 +161,7 @@ function Location(props) {
           </Col>
           <Col xs="12" sm="6" md="4">
             <Widget02
-              header={data.atd_txdot_crashes_aggregate.aggregate.count}
+              header={crashCount}
               mainText="Total Crashes"
               icon="fa fa-cab"
               color="success"
@@ -197,13 +174,13 @@ function Location(props) {
           <Card>
             <CardHeader>Types of Vehicles - Count Distribution</CardHeader>
             <CardBody>
-              {data.atd_txdot_crashes_aggregate.aggregate.count === 0 && (
+              {crashCount === 0 && (
                 <Alert color="warning">
                   No crashes at this particular location
                 </Alert>
               )}
 
-              {data.atd_txdot_crashes_aggregate.aggregate.count > 0 && (
+              {crashCount > 0 && (
                 <div className="chart-wrapper" style={{ padding: "1.5rem 0" }}>
                   <Badge
                     color="dark"
@@ -223,13 +200,13 @@ function Location(props) {
           <Card>
             <CardHeader>Manner of Collisions - Most Frequent</CardHeader>
             <CardBody>
-              {data.atd_txdot_crashes_aggregate.aggregate.count === 0 && (
+              {crashCount === 0 && (
                 <Alert color="warning">
                   No crashes at this particular location
                 </Alert>
               )}
 
-              {data.atd_txdot_crashes_aggregate.aggregate.count > 0 && (
+              {crashCount > 0 && (
                 <div className="chart-wrapper" style={{ padding: "1.5rem 0" }}>
                   <HorizontalBar
                     data={horizontalBar}
