@@ -58,9 +58,7 @@ let queryConf = {
       type: "Currency",
     },
   },
-  order_by: {
-    location_id: "desc", // Unique ID desc by default
-  },
+  order_by: {},
   where: {},
   limit: 25,
   offset: 0,

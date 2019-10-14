@@ -63,7 +63,7 @@ const GridDateRange = ({ setDateRangeFilter, initStartDate, initEndDate }) => {
   const formatDate = date => moment(date).format("YYYY-MM-DD");
 
   /**
-   * Returns a date one year ago from today
+   * Returns existing selection or date one year ago from today
    * @type {Date}
    */
   const minDate = initStartDate
@@ -74,7 +74,12 @@ const GridDateRange = ({ setDateRangeFilter, initStartDate, initEndDate }) => {
           .format()
       );
 
+  /**
+   * Returns existing selection or today
+   * @type {Date}
+   */
   const maxDate = initEndDate ? parseDate(initEndDate) : new Date();
+
   const [startDate, setStartDate] = useState(minDate);
   const [endDate, setEndDate] = useState(maxDate);
 
@@ -103,7 +108,7 @@ const GridDateRange = ({ setDateRangeFilter, initStartDate, initEndDate }) => {
           startDate={startDate}
           endDate={endDate}
           minDate={startDate}
-          maxDate={maxDate}
+          maxDate={new Date()}
         />
       </StyledDatePicker>
     </>
