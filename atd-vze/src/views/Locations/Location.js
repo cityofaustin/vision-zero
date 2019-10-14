@@ -243,10 +243,10 @@ function Location(props) {
                   <Table responsive striped hover>
                     <tbody>
                       {Object.keys(section.fields).map((field, i) => {
-                        // If key is "crashes_count_cost_summary,"
-                        // look for nested key "est_comp_cost"
-                        // and display associated value in currency format
-                        if (field === "crashes_count_cost_summary") {
+                        if (field === "crashes_count_cost_summary" && data.atd_txdot_locations[0][field]) {
+                          // If key is "crashes_count_cost_summary,"
+                          // look for nested key "est_comp_cost"
+                          // and display associated value in currency format
                           return (
                             <tr key={i}>
                               <td>{`${section.fields[field]["est_comp_cost"]}:`}</td>
@@ -258,6 +258,15 @@ function Location(props) {
                             </tr>
                           );
                         // Otherwise, get the value associated with the key
+                        }
+                        else if (field === "crashes_count_cost_summary" && !data.atd_txdot_locations[0][field]) {
+                          return (
+                            <tr key={i}>
+                              <td>{`${section.fields[field]["est_comp_cost"]}:`}</td>
+                              <td>
+                              </td>
+                            </tr>
+                          );
                         } else {
                           return (
                             <tr key={i}>
