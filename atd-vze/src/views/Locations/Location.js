@@ -42,10 +42,14 @@ function Location(props) {
   if (error) return `Error! ${error.message}`;
 
   const getAggregatePersonsSum = (data, field) => {
-    return (
-      data.atd_txdot_primaryperson_aggregate.aggregate.sum[field] +
-      data.atd_txdot_person_aggregate.aggregate.sum[field]
-    );
+    if (field === "apd_confirmed_death_count") {
+      return data.atd_txdot_crashes_aggregate.aggregate.sum[field];
+    } else {
+      return (
+        data.atd_txdot_primaryperson_aggregate.aggregate.sum[field] +
+        data.atd_txdot_person_aggregate.aggregate.sum[field]
+      );
+    }
   };
 
   const formatLabel = str => {
@@ -118,7 +122,7 @@ function Location(props) {
         <Row>
           <Col xs="12" sm="6" md="4">
             <Widget02
-              header={getAggregatePersonsSum(data, "death_cnt")}
+              header={getAggregatePersonsSum(data, "apd_confirmed_death_count")}
               mainText="Fatalities"
               icon="fa fa-heartbeat"
               color="danger"
