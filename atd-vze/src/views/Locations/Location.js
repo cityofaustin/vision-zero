@@ -243,16 +243,33 @@ function Location(props) {
                   <Table responsive striped hover>
                     <tbody>
                       {Object.keys(section.fields).map((field, i) => {
-                        return (
-                          <tr key={i}>
-                            <td>{`${section.fields[field]}:`}</td>
-                            <td>
-                              <strong>
-                                {data.atd_txdot_locations[0][field]}
-                              </strong>
-                            </td>
-                          </tr>
-                        );
+                        // If key is "crashes_count_cost_summary,"
+                        // look for nested key "est_comp_cost"
+                        // and display associated value in currency format
+                        if (field === "crashes_count_cost_summary") {
+                          return (
+                            <tr key={i}>
+                              <td>{`${section.fields[field]["est_comp_cost"]}:`}</td>
+                              <td>
+                                <strong>
+                                ${data.atd_txdot_locations[0][field]["est_comp_cost"].toLocaleString()}
+                                </strong>
+                              </td>
+                            </tr>
+                          );
+                        // Otherwise, get the value associated with the key
+                        } else {
+                          return (
+                            <tr key={i}>
+                              <td>{`${section.fields[field]}:`}</td>
+                              <td>
+                                <strong>
+                                  {data.atd_txdot_locations[0][field]}
+                                </strong>
+                              </td>
+                            </tr>
+                          );
+                        }
                       })}
                     </tbody>
                   </Table>
