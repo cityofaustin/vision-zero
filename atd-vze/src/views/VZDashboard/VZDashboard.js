@@ -24,7 +24,7 @@ function VZDashboard() {
     years_of_life_lost: yearsOfLifeLostPerson,
   } = data.atd_txdot_person_aggregate.aggregate.sum;
   const {
-    death_cnt: deathCount,
+    apd_confirmed_death_count: deathCount,
     sus_serious_injry_cnt: seriousInjuryCount,
   } = data.atd_txdot_crashes_aggregate.aggregate.sum;
   const { count: crashesCount } = data.atd_txdot_crashes_aggregate.aggregate;

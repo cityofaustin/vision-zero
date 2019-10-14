@@ -45,13 +45,13 @@ let queryConf = {
       label_table: "Secondary Address",
       type: "String",
     },
-    tot_injry_cnt: {
+    sus_serious_injry_cnt: {
       searchable: false,
       sortable: true,
-      label_table: "Injury Count",
+      label_table: "Serious Injury Count",
       type: "Int",
     },
-    death_cnt: {
+    apd_confirmed_death_count: {
       searchable: false,
       sortable: true,
       label_table: "Death Count",
@@ -89,7 +89,7 @@ let customFilters = {
         id: "dni_deaths",
         label: "Deaths",
         filter: {
-          where: [{ death_cnt: "_gt: 0" }],
+          where: [{ apd_confirmed_death_count: "_gt: 0" }],
         },
       },
       {

@@ -263,7 +263,6 @@ gqlAbstractTableAggregateName (
    */
   getFormattedValue(columnName, value) {
     const type = this.getType(columnName);
-    const defaultValue = this.getDefault(columnName);
 
     if (value === null) return "-";
 
