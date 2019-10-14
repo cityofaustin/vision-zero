@@ -16,7 +16,10 @@ import {
   FormGroup,
   Input,
   Label,
+  Row,
+  Alert,
 } from "reactstrap";
+import { AppSwitch } from "@coreui/react";
 
 const StyledSaveLink = styled.i`
   color: ${colors.info};
@@ -110,35 +113,44 @@ const GridExportData = ({ query, columnsToExport, totalRecords }) => {
           Export to .csv ({query.limit} rows)
         </ModalHeader>
         <ModalBody>
-          <FormGroup row>
-            <Col sm="8">
-              <Input
-                id="csv-number-input"
-                type="number"
-                placeholder="Number of rows"
-                min={0}
-                max={totalRecords}
-                onChange={setExportLimit}
-              />
-            </Col>
-            <Col sm="4">
-              <Input
-                className="form-check-input"
-                type="checkbox"
-                id="csv-checkbox-input"
-                name="inline-checkbox1"
-                value="option1"
-                onChange={setExportLimit}
-              />
-              <Label
-                className="form-check-label"
-                check
-                htmlFor="inline-checkbox1"
-              >
-                All ({totalRecords})
-              </Label>
-            </Col>
+          <FormGroup>
+            <Row>
+              <Col sm="8">
+                <Input
+                  id="csv-number-input"
+                  type="number"
+                  placeholder="Number of rows"
+                  min={0}
+                  max={totalRecords}
+                  onChange={setExportLimit}
+                />
+              </Col>
+            </Row>
+            <Row className="mt-3">
+              <Col sm="8">
+                <Label
+                  className="form-check-label"
+                  check
+                  htmlFor="csv-checkbox-input"
+                >
+                  <AppSwitch
+                    id="csv-checkbox-input"
+                    onChange={setExportLimit}
+                    className={"mx-1"}
+                    variant={"3d"}
+                    color={"success"}
+                  />
+                  All ({totalRecords} rows)
+                </Label>
+              </Col>
+            </Row>
           </FormGroup>
+          {query.limit > 4000 && (
+            <Alert color="danger">
+              For larger downloads, please expect a delay while the CSV file is
+              generated. This may take multiple minutes.
+            </Alert>
+          )}
         </ModalBody>
         <ModalFooter>
           {!loading && data ? (
