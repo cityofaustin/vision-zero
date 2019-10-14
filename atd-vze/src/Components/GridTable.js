@@ -4,6 +4,7 @@ import { useQuery } from "@apollo/react-hooks";
 
 import { withApollo } from "react-apollo";
 import { CSVLink } from "react-csv";
+import moment from "moment";
 
 import {
   Card,
@@ -27,6 +28,7 @@ import GridFilters from "./GridFilters";
 import GridDateRange from "./GridDateRange";
 
 const GridTable = ({ title, query, filters }) => {
+  console.log(query.config.initStartDate, query.config.initEndDate);
   // Load table filters from localStorage by title
   const savedFilterState = JSON.parse(
     localStorage.getItem(`saved${title}Config`)
@@ -171,6 +173,12 @@ const GridTable = ({ title, query, filters }) => {
     setSearchParameters({});
     setFilterOptions({});
     resetPageOnSearch();
+    setDateRangeFilter({
+      startDate: moment(new Date())
+        .subtract(1, "year")
+        .format("YYYY-MM-DD"),
+      endDate: moment(new Date()).format("YYYY-MM-DD"),
+    });
   };
 
   /**
@@ -363,8 +371,7 @@ const GridTable = ({ title, query, filters }) => {
                   <ButtonGroup>
                     <GridDateRange
                       setDateRangeFilter={setDateRangeFilter}
-                      initStartDate={dateRangeFilter.startDate}
-                      initEndDate={dateRangeFilter.endDate}
+                      existingDateRange={dateRangeFilter}
                     />
                   </ButtonGroup>
                 )}
