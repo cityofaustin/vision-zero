@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { useQuery } from "@apollo/react-hooks";
 
 import { withApollo } from "react-apollo";
-import { CSVLink } from "react-csv";
 
 import {
   Card,
@@ -25,8 +24,9 @@ import GridTablePagination from "./GridTablePagination";
 import GridTableSearch from "./GridTableSearch";
 import GridFilters from "./GridFilters";
 import GridDateRange from "./GridDateRange";
+import GridExportData from "./GridExportData";
 
-const GridTable = ({ title, query, filters }) => {
+const GridTable = ({ title, query, filters, columnsToExport }) => {
   // Load table filters from localStorage by title
   const savedFilterState = JSON.parse(
     localStorage.getItem(`saved${title}Config`)
@@ -301,6 +301,7 @@ const GridTable = ({ title, query, filters }) => {
 
   // Make Query && Error handling
   let { loading, error, data } = useQuery(query.gql);
+
   if (error) return `Error! ${error.message}`;
 
   let dataEntries = [];
@@ -383,14 +384,13 @@ const GridTable = ({ title, query, filters }) => {
                     totalPages={totalPages}
                     handleRowClick={handleRowClick}
                   />
-                  {data[query.table] && (
-                    <CSVLink
-                      className=""
-                      data={data[query.table]}
-                      filename={query.table + Date.now()}
-                    >
-                      <i className="fa fa-save fa-2x ml-2 mt-1" />
-                    </CSVLink>
+
+                  {columnsToExport && (
+                    <GridExportData
+                      query={query}
+                      columnsToExport={columnsToExport}
+                      totalRecords={totalRecords}
+                    />
                   )}
                 </ButtonGroup>
               </ButtonToolbar>

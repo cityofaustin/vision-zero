@@ -437,6 +437,38 @@ gqlAbstractTableAggregateName (
   }
 
   /**
+   * Generates a GraphQL query based on columns passed in for export feature.
+   * @params {string} - String containing columns to return in query.
+   * @returns {Object} gql Object
+   */
+  queryCSV(string) {
+    // First copy the abstract and work from the copy
+    let query = this.abstractStructure;
+
+    // Replace the name of the table
+    query = query.replace("gqlAbstractTableName", this.config["table"]);
+    query = query.replace(
+      "gqlAbstractTableAggregateName",
+      this.config["table"] + "_aggregate"
+    );
+
+    // Generate Filters
+    query = query.replace("gqlAbstractFilters", this.generateFilters());
+    query = query.replace(
+      "gqlAbstractAggregateFilters",
+      this.generateFilters(true)
+    );
+
+    // Generate Columns
+    query = query.replace("gqlAbastractColumns", string);
+
+    // Return GraphQL query
+    return gql`
+      ${query}
+    `;
+  }
+
+  /**
    * Returns a GQL object based on the current state of the configuration.
    * @returns {Object} gql object
    */
