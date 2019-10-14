@@ -257,9 +257,9 @@ function Location(props) {
                               </td>
                             </tr>
                           );
-                        // Otherwise, get the value associated with the key
                         }
                         else if (field === "crashes_count_cost_summary" && !data.atd_txdot_locations[0][field]) {
+                          // If the query returns null, leave blank
                           return (
                             <tr key={i}>
                               <td>{`${section.fields[field]["est_comp_cost"]}:`}</td>
@@ -268,6 +268,7 @@ function Location(props) {
                             </tr>
                           );
                         } else {
+                          // Otherwise, get the value associated with the key
                           return (
                             <tr key={i}>
                               <td>{`${section.fields[field]}:`}</td>
