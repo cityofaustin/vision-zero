@@ -11,5 +11,6 @@ export const colors = {
   success: "#4dbd73",
   warning: "#f9c10a",
   danger: "#f86c6b",
+  info: "#63c2de",
   darkgreen: "#006400"
 };

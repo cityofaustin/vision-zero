@@ -2,8 +2,8 @@ import React from "react";
 import { withApollo } from "react-apollo";
 
 import GridTable from "../../Components/GridTable";
-
 import gqlAbstract from "../../queries/gqlAbstract";
+import { locationCrashesQueryExportFields } from "../../queries/crashes";
 
 function LocationCrashes(props) {
   // Our initial query configuration
@@ -177,6 +177,7 @@ function LocationCrashes(props) {
       query={crashesQuery}
       title={"Location Crashes"}
       filters={customFilters}
+      columnsToExport={locationCrashesQueryExportFields}
     />
   );
 }
