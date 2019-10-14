@@ -170,6 +170,7 @@ const GridTable = ({ title, query, filters }) => {
     query.deleteWhere(searchParameters.column);
     setSearchParameters({});
     setFilterOptions({});
+    resetPageOnSearch();
   };
 
   /**
