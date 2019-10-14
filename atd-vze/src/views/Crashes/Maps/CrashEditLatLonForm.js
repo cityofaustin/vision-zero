@@ -1,11 +1,12 @@
 import React from "react";
 import { Button, Col, Form, FormGroup, Input, Label } from "reactstrap";
 
-export const CrashQALatLonFrom = ({
+export const CrashEditLatLonForm = ({
   latitude,
   longitude,
   handleFormSubmit,
   handleFormReset,
+  handleFormCancel,
 }) => (
   <Form onSubmit={handleFormSubmit} className="form-horizontal mt-3">
     <FormGroup row>
@@ -41,8 +42,23 @@ export const CrashQALatLonFrom = ({
         <Button className="mr-3" type="submit" size="sm" color="primary">
           <i className="fa fa-dot-circle-o"></i> Save
         </Button>
-        <Button onClick={handleFormReset} type="reset" size="sm" color="danger">
+        <Button
+          onClick={handleFormReset}
+          type="reset"
+          size="sm"
+          color="danger"
+          className="mr-3"
+        >
           <i className="fa fa-ban"></i> Reset
+        </Button>
+        <Button
+          onClick={handleFormCancel}
+          type="cancel"
+          size="sm"
+          color="secondary"
+          className="mr-3"
+        >
+          <i className="fa fa-times"></i> Cancel
         </Button>
       </Col>
     </FormGroup>
