@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@apollo/react-hooks";
 
@@ -27,6 +27,15 @@ import GridFilters from "./GridFilters";
 import GridDateRange from "./GridDateRange";
 
 const GridTable = ({ title, query, filters }) => {
+  // Load table filters from localStorage by title
+  const savedFilterState = JSON.parse(
+    localStorage.getItem(`saved${title}Config`)
+  );
+
+  // Return saved filters if they exist
+  const getSavedState = stateName =>
+    (savedFilterState && savedFilterState[`${stateName}`]) || false;
+
   /**
    * State management:
    *      limit {int} - Contains the current limit of results in a page
@@ -39,17 +48,48 @@ const GridTable = ({ title, query, filters }) => {
    *      filterOptions {object} - Contains a list of filters and each individual status (enabled, disabled)
    *      dateRangeFilter {object} - Contains the date range (startDate, and endDate)
    */
-  const [limit, setLimit] = useState(25);
-  const [offset, setOffset] = useState(0);
-  const [page, setPage] = useState(1);
-  const [sortColumn, setSortColumn] = useState("");
-  const [sortOrder, setSortOrder] = useState("");
-  const [searchParameters, setSearchParameters] = useState({});
-  const [collapseAdvancedFilters, setCollapseAdvacedFilters] = useState(false);
-  const [filterOptions, setFilterOptions] = useState({});
-  const [dateRangeFilter, setDateRangeFilter] = useState({
-    startDate: query.config.initStartDate || null,
-    endDate: query.config.initEndDate || null,
+
+  // Use saved filter as default if it exists
+  const [limit, setLimit] = useState(getSavedState("limit") || 25);
+  const [offset, setOffset] = useState(getSavedState("offset") || 0);
+  const [page, setPage] = useState(getSavedState("page") || 1);
+  const [sortColumn, setSortColumn] = useState(
+    getSavedState("sortColumn") || ""
+  );
+  const [sortOrder, setSortOrder] = useState(getSavedState("sortOrder") || "");
+  const [searchParameters, setSearchParameters] = useState(
+    getSavedState("searchParameters") || {}
+  );
+  const [collapseAdvancedFilters, setCollapseAdvacedFilters] = useState(
+    getSavedState("collapseAdvancedFilters") || false
+  );
+  const [filterOptions, setFilterOptions] = useState(
+    getSavedState("filterOptions") || {}
+  );
+  const [dateRangeFilter, setDateRangeFilter] = useState(
+    getSavedState("dateRangeFilter") || {
+      startDate: query.config.initStartDate || null,
+      endDate: query.config.initEndDate || null,
+    }
+  );
+
+  useEffect(() => {
+    // Save query config by title to localStorage each time component renders
+    const stateForFilters = {
+      limit,
+      offset,
+      page,
+      sortColumn,
+      sortOrder,
+      searchParameters,
+      collapseAdvancedFilters,
+      filterOptions,
+      dateRangeFilter,
+    };
+    localStorage.setItem(
+      `saved${title}Config`,
+      JSON.stringify(stateForFilters)
+    );
   });
 
   /**
@@ -154,9 +194,13 @@ const GridTable = ({ title, query, filters }) => {
    * @returns {*}
    */
   const responseValue = (obj, keys) => {
-    for (let k = 1; k < keys.length; k++)
-      obj = obj ? obj[keys[k]] || null : null;
-
+    for (let k = 1; k < keys.length; k++) {
+      try {
+        obj = obj[keys[k]];
+      } catch {
+        obj = null;
+      }
+    }
     return obj;
   };
 
@@ -304,6 +348,7 @@ const GridTable = ({ title, query, filters }) => {
                 <GridTableSearch
                   query={query}
                   clearFilters={clearFilters}
+                  searchParameters={searchParameters}
                   setSearchParameters={setSearchParameters}
                   resetPage={resetPageOnSearch}
                   filters={filters}
@@ -314,6 +359,7 @@ const GridTable = ({ title, query, filters }) => {
                   filters={filters}
                   filterOptionsState={filterOptions}
                   setFilterOptions={setFilterOptions}
+                  resetPageOnSearch={resetPageOnSearch}
                 />
               </Row>
               <ButtonToolbar className="mb-3 justify-content-between">
@@ -321,8 +367,8 @@ const GridTable = ({ title, query, filters }) => {
                   <ButtonGroup>
                     <GridDateRange
                       setDateRangeFilter={setDateRangeFilter}
-                      initStartDate={query.config.initStartDate}
-                      initEndDate={query.config.initEndDate}
+                      initStartDate={dateRangeFilter.startDate}
+                      initEndDate={dateRangeFilter.endDate}
                     />
                   </ButtonGroup>
                 )}

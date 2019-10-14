@@ -30,7 +30,7 @@ let queryConf = {
       sortable: true,
       label_search: null,
       label_table: "Total Crashes",
-      default: "-",
+      default: 0,
       type: "Integer",
     },
     "crashes_count_cost_summary { total_deaths }": {
@@ -38,7 +38,7 @@ let queryConf = {
       sortable: true,
       label_search: null,
       label_table: "Total Deaths",
-      default: "-",
+      default: 0,
       type: "Integer",
     },
     "crashes_count_cost_summary { total_serious_injuries }": {
@@ -46,7 +46,7 @@ let queryConf = {
       sortable: true,
       label_search: null,
       label_table: "Total Serious Injry.",
-      default: "-",
+      default: 0,
       type: "Integer",
     },
     "crashes_count_cost_summary { est_comp_cost }": {
@@ -54,13 +54,11 @@ let queryConf = {
       sortable: true,
       label_search: null,
       label_table: "Comp. Cost",
-      default: "-",
+      default: 0,
       type: "Currency",
     },
   },
-  order_by: {
-    location_id: "desc", // Unique ID desc by default
-  },
+  order_by: {},
   where: {},
   limit: 25,
   offset: 0,

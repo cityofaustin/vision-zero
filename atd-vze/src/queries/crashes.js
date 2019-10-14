@@ -4,6 +4,8 @@ export const GET_CRASH = gql`
   query FindCrash($crashId: Int) {
     atd_txdot_crashes(where: { crash_id: { _eq: $crashId } }) {
       active_school_zone_fl
+      address_confirmed_primary
+      address_confirmed_secondary
       approval_date
       approved_by
       at_intrsct_fl
@@ -16,7 +18,7 @@ export const GET_CRASH = gql`
       crash_speed_limit
       crash_time
       day_of_week
-      death_cnt
+      apd_confirmed_death_count
       est_comp_cost
       fhe_collsn_id
       geocode_date
@@ -140,8 +142,8 @@ export const GET_CRASH = gql`
       record_crash_id
       record_json
       update_timestamp
-    },
-    atd_txdot_crash_locations(where: {crash_id: {_eq: $crashId}}) {
+    }
+    atd_txdot_crash_locations(where: { crash_id: { _eq: $crashId } }) {
       location_id
     }
   }
@@ -195,7 +197,7 @@ export const UPDATE_CRASH = gql`
         crash_speed_limit
         crash_time
         day_of_week
-        death_cnt
+        apd_confirmed_death_count
         fhe_collsn_id
         geocode_date
         geocode_provider

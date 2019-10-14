@@ -17,27 +17,13 @@ export default {
     },
     {
       name: "Crashes",
-      url: "#",
+      url: "/crashes",
       icon: "icon-shield",
-      children: [
-        {
-          name: "All Crashes",
-          url: "/crashes",
-          icon: "icon-puzzle",
-        },
-      ],
     },
     {
       name: "Locations",
-      url: "#",
-      icon: "icon-location-pin",
-      children: [
-        {
-          name: "All locations",
-          url: "/locations",
-          icon: "icon-map",
-        },
-      ],
+      url: "/locations",
+      icon: "icon-map",
     },
     {
       divider: true,

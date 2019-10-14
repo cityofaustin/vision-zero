@@ -253,7 +253,7 @@ gqlAbstractTableAggregateName (
    * @returns {string}
    */
   getDefault(columnName) {
-    return `${this.config["columns"][columnName]["default"] || "-"}`;
+    return this.config["columns"][columnName]["default"];
   }
 
   /**
@@ -263,9 +263,8 @@ gqlAbstractTableAggregateName (
    */
   getFormattedValue(columnName, value) {
     const type = this.getType(columnName);
-    const defaultValue = this.getDefault(columnName);
 
-    if (!value) return defaultValue;
+    if (value === null) return "-";
 
     switch (type) {
       case "string": {

@@ -19,15 +19,22 @@ import {
 const GridTableSearch = ({
   query,
   clearFilters,
+  searchParameters,
   setSearchParameters,
   resetPage,
   filters,
   toggleAdvancedFilters,
 }) => {
-  const [searchFieldValue, setSearchFieldValue] = useState("");
+  const [searchFieldValue, setSearchFieldValue] = useState(
+    (searchParameters && searchParameters.value) || ""
+  );
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [fieldToSearch, setFieldToSearch] = useState("");
-  const [isFieldSelected, setIsFieldSelected] = useState(false);
+  const [fieldToSearch, setFieldToSearch] = useState(
+    (searchParameters && searchParameters.column) || ""
+  );
+  const [isFieldSelected, setIsFieldSelected] = useState(
+    !!searchParameters || false
+  );
 
   const fieldsToSearch = query.searchableFields;
 
