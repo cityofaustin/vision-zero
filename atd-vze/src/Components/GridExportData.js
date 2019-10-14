@@ -53,40 +53,46 @@ const GridExportData = ({ query, columnsToExport, totalRecords }) => {
     getExport();
   };
 
+  /**
+   * Returns an array of objects (each object is a row and each key of that object is a column in the export file)
+   * @param {Array} Data returned from DB with nested data structures
+   * @returns {array}
+   */
   const formatExportData = data => {
+    // Moves nested data to top level object (CSVLink uses each top level key as a column header)
     // Handles:
-    // 1. Keys with values that are objects
-    // 2. Keys with values that are an array of objects
-    const newData = data.map(column => {
-      // Look through each column for nested object and move all to top level
-      Object.entries(column).forEach(([key, value]) => {
+    // 1. Nested objects
+    // 2. Nested arrays of objects
+    const newData = data.map(row => {
+      // Look through each row for nested objects or arrays and move all to top level
+      Object.entries(row).forEach(([key, value]) => {
         // Remove __typename from export (contains table name which is already in filename)
         if (key === "__typename") {
-          delete column["__typename"];
+          delete row["__typename"];
         } else if (Array.isArray(value)) {
           // If value is array, recursive call and handle objects in array
           value = formatExportData(value);
-          value.forEach(obj => {
-            Object.entries(obj).forEach(([key, value]) => {
-              if (column[key]) {
+          value.forEach(object => {
+            Object.entries(object).forEach(([key, value]) => {
+              if (row[key]) {
                 // If top level already has this key, concat
-                column[key] = `${column[key]}, ${value}`;
+                row[key] = `${row[key]}, ${value}`;
               } else {
                 // Else use spread to add to top level
-                column = { ...column, ...obj };
+                row = { ...row, ...object };
               }
             });
             // Delete nested data after added to top level
-            delete column[key];
+            delete row[key];
           });
         } else if (typeof value === "object" && value !== null) {
           // If value is object, remove __typename and move to top level, then delete
           "__typename" in value && delete value["__typename"];
-          column = { ...column, ...value };
-          delete column[key];
+          row = { ...row, ...value };
+          delete row[key];
         }
       });
-      return column;
+      return row;
     });
     return newData;
   };
