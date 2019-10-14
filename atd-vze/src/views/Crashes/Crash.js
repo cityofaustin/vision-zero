@@ -112,7 +112,7 @@ function Crash(props) {
     moment(datetime).format("YYYY-MM-DD hh:mm:ss a");
 
   const {
-    death_cnt: deathCount,
+    apd_confirmed_death_count: deathCount,
     sus_serious_injry_cnt: seriousInjuryCount,
     latitude_primary: latitude,
     longitude_primary: longitude,
