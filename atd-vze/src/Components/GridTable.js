@@ -371,7 +371,8 @@ const GridTable = ({ title, query, filters }) => {
                   <ButtonGroup>
                     <GridDateRange
                       setDateRangeFilter={setDateRangeFilter}
-                      existingDateRange={dateRangeFilter}
+                      initStartDate={dateRangeFilter.startDate}
+                      initendDate={dateRangeFilter.endDate}
                     />
                   </ButtonGroup>
                 )}
