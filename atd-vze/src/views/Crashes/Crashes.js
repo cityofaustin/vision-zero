@@ -141,24 +141,23 @@ let customFilters = {
         filter: {
           where: [
             {
-              units:
-                'unit_description: { veh_unit_desc_desc: { _eq: "PEDESTRIAN" } }',
+              units: "unit_desc_id: { _eq: 4 }",
             },
           ],
         },
       },
-      // {
-      //   id: "bicycle",
-      //   label: "Cyclist Involved",
-      //   filter: {
-      //     where: [
-      //       {
-      //         units:
-      //           'unit_description: { veh_unit_desc_desc: { _eq: "PEDALCYCLIST" } }',
-      //       },
-      //     ],
-      //   },
-      // },
+      {
+        id: "bicycle",
+        label: "Cyclist Involved",
+        filter: {
+          where: [
+            {
+              units:
+                'unit_description: { veh_unit_desc_desc: { _eq: "PEDALCYCLIST" } }',
+            },
+          ],
+        },
+      },
       // {
       //   id: "motorized_conveyance",
       //   label: "Motorized Conveyance Involved",
