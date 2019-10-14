@@ -355,6 +355,7 @@ const GridTable = ({ title, query, filters }) => {
                   filters={filters}
                   filterOptionsState={filterOptions}
                   setFilterOptions={setFilterOptions}
+                  resetPageOnSearch={resetPageOnSearch}
                 />
               </Row>
               <ButtonToolbar className="mb-3 justify-content-between">

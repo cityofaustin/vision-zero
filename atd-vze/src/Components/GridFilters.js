@@ -16,6 +16,7 @@ const GridFilters = ({
   filters,
   filterOptionsState,
   setFilterOptions,
+  resetPageOnSearch,
 }) => {
   // Filter options serves as a helper to load and stage the options from filterOptionsState
   let filterOptions = {};
@@ -65,6 +66,7 @@ const GridFilters = ({
   const handleChange = event => {
     filterOptions[event.target.id] = event.target.checked;
     setFilterOptions(filterOptions);
+    resetPageOnSearch();
   };
 
   // If there are filters, then initialize.
