@@ -16,15 +16,19 @@ import {
 
 import { withApollo } from "react-apollo";
 import { useQuery } from "@apollo/react-hooks";
-import { colors } from "../../styles/colors";
 import palette from "google-palette";
+import { Doughnut, HorizontalBar } from "react-chartjs-2";
 
 import locationDataMap from "./locationDataMap";
 import LocationCrashes from "./LocationCrashes";
-
-import { GET_LOCATION } from "../../queries/Locations";
 import Widget02 from "../Widgets/Widget02";
-import { Doughnut, HorizontalBar } from "react-chartjs-2";
+
+import { colors } from "../../styles/colors";
+import { GET_LOCATION } from "../../queries/Locations";
+import {
+  formatCostToDollars,
+  formatDateTimeString,
+} from "../../helpers/format";
 
 function Location(props) {
   const locationId = props.match.params.id;
@@ -47,19 +51,20 @@ function Location(props) {
       field === "apd_confirmed_death_count" &&
       data.atd_txdot_crashes_aggregate.aggregate.sum[field]
     ) {
-      return data.atd_txdot_crashes_aggregate.aggregate.sum[field];
+      return data.atd_txdot_crashes_aggregate.aggregate.sum[field] + "";
     }
     // Display 0 if no APD confiemd death count exists
     else if (
       field === "apd_confirmed_death_count" &&
       !data.atd_txdot_crashes_aggregate.aggregate.sum[field]
     ) {
-      return 0;
-    // Return aggregated sum from Person and Primary Person tables for other fields
+      return "0";
+      // Return aggregated sum from Person and Primary Person tables for other fields
     } else {
       return (
         data.atd_txdot_primaryperson_aggregate.aggregate.sum[field] +
-        data.atd_txdot_person_aggregate.aggregate.sum[field]
+        data.atd_txdot_person_aggregate.aggregate.sum[field] +
+        ""
       );
     }
   };
@@ -203,7 +208,7 @@ function Location(props) {
                     className="float-right"
                     style={{ padding: "4px" }}
                   >
-                    <i class="fa fa-mouse-pointer" />
+                    <i className="fa fa-mouse-pointer" />
                     &nbsp; Click On Labels
                   </Badge>
                   <Doughnut data={doughnut} />
@@ -255,43 +260,35 @@ function Location(props) {
                   <Table responsive striped hover>
                     <tbody>
                       {Object.keys(section.fields).map((field, i) => {
-                        if (field === "crashes_count_cost_summary" && data.atd_txdot_locations[0][field]) {
-                          // If key is "crashes_count_cost_summary,"
-                          // look for nested key "est_comp_cost"
-                          // and display associated value in currency format
-                          return (
-                            <tr key={i}>
-                              <td>{`${section.fields[field]["est_comp_cost"]}:`}</td>
-                              <td>
-                                <strong>
-                                ${data.atd_txdot_locations[0][field]["est_comp_cost"].toLocaleString()}
-                                </strong>
-                              </td>
-                            </tr>
+                        console.log(section);
+                        const fieldConfigObject = section.fields[field];
+                        const fieldLabel = fieldConfigObject.label;
+                        let fieldValueDisplay = "";
+
+                        switch (field) {
+                          // TODO: figure out a better way to parse through nested values
+                          case "est_comp_cost":
+                            fieldValueDisplay = data.atd_txdot_locations[0].crashes_count_cost_summary.est_comp_cost.toLocaleString();
+                            break;
+                          default:
+                            fieldValueDisplay =
+                              data.atd_txdot_locations[0][field];
+                        }
+
+                        if (fieldConfigObject.format === "dollars") {
+                          fieldValueDisplay = formatCostToDollars(
+                            fieldValueDisplay
                           );
                         }
-                        else if (field === "crashes_count_cost_summary" && !data.atd_txdot_locations[0][field]) {
-                          // If the query returns null, leave blank
-                          return (
-                            <tr key={i}>
-                              <td>{`${section.fields[field]["est_comp_cost"]}:`}</td>
-                              <td>
-                              </td>
-                            </tr>
-                          );
-                        } else {
-                          // Otherwise, get the value associated with the key
-                          return (
-                            <tr key={i}>
-                              <td>{`${section.fields[field]}:`}</td>
-                              <td>
-                                <strong>
-                                  {data.atd_txdot_locations[0][field]}
-                                </strong>
-                              </td>
-                            </tr>
-                          );
-                        }
+
+                        return (
+                          <tr key={i}>
+                            <td>
+                              <strong>{fieldLabel}</strong>
+                            </td>
+                            <td>{fieldValueDisplay}</td>
+                          </tr>
+                        );
                       })}
                     </tbody>
                   </Table>
