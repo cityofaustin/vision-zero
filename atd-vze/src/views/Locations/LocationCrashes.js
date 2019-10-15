@@ -2,8 +2,8 @@ import React from "react";
 import { withApollo } from "react-apollo";
 
 import GridTable from "../../Components/GridTable";
-
 import gqlAbstract from "../../queries/gqlAbstract";
+import { locationCrashesQueryExportFields } from "../../queries/crashes";
 
 function LocationCrashes(props) {
   // Our initial query configuration
@@ -58,7 +58,7 @@ function LocationCrashes(props) {
         label_table: "Injury Count",
         type: "Int",
       },
-      death_cnt: {
+      apd_confirmed_death_count: {
         searchable: false,
         sortable: true,
         label_table: "Death Count",
@@ -105,7 +105,7 @@ function LocationCrashes(props) {
           id: "dni_deaths",
           label: "Deaths",
           filter: {
-            where: [{ or: { death_cnt: "_gt: 0" } }],
+            where: [{ or: { apd_confirmed_death_count: "_gt: 0" } }],
           },
         },
         {
@@ -177,6 +177,7 @@ function LocationCrashes(props) {
       query={crashesQuery}
       title={"Location Crashes"}
       filters={customFilters}
+      columnsToExport={locationCrashesQueryExportFields}
     />
   );
 }

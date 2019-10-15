@@ -253,7 +253,7 @@ gqlAbstractTableAggregateName (
    * @returns {string}
    */
   getDefault(columnName) {
-    return `${this.config["columns"][columnName]["default"] || "-"}`;
+    return this.config["columns"][columnName]["default"];
   }
 
   /**
@@ -263,9 +263,8 @@ gqlAbstractTableAggregateName (
    */
   getFormattedValue(columnName, value) {
     const type = this.getType(columnName);
-    const defaultValue = this.getDefault(columnName);
 
-    if (!value) return defaultValue;
+    if (value === null) return "-";
 
     switch (type) {
       case "string": {
@@ -435,6 +434,38 @@ gqlAbstractTableAggregateName (
     // Aggregate Tables
 
     return query;
+  }
+
+  /**
+   * Generates a GraphQL query based on columns passed in for export feature.
+   * @params {string} - String containing columns to return in query.
+   * @returns {Object} gql Object
+   */
+  queryCSV(string) {
+    // First copy the abstract and work from the copy
+    let query = this.abstractStructure;
+
+    // Replace the name of the table
+    query = query.replace("gqlAbstractTableName", this.config["table"]);
+    query = query.replace(
+      "gqlAbstractTableAggregateName",
+      this.config["table"] + "_aggregate"
+    );
+
+    // Generate Filters
+    query = query.replace("gqlAbstractFilters", this.generateFilters());
+    query = query.replace(
+      "gqlAbstractAggregateFilters",
+      this.generateFilters(true)
+    );
+
+    // Generate Columns
+    query = query.replace("gqlAbastractColumns", string);
+
+    // Return GraphQL query
+    return gql`
+      ${query}
+    `;
   }
 
   /**

@@ -12,9 +12,12 @@ export const GET_LOCATION = gql`
       metadata
       last_update
       is_retired
-      crashes_by_manner_collision(order_by: {count: desc}, limit: 5) {
+      crashes_by_manner_collision(order_by: { count: desc }, limit: 5) {
         collsn_desc
         count
+      }
+      crashes_count_cost_summary {
+        est_comp_cost
       }
     }
     atd_txdot_crashes_aggregate(
@@ -22,6 +25,9 @@ export const GET_LOCATION = gql`
     ) {
       aggregate {
         count
+        sum {
+          apd_confirmed_death_count
+        }
       }
     }
     atd_txdot_primaryperson_aggregate(
@@ -32,7 +38,6 @@ export const GET_LOCATION = gql`
       aggregate {
         count
         sum {
-          death_cnt
           sus_serious_injry_cnt
           years_of_life_lost
         }
@@ -46,7 +51,6 @@ export const GET_LOCATION = gql`
       aggregate {
         count
         sum {
-          death_cnt
           sus_serious_injry_cnt
           years_of_life_lost
         }
@@ -81,4 +85,9 @@ export const UPDATE_LOCATION = gql`
       }
     }
   }
+`;
+
+export const locationQueryExportFields = `
+location_id
+description
 `;

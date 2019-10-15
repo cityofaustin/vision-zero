@@ -42,10 +42,26 @@ function Location(props) {
   if (error) return `Error! ${error.message}`;
 
   const getAggregatePersonsSum = (data, field) => {
-    return (
-      data.atd_txdot_primaryperson_aggregate.aggregate.sum[field] +
-      data.atd_txdot_person_aggregate.aggregate.sum[field]
-    );
+    // Display APD confirmed death count if one exists
+    if (
+      field === "apd_confirmed_death_count" &&
+      data.atd_txdot_crashes_aggregate.aggregate.sum[field]
+    ) {
+      return data.atd_txdot_crashes_aggregate.aggregate.sum[field];
+    }
+    // Display 0 if no APD confiemd death count exists
+    else if (
+      field === "apd_confirmed_death_count" &&
+      !data.atd_txdot_crashes_aggregate.aggregate.sum[field]
+    ) {
+      return 0;
+    // Return aggregated sum from Person and Primary Person tables for other fields
+    } else {
+      return (
+        data.atd_txdot_primaryperson_aggregate.aggregate.sum[field] +
+        data.atd_txdot_person_aggregate.aggregate.sum[field]
+      );
+    }
   };
 
   const formatLabel = str => {
@@ -118,7 +134,7 @@ function Location(props) {
         <Row>
           <Col xs="12" sm="6" md="4">
             <Widget02
-              header={getAggregatePersonsSum(data, "death_cnt")}
+              header={getAggregatePersonsSum(data, "apd_confirmed_death_count")}
               mainText="Fatalities"
               icon="fa fa-heartbeat"
               color="danger"
@@ -239,16 +255,43 @@ function Location(props) {
                   <Table responsive striped hover>
                     <tbody>
                       {Object.keys(section.fields).map((field, i) => {
-                        return (
-                          <tr key={i}>
-                            <td>{`${section.fields[field]}:`}</td>
-                            <td>
-                              <strong>
-                                {data.atd_txdot_locations[0][field]}
-                              </strong>
-                            </td>
-                          </tr>
-                        );
+                        if (field === "crashes_count_cost_summary" && data.atd_txdot_locations[0][field]) {
+                          // If key is "crashes_count_cost_summary,"
+                          // look for nested key "est_comp_cost"
+                          // and display associated value in currency format
+                          return (
+                            <tr key={i}>
+                              <td>{`${section.fields[field]["est_comp_cost"]}:`}</td>
+                              <td>
+                                <strong>
+                                ${data.atd_txdot_locations[0][field]["est_comp_cost"].toLocaleString()}
+                                </strong>
+                              </td>
+                            </tr>
+                          );
+                        }
+                        else if (field === "crashes_count_cost_summary" && !data.atd_txdot_locations[0][field]) {
+                          // If the query returns null, leave blank
+                          return (
+                            <tr key={i}>
+                              <td>{`${section.fields[field]["est_comp_cost"]}:`}</td>
+                              <td>
+                              </td>
+                            </tr>
+                          );
+                        } else {
+                          // Otherwise, get the value associated with the key
+                          return (
+                            <tr key={i}>
+                              <td>{`${section.fields[field]}:`}</td>
+                              <td>
+                                <strong>
+                                  {data.atd_txdot_locations[0][field]}
+                                </strong>
+                              </td>
+                            </tr>
+                          );
+                        }
                       })}
                     </tbody>
                   </Table>
