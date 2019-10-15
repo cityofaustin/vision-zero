@@ -19,12 +19,6 @@ function LocationCrashes(props) {
         label_table: "Crash ID",
         type: "Int",
       },
-      "location { location_id }": {
-        searchable: false,
-        sortable: true,
-        label_table: "Location ID",
-        type: "String",
-      },
       case_id: {
         searchable: true,
         sortable: true,
@@ -52,10 +46,10 @@ function LocationCrashes(props) {
         label_table: "Secondary Address",
         type: "String",
       },
-      tot_injry_cnt: {
+      sus_serious_injry_cnt: {
         searchable: false,
         sortable: true,
-        label_table: "Injury Count",
+        label_table: "Serious Injury Count",
         type: "Int",
       },
       apd_confirmed_death_count: {
@@ -68,12 +62,6 @@ function LocationCrashes(props) {
         searchable: false,
         sortable: false,
         label_table: "Collision Description",
-        type: "String",
-      },
-      "units { body_style { veh_body_styl_desc } }": {
-        searchable: false,
-        sortable: false,
-        label_table: "Unit Body Type",
         type: "String",
       },
       "units { unit_description { veh_unit_desc_desc } }": {
