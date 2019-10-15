@@ -90,4 +90,8 @@ export const UPDATE_LOCATION = gql`
 export const locationQueryExportFields = `
 location_id
 description
+crashes_count_cost_summary { total_crashes }
+crashes_count_cost_summary { total_deaths }
+crashes_count_cost_summary { total_serious_injuries }
+crashes_count_cost_summary { est_comp_cost }
 `;
