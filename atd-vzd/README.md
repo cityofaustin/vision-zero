@@ -25,3 +25,27 @@ We deployed a standard Hasura container to work as an API  between Postgres and 
 
 ## Metabase
 We use a standard metabase container for business intelligence analytics as well as other solutions in the cloud (ie. QuickSight), while not part of the canonical stack, you may see references of this in the database schema definitions, triggers or views.
+
+
+## How to manually add columns to a table for VZD
+
+### Postgres changes
+
+1. On the staging database `atd_vz_data_staging`, make changes to your data structure either with a GUI (ex: TablePlus) or with SQL statements. 
+
+2. Once you changes have been made, copy the SQL statement that modified the table to our [migrations folder](/migrations) for version control. Example: 
+ ```sql
+  ALTER TABLE "public"."atd_txdot_crashes" ADD COLUMN "micromobility_device_flag" varchar(1) NOT NULL DEFAULT 'N';
+  ```
+3. Execute the same SQL statement on the production database `atd_vz_data`
+
+### Hasura changes
+
+In the case of adding new database columns, you will need to update the permission in the Hasura UI to make new columns editable or available to the relevant permission groups.
+
+4. In the vzd-staging Hasura site, go to the permissions page for the table you're editing
+   - Ex: https://vzd-staging.austintexas.io/console/data/schema/public/tables/atd_txdot_crashes/permissions
+5. Update which roles can select or update records.
+6. Click the Settings gear icon in the top right corner of the Hasura page (or go to: https://vzd-staging.austintexas.io/console/settings/metadata-actions) and click "Export metadata" to get a son config from the staging environment.
+7. Go to the production Hasura site on the equivalent Settings page (https://vzd.austintexas.io/console/settings/metadata-actions) and click "Import metadata". Select the file that was just exported from the staging site (ex: metadata.json)
+8. Confirm that the permission you previously added to the staging site have been copied to production with your metadata import.
