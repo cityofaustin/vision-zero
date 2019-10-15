@@ -344,9 +344,9 @@ gqlAbstractTableAggregateName (
       let or = [];
       for (let [key, value] of this.getEntries("where")) {
         // If we have a nested expression for a key, then append to 'or'
-        if(this.isNestedKey(key)) {
+        if (this.isNestedKey(key)) {
           or.push(`{ ${key} }`);
-        // Else, append to 'where'
+          // Else, append to 'where'
         } else {
           where.push(`${key}: {${value}}`);
         }
@@ -447,8 +447,9 @@ gqlAbstractTableAggregateName (
    * @returns {Object} gql Object
    */
   queryCSV(string) {
-    // First copy the abstract and work from the copy
+    // First copy the abstract and work from the copy and clear offset to request all records
     let query = this.abstractStructure;
+    this.offset = 0;
 
     // Replace the name of the table
     query = query.replace("gqlAbstractTableName", this.config["table"]);
