@@ -132,123 +132,102 @@ function Location(props) {
 
   return (
     <div className="animated fadeIn">
-      {data && (
-        <Row>
-          <Col xs="12" sm="6" md="4">
-            <Widget02
-              header={getAggregatePersonsSum(data, "apd_confirmed_death_count")}
-              mainText="Fatalities"
-              icon="fa fa-heartbeat"
-              color="danger"
-            />
-          </Col>
-          <Col xs="12" sm="6" md="4">
-            <Widget02
-              header={getAggregatePersonsSum(data, "sus_serious_injry_cnt")}
-              mainText="Serious Injuries"
-              icon="fa fa-medkit"
-              color="warning"
-            />
-          </Col>
-          <Col xs="12" sm="6" md="4">
-            <Widget02
-              header={getAggregatePersonsSum(data, "years_of_life_lost")}
-              mainText="Years of Life Lost"
-              icon="fa fa-hourglass-end"
-              color="info"
-            />
-          </Col>
-          <Col xs="12" sm="6" md="4">
-            <Widget02
-              header={
-                data.atd_txdot_primaryperson_aggregate.aggregate.count +
-                data.atd_txdot_person_aggregate.aggregate.count
-              }
-              mainText="Total People (Primary + Non-Primary)"
-              icon="fa fa-user"
-              color="dark"
-            />
-          </Col>
-          <Col xs="12" sm="6" md="4">
-            <Widget02
-              header={data.atd_txdot_units_aggregate.aggregate.count}
-              mainText="Total Units"
-              icon="fa fa-car"
-              color="secondary"
-            />
-          </Col>
-          <Col xs="12" sm="6" md="4">
-            <Widget02
-              header={crashCount}
-              mainText="Total Crashes"
-              icon="fa fa-cab"
-              color="success"
-            />
-          </Col>
-        </Row>
-      )}
-      <Row>
-        <Col lg={6}>
-          <Card>
-            <CardHeader>Types of Vehicles - Count Distribution</CardHeader>
-            <CardBody>
-              {crashCount === 0 && (
-                <Alert color="warning">
-                  No crashes at this particular location
-                </Alert>
-              )}
-
-              {crashCount > 0 && (
-                <div className="chart-wrapper" style={{ padding: "1.5rem 0" }}>
-                  <Badge
-                    color="dark"
-                    className="float-right"
-                    style={{ padding: "4px" }}
-                  >
-                    <i className="fa fa-mouse-pointer" />
-                    &nbsp; Click On Labels
-                  </Badge>
-                  <Doughnut data={doughnut} />
-                </div>
-              )}
-            </CardBody>
-          </Card>
-        </Col>
-        <Col lg={6}>
-          <Card>
-            <CardHeader>Manner of Collisions - Most Frequent</CardHeader>
-            <CardBody>
-              {crashCount === 0 && (
-                <Alert color="warning">
-                  No crashes at this particular location
-                </Alert>
-              )}
-
-              {crashCount > 0 && (
-                <div className="chart-wrapper" style={{ padding: "1.5rem 0" }}>
-                  <HorizontalBar
-                    data={horizontalBar}
-                    options={{
-                      scales: {
-                        xAxes: [
-                          {
-                            ticks: {
-                              beginAtZero: true,
-                              precision: 0,
-                            },
-                          },
-                        ],
-                      },
-                    }}
-                  />
-                </div>
-              )}
-            </CardBody>
-          </Card>
-        </Col>
-      </Row>
       <Row>
         <Col>
+          <h2 className="h2 mb-3">{data.atd_txdot_locations[0].description}</h2>
+        </Col>
+      </Row>
+      {data && (
+        <>
+          <Row>
+            <Col xs="12" sm="6" md="4">
+              <Widget02
+                header={getAggregatePersonsSum(
+                  data,
+                  "apd_confirmed_death_count"
+                )}
+                mainText="Fatalities"
+                icon="fa fa-heartbeat"
+                color="danger"
+              />
+            </Col>
+            <Col xs="12" sm="6" md="4">
+              <Widget02
+                header={getAggregatePersonsSum(data, "sus_serious_injry_cnt")}
+                mainText="Serious Injuries"
+                icon="fa fa-medkit"
+                color="warning"
+              />
+            </Col>
+            <Col xs="12" sm="6" md="4">
+              <Widget02
+                header={getAggregatePersonsSum(data, "years_of_life_lost")}
+                mainText="Years of Life Lost"
+                icon="fa fa-hourglass-end"
+                color="info"
+              />
+            </Col>
+            <Col xs="12" sm="6" md="4">
+              <Widget02
+                header={`${crashCount}`}
+                mainText="Total Crashes"
+                icon="fa fa-cab"
+                color="success"
+              />
+            </Col>
+            <Col xs="12" sm="6" md="4">
+              <Widget02
+                header={`${data.atd_txdot_primaryperson_aggregate.aggregate
+                  .count + data.atd_txdot_person_aggregate.aggregate.count}`}
+                mainText="Total People (Primary + Non-Primary)"
+                icon="fa fa-user"
+                color="dark"
+              />
+            </Col>
+            <Col xs="12" sm="6" md="4">
+              <Widget02
+                header={`${data.atd_txdot_units_aggregate.aggregate.count}`}
+                mainText="Total Units"
+                icon="fa fa-car"
+                color="secondary"
+              />
+            </Col>
+          </Row>
+        </>
+      )}
+      <Row>
+        <Col md="6">
+          <Card>
+            <CardHeader>
+              <i className="fa fa-map fa-lg mt-3"></i> View or Edit Location
+              <ButtonGroup className="float-right">
+                <Button
+                  active={mapSelected === "aerial"}
+                  id="aerial"
+                  onClick={handleMapChange}
+                  color="dark"
+                  outline
+                >
+                  Aerial Map
+                </Button>
+                <Button
+                  active={mapSelected === "edit"}
+                  id="edit"
+                  onClick={handleMapChange}
+                  color="dark"
+                  outline
+                >
+                  Edit Polygon
+                </Button>
+              </ButtonGroup>
+            </CardHeader>
+            <CardBody>
+              {data && mapSelected === "aerial" && <LocationMap data={data} />}
+              {data && mapSelected === "edit" && (
+                <LocationEditMap data={data} refetch={refetch} />
+              )}
+            </CardBody>
+          </Card>
           {locationDataMap.map(section => {
             return (
               <Card key={section.title}>
@@ -299,45 +278,66 @@ function Location(props) {
             );
           })}
         </Col>
-      </Row>
-      <Row>
-        <Col>
-          <LocationCrashes locationId={locationId} />
+        <Col md="6">
+          <Card>
+            <CardHeader>Types of Vehicles - Count Distribution</CardHeader>
+            <CardBody>
+              {crashCount === 0 && (
+                <Alert color="warning">
+                  No crashes at this particular location
+                </Alert>
+              )}
+
+              {crashCount > 0 && (
+                <div className="chart-wrapper" style={{ padding: "1.5rem 0" }}>
+                  <Badge
+                    color="dark"
+                    className="float-right"
+                    style={{ padding: "4px" }}
+                  >
+                    <i className="fa fa-mouse-pointer" />
+                    &nbsp; Click On Labels
+                  </Badge>
+                  <Doughnut data={doughnut} />
+                </div>
+              )}
+            </CardBody>
+          </Card>
+          <Card>
+            <CardHeader>Manner of Collisions - Most Frequent</CardHeader>
+            <CardBody>
+              {crashCount === 0 && (
+                <Alert color="warning">
+                  No crashes at this particular location
+                </Alert>
+              )}
+
+              {crashCount > 0 && (
+                <div className="chart-wrapper" style={{ padding: "1.5rem 0" }}>
+                  <HorizontalBar
+                    data={horizontalBar}
+                    options={{
+                      scales: {
+                        xAxes: [
+                          {
+                            ticks: {
+                              beginAtZero: true,
+                              precision: 0,
+                            },
+                          },
+                        ],
+                      },
+                    }}
+                  />
+                </div>
+              )}
+            </CardBody>
+          </Card>
         </Col>
       </Row>
       <Row>
         <Col>
-          <Card>
-            <CardHeader>
-              <i className="fa fa-map fa-lg mt-3"></i> View or Edit Location
-              <ButtonGroup className="float-right">
-                <Button
-                  active={mapSelected === "aerial"}
-                  id="aerial"
-                  onClick={handleMapChange}
-                  color="dark"
-                  outline
-                >
-                  Aerial Map
-                </Button>
-                <Button
-                  active={mapSelected === "edit"}
-                  id="edit"
-                  onClick={handleMapChange}
-                  color="dark"
-                  outline
-                >
-                  Edit Polygon
-                </Button>
-              </ButtonGroup>
-            </CardHeader>
-            <CardBody>
-              {data && mapSelected === "aerial" && <LocationMap data={data} />}
-              {data && mapSelected === "edit" && (
-                <LocationEditMap data={data} refetch={refetch} />
-              )}
-            </CardBody>
-          </Card>
+          <LocationCrashes locationId={locationId} />
         </Col>
       </Row>
     </div>
