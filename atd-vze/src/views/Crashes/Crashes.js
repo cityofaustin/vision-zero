@@ -141,35 +141,33 @@ let customFilters = {
         filter: {
           where: [
             {
-              units: "unit_desc_id: { _eq: 4 }",
+              'units: { unit_description: { veh_unit_desc_desc: { _eq: "PEDESTRIAN" } } }': null
             },
           ],
         },
       },
       {
-        id: "bicycle",
+        id: "pedacyclist",
         label: "Cyclist Involved",
         filter: {
           where: [
             {
-              units:
-                'unit_description: { veh_unit_desc_desc: { _eq: "PEDALCYCLIST" } }',
+              'units: { unit_description: { veh_unit_desc_desc: { _eq: "PEDALCYCLIST" } } }': null
             },
           ],
         },
       },
-      // {
-      //   id: "motorized_conveyance",
-      //   label: "Motorized Conveyance Involved",
-      //   filter: {
-      //     where: [
-      //       {
-      //         units:
-      //           'unit_description: { veh_unit_desc_desc: { _eq: "MOTORIZED CONVEYANCE" } }',
-      //       },
-      //     ],
-      //   },
-      // },
+      {
+        id: "motorized_conveyance",
+        label: "Motorized Conveyance Involved",
+        filter: {
+          where: [
+            {
+              'units: { unit_description: { veh_unit_desc_desc: { _eq: "MOTORIZED CONVEYANCE" } } }': null
+            },
+          ],
+        },
+      },
     ],
   },
   groupCase: {
