@@ -108,7 +108,8 @@ export default class LocationMap extends Component {
         {...viewport}
         width="100%"
         height="500px"
-        mapStyle={rasterStyle}
+        // mapStyle={rasterStyle}
+        mapStyle={"mapbox://styles/mapbox/satellite-streets-v9"}
         onViewportChange={this._updateViewport}
         mapboxApiAccessToken={TOKEN}
       >
@@ -119,15 +120,17 @@ export default class LocationMap extends Component {
           <NavigationControl showCompass={false} />
         </div>
         <TimestampDisplay>
-          <Button
-            id="timestamp-display"
-            block
-            active
-            color="ghost-light"
-            aria-pressed="true"
-          >
-            Captured on {this.state.aerialTimestamp}
-          </Button>
+          {this.state.aerialTimestamp && (
+            <Button
+              id="timestamp-display"
+              block
+              active
+              color="ghost-light"
+              aria-pressed="true"
+            >
+              Captured on {this.state.aerialTimestamp}
+            </Button>
+          )}
         </TimestampDisplay>
       </MapGL>
     );
