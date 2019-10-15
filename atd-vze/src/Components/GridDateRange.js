@@ -81,6 +81,7 @@ const GridDateRange = ({ setDateRangeFilter, initStartDate, initEndDate }) => {
   const [startDate, setStartDate] = useState(parseDate(initStartDate));
   const [endDate, setEndDate] = useState(parseDate(initEndDate));
 
+  // Set date range filter in GridTable if startDate or endDate changes
   useEffect(() => {
     setDateRangeFilter({
       startDate: formatDate(startDate),
@@ -88,11 +89,18 @@ const GridDateRange = ({ setDateRangeFilter, initStartDate, initEndDate }) => {
     });
   }, [startDate, endDate, setDateRangeFilter]);
 
+  // Set startDate or endDate state if props change
+  useEffect(() => {
+    setStartDate(parseDate(initStartDate));
+    setEndDate(parseDate(initEndDate));
+  }, [initStartDate, initEndDate]);
+
   return (
     <>
       <StyledDatePicker>
         <DatePicker
-          selected={parseDate(initStartDate)}
+          id="start-date"
+          selected={startDate}
           onChange={date => setStartDate(date)}
           selectsStart
           startDate={startDate}
@@ -102,7 +110,8 @@ const GridDateRange = ({ setDateRangeFilter, initStartDate, initEndDate }) => {
         />
         <span>{" to "}</span>
         <DatePicker
-          selected={parseDate(initEndDate)}
+          id="end-date"
+          selected={endDate}
           onChange={date => setEndDate(date)}
           selectsEnd
           startDate={startDate}

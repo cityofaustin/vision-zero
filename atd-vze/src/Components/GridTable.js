@@ -28,7 +28,6 @@ import GridFilters from "./GridFilters";
 import GridDateRange from "./GridDateRange";
 
 const GridTable = ({ title, query, filters }) => {
-  console.log(query.config.initStartDate, query.config.initEndDate);
   // Load table filters from localStorage by title
   const savedFilterState = JSON.parse(
     localStorage.getItem(`saved${title}Config`)
@@ -37,6 +36,13 @@ const GridTable = ({ title, query, filters }) => {
   // Return saved filters if they exist
   const getSavedState = stateName =>
     (savedFilterState && savedFilterState[`${stateName}`]) || false;
+
+  const defaultTimeRange = {
+    startDate: moment(new Date())
+      .subtract(1, "year")
+      .format("YYYY-MM-DD"),
+    endDate: moment(new Date()).format("YYYY-MM-DD"),
+  };
 
   /**
    * State management:
@@ -69,12 +75,7 @@ const GridTable = ({ title, query, filters }) => {
     getSavedState("filterOptions") || {}
   );
   const [dateRangeFilter, setDateRangeFilter] = useState(
-    getSavedState("dateRangeFilter") || {
-      startDate: moment(new Date())
-        .subtract(1, "year")
-        .format("YYYY-MM-DD"),
-      endDate: moment(new Date()).format("YYYY-MM-DD"),
-    }
+    getSavedState("dateRangeFilter") || defaultTimeRange
   );
 
   useEffect(() => {
@@ -175,7 +176,7 @@ const GridTable = ({ title, query, filters }) => {
     setSearchParameters({});
     setFilterOptions({});
     resetPageOnSearch();
-    setDateRangeFilter({});
+    setDateRangeFilter(defaultTimeRange);
     setLimit(25);
   };
 
