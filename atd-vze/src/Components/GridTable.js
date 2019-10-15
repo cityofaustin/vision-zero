@@ -70,8 +70,10 @@ const GridTable = ({ title, query, filters }) => {
   );
   const [dateRangeFilter, setDateRangeFilter] = useState(
     getSavedState("dateRangeFilter") || {
-      startDate: query.config.initStartDate || null,
-      endDate: query.config.initEndDate || null,
+      startDate: moment(new Date())
+        .subtract(1, "year")
+        .format("YYYY-MM-DD"),
+      endDate: moment(new Date()).format("YYYY-MM-DD"),
     }
   );
 
@@ -173,12 +175,14 @@ const GridTable = ({ title, query, filters }) => {
     setSearchParameters({});
     setFilterOptions({});
     resetPageOnSearch();
-    setDateRangeFilter({
-      startDate: moment(new Date())
-        .subtract(1, "year")
-        .format("YYYY-MM-DD"),
-      endDate: moment(new Date()).format("YYYY-MM-DD"),
-    });
+    // setDateRangeFilter({
+    //   startDate: moment(new Date())
+    //     .subtract(1, "year")
+    //     .format("YYYY-MM-DD"),
+    //   endDate: moment(new Date()).format("YYYY-MM-DD"),
+    // });
+    setDateRangeFilter({});
+    setLimit(25);
   };
 
   /**
@@ -372,7 +376,7 @@ const GridTable = ({ title, query, filters }) => {
                     <GridDateRange
                       setDateRangeFilter={setDateRangeFilter}
                       initStartDate={dateRangeFilter.startDate}
-                      initendDate={dateRangeFilter.endDate}
+                      initEndDate={dateRangeFilter.endDate}
                     />
                   </ButtonGroup>
                 )}

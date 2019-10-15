@@ -66,23 +66,21 @@ const GridDateRange = ({ setDateRangeFilter, initStartDate, initEndDate }) => {
    * Returns existing selection or date one year ago from today
    * @type {Date}
    */
-  const minDate = initStartDate
-    ? parseDate(initStartDate)
-    : new Date(
-        moment()
-          .subtract(1, "year")
-          .format()
-      );
+  const minDate = new Date(
+    moment()
+      .subtract(1, "year")
+      .format()
+  );
 
   /**
    * Returns existing selection or today
    * @type {Date}
    */
-  const maxDate = initEndDate ? parseDate(initEndDate) : new Date();
+  const maxDate = new Date();
 
-  const [startDate, setStartDate] = useState(minDate);
-  const [endDate, setEndDate] = useState(maxDate);
-  console.log(minDate, initStartDate);
+  const [startDate, setStartDate] = useState(parseDate(initStartDate));
+  const [endDate, setEndDate] = useState(parseDate(initEndDate));
+  console.log(minDate, maxDate);
   useEffect(() => {
     setDateRangeFilter({
       startDate: formatDate(startDate),
@@ -94,7 +92,7 @@ const GridDateRange = ({ setDateRangeFilter, initStartDate, initEndDate }) => {
     <>
       <StyledDatePicker>
         <DatePicker
-          selected={startDate}
+          selected={parseDate(initStartDate)}
           onChange={date => setStartDate(date)}
           selectsStart
           startDate={startDate}
@@ -102,7 +100,7 @@ const GridDateRange = ({ setDateRangeFilter, initStartDate, initEndDate }) => {
         />
         <span>{" to "}</span>
         <DatePicker
-          selected={endDate}
+          selected={parseDate(initEndDate)}
           onChange={date => setEndDate(date)}
           selectsEnd
           startDate={startDate}
