@@ -175,12 +175,6 @@ const GridTable = ({ title, query, filters }) => {
     setSearchParameters({});
     setFilterOptions({});
     resetPageOnSearch();
-    // setDateRangeFilter({
-    //   startDate: moment(new Date())
-    //     .subtract(1, "year")
-    //     .format("YYYY-MM-DD"),
-    //   endDate: moment(new Date()).format("YYYY-MM-DD"),
-    // });
     setDateRangeFilter({});
     setLimit(25);
   };

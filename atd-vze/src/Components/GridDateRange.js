@@ -63,7 +63,7 @@ const GridDateRange = ({ setDateRangeFilter, initStartDate, initEndDate }) => {
   const formatDate = date => moment(date).format("YYYY-MM-DD");
 
   /**
-   * Returns existing selection or date one year ago from today
+   * Returns date one year ago from today
    * @type {Date}
    */
   const minDate = new Date(
@@ -73,14 +73,14 @@ const GridDateRange = ({ setDateRangeFilter, initStartDate, initEndDate }) => {
   );
 
   /**
-   * Returns existing selection or today
+   * Returns today
    * @type {Date}
    */
   const maxDate = new Date();
 
   const [startDate, setStartDate] = useState(parseDate(initStartDate));
   const [endDate, setEndDate] = useState(parseDate(initEndDate));
-  console.log(minDate, maxDate);
+
   useEffect(() => {
     setDateRangeFilter({
       startDate: formatDate(startDate),
@@ -97,6 +97,8 @@ const GridDateRange = ({ setDateRangeFilter, initStartDate, initEndDate }) => {
           selectsStart
           startDate={startDate}
           endDate={endDate}
+          // Prevent user from selecting start date after current date
+          maxDate={maxDate}
         />
         <span>{" to "}</span>
         <DatePicker
@@ -105,8 +107,9 @@ const GridDateRange = ({ setDateRangeFilter, initStartDate, initEndDate }) => {
           selectsEnd
           startDate={startDate}
           endDate={endDate}
+          // Prevent user from selecting date before startDate (chosen in first DatePicker) or after current date
           minDate={startDate}
-          maxDate={new Date()}
+          maxDate={maxDate}
         />
       </StyledDatePicker>
     </>
