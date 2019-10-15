@@ -343,7 +343,13 @@ gqlAbstractTableAggregateName (
       let where = [];
       let or = [];
       for (let [key, value] of this.getEntries("where")) {
-        where.push(`${key}: {${value}}`);
+        // If we have a nested expression for a key, then append to 'or'
+        if(this.isNestedKey(key)) {
+          or.push(`{ ${key} }`);
+        // Else, append to 'where'
+        } else {
+          where.push(`${key}: {${value}}`);
+        }
       }
       if (!!this.config["or"]) {
         for (let [key, value] of this.getEntries("or")) {
@@ -392,7 +398,6 @@ gqlAbstractTableAggregateName (
         for (let filterItem of filter.filter["where"]) {
           for (let [key, syntax] of this.getEntries(filterItem)) {
             // If enabled, add to the list or remove it from the query.
-
             if (filtersState[filter.id]) {
               key === "or"
                 ? this.setOr(Object.keys(syntax), Object.values(syntax))
