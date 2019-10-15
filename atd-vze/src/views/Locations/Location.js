@@ -51,7 +51,7 @@ function Location(props) {
       field === "apd_confirmed_death_count" &&
       data.atd_txdot_crashes_aggregate.aggregate.sum[field]
     ) {
-      return data.atd_txdot_crashes_aggregate.aggregate.sum[field] + "";
+      return `${data.atd_txdot_crashes_aggregate.aggregate.sum[field]}`;
     }
     // Display 0 if no APD confiemd death count exists
     else if (
@@ -61,11 +61,8 @@ function Location(props) {
       return "0";
       // Return aggregated sum from Person and Primary Person tables for other fields
     } else {
-      return (
-        data.atd_txdot_primaryperson_aggregate.aggregate.sum[field] +
-        data.atd_txdot_person_aggregate.aggregate.sum[field] +
-        ""
-      );
+      return `${data.atd_txdot_primaryperson_aggregate.aggregate.sum[field] +
+        data.atd_txdot_person_aggregate.aggregate.sum[field]}`;
     }
   };
 
