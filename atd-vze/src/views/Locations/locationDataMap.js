@@ -10,6 +10,7 @@ const locationDataMap = [
       },
       last_update: {
         label: "Last Update",
+        format: "datetime",
       },
       est_comp_cost: {
         label: "Estimated Comprehensive Cost",

@@ -257,7 +257,6 @@ function Location(props) {
                   <Table responsive striped hover>
                     <tbody>
                       {Object.keys(section.fields).map((field, i) => {
-                        console.log(section);
                         const fieldConfigObject = section.fields[field];
                         const fieldLabel = fieldConfigObject.label;
                         let fieldValueDisplay = "";
@@ -270,6 +269,12 @@ function Location(props) {
                           default:
                             fieldValueDisplay =
                               data.atd_txdot_locations[0][field];
+                        }
+
+                        if (fieldConfigObject.format === "datetime") {
+                          fieldValueDisplay = formatDateTimeString(
+                            fieldValueDisplay
+                          );
                         }
 
                         if (fieldConfigObject.format === "dollars") {
