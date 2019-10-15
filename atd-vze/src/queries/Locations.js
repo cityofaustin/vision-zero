@@ -16,6 +16,9 @@ export const GET_LOCATION = gql`
         collsn_desc
         count
       }
+      crashes_count_cost_summary {
+        est_comp_cost
+      }
     }
     atd_txdot_crashes_aggregate(
       where: { city_id: { _eq: 22 }, location: { location_id: { _eq: $id } } }

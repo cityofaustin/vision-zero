@@ -243,16 +243,43 @@ function Location(props) {
                   <Table responsive striped hover>
                     <tbody>
                       {Object.keys(section.fields).map((field, i) => {
-                        return (
-                          <tr key={i}>
-                            <td>{`${section.fields[field]}:`}</td>
-                            <td>
-                              <strong>
-                                {data.atd_txdot_locations[0][field]}
-                              </strong>
-                            </td>
-                          </tr>
-                        );
+                        if (field === "crashes_count_cost_summary" && data.atd_txdot_locations[0][field]) {
+                          // If key is "crashes_count_cost_summary,"
+                          // look for nested key "est_comp_cost"
+                          // and display associated value in currency format
+                          return (
+                            <tr key={i}>
+                              <td>{`${section.fields[field]["est_comp_cost"]}:`}</td>
+                              <td>
+                                <strong>
+                                ${data.atd_txdot_locations[0][field]["est_comp_cost"].toLocaleString()}
+                                </strong>
+                              </td>
+                            </tr>
+                          );
+                        }
+                        else if (field === "crashes_count_cost_summary" && !data.atd_txdot_locations[0][field]) {
+                          // If the query returns null, leave blank
+                          return (
+                            <tr key={i}>
+                              <td>{`${section.fields[field]["est_comp_cost"]}:`}</td>
+                              <td>
+                              </td>
+                            </tr>
+                          );
+                        } else {
+                          // Otherwise, get the value associated with the key
+                          return (
+                            <tr key={i}>
+                              <td>{`${section.fields[field]}:`}</td>
+                              <td>
+                                <strong>
+                                  {data.atd_txdot_locations[0][field]}
+                                </strong>
+                              </td>
+                            </tr>
+                          );
+                        }
                       })}
                     </tbody>
                   </Table>
