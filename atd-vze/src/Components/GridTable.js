@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { useQuery } from "@apollo/react-hooks";
 
 import { withApollo } from "react-apollo";
-import { CSVLink } from "react-csv";
 import moment from "moment";
 
 import {
