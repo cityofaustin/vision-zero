@@ -42,8 +42,20 @@ function Location(props) {
   if (error) return `Error! ${error.message}`;
 
   const getAggregatePersonsSum = (data, field) => {
-    if (field === "apd_confirmed_death_count") {
+    // Display APD confirmed death count if one exists
+    if (
+      field === "apd_confirmed_death_count" &&
+      data.atd_txdot_crashes_aggregate.aggregate.sum[field]
+    ) {
       return data.atd_txdot_crashes_aggregate.aggregate.sum[field];
+    }
+    // Display 0 if no APD confiemd death count exists
+    else if (
+      field === "apd_confirmed_death_count" &&
+      !data.atd_txdot_crashes_aggregate.aggregate.sum[field]
+    ) {
+      return 0;
+    // Return aggregated sum from Person and Primary Person tables for other fields
     } else {
       return (
         data.atd_txdot_primaryperson_aggregate.aggregate.sum[field] +
