@@ -312,52 +312,6 @@ export const crashDataMap = [
     },
   },
   {
-    title: "Fatalities/Injuries",
-    fields: {
-      crash_fatal_fl: {
-        label: "Fatality Flag",
-        editable: false,
-        lookupOptions: "atd_txdot__y_n_lkp",
-        lookupPrefix: "y_n",
-      },
-      apd_confirmed_death_count: {
-        label: "Death Count",
-        editable: true,
-        uiType: "text",
-      },
-      crash_sev_id: {
-        label: "Crash Severity",
-        editable: false,
-        lookupOptions: "atd_txdot__injry_sev_lkp",
-        lookupPrefix: "injry_sev",
-      },
-      non_injry_cnt: {
-        label: "Not Injured Count",
-        editable: false,
-      },
-      nonincap_injry_cnt: {
-        label: "Non-incapacitating Injury Count",
-        editable: false,
-      },
-      poss_injry_cnt: {
-        label: "Possible Injury Count",
-        editable: false,
-      },
-      sus_serious_injry_cnt: {
-        label: "Suspected Serious Injury Count",
-        editable: false,
-      },
-      tot_injry_cnt: {
-        label: "Total Injury Count",
-        editable: false,
-      },
-      unkn_injry_cnt: {
-        label: "Unknown Injury Count",
-        editable: false,
-      },
-    },
-  },
-  {
     title: "Flags",
     fields: {
       active_school_zone_fl: {
