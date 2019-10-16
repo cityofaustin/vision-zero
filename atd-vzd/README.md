@@ -7,7 +7,7 @@ At the moment, only the schema, views and triggers are posted on here and versio
 Currently the schema is being tracked in the following folders:
 
 - `schema`- Contains the original table definitions, 
-- `migrations` - Contains sql modifications to the original files in schema, all timestamped with date and time in a `yyyy-mm-dd--hhmm` format.
+- `migrations` - Contains sql modifications to the original files in schema, all timestamped with date and time in a `yyyy-mm-dd--hhmm` format. [More info about migrations in this README](./migrations/README.md)
 - `views` - Contains SQL views.
 - `triggers` - Contains SQL triggers.
 - `hasura` - Contains Hasura metadata files.
