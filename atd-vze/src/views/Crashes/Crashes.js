@@ -89,21 +89,21 @@ let customFilters = {
         id: "dni_deaths",
         label: "Deaths",
         filter: {
-          where: [{ apd_confirmed_death_count: "_gt: 0" }],
+          where: [{ or: { apd_confirmed_death_count: "_gt: 0" } }],
         },
       },
       {
         id: "dni_serious_injuries",
         label: "Serious Injuries",
         filter: {
-          where: [{ sus_serious_injry_cnt: "_gt: 0" }],
+          where: [{ or: { sus_serious_injry_cnt: "_gt: 0" } }],
         },
       },
       {
         id: "dni_non_fatal",
         label: "Non-serious Injuries",
         filter: {
-          where: [{ nonincap_injry_cnt: "_gt: 0" }],
+          where: [{ or: { nonincap_injry_cnt: "_gt: 0" } }],
         },
       },
     ],
