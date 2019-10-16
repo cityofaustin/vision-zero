@@ -101,7 +101,7 @@ let customFilters = {
       },
       {
         id: "dni_non_fatal",
-        label: "Non-Fatal Injuries",
+        label: "Non-serious Injuries",
         filter: {
           where: [{ nonincap_injry_cnt: "_gt: 0" }],
         },
@@ -141,7 +141,7 @@ let customFilters = {
         filter: {
           where: [
             {
-              'units: { unit_description: { veh_unit_desc_desc: { _eq: "PEDESTRIAN" } } }': null
+              'units: { unit_description: { veh_unit_desc_desc: { _eq: "PEDESTRIAN" } } }': null,
             },
           ],
         },
@@ -152,7 +152,7 @@ let customFilters = {
         filter: {
           where: [
             {
-              'units: { unit_description: { veh_unit_desc_desc: { _eq: "PEDALCYCLIST" } } }': null
+              'units: { unit_description: { veh_unit_desc_desc: { _eq: "PEDALCYCLIST" } } }': null,
             },
           ],
         },
@@ -163,7 +163,7 @@ let customFilters = {
         filter: {
           where: [
             {
-              'units: { unit_description: { veh_unit_desc_desc: { _eq: "MOTORIZED CONVEYANCE" } } }': null
+              'units: { unit_description: { veh_unit_desc_desc: { _eq: "MOTORIZED CONVEYANCE" } } }': null,
             },
           ],
         },
