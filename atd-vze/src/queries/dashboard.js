@@ -3,7 +3,7 @@ import { gql } from "apollo-boost";
 export const GET_CRASH = gql`
   query GetCrashesYTD($yearStart: date, $yearEnd: date) {
     atd_txdot_crashes_aggregate(
-      where: { crash_date: { _gte: $yearStart, _lte: $yearEnd } }
+      where: { city_id: {_eq: 22}, crash_date: { _gte: $yearStart, _lte: $yearEnd } }
     ) {
       aggregate {
         count
