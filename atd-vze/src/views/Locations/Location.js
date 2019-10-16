@@ -243,7 +243,10 @@ function Location(props) {
                         switch (field) {
                           // TODO: figure out a better way to parse through nested values
                           case "est_comp_cost":
-                            fieldValueDisplay = data.atd_txdot_locations[0].crashes_count_cost_summary.est_comp_cost.toLocaleString();
+                            fieldValueDisplay = !!data.atd_txdot_locations[0]
+                              .crashes_count_cost_summary
+                              ? data.atd_txdot_locations[0].crashes_count_cost_summary.est_comp_cost.toLocaleString()
+                              : "0";
                             break;
                           default:
                             fieldValueDisplay =
