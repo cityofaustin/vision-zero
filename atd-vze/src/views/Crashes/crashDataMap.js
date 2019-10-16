@@ -321,7 +321,7 @@ export const crashDataMap = [
       apd_confirmed_death_count: {
         label: "Death Count",
         editable: true,
-        uiType: "text"
+        uiType: "text",
       },
       crash_sev_id: {
         label: "Crash Severity",

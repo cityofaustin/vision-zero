@@ -77,7 +77,7 @@ const GridFilters = ({
 
     let groupFilters = group["filters"].map(currentFilter => {
       return (
-        <Row>
+        <Row key={`filter--${currentFilter.id}`}>
           <AppSwitch
             id={currentFilter.id}
             onChange={handleChange}
@@ -94,7 +94,7 @@ const GridFilters = ({
     });
 
     return (
-      <Col md="6" id={groupName}>
+      <Col md="6" id={groupName} key={`groupName--${groupName}`}>
         <Collapse isOpen={isCollapsed}>
           <div>
             <Card>

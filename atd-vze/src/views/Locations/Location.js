@@ -16,15 +16,19 @@ import {
 
 import { withApollo } from "react-apollo";
 import { useQuery } from "@apollo/react-hooks";
-import { colors } from "../../styles/colors";
 import palette from "google-palette";
+import { Doughnut, HorizontalBar } from "react-chartjs-2";
 
 import locationDataMap from "./locationDataMap";
 import LocationCrashes from "./LocationCrashes";
-
-import { GET_LOCATION } from "../../queries/Locations";
 import Widget02 from "../Widgets/Widget02";
-import { Doughnut, HorizontalBar } from "react-chartjs-2";
+
+import { colors } from "../../styles/colors";
+import { GET_LOCATION } from "../../queries/Locations";
+import {
+  formatCostToDollars,
+  formatDateTimeString,
+} from "../../helpers/format";
 
 function Location(props) {
   const locationId = props.match.params.id;
@@ -47,20 +51,18 @@ function Location(props) {
       field === "apd_confirmed_death_count" &&
       data.atd_txdot_crashes_aggregate.aggregate.sum[field]
     ) {
-      return data.atd_txdot_crashes_aggregate.aggregate.sum[field];
+      return `${data.atd_txdot_crashes_aggregate.aggregate.sum[field]}`;
     }
     // Display 0 if no APD confiemd death count exists
     else if (
       field === "apd_confirmed_death_count" &&
       !data.atd_txdot_crashes_aggregate.aggregate.sum[field]
     ) {
-      return 0;
-    // Return aggregated sum from Person and Primary Person tables for other fields
+      return "0";
+      // Return aggregated sum from Person and Primary Person tables for other fields
     } else {
-      return (
-        data.atd_txdot_primaryperson_aggregate.aggregate.sum[field] +
-        data.atd_txdot_person_aggregate.aggregate.sum[field]
-      );
+      return `${data.atd_txdot_primaryperson_aggregate.aggregate.sum[field] +
+        data.atd_txdot_person_aggregate.aggregate.sum[field]}`;
     }
   };
 
@@ -130,63 +132,156 @@ function Location(props) {
 
   return (
     <div className="animated fadeIn">
+      <Row>
+        <Col>
+          <h2 className="h2 mb-3">{data.atd_txdot_locations[0].description}</h2>
+        </Col>
+      </Row>
       {data && (
-        <Row>
-          <Col xs="12" sm="6" md="4">
-            <Widget02
-              header={getAggregatePersonsSum(data, "apd_confirmed_death_count")}
-              mainText="Fatalities"
-              icon="fa fa-heartbeat"
-              color="danger"
-            />
-          </Col>
-          <Col xs="12" sm="6" md="4">
-            <Widget02
-              header={getAggregatePersonsSum(data, "sus_serious_injry_cnt")}
-              mainText="Serious Injuries"
-              icon="fa fa-medkit"
-              color="warning"
-            />
-          </Col>
-          <Col xs="12" sm="6" md="4">
-            <Widget02
-              header={getAggregatePersonsSum(data, "years_of_life_lost")}
-              mainText="Years of Life Lost"
-              icon="fa fa-hourglass-end"
-              color="info"
-            />
-          </Col>
-          <Col xs="12" sm="6" md="4">
-            <Widget02
-              header={
-                data.atd_txdot_primaryperson_aggregate.aggregate.count +
-                data.atd_txdot_person_aggregate.aggregate.count
-              }
-              mainText="Total People (Primary + Non-Primary)"
-              icon="fa fa-user"
-              color="dark"
-            />
-          </Col>
-          <Col xs="12" sm="6" md="4">
-            <Widget02
-              header={data.atd_txdot_units_aggregate.aggregate.count}
-              mainText="Total Units"
-              icon="fa fa-car"
-              color="secondary"
-            />
-          </Col>
-          <Col xs="12" sm="6" md="4">
-            <Widget02
-              header={crashCount}
-              mainText="Total Crashes"
-              icon="fa fa-cab"
-              color="success"
-            />
-          </Col>
-        </Row>
+        <>
+          <Row>
+            <Col xs="12" sm="6" md="4">
+              <Widget02
+                header={getAggregatePersonsSum(
+                  data,
+                  "apd_confirmed_death_count"
+                )}
+                mainText="Fatalities"
+                icon="fa fa-heartbeat"
+                color="danger"
+              />
+            </Col>
+            <Col xs="12" sm="6" md="4">
+              <Widget02
+                header={getAggregatePersonsSum(data, "sus_serious_injry_cnt")}
+                mainText="Serious Injuries"
+                icon="fa fa-medkit"
+                color="warning"
+              />
+            </Col>
+            <Col xs="12" sm="6" md="4">
+              <Widget02
+                header={getAggregatePersonsSum(data, "years_of_life_lost")}
+                mainText="Years of Life Lost"
+                icon="fa fa-hourglass-end"
+                color="info"
+              />
+            </Col>
+            <Col xs="12" sm="6" md="4">
+              <Widget02
+                header={`${crashCount}`}
+                mainText="Total Crashes"
+                icon="fa fa-cab"
+                color="success"
+              />
+            </Col>
+            <Col xs="12" sm="6" md="4">
+              <Widget02
+                header={`${data.atd_txdot_primaryperson_aggregate.aggregate
+                  .count + data.atd_txdot_person_aggregate.aggregate.count}`}
+                mainText="Total People (Primary + Non-Primary)"
+                icon="fa fa-user"
+                color="dark"
+              />
+            </Col>
+            <Col xs="12" sm="6" md="4">
+              <Widget02
+                header={`${data.atd_txdot_units_aggregate.aggregate.count}`}
+                mainText="Total Units"
+                icon="fa fa-car"
+                color="secondary"
+              />
+            </Col>
+          </Row>
+        </>
       )}
       <Row>
-        <Col lg={6}>
+        <Col md="6">
+          <Card>
+            <CardHeader>
+              <i className="fa fa-map fa-lg mt-3"></i> View or Edit Location
+              <ButtonGroup className="float-right">
+                <Button
+                  active={mapSelected === "aerial"}
+                  id="aerial"
+                  onClick={handleMapChange}
+                  color="dark"
+                  outline
+                >
+                  Aerial Map
+                </Button>
+                <Button
+                  active={mapSelected === "edit"}
+                  id="edit"
+                  onClick={handleMapChange}
+                  color="dark"
+                  outline
+                >
+                  Edit Polygon
+                </Button>
+              </ButtonGroup>
+            </CardHeader>
+            <CardBody>
+              {data && mapSelected === "aerial" && <LocationMap data={data} />}
+              {data && mapSelected === "edit" && (
+                <LocationEditMap data={data} refetch={refetch} />
+              )}
+            </CardBody>
+          </Card>
+          {locationDataMap.map(section => {
+            return (
+              <Card key={section.title}>
+                <CardHeader>{section.title}</CardHeader>
+                <CardBody>
+                  <Table responsive striped hover>
+                    <tbody>
+                      {Object.keys(section.fields).map((field, i) => {
+                        const fieldConfigObject = section.fields[field];
+                        const fieldLabel = fieldConfigObject.label;
+                        let fieldValueDisplay = "";
+
+                        switch (field) {
+                          // TODO: figure out a better way to parse through nested values
+                          case "est_comp_cost":
+                            fieldValueDisplay = !!data.atd_txdot_locations[0]
+                              .crashes_count_cost_summary
+                              ? data.atd_txdot_locations[0].crashes_count_cost_summary.est_comp_cost.toLocaleString()
+                              : "0";
+                            break;
+                          default:
+                            fieldValueDisplay =
+                              data.atd_txdot_locations[0][field];
+                        }
+
+                        if (fieldConfigObject.format === "datetime") {
+                          fieldValueDisplay = formatDateTimeString(
+                            fieldValueDisplay
+                          );
+                        }
+
+                        if (fieldConfigObject.format === "dollars") {
+                          fieldValueDisplay = formatCostToDollars(
+                            fieldValueDisplay
+                          );
+                        }
+
+                        return (
+                          <tr key={i}>
+                            <td>
+                              <strong>{fieldLabel}</strong>
+                            </td>
+                            <td>{fieldValueDisplay}</td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </Table>
+                </CardBody>
+              </Card>
+            );
+          })}
+        </Col>
+        <Col md="6">
           <Card>
             <CardHeader>Types of Vehicles - Count Distribution</CardHeader>
             <CardBody>
@@ -203,7 +298,7 @@ function Location(props) {
                     className="float-right"
                     style={{ padding: "4px" }}
                   >
-                    <i class="fa fa-mouse-pointer" />
+                    <i className="fa fa-mouse-pointer" />
                     &nbsp; Click On Labels
                   </Badge>
                   <Doughnut data={doughnut} />
@@ -211,8 +306,6 @@ function Location(props) {
               )}
             </CardBody>
           </Card>
-        </Col>
-        <Col lg={6}>
           <Card>
             <CardHeader>Manner of Collisions - Most Frequent</CardHeader>
             <CardBody>
@@ -247,98 +340,7 @@ function Location(props) {
       </Row>
       <Row>
         <Col>
-          {locationDataMap.map(section => {
-            return (
-              <Card key={section.title}>
-                <CardHeader>{section.title}</CardHeader>
-                <CardBody>
-                  <Table responsive striped hover>
-                    <tbody>
-                      {Object.keys(section.fields).map((field, i) => {
-                        if (field === "crashes_count_cost_summary" && data.atd_txdot_locations[0][field]) {
-                          // If key is "crashes_count_cost_summary,"
-                          // look for nested key "est_comp_cost"
-                          // and display associated value in currency format
-                          return (
-                            <tr key={i}>
-                              <td>{`${section.fields[field]["est_comp_cost"]}:`}</td>
-                              <td>
-                                <strong>
-                                ${data.atd_txdot_locations[0][field]["est_comp_cost"].toLocaleString()}
-                                </strong>
-                              </td>
-                            </tr>
-                          );
-                        }
-                        else if (field === "crashes_count_cost_summary" && !data.atd_txdot_locations[0][field]) {
-                          // If the query returns null, leave blank
-                          return (
-                            <tr key={i}>
-                              <td>{`${section.fields[field]["est_comp_cost"]}:`}</td>
-                              <td>
-                              </td>
-                            </tr>
-                          );
-                        } else {
-                          // Otherwise, get the value associated with the key
-                          return (
-                            <tr key={i}>
-                              <td>{`${section.fields[field]}:`}</td>
-                              <td>
-                                <strong>
-                                  {data.atd_txdot_locations[0][field]}
-                                </strong>
-                              </td>
-                            </tr>
-                          );
-                        }
-                      })}
-                    </tbody>
-                  </Table>
-                </CardBody>
-              </Card>
-            );
-          })}
-        </Col>
-      </Row>
-      <Row>
-        <Col>
           <LocationCrashes locationId={locationId} />
-        </Col>
-      </Row>
-      <Row>
-        <Col>
-          <Card>
-            <CardHeader>
-              <i className="fa fa-map fa-lg mt-3"></i> View or Edit Location
-              <ButtonGroup className="float-right">
-                <Button
-                  active={mapSelected === "aerial"}
-                  id="aerial"
-                  onClick={handleMapChange}
-                  color="dark"
-                  outline
-                >
-                  Aerial Map
-                </Button>
-                <Button
-                  active={mapSelected === "edit"}
-                  id="edit"
-                  onClick={handleMapChange}
-                  color="dark"
-                  outline
-                >
-                  Edit Polygon
-                </Button>
-              </ButtonGroup>
-            </CardHeader>
-            <CardBody>
-              {data && mapSelected === "aerial" && <LocationMap data={data} />}
-              {data && mapSelected === "edit" && (
-                <LocationEditMap data={data} refetch={refetch} />
-              )}
-            </CardBody>
-          </Card>
         </Col>
       </Row>
     </div>
