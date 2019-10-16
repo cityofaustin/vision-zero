@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useQuery } from "@apollo/react-hooks";
 
 import { withApollo } from "react-apollo";
+import moment from "moment";
 
 import {
   Card,
@@ -36,6 +37,13 @@ const GridTable = ({ title, query, filters, columnsToExport }) => {
   const getSavedState = stateName =>
     (savedFilterState && savedFilterState[`${stateName}`]) || false;
 
+  const defaultTimeRange = {
+    startDate: moment(new Date())
+      .subtract(1, "year")
+      .format("YYYY-MM-DD"),
+    endDate: moment(new Date()).format("YYYY-MM-DD"),
+  };
+
   /**
    * State management:
    *      limit {int} - Contains the current limit of results in a page
@@ -67,10 +75,7 @@ const GridTable = ({ title, query, filters, columnsToExport }) => {
     getSavedState("filterOptions") || {}
   );
   const [dateRangeFilter, setDateRangeFilter] = useState(
-    getSavedState("dateRangeFilter") || {
-      startDate: query.config.initStartDate || null,
-      endDate: query.config.initEndDate || null,
-    }
+    getSavedState("dateRangeFilter") || defaultTimeRange
   );
 
   useEffect(() => {
@@ -170,6 +175,9 @@ const GridTable = ({ title, query, filters, columnsToExport }) => {
     query.deleteWhere(searchParameters.column);
     setSearchParameters({});
     setFilterOptions({});
+    resetPageOnSearch();
+    setDateRangeFilter(defaultTimeRange);
+    setLimit(25);
   };
 
   /**
