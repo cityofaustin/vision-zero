@@ -63,16 +63,6 @@ const GridDateRange = ({ setDateRangeFilter, initStartDate, initEndDate }) => {
   const formatDate = date => moment(date).format("YYYY-MM-DD");
 
   /**
-   * Returns date one year ago from today
-   * @type {Date}
-   */
-  const minDate = new Date(
-    moment()
-      .subtract(1, "year")
-      .format()
-  );
-
-  /**
    * Returns today
    * @type {Date}
    */
