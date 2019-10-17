@@ -475,11 +475,12 @@ gqlAbstractTableAggregateName (
   }
 
   /**
-   * Generates a GraphQL query based on columns passed in for export feature.
-   * @params {string} - String containing columns to return in query.
+   * Generates a GraphQL query based on queryConfigArray passed in for driving aggregate data from table filters.
+   * @params {queryConfigarray} - Array of objects of config for aggregate queries.
+   * @params {queryInstance} - Query instance to load query filters
    * @returns {Object} gql Object
    */
-  queryAggregate(queryConfigArray) {
+  queryAggregate(queryConfigArray, queryInstance) {
     // First copy the abstract and work from the copy and clear offset to request all records
     // For each table name/config passed in, replace name, nested (true or false) key, and columns
     // Concat each aggregate and return gql query
@@ -487,8 +488,10 @@ gqlAbstractTableAggregateName (
     // 1. table name
     // 2. key for nested where conditions (if no key, no nested string)
     // 3. columns
+    const aggregatesQueryString = "";
 
-    let query = `
+    queryConfigArray.forEach(config => {
+      let query = `
       gqlAbstractTableAggregateName (
           gqlAbstractAggregateFilters
       ) {
@@ -497,30 +500,25 @@ gqlAbstractTableAggregateName (
           }
         }
       }`;
+      // Replace the name of the aggregate table
+      query = query.replace("gqlAbstractTableAggregateName", config.table);
 
-    debugger;
-    // Replace the name of the aggregate table
-    query = query.replace(
-      "gqlAbstractTableAggregateName",
-      this.config["table"] + "_aggregate"
-    );
+      // Generate Filters
+      // Retrieve filters from query instance and add to aggregate
+      // query = query.replace(
+      //   "gqlAbstractFilters",
+      //   `{ ${`f}: {this.generateFilters()} }`
+      // );
 
-    // Generate Filters
-    query = query.replace(
-      "gqlAbstractFilters",
-      `{ ${`ftable`}: {this.generateFilters()} }`
-    );
-    query = query.replace(
-      "gqlAbstractAggregateFilters",
-      this.generateFilters(true)
-    );
-
-    // Generate Columns
-    query = query.replace("gqlAbastractColumns", `columns`);
+      // Generate Columns
+      query = query.replace("gqlAggregateColumns", config.columns.join(" "));
+      debugger;
+      // concat with aggregatesQueryString
+    });
 
     // Return GraphQL query
     return gql`
-      ${query}
+      ${aggregatesQueryString}
     `;
   }
 
