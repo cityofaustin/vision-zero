@@ -488,11 +488,18 @@ gqlAbstractTableAggregateName (
     // 2. key for nested where conditions (if no key, no nested string)
     // 3. columns
 
-    let query = this.abstractStructure;
+    let query = `
+      gqlAbstractTableAggregateName (
+          gqlAbstractAggregateFilters
+      ) {
+          aggregate {
+            gqlAggregateColumns
+          }
+        }
+      }`;
 
     debugger;
-    // Replace the name of the table
-    query = query.replace("gqlAbstractTableName", this.config["table"]);
+    // Replace the name of the aggregate table
     query = query.replace(
       "gqlAbstractTableAggregateName",
       this.config["table"] + "_aggregate"
@@ -509,7 +516,7 @@ gqlAbstractTableAggregateName (
     );
 
     // Generate Columns
-    query = query.replace("gqlAbastractColumns", string);
+    query = query.replace("gqlAbastractColumns", `columns`);
 
     // Return GraphQL query
     return gql`
