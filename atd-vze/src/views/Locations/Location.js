@@ -33,6 +33,7 @@ import {
 function Location(props) {
   const locationId = props.match.params.id;
   const [mapSelected, setMapSelected] = useState("aerial");
+  const [tableQuery, setTableQuery] = useState(null);
   const { loading, error, data, refetch } = useQuery(GET_LOCATION, {
     variables: { id: locationId },
   });
@@ -126,6 +127,10 @@ function Location(props) {
         ),
       },
     ],
+  };
+
+  const getTableQuery = query => {
+    debugger;
   };
 
   const { count: crashCount } = data.atd_txdot_crashes_aggregate.aggregate;
@@ -340,7 +345,10 @@ function Location(props) {
       </Row>
       <Row>
         <Col>
-          <LocationCrashes locationId={locationId} />
+          <LocationCrashes
+            locationId={locationId}
+            getTableQuery={getTableQuery}
+          />
         </Col>
       </Row>
     </div>

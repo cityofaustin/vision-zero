@@ -27,7 +27,13 @@ import GridFilters from "./GridFilters";
 import GridDateRange from "./GridDateRange";
 import GridExportData from "./GridExportData";
 
-const GridTable = ({ title, query, filters, columnsToExport }) => {
+const GridTable = ({
+  title,
+  query,
+  filters,
+  columnsToExport,
+  getTableQuery,
+}) => {
   // Load table filters from localStorage by title
   const savedFilterState = JSON.parse(
     localStorage.getItem(`saved${title}Config`)
@@ -95,6 +101,7 @@ const GridTable = ({ title, query, filters, columnsToExport }) => {
       `saved${title}Config`,
       JSON.stringify(stateForFilters)
     );
+    getTableQuery && getTableQuery(query);
   });
 
   /**

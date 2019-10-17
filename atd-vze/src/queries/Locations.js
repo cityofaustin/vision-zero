@@ -96,9 +96,9 @@ crashes_count_cost_summary { total_serious_injuries }
 crashes_count_cost_summary { est_comp_cost }
 `;
 
-// query LocationDetailStats {
+// query GetLocationStats {
 //   atd_txdot_crashes_aggregate(
-//     where: { city_id: { _eq: 22 }, location: { location_id: { _eq: "5553912" } } }
+//     where: {city_id: {_eq: 22}, location: {location_id: {_eq: "5554229"}}, crash_date: {_gte: "2018-10-17", _lte: "2019-10-17"}, latitude: {_is_null: true}, longitude: {_is_null: true}}
 //   ) {
 //     aggregate {
 //       count
@@ -109,8 +109,8 @@ crashes_count_cost_summary { est_comp_cost }
 //   }
 //   atd_txdot_primaryperson_aggregate(
 //     where: {
-//       crash: { city_id: { _eq: 22 }, location: { location_id: { _eq: "5553912" } } }
-//     }
+//      crash: { city_id: { _eq: 22 }, location: { location_id: { _eq: "5553912" } } }
+//   }
 //   ) {
 //     aggregate {
 //       count
@@ -121,9 +121,7 @@ crashes_count_cost_summary { est_comp_cost }
 //     }
 //   }
 //   atd_txdot_person_aggregate(
-//     where: {
-//       crash: { city_id: { _eq: 22 }, location: { location_id: { _eq: "5553912" } } }
-//     }
+//     where: { crash: {city_id: {_eq: 22}, location: {location_id: {_eq: "5554229"}}, crash_date: {_gte: "2018-10-17", _lte: "2019-10-17"}, latitude: {_is_null: true}, longitude: {_is_null: true}}}
 //   ) {
 //     aggregate {
 //       count
@@ -134,9 +132,7 @@ crashes_count_cost_summary { est_comp_cost }
 //     }
 //   }
 //   atd_txdot_units_aggregate(
-//     where: {
-//       crash: { city_id: { _eq: 22 }, location: { location_id: { _eq: "5553912" } } }
-//     }
+//     where: { crash: {city_id: {_eq: 22}, location: {location_id: {_eq: "5554229"}}, crash_date: {_gte: "2018-10-17", _lte: "2019-10-17"}, latitude: {_is_null: true}, longitude: {_is_null: true}}}
 //   ) {
 //     aggregate {
 //       count

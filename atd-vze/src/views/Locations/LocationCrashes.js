@@ -166,6 +166,7 @@ function LocationCrashes(props) {
       title={"Location Crashes"}
       filters={customFilters}
       columnsToExport={locationCrashesQueryExportFields}
+      getTableQuery={props.getTableQuery}
     />
   );
 }
