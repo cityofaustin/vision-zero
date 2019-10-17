@@ -130,7 +130,18 @@ function Location(props) {
   };
 
   const getTableQuery = query => {
-    debugger;
+    const queryConfig = [
+      {
+        table: "atd_txdot_crashes_aggregate",
+        columns: [
+          `count`,
+          `sum { sus_serious_injry_cnt
+                                 years_of_life_lost }`,
+        ],
+        key: "crash",
+      },
+    ];
+    query.queryAggregate(queryConfig);
   };
 
   const { count: crashCount } = data.atd_txdot_crashes_aggregate.aggregate;

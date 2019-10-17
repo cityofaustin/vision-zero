@@ -475,6 +475,49 @@ gqlAbstractTableAggregateName (
   }
 
   /**
+   * Generates a GraphQL query based on columns passed in for export feature.
+   * @params {string} - String containing columns to return in query.
+   * @returns {Object} gql Object
+   */
+  queryAggregate(queryConfigArray) {
+    // First copy the abstract and work from the copy and clear offset to request all records
+    // For each table name/config passed in, replace name, nested (true or false) key, and columns
+    // Concat each aggregate and return gql query
+    // For each query need:
+    // 1. table name
+    // 2. key for nested where conditions (if no key, no nested string)
+    // 3. columns
+
+    let query = this.abstractStructure;
+
+    debugger;
+    // Replace the name of the table
+    query = query.replace("gqlAbstractTableName", this.config["table"]);
+    query = query.replace(
+      "gqlAbstractTableAggregateName",
+      this.config["table"] + "_aggregate"
+    );
+
+    // Generate Filters
+    query = query.replace(
+      "gqlAbstractFilters",
+      `{ ${`ftable`}: {this.generateFilters()} }`
+    );
+    query = query.replace(
+      "gqlAbstractAggregateFilters",
+      this.generateFilters(true)
+    );
+
+    // Generate Columns
+    query = query.replace("gqlAbastractColumns", string);
+
+    // Return GraphQL query
+    return gql`
+      ${query}
+    `;
+  }
+
+  /**
    * Returns a GQL object based on the current state of the configuration.
    * @returns {Object} gql object
    */
