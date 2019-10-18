@@ -499,7 +499,7 @@ gqlAbstractTableAggregateName (
             gqlAggregateColumns
           }
         }
-      }`;
+      `;
       // Replace the name of the aggregate table
       query = query.replace("gqlAbstractTableAggregateName", config.table);
 
@@ -526,11 +526,11 @@ gqlAbstractTableAggregateName (
       aggregatesQueryArray.push(query);
     });
     const aggregatesQueryString = aggregatesQueryArray.join(" ");
-    debugger;
+    
     // Return GraphQL query
-    return gql`
+    return gql`query GetLocationStats {
       ${aggregatesQueryString}
-    `;
+    }`;
   }
 
   /**

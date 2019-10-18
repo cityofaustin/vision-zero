@@ -144,6 +144,16 @@ function Location(props) {
         ],
         key: "crash",
       },
+      {
+        table: "atd_txdot_person_aggregate",
+        columns: [`count`],
+        key: "crash",
+      },
+      {
+        table: "atd_txdot_units_aggregate",
+        columns: [`count`],
+        key: "crash",
+      },
     ];
     query.queryAggregate(queryConfig, query);
   };
