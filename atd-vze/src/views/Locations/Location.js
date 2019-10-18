@@ -133,15 +133,19 @@ function Location(props) {
     const queryConfig = [
       {
         table: "atd_txdot_crashes_aggregate",
+        columns: [`count`, `sum { apd_confirmed_death_count }`],
+      },
+      {
+        table: "atd_txdot_primaryperson_aggregate",
         columns: [
           `count`,
           `sum { sus_serious_injry_cnt
-                                 years_of_life_lost }`,
+                 years_of_life_lost }`,
         ],
         key: "crash",
       },
     ];
-    query.queryAggregate(queryConfig);
+    query.queryAggregate(queryConfig, query);
   };
 
   const { count: crashCount } = data.atd_txdot_crashes_aggregate.aggregate;

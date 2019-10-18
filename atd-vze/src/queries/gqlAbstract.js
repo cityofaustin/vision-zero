@@ -488,7 +488,7 @@ gqlAbstractTableAggregateName (
     // 1. table name
     // 2. key for nested where conditions (if no key, no nested string)
     // 3. columns
-    const aggregatesQueryString = "";
+    let aggregatesQueryArray = [];
 
     queryConfigArray.forEach(config => {
       let query = `
@@ -505,17 +505,28 @@ gqlAbstractTableAggregateName (
 
       // Generate Filters
       // Retrieve filters from query instance and add to aggregate
-      // query = query.replace(
-      //   "gqlAbstractFilters",
-      //   `{ ${`f}: {this.generateFilters()} }`
-      // );
+      let whereFilters = [];
+      Object.entries(queryInstance.config.where).forEach(([filter, value]) =>
+        whereFilters.push(`${filter}: { ${value} }`)
+      );
+
+      query = config.key
+        ? query.replace(
+            "gqlAbstractAggregateFilters",
+            `where: { ${config.key}: { ${whereFilters} } }`
+          )
+        : query.replace(
+            "gqlAbstractAggregateFilters",
+            `where: { ${whereFilters} }`
+          );
 
       // Generate Columns
       query = query.replace("gqlAggregateColumns", config.columns.join(" "));
-      debugger;
-      // concat with aggregatesQueryString
-    });
 
+      aggregatesQueryArray.push(query);
+    });
+    const aggregatesQueryString = aggregatesQueryArray.join(" ");
+    debugger;
     // Return GraphQL query
     return gql`
       ${aggregatesQueryString}
