@@ -101,6 +101,8 @@ const GridTable = ({
       `saved${title}Config`,
       JSON.stringify(stateForFilters)
     );
+
+    // Pass query to parent components to expose query parameters
     getTableQuery && getTableQuery(query);
   });
 

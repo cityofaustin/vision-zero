@@ -475,14 +475,14 @@ gqlAbstractTableAggregateName (
   }
 
   /**
-   * Generates a GraphQL query based on queryConfigArray passed in for driving aggregate data from table filters.
-   * @params {queryConfigarray} - Array of objects of config for aggregate queries.
-   * @params {queryInstance} - Query instance to load query filters
+   * Generates a GraphQL query based on queryConfigArray passed in to set aggregate filters from table filters.
+   * @params {queryConfigArray} - Array of config objects (object keys are table, columns, and key (if nested)).
+   * @params {queryInstance} - Query instance to get table filters and set in aggregate queries.
    * @returns {Object} gql Object
    */
   queryAggregate(queryConfigArray, queryInstance) {
     // First copy the abstract and work from the copy and clear offset to request all records
-    // For each table name/config passed in, replace name, nested (true or false) key, and columns
+    // For each config in array, replace table name, columns, and key if nested query.
     // Concat each aggregate and return gql query
     // For each query need:
     // 1. table name
@@ -503,13 +503,13 @@ gqlAbstractTableAggregateName (
       // Replace the name of the aggregate table
       query = query.replace("gqlAbstractTableAggregateName", config.table);
 
-      // Generate Filters
       // Retrieve filters from query instance and add to aggregate
       let whereFilters = [];
       Object.entries(queryInstance.config.where).forEach(([filter, value]) =>
         whereFilters.push(`${filter}: { ${value} }`)
       );
 
+      // If a key is defined in config, nest whereFilters
       query = config.key
         ? query.replace(
             "gqlAbstractAggregateFilters",
@@ -525,8 +525,9 @@ gqlAbstractTableAggregateName (
 
       aggregatesQueryArray.push(query);
     });
+    // Join each aggregate query into one string
     const aggregatesQueryString = aggregatesQueryArray.join(" ");
-    
+
     // Return GraphQL query
     return gql`query GetLocationStats {
       ${aggregatesQueryString}

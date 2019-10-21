@@ -33,10 +33,11 @@ import {
 function Location(props) {
   const locationId = props.match.params.id;
   const [mapSelected, setMapSelected] = useState("aerial");
-  const [tableQuery, setTableQuery] = useState(null);
+  const [aggregateQuery, setAggregateQuery] = useState(null);
   const { loading, error, data, refetch } = useQuery(GET_LOCATION, {
     variables: { id: locationId },
   });
+  // const { aggLoading, aggError, aggData } = useQuery(aggregateQuery);
 
   const handleMapChange = e => {
     e.preventDefault();
@@ -130,7 +131,8 @@ function Location(props) {
   };
 
   const getTableQuery = query => {
-    const queryConfig = [
+    // Define aggregates needed for widgets
+    const aggregateQueryConfigs = [
       {
         table: "atd_txdot_crashes_aggregate",
         columns: [`count`, `sum { apd_confirmed_death_count }`],
@@ -155,7 +157,12 @@ function Location(props) {
         key: "crash",
       },
     ];
-    query.queryAggregate(queryConfig, query);
+
+    // Generate GraphQL query from config array
+    const aggregatesQuery = query.queryAggregate(aggregateQueryConfigs, query);
+
+    // Set state to execute GraphQL query
+    setAggregateQuery(aggregateQuery);
   };
 
   const { count: crashCount } = data.atd_txdot_crashes_aggregate.aggregate;
