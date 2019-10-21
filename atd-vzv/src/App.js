@@ -6,7 +6,7 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <a>Vision Zero Viewer</a>
+        <h1>Vision Zero Viewer</h1>
       </header>
       <Dashboard />
     </div>
