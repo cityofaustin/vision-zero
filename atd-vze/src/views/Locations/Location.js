@@ -162,7 +162,7 @@ function Location(props) {
     const aggregatesQuery = query.queryAggregate(aggregateQueryConfigs, query);
 
     // Set state to execute GraphQL query
-    setAggregateQuery(aggregateQuery);
+    setAggregateQuery(aggregatesQuery);
   };
 
   const { count: crashCount } = data.atd_txdot_crashes_aggregate.aggregate;
