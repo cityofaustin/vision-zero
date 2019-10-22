@@ -12,9 +12,6 @@
 #
 # React
 #
-/editor/static/*        /editor/static/:splat           200
-/editor/public/*        /editor/public/:splat           200
-/editor/*               /editor/index.html              200
 /static/*               /static/:splat                  200
 /public/*               /public/:splat                  200
 /*                      /index.html                     200
