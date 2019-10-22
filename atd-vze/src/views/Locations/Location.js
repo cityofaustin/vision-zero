@@ -283,7 +283,7 @@ function Location(props) {
                             fieldValueDisplay = !!data.atd_txdot_locations[0]
                               .crashes_count_cost_summary
                               ? data.atd_txdot_locations[0].crashes_count_cost_summary.est_comp_cost.toLocaleString()
-                              : "0";
+                              : "No data";
                             break;
                           default:
                             fieldValueDisplay =

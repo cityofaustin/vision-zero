@@ -6,6 +6,8 @@ export const GET_CRASH = gql`
       active_school_zone_fl
       address_confirmed_primary
       address_confirmed_secondary
+      apd_confirmed_fatality
+      apd_confirmed_death_count
       approval_date
       approved_by
       at_intrsct_fl
@@ -18,7 +20,6 @@ export const GET_CRASH = gql`
       crash_speed_limit
       crash_time
       day_of_week
-      apd_confirmed_death_count
       est_comp_cost
       fhe_collsn_id
       geocode_date
@@ -187,6 +188,8 @@ export const UPDATE_CRASH = gql`
         active_school_zone_fl
         approval_date
         approved_by
+        apd_confirmed_fatality
+        apd_confirmed_death_count
         at_intrsct_fl
         case_id
         city_id
@@ -197,7 +200,6 @@ export const UPDATE_CRASH = gql`
         crash_speed_limit
         crash_time
         day_of_week
-        apd_confirmed_death_count
         fhe_collsn_id
         geocode_date
         geocode_provider
