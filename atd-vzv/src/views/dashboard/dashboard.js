@@ -8,7 +8,7 @@ import { Container, Row, Col } from "reactstrap";
 
 const Dashboard = () => {
   return (
-    <Container>
+    <Container fluid>
       <Row>
         <Col md="6">
           <Fatalities />

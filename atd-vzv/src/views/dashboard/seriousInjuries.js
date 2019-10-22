@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import moment from "moment";
 
-import { Container } from "reactstrap";
+import { Container, Row, Col } from "reactstrap";
 
 const SeriousInjuries = props => {
   const today = moment().format("YYYY-MM-DD");
@@ -42,12 +42,16 @@ const SeriousInjuries = props => {
     <Container>
       <h3>Year-to-Date Serious Injuries</h3>
       <br />
-      <h2>
-        {thisYear}: {yearToDateInjuryTotal}
-      </h2>
-      <h2>
-        {lastYear}: {lastYearToDateInjuryTotal}
-      </h2>
+      <Row>
+        <Col>
+          <h5>{thisYear}</h5>
+          <h1>{yearToDateInjuryTotal}</h1>
+        </Col>
+        <Col>
+          <h5>{lastYear}</h5>
+          <h1>{lastYearToDateInjuryTotal}</h1>
+        </Col>
+      </Row>
     </Container>
   );
 };
