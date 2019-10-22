@@ -1,13 +1,13 @@
 #
 # Domain
 #
-http://vze.austintexas.io/* https://vze.austintexas.io/:splat 301!
+#http://vze.austintexas.io/* https://vze.austintexas.io/:splat 301!
 
 #
 # Netlify's domain
 #
-https://atd-vze.netlify.com/* https://vze.austintexas.io/:splat 301!
-http://atd-vze.netlify.com/* https://vze.austintexas.io/:splat 301!
+#https://atd-vze.netlify.com/* https://vze.austintexas.io/:splat 301!
+#http://atd-vze.netlify.com/* https://vze.austintexas.io/:splat 301!
 
 #
 # React
