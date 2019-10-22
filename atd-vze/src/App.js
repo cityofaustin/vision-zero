@@ -134,7 +134,10 @@ class App extends Component {
     this.auth.auth0.parseHash((err, authResult) => {
       if (authResult && authResult.accessToken && authResult.idToken) {
         this.setSession(authResult);
-        window.location = "/#/dashboard";
+        const prefix = window.location.pathname.startsWith("/editor")
+            ? "/editor"
+            : "";
+        window.location = prefix + "/#/dashboard";
       } else if (err) {
         alert(`Error: ${err.error}. Check the console for further details.`);
       }
