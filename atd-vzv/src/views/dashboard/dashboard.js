@@ -10,19 +10,19 @@ const Dashboard = () => {
   return (
     <Container>
       <Row>
-        <Col sm="6">
+        <Col md="6">
           <Fatalities />
         </Col>
-        <Col sm="6">
+        <Col md="6">
           <SeriousInjuryAndFatalCrashesByMonth />
         </Col>
       </Row>
       <Row>
-        <Col sm="6">
+        <Col md="6">
           <SeriousInjuries />
         </Col>
         {/* TODO Serious Injury + Fatal Crashes by Mode - populate real data */}
-        <Col sm="6">
+        <Col md="6">
           <SeriousInjuryAndFatalCrashesByMode />
         </Col>
       </Row>

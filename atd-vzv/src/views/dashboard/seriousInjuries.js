@@ -41,12 +41,13 @@ const SeriousInjuries = props => {
   return (
     <Container>
       <h3>Year-to-Date Serious Injuries</h3>
-      <p>
+      <br />
+      <h2>
         {thisYear}: {yearToDateInjuryTotal}
-      </p>
-      <p>
+      </h2>
+      <h2>
         {lastYear}: {lastYearToDateInjuryTotal}
-      </p>
+      </h2>
     </Container>
   );
 };

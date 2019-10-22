@@ -65,12 +65,16 @@ const Fatalities = props => {
         <Col sm="6">
           <p>{thisYear}</p>
           <h2>{yearToDateFatalityTotal}</h2>
-          <p>{renderFatalityIcons(yearToDateFatalityTotal)}</p>
+          <p className="text-left">
+            {renderFatalityIcons(yearToDateFatalityTotal)}
+          </p>
         </Col>
         <Col sm="6">
           <p>{lastYear}</p>
           <h2>{lastYearToDateFatalityTotal}</h2>
-          <p>{renderFatalityIcons(lastYearToDateFatalityTotal)}</p>
+          <p className="text-left">
+            {renderFatalityIcons(lastYearToDateFatalityTotal)}
+          </p>
         </Col>
       </Row>
     </Container>

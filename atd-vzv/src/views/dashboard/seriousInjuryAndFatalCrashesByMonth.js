@@ -157,12 +157,6 @@ const SeriousInjuryAndFatalCrashesByMonth = props => {
     <Container>
       <h3>Serious Injury + Fatal Crashes by Month</h3>
       <Line data={data} />
-      <p>
-        {thisYear}: {yearToDateInjuryDeathTotal}
-      </p>
-      <p>
-        {lastYear}: {lastYearToDateInjuryDeathTotal}
-      </p>
     </Container>
   );
 };

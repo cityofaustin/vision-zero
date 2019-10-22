@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import moment from "moment";
-import { Doughnut } from "react-chartjs-2";
+import { Pie } from "react-chartjs-2";
 
 import { Container, Row, Col } from "reactstrap";
 
 // TODO Need modes of vehicle in crash in dataset
+// TODO one legend for both pie charts (might need different library)
 // Endpoint: https://data.austintexas.gov/resource/y2wy-tgr5.json
-// Need to display doughnut graph (Motor Vehicle, Motorcycle, Pedestrian, Bicycle) of:
+// Need to display pie chart (Motor Vehicle, Motorcycle, Pedestrian, Bicycle) of:
 // 1. Year-to-date
 // 2. Previous year
 
@@ -98,12 +99,12 @@ const SeriousInjuryAndFatalCrashesByMode = props => {
       <h3>Serious Injury + Fatal Crashes by Mode</h3>
       <Row>
         <Col sm="6">
-          <h4>{thisYear}</h4>
-          <Doughnut data={yearToDateData} />
+          <h4>{thisYear} YTD</h4>
+          <Pie data={yearToDateData} />
         </Col>
         <Col sm="6">
-          <h4>{lastYear}</h4>
-          <Doughnut data={lastYearToDateData} />
+          <h4>{lastYear} YTD</h4>
+          <Pie data={lastYearToDateData} />
         </Col>
       </Row>
     </Container>
