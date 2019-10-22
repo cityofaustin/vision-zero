@@ -139,6 +139,11 @@ export const crashDataMap = [
   {
     title: "Primary Street Information",
     fields: {
+      address_confirmed_primary: {
+        label: "Primary Address",
+        editable: true,
+        uiType: "text",
+      },
       street_nbr: {
         label: "Street Number",
         editable: false,
@@ -211,6 +216,11 @@ export const crashDataMap = [
   {
     title: "Secondary Street Information",
     fields: {
+      address_confirmed_secondary: {
+        label: "Secondary Address",
+        editable: true,
+        uiType: "text",
+      },
       street_nbr_2: {
         label: "Secondary Street Number",
         editable: false,
