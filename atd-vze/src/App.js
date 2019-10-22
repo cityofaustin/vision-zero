@@ -101,12 +101,18 @@ class App extends Component {
       This seems to work for now, let's see if we can make the router take care
       of this at some point.
     */
-    if (window.location.pathname.startsWith("/callback") || window.location.pathname.startsWith("/editor/callback")) {
+    if (
+      window.location.pathname.startsWith("/callback") ||
+      window.location.pathname.startsWith("/editor/callback")
+    ) {
       // Handle authentication if expected values are in the URL.
       if (/access_token|id_token|error/.test(window.location.hash)) {
         this.handleAuthentication();
       } else {
-        window.location = "/#/login";
+        const prefix = window.location.pathname.startsWith("/editor")
+          ? "/editor"
+          : "";
+        window.location = prefix + "/#/login";
       }
     }
   }
