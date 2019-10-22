@@ -5,6 +5,12 @@
   publish = "build"
   command = "npm run build:staging"
 
+[context.341-sg-visionzerogateway] # 'master' is a branch name
+  NODE_ENV = "staging"
+  base    = "atd-vze"
+  publish = "build"
+  command = "npm run build:staging"
+
 # Production context: all deploys from the Production branch set in your site's
 # deploy contexts will inherit these settings.
 [context.production]
