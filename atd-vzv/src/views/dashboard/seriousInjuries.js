@@ -10,8 +10,8 @@ const SeriousInjuries = props => {
     .subtract(1, "year")
     .format("YYYY");
 
-  const yearToDateUri = `https://data.austintexas.gov/resource/y2wy-tgr5.json?$where=sus_serious_injry_cnt > 0 AND crash_date between '${thisYear}-01-01T00:00:00' and '${today}T23:59:59'`;
-  const previousYearUri = `https://data.austintexas.gov/resource/y2wy-tgr5.json?$where=sus_serious_injry_cnt > 0 AND crash_date between '${lastYear}-01-01T00:00:00' and '${lastYear}${todayMonthYear}T23:59:59'`;
+  const yearToDateUrl = `https://data.austintexas.gov/resource/y2wy-tgr5.json?$where=sus_serious_injry_cnt > 0 AND crash_date between '${thisYear}-01-01T00:00:00' and '${today}T23:59:59'`;
+  const previousYearUrl = `https://data.austintexas.gov/resource/y2wy-tgr5.json?$where=sus_serious_injry_cnt > 0 AND crash_date between '${lastYear}-01-01T00:00:00' and '${lastYear}${todayMonthYear}T23:59:59'`;
 
   const [yearToDateInjuryTotal, setYearToDateInjuryTotal] = useState(0);
   const [lastYearToDateInjuryTotal, setLastYearToDateInjuryTotal] = useState(0);
@@ -26,12 +26,12 @@ const SeriousInjuries = props => {
 
   useEffect(() => {
     // Fetch year-to-date records
-    axios.get(yearToDateUri).then(res => {
+    axios.get(yearToDateUrl).then(res => {
       setYearToDateInjuryTotal(calculateTotalInjuries(res));
     });
 
     // Fetch last year-to-date records
-    axios.get(previousYearUri).then(res => {
+    axios.get(previousYearUrl).then(res => {
       setLastYearToDateInjuryTotal(calculateTotalInjuries(res));
     });
   }, []);
