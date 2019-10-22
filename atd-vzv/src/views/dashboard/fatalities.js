@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import moment from "moment";
 
+import { Container, Row, Col } from "reactstrap";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMale } from "@fortawesome/free-solid-svg-icons";
@@ -58,19 +59,21 @@ const Fatalities = props => {
   }, []);
 
   return (
-    <div>
+    <Container>
       <h3>Year-to-Date Fatalities</h3>
-      <p>
-        {thisYear}: {yearToDateFatalityTotal}
-      </p>
-      <p>
-        {lastYear}: {lastYearToDateFatalityTotal}
-      </p>
-      <p>{thisYear}</p>
-      <p>{renderFatalityIcons(yearToDateFatalityTotal)}</p>
-      <p>{lastYear}</p>
-      <p>{renderFatalityIcons(lastYearToDateFatalityTotal)}</p>
-    </div>
+      <Row>
+        <Col sm="6">
+          <p>{thisYear}</p>
+          <h2>{yearToDateFatalityTotal}</h2>
+          <p>{renderFatalityIcons(yearToDateFatalityTotal)}</p>
+        </Col>
+        <Col sm="6">
+          <p>{lastYear}</p>
+          <h2>{lastYearToDateFatalityTotal}</h2>
+          <p>{renderFatalityIcons(lastYearToDateFatalityTotal)}</p>
+        </Col>
+      </Row>
+    </Container>
   );
 };
 

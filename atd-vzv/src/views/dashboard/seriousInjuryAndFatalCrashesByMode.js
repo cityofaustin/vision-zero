@@ -3,8 +3,10 @@ import axios from "axios";
 import moment from "moment";
 import { Doughnut } from "react-chartjs-2";
 
-// Endpoint: https://data.austintexas.gov/resource/y2wy-tgr5.json
+import { Container, Row, Col } from "reactstrap";
+
 // TODO Need modes of vehicle in crash in dataset
+// Endpoint: https://data.austintexas.gov/resource/y2wy-tgr5.json
 // Need to display doughnut graph (Motor Vehicle, Motorcycle, Pedestrian, Bicycle) of:
 // 1. Year-to-date
 // 2. Previous year
@@ -92,13 +94,19 @@ const SeriousInjuryAndFatalCrashesByMode = props => {
   };
 
   return (
-    <div>
+    <Container>
       <h3>Serious Injury + Fatal Crashes by Mode</h3>
-      <h4>{thisYear}</h4>
-      <Doughnut data={yearToDateData} />
-      <h4>{lastYear}</h4>
-      <Doughnut data={lastYearToDateData} />
-    </div>
+      <Row>
+        <Col sm="6">
+          <h4>{thisYear}</h4>
+          <Doughnut data={yearToDateData} />
+        </Col>
+        <Col sm="6">
+          <h4>{lastYear}</h4>
+          <Doughnut data={lastYearToDateData} />
+        </Col>
+      </Row>
+    </Container>
   );
 };
 

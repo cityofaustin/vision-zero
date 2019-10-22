@@ -3,6 +3,8 @@ import axios from "axios";
 import moment from "moment";
 import { Line } from "react-chartjs-2";
 
+import { Container } from "reactstrap";
+
 // Endpoint: https://data.austintexas.gov/resource/y2wy-tgr5.json
 // Need to display line graph (x-axis is Jan-Dec, y-axis is count) of:
 // 1. Year-to-date
@@ -34,7 +36,9 @@ const SeriousInjuryAndFatalCrashesByMonth = props => {
     setLastYearToDateInjuryDeathArray
   ] = useState([]);
 
-  const calculateMonthlyTotals = data => {
+  const calculateMonthlyTotals = (data, monthString) => {
+    // Limit returned data to months of data available, prevent line from zeroing out
+    const monthLimit = monthString ? moment(monthString).format("MM") : "12";
     const monthIntegerArray = [
       "01",
       "02",
@@ -49,7 +53,11 @@ const SeriousInjuryAndFatalCrashesByMonth = props => {
       "11",
       "12"
     ];
-    return monthIntegerArray.map(month => {
+    const truncatedMonthIntegerArray = monthIntegerArray.slice(
+      0,
+      monthIntegerArray.indexOf(monthLimit) + 1
+    );
+    return truncatedMonthIntegerArray.map(month => {
       let monthTotal = 0;
       data.data.forEach(record => {
         if (moment(record.crash_date).format("MM") === month) {
@@ -74,7 +82,7 @@ const SeriousInjuryAndFatalCrashesByMonth = props => {
     // Fetch year-to-date records
     axios.get(yearToDateUrl).then(res => {
       setYearToDateInjuryDeathTotal(calculateTotalInjuries(res));
-      setYearToDateInjuryDeathArray(calculateMonthlyTotals(res));
+      setYearToDateInjuryDeathArray(calculateMonthlyTotals(res, today));
     });
 
     // Fetch last year-to-date records
@@ -146,7 +154,7 @@ const SeriousInjuryAndFatalCrashesByMonth = props => {
   };
 
   return (
-    <div>
+    <Container>
       <h3>Serious Injury + Fatal Crashes by Month</h3>
       <Line data={data} />
       <p>
@@ -155,7 +163,7 @@ const SeriousInjuryAndFatalCrashesByMonth = props => {
       <p>
         {lastYear}: {lastYearToDateInjuryDeathTotal}
       </p>
-    </div>
+    </Container>
   );
 };
 
