@@ -60,7 +60,7 @@
   },
   "scripts": {
     "start": "export HTTPS=true && react-scripts start",
-    "build": "react-scripts build && cp _redirects build",
+    "build": "react-scripts build && cp _redirects build && cp -r build editor && mv editor build",
     "build:production": "env-cmd -f .env.production npm run build",
     "build:staging": "env-cmd -f .env.staging npm run build",
     "test": "react-scripts test",
