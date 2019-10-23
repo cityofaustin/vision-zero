@@ -12,7 +12,7 @@ import { Container, Row, Col } from "reactstrap";
 // 1. Year-to-date
 // 2. Previous year
 
-const SeriousInjuryAndFatalCrashesByMode = props => {
+const SeriousInjuryAndFatalCrashesByMode = () => {
   const today = moment().format("YYYY-MM-DD");
   const todayMonthYear = moment().format("-MM-DD");
   const thisYear = moment().format("YYYY");
@@ -34,7 +34,7 @@ const SeriousInjuryAndFatalCrashesByMode = props => {
   ] = useState([]);
 
   const calculateModeTotals = data => {
-    // TODO replace strings in array with mode labels in DB
+    // TODO replace strings in array with mode names in DB
     const modeArray = ["Motor Vehicle", "Motorcycle", "Pedestrian", "Bicycle"];
     return modeArray.map(mode => {
       let modeTotal = 0;
@@ -74,7 +74,7 @@ const SeriousInjuryAndFatalCrashesByMode = props => {
     labels: ["Motor Vehicle", "Motorcycle", "Pedestrian", "Bicycle"],
     datasets: [
       {
-        // TODO use yearToDateInjuryDeathModeArray here
+        // TODO use yearToDateInjuryDeathModeArray here and style
         data: [61, 13, 20, 6],
         backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"],
         hoverBackgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"]

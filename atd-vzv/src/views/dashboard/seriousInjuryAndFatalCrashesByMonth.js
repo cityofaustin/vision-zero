@@ -5,12 +5,7 @@ import { Line } from "react-chartjs-2";
 
 import { Container } from "reactstrap";
 
-// Endpoint: https://data.austintexas.gov/resource/y2wy-tgr5.json
-// Need to display line graph (x-axis is Jan-Dec, y-axis is count) of:
-// 1. Year-to-date
-// 2. Previous year
-
-const SeriousInjuryAndFatalCrashesByMonth = props => {
+const SeriousInjuryAndFatalCrashesByMonth = () => {
   const today = moment().format("YYYY-MM-DD");
   const todayMonthYear = moment().format("-MM-DD");
   const thisYear = moment().format("YYYY");
@@ -21,13 +16,6 @@ const SeriousInjuryAndFatalCrashesByMonth = props => {
   const yearToDateUrl = `https://data.austintexas.gov/resource/y2wy-tgr5.json?$where=(sus_serious_injry_cnt > 0 OR death_cnt > 0) AND crash_date between '${thisYear}-01-01T00:00:00' and '${today}T23:59:59'`;
   const previousYearUrl = `https://data.austintexas.gov/resource/y2wy-tgr5.json?$where=(sus_serious_injry_cnt > 0 OR death_cnt > 0) AND crash_date between '${lastYear}-01-01T00:00:00' and '${lastYear}${todayMonthYear}T23:59:59'`;
 
-  const [yearToDateInjuryDeathTotal, setYearToDateInjuryDeathTotal] = useState(
-    0
-  );
-  const [
-    lastYearToDateInjuryDeathTotal,
-    setLastYearToDateInjuryDeathTotal
-  ] = useState(0);
   const [yearToDateInjuryDeathArray, setYearToDateInjuryDeathArray] = useState(
     []
   );
@@ -36,9 +24,10 @@ const SeriousInjuryAndFatalCrashesByMonth = props => {
     setLastYearToDateInjuryDeathArray
   ] = useState([]);
 
-  const calculateMonthlyTotals = (data, monthString) => {
-    // Limit returned data to months of data available, prevent line from zeroing out
-    const monthLimit = monthString ? moment(monthString).format("MM") : "12";
+  const calculateMonthlyTotals = (data, dateString) => {
+    // Limit returned data to months of data available and prevent line from zeroing out
+    // If dataString is passed in, convert to month string and use to truncate monthIntegerArray
+    const monthLimit = dateString ? moment(dateString).format("MM") : "12";
     const monthIntegerArray = [
       "01",
       "02",
@@ -133,7 +122,7 @@ const SeriousInjuryAndFatalCrashesByMonth = props => {
         label: `${lastYear}`,
         fill: false,
         lineTension: 0.1,
-        backgroundColor: "rgba(75,192,192,0.4)",
+        backgroundColor: "rgba(75,192,192,0.4)", // Legend box
         borderColor: "rgba(75,192,192,1)",
         borderCapStyle: "butt",
         borderDash: [],

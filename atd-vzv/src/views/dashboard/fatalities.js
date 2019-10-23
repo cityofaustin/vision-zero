@@ -7,16 +7,11 @@ import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMale } from "@fortawesome/free-solid-svg-icons";
 
-// Endpoint: https://data.austintexas.gov/resource/y2wy-tgr5.json
-// Need to display pictorial chart of:
-// 1. Year-to-date fatalities for current
-// 2. Fatalities from previous year
-
 const StyledIcon = styled.i`
   margin: 0px 2px 0px 2px;
 `;
 
-const Fatalities = props => {
+const Fatalities = () => {
   const today = moment().format("YYYY-MM-DD");
   const todayMonthYear = moment().format("-MM-DD");
   const thisYear = moment().format("YYYY");

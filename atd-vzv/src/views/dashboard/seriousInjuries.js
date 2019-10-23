@@ -4,7 +4,7 @@ import moment from "moment";
 
 import { Container, Row, Col } from "reactstrap";
 
-const SeriousInjuries = props => {
+const SeriousInjuries = () => {
   const today = moment().format("YYYY-MM-DD");
   const todayMonthYear = moment().format("-MM-DD");
   const thisYear = moment().format("YYYY");
