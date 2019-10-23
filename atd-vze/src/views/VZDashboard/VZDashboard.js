@@ -4,13 +4,13 @@ import { withApollo } from "react-apollo";
 import { useQuery } from "@apollo/react-hooks";
 import Widget02 from "../Widgets/Widget02";
 
-import { GET_CRASH } from "../../queries/dashboard";
+import { GET_CRASHES_YTD } from "../../queries/dashboard";
 
 function VZDashboard() {
   const year = new Date().getFullYear();
   const yearStart = `${year}-01-01`;
   const yearEnd = `${year}-12-31`;
-  const { loading, error, data } = useQuery(GET_CRASH, {
+  const { loading, error, data } = useQuery(GET_CRASHES_YTD, {
     variables: { yearStart, yearEnd },
   });
 

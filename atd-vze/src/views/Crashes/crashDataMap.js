@@ -92,229 +92,10 @@ export const crashDataMap = [
   {
     title: "Fatalities/Injuries",
     fields: {
-      crash_fatal_fl: {
+      apd_confirmed_fatality: {
         label: "Fatality Flag",
-        editable: false,
-        lookupOptions: "atd_txdot__y_n_lkp",
-        lookupPrefix: "y_n",
-      },
-      death_cnt: {
-        label: "Death Count",
-        editable: false,
-      },
-      crash_sev_id: {
-        label: "Crash Severity",
-        editable: false,
-        lookupOptions: "atd_txdot__injry_sev_lkp",
-        lookupPrefix: "injry_sev",
-      },
-      non_injry_cnt: {
-        label: "Not Injured Count",
-        editable: false,
-      },
-      nonincap_injry_cnt: {
-        label: "Non-incapacitating Injury Count",
-        editable: false,
-      },
-      poss_injry_cnt: {
-        label: "Possible Injury Count",
-        editable: false,
-      },
-      sus_serious_injry_cnt: {
-        label: "Suspected Serious Injury Count",
-        editable: false,
-      },
-      tot_injry_cnt: {
-        label: "Total Injury Count",
-        editable: false,
-      },
-      unkn_injry_cnt: {
-        label: "Unknown Injury Count",
-        editable: false,
-      },
-    },
-  },
-  {
-    title: "Primary Street Information",
-    fields: {
-      street_nbr: {
-        label: "Street Number",
-        editable: true,
-        uiType: "text",
-      },
-      street_name: {
-        label: "Street Name",
-        editable: true,
-        uiType: "text",
-      },
-      rpt_street_desc: {
-        label: "Street Description",
-        editable: true,
-        uiType: "text",
-      },
-      rpt_road_part_id: {
-        label: "Roadway Part",
         editable: true,
         uiType: "select",
-        lookupOptions: "atd_txdot__road_part_lkp",
-        lookupPrefix: "road_part",
-      },
-      rpt_rdwy_sys_id: {
-        label: "Roadway System",
-        editable: true,
-        uiType: "select",
-        lookupOptions: "atd_txdot__rwy_sys_lkp",
-        lookupPrefix: "rwy_sys",
-      },
-      hwy_sys: {
-        label: "Highway System",
-        editable: true,
-        uiType: "text",
-      },
-      hwy_nbr: {
-        label: "Highway Number",
-        editable: true,
-        uiType: "text",
-      },
-      //  TODO: Need to create hwy_sfx_lkp table when I have access to the DB directly
-      hwy_sfx: {
-        label: "Highway Suffix",
-        editable: true,
-        uiType: "text",
-      },
-      rpt_block_num: {
-        label: "Reported Block Number",
-        editable: true,
-        uiType: "text",
-      },
-      rpt_street_pfx: {
-        label: "Reported Street Prefix",
-        editable: true,
-        uiType: "text",
-      },
-      rpt_street_name: {
-        label: "Reported Street Name",
-        editable: true,
-        uiType: "text",
-      },
-      // TODO: We'll probably want to validate that they are using values from the atd_txdot__street_sfx_lkp table
-      // for the rpt_street_sfx & rpt_sec_street_sfx fields but the values are currently text, not ID lookups so we'll punt
-      rpt_street_sfx: {
-        label: "Reported Street Suffix",
-        editable: true,
-        uiType: "text",
-      },
-    },
-  },
-  {
-    title: "Secondary Street Information",
-    fields: {
-      street_nbr_2: {
-        label: "Secondary Street Number",
-        editable: true,
-        uiType: "text",
-      },
-      street_name_2: {
-        label: "Secondary Street Name",
-        editable: true,
-        uiType: "text",
-      },
-      rpt_sec_street_desc: {
-        label: "Secondary Street Description",
-        editable: true,
-        uiType: "text",
-      },
-      rpt_sec_road_part_id: {
-        label: "Secondary Roadway Part",
-        editable: true,
-        uiType: "select",
-        lookupOptions: "atd_txdot__road_part_lkp",
-        lookupPrefix: "road_part",
-      },
-      rpt_sec_rdwy_sys_id: {
-        label: "Secondary Roadway System",
-        editable: true,
-        uiType: "select",
-        lookupOptions: "atd_txdot__rwy_sys_lkp",
-        lookupPrefix: "rwy_sys",
-      },
-      hwy_sys_2: {
-        label: "Secondary Highway System",
-        editable: true,
-        uiType: "text",
-      },
-      rpt_sec_hwy_num: {
-        label: "Secondary Highway Number",
-        editable: true,
-        uiType: "text",
-      },
-      rpt_sec_hwy_sfx: {
-        label: "Secondary Highway Suffix",
-        editable: true,
-        uiType: "text",
-      },
-      rpt_sec_block_num: {
-        label: "Reported Secondary Block Number",
-        editable: true,
-        uiType: "text",
-      },
-      rpt_sec_street_pfx: {
-        label: "Reported Secondary Street Prefix",
-        editable: true,
-        uiType: "text",
-      },
-
-      rpt_sec_street_name: {
-        label: "Reported Secondary Street Name",
-        editable: true,
-        uiType: "text",
-      },
-      rpt_sec_street_sfx: {
-        label: "Secondary Street Suffix",
-        editable: true,
-        uiType: "text",
-      },
-    },
-  },
-  {
-    title: "Geocoding",
-    fields: {
-      latitude_primary: {
-        label: "Latitude",
-        editable: true,
-        uiType: "text",
-      },
-      longitude_primary: {
-        label: "Longitude",
-        editable: true,
-        uiType: "text",
-      },
-      geocode_date: {
-        label: "Geocode Date",
-        editable: false,
-      },
-      geocode_provider: {
-        label: "Geocode Provider",
-        editable: false,
-      },
-      geocode_status: {
-        label: "Geocode Status",
-        editable: false,
-      },
-      geocoded: {
-        label: "Geocoded",
-        editable: false,
-        lookupOptions: "atd_txdot__y_n_lkp",
-        lookupPrefix: "y_n",
-      },
-    },
-  },
-  {
-    title: "Fatalities/Injuries",
-    fields: {
-      crash_fatal_fl: {
-        label: "Fatality Flag",
-        editable: false,
         lookupOptions: "atd_txdot__y_n_lkp",
         lookupPrefix: "y_n",
       },
@@ -352,6 +133,191 @@ export const crashDataMap = [
       unkn_injry_cnt: {
         label: "Unknown Injury Count",
         editable: false,
+      },
+    },
+  },
+  {
+    title: "Primary Street Information",
+    fields: {
+      address_confirmed_primary: {
+        label: "Primary Address",
+        editable: true,
+        uiType: "text",
+      },
+      street_nbr: {
+        label: "Street Number",
+        editable: false,
+        uiType: "text",
+      },
+      street_name: {
+        label: "Street Name",
+        editable: false,
+        uiType: "text",
+      },
+      rpt_street_desc: {
+        label: "Street Description",
+        editable: false,
+        uiType: "text",
+      },
+      rpt_road_part_id: {
+        label: "Roadway Part",
+        editable: false,
+        uiType: "select",
+        lookupOptions: "atd_txdot__road_part_lkp",
+        lookupPrefix: "road_part",
+      },
+      rpt_rdwy_sys_id: {
+        label: "Roadway System",
+        editable: false,
+        uiType: "select",
+        lookupOptions: "atd_txdot__rwy_sys_lkp",
+        lookupPrefix: "rwy_sys",
+      },
+      hwy_sys: {
+        label: "Highway System",
+        editable: false,
+        uiType: "text",
+      },
+      hwy_nbr: {
+        label: "Highway Number",
+        editable: false,
+        uiType: "text",
+      },
+      //  TODO: Need to create hwy_sfx_lkp table when I have access to the DB directly
+      hwy_sfx: {
+        label: "Highway Suffix",
+        editable: false,
+        uiType: "text",
+      },
+      rpt_block_num: {
+        label: "Reported Block Number",
+        editable: false,
+        uiType: "text",
+      },
+      rpt_street_pfx: {
+        label: "Reported Street Prefix",
+        editable: false,
+        uiType: "text",
+      },
+      rpt_street_name: {
+        label: "Reported Street Name",
+        editable: false,
+        uiType: "text",
+      },
+      // TODO: We'll probably want to validate that they are using values from the atd_txdot__street_sfx_lkp table
+      // for the rpt_street_sfx & rpt_sec_street_sfx fields but the values are currently text, not ID lookups so we'll punt
+      rpt_street_sfx: {
+        label: "Reported Street Suffix",
+        editable: false,
+        uiType: "text",
+      },
+    },
+  },
+  {
+    title: "Secondary Street Information",
+    fields: {
+      address_confirmed_secondary: {
+        label: "Secondary Address",
+        editable: true,
+        uiType: "text",
+      },
+      street_nbr_2: {
+        label: "Secondary Street Number",
+        editable: false,
+        uiType: "text",
+      },
+      street_name_2: {
+        label: "Secondary Street Name",
+        editable: false,
+        uiType: "text",
+      },
+      rpt_sec_street_desc: {
+        label: "Secondary Street Description",
+        editable: false,
+        uiType: "text",
+      },
+      rpt_sec_road_part_id: {
+        label: "Secondary Roadway Part",
+        editable: false,
+        uiType: "select",
+        lookupOptions: "atd_txdot__road_part_lkp",
+        lookupPrefix: "road_part",
+      },
+      rpt_sec_rdwy_sys_id: {
+        label: "Secondary Roadway System",
+        editable: false,
+        uiType: "select",
+        lookupOptions: "atd_txdot__rwy_sys_lkp",
+        lookupPrefix: "rwy_sys",
+      },
+      hwy_sys_2: {
+        label: "Secondary Highway System",
+        editable: false,
+        uiType: "text",
+      },
+      rpt_sec_hwy_num: {
+        label: "Secondary Highway Number",
+        editable: false,
+        uiType: "text",
+      },
+      rpt_sec_hwy_sfx: {
+        label: "Secondary Highway Suffix",
+        editable: false,
+        uiType: "text",
+      },
+      rpt_sec_block_num: {
+        label: "Reported Secondary Block Number",
+        editable: false,
+        uiType: "text",
+      },
+      rpt_sec_street_pfx: {
+        label: "Reported Secondary Street Prefix",
+        editable: false,
+        uiType: "text",
+      },
+
+      rpt_sec_street_name: {
+        label: "Reported Secondary Street Name",
+        editable: false,
+        uiType: "text",
+      },
+      rpt_sec_street_sfx: {
+        label: "Secondary Street Suffix",
+        editable: false,
+        uiType: "text",
+      },
+    },
+  },
+  {
+    title: "Geocoding",
+    fields: {
+      latitude_primary: {
+        label: "Latitude",
+        editable: true,
+        uiType: "text",
+      },
+      longitude_primary: {
+        label: "Longitude",
+        editable: true,
+        uiType: "text",
+      },
+      geocode_date: {
+        label: "Geocode Date",
+        editable: false,
+      },
+      geocode_provider: {
+        label: "Geocode Provider",
+        editable: false,
+      },
+      geocode_status: {
+        label: "Geocode Status",
+        editable: false,
+      },
+      geocoded: {
+        label: "Geocoded",
+        editable: false,
+        lookupOptions: "atd_txdot__y_n_lkp",
+        lookupPrefix: "y_n",
       },
     },
   },

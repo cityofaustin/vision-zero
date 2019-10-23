@@ -188,7 +188,7 @@ let customFilters = {
 const Crashes = () => (
   <GridTable
     query={crashesQuery}
-    title={"Crashes Q/A"}
+    title={"Crashes"}
     filters={customFilters}
     columnsToExport={crashQueryExportFields}
   />
