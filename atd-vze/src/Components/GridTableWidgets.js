@@ -11,11 +11,14 @@ const GridTableWidgets = ({ query, queryConfig, widgetsConfig }) => {
     aggregateQuery
   );
 
-  // Execute aggregate query each time it changes
+  // Update aggregate query with latest filters
   useEffect(() => {
     const aggregatesQuery = query.queryAggregate(queryConfig, query);
-    setAggregateQuery(aggregatesQuery);
-  }, [query]);
+    // Prevent endlessly setting aggregateQuery
+    if (aggregatesQuery !== aggregateQuery) {
+      setAggregateQuery(aggregatesQuery);
+    }
+  });
 
   // Execute aggregate query each time it changes
   useEffect(() => {
@@ -59,7 +62,7 @@ const GridTableWidgets = ({ query, queryConfig, widgetsConfig }) => {
   };
 
   return (
-    <Container>
+    <Col>
       <Row>
         {widgetsConfig.map((widget, i) => (
           <Col key={i} xs="12" sm="6" md="4">
@@ -73,7 +76,7 @@ const GridTableWidgets = ({ query, queryConfig, widgetsConfig }) => {
           </Col>
         ))}
       </Row>
-    </Container>
+    </Col>
   );
 };
 

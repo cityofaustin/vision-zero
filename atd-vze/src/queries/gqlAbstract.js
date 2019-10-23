@@ -504,6 +504,16 @@ gqlAbstractTableAggregateName (
         whereFilters.push(`${filter}: { ${value} }`)
       );
 
+      // Retrieve or filters from query instance
+      let orFilters = [];
+      Object.entries(queryInstance.config.or).forEach(([filter, value]) =>
+        orFilters.push(`{${filter}: { ${value} }}`)
+      );
+
+      if (orFilters.length > 0) {
+        let orString = `_or: [ ${orFilters.join(",")} ]`;
+        whereFilters.push(orString);
+      }
       // If a key is defined in config, nest whereFilters
       query = config.key
         ? query.replace(

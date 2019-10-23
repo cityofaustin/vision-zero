@@ -361,13 +361,15 @@ const GridTable = ({
               <i className="fa fa-car" /> {title}
             </CardHeader>
             <CardBody>
-              <Row>
-                <GridTableWidgets
-                  query={query}
-                  queryConfig={aggregateQueryConfig}
-                  widgetsConfig={widgetsConfig}
-                />
-              </Row>
+              {aggregateQueryConfig && widgetsConfig && (
+                <Row>
+                  <GridTableWidgets
+                    query={query}
+                    queryConfig={aggregateQueryConfig}
+                    widgetsConfig={widgetsConfig}
+                  />
+                </Row>
+              )}
               <Row>
                 <GridTableSearch
                   query={query}

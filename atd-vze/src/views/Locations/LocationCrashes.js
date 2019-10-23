@@ -205,13 +205,13 @@ function LocationCrashes(props) {
     },
     {
       getAggregateDataArg: "years_of_life_lost",
-      mainText: "Total Crashes",
+      mainText: "Years of Life Lost",
       icon: "fa fa-hourglass-end",
       color: "info",
     },
     {
       getAggregateDataArg: "count",
-      mainText: "Years of Life Lost",
+      mainText: "Total Crashes",
       icon: "fa fa-cab",
       color: "success",
     },
