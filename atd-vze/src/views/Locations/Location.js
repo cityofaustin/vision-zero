@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import LocationMap from "./LocationMap";
 import LocationEditMap from "./LocationEditMap";
 import {
@@ -15,7 +15,7 @@ import {
 } from "reactstrap";
 
 import { withApollo } from "react-apollo";
-import { useQuery } from "@apollo/react-hooks";
+import { useQuery, useLazyQuery } from "@apollo/react-hooks";
 import palette from "google-palette";
 import { Doughnut, HorizontalBar } from "react-chartjs-2";
 
@@ -37,7 +37,14 @@ function Location(props) {
   const { loading, error, data, refetch } = useQuery(GET_LOCATION, {
     variables: { id: locationId },
   });
-  // const { aggLoading, aggError, aggData } = useQuery(aggregateQuery);
+  const [loadAggData, { loading: aggLoading, data: aggData }] = useLazyQuery(
+    aggregateQuery
+  );
+
+  useEffect(() => {
+    aggregateQuery && loadAggData();
+    console.log(aggData);
+  }, [aggregateQuery]);
 
   const handleMapChange = e => {
     e.preventDefault();
@@ -49,22 +56,71 @@ function Location(props) {
 
   const getAggregatePersonsSum = (data, field) => {
     // Display APD confirmed death count if one exists
-    if (
-      field === "apd_confirmed_death_count" &&
-      data.atd_txdot_crashes_aggregate.aggregate.sum[field]
-    ) {
-      return `${data.atd_txdot_crashes_aggregate.aggregate.sum[field]}`;
+    try {
+      if (
+        field === "apd_confirmed_death_count" &&
+        data.atd_txdot_crashes_aggregate.aggregate.sum[field]
+      ) {
+        return `${data.atd_txdot_crashes_aggregate.aggregate.sum[field]}`;
+      }
+      // Display 0 if no APD confiemd death count exists
+      else if (
+        field === "apd_confirmed_death_count" &&
+        !data.atd_txdot_crashes_aggregate.aggregate.sum[field]
+      ) {
+        return "0";
+        // Return aggregated sum from Person and Primary Person tables for other fields
+      } else {
+        return `${data.atd_txdot_primaryperson_aggregate.aggregate.sum[field] +
+          data.atd_txdot_person_aggregate.aggregate.sum[field]}`;
+      }
+    } catch {
+      return "catch";
     }
-    // Display 0 if no APD confiemd death count exists
-    else if (
-      field === "apd_confirmed_death_count" &&
-      !data.atd_txdot_crashes_aggregate.aggregate.sum[field]
-    ) {
-      return "0";
-      // Return aggregated sum from Person and Primary Person tables for other fields
+  };
+
+  const getAggregate = (data, field) => {
+    // try {
+    //   let aggregate = "";
+    //   Object.keys(data).forEach(key => {
+    //     if (key !== field) {
+    //       getAggregate(data[key], field);
+    //     } else {
+    //       aggregate = data[key];
+    //       // return data[key].toString();
+    //     }
+    //   });
+    //   return `${aggregate}`;
+    // } catch {
+    //   return "0";
+    // }
+    // if (data !== undefined && Object.keys(data).length > 0) {
+    //   for (let key in data) {
+    //     debugger;
+    //     if (key !== field) {
+    //       getAggregate(data[key], field);
+    //     } else {
+    //       console.log(`${data[key]}`);
+    //       return `${data[key]}`;
+    //     }
+    //   }
+    // } else {
+    //   return "0";
+    // }
+    if (data !== undefined && Object.keys(data).length > 0) {
+      // let aggregate = "";
+      Object.keys(data).map(key => {
+        if (key !== field) {
+          getAggregate(data[key], field);
+        } else {
+          // aggregate = data[key];
+          debugger;
+          return data[key].toString();
+        }
+      });
+      // return `${aggregate}`;
     } else {
-      return `${data.atd_txdot_primaryperson_aggregate.aggregate.sum[field] +
-        data.atd_txdot_person_aggregate.aggregate.sum[field]}`;
+      return "0";
     }
   };
 
@@ -180,7 +236,7 @@ function Location(props) {
             <Col xs="12" sm="6" md="4">
               <Widget02
                 header={getAggregatePersonsSum(
-                  data,
+                  aggData,
                   "apd_confirmed_death_count"
                 )}
                 mainText="Fatalities"
@@ -190,7 +246,7 @@ function Location(props) {
             </Col>
             <Col xs="12" sm="6" md="4">
               <Widget02
-                header={getAggregatePersonsSum(data, "sus_serious_injry_cnt")}
+                header={getAggregate(aggData, "sus_serious_injry_cnt")}
                 mainText="Serious Injuries"
                 icon="fa fa-medkit"
                 color="warning"
