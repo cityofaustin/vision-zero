@@ -29,6 +29,7 @@ import {
   formatCostToDollars,
   formatDateTimeString,
 } from "../../helpers/format";
+import LocationDashboard from "./LocationDashboard";
 
 function Location(props) {
   const locationId = props.match.params.id;
@@ -53,42 +54,6 @@ function Location(props) {
 
   if (loading) return "Loading...";
   if (error) return `Error! ${error.message}`;
-
-  const getAggregateData = field => {
-    // if aggData is populated, use switch to return aggregate data
-    if (aggData !== undefined && Object.keys(aggData).length > 0) {
-      // In switch, using field in object reference if possible
-      switch (field) {
-        case "apd_confirmed_death_count":
-          return aggData.atd_txdot_crashes_aggregate.aggregate.sum[field];
-        case "sus_serious_injry_cnt":
-          return (
-            aggData.atd_txdot_primaryperson_aggregate.aggregate.sum
-              .sus_serious_injry_cnt +
-            aggData.atd_txdot_person_aggregate.aggregate.sum
-              .sus_serious_injry_cnt
-          );
-        case "years_of_life_lost":
-          return (
-            aggData.atd_txdot_primaryperson_aggregate.aggregate.sum[field] +
-            aggData.atd_txdot_person_aggregate.aggregate.sum[field]
-          );
-        case "count":
-          return aggData.atd_txdot_crashes_aggregate.aggregate[field];
-        case "total_people":
-          return (
-            aggData.atd_txdot_primaryperson_aggregate.aggregate.count +
-            aggData.atd_txdot_person_aggregate.aggregate.count
-          );
-        case "total_units":
-          return aggData.atd_txdot_units_aggregate.aggregate.count;
-        default:
-          console.log("no match");
-      }
-    } else {
-      return "catch";
-    }
-  };
 
   const formatLabel = str => {
     let sections = [];
@@ -191,6 +156,42 @@ function Location(props) {
     setAggregateQuery(aggregatesQuery);
   };
 
+  const getAggregateData = field => {
+    // If aggData is populated, use switch to return aggregate data
+    if (aggData !== undefined && Object.keys(aggData).length > 0) {
+      // In switch, using field in object reference if possible
+      switch (field) {
+        case "apd_confirmed_death_count":
+          return aggData.atd_txdot_crashes_aggregate.aggregate.sum[field];
+        case "sus_serious_injry_cnt":
+          return (
+            aggData.atd_txdot_primaryperson_aggregate.aggregate.sum
+              .sus_serious_injry_cnt +
+            aggData.atd_txdot_person_aggregate.aggregate.sum
+              .sus_serious_injry_cnt
+          );
+        case "years_of_life_lost":
+          return (
+            aggData.atd_txdot_primaryperson_aggregate.aggregate.sum[field] +
+            aggData.atd_txdot_person_aggregate.aggregate.sum[field]
+          );
+        case "count":
+          return aggData.atd_txdot_crashes_aggregate.aggregate[field];
+        case "total_people":
+          return (
+            aggData.atd_txdot_primaryperson_aggregate.aggregate.count +
+            aggData.atd_txdot_person_aggregate.aggregate.count
+          );
+        case "total_units":
+          return aggData.atd_txdot_units_aggregate.aggregate.count;
+        default:
+          console.log("no match");
+      }
+    } else {
+      return "0";
+    }
+  };
+
   const { count: crashCount } = data.atd_txdot_crashes_aggregate.aggregate;
 
   return (
@@ -200,60 +201,7 @@ function Location(props) {
           <h2 className="h2 mb-3">{data.atd_txdot_locations[0].description}</h2>
         </Col>
       </Row>
-      {data && (
-        <>
-          <Row>
-            <Col xs="12" sm="6" md="4">
-              <Widget02
-                header={getAggregateData("apd_confirmed_death_count")}
-                mainText="Fatalities"
-                icon="fa fa-heartbeat"
-                color="danger"
-              />
-            </Col>
-            <Col xs="12" sm="6" md="4">
-              <Widget02
-                header={getAggregateData("sus_serious_injry_cnt")}
-                mainText="Serious Injuries"
-                icon="fa fa-medkit"
-                color="warning"
-              />
-            </Col>
-            <Col xs="12" sm="6" md="4">
-              <Widget02
-                header={getAggregateData("years_of_life_lost")}
-                mainText="Years of Life Lost"
-                icon="fa fa-hourglass-end"
-                color="info"
-              />
-            </Col>
-            <Col xs="12" sm="6" md="4">
-              <Widget02
-                header={getAggregateData("count")}
-                mainText="Total Crashes"
-                icon="fa fa-cab"
-                color="success"
-              />
-            </Col>
-            <Col xs="12" sm="6" md="4">
-              <Widget02
-                header={getAggregateData("total_people")}
-                mainText="Total People (Primary + Non-Primary)"
-                icon="fa fa-user"
-                color="dark"
-              />
-            </Col>
-            <Col xs="12" sm="6" md="4">
-              <Widget02
-                header={getAggregateData("total_units")}
-                mainText="Total Units"
-                icon="fa fa-car"
-                color="secondary"
-              />
-            </Col>
-          </Row>
-        </>
-      )}
+      <LocationDashboard getAggregateData={getAggregateData} />
       <Row>
         <Col md="6">
           <Card>

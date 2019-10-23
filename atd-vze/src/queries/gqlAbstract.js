@@ -481,15 +481,10 @@ gqlAbstractTableAggregateName (
    * @returns {Object} gql Object
    */
   queryAggregate(queryConfigArray, queryInstance) {
-    // First copy the abstract and work from the copy and clear offset to request all records
-    // For each config in array, replace table name, columns, and key if nested query.
-    // Concat each aggregate and return gql query
-    // For each query need:
-    // 1. table name
-    // 2. key for nested where conditions (if no key, no nested string)
-    // 3. columns
+    // Create array to store each query
     let aggregatesQueryArray = [];
 
+    // For each config, create query, replace filters/columns, and push to aggregatesQueryArray
     queryConfigArray.forEach(config => {
       let query = `
       gqlAbstractTableAggregateName (
@@ -503,7 +498,7 @@ gqlAbstractTableAggregateName (
       // Replace the name of the aggregate table
       query = query.replace("gqlAbstractTableAggregateName", config.table);
 
-      // Retrieve filters from query instance and add to aggregate
+      // Retrieve filters from query instance and add to aggregate query
       let whereFilters = [];
       Object.entries(queryInstance.config.where).forEach(([filter, value]) =>
         whereFilters.push(`${filter}: { ${value} }`)
@@ -527,7 +522,7 @@ gqlAbstractTableAggregateName (
     });
     // Join each aggregate query into one string
     const aggregatesQueryString = aggregatesQueryArray.join(" ");
-    console.log(aggregatesQueryString);
+
     // Return GraphQL query
     return gql`query GetLocationStats {
       ${aggregatesQueryString}
