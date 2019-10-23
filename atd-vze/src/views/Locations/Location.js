@@ -54,73 +54,39 @@ function Location(props) {
   if (loading) return "Loading...";
   if (error) return `Error! ${error.message}`;
 
-  const getAggregatePersonsSum = (data, field) => {
-    // Display APD confirmed death count if one exists
-    try {
-      if (
-        field === "apd_confirmed_death_count" &&
-        data.atd_txdot_crashes_aggregate.aggregate.sum[field]
-      ) {
-        return `${data.atd_txdot_crashes_aggregate.aggregate.sum[field]}`;
+  const getAggregateData = field => {
+    // if aggData is populated, use switch to return aggregate data
+    if (aggData !== undefined && Object.keys(aggData).length > 0) {
+      // In switch, using field in object reference if possible
+      switch (field) {
+        case "apd_confirmed_death_count":
+          return aggData.atd_txdot_crashes_aggregate.aggregate.sum[field];
+        case "sus_serious_injry_cnt":
+          return (
+            aggData.atd_txdot_primaryperson_aggregate.aggregate.sum
+              .sus_serious_injry_cnt +
+            aggData.atd_txdot_person_aggregate.aggregate.sum
+              .sus_serious_injry_cnt
+          );
+        case "years_of_life_lost":
+          return (
+            aggData.atd_txdot_primaryperson_aggregate.aggregate.sum[field] +
+            aggData.atd_txdot_person_aggregate.aggregate.sum[field]
+          );
+        case "count":
+          return aggData.atd_txdot_crashes_aggregate.aggregate[field];
+        case "total_people":
+          return (
+            aggData.atd_txdot_primaryperson_aggregate.aggregate.count +
+            aggData.atd_txdot_person_aggregate.aggregate.count
+          );
+        case "total_units":
+          return aggData.atd_txdot_units_aggregate.aggregate.count;
+        default:
+          console.log("no match");
       }
-      // Display 0 if no APD confiemd death count exists
-      else if (
-        field === "apd_confirmed_death_count" &&
-        !data.atd_txdot_crashes_aggregate.aggregate.sum[field]
-      ) {
-        return "0";
-        // Return aggregated sum from Person and Primary Person tables for other fields
-      } else {
-        return `${data.atd_txdot_primaryperson_aggregate.aggregate.sum[field] +
-          data.atd_txdot_person_aggregate.aggregate.sum[field]}`;
-      }
-    } catch {
-      return "catch";
-    }
-  };
-
-  const getAggregate = (data, field) => {
-    // try {
-    //   let aggregate = "";
-    //   Object.keys(data).forEach(key => {
-    //     if (key !== field) {
-    //       getAggregate(data[key], field);
-    //     } else {
-    //       aggregate = data[key];
-    //       // return data[key].toString();
-    //     }
-    //   });
-    //   return `${aggregate}`;
-    // } catch {
-    //   return "0";
-    // }
-    // if (data !== undefined && Object.keys(data).length > 0) {
-    //   for (let key in data) {
-    //     debugger;
-    //     if (key !== field) {
-    //       getAggregate(data[key], field);
-    //     } else {
-    //       console.log(`${data[key]}`);
-    //       return `${data[key]}`;
-    //     }
-    //   }
-    // } else {
-    //   return "0";
-    // }
-    if (data !== undefined && Object.keys(data).length > 0) {
-      // let aggregate = "";
-      Object.keys(data).map(key => {
-        if (key !== field) {
-          getAggregate(data[key], field);
-        } else {
-          // aggregate = data[key];
-          debugger;
-          return data[key].toString();
-        }
-      });
-      // return `${aggregate}`;
     } else {
-      return "0";
+      return "catch";
     }
   };
 
@@ -204,7 +170,11 @@ function Location(props) {
       },
       {
         table: "atd_txdot_person_aggregate",
-        columns: [`count`],
+        columns: [
+          `count`,
+          `sum { sus_serious_injry_cnt
+                 years_of_life_lost }`,
+        ],
         key: "crash",
       },
       {
@@ -235,10 +205,7 @@ function Location(props) {
           <Row>
             <Col xs="12" sm="6" md="4">
               <Widget02
-                header={getAggregatePersonsSum(
-                  aggData,
-                  "apd_confirmed_death_count"
-                )}
+                header={getAggregateData("apd_confirmed_death_count")}
                 mainText="Fatalities"
                 icon="fa fa-heartbeat"
                 color="danger"
@@ -246,7 +213,7 @@ function Location(props) {
             </Col>
             <Col xs="12" sm="6" md="4">
               <Widget02
-                header={getAggregate(aggData, "sus_serious_injry_cnt")}
+                header={getAggregateData("sus_serious_injry_cnt")}
                 mainText="Serious Injuries"
                 icon="fa fa-medkit"
                 color="warning"
@@ -254,7 +221,7 @@ function Location(props) {
             </Col>
             <Col xs="12" sm="6" md="4">
               <Widget02
-                header={getAggregatePersonsSum(data, "years_of_life_lost")}
+                header={getAggregateData("years_of_life_lost")}
                 mainText="Years of Life Lost"
                 icon="fa fa-hourglass-end"
                 color="info"
@@ -262,7 +229,7 @@ function Location(props) {
             </Col>
             <Col xs="12" sm="6" md="4">
               <Widget02
-                header={`${crashCount}`}
+                header={getAggregateData("count")}
                 mainText="Total Crashes"
                 icon="fa fa-cab"
                 color="success"
@@ -270,8 +237,7 @@ function Location(props) {
             </Col>
             <Col xs="12" sm="6" md="4">
               <Widget02
-                header={`${data.atd_txdot_primaryperson_aggregate.aggregate
-                  .count + data.atd_txdot_person_aggregate.aggregate.count}`}
+                header={getAggregateData("total_people")}
                 mainText="Total People (Primary + Non-Primary)"
                 icon="fa fa-user"
                 color="dark"
@@ -279,7 +245,7 @@ function Location(props) {
             </Col>
             <Col xs="12" sm="6" md="4">
               <Widget02
-                header={`${data.atd_txdot_units_aggregate.aggregate.count}`}
+                header={getAggregateData("total_units")}
                 mainText="Total Units"
                 icon="fa fa-car"
                 color="secondary"
