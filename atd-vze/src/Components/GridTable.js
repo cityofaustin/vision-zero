@@ -21,6 +21,7 @@ import ButtonToolbar from "reactstrap/es/ButtonToolbar";
 
 // GridTable
 import GridTableHeader from "./GridTableHeader";
+import GridTableWidgets from "./GridTableWidgets";
 import GridTablePagination from "./GridTablePagination";
 import GridTableSearch from "./GridTableSearch";
 import GridFilters from "./GridFilters";
@@ -32,7 +33,8 @@ const GridTable = ({
   query,
   filters,
   columnsToExport,
-  getTableQuery,
+  aggregateQueryConfig,
+  widgetsConfig,
 }) => {
   // Load table filters from localStorage by title
   const savedFilterState = JSON.parse(
@@ -101,9 +103,6 @@ const GridTable = ({
       `saved${title}Config`,
       JSON.stringify(stateForFilters)
     );
-
-    // Pass query to parent components to expose query parameters
-    getTableQuery && getTableQuery(query);
   });
 
   /**
@@ -362,6 +361,13 @@ const GridTable = ({
               <i className="fa fa-car" /> {title}
             </CardHeader>
             <CardBody>
+              <Row>
+                <GridTableWidgets
+                  query={query}
+                  queryConfig={aggregateQueryConfig}
+                  widgetsConfig={widgetsConfig}
+                />
+              </Row>
               <Row>
                 <GridTableSearch
                   query={query}

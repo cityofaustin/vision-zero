@@ -42,7 +42,7 @@ const widgetsConfig = [
   },
 ];
 
-const LocationDashboard = ({ getAggregateData }) => {
+const GridTableWidgets = ({ getAggregateData }) => {
   return (
     <Row>
       {widgetsConfig.map((widget, i) => (
@@ -60,4 +60,4 @@ const LocationDashboard = ({ getAggregateData }) => {
   );
 };
 
-export default LocationDashboard;
+export default GridTableWidgets;

@@ -160,13 +160,83 @@ function LocationCrashes(props) {
     },
   };
 
+  const aggregateQueryConfig = [
+    {
+      table: "atd_txdot_crashes_aggregate",
+      columns: [`count`, `sum { apd_confirmed_death_count }`],
+    },
+    {
+      table: "atd_txdot_primaryperson_aggregate",
+      columns: [
+        `count`,
+        `sum { sus_serious_injry_cnt
+               years_of_life_lost }`,
+      ],
+      key: "crash",
+    },
+    {
+      table: "atd_txdot_person_aggregate",
+      columns: [
+        `count`,
+        `sum { sus_serious_injry_cnt
+               years_of_life_lost }`,
+      ],
+      key: "crash",
+    },
+    {
+      table: "atd_txdot_units_aggregate",
+      columns: [`count`],
+      key: "crash",
+    },
+  ];
+
+  const widgetsConfig = [
+    {
+      getAggregateDataArg: "apd_confirmed_death_count",
+      mainText: "Fatalities",
+      icon: "fa fa-heartbeat",
+      color: "danger",
+    },
+    {
+      getAggregateDataArg: "sus_serious_injry_cnt",
+      mainText: "Serious Injuries",
+      icon: "fa fa-medkit",
+      color: "warning",
+    },
+    {
+      getAggregateDataArg: "years_of_life_lost",
+      mainText: "Total Crashes",
+      icon: "fa fa-hourglass-end",
+      color: "info",
+    },
+    {
+      getAggregateDataArg: "count",
+      mainText: "Years of Life Lost",
+      icon: "fa fa-cab",
+      color: "success",
+    },
+    {
+      getAggregateDataArg: "total_people",
+      mainText: "Total People (Primary + Non-Primary)",
+      icon: "fa fa-user",
+      color: "dark",
+    },
+    {
+      getAggregateDataArg: "total_units",
+      mainText: "Total Units",
+      icon: "fa fa-car",
+      color: "secondary",
+    },
+  ];
+
   return (
     <GridTable
       query={crashesQuery}
       title={"Location Crashes"}
       filters={customFilters}
       columnsToExport={locationCrashesQueryExportFields}
-      getTableQuery={props.getTableQuery}
+      aggregateQueryConfig={aggregateQueryConfig}
+      widgetsConfig={widgetsConfig}
     />
   );
 }

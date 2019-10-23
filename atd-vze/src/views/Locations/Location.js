@@ -15,13 +15,12 @@ import {
 } from "reactstrap";
 
 import { withApollo } from "react-apollo";
-import { useQuery, useLazyQuery } from "@apollo/react-hooks";
+import { useQuery } from "@apollo/react-hooks";
 import palette from "google-palette";
 import { Doughnut, HorizontalBar } from "react-chartjs-2";
 
 import locationDataMap from "./locationDataMap";
 import LocationCrashes from "./LocationCrashes";
-import Widget02 from "../Widgets/Widget02";
 
 import { colors } from "../../styles/colors";
 import { GET_LOCATION } from "../../queries/Locations";
@@ -29,23 +28,13 @@ import {
   formatCostToDollars,
   formatDateTimeString,
 } from "../../helpers/format";
-import LocationDashboard from "./LocationDashboard";
 
 function Location(props) {
   const locationId = props.match.params.id;
   const [mapSelected, setMapSelected] = useState("aerial");
-  const [aggregateQuery, setAggregateQuery] = useState(null);
   const { loading, error, data, refetch } = useQuery(GET_LOCATION, {
     variables: { id: locationId },
   });
-  const [loadAggData, { loading: aggLoading, data: aggData }] = useLazyQuery(
-    aggregateQuery
-  );
-
-  useEffect(() => {
-    aggregateQuery && loadAggData();
-    console.log(aggData);
-  }, [aggregateQuery]);
 
   const handleMapChange = e => {
     e.preventDefault();
@@ -117,81 +106,6 @@ function Location(props) {
     ],
   };
 
-  const getTableQuery = query => {
-    // Define aggregates needed for widgets
-    const aggregateQueryConfigs = [
-      {
-        table: "atd_txdot_crashes_aggregate",
-        columns: [`count`, `sum { apd_confirmed_death_count }`],
-      },
-      {
-        table: "atd_txdot_primaryperson_aggregate",
-        columns: [
-          `count`,
-          `sum { sus_serious_injry_cnt
-                 years_of_life_lost }`,
-        ],
-        key: "crash",
-      },
-      {
-        table: "atd_txdot_person_aggregate",
-        columns: [
-          `count`,
-          `sum { sus_serious_injry_cnt
-                 years_of_life_lost }`,
-        ],
-        key: "crash",
-      },
-      {
-        table: "atd_txdot_units_aggregate",
-        columns: [`count`],
-        key: "crash",
-      },
-    ];
-
-    // Generate GraphQL query from config array
-    const aggregatesQuery = query.queryAggregate(aggregateQueryConfigs, query);
-
-    // Set state to execute GraphQL query
-    setAggregateQuery(aggregatesQuery);
-  };
-
-  const getAggregateData = field => {
-    // If aggData is populated, use switch to return aggregate data
-    if (aggData !== undefined && Object.keys(aggData).length > 0) {
-      // In switch, using field in object reference if possible
-      switch (field) {
-        case "apd_confirmed_death_count":
-          return aggData.atd_txdot_crashes_aggregate.aggregate.sum[field];
-        case "sus_serious_injry_cnt":
-          return (
-            aggData.atd_txdot_primaryperson_aggregate.aggregate.sum
-              .sus_serious_injry_cnt +
-            aggData.atd_txdot_person_aggregate.aggregate.sum
-              .sus_serious_injry_cnt
-          );
-        case "years_of_life_lost":
-          return (
-            aggData.atd_txdot_primaryperson_aggregate.aggregate.sum[field] +
-            aggData.atd_txdot_person_aggregate.aggregate.sum[field]
-          );
-        case "count":
-          return aggData.atd_txdot_crashes_aggregate.aggregate[field];
-        case "total_people":
-          return (
-            aggData.atd_txdot_primaryperson_aggregate.aggregate.count +
-            aggData.atd_txdot_person_aggregate.aggregate.count
-          );
-        case "total_units":
-          return aggData.atd_txdot_units_aggregate.aggregate.count;
-        default:
-          console.log("no match");
-      }
-    } else {
-      return "0";
-    }
-  };
-
   const { count: crashCount } = data.atd_txdot_crashes_aggregate.aggregate;
 
   return (
@@ -201,7 +115,6 @@ function Location(props) {
           <h2 className="h2 mb-3">{data.atd_txdot_locations[0].description}</h2>
         </Col>
       </Row>
-      <LocationDashboard getAggregateData={getAggregateData} />
       <Row>
         <Col md="6">
           <Card>
@@ -347,10 +260,7 @@ function Location(props) {
       </Row>
       <Row>
         <Col>
-          <LocationCrashes
-            locationId={locationId}
-            getTableQuery={getTableQuery}
-          />
+          <LocationCrashes locationId={locationId} />
         </Col>
       </Row>
     </div>
