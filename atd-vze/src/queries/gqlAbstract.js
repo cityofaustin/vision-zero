@@ -9,7 +9,7 @@ class gqlAbstract {
    */
   constructor(initConfig) {
     this.config = initConfig;
-    this.configInit = JSON.stringify(initConfig);
+    this.configInit = JSON.parse(JSON.stringify(initConfig));
     this.config["filterStack"] = {
       where: [],
       order_by: [],
@@ -36,6 +36,43 @@ gqlAbstractTableAggregateName (
   }
 }`;
   }
+
+  /**
+   * Returns true if the input string is a valid alphanumeric object key
+   * @param {string} input - The string to be tested
+   * @returns {boolean}
+   */
+  isNestedKey(input) {
+    return input.match(/^[0-9a-zA-Z\-_]+$/) === null;
+  }
+
+  /**
+   * Returns the key for a nested expression
+   * @param {string} exp - The GraphQL expression
+   * @returns {string}
+   */
+  getExpKey = exp => exp.split(/[{} ]+/, 1)[0].trim();
+
+  /**
+   * Returns the value of a nested expression, usually another expression.
+   * @param {string} exp - The GraphQL expressoin
+   * @returns {string}
+   */
+  getExpValue = exp =>
+    exp.substring(exp.indexOf("{") + 1, exp.lastIndexOf("}")).trim();
+
+  /**
+   * Refactors a nested key into `sort` format
+   * @param {string} exp - The nested key (usually a graphql expression)
+   * @returns {string}
+   */
+  sortifyNestedKey = (exp, val) =>
+    this.isNestedKey(exp)
+      ? `${this.getExpKey(exp)}: { ${this.sortifyNestedKey(
+          this.getExpValue(exp),
+          val
+        )} }`
+      : `${exp}: ${val}`;
 
   /**
    * Returns the name of the table
@@ -98,10 +135,32 @@ gqlAbstractTableAggregateName (
   }
 
   /**
-   * Resets the value of where to empty
+   * Resets the value of where and or to empty
    */
   cleanWhere() {
     this.config["where"] = null;
+    this.config["or"] = null;
+  }
+
+  /**
+   * Removes all conditions that will be used for ordering.
+   */
+  clearOrderBy() {
+    this.config["order_by"] = [];
+  }
+
+  /**
+   * Resets original conditions used for ordering
+   */
+  resetOrderBy() {
+    this.config["order_by"] = this.configInit["order_by"];
+  }
+
+  /**
+   * Full reset of all conditions
+   */
+  resetFull() {
+    this.config = JSON.parse(JSON.stringify(this.configInit));
   }
 
   /**
@@ -115,11 +174,30 @@ gqlAbstractTableAggregateName (
   }
 
   /**
+   * Replaces or creates an 'or' condition in graphql syntax.
+   * @param {string} key - The name of the column
+   * @param {string} syntax - the graphql syntax for the where condition
+   */
+  setOr(key, syntax) {
+    if (!this.config["or"]) this.config["or"] = {};
+    this.config["or"][key[0]] = syntax[0];
+  }
+
+  /**
    * Removes a column from the where condition
    * @param {string} key - The name of the column
    */
   deleteWhere(key) {
     delete this.config["where"][key];
+  }
+
+  /**
+   * Removes a column from the or condition
+   * @param {object} orObject - The object to be deleted
+   */
+  deleteOr(orObject) {
+    const keyToDelete = Object.keys(orObject)[0];
+    this.config["or"] && delete this.config["or"][keyToDelete];
   }
 
   /**
@@ -161,10 +239,49 @@ gqlAbstractTableAggregateName (
   /**
    * Returns the type of a column as defined in the config, assumes string if not found.
    * @param {string} columnName - The name of the column in the config
-   * @returns {boolean}
+   * @returns {string}
    */
   getType(columnName) {
-    return this.config["columns"][columnName]["type"] || "String";
+    return (
+      this.config["columns"][columnName]["type"] || "string"
+    ).toLowerCase();
+  }
+
+  /**
+   * Returns the default value when value is null
+   * @param {string} columnName - The name of the column in the config
+   * @returns {string}
+   */
+  getDefault(columnName) {
+    return this.config["columns"][columnName]["default"];
+  }
+
+  /**
+   * Attempts to format value based on configuration specification `format`
+   * @param {string} columnName - The column to read the configuration from
+   * @param {object} value - The actual value to be presented to the component
+   */
+  getFormattedValue(columnName, value) {
+    const type = this.getType(columnName);
+
+    if (value === null) return "-";
+
+    switch (type) {
+      case "string": {
+        if (typeof value === "object") return JSON.stringify(value);
+        else return `${value}`;
+      }
+      case "currency": {
+        return `$${value.toLocaleString()}`;
+      }
+      case "boolean": {
+        return value ? "True" : "False";
+      }
+      // Integers, Decimals
+      default: {
+        return `${value}`;
+      }
+    }
   }
 
   /**
@@ -224,16 +341,36 @@ gqlAbstractTableAggregateName (
 
     if (this.config["where"] !== null) {
       let where = [];
+      let or = [];
       for (let [key, value] of this.getEntries("where")) {
-        where.push(`${key}: {${value}}`);
+        // If we have a nested expression for a key, then append to 'or'
+        if (this.isNestedKey(key)) {
+          or.push(`{ ${key} }`);
+          // Else, append to 'where'
+        } else {
+          where.push(`${key}: {${value}}`);
+        }
       }
-      output.push(`where: {${where.join(", ")}}`);
+      if (!!this.config["or"]) {
+        for (let [key, value] of this.getEntries("or")) {
+          or.push(`{${key}: {${value}}}`);
+        }
+      }
+      if (or.length > 0) {
+        output.push(`where: {${where.join(", ")}, _or: [${or.join(", ")}]}`);
+      } else {
+        output.push(`where: {${where.join(", ")}}`);
+      }
     }
 
     if (this.config["order_by"]) {
       let order_by = [];
       for (let [key, value] of this.getEntries("order_by")) {
-        order_by.push(`${key}: ${value}`);
+        order_by.push(
+          this.isNestedKey(key)
+            ? this.sortifyNestedKey(key, value)
+            : `${key}: ${value}`
+        );
       }
       output.push(`order_by: {${order_by.join(", ")}}`);
     }
@@ -262,9 +399,11 @@ gqlAbstractTableAggregateName (
           for (let [key, syntax] of this.getEntries(filterItem)) {
             // If enabled, add to the list or remove it from the query.
             if (filtersState[filter.id]) {
-              this.setWhere(key, syntax);
+              key === "or"
+                ? this.setOr(Object.keys(syntax), Object.values(syntax))
+                : this.setWhere(key, syntax);
             } else {
-              this.deleteWhere(key);
+              key === "or" ? this.deleteOr(syntax) : this.deleteWhere(key);
             }
           }
         }
@@ -300,6 +439,39 @@ gqlAbstractTableAggregateName (
     // Aggregate Tables
 
     return query;
+  }
+
+  /**
+   * Generates a GraphQL query based on columns passed in for export feature.
+   * @params {string} - String containing columns to return in query.
+   * @returns {Object} gql Object
+   */
+  queryCSV(string) {
+    // First copy the abstract and work from the copy and clear offset to request all records
+    let query = this.abstractStructure;
+    this.offset = 0;
+
+    // Replace the name of the table
+    query = query.replace("gqlAbstractTableName", this.config["table"]);
+    query = query.replace(
+      "gqlAbstractTableAggregateName",
+      this.config["table"] + "_aggregate"
+    );
+
+    // Generate Filters
+    query = query.replace("gqlAbstractFilters", this.generateFilters());
+    query = query.replace(
+      "gqlAbstractAggregateFilters",
+      this.generateFilters(true)
+    );
+
+    // Generate Columns
+    query = query.replace("gqlAbastractColumns", string);
+
+    // Return GraphQL query
+    return gql`
+      ${query}
+    `;
   }
 
   /**

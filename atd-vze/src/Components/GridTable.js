@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@apollo/react-hooks";
 
 import { withApollo } from "react-apollo";
-import { CSVLink } from "react-csv";
+import moment from "moment";
 
 import {
   Card,
@@ -25,9 +25,25 @@ import GridTablePagination from "./GridTablePagination";
 import GridTableSearch from "./GridTableSearch";
 import GridFilters from "./GridFilters";
 import GridDateRange from "./GridDateRange";
+import GridExportData from "./GridExportData";
 
+const GridTable = ({ title, query, filters, columnsToExport }) => {
+  // Load table filters from localStorage by title
+  const savedFilterState = JSON.parse(
+    localStorage.getItem(`saved${title}Config`)
+  );
 
-const GridTable = ({ title, query, filters }) => {
+  // Return saved filters if they exist
+  const getSavedState = stateName =>
+    (savedFilterState && savedFilterState[`${stateName}`]) || false;
+
+  const defaultTimeRange = {
+    startDate: moment(new Date())
+      .subtract(1, "year")
+      .format("YYYY-MM-DD"),
+    endDate: moment(new Date()).format("YYYY-MM-DD"),
+  };
+
   /**
    * State management:
    *      limit {int} - Contains the current limit of results in a page
@@ -40,17 +56,45 @@ const GridTable = ({ title, query, filters }) => {
    *      filterOptions {object} - Contains a list of filters and each individual status (enabled, disabled)
    *      dateRangeFilter {object} - Contains the date range (startDate, and endDate)
    */
-  const [limit, setLimit] = useState(25);
-  const [offset, setOffset] = useState(0);
-  const [page, setPage] = useState(1);
-  const [sortColumn, setSortColumn] = useState("");
-  const [sortOrder, setSortOrder] = useState("");
-  const [searchParameters, setSearchParameters] = useState({});
-  const [collapseAdvancedFilters, setCollapseAdvacedFilters] = useState(false);
-  const [filterOptions, setFilterOptions] = useState({});
-  const [dateRangeFilter, setDateRangeFilter] = useState({
-    startDate: query.config.initStartDate || null,
-    endDate: query.config.initEndDate || null,
+
+  // Use saved filter as default if it exists
+  const [limit, setLimit] = useState(getSavedState("limit") || 25);
+  const [offset, setOffset] = useState(getSavedState("offset") || 0);
+  const [page, setPage] = useState(getSavedState("page") || 1);
+  const [sortColumn, setSortColumn] = useState(
+    getSavedState("sortColumn") || ""
+  );
+  const [sortOrder, setSortOrder] = useState(getSavedState("sortOrder") || "");
+  const [searchParameters, setSearchParameters] = useState(
+    getSavedState("searchParameters") || {}
+  );
+  const [collapseAdvancedFilters, setCollapseAdvacedFilters] = useState(
+    getSavedState("collapseAdvancedFilters") || false
+  );
+  const [filterOptions, setFilterOptions] = useState(
+    getSavedState("filterOptions") || {}
+  );
+  const [dateRangeFilter, setDateRangeFilter] = useState(
+    getSavedState("dateRangeFilter") || defaultTimeRange
+  );
+
+  useEffect(() => {
+    // Save query config by title to localStorage each time component renders
+    const stateForFilters = {
+      limit,
+      offset,
+      page,
+      sortColumn,
+      sortOrder,
+      searchParameters,
+      collapseAdvancedFilters,
+      filterOptions,
+      dateRangeFilter,
+    };
+    localStorage.setItem(
+      `saved${title}Config`,
+      JSON.stringify(stateForFilters)
+    );
   });
 
   /**
@@ -65,15 +109,20 @@ const GridTable = ({ title, query, filters }) => {
    * @param {string} col - The name of the column
    **/
   const handleTableHeaderClick = col => {
+    // Before anything, let's clear all current conditions
+    query.clearOrderBy();
+
+    // If both column and order are empty...
     if (sortOrder === "" && sortColumn === "") {
       // First time sort is applied
       setSortOrder("asc");
       setSortColumn(col);
     } else if (sortColumn === col) {
-      // Repeat sort on column
+      // Else if the current sortColumn is the same as the new
+      // then invert values and repeat sort on column
       sortOrder === "desc" ? setSortOrder("asc") : setSortOrder("desc");
     } else if (sortColumn !== col) {
-      // Sort different column after initial sort
+      // Sort different column after initial sort, then reset
       setSortOrder("desc");
       setSortColumn(col);
     }
@@ -122,8 +171,13 @@ const GridTable = ({ title, query, filters }) => {
    * Clears all filters
    */
   const clearFilters = () => {
+    query.resetOrderBy();
+    query.deleteWhere(searchParameters.column);
     setSearchParameters({});
     setFilterOptions({});
+    resetPageOnSearch();
+    setDateRangeFilter(defaultTimeRange);
+    setLimit(25);
   };
 
   /**
@@ -131,8 +185,7 @@ const GridTable = ({ title, query, filters }) => {
    * @param {string} input - The string to be tested
    * @returns {boolean}
    */
-  const isAlphanumeric = input =>
-    input.match(/^[0-9a-zA-Z\-_]+$/) === null ? false : true;
+  const isAlphanumeric = input => input.match(/^[0-9a-zA-Z\-_]+$/) !== null;
 
   /**
    * Extracts a list of keys in a graphql expression
@@ -149,14 +202,18 @@ const GridTable = ({ title, query, filters }) => {
    * @returns {*}
    */
   const responseValue = (obj, keys) => {
-    for (let k = 1; k < keys.length; k++)
-      obj = obj ? obj[keys[k]] || null : null;
-
+    for (let k = 1; k < keys.length; k++) {
+      try {
+        obj = obj[keys[k]];
+      } catch {
+        obj = null;
+      }
+    }
     return obj;
   };
 
   /**
-   * Extracts the value (or summary of values)
+   * Extracts the value (or summary of values) for nested field names
    * @param {object} obj - The dataset current object
    * @param {string} exp - The graphql expression
    * @returns {string}
@@ -219,10 +276,10 @@ const GridTable = ({ title, query, filters }) => {
     // on whether the column is an integer or a string, etc.
     if (searchParameters["column"] === "crash_id") {
       // Search Integer for exact value
-      query.setWhere(
-        searchParameters["column"],
-        `_eq: ${searchParameters["value"]}`
-      );
+      // If string contains integers, insert in gql query, if not insert 0 to return no matches
+      const parsedValue = parseInt(searchParameters["value"]);
+      const value = isNaN(parsedValue) ? 0 : parsedValue;
+      query.setWhere(searchParameters["column"], `_eq: ${value}`);
     } else {
       // Search Case-Insensitive String
       query.setWhere(
@@ -252,6 +309,7 @@ const GridTable = ({ title, query, filters }) => {
 
   // Make Query && Error handling
   let { loading, error, data } = useQuery(query.gql);
+
   if (error) return `Error! ${error.message}`;
 
   let dataEntries = [];
@@ -275,9 +333,9 @@ const GridTable = ({ title, query, filters }) => {
                   {row[column]}
                 </Link>
               ) : isAlphanumeric(column) ? (
-                row[column]
+                query.getFormattedValue(column, row[column])
               ) : (
-                getSummary(row, column.trim())
+                query.getFormattedValue(column, getSummary(row, column.trim()))
               )}
             </td>
           ))}
@@ -299,6 +357,7 @@ const GridTable = ({ title, query, filters }) => {
                 <GridTableSearch
                   query={query}
                   clearFilters={clearFilters}
+                  searchParameters={searchParameters}
                   setSearchParameters={setSearchParameters}
                   resetPage={resetPageOnSearch}
                   filters={filters}
@@ -309,6 +368,7 @@ const GridTable = ({ title, query, filters }) => {
                   filters={filters}
                   filterOptionsState={filterOptions}
                   setFilterOptions={setFilterOptions}
+                  resetPageOnSearch={resetPageOnSearch}
                 />
               </Row>
               <ButtonToolbar className="mb-3 justify-content-between">
@@ -316,8 +376,8 @@ const GridTable = ({ title, query, filters }) => {
                   <ButtonGroup>
                     <GridDateRange
                       setDateRangeFilter={setDateRangeFilter}
-                      initStartDate={query.config.initStartDate}
-                      initEndDate={query.config.initEndDate}
+                      initStartDate={dateRangeFilter.startDate}
+                      initEndDate={dateRangeFilter.endDate}
                     />
                   </ButtonGroup>
                 )}
@@ -332,14 +392,13 @@ const GridTable = ({ title, query, filters }) => {
                     totalPages={totalPages}
                     handleRowClick={handleRowClick}
                   />
-                  {data[query.table] && (
-                    <CSVLink
-                      className=""
-                      data={data[query.table]}
-                      filename={query.table + Date.now()}
-                    >
-                      <i className="fa fa-save fa-2x ml-2 mt-1" />
-                    </CSVLink>
+
+                  {columnsToExport && (
+                    <GridExportData
+                      query={query}
+                      columnsToExport={columnsToExport}
+                      totalRecords={totalRecords}
+                    />
                   )}
                 </ButtonGroup>
               </ButtonToolbar>

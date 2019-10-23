@@ -17,37 +17,13 @@ export default {
     },
     {
       name: "Crashes",
-      url: "#",
+      url: "/crashes",
       icon: "icon-shield",
-      children: [
-        {
-          name: "Crashes",
-          url: "/crashes",
-          icon: "icon-puzzle",
-        },
-        {
-          name: "Q/A Deaths & Injuries",
-          url: "/crashes/qa",
-          icon: "icon-puzzle",
-        },
-      ],
     },
     {
       name: "Locations",
-      url: "#",
-      icon: "icon-location-pin",
-      children: [
-        {
-          name: "All locations",
-          url: "/locations",
-          icon: "icon-map",
-        },
-        {
-          name: "Locations Q/A",
-          url: "/locations/qa",
-          icon: "icon-compass",
-        },
-      ],
+      url: "/locations",
+      icon: "icon-map",
     },
     {
       divider: true,

@@ -2,11 +2,20 @@ const locationDataMap = [
   {
     title: "Details",
     fields: {
-      location_id: "Location ID",
-      address: "Address",
-      description: "Crash ID",
-      metadata: "Metadata",
-      last_update: "Last Update",
+      location_id: {
+        label: "Location ID",
+      },
+      description: {
+        label: "Description",
+      },
+      last_update: {
+        label: "Last Update",
+        format: "datetime",
+      },
+      est_comp_cost: {
+        label: "Estimated Comprehensive Cost",
+        format: "dollars",
+      },
     },
   },
 ];

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import {
   Card,
   CardBody,
@@ -8,15 +9,21 @@ import {
   Table,
   Alert,
   Input,
+  Button,
 } from "reactstrap";
 import { withApollo } from "react-apollo";
 import { useQuery } from "@apollo/react-hooks";
-import { crashDataMap } from "./crashDataMap";
+
 import CrashCollapses from "./CrashCollapses";
 import CrashMap from "./Maps/CrashMap";
-import CrashQAMap from "./Maps/CrashQAMap";
+import CrashEditCoordsMap from "./Maps/CrashEditCoordsMap";
 import Widget02 from "../Widgets/Widget02";
 import CrashChangeLog from "./CrashChangeLog";
+import { crashDataMap } from "./crashDataMap";
+import {
+  formatCostToDollars,
+  formatDateTimeString,
+} from "../../helpers/format";
 import "./crash.scss";
 
 import { GET_CRASH, UPDATE_CRASH, GET_LOOKUPS } from "../../queries/crashes";
@@ -49,6 +56,7 @@ function Crash(props) {
 
   const [editField, setEditField] = useState("");
   const [formData, setFormData] = useState({});
+  const [isEditingCoords, setIsEditingCoords] = useState(false);
 
   if (loading) return "Loading...";
   if (error) return `Error! ${error.message}`;
@@ -74,6 +82,7 @@ function Crash(props) {
   const handleInputChange = e => {
     const newFormState = Object.assign(formData, {
       [editField]: e.target.value,
+      updated_by: localStorage.getItem("hasura_user_email"),
     });
     setFormData(newFormState);
   };
@@ -100,10 +109,15 @@ function Crash(props) {
     setEditField("");
   };
 
-  const deathCount = data.atd_txdot_crashes[0].death_cnt;
-  const injuryCount = data.atd_txdot_crashes[0].tot_injry_cnt;
-  const latitude = data.atd_txdot_crashes[0].latitude;
-  const longitude = data.atd_txdot_crashes[0].longitude;
+  const {
+    apd_confirmed_death_count: deathCount,
+    sus_serious_injry_cnt: seriousInjuryCount,
+    latitude_primary: latitude,
+    longitude_primary: longitude,
+    address_confirmed_primary: primaryAddress,
+    address_confirmed_secondary: secondaryAddress,
+  } = data.atd_txdot_crashes[0];
+
   const mapGeocoderAddress = createGeocoderAddressString(data);
   const yearsLifeLostCount = calculateYearsLifeLost(
     data.atd_txdot_primaryperson.concat(data.atd_txdot_person)
@@ -112,9 +126,14 @@ function Crash(props) {
   return (
     <div className="animated fadeIn">
       <Row>
+        <Col>
+          <h2 className="h2 mb-3">{`${primaryAddress} & ${secondaryAddress}`}</h2>
+        </Col>
+      </Row>
+      <Row>
         <Col xs="12" sm="6" md="4">
           <Widget02
-            header={deathCount + ""}
+            header={`${deathCount}`}
             mainText="Fatalities"
             icon="fa fa-heartbeat"
             color="danger"
@@ -122,7 +141,7 @@ function Crash(props) {
         </Col>
         <Col xs="12" sm="6" md="4">
           <Widget02
-            header={injuryCount + ""}
+            header={`${seriousInjuryCount}`}
             mainText="Serious Injuries"
             icon="fa fa-medkit"
             color="warning"
@@ -130,7 +149,7 @@ function Crash(props) {
         </Col>
         <Col xs="12" sm="6" md="4">
           <Widget02
-            header={yearsLifeLostCount + ""}
+            header={`${yearsLifeLostCount}`}
             mainText="Years of Life Lost"
             icon="fa fa-hourglass-end"
             color="info"
@@ -138,9 +157,78 @@ function Crash(props) {
         </Col>
       </Row>
       <Row>
-        <Col lg={6}>
-          {crashDataMap.map(section => {
-            return (
+        <Col xs="12" md="6">
+          <div className="mb-4">
+            <Card>
+              <CardHeader>
+                <Row>
+                  <Col>
+                    Crash Location{" "}
+                    {(data && data.atd_txdot_crash_locations.length > 0 && (
+                      <>
+                        (ID:&nbsp;
+                        <Link
+                          to={`/locations/${
+                            data.atd_txdot_crash_locations[0]["location_id"]
+                          }`}
+                        >
+                          {data.atd_txdot_crash_locations[0]["location_id"]}
+                        </Link>
+                        )
+                      </>
+                    )) ||
+                      "(Unassigned)"}
+                  </Col>
+                  <Col>
+                    {!isEditingCoords && (
+                      <Button
+                        color="primary"
+                        style={{ float: "right" }}
+                        onClick={e => setIsEditingCoords(!isEditingCoords)}
+                      >
+                        Edit Coordinates
+                      </Button>
+                    )}
+                  </Col>
+                </Row>
+              </CardHeader>
+              <CardBody>
+                {(!latitude || !longitude) && (
+                  <Alert color="danger">
+                    Crash record is missing latitude and longitude values
+                    required for map display.
+                  </Alert>
+                )}
+                {!isEditingCoords && latitude && longitude ? (
+                  <>
+                    <CrashMap data={data.atd_txdot_crashes[0]} />
+                    <Table responsive striped hover>
+                      <tbody></tbody>
+                    </Table>
+                  </>
+                ) : (
+                  <>
+                    <CrashEditCoordsMap
+                      data={data.atd_txdot_crashes[0]}
+                      mapGeocoderAddress={mapGeocoderAddress}
+                      crashId={crashId}
+                      refetchCrashData={refetch}
+                      setIsEditingCoords={setIsEditingCoords}
+                    />
+                  </>
+                )}
+              </CardBody>
+            </Card>
+          </div>
+        </Col>
+        <Col>
+          <CrashCollapses data={data} />
+        </Col>
+      </Row>
+      <Row>
+        {crashDataMap.map(section => {
+          return (
+            <Col xs="12" md="6">
               <Card key={section.title}>
                 <CardHeader>{section.title}</CardHeader>
                 <CardBody>
@@ -152,7 +240,19 @@ function Crash(props) {
 
                         const fieldLabel = fieldConfigObject.label;
 
+                        const formattedDollarValue =
+                          fieldConfigObject.format === "dollars" &&
+                          formatCostToDollars(data.atd_txdot_crashes[0][field]);
+
+                        const formatDateTimeValue =
+                          fieldConfigObject.format === "datetime" &&
+                          formatDateTimeString(
+                            data.atd_txdot_crashes[0][field]
+                          );
+
                         const fieldValue =
+                          formattedDollarValue ||
+                          formatDateTimeValue ||
                           (formData && formData[field.data]) ||
                           data.atd_txdot_crashes[0][field];
 
@@ -244,39 +344,11 @@ function Crash(props) {
                   </Table>
                 </CardBody>
               </Card>
-            );
-          })}
-        </Col>
+            </Col>
+          );
+        })}
 
         <Col lg={6}>
-          <div className="mb-4">
-            <Card>
-              <CardHeader>Crash Location</CardHeader>
-              <CardBody>
-                {latitude && longitude ? (
-                  <>
-                    <CrashMap data={data.atd_txdot_crashes[0]} />
-                    <Table responsive striped hover>
-                      <tbody></tbody>
-                    </Table>
-                  </>
-                ) : (
-                  <>
-                    <Alert color="danger">
-                      Crash record is missing latitude and longitude values
-                      required for map display.
-                    </Alert>
-                    <CrashQAMap
-                      mapGeocoderAddress={mapGeocoderAddress}
-                      crashId={crashId}
-                      refetchCrashData={refetch}
-                    />
-                  </>
-                )}
-              </CardBody>
-            </Card>
-          </div>
-          <CrashCollapses data={data} />
           <CrashChangeLog data={data} />
         </Col>
       </Row>

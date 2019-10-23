@@ -2,8 +2,8 @@ import React from "react";
 import { withApollo } from "react-apollo";
 
 import GridTable from "../../Components/GridTable";
-
 import gqlAbstract from "../../queries/gqlAbstract";
+import { locationCrashesQueryExportFields } from "../../queries/crashes";
 
 function LocationCrashes(props) {
   // Our initial query configuration
@@ -18,12 +18,6 @@ function LocationCrashes(props) {
         label_search: "Search by Crash ID",
         label_table: "Crash ID",
         type: "Int",
-      },
-      "location { location_id }": {
-        searchable: false,
-        sortable: true,
-        label_table: "Location ID",
-        type: "String",
       },
       case_id: {
         searchable: true,
@@ -52,13 +46,13 @@ function LocationCrashes(props) {
         label_table: "Secondary Address",
         type: "String",
       },
-      tot_injry_cnt: {
+      sus_serious_injry_cnt: {
         searchable: false,
         sortable: true,
-        label_table: "Injury Count",
+        label_table: "Serious Injury Count",
         type: "Int",
       },
-      death_cnt: {
+      apd_confirmed_death_count: {
         searchable: false,
         sortable: true,
         label_table: "Death Count",
@@ -68,12 +62,6 @@ function LocationCrashes(props) {
         searchable: false,
         sortable: false,
         label_table: "Collision Description",
-        type: "String",
-      },
-      "units { body_style { veh_body_styl_desc } }": {
-        searchable: false,
-        sortable: false,
-        label_table: "Unit Body Type",
         type: "String",
       },
       "units { unit_description { veh_unit_desc_desc } }": {
@@ -105,21 +93,21 @@ function LocationCrashes(props) {
           id: "dni_deaths",
           label: "Deaths",
           filter: {
-            where: [{ death_cnt: "_gt: 0" }],
+            where: [{ or: { apd_confirmed_death_count: "_gt: 0" } }],
           },
         },
         {
           id: "dni_serious_injuries",
           label: "Serious Injuries",
           filter: {
-            where: [{ sus_serious_injry_cnt: "_gt: 0" }],
+            where: [{ or: { sus_serious_injry_cnt: "_gt: 0" } }],
           },
         },
         {
           id: "dni_non_fatal",
-          label: "Non-Fatal Injuries",
+          label: "Non-serious Injuries",
           filter: {
-            where: [{ nonincap_injry_cnt: "_gt: 0" }],
+            where: [{ or: { nonincap_injry_cnt: "_gt: 0" } }],
           },
         },
       ],
@@ -177,6 +165,7 @@ function LocationCrashes(props) {
       query={crashesQuery}
       title={"Location Crashes"}
       filters={customFilters}
+      columnsToExport={locationCrashesQueryExportFields}
     />
   );
 }

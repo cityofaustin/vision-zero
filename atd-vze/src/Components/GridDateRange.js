@@ -63,21 +63,15 @@ const GridDateRange = ({ setDateRangeFilter, initStartDate, initEndDate }) => {
   const formatDate = date => moment(date).format("YYYY-MM-DD");
 
   /**
-   * Returns a date one year ago from today
+   * Returns today
    * @type {Date}
    */
-  const minDate = initStartDate
-    ? parseDate(initStartDate)
-    : new Date(
-        moment()
-          .subtract(1, "year")
-          .format()
-      );
+  const maxDate = new Date();
 
-  const maxDate = initEndDate ? parseDate(initEndDate) : new Date();
-  const [startDate, setStartDate] = useState(minDate);
-  const [endDate, setEndDate] = useState(maxDate);
+  const [startDate, setStartDate] = useState(parseDate(initStartDate));
+  const [endDate, setEndDate] = useState(parseDate(initEndDate));
 
+  // Set date range filter in GridTable if startDate or endDate changes
   useEffect(() => {
     setDateRangeFilter({
       startDate: formatDate(startDate),
@@ -85,23 +79,34 @@ const GridDateRange = ({ setDateRangeFilter, initStartDate, initEndDate }) => {
     });
   }, [startDate, endDate, setDateRangeFilter]);
 
+  // Set startDate or endDate state if props change
+  useEffect(() => {
+    setStartDate(parseDate(initStartDate));
+    setEndDate(parseDate(initEndDate));
+  }, [initStartDate, initEndDate]);
+
   return (
     <>
       <StyledDatePicker>
         <DatePicker
+          id="start-date"
           selected={startDate}
           onChange={date => setStartDate(date)}
           selectsStart
           startDate={startDate}
           endDate={endDate}
+          // Prevent user from selecting start date after current date
+          maxDate={maxDate}
         />
         <span>{" to "}</span>
         <DatePicker
+          id="end-date"
           selected={endDate}
           onChange={date => setEndDate(date)}
           selectsEnd
           startDate={startDate}
           endDate={endDate}
+          // Prevent user from selecting date before startDate (chosen in first DatePicker) or after current date
           minDate={startDate}
           maxDate={maxDate}
         />

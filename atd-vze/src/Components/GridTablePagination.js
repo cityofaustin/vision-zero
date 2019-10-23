@@ -39,10 +39,7 @@ const GridTablePagination = ({
     <>
       <ButtonToolbar className="">
         <ButtonGroup>
-          <Button
-            onClick={moveBack}
-            disabled={pageNumber < 2 ? "disabled" : ""}
-          >
+          <Button onClick={moveBack} disabled={pageNumber < 2 ? true : false}>
             <StyledDisableClick>
               <i className="fa fa-arrow-circle-left" />
             </StyledDisableClick>{" "}
@@ -57,7 +54,7 @@ const GridTablePagination = ({
 
           <Button
             onClick={moveNext}
-            disabled={pageNumber >= totalPages ? "disabled" : ""}
+            disabled={pageNumber >= totalPages ? true : false}
           >
             Next{" "}
             <StyledDisableClick>

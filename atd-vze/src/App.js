@@ -28,6 +28,9 @@ const Register = React.lazy(() => import("./views/Pages/Register"));
 const Page404 = React.lazy(() => import("./views/Pages/Page404"));
 const Page500 = React.lazy(() => import("./views/Pages/Page500"));
 
+// Hasura Endpoint
+const HASURA_ENDPOINT = process.env.REACT_APP_HASURA_ENDPOINT;
+
 class App extends Component {
   constructor(props) {
     super(props);
@@ -67,6 +70,7 @@ class App extends Component {
             profile["https://hasura.io/jwt/claims"][
               "x-hasura-allowed-roles"
             ][0];
+          localStorage.setItem("hasura_user_email", profile["email"]);
           localStorage.setItem("hasura_user_role", role);
           this.setState({ role: role });
           this.initializeClient();
@@ -82,7 +86,7 @@ class App extends Component {
     if (this.auth.isAuthenticated()) {
       if (this.state.role !== null) {
         client = new ApolloClient({
-          uri: "https://vzd.austintexas.io/v1/graphql",
+          uri: HASURA_ENDPOINT,
           headers: {
             Authorization: `Bearer ${this.state.token}`,
             "x-hasura-role": this.state.role,
@@ -97,12 +101,18 @@ class App extends Component {
       This seems to work for now, let's see if we can make the router take care
       of this at some point.
     */
-    if (window.location.pathname.startsWith("/callback")) {
+    if (
+      window.location.pathname.startsWith("/callback") ||
+      window.location.pathname.startsWith("/editor/callback")
+    ) {
       // Handle authentication if expected values are in the URL.
       if (/access_token|id_token|error/.test(window.location.hash)) {
         this.handleAuthentication();
       } else {
-        window.location = "/#/login";
+        const prefix = window.location.pathname.startsWith("/editor")
+          ? "/editor"
+          : "";
+        window.location = prefix + "/#/login";
       }
     }
   }
@@ -124,7 +134,10 @@ class App extends Component {
     this.auth.auth0.parseHash((err, authResult) => {
       if (authResult && authResult.accessToken && authResult.idToken) {
         this.setSession(authResult);
-        window.location = "/#/dashboard";
+        const prefix = window.location.pathname.startsWith("/editor")
+            ? "/editor"
+            : "";
+        window.location = prefix + "/#/dashboard";
       } else if (err) {
         alert(`Error: ${err.error}. Check the console for further details.`);
       }

@@ -12,27 +12,40 @@ export const GET_LOCATION = gql`
       metadata
       last_update
       is_retired
-      crashes_by_manner_collision(order_by: {count: desc}, limit: 5) {
+      crashes_by_manner_collision(order_by: { count: desc }, limit: 5) {
         collsn_desc
         count
       }
-    }
-    atd_txdot_crashes_aggregate(
-      where: { city_id: { _eq: 22 }, location: { location_id: { _eq: $id } } }
-    ) {
-      aggregate {
-        count
+      crashes_count_cost_summary {
+        est_comp_cost
       }
     }
-    atd_txdot_primaryperson_aggregate(
+    atd_txdot_crashes_aggregate(
       where: {
-        crash: { city_id: { _eq: 22 }, location: { location_id: { _eq: $id } } }
+        city_id: { _eq: 22 }
+        location: { location_id: { _eq: $id } }
+        private_dr_fl: { _neq: "Y" }
       }
     ) {
       aggregate {
         count
         sum {
-          death_cnt
+          apd_confirmed_death_count
+        }
+      }
+    }
+    atd_txdot_primaryperson_aggregate(
+      where: {
+        crash: {
+          city_id: { _eq: 22 }
+          location: { location_id: { _eq: $id } }
+          private_dr_fl: { _neq: "Y" }
+        }
+      }
+    ) {
+      aggregate {
+        count
+        sum {
           sus_serious_injry_cnt
           years_of_life_lost
         }
@@ -40,13 +53,16 @@ export const GET_LOCATION = gql`
     }
     atd_txdot_person_aggregate(
       where: {
-        crash: { city_id: { _eq: 22 }, location: { location_id: { _eq: $id } } }
+        crash: {
+          city_id: { _eq: 22 }
+          location: { location_id: { _eq: $id } }
+          private_dr_fl: { _neq: "Y" }
+        }
       }
     ) {
       aggregate {
         count
         sum {
-          death_cnt
           sus_serious_injry_cnt
           years_of_life_lost
         }
@@ -54,7 +70,11 @@ export const GET_LOCATION = gql`
     }
     atd_txdot_units_aggregate(
       where: {
-        crash: { city_id: { _eq: 22 }, location: { location_id: { _eq: $id } } }
+        crash: {
+          city_id: { _eq: 22 }
+          location: { location_id: { _eq: $id } }
+          private_dr_fl: { _neq: "Y" }
+        }
       }
     ) {
       aggregate {
@@ -81,4 +101,13 @@ export const UPDATE_LOCATION = gql`
       }
     }
   }
+`;
+
+export const locationQueryExportFields = `
+location_id
+description
+crashes_count_cost_summary { total_crashes }
+crashes_count_cost_summary { total_deaths }
+crashes_count_cost_summary { total_serious_injuries }
+crashes_count_cost_summary { est_comp_cost }
 `;

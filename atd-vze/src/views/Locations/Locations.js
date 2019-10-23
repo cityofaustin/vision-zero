@@ -2,8 +2,8 @@ import React from "react";
 import { withApollo } from "react-apollo";
 
 import GridTable from "../../Components/GridTable";
-
 import gqlAbstract from "../../queries/gqlAbstract";
+import { locationQueryExportFields } from "../../queries/Locations";
 
 // Our initial query configuration
 let queryConf = {
@@ -16,7 +16,7 @@ let queryConf = {
       sortable: true,
       label_search: "Search by location id",
       label_table: "Location ID",
-      type: "Int",
+      type: "Integer",
     },
     description: {
       searchable: true,
@@ -25,10 +25,40 @@ let queryConf = {
       label_table: "Intersection",
       type: "String",
     },
+    "crashes_count_cost_summary { total_crashes }": {
+      searchable: false,
+      sortable: true,
+      label_search: null,
+      label_table: "Total Crashes",
+      default: 0,
+      type: "Integer",
+    },
+    "crashes_count_cost_summary { total_deaths }": {
+      searchable: false,
+      sortable: true,
+      label_search: null,
+      label_table: "Total Deaths",
+      default: 0,
+      type: "Integer",
+    },
+    "crashes_count_cost_summary { total_serious_injuries }": {
+      searchable: false,
+      sortable: true,
+      label_search: null,
+      label_table: "Total Serious Injry.",
+      default: 0,
+      type: "Integer",
+    },
+    "crashes_count_cost_summary { est_comp_cost }": {
+      searchable: false,
+      sortable: true,
+      label_search: null,
+      label_table: "Comp. Cost",
+      default: 0,
+      type: "Currency",
+    },
   },
-  order_by: {
-    location_id: "desc", // Unique ID desc by default
-  },
+  order_by: {},
   where: {},
   limit: 25,
   offset: 0,
@@ -37,7 +67,11 @@ let queryConf = {
 let locationsQuery = new gqlAbstract(queryConf);
 
 const Locations = () => (
-  <GridTable query={locationsQuery} title={"Locations"} />
+  <GridTable
+    query={locationsQuery}
+    title={"Locations"}
+    columnsToExport={locationQueryExportFields}
+  />
 );
 
 export default withApollo(Locations);
