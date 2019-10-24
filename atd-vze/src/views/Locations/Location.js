@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import LocationMap from "./LocationMap";
 import LocationEditMap from "./LocationEditMap";
 import {
@@ -10,19 +10,14 @@ import {
   Table,
   Button,
   ButtonGroup,
-  Badge,
-  Alert,
 } from "reactstrap";
 
 import { withApollo } from "react-apollo";
 import { useQuery } from "@apollo/react-hooks";
-import palette from "google-palette";
-import { Doughnut, HorizontalBar } from "react-chartjs-2";
 
 import locationDataMap from "./locationDataMap";
 import LocationCrashes from "./LocationCrashes";
 
-import { colors } from "../../styles/colors";
 import { GET_LOCATION } from "../../queries/Locations";
 import {
   formatCostToDollars,
@@ -43,40 +38,6 @@ function Location(props) {
 
   if (loading) return "Loading...";
   if (error) return `Error! ${error.message}`;
-
-  const formatLabel = str => {
-    let sections = [];
-
-    // Get the approximate midpoint of the string
-    let splitPoint = Math.floor(str.length / 2);
-
-    // If the midpoint is not a space,
-    // find the closest " " to the left of the midpoint
-    // and split there instead
-    if (str.charAt(splitPoint) !== " ") {
-      splitPoint = str.substring(0, splitPoint).lastIndexOf(" ");
-    }
-
-    sections.push(str.substring(0, splitPoint));
-    sections.push(str.substring(splitPoint));
-
-    return sections;
-  };
-
-  const vehBodyGraphConfig = {
-    palette: palette(
-      "mpn65",
-      data.atd_txdot_locations[0].crashes_by_veh_body_style.length
-    ).map(a => `#${a}`),
-    labels: data.atd_txdot_locations[0].crashes_by_veh_body_style.map(
-      a => a.veh_body_styl_desc
-    ),
-    data: data.atd_txdot_locations[0].crashes_by_veh_body_style.map(
-      a => a.count
-    ),
-  };
-
-  const { count: crashCount } = data.atd_txdot_crashes_aggregate.aggregate;
 
   return (
     <div className="animated fadeIn">

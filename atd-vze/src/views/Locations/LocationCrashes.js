@@ -196,36 +196,82 @@ function LocationCrashes(props) {
       mainText: "Fatalities",
       icon: "fa fa-heartbeat",
       color: "danger",
+      dataPath: [
+        "atd_txdot_crashes_aggregate",
+        "aggregate",
+        "sum",
+        "apd_confirmed_death_count",
+      ],
+      sum: false,
     },
     {
       getAggregateDataArg: "sus_serious_injry_cnt",
       mainText: "Serious Injuries",
       icon: "fa fa-medkit",
       color: "warning",
+      dataPath: [
+        [
+          "atd_txdot_primaryperson_aggregate",
+          "aggregate",
+          "sum",
+          "sus_serious_injry_cnt",
+        ],
+        [
+          "atd_txdot_person_aggregate",
+          "aggregate",
+          "sum",
+          "sus_serious_injry_cnt",
+        ],
+      ],
+      sum: true,
     },
     {
       getAggregateDataArg: "years_of_life_lost",
       mainText: "Years of Life Lost",
       icon: "fa fa-hourglass-end",
       color: "info",
+      dataPath: [
+        [
+          "atd_txdot_primaryperson_aggregate",
+          "aggregate",
+          "sum",
+          "years_of_life_lost",
+        ],
+        [
+          "atd_txdot_person_aggregate",
+          "aggregate",
+          "sum",
+          "years_of_life_lost",
+        ],
+      ],
+      sum: true,
     },
     {
       getAggregateDataArg: "count",
       mainText: "Total Crashes",
       icon: "fa fa-cab",
       color: "success",
+      dataPath: ["atd_txdot_crashes_aggregate", "aggregate", "count"],
+      sum: false,
     },
     {
       getAggregateDataArg: "total_people",
       mainText: "Total People (Primary + Non-Primary)",
       icon: "fa fa-user",
       color: "dark",
+      dataPath: [
+        ["atd_txdot_primaryperson_aggregate", "aggregate", "count"],
+        ["atd_txdot_person_aggregate", "aggregate", "count"],
+      ],
+      sum: true,
     },
     {
       getAggregateDataArg: "total_units",
       mainText: "Total Units",
       icon: "fa fa-car",
       color: "secondary",
+      dataPath: ["atd_txdot_units_aggregate", "aggregate", "count"],
+      sum: false,
     },
   ];
 

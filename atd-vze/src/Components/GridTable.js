@@ -27,6 +27,7 @@ import GridTableSearch from "./GridTableSearch";
 import GridFilters from "./GridFilters";
 import GridDateRange from "./GridDateRange";
 import GridExportData from "./GridExportData";
+import GridTableCharts from "./GridTableCharts";
 
 const GridTable = ({
   title,
@@ -105,20 +106,22 @@ const GridTable = ({
     );
   });
 
+  // Aggregate query state and query
   const [aggregateQuery, setAggregateQuery] = useState(null);
-
   const [loadAggData, { data: aggData }] = useLazyQuery(aggregateQuery);
 
   // Update aggregate query with latest filters
   useEffect(() => {
-    const aggregatesQuery = query.queryAggregate(aggregateQueryConfig, query);
-    // Prevent endlessly setting aggregateQuery
-    if (aggregatesQuery !== aggregateQuery) {
-      setAggregateQuery(aggregatesQuery);
+    if (aggregateQueryConfig) {
+      const aggregatesQuery = query.queryAggregate(aggregateQueryConfig, query);
+      // Prevent endlessly setting aggregateQuery
+      if (aggregatesQuery !== aggregateQuery) {
+        setAggregateQuery(aggregatesQuery);
+      }
     }
   });
 
-  // Execute aggregate query each time it changes
+  // Execute aggregate query each time query filters change
   useEffect(() => {
     aggregateQuery !== null && loadAggData();
   }, [aggregateQuery]);
@@ -335,7 +338,7 @@ const GridTable = ({
 
   // Make Query && Error handling
   let { loading, error, data } = useQuery(query.gql);
-
+  console.log(data);
   if (error) return `Error! ${error.message}`;
 
   let dataEntries = [];
@@ -379,6 +382,11 @@ const GridTable = ({
               <i className="fa fa-car" /> {title}
             </CardHeader>
             <CardBody>
+              {/* {aggData !== undefined && Object.keys(aggData).length > 0 && (
+                <Row>
+                  <GridTableCharts aggData={aggData} data={data} />
+                </Row>
+              )} */}
               {aggregateQueryConfig && widgetsConfig && (
                 <Row>
                   <GridTableWidgets

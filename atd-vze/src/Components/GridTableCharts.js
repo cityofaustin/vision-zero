@@ -1,9 +1,31 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 
-import { Col } from "reactstrap";
+import { Col, Badge, Alert, Card, CardHeader, CardBody } from "reactstrap";
+import palette from "google-palette";
+import { Doughnut, HorizontalBar } from "react-chartjs-2";
+import { colors } from "../styles/colors";
 
-const GridTableCharts = ({}) => {
-  const { count: crashCount } = data.atd_txdot_crashes_aggregate.aggregate;
+const GridTableCharts = ({ aggData, data }) => {
+  const { count: crashCount } = aggData.atd_txdot_crashes_aggregate.aggregate;
+
+  const formatLabel = str => {
+    let sections = [];
+
+    // Get the approximate midpoint of the string
+    let splitPoint = Math.floor(str.length / 2);
+
+    // If the midpoint is not a space,
+    // find the closest " " to the left of the midpoint
+    // and split there instead
+    if (str.charAt(splitPoint) !== " ") {
+      splitPoint = str.substring(0, splitPoint).lastIndexOf(" ");
+    }
+
+    sections.push(str.substring(0, splitPoint));
+    sections.push(str.substring(splitPoint));
+
+    return sections;
+  };
 
   const vehBodyGraphConfig = {
     palette: palette(
