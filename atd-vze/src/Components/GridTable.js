@@ -35,6 +35,7 @@ const GridTable = ({
   filters,
   columnsToExport,
   aggregateQueryConfig,
+  charts,
   widgetsConfig,
 }) => {
   // Load table filters from localStorage by title
@@ -109,6 +110,8 @@ const GridTable = ({
   // Aggregate query state and query
   const [aggregateQuery, setAggregateQuery] = useState(null);
   const [loadAggData, { data: aggData }] = useLazyQuery(aggregateQuery);
+  const [chartQuery, setChartQuery] = useState(null);
+  const [loadChartData, { data: chartData }] = useLazyQuery(chartQuery);
 
   // Update aggregate query with latest filters
   useEffect(() => {
@@ -119,12 +122,27 @@ const GridTable = ({
         setAggregateQuery(aggregatesQuery);
       }
     }
+
+    if (charts) {
+      delete query.config.limit;
+      const chartsQuery = query.gql;
+
+      // Prevent endlessly setting aggregateQuery
+      if (chartsQuery !== chartQuery) {
+        setChartQuery(chartsQuery);
+      }
+    }
   });
 
   // Execute aggregate query each time query filters change
   useEffect(() => {
     aggregateQuery !== null && loadAggData();
   }, [aggregateQuery]);
+
+  // Execute chart query each time query filters change
+  useEffect(() => {
+    chartQuery !== null && loadChartData();
+  }, [chartQuery]);
 
   /**
    * Shows or hides advanced filters
@@ -382,11 +400,14 @@ const GridTable = ({
               <i className="fa fa-car" /> {title}
             </CardHeader>
             <CardBody>
-              {/* {aggData !== undefined && Object.keys(aggData).length > 0 && (
-                <Row>
-                  <GridTableCharts aggData={aggData} data={data} />
-                </Row>
-              )} */}
+              {chartData !== undefined &&
+                Object.keys(chartData).length > 0 &&
+                aggData !== undefined &&
+                Object.keys(aggData).length > 0 && (
+                  <Row>
+                    <GridTableCharts chartData={chartData} />
+                  </Row>
+                )}
               {aggregateQueryConfig && widgetsConfig && (
                 <Row>
                   <GridTableWidgets

@@ -160,6 +160,7 @@ function LocationCrashes(props) {
     },
   };
 
+  // Configuration for aggregate queries that drive <GridTableWidgets />
   const aggregateQueryConfig = [
     {
       table: "atd_txdot_crashes_aggregate",
@@ -190,9 +191,12 @@ function LocationCrashes(props) {
     },
   ];
 
+  // Configuration for widget styles and data that populates them
+  // Using lodash.get() here to expose nested data which requires
+  // each node in object to be passed as an array of strings
+  // Ex. reference for `test` in {a: {b: `test`}} is ["a", "b"]
   const widgetsConfig = [
     {
-      getAggregateDataArg: "apd_confirmed_death_count",
       mainText: "Fatalities",
       icon: "fa fa-heartbeat",
       color: "danger",
@@ -202,10 +206,9 @@ function LocationCrashes(props) {
         "sum",
         "apd_confirmed_death_count",
       ],
-      sum: false,
+      sum: false, // Is the data a sum of multiple aggregates
     },
     {
-      getAggregateDataArg: "sus_serious_injry_cnt",
       mainText: "Serious Injuries",
       icon: "fa fa-medkit",
       color: "warning",
@@ -226,7 +229,6 @@ function LocationCrashes(props) {
       sum: true,
     },
     {
-      getAggregateDataArg: "years_of_life_lost",
       mainText: "Years of Life Lost",
       icon: "fa fa-hourglass-end",
       color: "info",
@@ -247,7 +249,6 @@ function LocationCrashes(props) {
       sum: true,
     },
     {
-      getAggregateDataArg: "count",
       mainText: "Total Crashes",
       icon: "fa fa-cab",
       color: "success",
@@ -255,7 +256,6 @@ function LocationCrashes(props) {
       sum: false,
     },
     {
-      getAggregateDataArg: "total_people",
       mainText: "Total People (Primary + Non-Primary)",
       icon: "fa fa-user",
       color: "dark",
@@ -266,7 +266,6 @@ function LocationCrashes(props) {
       sum: true,
     },
     {
-      getAggregateDataArg: "total_units",
       mainText: "Total Units",
       icon: "fa fa-car",
       color: "secondary",
@@ -283,6 +282,7 @@ function LocationCrashes(props) {
       columnsToExport={locationCrashesQueryExportFields}
       aggregateQueryConfig={aggregateQueryConfig}
       widgetsConfig={widgetsConfig}
+      charts={true}
     />
   );
 }

@@ -1,5 +1,5 @@
 import React from "react";
-import { get } from "lodash";
+import get from "lodash.get";
 
 import { Col, Row } from "reactstrap";
 import Widget02 from "../views/Widgets/Widget02";
@@ -11,7 +11,6 @@ const GridTableWidgets = ({ aggData, widgetsConfig }) => {
     if (!!widget.sum) {
       let sum = 0;
       widget.dataPath.forEach(path => (sum += get(aggData, path)));
-      console.log(sum);
       return sum;
     } else {
       const path = widget.dataPath;
