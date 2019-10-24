@@ -274,6 +274,82 @@ function LocationCrashes(props) {
     },
   ];
 
+  const chartConfig = {
+    totalRecordsPath: ["atd_txdot_crashes_aggregate", "aggregate", "count"],
+    horizontalBarChart: {
+      labels: [
+        "ONE MOTOR VEHICLE - GOING STRAIGHT",
+        "ONE MOTOR VEHICLE - TURNING RIGHT",
+        "ONE MOTOR VEHICLE - TURNING LEFT",
+        "ONE MOTOR VEHICLE - BACKING",
+        "ONE MOTOR VEHICLE - OTHER",
+        "ANGLE - BOTH GOING STRAIGHT",
+        "ANGLE - ONE STRAIGHT-ONE BACKING",
+        "ANGLE - ONE STRAIGHT-ONE STOPPED",
+        "ANGLE - ONE STRAIGHT-ONE RIGHT TURN",
+        "ANGLE - ONE STRAIGHT-ONE LEFT TURN",
+        "ANGLE - BOTH RIGHT TURN",
+        "ANGLE - ONE RIGHT TURN-ONE LEFT TURN",
+        "ANGLE - ONE RIGHT TURN-ONE STOPPED",
+        "ANGLE - BOTH LEFT TURN",
+        "ANGLE - ONE LEFT TURN-ONE STOPPED",
+        "SAME DIRECTION - BOTH GOING STRAIGHT-REAR END",
+        "SAME DIRECTION - BOTH GOING STRAIGHT-SIDESWIPE",
+        "SAME DIRECTION - ONE STRAIGHT-ONE STOPPED",
+        "SAME DIRECTION - ONE STRAIGHT-ONE RIGHT TURN",
+        "SAME DIRECTION - ONE STRAIGHT-ONE LEFT TURN",
+        "SAME DIRECTION - BOTH RIGHT TURN",
+        "SAME DIRECTION - ONE RIGHT TURN-ONE LEFT TURN",
+        "SAME DIRECTION - ONE RIGHT TURN-ONE STOPPED",
+        "SAME DIRECTION - BOTH LEFT TURN",
+        "SAME DIRECTION - ONE LEFT TURN-ONE STOPPED",
+        "OPPOSITE DIRECTION - BOTH GOING STRAIGHT",
+        "OPPOSITE DIRECTION - ONE STRAIGHT-ONE BACKING",
+        "OPPOSITE DIRECTION - ONE STRAIGHT-ONE STOPPED",
+        "OPPOSITE DIRECTION - ONE STRAIGHT-ONE RIGHT TURN",
+        "OPPOSITE DIRECTION - ONE STRAIGHT-ONE LEFT TURN",
+        "OPPOSITE DIRECTION - ONE BACKING-ONE STOPPED",
+        "OPPOSITE DIRECTION - ONE RIGHT TURN-ONE LEFT TURN",
+        "OPPOSITE DIRECTION - ONE RIGHT TURN-ONE STOPPED",
+        "OPPOSITE DIRECTION - BOTH LEFT TURNS",
+        "OPPOSITE DIRECTION - ONE LEFT TURN-ONE STOPPED",
+        "OTHER - ONE STRAIGHT-ONE ENTERING OR LEAVING PARKI",
+        "OTHER - ONE RIGHT TURN-ONE ENTERING OR LEAVING PAR",
+        "OTHER - ONE LEFT TURN-ONE ENTERING OR LEAVING PARK",
+        "OTHER - ONE ENTERING OR LEAVING PARKING SPACE-ONE",
+        "OTHER - BOTH ENTERING OR LEAVING A PARKING SPACE",
+        "OTHER - BOTH BACKING",
+        "OTHER",
+      ],
+      title: "Number of Collisions",
+      table: "atd_txdot_crashes",
+      nestedKey: "collision",
+      // Using lodash.get(), array is arg that translates to unit.unit_description.veh_unit_desc_desc
+      nestedPath: ["collsn_desc"],
+      // Is value of table.nestedKey.nestedPath a single record or array
+      isSingleRecord: true,
+    },
+    doughnutChart: {
+      labels: [
+        "MOTOR VEHICLE",
+        "TRAIN",
+        "PEDALCYCLIST",
+        "PEDESTRIAN",
+        "MOTORIZED CONVEYANCE",
+        "TOWED/PUSHED/TRAILER",
+        "NON-CONTACT",
+        "OTHER",
+      ],
+      title: "Types of Vehicles - Count Distribution",
+      table: "atd_txdot_crashes",
+      nestedKey: "units",
+      // Using lodash.get(), array is arg that translates to unit.unit_description.veh_unit_desc_desc
+      nestedPath: ["unit_description", "veh_unit_desc_desc"],
+      // Is value of table.nestedKey.nestedPath a single record or array
+      isSingleRecord: false,
+    },
+  };
+
   return (
     <GridTable
       query={crashesQuery}
@@ -282,7 +358,7 @@ function LocationCrashes(props) {
       columnsToExport={locationCrashesQueryExportFields}
       aggregateQueryConfig={aggregateQueryConfig}
       widgetsConfig={widgetsConfig}
-      charts={true}
+      chartConfig={chartConfig}
     />
   );
 }

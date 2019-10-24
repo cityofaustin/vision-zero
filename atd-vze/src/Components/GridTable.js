@@ -35,7 +35,7 @@ const GridTable = ({
   filters,
   columnsToExport,
   aggregateQueryConfig,
-  charts,
+  chartConfig,
   widgetsConfig,
 }) => {
   // Load table filters from localStorage by title
@@ -123,7 +123,7 @@ const GridTable = ({
       }
     }
 
-    if (charts) {
+    if (chartConfig) {
       delete query.config.limit;
       const chartsQuery = query.gql;
 
@@ -137,12 +137,12 @@ const GridTable = ({
   // Execute aggregate query each time query filters change
   useEffect(() => {
     aggregateQuery !== null && loadAggData();
-  }, [aggregateQuery]);
+  }, [aggregateQuery, loadAggData]);
 
   // Execute chart query each time query filters change
   useEffect(() => {
     chartQuery !== null && loadChartData();
-  }, [chartQuery]);
+  }, [chartQuery, loadChartData]);
 
   /**
    * Shows or hides advanced filters
@@ -405,7 +405,10 @@ const GridTable = ({
                 aggData !== undefined &&
                 Object.keys(aggData).length > 0 && (
                   <Row>
-                    <GridTableCharts chartData={chartData} />
+                    <GridTableCharts
+                      chartData={chartData}
+                      chartConfig={chartConfig}
+                    />
                   </Row>
                 )}
               {aggregateQueryConfig && widgetsConfig && (

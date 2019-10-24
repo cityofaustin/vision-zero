@@ -1,108 +1,78 @@
-import React, { useState } from "react";
+import React from "react";
+import get from "lodash.get";
 
 import { Col, Badge, Alert, Card, CardHeader, CardBody } from "reactstrap";
 import palette from "google-palette";
 import { Doughnut, HorizontalBar } from "react-chartjs-2";
 import { colors } from "../styles/colors";
 
-const GridTableCharts = ({ chartData }) => {
-  const collisionTypeArray = [
-    "MOTOR VEHICLE",
-    "TRAIN",
-    "PEDALCYCLIST",
-    "PEDESTRIAN",
-    "MOTORIZED CONVEYANCE",
-    "TOWED/PUSHED/TRAILER",
-    "NON-CONTACT",
-    "OTHER",
-  ];
+const GridTableCharts = ({ chartData, chartConfig }) => {
+  const recordCount = get(chartData, chartConfig.totalRecordsPath);
 
-  const getMannerOfCollisions = () => {
-    return collisionTypeArray.map(type => {
+  const getChartData = config => {
+    return config.labels.map(type => {
       let typeTotal = 0;
-      chartData.atd_txdot_crashes.forEach(record => {
-        record.units.forEach(unit => {
-          if (unit.unit_description.veh_unit_desc_desc === type) {
+      chartData[config.table].forEach(record => {
+        if (config.isSingleRecord) {
+          if (record[config.nestedKey][config.nestedPath] === type) {
             typeTotal++;
           }
-        });
+        } else {
+          record[config.nestedKey].forEach(unit => {
+            if (get(unit, config.nestedPath) === type) {
+              typeTotal++;
+            }
+          });
+        }
       });
       return typeTotal;
     });
   };
 
-  const { count: crashCount } = chartData.atd_txdot_crashes_aggregate.aggregate;
+  const vehBodyGraphConfig = {
+    palette: palette("mpn65", chartConfig.doughnutChart.labels.length).map(
+      a => `#${a}`
+    ),
+    labels: chartConfig.doughnutChart.labels.map(a => a),
+    data: getChartData(chartConfig.doughnutChart),
+  };
 
-  //   const formatLabel = str => {
-  //     let sections = [];
-
-  //     // Get the approximate midpoint of the string
-  //     let splitPoint = Math.floor(str.length / 2);
-
-  //     // If the midpoint is not a space,
-  //     // find the closest " " to the left of the midpoint
-  //     // and split there instead
-  //     if (str.charAt(splitPoint) !== " ") {
-  //       splitPoint = str.substring(0, splitPoint).lastIndexOf(" ");
-  //     }
-
-  //     sections.push(str.substring(0, splitPoint));
-  //     sections.push(str.substring(splitPoint));
-
-  //     return sections;
-  //   };
-
-  //   const vehBodyGraphConfig = {
-  //     palette: palette(
-  //       "mpn65",
-  //       chartData.atd_txdot_locations[0].crashes_by_veh_body_style.length
-  //     ).map(a => `#${a}`),
-  //     labels: chartData.atd_txdot_locations[0].crashes_by_veh_body_style.map(
-  //       a => a.veh_body_styl_desc
-  //     ),
-  //     data: chartData.atd_txdot_locations[0].crashes_by_veh_body_style.map(
-  //       a => a.count
-  //     ),
-  //   };
-
-  //   const doughnut = {
-  //     labels: vehBodyGraphConfig.labels,
-  //     datasets: [
-  //       {
-  //         data: vehBodyGraphConfig.data,
-  //         backgroundColor: vehBodyGraphConfig.palette,
-  //         hoverBackgroundColor: ["#000"],
-  //       },
-  //     ],
-  //   };
-
-  const horizontalBar = {
-    labels: collisionTypeArray,
+  const doughnut = {
+    labels: vehBodyGraphConfig.labels,
     datasets: [
       {
-        label: "Number of Collisions",
+        data: getChartData(chartConfig.doughnutChart),
+        backgroundColor: vehBodyGraphConfig.palette,
+        hoverBackgroundColor: ["#000"],
+      },
+    ],
+  };
+
+  const horizontalBar = {
+    labels: chartConfig.horizontalBarChart.labels,
+    datasets: [
+      {
+        label: chartConfig.horizontalBarChart.title,
         backgroundColor: colors.success,
         borderColor: colors.grey200,
         borderWidth: 1,
         hoverBackgroundColor: colors.darkgreen,
         hoverBorderColor: colors.grey700,
-        data: getMannerOfCollisions(),
+        data: getChartData(chartConfig.horizontalBarChart),
       },
     ],
   };
 
+  const renderAlert = () => (
+    <Alert color="warning">No crashes at this particular location</Alert>
+  );
+
   return (
     <Col>
-      {/* <Card>
+      <Card>
         <CardHeader>Types of Vehicles - Count Distribution</CardHeader>
         <CardBody>
-          {crashCount === 0 && (
-            <Alert color="warning">
-              No crashes at this particular location
-            </Alert>
-          )}
-
-          {crashCount > 0 && (
+          {(recordCount === 0 && renderAlert()) || (
             <div className="chart-wrapper" style={{ padding: "1.5rem 0" }}>
               <Badge
                 color="dark"
@@ -116,17 +86,11 @@ const GridTableCharts = ({ chartData }) => {
             </div>
           )}
         </CardBody>
-      </Card> */}
+      </Card>
       <Card>
         <CardHeader>Manner of Collisions - Most Frequent</CardHeader>
         <CardBody>
-          {crashCount === 0 && (
-            <Alert color="warning">
-              No crashes at this particular location
-            </Alert>
-          )}
-
-          {crashCount > 0 && (
+          {(recordCount === 0 && renderAlert()) || (
             <div className="chart-wrapper" style={{ padding: "1.5rem 0" }}>
               <HorizontalBar
                 data={horizontalBar}
