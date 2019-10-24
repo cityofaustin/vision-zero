@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import axios from "axios";
 import moment from "moment";
 import { Pie } from "react-chartjs-2";
@@ -24,6 +24,12 @@ const SeriousInjuryAndFatalCrashesByMode = () => {
   const yearToDateUrl = `https://data.austintexas.gov/resource/y2wy-tgr5.json?$where=(sus_serious_injry_cnt > 0 OR death_cnt > 0) AND crash_date between '${thisYear}-01-01T00:00:00' and '${today}T23:59:59'`;
   const previousYearUrl = `https://data.austintexas.gov/resource/y2wy-tgr5.json?$where=(sus_serious_injry_cnt > 0 OR death_cnt > 0) AND crash_date between '${lastYear}-01-01T00:00:00' and '${lastYear}${todayMonthYear}T23:59:59'`;
 
+  /*
+    We are commenting this out only to clear console warnings.
+    The following code will be needed as soon as we have data endpoints.
+  */
+
+  /*
   const [
     yearToDateInjuryDeathModeArray,
     setYearToDateInjuryDeathModeArray
@@ -57,6 +63,7 @@ const SeriousInjuryAndFatalCrashesByMode = () => {
     });
     return total;
   };
+  */
 
   useEffect(() => {
     // Fetch year-to-date records
@@ -68,7 +75,7 @@ const SeriousInjuryAndFatalCrashesByMode = () => {
     axios.get(previousYearUrl).then(res => {
       // setLastYearToDateInjuryDeathModeArray(calculateModeTotals(res));
     });
-  }, []);
+  }, [yearToDateUrl, previousYearUrl]);
 
   const yearToDateData = {
     labels: ["Motor Vehicle", "Motorcycle", "Pedestrian", "Bicycle"],

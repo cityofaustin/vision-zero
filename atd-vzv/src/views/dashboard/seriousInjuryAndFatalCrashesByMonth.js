@@ -58,15 +58,6 @@ const SeriousInjuryAndFatalCrashesByMonth = () => {
     });
   };
 
-  const calculateTotalInjuries = data => {
-    let total = 0;
-    data.data.forEach(record => {
-      total += parseInt(record.sus_serious_injry_cnt);
-      total += parseInt(record.death_cnt);
-    });
-    return total;
-  };
-
   useEffect(() => {
     // Fetch year-to-date records
     axios.get(yearToDateUrl).then(res => {
@@ -77,7 +68,7 @@ const SeriousInjuryAndFatalCrashesByMonth = () => {
     axios.get(previousYearUrl).then(res => {
       setLastYearToDateInjuryDeathArray(calculateMonthlyTotals(res));
     });
-  }, []);
+  }, [yearToDateUrl, previousYearUrl, today]);
 
   const data = {
     labels: [

@@ -52,7 +52,7 @@ const Fatalities = () => {
     axios.get(previousYearUrl).then(res => {
       setLastYearToDateFatalityTotal(calculateTotalFatalities(res));
     });
-  }, []);
+  }, [yearToDateUrl, previousYearUrl]);
 
   return (
     <Container>

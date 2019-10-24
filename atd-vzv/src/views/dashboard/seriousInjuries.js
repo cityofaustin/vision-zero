@@ -36,7 +36,7 @@ const SeriousInjuries = () => {
     axios.get(previousYearUrl).then(res => {
       setLastYearToDateInjuryTotal(calculateTotalInjuries(res));
     });
-  }, []);
+  }, [yearToDateUrl, previousYearUrl]);
 
   return (
     <Container>
