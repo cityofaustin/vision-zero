@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 import { Col, Badge, Alert, Card, CardHeader, CardBody } from "reactstrap";
 import palette from "google-palette";
@@ -6,9 +6,32 @@ import { Doughnut, HorizontalBar } from "react-chartjs-2";
 import { colors } from "../styles/colors";
 
 const GridTableCharts = ({ chartData }) => {
-  console.log(chartData.atd_txdot_crashes.length);
-  //   debugger;
-  //   const { count: crashCount } = chartData.atd_txdot_crashes_aggregate.aggregate;
+  const collisionTypeArray = [
+    "MOTOR VEHICLE",
+    "TRAIN",
+    "PEDALCYCLIST",
+    "PEDESTRIAN",
+    "MOTORIZED CONVEYANCE",
+    "TOWED/PUSHED/TRAILER",
+    "NON-CONTACT",
+    "OTHER",
+  ];
+
+  const getMannerOfCollisions = () => {
+    return collisionTypeArray.map(type => {
+      let typeTotal = 0;
+      chartData.atd_txdot_crashes.forEach(record => {
+        record.units.forEach(unit => {
+          if (unit.unit_description.veh_unit_desc_desc === type) {
+            typeTotal++;
+          }
+        });
+      });
+      return typeTotal;
+    });
+  };
+
+  const { count: crashCount } = chartData.atd_txdot_crashes_aggregate.aggregate;
 
   //   const formatLabel = str => {
   //     let sections = [];
@@ -53,24 +76,20 @@ const GridTableCharts = ({ chartData }) => {
   //     ],
   //   };
 
-  //   const horizontalBar = {
-  //     labels: chartData.atd_txdot_locations[0].crashes_by_manner_collision
-  //       .map((a, index) => `${index + 1}. ${a.collsn_desc}`)
-  //       .map(a => formatLabel(a)),
-  //     datasets: [
-  //       {
-  //         label: "Number of Collisions",
-  //         backgroundColor: colors.success,
-  //         borderColor: colors.grey200,
-  //         borderWidth: 1,
-  //         hoverBackgroundColor: colors.darkgreen,
-  //         hoverBorderColor: colors.grey700,
-  //         data: chartData.atd_txdot_locations[0].crashes_by_manner_collision.map(
-  //           a => a.count
-  //         ),
-  //       },
-  //     ],
-  //   };
+  const horizontalBar = {
+    labels: collisionTypeArray,
+    datasets: [
+      {
+        label: "Number of Collisions",
+        backgroundColor: colors.success,
+        borderColor: colors.grey200,
+        borderWidth: 1,
+        hoverBackgroundColor: colors.darkgreen,
+        hoverBorderColor: colors.grey700,
+        data: getMannerOfCollisions(),
+      },
+    ],
+  };
 
   return (
     <Col>
@@ -97,7 +116,7 @@ const GridTableCharts = ({ chartData }) => {
             </div>
           )}
         </CardBody>
-      </Card>
+      </Card> */}
       <Card>
         <CardHeader>Manner of Collisions - Most Frequent</CardHeader>
         <CardBody>
@@ -127,7 +146,7 @@ const GridTableCharts = ({ chartData }) => {
             </div>
           )}
         </CardBody>
-      </Card> */}
+      </Card>
     </Col>
   );
 };
