@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { useQuery } from "@apollo/react-hooks";
+import { useQuery, useLazyQuery } from "@apollo/react-hooks";
 
 import { withApollo } from "react-apollo";
 import moment from "moment";
@@ -86,8 +86,8 @@ const GridTable = ({
     getSavedState("dateRangeFilter") || defaultTimeRange
   );
 
+  // Save query config by title to localStorage each time component renders
   useEffect(() => {
-    // Save query config by title to localStorage each time component renders
     const stateForFilters = {
       limit,
       offset,
@@ -104,6 +104,24 @@ const GridTable = ({
       JSON.stringify(stateForFilters)
     );
   });
+
+  const [aggregateQuery, setAggregateQuery] = useState(null);
+
+  const [loadAggData, { data: aggData }] = useLazyQuery(aggregateQuery);
+
+  // Update aggregate query with latest filters
+  useEffect(() => {
+    const aggregatesQuery = query.queryAggregate(aggregateQueryConfig, query);
+    // Prevent endlessly setting aggregateQuery
+    if (aggregatesQuery !== aggregateQuery) {
+      setAggregateQuery(aggregatesQuery);
+    }
+  });
+
+  // Execute aggregate query each time it changes
+  useEffect(() => {
+    aggregateQuery !== null && loadAggData();
+  }, [aggregateQuery]);
 
   /**
    * Shows or hides advanced filters
@@ -364,8 +382,7 @@ const GridTable = ({
               {aggregateQueryConfig && widgetsConfig && (
                 <Row>
                   <GridTableWidgets
-                    query={query}
-                    queryConfig={aggregateQueryConfig}
+                    aggData={aggData}
                     widgetsConfig={widgetsConfig}
                   />
                 </Row>

@@ -506,9 +506,11 @@ gqlAbstractTableAggregateName (
 
       // Retrieve or filters from query instance
       let orFilters = [];
-      Object.entries(queryInstance.config.or).forEach(([filter, value]) =>
-        orFilters.push(`{${filter}: { ${value} }}`)
-      );
+      if (queryInstance.config.or) {
+        Object.entries(queryInstance.config.or).forEach(([filter, value]) =>
+          orFilters.push(`{${filter}: { ${value} }}`)
+        );
+      }
 
       if (orFilters.length > 0) {
         let orString = `_or: [ ${orFilters.join(",")} ]`;

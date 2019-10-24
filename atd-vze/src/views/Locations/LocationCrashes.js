@@ -121,8 +121,8 @@ function LocationCrashes(props) {
           label: "No Latitude and Longitude provided",
           filter: {
             where: [
-              { latitude: "_is_null: true" },
-              { longitude: "_is_null: true" },
+              { latitude_primary: "_is_null: true" },
+              { longitude_primary: "_is_null: true" },
             ],
           },
         },
