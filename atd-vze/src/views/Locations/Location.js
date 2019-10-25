@@ -132,7 +132,6 @@ function Location(props) {
             );
           })}
         </Col>
-        <Col md="6"></Col>
       </Row>
       <Row>
         <Col>

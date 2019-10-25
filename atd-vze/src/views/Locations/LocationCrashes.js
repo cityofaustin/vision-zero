@@ -276,6 +276,7 @@ function LocationCrashes(props) {
 
   const chartConfig = {
     totalRecordsPath: ["atd_txdot_crashes_aggregate", "aggregate", "count"],
+    alert: "No crashes at this particular location",
     horizontalBarChart: {
       labels: [
         "ONE MOTOR VEHICLE - GOING STRAIGHT",
@@ -322,12 +323,15 @@ function LocationCrashes(props) {
         "OTHER",
       ],
       title: "Number of Collisions",
+      header: "Manner of Collisions - Most Frequent",
       table: "atd_txdot_crashes",
       nestedKey: "collision",
-      // Using lodash.get(), array is arg that translates to unit.unit_description.veh_unit_desc_desc
+      // Using lodash.get(), array is arg that translates to collision.collsn_desc
       nestedPath: ["collsn_desc"],
       // Is value of table.nestedKey.nestedPath a single record or array
       isSingleRecord: true,
+      // Top n types
+      limit: 4,
     },
     doughnutChart: {
       labels: [
@@ -341,12 +345,15 @@ function LocationCrashes(props) {
         "OTHER",
       ],
       title: "Types of Vehicles - Count Distribution",
+      header: "Types of Vehicles - Count Distribution",
       table: "atd_txdot_crashes",
       nestedKey: "units",
       // Using lodash.get(), array is arg that translates to unit.unit_description.veh_unit_desc_desc
       nestedPath: ["unit_description", "veh_unit_desc_desc"],
       // Is value of table.nestedKey.nestedPath a single record or array
       isSingleRecord: false,
+      // Top n types
+      limit: 4,
     },
   };
 

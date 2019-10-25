@@ -27,7 +27,8 @@ import GridTableSearch from "./GridTableSearch";
 import GridFilters from "./GridFilters";
 import GridDateRange from "./GridDateRange";
 import GridExportData from "./GridExportData";
-import GridTableCharts from "./GridTableCharts";
+import GridTableDoughnut from "./GridTableDoughnut";
+import GridTableHorizontalBar from "./GridTableHorizontalBar";
 
 const GridTable = ({
   title,
@@ -405,10 +406,18 @@ const GridTable = ({
                 aggData !== undefined &&
                 Object.keys(aggData).length > 0 && (
                   <Row>
-                    <GridTableCharts
-                      chartData={chartData}
-                      chartConfig={chartConfig}
-                    />
+                    <Col xs="6">
+                      <GridTableDoughnut
+                        chartData={chartData}
+                        chartConfig={chartConfig}
+                      />
+                    </Col>
+                    <Col xs="6">
+                      <GridTableHorizontalBar
+                        chartData={chartData}
+                        chartConfig={chartConfig}
+                      />
+                    </Col>
                   </Row>
                 )}
               {aggregateQueryConfig && widgetsConfig && (

@@ -8,7 +8,7 @@ const GridTableWidgets = ({ aggData, widgetsConfig }) => {
   // Use lodash get() to expose nested data from aggData using dataPath from widgetsConfig
   const getData = widget => {
     // If data is sum of many aggregates, sum and return
-    if (!!widget.sum) {
+    if (widget.sum) {
       let sum = 0;
       widget.dataPath.forEach(path => (sum += get(aggData, path)));
       return sum;
