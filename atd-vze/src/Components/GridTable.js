@@ -108,29 +108,36 @@ const GridTable = ({
     );
   });
 
-  // Aggregate query state and query
+  // Aggregate and chart query state and queries
   const [aggregateQuery, setAggregateQuery] = useState(null);
   const [loadAggData, { data: aggData }] = useLazyQuery(aggregateQuery);
   const [chartQuery, setChartQuery] = useState(null);
   const [loadChartData, { data: chartData }] = useLazyQuery(chartQuery);
 
-  // Update aggregate query with latest filters
+  // Update aggregate and chart queries with latest filters
+  // No dependencies added because we need to depend on changes in the query
+  // instance to propogate changes to children. This does not work properly so
+  // changes in the aggregateQuery and chartQuery are compared in if blocks.
   useEffect(() => {
     if (aggregateQueryConfig) {
-      const aggregatesQuery = query.queryAggregate(aggregateQueryConfig, query);
-      // Prevent endlessly setting aggregateQuery
-      if (aggregatesQuery !== aggregateQuery) {
-        setAggregateQuery(aggregatesQuery);
+      const updatedAggregateQuery = query.queryAggregate(
+        aggregateQueryConfig,
+        query
+      );
+      // If previous query is different from updated query,
+      // set query to propogate change to children (and prevent endless loop)
+      if (updatedAggregateQuery !== aggregateQuery) {
+        setAggregateQuery(updatedAggregateQuery);
       }
     }
 
     if (chartConfig) {
       delete query.config.limit;
-      const chartsQuery = query.gql;
-
-      // Prevent endlessly setting aggregateQuery
-      if (chartsQuery !== chartQuery) {
-        setChartQuery(chartsQuery);
+      const updatedChartsQuery = query.gql;
+      // If previous query is different from updated query,
+      // set query to propogate change to children (and prevent endless loop)
+      if (updatedChartsQuery !== chartQuery) {
+        setChartQuery(updatedChartsQuery);
       }
     }
   });
@@ -357,7 +364,7 @@ const GridTable = ({
 
   // Make Query && Error handling
   let { loading, error, data } = useQuery(query.gql);
-  console.log(data);
+
   if (error) return `Error! ${error.message}`;
 
   let dataEntries = [];

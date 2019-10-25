@@ -13,13 +13,15 @@ const GridTableDoughnut = ({ chartData, chartConfig }) => {
   const [doughnutLabels, setDoughnutLabels] = useState([]);
 
   useEffect(() => {
+    // If records exist, get data and then get top n records/labels
     if (Object.keys(chartData).length > 0) {
-      const horizontalData = getChartData(chartData, chartConfig.doughnutChart);
+      const doughnutData = getChartData(chartData, chartConfig.doughnutChart);
       const topChartData = getTopValues(
-        horizontalData,
+        doughnutData,
         chartConfig.doughnutChart
       );
 
+      // Separate data values and labels and set state to update chart
       const topValues = topChartData.map(arr => arr[0]);
       const topLabels = topChartData.map(arr => arr[1]);
       setDoughnutData(topValues);
