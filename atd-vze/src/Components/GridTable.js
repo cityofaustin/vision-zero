@@ -401,25 +401,26 @@ const GridTable = ({
               <i className="fa fa-car" /> {title}
             </CardHeader>
             <CardBody>
-              {chartData !== undefined &&
-                Object.keys(chartData).length > 0 &&
-                aggData !== undefined &&
-                Object.keys(aggData).length > 0 && (
-                  <Row>
-                    <Col xs="6">
-                      <GridTableDoughnut
-                        chartData={chartData}
-                        chartConfig={chartConfig}
-                      />
-                    </Col>
-                    <Col xs="6">
+              <Row>
+                <Col md="6">
+                  {!!aggData && !!chartData && chartConfig.doughnutChart && (
+                    <GridTableDoughnut
+                      chartData={chartData}
+                      chartConfig={chartConfig}
+                    />
+                  )}
+                </Col>
+                <Col md="6">
+                  {!!aggData &&
+                    !!chartData &&
+                    chartConfig.horizontalBarChart && (
                       <GridTableHorizontalBar
                         chartData={chartData}
                         chartConfig={chartConfig}
                       />
-                    </Col>
-                  </Row>
-                )}
+                    )}
+                </Col>
+              </Row>
               {aggregateQueryConfig && widgetsConfig && (
                 <Row>
                   <GridTableWidgets

@@ -79,6 +79,8 @@ function Location(props) {
               )}
             </CardBody>
           </Card>
+        </Col>
+        <Col md="6">
           {locationDataMap.map(section => {
             return (
               <Card key={section.title}>

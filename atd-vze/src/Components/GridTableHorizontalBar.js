@@ -48,7 +48,8 @@ const GridTableHorizontalBar = ({ chartData, chartConfig }) => {
       return getTopValues(data, config);
     };
 
-    getChartData(chartConfig.horizontalBarChart);
+    Object.keys(chartData).length > 0 &&
+      getChartData(chartConfig.horizontalBarChart);
   }, [chartData]);
 
   const horizontalBar = {

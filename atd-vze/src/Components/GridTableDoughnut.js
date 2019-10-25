@@ -48,7 +48,8 @@ const GridTableDoughnut = ({ chartData, chartConfig }) => {
       return getTopValues(data, config);
     };
 
-    getChartData(chartConfig.doughnutChart);
+    Object.keys(chartData).length > 0 &&
+      getChartData(chartConfig.doughnutChart);
   }, [chartData]);
 
   const graphConfig = {
