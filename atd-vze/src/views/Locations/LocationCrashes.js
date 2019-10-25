@@ -328,7 +328,7 @@ function LocationCrashes(props) {
       nestedKey: "collision",
       // Using lodash.get(), array is arg that translates to collision.collsn_desc
       nestedPath: ["collsn_desc"],
-      // Is value of table.nestedKey.nestedPath a single record or array
+      // Is value of table.nestedKey.nestedPath a single record or array of objects
       isSingleRecord: true,
       // Top n types
       limit: 4,
@@ -350,7 +350,7 @@ function LocationCrashes(props) {
       nestedKey: "units",
       // Using lodash.get(), array is arg that translates to unit.unit_description.veh_unit_desc_desc
       nestedPath: ["unit_description", "veh_unit_desc_desc"],
-      // Is value of table.nestedKey.nestedPath a single record or array
+      // Is value of table.nestedKey.nestedPath a single record or array of objects
       isSingleRecord: false,
       // Top n types
       limit: 4,

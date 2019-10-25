@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import get from "lodash.get";
-import { renderAlert } from "./gridTableHelpers";
+import { renderAlert, getChartData, getTopValues } from "./gridTableHelpers";
 
 import { Card, CardHeader, CardBody } from "reactstrap";
 import { HorizontalBar } from "react-chartjs-2";
@@ -13,44 +13,24 @@ const GridTableHorizontalBar = ({ chartData, chartConfig }) => {
   const [horizontalLabels, setHorizontalLabels] = useState([]);
 
   useEffect(() => {
-    const getTopValues = (data, config) => {
-      let valueAndLabelArray = [];
-      data.forEach((record, i) => {
-        valueAndLabelArray.push([record, config.labels[i]]);
-      });
-      valueAndLabelArray = valueAndLabelArray
-        .sort((a, b) => b[0] - a[0])
-        .slice(0, config.limit);
-      const topValues = valueAndLabelArray.map((arr, i) => arr[0]);
-      const topLabels = valueAndLabelArray.map((arr, i) => arr[1]);
+    // If records exist, get data and then get top n records/labels
+    if (Object.keys(chartData).length > 0) {
+      const horizontalData = getChartData(
+        chartData,
+        chartConfig.horizontalBarChart
+      );
+      const topChartData = getTopValues(
+        horizontalData,
+        chartConfig.horizontalBarChart
+      );
+
+      // Separate data values and labels and set state to update chart
+      const topValues = topChartData.map(arr => arr[0]);
+      const topLabels = topChartData.map(arr => arr[1]);
       setHorizontalData(topValues);
       setHorizontalLabels(topLabels);
-    };
-
-    const getChartData = config => {
-      const data = config.labels.map(type => {
-        let typeTotal = 0;
-        chartData[config.table].forEach(record => {
-          if (config.isSingleRecord) {
-            if (record[config.nestedKey][config.nestedPath] === type) {
-              typeTotal++;
-            }
-          } else {
-            record[config.nestedKey].forEach(unit => {
-              if (get(unit, config.nestedPath) === type) {
-                typeTotal++;
-              }
-            });
-          }
-        });
-        return typeTotal;
-      });
-      return getTopValues(data, config);
-    };
-
-    Object.keys(chartData).length > 0 &&
-      getChartData(chartConfig.horizontalBarChart);
-  }, [chartData]);
+    }
+  }, [chartData, chartConfig.horizontalBarChart]);
 
   const horizontalBar = {
     labels: horizontalLabels,
