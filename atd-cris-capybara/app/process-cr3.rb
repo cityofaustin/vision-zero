@@ -26,8 +26,8 @@ session.click_button 'idpSelectSelectButton'
 puts("\nSession Url Now: #{session.current_url}")
 
 # Then, we need to log in
-session.fill_in 'username', with: "mclark@austintexas.gov"
-session.fill_in 'password', with: "qTt4PFFcg-e9nunC"
+session.fill_in 'username', with: ENV['ATD_CRIS_USERNAME']
+session.fill_in 'password', with: ENV['ATD_CRIS_PASSWORD']
 session.click_button '_eventId_proceed'
 puts("\nSession Url Now: #{session.current_url}")
 
