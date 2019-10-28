@@ -134,15 +134,17 @@ export default class LocationMap extends Component {
 
   render() {
     const { viewport } = this.state;
+    const isDev = window.location.hostname === "localhost";
 
     return (
       <MapGL
         {...viewport}
         width="100%"
         height="500px"
-        mapStyle={rasterStyle}
         // Mapbox Satellite layer as fallback or for testing
-        // mapStyle={"mapbox://styles/mapbox/satellite-streets-v9"}
+        mapStyle={
+          isDev ? "mapbox://styles/mapbox/satellite-streets-v9" : rasterStyle
+        }
         onViewportChange={this._updateViewport}
         mapboxApiAccessToken={TOKEN}
       >
