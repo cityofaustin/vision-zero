@@ -28,8 +28,10 @@ const Dashboard = () => {
         </Col>
       </Row>
       <Row>
-        <Col md="12">
+        <Col md="6">
           <YearsOfLifeLost />
+        </Col>
+        <Col md="6">
         </Col>
       </Row>
     </Container>
