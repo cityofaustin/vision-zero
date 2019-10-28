@@ -13,7 +13,7 @@ import { colors } from "../../styles/colors";
 import { Button } from "reactstrap";
 
 const TOKEN = process.env.REACT_APP_MAPBOX_TOKEN;
-// This API key is manage by CTM. Contact help desk for maintenance and troubleshooting.
+// This API key is managed by CTM. Contact help desk for maintenance and troubleshooting.
 const NEARMAP_KEY = process.env.REACT_APP_NEARMAP_KEY;
 
 const fullscreenControlStyle = {
