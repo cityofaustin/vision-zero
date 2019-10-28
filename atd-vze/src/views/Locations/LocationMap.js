@@ -7,6 +7,7 @@ import styled from "styled-components";
 import { Button } from "reactstrap";
 
 const TOKEN = process.env.REACT_APP_MAPBOX_TOKEN;
+// This API key is manage by CTM. Contact help desk for maintenance and troubleshooting.
 const NEARMAP_KEY = process.env.REACT_APP_NEARMAP_KEY;
 
 const fullscreenControlStyle = {
