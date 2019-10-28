@@ -3,6 +3,7 @@ import Fatalities from "./fatalities";
 import SeriousInjuries from "./seriousInjuries";
 import SeriousInjuryAndFatalCrashesByMonth from "./seriousInjuryAndFatalCrashesByMonth";
 import SeriousInjuryAndFatalCrashesByMode from "./seriousInjuryAndFatalCrashesByMode";
+import YearsOfLifeLost from "./yearsOfLifeLost";
 
 import { Container, Row, Col } from "reactstrap";
 
@@ -24,6 +25,11 @@ const Dashboard = () => {
         {/* TODO Serious Injury + Fatal Crashes by Mode - populate real data */}
         <Col md="6">
           <SeriousInjuryAndFatalCrashesByMode />
+        </Col>
+      </Row>
+      <Row>
+        <Col md="12">
+          <YearsOfLifeLost />
         </Col>
       </Row>
     </Container>
