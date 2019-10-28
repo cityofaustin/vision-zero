@@ -6,7 +6,7 @@ Data is sourced from TxDOT's Crash Records Information System (CRIS) database. A
 
 For resources and updates, see the [Vision Zero Crash Data System](https://github.com/cityofaustin/atd-data-tech/issues/255) project index.
 
-For maintenance and troubleshooting of Nearmap app for Location aerial map (domains whitelisted, API key, etc.), contact CTM help desk.
+For maintenance and troubleshooting of Nearmap API key for the Location aerial map (domains whitelisted, usage, etc.), contact CTM help desk.
 
 ## Getting Started
 
