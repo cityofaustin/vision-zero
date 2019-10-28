@@ -1,9 +1,15 @@
 import React, { Component } from "react";
-import MapGL, { NavigationControl, FullscreenControl } from "react-map-gl";
+import MapGL, {
+  NavigationControl,
+  FullscreenControl,
+  Source,
+  Layer,
+} from "react-map-gl";
 import axios from "axios";
 import moment from "moment";
 
 import styled from "styled-components";
+import { colors } from "../../styles/colors";
 import { Button } from "reactstrap";
 
 const TOKEN = process.env.REACT_APP_MAPBOX_TOKEN;
@@ -57,6 +63,16 @@ const TimestampDisplay = styled.div`
   }
 `;
 
+// Styles for location polygon overlay
+const polygonDataLayer = {
+  id: "data",
+  type: "fill",
+  paint: {
+    "fill-color": colors.warning,
+    "fill-opacity": 0.5,
+  },
+};
+
 export default class LocationMap extends Component {
   constructor(props) {
     super(props);
@@ -70,6 +86,21 @@ export default class LocationMap extends Component {
       },
       popupInfo: null,
       aerialTimestamp: "",
+    };
+
+    this.polygon = this.props.data.atd_txdot_locations[0];
+
+    // Create GeoJSON object from location polygon record for Source component
+    this.locationPolygonGeoJson = {
+      type: "Feature",
+      properties: {
+        renderType: this.polygon.shape.type,
+        id: this.polygon.location_id,
+      },
+      geometry: {
+        coordinates: this.polygon.shape.coordinates,
+        type: this.polygon.shape.type,
+      },
     };
   }
 
@@ -109,11 +140,16 @@ export default class LocationMap extends Component {
         {...viewport}
         width="100%"
         height="500px"
-        // mapStyle={rasterStyle}
-        mapStyle={"mapbox://styles/mapbox/satellite-streets-v9"}
+        mapStyle={rasterStyle}
+        // Mapbox Satellite layer as fallback or for testing
+        // mapStyle={"mapbox://styles/mapbox/satellite-streets-v9"}
         onViewportChange={this._updateViewport}
         mapboxApiAccessToken={TOKEN}
       >
+        {/* Show polygon on map */}
+        <Source type="geojson" data={this.locationPolygonGeoJson}>
+          <Layer {...polygonDataLayer} />
+        </Source>
         <div className="fullscreen" style={fullscreenControlStyle}>
           <FullscreenControl />
         </div>
