@@ -66,10 +66,10 @@ const TimestampDisplay = styled.div`
 // Styles for location polygon overlay
 const polygonDataLayer = {
   id: "data",
-  type: "fill",
+  type: "line",
   paint: {
-    "fill-color": colors.warning,
-    "fill-opacity": 0.5,
+    "line-color": colors.warning,
+    "line-width": 3,
   },
 };
 
