@@ -1,0 +1,32 @@
+{
+    "production": {
+        "app_function": "server.APP",
+        "profile_name": null,
+        "project_name": "atd-cr3-api",
+        "runtime": "python3.7",
+        "s3_bucket": "atd-lambda-functions",
+        "aws_environment_variables": {
+            "AUTH0_DOMAIN": "atd-datatech.auth0.com",
+            "CLIENT_ID": "Y5Q304ADgUOYq8199aSgSxLEc6Xzdkb4"
+        },
+        "tags": {
+            "project": "atd-vz-data",
+            "environment": "production"
+        }
+    },
+    "staging": {
+        "app_function": "server.APP",
+        "profile_name": null,
+        "project_name": "atd-cr3-api",
+        "runtime": "python3.7",
+        "s3_bucket": "atd-lambda-functions",
+        "aws_environment_variables": {
+            "AUTH0_DOMAIN": "atd-datatech.auth0.com",
+            "CLIENT_ID": "2qbqz2sf8L9idBOwn0d5YA9efNgQbL7c"
+        },
+        "tags": {
+            "project": "atd-vz-data",
+            "environment": "staging"
+        }
+    }
+}
