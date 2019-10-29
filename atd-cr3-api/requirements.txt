@@ -1,0 +1,7 @@
+flask
+python-dotenv
+python-jose
+flask-cors
+six
+zappa
+boto3
