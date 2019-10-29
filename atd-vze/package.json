@@ -31,6 +31,7 @@
     "font-awesome": "^4.7.0",
     "google-palette": "^1.1.0",
     "graphql": "^14.4.2",
+    "lodash.get": "^4.4.2",
     "moment": "^2.24.0",
     "nebula.gl": "^0.15.0",
     "node-sass": "^4.12.0",

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { useQuery } from "@apollo/react-hooks";
+import { useQuery, useLazyQuery } from "@apollo/react-hooks";
 
 import { withApollo } from "react-apollo";
 import moment from "moment";
@@ -21,13 +21,24 @@ import ButtonToolbar from "reactstrap/es/ButtonToolbar";
 
 // GridTable
 import GridTableHeader from "./GridTableHeader";
+import GridTableWidgets from "./GridTableWidgets";
 import GridTablePagination from "./GridTablePagination";
 import GridTableSearch from "./GridTableSearch";
 import GridFilters from "./GridFilters";
 import GridDateRange from "./GridDateRange";
 import GridExportData from "./GridExportData";
+import GridTableDoughnut from "./GridTableDoughnut";
+import GridTableHorizontalBar from "./GridTableHorizontalBar";
 
-const GridTable = ({ title, query, filters, columnsToExport }) => {
+const GridTable = ({
+  title,
+  query,
+  filters,
+  columnsToExport,
+  aggregateQueryConfig,
+  chartConfig,
+  widgetsConfig,
+}) => {
   // Load table filters from localStorage by title
   const savedFilterState = JSON.parse(
     localStorage.getItem(`saved${title}Config`)
@@ -78,8 +89,8 @@ const GridTable = ({ title, query, filters, columnsToExport }) => {
     getSavedState("dateRangeFilter") || defaultTimeRange
   );
 
+  // Save query config by title to localStorage each time component renders
   useEffect(() => {
-    // Save query config by title to localStorage each time component renders
     const stateForFilters = {
       limit,
       offset,
@@ -96,6 +107,50 @@ const GridTable = ({ title, query, filters, columnsToExport }) => {
       JSON.stringify(stateForFilters)
     );
   });
+
+  // Aggregate and chart query state and queries
+  const [aggregateQuery, setAggregateQuery] = useState(null);
+  const [loadAggData, { data: aggData }] = useLazyQuery(aggregateQuery);
+  const [chartQuery, setChartQuery] = useState(null);
+  const [loadChartData, { data: chartData }] = useLazyQuery(chartQuery);
+
+  // Update aggregate and chart queries with latest filters
+  // No dependencies added because we need to depend on changes in the query
+  // instance to propogate changes to children. This does not work properly so
+  // changes in the aggregateQuery and chartQuery are compared in if blocks.
+  useEffect(() => {
+    if (aggregateQueryConfig) {
+      const updatedAggregateQuery = query.queryAggregate(
+        aggregateQueryConfig,
+        query
+      );
+      // If previous query is different from updated query,
+      // set query to propogate change to children (and prevent endless loop)
+      if (updatedAggregateQuery !== aggregateQuery) {
+        setAggregateQuery(updatedAggregateQuery);
+      }
+    }
+
+    if (chartConfig) {
+      delete query.config.limit;
+      const updatedChartsQuery = query.gql;
+      // If previous query is different from updated query,
+      // set query to propogate change to children (and prevent endless loop)
+      if (updatedChartsQuery !== chartQuery) {
+        setChartQuery(updatedChartsQuery);
+      }
+    }
+  });
+
+  // Execute aggregate query each time query filters change
+  useEffect(() => {
+    aggregateQuery !== null && loadAggData();
+  }, [aggregateQuery, loadAggData]);
+
+  // Execute chart query each time query filters change
+  useEffect(() => {
+    chartQuery !== null && loadChartData();
+  }, [chartQuery, loadChartData]);
 
   /**
    * Shows or hides advanced filters
@@ -353,6 +408,34 @@ const GridTable = ({ title, query, filters, columnsToExport }) => {
               <i className="fa fa-car" /> {title}
             </CardHeader>
             <CardBody>
+              <Row>
+                <Col md="6">
+                  {!!aggData && !!chartData && chartConfig.doughnutChart && (
+                    <GridTableDoughnut
+                      chartData={chartData}
+                      chartConfig={chartConfig}
+                    />
+                  )}
+                </Col>
+                <Col md="6">
+                  {!!aggData &&
+                    !!chartData &&
+                    chartConfig.horizontalBarChart && (
+                      <GridTableHorizontalBar
+                        chartData={chartData}
+                        chartConfig={chartConfig}
+                      />
+                    )}
+                </Col>
+              </Row>
+              {aggregateQueryConfig && widgetsConfig && (
+                <Row>
+                  <GridTableWidgets
+                    aggData={aggData}
+                    widgetsConfig={widgetsConfig}
+                  />
+                </Row>
+              )}
               <Row>
                 <GridTableSearch
                   query={query}
