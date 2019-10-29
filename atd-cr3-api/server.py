@@ -13,7 +13,7 @@ from os import environ as env
 from functools import wraps
 from six.moves.urllib.request import urlopen
 
-from flask import Flask, request, jsonify, _request_ctx_stack
+from flask import Flask, request, redirect, jsonify, _request_ctx_stack
 from flask_cors import cross_origin
 from jose import jwt
 
@@ -186,7 +186,7 @@ def healthcheck():
     return jsonify(message=response)
 
 
-@APP.route("/download/<crash_id>")
+@APP.route("/cr3/download/<crash_id>")
 @cross_origin(headers=["Content-Type", "Authorization"])
 @cross_origin(headers=["Access-Control-Allow-Origin", CORS_URL])
 @requires_auth
@@ -207,10 +207,10 @@ def download_crash_id(crash_id):
         }
     )
 
-    #return redirect(url, code=302)
-
-    response = "Private Download, CrashID: %s , %s" % (safe_crash_id, url)
-    return jsonify(message=response)
+    # For testing uncomment:
+    # response = "Private Download, CrashID: %s , %s" % (safe_crash_id, url)
+    # return jsonify(message=response)
+    return redirect(url, code=302)
 
 
 
