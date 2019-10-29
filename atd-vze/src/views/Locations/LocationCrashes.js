@@ -286,6 +286,7 @@ function LocationCrashes(props) {
 
   const chartConfig = [
     {
+      type: "horizontal",
       totalRecordsPath: ["atd_txdot_crashes_aggregate", "aggregate", "count"],
       alert: "No crashes at this particular location",
       labels: [
@@ -344,6 +345,7 @@ function LocationCrashes(props) {
       limit: 4,
     },
     {
+      type: "horizontal",
       totalRecordsPath: ["atd_txdot_crashes_aggregate", "aggregate", "count"],
       alert: "No crashes at this particular location",
       labels: [
@@ -368,6 +370,7 @@ function LocationCrashes(props) {
       limit: 4,
     },
   ];
+
   return (
     <GridTable
       query={crashesQuery}
