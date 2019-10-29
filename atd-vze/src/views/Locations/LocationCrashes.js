@@ -255,14 +255,14 @@ function LocationCrashes(props) {
     {
       mainText: "Total Crashes",
       icon: "fa fa-cab",
-      color: "success",
+      color: "primary",
       dataPath: ["atd_txdot_crashes_aggregate", "aggregate", "count"],
       sum: false,
     },
     {
       mainText: "Total People (Primary + Non-Primary)",
       icon: "fa fa-user",
-      color: "dark",
+      color: "success",
       dataPath: [
         ["atd_txdot_primaryperson_aggregate", "aggregate", "count"],
         ["atd_txdot_person_aggregate", "aggregate", "count"],
@@ -272,7 +272,7 @@ function LocationCrashes(props) {
     {
       mainText: "Total Comprehensive Cost",
       icon: "fa fa-usd",
-      color: "secondary",
+      color: "dark",
       dataPath: [
         "atd_txdot_crashes_aggregate",
         "aggregate",
@@ -280,6 +280,7 @@ function LocationCrashes(props) {
         "est_comp_cost",
       ],
       sum: false,
+      format: "dollars",
     },
   ];
 
