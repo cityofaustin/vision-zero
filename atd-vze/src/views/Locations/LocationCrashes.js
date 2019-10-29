@@ -164,7 +164,11 @@ function LocationCrashes(props) {
   const aggregateQueryConfig = [
     {
       table: "atd_txdot_crashes_aggregate",
-      columns: [`count`, `sum { apd_confirmed_death_count }`],
+      columns: [
+        `count`,
+        `sum { apd_confirmed_death_count
+               est_comp_cost }`,
+      ],
     },
     {
       table: "atd_txdot_primaryperson_aggregate",
@@ -266,10 +270,15 @@ function LocationCrashes(props) {
       sum: true,
     },
     {
-      mainText: "Total Units",
-      icon: "fa fa-car",
+      mainText: "Total Comprehensive Cost",
+      icon: "fa fa-usd",
       color: "secondary",
-      dataPath: ["atd_txdot_units_aggregate", "aggregate", "count"],
+      dataPath: [
+        "atd_txdot_crashes_aggregate",
+        "aggregate",
+        "sum",
+        "est_comp_cost",
+      ],
       sum: false,
     },
   ];
