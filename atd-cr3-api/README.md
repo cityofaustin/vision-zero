@@ -16,13 +16,26 @@ source venv/bin/activate
 
 In order to run the example you need to have `python` and `pip` installed.
 
-You also need to set your Auth0 Domain and the CLIENT_ID (as audience id) as environment variables with the following names respectively: `AUTH0_DOMAIN` and `CLIENT_ID`
+You also need to set up a series of environment variables, including your Auth0 Domain and the CLIENT_ID (as audience id) as environment variables with the following names respectively: `AUTH0_DOMAIN` and `CLIENT_ID`, as well as AWS credentials and additional bucket settings.
+
+Option A) Rename `.env.example` file to `.env` and fill in the blanks.
+
+```bash
+# .env.example
+AUTH0_DOMAIN="atd-datatech.auth0.com"
+CLIENT_ID="2qbqz2sf8L9idBOwn0d5YA9efNgQbL7c"
+...
+```
+
+Option B) Export directly in bash:
 
 
 ```bash
 export AUTH0_DOMAIN=atd-datatech.auth0.com
 export CLIENT_ID=2qbqz2sf8L9idBOwn0d5YA9efNgQbL7c
+...
 ```
+
 
 Once you've set those 2 environment variables:
 
