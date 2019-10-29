@@ -21,7 +21,11 @@ export const GET_LOCATION = gql`
       }
     }
     atd_txdot_crashes_aggregate(
-      where: { city_id: { _eq: 22 }, location: { location_id: { _eq: $id } } }
+      where: {
+        city_id: { _eq: 22 }
+        location: { location_id: { _eq: $id } }
+        private_dr_fl: { _neq: "Y" }
+      }
     ) {
       aggregate {
         count
@@ -32,7 +36,11 @@ export const GET_LOCATION = gql`
     }
     atd_txdot_primaryperson_aggregate(
       where: {
-        crash: { city_id: { _eq: 22 }, location: { location_id: { _eq: $id } } }
+        crash: {
+          city_id: { _eq: 22 }
+          location: { location_id: { _eq: $id } }
+          private_dr_fl: { _neq: "Y" }
+        }
       }
     ) {
       aggregate {
@@ -45,7 +53,11 @@ export const GET_LOCATION = gql`
     }
     atd_txdot_person_aggregate(
       where: {
-        crash: { city_id: { _eq: 22 }, location: { location_id: { _eq: $id } } }
+        crash: {
+          city_id: { _eq: 22 }
+          location: { location_id: { _eq: $id } }
+          private_dr_fl: { _neq: "Y" }
+        }
       }
     ) {
       aggregate {
@@ -58,7 +70,11 @@ export const GET_LOCATION = gql`
     }
     atd_txdot_units_aggregate(
       where: {
-        crash: { city_id: { _eq: 22 }, location: { location_id: { _eq: $id } } }
+        crash: {
+          city_id: { _eq: 22 }
+          location: { location_id: { _eq: $id } }
+          private_dr_fl: { _neq: "Y" }
+        }
       }
     ) {
       aggregate {

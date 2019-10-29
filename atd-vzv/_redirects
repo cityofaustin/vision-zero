@@ -1,0 +1,6 @@
+#
+# React
+#
+/static/*       /static/:splat          200
+/public/*       /public/:splat          200
+/*              /index.html             200
