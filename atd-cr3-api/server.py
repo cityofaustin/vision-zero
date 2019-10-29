@@ -5,20 +5,39 @@
 import json
 import re
 import datetime
+import boto3
+import os
 
+from dotenv import load_dotenv, find_dotenv
 from os import environ as env
 from functools import wraps
 from six.moves.urllib.request import urlopen
-
 
 from flask import Flask, request, jsonify, _request_ctx_stack
 from flask_cors import cross_origin
 from jose import jwt
 
+#
+# Environment
+#
+ENV_FILE = find_dotenv()
+if ENV_FILE:
+    load_dotenv(ENV_FILE, verbose=True)
+
+# We need the Auth0 domain, Client ID and current api environment.
+AUTH0_DOMAIN = os.getenv("AUTH0_DOMAIN", "") 
+CLIENT_ID = os.getenv("CLIENT_ID", "")
+API_ENVIRONMENT = os.getenv("API_ENVIRONMENT", "STAGING")
+
+# AWS Configuration
+AWS_DEFALUT_REGION = os.getenv("AWS_DEFALUT_REGION", "us-east-1")
+AWS_S3_KEY = os.getenv("AWS_S3_KEY", "")
+AWS_S3_SECRET = os.getenv("AWS_S3_SECRET", "")
+AWS_S3_CR3_LOCATION = os.getenv("AWS_S3_CR3_LOCATION", "")
+AWS_S3_BUCKET = os.getenv("AWS_S3_BUCKET", "")
 
 
-AUTH0_DOMAIN = env.get("AUTH0_DOMAIN")
-CLIENT_ID = env.get("CLIENT_ID")
+
 
 CORS_URL="*"
 ALGORITHMS = ["RS256"]
@@ -176,7 +195,21 @@ def download_crash_id(crash_id):
     """
     # We only care for an integer string, anything else is not safe:
     safe_crash_id = re.sub("[^0-9]", "", crash_id)
-    response = "Private Download, CrashID: %s" % safe_crash_id
+
+    s3 = boto3.client("s3",region_name=AWS_DEFALUT_REGION, aws_access_key_id=AWS_S3_KEY, aws_secret_access_key=AWS_S3_SECRET)
+
+    url = s3.generate_presigned_url(
+        ExpiresIn=60, # seconds
+        ClientMethod='get_object',
+        Params={
+            'Bucket': AWS_S3_BUCKET,
+            'Key': AWS_S3_CR3_LOCATION + "/" + safe_crash_id + ".pdf"
+        }
+    )
+
+    #return redirect(url, code=302)
+
+    response = "Private Download, CrashID: %s , %s" % (safe_crash_id, url)
     return jsonify(message=response)
 
 
