@@ -4,6 +4,7 @@ import { withApollo } from "react-apollo";
 import GridTable from "../../Components/GridTable";
 import gqlAbstract from "../../queries/gqlAbstract";
 import { locationCrashesQueryExportFields } from "../../queries/crashes";
+import { colors } from "../../styles/colors";
 
 function LocationCrashes(props) {
   // Our initial query configuration
@@ -343,6 +344,7 @@ function LocationCrashes(props) {
       isSingleRecord: true,
       // Top n types
       limit: 4,
+      color: colors.success,
     },
     {
       type: "horizontal",
@@ -368,6 +370,7 @@ function LocationCrashes(props) {
       isSingleRecord: false,
       // Top n types
       limit: 4,
+      color: colors.danger,
     },
   ];
 

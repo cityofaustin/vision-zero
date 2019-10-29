@@ -31,7 +31,7 @@ const GridTableHorizontalBar = ({ chartData, chartConfig }) => {
     datasets: [
       {
         label: chartConfig.title,
-        backgroundColor: colors.success,
+        backgroundColor: chartConfig.color,
         borderColor: colors.grey200,
         borderWidth: 1,
         hoverBackgroundColor: colors.darkgreen,
