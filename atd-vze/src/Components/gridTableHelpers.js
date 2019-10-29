@@ -6,24 +6,20 @@ export const renderAlert = alert => <Alert color="warning">{alert}</Alert>;
 
 export const getChartData = (chartData, config) => {
   // Look for records that match labels and increment total
-  const data = config.labels.map(type => {
-    let typeTotal = 0;
+  const data = config.labels.map(label => {
+    let labelTotal = 0;
     chartData[config.table].forEach(record => {
       // If record is a string, increment total if match
       if (config.isSingleRecord) {
-        if (record[config.nestedKey][config.nestedPath] === type) {
-          typeTotal++;
-        }
+        record[config.nestedKey][config.nestedPath] === label && labelTotal++;
       } else {
         // If record is an array of objects, iterate and increment total if match
         record[config.nestedKey].forEach(unit => {
-          if (get(unit, config.nestedPath) === type) {
-            typeTotal++;
-          }
+          get(unit, config.nestedPath) === label && labelTotal++;
         });
       }
     });
-    return typeTotal;
+    return labelTotal;
   });
   return data;
 };
