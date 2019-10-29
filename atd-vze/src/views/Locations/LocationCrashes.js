@@ -284,10 +284,10 @@ function LocationCrashes(props) {
     },
   ];
 
-  const chartConfig = {
-    totalRecordsPath: ["atd_txdot_crashes_aggregate", "aggregate", "count"],
-    alert: "No crashes at this particular location",
-    horizontalBarChart: {
+  const chartConfig = [
+    {
+      totalRecordsPath: ["atd_txdot_crashes_aggregate", "aggregate", "count"],
+      alert: "No crashes at this particular location",
       labels: [
         "ONE MOTOR VEHICLE - GOING STRAIGHT",
         "ONE MOTOR VEHICLE - TURNING RIGHT",
@@ -343,7 +343,9 @@ function LocationCrashes(props) {
       // Top n types
       limit: 4,
     },
-    doughnutChart: {
+    {
+      totalRecordsPath: ["atd_txdot_crashes_aggregate", "aggregate", "count"],
+      alert: "No crashes at this particular location",
       labels: [
         "MOTOR VEHICLE",
         "TRAIN",
@@ -365,8 +367,7 @@ function LocationCrashes(props) {
       // Top n types
       limit: 4,
     },
-  };
-
+  ];
   return (
     <GridTable
       query={crashesQuery}
