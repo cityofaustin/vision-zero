@@ -4,10 +4,17 @@
         "profile_name": null,
         "project_name": "atd-cr3-api",
         "runtime": "python3.7",
+        "aws_region": "us-east-1",
         "s3_bucket": "atd-lambda-functions",
         "aws_environment_variables": {
+            "API_ENVIRONMENT": "PRODUCTION",
             "AUTH0_DOMAIN": "atd-datatech.auth0.com",
-            "CLIENT_ID": "Y5Q304ADgUOYq8199aSgSxLEc6Xzdkb4"
+            "CLIENT_ID": "Y5Q304ADgUOYq8199aSgSxLEc6Xzdkb4",
+            "AWS_DEFALUT_REGION": "us-east-1",
+            "AWS_S3_CR3_LOCATION": "look_at_lambda_function_for_value",
+            "AWS_S3_BUCKET": "look_at_lambda_function_for_value",
+            "AWS_S3_KEY": "look_at_lambda_function_for_value",
+            "AWS_S3_SECRET": "look_at_lambda_function_for_value"
         },
         "tags": {
             "project": "atd-vz-data",
@@ -20,9 +27,16 @@
         "project_name": "atd-cr3-api",
         "runtime": "python3.7",
         "s3_bucket": "atd-lambda-functions",
+        "aws_region": "us-east-1",
         "aws_environment_variables": {
+            "API_ENVIRONMENT": "STAGING",
             "AUTH0_DOMAIN": "atd-datatech.auth0.com",
-            "CLIENT_ID": "2qbqz2sf8L9idBOwn0d5YA9efNgQbL7c"
+            "CLIENT_ID": "2qbqz2sf8L9idBOwn0d5YA9efNgQbL7c",
+            "AWS_DEFALUT_REGION": "us-east-1",
+            "AWS_S3_CR3_LOCATION": "look_at_lambda_function_for_value",
+            "AWS_S3_BUCKET": "look_at_lambda_function_for_value",
+            "AWS_S3_KEY": "look_at_lambda_function_for_value",
+            "AWS_S3_SECRET": "look_at_lambda_function_for_value"
         },
         "tags": {
             "project": "atd-vz-data",
