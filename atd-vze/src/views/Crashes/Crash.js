@@ -224,8 +224,8 @@ function Crash(props) {
           </div>
         </Col>
         <Col>
-          <CrashCollapses data={data} />
           <CR3Record crashId={crashId} isCr3Stored={cr3StoredFlag === "Y"} />
+          <CrashCollapses data={data} />
         </Col>
       </Row>
       <Row>
