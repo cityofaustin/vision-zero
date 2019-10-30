@@ -4,7 +4,6 @@ import axios from "axios";
 
 function CR3Record(props) {
   const requestCR3 = () => {
-    console.log(props);
     const isProd = process.env.NODE_ENV === "production";
     const subdomain = isProd ? "atd-vz-api" : "atd-vz-api-staging";
     const requestUrl = `https://${subdomain}.austinmobility.io/cr3/download/${props.crashId}`;
