@@ -67,14 +67,14 @@ const GridTableFilterBadges = ({
     <Row className="mb-2">
       <Col>
         <span className="mr-1">Filters applied:</span>
-        {searchBadgeText && (
-          <Badge className="mr-1" color="primary">
-            {searchBadgeText}
-          </Badge>
-        )}
         {dateRangeBadgeText && (
           <Badge className="mr-1" color="primary">
             {dateRangeBadgeText}
+          </Badge>
+        )}
+        {searchBadgeText && (
+          <Badge className="mr-1" color="primary">
+            {searchBadgeText}
           </Badge>
         )}
         {advancedFilterBadgeText &&
