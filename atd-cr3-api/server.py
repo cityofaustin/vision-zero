@@ -209,8 +209,9 @@ def download_crash_id(crash_id):
 
     # For testing uncomment:
     # response = "Private Download, CrashID: %s , %s" % (safe_crash_id, url)
-    # return jsonify(message=response)
-    return redirect(url, code=302)
+    # return redirect(url, code=302)
+    return jsonify(message=url)
+    
 
 
 
