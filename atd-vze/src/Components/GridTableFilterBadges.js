@@ -39,8 +39,8 @@ const GridTableFilterBadges = ({
   useEffect(() => {
     // Collect string names of all filters applied
     let advancedFilterText = [];
-    Object.entries(advancedFilterParams).forEach(([key, value]) => {
-      value && advancedFilterText.push(key);
+    Object.entries(advancedFilterParams).forEach(([filter, boolean]) => {
+      boolean && advancedFilterText.push(filter);
     });
 
     const updateFiltersWithConfigLabels = filterTextArray => {
