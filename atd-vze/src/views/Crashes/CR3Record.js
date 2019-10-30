@@ -1,12 +1,14 @@
-import React, { Component, useState } from "react";
-import { Card, CardHeader, CardBody, Button } from "reactstrap";
+import React from "react";
+import { Card, CardHeader, CardBody, Button, Alert } from "reactstrap";
 import axios from "axios";
 
 function CR3Record(props) {
   const requestCR3 = () => {
     console.log(props);
-    let requestUrl = `https://atd-vz-api-staging.austinmobility.io/cr3/download/${props.crashId}`;
-    let token = window.localStorage.getItem("id_token");
+    const isProd = process.env.NODE_ENV === "production";
+    const subdomain = isProd ? "atd-vz-api" : "atd-vz-api-staging";
+    const requestUrl = `https://${subdomain}.austinmobility.io/cr3/download/${props.crashId}`;
+    const token = window.localStorage.getItem("id_token");
 
     axios
       .request(requestUrl, {
@@ -17,8 +19,6 @@ function CR3Record(props) {
       .then(res => {
         const win = window.open(res.data.message, "_blank");
         win.focus();
-
-        // TODO: handle case when there is no associated CR3
       });
   };
 
@@ -26,9 +26,16 @@ function CR3Record(props) {
     <Card>
       <CardHeader>Crash Report</CardHeader>
       <CardBody>
-        <Button color="primary" onClick={requestCR3}>
-          Download CR-3 PDF
-        </Button>
+        {props.isCr3Stored ? (
+          <Button color="primary" onClick={requestCR3}>
+            Download CR-3 PDF
+          </Button>
+        ) : (
+          <Alert color="warning">
+            The CR-3 file for this crash has not been imported. Use Brazos to
+            search for the associated CR-3 Crash Report.
+          </Alert>
+        )}
       </CardBody>
     </Card>
   );

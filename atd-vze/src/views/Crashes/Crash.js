@@ -117,6 +117,7 @@ function Crash(props) {
     longitude_primary: longitude,
     address_confirmed_primary: primaryAddress,
     address_confirmed_secondary: secondaryAddress,
+    cr3_stored_flag: cr3StoredFlag,
   } = data.atd_txdot_crashes[0];
 
   const mapGeocoderAddress = createGeocoderAddressString(data);
@@ -224,7 +225,7 @@ function Crash(props) {
         </Col>
         <Col>
           <CrashCollapses data={data} />
-          <CR3Record crashId={crashId} />
+          <CR3Record crashId={crashId} isCr3Stored={cr3StoredFlag === "Y"} />
         </Col>
       </Row>
       <Row>
