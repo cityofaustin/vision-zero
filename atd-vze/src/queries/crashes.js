@@ -13,6 +13,7 @@ export const GET_CRASH = gql`
       at_intrsct_fl
       case_id
       city_id
+      cr3_stored_flag
       crash_date
       crash_fatal_fl
       crash_id
