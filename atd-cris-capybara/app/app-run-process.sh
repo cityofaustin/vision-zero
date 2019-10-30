@@ -1,12 +1,8 @@
 #!/usr/bin/env bash
 
-echo -e "\n\n"
-echo -e "Starting email and zip file download process..."
-echo -e "------------------------------------------------"
-xvfb-run --server-args="-screen 0 1024x768x24" ruby download.rb
-echo -e "Done.\n"
+PROCESS_TYPE=$1
 
-echo -e "\nStarting CSV processing..."
-echo -e "------------------------------------------------"
-python3 process.py
-echo -e "Done.\n\n"
+for CURRENT_FILE in $(find ./data -name "extract_*$PROCESS_TYPE*.csv");
+do
+    python3 process.py $PROCESS_TYPE $CURRENT_FILE;
+done;
