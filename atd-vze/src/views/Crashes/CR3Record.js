@@ -5,8 +5,7 @@ import axios from "axios";
 function CR3Record(props) {
   const requestCR3 = () => {
     console.log(props);
-    let requestUrl =
-      "https://atd-vz-api-staging.austinmobility.io/cr3/download/11156151";
+    let requestUrl = `https://atd-vz-api-staging.austinmobility.io/cr3/download/${props.crashId}`;
     let token = window.localStorage.getItem("id_token");
 
     axios
@@ -16,10 +15,10 @@ function CR3Record(props) {
         },
       })
       .then(res => {
-        console.log("res", res);
-        var win = window.open(res, "_blank");
-        console.log(" should open a new window");
+        const win = window.open(res.data.message, "_blank");
         win.focus();
+
+        // TODO: handle case when there is no associated CR3
       });
   };
 
