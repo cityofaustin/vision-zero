@@ -18,6 +18,7 @@ const GridTableFilterBadges = ({
     const searchText = searchParams.value
       ? `Search: ${searchParams.value}`
       : null;
+
     setSearchBadgeText(searchText);
   }, [searchParams]);
 
@@ -30,25 +31,29 @@ const GridTableFilterBadges = ({
       "MM/DD/YYYY"
     );
     const formattedDateRangeText = `Date: ${startDateRangeText} to ${endDateRangeText}`;
+
     setDateRangeBadgeText(formattedDateRangeText);
   }, [dateRangeParams]);
 
   // Update advanced filter badges text
   useEffect(() => {
+    // Collect string names of all filters applied
     let advancedFilterText = [];
     Object.entries(advancedFilterParams).forEach(([key, value]) => {
       value && advancedFilterText.push(key);
     });
 
     const updateFiltersWithConfigLabels = filterTextArray => {
-      // Iterate through config object and collect labels and IDs
+      // Create dictionary of filter names and labels from
+      // filter configuration passed to GridTable
       const filterDictionary = {};
-      Object.values(advancedFiltersConfig).forEach(value => {
-        value.filters.forEach(filter => {
+      Object.values(advancedFiltersConfig).forEach(filterGroup => {
+        filterGroup.filters.forEach(filter => {
           filterDictionary[filter.id] = filter.label;
         });
       });
 
+      // Use dictionary to translate filters
       return filterTextArray.map(filter => filterDictionary[filter]);
     };
 
@@ -72,7 +77,6 @@ const GridTableFilterBadges = ({
             {dateRangeBadgeText}
           </Badge>
         )}
-        {/* TODO: translate badge names into human readable strings */}
         {advancedFilterBadgeText &&
           advancedFilterBadgeText.map(filter => (
             <Badge className="mr-1" color="primary">

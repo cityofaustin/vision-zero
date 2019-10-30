@@ -409,12 +409,14 @@ const GridTable = ({
               <i className="fa fa-car" /> {title}
             </CardHeader>
             <CardBody>
-              <GridTableFilterBadges
-                searchParams={searchParameters}
-                dateRangeParams={dateRangeFilter}
-                advancedFilterParams={filterOptions}
-                advancedFiltersConfig={filters}
-              />
+              {filters && (
+                <GridTableFilterBadges
+                  searchParams={searchParameters}
+                  dateRangeParams={dateRangeFilter}
+                  advancedFilterParams={filterOptions}
+                  advancedFiltersConfig={filters}
+                />
+              )}
               <Row>
                 <Col md="6">
                   {!!aggData && !!chartData && chartConfig.doughnutChart && (
