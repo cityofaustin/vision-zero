@@ -19,6 +19,7 @@ import CrashMap from "./Maps/CrashMap";
 import CrashEditCoordsMap from "./Maps/CrashEditCoordsMap";
 import Widget02 from "../Widgets/Widget02";
 import CrashChangeLog from "./CrashChangeLog";
+import CR3Record from "./CR3Record";
 import { crashDataMap } from "./crashDataMap";
 import {
   formatCostToDollars,
@@ -223,6 +224,7 @@ function Crash(props) {
         </Col>
         <Col>
           <CrashCollapses data={data} />
+          <CR3Record crashId={crashId} />
         </Col>
       </Row>
       <Row>
