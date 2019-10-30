@@ -430,6 +430,8 @@ const GridTable = ({
                           />
                         </Col>
                       );
+                    } else {
+                      return null;
                     }
                   })}
               </Row>
