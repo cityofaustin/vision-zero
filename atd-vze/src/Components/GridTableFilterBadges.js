@@ -10,7 +10,9 @@ const GridTableFilterBadges = ({
 }) => {
   const [searchBadgeText, setSearchBadgeText] = useState(null);
   const [dateRangeBadgeText, setDateRangeBadgeText] = useState(null);
+  const [advancedFilterBadgeText, setAdvancedFilterBadgeText] = useState([]);
 
+  // Update search badge text
   useEffect(() => {
     const searchText = searchParams.value
       ? `Search: ${searchParams.value}`
@@ -18,8 +20,8 @@ const GridTableFilterBadges = ({
     setSearchBadgeText(searchText);
   }, [searchParams]);
 
+  // Update date range badge text
   useEffect(() => {
-    console.log(dateRangeParams);
     const startDateRangeText = moment(dateRangeParams.startDate).format(
       "MM/DD/YYYY"
     );
@@ -29,6 +31,15 @@ const GridTableFilterBadges = ({
     const formattedDateRangeText = `Date: ${startDateRangeText} to ${endDateRangeText}`;
     setDateRangeBadgeText(formattedDateRangeText);
   }, [dateRangeParams]);
+
+  // Update advanced filter badges text
+  useEffect(() => {
+    let advancedFilterText = [];
+    Object.entries(advancedFilterParams).forEach(([key, value]) => {
+      value && advancedFilterText.push(key);
+    });
+    setAdvancedFilterBadgeText(advancedFilterText);
+  }, [advancedFilterParams]);
 
   return (
     <Row className="mb-2">
@@ -44,6 +55,13 @@ const GridTableFilterBadges = ({
             {dateRangeBadgeText}
           </Badge>
         )}
+        {/* TODO: translate badge names into human readable strings */}
+        {advancedFilterBadgeText &&
+          advancedFilterBadgeText.map(filter => (
+            <Badge className="mr-1" color="primary">
+              {filter}
+            </Badge>
+          ))}
       </Col>
     </Row>
   );
