@@ -411,8 +411,9 @@ const GridTable = ({
             <CardBody>
               <GridTableFilterBadges
                 searchParams={searchParameters}
-                advancedFilterParams={filterOptions}
                 dateRangeParams={dateRangeFilter}
+                advancedFilterParams={filterOptions}
+                advancedFiltersConfig={filters}
               />
               <Row>
                 <Col md="6">

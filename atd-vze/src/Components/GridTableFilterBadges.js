@@ -5,8 +5,9 @@ import { Col, Row, Badge } from "reactstrap";
 
 const GridTableFilterBadges = ({
   searchParams,
-  advancedFilterParams,
   dateRangeParams,
+  advancedFilterParams,
+  advancedFiltersConfig,
 }) => {
   const [searchBadgeText, setSearchBadgeText] = useState(null);
   const [dateRangeBadgeText, setDateRangeBadgeText] = useState(null);
@@ -38,7 +39,23 @@ const GridTableFilterBadges = ({
     Object.entries(advancedFilterParams).forEach(([key, value]) => {
       value && advancedFilterText.push(key);
     });
-    setAdvancedFilterBadgeText(advancedFilterText);
+
+    const updateFiltersWithConfigLabels = filterTextArray => {
+      // Iterate through config object and collect labels and IDs
+      const filterDictionary = {};
+      Object.values(advancedFiltersConfig).forEach(value => {
+        value.filters.forEach(filter => {
+          filterDictionary[filter.id] = filter.label;
+        });
+      });
+
+      return filterTextArray.map(filter => filterDictionary[filter]);
+    };
+
+    const humanReadableBadgeText = updateFiltersWithConfigLabels(
+      advancedFilterText
+    );
+    setAdvancedFilterBadgeText(humanReadableBadgeText);
   }, [advancedFilterParams]);
 
   return (
