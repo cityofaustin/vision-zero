@@ -196,7 +196,7 @@ class CrashChangeLog extends Component {
                   </td>
                   <td>
                     <Badge color="danger">
-                      {String(record.updated_by || "Unavailable")}{" "}
+                      {String(record.updated_by || "Unavailable")}
                     </Badge>
                   </td>
                   <td>
