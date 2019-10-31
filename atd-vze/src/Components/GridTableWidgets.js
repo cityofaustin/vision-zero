@@ -29,7 +29,7 @@ const GridTableWidgets = ({ aggData, widgetsConfig }) => {
     } else if (!!data) {
       return data.toString();
     } else {
-      return "0";
+      return "--";
     }
   };
 
