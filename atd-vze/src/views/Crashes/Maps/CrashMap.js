@@ -57,7 +57,10 @@ export default class CrashMap extends Component {
 
   componentDidUpdate(prevProps) {
     // Update viewport after an edit has been submitted with CrashEditCoordsMap component
-    if (prevProps.data.latitude_primary !== this.props.data.latitude_primary) {
+    if (
+      prevProps.data.latitude_primary !== this.props.data.latitude_primary ||
+      prevProps.data.longitude_primary !== this.props.data.longitude_primary
+    ) {
       const updatedViewport = {
         ...this.state.viewport,
         latitude: this.props.data.latitude_primary,
