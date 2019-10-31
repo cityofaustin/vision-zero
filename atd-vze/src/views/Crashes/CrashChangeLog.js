@@ -133,7 +133,7 @@ class CrashChangeLog extends Component {
       <section>
         <h6>Crash ID: {record.record_crash_id}</h6>
         <h6>Edited Date: {record.update_timestamp}</h6>
-        <h6>Created by: {record.record_json.updated_by || "Unavailable"}</h6>
+        <h6>Updated by: {record.updated_by || "Unavailable"}</h6>
         &nbsp;
         <Table responsive>
           <thead>
@@ -195,7 +195,9 @@ class CrashChangeLog extends Component {
                     </Badge>
                   </td>
                   <td>
-                    <Badge color="danger">{String(record['record_json'].updated_by || "Unavailable")} </Badge>
+                    <Badge color="danger">
+                      {String(record.updated_by || "Unavailable")}{" "}
+                    </Badge>
                   </td>
                   <td>
                     <Button
