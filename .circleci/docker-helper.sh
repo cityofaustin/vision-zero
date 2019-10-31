@@ -1,6 +1,7 @@
-#!/usr/bin/env bash
+#!/bin/bash
+set -euo pipefail
 
-export ATD_IMAGE="atddocker/atd-cris-capybara";
+ATD_IMAGE="atddocker/atd-cris-capybara";
 
 #
 # We need to assign the name of the branch as the tag to be deployed
@@ -8,19 +9,22 @@ export ATD_IMAGE="atddocker/atd-cris-capybara";
 if [[ "${CIRCLE_BRANCH}" == "production" ]]; then
     export ATD_TAG="latest";
 else
-    export ATD_TAG="${CIRCLE_BRANCH}";
+    export ATD_TAG="cibuild";
 fi;
 
-function build_containers {
-    echo "Logging in to Docker hub"
-    docker login -u $ATD_DOCKER_USER -p $ATD_DOCKER_PASS
+echo "docker build --no-cache -f Dockerfile -t $ATD_IMAGE:$ATD_TAG ."
+docker build -f atd-cris-capybara/Dockerfile -t "$ATD_IMAGE:$ATD_TAG" ./atd-cris-capybara
 
-    echo "docker build --no-cache -f Dockerfile -t $ATD_IMAGE:$ATD_TAG .";
-    docker build -f atd-cris-capybara/Dockerfile -t $ATD_IMAGE:$ATD_TAG ./atd-cris-capybara
+echo "docker tag $ATD_IMAGE:$ATD_TAG $ATD_IMAGE:$ATD_TAG;"
+docker tag "$ATD_IMAGE:$ATD_TAG $ATD_IMAGE:$ATD_TAG"
 
-    echo "docker tag $ATD_IMAGE:$ATD_TAG $ATD_IMAGE:$ATD_TAG;";
-    docker tag $ATD_IMAGE:$ATD_TAG $ATD_IMAGE:$ATD_TAG;
+if [ -z "$ATD_DOCKER_USER" ]; then
+  echo "You are not authorized to push the image. Skipping."
+  exit 0
+fi
 
-    echo "docker push $ATD_IMAGE:$ATD_TAG";
-    docker push $ATD_IMAGE:$ATD_TAG;
-}
+echo "Logging in to Docker hub"
+docker login -u "$ATD_DOCKER_USER" -p "$ATD_DOCKER_PASS"
+
+echo "docker push $ATD_IMAGE:$ATD_TAG"
+docker push "$ATD_IMAGE:$ATD_TAG"
