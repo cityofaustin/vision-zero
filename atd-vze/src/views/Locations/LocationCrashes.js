@@ -4,6 +4,7 @@ import { withApollo } from "react-apollo";
 import GridTable from "../../Components/GridTable";
 import gqlAbstract from "../../queries/gqlAbstract";
 import { locationCrashesQueryExportFields } from "../../queries/crashes";
+import { colors } from "../../styles/colors";
 
 function LocationCrashes(props) {
   // Our initial query configuration
@@ -164,7 +165,11 @@ function LocationCrashes(props) {
   const aggregateQueryConfig = [
     {
       table: "atd_txdot_crashes_aggregate",
-      columns: [`count`, `sum { apd_confirmed_death_count }`],
+      columns: [
+        `count`,
+        `sum { apd_confirmed_death_count
+               est_comp_cost }`,
+      ],
     },
     {
       table: "atd_txdot_primaryperson_aggregate",
@@ -251,14 +256,14 @@ function LocationCrashes(props) {
     {
       mainText: "Total Crashes",
       icon: "fa fa-cab",
-      color: "success",
+      color: "primary",
       dataPath: ["atd_txdot_crashes_aggregate", "aggregate", "count"],
       sum: false,
     },
     {
       mainText: "Total People (Primary + Non-Primary)",
       icon: "fa fa-user",
-      color: "dark",
+      color: "success",
       dataPath: [
         ["atd_txdot_primaryperson_aggregate", "aggregate", "count"],
         ["atd_txdot_person_aggregate", "aggregate", "count"],
@@ -266,18 +271,25 @@ function LocationCrashes(props) {
       sum: true,
     },
     {
-      mainText: "Total Units",
-      icon: "fa fa-car",
-      color: "secondary",
-      dataPath: ["atd_txdot_units_aggregate", "aggregate", "count"],
+      mainText: "Total Comprehensive Cost",
+      icon: "fa fa-usd",
+      color: "dark",
+      dataPath: [
+        "atd_txdot_crashes_aggregate",
+        "aggregate",
+        "sum",
+        "est_comp_cost",
+      ],
       sum: false,
+      format: "dollars",
     },
   ];
 
-  const chartConfig = {
-    totalRecordsPath: ["atd_txdot_crashes_aggregate", "aggregate", "count"],
-    alert: "No crashes at this particular location",
-    horizontalBarChart: {
+  const chartConfig = [
+    {
+      type: "horizontal",
+      totalRecordsPath: ["atd_txdot_crashes_aggregate", "aggregate", "count"],
+      alert: "No crashes at this particular location",
       labels: [
         "ONE MOTOR VEHICLE - GOING STRAIGHT",
         "ONE MOTOR VEHICLE - TURNING RIGHT",
@@ -332,8 +344,12 @@ function LocationCrashes(props) {
       isSingleRecord: true,
       // Top n types
       limit: 4,
+      color: colors.success,
     },
-    doughnutChart: {
+    {
+      type: "horizontal",
+      totalRecordsPath: ["atd_txdot_crashes_aggregate", "aggregate", "count"],
+      alert: "No crashes at this particular location",
       labels: [
         "MOTOR VEHICLE",
         "TRAIN",
@@ -354,8 +370,9 @@ function LocationCrashes(props) {
       isSingleRecord: false,
       // Top n types
       limit: 4,
+      color: colors.danger,
     },
-  };
+  ];
 
   return (
     <GridTable

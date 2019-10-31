@@ -418,24 +418,31 @@ const GridTable = ({
                 />
               )}
               <Row>
-                <Col md="6">
-                  {!!aggData && !!chartData && chartConfig.doughnutChart && (
-                    <GridTableDoughnut
-                      chartData={chartData}
-                      chartConfig={chartConfig}
-                    />
-                  )}
-                </Col>
-                <Col md="6">
-                  {!!aggData &&
-                    !!chartData &&
-                    chartConfig.horizontalBarChart && (
-                      <GridTableHorizontalBar
-                        chartData={chartData}
-                        chartConfig={chartConfig}
-                      />
-                    )}
-                </Col>
+                {!!aggData &&
+                  !!chartData &&
+                  chartConfig.map(chart => {
+                    if (chart.type === "horizontal") {
+                      return (
+                        <Col md="6">
+                          <GridTableHorizontalBar
+                            chartData={chartData}
+                            chartConfig={chart}
+                          />
+                        </Col>
+                      );
+                    } else if (chart.type === "doughnut") {
+                      return (
+                        <Col md="6">
+                          <GridTableDoughnut
+                            chartData={chartData}
+                            chartConfig={chart}
+                          />
+                        </Col>
+                      );
+                    } else {
+                      return null;
+                    }
+                  })}
               </Row>
               {aggregateQueryConfig && widgetsConfig && (
                 <Row>
