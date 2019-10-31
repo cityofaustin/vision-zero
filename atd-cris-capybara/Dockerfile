@@ -18,6 +18,7 @@ RUN apt-get update -y \
   qt5-default \
   ruby-capybara \
   ruby-selenium-webdriver \
+  xauth \
   xvfb \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
