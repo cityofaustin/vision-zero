@@ -1,18 +1,29 @@
-FROM ruby:stretch
+FROM ruby:2.6.5-buster
+LABEL MAINTAINER="Sergio Garcia <sergio.garcia@austintexas.gov>"
+LABEL MAINTAINER="Rémy Greinhofer <remy.greinhofer@gmail.com>"
 
-RUN mkdir /app && mkdir /app/tmp
+WORKDIR /usr/src/app
 
-WORKDIR /app
+RUN apt-get update -y \
+  && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+  awscli \
+  g++ \
+  gstreamer1.0-plugins-base \
+  gstreamer1.0-tools \
+  gstreamer1.0-x \
+  libqt5webkit5-dev \
+  p7zip-full \
+  python3 \
+  python3-pip \
+  python3-psycopg2 \
+  python3-requests \
+  qt5-default \
+  ruby-capybara \
+  ruby-selenium-webdriver \
+  xvfb \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
+  && gem install capybara-webkit mail --no-document \
+  && pip3 install --no-cache-dir knackpy
 
-RUN echo "deb http://ftp.de.debian.org/debian testing main" >> /etc/apt/sources.list && \
-    echo 'APT::Default-Release "stretch";' | tee -a /etc/apt/apt.conf.d/00local
-
-RUN apt-get update -y && apt-get -t stretch install -y g++ xvfb qt5-default libqt5webkit5-dev \
-    gstreamer1.0-plugins-base gstreamer1.0-tools gstreamer1.0-x qt-sdk p7zip-full
-
-RUN apt-get -t testing install -y python3.7 python3-pip
-
-RUN gem install capybara capybara-webkit selenium-webdriver  mail --no-document
-RUN pip3 install awscli knackpy psycopg2 requests
-
-COPY app /app
+COPY app /usr/src/app
