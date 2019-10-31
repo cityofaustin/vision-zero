@@ -29,6 +29,7 @@ import GridDateRange from "./GridDateRange";
 import GridExportData from "./GridExportData";
 import GridTableDoughnut from "./GridTableDoughnut";
 import GridTableHorizontalBar from "./GridTableHorizontalBar";
+import GridTableFilterBadges from "./GridTableFilterBadges";
 
 const GridTable = ({
   title,
@@ -408,6 +409,14 @@ const GridTable = ({
               <i className="fa fa-car" /> {title}
             </CardHeader>
             <CardBody>
+              {filters && (
+                <GridTableFilterBadges
+                  searchParams={searchParameters}
+                  dateRangeParams={dateRangeFilter}
+                  advancedFilterParams={filterOptions}
+                  advancedFiltersConfig={filters}
+                />
+              )}
               <Row>
                 <Col md="6">
                   {!!aggData && !!chartData && chartConfig.doughnutChart && (
