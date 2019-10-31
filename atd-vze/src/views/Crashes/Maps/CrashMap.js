@@ -69,7 +69,7 @@ export default class CrashMap extends Component {
 
   render() {
     const { viewport } = this.state;
-    console.log(viewport);
+
     return (
       <MapGL
         {...viewport}
