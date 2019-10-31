@@ -30,7 +30,7 @@ const GridTableFilterBadges = ({
     const endDateRangeText = moment(dateRangeParams.endDate).format(
       "MM/DD/YYYY"
     );
-    const formattedDateRangeText = `Date: ${startDateRangeText} to ${endDateRangeText}`;
+    const formattedDateRangeText = `${startDateRangeText} to ${endDateRangeText}`;
 
     setDateRangeBadgeText(formattedDateRangeText);
   }, [dateRangeParams]);
@@ -64,27 +64,39 @@ const GridTableFilterBadges = ({
   }, [advancedFilterParams]);
 
   return (
-    <Row className="mb-2">
-      <Col>
-        <span className="mr-1">Filters applied:</span>
-        {dateRangeBadgeText && (
-          <Badge className="mr-1" color="primary">
-            {dateRangeBadgeText}
-          </Badge>
-        )}
-        {searchBadgeText && (
-          <Badge className="mr-1" color="primary">
-            {searchBadgeText}
-          </Badge>
-        )}
-        {advancedFilterBadgeText &&
-          advancedFilterBadgeText.map(filter => (
-            <Badge className="mr-1" color="primary">
-              {filter}
-            </Badge>
-          ))}
-      </Col>
-    </Row>
+    <>
+      <Row className="mb-2">
+        <Col>
+          <h4>
+            <i className="fa fa-calendar mr-2"></i>
+            {dateRangeBadgeText && (
+              <Badge className="mr-1" color="primary">
+                {dateRangeBadgeText}
+              </Badge>
+            )}
+          </h4>
+        </Col>
+      </Row>
+      <Row className="mb-2">
+        <Col>
+          <h5>
+            <i className="fa fa-filter mr-2"></i>
+
+            {searchBadgeText && (
+              <Badge className="mr-1" color="primary">
+                {searchBadgeText}
+              </Badge>
+            )}
+            {advancedFilterBadgeText &&
+              advancedFilterBadgeText.map(filter => (
+                <Badge className="mr-1" color="primary">
+                  {filter}
+                </Badge>
+              ))}
+          </h5>
+        </Col>
+      </Row>
+    </>
   );
 };
 
