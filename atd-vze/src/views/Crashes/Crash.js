@@ -19,6 +19,7 @@ import CrashMap from "./Maps/CrashMap";
 import CrashEditCoordsMap from "./Maps/CrashEditCoordsMap";
 import Widget02 from "../Widgets/Widget02";
 import CrashChangeLog from "./CrashChangeLog";
+import CR3Record from "./CR3Record";
 import { crashDataMap } from "./crashDataMap";
 import {
   formatCostToDollars,
@@ -116,6 +117,7 @@ function Crash(props) {
     longitude_primary: longitude,
     address_confirmed_primary: primaryAddress,
     address_confirmed_secondary: secondaryAddress,
+    cr3_stored_flag: cr3StoredFlag,
   } = data.atd_txdot_crashes[0];
 
   const mapGeocoderAddress = createGeocoderAddressString(data);
@@ -222,6 +224,7 @@ function Crash(props) {
           </div>
         </Col>
         <Col>
+          <CR3Record crashId={crashId} isCr3Stored={cr3StoredFlag === "Y"} />
           <CrashCollapses data={data} />
         </Col>
       </Row>

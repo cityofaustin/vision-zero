@@ -1,12 +1,19 @@
 import React, { Component } from "react";
-import MapGL, { NavigationControl, FullscreenControl } from "react-map-gl";
+import MapGL, {
+  NavigationControl,
+  FullscreenControl,
+  Source,
+  Layer,
+} from "react-map-gl";
 import axios from "axios";
 import moment from "moment";
 
 import styled from "styled-components";
+import { colors } from "../../styles/colors";
 import { Button } from "reactstrap";
 
 const TOKEN = process.env.REACT_APP_MAPBOX_TOKEN;
+// This API key is managed by CTM. Contact help desk for maintenance and troubleshooting.
 const NEARMAP_KEY = process.env.REACT_APP_NEARMAP_KEY;
 
 const fullscreenControlStyle = {
@@ -56,6 +63,16 @@ const TimestampDisplay = styled.div`
   }
 `;
 
+// Styles for location polygon overlay
+const polygonDataLayer = {
+  id: "data",
+  type: "line",
+  paint: {
+    "line-color": colors.warning,
+    "line-width": 3,
+  },
+};
+
 export default class LocationMap extends Component {
   constructor(props) {
     super(props);
@@ -69,6 +86,21 @@ export default class LocationMap extends Component {
       },
       popupInfo: null,
       aerialTimestamp: "",
+    };
+
+    this.polygon = this.props.data.atd_txdot_locations[0];
+
+    // Create GeoJSON object from location polygon record for Source component
+    this.locationPolygonGeoJson = {
+      type: "Feature",
+      properties: {
+        renderType: this.polygon.shape.type,
+        id: this.polygon.location_id,
+      },
+      geometry: {
+        coordinates: this.polygon.shape.coordinates,
+        type: this.polygon.shape.type,
+      },
     };
   }
 
@@ -102,17 +134,24 @@ export default class LocationMap extends Component {
 
   render() {
     const { viewport } = this.state;
+    const isDev = window.location.hostname === "localhost";
 
     return (
       <MapGL
         {...viewport}
         width="100%"
         height="500px"
-        // mapStyle={rasterStyle}
-        mapStyle={"mapbox://styles/mapbox/satellite-streets-v9"}
+        // Mapbox Satellite layer as fallback or for testing
+        mapStyle={
+          isDev ? "mapbox://styles/mapbox/satellite-streets-v9" : rasterStyle
+        }
         onViewportChange={this._updateViewport}
         mapboxApiAccessToken={TOKEN}
       >
+        {/* Show polygon on map */}
+        <Source type="geojson" data={this.locationPolygonGeoJson}>
+          <Layer {...polygonDataLayer} />
+        </Source>
         <div className="fullscreen" style={fullscreenControlStyle}>
           <FullscreenControl />
         </div>

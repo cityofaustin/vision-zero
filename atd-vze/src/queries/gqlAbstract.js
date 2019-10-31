@@ -475,6 +475,73 @@ gqlAbstractTableAggregateName (
   }
 
   /**
+   * Generates a GraphQL query based on queryConfigArray passed in to set aggregate filters from table filters.
+   * @params {queryConfigArray} - Array of config objects (object keys are table, columns, and key (if nested)).
+   * @params {queryInstance} - Query instance to get table filters and set in aggregate queries.
+   * @returns {Object} gql Object
+   */
+  queryAggregate(queryConfigArray, queryInstance) {
+    // Create array to store each query
+    let aggregatesQueryArray = [];
+
+    // For each config, create query, replace filters/columns, and push to aggregatesQueryArray
+    queryConfigArray.forEach(config => {
+      let query = `
+      gqlAbstractTableAggregateName (
+          gqlAbstractAggregateFilters
+      ) {
+          aggregate {
+            gqlAggregateColumns
+          }
+        }
+      `;
+      // Replace the name of the aggregate table
+      query = query.replace("gqlAbstractTableAggregateName", config.table);
+
+      // Retrieve filters from query instance and add to aggregate query
+      let whereFilters = [];
+      Object.entries(queryInstance.config.where).forEach(([filter, value]) =>
+        whereFilters.push(`${filter}: { ${value} }`)
+      );
+
+      // Retrieve or filters from query instance
+      let orFilters = [];
+      if (queryInstance.config.or) {
+        Object.entries(queryInstance.config.or).forEach(([filter, value]) =>
+          orFilters.push(`{${filter}: { ${value} }}`)
+        );
+      }
+
+      if (orFilters.length > 0) {
+        let orString = `_or: [ ${orFilters.join(",")} ]`;
+        whereFilters.push(orString);
+      }
+      // If a key is defined in config, nest whereFilters
+      query = config.key
+        ? query.replace(
+            "gqlAbstractAggregateFilters",
+            `where: { ${config.key}: { ${whereFilters} } }`
+          )
+        : query.replace(
+            "gqlAbstractAggregateFilters",
+            `where: { ${whereFilters} }`
+          );
+
+      // Generate Columns
+      query = query.replace("gqlAggregateColumns", config.columns.join(" "));
+
+      aggregatesQueryArray.push(query);
+    });
+    // Join each aggregate query into one string
+    const aggregatesQueryString = aggregatesQueryArray.join(" ");
+    console.log(aggregatesQueryString);
+    // Return GraphQL query
+    return gql`query GetLocationStats {
+      ${aggregatesQueryString}
+    }`;
+  }
+
+  /**
    * Returns a GQL object based on the current state of the configuration.
    * @returns {Object} gql object
    */

@@ -13,6 +13,7 @@ export const GET_CRASH = gql`
       at_intrsct_fl
       case_id
       city_id
+      cr3_stored_flag
       crash_date
       crash_fatal_fl
       crash_id
@@ -143,6 +144,7 @@ export const GET_CRASH = gql`
       record_crash_id
       record_json
       update_timestamp
+      updated_by
     }
     atd_txdot_crash_locations(where: { crash_id: { _eq: $crashId } }) {
       location_id
