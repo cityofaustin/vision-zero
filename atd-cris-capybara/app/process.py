@@ -14,21 +14,21 @@ print("Processing file '%s' of type '%s'" % (FILE_PATH, FILE_TYPE))
 fieldnames = []
 with open(FILE_PATH) as fp:
     line = fp.readline()
-    cnt = 1
+    cnt = 0
     while line:
-        if cnt == 1:
+        if cnt == 0:
             fieldnames = line.strip().split(",")
 
         else:
             if record_exists(line=line, type=FILE_TYPE):
                 print("Record exists")
             else:
-                print("Record does not exist")
+                print("Record does not exist, inserting...")
                 gql = generate_gql(line=line, fieldnames=fieldnames, type=FILE_TYPE)
                 print(gql)
 
         line = fp.readline() # Move pointer to next line
         cnt += 1    # Increase count
 
-        if cnt == 5:
+        if cnt == 100:
             break

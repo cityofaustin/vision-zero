@@ -12,4 +12,14 @@ def searchCrashQuery(crash_id):
     """.replace("%CRASH_ID%", crash_id)
 
 
+def searchPerson(line):
+    return "person"
 
+def searchPrimaryPerson(line):
+    return "primaryperson"
+
+def searchCharges(line):
+    return "charges"
+
+def searchUnits(line):
+    return "units"

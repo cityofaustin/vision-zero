@@ -4,6 +4,7 @@ import re
 import json
 
 from .queries import searchCrashQuery
+from .request import run_query
 
 def generate_template(name, function, fields):
     """
@@ -162,7 +163,31 @@ def record_exists(line, type):
                 - We can try to get the record, and see if we receive anything using crash_id
         """
         crash_id = line.split(",")[0]
-        print(crash_id)
+        query = searchCrashQuery(crash_id)
+
+        try:
+            result = run_query(query)
+            return len(result["data"]["atd_txdot_crashes"]) > 0
+        except Exception as e:
+            print(str(e))
+            return True 
+
+    if type.lower() == "person":
+        query = searchPerson(line)
+        print("These are person records: " + query)
+
+    if type.lower() == "priamryperson":
+        query = searchPrimaryPerson(line)
+        print("These are primary person records: " + query)
+
+    if type.lower() == "charges":
+        query = searchCharges(line)
+        print("These are charges: " + query)
+
+    if type.lower() == "units":
+        query = searchUnits(line)
+        print("These are units: " + query)
+
 
     # if type.lower() == "charges":
     # if type.lower() == "unit":
