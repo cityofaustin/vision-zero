@@ -81,7 +81,6 @@ const GridTableFilterBadges = ({
         <Col>
           <h5>
             <i className="fa fa-lg fa-filter mr-2"></i>
-
             {searchBadgeText && (
               <Badge className="mr-1" color="primary">
                 {searchBadgeText}
