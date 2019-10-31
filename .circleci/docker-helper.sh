@@ -1,5 +1,5 @@
 #!/bin/bash
-set -euo pipefail
+set -uo pipefail
 
 ATD_IMAGE="atddocker/atd-cris-capybara";
 
