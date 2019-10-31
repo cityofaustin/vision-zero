@@ -5,8 +5,14 @@
 version: 2
 jobs:
   build:
-    machine:
-      image: ubuntu-1604:201903-01
+    docker:
+      - image: circleci/python:3.7
+    # machine:
+    #   image: ubuntu-1604:201903-01
+
+    # We need docker enabled
+    setup_remote_docker:
+      version: 18.09.3
 
     # Our build steps
     steps:
