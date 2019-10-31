@@ -100,9 +100,6 @@ export const crashDataMap = [
       apd_confirmed_fatality: {
         label: "Fatality Flag",
         editable: false,
-        uiType: "select",
-        lookupOptions: "atd_txdot__y_n_lkp",
-        lookupPrefix: "y_n",
       },
       crash_sev_id: {
         label: "Crash Severity",
