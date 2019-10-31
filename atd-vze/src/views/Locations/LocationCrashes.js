@@ -4,6 +4,7 @@ import { withApollo } from "react-apollo";
 import GridTable from "../../Components/GridTable";
 import gqlAbstract from "../../queries/gqlAbstract";
 import { locationCrashesQueryExportFields } from "../../queries/crashes";
+import { colors } from "../../styles/colors";
 
 function LocationCrashes(props) {
   // Our initial query configuration
@@ -284,10 +285,11 @@ function LocationCrashes(props) {
     },
   ];
 
-  const chartConfig = {
-    totalRecordsPath: ["atd_txdot_crashes_aggregate", "aggregate", "count"],
-    alert: "No crashes at this particular location",
-    horizontalBarChart: {
+  const chartConfig = [
+    {
+      type: "horizontal",
+      totalRecordsPath: ["atd_txdot_crashes_aggregate", "aggregate", "count"],
+      alert: "No crashes at this particular location",
       labels: [
         "ONE MOTOR VEHICLE - GOING STRAIGHT",
         "ONE MOTOR VEHICLE - TURNING RIGHT",
@@ -342,8 +344,12 @@ function LocationCrashes(props) {
       isSingleRecord: true,
       // Top n types
       limit: 4,
+      color: colors.success,
     },
-    doughnutChart: {
+    {
+      type: "horizontal",
+      totalRecordsPath: ["atd_txdot_crashes_aggregate", "aggregate", "count"],
+      alert: "No crashes at this particular location",
       labels: [
         "MOTOR VEHICLE",
         "TRAIN",
@@ -364,8 +370,9 @@ function LocationCrashes(props) {
       isSingleRecord: false,
       // Top n types
       limit: 4,
+      color: colors.danger,
     },
-  };
+  ];
 
   return (
     <GridTable

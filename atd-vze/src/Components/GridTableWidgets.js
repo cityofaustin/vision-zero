@@ -23,10 +23,13 @@ const GridTableWidgets = ({ aggData, widgetsConfig }) => {
   };
 
   const formatWidgetData = (data, format) => {
-    if (format === "dollars") {
+    // Handles null return values and format
+    if (!!data && format === "dollars") {
       return formatCostToDollars(data);
-    } else {
+    } else if (!!data) {
       return data.toString();
+    } else {
+      return "--";
     }
   };
 

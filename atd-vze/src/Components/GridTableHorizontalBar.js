@@ -15,14 +15,8 @@ const GridTableHorizontalBar = ({ chartData, chartConfig }) => {
   useEffect(() => {
     // If records exist, get data and then get top n records/labels
     if (Object.keys(chartData).length > 0) {
-      const horizontalData = getChartData(
-        chartData,
-        chartConfig.horizontalBarChart
-      );
-      const topChartData = getTopValues(
-        horizontalData,
-        chartConfig.horizontalBarChart
-      );
+      const horizontalData = getChartData(chartData, chartConfig);
+      const topChartData = getTopValues(horizontalData, chartConfig);
 
       // Separate data values and labels and set state to update chart
       const topValues = topChartData.map(arr => arr[0]);
@@ -30,14 +24,14 @@ const GridTableHorizontalBar = ({ chartData, chartConfig }) => {
       setHorizontalData(topValues);
       setHorizontalLabels(topLabels);
     }
-  }, [chartData, chartConfig.horizontalBarChart]);
+  }, [chartData, chartConfig]);
 
   const horizontalBar = {
     labels: horizontalLabels,
     datasets: [
       {
-        label: chartConfig.horizontalBarChart.title,
-        backgroundColor: colors.success,
+        label: chartConfig.title,
+        backgroundColor: chartConfig.color,
         borderColor: colors.grey200,
         borderWidth: 1,
         hoverBackgroundColor: colors.darkgreen,
@@ -49,7 +43,7 @@ const GridTableHorizontalBar = ({ chartData, chartConfig }) => {
 
   return (
     <Card>
-      <CardHeader>{chartConfig.horizontalBarChart.header}</CardHeader>
+      <CardHeader>{chartConfig.header}</CardHeader>
       <CardBody>
         {(recordCount === 0 && renderAlert(chartConfig.alert)) || (
           <div className="chart-wrapper" style={{ padding: "1.5rem 0" }}>
