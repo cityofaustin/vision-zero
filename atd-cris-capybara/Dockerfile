@@ -14,8 +14,6 @@ RUN apt-get update -y \
   libqt5webkit5-dev \
   p7zip-full \
   python3 \
-  python3-pip \
-  python3-psycopg2 \
   python3-requests \
   qt5-default \
   ruby-capybara \
@@ -23,7 +21,6 @@ RUN apt-get update -y \
   xvfb \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
-  && gem install capybara-webkit mail --no-document \
-  && pip3 install --no-cache-dir knackpy
+  && gem install capybara-webkit mail --no-document
 
 COPY app /usr/src/app
