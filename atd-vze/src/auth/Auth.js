@@ -56,7 +56,7 @@ export default class Auth {
     this.userProfile = null;
     this.auth0.logout({
       clientID: process.env.REACT_APP_AUTH0_CLIENT_ID,
-      returnTo: process.env.REACT_APP_AUTH0_LOGOUT_URL,
+      returnTo: window.location.origin,
     });
   };
 
