@@ -8,7 +8,6 @@ import {
   Row,
   Table,
   Alert,
-  Input,
   Button,
 } from "reactstrap";
 import { withApollo } from "react-apollo";
@@ -20,14 +19,13 @@ import CrashEditCoordsMap from "./Maps/CrashEditCoordsMap";
 import Widget02 from "../Widgets/Widget02";
 import CrashChangeLog from "./CrashChangeLog";
 import CR3Record from "./CR3Record";
+import DataTable from "../../Components/DataTable";
 import { crashDataMap } from "./crashDataMap";
-import {
-  formatCostToDollars,
-  formatDateTimeString,
-} from "../../helpers/format";
+
 import "./crash.scss";
 
-import { GET_CRASH, UPDATE_CRASH, GET_LOOKUPS } from "../../queries/crashes";
+import { GET_CRASH, UPDATE_CRASH } from "../../queries/crashes";
+import { GET_LOOKUPS } from "../../queries/lookups";
 
 const calculateYearsLifeLost = people => {
   // Assume 75 year life expectancy,
@@ -86,12 +84,6 @@ function Crash(props) {
       updated_by: localStorage.getItem("hasura_user_email"),
     });
     setFormData(newFormState);
-  };
-
-  const handleCancelClick = e => {
-    e.preventDefault();
-
-    setEditField("");
   };
 
   const handleFieldUpdate = e => {
@@ -229,129 +221,18 @@ function Crash(props) {
         </Col>
       </Row>
       <Row>
-        {crashDataMap.map(section => {
-          return (
-            <Col xs="12" md="6">
-              <Card key={section.title}>
-                <CardHeader>{section.title}</CardHeader>
-                <CardBody>
-                  <Table responsive striped hover>
-                    <tbody>
-                      {Object.keys(section.fields).map((field, i) => {
-                        const isEditing = field === editField;
-                        const fieldConfigObject = section.fields[field];
-
-                        const fieldLabel = fieldConfigObject.label;
-
-                        const formattedDollarValue =
-                          fieldConfigObject.format === "dollars" &&
-                          formatCostToDollars(data.atd_txdot_crashes[0][field]);
-
-                        const formatDateTimeValue =
-                          fieldConfigObject.format === "datetime" &&
-                          formatDateTimeString(
-                            data.atd_txdot_crashes[0][field]
-                          );
-
-                        const fieldValue =
-                          formattedDollarValue ||
-                          formatDateTimeValue ||
-                          (formData && formData[field.data]) ||
-                          data.atd_txdot_crashes[0][field];
-
-                        const fieldUiType = fieldConfigObject.uiType;
-
-                        const lookupPrefix = fieldConfigObject.lookupPrefix
-                          ? fieldConfigObject.lookupPrefix
-                          : field.split("_id")[0];
-
-                        // If there is no lookup options, we can assume the field value can be displayed as is.
-                        // If there is a lookup option, then the value is an ID to be referenced in a lookup table.
-                        const fieldValueDisplay =
-                          // make sure the value isn't null blank
-                          fieldValue &&
-                          // make sure there is a lookup object in the config
-                          !!fieldConfigObject.lookupOptions &&
-                          // make sure the config lookup object matches with lookup queries
-                          lookupSelectOptions[fieldConfigObject.lookupOptions]
-                            ? lookupSelectOptions[
-                                fieldConfigObject.lookupOptions
-                              ].find(
-                                item =>
-                                  item[`${lookupPrefix}_id`] === fieldValue
-                              )[`${lookupPrefix}_desc`]
-                            : fieldValue;
-
-                        const selectOptions =
-                          lookupSelectOptions[fieldConfigObject.lookupOptions];
-
-                        return (
-                          <tr key={i}>
-                            <td>
-                              <strong>{fieldLabel}</strong>
-                            </td>
-                            <td>
-                              {isEditing ? (
-                                <form onSubmit={e => handleFieldUpdate(e)}>
-                                  {fieldUiType === "select" && (
-                                    <Input
-                                      name={field}
-                                      id={field}
-                                      onChange={e => handleInputChange(e)}
-                                      defaultValue={fieldValue}
-                                      type="select"
-                                    >
-                                      {selectOptions.map(option => (
-                                        <option
-                                          value={option[`${lookupPrefix}_id`]}
-                                        >
-                                          {option[`${lookupPrefix}_desc`]}
-                                        </option>
-                                      ))}
-                                    </Input>
-                                  )}
-                                  {fieldUiType === "text" && (
-                                    <input
-                                      type="text"
-                                      defaultValue={fieldValue}
-                                      onChange={e => handleInputChange(e)}
-                                    />
-                                  )}
-
-                                  <button type="submit">
-                                    <i className="fa fa-check edit-toggle" />
-                                  </button>
-                                  <button type="cancel">
-                                    <i
-                                      className="fa fa-times edit-toggle"
-                                      onClick={e => handleCancelClick(e)}
-                                    ></i>
-                                  </button>
-                                </form>
-                              ) : (
-                                fieldValueDisplay
-                              )}
-                            </td>
-                            <td>
-                              {fieldConfigObject.editable && !isEditing && (
-                                <i
-                                  className="fa fa-pencil edit-toggle"
-                                  onClick={() => setEditField(field)}
-                                />
-                              )}
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </Table>
-                </CardBody>
-              </Card>
-            </Col>
-          );
-        })}
-
-        <Col lg={6}>
+        <DataTable
+          dataMap={crashDataMap}
+          dataTable={"atd_txdot_crashes"}
+          formData={formData}
+          setEditField={setEditField}
+          editField={editField}
+          handleInputChange={handleInputChange}
+          handleFieldUpdate={handleFieldUpdate}
+          lookupSelectOptions={lookupSelectOptions}
+          data={data}
+        />
+        <Col md="6">
           <CrashChangeLog data={data} />
         </Col>
       </Row>

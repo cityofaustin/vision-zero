@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import DataTable from "../../Components/DataTable";
 import LocationMap from "./LocationMap";
 import LocationEditMap from "./LocationEditMap";
 import {
@@ -8,6 +9,7 @@ import {
   Col,
   Row,
   Table,
+  Container,
   Button,
   ButtonGroup,
 } from "reactstrap";
@@ -19,10 +21,7 @@ import locationDataMap from "./locationDataMap";
 import LocationCrashes from "./LocationCrashes";
 
 import { GET_LOCATION } from "../../queries/Locations";
-import {
-  formatCostToDollars,
-  formatDateTimeString,
-} from "../../helpers/format";
+import { GET_LOOKUPS } from "../../queries/lookups";
 
 function Location(props) {
   const locationId = props.match.params.id;
@@ -30,6 +29,12 @@ function Location(props) {
   const { loading, error, data, refetch } = useQuery(GET_LOCATION, {
     variables: { id: locationId },
   });
+
+  // Import Lookup tables and aggregate an object of uiType= "select" options
+  const { data: lookupSelectOptions } = useQuery(GET_LOOKUPS);
+
+  const [editField, setEditField] = useState("");
+  const [formData, setFormData] = useState({});
 
   const handleMapChange = e => {
     e.preventDefault();
@@ -46,6 +51,7 @@ function Location(props) {
           <h2 className="h2 mb-3">{data.atd_txdot_locations[0].description}</h2>
         </Col>
       </Row>
+      {/* <Row> */}
       <Row>
         <Col md="6">
           <Card>
@@ -80,8 +86,16 @@ function Location(props) {
             </CardBody>
           </Card>
         </Col>
-        <Col md="6">
-          {locationDataMap.map(section => {
+
+        <DataTable
+          dataMap={locationDataMap}
+          dataTable={"atd_txdot_locations"}
+          data={data}
+          formData={formData}
+          lookupSelectOptions={lookupSelectOptions}
+        />
+      </Row>
+      {/* {locationDataMap.map(section => {
             return (
               <Card key={section.title}>
                 <CardHeader>{section.title}</CardHeader>
@@ -132,9 +146,8 @@ function Location(props) {
                 </CardBody>
               </Card>
             );
-          })}
-        </Col>
-      </Row>
+          })} */}
+      {/* </Row> */}
       <Row>
         <Col>
           <LocationCrashes locationId={locationId} />
