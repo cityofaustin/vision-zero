@@ -8,8 +8,6 @@ import {
   CardHeader,
   Col,
   Row,
-  Table,
-  Container,
   Button,
   ButtonGroup,
 } from "reactstrap";
@@ -36,13 +34,38 @@ function Location(props) {
   const [editField, setEditField] = useState("");
   const [formData, setFormData] = useState({});
 
+  if (loading) return "Loading...";
+  if (error) return `Error! ${error.message}`;
+
+  const handleInputChange = e => {
+    const newFormState = Object.assign(formData, {
+      [editField]: e.target.value,
+      updated_by: localStorage.getItem("hasura_user_email"),
+    });
+    setFormData(newFormState);
+  };
+
+  const handleFieldUpdate = e => {
+    e.preventDefault();
+
+    debugger;
+    // props.client
+    //   .mutate({
+    //     mutation: UPDATE_CRASH,
+    //     variables: {
+    //       crashId: crashId,
+    //       changes: formData,
+    //     },
+    //   })
+    //   .then(res => refetch());
+
+    setEditField("");
+  };
+
   const handleMapChange = e => {
     e.preventDefault();
     setMapSelected(e.target.id);
   };
-
-  if (loading) return "Loading...";
-  if (error) return `Error! ${error.message}`;
 
   return (
     <div className="animated fadeIn">
@@ -90,9 +113,13 @@ function Location(props) {
         <DataTable
           dataMap={locationDataMap}
           dataTable={"atd_txdot_locations"}
-          data={data}
           formData={formData}
+          setEditField={setEditField}
+          editField={editField}
+          handleInputChange={handleInputChange}
+          handleFieldUpdate={handleFieldUpdate}
           lookupSelectOptions={lookupSelectOptions}
+          data={data}
         />
       </Row>
       {/* {locationDataMap.map(section => {

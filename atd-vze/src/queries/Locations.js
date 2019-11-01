@@ -92,6 +92,20 @@ export const GET_LOCATION = gql`
 `;
 
 export const UPDATE_LOCATION = gql`
+  mutation update_atd_txdot_locations(
+    $locationId: Int
+    $changes: atd_txdot_locations_set_input
+  ) {
+    update_atd_txdot_locations(
+      where: { location_id: { _eq: $locationId } }
+      _set: $changes
+    ) {
+      affected_rows
+    }
+  }
+`;
+
+export const UPDATE_LOCATION_POLYGON = gql`
   mutation UpdateLocation($locationId: String, $updatedPolygon: geometry!) {
     update_atd_txdot_locations(
       where: { location_id: { _eq: $locationId } }

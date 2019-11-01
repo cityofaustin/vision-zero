@@ -6,7 +6,7 @@ import styled from "styled-components";
 
 import Toolbar from "./toolbar";
 import { Button, ButtonGroup } from "reactstrap";
-import { UPDATE_LOCATION } from "../../queries/Locations";
+import { UPDATE_LOCATION_POLYGON } from "../../queries/Locations";
 
 const TOKEN = process.env.REACT_APP_MAPBOX_TOKEN;
 
@@ -139,7 +139,7 @@ class LocationEditMap extends Component {
     this.setState({ isSubmitting: true });
     this.props.client
       .mutate({
-        mutation: UPDATE_LOCATION,
+        mutation: UPDATE_LOCATION_POLYGON,
         variables: {
           locationId: featureId,
           updatedPolygon: featureDataForEditSubmit,

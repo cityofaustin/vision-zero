@@ -1,4 +1,5 @@
 import React from "react";
+import get from "lodash.get";
 import { formatCostToDollars, formatDateTimeString } from "../helpers/format";
 
 import { Card, CardHeader, CardBody, Col, Input, Table } from "reactstrap";
@@ -36,13 +37,22 @@ const DataTable = ({
 
                       const fieldLabel = fieldConfigObject.label;
 
+                      // If data is nested in data object, define path in dataMap
+                      const nestedData =
+                        fieldConfigObject.dataPath &&
+                        get(data[dataTable][0], fieldConfigObject.dataPath);
+
                       const formattedDollarValue =
                         fieldConfigObject.format === "dollars" &&
-                        formatCostToDollars(data[dataTable][0][field]);
+                        formatCostToDollars(
+                          nestedData || data[dataTable][0][field]
+                        );
 
                       const formatDateTimeValue =
                         fieldConfigObject.format === "datetime" &&
-                        formatDateTimeString(data[dataTable][0][field]);
+                        formatDateTimeString(
+                          nestedData || data[dataTable][0][field]
+                        );
 
                       const fieldValue =
                         formattedDollarValue ||
