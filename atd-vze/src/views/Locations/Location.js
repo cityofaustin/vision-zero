@@ -18,7 +18,7 @@ import { useQuery } from "@apollo/react-hooks";
 import locationDataMap from "./locationDataMap";
 import LocationCrashes from "./LocationCrashes";
 
-import { GET_LOCATION } from "../../queries/Locations";
+import { GET_LOCATION, UPDATE_LOCATION } from "../../queries/Locations";
 import { GET_LOOKUPS } from "../../queries/lookups";
 
 function Location(props) {
@@ -40,7 +40,6 @@ function Location(props) {
   const handleInputChange = e => {
     const newFormState = Object.assign(formData, {
       [editField]: e.target.value,
-      updated_by: localStorage.getItem("hasura_user_email"),
     });
     setFormData(newFormState);
   };
@@ -48,16 +47,15 @@ function Location(props) {
   const handleFieldUpdate = e => {
     e.preventDefault();
 
-    debugger;
-    // props.client
-    //   .mutate({
-    //     mutation: UPDATE_CRASH,
-    //     variables: {
-    //       crashId: crashId,
-    //       changes: formData,
-    //     },
-    //   })
-    //   .then(res => refetch());
+    props.client
+      .mutate({
+        mutation: UPDATE_LOCATION,
+        variables: {
+          locationId: locationId,
+          changes: formData,
+        },
+      })
+      .then(res => refetch());
 
     setEditField("");
   };
@@ -109,7 +107,6 @@ function Location(props) {
             </CardBody>
           </Card>
         </Col>
-
         <DataTable
           dataMap={locationDataMap}
           dataTable={"atd_txdot_locations"}
@@ -122,59 +119,6 @@ function Location(props) {
           data={data}
         />
       </Row>
-      {/* {locationDataMap.map(section => {
-            return (
-              <Card key={section.title}>
-                <CardHeader>{section.title}</CardHeader>
-                <CardBody>
-                  <Table responsive striped hover>
-                    <tbody>
-                      {Object.keys(section.fields).map((field, i) => {
-                        const fieldConfigObject = section.fields[field];
-                        const fieldLabel = fieldConfigObject.label;
-                        let fieldValueDisplay = "";
-
-                        switch (field) {
-                          // TODO: figure out a better way to parse through nested values
-                          case "est_comp_cost":
-                            fieldValueDisplay = !!data.atd_txdot_locations[0]
-                              .crashes_count_cost_summary
-                              ? data.atd_txdot_locations[0].crashes_count_cost_summary.est_comp_cost.toLocaleString()
-                              : "No data";
-                            break;
-                          default:
-                            fieldValueDisplay =
-                              data.atd_txdot_locations[0][field];
-                        }
-
-                        if (fieldConfigObject.format === "datetime") {
-                          fieldValueDisplay = formatDateTimeString(
-                            fieldValueDisplay
-                          );
-                        }
-
-                        if (fieldConfigObject.format === "dollars") {
-                          fieldValueDisplay = formatCostToDollars(
-                            fieldValueDisplay
-                          );
-                        }
-
-                        return (
-                          <tr key={i}>
-                            <td>
-                              <strong>{fieldLabel}</strong>
-                            </td>
-                            <td>{fieldValueDisplay}</td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </Table>
-                </CardBody>
-              </Card>
-            );
-          })} */}
-      {/* </Row> */}
       <Row>
         <Col>
           <LocationCrashes locationId={locationId} />

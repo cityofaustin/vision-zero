@@ -93,7 +93,7 @@ export const GET_LOCATION = gql`
 
 export const UPDATE_LOCATION = gql`
   mutation update_atd_txdot_locations(
-    $locationId: Int
+    $locationId: String
     $changes: atd_txdot_locations_set_input
   ) {
     update_atd_txdot_locations(

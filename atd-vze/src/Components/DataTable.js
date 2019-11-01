@@ -84,7 +84,7 @@ const DataTable = ({
 
                       const selectOptions =
                         lookupSelectOptions[fieldConfigObject.lookupOptions];
-
+                      console.log(lookupSelectOptions);
                       return (
                         <tr key={i}>
                           <td>
