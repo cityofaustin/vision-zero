@@ -381,6 +381,13 @@ export const crashDataMap = [
         lookupOptions: "atd_txdot__y_n_lkp",
         lookupPrefix: "y_n",
       },
+      micromobility_device_flag: {
+        label: "Micromobility Device Flag",
+        editable: true,
+        uiType: "select",
+        lookupOptions: "atd_txdot__y_n_lkp",
+        lookupPrefix: "y_n",
+      },
     },
   },
   {

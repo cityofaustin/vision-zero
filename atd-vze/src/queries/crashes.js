@@ -42,6 +42,7 @@ export const GET_CRASH = gql`
       longitude
       longitude_primary
       longitude_geocoded
+      micromobility_device_flag
       non_injry_cnt
       nonincap_injry_cnt
       obj_struck_id
