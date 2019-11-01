@@ -208,7 +208,7 @@ class CrashEditCoordsMap extends Component {
           longitude={markerLongitude}
           handleFormSubmit={this.handleMapFormSubmit}
           handleFormReset={this.handleMapFormReset}
-          handleCancel={this.handleMapFormCancel}
+          handleFormCancel={this.handleMapFormCancel}
         />
       </div>
     );
