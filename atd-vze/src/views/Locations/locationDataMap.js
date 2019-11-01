@@ -16,6 +16,13 @@ const locationDataMap = [
         label: "Estimated Comprehensive Cost",
         format: "dollars",
       },
+      asmp_street_level: {
+        label: "ASMP Street Level",
+        editable: true,
+        uiType: "select",
+        lookupOptions: "atd_txdot__asmp_level_lkp",
+        lookupPrefix: "asmp_level",
+      },
     },
   },
 ];

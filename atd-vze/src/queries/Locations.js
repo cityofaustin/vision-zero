@@ -5,6 +5,7 @@ export const GET_LOCATION = gql`
     atd_txdot_locations(where: { location_id: { _eq: $id } }) {
       location_id
       address
+      asmp_street_level
       description
       shape
       latitude
