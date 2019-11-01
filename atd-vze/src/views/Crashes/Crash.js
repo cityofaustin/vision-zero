@@ -25,7 +25,6 @@ import { crashDataMap } from "./crashDataMap";
 import "./crash.scss";
 
 import { GET_CRASH, UPDATE_CRASH } from "../../queries/crashes";
-import { GET_LOOKUPS } from "../../queries/lookups";
 
 const calculateYearsLifeLost = people => {
   // Assume 75 year life expectancy,
@@ -49,9 +48,6 @@ function Crash(props) {
   const { loading, error, data, refetch } = useQuery(GET_CRASH, {
     variables: { crashId },
   });
-
-  // Import Lookup tables and aggregate an object of uiType= "select" options
-  const { data: lookupSelectOptions } = useQuery(GET_LOOKUPS);
 
   const [editField, setEditField] = useState("");
   const [formData, setFormData] = useState({});
@@ -229,7 +225,6 @@ function Crash(props) {
           editField={editField}
           handleInputChange={handleInputChange}
           handleFieldUpdate={handleFieldUpdate}
-          lookupSelectOptions={lookupSelectOptions}
           data={data}
         />
         <Col md="6">

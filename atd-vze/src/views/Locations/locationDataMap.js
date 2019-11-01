@@ -17,6 +17,8 @@ const locationDataMap = [
       },
       est_comp_cost: {
         label: "Estimated Comprehensive Cost",
+        // If data is nested in data object, define path in lodash.get() format
+        // to expose in DataTable component
         dataPath: ["crashes_count_cost_summary", "est_comp_cost"],
         editable: false,
         format: "dollars",

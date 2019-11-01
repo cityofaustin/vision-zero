@@ -1,8 +1,11 @@
 import React from "react";
+import { useQuery } from "@apollo/react-hooks";
 import get from "lodash.get";
 import { formatCostToDollars, formatDateTimeString } from "../helpers/format";
 
 import { Card, CardHeader, CardBody, Col, Input, Table } from "reactstrap";
+
+import { GET_LOOKUPS } from "../queries/lookups";
 
 const DataTable = ({
   dataMap,
@@ -13,8 +16,10 @@ const DataTable = ({
   formData,
   handleInputChange,
   handleFieldUpdate,
-  lookupSelectOptions,
 }) => {
+  // Import Lookup tables and aggregate an object of uiType= "select" options
+  const { data: lookupSelectOptions } = useQuery(GET_LOOKUPS);
+
   const handleCancelClick = e => {
     e.preventDefault();
 
@@ -23,9 +28,9 @@ const DataTable = ({
 
   return (
     <>
-      {dataMap.map(section => {
+      {dataMap.map((section, i) => {
         return (
-          <Col md="6">
+          <Col key={i} md="6">
             <Card key={section.title}>
               <CardHeader>{section.title}</CardHeader>
               <CardBody>
@@ -84,7 +89,7 @@ const DataTable = ({
 
                       const selectOptions =
                         lookupSelectOptions[fieldConfigObject.lookupOptions];
-                      console.log(lookupSelectOptions);
+
                       return (
                         <tr key={i}>
                           <td>

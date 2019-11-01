@@ -61,7 +61,7 @@ const GridTableFilterBadges = ({
       advancedFilterText
     );
     setAdvancedFilterBadgeText(humanReadableBadgeText);
-  }, [advancedFilterParams]);
+  }, [advancedFilterParams, advancedFiltersConfig]);
 
   return (
     <>

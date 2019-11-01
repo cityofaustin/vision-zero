@@ -19,7 +19,6 @@ import locationDataMap from "./locationDataMap";
 import LocationCrashes from "./LocationCrashes";
 
 import { GET_LOCATION, UPDATE_LOCATION } from "../../queries/Locations";
-import { GET_LOOKUPS } from "../../queries/lookups";
 
 function Location(props) {
   const locationId = props.match.params.id;
@@ -27,9 +26,6 @@ function Location(props) {
   const { loading, error, data, refetch } = useQuery(GET_LOCATION, {
     variables: { id: locationId },
   });
-
-  // Import Lookup tables and aggregate an object of uiType= "select" options
-  const { data: lookupSelectOptions } = useQuery(GET_LOOKUPS);
 
   const [editField, setEditField] = useState("");
   const [formData, setFormData] = useState({});
@@ -115,7 +111,6 @@ function Location(props) {
           editField={editField}
           handleInputChange={handleInputChange}
           handleFieldUpdate={handleFieldUpdate}
-          lookupSelectOptions={lookupSelectOptions}
           data={data}
         />
       </Row>
