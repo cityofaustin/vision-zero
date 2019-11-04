@@ -109,6 +109,16 @@ export const crashGridTableAdvancedFilters = {
           where: [{ geocoded: '_eq: "Y"' }],
         },
       },
+      {
+        id: "geo_confirmed_coordinates",
+        label: "Confirmed Coordinates",
+        filter: {
+          where: [
+            { latitude_primary: "_is_null: false" },
+            { longitude_primary: "_is_null: false" },
+          ],
+        },
+      },
     ],
   },
   groupUnitTypes: {
