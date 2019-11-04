@@ -61,7 +61,7 @@ const GridTableFilterBadges = ({
       advancedFilterText
     );
     setAdvancedFilterBadgeText(humanReadableBadgeText);
-  }, [advancedFilterParams]);
+  }, [advancedFilterParams, advancedFiltersConfig]);
 
   // Determine whether to show filter icon and filter badges in UI
   const hasFiltersApplied =

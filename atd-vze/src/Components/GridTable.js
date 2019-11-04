@@ -420,10 +420,10 @@ const GridTable = ({
               <Row>
                 {!!aggData &&
                   !!chartData &&
-                  chartConfig.map(chart => {
+                  chartConfig.map((chart, i) => {
                     if (chart.type === "horizontal") {
                       return (
-                        <Col md="6">
+                        <Col key={i} md="6">
                           <GridTableHorizontalBar
                             chartData={chartData}
                             chartConfig={chart}
@@ -432,7 +432,7 @@ const GridTable = ({
                       );
                     } else if (chart.type === "doughnut") {
                       return (
-                        <Col md="6">
+                        <Col key={i} md="6">
                           <GridTableDoughnut
                             chartData={chartData}
                             chartConfig={chart}
