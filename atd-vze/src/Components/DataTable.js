@@ -62,6 +62,7 @@ const DataTable = ({
                       const fieldValue =
                         formattedDollarValue ||
                         formatDateTimeValue ||
+                        nestedData ||
                         (formData && formData[field.data]) ||
                         data[dataTable][0][field];
 

@@ -68,7 +68,6 @@ function Location(props) {
           <h2 className="h2 mb-3">{data.atd_txdot_locations[0].description}</h2>
         </Col>
       </Row>
-      {/* <Row> */}
       <Row>
         <Col md="6">
           <Card>
