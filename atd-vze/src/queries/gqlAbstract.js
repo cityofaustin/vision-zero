@@ -502,6 +502,7 @@ gqlAbstractTableAggregateName (
       let whereFilters = [];
       let orFilters = [];
       Object.entries(queryInstance.config.where).forEach(([filter, value]) => {
+        // If we have a nested expression for a key, then append to 'or'
         if (this.isNestedKey(filter)) {
           orFilters.push(`{ ${filter} }`);
           // Else, append to 'where'
