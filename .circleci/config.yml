@@ -5,6 +5,11 @@
 version: 2
 jobs:
   build:
+    branches:
+      only:
+        - master
+        - production
+
     docker:
       - image: circleci/python:3.7
 
