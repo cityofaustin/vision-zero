@@ -2,23 +2,20 @@ import os
 import json
 import requests
 
-RUN_MODE = os.getenv("RUN_MODE", "STAGING")
-HASURA_ADMIN_SECRET = os.getenv("HASURA_ADMIN_SECRET")
-HASURA_ADMIN_SECRET_STAGING = os.getenv("HASURA_ADMIN_SECRET_STAGING")
+HASURA_ENDPOINT = os.getenv("HASURA_ENDPOINT")
+HASURA_ADMIN_KEY = os.getenv("HASURA_ADMIN_KEY")
 
-def run_query(query):  # A simple function to use requests.post to make the API call. Note the json= section.
-    # Assume staging
-    endpoint_mode = "vzd-staging" # Staging by default
-    token = HASURA_ADMIN_SECRET_STAGING
+def run_query(query):
+    
+    # Build Header with Admin Secret
+    headers = {"x-hasura-admin-secret": HASURA_ADMIN_KEY}
 
-    if RUN_MODE == "PRODUCTION":
-        endpoint_mode = "vzd"
-        token = HASURA_ADMIN_SECRET
-
-    headers = {"x-hasura-admin-secret": token}
+    # Try making insertion
     try:
-        return requests.post("https://" + endpoint_mode + ".austinmobility.io/v1/graphql",
+        return requests.post(HASURA_ENDPOINT,
                              json={'query': query},
                              headers=headers).json()
-    except:
+    except Exception as e:
+        print("Exception, could not insert: " + str(e))
+        print("Query: '%s'" % query)
         return None
