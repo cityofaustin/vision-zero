@@ -90,10 +90,35 @@ def generate_gql(line, fieldnames, type):
     if type.lower() == "crash":
         remove = []
         numerictext = [
+            "id_number",
+            "case_id",
+            "street_nbr",
+            "street_name",
+            "surf_width",
+            "surf_type_id",
+            "hp_shldr_right",
+            "hp_shldr_left",
+            "hp_median_width",
+            "rpt_hwy_num",
             "rpt_block_num",
             "rpt_sec_block_num",
-            "id_number",
-            "street_nbr"
+            "rpt_sec_hwy_num",
+            "rpt_street_name",
+            "rpt_sec_street_name",
+            "rpt_sec_street_desc",
+            "rpt_ref_mark_nbr",
+            "roadbed_width",
+            "hwy_nbr",
+            "hwy_nbr_2",
+            "hwy_dsgn_hrt_id",
+            "base_type_id",
+            "nbr_of_lane",
+            "row_width_usual",
+            "hwy_dsgn_lane_id",
+            "local_use",
+            "ori_number",
+            "investigat_notify_meth",
+            "wdcode_id",
         ]
 
         fields = generate_fields(line,
@@ -168,8 +193,7 @@ def record_exists(line, type):
         try:
             result = run_query(query)
             return len(result["data"]["atd_txdot_crashes"]) > 0
-        except Exception as e:
-            print(str(e))
+        except Exception:
             return True 
 
     if type.lower() == "person":
@@ -187,11 +211,5 @@ def record_exists(line, type):
     if type.lower() == "units":
         query = searchUnits(line)
         print("These are units: " + query)
-
-
-    # if type.lower() == "charges":
-    # if type.lower() == "unit":
-    # if type.lower() == "person":
-    # if type.lower() == "primaryperson":
 
     return False
