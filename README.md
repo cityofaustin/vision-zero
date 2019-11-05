@@ -10,7 +10,7 @@ This folder hosts our API that securely downloads a private file from S3. It is 
 
 ## atd-cris-capybara
 
-Our ETL process uses capybara to request, download and process data. The environment in which our capybara script runs is very specific to our needs, so we built a docker container which has all the requirements pre-built. There are also certain variables that are needed in order for capybara to run.
+Our current method for extracting data from the TxDOT C.R.I.S. data system uses Capybara to request, download and process data. It is deployed as a Docker container.
 
 For step-by-step details on how to prepare your environment and how to execute this process, please refer to the documentation in the [atd-cris-capybara folder.](https://github.com/cityofaustin/atd-vz-data/tree/master/atd-cris-capybara)
 
@@ -34,9 +34,7 @@ VZV is our public facing home for visualizations, maps, and dashboards that help
 
 [more info](./atd-vzv/README.md)
 
-## Getting Started
-
-### Technology Stack
+## Technology Stack
 
 Technologies, libraries, and languages used for this project include:
 
