@@ -5,11 +5,7 @@ export ATD_IMAGE="atddocker/atd-cris-capybara";
 #
 # We need to assign the name of the branch as the tag to be deployed
 #
-if [[ "${CIRCLE_BRANCH}" == "production" ]]; then
-    export ATD_TAG="latest";
-else
-    export ATD_TAG="${CIRCLE_BRANCH}";
-fi;
+export ATD_TAG="${CIRCLE_BRANCH}";
 
 function build_containers {
     echo "Logging in to Docker hub"
