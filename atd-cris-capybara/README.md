@@ -1,4 +1,20 @@
+# Current State - Read Me
+
+** IMPORTANT **
+
+Currently the ETL processes is undergoing a review. We are re-evaluating Capybara a as a viable tool to run our ETL processes.
+
+In capybara we are currently experiencing some challenges, including:
+
+- Non-uniform Code and Frameworks, it is confusing to have both ruby and python in the same container.
+- The capybara container takes up a lot of memory, up to 3gb.
+
+
+We are evaluating other frameworks in python that could replace capybara, such as splinter, python-selenium, or just plain python.
+
 # atd-cris-capybara
+
+### What is it
 
 This is an ETL tool that automates the making of requests, downloads and processing of crash data from the C.R.I.S. website. It utilizes Capybara with Ruby to emulate browser behavior, Python, and Docker. It requires setting up environment variables on your system to run, these can be fund in the `./scripts/run.sh` file.
 
