@@ -4,8 +4,22 @@ require 'capybara/webkit'
 
 Capybara.default_driver = :webkit
 
+# AWS Bucket
 AWS_BUCKET = ENV["AWS_BUCKET_NAME"]
 AWS_DOWNLOAD_PATH = "./tmp"
+AWS_BUCKET_PATH = ENV["AWS_BUCKET_PATH"] rescue "production/cris-cr3-files-unassigned"
+
+
+
+
+# Hasura Accesss
+HASURA_ENDPOINT = ENV["HASURA_ENDPOINT"]
+HASURA_ADMIN_KEY = ENV["HASURA_ADMIN_KEY"]
+
+# CRIS
+ATD_CRIS_USERNAME = ENV['ATD_CRIS_USERNAME']
+ATD_CRIS_PASSWORD = ENV['ATD_CRIS_PASSWORD']
+ATD_CRIS_DOWNLOADS_PER_RUN = ENV["ATD_CRIS_DOWNLOADS_PER_RUN"] rescue 10
 
 #
 # We need to allow certain urls
