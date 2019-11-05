@@ -11,13 +11,10 @@ jobs:
     steps:
       - checkout
       - run:
-          name: "Building Packages"
+          name: "Building Docker"
           command: |
             source .circleci/docker-helper.sh
             build_containers
-      - run:
-          name: "Triggering netlify build"
-          command: node ./.circleci/scripts/buildNetlifySite.js
 
 workflows:
   version: 2.1
