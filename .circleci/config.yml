@@ -1,30 +1,31 @@
-# Javascript Node CircleCI 2.0 configuration file
 #
-# Check https://circleci.com/docs/2.0/language-javascript/ for more details
+# CircleCI Builder for Vision Zero
 #
-version: 2
-jobs:
-  build:
-    branches:
-      only:
-        - master
-        - production
 
+version: 2.1
+
+jobs:
+  deploy:
     docker:
       - image: circleci/python:3.7
-
-    # Our build steps
     steps:
-      # Get out scripts
       - checkout
-
-      # We need docker enabled
-      - setup_remote_docker:
-          version: 18.09.3
-
-      # We are simply going to source our docker helper script and run our build process.
       - run:
           name: "Building Packages"
           command: |
             source .circleci/docker-helper.sh
             build_containers
+      - run:
+          name: "Triggering netlify build"
+          command: node ./.circleci/scripts/buildNetlifySite.js
+
+workflows:
+  version: 2.1
+  build-and-deploy:
+    jobs:
+      - deploy:
+          filters:
+            branches:
+              only:
+                - master
+                - production
