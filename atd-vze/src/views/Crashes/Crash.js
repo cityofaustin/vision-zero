@@ -117,13 +117,17 @@ function Crash(props) {
     <div className="animated fadeIn">
       <Row>
         <Col>
-          <h2 className="h2 mb-3">{`${primaryAddress} & ${secondaryAddress}`}</h2>
+          {primaryAddress && secondaryAddress ? (
+            <h2 className="h2 mb-3">{`${primaryAddress} & ${secondaryAddress}`}</h2>
+          ) : (
+            <h2 className="h2 mb-3">{`Location Not Yet Assigned`}</h2>
+          )}
         </Col>
       </Row>
       <Row>
         <Col xs="12" sm="6" md="4">
           <Widget02
-            header={`${deathCount}`}
+            header={`${deathCount === null ? "--" : deathCount}`}
             mainText="Fatalities"
             icon="fa fa-heartbeat"
             color="danger"
@@ -131,7 +135,9 @@ function Crash(props) {
         </Col>
         <Col xs="12" sm="6" md="4">
           <Widget02
-            header={`${seriousInjuryCount}`}
+            header={`${
+              seriousInjuryCount === null ? "--" : seriousInjuryCount
+            }`}
             mainText="Serious Injuries"
             icon="fa fa-medkit"
             color="warning"
@@ -139,7 +145,9 @@ function Crash(props) {
         </Col>
         <Col xs="12" sm="6" md="4">
           <Widget02
-            header={`${yearsLifeLostCount}`}
+            header={`${
+              yearsLifeLostCount === null ? "--" : yearsLifeLostCount
+            }`}
             mainText="Years of Life Lost"
             icon="fa fa-hourglass-end"
             color="info"
