@@ -61,7 +61,11 @@ const GridTableFilterBadges = ({
       advancedFilterText
     );
     setAdvancedFilterBadgeText(humanReadableBadgeText);
-  }, [advancedFilterParams]);
+  }, [advancedFilterParams, advancedFiltersConfig]);
+
+  // Determine whether to show filter icon and filter badges in UI
+  const hasFiltersApplied =
+    advancedFilterBadgeText.length > 0 || searchBadgeText;
 
   return (
     <>
@@ -79,20 +83,22 @@ const GridTableFilterBadges = ({
       </Row>
       <Row className="mb-2">
         <Col>
-          <h5>
-            <i className="fa fa-lg fa-filter mr-2"></i>
-            {searchBadgeText && (
-              <Badge className="mr-1" color="primary">
-                {searchBadgeText}
-              </Badge>
-            )}
-            {advancedFilterBadgeText &&
-              advancedFilterBadgeText.map(filter => (
+          {hasFiltersApplied && (
+            <h5>
+              <i className="fa fa-lg fa-filter mr-2"></i>
+              {searchBadgeText && (
                 <Badge className="mr-1" color="primary">
-                  {filter}
+                  {searchBadgeText}
                 </Badge>
-              ))}
-          </h5>
+              )}
+              {advancedFilterBadgeText &&
+                advancedFilterBadgeText.map(filter => (
+                  <Badge className="mr-1" color="primary">
+                    {filter}
+                  </Badge>
+                ))}
+            </h5>
+          )}
         </Col>
       </Row>
     </>

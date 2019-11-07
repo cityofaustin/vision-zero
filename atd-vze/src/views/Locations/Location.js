@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import DataTable from "../../Components/DataTable";
 import LocationMap from "./LocationMap";
 import LocationEditMap from "./LocationEditMap";
 import {
@@ -7,7 +8,6 @@ import {
   CardHeader,
   Col,
   Row,
-  Table,
   Button,
   ButtonGroup,
 } from "reactstrap";
@@ -18,11 +18,7 @@ import { useQuery } from "@apollo/react-hooks";
 import locationDataMap from "./locationDataMap";
 import LocationCrashes from "./LocationCrashes";
 
-import { GET_LOCATION } from "../../queries/Locations";
-import {
-  formatCostToDollars,
-  formatDateTimeString,
-} from "../../helpers/format";
+import { GET_LOCATION, UPDATE_LOCATION } from "../../queries/Locations";
 
 function Location(props) {
   const locationId = props.match.params.id;
@@ -31,13 +27,39 @@ function Location(props) {
     variables: { id: locationId },
   });
 
+  const [editField, setEditField] = useState("");
+  const [formData, setFormData] = useState({});
+
+  if (loading) return "Loading...";
+  if (error) return `Error! ${error.message}`;
+
+  const handleInputChange = e => {
+    const newFormState = Object.assign(formData, {
+      [editField]: e.target.value,
+    });
+    setFormData(newFormState);
+  };
+
+  const handleFieldUpdate = e => {
+    e.preventDefault();
+
+    props.client
+      .mutate({
+        mutation: UPDATE_LOCATION,
+        variables: {
+          locationId: locationId,
+          changes: formData,
+        },
+      })
+      .then(res => refetch());
+
+    setEditField("");
+  };
+
   const handleMapChange = e => {
     e.preventDefault();
     setMapSelected(e.target.id);
   };
-
-  if (loading) return "Loading...";
-  if (error) return `Error! ${error.message}`;
 
   return (
     <div className="animated fadeIn">
@@ -80,60 +102,16 @@ function Location(props) {
             </CardBody>
           </Card>
         </Col>
-        <Col md="6">
-          {locationDataMap.map(section => {
-            return (
-              <Card key={section.title}>
-                <CardHeader>{section.title}</CardHeader>
-                <CardBody>
-                  <Table responsive striped hover>
-                    <tbody>
-                      {Object.keys(section.fields).map((field, i) => {
-                        const fieldConfigObject = section.fields[field];
-                        const fieldLabel = fieldConfigObject.label;
-                        let fieldValueDisplay = "";
-
-                        switch (field) {
-                          // TODO: figure out a better way to parse through nested values
-                          case "est_comp_cost":
-                            fieldValueDisplay = !!data.atd_txdot_locations[0]
-                              .crashes_count_cost_summary
-                              ? data.atd_txdot_locations[0].crashes_count_cost_summary.est_comp_cost.toLocaleString()
-                              : "No data";
-                            break;
-                          default:
-                            fieldValueDisplay =
-                              data.atd_txdot_locations[0][field];
-                        }
-
-                        if (fieldConfigObject.format === "datetime") {
-                          fieldValueDisplay = formatDateTimeString(
-                            fieldValueDisplay
-                          );
-                        }
-
-                        if (fieldConfigObject.format === "dollars") {
-                          fieldValueDisplay = formatCostToDollars(
-                            fieldValueDisplay
-                          );
-                        }
-
-                        return (
-                          <tr key={i}>
-                            <td>
-                              <strong>{fieldLabel}</strong>
-                            </td>
-                            <td>{fieldValueDisplay}</td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </Table>
-                </CardBody>
-              </Card>
-            );
-          })}
-        </Col>
+        <DataTable
+          dataMap={locationDataMap}
+          dataTable={"atd_txdot_locations"}
+          formData={formData}
+          setEditField={setEditField}
+          editField={editField}
+          handleInputChange={handleInputChange}
+          handleFieldUpdate={handleFieldUpdate}
+          data={data}
+        />
       </Row>
       <Row>
         <Col>

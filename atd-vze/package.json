@@ -1,6 +1,6 @@
 {
-  "name": "atd-vze",
-  "version": "2.6.0",
+  "name": "atd-vz-data",
+  "version": "1.0.1",
   "homepage": "./",
   "description": "ATD Vision Zero Editor",
   "author": "ATD Data & Technology Services",
@@ -43,7 +43,7 @@
     "react-csv": "^1.1.1",
     "react-datepicker": "^2.9.6",
     "react-dom": "^16.8.6",
-    "react-map-gl": "^5.1.0-alpha.1",
+    "react-map-gl": "^5.1.1",
     "react-map-gl-draw": "^0.15.0",
     "react-map-gl-geocoder": "^2.0.11",
     "react-router-config": "^5.0.1",

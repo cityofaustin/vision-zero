@@ -500,12 +500,18 @@ gqlAbstractTableAggregateName (
 
       // Retrieve filters from query instance and add to aggregate query
       let whereFilters = [];
-      Object.entries(queryInstance.config.where).forEach(([filter, value]) =>
-        whereFilters.push(`${filter}: { ${value} }`)
-      );
+      let orFilters = [];
+      Object.entries(queryInstance.config.where).forEach(([filter, value]) => {
+        // If we have a nested expression for a key, then append to 'or'
+        if (this.isNestedKey(filter)) {
+          orFilters.push(`{ ${filter} }`);
+          // Else, append to 'where'
+        } else {
+          whereFilters.push(`${filter}: { ${value} }`);
+        }
+      });
 
       // Retrieve or filters from query instance
-      let orFilters = [];
       if (queryInstance.config.or) {
         Object.entries(queryInstance.config.or).forEach(([filter, value]) =>
           orFilters.push(`{${filter}: { ${value} }}`)
