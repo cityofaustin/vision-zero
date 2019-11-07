@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 var pckg = require("../../../package.json");
 
-console.log(pckg.version);
 const propTypes = {
   children: PropTypes.node,
 };
