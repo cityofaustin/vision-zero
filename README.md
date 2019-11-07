@@ -18,7 +18,7 @@ For step-by-step details on how to prepare your environment and how to execute t
 
 ## atd-vzd (Vision Zero Database)
 
-VZD is our name our Hasura GraphQL API server that connects to our Postgres RDS database instances.
+VZD is our name for our Hasura GraphQL API server that connects to our Postgres RDS database instances.
 
 [more info](./atd-vzd/README.md)
 
