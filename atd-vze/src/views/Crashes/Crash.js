@@ -120,7 +120,11 @@ function Crash(props) {
           {primaryAddress && secondaryAddress ? (
             <h2 className="h2 mb-3">{`${primaryAddress} & ${secondaryAddress}`}</h2>
           ) : (
-            <h2 className="h2 mb-3">{`Location Not Yet Assigned`}</h2>
+            <h2 className="h2 mb-3">{`${
+              primaryAddress ? primaryAddress : "PRIMARY ADDRESS MISSING"
+            } & ${
+              secondaryAddress ? secondaryAddress : "SECONDARY ADDRESS MISSING"
+            }`}</h2>
           )}
         </Col>
       </Row>
