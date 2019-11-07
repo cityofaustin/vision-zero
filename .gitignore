@@ -70,3 +70,4 @@ build-iPhoneSimulator/
 
 # Let's not track any csv files either
 *.csv
+*.env
