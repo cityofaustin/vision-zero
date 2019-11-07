@@ -18,9 +18,12 @@ For step-by-step details on how to prepare your environment and how to execute t
 
 ## atd-vzd (Vision Zero Database)
 
-VZD is our name for the Postgres database and Hasura GraphQL API server.
+VZD is our name for our Hasura GraphQL API server that connects to our Postgres RDS database instances.
 
 [more info](./atd-vzd/README.md)
+
+Production site: http://vzd.austinmobility.io/
+Staging site: https://vzd-staging.austinmobility.io/
 
 ## atd-vze (Vision Zero Editor)
 
@@ -28,11 +31,17 @@ VZE is our front end application built in React.js with CoreUI that allows a tru
 
 [more info](./atd-vze/README.md)
 
+Production site: https://visionzero.austin.gov/editor/
+Staging site: https://visionzero-staging.austinmobility.io/editor/
+
 ## atd-vzv (Vision Zero Viewer)
 
 VZV is our public facing home for visualizations, maps, and dashboards that help make sense and aggregate trends in our Vision Zero Database
 
 [more info](./atd-vzv/README.md)
+
+Production site: https://visionzero.austin.gov/viewer/
+Staging site: https://visionzero-staging.austinmobility.io/viewer/
 
 ## Technology Stack
 
