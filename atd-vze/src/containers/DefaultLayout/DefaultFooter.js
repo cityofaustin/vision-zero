@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
+var pckg = require("../../../package.json");
 
+console.log(pckg.version);
 const propTypes = {
   children: PropTypes.node,
 };
@@ -14,9 +16,9 @@ class DefaultFooter extends Component {
 
     return (
       <React.Fragment>
-        {/* <span>
-          <a href="https://coreui.io">CoreUI</a> &copy; 2019 creativeLabs.
-        </span> */}
+        <span>
+          {pckg.name} v{pckg.version}
+        </span>
         <span className="ml-auto">
           Powered by{" "}
           <a href="https://transportation.austintexas.io/about/">
