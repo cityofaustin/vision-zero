@@ -90,6 +90,32 @@ export const crashDataMap = [
     },
   },
   {
+    title: "Fatality Flags and Counts",
+    fields: {
+      apd_confirmed_death_count: {
+        label: "APD Death Count",
+        editable: true,
+        uiType: "text",
+      },
+      apd_confirmed_fatality: {
+        label: "APD Fatality Flag",
+        editable: false,
+        lookupOptions: "atd_txdot__y_n_lkp",
+        lookupPrefix: "y_n",
+      },
+      crash_fatal_fl: {
+        label: "CRIS Fatality Flag",
+        editable: false,
+        lookupOptions: "atd_txdot__y_n_lkp",
+        lookupPrefix: "y_n",
+      },
+      death_cnt: {
+        label: "CRIS Death Count",
+        editable: false,
+      },
+    },
+  },
+  {
     title: "Fatalities/Injuries",
     fields: {
       apd_confirmed_death_count: {
