@@ -93,6 +93,7 @@ export const crashDataMap = [
     title: "Fatalities",
     button: {
       buttonText: "Reset to CRIS Data",
+      // Define conditions for when button should appear
       buttonCondition: {
         dataTableName: "atd_txdot_crashes",
         dataPath: "apd_human_update",
@@ -122,6 +123,12 @@ export const crashDataMap = [
       death_cnt: {
         label: "CRIS Death Count",
         editable: false,
+      },
+      apd_human_update: {
+        label: "Manually Edited?",
+        editable: false,
+        lookupOptions: "atd_txdot__y_n_lkp",
+        lookupPrefix: "y_n",
       },
     },
   },

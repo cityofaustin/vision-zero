@@ -85,11 +85,17 @@ function Crash(props) {
   const handleFieldUpdate = (e, dataMap, field) => {
     e.preventDefault();
 
-    // Check for secondary field to update here and add to mutation payload below
+    // Expose secondary field to update and add to mutation payload below
     let secondaryFormData = {};
+    // Look through each dataTable in dataMap for the edited field to expose key/value of secondary field
     dataMap.forEach(dataTable => {
-      if (dataTable.fields[field]) {
+      // If dataTable contains edited field, assign secondaryFieldUpdate key/value to secondaryFormData
+      if (
+        dataTable.fields[field] &&
+        dataTable.fields[field].secondaryFieldUpdate
+      ) {
         secondaryFormData = dataTable.fields[field].secondaryFieldUpdate;
+        // Else secondaryFieldUpdate comes from top level param (like button)
       } else if (dataTable[field]) {
         secondaryFormData = dataTable[field].secondaryFieldUpdate;
       }
