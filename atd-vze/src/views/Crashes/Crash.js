@@ -82,15 +82,23 @@ function Crash(props) {
     setFormData(newFormState);
   };
 
-  const handleFieldUpdate = e => {
+  const handleFieldUpdate = (e, dataMap, field) => {
     e.preventDefault();
+
+    // Check for secondary field to update here
+    let secondaryFormData = {};
+    dataMap.forEach(dataTable => {
+      if (dataTable.fields[field]) {
+        secondaryFormData = dataTable.fields[field].secondaryFieldUpdate;
+      }
+    });
 
     props.client
       .mutate({
         mutation: UPDATE_CRASH,
         variables: {
           crashId: crashId,
-          changes: formData,
+          changes: { ...formData, ...secondaryFormData },
         },
       })
       .then(res => refetch());

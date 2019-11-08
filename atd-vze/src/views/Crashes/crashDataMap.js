@@ -96,6 +96,7 @@ export const crashDataMap = [
         label: "APD Death Count",
         editable: true,
         uiType: "text",
+        secondaryFieldUpdate: { apd_human_update: "Y" },
       },
       apd_confirmed_fatality: {
         label: "APD Fatality Flag",
@@ -118,11 +119,11 @@ export const crashDataMap = [
   {
     title: "Fatalities/Injuries",
     fields: {
-      apd_confirmed_death_count: {
-        label: "Death Count",
-        editable: true,
-        uiType: "text",
-      },
+      // apd_confirmed_death_count: {
+      //   label: "Death Count",
+      //   editable: true,
+      //   uiType: "text",
+      // },
       apd_confirmed_fatality: {
         label: "Fatality Flag",
         editable: false,

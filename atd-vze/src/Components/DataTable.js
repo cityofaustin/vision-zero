@@ -98,7 +98,11 @@ const DataTable = ({
                           </td>
                           <td>
                             {isEditing ? (
-                              <form onSubmit={e => handleFieldUpdate(e)}>
+                              <form
+                                onSubmit={e =>
+                                  handleFieldUpdate(e, dataMap, field)
+                                }
+                              >
                                 {fieldUiType === "select" && (
                                   <Input
                                     name={field}
