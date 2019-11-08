@@ -1,6 +1,7 @@
 import os
 import json
 import requests
+from string import Template
 from sodapy import Socrata
 
 HASURA_ENDPOINT = ""
@@ -19,7 +20,7 @@ def run_query(query):
    # Try making insertion
     try:
         return requests.post(HASURA_ENDPOINT,
-                             json={'query': query},
+                             json={'query': query, "offset": offset},
                              headers=headers).json()
     except Exception as e:
         print("Exception, could not insert: " + str(e))
@@ -27,9 +28,10 @@ def run_query(query):
         return None
 
 
-crashes_query = """
+crashes_query_template = Template(
+    """
     query getCrashesSocrata {
-        atd_txdot_crashes (limit: 2) {
+        atd_txdot_crashes (limit: $limit, offset: $offset, where: {city_id: {_eq: 22}, crash_date: {_gte: "2018-10-31", _lte: "2019-10-31"}, _or: [{apd_confirmed_death_count: {_gt: 0}}]}) {
             crash_id
     		crash_fatal_fl
             crash_date
@@ -58,8 +60,9 @@ crashes_query = """
             tot_injry_cnt
             death_cnt
         }
-    }  
+    }
 """
+)
 
 persons_query = """
     query PersonsQuery {
@@ -83,39 +86,75 @@ persons_query = """
     }
 """
 
-persons = run_query(persons_query)
-person_data = persons['data']['atd_txdot_person']
-primary_person_data = persons['data']['atd_txdot_primaryperson']
+# persons = run_query(persons_query)
+# person_data = persons['data']['atd_txdot_person']
+# primary_person_data = persons['data']['atd_txdot_primaryperson']
 
 
-print("\nPerson Data")
-print("-----------")
-for record in person_data:
-    for k, v in record.items():
-        print(str(k) + " " + str(v))
-    print("\n")
-print("\nPrimary Person Data")
-print("-------------------")
-for record in primary_person_data:
-    for k, v in record.items():
-        print(str(k) + " " + str(v))
-    print("\n")
+# print("\nPerson Data")
+# print("-----------")
+# for record in person_data:
+#     for k, v in record.items():
+#         print(str(k) + " " + str(v))
+#     print("\n")
+# print("\nPrimary Person Data")
+# print("-------------------")
+# for record in primary_person_data:
+#     for k, v in record.items():
+#         print(f"{k}: {v}")
+#     print("\n")
 
-crashes = run_query(crashes_query)
-crash_data = crashes['data']['atd_txdot_crashes']
-print("\nCrash Data")
-print("----------")
-for record in crash_data:
-    for k, v in record.items():
-        print(str(k) + " " + str(v))
-    print("\n")
+# crashes = run_query(crashes_query)
+# crash_data = crashes['data']['atd_txdot_crashes']
+# print("\nCrash Data")
+# print("----------")
+# for record in crash_data:
+#     for k, v in record.items():
+#         print(f"{k}: {v}")
+#     print("\n")
 
-# sodapy
-client = Socrata("data.austintexas.gov", None)
+# # sodapy
+# client = Socrata("data.austintexas.gov", None)
 
-result = client.get("y2wy-tgr5", limit=2)
+# result = client.get("y2wy-tgr5", limit=2)
 
-client.close()
+# client.close()
 
-print("\n")
-print(result)
+# print("\n")
+# print(result)
+
+# counter = 0
+# while counter < 10:
+#     counter += 1
+#     print(f"while loop is on: {counter}")
+
+# for i in range(0, 5):
+#     print(f"for loop is on: {i}")
+
+# os.environ["SECRET"] = "This is the secret"
+
+# secret = os.getenv("COOL_CODE", "Secret doesn't exist")
+# print(secret)
+
+# while loop to request records from Hasura and post to Socrata
+records = None
+offset = 0
+limit = 100
+
+# while records != []:
+# Get records from Hasura until there are no more resp is []
+while records != []:
+    crashes_query = crashes_query_template.substitute(
+        limit=limit, offset=offset)
+    offset += limit
+    crashes = run_query(crashes_query)
+    records = crashes['data']['atd_txdot_crashes']
+    print("\nCrash Data")
+    print("----------")
+
+    for record in records:
+        for k, v in record.items():
+            print(f"{k}: {v}")
+        print("\n")
+
+print(f"Script Complete - offset reached: {offset}")
