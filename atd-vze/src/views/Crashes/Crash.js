@@ -85,7 +85,7 @@ function Crash(props) {
   const handleFieldUpdate = (e, dataMap, field) => {
     e.preventDefault();
 
-    // Check for secondary field to update here
+    // Check for secondary field to update here and add to mutation payload below
     let secondaryFormData = {};
     dataMap.forEach(dataTable => {
       if (dataTable.fields[field]) {

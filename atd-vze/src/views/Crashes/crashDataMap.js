@@ -90,7 +90,7 @@ export const crashDataMap = [
     },
   },
   {
-    title: "Fatality Flags and Counts",
+    title: "Fatalities",
     fields: {
       apd_confirmed_death_count: {
         label: "APD Death Count",
@@ -117,19 +117,8 @@ export const crashDataMap = [
     },
   },
   {
-    title: "Fatalities/Injuries",
+    title: "Injuries",
     fields: {
-      // apd_confirmed_death_count: {
-      //   label: "Death Count",
-      //   editable: true,
-      //   uiType: "text",
-      // },
-      apd_confirmed_fatality: {
-        label: "Fatality Flag",
-        editable: false,
-        lookupOptions: "atd_txdot__y_n_lkp",
-        lookupPrefix: "y_n",
-      },
       crash_sev_id: {
         label: "Crash Severity",
         editable: false,
