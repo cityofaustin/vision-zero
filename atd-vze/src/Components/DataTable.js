@@ -3,7 +3,15 @@ import { useQuery } from "@apollo/react-hooks";
 import get from "lodash.get";
 import { formatCostToDollars, formatDateTimeString } from "../helpers/format";
 
-import { Card, CardHeader, CardBody, Col, Input, Table } from "reactstrap";
+import {
+  Card,
+  CardHeader,
+  CardBody,
+  Col,
+  Input,
+  Table,
+  Button,
+} from "reactstrap";
 
 import { GET_LOOKUPS } from "../queries/lookups";
 
@@ -29,6 +37,10 @@ const DataTable = ({
   return (
     <>
       {dataMap.map((section, i) => {
+        const buttonCondition =
+          section.button &&
+          section.button.buttonCondition &&
+          section.button.buttonCondition;
         return (
           <Col key={i} md="6">
             <Card key={section.title}>
@@ -155,6 +167,18 @@ const DataTable = ({
                     })}
                   </tbody>
                 </Table>
+                {/* If button parameters are set and the defined condition is met, show button */}
+                {section.button &&
+                  data[buttonCondition.dataTableName][0][
+                    buttonCondition.dataPath
+                  ] === buttonCondition.value && (
+                    <Button
+                      color="danger"
+                      onClick={e => handleFieldUpdate(e, dataMap, "button")}
+                    >
+                      {section.button.buttonText}
+                    </Button>
+                  )}
               </CardBody>
             </Card>
           </Col>

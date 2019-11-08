@@ -91,6 +91,15 @@ export const crashDataMap = [
   },
   {
     title: "Fatalities",
+    button: {
+      buttonText: "Reset to CRIS Data",
+      buttonCondition: {
+        dataTableName: "atd_txdot_crashes",
+        dataPath: "apd_human_update",
+        value: "Y",
+      },
+      secondaryFieldUpdate: { apd_human_update: "N" },
+    },
     fields: {
       apd_confirmed_death_count: {
         label: "APD Death Count",

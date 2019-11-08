@@ -90,6 +90,8 @@ function Crash(props) {
     dataMap.forEach(dataTable => {
       if (dataTable.fields[field]) {
         secondaryFormData = dataTable.fields[field].secondaryFieldUpdate;
+      } else if (dataTable[field]) {
+        secondaryFormData = dataTable[field].secondaryFieldUpdate;
       }
     });
 
