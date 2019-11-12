@@ -90,19 +90,56 @@ export const crashDataMap = [
     },
   },
   {
-    title: "Fatalities/Injuries",
+    title: "Fatalities",
+    button: {
+      buttonText: "Reset to CRIS Data",
+      // Define conditions for when button should appear
+      buttonCondition: {
+        dataTableName: "atd_txdot_crashes",
+        dataPath: "apd_human_update",
+        value: "Y",
+      },
+      buttonFieldUpdate: {
+        field: "apd_confirmed_death_count",
+        dataTableName: "atd_txdot_crashes",
+        dataPath: "death_cnt",
+      },
+      secondaryFieldUpdate: { apd_human_update: "N" },
+    },
     fields: {
       apd_confirmed_death_count: {
-        label: "Death Count",
+        label: "APD Death Count",
         editable: true,
         uiType: "text",
+        secondaryFieldUpdate: { apd_human_update: "Y" },
       },
       apd_confirmed_fatality: {
-        label: "Fatality Flag",
+        label: "APD Fatality Flag",
         editable: false,
         lookupOptions: "atd_txdot__y_n_lkp",
         lookupPrefix: "y_n",
       },
+      crash_fatal_fl: {
+        label: "CRIS Fatality Flag",
+        editable: false,
+        lookupOptions: "atd_txdot__y_n_lkp",
+        lookupPrefix: "y_n",
+      },
+      death_cnt: {
+        label: "CRIS Death Count",
+        editable: false,
+      },
+      apd_human_update: {
+        label: "Manually Edited?",
+        editable: false,
+        lookupOptions: "atd_txdot__y_n_lkp",
+        lookupPrefix: "y_n",
+      },
+    },
+  },
+  {
+    title: "Injuries",
+    fields: {
       crash_sev_id: {
         label: "Crash Severity",
         editable: false,
