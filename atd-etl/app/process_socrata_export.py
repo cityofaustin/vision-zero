@@ -20,6 +20,10 @@ print("Socrata - Exporter:  Not yet implemented.")
 print("SOCRATA_KEY_ID: " + ATD_ETL_CONFIG["SOCRATA_KEY_ID"])
 print("SOCRATA_KEY_SECRET: " + ATD_ETL_CONFIG["SOCRATA_KEY_SECRET"])
 
+# Setup connection to Socrata
+client = Socrata("data.austintexas.gov", ATD_ETL_CONFIG["SOCRATA_APP_TOKEN"],
+                 username=ATD_ETL_CONFIG["SOCRATA_KEY_ID"], password=ATD_ETL_CONFIG["SOCRATA_KEY_SECRET"])
+
 
 def run_hasura_query(query):
 
@@ -42,7 +46,7 @@ def run_hasura_query(query):
 crashes_query_template = Template(
     """
     query getCrashesSocrata {
-        atd_txdot_crashes (limit: $limit, offset: $offset, where: {city_id: {_eq: 22}, crash_date: {_gte: "2018-10-31", _lte: "2019-10-31"}, _or: [{apd_confirmed_death_count: {_gt: 0}}]}) {
+        atd_txdot_crashes (limit: $limit, offset: $offset, where: {city_id: {_eq: 22}, crash_date: {_gte: "2019-10-01", _lte: "2019-10-31"}, _or: [{apd_confirmed_death_count: {_gt: 0}}]}) {
             crash_id
     		crash_fatal_fl
             crash_date
@@ -102,7 +106,6 @@ records = None
 offset = 0
 limit = 100
 
-# while records != []:
 # Get records from Hasura until there are no more resp is []
 while records != []:
     crashes_query = crashes_query_template.substitute(
@@ -110,12 +113,24 @@ while records != []:
     offset += limit
     crashes = run_hasura_query(crashes_query)
     records = crashes['data']['atd_txdot_crashes']
-    print("\nCrash Data")
-    print("----------")
 
-    for record in records:
-        for k, v in record.items():
-            print(f"{k}: {v}")
-        print("\n")
+    client.upsert("rrxh-grh6", records)
+    # TODO: Add sleep delay
+    # print("\nCrash Data from Hasura")
+    # print("----------")
+
+    # for record in records:
+    #     for k, v in record.items():
+    #         print(f"{k}: {v}")
+    #     print("\n")
 
 print(f"Script Complete - offset reached: {offset}")
+
+# sodapy get
+result = client.get("rrxh-grh6", limit=2)
+
+client.close()
+
+print("\nCrash Data from Socrata")
+print("----------")
+print(result)
