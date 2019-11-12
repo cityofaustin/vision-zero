@@ -31,7 +31,21 @@ drwxr-xr-x   1 user_owner  group    96 Nov 12 12:04 data
 -rwxr-xr-x   1 user_owner  group  1234 Nov 12 12:04 runetl.sh
 ```
 
-Notice the etl env files live in the same directory as `runetl.sh`
+Notice the etl env files live in the same directory as `runetl.sh`.
+
+To check if the files are being ignored by git, you can enter the `git ls-files -o` which should list the two files you just downloaded:
+
+Example:
+
+```bash
+$ git ls-files -o
+
+.DS_Store
+app/process/__pycache__/__init__.cpython-37.pyc
+app/process/__pycache__/config.cpython-37.pyc
+etl.production.env
+etl.staging.env
+```
 
 #### 2. Run the image:
 
