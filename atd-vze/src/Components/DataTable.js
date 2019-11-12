@@ -24,6 +24,7 @@ const DataTable = ({
   formData,
   handleInputChange,
   handleFieldUpdate,
+  handleButtonClick,
 }) => {
   // Import Lookup tables and aggregate an object of uiType= "select" options
   const { data: lookupSelectOptions } = useQuery(GET_LOOKUPS);
@@ -32,6 +33,11 @@ const DataTable = ({
     e.preventDefault();
 
     setEditField("");
+  };
+
+  const onButtonClick = (e, section) => {
+    handleFieldUpdate && handleFieldUpdate(e, section, "button");
+    handleButtonClick && handleButtonClick(e, dataMap, data);
   };
 
   return (
@@ -112,7 +118,7 @@ const DataTable = ({
                             {isEditing ? (
                               <form
                                 onSubmit={e =>
-                                  handleFieldUpdate(e, dataMap, field)
+                                  handleFieldUpdate(e, section.fields, field)
                                 }
                               >
                                 {fieldUiType === "select" && (
@@ -174,7 +180,7 @@ const DataTable = ({
                   ] === buttonCondition.value && (
                     <Button
                       color="danger"
-                      onClick={e => handleFieldUpdate(e, dataMap, "button")}
+                      onClick={e => onButtonClick(e, section)}
                     >
                       {section.button.buttonText}
                     </Button>

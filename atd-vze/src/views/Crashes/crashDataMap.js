@@ -99,6 +99,11 @@ export const crashDataMap = [
         dataPath: "apd_human_update",
         value: "Y",
       },
+      buttonFieldUpdate: {
+        field: "apd_confirmed_death_count",
+        dataTableName: "atd_txdot_crashes",
+        dataPath: "death_cnt",
+      },
       secondaryFieldUpdate: { apd_human_update: "N" },
     },
     fields: {

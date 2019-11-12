@@ -82,24 +82,14 @@ function Crash(props) {
     setFormData(newFormState);
   };
 
-  const handleFieldUpdate = (e, dataMap, field) => {
+  const handleFieldUpdate = (e, fields, field) => {
     e.preventDefault();
 
     // Expose secondary field to update and add to mutation payload below
     let secondaryFormData = {};
-    // Look through each dataTable in dataMap for the edited field to expose key/value of secondary field
-    dataMap.forEach(dataTable => {
-      // If dataTable contains edited field, assign secondaryFieldUpdate key/value to secondaryFormData
-      if (
-        dataTable.fields[field] &&
-        dataTable.fields[field].secondaryFieldUpdate
-      ) {
-        secondaryFormData = dataTable.fields[field].secondaryFieldUpdate;
-        // Else secondaryFieldUpdate comes from top level param (like button)
-      } else if (dataTable[field]) {
-        secondaryFormData = dataTable[field].secondaryFieldUpdate;
-      }
-    });
+    if (fields[field] && fields[field].secondaryFieldUpdate) {
+      secondaryFormData = fields[field].secondaryFieldUpdate;
+    }
 
     props.client
       .mutate({
@@ -112,6 +102,12 @@ function Crash(props) {
       .then(res => refetch());
 
     setEditField("");
+  };
+
+  const handleButtonClick = (e, dataMap, data) => {
+    e.preventDefault();
+
+    console.log("button handled");
   };
 
   const {
@@ -241,6 +237,7 @@ function Crash(props) {
           editField={editField}
           handleInputChange={handleInputChange}
           handleFieldUpdate={handleFieldUpdate}
+          handleButtonClick={handleButtonClick}
           data={data}
         />
         <Col md="6">
