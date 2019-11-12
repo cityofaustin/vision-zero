@@ -37,7 +37,8 @@ const DataTable = ({
 
   const onButtonClick = (e, section) => {
     handleFieldUpdate && handleFieldUpdate(e, section, "button");
-    handleButtonClick && handleButtonClick(e, dataMap, data);
+    handleButtonClick &&
+      handleButtonClick(e, section.button.buttonFieldUpdate, data);
   };
 
   return (

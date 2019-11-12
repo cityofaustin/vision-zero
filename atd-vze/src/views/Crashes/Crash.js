@@ -104,10 +104,23 @@ function Crash(props) {
     setEditField("");
   };
 
-  const handleButtonClick = (e, dataMap, data) => {
+  const handleButtonClick = (e, buttonParams, data) => {
     e.preventDefault();
 
-    console.log("button handled");
+    const fieldToUpdate = buttonParams.field;
+    const fieldValue =
+      data[buttonParams.dataTableName][0][buttonParams.dataPath];
+    const buttonFormData = { [fieldToUpdate]: fieldValue };
+
+    props.client
+      .mutate({
+        mutation: UPDATE_CRASH,
+        variables: {
+          crashId: crashId,
+          changes: { ...formData, ...buttonFormData },
+        },
+      })
+      .then(res => refetch());
   };
 
   const {
