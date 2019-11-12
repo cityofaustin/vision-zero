@@ -107,6 +107,8 @@ function Crash(props) {
   const handleButtonClick = (e, buttonParams, data) => {
     e.preventDefault();
 
+    // Expose the field to mutate defined in crashDataMap
+    // and the value from data using the dataPath, then mutate
     const fieldToUpdate = buttonParams.field;
     const fieldValue =
       data[buttonParams.dataTableName][0][buttonParams.dataPath];
