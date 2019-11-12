@@ -97,8 +97,8 @@ export const crashGridTableAdvancedFilters = {
         label: "No Latitude and Longitude",
         filter: {
           where: [
-            { latitude_primary: "_is_null: true" },
-            { longitude_primary: "_is_null: true" },
+            { latitude: "_is_null: true" },
+            { longitude: "_is_null: true" },
           ],
         },
       },
