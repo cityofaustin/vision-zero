@@ -12,76 +12,68 @@ In short, Docker allows us to have a fully built container with everything alrea
 
 ### Getting Started
 
-#### 1. Get or Build the image:
+#### 1. Download the environment variable files.
 
-Depending on your broadband speed, you may want to avoid building the image, it can take a while to build. Instead it is suggested you download it via docker-pull.
+The ETL container depends on two specific files: `etl.production.env` and `etl.staging.env`.
 
-Method A (Pull pre-built image, it's large):
+The files are located in 1Password and you can find the two files if you type `ETL` in the search bar.
+ 
+Once you download the files, put them in this folder right next to `runetl.sh`:
 
-```bash
-docker pull atddocker/atd-vz-etl
+```
+$ls -lh
+-rw-r--r--   1 user_owner  group   332 Nov 12 12:04 Dockerfile
+-rw-r--r--   1 user_owner  group  4564 Nov 12 12:04 README.md
+drwxr-xr-x   1 user_owner  group   384 Nov 12 12:04 app
+drwxr-xr-x   1 user_owner  group    96 Nov 12 12:04 data
+-rwx------   1 user_owner  group   987 Nov 12 11:50 etl.production.env
+-rwx------   1 user_owner  group   987 Nov 10 22:05 etl.staging.env
+-rwxr-xr-x   1 user_owner  group  1234 Nov 12 12:04 runetl.sh
 ```
 
-Method B (Build image, it can take a minute or two)
+Notice the etl env files live in the same directory as `runetl.sh`
 
-```bash
-docker build -f Dockerfile -t atddocker/atd-vz-etl .
-```
+#### 2. Run the image:
 
-Be sure to have the source code cloned in your computer before you can build the Dockerfile.
-
-#### 2. Edit your environment variables
-
-Edit both `etl.production.env` and `etl.staging.env` and insert the proper values for each environment variable.  The ETL process relies on a few variables to access API services and other integrations, to find these, you can go to 1password and look for `Vision Zero ETL` to find both files. Make sure you change permissions to make sure only you can see these files: `chmod 600 ./etl.staging.env`
-
-Once you edit your changes, save and run the image.
-
-#### 3. We run the image:
-
-Option 1:
-
-Set up an environment variable `ATD_CRIS_CONFIG` with the location to your env-file and run:
-
-
-1. Run `source runetl.sh` to load the function you will need to run the ETL.
+1. In the terminal, enter `source runetl.sh` to load the function you will need to run the ETL.
 2. Run the helper like this: `runetl [ENVIRONMENT] [APP FILE]`
 
-The environment is optional, if not provided it will assume staging.
-
-Examples:
+Follow this example:
 
 ```bash
-$ runetl staging app/process_cris_cr3.py
-$ runetl production app/process_cris_cr3.py
-
-# The environment is optional, but if not provided it will deafult to staging.
-$ runetl app/process_cris_cr3.py
-
-# the commands above run as staging
-
+$ runetl build
+$ runetl staging app/process_test_run.py
+$ runetl production app/process_test_run.py
 ```
 
-
-Option 2:
-
-Run with Docker:
+The environment (staging or production) is optional, if omitted the environment will default to staging.
 
 ```bash
-docker run -it --rm -v $(pwd)/app:/app -v $(pwd)/data:/data \
---env-file ~/location/to/env-file.env \ 
-atddocker/atd-vz-etl \
-sh -c "python /app/process_cris_cr3.py"
+# The environment is optional, but if not provided it will default to staging.
+$ runetl app/process_test_run.py
 ```
 
-Option 3:
+#### Debugging
 
-Run without env-file, but providing the required variables through the console:
+You can access the container's console by using the following command:
 
 ```bash
-docker run -it --rm -v $(pwd)/app:/app -v $(pwd)/data:/data \
---env ATD_CRIS_USERNAME=$ATD_CRIS_USERNAME \
---env ATD_CRIS_PASSWORD=$ATD_CRIS_PASSWORD \
-atddocker/atd-vz-etl python /app/process_cris_cr3.py
+$ runetl bash
+```
+
+The command above will output something like this:
+
+```python
+Using environment variables in '/Users/user/development/atd-vz-data/atd-etl/etl.staging.env'...
+
+----- ETL RUN ------
+Run Environment: 	staging
+Run File: 		bash
+ATD_CRIS_CONFIG: 	/Users/user/development/atd-vz-data/atd-etl/etl.staging.env
+ATD_DOCKER_IMAGE: 	atddocker/atd-vz-etl:local
+--------------------
+
+bash-4.4#
 ```
 
 ## ETL Scripts
