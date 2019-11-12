@@ -11,8 +11,8 @@ function build_containers {
     echo "Logging in to Docker hub"
     docker login -u $ATD_DOCKER_USER -p $ATD_DOCKER_PASS
 
-    echo "docker build --no-cache -f Dockerfile -t $ATD_IMAGE:$ATD_TAG .";
-    docker build -f --no-cache atd-etl/Dockerfile -t $ATD_IMAGE:$ATD_TAG ./atd-etl
+    echo "docker build -f Dockerfile -t $ATD_IMAGE:$ATD_TAG .";
+    docker build -f atd-etl/Dockerfile -t $ATD_IMAGE:$ATD_TAG ./atd-etl
 
     echo "docker tag $ATD_IMAGE:$ATD_TAG $ATD_IMAGE:$ATD_TAG;";
     docker tag $ATD_IMAGE:$ATD_TAG $ATD_IMAGE:$ATD_TAG;
