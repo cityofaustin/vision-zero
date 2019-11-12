@@ -1,6 +1,15 @@
-#
-# All queries necessary to run this thing...
-#
+"""
+Query Helpers
+Author: Austin Transportation Department, Data and Technology Office
+
+Description: The purpose of this script is to generate graphql queries
+to run against the Hasura endpoint. These methods include the searching
+of existing records, mutations, deletions, etc.
+
+Important: These methods do not require the graphql queries to be
+executed, they only generate the queries and delegate the execution
+to whatever script is running them.
+"""
 
 
 def search_crash_query(crash_id):
