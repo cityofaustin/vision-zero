@@ -66,11 +66,11 @@ function runetl {
     echo -e "--------------------\n";
 
 
-    # If the command is not bash, run as script.
-    if [[ "$1" != "bash" ]]; then
-        FINAL_COMMAND="/${RUN_COMMAND}";
-    else
+    # If the command is not bash, prepend the forward slash...
+    if [[ "$1" == "bash" ]] || [[ "$2" == "bash" ]]; then
         FINAL_COMMAND=$RUN_COMMAND;
+    else
+        FINAL_COMMAND="/${RUN_COMMAND}";
     fi;
 
     # Run Docker
