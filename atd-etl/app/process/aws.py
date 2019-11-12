@@ -1,5 +1,43 @@
+"""
+AWS Helpers
+Author: Austin Transportation Department, Data and Technology Office
 
+Description: The purpose of this script is to provide helper methods
+associated to AWS services.
+"""
 import subprocess
+import boto3
+
+# We need our AWS configuration variables
+from .config import ATD_ETL_CONFIG
+
+
+def aws_credentials_present():
+    """
+    Returns True if the environment variables containing AWS credentials
+    are present, returns False otherwise (if either key id, or secret key,
+    or default region values are missing).
+    :return: boolean - True if the AWS credentials are present.
+    """
+    return ATD_ETL_CONFIG["AWS_DEFALUT_REGION"] != "" \
+           and ATD_ETL_CONFIG["AWS_ACCESS_KEY_ID"] != "" \
+           and ATD_ETL_CONFIG["AWS_SECRET_ACCESS_KEY"] != ""
+
+
+def aws_valid_access():
+    """
+    Returns true if we have access to aws resources.
+    :return: boolean - True if we have access.
+    """
+    try:
+        boto3.Session(
+            aws_access_key_id=ATD_ETL_CONFIG["AWS_ACCESS_KEY_ID"],
+            aws_secret_access_key=ATD_ETL_CONFIG["AWS_SECRET_ACCESS_KEY"]
+        )
+        return True
+    except:
+        return False
+
 
 def run_command(command):
     """
