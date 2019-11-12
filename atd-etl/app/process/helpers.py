@@ -1,10 +1,20 @@
+"""
+Helper Methods
+Author: Austin Transportation Department, Data and Technology Office
+
+Description: The purpose of this script is to provide any methods that
+assist any script associated to this application.
+"""
+
 import csv
 import io
 import re
 import json
 
+# Dependencies
 from .queries import search_crash_query
 from .request import run_query
+
 
 def generate_template(name, function, fields):
     """
@@ -59,6 +69,7 @@ def quote_numeric(input, fields):
 
 def lowercase_group_match(match):
     return match.group(1).lower() + ":"
+
 
 def generate_fields(line, fieldnames, remove_fields = [], quoted_numeric = []):
     """
