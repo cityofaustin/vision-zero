@@ -45,9 +45,8 @@ const DataTable = ({
     <>
       {dataMap.map((section, i) => {
         const buttonCondition =
-          section.button &&
-          section.button.buttonCondition &&
-          section.button.buttonCondition;
+          section.button && section.button.buttonCondition;
+
         return (
           <Col key={i} md="6">
             <Card key={section.title}>
