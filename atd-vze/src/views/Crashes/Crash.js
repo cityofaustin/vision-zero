@@ -82,20 +82,47 @@ function Crash(props) {
     setFormData(newFormState);
   };
 
-  const handleFieldUpdate = e => {
+  const handleFieldUpdate = (e, fields, field) => {
     e.preventDefault();
+
+    // Expose secondary field to update and add to mutation payload below
+    let secondaryFormData = {};
+    if (fields[field] && fields[field].secondaryFieldUpdate) {
+      secondaryFormData = fields[field].secondaryFieldUpdate;
+    }
 
     props.client
       .mutate({
         mutation: UPDATE_CRASH,
         variables: {
           crashId: crashId,
-          changes: formData,
+          changes: { ...formData, ...secondaryFormData },
         },
       })
       .then(res => refetch());
 
     setEditField("");
+  };
+
+  const handleButtonClick = (e, buttonParams, data) => {
+    e.preventDefault();
+
+    // Expose the field to mutate defined in crashDataMap
+    // and the value from data using the dataPath, then mutate
+    const fieldToUpdate = buttonParams.field;
+    const fieldValue =
+      data[buttonParams.dataTableName][0][buttonParams.dataPath];
+    const buttonFormData = { [fieldToUpdate]: fieldValue };
+
+    props.client
+      .mutate({
+        mutation: UPDATE_CRASH,
+        variables: {
+          crashId: crashId,
+          changes: { ...formData, ...buttonFormData },
+        },
+      })
+      .then(res => refetch());
   };
 
   const {
@@ -117,13 +144,21 @@ function Crash(props) {
     <div className="animated fadeIn">
       <Row>
         <Col>
-          <h2 className="h2 mb-3">{`${primaryAddress} & ${secondaryAddress}`}</h2>
+          {primaryAddress && secondaryAddress ? (
+            <h2 className="h2 mb-3">{`${primaryAddress} & ${secondaryAddress}`}</h2>
+          ) : (
+            <h2 className="h2 mb-3">{`${
+              primaryAddress ? primaryAddress : "PRIMARY ADDRESS MISSING"
+            } & ${
+              secondaryAddress ? secondaryAddress : "SECONDARY ADDRESS MISSING"
+            }`}</h2>
+          )}
         </Col>
       </Row>
       <Row>
         <Col xs="12" sm="6" md="4">
           <Widget02
-            header={`${deathCount}`}
+            header={`${deathCount === null ? "--" : deathCount}`}
             mainText="Fatalities"
             icon="fa fa-heartbeat"
             color="danger"
@@ -131,7 +166,9 @@ function Crash(props) {
         </Col>
         <Col xs="12" sm="6" md="4">
           <Widget02
-            header={`${seriousInjuryCount}`}
+            header={`${
+              seriousInjuryCount === null ? "--" : seriousInjuryCount
+            }`}
             mainText="Serious Injuries"
             icon="fa fa-medkit"
             color="warning"
@@ -139,7 +176,9 @@ function Crash(props) {
         </Col>
         <Col xs="12" sm="6" md="4">
           <Widget02
-            header={`${yearsLifeLostCount}`}
+            header={`${
+              yearsLifeLostCount === null ? "--" : yearsLifeLostCount
+            }`}
             mainText="Years of Life Lost"
             icon="fa fa-hourglass-end"
             color="info"
@@ -225,6 +264,7 @@ function Crash(props) {
           editField={editField}
           handleInputChange={handleInputChange}
           handleFieldUpdate={handleFieldUpdate}
+          handleButtonClick={handleButtonClick}
           data={data}
         />
         <Col md="6">

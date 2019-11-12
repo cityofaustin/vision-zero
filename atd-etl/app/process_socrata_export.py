@@ -1,25 +1,36 @@
-import os
-import json
-import requests
-from string import Template
+#!/usr/bin/env python
+"""
+Socrata - Exporter
+Author: Austin Transportation Department, Data and Technology Office
+
+Description: The purpose of this script is to gather data from Hasura
+and export it to the Socrata database.
+
+The application requires the requests library:
+    https://pypi.org/project/requests/
+"""
+
 from sodapy import Socrata
+from string import Template
+import requests
+import json
+import os
+from process.config import ATD_ETL_CONFIG
+print("Socrata - Exporter:  Not yet implemented.")
+print("SOCRATA_KEY_ID: " + ATD_ETL_CONFIG["SOCRATA_KEY_ID"])
+print("SOCRATA_KEY_SECRET: " + ATD_ETL_CONFIG["SOCRATA_KEY_SECRET"])
 
-HASURA_ENDPOINT = ""
-HASURA_ADMIN_KEY = ""
 
-# Hasura
-
-
-def run_query(query):
+def run_hasura_query(query):
 
     # Build Header with Admin Secret
     headers = {
-        "x-hasura-admin-secret": HASURA_ADMIN_KEY
+        "x-hasura-admin-secret": ATD_ETL_CONFIG["HASURA_ADMIN_KEY"]
     }
 
    # Try making insertion
     try:
-        return requests.post(HASURA_ENDPOINT,
+        return requests.post(ATD_ETL_CONFIG["HASURA_ENDPOINT"],
                              json={'query': query, "offset": offset},
                              headers=headers).json()
     except Exception as e:
@@ -86,56 +97,6 @@ persons_query = """
     }
 """
 
-# persons = run_query(persons_query)
-# person_data = persons['data']['atd_txdot_person']
-# primary_person_data = persons['data']['atd_txdot_primaryperson']
-
-
-# print("\nPerson Data")
-# print("-----------")
-# for record in person_data:
-#     for k, v in record.items():
-#         print(str(k) + " " + str(v))
-#     print("\n")
-# print("\nPrimary Person Data")
-# print("-------------------")
-# for record in primary_person_data:
-#     for k, v in record.items():
-#         print(f"{k}: {v}")
-#     print("\n")
-
-# crashes = run_query(crashes_query)
-# crash_data = crashes['data']['atd_txdot_crashes']
-# print("\nCrash Data")
-# print("----------")
-# for record in crash_data:
-#     for k, v in record.items():
-#         print(f"{k}: {v}")
-#     print("\n")
-
-# # sodapy
-# client = Socrata("data.austintexas.gov", None)
-
-# result = client.get("y2wy-tgr5", limit=2)
-
-# client.close()
-
-# print("\n")
-# print(result)
-
-# counter = 0
-# while counter < 10:
-#     counter += 1
-#     print(f"while loop is on: {counter}")
-
-# for i in range(0, 5):
-#     print(f"for loop is on: {i}")
-
-# os.environ["SECRET"] = "This is the secret"
-
-# secret = os.getenv("COOL_CODE", "Secret doesn't exist")
-# print(secret)
-
 # while loop to request records from Hasura and post to Socrata
 records = None
 offset = 0
@@ -147,7 +108,7 @@ while records != []:
     crashes_query = crashes_query_template.substitute(
         limit=limit, offset=offset)
     offset += limit
-    crashes = run_query(crashes_query)
+    crashes = run_hasura_query(crashes_query)
     records = crashes['data']['atd_txdot_crashes']
     print("\nCrash Data")
     print("----------")

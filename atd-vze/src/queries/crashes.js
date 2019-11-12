@@ -8,6 +8,7 @@ export const GET_CRASH = gql`
       address_confirmed_secondary
       apd_confirmed_fatality
       apd_confirmed_death_count
+      apd_human_update
       approval_date
       approved_by
       at_intrsct_fl
@@ -21,6 +22,7 @@ export const GET_CRASH = gql`
       crash_speed_limit
       crash_time
       day_of_week
+      death_cnt
       est_comp_cost
       fhe_collsn_id
       geocode_date
