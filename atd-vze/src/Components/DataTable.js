@@ -44,7 +44,6 @@ const DataTable = ({
 
   return (
     <>
-      <WarningModal />
       {dataMap.map((section, i) => {
         const buttonCondition =
           section.button && section.button.buttonCondition;
@@ -180,12 +179,22 @@ const DataTable = ({
                   data[buttonCondition.dataTableName][0][
                     buttonCondition.dataPath
                   ] === buttonCondition.value && (
-                    <Button
-                      color="danger"
-                      onClick={e => onButtonClick(e, section)}
-                    >
-                      {section.button.buttonText}
-                    </Button>
+                    <>
+                      <Button
+                        color="danger"
+                        onClick={e => onButtonClick(e, section)}
+                      >
+                        {section.button.buttonText}
+                      </Button>
+                      {section.button.buttonConfirm && (
+                        <WarningModal
+                          modalHeader={
+                            section.button.buttonConfirm.confirmHeader
+                          }
+                          modalBody={section.button.buttonConfirm.confirmBody}
+                        />
+                      )}
+                    </>
                   )}
               </CardBody>
             </Card>
