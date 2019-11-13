@@ -36,7 +36,7 @@ $ ls -lha  ~/.ssh/atd-etl/*;
  -rw-------  1 owner  group   718B Nov 10 22:05 ~/.ssh/atd-etl/etl.staging.env
 ```
 
-If the file shows `-rw-------` (read only access) you did it correctly. 
+If the file shows `-rw-------` (read-write access for you only) you did it correctly. 
 
 The .ssh folder happens to be hidden, and it is available in most Mac/Linux machines, but feel free to put those files anywhere you think they will be safe.
 
