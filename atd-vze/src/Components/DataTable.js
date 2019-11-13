@@ -179,6 +179,19 @@ const DataTable = ({
                   data[buttonCondition.dataTableName][0][
                     buttonCondition.dataPath
                   ] === buttonCondition.value && (
+                    <Button
+                      color="danger"
+                      onClick={e => onButtonClick(e, section)}
+                    >
+                      {section.button.buttonText}
+                    </Button>
+                  )}
+                {/* If button confirm parameters are set, show button and confirm modal */}
+                {section.button &&
+                  section.button.buttonConfirm &&
+                  data[buttonCondition.dataTableName][0][
+                    buttonCondition.dataPath
+                  ] === buttonCondition.value && (
                     <>
                       <Button
                         color="danger"
@@ -186,12 +199,13 @@ const DataTable = ({
                       >
                         {section.button.buttonText}
                       </Button>
-                      {section.button.buttonConfirm && (
+                      {section.button.buttonConfirm && showModal && (
                         <WarningModal
                           modalHeader={
                             section.button.buttonConfirm.confirmHeader
                           }
                           modalBody={section.button.buttonConfirm.confirmBody}
+                          confirmClick={onButtonClick}
                         />
                       )}
                     </>
