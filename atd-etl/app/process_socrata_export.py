@@ -15,6 +15,7 @@ from string import Template
 import requests
 import json
 import os
+import time
 from process.config import ATD_ETL_CONFIG
 print("Socrata - Exporter:  Not yet implemented.")
 print("SOCRATA_KEY_ID: " + ATD_ETL_CONFIG["SOCRATA_KEY_ID"])
@@ -38,7 +39,7 @@ def run_hasura_query(query):
                              json={'query': query, "offset": offset},
                              headers=headers).json()
     except Exception as e:
-        print("Exception, could not insert: " + str(e))
+        print("Exception, could not upsert: " + str(e))
         print("Query: '%s'" % query)
         return None
 
@@ -46,7 +47,7 @@ def run_hasura_query(query):
 crashes_query_template = Template(
     """
     query getCrashesSocrata {
-        atd_txdot_crashes (limit: $limit, offset: $offset, where: {city_id: {_eq: 22}, crash_date: {_gte: "2019-10-01", _lte: "2019-10-31"}, _or: [{apd_confirmed_death_count: {_gt: 0}}]}) {
+        atd_txdot_crashes (limit: $limit, offset: $offset, order_by: {crash_id: asc}, where: {city_id: {_eq: 22}}) {
             crash_id
     		crash_fatal_fl
             crash_date
@@ -101,12 +102,15 @@ persons_query = """
     }
 """
 
+# Start timer
+start = time.time()
+
 # while loop to request records from Hasura and post to Socrata
 records = None
 offset = 0
-limit = 100
+limit = 1000
 
-# Get records from Hasura until there are no more resp is []
+# Get records from Hasura until res is []
 while records != []:
     crashes_query = crashes_query_template.substitute(
         limit=limit, offset=offset)
@@ -115,22 +119,13 @@ while records != []:
     records = crashes['data']['atd_txdot_crashes']
 
     client.upsert("rrxh-grh6", records)
-    # TODO: Add sleep delay
-    # print("\nCrash Data from Hasura")
-    # print("----------")
+    print(f"{offset} records published")
 
-    # for record in records:
-    #     for k, v in record.items():
-    #         print(f"{k}: {v}")
-    #     print("\n")
-
-print(f"Script Complete - offset reached: {offset}")
-
-# sodapy get
-result = client.get("rrxh-grh6", limit=2)
-
+# Terminate Socrata connection
 client.close()
 
-print("\nCrash Data from Socrata")
-print("----------")
-print(result)
+end = time.time()
+hours, rem = divmod(end-start, 3600)
+minutes, seconds = divmod(rem, 60)
+print("Finished in: {:0>2}:{:0>2}:{:05.2f}".format(
+    int(hours), int(minutes), seconds))
