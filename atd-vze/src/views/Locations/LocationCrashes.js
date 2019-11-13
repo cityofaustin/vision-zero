@@ -213,6 +213,7 @@ function LocationCrashes(props) {
       // Top n types
       limit: 4,
       color: colors.success,
+      hoverColor: colors.successDark,
     },
     {
       type: "horizontal",
@@ -239,6 +240,7 @@ function LocationCrashes(props) {
       // Top n types
       limit: 4,
       color: colors.danger,
+      hoverColor: colors.dangerDark,
     },
   ];
 
