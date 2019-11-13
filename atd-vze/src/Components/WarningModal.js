@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from "reactstrap";
 
@@ -10,6 +10,7 @@ const WarningModal = ({
   showModal,
   section,
 }) => {
+  // Hide modal and call button click handler on confirm
   const handleConfirm = e => {
     toggleModal();
     confirmClick(e, section);
