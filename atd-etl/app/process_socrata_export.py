@@ -6,8 +6,9 @@ Author: Austin Transportation Department, Data and Technology Office
 Description: The purpose of this script is to gather data from Hasura
 and export it to the Socrata database.
 
-The application requires the requests library:
+The application requires the requests and sodapy libraries:
     https://pypi.org/project/requests/
+    https://pypi.org/project/sodapy/
 """
 
 from sodapy import Socrata
@@ -86,7 +87,7 @@ start = time.time()
 # while loop to request records from Hasura and post to Socrata
 records = None
 offset = 0
-limit = 1000
+limit = 4000
 total_records_published = 0
 
 # Get records from Hasura until res is []
