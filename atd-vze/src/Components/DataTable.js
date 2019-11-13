@@ -1,5 +1,6 @@
 import React from "react";
 import { useQuery } from "@apollo/react-hooks";
+import WarningModal from "./WarningModal";
 import get from "lodash.get";
 import { formatCostToDollars, formatDateTimeString } from "../helpers/format";
 
@@ -43,6 +44,7 @@ const DataTable = ({
 
   return (
     <>
+      <WarningModal />
       {dataMap.map((section, i) => {
         const buttonCondition =
           section.button && section.button.buttonCondition;
