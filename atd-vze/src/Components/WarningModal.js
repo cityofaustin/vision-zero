@@ -2,20 +2,26 @@ import React, { useState } from "react";
 
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from "reactstrap";
 
-const WarningModal = ({ modalHeader, modalBody }) => {
-  const [isOpen, setIsOpen] = useState(true);
-
-  const toggleModal = () => {
-    setIsOpen(!isOpen);
+const WarningModal = ({
+  modalHeader,
+  modalBody,
+  confirmClick,
+  toggleModal,
+  showModal,
+  section,
+}) => {
+  const handleConfirm = e => {
+    toggleModal();
+    confirmClick(e, section);
   };
 
   return (
-    <Modal isOpen={isOpen} toggle={toggleModal} className={"modal-danger"}>
+    <Modal isOpen={showModal} toggle={toggleModal} className={"modal-danger"}>
       <ModalHeader toggle={toggleModal}>{modalHeader}</ModalHeader>
       <ModalBody>{modalBody}</ModalBody>
       <ModalFooter>
-        <Button color="danger" onClick={toggleModal}>
-          Do Something
+        <Button color="danger" onClick={handleConfirm}>
+          Confirm
         </Button>{" "}
         <Button color="secondary" onClick={toggleModal}>
           Cancel

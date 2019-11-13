@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useQuery } from "@apollo/react-hooks";
 import WarningModal from "./WarningModal";
 import get from "lodash.get";
@@ -27,6 +27,8 @@ const DataTable = ({
   handleFieldUpdate,
   handleButtonClick,
 }) => {
+  const [showModal, setShowModal] = useState(false);
+
   // Import Lookup tables and aggregate an object of uiType= "select" options
   const { data: lookupSelectOptions } = useQuery(GET_LOOKUPS);
 
@@ -40,6 +42,10 @@ const DataTable = ({
     handleFieldUpdate && handleFieldUpdate(e, section, "button");
     handleButtonClick &&
       handleButtonClick(e, section.button.buttonFieldUpdate, data);
+  };
+
+  const toggleModal = () => {
+    setShowModal(!showModal);
   };
 
   return (
@@ -176,6 +182,7 @@ const DataTable = ({
                 </Table>
                 {/* If button parameters are set and the defined condition is met, show button */}
                 {section.button &&
+                  !section.button.buttonConfirm &&
                   data[buttonCondition.dataTableName][0][
                     buttonCondition.dataPath
                   ] === buttonCondition.value && (
@@ -193,10 +200,7 @@ const DataTable = ({
                     buttonCondition.dataPath
                   ] === buttonCondition.value && (
                     <>
-                      <Button
-                        color="danger"
-                        onClick={e => onButtonClick(e, section)}
-                      >
+                      <Button color="danger" onClick={toggleModal}>
                         {section.button.buttonText}
                       </Button>
                       {section.button.buttonConfirm && showModal && (
@@ -206,6 +210,9 @@ const DataTable = ({
                           }
                           modalBody={section.button.buttonConfirm.confirmBody}
                           confirmClick={onButtonClick}
+                          toggleModal={toggleModal}
+                          showModal={showModal}
+                          section={section}
                         />
                       )}
                     </>
