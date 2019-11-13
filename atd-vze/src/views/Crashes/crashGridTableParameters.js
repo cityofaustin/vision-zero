@@ -94,11 +94,11 @@ export const crashGridTableAdvancedFilters = {
     filters: [
       {
         id: "geo_no_coordinates",
-        label: "No Latitude and Longitude",
+        label: "No Primary Coordinates",
         filter: {
           where: [
-            { latitude: "_is_null: true" },
-            { longitude: "_is_null: true" },
+            { latitude_primary: "_is_null: true" },
+            { longitude_primary: "_is_null: true" },
           ],
         },
       },
@@ -111,11 +111,11 @@ export const crashGridTableAdvancedFilters = {
       },
       {
         id: "geo_confirmed_coordinates",
-        label: "Confirmed Coordinates",
+        label: "No CRIS Coordinates",
         filter: {
           where: [
-            { latitude_primary: "_is_null: false" },
-            { longitude_primary: "_is_null: false" },
+            { latitude: "_is_null: true" },
+            { longitude: "_is_null: true" },
           ],
         },
       },
