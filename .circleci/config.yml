@@ -10,6 +10,8 @@ jobs:
       - image: circleci/python:3.7
     steps:
       - checkout
+      - setup_remote_docker:
+          version: 18.09.3
       - run:
           name: "Building Docker"
           command: |

@@ -5,12 +5,12 @@
 #
 #   run build
 #
-#   run process_socrata_export.py
-#   run app-run-process-cr3.sh
+#   runetl ~/etl.staging.env bash
+#   runetl ~/etl.production.env app/process_test_run.py
+#
 
 
 # Make sure your ENV files are only visible to the current user
-chmod 700 ./*.env;
 chmod +x app/*.py;
 chmod +x app/*.sh;
 
@@ -32,22 +32,17 @@ function runetl {
         return;
     fi;
 
-    # If the second argument is empty, then assume staging and make $1 the command
-    if [[ "$2" == "" ]]; then
-        RUN_ENVIRONMENT="staging"; # Assume staging
-        RUN_COMMAND=$1
-    # We have two arguments, let's use them
-    else
-        RUN_ENVIRONMENT=$1;
-        RUN_COMMAND=$2;
-    fi;
+    # We are going to assume $1 is the file $2 is the command
+    ATD_CRIS_CONFIG=$1;
+    RUN_COMMAND=$2;
 
-    # We need to determine the environment
-    if [[ "${RUN_ENVIRONMENT}" == "production" ]]; then
-        export ATD_CRIS_CONFIG="$(pwd)/etl.production.env";
+
+    if [[ "${ATD_CRIS_CONFIG}" =~ "production" ]];
+    then
+        RUN_ENVIRONMENT="production"
     else
-        export ATD_CRIS_CONFIG="$(pwd)/etl.staging.env";
-    fi;
+        RUN_ENVIRONMENT="staging"
+    fi
 
     # Makes sure the file exists
     if [[ -f "${ATD_CRIS_CONFIG}" ]]; then
@@ -67,7 +62,7 @@ function runetl {
 
 
     # If the command is not bash, prepend the forward slash...
-    if [[ "$1" == "bash" ]] || [[ "$2" == "bash" ]]; then
+    if [[ "$2" == "bash" ]]; then
         FINAL_COMMAND=$RUN_COMMAND;
     else
         FINAL_COMMAND="/${RUN_COMMAND}";
@@ -83,4 +78,3 @@ function runetl {
     # Exit
     return;
 }
-
