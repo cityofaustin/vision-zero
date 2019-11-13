@@ -87,6 +87,7 @@ As of this moment, the ETL container should be able to run these scripts:
 - `app/process_hasura_geocode.py` - This script will look for records in the database through Hasura that do not have a Lat/Long, it will try to find the coordinates if enough information is provided.
 - `app/process_hasura_locations.py` - This script will find crashes that do not have a location assigned. If no location is found it leaves the record intact, and moves unto the next records.
 - `app/process_hasura_cr3heal.py` - This script will make sure the records in Hasura that are marked to have a CR3 actually have a PDF in S3. If the file is not found in S3, then it will unmark the file.
-- `app/process_socrata_export.py` - This script will export data unto the Socrata.
+- `app/process_socrata_export.py` - This script will export data unto the Socrata database.
+- `app/process_test_run.py` - A dummy script meant to test if the environment is working, it will print two environment variables.
 
-As of this first iteration, the docuentation is not fully fleshed out. This is a living document that needs to be updated as new features are added and implemented. 
+As of this first iteration, the documentation is not fully fleshed out. This is a living document that needs to be updated as new features are added and implemented. 
