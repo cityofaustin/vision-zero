@@ -39,7 +39,7 @@ def run_hasura_query(query):
                              json={'query': query, "offset": offset},
                              headers=headers).json()
     except Exception as e:
-        print("Exception, could not upsert: " + str(e))
+        print("Exception, could not insert: " + str(e))
         print("Query: '%s'" % query)
         return None
 
@@ -80,28 +80,6 @@ crashes_query_template = Template(
 """
 )
 
-persons_query = """
-    query PersonsQuery {
-        atd_txdot_person(limit: 1, where: {_or: [{prsn_injry_sev_id: {_eq: 1}}, {prsn_injry_sev_id: {_eq: 4}}], _and: {crash: {city_id: {_eq: 22}}}}) {
-            prsn_injry_sev_id
-            prsn_age
-            prsn_gndr_id
-            crash {
-                crash_date
-            }
-        }
-        atd_txdot_primaryperson(limit: 1, where: {_or: [{prsn_injry_sev_id: {_eq: 1}}, {prsn_injry_sev_id: {_eq: 4}}], _and: {crash: {city_id: {_eq: 22}}}}) {
-            prsn_injry_sev_id
-            prsn_age
-            prsn_gndr_id
-            drvr_zip
-            crash {
-                crash_date
-            }
-        }
-    }
-"""
-
 # Start timer
 start = time.time()
 
@@ -109,6 +87,7 @@ start = time.time()
 records = None
 offset = 0
 limit = 1000
+total_records_published = 0
 
 # Get records from Hasura until res is []
 while records != []:
@@ -118,12 +97,15 @@ while records != []:
     crashes = run_hasura_query(crashes_query)
     records = crashes['data']['atd_txdot_crashes']
 
+    # Upsert records to Socrata
     client.upsert("rrxh-grh6", records)
-    print(f"{offset} records published")
+    total_records_published += len(records)
+    print(f"{total_records_published} records published")
 
 # Terminate Socrata connection
 client.close()
 
+# Stop timer and print duration
 end = time.time()
 hours, rem = divmod(end-start, 3600)
 minutes, seconds = divmod(rem, 60)
