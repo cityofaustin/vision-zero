@@ -32,6 +32,16 @@ export const crashDataMap = [
         editable: false,
         format: "dollars",
       },
+      est_econ_cost: {
+        label: "Est. Economic Cost",
+        editable: false,
+        format: "dollars",
+      },
+      speed_mgmt_points: {
+        label: "Speed Management Points",
+        editable: false,
+        format: "text",
+      },
       fhe_collsn_id: {
         label: "Manner of Collision ID",
         editable: false,

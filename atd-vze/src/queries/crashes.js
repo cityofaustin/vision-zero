@@ -24,6 +24,7 @@ export const GET_CRASH = gql`
       day_of_week
       death_cnt
       est_comp_cost
+      est_econ_cost
       fhe_collsn_id
       geocode_date
       geocode_provider
@@ -77,6 +78,7 @@ export const GET_CRASH = gql`
       rpt_street_desc
       rr_relat_fl
       schl_bus_fl
+      speed_mgmt_points
       street_name
       street_name_2
       street_nbr
