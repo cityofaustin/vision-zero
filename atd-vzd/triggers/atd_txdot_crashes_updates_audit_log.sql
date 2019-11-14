@@ -1,18 +1,19 @@
-create function atd_txdot_crashes_updates_audit_log() returns trigger
-    language plpgsql
-as
-$$
+CREATE OR REPLACE FUNCTION public.atd_txdot_crashes_updates_audit_log()
+ RETURNS trigger
+ LANGUAGE plpgsql
+AS $function$
 DECLARE
     estCompCostList decimal(10,2)[];
     estCompEconList decimal(10,2)[];
+    speedMgmtList decimal(10,2)[];
 BEGIN
     ------------------------------------------------------------------------------------------
     -- CHANGE-LOG OPERATIONS
     ------------------------------------------------------------------------------------------
     -- Stores a copy of the current record into the change log
     IF  (TG_OP = 'UPDATE') then
-        INSERT INTO atd_txdot_change_log (record_id, record_crash_id, record_type, record_json)
-        VALUES (old.crash_id, old.crash_id, 'crashes', row_to_json(old));
+        INSERT INTO atd_txdot_change_log (record_id, record_crash_id, record_type, record_json, updated_by)
+        VALUES (old.crash_id, old.crash_id, 'crashes', row_to_json(old), NEW.updated_by);
     END IF;
 
     ------------------------------------------------------------------------------------------
@@ -70,7 +71,11 @@ BEGIN
         NEW.apd_confirmed_death_count = NEW.death_cnt;
     -- Otherwise, the value has been entered manually, signal change with confirmed as 'Y'
     ELSE
-        NEW.apd_confirmed_fatality = 'Y';
+        IF (NEW.apd_confirmed_death_count > 0) THEN
+            NEW.apd_confirmed_fatality = 'Y';
+        ELSE 
+            NEW.apd_confirmed_fatality = 'N';
+        END IF;
     END IF;
     -- END OF APD's DEATH COUNT
 
@@ -99,12 +104,23 @@ BEGIN
    )::decimal(10,2);
 
     --- END OF COST OPERATIONS ---
+    
+    ------------------------------------------------------------------------------------------
+    -- SPEED MGMT POINTS
+    ------------------------------------------------------------------------------------------
+    speedMgmtList = ARRAY (SELECT speed_mgmt_points FROM atd_txdot__speed_mgmt_lkp ORDER BY speed_mgmt_id ASC);
 
+	NEW.speed_mgmt_points = (0 
+		+ (NEW.apd_confirmed_death_count * (speedMgmtList [2])) 
+        + (NEW.sus_serious_injry_cnt * (speedMgmtList [3])) 
+        + (NEW.nonincap_injry_cnt * (speedMgmtList [4])) 
+        + (NEW.poss_injry_cnt * (speedMgmtList [5])) 
+        + (NEW.non_injry_cnt * (speedMgmtList [6]))
+    )::decimal (10,2);
+    --- END OF SPEED MGMT POINTS ---
+    
     -- Record the current timestamp
     NEW.last_update = current_timestamp;
     RETURN NEW;
 END;
-$$;
-
-alter function atd_txdot_crashes_updates_audit_log() owner to atd_vz_data;
-
+$function$
