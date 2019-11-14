@@ -8,7 +8,6 @@ const ConfirmModal = ({
   confirmClick,
   toggleModal,
   showModal,
-  section,
 }) => {
   // Hide modal and call button click handler on confirm
   const handleConfirm = e => {

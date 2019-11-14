@@ -212,7 +212,6 @@ const DataTable = ({
                           confirmClick={e => onButtonClick(e, section)}
                           toggleModal={toggleModal}
                           showModal={showModal}
-                          section={section}
                         />
                       )}
                     </>
