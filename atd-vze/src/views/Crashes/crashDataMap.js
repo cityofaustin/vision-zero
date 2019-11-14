@@ -114,6 +114,11 @@ export const crashDataMap = [
         dataTableName: "atd_txdot_crashes",
         dataPath: "death_cnt",
       },
+      buttonConfirm: {
+        confirmHeader: "Are you sure?",
+        confirmBody:
+          "Are you sure you want to revert to the original value from the CRIS database?",
+      },
       secondaryFieldUpdate: { apd_human_update: "N" },
     },
     fields: {
