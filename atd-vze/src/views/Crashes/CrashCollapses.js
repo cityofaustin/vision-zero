@@ -326,7 +326,7 @@ class CrashCollapses extends Component {
                           <Badge color="secondary float-right">
                             {
                               this.props.data.atd_txdot_charges.filter(
-                                charge => charge.charge_cat_id !== 0
+                                charge => charge.charge !== "NO CHARGES"
                               ).length
                             }
                           </Badge>
@@ -348,12 +348,13 @@ class CrashCollapses extends Component {
                           </thead>
                           <tbody>
                             {this.props.data.atd_txdot_charges.map(
-                              (charges, i) => (
-                                <tr key={`charges-${i}`}>
-                                  <td>{charges.charge}</td>
-                                  <td>{charges.charge_cat_id}</td>
-                                </tr>
-                              )
+                              (charge, i) =>
+                                charge.charge !== "NO CHARGES" && (
+                                  <tr key={`charges-${i}`}>
+                                    <td>{charge.charge}</td>
+                                    <td>{charge.charge_cat_id}</td>
+                                  </tr>
+                                )
                             )}
                           </tbody>
                         </Table>

@@ -7,14 +7,13 @@ import { Container } from "reactstrap";
 
 const SeriousInjuryAndFatalCrashesByMonth = () => {
   const today = moment().format("YYYY-MM-DD");
-  const todayMonthYear = moment().format("-MM-DD");
   const thisYear = moment().format("YYYY");
   const lastYear = moment()
     .subtract(1, "year")
     .format("YYYY");
 
   const yearToDateUrl = `https://data.austintexas.gov/resource/y2wy-tgr5.json?$where=(sus_serious_injry_cnt > 0 OR death_cnt > 0) AND crash_date between '${thisYear}-01-01T00:00:00' and '${today}T23:59:59'`;
-  const previousYearUrl = `https://data.austintexas.gov/resource/y2wy-tgr5.json?$where=(sus_serious_injry_cnt > 0 OR death_cnt > 0) AND crash_date between '${lastYear}-01-01T00:00:00' and '${lastYear}${todayMonthYear}T23:59:59'`;
+  const previousYearUrl = `https://data.austintexas.gov/resource/y2wy-tgr5.json?$where=(sus_serious_injry_cnt > 0 OR death_cnt > 0) AND crash_date between '${lastYear}-01-01T00:00:00' and '${lastYear}-12-31T23:59:59'`;
 
   const [yearToDateInjuryDeathArray, setYearToDateInjuryDeathArray] = useState(
     []

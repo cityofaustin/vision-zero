@@ -8,7 +8,7 @@ export const CrashEditLatLonForm = ({
   handleFormReset,
   handleFormCancel,
 }) => (
-  <Form onSubmit={handleFormSubmit} className="form-horizontal mt-3">
+  <Form className="form-horizontal mt-3">
     <FormGroup row>
       <Col md="3">
         <Label htmlFor="qa-latitude">Latitude</Label>
@@ -39,7 +39,13 @@ export const CrashEditLatLonForm = ({
         />
       </Col>
       <Col className="mt-3">
-        <Button className="mr-3" type="submit" size="sm" color="primary">
+        <Button
+          onClick={handleFormSubmit}
+          className="mr-3"
+          type="submit"
+          size="sm"
+          color="primary"
+        >
           <i className="fa fa-dot-circle-o"></i> Save
         </Button>
         <Button
