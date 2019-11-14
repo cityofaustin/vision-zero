@@ -1,9 +1,18 @@
-import React from "react";
+import React, { useState } from "react";
 import { useQuery } from "@apollo/react-hooks";
+import ConfirmModal from "./ConfirmModal";
 import get from "lodash.get";
 import { formatCostToDollars, formatDateTimeString } from "../helpers/format";
 
-import { Card, CardHeader, CardBody, Col, Input, Table } from "reactstrap";
+import {
+  Card,
+  CardHeader,
+  CardBody,
+  Col,
+  Input,
+  Table,
+  Button,
+} from "reactstrap";
 
 import { GET_LOOKUPS } from "../queries/lookups";
 
@@ -16,7 +25,10 @@ const DataTable = ({
   formData,
   handleInputChange,
   handleFieldUpdate,
+  handleButtonClick,
 }) => {
+  const [showModal, setShowModal] = useState(false);
+
   // Import Lookup tables and aggregate an object of uiType= "select" options
   const { data: lookupSelectOptions } = useQuery(GET_LOOKUPS);
 
@@ -26,9 +38,22 @@ const DataTable = ({
     setEditField("");
   };
 
+  const onButtonClick = (e, section) => {
+    handleFieldUpdate && handleFieldUpdate(e, section, "button");
+    handleButtonClick &&
+      handleButtonClick(e, section.button.buttonFieldUpdate, data);
+  };
+
+  const toggleModal = () => {
+    setShowModal(!showModal);
+  };
+
   return (
     <>
       {dataMap.map((section, i) => {
+        const buttonCondition =
+          section.button && section.button.buttonCondition;
+
         return (
           <Col key={i} md="6">
             <Card key={section.title}>
@@ -98,7 +123,11 @@ const DataTable = ({
                           </td>
                           <td>
                             {isEditing ? (
-                              <form onSubmit={e => handleFieldUpdate(e)}>
+                              <form
+                                onSubmit={e =>
+                                  handleFieldUpdate(e, section.fields, field)
+                                }
+                              >
                                 {fieldUiType === "select" && (
                                   <Input
                                     name={field}
@@ -151,6 +180,42 @@ const DataTable = ({
                     })}
                   </tbody>
                 </Table>
+                {/* If button parameters are set and the defined condition is met, show button */}
+                {section.button &&
+                  !section.button.buttonConfirm &&
+                  data[buttonCondition.dataTableName][0][
+                    buttonCondition.dataPath
+                  ] === buttonCondition.value && (
+                    <Button
+                      color="danger"
+                      onClick={e => onButtonClick(e, section)}
+                    >
+                      {section.button.buttonText}
+                    </Button>
+                  )}
+                {/* If button confirm parameters are set, show button and confirm modal */}
+                {section.button &&
+                  section.button.buttonConfirm &&
+                  data[buttonCondition.dataTableName][0][
+                    buttonCondition.dataPath
+                  ] === buttonCondition.value && (
+                    <>
+                      <Button color="danger" onClick={toggleModal}>
+                        {section.button.buttonText}
+                      </Button>
+                      {section.button.buttonConfirm && showModal && (
+                        <ConfirmModal
+                          modalHeader={
+                            section.button.buttonConfirm.confirmHeader
+                          }
+                          modalBody={section.button.buttonConfirm.confirmBody}
+                          confirmClick={e => onButtonClick(e, section)}
+                          toggleModal={toggleModal}
+                          showModal={showModal}
+                        />
+                      )}
+                    </>
+                  )}
               </CardBody>
             </Card>
           </Col>

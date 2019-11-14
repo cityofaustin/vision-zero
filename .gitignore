@@ -67,3 +67,7 @@ build-iPhoneSimulator/
 
 
 .DS_Store
+
+# Let's not track any csv files either
+*.csv
+*.env

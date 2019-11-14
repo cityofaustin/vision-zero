@@ -82,20 +82,47 @@ function Crash(props) {
     setFormData(newFormState);
   };
 
-  const handleFieldUpdate = e => {
+  const handleFieldUpdate = (e, fields, field) => {
     e.preventDefault();
+
+    // Expose secondary field to update and add to mutation payload below
+    let secondaryFormData = {};
+    if (fields[field] && fields[field].secondaryFieldUpdate) {
+      secondaryFormData = fields[field].secondaryFieldUpdate;
+    }
 
     props.client
       .mutate({
         mutation: UPDATE_CRASH,
         variables: {
           crashId: crashId,
-          changes: formData,
+          changes: { ...formData, ...secondaryFormData },
         },
       })
       .then(res => refetch());
 
     setEditField("");
+  };
+
+  const handleButtonClick = (e, buttonParams, data) => {
+    e.preventDefault();
+
+    // Expose the field to mutate defined in crashDataMap
+    // and the value from data using the dataPath, then mutate
+    const fieldToUpdate = buttonParams.field;
+    const fieldValue =
+      data[buttonParams.dataTableName][0][buttonParams.dataPath];
+    const buttonFormData = { [fieldToUpdate]: fieldValue };
+
+    props.client
+      .mutate({
+        mutation: UPDATE_CRASH,
+        variables: {
+          crashId: crashId,
+          changes: { ...formData, ...buttonFormData },
+        },
+      })
+      .then(res => refetch());
   };
 
   const {
@@ -237,6 +264,7 @@ function Crash(props) {
           editField={editField}
           handleInputChange={handleInputChange}
           handleFieldUpdate={handleFieldUpdate}
+          handleButtonClick={handleButtonClick}
           data={data}
         />
         <Col md="6">

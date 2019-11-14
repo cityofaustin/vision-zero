@@ -34,7 +34,7 @@ const GridTableHorizontalBar = ({ chartData, chartConfig }) => {
         backgroundColor: chartConfig.color,
         borderColor: colors.grey200,
         borderWidth: 1,
-        hoverBackgroundColor: colors.darkgreen,
+        hoverBackgroundColor: chartConfig.hoverColor,
         hoverBorderColor: colors.grey700,
         data: horizontalData,
       },
