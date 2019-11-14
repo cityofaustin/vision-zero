@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useQuery } from "@apollo/react-hooks";
-import WarningModal from "./WarningModal";
+import ConfirmModal from "./ConfirmModal";
 import get from "lodash.get";
 import { formatCostToDollars, formatDateTimeString } from "../helpers/format";
 
@@ -204,12 +204,12 @@ const DataTable = ({
                         {section.button.buttonText}
                       </Button>
                       {section.button.buttonConfirm && showModal && (
-                        <WarningModal
+                        <ConfirmModal
                           modalHeader={
                             section.button.buttonConfirm.confirmHeader
                           }
                           modalBody={section.button.buttonConfirm.confirmBody}
-                          confirmClick={onButtonClick}
+                          confirmClick={e => onButtonClick(e, section)}
                           toggleModal={toggleModal}
                           showModal={showModal}
                           section={section}

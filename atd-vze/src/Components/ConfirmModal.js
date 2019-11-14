@@ -2,7 +2,7 @@ import React from "react";
 
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from "reactstrap";
 
-const WarningModal = ({
+const ConfirmModal = ({
   modalHeader,
   modalBody,
   confirmClick,
@@ -13,7 +13,7 @@ const WarningModal = ({
   // Hide modal and call button click handler on confirm
   const handleConfirm = e => {
     toggleModal();
-    confirmClick(e, section);
+    confirmClick(e);
   };
 
   return (
@@ -32,4 +32,4 @@ const WarningModal = ({
   );
 };
 
-export default WarningModal;
+export default ConfirmModal;
