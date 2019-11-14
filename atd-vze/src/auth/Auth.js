@@ -4,10 +4,14 @@ export default class Auth {
   constructor(history) {
     this.history = history;
     this.userProfile = null;
+    this.urlPath =
+      process.env.NODE_ENV === "development"
+        ? window.location.origin
+        : `${window.location.origin}/editor`;
     this.auth0 = new auth0.WebAuth({
       domain: process.env.REACT_APP_AUTH0_DOMAIN,
       clientID: process.env.REACT_APP_AUTH0_CLIENT_ID,
-      redirectUri: process.env.REACT_APP_AUTH0_CALLBACK_URL,
+      redirectUri: `${this.urlPath}/callback`,
       responseType: "token id_token",
       scope: "openid profile email",
     });
@@ -56,7 +60,7 @@ export default class Auth {
     this.userProfile = null;
     this.auth0.logout({
       clientID: process.env.REACT_APP_AUTH0_CLIENT_ID,
-      returnTo: process.env.REACT_APP_AUTH0_LOGOUT_URL,
+      returnTo: this.urlPath,
     });
   };
 

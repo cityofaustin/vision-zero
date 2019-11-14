@@ -10,6 +10,8 @@ const YearsOfLifeLost = () => {
     .subtract(1, "year")
     .format("YYYY");
 
+  console.log("test");
+
   const yearToDateUrl = `https://data.austintexas.gov/resource/e4ms-uusv.json?$where=year = '${thisYear}' AND stat_type = 'years_of_life_lost'`;
   const previousYearUrl = `https://data.austintexas.gov/resource/e4ms-uusv.json?$where=year = '${lastYear}' AND stat_type = 'years_of_life_lost'`;
 
@@ -27,6 +29,17 @@ const YearsOfLifeLost = () => {
       setLastYearToDateYearsLostTotal(res.data[0].stat_value);
     });
   }, [yearToDateUrl, previousYearUrl]);
+
+  axios.get({
+    url: "https://data.austintexas.gov/resource/xecs-rpy9.json",
+    type: "GET",
+    data: {
+      "$limit" : 5000,
+      "$$app_token" : "YOURAPPTOKENHERE"
+    }
+  }).then(res => {
+    console.log(res)
+  });
 
   return (
     <Container>

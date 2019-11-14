@@ -16,7 +16,7 @@ __pycache__/
 /node_modules/
 
 # Used by dotenv library to load environment variables.
-# .env
+.env
 
 # Ignore Byebug command history file.
 .byebug_history
@@ -61,9 +61,13 @@ build-iPhoneSimulator/
 # IDEs
 .code/
 .idea/
-
+.vscode/
 # node_modules
 /atd-vze/node_modules
 
 
 .DS_Store
+
+# Let's not track any csv files either
+*.csv
+*.env

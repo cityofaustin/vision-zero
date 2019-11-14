@@ -1,0 +1,50 @@
+{
+    "production": {
+        "app_function": "server.APP",
+        "profile_name": null,
+        "project_name": "atd-cr3-api",
+        "runtime": "python3.7",
+        "aws_region": "us-east-1",
+        "s3_bucket": "atd-lambda-functions",
+        "domain": "atd-vz-api.austinmobility.io",
+        "certificate_arn": "arn:aws:acm:us-east-1:295525487728:certificate/21a90b0f-d638-4d3c-9784-74ec2b232083",
+        "aws_environment_variables": {
+            "API_ENVIRONMENT": "PRODUCTION",
+            "AUTH0_DOMAIN": "atd-datatech.auth0.com",
+            "CLIENT_ID": "Y5Q304ADgUOYq8199aSgSxLEc6Xzdkb4",
+            "AWS_DEFALUT_REGION": "us-east-1",
+            "AWS_S3_CR3_LOCATION": "__see_lambda_function_for_values__",
+            "AWS_S3_BUCKET": "__see_lambda_function_for_values__",
+            "AWS_S3_KEY": "__see_lambda_function_for_values__",
+            "AWS_S3_SECRET": "__see_lambda_function_for_values__"
+        },
+        "tags": {
+            "project": "atd-vz-data",
+            "environment": "production"
+        }
+    },
+    "staging": {
+        "app_function": "server.APP",
+        "profile_name": null,
+        "project_name": "atd-cr3-api",
+        "runtime": "python3.7",
+        "s3_bucket": "atd-lambda-functions",
+        "aws_region": "us-east-1",
+        "domain": "atd-vz-api-staging.austinmobility.io",
+        "certificate_arn": "arn:aws:acm:us-east-1:295525487728:certificate/ae2d52ac-3681-41af-8f1c-184cb7942ec6",
+        "aws_environment_variables": {
+            "API_ENVIRONMENT": "STAGING",
+            "AUTH0_DOMAIN": "atd-datatech.auth0.com",
+            "CLIENT_ID": "2qbqz2sf8L9idBOwn0d5YA9efNgQbL7c",
+            "AWS_DEFALUT_REGION": "us-east-1",
+            "AWS_S3_CR3_LOCATION": "__see_lambda_function_for_values__",
+            "AWS_S3_BUCKET": "__see_lambda_function_for_values__",
+            "AWS_S3_KEY": "__see_lambda_function_for_values__",
+            "AWS_S3_SECRET": "__see_lambda_function_for_values__"
+        },
+        "tags": {
+            "project": "atd-vz-data",
+            "environment": "staging"
+        }
+    }
+}

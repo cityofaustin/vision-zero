@@ -38,8 +38,6 @@ const Modals = React.lazy(() => import("./views/Notifications/Modals"));
 const Colors = React.lazy(() => import("./views/Theme/Colors"));
 const Typography = React.lazy(() => import("./views/Theme/Typography"));
 const Widgets = React.lazy(() => import("./views/Widgets/Widgets"));
-const Users = React.lazy(() => import("./views/Users/Users"));
-const User = React.lazy(() => import("./views/Users/User"));
 const Dev = React.lazy(() => import("./views/Dev/Dev"));
 const Crashes = React.lazy(() => import("./views/Crashes/Crashes"));
 const Crash = React.lazy(() => import("./views/Crashes/Crash"));
@@ -130,8 +128,6 @@ const routes = [
   { path: "/dev/widgets", name: "Widgets", component: Widgets },
   { path: "/dev/charts", name: "Charts", component: Charts },
   { path: "/profile", name: "Profile", component: Profile },
-  { path: "/users", exact: true, name: "Users", component: Users },
-  { path: "/users/:id", exact: true, name: "User Details", component: User },
   { path: "/dashboard", name: "Dashboard", component: VZDashboard },
   { path: "/locations", exact: true, name: "Locations", component: Locations },
   {

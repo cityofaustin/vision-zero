@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import {
   UncontrolledDropdown,
   DropdownItem,
@@ -44,11 +44,6 @@ class DefaultHeader extends Component {
             <NavLink to="/dashboard" className="nav-link">
               Dashboard
             </NavLink>
-          </NavItem>
-          <NavItem className="px-3">
-            <Link to="/users" className="nav-link">
-              Users
-            </Link>
           </NavItem>
         </Nav>
         <Nav className="ml-auto" navbar>
