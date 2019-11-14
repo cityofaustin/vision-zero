@@ -5,41 +5,63 @@ import moment from "moment";
 import { Container, Row, Col } from "reactstrap";
 
 const YearsOfLifeLost = () => {
+  const today = moment().format("YYYY-MM-DD");
+  const todayMonthYear = moment().format("-MM-DD");
   const thisYear = moment().format("YYYY");
   const lastYear = moment()
     .subtract(1, "year")
     .format("YYYY");
 
-  console.log("test");
-
-  const yearToDateUrl = `https://data.austintexas.gov/resource/e4ms-uusv.json?$where=year = '${thisYear}' AND stat_type = 'years_of_life_lost'`;
-  const previousYearUrl = `https://data.austintexas.gov/resource/e4ms-uusv.json?$where=year = '${lastYear}' AND stat_type = 'years_of_life_lost'`;
+  const yearToDateUrl = `https://data.austintexas.gov/resource/xecs-rpy9.json?$where=prsn_injry_sev_id = '4' AND crash_date between '${thisYear}-01-01T00:00:00' and '${today}T23:59:59'`;
+  const previousYearUrl = `https://data.austintexas.gov/resource/xecs-rpy9.json?$where=prsn_injry_sev_id = '4' AND crash_date between '${lastYear}-01-01T00:00:00' and '${lastYear}${todayMonthYear}T23:59:59'`;
 
   const [yearToDateYearsLostTotal, setYearToDateYearsLostTotal] = useState(0);
-  const [lastYearToDateYearsLostTotal, setLastYearToDateYearsLostTotal] = useState(0);
+  const [
+    lastYearToDateYearsLostTotal,
+    setLastYearToDateYearsLostTotal
+  ] = useState(0);
+
+  const getYearsOfLifeLost = fatalityData => {
+    // Assume 75 year life expectancy,
+    // Find the difference between person.prsn_age & 75
+    // Sum over the list of ppl with .reduce
+    return fatalityData.reduce((accumulator, fatalityRecord) => {
+      let years = 0;
+      if (fatalityRecord.prsn_age !== undefined) {
+        let yearsLifeLost = 75 - Number(fatalityRecord.prsn_age);
+        // What if the person is older than 75?
+        // For now, so we don't have negative numbers,
+        // Assume years of life lost is 0
+        years = yearsLifeLost < 0 ? 0 : yearsLifeLost;
+      }
+      return accumulator + years;
+    }, 0); // start with a count at 0 years
+  };
+
+  // const getYearsOfLifeLostAlt = fatalityData => {
+  //   let totalYearsOfLifeLost = 0;
+  //   fatalityData.forEach(fatalityRecord => {
+  //     if (fatalityRecord.prsn_age !== undefined) {
+  //       let yearsOfLifeLost = 75 - parseInt(fatalityRecord.prsn_age);
+  //       if (yearsOfLifeLost > 0) {
+  //         totalYearsOfLifeLost += yearsOfLifeLost;
+  //       }
+  //     }
+  //   });
+  //   return totalYearsOfLifeLost;
+  // };
 
   useEffect(() => {
     // Fetch year-to-date records
     axios.get(yearToDateUrl).then(res => {
-      setYearToDateYearsLostTotal(res.data[0].stat_value);
+      setYearToDateYearsLostTotal(getYearsOfLifeLost(res.data));
     });
 
     // Fetch last year-to-date records
     axios.get(previousYearUrl).then(res => {
-      setLastYearToDateYearsLostTotal(res.data[0].stat_value);
+      setLastYearToDateYearsLostTotal(getYearsOfLifeLost(res.data));
     });
   }, [yearToDateUrl, previousYearUrl]);
-
-  axios.get({
-    url: "https://data.austintexas.gov/resource/xecs-rpy9.json",
-    type: "GET",
-    data: {
-      "$limit" : 5000,
-      "$$app_token" : "YOURAPPTOKENHERE"
-    }
-  }).then(res => {
-    console.log(res)
-  });
 
   return (
     <Container>
