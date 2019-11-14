@@ -77,6 +77,12 @@ BEGIN
             NEW.apd_confirmed_fatality = 'N';
         END IF;
     END IF;
+    -- If the death count is any different from the original, then it is human-manipulated.
+    IF (NEW.apd_confirmed_death_count = NEW.death_cnt) THEN
+        NEW.apd_human_update = 'N';
+    ELSE
+        NEW.apd_human_update = 'Y';
+    END IF;
     -- END OF APD's DEATH COUNT
 
     ------------------------------------------------------------------------------------------
@@ -124,3 +130,5 @@ BEGIN
     RETURN NEW;
 END;
 $function$
+
+ALTER FUNCTION atd_txdot_crashes_updates_audit_log() OWNER TO atd_vz_data;
