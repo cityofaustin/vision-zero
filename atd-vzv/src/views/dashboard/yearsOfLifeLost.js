@@ -38,19 +38,6 @@ const YearsOfLifeLost = () => {
     }, 0); // start with a count at 0 years
   };
 
-  // const getYearsOfLifeLostAlt = fatalityData => {
-  //   let totalYearsOfLifeLost = 0;
-  //   fatalityData.forEach(fatalityRecord => {
-  //     if (fatalityRecord.prsn_age !== undefined) {
-  //       let yearsOfLifeLost = 75 - parseInt(fatalityRecord.prsn_age);
-  //       if (yearsOfLifeLost > 0) {
-  //         totalYearsOfLifeLost += yearsOfLifeLost;
-  //       }
-  //     }
-  //   });
-  //   return totalYearsOfLifeLost;
-  // };
-
   useEffect(() => {
     // Fetch year-to-date records
     axios.get(yearToDateUrl).then(res => {
