@@ -110,15 +110,17 @@ def flatten_hasura_response(records):
                             print(f"Nested: {value}")
                             for nested_key, nested_value in value.items():
                                 if nested_key in formatted_record.keys():
+                                    # If key already exists at top-level, concat with existing values
                                     next_record = f"|{nested_value}"
-                                    # Need to join records here
-                                    formatted_record[nested_key] = formatted_record[nested_key] += next_record
+                                    formatted_record[nested_key] = formatted_record[nested_key] + next_record
                                 else:
+                                    # Create key at top-level
                                     formatted_record[nested_key] = nested_value
                         # Copy non-nested key-values to top-level
                         else:
                             formatted_record[key] = value
-                # del formatted_record[k]
+                # Remove key with values that were moved to top-level
+                del formatted_record[k]
         formatted_records.append(formatted_record)
     return formatted_records
 
