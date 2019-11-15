@@ -19,7 +19,7 @@ import json
 import os
 import time
 from process.config import ATD_ETL_CONFIG
-print("Socrata - Exporter:  Not yet implemented.")
+print("Socrata - Exporter:  Started.")
 print("SOCRATA_KEY_ID: " + ATD_ETL_CONFIG["SOCRATA_KEY_ID"])
 print("SOCRATA_KEY_SECRET: " + ATD_ETL_CONFIG["SOCRATA_KEY_SECRET"])
 
@@ -105,6 +105,25 @@ def rename_record_columns(record):
     return record
 
 
+unit_modes = ["MOTOR VEHICLE",
+              "PEDALCYCLIST",
+              "PEDESTRIAN",
+              "MOTORIZED CONVEYANCE"]
+
+
+def create_mode_flags(record):
+    if "unit_mode" in record.keys():
+        for mode in unit_modes:
+            formatted_mode = mode.replace(" ", "_").replace(
+                "/", "_").replace("-", "_").lower()
+            record_flag_column = f"{formatted_mode}_fl"
+            if mode in record["unit_mode"]:
+                record[record_flag_column] = "Y"
+            else:
+                record[record_flag_column] = "N"
+    return record
+
+
 def flatten_hasura_response(records):
     formatted_records = []
     for record in records:
@@ -122,7 +141,7 @@ def flatten_hasura_response(records):
                             for nested_key, nested_value in value.items():
                                 if nested_key in formatted_record.keys():
                                     # If key already exists at top-level, concat with existing values
-                                    next_record = f"&{nested_value}"
+                                    next_record = f" & {nested_value}"
                                     formatted_record[nested_key] = formatted_record[nested_key] + next_record
                                 else:
                                     # Create key at top-level
@@ -140,6 +159,7 @@ def flatten_hasura_response(records):
                 # Remove key with values that were moved to top-level
                 del formatted_record[k]
         formatted_record = rename_record_columns(formatted_record)
+        formatted_record = create_mode_flags(formatted_record)
         formatted_records.append(formatted_record)
     return formatted_records
 
@@ -150,7 +170,7 @@ start = time.time()
 # while loop to request records from Hasura and post to Socrata
 records = None
 offset = 0
-limit = 5000
+limit = 6000
 total_records_published = 0
 
 # Get records from Hasura until res is []
