@@ -15,30 +15,25 @@ of whatever environment this script runs. Be sure to provide the
 The application requires the requests library:
     https://pypi.org/project/requests/
 """
-
-import sys
+import time
 import signal
 import json
-import glob
 import concurrent.futures
-
-# Setting up a concurrency of 10 max_threads, that should be enough.
-# We will need to test how much more ESRI will allow us to run reliably.
-#
-# with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
-# 	executor.map(process_crash, crash_data['data']['atd_txdot_crashes'])
-# with ThreadPoolExecutor(max_workers=1) as executor:
-#     future = executor.submit(pow, 323, 1235)
-#     print(future.result())
 
 # We need to import our configuration, helpers and request methods
 from process.config import ATD_ETL_CONFIG
-from process.helpers import *
 from process.request import *
+from process.helpers_import import *
 
 
 # Global Variable to signal execution stop
 STOP_EXEC = False
+
+# We need global counts:
+records_skipped = 0
+records_inserted = 0
+existing_records = 0
+insert_errors = 0
 
 
 def keyboard_interrupt_handler(signal, frame):
@@ -53,34 +48,139 @@ def keyboard_interrupt_handler(signal, frame):
     STOP_EXEC = True
 
 
+def process_line(file_type, line, fieldnames, current_line):
+    """
+    Will process a single CSV line and will try to check if
+    the record already exists and attempt insertion.
+    :param file_type: string - the file type
+    :param line: string - the csv line to process
+    :param fieldnames: array of strings - an array of strings container the table headers
+    :param current_line: int - the current line in the csv being read
+    :return:
+    """
+    global STOP_EXEC
+    if STOP_EXEC:
+        print("Stop signal detected.")
+        exit(1)
+
+    global existing_records, records_inserted, insert_errors
+    # Read the crash_id from the current line
+    # Applies to: crashes, unit, person, primary person, charges
+    crash_id = line.strip().split(",")[0]
+
+    # First we need to check if the current record exists, skip if so.
+    if record_exists_hook(line=line, type=file_type):
+        print("[%s] Exists: %s (%s)" % (str(current_line), str(crash_id), file_type))
+        existing_records += 1
+
+    # The record does not exist, insert.
+    else:
+        # Generate query and present to terminal
+        gql = generate_gql(line=line, fieldnames=fieldnames, type=file_type)
+        print("[%s] Inserting: %s \n %s \n" % (str(current_line), str(crash_id), gql))
+
+        # Make actual Insertion
+        # response = run_query(gql)
+
+        response = {
+            "errors": "There is an error"
+        }
+
+        print("[%s] Response: %s \n %s \n" % (str(current_line), str(crash_id), json.dumps(response)))
+
+        # If there is an error, run the hook.
+        if "errors" in response:
+            # Gather from this function if we need to stop the execution.
+            stop_execution = handle_record_error_hook(line=line, gql=gql, type=file_type)
+            if stop_execution:
+                print(json.dumps(response))
+                insert_errors += 1
+                STOP_EXEC = True
+                exit(1)
+
+        # Record Inserted
+        records_inserted += 1
+
+
+def process_file(file_path, file_type, skip_lines):
+    """
+    It reads an individual CSV file and processes each line into the database.
+    :param file_path: string - the full path location of the csv file
+    :param file_type: string - the file type: crash, unit, person, primaryperson, charges
+    :param skip_lines: int - the number of lines to skip (0 if none)
+    :return:
+    """
+    FILE_PATH = file_path
+    FILE_TYPE = file_type
+    FILE_SKIP_ROWS = skip_lines
+
+    global STOP_EXEC, records_skipped
+
+    # Print what we are currently doing, and where we are going to insert data.
+    print("Processing file '%s' of type '%s', skipping: '%s'" % (FILE_PATH, FILE_TYPE, FILE_SKIP_ROWS))
+    print("Endpoint: %s" % ATD_ETL_CONFIG["HASURA_ENDPOINT"])
+
+    # Current line tracker
+    current_line = 0
+
+    # This array stores the header names taken from the CSV file,
+    # this will later be used to generate our graphql queries.
+    fieldnames = []
+
+    # This will hold the official number of rows being skipped, just to be safe.
+    # If FILE_SKIP_ROWS contains no value, assumes 0 rows to be skipped.
+    skip_rows_parsed = int(FILE_SKIP_ROWS) if FILE_SKIP_ROWS != "" else 0
+    print("We are skipping: %d" % skip_rows_parsed)
+
+    # Open FILE_PATH as a file pointer:
+    with open(FILE_PATH) as fp:
+        # Read first line
+        line = fp.readline()
+
+        # Then read the first line
+        with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
+
+            # While we haven't reached the EOF
+            while line:
+                if current_line == 0:
+                    # Then split each word and use as field names for our GraphQL query
+                    fieldnames = line.strip().split(",")
+                else:
+                    # Skipping `skip_rows_parsed` number of lines
+                    if skip_rows_parsed != 0 and skip_rows_parsed >= current_line:
+                        current_line += 1
+                        records_skipped += 1
+                        line = fp.readline()  # Move pointer to next line
+                        continue
+
+                    # Process The Line, if no interrupt in place
+                    if not(STOP_EXEC):
+                        # Allow time for an interrupt to take place
+                        time.sleep(.01)
+
+                        # Submit thread to executor
+                        executor.submit(process_line, FILE_TYPE, line, fieldnames, current_line)
+
+                # Keep adding to current line
+                current_line += 1
+                # Move pointer to next line
+                line = fp.readline()
+
+    print("\n------------------------------------------\n")
+    print("Total Skipped Records: %s" % (records_skipped))
+    print("Total Existing Records: %s" % (existing_records))
+    print("Total Records Inserted: %s" % (records_inserted))
+    print("Total Errors: %s" % (insert_errors))
+    print("")
+
+
 # We register our handler in the interrupt hook
 signal.signal(signal.SIGINT, keyboard_interrupt_handler)
 
+print("Running import script, gathering configuration.")
+IMPORT_CONFIG = generate_run_config()
 
-# First the file type, ie: 'crash', 'charges', 'units', 'person' or 'primary person'.
-# This string must match with the export_*.csv file name.
-FILE_TYPE = str(sys.argv[1]).lower()
-
-# Secondly, we need to know how many rows to skip
-try:
-    # The user should also be able to specify how many rows to skip on the 3rd argument
-    FILE_SKIP_ROWS = sys.argv[2]
-except:
-    # Otherwise, skip none.
-    FILE_SKIP_ROWS = 0
-
-if FILE_TYPE == "":
-    print("No File Type provided")
-    exit(1)
-
-
-for
-FILE_LIST = glob.glob("/data/extract_*%s*.csv" % FILE_TYPE)
-
-for CURRENT_FILE in FILE_LIST:
-    print("Processing file: '%s'" % CURRENT_FILE)
-
-    print("Skipping Lines: %s" % FILE_SKIP_ROWS)
-
-
-
+print("Processing Files: ")
+for FILE in IMPORT_CONFIG["file_list"]:
+    print(FILE)
+    process_file(file_type=IMPORT_CONFIG["file_type"], file_path=FILE["file"], skip_lines=FILE["skip"])
