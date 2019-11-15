@@ -179,7 +179,7 @@ export const crashGridTableAdvancedFilters = {
         },
       },
       {
-        id: "int_exludeprivdrive",
+        id: "int_excludeprivdrive",
         label: "Exclude Private Driveway Crashes",
         filter: {
           where: [{ private_dr_fl: '_neq: "Y"' }],
