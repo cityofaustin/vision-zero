@@ -43,7 +43,7 @@ export const crashGridTableColumns = {
   apd_confirmed_death_count: {
     searchable: false,
     sortable: true,
-    label_table: "Death Count",
+    label_table: "APD Death Count",
     type: "Date",
   },
   "collision { collsn_desc } ": {
@@ -66,10 +66,17 @@ export const crashGridTableAdvancedFilters = {
     label: "Deaths & Injuries",
     filters: [
       {
-        id: "dni_deaths",
-        label: "Deaths",
+        id: "dni_apd_deaths",
+        label: "APD Confirmed Deaths",
         filter: {
           where: [{ or: { apd_confirmed_death_count: "_gt: 0" } }],
+        },
+      },
+      {
+        id: "dni_cris_deaths",
+        label: "CRIS Deaths",
+        filter: {
+          where: [{ or: { death_cnt: "_gt: 0" } }],
         },
       },
       {
@@ -169,6 +176,13 @@ export const crashGridTableAdvancedFilters = {
         label: "No Case Number",
         filter: {
           where: [{ case_id: "_is_null: true" }],
+        },
+      },
+      {
+        id: "int_exludeprivdrive",
+        label: "Exclude Private Driveway Crashes",
+        filter: {
+          where: [{ private_dr_fl: '_neq: "Y"' }],
         },
       },
     ],
