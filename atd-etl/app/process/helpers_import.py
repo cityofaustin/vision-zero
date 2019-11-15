@@ -282,6 +282,7 @@ def generate_run_config():
 
     # Our dictionary template
     config = {
+        "file_dryrun": False,
         "file_type": "",
         "file_list_raw": [],
         "skip_rows_raw": []
@@ -301,6 +302,18 @@ def generate_run_config():
         config["skip_rows_raw"] = sr_expression.split(",")
     except:
         config["skip_rows_raw"] = []
+
+    # We need to determine if this is a dry-run
+    try:
+        if "--dryrun" in sys.argv:
+            config["file_dryrun"] = True
+            print("WE SHEEE DRY MODE")
+        else:
+            config["file_dryrun"] = False
+            print("DO NOT SHEEE DRY MODE")
+    except:
+        config["file_dryrun"] = False
+        print("Dry-run not defined, assuming runing without dry-run mode.")
 
     # Gather the list of files
     config["file_list_raw"] = get_file_list(type=config["file_type"])

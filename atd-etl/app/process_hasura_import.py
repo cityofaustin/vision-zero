@@ -35,7 +35,6 @@ records_inserted = 0
 existing_records = 0
 insert_errors = 0
 
-
 def keyboard_interrupt_handler(signal, frame):
     """
     Handles keyboard interrputs (ie. Control+C) and signals the script to stop.
@@ -48,7 +47,7 @@ def keyboard_interrupt_handler(signal, frame):
     STOP_EXEC = True
 
 
-def process_line(file_type, line, fieldnames, current_line):
+def process_line(file_type, line, fieldnames, current_line, dryrun=False):
     """
     Will process a single CSV line and will try to check if
     the record already exists and attempt insertion.
@@ -80,11 +79,14 @@ def process_line(file_type, line, fieldnames, current_line):
         print("[%s] Inserting: %s \n %s \n" % (str(current_line), str(crash_id), gql))
 
         # Make actual Insertion
-        # response = run_query(gql)
-
-        response = {
-            "errors": "There is an error"
-        }
+        if dryrun:
+            print("\t[Dry-run] Inserting: %s" + gql)
+            response = {
+                "message": "dry run, no record actually inserted"
+            }
+        else:
+            #response = run_query(gql)
+            print("Whaddup")
 
         print("[%s] Response: %s \n %s \n" % (str(current_line), str(crash_id), json.dumps(response)))
 
@@ -102,7 +104,7 @@ def process_line(file_type, line, fieldnames, current_line):
         records_inserted += 1
 
 
-def process_file(file_path, file_type, skip_lines):
+def process_file(file_path, file_type, skip_lines, dryrun=False):
     """
     It reads an individual CSV file and processes each line into the database.
     :param file_path: string - the full path location of the csv file
@@ -117,9 +119,11 @@ def process_file(file_path, file_type, skip_lines):
     global STOP_EXEC, records_skipped
 
     # Print what we are currently doing, and where we are going to insert data.
+    print("\n\n------------------------------------------")
     print("Processing file '%s' of type '%s', skipping: '%s'" % (FILE_PATH, FILE_TYPE, FILE_SKIP_ROWS))
     print("Endpoint: %s" % ATD_ETL_CONFIG["HASURA_ENDPOINT"])
-
+    print("Dry-run mode enabled: " + str(dryrun))
+    print("------------------------------------------")
     # Current line tracker
     current_line = 0
 
@@ -130,7 +134,9 @@ def process_file(file_path, file_type, skip_lines):
     # This will hold the official number of rows being skipped, just to be safe.
     # If FILE_SKIP_ROWS contains no value, assumes 0 rows to be skipped.
     skip_rows_parsed = int(FILE_SKIP_ROWS) if FILE_SKIP_ROWS != "" else 0
-    print("We are skipping: %d" % skip_rows_parsed)
+
+    # We proceed as normal
+    print("We are skipping: %s" % (str(skip_rows_parsed) if skip_rows_parsed >= 0 else "all records"))
 
     # Open FILE_PATH as a file pointer:
     with open(FILE_PATH) as fp:
@@ -147,7 +153,7 @@ def process_file(file_path, file_type, skip_lines):
                     fieldnames = line.strip().split(",")
                 else:
                     # Skipping `skip_rows_parsed` number of lines
-                    if skip_rows_parsed != 0 and skip_rows_parsed >= current_line:
+                    if (skip_rows_parsed != 0 and skip_rows_parsed >= current_line) or (skip_rows_parsed == -1):
                         current_line += 1
                         records_skipped += 1
                         line = fp.readline()  # Move pointer to next line
@@ -159,14 +165,14 @@ def process_file(file_path, file_type, skip_lines):
                         time.sleep(.01)
 
                         # Submit thread to executor
-                        executor.submit(process_line, FILE_TYPE, line, fieldnames, current_line)
+                        executor.submit(process_line, FILE_TYPE, line, fieldnames, current_line, dryrun)
 
                 # Keep adding to current line
                 current_line += 1
                 # Move pointer to next line
                 line = fp.readline()
-
-    print("\n------------------------------------------\n")
+    print("------------------------------------------")
+    print("Overall thus far:")
     print("Total Skipped Records: %s" % (records_skipped))
     print("Total Existing Records: %s" % (existing_records))
     print("Total Records Inserted: %s" % (records_inserted))
@@ -182,5 +188,4 @@ IMPORT_CONFIG = generate_run_config()
 
 print("Processing Files: ")
 for FILE in IMPORT_CONFIG["file_list"]:
-    print(FILE)
-    process_file(file_type=IMPORT_CONFIG["file_type"], file_path=FILE["file"], skip_lines=FILE["skip"])
+    process_file(file_type=IMPORT_CONFIG["file_type"], file_path=FILE["file"], skip_lines=FILE["skip"], dryrun=IMPORT_CONFIG["file_dryrun"])
