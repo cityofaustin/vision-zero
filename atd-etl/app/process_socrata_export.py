@@ -92,6 +92,18 @@ crashes_query_template = Template(
 """
 )
 
+columns_to_rename = {
+    "veh_body_styl_desc": "unit_desc",
+    "veh_unit_desc_desc": "unit_mode",
+}
+
+
+def rename_record_columns(record):
+    for k, v in columns_to_rename.items():
+        if k in record.keys():
+            record[v] = record.pop(k)
+    return record
+
 
 def flatten_hasura_response(records):
     formatted_records = []
@@ -107,20 +119,27 @@ def flatten_hasura_response(records):
                         # Handle nested values
                         if type(value) == dict:
                             # Handles concat of values here
-                            print(f"Nested: {value}")
                             for nested_key, nested_value in value.items():
                                 if nested_key in formatted_record.keys():
                                     # If key already exists at top-level, concat with existing values
-                                    next_record = f"|{nested_value}"
+                                    next_record = f"&{nested_value}"
                                     formatted_record[nested_key] = formatted_record[nested_key] + next_record
                                 else:
                                     # Create key at top-level
                                     formatted_record[nested_key] = nested_value
-                        # Copy non-nested key-values to top-level
-                        else:
+                        # Copy non-nested key-values to top-level (if not null)
+                        # Null records can create unwanted columns at top level of record
+                        # from keys of nested data Ex.
+                        # "body_style": {
+                        #       "veh_body_styl_desc": "PICKUP"
+                        # }
+                        #         VS.
+                        # "body_style": null
+                        elif value is not None:
                             formatted_record[key] = value
                 # Remove key with values that were moved to top-level
                 del formatted_record[k]
+        formatted_record = rename_record_columns(formatted_record)
         formatted_records.append(formatted_record)
     return formatted_records
 
@@ -130,29 +149,32 @@ start = time.time()
 
 # while loop to request records from Hasura and post to Socrata
 records = None
-offset = 3
-limit = 1
+offset = 0
+limit = 5000
 total_records_published = 0
 
 # Get records from Hasura until res is []
-# while records != []:
-#     crashes_query = crashes_query_template.substitute(
-#         limit=limit, offset=offset)
-#     offset += limit
-#     crashes = run_hasura_query(crashes_query)
-#     records = crashes['data']['atd_txdot_crashes']
+while records != []:
+    crashes_query = crashes_query_template.substitute(
+        limit=limit, offset=offset)
+    offset += limit
+    crashes = run_hasura_query(crashes_query)
+    records = crashes['data']['atd_txdot_crashes']
 
-#     # Upsert records to Socrata
-#     client.upsert("rrxh-grh6", records)
-#     total_records_published += len(records)
-#     print(f"{total_records_published} records published")
+    # Upsert records to Socrata
+    formatted_records = flatten_hasura_response(records)
+    client.upsert("rrxh-grh6", formatted_records)
+    total_records_published += len(records)
+    print(f"{total_records_published} records published")
 
-crashes_query = crashes_query_template.substitute(
-    limit=limit, offset=offset)
-crashes = run_hasura_query(crashes_query)
-records = crashes['data']['atd_txdot_crashes']
-formatted_records = flatten_hasura_response(records)
-print(formatted_records[0])
+# Hasura test request
+
+# crashes_query = crashes_query_template.substitute(
+#     limit=limit, offset=offset)
+# crashes = run_hasura_query(crashes_query)
+# records = crashes['data']['atd_txdot_crashes']
+# formatted_records = flatten_hasura_response(records)
+# print(formatted_records[4])
 
 
 # Terminate Socrata connection
