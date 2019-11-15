@@ -38,15 +38,19 @@ const YearsOfLifeLost = () => {
     }, 0); // start with a count at 0 years
   };
 
+  const formatNumber = number => {
+    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  };
+
   useEffect(() => {
     // Fetch year-to-date records
     axios.get(yearToDateUrl).then(res => {
-      setYearToDateYearsLostTotal(getYearsOfLifeLost(res.data));
+      setYearToDateYearsLostTotal(formatNumber(getYearsOfLifeLost(res.data)));
     });
 
     // Fetch last year-to-date records
     axios.get(previousYearUrl).then(res => {
-      setLastYearToDateYearsLostTotal(getYearsOfLifeLost(res.data));
+      setLastYearToDateYearsLostTotal(formatNumber(getYearsOfLifeLost(res.data)));
     });
   }, [yearToDateUrl, previousYearUrl]);
 
