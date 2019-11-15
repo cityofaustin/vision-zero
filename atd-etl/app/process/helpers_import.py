@@ -6,6 +6,8 @@ Description: The purpose of this script is to provide any methods that
 assist any script associated to this application.
 """
 
+import sys
+import glob
 import csv
 import io
 import re
@@ -238,11 +240,104 @@ def record_exists_hook(line, type):
 
 
 def handle_record_error_hook(line, gql, type):
+    """
+    Returns true to stop the execution of this script, false to mark as a non-error and move on.
+    :param line: string - the csv line being processed
+    :param gql: string - the graphql query that was at fault
+    :param type: string - the type of record being processed
+    :return: bool - True to signal error and stop execution, False otherwise.
+    """
+
+    # If this is a crash, we want to know why it didn't insert, so we need to stop.
     if type == "crash":
         print(gql)
         return True
 
+    # If not a crash, we are not interested to know what happened. Move on to next one.
+    # This is because the other records do not have a primary key, so to avoid duplicates
+    # we rely on unique indexes. So if a duplicate record tries to insert, it just fails.
+    # So there is no need to stop the rest of the execution.
     else:
         crash_id = get_crash_id(line)
         print("Error skipping: %s (%s)" % (crash_id, type))
         return False
+
+
+def get_file_list(type):
+    """
+    Returns a list of all files to be processed
+    :param type: string - The type to be used: crash, charges, person, primaryperson, unit
+    :return: array
+    """
+    return glob.glob("/data/extract_*%s*.csv" % type)
+
+
+def generate_run_config():
+    """
+    It takes the arguments passed to the python script and it generates
+    a configuration json dictionary with a list of all csv files to process
+    and the number of lines to skip per file.
+    :return: dict
+    """
+
+    # Our dictionary template
+    config = {
+        "file_type": "",
+        "file_list_raw": [],
+        "skip_rows_raw": []
+    }
+
+    # First we try to get the file type from the 1st argument
+    try:
+        config["file_type"] = str(sys.argv[1]).lower()
+    except:
+        # Or force quit, we really need it.
+        print("No file type provided")
+        exit(1)
+
+    # Gather a skip rows expressions
+    try:
+        sr_expression = str(sys.argv[2]).lower()
+        config["skip_rows_raw"] = sr_expression.split(",")
+    except:
+        config["skip_rows_raw"] = []
+
+    # Gather the list of files
+    config["file_list_raw"] = get_file_list(type=config["file_type"])
+
+    # Final list placeholder
+    finalFileList = []
+
+    # For every file in the list
+    for i in range(0, len(config["file_list_raw"])):
+        # Get the file path
+        file = config["file_list_raw"][i]
+
+        try:
+            # Try reading the number of lines in different array
+            # or assume zero on exception.
+            skip_lines_string = config["skip_rows_raw"][i]
+
+            # If this is a star, signal we are going to skip all lines.
+            if skip_lines_string == "*":
+                skip_lines_string = "-1"
+
+            # Parse string number into actual integer
+            skip_lines_value = int(skip_lines_string)
+        except:
+            # On failure assume zero
+            skip_lines_value = 0
+
+        # Append a mini-dictionary into the finalFileList
+        finalFileList.append({
+            "file": file,
+            "skip": skip_lines_value
+        })
+
+    # Assign to the final template the finalFileList array of dictionaries
+    config["file_list"] = finalFileList
+
+    # Return the config
+    return config
+
+
