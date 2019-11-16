@@ -35,6 +35,9 @@ records_inserted = 0
 existing_records = 0
 insert_errors = 0
 
+# Start timer
+start = time.time()
+
 def keyboard_interrupt_handler(signal, frame):
     """
     Handles keyboard interrputs (ie. Control+C) and signals the script to stop.
@@ -57,12 +60,15 @@ def process_line(file_type, line, fieldnames, current_line, dryrun=False):
     :param current_line: int - the current line in the csv being read
     :return:
     """
+    # Gather stop signal value
     global STOP_EXEC
+    # Do not run if there is stop signal
     if STOP_EXEC:
-        print("Stop signal detected.")
+        print("process_line(): Stop signal detected, halting program.")
         exit(1)
+        return
 
-    global existing_records, records_inserted, insert_errors
+    global existing_records, records_inserted, insert_errors, records_skipped
     # Read the crash_id from the current line
     # Applies to: crashes, unit, person, primary person, charges
     crash_id = line.strip().split(",")[0]
@@ -76,32 +82,46 @@ def process_line(file_type, line, fieldnames, current_line, dryrun=False):
     else:
         # Generate query and present to terminal
         gql = generate_gql(line=line, fieldnames=fieldnames, type=file_type)
-        print("[%s] Inserting: %s \n %s \n" % (str(current_line), str(crash_id), gql))
+        print("%s[%s] Inserting: %s \n %s \n" %
+              (("[Dry-Run]" if dryrun else "[Live]"),
+               str(current_line), str(crash_id), gql))
 
         # Make actual Insertion
         if dryrun:
-            print("\t[Dry-run] Inserting: %s" + gql)
+            # Dry-run, we need a fake response
             response = {
                 "message": "dry run, no record actually inserted"
             }
         else:
-            #response = run_query(gql)
-            print("Whaddup")
+            # Live Execution
+            response = run_query(gql)
 
-        print("[%s] Response: %s \n %s \n" % (str(current_line), str(crash_id), json.dumps(response)))
+        if "constraint-violation" in str(response):
+            print("%s[%s] Skipped (existing record): %s" %
+                  (("[Dry-Run]" if dryrun else "[live]"),
+                   str(current_line), str(crash_id)))
+        else:
+            print("%s[%s] Response: %s \n %s \n" %
+                  (("[Dry-Run]" if dryrun else "[live]"),
+                   str(current_line), str(crash_id),  json.dumps(response)))
 
         # If there is an error, run the hook.
         if "errors" in response:
             # Gather from this function if we need to stop the execution.
-            stop_execution = handle_record_error_hook(line=line, gql=gql, type=file_type)
+            stop_execution = handle_record_error_hook(line=line, gql=gql, type=file_type, response=response)
+
+            # If we are stopping we must make signal of it
             if stop_execution:
-                print(json.dumps(response))
                 insert_errors += 1
                 STOP_EXEC = True
                 exit(1)
+            # If we are not stopping execution, we are skipping the record
+            else:
+                records_skipped += 1
 
-        # Record Inserted
-        records_inserted += 1
+        else:
+            # An actual insertion was made
+            records_inserted += 1
 
 
 def process_file(file_path, file_type, skip_lines, dryrun=False):
@@ -115,8 +135,19 @@ def process_file(file_path, file_type, skip_lines, dryrun=False):
     FILE_PATH = file_path
     FILE_TYPE = file_type
     FILE_SKIP_ROWS = skip_lines
+    current_file_skipped_lines = 0
 
+    # Start a local timer
+    local_timer_start = time.time()
+
+    # Gather stop signal and records skipped
     global STOP_EXEC, records_skipped
+
+    # Do not run if there is stop signal
+    if STOP_EXEC:
+        print("process_file(): Stop signal detected.")
+        exit(1)
+        return
 
     # Print what we are currently doing, and where we are going to insert data.
     print("\n\n------------------------------------------")
@@ -156,6 +187,7 @@ def process_file(file_path, file_type, skip_lines, dryrun=False):
                     if (skip_rows_parsed != 0 and skip_rows_parsed >= current_line) or (skip_rows_parsed == -1):
                         current_line += 1
                         records_skipped += 1
+                        current_file_skipped_lines += 1
                         line = fp.readline()  # Move pointer to next line
                         continue
 
@@ -169,10 +201,21 @@ def process_file(file_path, file_type, skip_lines, dryrun=False):
 
                 # Keep adding to current line
                 current_line += 1
+
                 # Move pointer to next line
                 line = fp.readline()
+
+    if skip_lines == -1:
+        print("Skipped lines for this file: %s" % current_file_skipped_lines)
+
+    # Calculate and display the time it took for this specific file
+    local_timer_end = time.time()
+    local_timer_hours, local_timer_rem = divmod(local_timer_end - local_timer_start, 3600)
+    local_timer_minutes, local_timer_seconds = divmod(local_timer_rem, 60)
+    print("Current file finished in: {:0>2}:{:0>2}:{:05.2f}".format(int(local_timer_hours), int(local_timer_minutes), local_timer_seconds))
+
     print("------------------------------------------")
-    print("Overall thus far:")
+    print("Overall:")
     print("Total Skipped Records: %s" % (records_skipped))
     print("Total Existing Records: %s" % (existing_records))
     print("Total Records Inserted: %s" % (records_inserted))
@@ -188,4 +231,14 @@ IMPORT_CONFIG = generate_run_config()
 
 print("Processing Files: ")
 for FILE in IMPORT_CONFIG["file_list"]:
-    process_file(file_type=IMPORT_CONFIG["file_type"], file_path=FILE["file"], skip_lines=FILE["skip"], dryrun=IMPORT_CONFIG["file_dryrun"])
+    process_file(file_type=IMPORT_CONFIG["file_type"],
+                 file_path=FILE["file"],
+                 skip_lines=FILE["skip"],
+                 dryrun=IMPORT_CONFIG["file_dryrun"])
+
+
+# Calculate & print overall time
+end = time.time()
+hours, rem = divmod(end-start, 3600)
+minutes, seconds = divmod(rem, 60)
+print("Overall process finished in: {:0>2}:{:0>2}:{:05.2f}".format(int(hours),int(minutes),seconds))
