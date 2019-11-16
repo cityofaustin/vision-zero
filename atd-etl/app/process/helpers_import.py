@@ -16,6 +16,7 @@ import json
 # Dependencies
 from .queries import search_crash_query
 from .request import run_query
+from .helpers_import_filters import *
 
 
 def generate_template(name, function, fields):
@@ -41,39 +42,11 @@ def generate_template(name, function, fields):
         .replace("%FIELDS%", fields)
 
 
-def remove_field(input, fields):
-    """
-    Removes fields froma field list in a graphql query
-    :param input:
-    :param fields:
-    :return:
-    """
-    output = input
-    for field in fields:
-        output = re.sub(r"%s: ([a-zA-Z0-9\"]+)(, )?" % field, "", output)
-
-    return output
-
-
-def quote_numeric(input, fields):
-    """
-    Quotes a numeric value for graphql insertin
-    :param input:
-    :param fields:
-    :return:
-    """
-    output = input
-    for field in fields:
-        output = re.sub(r"%s: ([0-9]+)(,?)" % field, r'%s: "\1"\2' % field, output)
-
-    return output
-
-
 def lowercase_group_match(match):
     return match.group(1).lower() + ":"
 
 
-def generate_fields(line, fieldnames, remove_fields = [], quoted_numeric = []):
+def generate_fields(line, fieldnames, remove_fields = [], quoted_numeric = [], null_to_zero = []):
     """
     Generates a list of fields for graphql query
     :param line:
@@ -85,10 +58,41 @@ def generate_fields(line, fieldnames, remove_fields = [], quoted_numeric = []):
     fields = json.dumps([row for row in reader]) # Generate json
     fields = re.sub(r'"([a-zA-Z0-9_]+)":', lowercase_group_match, fields) # Clean the keys
     fields = re.sub(r'"([0-9\.]+)"', r'\1', fields) # Clean the values
-    fields = remove_field(fields, remove_fields) # Remove fields
+    fields = filter_remove_field(fields, fields=remove_fields) # Remove fields
     fields = fields.replace('""', "null").replace ("[{", "").replace("}]", "") # Clean up
     fields = fields.replace(", ", ", \n") # Break line
-    fields = quote_numeric(fields, quoted_numeric)  # Quote Numeric Text
+    fields = filter_quote_numeric(fields, fields=quoted_numeric)  # Quote Numeric Text
+    fields = filter_numeric_null_to_zero(fields, fields=null_to_zero)
+    fields = fields.replace(", ", "") # Remove commas
+    return fields
+
+
+def generate_fields_with_filters(line, fieldnames, filters = []):
+    """
+    Generates a list of fields for graphql query
+    :param line:
+    :param fieldnames:
+    :param remove_fields:
+    :return:
+    """
+    reader = csv.DictReader(f=io.StringIO(line), fieldnames=fieldnames, delimiter=',') # parse line
+    fields = json.dumps([row for row in reader]) # Generate json
+    fields = re.sub(r'"([a-zA-Z0-9_]+)":', lowercase_group_match, fields) # Clean the keys
+    fields = re.sub(r'"([0-9\.]+)"', r'\1', fields) # Clean the values
+    fields = fields.replace('""', "null").replace ("[{", "").replace("}]", "") # Clean up
+    fields = fields.replace(", ", ", \n") # Break line
+
+    # Apply filters
+    for filter_group in filters:
+        filter_function = filter_group[0]
+        filter_function_arguments = filter_group[1]
+
+        try:
+            fields = filter_function(input=fields, fields=filter_function_arguments)
+        except Exception as e:
+            print("Error when applying filter: %s" % str(e))
+
+    # Remove ending commas
     fields = fields.replace(", ", "") # Remove commas
     return fields
 
@@ -115,55 +119,61 @@ def generate_gql(line, fieldnames, type):
     """
 
     if type == "crash":
-        remove = []
-        numerictext = [
-            "id_number",
-            "case_id",
-            "street_nbr",
-            "street_name",
-            "surf_width",
-            "surf_type_id",
-            "hp_shldr_right",
-            "hp_shldr_left",
-            "hp_median_width",
-            "rpt_hwy_num",
-            "rpt_block_num",
-            "rpt_sec_block_num",
-            "rpt_sec_hwy_num",
-            "rpt_street_name",
-            "rpt_sec_street_name",
-            "rpt_sec_street_desc",
-            "rpt_ref_mark_nbr",
-            "roadbed_width",
-            "hwy_nbr",
-            "hwy_nbr_2",
-            "hwy_dsgn_hrt_id",
-            "base_type_id",
-            "nbr_of_lane",
-            "row_width_usual",
-            "hwy_dsgn_lane_id",
-            "local_use",
-            "ori_number",
-            "investigat_notify_meth",
-            "wdcode_id",
+
+        filters = [
+            [filter_quote_numeric, [
+                "id_number",
+                "case_id",
+                "street_nbr",
+                "street_name",
+                "surf_width",
+                "surf_type_id",
+                "hp_shldr_right",
+                "hp_shldr_left",
+                "hp_median_width",
+                "rpt_hwy_num",
+                "rpt_block_num",
+                "rpt_sec_block_num",
+                "rpt_sec_hwy_num",
+                "rpt_street_name",
+                "rpt_sec_street_name",
+                "rpt_sec_street_desc",
+                "rpt_ref_mark_nbr",
+                "roadbed_width",
+                "hwy_nbr",
+                "hwy_nbr_2",
+                "hwy_dsgn_hrt_id",
+                "base_type_id",
+                "nbr_of_lane",
+                "row_width_usual",
+                "hwy_dsgn_lane_id",
+                "local_use",
+                "ori_number",
+                "investigat_notify_meth",
+                "wdcode_id",
+                ]
+            ]
         ]
 
-        fields = generate_fields(line,
-                                 fieldnames,
-                                 remove_fields=remove,
-                                 quoted_numeric=numerictext)
+        fields = generate_fields_with_filters(line=line,
+                                              fieldnames=fieldnames,
+                                              filters=filters)
+
         return generate_template(name="insertCrashQuery",
                                  function="insert_atd_txdot_crashes",
                                  fields=fields)
 
     if type == "charges":
-        print("CHAAARGE")
-        remove = []
-        numerictext = []
-        fields = generate_fields(line,
-                                 fieldnames,
-                                 remove_fields=remove,
-                                 quoted_numeric=numerictext)
+        filters = [
+            [filter_numeric_null_to_zero, ["charge_cat_id"]],
+            [filter_text_null_to_empty, ["citation_nbr"]],
+            [filter_quote_numeric, ["citation_nbr"]]
+        ]
+
+        fields = generate_fields_with_filters(line=line,
+                                 fieldnames=fieldnames,
+                                 filters=filters)
+
         return generate_template(name="insertChargeQuery",
                                  function="insert_atd_txdot_charges",
                                  fields=fields)
@@ -239,7 +249,7 @@ def record_exists_hook(line, type):
     return False
 
 
-def handle_record_error_hook(line, gql, type):
+def handle_record_error_hook(line, gql, type, response = {}):
     """
     Returns true to stop the execution of this script, false to mark as a non-error and move on.
     :param line: string - the csv line being processed
@@ -258,9 +268,29 @@ def handle_record_error_hook(line, gql, type):
     # we rely on unique indexes. So if a duplicate record tries to insert, it just fails.
     # So there is no need to stop the rest of the execution.
     else:
-        crash_id = get_crash_id(line)
-        print("Error skipping: %s (%s)" % (crash_id, type))
-        return False
+        # We must ignore constraint-violation errors,
+        # it means we are trying to overwrite a record.
+        if "constraint-violation" in str(response):
+            return False
+        # Otherwise, this could be a legitimate problem,
+        # for which we must stop the execution
+        else:
+            print("""\n\n------------------------------------------
+Fatal Error
+-----------------------------------------
+CrashID:\t%s
+Line:   \t%s
+Type:   \t%s \n
+Query:  \t%s \n
+Response: %s \n
+------------------------------------------\n\n
+            """ % (
+                get_crash_id(line),
+                str(line).strip(), type, gql,
+                str(response)
+            ))
+            return True
+
 
 
 def get_file_list(type):
@@ -307,13 +337,11 @@ def generate_run_config():
     try:
         if "--dryrun" in sys.argv:
             config["file_dryrun"] = True
-            print("WE SHEEE DRY MODE")
         else:
             config["file_dryrun"] = False
-            print("DO NOT SHEEE DRY MODE")
     except:
         config["file_dryrun"] = False
-        print("Dry-run not defined, assuming runing without dry-run mode.")
+        print("Dry-run not defined, assuming running without dry-run mode.")
 
     # Gather the list of files
     config["file_list_raw"] = get_file_list(type=config["file_type"])
@@ -352,5 +380,3 @@ def generate_run_config():
 
     # Return the config
     return config
-
-
