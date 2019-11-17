@@ -53,6 +53,7 @@ The same pattern should be followed for any new filters.
 import re
 
 
+
 def filter_remove_field(input, fields):
     """
     Removes fields from field list in a graphql query
@@ -76,7 +77,7 @@ def filter_quote_numeric(input, fields):
     """
     output = input
     for field in fields:
-        output = re.sub(r"%s: ([0-9]+)(,?)" % field, r'%s: "\1"\2' % field, output)
+        output = re.sub(r"%s: ([0-9\.]+)(,?)" % field, r'%s: "\1"\2' % field, output)
 
     return output
 
