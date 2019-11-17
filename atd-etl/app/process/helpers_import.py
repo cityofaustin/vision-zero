@@ -10,7 +10,6 @@ import sys
 import glob
 import csv
 import io
-import re
 import json
 
 # Dependencies
@@ -46,6 +45,10 @@ def lowercase_group_match(match):
     return match.group(1).lower() + ":"
 
 
+def escape_double_quotes(match):
+    return ""
+
+
 def generate_fields(line, fieldnames, remove_fields = [], quoted_numeric = [], null_to_zero = []):
     """
     Generates a list of fields for graphql query
@@ -77,10 +80,22 @@ def generate_fields_with_filters(line, fieldnames, filters = []):
     """
     reader = csv.DictReader(f=io.StringIO(line), fieldnames=fieldnames, delimiter=',') # parse line
     fields = json.dumps([row for row in reader]) # Generate json
-    fields = re.sub(r'"([a-zA-Z0-9_]+)":', lowercase_group_match, fields) # Clean the keys
-    fields = re.sub(r'"([0-9\.]+)"', r'\1', fields) # Clean the values
-    fields = fields.replace('""', "null").replace ("[{", "").replace("}]", "") # Clean up
-    fields = fields.replace(", ", ", \n") # Break line
+
+    # Remove object characters
+    fields = fields.replace("[{", "").replace("}]", "")
+    # Lowercase the keys
+    fields = re.sub(r'"([a-zA-Z0-9_]+)":', lowercase_group_match, fields)
+
+    # Escape Quotes
+
+    # Remove quotes for numeric values
+    fields = re.sub(r'"([0-9\.]+)"', r'\1', fields)
+
+    # Remove turn empty strings into nulls
+    fields = fields.replace('""', "null")
+
+    # Break lines
+    fields = fields.replace(", ", ", \n")
 
     # Apply filters
     for filter_group in filters:
