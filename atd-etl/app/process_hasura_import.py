@@ -64,15 +64,13 @@ def process_line(file_type, line, fieldnames, current_line, dryrun=False):
     global STOP_EXEC
     # Do not run if there is stop signal
     if STOP_EXEC:
-        print("process_line(): Stop signal detected, halting program.")
-        exit(1)
         return
 
     global existing_records, records_inserted, insert_errors, records_skipped
     # Read the crash_id from the current line
     # Applies to: crashes, unit, person, primary person, charges
     crash_id = line.strip().split(",")[0]
-
+    mode = "[Dry-Run]" if dryrun else "[Live]"
     # First we need to check if the current record exists, skip if so.
     if record_exists_hook(line=line, type=file_type):
         print("[%s] Exists: %s (%s)" % (str(current_line), str(crash_id), file_type))
@@ -82,9 +80,7 @@ def process_line(file_type, line, fieldnames, current_line, dryrun=False):
     else:
         # Generate query and present to terminal
         gql = generate_gql(line=line, fieldnames=fieldnames, type=file_type)
-        print("%s[%s] Inserting: %s \n %s \n" %
-              (("[Dry-Run]" if dryrun else "[Live]"),
-               str(current_line), str(crash_id), gql))
+
 
         # Make actual Insertion
         if dryrun:
@@ -98,12 +94,10 @@ def process_line(file_type, line, fieldnames, current_line, dryrun=False):
 
         if "constraint-violation" in str(response):
             print("%s[%s] Skipped (existing record): %s" %
-                  (("[Dry-Run]" if dryrun else "[live]"),
-                   str(current_line), str(crash_id)))
+                  (mode, str(current_line), str(crash_id)))
         else:
-            print("%s[%s] Response: %s \n %s \n" %
-                  (("[Dry-Run]" if dryrun else "[live]"),
-                   str(current_line), str(crash_id),  json.dumps(response)))
+            print("%s[%s] Inserted: %s" %
+                  (mode, str(current_line), str(crash_id)))
 
         # If there is an error, run the hook.
         if "errors" in response:
@@ -115,9 +109,10 @@ def process_line(file_type, line, fieldnames, current_line, dryrun=False):
                 insert_errors += 1
                 STOP_EXEC = True
                 exit(1)
+                time.sleep(1)
             # If we are not stopping execution, we are skipping the record
             else:
-                records_skipped += 1
+                existing_records += 1
 
         else:
             # An actual insertion was made
