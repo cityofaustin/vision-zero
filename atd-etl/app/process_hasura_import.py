@@ -81,8 +81,7 @@ def process_line(file_type, line, fieldnames, current_line, dryrun=False):
         # Generate query and present to terminal
         gql = generate_gql(line=line, fieldnames=fieldnames, type=file_type)
 
-
-        # Make actual Insertion
+        # If this is not a dry-run, then make an actual insertion
         if dryrun:
             # Dry-run, we need a fake response
             response = {
@@ -92,15 +91,13 @@ def process_line(file_type, line, fieldnames, current_line, dryrun=False):
             # Live Execution
             response = run_query(gql)
 
+        # If there is a constraint-violation error in the response, show as skipped
         if "constraint-violation" in str(response):
             print("%s[%s] Skipped (existing record): %s" %
                   (mode, str(current_line), str(crash_id)))
-        else:
-            print("%s[%s] Inserted: %s" %
-                  (mode, str(current_line), str(crash_id)))
 
-        # If there is an error, run the hook.
-        if "errors" in response:
+        # For any other errors, run the error handler hook:
+        elif "errors" in str(response):
             # Gather from this function if we need to stop the execution.
             stop_execution = handle_record_error_hook(line=line, gql=gql, type=file_type, response=response)
 
@@ -113,9 +110,11 @@ def process_line(file_type, line, fieldnames, current_line, dryrun=False):
             # If we are not stopping execution, we are skipping the record
             else:
                 existing_records += 1
-
+        # If no errors, then we did insert the record successfully
         else:
             # An actual insertion was made
+            print("%s[%s] Inserted: %s" %
+                  (mode, str(current_line), str(crash_id)))
             records_inserted += 1
 
 
