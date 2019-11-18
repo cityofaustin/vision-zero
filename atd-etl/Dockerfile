@@ -8,10 +8,12 @@ RUN mkdir /app && mkdir /app/tmp && mkdir /data
 
 RUN apk add bash chromium chromium-chromedriver
 
-RUN pip install splinter selenium requests awscli
+RUN pip install splinter selenium requests awscli web-pdb
 
 WORKDIR /app
 
 COPY app /app
+
+EXPOSE 5555/tcp
 
 CMD ["bash"]
