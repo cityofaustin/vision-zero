@@ -340,7 +340,7 @@ def record_exists_hook(line, type):
     return False
 
 
-def handle_record_error_hook(line, gql, type, response = {}):
+def handle_record_error_hook(line, gql, type, response = {}, line_number = "n\a"):
     """
     Returns true to stop the execution of this script, false to mark as a non-error and move on.
     :param line: string - the csv line being processed
@@ -369,6 +369,7 @@ def handle_record_error_hook(line, gql, type, response = {}):
             print("""\n\n------------------------------------------
 Fatal Error
 -----------------------------------------
+Line:   \t%s 
 CrashID:\t%s
 Line:   \t%s
 Type:   \t%s \n
@@ -376,6 +377,7 @@ Query:  \t%s \n
 Response: %s \n
 ------------------------------------------\n\n
             """ % (
+                line_number,
                 get_crash_id(line),
                 str(line).strip(), type, gql,
                 str(response)
