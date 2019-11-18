@@ -70,6 +70,9 @@ def flatten_hasura_response(records):
                 del formatted_record[first_level_key]
             elif type(first_level_value) == dict:
                 # todo: Flatten key with value that is dict
+                for dict_key, dict_value in first_level_value.items():
+                    formatted_record[dict_key] = dict_value
+                    del formatted_record[first_level_key]
         formatted_records.append(formatted_record)
     return formatted_records
 
@@ -98,4 +101,12 @@ def rename_record_columns(records, columns_to_rename):
         for key, value in columns_to_rename.items():
             if key in record.keys():
                 record[value] = record.pop(key)
+    return records
+
+
+def add_value_prefix(records, prefix_dict):
+    for record in records:
+        for prefix_key, prefix_value in prefix_dict.items():
+            if prefix_key in record.keys():
+                record[prefix_key] = prefix_value + str(record[prefix_key])
     return records

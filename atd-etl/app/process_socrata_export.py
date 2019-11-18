@@ -97,7 +97,7 @@ people_query_template = Template(
 """
 )
 
-columns_to_rename = {
+crash_columns_to_rename = {
     "veh_body_styl_desc": "unit_desc",
     "veh_unit_desc_desc": "unit_mode",
 }
@@ -110,6 +110,15 @@ unit_modes = ["MOTOR VEHICLE",
               "TOWED/PUSHED/TRAILER",
               "NON-CONTACT",
               "OTHER"]
+
+person_id_prefixes = {
+    "person_id": "P",
+    "primaryperson_id": "PP",
+}
+
+person_columns_to_rename = {
+    "primaryperson_id": "person_id"
+}
 
 # Start timer
 start = time.time()
@@ -143,10 +152,17 @@ people_query = people_query_template.substitute(
     limit=limit, offset=offset)
 offset += limit
 people = run_hasura_query(people_query)
-records = people['data']['atd_txdot_person']
+person_records = people['data']['atd_txdot_person']
+person_records = add_value_prefix(person_records, person_id_prefixes)
+primary_person_records = people['data']['atd_txdot_primaryperson']
+primary_person_records = add_value_prefix(
+    primary_person_records, person_id_prefixes)
+people_records = person_records + primary_person_records
+people_records = rename_record_columns(
+    people_records, person_columns_to_rename)
 
 # Upsert records to Socrata
-formatted_records = flatten_hasura_response(records)
+formatted_records = flatten_hasura_response(people_records)
 print(formatted_records)
 # formatted_records = rename_record_columns(
 #     formatted_records, columns_to_rename)
