@@ -16,6 +16,12 @@ from copy import deepcopy
 from process.config import ATD_ETL_CONFIG
 
 
+def replace_chars(target_str, char_list, replacement_str):
+    for char in char_list:
+        target_str = target_str.replace(char, replacement_str)
+    return target_str
+
+
 def run_hasura_query(query):
 
     # Build Header with Admin Secret
@@ -81,8 +87,10 @@ def create_crash_mode_flags(records, unit_modes):
     for record in records:
         if "unit_mode" in record.keys():
             for mode in unit_modes:
-                formatted_mode = mode.replace(" ", "_").replace(
-                    "/", "_").replace("-", "_").lower()
+                chars_to_replace = ["/", " ", "-"]
+
+                formatted_mode = replace_chars(
+                    mode, chars_to_replace, "_").lower()
                 record_flag_column = f"{formatted_mode}_fl"
                 if mode in record["unit_mode"]:
                     record[record_flag_column] = "Y"

@@ -128,22 +128,25 @@ start = time.time()
 # while loop to request records from Hasura and post to Socrata
 records = None
 offset = 0
-limit = 1
+limit = 6000
 total_records_published = 0
 
 # Get records from Hasura until res is [] (Crashes)
 while records != []:
+    # Create query, increment offset, and query DB
     crashes_query = crashes_query_template.substitute(
         limit=limit, offset=offset)
     offset += limit
     crashes = run_hasura_query(crashes_query)
-    records = crashes['data']['atd_txdot_crashes']
 
-    # Upsert records to Socrata
+    # Format records
+    records = crashes['data']['atd_txdot_crashes']
     formatted_records = flatten_hasura_response(records)
     formatted_records = rename_record_columns(
-        formatted_records, columns_to_rename)
+        formatted_records, crash_columns_to_rename)
     formatted_records = create_crash_mode_flags(formatted_records, unit_modes)
+
+    # Upsert records to Socrata
     client.upsert("rrxh-grh6", formatted_records)
     total_records_published += len(records)
     print(f"{total_records_published} records published")
@@ -164,13 +167,13 @@ while records != []:
 #         people_records, person_columns_to_rename)
 
 # Upsert records to Socrata
-formatted_records = flatten_hasura_response(records)
-formatted_records = rename_record_columns(
-    formatted_records, columns_to_rename)
-formatted_records = create_crash_mode_flags(formatted_records, unit_modes)
-client.upsert("rrxh-grh6", formatted_records)
-total_records_published += len(records)
-print(f"{total_records_published} records published")
+# formatted_records = flatten_hasura_response(records)
+# formatted_records = rename_record_columns(
+#     formatted_records, columns_to_rename)
+# formatted_records = create_crash_mode_flags(formatted_records, unit_modes)
+# client.upsert("rrxh-grh6", formatted_records)
+# total_records_published += len(records)
+# print(f"{total_records_published} records published")
 
 # Terminate Socrata connection
 client.close()
