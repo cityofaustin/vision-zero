@@ -18,6 +18,7 @@ The application requires the requests library:
 import time
 import signal
 import json
+import logging
 import concurrent.futures
 
 # We need to import our configuration, helpers and request methods
@@ -25,6 +26,8 @@ from process.config import ATD_ETL_CONFIG
 from process.request import *
 from process.helpers_import import *
 
+# Disable logging
+logging.getLogger().setLevel(logging.CRITICAL)
 
 # Global Variable to signal execution stop
 STOP_EXEC = False
@@ -99,7 +102,8 @@ def process_line(file_type, line, fieldnames, current_line, dryrun=False):
         # For any other errors, run the error handler hook:
         elif "errors" in str(response):
             # Gather from this function if we need to stop the execution.
-            stop_execution = handle_record_error_hook(line=line, gql=gql, type=file_type, response=response)
+            stop_execution = handle_record_error_hook(line=line, gql=gql, type=file_type,
+                                                      response=response, current_line=str(current_line))
 
             # If we are stopping we must make signal of it
             if stop_execution:
@@ -169,7 +173,7 @@ def process_file(file_path, file_type, skip_lines, dryrun=False):
         line = fp.readline()
 
         # Then read the first line
-        with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=20) as executor:
 
             # While we haven't reached the EOF
             while line:
@@ -186,7 +190,7 @@ def process_file(file_path, file_type, skip_lines, dryrun=False):
                         continue
 
                     # Process The Line, if no interrupt in place
-                    if not(STOP_EXEC):
+                    if not STOP_EXEC:
                         # Allow time for an interrupt to take place
                         time.sleep(.01)
 
