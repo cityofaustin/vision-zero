@@ -1,0 +1,13 @@
+# Ignore Git
+**/.git
+
+# Ignore data and tmp directories
+**/data
+**/tmp
+**/app/tmp
+
+# Ignore files with these extensions:
+**/*.csv
+**/*.log
+**/*.env
+
