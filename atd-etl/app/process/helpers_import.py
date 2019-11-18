@@ -42,11 +42,12 @@ def generate_template(name, function, fields):
 
 
 def lowercase_group_match(match):
+    """
+    Return the lowercase of a group match.
+    :param match: raw string of the group match
+    :return: string in lower case
+    """
     return match.group(1).lower() + ":"
-
-
-def escape_double_quotes(match):
-    return ""
 
 
 def generate_fields(line, fieldnames, remove_fields = [], quoted_numeric = [], null_to_zero = []):
@@ -86,23 +87,20 @@ def generate_fields_with_filters(line, fieldnames, filters = []):
     # Lowercase the keys
     fields = re.sub(r'"([a-zA-Z0-9_]+)":', lowercase_group_match, fields)
 
-    # Escape Quotes
-
-    # Remove quotes for numeric values
-    fields = re.sub(r'"([0-9\.]+)"', r'\1', fields)
-
-    # Remove turn empty strings into nulls
-    fields = fields.replace('""', "null")
+    # Make empty strings null
+    fields = re.sub(r'([a-zA-Z0-9_]+): "",', r'\1: null,', fields)
 
     # Break lines
     fields = fields.replace(", ", ", \n")
 
     # Apply filters
     for filter_group in filters:
+
         filter_function = filter_group[0]
         filter_function_arguments = filter_group[1]
 
         try:
+            fields_copy = fields
             fields = filter_function(input=fields, fields=filter_function_arguments)
         except Exception as e:
             print("Error when applying filter: %s" % str(e))
@@ -180,9 +178,10 @@ def generate_gql(line, fieldnames, type):
 
     if type == "charges":
         filters = [
+            [filter_numeric_empty_to_zero, ["charge_cat_id"]],
             [filter_numeric_null_to_zero, ["charge_cat_id"]],
-            [filter_text_null_to_empty, ["citation_nbr"]],
-            [filter_quote_numeric, ["citation_nbr"]]
+            [filter_numeric_field, ["charge_id", "crash_id", "unit_nbr", "prsn_nbr", "charge_cat_id"]],
+            [filter_text_null_to_empty, ["citation_nbr"]]
         ]
 
         fields = generate_fields_with_filters(line=line,
@@ -194,13 +193,71 @@ def generate_gql(line, fieldnames, type):
                                  fields=fields)
 
     if type == "unit":
-        remove = []
-        numerictext = []
-        fields = generate_fields(line,
-                                 fieldnames,
-                                 remove_fields=remove,
-                                 quoted_numeric=numerictext)
+        filters = [
+            # [filter_numeric_empty_to_zero, ["charge_cat_id"]],
+            # [filter_numeric_null_to_zero, ["charge_cat_id"]],
+            [filter_numeric_field,
+                [
+                    "crash_id",
+                    "unit_nbr",
+                    "unit_desc_id",
+                    "veh_lic_state_id",
+                    "veh_mod_year",
+                    "veh_color_id",
+                    "veh_make_id",
+                    "veh_mod_id",
+                    "veh_body_styl_id",
+                    "ownr_state_id",
+                    "fin_resp_proof_id",
+                    "fin_resp_type_id",
+                    "veh_dmag_area_1_id",
+                    "veh_dmag_scl_1_id",
+                    "force_dir_1_id",
+                    "veh_dmag_area_2_id",
+                    "veh_dmag_scl_2_id",
+                    "force_dir_2_id",
+                    "cmv_veh_oper_id",
+                    "cmv_carrier_id_type_id",
+                    "cmv_carrier_state_id",
+                    "cmv_road_acc_id",
+                    "cmv_veh_type_id",
+                    "hazmat_cls_1_id",
+                    "hazmat_idnbr_1_id",
+                    "hazmat_cls_2_id",
+                    "hazmat_idnbr_2_id",
+                    "cmv_cargo_body_id",
+                    "trlr1_type_id",
+                    "trlr2_type_id",
+                    "cmv_evnt1_id",
+                    "cmv_evnt2_id",
+                    "cmv_evnt3_id",
+                    "cmv_evnt4_id",
+                    "contrib_factr_1_id",
+                    "contrib_factr_2_id",
+                    "contrib_factr_3_id",
+                    "contrib_factr_p1_id",
+                    "contrib_factr_p2_id",
+                    "veh_dfct_1_id",
+                    "veh_dfct_2_id",
+                    "veh_dfct_3_id",
+                    "veh_dfct_p1_id",
+                    "veh_dfct_p2_id",
+                    "veh_trvl_dir_id",
+                    "first_harm_evt_inv_id",
+                    "cmv_trlr1_disabling_dmag_id",
+                    "cmv_trlr2_disabling_dmag_id",
+                    "cmv_bus_type_id",
+                    "unit_id"
+                ]
+            ],
+        ]
+
+        fields = generate_fields_with_filters(line=line,
+                                              fieldnames=fieldnames,
+                                              filters=filters)
+
         return generate_template(name="insertUnitQuery",
+
                                  function="insert_atd_txdot_units",
                                  fields=fields)
 
