@@ -7,6 +7,7 @@ export const GET_CRASHES_YTD = gql`
         city_id: { _eq: 22 }
         crash_date: { _gte: $yearStart, _lte: $yearEnd }
         private_dr_fl: { _neq: "Y" }
+        apd_confirmed_fatality: { _neq: "N" }
       }
     ) {
       aggregate {
@@ -23,6 +24,7 @@ export const GET_CRASHES_YTD = gql`
         crash: {
           city_id: { _eq: 22 }
           crash_date: { _gte: $yearStart, _lte: $yearEnd }
+          apd_confirmed_fatality: { _neq: "N" }
         }
       }
     ) {
@@ -38,6 +40,7 @@ export const GET_CRASHES_YTD = gql`
         crash: {
           city_id: { _eq: 22 }
           crash_date: { _gte: $yearStart, _lte: $yearEnd }
+          apd_confirmed_fatality: { _neq: "N" }
         }
       }
     ) {

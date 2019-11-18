@@ -37,7 +37,7 @@ let queryConf = {
       searchable: false,
       sortable: true,
       label_search: null,
-      label_table: "Total Deaths",
+      label_table: "Total Deaths (APD)",
       default: 0,
       type: "Integer",
     },
