@@ -68,8 +68,8 @@ def flatten_hasura_response(records):
                             formatted_record[second_level_key] = second_level_value
                 # Remove key with values that were moved to top-level
                 del formatted_record[first_level_key]
+            # If dict is found, iterate to bring key values to top-level
             elif type(first_level_value) == dict:
-                # todo: Flatten key with value that is dict
                 for dict_key, dict_value in first_level_value.items():
                     formatted_record[dict_key] = dict_value
                     del formatted_record[first_level_key]
