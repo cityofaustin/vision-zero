@@ -49,7 +49,7 @@ years_of_experience: 0
 
 The same pattern should be followed for any new filters.
 """
-
+import web_pdb;
 import re
 
 
@@ -71,7 +71,7 @@ def filter_remove_field(input, fields):
     """
     output = input
     for field in fields:
-        output = re.sub(r"%s: ([a-zA-Z0-9\"]+)(, )?" % field, "", output)
+        output = re.sub(r"%s:(.+)(, )?\n?" % field, "", output)
 
     return output
 
