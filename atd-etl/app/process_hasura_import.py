@@ -103,7 +103,7 @@ def process_line(file_type, line, fieldnames, current_line, dryrun=False):
         elif "errors" in str(response):
             # Gather from this function if we need to stop the execution.
             stop_execution = handle_record_error_hook(line=line, gql=gql, type=file_type,
-                                                      response=response, current_line=str(current_line))
+                                                      response=response, line_number=str(current_line))
 
             # If we are stopping we must make signal of it
             if stop_execution:
