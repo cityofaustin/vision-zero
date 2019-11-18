@@ -98,11 +98,12 @@ columns_to_rename = {
 }
 
 
-def rename_record_columns(record):
-    for k, v in columns_to_rename.items():
-        if k in record.keys():
-            record[v] = record.pop(k)
-    return record
+def rename_record_columns(records):
+    for record in records:
+        for key, value in columns_to_rename.items():
+            if key in record.keys():
+                record[value] = record.pop(key)
+    return records
 
 
 unit_modes = ["MOTOR VEHICLE",
@@ -115,22 +116,23 @@ unit_modes = ["MOTOR VEHICLE",
               "OTHER"]
 
 
-def create_crash_mode_flags(record):
-    if "unit_mode" in record.keys():
-        for mode in unit_modes:
-            formatted_mode = mode.replace(" ", "_").replace(
-                "/", "_").replace("-", "_").lower()
-            record_flag_column = f"{formatted_mode}_fl"
-            if mode in record["unit_mode"]:
-                record[record_flag_column] = "Y"
+def create_crash_mode_flags(records):
+    for record in records:
+        if "unit_mode" in record.keys():
+            for mode in unit_modes:
+                formatted_mode = mode.replace(" ", "_").replace(
+                    "/", "_").replace("-", "_").lower()
+                record_flag_column = f"{formatted_mode}_fl"
+                if mode in record["unit_mode"]:
+                    record[record_flag_column] = "Y"
+                else:
+                    record[record_flag_column] = "N"
+        if "unit_desc" in record.keys():
+            if "MOTORCYCLE" in record["unit_desc"]:
+                record["motorcycle_fl"] = "Y"
             else:
-                record[record_flag_column] = "N"
-    if "unit_desc" in record.keys():
-        if "MOTORCYCLE" in record["unit_desc"]:
-            record["motorcycle_fl"] = "Y"
-        else:
-            record["motorcycle_fl"] = "N"
-    return record
+                record["motorcycle_fl"] = "N"
+    return records
 
 
 def flatten_hasura_response(records):
@@ -167,8 +169,6 @@ def flatten_hasura_response(records):
                             formatted_record[second_level_key] = second_level_value
                 # Remove key with values that were moved to top-level
                 del formatted_record[first_level_key]
-        formatted_record = rename_record_columns(formatted_record)
-        formatted_record = create_crash_mode_flags(formatted_record)
         formatted_records.append(formatted_record)
     return formatted_records
 
@@ -192,6 +192,8 @@ while records != []:
 
     # Upsert records to Socrata
     formatted_records = flatten_hasura_response(records)
+    formatted_records = rename_record_columns(formatted_records)
+    formatted_records = create_crash_mode_flags(formatted_records)
     client.upsert("rrxh-grh6", formatted_records)
     total_records_published += len(records)
     print(f"{total_records_published} records published")
