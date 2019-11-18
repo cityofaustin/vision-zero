@@ -53,6 +53,14 @@ The same pattern should be followed for any new filters.
 import re
 
 
+def filter_numeric_field(input, fields):
+    # Remove quotes for numeric values
+    output = input
+    for field in fields:
+        output = re.sub(r"%s: \"([0-9\.]+)\"(,)?" % field, r"%s: \1\2" % field, output)
+
+    return output
+
 
 def filter_remove_field(input, fields):
     """
@@ -93,6 +101,19 @@ def filter_numeric_null_to_zero(input, fields):
     for field in fields:
         output = re.sub(r"%s: null(,?)" % field, r'%s: 0\1' % field, output)
 
+    return output
+
+
+def filter_numeric_empty_to_zero(input, fields):
+    """
+    Converts null strings to zero
+    :param input:
+    :param fields:
+    :return:
+    """
+    output = input
+    for field in fields:
+        output = re.sub(r"%s: \"\"(,?)" % field, r'%s: 0\1' % field, output)
     return output
 
 
