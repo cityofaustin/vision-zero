@@ -34,7 +34,7 @@ output = input.replace("input", "output")
 print("Running test debugger, you should be able to see these two lines in the debugger: \n")
 
 print('input = "This is the input variable"')
-print('output = input.replace("input", "output")')
+print('output = "This is the output variable"')
 
 print("\nTo proceed visit in your browser: http://localhost:5555")
 
