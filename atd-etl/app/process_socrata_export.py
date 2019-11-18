@@ -13,9 +13,7 @@ The application requires the requests and sodapy libraries:
 
 from sodapy import Socrata
 from string import Template
-from copy import deepcopy
-import requests
-import json
+from process.helpers_socrata import *
 import os
 import time
 from process.config import ATD_ETL_CONFIG
@@ -26,25 +24,6 @@ print("SOCRATA_KEY_SECRET: " + ATD_ETL_CONFIG["SOCRATA_KEY_SECRET"])
 # Setup connection to Socrata
 client = Socrata("data.austintexas.gov", ATD_ETL_CONFIG["SOCRATA_APP_TOKEN"],
                  username=ATD_ETL_CONFIG["SOCRATA_KEY_ID"], password=ATD_ETL_CONFIG["SOCRATA_KEY_SECRET"])
-
-
-def run_hasura_query(query):
-
-    # Build Header with Admin Secret
-    headers = {
-        "x-hasura-admin-secret": ATD_ETL_CONFIG["HASURA_ADMIN_KEY"]
-    }
-
-   # Try making insertion
-    try:
-        return requests.post(ATD_ETL_CONFIG["HASURA_ENDPOINT"],
-                             json={'query': query, "offset": offset},
-                             headers=headers).json()
-    except Exception as e:
-        print("Exception, could not insert: " + str(e))
-        print("Query: '%s'" % query)
-        return None
-
 
 crashes_query_template = Template(
     """
@@ -97,15 +76,6 @@ columns_to_rename = {
     "veh_unit_desc_desc": "unit_mode",
 }
 
-
-def rename_record_columns(records):
-    for record in records:
-        for key, value in columns_to_rename.items():
-            if key in record.keys():
-                record[value] = record.pop(key)
-    return records
-
-
 unit_modes = ["MOTOR VEHICLE",
               "TRAIN",
               "PEDALCYCLIST",
@@ -114,64 +84,6 @@ unit_modes = ["MOTOR VEHICLE",
               "TOWED/PUSHED/TRAILER",
               "NON-CONTACT",
               "OTHER"]
-
-
-def create_crash_mode_flags(records):
-    for record in records:
-        if "unit_mode" in record.keys():
-            for mode in unit_modes:
-                formatted_mode = mode.replace(" ", "_").replace(
-                    "/", "_").replace("-", "_").lower()
-                record_flag_column = f"{formatted_mode}_fl"
-                if mode in record["unit_mode"]:
-                    record[record_flag_column] = "Y"
-                else:
-                    record[record_flag_column] = "N"
-        if "unit_desc" in record.keys():
-            if "MOTORCYCLE" in record["unit_desc"]:
-                record["motorcycle_fl"] = "Y"
-            else:
-                record["motorcycle_fl"] = "N"
-    return records
-
-
-def flatten_hasura_response(records):
-    formatted_records = []
-    for record in records:
-        # Create copy of record to mutate
-        formatted_record = deepcopy(record)
-        # Look through key values for data lists
-        for first_level_key, first_level_value in record.items():
-            # If list is found, iterate to bring key values to top-level
-            if type(first_level_value) == list:
-                for item in first_level_value:
-                    for second_level_key, second_level_value in item.items():
-                        # Handle nested values
-                        if type(second_level_value) == dict:
-                            # Handles concat of values here
-                            for third_level_key, third_level_value in second_level_value.items():
-                                if third_level_key in formatted_record.keys():
-                                    # If key already exists at top-level, concat with existing values
-                                    next_record = f" & {third_level_value}"
-                                    formatted_record[third_level_key] = formatted_record[third_level_key] + next_record
-                                else:
-                                    # Create key at top-level
-                                    formatted_record[third_level_key] = third_level_value
-                        # Copy non-nested key-values to top-level (if not null)
-                        # Null records can create unwanted columns at top level of record
-                        # from keys of nested data Ex.
-                        # "body_style": {
-                        #       "veh_body_styl_desc": "PICKUP"
-                        # }
-                        #         VS.
-                        # "body_style": null
-                        elif second_level_value is not None:
-                            formatted_record[second_level_key] = second_level_value
-                # Remove key with values that were moved to top-level
-                del formatted_record[first_level_key]
-        formatted_records.append(formatted_record)
-    return formatted_records
-
 
 # Start timer
 start = time.time()
@@ -192,8 +104,9 @@ while records != []:
 
     # Upsert records to Socrata
     formatted_records = flatten_hasura_response(records)
-    formatted_records = rename_record_columns(formatted_records)
-    formatted_records = create_crash_mode_flags(formatted_records)
+    formatted_records = rename_record_columns(
+        formatted_records, columns_to_rename)
+    formatted_records = create_crash_mode_flags(formatted_records, unit_modes)
     client.upsert("rrxh-grh6", formatted_records)
     total_records_published += len(records)
     print(f"{total_records_published} records published")
