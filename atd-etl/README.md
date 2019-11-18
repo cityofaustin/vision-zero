@@ -68,7 +68,7 @@ import web_pdb
 # Then use this line as a breakpoint
 web_pdb.set_trace()
 ``` 
-The set_trace() call will suspend your program and open a web-UI at the default port 5555 (port value can be changed). Enter in your browser's address bar: http://<your Python machine hostname or IP>:5555, for example http://monty-python:5555, and you should see the web-UI like the one on the preceding screenshot. Now you can use all PDB commands and features. Additional Current file, Globals and Locals information boxes help you better track your program runtime state.
+The set_trace() call will suspend your program and open a web-UI at the default port 5555 (port value can be changed). Enter in your browser's address bar: http://localhost:5555, and you should see the web-UI like the one on the preceding screenshot. Now you can use all PDB commands and features. Additional Current file, Globals and Locals information boxes help you better track your program runtime state.
 
 Subsequent set_trace() calls can be used as hardcoded breakpoints.
 
