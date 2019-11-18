@@ -53,8 +53,30 @@ $ runetl ~/.ssh/atd-etl/etl.staging.env app/process_test_run.py
 $ runetl ~/.ssh/atd-etl/etl.production.env app/process_test_run.py
 ```
 
-#### Debugging
+## Development
 
+You should be able to make changes to the files (without need to re-build the container every time), just save your changes to the python file and then re-run the runetl command as needed.
+
+#### Debugging your ETL script with Web-PDB
+
+Web-PDB is available to your script, to use it just insert the following line into your Python program at the point where you want to start debugging:
+
+```
+# First impor the 
+import web_pdb
+
+# Then use this line as a breakpoint
+web_pdb.set_trace()
+``` 
+The set_trace() call will suspend your program and open a web-UI at the default port 5555 (port value can be changed). Enter in your browser's address bar: http://localhost:5555, and you should see the web-UI like the one on the preceding screenshot. Now you can use all PDB commands and features. Additional Current file, Globals and Locals information boxes help you better track your program runtime state.
+
+Subsequent set_trace() calls can be used as hardcoded breakpoints.
+
+Web-PDB is compatible with the new breakpoint() function added in Python 3.7. Set environment variable PYTHONBREAKPOINT="web_pdb.set_trace" to launch Web-PDB with breakpoint().
+
+For more details refer to their documentation in their repo: https://github.com/romanvm/python-web-pdb
+
+#### Debugging Container (file system, os, python)
 You can access the container's console by using the following command:
 
 ```bash
@@ -89,5 +111,13 @@ As of this moment, the ETL container should be able to run these scripts:
 - `app/process_hasura_cr3heal.py` - This script will make sure the records in Hasura that are marked to have a CR3 actually have a PDF in S3. If the file is not found in S3, then it will unmark the file.
 - `app/process_socrata_export.py` - This script will export data unto the Socrata database.
 - `app/process_test_run.py` - A dummy script meant to test if the environment is working, it will print two environment variables.
+
+#### Creating New Scripts
+
+When creating new scripts, be sure to add some comments at the beginning of the file (as shown in any of the above files).
+
+Make sure you run: `chmod +x app/your_new_python_script.py` before running it the first time, otherwise you might run into permissions errors.
+
+Also make sure the "shebang" is present at the very first line: `#!/usr/bin/env python` to avoid issues. See other files for examples.
 
 As of this first iteration, the documentation is not fully fleshed out. This is a living document that needs to be updated as new features are added and implemented. 

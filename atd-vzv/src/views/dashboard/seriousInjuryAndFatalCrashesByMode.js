@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import axios from "axios";
 import moment from "moment";
-import { Pie } from "react-chartjs-2";
+import { HorizontalBar } from "react-chartjs-2";
 
 import { Container, Row, Col } from "reactstrap";
 
@@ -82,6 +82,7 @@ const SeriousInjuryAndFatalCrashesByMode = () => {
     datasets: [
       {
         // TODO use yearToDateInjuryDeathModeArray here and style
+        label: "Total crashes",
         data: [61, 13, 20, 6],
         backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"],
         hoverBackgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"]
@@ -94,6 +95,7 @@ const SeriousInjuryAndFatalCrashesByMode = () => {
     datasets: [
       {
         // TODO use lastYearToDateInjuryDeathModeArray here and style
+        label: "Total crashes",
         data: [61, 18, 16, 4],
         backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"],
         hoverBackgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"]
@@ -107,11 +109,11 @@ const SeriousInjuryAndFatalCrashesByMode = () => {
       <Row>
         <Col sm="6">
           <h4>{thisYear} YTD</h4>
-          <Pie data={yearToDateData} />
+          <HorizontalBar data={yearToDateData} />
         </Col>
         <Col sm="6">
           <h4>{lastYear} YTD</h4>
-          <Pie data={lastYearToDateData} />
+          <HorizontalBar data={lastYearToDateData} />
         </Col>
       </Row>
     </Container>

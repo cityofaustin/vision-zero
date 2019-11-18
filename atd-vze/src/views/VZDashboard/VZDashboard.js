@@ -75,6 +75,13 @@ function VZDashboard() {
           />
         </Col>
       </Row>
+      <Row>
+        <Col className="ml-1">
+          {
+            "*Dashboard data reflects APD confirmed deaths and excludes crashes on private driveways."
+          }
+        </Col>
+      </Row>
     </div>
   );
 }
