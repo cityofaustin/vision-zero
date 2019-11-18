@@ -94,16 +94,18 @@ def process_line(file_type, line, fieldnames, current_line, dryrun=False):
             # Live Execution
             response = run_query(gql)
 
-        # If there is a constraint-violation error in the response, show as skipped
-        if "constraint-violation" in str(response):
-            print("%s[%s] Skipped (existing record): %s" %
-                  (mode, str(current_line), str(crash_id)))
-
         # For any other errors, run the error handler hook:
-        elif "errors" in str(response):
-            # Gather from this function if we need to stop the execution.
-            stop_execution = handle_record_error_hook(line=line, gql=gql, type=file_type,
-                                                      response=response, line_number=str(current_line))
+        if "errors" in str(response):
+            stop_execution = False
+            if "constraint-violation" in str(response):
+                records_skipped += 1
+                print("%s[%s] Skipped (existing record): %s" %
+                      (mode, str(current_line), str(crash_id)))
+
+            else:
+                # Gather from this function if we need to stop the execution.
+                stop_execution = handle_record_error_hook(line=line, gql=gql, type=file_type,
+                                                          response=response, line_number=str(current_line))
 
             # If we are stopping we must make signal of it
             if stop_execution:
