@@ -12,6 +12,9 @@ import csv
 import io
 import json
 
+
+
+
 # Dependencies
 from .queries import search_crash_query
 from .request import run_query
@@ -194,9 +197,26 @@ def generate_gql(line, fieldnames, type):
 
     if type == "unit":
         filters = [
-            # [filter_numeric_empty_to_zero, ["charge_cat_id"]],
-            # [filter_numeric_null_to_zero, ["charge_cat_id"]],
-            [filter_numeric_field,
+            [
+                filter_remove_field,
+                [
+                    # PII Fields that need to be removed
+                    "ownr_last_name",
+                    "ownr_first_name",
+                    "ownr_street_nbr",
+                    "ownr_street_pfx",
+                    "ownr_street_name",
+                    "ownr_street_sfx",
+                    "ownr_apt_nbr",
+                    # These fields are not present in the database
+                    "trlr_gvwr",
+                    "trlr_rgvw",
+                    "trlr_type_id",
+                    "trlr_disabling_dmag_id",
+                ]
+            ],
+            [
+                filter_numeric_field,
                 [
                     "crash_id",
                     "unit_nbr",
@@ -257,7 +277,6 @@ def generate_gql(line, fieldnames, type):
                                               filters=filters)
 
         return generate_template(name="insertUnitQuery",
-
                                  function="insert_atd_txdot_units",
                                  fields=fields)
 
