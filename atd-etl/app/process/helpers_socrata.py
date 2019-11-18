@@ -68,6 +68,8 @@ def flatten_hasura_response(records):
                             formatted_record[second_level_key] = second_level_value
                 # Remove key with values that were moved to top-level
                 del formatted_record[first_level_key]
+            elif type(first_level_value) == dict:
+                # todo: Flatten key with value that is dict
         formatted_records.append(formatted_record)
     return formatted_records
 

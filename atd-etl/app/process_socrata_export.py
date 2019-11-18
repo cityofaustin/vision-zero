@@ -71,6 +71,32 @@ crashes_query_template = Template(
 """
 )
 
+people_query_template = Template(
+    """
+    query getPeopleSocrata {
+        atd_txdot_person(limit: $limit, offset: $offset, order_by: {person_id: asc}, where: {_or: [{prsn_injry_sev_id: {_eq: 1}}, {prsn_injry_sev_id: {_eq: 4}}], _and: {crash: {city_id: {_eq: 22}}}}) {
+            person_id
+            prsn_injry_sev_id
+            prsn_age
+            prsn_gndr_id
+            crash {
+                crash_date
+            }
+        }
+        atd_txdot_primaryperson(limit: $limit, offset: $offset, order_by: {primaryperson_id: asc}, where: {_or: [{prsn_injry_sev_id: {_eq: 1}}, {prsn_injry_sev_id: {_eq: 4}}], _and: {crash: {city_id: {_eq: 22}}}}) {
+            primaryperson_id
+            prsn_injry_sev_id
+            prsn_age
+            prsn_gndr_id
+            drvr_zip
+            crash {
+                crash_date
+            }
+        }
+    }
+"""
+)
+
 columns_to_rename = {
     "veh_body_styl_desc": "unit_desc",
     "veh_unit_desc_desc": "unit_mode",
@@ -91,25 +117,43 @@ start = time.time()
 # while loop to request records from Hasura and post to Socrata
 records = None
 offset = 0
-limit = 6000
+limit = 1
 total_records_published = 0
 
-# Get records from Hasura until res is []
-while records != []:
-    crashes_query = crashes_query_template.substitute(
-        limit=limit, offset=offset)
-    offset += limit
-    crashes = run_hasura_query(crashes_query)
-    records = crashes['data']['atd_txdot_crashes']
+# Get records from Hasura until res is [] (Crashes)
+# while records != []:
+#     crashes_query = crashes_query_template.substitute(
+#         limit=limit, offset=offset)
+#     offset += limit
+#     crashes = run_hasura_query(crashes_query)
+#     records = crashes['data']['atd_txdot_crashes']
 
-    # Upsert records to Socrata
-    formatted_records = flatten_hasura_response(records)
-    formatted_records = rename_record_columns(
-        formatted_records, columns_to_rename)
-    formatted_records = create_crash_mode_flags(formatted_records, unit_modes)
-    client.upsert("rrxh-grh6", formatted_records)
-    total_records_published += len(records)
-    print(f"{total_records_published} records published")
+#     # Upsert records to Socrata
+#     formatted_records = flatten_hasura_response(records)
+#     formatted_records = rename_record_columns(
+#         formatted_records, columns_to_rename)
+#     formatted_records = create_crash_mode_flags(formatted_records, unit_modes)
+#     client.upsert("rrxh-grh6", formatted_records)
+#     total_records_published += len(records)
+#     print(f"{total_records_published} records published")
+
+# Get records from Hasura until res is [] (People)
+# while records != []:
+people_query = people_query_template.substitute(
+    limit=limit, offset=offset)
+offset += limit
+people = run_hasura_query(people_query)
+records = people['data']['atd_txdot_person']
+
+# Upsert records to Socrata
+formatted_records = flatten_hasura_response(records)
+print(formatted_records)
+# formatted_records = rename_record_columns(
+#     formatted_records, columns_to_rename)
+# formatted_records = create_crash_mode_flags(formatted_records, unit_modes)
+# client.upsert("rrxh-grh6", formatted_records)
+# total_records_published += len(records)
+# print(f"{total_records_published} records published")
 
 # Hasura test request
 
