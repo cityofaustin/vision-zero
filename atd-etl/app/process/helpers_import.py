@@ -11,14 +11,13 @@ import glob
 import csv
 import io
 import json
-
-
+import re
 
 
 # Dependencies
 from .queries import search_crash_query
 from .request import run_query
-from .helpers_import_filters import *
+from .helpers_import_fields import CRIS_TXDOT_FIELDS
 
 
 def generate_template(name, function, fields):
@@ -133,176 +132,23 @@ def generate_gql(line, fieldnames, type):
     :param fields:
     :return:
     """
+    filters = CRIS_TXDOT_FIELDS[type]["filters"]
+    query_name = CRIS_TXDOT_FIELDS[type]["query_name"]
+    function_name = CRIS_TXDOT_FIELDS[type]["function_name"]
 
-    if type == "crash":
-
-        filters = [
-            [filter_quote_numeric, [
-                "id_number",
-                "case_id",
-                "street_nbr",
-                "street_name",
-                "surf_width",
-                "surf_type_id",
-                "hp_shldr_right",
-                "hp_shldr_left",
-                "hp_median_width",
-                "rpt_hwy_num",
-                "rpt_block_num",
-                "rpt_sec_block_num",
-                "rpt_sec_hwy_num",
-                "rpt_street_name",
-                "rpt_sec_street_name",
-                "rpt_sec_street_desc",
-                "rpt_ref_mark_nbr",
-                "roadbed_width",
-                "hwy_nbr",
-                "hwy_nbr_2",
-                "hwy_dsgn_hrt_id",
-                "base_type_id",
-                "nbr_of_lane",
-                "row_width_usual",
-                "hwy_dsgn_lane_id",
-                "local_use",
-                "ori_number",
-                "investigat_notify_meth",
-                "wdcode_id",
-                ]
-            ]
-        ]
-
+    try:
         fields = generate_fields_with_filters(line=line,
                                               fieldnames=fieldnames,
                                               filters=filters)
 
-        return generate_template(name="insertCrashQuery",
-                                 function="insert_atd_txdot_crashes",
+        template = generate_template(name=query_name,
+                                 function=function_name,
                                  fields=fields)
+    except Exception as e:
+        print("generate_gql() Error: " + str(e))
+        template = ""
 
-    if type == "charges":
-        filters = [
-            [filter_numeric_empty_to_zero, ["charge_cat_id"]],
-            [filter_numeric_null_to_zero, ["charge_cat_id"]],
-            [filter_numeric_field, ["charge_id", "crash_id", "unit_nbr", "prsn_nbr", "charge_cat_id"]],
-            [filter_text_null_to_empty, ["citation_nbr"]]
-        ]
-
-        fields = generate_fields_with_filters(line=line,
-                                 fieldnames=fieldnames,
-                                 filters=filters)
-
-        return generate_template(name="insertChargeQuery",
-                                 function="insert_atd_txdot_charges",
-                                 fields=fields)
-
-    if type == "unit":
-        filters = [
-            [
-                filter_remove_field,
-                [
-                    # PII Fields that need to be removed
-                    "ownr_last_name",
-                    "ownr_first_name",
-                    "ownr_street_nbr",
-                    "ownr_street_pfx",
-                    "ownr_street_name",
-                    "ownr_street_sfx",
-                    "ownr_apt_nbr",
-                    # These fields are not present in the database
-                    "trlr_gvwr",
-                    "trlr_rgvw",
-                    "trlr_type_id",
-                    "trlr_disabling_dmag_id",
-                ]
-            ],
-            [
-                filter_numeric_field,
-                [
-                    "crash_id",
-                    "unit_nbr",
-                    "unit_desc_id",
-                    "veh_lic_state_id",
-                    "veh_mod_year",
-                    "veh_color_id",
-                    "veh_make_id",
-                    "veh_mod_id",
-                    "veh_body_styl_id",
-                    "ownr_state_id",
-                    "fin_resp_proof_id",
-                    "fin_resp_type_id",
-                    "veh_dmag_area_1_id",
-                    "veh_dmag_scl_1_id",
-                    "force_dir_1_id",
-                    "veh_dmag_area_2_id",
-                    "veh_dmag_scl_2_id",
-                    "force_dir_2_id",
-                    "cmv_veh_oper_id",
-                    "cmv_carrier_id_type_id",
-                    "cmv_carrier_state_id",
-                    "cmv_road_acc_id",
-                    "cmv_veh_type_id",
-                    "hazmat_cls_1_id",
-                    "hazmat_idnbr_1_id",
-                    "hazmat_cls_2_id",
-                    "hazmat_idnbr_2_id",
-                    "cmv_cargo_body_id",
-                    "trlr1_type_id",
-                    "trlr2_type_id",
-                    "cmv_evnt1_id",
-                    "cmv_evnt2_id",
-                    "cmv_evnt3_id",
-                    "cmv_evnt4_id",
-                    "contrib_factr_1_id",
-                    "contrib_factr_2_id",
-                    "contrib_factr_3_id",
-                    "contrib_factr_p1_id",
-                    "contrib_factr_p2_id",
-                    "veh_dfct_1_id",
-                    "veh_dfct_2_id",
-                    "veh_dfct_3_id",
-                    "veh_dfct_p1_id",
-                    "veh_dfct_p2_id",
-                    "veh_trvl_dir_id",
-                    "first_harm_evt_inv_id",
-                    "cmv_trlr1_disabling_dmag_id",
-                    "cmv_trlr2_disabling_dmag_id",
-                    "cmv_bus_type_id",
-                    "unit_id"
-                ]
-            ],
-        ]
-
-        fields = generate_fields_with_filters(line=line,
-                                              fieldnames=fieldnames,
-                                              filters=filters)
-
-        return generate_template(name="insertUnitQuery",
-                                 function="insert_atd_txdot_units",
-                                 fields=fields)
-
-    if type == "person":
-        remove = []
-        numerictext = []
-        fields = generate_fields(line,
-                                 fieldnames,
-                                 remove_fields=remove,
-                                 quoted_numeric=numerictext)
-        return generate_template(name="insertPersonQuery",
-                                 function="insert_atd_txdot_person",
-                                 fields=fields)
-
-    if type == "primaryperson":
-        remove = []
-        numerictext = ["drvr_zip"]
-        fields = generate_fields(line,
-                                 fieldnames,
-                                 remove_fields=remove,
-                                 quoted_numeric=numerictext)
-        return generate_template(name="insertPersonQuery",
-                                 function="insert_atd_txdot_primaryperson",
-                                 fields=fields)
-
-    return ""
+    return template
 
 
 def record_exists_hook(line, type):
@@ -331,7 +177,8 @@ def record_exists_hook(line, type):
         try:
             result = run_query(query)
             return len(result["data"]["atd_txdot_crashes"]) > 0
-        except Exception:
+        except Exception as e:
+            print("record_exists_hook() Error: " + str(e))
             return True
 
     # Any other record types just assume false.
@@ -392,7 +239,7 @@ def get_file_list(type):
     :param type: string - The type to be used: crash, charges, person, primaryperson, unit
     :return: array
     """
-    return glob.glob("/data/extract_*%s*.csv" % type)
+    return glob.glob("/data/extract_*_%s_*.csv" % type)
 
 
 def generate_run_config():
