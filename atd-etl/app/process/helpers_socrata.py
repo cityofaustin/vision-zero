@@ -124,9 +124,32 @@ def add_value_prefix(records, prefix_dict):
 
 def format_crash_data(data, formatter_config):
     records = data['data'][formatter_config["tables"][0]]
+
+    # Format records
     formatted_records = flatten_hasura_response(records)
     formatted_records = rename_record_columns(
         formatted_records, formatter_config["columns_to_rename"])
     formatted_records = create_crash_mode_flags(
         formatted_records, formatter_config["flags_list"])
+
+    return formatted_records
+
+
+def format_person_data(data, formatter_config):
+    person_records = data['data'][formatter_config["tables"][0]]
+    primary_person_records = data['data'][formatter_config["tables"][1]]
+
+    # Make record IDs unique by adding prefixes
+    person_records = add_value_prefix(
+        person_records, formatter_config["prefixes"])
+    primary_person_records = add_value_prefix(
+        primary_person_records, formatter_config["prefixes"])
+
+    # Join records and format
+    people_records = person_records + primary_person_records
+    formatted_records = rename_record_columns(
+        people_records, formatter_config["columns_to_rename"])
+    formatted_records = flatten_hasura_response(
+        formatted_records)
+
     return formatted_records
