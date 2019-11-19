@@ -38,9 +38,11 @@ ATD_ETL_CONFIG = {
     "AWS_CRIS_CR3_BUCKET_PATH": os.getenv("AWS_CRIS_CR3_BUCKET_PATH", "production/cris-cr3-files-unassigned"),
 
     # REQUEST
-    "ATD_CRIS_WEBSITE_HOME": "https://cris.dot.state.tx.us/secure/Share/app/home/welcome",
-    "ATD_CRIS_WEBSITE_ENDPOINT":  "https://cris.dot.state.tx.us/secure/Share/rest/saveextractrequest",
-    "ATD_CRIS_WEBSITE_REQUEST": {
+    "ATD_CRIS_REQUEST_USERNAME": os.getenv("ATD_CRIS_REQUEST_USERNAME", ""),
+    "ATD_CRIS_REQUEST_PASSWORD": os.getenv("ATD_CRIS_REQUEST_PASSWORD", ""),
+    "ATD_CRIS_REQUEST_WEBSITE_HOME": "https://cris.dot.state.tx.us/secure/Share/app/home/welcome",
+    "ATD_CRIS_REQUEST_WEBSITE_ENDPOINT":  "https://cris.dot.state.tx.us/secure/Share/rest/saveextractrequest",
+    "ATD_CRIS_REQUEST_WEBSITE_REQUEST": {
         "type": "https://cris.dot.state.tx.us/secure/Share/app/home/request/type",
         "location": "https://cris.dot.state.tx.us/secure/Share/app/home/request/location",
         "date":  "https://cris.dot.state.tx.us/secure/Share/app/home/request/date",

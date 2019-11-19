@@ -12,7 +12,6 @@
 
 # Make sure your ENV files are only visible to the current user
 chmod +x app/*.py;
-chmod +x app/*.sh;
 
 #
 # We also need to export the name of the docker image we are going to use
