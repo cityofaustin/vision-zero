@@ -69,11 +69,17 @@ print("Preparing download loop.")
 print("Gathering list of crashes.")
 crashes_list = []
 try:
-    response = get_crash_id_list(downloads_per_run=ATD_ETL_CONFIG["ATD_CRIS_CR3_DOWNLOADS_PER_RUN"])
-    crashes_list = response['data']['atd_txdot_crashes']
-    print(json.dumps(crashes_list))
-    print("\nInitializing Execution Thread Pool:")
+    print("Hasura endpoint: '%s' " % ATD_ETL_CONFIG["HASURA_ENDPOINT"])
+    downloads_per_run = ATD_ETL_CONFIG["ATD_CRIS_CR3_DOWNLOADS_PER_RUN"]
+    print("Downloads Per This Run: %s" % str(downloads_per_run))
 
+    response = get_crash_id_list(downloads_per_run=downloads_per_run)
+    print("\nResponse from Hasura: %s" % json.dumps(response))
+
+    crashes_list = response['data']['atd_txdot_crashes']
+    print("\nList of crashes: %s" % json.dumps(crashes_list))
+
+    print("\nInitializing Execution Thread Pool:")
 except Exception as e:
     crashes_list = []
     print("Error, could not run CR3 processing: " + str(e))

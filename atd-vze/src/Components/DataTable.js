@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import { useQuery } from "@apollo/react-hooks";
+import ConfirmModal from "./ConfirmModal";
 import get from "lodash.get";
 import { formatCostToDollars, formatDateTimeString } from "../helpers/format";
 
@@ -26,6 +27,8 @@ const DataTable = ({
   handleFieldUpdate,
   handleButtonClick,
 }) => {
+  const [showModal, setShowModal] = useState(false);
+
   // Import Lookup tables and aggregate an object of uiType= "select" options
   const { data: lookupSelectOptions } = useQuery(GET_LOOKUPS);
 
@@ -39,6 +42,10 @@ const DataTable = ({
     handleFieldUpdate && handleFieldUpdate(e, section, "button");
     handleButtonClick &&
       handleButtonClick(e, section.button.buttonFieldUpdate, data);
+  };
+
+  const toggleModal = () => {
+    setShowModal(!showModal);
   };
 
   return (
@@ -175,6 +182,7 @@ const DataTable = ({
                 </Table>
                 {/* If button parameters are set and the defined condition is met, show button */}
                 {section.button &&
+                  !section.button.buttonConfirm &&
                   data[buttonCondition.dataTableName][0][
                     buttonCondition.dataPath
                   ] === buttonCondition.value && (
@@ -184,6 +192,29 @@ const DataTable = ({
                     >
                       {section.button.buttonText}
                     </Button>
+                  )}
+                {/* If button confirm parameters are set, show button and confirm modal */}
+                {section.button &&
+                  section.button.buttonConfirm &&
+                  data[buttonCondition.dataTableName][0][
+                    buttonCondition.dataPath
+                  ] === buttonCondition.value && (
+                    <>
+                      <Button color="danger" onClick={toggleModal}>
+                        {section.button.buttonText}
+                      </Button>
+                      {section.button.buttonConfirm && showModal && (
+                        <ConfirmModal
+                          modalHeader={
+                            section.button.buttonConfirm.confirmHeader
+                          }
+                          modalBody={section.button.buttonConfirm.confirmBody}
+                          confirmClick={e => onButtonClick(e, section)}
+                          toggleModal={toggleModal}
+                          showModal={showModal}
+                        />
+                      )}
+                    </>
                   )}
               </CardBody>
             </Card>

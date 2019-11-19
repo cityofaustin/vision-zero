@@ -69,7 +69,8 @@ function runetl {
     fi;
 
     # Run Docker
-    docker run -it --rm -v $(pwd)/app:/app -v $(pwd)/data:/data -v $(pwd)/tmp:/app/tmp \
+    docker run -it --rm -p 5555:5555/tcp \
+        -v $(pwd)/app:/app -v $(pwd)/data:/data -v $(pwd)/tmp:/app/tmp \
         --env-file $ATD_CRIS_CONFIG $ATD_DOCKER_IMAGE $FINAL_COMMAND;
 
     # Reload Run Script into memory

@@ -89,6 +89,7 @@ def create_crash_mode_flags(records, unit_modes):
             for mode in unit_modes:
                 chars_to_replace = ["/", " ", "-"]
 
+                # Need flag to be camelcase with "_fl" suffix
                 formatted_mode = replace_chars(
                     mode, chars_to_replace, "_").lower()
                 record_flag_column = f"{formatted_mode}_fl"
@@ -96,6 +97,7 @@ def create_crash_mode_flags(records, unit_modes):
                     record[record_flag_column] = "Y"
                 else:
                     record[record_flag_column] = "N"
+        # Motorcycle crashes are documented in unit desc not mode
         if "unit_desc" in record.keys():
             if "MOTORCYCLE" in record["unit_desc"]:
                 record["motorcycle_fl"] = "Y"

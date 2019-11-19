@@ -32,6 +32,16 @@ export const crashDataMap = [
         editable: false,
         format: "dollars",
       },
+      est_econ_cost: {
+        label: "Est. Economic Cost",
+        editable: false,
+        format: "dollars",
+      },
+      speed_mgmt_points: {
+        label: "Speed Management Points",
+        editable: false,
+        format: "text",
+      },
       fhe_collsn_id: {
         label: "Manner of Collision ID",
         editable: false,
@@ -103,6 +113,11 @@ export const crashDataMap = [
         field: "apd_confirmed_death_count",
         dataTableName: "atd_txdot_crashes",
         dataPath: "death_cnt",
+      },
+      buttonConfirm: {
+        confirmHeader: "Are you sure?",
+        confirmBody:
+          "Are you sure you want to revert to the original value from the CRIS database?",
       },
       secondaryFieldUpdate: { apd_human_update: "N" },
     },

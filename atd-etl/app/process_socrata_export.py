@@ -23,7 +23,7 @@ print("SOCRATA_KEY_SECRET: " + ATD_ETL_CONFIG["SOCRATA_KEY_SECRET"])
 
 # Setup connection to Socrata
 client = Socrata("data.austintexas.gov", ATD_ETL_CONFIG["SOCRATA_APP_TOKEN"],
-                 username=ATD_ETL_CONFIG["SOCRATA_KEY_ID"], password=ATD_ETL_CONFIG["SOCRATA_KEY_SECRET"])
+                 username=ATD_ETL_CONFIG["SOCRATA_KEY_ID"], password=ATD_ETL_CONFIG["SOCRATA_KEY_SECRET"], timeout=20)
 
 # Crash config
 crashes_query_template = Template(
@@ -125,6 +125,22 @@ person_columns_to_rename = {
 # Start timer
 start = time.time()
 
+# Queries
+queries_config = {
+    crashes: {
+        template: crashes_query_template,
+        formatter: format_crash_data,
+        tables: ["atd_txdot_crashes"],
+        dataset_uid: "y2wy-tgr5"
+    },
+    people: {
+        template: people_query_template,
+        formatter: format_person_data,
+        tables: ["atd_txdot_person", "atd_txdot_primaryperson"],
+        dataset_uid: "xecs-rpy9"
+    }
+}
+
 # while loop to request records from Hasura and post to Socrata
 records = None
 offset = 0
@@ -132,50 +148,50 @@ limit = 6000
 total_records_published = 0
 
 # Get records from Hasura until res is [] (Crashes)
-# while records != []:
-#     # Create query, increment offset, and query DB
-#     crashes_query = crashes_query_template.substitute(
-#         limit=limit, offset=offset)
-#     offset += limit
-#     crashes = run_hasura_query(crashes_query)
-
-#     # Format records
-#     records = crashes['data']['atd_txdot_crashes']
-#     formatted_records = flatten_hasura_response(records)
-#     formatted_records = rename_record_columns(
-#         formatted_records, crash_columns_to_rename)
-#     formatted_records = create_crash_mode_flags(formatted_records, unit_modes)
-
-#     # Upsert records to Socrata
-#     client.upsert("rrxh-grh6", formatted_records)
-#     total_records_published += len(records)
-#     print(f"{total_records_published} records published")
-
-# Get records from Hasura until res is [] (People)
 while records != []:
     # Create query, increment offset, and query DB
-    people_query = people_query_template.substitute(
+    crashes_query = crashes_query_template.substitute(
         limit=limit, offset=offset)
     offset += limit
-    people = run_hasura_query(people_query)
+    crashes = run_hasura_query(crashes_query)
 
     # Format records
-    person_records = people['data']['atd_txdot_person']
-    person_records = add_value_prefix(person_records, person_id_prefixes)
-    primary_person_records = people['data']['atd_txdot_primaryperson']
-    primary_person_records = add_value_prefix(
-        primary_person_records, person_id_prefixes)
-    people_records = person_records + primary_person_records
-    records = people_records
-    people_records = rename_record_columns(
-        people_records, person_columns_to_rename)
-    people_records = formatted_records = flatten_hasura_response(
-        people_records)
+    records = crashes['data']['atd_txdot_crashes']
+    formatted_records = flatten_hasura_response(records)
+    formatted_records = rename_record_columns(
+        formatted_records, crash_columns_to_rename)
+    formatted_records = create_crash_mode_flags(formatted_records, unit_modes)
 
-# Upsert records to Socrata
-    client.upsert("xecs-rpy9", people_records)
-    total_records_published += len(people_records)
+    # Upsert records to Socrata
+    client.upsert("y2wy-tgr5", formatted_records)
+    total_records_published += len(records)
     print(f"{total_records_published} records published")
+
+# Get records from Hasura until res is [] (People)
+# while records != []:
+#     # Create query, increment offset, and query DB
+#     people_query = people_query_template.substitute(
+#         limit=limit, offset=offset)
+#     offset += limit
+#     people = run_hasura_query(people_query)
+
+#     # Format records
+#     person_records = people['data']['atd_txdot_person']
+#     person_records = add_value_prefix(person_records, person_id_prefixes)
+#     primary_person_records = people['data']['atd_txdot_primaryperson']
+#     primary_person_records = add_value_prefix(
+#         primary_person_records, person_id_prefixes)
+#     people_records = person_records + primary_person_records
+#     records = people_records
+#     people_records = rename_record_columns(
+#         people_records, person_columns_to_rename)
+#     people_records = formatted_records = flatten_hasura_response(
+#         people_records)
+
+# # Upsert records to Socrata
+#     client.upsert("xecs-rpy9", people_records)
+#     total_records_published += len(people_records)
+#     print(f"{total_records_published} records published")
 
 # Terminate Socrata connection
 client.close()
