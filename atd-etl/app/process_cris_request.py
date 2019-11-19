@@ -74,6 +74,13 @@ wait(10)
 browser.find_by_text("Continue").click()
 wait(10)
 
+print("Selecting Counties to be Included in the Extract")
+browser.find_by_css('input[ng-value="shareConstants.LOCATION_TYPE_IDS.COUNTY"]').click()
+browser.execute_script("$(\"div[data-value='105']\").click()") # Travis
+browser.execute_script("$(\"div[data-value='227']\").click()") # Williamson
+browser.execute_script("$(\"div[data-value='246']\").click()") # Hays
+wait(3)
+
 print("\nProcess done.")
 
 end = time.time()
