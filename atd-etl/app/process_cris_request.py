@@ -65,6 +65,15 @@ browser.find_by_id('username').fill(ATD_ETL_CONFIG["ATD_CRIS_REQUEST_USERNAME"])
 browser.find_by_id('password').fill(ATD_ETL_CONFIG["ATD_CRIS_REQUEST_PASSWORD"])
 browser.find_by_name('_eventId_proceed').click()
 
+
+# Let's begin our data extract request
+print("Selecting data extract request")
+browser.find_by_text("Create Data Extract Request").click()
+wait(10)
+
+browser.find_by_text("Continue").click()
+wait(10)
+
 print("\nProcess done.")
 
 end = time.time()
