@@ -12,8 +12,8 @@ The application requires the splinter library:
 """
 
 import time
-import json
-import concurrent.futures
+import datetime
+import dateutil.relativedelta
 
 from process.config import ATD_ETL_CONFIG
 from process.helpers_cr3 import *
@@ -24,8 +24,19 @@ from process.helpers_cr3 import *
 from splinter import Browser
 from selenium.webdriver.chrome.options import Options
 
+
+def wait(int):
+    print("Should wait: %s" % str(int))
+    time.sleep(int)
+
 # Start timer
 start = time.time()
+
+# Report Dates
+date_now = datetime.datetime.now()
+date_month_ago = date_now + dateutil.relativedelta.relativedelta(days=-3)
+CRIS_EXTRACT_DATE_START=date_month_ago.strftime('%m/%d/%Y')
+CRIS_EXTRACT_DATE_END=date_now.strftime('%m/%d/%Y')
 
 #
 # We need to initialize our browser with the following options
@@ -50,19 +61,9 @@ browser.find_by_id('idpSelectSelectButton').click()
 
 # We log in
 print("Filling out credentials.")
-browser.find_by_id('username').fill(ATD_ETL_CONFIG["ATD_CRIS_USERNAME_CR3"])
-browser.find_by_id('password').fill(ATD_ETL_CONFIG["ATD_CRIS_PASSWORD_CR3"])
+browser.find_by_id('username').fill(ATD_ETL_CONFIG["ATD_CRIS_REQUEST_USERNAME"])
+browser.find_by_id('password').fill(ATD_ETL_CONFIG["ATD_CRIS_REQUEST_PASSWORD"])
 browser.find_by_name('_eventId_proceed').click()
-
-# At this point, we have all we need from the browser, the cookies:
-print("Gathering cookies.")
-CRIS_BROWSER_COOKIES = browser.cookies.all()
-
-
-
-
-
-
 
 print("\nProcess done.")
 
