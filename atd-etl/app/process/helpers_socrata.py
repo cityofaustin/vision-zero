@@ -120,3 +120,13 @@ def add_value_prefix(records, prefix_dict):
             if prefix_key in record.keys():
                 record[prefix_key] = prefix_value + str(record[prefix_key])
     return records
+
+
+def format_crash_data(data, formatter_config):
+    records = data['data'][formatter_config["tables"][0]]
+    formatted_records = flatten_hasura_response(records)
+    formatted_records = rename_record_columns(
+        formatted_records, formatter_config["columns_to_rename"])
+    formatted_records = create_crash_mode_flags(
+        formatted_records, formatter_config["flags_list"])
+    return formatted_records
