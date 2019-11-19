@@ -90,6 +90,9 @@ browser.find_by_id('requestDateProcessEnd').fill(CRIS_EXTRACT_DATE_END)
 browser.find_by_text("Continue").click()
 wait(10)
 
+print("Submit Request")
+browser.find_by_text("Submit").click()
+
 print("\nProcess done.")
 
 end = time.time()
