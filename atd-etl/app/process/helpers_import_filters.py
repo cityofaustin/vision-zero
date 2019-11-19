@@ -49,7 +49,7 @@ years_of_experience: 0
 
 The same pattern should be followed for any new filters.
 """
-import web_pdb;
+
 import re
 
 
@@ -57,7 +57,7 @@ def filter_numeric_field(input, fields):
     # Remove quotes for numeric values
     output = input
     for field in fields:
-        output = re.sub(r"%s: \"([0-9\.]+)\"(,)?" % field, r"%s: \1\2" % field, output)
+        output = re.sub(r"(\n|^)%s: \"([0-9\.]+)\"(,)?" % field, r"\1%s: \2\3" % field, output)
 
     return output
 
