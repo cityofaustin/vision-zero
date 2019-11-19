@@ -8,7 +8,11 @@ Data extracts are routed and saved into a private S3 bucket where they will be
 waiting to be 'processed'. The emails contain a download link, which requires
 the user to log in to the CRIS website and proceed to the download.
 
-The application requires the splinter library:
-    https://splinter.readthedocs.io/en/latest/
+The application requires the boto3 and mail-parser libraries:
+    https://pypi.org/project/boto3/
+    https://pypi.org/project/mail-parser/
 """
-print("CRIS - Request Download: Not yet implemented.")
+import mailparser
+import boto3
+
+print("First test")
