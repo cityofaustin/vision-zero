@@ -17,7 +17,6 @@ The application requires the requests library:
 """
 import time
 import signal
-import json
 import logging
 import concurrent.futures
 
@@ -41,9 +40,10 @@ insert_errors = 0
 # Start timer
 start = time.time()
 
+
 def keyboard_interrupt_handler(signal, frame):
     """
-    Handles keyboard interrputs (ie. Control+C) and signals the script to stop.
+    Handles keyboard interrupts (ie. Control+C) and signals the script to stop.
     :param signal: The signal being caught
     :param frame:
     :return:
@@ -109,6 +109,13 @@ def process_line(file_type, line, fieldnames, current_line, dryrun=False):
 
             # If we are stopping we must make signal of it
             if stop_execution:
+                print("----- Crash Insertion Error ------")
+                print("Original Line: %s" % line)
+
+                print("%s[%s] Error: %s" %
+                      (mode, str(current_line), str(response)))
+                print("----------------------------------")
+
                 insert_errors += 1
                 STOP_EXEC = True
                 exit(1)
