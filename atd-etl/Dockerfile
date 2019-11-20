@@ -8,7 +8,7 @@ RUN mkdir /app && mkdir /app/tmp && mkdir /data
 
 RUN apk add bash chromium chromium-chromedriver
 
-RUN pip install splinter selenium requests awscli web-pdb mail-parser
+RUN pip install splinter selenium requests awscli web-pdb boto3 mail-parser
 
 WORKDIR /app
 
