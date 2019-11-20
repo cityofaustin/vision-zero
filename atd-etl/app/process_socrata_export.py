@@ -23,7 +23,8 @@ print("Socrata - Exporter:  Started.")
 client = Socrata("data.austintexas.gov", ATD_ETL_CONFIG["SOCRATA_APP_TOKEN"],
                  username=ATD_ETL_CONFIG["SOCRATA_KEY_ID"], password=ATD_ETL_CONFIG["SOCRATA_KEY_SECRET"], timeout=20)
 
-queries_config = [
+# Define tables to query from Hasura and publish to Socrata
+query_configs = [
     {
         "table": "crash",
         "template": crashes_query_template,
@@ -66,8 +67,8 @@ queries_config = [
 # Start timer
 start = time.time()
 
-# For each config, get records from Hasura until res is [] and upsert to Socrata
-for config in queries_config:
+# For each config, get records from Hasura and upsert to Socrata until res is []
+for config in query_configs:
     records = None
     offset = 0
     limit = 6000
@@ -91,7 +92,6 @@ for config in queries_config:
         if len(records) == 0:
             print(
                 f'{total_records} {config["table"]} records upserted.')
-
 
 # Terminate Socrata connection
 client.close()
