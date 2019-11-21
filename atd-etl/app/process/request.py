@@ -24,4 +24,8 @@ def run_query(query):
     except Exception as e:
         print("Exception, could not insert: " + str(e))
         print("Query: '%s'" % query)
-        return None
+        response = {
+            "errors": "Exception, could not insert: " + str(e),
+            "query": query
+        }
+        return response

@@ -72,3 +72,4 @@ build-iPhoneSimulator/
 *.csv
 *.env
 *.log
+*.xml

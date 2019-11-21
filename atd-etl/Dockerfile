@@ -6,9 +6,9 @@ FROM python:3-alpine3.8
 
 RUN mkdir /app && mkdir /app/tmp && mkdir /data
 
-RUN apk add bash chromium chromium-chromedriver
+RUN apk add bash chromium chromium-chromedriver p7zip
 
-RUN pip install splinter selenium requests awscli web-pdb sodapy
+RUN pip install splinter selenium requests awscli web-pdb sodapy boto3 mail-parser
 
 WORKDIR /app
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
 Test - Run
-Author: Austin Transportation Department, Data and Technology Office
+Author: Austin Transportation Department, Data and Technology Services
 
 Description: The purpose of this script is to help troubleshooting
 running python commands within the splinter docker container.
