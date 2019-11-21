@@ -213,7 +213,6 @@ function Crash(props) {
                         >
                           {data.atd_txdot_crash_locations[0]["location_id"]}
                         </Link>
-                        )
                       </>
                     )) ||
                       "unassigned"}
