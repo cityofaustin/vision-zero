@@ -78,11 +78,10 @@ function Crash(props) {
   };
 
   const convertGeocoderToName = geocoderID => {
+    const geocoders = geocoderOptions.atd_txdot_geocoders;
     const geocoderOption =
-      geocoderOptions.length > 0 &&
-      geocoderOptions.atd_txdot_geocoders.find(option => {
-        debugger;
-      });
+      geocoders && geocoders.find(option => option.geocoder_id === geocoderID);
+    return geocoderOption && geocoderOption.name;
   };
 
   const handleInputChange = e => {
