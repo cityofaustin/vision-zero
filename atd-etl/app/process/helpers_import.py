@@ -1,6 +1,6 @@
 """
 Helper Methods
-Author: Austin Transportation Department, Data and Technology Office
+Author: Austin Transportation Department, Data and Technology Services
 
 Description: The purpose of this script is to provide any methods that
 assist any script associated to this application.
