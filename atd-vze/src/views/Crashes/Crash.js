@@ -192,10 +192,9 @@ function Crash(props) {
               <CardHeader>
                 <Row>
                   <Col>
-                    Crash Location{" "}
+                    Crash Location (ID:{" "}
                     {(data && data.atd_txdot_crash_locations.length > 0 && (
                       <>
-                        (ID:&nbsp;
                         <Link
                           to={`/locations/${
                             data.atd_txdot_crash_locations[0]["location_id"]
@@ -206,7 +205,8 @@ function Crash(props) {
                         )
                       </>
                     )) ||
-                      "(Unassigned)"}
+                      "unassigned"}
+                    )
                   </Col>
                   <Col>
                     {!isEditingCoords && (
