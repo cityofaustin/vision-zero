@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
 Test - Web-PDB
-Author: Austin Transportation Department, Data and Technology Office
+Author: Austin Transportation Department, Data and Technology Services
 
 Description: The purpose of this script is to run and test web-pdb
 within the ETL docker container. Our ETL processes will expand in
