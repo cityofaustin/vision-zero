@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
-Hasura - Import
-Author: Austin Transportation Department, Data and Technology Office
+Hasura - Import 
+Author: Austin Transportation Department, Data and Technology Services
 
 Description: The purpose of this script is to import CSV files from
 the data extract. It assumes the files are available in the /data folder

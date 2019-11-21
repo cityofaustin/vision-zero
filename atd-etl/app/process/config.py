@@ -1,6 +1,6 @@
 """
 ETL Configuration File
-Author: Austin Transportation Department, Data and Technology Office
+Author: Austin Transportation Department, Data and Technology Services
 
 Description: This file contains an dictionary that contains environment
 variables for all scripts, including CRIS, Hasura, Socrata, ETC. These

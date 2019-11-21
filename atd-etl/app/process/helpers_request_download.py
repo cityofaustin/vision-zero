@@ -1,6 +1,6 @@
 """
 CRIS - Request Download Helper
-Author: Austin Transportation Department, Data and Technology Office
+Author: Austin Transportation Department, Data and Technology Services
 
 Description: The purpose of this script is to provide helper functions
 that can list and download emails from S3, moving files within the S3

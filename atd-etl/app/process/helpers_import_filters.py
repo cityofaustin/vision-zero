@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
 Hasura - Import - Helpers - Filters
-Author: Austin Transportation Department, Data and Technology Office
+Author: Austin Transportation Department, Data and Technology Services
 
 Description: The purpose of this script is to provide text filters that
 help correct graphql syntax. The way these filters work is by receiving

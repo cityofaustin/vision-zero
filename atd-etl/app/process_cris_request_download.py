@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
 CRIS - Request Download
-Author: Austin Transportation Department, Data and Technology Office
+Author: Austin Transportation Department, Data and Technology Services
 
 Description: This script will process emails deposited on an S3 bucket on AWS.
 Data extracts are routed and saved into a private S3 bucket where they will be

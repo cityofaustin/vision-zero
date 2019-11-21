@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
 CRIS - Request Script
-Author: Austin Transportation Department, Data and Technology Office
+Author: Austin Transportation Department, Data and Technology Services
 
 Description: This script allows the user to request new CSV data extracts.
 It will sign-in to the CRIS website, and given date parameters, it will
