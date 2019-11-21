@@ -1,6 +1,6 @@
 """
 Helpers for CR3 Downloads
-Author: Austin Transportation Department, Data and Technology Office
+Author: Austin Transportation Department, Data and Technology Services
 
 Description: This script contains methods that help in the download
 and processing of CR3 files, this can include downloading the file
