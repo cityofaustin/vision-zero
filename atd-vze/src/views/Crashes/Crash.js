@@ -77,6 +77,14 @@ function Crash(props) {
     return geocoderAddressString;
   };
 
+  const convertGeocoderToName = geocoderID => {
+    const geocoderOption =
+      geocoderOptions.length > 0 &&
+      geocoderOptions.atd_txdot_geocoders.find(option => {
+        debugger;
+      });
+  };
+
   const handleInputChange = e => {
     const newFormState = Object.assign(formData, {
       [editField]: e.target.value,
@@ -225,7 +233,7 @@ function Crash(props) {
                   </Col>
                 </Row>
                 <Row>
-                  <Col>Source: {geocodeProvider}</Col>
+                  <Col>Source: {convertGeocoderToName(geocodeProvider)}</Col>
                 </Row>
               </CardHeader>
               <CardBody>
