@@ -25,6 +25,7 @@ import { crashDataMap } from "./crashDataMap";
 import "./crash.scss";
 
 import { GET_CRASH, UPDATE_CRASH } from "../../queries/crashes";
+import { GET_GEOCODERS } from "../../queries/lookups";
 
 const calculateYearsLifeLost = people => {
   // Assume 75 year life expectancy,
@@ -48,6 +49,8 @@ function Crash(props) {
   const { loading, error, data, refetch } = useQuery(GET_CRASH, {
     variables: { crashId },
   });
+
+  const { data: geocoderOptions } = useQuery(GET_GEOCODERS);
 
   const [editField, setEditField] = useState("");
   const [formData, setFormData] = useState({});

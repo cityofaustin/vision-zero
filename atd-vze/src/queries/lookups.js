@@ -56,3 +56,12 @@ export const GET_LOOKUPS = gql`
     }
   }
 `;
+
+export const GET_GEOCODERS = gql`
+  {
+    atd_txdot_geocoders {
+      name
+      geocoder_id
+    }
+  }
+`;
