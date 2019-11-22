@@ -79,9 +79,14 @@ function Crash(props) {
 
   const convertGeocoderToName = geocoderID => {
     const geocoders = geocoderOptions.atd_txdot_geocoders;
+    const primaryLat = data.atd_txdot_crashes[0]["latitude_primary"];
+    const primaryLong = data.atd_txdot_crashes[0]["longitude_primary"];
+
     const geocoderOption =
       geocoders && geocoders.find(option => option.geocoder_id === geocoderID);
-    return geocoderOption && geocoderOption.name;
+    return primaryLat && primaryLong
+      ? geocoderOption && geocoderOption.name
+      : "No Primary Coordinates";
   };
 
   const handleInputChange = e => {
