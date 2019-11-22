@@ -30,6 +30,7 @@ ATD_ETL_CONFIG = {
     # SOCRATA
     "SOCRATA_KEY_ID": os.getenv("SOCRATA_KEY_ID", ""),
     "SOCRATA_KEY_SECRET": os.getenv("SOCRATA_KEY_SECRET", ""),
+    "SOCRATA_APP_TOKEN": os.getenv("SOCRATA_APP_TOKEN", ""),
 
     # CR3
     "ATD_CRIS_CR3_URL": "https://cris.dot.state.tx.us/secure/ImageServices/DisplayImageServlet?target=",
