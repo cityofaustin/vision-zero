@@ -1,6 +1,6 @@
 """
 Socrata Queries
-Author: Austin Transportation Department, Data and Technology Office
+Author: Austin Transportation Department, Data & Technology Services
 
 Description: The purpose of this script is to define graphql query templates
 to run against the Hasura endpoint for Socrata upsertion.

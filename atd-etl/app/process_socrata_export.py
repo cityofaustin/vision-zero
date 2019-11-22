@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
 Socrata - Exporter
-Author: Austin Transportation Department, Data and Technology Office
+Author: Austin Transportation Department, Data & Technology Services
 
 Description: The purpose of this script is to gather data from Hasura
 and export it to the Socrata database.
@@ -69,6 +69,7 @@ start = time.time()
 
 # For each config, get records from Hasura and upsert to Socrata until res is []
 for config in query_configs:
+    print(f'Starting {config["table"]} table...')
     records = None
     offset = 0
     limit = 6000
@@ -92,6 +93,7 @@ for config in query_configs:
         if len(records) == 0:
             print(
                 f'{total_records} {config["table"]} records upserted.')
+            print(f'Completed {config["table"]} table.')
 
 # Terminate Socrata connection
 client.close()

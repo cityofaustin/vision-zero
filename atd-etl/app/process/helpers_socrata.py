@@ -1,6 +1,6 @@
 """
 Helpers for Socrata Export
-Author: Austin Transportation Department, Data and Technology Office
+Author: Austin Transportation Department, Data & Technology Services
 
 Description: This script contains methods that help in the download
 of records from Hasura and upserting into an existing Socrata data table.
