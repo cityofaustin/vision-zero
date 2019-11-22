@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
 CRIS - CR3 Downloader
-Author: Austin Transportation Department, Data and Technology Office
+Author: Austin Transportation Department, Data and Technology Services
 
 Description: This script allows the user to log in to the CRIS website
 and download CR3 pdf files as needed. The list of CR3 files to be downloaded
