@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
 Socrata - Exporter
-Author: Austin Transportation Department, Data and Technology Office
+Author: Austin Transportation Department, Data and Technology Services
 
 Description: The purpose of this script is to gather data from Hasura
 and export it to the Socrata database.

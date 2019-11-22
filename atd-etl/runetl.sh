@@ -12,7 +12,6 @@
 
 # Make sure your ENV files are only visible to the current user
 chmod +x app/*.py;
-chmod +x app/*.sh;
 
 #
 # We also need to export the name of the docker image we are going to use
@@ -20,10 +19,12 @@ chmod +x app/*.sh;
 export ATD_DOCKER_IMAGE="atddocker/atd-vz-etl:local";
 
 function runetl {
-    # We have a limit of two arguments
-    if [[ "$3" != "" ]]; then
-        echo "Unrecognized argument: $3";
-        return;
+    # Let's establish our default web-pdb port:
+    WEB_PDB_PORT="5555";
+
+    # We are also going to allow for changes for the default web-pdb port:
+    if [[ "$3" = "--port" ]] || [[ "$3" = "-p" ]]; then
+        WEB_PDB_PORT="$4"
     fi;
 
     # If the first argumentis build, then we build the container
@@ -68,8 +69,13 @@ function runetl {
         FINAL_COMMAND="/${RUN_COMMAND}";
     fi;
 
+    echo "--------------------------------------------------------------------"
+    echo "--- Running web-pdb debugger at http://localhost:${WEB_PDB_PORT} ---"
+    echo "--------------------------------------------------------------------"
+
     # Run Docker
-    docker run -it --rm -v $(pwd)/app:/app -v $(pwd)/data:/data -v $(pwd)/tmp:/app/tmp \
+    docker run -it --rm -p $WEB_PDB_PORT:5555/tcp \
+        -v $(pwd)/app:/app -v $(pwd)/data:/data -v $(pwd)/tmp:/app/tmp \
         --env-file $ATD_CRIS_CONFIG $ATD_DOCKER_IMAGE $FINAL_COMMAND;
 
     # Reload Run Script into memory

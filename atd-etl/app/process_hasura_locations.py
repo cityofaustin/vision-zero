@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
 Hasura - Locations
-Author: Austin Transportation Department, Data and Technology Office
+Author: Austin Transportation Department, Data and Technology Services
 
 Description: This script searches through the crashes table (through
 Hasura) in Postgres, for any crashes that do not have a location
