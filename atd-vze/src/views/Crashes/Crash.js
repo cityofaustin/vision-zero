@@ -78,12 +78,14 @@ function Crash(props) {
   };
 
   const convertGeocoderToName = geocoderID => {
-    const geocoders = geocoderOptions.atd_txdot_geocoders;
+    const geocoders = geocoderOptions.atd_txdot_geocoders || [];
     const primaryLat = data.atd_txdot_crashes[0]["latitude_primary"];
     const primaryLong = data.atd_txdot_crashes[0]["longitude_primary"];
 
-    const geocoderOption =
-      geocoders && geocoders.find(option => option.geocoder_id === geocoderID);
+    const geocoderOption = geocoders.find(
+      option => option.geocoder_id === geocoderID
+    );
+
     return primaryLat && primaryLong
       ? geocoderOption && geocoderOption.name
       : "No Primary Coordinates";
@@ -222,6 +224,8 @@ function Crash(props) {
                     )) ||
                       "unassigned"}
                     )
+                    <br />
+                    Source: {convertGeocoderToName(geocodeProvider)}
                   </Col>
                   <Col>
                     {!isEditingCoords && (
@@ -234,9 +238,6 @@ function Crash(props) {
                       </Button>
                     )}
                   </Col>
-                </Row>
-                <Row>
-                  <Col>Source: {convertGeocoderToName(geocodeProvider)}</Col>
                 </Row>
               </CardHeader>
               <CardBody>
