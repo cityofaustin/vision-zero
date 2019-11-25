@@ -25,6 +25,7 @@ import { crashDataMap } from "./crashDataMap";
 import "./crash.scss";
 
 import { GET_CRASH, UPDATE_CRASH } from "../../queries/crashes";
+import { GET_GEOCODERS } from "../../queries/lookups";
 
 const calculateYearsLifeLost = people => {
   // Assume 75 year life expectancy,
@@ -49,6 +50,8 @@ function Crash(props) {
     variables: { crashId },
   });
 
+  const { data: geocoderOptions } = useQuery(GET_GEOCODERS);
+
   const [editField, setEditField] = useState("");
   const [formData, setFormData] = useState({});
   const [isEditingCoords, setIsEditingCoords] = useState(false);
@@ -72,6 +75,20 @@ function Crash(props) {
       }
     });
     return geocoderAddressString;
+  };
+
+  const convertGeocoderToName = geocoderID => {
+    const geocoders = geocoderOptions.atd_txdot_geocoders || [];
+    const primaryLat = data.atd_txdot_crashes[0]["latitude_primary"];
+    const primaryLong = data.atd_txdot_crashes[0]["longitude_primary"];
+
+    const geocoderOption = geocoders.find(
+      option => option.geocoder_id === geocoderID
+    );
+
+    return primaryLat && primaryLong
+      ? geocoderOption && geocoderOption.name
+      : "No Primary Coordinates";
   };
 
   const handleInputChange = e => {
@@ -133,6 +150,7 @@ function Crash(props) {
     address_confirmed_primary: primaryAddress,
     address_confirmed_secondary: secondaryAddress,
     cr3_stored_flag: cr3StoredFlag,
+    geocode_provider: geocodeProvider,
   } = data.atd_txdot_crashes[0];
 
   const mapGeocoderAddress = createGeocoderAddressString(data);
@@ -192,10 +210,9 @@ function Crash(props) {
               <CardHeader>
                 <Row>
                   <Col>
-                    Crash Location{" "}
+                    Crash Location (ID:{" "}
                     {(data && data.atd_txdot_crash_locations.length > 0 && (
                       <>
-                        (ID:&nbsp;
                         <Link
                           to={`/locations/${
                             data.atd_txdot_crash_locations[0]["location_id"]
@@ -203,10 +220,12 @@ function Crash(props) {
                         >
                           {data.atd_txdot_crash_locations[0]["location_id"]}
                         </Link>
-                        )
                       </>
                     )) ||
-                      "(Unassigned)"}
+                      "unassigned"}
+                    )
+                    <br />
+                    Source: {convertGeocoderToName(geocodeProvider)}
                   </Col>
                   <Col>
                     {!isEditingCoords && (
