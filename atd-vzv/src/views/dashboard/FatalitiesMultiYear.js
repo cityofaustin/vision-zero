@@ -29,11 +29,11 @@ const FatalitiesMultiYear = () => {
   const [threeYearsAgoDeathArray, setThreeYearsAgoDeathArray] = useState([]);
   const [fourYearsAgoDeathArray, setFourYearsAgoDeathArray] = useState([]);
 
-  // const calculateTotalFatalities = data => {
-  //   let total = 0;
-  //   data.data.forEach(record => (total += parseInt(record.death_cnt)));
-  //   return total;
-  // };
+  const calculateTotalFatalities = data => {
+    let total = 0;
+    data.data.forEach(record => (total += parseInt(record.death_cnt)));
+    return total;
+  };
 
   const calculateMonthlyTotals = (data, dateString) => {
     // Limit returned data to months of data available and prevent line from zeroing out
@@ -57,6 +57,7 @@ const FatalitiesMultiYear = () => {
       0,
       monthIntegerArray.indexOf(monthLimit) + 1
     );
+    let cumulativeMonthTotal = 0;
     return truncatedMonthIntegerArray.map(month => {
       let monthTotal = 0;
       data.data.forEach(record => {
@@ -64,39 +65,40 @@ const FatalitiesMultiYear = () => {
           monthTotal += parseInt(record.death_cnt);
         }
       });
-      // console.log(month, monthTotal);
-      return monthTotal;
+      cumulativeMonthTotal += monthTotal;
+      console.log(monthTotal, cumulativeMonthTotal);
+      return cumulativeMonthTotal;
     });
   };
 
   useEffect(() => {
     // Fetch year-to-date records
     axios.get(yearToDateUrl).then(res => {
-      // console.log(`Year to date fatalities: ${calculateTotalFatalities(res)}`);
+      console.log(`Year to date fatalities: ${calculateTotalFatalities(res)}`);
       setYearToDateDeathArray(calculateMonthlyTotals(res, today));
     });
 
     // Fetch records from last year
     axios.get(getFatalitiesByYearsAgoUrl(1)).then(res => {
-      // console.log(`Last year fatalities: ${calculateTotalFatalities(res)}`);
+      console.log(`Last year fatalities: ${calculateTotalFatalities(res)}`);
       setLastYearDeathArray(calculateMonthlyTotals(res));
     });
 
     // Fetch records from two years ago
     axios.get(getFatalitiesByYearsAgoUrl(2)).then(res => {
-      // console.log(`Two yeas ago fatalities: ${calculateTotalFatalities(res)}`);
+      console.log(`Two yeas ago fatalities: ${calculateTotalFatalities(res)}`);
       setTwoYearsAgoDeathArray(calculateMonthlyTotals(res));
     });
 
     // Fetch records from three years ago
     axios.get(getFatalitiesByYearsAgoUrl(3)).then(res => {
-      // console.log(`Two yeas ago fatalities: ${calculateTotalFatalities(res)}`);
+      console.log(`Three yeas ago fatalities: ${calculateTotalFatalities(res)}`);
       setThreeYearsAgoDeathArray(calculateMonthlyTotals(res));
     });
 
     // Fetch records from three years ago
     axios.get(getFatalitiesByYearsAgoUrl(4)).then(res => {
-      // console.log(`Two yeas ago fatalities: ${calculateTotalFatalities(res)}`);
+      console.log(`Four yeas ago fatalities: ${calculateTotalFatalities(res)}`);
       setFourYearsAgoDeathArray(calculateMonthlyTotals(res));
     });
   }, [
