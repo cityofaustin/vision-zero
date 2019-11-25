@@ -1,20 +1,32 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import moment from "moment";
+
 import { Line } from "react-chartjs-2";
 
-import { Container } from "reactstrap";
+import { Container, Row, Col } from "reactstrap";
 
 const FatalitiesMultiYear = () => {
-  const today = moment().format("YYYY-MM-DD");
   const thisYear = moment().format("YYYY");
+  const lastMonthNumber = moment()
+    .subtract(1, "month")
+    .format("MM");
+  const lastMonthLastDayNumber = moment(
+    `${thisYear}-${lastMonthNumber}`,
+    "YYYY-MM"
+  ).daysInMonth();
+  const lastMonthLastDayDate = `${thisYear}-${lastMonthNumber}-${lastMonthLastDayNumber}`;
+  const lastMonthString = moment()
+    .subtract(1, "month")
+    .format("MMMM");
+
   const getYearsAgoLabel = yearsAgo => {
     return moment()
       .subtract(yearsAgo, "year")
       .format("YYYY");
   };
 
-  const yearToDateUrl = `https://data.austintexas.gov/resource/y2wy-tgr5.json?$where=death_cnt > 0 AND crash_date between '${thisYear}-01-01T00:00:00' and '${today}T23:59:59'`;
+  const thisYearUrl = `https://data.austintexas.gov/resource/y2wy-tgr5.json?$where=death_cnt > 0 AND crash_date between '${thisYear}-01-01T00:00:00' and '${lastMonthLastDayDate}T23:59:59'`;
 
   const getFatalitiesByYearsAgoUrl = yearsAgo => {
     let yearsAgoDate = moment()
@@ -23,16 +35,15 @@ const FatalitiesMultiYear = () => {
     return `https://data.austintexas.gov/resource/y2wy-tgr5.json?$where=death_cnt > 0 AND crash_date between '${yearsAgoDate}-01-01T00:00:00' and '${yearsAgoDate}-12-31T23:59:59'`;
   };
 
-  const [yearToDateDeathArray, setYearToDateDeathArray] = useState([]);
+  const [thisYearDeathArray, setThisYearDeathArray] = useState([]);
   const [lastYearDeathArray, setLastYearDeathArray] = useState([]);
   const [twoYearsAgoDeathArray, setTwoYearsAgoDeathArray] = useState([]);
   const [threeYearsAgoDeathArray, setThreeYearsAgoDeathArray] = useState([]);
   const [fourYearsAgoDeathArray, setFourYearsAgoDeathArray] = useState([]);
+  const [fiveYearsAgoDeathArray, setFiveYearsAgoDeathArray] = useState([]);
 
-  const calculateTotalFatalities = data => {
-    let total = 0;
-    data.data.forEach(record => (total += parseInt(record.death_cnt)));
-    return total;
+  const calculateYearlyTotals = deathArray => {
+    return deathArray[deathArray.length - 1];
   };
 
   const calculateMonthlyTotals = (data, dateString) => {
@@ -66,48 +77,48 @@ const FatalitiesMultiYear = () => {
         }
       });
       cumulativeMonthTotal += monthTotal;
-      console.log(monthTotal, cumulativeMonthTotal);
       return cumulativeMonthTotal;
     });
   };
 
   useEffect(() => {
-    // Fetch year-to-date records
-    axios.get(yearToDateUrl).then(res => {
-      console.log(`Year to date fatalities: ${calculateTotalFatalities(res)}`);
-      setYearToDateDeathArray(calculateMonthlyTotals(res, today));
+    // Fetch records from this year through last month
+    axios.get(thisYearUrl).then(res => {
+      setThisYearDeathArray(calculateMonthlyTotals(res, lastMonthLastDayDate));
     });
 
     // Fetch records from last year
     axios.get(getFatalitiesByYearsAgoUrl(1)).then(res => {
-      console.log(`Last year fatalities: ${calculateTotalFatalities(res)}`);
       setLastYearDeathArray(calculateMonthlyTotals(res));
     });
 
     // Fetch records from two years ago
     axios.get(getFatalitiesByYearsAgoUrl(2)).then(res => {
-      console.log(`Two yeas ago fatalities: ${calculateTotalFatalities(res)}`);
       setTwoYearsAgoDeathArray(calculateMonthlyTotals(res));
     });
 
     // Fetch records from three years ago
     axios.get(getFatalitiesByYearsAgoUrl(3)).then(res => {
-      console.log(`Three yeas ago fatalities: ${calculateTotalFatalities(res)}`);
       setThreeYearsAgoDeathArray(calculateMonthlyTotals(res));
     });
 
-    // Fetch records from three years ago
+    // Fetch records from four years ago
     axios.get(getFatalitiesByYearsAgoUrl(4)).then(res => {
-      console.log(`Four yeas ago fatalities: ${calculateTotalFatalities(res)}`);
       setFourYearsAgoDeathArray(calculateMonthlyTotals(res));
     });
+
+    // Fetch records from five years ago
+    axios.get(getFatalitiesByYearsAgoUrl(5)).then(res => {
+      setFiveYearsAgoDeathArray(calculateMonthlyTotals(res));
+    });
   }, [
-    yearToDateUrl,
+    thisYearUrl,
     getFatalitiesByYearsAgoUrl(1),
     getFatalitiesByYearsAgoUrl(2),
     getFatalitiesByYearsAgoUrl(3),
     getFatalitiesByYearsAgoUrl(4),
-    today
+    getFatalitiesByYearsAgoUrl(5),
+    lastMonthLastDayDate
   ]);
 
   const data = {
@@ -130,40 +141,39 @@ const FatalitiesMultiYear = () => {
         label: `${thisYear}`,
         fill: false,
         lineTension: 0.1,
-        backgroundColor: "rgba(192,10,10,1)", // Legend box
-        // backgroundColor: "rgba(192,10,10,0.4)", // Legend box
-        borderColor: "rgba(192,10,10,1)",
+        backgroundColor: "#08519c", // Legend box
+        borderColor: "#08519c",
         borderCapStyle: "butt",
         borderDash: [],
         borderDashOffset: 0.0,
         borderJoinStyle: "miter",
-        pointBorderColor: "rgba(192,10,10,1)",
-        pointBackgroundColor: "#fff",
+        pointBorderColor: "#08519c",
+        pointBackgroundColor: "#08519c",
         pointBorderWidth: 1,
         pointHoverRadius: 5,
-        pointHoverBackgroundColor: "rgba(192,10,10,1)",
-        pointHoverBorderColor: "rgba(220,220,220,1)",
+        pointHoverBackgroundColor: "#08519c",
+        pointHoverBorderColor: "#08519c",
         pointHoverBorderWidth: 2,
         pointRadius: 1,
         pointHitRadius: 10,
-        data: yearToDateDeathArray
+        data: thisYearDeathArray
       },
       {
         label: `${getYearsAgoLabel(1)}`,
         fill: false,
         lineTension: 0.1,
-        backgroundColor: "rgb(0,0,0)", // Legend box
-        borderColor: "rgb(0,0,0)",
+        backgroundColor: "#a50f15", // Legend box
+        borderColor: "#a50f15",
         borderCapStyle: "butt",
         borderDash: [],
         borderDashOffset: 0.0,
         borderJoinStyle: "miter",
-        pointBorderColor: "rgb(0,0,0)",
-        pointBackgroundColor: "#fff",
+        pointBorderColor: "#a50f15",
+        pointBackgroundColor: "#a50f15",
         pointBorderWidth: 1,
         pointHoverRadius: 5,
-        pointHoverBackgroundColor: "rgb(0,0,0)",
-        pointHoverBorderColor: "rgb(0,0,0)",
+        pointHoverBackgroundColor: "#a50f15",
+        pointHoverBorderColor: "#a50f15",
         pointHoverBorderWidth: 2,
         pointRadius: 1,
         pointHitRadius: 10,
@@ -173,18 +183,18 @@ const FatalitiesMultiYear = () => {
         label: `${getYearsAgoLabel(2)}`,
         fill: false,
         lineTension: 0.1,
-        backgroundColor: "rgb(128,128,128)", // Legend box
-        borderColor: "	rgb(128,128,128)",
+        backgroundColor: "#de2d26", // Legend box
+        borderColor: "	#de2d26",
         borderCapStyle: "butt",
         borderDash: [],
         borderDashOffset: 0.0,
         borderJoinStyle: "miter",
-        pointBorderColor: "	rgb(128,128,128)",
+        pointBorderColor: "	#de2d26",
         pointBackgroundColor: "#fff",
         pointBorderWidth: 1,
         pointHoverRadius: 5,
-        pointHoverBackgroundColor: "rgb(128,128,128)",
-        pointHoverBorderColor: "rgb(128,128,128)",
+        pointHoverBackgroundColor: "#de2d26",
+        pointHoverBorderColor: "#de2d26",
         pointHoverBorderWidth: 2,
         pointRadius: 1,
         pointHitRadius: 10,
@@ -194,18 +204,18 @@ const FatalitiesMultiYear = () => {
         label: `${getYearsAgoLabel(3)}`,
         fill: false,
         lineTension: 0.1,
-        backgroundColor: "rgb(192,192,192)", // Legend box
-        borderColor: "rgb(192,192,192)",
+        backgroundColor: "#fb6a4a", // Legend box
+        borderColor: "#fb6a4a",
         borderCapStyle: "butt",
         borderDash: [],
         borderDashOffset: 0.0,
         borderJoinStyle: "miter",
-        pointBorderColor: "rgb(192,192,192)",
+        pointBorderColor: "#fb6a4a",
         pointBackgroundColor: "#fff",
         pointBorderWidth: 1,
         pointHoverRadius: 5,
-        pointHoverBackgroundColor: "rgb(192,192,192)",
-        pointHoverBorderColor: "rgb(192,192,192)",
+        pointHoverBackgroundColor: "#fb6a4a",
+        pointHoverBorderColor: "#fb6a4a",
         pointHoverBorderWidth: 2,
         pointRadius: 1,
         pointHitRadius: 10,
@@ -215,30 +225,136 @@ const FatalitiesMultiYear = () => {
         label: `${getYearsAgoLabel(4)}`,
         fill: false,
         lineTension: 0.1,
-        backgroundColor: "rgb(220,220,220)", // Legend box
-        borderColor: "rgb(220,220,220)",
+        backgroundColor: "#fcae91", // Legend box
+        borderColor: "#fcae91",
         borderCapStyle: "butt",
         borderDash: [],
         borderDashOffset: 0.0,
         borderJoinStyle: "miter",
-        pointBorderColor: "rgb(220,220,220)",
-        pointBackgroundColor: "#fff",
+        pointBorderColor: "#fcae91",
+        pointBackgroundColor: "#fcae91",
         pointBorderWidth: 1,
         pointHoverRadius: 5,
-        pointHoverBackgroundColor: "rgb(220,220,220)",
-        pointHoverBorderColor: "rgb(220,220,220)",
+        pointHoverBackgroundColor: "#fcae91",
+        pointHoverBorderColor: "#fcae91",
         pointHoverBorderWidth: 2,
         pointRadius: 1,
         pointHitRadius: 10,
         data: fourYearsAgoDeathArray
+      },
+      {
+        label: `${getYearsAgoLabel(5)}`,
+        fill: false,
+        lineTension: 0.1,
+        backgroundColor: "#fee5d9", // Legend box
+        borderColor: "#fee5d9",
+        borderCapStyle: "butt",
+        borderDash: [],
+        borderDashOffset: 0.0,
+        borderJoinStyle: "miter",
+        pointBorderColor: "#fee5d9",
+        pointBackgroundColor: "#fee5d9",
+        pointBorderWidth: 1,
+        pointHoverRadius: 5,
+        pointHoverBackgroundColor: "#fee5d9",
+        pointHoverBorderColor: "#fee5d9",
+        pointHoverBorderWidth: 2,
+        pointRadius: 1,
+        pointHitRadius: 10,
+        data: fiveYearsAgoDeathArray
       }
     ]
   };
 
   return (
     <Container>
-      <h3>Fatal Crashes by Month for the Past Five Years</h3>
-      <Line data={data} />
+      <Row>
+        <Col>
+          <h3>Traffic Fatalities by Year</h3>
+        </Col>
+      </Row>
+      <Row>
+        <Col md="2">
+          <h6>Prior Years:</h6>
+        </Col>
+        <Col md="2">
+          <Row>
+            <Col md="12">
+              <h3>{calculateYearlyTotals(lastYearDeathArray)}</h3>
+            </Col>
+          </Row>
+          <Row>
+            <Col md="12">
+              <h6>in {getYearsAgoLabel(1)}</h6>
+            </Col>
+          </Row>
+        </Col>
+        <Col md="2">
+          <Row>
+            <Col md="12">
+              <h3>{calculateYearlyTotals(twoYearsAgoDeathArray)}</h3>
+            </Col>
+          </Row>
+          <Row>
+            <Col md="12">
+              <h6>in {getYearsAgoLabel(2)}</h6>
+            </Col>
+          </Row>
+        </Col>
+        <Col md="2">
+          <Row>
+            <Col md="12">
+              <h3>{calculateYearlyTotals(threeYearsAgoDeathArray)}</h3>
+            </Col>
+          </Row>
+          <Row>
+            <Col md="12">
+              <h6>in {getYearsAgoLabel(3)}</h6>
+            </Col>
+          </Row>
+        </Col>
+        <Col md="2">
+          <Row>
+            <Col md="12">
+              <h3>{calculateYearlyTotals(fourYearsAgoDeathArray)}</h3>
+            </Col>
+          </Row>
+          <Row>
+            <Col md="12">
+              <h6>in {getYearsAgoLabel(4)}</h6>
+            </Col>
+          </Row>
+        </Col>
+        <Col md="2">
+          <Row>
+            <Col md="12">
+              <h3>{calculateYearlyTotals(fiveYearsAgoDeathArray)}</h3>
+            </Col>
+          </Row>
+          <Row>
+            <Col md="12">
+              <h6>in {getYearsAgoLabel(5)}</h6>
+            </Col>
+          </Row>
+        </Col>
+      </Row>
+      <Row>
+        <Col md="12">
+          <h6 style={{ color: "#08519c" }}>
+            As of {lastMonthString}, there have been{" "}
+            {calculateYearlyTotals(thisYearDeathArray)} traffic fatalities
+            this year.
+          </h6>
+        </Col>
+      </Row>
+      <Line
+        data={data}
+        options={{
+          tooltips: {
+            mode: "x"
+          }
+        }}
+      />
     </Container>
   );
 };
