@@ -19,7 +19,7 @@
 <img width="383" alt="Screen Shot 2019-11-25 at 3 59 49 PM" src="https://user-images.githubusercontent.com/5697474/69582856-1c770400-0f9f-11ea-87fb-fa398c1b1682.png">
 
 - Once your password has successfully been reset, go back to [https://visionzero.austin.gov/editor/#/login](https://visionzero.austin.gov/editor/#/login) and click the blue "Login" button.
-- Enter CoA.gov email and your new password. This should successfully log you into VZE.
+- Enter your CoA.gov email and your new password. This should successfully log you into VZE.
 
 ---
 
@@ -36,4 +36,4 @@
 }
 ```
 
-- Send the users the instructions above.
+- Send the new user(s) the "Logging into VZE for the 1st time" instructions above.
