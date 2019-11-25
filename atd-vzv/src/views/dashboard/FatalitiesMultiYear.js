@@ -274,13 +274,29 @@ const FatalitiesMultiYear = () => {
         </Col>
       </Row>
       <Row>
+        <Col md="12">
+          <h5 style={{ color: "#08519c" }}>
+            As of {lastMonthString}, there have been <strong>{calculateYearlyTotals(thisYearDeathArray)}</strong> traffic fatalities in {thisYear}.
+          </h5>
+        </Col>
+      </Row>
+      <Row>
         <Col md="2">
-          <h6>Prior Years:</h6>
+          <Row>
+            <Col md="12">
+              <h6>Prior</h6>
+            </Col>
+          </Row>
+          <Row>
+            <Col md="12">
+              <h6>Years:</h6>
+            </Col>
+          </Row>
         </Col>
         <Col md="2">
           <Row>
             <Col md="12">
-              <h3>{calculateYearlyTotals(lastYearDeathArray)}</h3>
+              <h6><strong>{calculateYearlyTotals(lastYearDeathArray)}</strong></h6>
             </Col>
           </Row>
           <Row>
@@ -292,7 +308,7 @@ const FatalitiesMultiYear = () => {
         <Col md="2">
           <Row>
             <Col md="12">
-              <h3>{calculateYearlyTotals(twoYearsAgoDeathArray)}</h3>
+              <h6><strong>{calculateYearlyTotals(twoYearsAgoDeathArray)}</strong></h6>
             </Col>
           </Row>
           <Row>
@@ -304,7 +320,7 @@ const FatalitiesMultiYear = () => {
         <Col md="2">
           <Row>
             <Col md="12">
-              <h3>{calculateYearlyTotals(threeYearsAgoDeathArray)}</h3>
+              <h6><strong>{calculateYearlyTotals(threeYearsAgoDeathArray)}</strong></h6>
             </Col>
           </Row>
           <Row>
@@ -316,7 +332,7 @@ const FatalitiesMultiYear = () => {
         <Col md="2">
           <Row>
             <Col md="12">
-              <h3>{calculateYearlyTotals(fourYearsAgoDeathArray)}</h3>
+              <h6><strong>{calculateYearlyTotals(fourYearsAgoDeathArray)}</strong></h6>
             </Col>
           </Row>
           <Row>
@@ -328,7 +344,7 @@ const FatalitiesMultiYear = () => {
         <Col md="2">
           <Row>
             <Col md="12">
-              <h3>{calculateYearlyTotals(fiveYearsAgoDeathArray)}</h3>
+              <h6><strong>{calculateYearlyTotals(fiveYearsAgoDeathArray)}</strong></h6>
             </Col>
           </Row>
           <Row>
@@ -336,15 +352,6 @@ const FatalitiesMultiYear = () => {
               <h6>in {getYearsAgoLabel(5)}</h6>
             </Col>
           </Row>
-        </Col>
-      </Row>
-      <Row>
-        <Col md="12">
-          <h6 style={{ color: "#08519c" }}>
-            As of {lastMonthString}, there have been{" "}
-            {calculateYearlyTotals(thisYearDeathArray)} traffic fatalities
-            this year.
-          </h6>
         </Col>
       </Row>
       <Line
