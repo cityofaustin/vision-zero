@@ -208,7 +208,10 @@ function Crash(props) {
                       "unassigned"}
                     )
                     <br />
-                    Source: {geocodeMethod.name}
+                    Source:{" "}
+                    {latitude && longitude
+                      ? geocodeMethod.name
+                      : "No Primary Coordinates"}
                   </Col>
                   <Col>
                     {!isEditingCoords && (
