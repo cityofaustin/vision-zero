@@ -74,20 +74,6 @@ function Crash(props) {
     return geocoderAddressString;
   };
 
-  const convertGeocoderToName = geocoderID => {
-    const geocoders = geocoderOptions.atd_txdot_geocoders || [];
-    const primaryLat = data.atd_txdot_crashes[0]["latitude_primary"];
-    const primaryLong = data.atd_txdot_crashes[0]["longitude_primary"];
-
-    const geocoderOption = geocoders.find(
-      option => option.geocoder_id === geocoderID
-    );
-
-    return primaryLat && primaryLong
-      ? geocoderOption && geocoderOption.name
-      : "No Primary Coordinates";
-  };
-
   const handleInputChange = e => {
     const newFormState = Object.assign(formData, {
       [editField]: e.target.value,
@@ -222,7 +208,7 @@ function Crash(props) {
                       "unassigned"}
                     )
                     <br />
-                    Source: {convertGeocoderToName(geocodeProvider)}
+                    Source: {data.atd_txdot_crashes[0].geocode_method.name}
                   </Col>
                   <Col>
                     {!isEditingCoords && (
