@@ -133,7 +133,7 @@ function Crash(props) {
     address_confirmed_primary: primaryAddress,
     address_confirmed_secondary: secondaryAddress,
     cr3_stored_flag: cr3StoredFlag,
-    geocode_provider: geocodeProvider,
+    geocode_method: geocodeMethod,
   } = data.atd_txdot_crashes[0];
 
   const mapGeocoderAddress = createGeocoderAddressString(data);
@@ -208,7 +208,7 @@ function Crash(props) {
                       "unassigned"}
                     )
                     <br />
-                    Source: {data.atd_txdot_crashes[0].geocode_method.name}
+                    Source: {geocodeMethod.name}
                   </Col>
                   <Col>
                     {!isEditingCoords && (
