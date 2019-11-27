@@ -2,7 +2,7 @@ import Proptypes from 'prop-types';
 import React from 'react';
 import ReactMapboxGl from 'react-mapbox-gl';
 import styled from '@emotion/styled';
-import { Cluster, Marker } from 'react-mapbox-gl';
+import { Cluster, Feature, Layer, Marker } from 'react-mapbox-gl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBiking, faCarCrash, faMotorcycle, faWalking } from '@fortawesome/free-solid-svg-icons';
 
@@ -156,6 +156,43 @@ function SingleMarker(fatality) {
   );
 }
 
+const layerPaint = {
+  'heatmap-weight': {
+    property: 'priceIndicator',
+    type: 'exponential',
+    stops: [[0, 0], [5, 2]]
+  },
+  // Increase the heatmap color weight weight by zoom level
+  // heatmap-ntensity is a multiplier on top of heatmap-weight
+  'heatmap-intensity': {
+    stops: [[0, 0], [5, 1.2]]
+  },
+  // Color ramp for heatmap.  Domain is 0 (low) to 1 (high).
+  // Begin color ramp at 0-stop with a 0-transparancy color
+  // to create a blur-like effect.
+  'heatmap-color': [
+    'interpolate',
+    ['linear'],
+    ['heatmap-density'],
+    0,
+    'rgba(33,102,172,0)',
+    0.25,
+    'rgb(103,169,207)',
+    0.5,
+    'rgb(209,229,240)',
+    0.8,
+    'rgb(253,219,199)',
+    1,
+    'rgb(239,138,98)',
+    2,
+    'rgb(178,24,43)'
+  ],
+  // Adjust the heatmap radius by zoom level
+  'heatmap-radius': {
+    stops: [[0, 1], [5, 50]]
+  }
+};
+
 class ScrapdMap extends React.Component {
   render() {
     return (
@@ -169,7 +206,12 @@ class ScrapdMap extends React.Component {
           center={[-97.740313, 30.274687]}
           zoom={[10]}
         >
-          <Cluster ClusterMarkerFactory={clusterMarker}>{this.props.fatalities.map(SingleMarker)}</Cluster>
+          {/* <Cluster ClusterMarkerFactory={clusterMarker}>{this.props.fatalities.map(SingleMarker)}</Cluster> */}
+          <Layer type="heatmap" paint={layerPaint}>
+            {this.props.fatalities.map((el, index) => (
+              <Feature key={index} coordinates={[parseFloat(el.longitude), parseFloat(el.latitude)]} properties={el} />
+            ))}
+          </Layer>
         </Map>
       </MapDiv>
     );
