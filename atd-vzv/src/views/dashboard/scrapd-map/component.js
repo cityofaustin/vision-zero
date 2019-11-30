@@ -158,7 +158,6 @@ function SingleMarker(fatality) {
 
 const layerPaint = {
   'heatmap-weight': {
-    property: 'priceIndicator',
     type: 'exponential',
     stops: [[0, 0], [5, 2]]
   },
@@ -184,13 +183,14 @@ const layerPaint = {
     'rgb(253,219,199)',
     1,
     'rgb(239,138,98)',
-    2,
-    'rgb(178,24,43)'
+    // 2,
+    // 'rgb(178,24,43)'
   ],
   // Adjust the heatmap radius by zoom level
-  'heatmap-radius': {
-    stops: [[0, 1], [5, 50]]
-  }
+  // 'heatmap-radius': {
+  //   stops: [[0, 1], [5, 15]]
+  // }
+  'heatmap-radius': 13
 };
 
 class ScrapdMap extends React.Component {
@@ -204,7 +204,7 @@ class ScrapdMap extends React.Component {
             width: '100%'
           }}
           center={[-97.740313, 30.274687]}
-          zoom={[10]}
+          zoom={[12]}
         >
           {/* <Cluster ClusterMarkerFactory={clusterMarker}>{this.props.fatalities.map(SingleMarker)}</Cluster> */}
           <Layer type="heatmap" paint={layerPaint}>
