@@ -80,7 +80,7 @@ const GridTable = ({
   const [searchParameters, setSearchParameters] = useState(
     getSavedState("searchParameters") || {}
   );
-  const [collapseAdvancedFilters, setCollapseAdvacedFilters] = useState(
+  const [collapseAdvancedFilters, setCollapseAdvancedFilters] = useState(
     getSavedState("collapseAdvancedFilters") || false
   );
   const [filterOptions, setFilterOptions] = useState(
@@ -157,7 +157,7 @@ const GridTable = ({
    * Shows or hides advanced filters
    */
   const toggleAdvancedFilters = () => {
-    setCollapseAdvacedFilters(!collapseAdvancedFilters);
+    setCollapseAdvancedFilters(!collapseAdvancedFilters);
   };
 
   /**
