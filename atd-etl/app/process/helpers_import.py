@@ -93,7 +93,7 @@ def generate_fields_with_filters(line, fieldnames, filters = []):
     fields = re.sub(r'([a-zA-Z0-9_]+): "",', r'\1: null,', fields)
 
     # Break lines
-    fields = fields.replace(", ", ", \n")
+    fields = re.sub(r'(, ?)([a-zA-Z0-9_]+):', r'\n\2:', fields)
 
     # Apply filters
     for filter_group in filters:

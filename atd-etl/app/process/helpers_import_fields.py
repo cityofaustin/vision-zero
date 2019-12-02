@@ -136,6 +136,8 @@ CRIS_TXDOT_FIELDS = {
                     "trlr_rgvw",
                     "trlr_type_id",
                     "trlr_disabling_dmag_id",
+                    "cmv_intermodal_container_permit_fl",
+                    "cmv_actual_gross_weight"
                 ]
             ],
             [
