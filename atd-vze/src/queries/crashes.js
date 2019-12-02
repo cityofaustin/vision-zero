@@ -26,6 +26,9 @@ export const GET_CRASH = gql`
       est_comp_cost
       est_econ_cost
       fhe_collsn_id
+      geocode_method {
+        name
+      }
       geocode_date
       geocode_provider
       geocode_status
