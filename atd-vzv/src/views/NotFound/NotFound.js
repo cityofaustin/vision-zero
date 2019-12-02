@@ -1,12 +1,12 @@
 import React from "react";
 import { Container } from "reactstrap";
 
-const Map = () => {
+const NotFound = () => {
   return (
     <Container>
-      <h3>Map Test</h3>
+      <h3>Sorry, but this page does not exist.</h3>
     </Container>
   );
 };
 
-export default Map;
+export default NotFound;

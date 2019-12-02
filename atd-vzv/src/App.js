@@ -2,11 +2,12 @@ import React from "react";
 import "./App.css";
 import Dashboard from "./views/dashboard/dashboard";
 import Map from "./views/map/map";
+import NotFound from "./views/NotFound/NotFound";
 import { Row, Col, Alert } from "reactstrap";
-import { useRoutes } from "hookrouter";
+import { useRoutes, A } from "hookrouter";
 
 const routes = {
-  "/dashboard": () => <Dashboard />,
+  "/": () => <Dashboard />,
   "/map": () => <Map />
 };
 
@@ -17,6 +18,8 @@ const App = () => {
     <div className="App">
       <header className="App-header">
         <h1>Vision Zero Viewer</h1>
+        <A href="/">Home</A>
+        <A href="/map">Map</A>
       </header>
       <Row>
         <Col md="12">
@@ -30,7 +33,7 @@ const App = () => {
           </Alert>
         </Col>
       </Row>
-      {routeResult}
+      {routeResult || <NotFound />}
     </div>
   );
 };
