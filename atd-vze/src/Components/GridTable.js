@@ -330,6 +330,19 @@ const GridTable = ({
   if (searchParameters["column"] && searchParameters["value"]) {
     // We will need to be careful which operator we will be using depending
     // on whether the column is an integer or a string, etc.
+
+    // Create an array of the searchable filters so we can loop over them and delete
+    // any old search parameters from the 'where' query before adding new search parameters.
+    const searchableColumns = Object.keys(query.config.columns).filter(
+      columnKey => {
+        if (query.config.columns[columnKey].searchable) return columnKey;
+      }
+    );
+
+    searchableColumns.forEach(column => {
+      query.deleteWhere(column);
+    });
+
     if (searchParameters["column"] === "crash_id") {
       // Search Integer for exact value
       // If string contains integers, insert in gql query, if not insert 0 to return no matches
