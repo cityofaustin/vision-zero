@@ -1,15 +1,9 @@
 import React from "react";
-import "./App.css";
-import Dashboard from "./views/dashboard/dashboard";
-import Map from "./views/map/map";
-import NotFound from "./views/NotFound/NotFound";
-import { Row, Col, Alert } from "reactstrap";
 import { useRoutes, A } from "hookrouter";
-
-const routes = {
-  "/": () => <Dashboard />,
-  "/map": () => <Map />
-};
+import { routes } from "./routes/routes";
+import NotFound from "./views/NotFound/NotFound";
+import "./App.css";
+import { Row, Col, Alert } from "reactstrap";
 
 const App = () => {
   const routeResult = useRoutes(routes);
