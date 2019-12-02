@@ -143,6 +143,7 @@ def process_file(file_path, file_type, skip_lines, dryrun=False):
     FILE_TYPE = file_type
     FILE_SKIP_ROWS = skip_lines
     current_file_skipped_lines = 0
+    max_threads = ATD_ETL_CONFIG["MAX_THREADS"]
 
     # Start a local timer
     local_timer_start = time.time()
@@ -160,6 +161,7 @@ def process_file(file_path, file_type, skip_lines, dryrun=False):
     print("\n\n------------------------------------------")
     print("Processing file '%s' of type '%s', skipping: '%s'" % (FILE_PATH, FILE_TYPE, FILE_SKIP_ROWS))
     print("Endpoint: %s" % ATD_ETL_CONFIG["HASURA_ENDPOINT"])
+    print("Max Threads: %s" % max_threads)
     print("Dry-run mode enabled: " + str(dryrun))
     print("------------------------------------------")
     # Current line tracker
@@ -182,7 +184,7 @@ def process_file(file_path, file_type, skip_lines, dryrun=False):
         line = fp.readline()
 
         # Then read the first line
-        with concurrent.futures.ThreadPoolExecutor(max_workers=20) as executor:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=max_threads) as executor:
 
             # While we haven't reached the EOF
             while line:
