@@ -321,3 +321,18 @@ def generate_run_config():
 
     # Return the config
     return config
+
+
+def get_crash_record(crash_id):
+    # First generate a query with a list of the columns we care about
+    query = search_crash_query_full(crash_id=crash_id,
+                                    field_list=CRIS_TXDOT_COMPARE_FIELDS_LIST)
+
+    # Then try to run the query to get the actual record
+    try:
+        result = run_query(query)
+        return result["data"]["atd_txdot_crashes"][0]
+
+    except Exception as e:
+        print("There was a problem getting crash_id: %s\n%s" % (crash_id, str(e)))
+        return None
