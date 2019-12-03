@@ -76,11 +76,17 @@ def search_charges(line):
     return line
 
 
-def search_units(line):
+def search_crash_query_full(crash_id, field_list):
     """
-    Generates a graphql query to search for a specific unit.
-    :param line: string - The raw CSV line
+    Generates a graphql query to search for a crash
+    :param crash_id: stirng - The Crash ID to search for.
     :return: string
     """
-    #(p.crash_id, p.unit_nbr)
-    return line
+    return """
+        query search_crash_query {
+          atd_txdot_crashes(limit: 1, where: {crash_id: {_eq: %CRASH_ID%}}){
+            %FIELD_LIST%
+          }
+        }
+    """.replace("%CRASH_ID%", crash_id)\
+        .replace("%FIELD_LIST%", "\n            ".join(field_list))
