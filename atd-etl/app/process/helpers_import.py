@@ -12,12 +12,13 @@ import csv
 import io
 import json
 import re
-
+import datetime
+import web_pdb
 
 # Dependencies
-from .queries import search_crash_query
+from .queries import search_crash_query, search_crash_query_full
 from .request import run_query
-from .helpers_import_fields import CRIS_TXDOT_FIELDS
+from .helpers_import_fields import CRIS_TXDOT_FIELDS, CRIS_TXDOT_COMPARE_FIELDS_LIST
 
 
 def generate_template(name, function, fields):
@@ -49,7 +50,7 @@ def lowercase_group_match(match):
     :param match: raw string of the group match
     :return: string in lower case
     """
-    return match.group(1).lower() + ":"
+    return "%s:" % match.group(1).lower()
 
 
 def generate_fields(line, fieldnames, remove_fields = [], quoted_numeric = [], null_to_zero = []):
