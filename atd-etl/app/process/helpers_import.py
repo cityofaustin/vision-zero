@@ -336,3 +336,25 @@ def get_crash_record(crash_id):
     except Exception as e:
         print("There was a problem getting crash_id: %s\n%s" % (crash_id, str(e)))
         return None
+
+
+def is_cris_date(string):
+    return bool(re.match(r'(\d{2})\/(\d{2})\/(\d{4})', string))
+
+
+def is_cris_time(string):
+    return bool(re.match(r'(\d{2}):(\d{2}) (AM|PM)', string))
+
+
+def convert_date(string):
+    input_date = datetime.datetime.strptime(string, "%m/%d/%Y")
+    return input_date.strftime("%Y-%m-%d")
+
+
+def convert_time(string):
+    input_time = datetime.datetime.strptime(string, "%I:%M %p")
+    return input_time.strftime("%H:%M:00")
+
+
+def clean_none_null(string):
+    return str(string).replace("None", "").replace("null", "")
