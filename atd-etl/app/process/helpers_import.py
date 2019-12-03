@@ -378,3 +378,12 @@ def record_compare(record_new, record_existing):
             return True
 
     return False
+
+
+def generate_crash_record(line, fieldnames):
+    reader = csv.DictReader(f=io.StringIO(line), fieldnames=fieldnames, delimiter=',')  # parse line
+    fields = json.dumps([row for row in reader])  # Generate json
+    # Remove object characters
+    fields = fields.replace("[", "").replace("]", "")
+    # Return a dictionary
+    return json.loads(fields)
