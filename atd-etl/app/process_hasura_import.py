@@ -76,8 +76,10 @@ def process_line(file_type, line, fieldnames, current_line, dryrun=False):
     mode = "[Dry-Run]" if dryrun else "[Live]"
     # First we need to check if the current record exists, skip if so.
     if record_exists_hook(line=line, type=file_type):
+        record_compare_hook(line=line, fieldnames=fieldnames, file_type=file_type)
         print("[%s] Exists: %s (%s)" % (str(current_line), str(crash_id), file_type))
         existing_records += 1
+
 
     # The record does not exist, insert.
     else:
