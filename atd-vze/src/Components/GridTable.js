@@ -334,9 +334,7 @@ const GridTable = ({
     // Create an array of the searchable filters so we can loop over them and delete
     // any old search parameters from the 'where' query before adding new search parameters.
     const searchableColumns = Object.keys(query.config.columns).filter(
-      columnKey => {
-        if (query.config.columns[columnKey].searchable) return columnKey;
-      }
+      column => query.config.columns[column].searchable
     );
 
     searchableColumns.forEach(column => {
