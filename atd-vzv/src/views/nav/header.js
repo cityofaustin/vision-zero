@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBars } from "@fortawesome/free-solid-svg-icons";
+import { faBars, faHome, faMap } from "@fortawesome/free-solid-svg-icons";
 import {
   Navbar,
   Button,
@@ -28,17 +28,19 @@ const Header = ({ toggleSidebar }) => {
       </Button>
       <NavbarToggler onClick={toggle} />
       <Collapse isOpen={isOpen} navbar>
-        <Nav className="ml-auto" navbar>
-          <NavLink>
-            <NavItem>
-              <A href="/">Home</A>
-            </NavItem>
-          </NavLink>
-          <NavLink>
-            <NavItem>
-              <A href="/map">Map</A>
-            </NavItem>
-          </NavLink>
+        <Nav className="mr-auto" navbar>
+          <NavItem>
+            <NavLink tag={A} href="/">
+              <FontAwesomeIcon icon={faHome} className="ml-2 mr-2" />
+              Dashboard
+            </NavLink>
+          </NavItem>
+          <NavItem>
+            <NavLink tag={A} href="/map">
+              <FontAwesomeIcon icon={faMap} className="mr-2" />
+              Map
+            </NavLink>
+          </NavItem>
         </Nav>
       </Collapse>
     </Navbar>
