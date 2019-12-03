@@ -5,7 +5,7 @@ import SeriousInjuryAndFatalCrashesByMonth from "./seriousInjuryAndFatalCrashesB
 import SeriousInjuryAndFatalCrashesByMode from "./seriousInjuryAndFatalCrashesByMode";
 import YearsOfLifeLost from "./yearsOfLifeLost";
 
-import { Container, Row, Col, Alert } from "reactstrap";
+import { Container, Row, Col } from "reactstrap";
 
 const Dashboard = () => {
   return (
