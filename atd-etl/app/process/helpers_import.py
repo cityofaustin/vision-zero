@@ -358,3 +358,23 @@ def convert_time(string):
 
 def clean_none_null(string):
     return str(string).replace("None", "").replace("null", "")
+
+
+def record_compare(record_new, record_existing):
+    for field in CRIS_TXDOT_COMPARE_FIELDS_LIST:
+        # Remove None and null
+        record_existing[field] = clean_none_null(record_existing[field])
+
+        if is_cris_date(record_new[field]):
+            record_new[field] = convert_date(record_new[field])
+
+        if is_cris_time(record_new[field]):
+            print("We got time: %s" % record_new[field])
+            record_new[field] = convert_time(record_new[field])
+
+        important_difference = record_new[field] != record_existing[field]
+
+        if important_difference:
+            return True
+
+    return False
