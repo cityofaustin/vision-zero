@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBars, faHome, faMap } from "@fortawesome/free-solid-svg-icons";
+import { A } from "hookrouter";
+
 import {
   Navbar,
   Button,
@@ -10,7 +10,8 @@ import {
   NavItem,
   NavLink
 } from "reactstrap";
-import { A } from "hookrouter";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBars, faHome, faMap } from "@fortawesome/free-solid-svg-icons";
 
 const Header = ({ toggleSidebar }) => {
   const [isOpen, setOpen] = useState(true);

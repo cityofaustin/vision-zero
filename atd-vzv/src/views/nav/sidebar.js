@@ -1,10 +1,11 @@
 import React from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHome, faMap } from "@fortawesome/free-solid-svg-icons";
+import { A } from "hookrouter";
+
 import { NavItem, NavLink, Nav } from "reactstrap";
 import styled from "styled-components";
 import classNames from "classnames";
-import { A } from "hookrouter";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faHome, faMap } from "@fortawesome/free-solid-svg-icons";
 
 const StyledSidebar = styled.div`
   .sidebar {
@@ -89,6 +90,7 @@ const StyledSidebar = styled.div`
 
 const SideBar = ({ toggle, isOpen }) => (
   <StyledSidebar>
+    {/* Use classNames to toggle "is-name" classname if sidebar isOpen */}
     <div className={classNames("sidebar", { "is-open": isOpen })}>
       <div className="sidebar-header">
         <span color="info" onClick={toggle} style={{ color: "#fff" }}>

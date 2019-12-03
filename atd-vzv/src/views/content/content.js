@@ -1,11 +1,12 @@
 import React from "react";
-import classNames from "classnames";
-import { Container, Row, Col, Alert } from "reactstrap";
-import styled from "styled-components";
 import { useRoutes } from "hookrouter";
 import { routes } from "../../routes/routes";
 import Header from "../nav/header";
 import NotFound from "../NotFound/NotFound";
+
+import { Container, Row, Col, Alert } from "reactstrap";
+import styled from "styled-components";
+import classNames from "classnames";
 
 const StyledContent = styled.div`
   .content {
@@ -20,11 +21,13 @@ const Content = ({ toggle, isOpen }) => {
 
   return (
     <StyledContent>
+      {/* Use classNames to toggle "is-name" classname if sidebar isOpen */}
       <Container
         fluid
         className={classNames("content", "bg-light", { "is-open": isOpen })}
       >
         <Header toggleSidebar={toggle} />
+        {/* TODO: Remove disclaimer  */}
         <Row>
           <Col md="12">
             <Alert color="primary">
