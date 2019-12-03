@@ -387,3 +387,15 @@ def generate_crash_record(line, fieldnames):
     fields = fields.replace("[", "").replace("]", "")
     # Return a dictionary
     return json.loads(fields)
+
+
+def record_compare_hook(line, fieldnames, file_type):
+    if file_type == "crash":
+        fieldnames = [column.lower() for column in fieldnames]
+        crash_id = get_crash_id(line)
+        record_new = generate_crash_record(line=line, fieldnames=fieldnames)
+        record_existing = get_crash_record(get_crash_id(line))
+        significant_difference = record_compare(record_new=record_new, record_existing=record_existing)
+        if significant_difference:
+            print("Significant Difference for %s is: %s" % (crash_id, str(significant_difference)))
+            web_pdb.set_trace()
