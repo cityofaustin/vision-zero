@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
 Process - Geocoder
-Author: Austin Transportation Department, Data and Technology Office
+Author: Austin Transportation Department, Data and Technology Services
 
 Description: The purpose of this script is to find records that do not have
 latitude/longitude coordinates and based on pre-determined business logic.

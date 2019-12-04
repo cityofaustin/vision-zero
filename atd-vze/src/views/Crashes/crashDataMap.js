@@ -359,6 +359,8 @@ export const crashDataMap = [
       geocode_provider: {
         label: "Geocode Provider",
         editable: false,
+        dataTableName: "atd_txdot_crashes",
+        dataPath: ["geocode_method", "name"],
       },
       geocode_status: {
         label: "Geocode Status",

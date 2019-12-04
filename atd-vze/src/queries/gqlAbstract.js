@@ -25,7 +25,7 @@ class gqlAbstract {
 gqlAbstractTableName (
     gqlAbstractFilters
 ) {
-    gqlAbastractColumns
+    gqlAbstractColumns
 },
 gqlAbstractTableAggregateName (
     gqlAbstractAggregateFilters
@@ -434,7 +434,7 @@ gqlAbstractTableAggregateName (
     );
 
     // Generate Columns
-    query = query.replace("gqlAbastractColumns", this.generateColumns());
+    query = query.replace("gqlAbstractColumns", this.generateColumns());
 
     // Aggregate Tables
 
@@ -466,7 +466,7 @@ gqlAbstractTableAggregateName (
     );
 
     // Generate Columns
-    query = query.replace("gqlAbastractColumns", string);
+    query = query.replace("gqlAbstractColumns", string);
 
     // Return GraphQL query
     return gql`
@@ -540,7 +540,7 @@ gqlAbstractTableAggregateName (
     });
     // Join each aggregate query into one string
     const aggregatesQueryString = aggregatesQueryArray.join(" ");
-    console.log(aggregatesQueryString);
+    
     // Return GraphQL query
     return gql`query GetLocationStats {
       ${aggregatesQueryString}
