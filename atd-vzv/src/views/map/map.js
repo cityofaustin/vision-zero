@@ -1,29 +1,36 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ReactMapGL from "react-map-gl";
+import axios from "axios";
 
-import { Container } from "reactstrap";
 import "mapbox-gl/dist/mapbox-gl.css";
 
 const MAPBOX_TOKEN = `pk.eyJ1Ijoiam9obmNsYXJ5IiwiYSI6ImNrM29wNnB3dDAwcXEzY29zMTU5bWkzOWgifQ.KKvoz6s4NKNHkFVSnGZonw`;
+const apiUrl = "https://data.austintexas.gov/resource/y2wy-tgr5.json";
 
 const Map = () => {
   const [viewport, setViewport] = useState({
-    width: 400,
-    height: 400,
-    latitude: 37.7577,
-    longitude: -122.4376,
-    zoom: 8
+    latitude: 30.268039,
+    longitude: -97.742828,
+    zoom: 11
   });
+  const [mapData, setMapData] = useState({});
+
+  useEffect(() => {
+    axios.get(apiUrl).then(res => {
+      setMapData(res.data);
+    });
+  }, []);
+
+  const _onViewportChange = viewport => setViewport(viewport);
 
   return (
-    <Container>
-      <h3>Map Test</h3>
-      <ReactMapGL
-        {...viewport}
-        onViewportChange={viewport => setViewport(viewport)}
-        mapboxApiAccessToken={MAPBOX_TOKEN}
-      />
-    </Container>
+    <ReactMapGL
+      width="900px"
+      height="600px"
+      {...viewport}
+      onViewportChange={_onViewportChange}
+      mapboxApiAccessToken={MAPBOX_TOKEN}
+    />
   );
 };
 

@@ -9,7 +9,7 @@ const App = () => {
   const toggle = () => setOpen(!isOpen);
 
   return (
-    <div className="App wrapper">
+    <div className="App">
       <Sidebar toggle={toggle} isOpen={isOpen} />
       <Content toggle={toggle} isOpen={isOpen} />
     </div>

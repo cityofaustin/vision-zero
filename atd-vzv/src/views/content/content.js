@@ -12,7 +12,9 @@ const StyledContent = styled.div`
   .content {
     padding: 20px;
     margin-left: 0;
-    height: 100vh;
+    height: 100%;
+    width: 100%;
+    position: relative;
   }
 `;
 
@@ -35,7 +37,7 @@ const Content = ({ toggle, isOpen }) => {
                 This site is a work in progress.
               </h4>
               <p>
-                The information displayed below may be outdated or incorrent.
+                The information displayed below may be outdated or incorrect.
                 <br></br>
                 Check back later for live Vision Zero data.
               </p>
