@@ -4,6 +4,7 @@ import { A } from "hookrouter";
 import { NavItem, NavLink, Nav } from "reactstrap";
 import styled from "styled-components";
 import classNames from "classnames";
+import { colors } from "../../constants/colors";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHome, faMap } from "@fortawesome/free-solid-svg-icons";
 
@@ -11,8 +12,8 @@ const StyledSidebar = styled.div`
   .sidebar {
     min-width: 250px;
     max-width: 250px;
-    background: #2f353a;
-    color: #fff;
+    background: ${colors.dark};
+    color: ${colors.light};
     margin-left: -250px;
     transition: all 0.5s;
   }
@@ -23,35 +24,35 @@ const StyledSidebar = styled.div`
   }
 
   .sidebar-header {
-    background: #c8ced3;
+    background: ${colors.light};
   }
 
   .sidebar-header h3 {
-    color: #2f353a;
+    color: ${colors.dark};
     padding: 1em;
   }
 
   .sidebar ul p {
-    color: #fff;
+    color: ${colors.light};
     padding: 10px;
   }
 
   .menu-open {
-    background: #6d7fcc;
+    background: ${colors.info};
   }
 
   .nav-link {
-    color: #63c2de;
+    color: ${colors.info};
   }
 
   .nav-item:hover {
-    color: #7386d5;
-    background: #fff;
+    color: ${colors.primary};
+    background: ${colors.light};
   }
 
   .items-menu {
-    color: #fff;
-    background: #6d7fcc;
+    color: ${colors.light};
+    background: ${colors.info};
   }
 
   li a.dropdown-toggle::after {
@@ -79,12 +80,12 @@ const StyledSidebar = styled.div`
   }
 
   .side-menu::-webkit-scrollbar-thumb {
-    background: #5466b3;
+    background: ${colors.primary};
     border-radius: 3px;
   }
 
   .side-menu::-webkit-scrollbar-thumb:hover {
-    background: #3a4c99;
+    background: ${colors.primary};
   }
 `;
 
