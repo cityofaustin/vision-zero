@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import ReactMapGL from "react-map-gl";
+import ReactMapGL, { Marker } from "react-map-gl";
+import CrashPin from "./crash-pin";
 import axios from "axios";
 
 import "mapbox-gl/dist/mapbox-gl.css";
@@ -13,7 +14,7 @@ const Map = () => {
     longitude: -97.742828,
     zoom: 11
   });
-  const [mapData, setMapData] = useState({});
+  const [mapData, setMapData] = useState([]);
 
   useEffect(() => {
     axios.get(apiUrl).then(res => {
@@ -23,6 +24,18 @@ const Map = () => {
 
   const _onViewportChange = viewport => setViewport(viewport);
 
+  const _renderCrashMarker = (crash, index) => {
+    return (
+      <Marker
+        key={`marker-${index}`}
+        longitude={crash.longitude ? parseFloat(crash.longitude) : 0}
+        latitude={crash.latitude ? parseFloat(crash.latitude) : 0}
+      >
+        <CrashPin size={20} />
+      </Marker>
+    );
+  };
+
   return (
     <ReactMapGL
       width="900px"
@@ -30,7 +43,9 @@ const Map = () => {
       {...viewport}
       onViewportChange={_onViewportChange}
       mapboxApiAccessToken={MAPBOX_TOKEN}
-    />
+    >
+      {mapData.map(_renderCrashMarker)}
+    </ReactMapGL>
   );
 };
 
