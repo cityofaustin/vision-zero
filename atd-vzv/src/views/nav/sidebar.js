@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { A } from "hookrouter";
 
 import { NavItem, NavLink, Nav, ButtonGroup, Button } from "reactstrap";
@@ -86,14 +86,27 @@ const StyledSidebar = styled.div`
 
 const queryParameters = {
   pedestrian: {
-    syntax: `$where=pedestrian_fl = "Y"`
+    syntax: `&$where=pedestrian_fl = "Y"`
   }
 };
 
 const SideBar = ({ toggle, isOpen }) => {
-  const [mapSettings, setMapSettings] = useState([]);
+  const [mapFilters, setMapFilters] = useState([]);
 
-  const handleSettingsClick = event => {};
+  useEffect(() => {}, [mapFilters]);
+
+  const handleFilterClick = event => {
+    // Set filter
+    // TODO: Remove filter on click when already set
+    const filter = queryParameters[event.target.id];
+    const filtersArray = [...mapFilters, filter];
+    setMapFilters(filtersArray);
+  };
+
+  const isFilterSet = filterName => {
+    const clickedFilter = queryParameters[filterName];
+    return !!mapFilters.find(setFilter => setFilter === clickedFilter);
+  };
 
   return (
     <StyledSidebar>
@@ -119,19 +132,19 @@ const SideBar = ({ toggle, isOpen }) => {
                 Map
               </NavLink>
             </NavItem>
+            <ButtonGroup>
+              <Button
+                color="info"
+                onClick={handleFilterClick}
+                id="pedestrian"
+                active={isFilterSet("pedestrian")}
+              >
+                Pedestrian
+              </Button>
+            </ButtonGroup>
           </Nav>
         </div>
       </div>
-      <ButtonGroup>
-        <Button
-          color="info"
-          onClick={handleSettingsClick}
-          id="pedestrian"
-          active={mapSettings.includes("pedestrian")}
-        >
-          Pedestrian
-        </Button>
-      </ButtonGroup>
     </StyledSidebar>
   );
 };
