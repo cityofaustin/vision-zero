@@ -34,6 +34,8 @@ query_configs = [
             "columns_to_rename": {
                 "veh_body_styl_desc": "unit_desc",
                 "veh_unit_desc_desc": "unit_mode",
+                "latitude_primary": "latitude",
+                "longitude_primary": "longitude"
             },
             "flags_list": ["MOTOR VEHICLE",
                            "TRAIN",
@@ -87,7 +89,8 @@ for config in query_configs:
         records = config["formatter"](data, config["formatter_config"])
 
         # Upsert records to Socrata
-        client.upsert(config["dataset_uid"], records)
+        print(records[0])
+        # client.upsert(config["dataset_uid"], records)
         total_records += len(records)
 
         if len(records) == 0:
