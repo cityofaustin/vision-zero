@@ -402,7 +402,8 @@ def insert_crash_change_template():
         affected_rows
       }
     }
-    """
+    """.replace("NEW_RECORD_ESCAPED_JSON", new_record_escaped)\
+        .replace("NEW_RECORD_ID", new_record_dict["crash_id"])
 
 
 def record_compare_hook(line, fieldnames, file_type):
