@@ -415,4 +415,6 @@ def record_compare_hook(line, fieldnames, file_type):
         significant_difference = record_compare(record_new=record_new, record_existing=record_existing)
         if significant_difference:
             print("Significant Difference for %s is: %s" % (crash_id, str(significant_difference)))
+            mutation_template = insert_crash_change_template(new_record_dict=record_new)
+            result = run_query(mutation_template)
             web_pdb.set_trace()
