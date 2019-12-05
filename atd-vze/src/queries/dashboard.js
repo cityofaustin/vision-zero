@@ -16,7 +16,7 @@ export const GET_CRASHES_YTD = gql`
         }
       }
     }
-    atd_txdot_crashes_aggregate(
+    seriousInjuriesAndTotal: atd_txdot_crashes_aggregate(
       where: {
         city_id: { _eq: 22 }
         crash_date: { _gte: $yearStart, _lte: $yearEnd }
