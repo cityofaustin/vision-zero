@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import ReactMapGL, { Source, Layer } from "react-map-gl";
 import { dataLayer, heatmapLayer } from "./map-style";
 import axios from "axios";

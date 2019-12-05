@@ -9,18 +9,18 @@ import styled from "styled-components";
 import classNames from "classnames";
 import { sidebar } from "../../constants/sidebar";
 
-const StyledContent = styled.div`
-  .content {
-    margin-left: 0;
-    padding: 0px;
-    height: 100vh;
-    width: calc(100vw - ${sidebar.width});
-    position: relative;
-  }
-`;
-
 const Content = ({ toggle, isOpen }) => {
   const routeResult = useRoutes(routes);
+
+  const StyledContent = styled.div`
+    .content {
+      margin-left: 0;
+      padding: 0px;
+      height: 100vh;
+      width: ${isOpen ? `calc(100vw - ${sidebar.width});` : `100v`}
+      position: relative;
+    }
+  `;
 
   return (
     <StyledContent>
@@ -31,7 +31,7 @@ const Content = ({ toggle, isOpen }) => {
       >
         <Header toggleSidebar={toggle} />
         {/* TODO: Remove disclaimer  */}
-        {/* <Row>
+        <Row>
           <Col md="12">
             <Alert color="primary">
               <h4 className="alert-heading">
@@ -39,12 +39,11 @@ const Content = ({ toggle, isOpen }) => {
               </h4>
               <p>
                 The information displayed below may be outdated or incorrect.
-                <br></br>
                 Check back later for live Vision Zero data.
               </p>
             </Alert>
           </Col>
-        </Row> */}
+        </Row>
         {routeResult || <NotFound />}
       </Container>
     </StyledContent>
