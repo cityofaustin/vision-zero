@@ -126,6 +126,7 @@ def create_point_datatype(records):
     for record in records:
         latitude = record['latitude']
         longitude = record['longitude']
+        # Socrata rejects point upserts with no lat/lon
         if latitude != None and longitude != None:
             record["point"] = f"POINT ({longitude} {latitude})"
     return records
