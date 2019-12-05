@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import ReactMapGL, { Source, Layer } from "react-map-gl";
 import { dataLayer, heatmapLayer } from "./map-style";
 import axios from "axios";
@@ -9,7 +9,7 @@ import "mapbox-gl/dist/mapbox-gl.css";
 
 const MAPBOX_TOKEN = `pk.eyJ1Ijoiam9obmNsYXJ5IiwiYSI6ImNrM29wNnB3dDAwcXEzY29zMTU5bWkzOWgifQ.KKvoz6s4NKNHkFVSnGZonw`;
 const apiUrl =
-  "https://data.austintexas.gov/resource/y2wy-tgr5.geojson?$limit=1000&$where=crash_date between '2019-01-01T00:00:00' and '2019-12-04T23:59:59'";
+  "https://data.austintexas.gov/resource/y2wy-tgr5.geojson?$limit=150000&$where=crash_date between '2001-01-01T00:00:00' and '2019-12-04T23:59:59'";
 
 const StyledCard = styled.div`
   position: absolute;
@@ -41,6 +41,7 @@ const Map = () => {
 
   const _onViewportChange = viewport => setViewport(viewport);
 
+  // Capture hovered feature to populate tooltip data
   const _onHover = event => {
     const {
       features,
@@ -51,14 +52,17 @@ const Map = () => {
     setHoveredFeature({ feature: hoveredFeature, x: offsetX, y: offsetY });
   };
 
+  const _getCursor = ({ isDragging }) => (isDragging ? "grab" : "default");
+
+  // Show tooltip if hovering over a feature
   const _renderTooltip = () => {
     const { feature, x, y } = hoveredFeature;
     return (
       feature && (
         <StyledCard>
-          <Card>
+          <Card style={{ left: x, top: y }}>
             <CardBody>
-              <CardText>Crash ID: {feature.properties.name}</CardText>
+              <CardText>Crash ID: {feature.properties.crash_id}</CardText>
               <CardText>
                 Fatality Count: {feature.properties.death_cnt}
               </CardText>
@@ -78,6 +82,7 @@ const Map = () => {
       height="600px"
       onViewportChange={_onViewportChange}
       mapboxApiAccessToken={MAPBOX_TOKEN}
+      getCursor={_getCursor}
       onHover={_onHover}
     >
       {!!mapData && (
