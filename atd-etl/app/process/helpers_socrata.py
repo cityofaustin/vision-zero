@@ -120,7 +120,10 @@ def create_crash_mode_flags(records, unit_modes):
 
 def create_point_datatype(records):
     for record in records:
-        record["point"] = f"POINT ({record["longitude"]} {record["longitude"])"
+        latitude = record['latitude']
+        longitude = record['longitude']
+        if latitude != None and longitude != None:
+            record["point"] = f"POINT ({longitude} {latitude})"
     return records
 
 
