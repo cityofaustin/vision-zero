@@ -4,18 +4,20 @@ import { A } from "hookrouter";
 import { NavItem, NavLink, Nav } from "reactstrap";
 import styled from "styled-components";
 import classNames from "classnames";
+import { sidebar } from "../../constants/sidebar";
 import { colors } from "../../constants/colors";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHome, faMap } from "@fortawesome/free-solid-svg-icons";
 
 const StyledSidebar = styled.div`
   .sidebar {
-    min-width: 250px;
-    max-width: 250px;
+    min-width: ${sidebar.width};
+    max-width: ${sidebar.width};
     background: ${colors.dark};
     color: ${colors.light};
-    margin-left: -250px;
+    margin-left: -${sidebar.width};
     transition: all 0.5s;
+    height: 100vh;
   }
 
   .sidebar.is-open {
@@ -55,23 +57,16 @@ const StyledSidebar = styled.div`
     background: ${colors.info};
   }
 
-  li a.dropdown-toggle::after {
-    display: inline-flex;
-    position: relative;
-    left: 60%;
-    top: 10%;
-  }
-
   .sidebar-header > span {
     position: relative;
     float: right;
-    margin: 0.5em;
+
     font-size: 2rem;
     cursor: pointer;
     display: none;
   }
+
   .side-menu {
-    height: calc(100vh - 130px);
     overflow-y: scroll;
   }
 
@@ -93,13 +88,13 @@ const SideBar = ({ toggle, isOpen }) => (
   <StyledSidebar>
     {/* Use classNames to toggle "is-name" classname if sidebar isOpen */}
     <div className={classNames("sidebar", { "is-open": isOpen })}>
-      <div className="sidebar-header">
-        <span color="info" onClick={toggle} style={{ color: "#fff" }}>
-          &times;
-        </span>
-        <h3>Vision Zero Viewer</h3>
-      </div>
       <div className="side-menu">
+        <div className="sidebar-header">
+          <span color="info" onClick={toggle} style={{ color: "#fff" }}>
+            &times;
+          </span>
+          <h3>Vision Zero Viewer</h3>
+        </div>
         <Nav vertical className="list-unstyled pb-3">
           <NavItem>
             <NavLink tag={A} href="/">

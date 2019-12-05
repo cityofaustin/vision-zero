@@ -7,13 +7,14 @@ import NotFound from "../NotFound/NotFound";
 import { Container, Row, Col, Alert } from "reactstrap";
 import styled from "styled-components";
 import classNames from "classnames";
+import { sidebar } from "../../constants/sidebar";
 
 const StyledContent = styled.div`
   .content {
-    padding: 20px;
     margin-left: 0;
-    height: 100%;
-    width: 100%;
+    padding: 0px;
+    height: 100vh;
+    width: calc(100vw - ${sidebar.width});
     position: relative;
   }
 `;
@@ -30,7 +31,7 @@ const Content = ({ toggle, isOpen }) => {
       >
         <Header toggleSidebar={toggle} />
         {/* TODO: Remove disclaimer  */}
-        <Row>
+        {/* <Row>
           <Col md="12">
             <Alert color="primary">
               <h4 className="alert-heading">
@@ -43,7 +44,7 @@ const Content = ({ toggle, isOpen }) => {
               </p>
             </Alert>
           </Col>
-        </Row>
+        </Row> */}
         {routeResult || <NotFound />}
       </Container>
     </StyledContent>

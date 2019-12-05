@@ -9,7 +9,7 @@ import "mapbox-gl/dist/mapbox-gl.css";
 
 const MAPBOX_TOKEN = `pk.eyJ1Ijoiam9obmNsYXJ5IiwiYSI6ImNrM29wNnB3dDAwcXEzY29zMTU5bWkzOWgifQ.KKvoz6s4NKNHkFVSnGZonw`;
 const apiUrl =
-  "https://data.austintexas.gov/resource/y2wy-tgr5.geojson?$limit=150000&$where=crash_date between '2001-01-01T00:00:00' and '2019-12-04T23:59:59'";
+  "https://data.austintexas.gov/resource/y2wy-tgr5.geojson?$limit=1000&$where=crash_date between '2001-01-01T00:00:00' and '2019-12-04T23:59:59'";
 
 const StyledCard = styled.div`
   position: absolute;
@@ -78,8 +78,8 @@ const Map = () => {
   return (
     <ReactMapGL
       {...viewport}
-      width="900px"
-      height="600px"
+      width="100%"
+      height="100%"
       onViewportChange={_onViewportChange}
       mapboxApiAccessToken={MAPBOX_TOKEN}
       getCursor={_getCursor}
