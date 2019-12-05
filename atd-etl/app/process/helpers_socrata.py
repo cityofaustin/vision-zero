@@ -52,7 +52,7 @@ def run_hasura_query(query):
 def flatten_hasura_response(records):
     """
     Flattens data response from Hasura
-    :param records: list - List of record dicts 
+    :param records: list - List of record dicts
     """
     formatted_records = []
     for record in records:
@@ -119,6 +119,10 @@ def create_crash_mode_flags(records, unit_modes):
 
 
 def create_point_datatype(records):
+    """
+    Creates point datatype to enable fetching GeoJSON from Socrata
+    :param records: list - List of record dicts
+    """
     for record in records:
         latitude = record['latitude']
         longitude = record['longitude']
