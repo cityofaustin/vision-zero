@@ -390,6 +390,7 @@ def generate_crash_record(line, fieldnames):
 
 
 def insert_crash_change_template():
+    new_record_escaped = json.dumps(new_record_dict).replace("\"", "\\\"")
     return """
         mutation insertCrashChangeMutation {
       insert_atd_txdot_changes(objects: {
