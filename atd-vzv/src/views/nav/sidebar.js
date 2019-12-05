@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import { A } from "hookrouter";
 
-import { NavItem, NavLink, Nav } from "reactstrap";
+import { NavItem, NavLink, Nav, ButtonGroup, Button } from "reactstrap";
 import styled from "styled-components";
 import classNames from "classnames";
 import { sidebar } from "../../constants/sidebar";
@@ -84,34 +84,56 @@ const StyledSidebar = styled.div`
   }
 `;
 
-const SideBar = ({ toggle, isOpen }) => (
-  <StyledSidebar>
-    {/* Use classNames to toggle "is-name" classname if sidebar isOpen */}
-    <div className={classNames("sidebar", { "is-open": isOpen })}>
-      <div className="side-menu">
-        <div className="sidebar-header">
-          <span color="info" onClick={toggle} style={{ color: "#fff" }}>
-            &times;
-          </span>
-          <h3>Vision Zero Viewer</h3>
+const queryParameters = {
+  pedestrian: {
+    syntax: `$where=pedestrian_fl = "Y"`
+  }
+};
+
+const SideBar = ({ toggle, isOpen }) => {
+  const [mapSettings, setMapSettings] = useState([]);
+
+  const handleSettingsClick = event => {};
+
+  return (
+    <StyledSidebar>
+      {/* Use classNames to toggle "is-name" classname if sidebar isOpen */}
+      <div className={classNames("sidebar", { "is-open": isOpen })}>
+        <div className="side-menu">
+          <div className="sidebar-header">
+            <span color="info" onClick={toggle} style={{ color: "#fff" }}>
+              &times;
+            </span>
+            <h3>Vision Zero Viewer</h3>
+          </div>
+          <Nav vertical className="list-unstyled pb-3">
+            <NavItem>
+              <NavLink tag={A} href="/">
+                <FontAwesomeIcon icon={faHome} className="mr-2" />
+                Dashboard
+              </NavLink>
+            </NavItem>
+            <NavItem>
+              <NavLink tag={A} href="/map">
+                <FontAwesomeIcon icon={faMap} className="mr-2" />
+                Map
+              </NavLink>
+            </NavItem>
+          </Nav>
         </div>
-        <Nav vertical className="list-unstyled pb-3">
-          <NavItem>
-            <NavLink tag={A} href="/">
-              <FontAwesomeIcon icon={faHome} className="mr-2" />
-              Dashboard
-            </NavLink>
-          </NavItem>
-          <NavItem>
-            <NavLink tag={A} href="/map">
-              <FontAwesomeIcon icon={faMap} className="mr-2" />
-              Map
-            </NavLink>
-          </NavItem>
-        </Nav>
       </div>
-    </div>
-  </StyledSidebar>
-);
+      <ButtonGroup>
+        <Button
+          color="info"
+          onClick={handleSettingsClick}
+          id="pedestrian"
+          active={mapSettings.includes("pedestrian")}
+        >
+          Pedestrian
+        </Button>
+      </ButtonGroup>
+    </StyledSidebar>
+  );
+};
 
 export default SideBar;
