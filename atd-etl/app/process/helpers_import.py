@@ -389,6 +389,21 @@ def generate_crash_record(line, fieldnames):
     return json.loads(fields)
 
 
+def insert_crash_change_template():
+    return """
+        mutation insertCrashChangeMutation {
+      insert_atd_txdot_changes(objects: {
+        record_id: NEW_RECORD_ID,
+        record_json: "NEW_RECORD_ESCAPED_JSON",
+        record_type: "crash",
+        updated_by: "System"
+      }) {
+        affected_rows
+      }
+    }
+    """
+
+
 def record_compare_hook(line, fieldnames, file_type):
     if file_type == "crash":
         fieldnames = [column.lower() for column in fieldnames]
