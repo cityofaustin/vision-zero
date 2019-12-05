@@ -35,8 +35,7 @@ const Map = () => {
   // Fetch crash data and convert to GeoJSON
   useEffect(() => {
     axios.get(apiUrl).then(res => {
-      debugger;
-      //   createGeoJSON(res.data);
+      setMapData(res.data);
     });
   }, []);
 
@@ -61,51 +60,16 @@ const Map = () => {
             <CardBody>
               <CardText>Crash ID: {feature.properties.name}</CardText>
               <CardText>
-                Fatality Count: {feature.properties.deathCount}
+                Fatality Count: {feature.properties.death_cnt}
               </CardText>
-              <CardText>Modes: {feature.properties.unitMode}</CardText>
-              <CardText>Description: {feature.properties.unitDesc}</CardText>
+              <CardText>Modes: {feature.properties.unit_mode}</CardText>
+              <CardText>Description: {feature.properties.unit_desc}</CardText>
             </CardBody>
           </Card>
         </StyledCard>
       )
     );
   };
-
-  //   const createGeoJSON = data => {
-  //     // Create features array
-  //     const features = data.map(crash => {
-  //       const latitude = crash.latitude ? parseFloat(crash.latitude) : 0;
-  //       const longitude = crash.longitude ? parseFloat(crash.longitude) : 0;
-  //       return {
-  //         type: "Feature",
-  //         geometry: {
-  //           type: "Point",
-  //           coordinates: [longitude, latitude]
-  //         },
-  //         properties: {
-  //           name: crash.case_id,
-  //           deathCount: parseInt(crash.death_cnt),
-  //           unitMode: crash.unit_mode,
-  //           unitDesc: crash.unit_desc
-  //         }
-  //       };
-  //     });
-  //
-  //     // Remove points that are missing latitude and longitude
-  //     const cleanedFeatures = features.filter(
-  //       feature =>
-  //         feature.geometry.coordinates[0] !== 0 &&
-  //         feature.geometry.coordinates[1] !== 0
-  //     );
-
-  //     const featureCollection = {
-  //       type: "FeatureCollection",
-  //       features: cleanedFeatures
-  //     };
-
-  //     setMapData(featureCollection);
-  //   };
 
   return (
     <ReactMapGL
