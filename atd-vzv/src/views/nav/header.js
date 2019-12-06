@@ -1,38 +1,41 @@
-import React, { useState } from "react";
+import React from "react";
 import { A } from "hookrouter";
 
-import {
-  Navbar,
-  Button,
-  NavbarToggler,
-  Collapse,
-  Nav,
-  NavItem,
-  NavLink
-} from "reactstrap";
+import { Container, Navbar, Button, Nav, NavItem, NavLink } from "reactstrap";
+import styled from "styled-components";
+import { responsive } from "../../constants/responsive";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars, faHome, faMap } from "@fortawesome/free-solid-svg-icons";
 
-const Header = ({ toggleSidebar }) => {
-  const [isOpen, setOpen] = useState(true);
-  const toggle = () => setOpen(!isOpen);
+const StyledNavbar = styled.div`
+  .collapse-toggle {
+    @media only screen and (min-width: ${responsive.sm}px) {
+      display: none;
+    }
+  }
+`;
 
-  return (
-    <Navbar
-      color="light"
-      light
-      className="navbar shadow-sm p-3 mb-5 bg-white rounded"
-      expand="md"
-    >
-      <Button color="info" onClick={toggleSidebar}>
-        <FontAwesomeIcon icon={faBars} />
-      </Button>
-      <NavbarToggler onClick={toggle} />
-      <Collapse isOpen={isOpen} navbar>
+const Header = ({ toggleSidebar }) => (
+  <Container fluid className="bg-light">
+    <StyledNavbar>
+      <Navbar
+        color="light"
+        light
+        className="navbar shadow-sm p-3 mb-4 bg-white rounded"
+        expand="xs"
+      >
+        <Button
+          className="mr-2 collapse-toggle"
+          color="info"
+          onClick={toggleSidebar}
+        >
+          <FontAwesomeIcon icon={faBars} />
+        </Button>
+
         <Nav className="mr-auto" navbar>
           <NavItem>
             <NavLink tag={A} href="/">
-              <FontAwesomeIcon icon={faHome} className="ml-2 mr-2" />
+              <FontAwesomeIcon icon={faHome} className="mr-2" />
               Dashboard
             </NavLink>
           </NavItem>
@@ -43,9 +46,9 @@ const Header = ({ toggleSidebar }) => {
             </NavLink>
           </NavItem>
         </Nav>
-      </Collapse>
-    </Navbar>
-  );
-};
+      </Navbar>
+    </StyledNavbar>
+  </Container>
+);
 
 export default Header;
