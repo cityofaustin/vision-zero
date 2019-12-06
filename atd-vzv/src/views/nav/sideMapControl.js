@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
 
-import { Container, ButtonGroup, Button, Label } from "reactstrap";
-import styled from "styled-components";
+import { Container, ButtonGroup, Button } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faWalking, faMap } from "@fortawesome/free-solid-svg-icons";
+import { faWalking } from "@fortawesome/free-solid-svg-icons";
 
 const queryParameters = {
   pedestrian: {
@@ -12,7 +11,7 @@ const queryParameters = {
   }
 };
 
-const SideMapControl = ({ toggle, isOpen }) => {
+const SideMapControl = () => {
   const [mapFilters, setMapFilters] = useState([]);
 
   // TODO: Call method to pass filters to parent here

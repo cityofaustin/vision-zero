@@ -1,4 +1,4 @@
 export const drawer = {
-  height: 116,
+  headerHeight: 116,
   width: 240
 };

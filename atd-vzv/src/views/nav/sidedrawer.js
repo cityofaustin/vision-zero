@@ -47,7 +47,7 @@ const StyledDrawerHeader = styled.div`
   background: ${colors.light};
   color: ${colors.dark};
   padding: 20px;
-  height: ${drawer.height}px;
+  height: ${drawer.headerHeight}px;
 `;
 
 const SideDrawer = ({ toggle, isOpen }) => {

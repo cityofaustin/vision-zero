@@ -7,14 +7,20 @@ import NotFound from "../NotFound/NotFound";
 import { Container } from "reactstrap";
 import styled from "styled-components";
 import { drawer } from "../../constants/drawer";
+import { responsive } from "../../constants/responsive";
 
 const StyledContent = styled.div`
   .content {
     padding: 0px;
-    margin-left: 0;
-    height: 100vh;
-    width: calc(100vw - ${drawer.width});
-    overflow-y: scroll;
+    width: calc(100vw - ${drawer.width}px);
+    height: calc(100vh - ${drawer.headerHeight}px);
+  }
+
+  @media only screen and (max-width: ${responsive.sm}px) {
+    .content {
+      width: 100vw;
+      height: calc(100vh - ${drawer.headerHeight}px);
+    }
   }
 `;
 
