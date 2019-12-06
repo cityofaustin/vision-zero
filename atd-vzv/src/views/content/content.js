@@ -6,27 +6,24 @@ import NotFound from "../NotFound/NotFound";
 
 import { Container, Row, Col, Alert } from "reactstrap";
 import styled from "styled-components";
-import classNames from "classnames";
+import { drawer } from "../../constants/drawer";
 
 const StyledContent = styled.div`
   .content {
     padding: 20px;
     margin-left: 0;
     height: 100vh;
+    width: calc(100vw - ${drawer.width});
     overflow-y: scroll;
   }
 `;
 
-const Content = ({ toggle, isOpen }) => {
+const Content = ({ toggle }) => {
   const routeResult = useRoutes(routes);
 
   return (
     <StyledContent>
-      {/* Use classNames to toggle "is-name" classname if sidebar isOpen */}
-      <Container
-        fluid
-        className={classNames("content", "bg-light", { "is-open": isOpen })}
-      >
+      <Container fluid className="content bg-light">
         <Header toggleSidebar={toggle} />
         {/* TODO: Remove disclaimer  */}
         <Row>

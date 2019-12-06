@@ -16,34 +16,3 @@ a:focus {
   text-decoration: none;
   transition: all 0.3s;
 }
-
-/* ---------------------------------------------------
-    MOBILE STYLES
------------------------------------------------------ */
-
-@media only screen and (max-width: 500px) {
-  body {
-    overflow: hidden;
-  }
-
-  .content.is-open {
-    margin-left: 100%;
-  }
-
-  .sidebar.is-open {
-    min-width: 100%;
-    max-width: 100%;
-    margin-left: 0;
-    transition: all 0.5s, height 0s;
-  }
-
-  .sidebar.is-open > .sidebar-header span {
-    display: unset;
-  }
-
-  li a.dropdown-toggle::after {
-    display: inline-block;
-    position: relative;
-    left: 68%;
-  }
-}

@@ -30,11 +30,11 @@ const useStyles = makeStyles(theme => ({
       display: "none"
     }
   },
-  toolbar: theme.mixins.toolbar,
   drawerPaper: {
     width: drawerWidth,
     background: colors.dark,
-    color: colors.light
+    color: colors.light,
+    border: 0
   },
   content: {
     flexGrow: 1,
@@ -53,6 +53,28 @@ const SideDrawer = ({ toggle, isOpen }) => {
   const classes = useStyles();
   const theme = useTheme();
 
+  const drawerContent = (
+    <div className="side-menu">
+      <Nav vertical className="list-unstyled pb-3">
+        <StyledDrawerHeader>
+          <h3>Vision Zero Viewer</h3>
+        </StyledDrawerHeader>
+        <NavItem>
+          <NavLink tag={A} href="/">
+            <FontAwesomeIcon icon={faHome} className="mr-2" />
+            Dashboard
+          </NavLink>
+        </NavItem>
+        <NavItem>
+          <NavLink tag={A} href="/map">
+            <FontAwesomeIcon icon={faMap} className="mr-2" />
+            Map
+          </NavLink>
+        </NavItem>
+      </Nav>
+    </div>
+  );
+
   return (
     <div className={classes.root}>
       <CssBaseline />
@@ -70,26 +92,18 @@ const SideDrawer = ({ toggle, isOpen }) => {
               keepMounted: true // Better open performance on mobile.
             }}
           >
-            <div className="side-menu">
-              <Nav vertical className="list-unstyled pb-3">
-                <StyledDrawerHeader>
-                  <h3>Vision Zero Viewer</h3>
-                </StyledDrawerHeader>
-
-                <NavItem>
-                  <NavLink tag={A} href="/">
-                    <FontAwesomeIcon icon={faHome} className="mr-2" />
-                    Dashboard
-                  </NavLink>
-                </NavItem>
-                <NavItem>
-                  <NavLink tag={A} href="/map">
-                    <FontAwesomeIcon icon={faMap} className="mr-2" />
-                    Map
-                  </NavLink>
-                </NavItem>
-              </Nav>
-            </div>
+            {drawerContent}
+          </Drawer>
+        </Hidden>
+        <Hidden xsDown implementation="css">
+          <Drawer
+            classes={{
+              paper: classes.drawerPaper
+            }}
+            variant="permanent"
+            open
+          >
+            {drawerContent}
           </Drawer>
         </Hidden>
       </nav>
