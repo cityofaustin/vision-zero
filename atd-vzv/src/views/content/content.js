@@ -17,7 +17,7 @@ const Content = ({ toggle, isOpen }) => {
       margin-left: 0;
       padding: 0px;
       height: 100vh;
-      width: ${isOpen ? `calc(100vw - ${sidebar.width});` : `100v`}
+      width: ${isOpen ? `calc(100vw - ${sidebar.width});` : `100vw`}
       position: relative;
     }
   `;

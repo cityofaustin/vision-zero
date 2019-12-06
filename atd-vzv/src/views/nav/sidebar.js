@@ -86,13 +86,15 @@ const StyledSidebar = styled.div`
 
 const queryParameters = {
   pedestrian: {
-    syntax: `&$where=pedestrian_fl = "Y"`
+    syntax: `&$where=pedestrian_fl = "Y"`,
+    type: `where`
   }
 };
 
 const SideBar = ({ toggle, isOpen }) => {
   const [mapFilters, setMapFilters] = useState([]);
 
+  // TODO: Call method to pass filters to parent here
   useEffect(() => {}, [mapFilters]);
 
   const handleFilterClick = event => {
