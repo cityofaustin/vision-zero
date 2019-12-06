@@ -28,13 +28,12 @@ const Content = ({ toggle }) => {
         {/* TODO: Remove disclaimer  */}
         <Row>
           <Col md="12">
-            <Alert color="primary">
+            <Alert color="primary" className="m-2">
               <h4 className="alert-heading">
                 This site is a work in progress.
               </h4>
               <p>
-                The information displayed below may be outdated or incorrent.
-                <br></br>
+                The information displayed below may be outdated or incorrect.
                 Check back later for live Vision Zero data.
               </p>
             </Alert>
