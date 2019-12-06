@@ -24,7 +24,7 @@ const Header = ({ toggleSidebar }) => {
       className="navbar shadow-sm p-3 mb-5 bg-white rounded"
       expand="md"
     >
-      <Button color="info" onClick={toggleSidebar}>
+      <Button className="mr-2" color="info" onClick={toggleSidebar}>
         <FontAwesomeIcon icon={faBars} />
       </Button>
       <NavbarToggler onClick={toggle} />
@@ -32,7 +32,7 @@ const Header = ({ toggleSidebar }) => {
         <Nav className="mr-auto" navbar>
           <NavItem>
             <NavLink tag={A} href="/">
-              <FontAwesomeIcon icon={faHome} className="ml-2 mr-2" />
+              <FontAwesomeIcon icon={faHome} className="mr-2" />
               Dashboard
             </NavLink>
           </NavItem>

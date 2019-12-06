@@ -13,6 +13,7 @@ const StyledContent = styled.div`
     padding: 20px;
     margin-left: 0;
     height: 100vh;
+    overflow-y: scroll;
   }
 `;
 
