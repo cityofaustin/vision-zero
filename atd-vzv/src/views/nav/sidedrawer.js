@@ -15,6 +15,7 @@ import SideMapControl from "./sideMapControl";
 
 const drawerWidth = drawer.width;
 
+// Styles for MUI drawer
 const useStyles = makeStyles(theme => ({
   root: {
     display: "flex"
@@ -91,6 +92,7 @@ const SideDrawer = ({ toggle, isOpen }) => {
     <div className={classes.root}>
       <CssBaseline />
       <nav className={classes.drawer} aria-label="mailbox folders">
+        {/* One drawer for desktop, one drawer for mobile */}
         <Hidden smUp implementation="css">
           <Drawer
             variant="temporary"
@@ -117,6 +119,7 @@ const SideDrawer = ({ toggle, isOpen }) => {
             open
           >
             {drawerContent}
+            {/* TODO: Dynamic sidebar content based on route */}
             <SideMapControl />
           </Drawer>
         </Hidden>

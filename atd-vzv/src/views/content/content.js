@@ -16,6 +16,7 @@ const StyledContent = styled.div`
     height: calc(100vh - ${drawer.headerHeight}px);
   }
 
+  /* Fill space left behind by SideDrawer on mobile */
   @media only screen and (max-width: ${responsive.sm}px) {
     .content {
       width: 100vw;
@@ -31,7 +32,6 @@ const Content = ({ toggle }) => {
     <StyledContent>
       <Container fluid className="content bg-light">
         <Header toggleSidebar={toggle} />
-
         {routeResult || <NotFound />}
       </Container>
     </StyledContent>

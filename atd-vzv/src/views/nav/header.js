@@ -9,6 +9,7 @@ import { faBars, faHome, faMap } from "@fortawesome/free-solid-svg-icons";
 
 const StyledNavbar = styled.div`
   .collapse-toggle {
+    /* Hide toggle until mobile */
     @media only screen and (min-width: ${responsive.sm}px) {
       display: none;
     }
@@ -31,7 +32,6 @@ const Header = ({ toggleSidebar }) => (
         >
           <FontAwesomeIcon icon={faBars} />
         </Button>
-
         <Nav className="mr-auto" navbar>
           <NavItem>
             <NavLink tag={A} href="/">
