@@ -1,7 +1,6 @@
 import React from "react";
-import { A } from "hookrouter";
 
-import { NavItem, NavLink, Nav, Row, Col, Alert } from "reactstrap";
+import { Nav, Alert } from "reactstrap";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Drawer from "@material-ui/core/Drawer";
 import Hidden from "@material-ui/core/Hidden";
@@ -9,8 +8,6 @@ import { makeStyles, useTheme } from "@material-ui/core/styles";
 import styled from "styled-components";
 import { drawer } from "../../constants/drawer";
 import { colors } from "../../constants/colors";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHome, faMap } from "@fortawesome/free-solid-svg-icons";
 import SideMapControl from "./sideMapControl";
 
 const drawerWidth = drawer.width;
@@ -71,19 +68,6 @@ const SideDrawer = ({ toggle, isOpen }) => {
             later for live Vision Zero data.
           </span>
         </Alert>
-
-        <NavItem>
-          <NavLink tag={A} href="/">
-            <FontAwesomeIcon icon={faHome} className="mr-2" />
-            Dashboard
-          </NavLink>
-        </NavItem>
-        <NavItem>
-          <NavLink tag={A} href="/map">
-            <FontAwesomeIcon icon={faMap} className="mr-2" />
-            Map
-          </NavLink>
-        </NavItem>
       </Nav>
     </div>
   );
@@ -91,7 +75,7 @@ const SideDrawer = ({ toggle, isOpen }) => {
   return (
     <div className={classes.root}>
       <CssBaseline />
-      <nav className={classes.drawer} aria-label="mailbox folders">
+      <nav className={classes.drawer} aria-label="sidebar">
         {/* One drawer for desktop, one drawer for mobile */}
         <Hidden smUp implementation="css">
           <Drawer
