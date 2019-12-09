@@ -390,6 +390,13 @@ def insert_crash_change_template(new_record_dict):
 
 
 def record_compare_hook(line, fieldnames, file_type):
+    """
+    Hook that finds an existing record, and compares it with a new incoming record built from a raw csv line.
+    :param line: string - The raw csv line
+    :param fieldnames: array of strings - The strings to be used as headers
+    :param file_type: string - The file type (crash, units, charges, etc...)
+    :return:
+    """
     if file_type == "crash":
         fieldnames = [column.lower() for column in fieldnames]
         crash_id = get_crash_id(line)
@@ -401,3 +408,4 @@ def record_compare_hook(line, fieldnames, file_type):
             mutation_template = insert_crash_change_template(new_record_dict=record_new)
             result = run_query(mutation_template)
             web_pdb.set_trace()
+    web_pdb.set_trace()
