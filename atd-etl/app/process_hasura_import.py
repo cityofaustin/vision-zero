@@ -75,17 +75,17 @@ def process_line(file_type, line, fieldnames, current_line, dryrun=False):
     crash_id = line.strip().split(",")[0]
     mode = "[Dry-Run]" if dryrun else "[Live]"
     # First we need to check if the current record exists, skip if so.
-    if record_exists_hook(line=line, type=file_type):
+    if record_exists_hook(line=line, file_type=file_type):
         if ATD_ETL_CONFIG["ATD_CRIS_IMPORT_COMPARE_FUNCTION"] == "ENABLED":
             record_compare_hook(line=line, fieldnames=fieldnames, file_type=file_type)
+
         print("[%s] Exists: %s (%s)" % (str(current_line), str(crash_id), file_type))
         existing_records += 1
 
     # The record does not exist, insert.
     else:
         # Generate query and present to terminal
-        gql = generate_gql(line=line, fieldnames=fieldnames, type=file_type)
-
+        gql = generate_gql(line=line, fieldnames=fieldnames, file_type=file_type)
         # If this is not a dry-run, then make an actual insertion
         if dryrun:
             # Dry-run, we need a fake response
@@ -106,7 +106,7 @@ def process_line(file_type, line, fieldnames, current_line, dryrun=False):
 
             else:
                 # Gather from this function if we need to stop the execution.
-                stop_execution = handle_record_error_hook(line=line, gql=gql, type=file_type,
+                stop_execution = handle_record_error_hook(line=line, gql=gql, file_type=file_type,
                                                           response=response, line_number=str(current_line))
 
             # If we are stopping we must make signal of it
