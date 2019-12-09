@@ -23,7 +23,7 @@ const FatalitiesByMode = () => {
     return years;
   })();
 
-  const [chartData, setChartData] = useState({});
+  const [chartData, setChartData] = useState("");
 
   useEffect(() => {
     const getChartData = async () => {
@@ -43,45 +43,82 @@ const FatalitiesByMode = () => {
 
   const createChartLabels = () => years.sort().map(year => `${year}`);
 
+  const getMotorData = () =>
+    years.map(year => {
+      let fatalities = 0;
+      !!chartData &&
+        chartData[year].forEach(
+          f => f["motor_vehicle_fl"] === "Y" && fatalities++
+        );
+      return fatalities;
+    });
+
+  const getPedestrianData = () =>
+    years.map(year => {
+      let fatalities = 0;
+      !!chartData &&
+        chartData[year].forEach(
+          f => f["pedestrian_fl"] === "Y" && fatalities++
+        );
+      return fatalities;
+    });
+
+  const getPedalcyclistData = () =>
+    years.map(year => {
+      let fatalities = 0;
+      !!chartData &&
+        chartData[year].forEach(
+          f => f["pedalcyclist_fl"] === "Y" && fatalities++
+        );
+      return fatalities;
+    });
+
   const data = {
     labels: createChartLabels(),
     datasets: [
       {
-        label: "My First dataset",
         backgroundColor: "rgba(255,99,132,0.2)",
         borderColor: "rgba(255,99,132,1)",
         borderWidth: 1,
         hoverBackgroundColor: "rgba(255,99,132,0.4)",
         hoverBorderColor: "rgba(255,99,132,1)",
-        data: {
-          datasets: [
-            {
-              label: "test1",
-              data: [1]
-            },
-            {
-              label: "test2",
-              data: [2]
-            }
-          ],
-          labels: ["label"]
-        },
-        options: {
-          scales: {
-            xAxes: [
-              {
-                stacked: false
-              }
-            ],
-            yAxes: [
-              {
-                stacked: true
-              }
-            ]
-          }
-        }
+        label: "Motor",
+        data: getMotorData()
+      },
+      {
+        backgroundColor: "rgba(255,99,132,0.2)",
+        borderColor: "rgba(255,99,132,1)",
+        borderWidth: 1,
+        hoverBackgroundColor: "rgba(255,99,132,0.4)",
+        hoverBorderColor: "rgba(255,99,132,1)",
+        label: "Pedestrian",
+        data: getPedestrianData()
+      },
+      {
+        backgroundColor: "rgba(255,99,132,0.2)",
+        borderColor: "rgba(255,99,132,1)",
+        borderWidth: 1,
+        hoverBackgroundColor: "rgba(255,99,132,0.4)",
+        hoverBorderColor: "rgba(255,99,132,1)",
+        label: "Pedalcyclist",
+        data: getPedalcyclistData()
       }
-    ]
+    ],
+    labels: ["label"],
+    options: {
+      scales: {
+        xAxes: [
+          {
+            stacked: true
+          }
+        ],
+        yAxes: [
+          {
+            stacked: true
+          }
+        ]
+      }
+    }
   };
 
   return (
