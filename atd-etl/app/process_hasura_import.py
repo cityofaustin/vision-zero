@@ -136,9 +136,10 @@ def process_line(file_type, line, fieldnames, current_line, dryrun=False):
 def process_file(file_path, file_type, skip_lines, dryrun=False):
     """
     It reads an individual CSV file and processes each line into the database.
-    :param file_path: string - the full path location of the csv file
-    :param file_type: string - the file type: crash, unit, person, primaryperson, charges
-    :param skip_lines: int - the number of lines to skip (0 if none)
+    :param file_path: string - The full path location of the csv file
+    :param file_type: string - The file type: crash, unit, person, primaryperson, charges
+    :param skip_lines: int - The number of lines to skip (0 if none)
+    :param dryrun: bool - True to enable a dry-run process, or false to run live.
     :return:
     """
     FILE_PATH = file_path
@@ -164,7 +165,8 @@ def process_file(file_path, file_type, skip_lines, dryrun=False):
     print("Processing file '%s' of type '%s', skipping: '%s'" % (FILE_PATH, FILE_TYPE, FILE_SKIP_ROWS))
     print("Endpoint: %s" % ATD_ETL_CONFIG["HASURA_ENDPOINT"])
     print("Max Threads: %s" % max_threads)
-    print("Dry-run mode enabled: " + str(dryrun))
+    print("Dry-run mode enabled: %s" % str(dryrun))
+    print("Compare-function: %s" % ATD_ETL_CONFIG["ATD_CRIS_IMPORT_COMPARE_FUNCTION"])
     print("------------------------------------------")
     # Current line tracker
     current_line = 0
