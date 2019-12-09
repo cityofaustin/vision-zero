@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
+import { StoreContext } from "../../utils/store";
 
 import { Container, ButtonGroup, Button } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -22,33 +23,31 @@ const queryParameters = {
   }
 };
 
-const SideMapControl = ({ updateMapFilters }) => {
-  const [mapFilters, setMapFilters] = useState([]);
-
-  // TODO: Call method to pass filters to parent here
-  useEffect(() => {
-    updateMapFilters(mapFilters);
-  }, [mapFilters, updateMapFilters]);
+const SideMapControl = () => {
+  const {
+    mapFilters: [filters, setFilters]
+  } = React.useContext(StoreContext);
 
   const handleFilterClick = event => {
     // Set filter or remove if already set
     const filterName = event.currentTarget.id;
+
     if (isFilterSet(filterName)) {
       const filterToRemove = queryParameters[filterName];
-      const updatedFiltersArray = mapFilters.filter(
+      const updatedFiltersArray = filters.filter(
         setFilter => setFilter !== filterToRemove
       );
-      setMapFilters(updatedFiltersArray);
+      setFilters(updatedFiltersArray);
     } else {
       const filter = queryParameters[filterName];
-      const filtersArray = [...mapFilters, filter];
-      setMapFilters(filtersArray);
+      const filtersArray = [...filters, filter];
+      setFilters(filtersArray);
     }
   };
 
   const isFilterSet = filterName => {
     const clickedFilter = queryParameters[filterName];
-    return !!mapFilters.find(setFilter => setFilter === clickedFilter);
+    return !!filters.find(setFilter => setFilter === clickedFilter);
   };
 
   return (
