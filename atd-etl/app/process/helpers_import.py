@@ -134,16 +134,16 @@ def generate_gql(line, fieldnames, file_type):
     return template
 
 
-def record_exists_hook(line, type):
+def record_exists_hook(line, file_type):
     """
     Returns True if the record already exists, False if it cannot find it.
     :param line: string - The raw record in CSV format
-    :param type: string - The parameter as passed to the terminal
+    :param file_type: string - The parameter as passed to the terminal
     :return: boolean - True if the record exists, False otherwise.
     """
 
     # If the record type is a crash:
-    if type == "crash":
+    if file_type == "crash":
         """
             Approach: 
                 - Crashes:
