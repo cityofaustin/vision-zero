@@ -364,6 +364,12 @@ def record_compare(record_new, record_existing):
 
 
 def generate_crash_record(line, fieldnames):
+    """
+    Translates a raw csv line into a python dictionary
+    :param line: string - The raw csv line
+    :param fieldnames: array of strings - The strings to be used as headers
+    :return: dict
+    """
     reader = csv.DictReader(f=io.StringIO(line), fieldnames=fieldnames, delimiter=',')  # parse line
     fields = json.dumps([row for row in reader])  # Generate json
     # Remove object characters
@@ -376,7 +382,7 @@ def insert_crash_change_template(new_record_dict):
     """
     Generates a crash insertion graphql query
     :param new_record_dict: dict - The new record as a dictionary
-    :return:
+    :return: string
     """
     # Turn the dictionary into a character-escaped json string
     new_record_escaped = json.dumps(new_record_dict).replace("\"", "\\\"")
