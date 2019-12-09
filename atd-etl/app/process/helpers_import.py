@@ -307,6 +307,11 @@ def generate_run_config():
 
 
 def get_crash_record(crash_id):
+    """
+    Obtains a single crash record based on the crash_id
+    :param crash_id: string - The crash id to obtain from the database
+    :return: string
+    """
     # First generate a query with a list of the columns we care about
     query = search_crash_query_full(crash_id=crash_id,
                                     field_list=CRIS_TXDOT_COMPARE_FIELDS_LIST)
