@@ -28,6 +28,9 @@ ATD_ETL_CONFIG = {
     "ATD_CRIS_PASSWORD_CR3": os.getenv("ATD_CRIS_PASSWORD", ""),
     "ATD_CRIS_CR3_DOWNLOADS_PER_RUN": os.getenv("ATD_CRIS_DOWNLOADS_PER_RUN", "25"),
 
+    # HERE
+    "ATD_HERE_API_ENDPOINT": "https://geocoder.api.here.com/6.2/geocode.json",
+
     # SOCRATA
     "SOCRATA_KEY_ID": os.getenv("SOCRATA_KEY_ID", ""),
     "SOCRATA_KEY_SECRET": os.getenv("SOCRATA_KEY_SECRET", ""),
