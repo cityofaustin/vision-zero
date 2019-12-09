@@ -344,22 +344,35 @@ def clean_none_null(string):
 
 
 def record_compare(record_new, record_existing):
+    """
+    Compares two dictionaries. It uses the CRIS_TXDOT_COMPARE_FIELDS_LIST
+    to determine what fields are important enough, and returns True if
+    there is one important difference. Returns False if none of the fields
+    present any differences.
+    :param record_new: dict - The new object being parsed from csv
+    :param record_existing: dict - The existing object, as parsed from an HTTP query
+    :return: bool
+    """
     for field in CRIS_TXDOT_COMPARE_FIELDS_LIST:
         # Remove None and null
         record_existing[field] = clean_none_null(record_existing[field])
 
+        # If the current field is a date, then try to parse it
         if is_cris_date(record_new[field]):
             record_new[field] = convert_date(record_new[field])
 
+        # If the current field is a time string, then try to parse it
         if is_cris_time(record_new[field]):
             print("We got time: %s" % record_new[field])
             record_new[field] = convert_time(record_new[field])
 
+        # Make the comparison, if not equal important_difference = true
         important_difference = record_new[field] != record_existing[field]
 
         if important_difference:
             return True
 
+    # Found no differences in any of the fields
     return False
 
 
