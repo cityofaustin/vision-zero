@@ -6,24 +6,29 @@ import { faWalking, faBicycle, faCar } from "@fortawesome/free-solid-svg-icons";
 
 const queryParameters = {
   pedestrian: {
-    syntax: `&$where=pedestrian_fl = "Y"`,
-    type: `where`
+    syntax: `pedestrian_fl = "Y"`,
+    type: `where`,
+    operator: `AND`
   },
   pedalcyclist: {
-    syntax: `&$where=pedalcyclist_fl = "Y"`,
-    type: `where`
+    syntax: `pedalcyclist_fl = "Y"`,
+    type: `where`,
+    operator: `AND`
   },
   motor: {
-    syntax: `&$where=motor_vehicle_fl = "Y"`,
-    type: `where`
+    syntax: `motor_vehicle_fl = "Y"`,
+    type: `where`,
+    operator: `AND`
   }
 };
 
-const SideMapControl = () => {
+const SideMapControl = ({ updateMapFilters }) => {
   const [mapFilters, setMapFilters] = useState([]);
 
   // TODO: Call method to pass filters to parent here
-  useEffect(() => {}, [mapFilters]);
+  useEffect(() => {
+    updateMapFilters(mapFilters);
+  }, [mapFilters, updateMapFilters]);
 
   const handleFilterClick = event => {
     // Set filter

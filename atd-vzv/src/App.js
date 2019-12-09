@@ -8,10 +8,20 @@ const App = () => {
   const [isOpen, setOpen] = useState(false);
   const toggle = () => setOpen(!isOpen);
 
+  const [mapFilters, setMapFilters] = useState([]);
+
+  const updateMapFilters = mapFilters => {
+    setMapFilters(mapFilters);
+  };
+
   return (
     <div className="App">
-      <SideDrawer toggle={toggle} isOpen={isOpen} />
-      <Content toggle={toggle} isOpen={isOpen} />
+      <SideDrawer
+        toggle={toggle}
+        isOpen={isOpen}
+        updateMapFilters={updateMapFilters}
+      />
+      <Content toggle={toggle} isOpen={isOpen} mapFilters={mapFilters} />
     </div>
   );
 };

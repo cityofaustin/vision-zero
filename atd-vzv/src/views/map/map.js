@@ -21,7 +21,7 @@ const StyledCard = styled.div`
   pointer-events: none;
 `;
 
-const Map = () => {
+const Map = ({ mapFilters }) => {
   // Set initial map config
   const [viewport, setViewport] = useState({
     latitude: 30.268039,

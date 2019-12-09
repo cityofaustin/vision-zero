@@ -4,5 +4,5 @@ import Map from "../views/map/map";
 
 export const routes = {
   "/": () => <Dashboard />,
-  "/map": () => <Map />
+  "/map": () => mapFilters => <Map mapFilters={mapFilters} />
 };

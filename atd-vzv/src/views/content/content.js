@@ -9,6 +9,7 @@ import styled from "styled-components";
 import { drawer } from "../../constants/drawer";
 import { responsive } from "../../constants/responsive";
 
+// TODO: overflow-y scroll on Dashboard
 const StyledContent = styled.div`
   .content {
     padding: 0px;
@@ -25,14 +26,14 @@ const StyledContent = styled.div`
   }
 `;
 
-const Content = ({ toggle }) => {
+const Content = ({ toggle, mapFilters }) => {
   const routeResult = useRoutes(routes);
 
   return (
     <StyledContent>
       <Container fluid className="content bg-light">
         <Header toggleSidebar={toggle} />
-        {routeResult || <NotFound />}
+        {routeResult(mapFilters) || <NotFound />}
       </Container>
     </StyledContent>
   );

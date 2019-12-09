@@ -48,7 +48,7 @@ const StyledDrawerHeader = styled.div`
   height: ${drawer.headerHeight}px;
 `;
 
-const SideDrawer = ({ toggle, isOpen }) => {
+const SideDrawer = ({ toggle, isOpen, updateMapFilters }) => {
   const classes = useStyles();
   const theme = useTheme();
 
@@ -91,7 +91,7 @@ const SideDrawer = ({ toggle, isOpen }) => {
             }}
           >
             {drawerContent}
-            <SideMapControl />
+            <SideMapControl updateMapFilters={updateMapFilters} />
           </Drawer>
         </Hidden>
         <Hidden xsDown implementation="css">
@@ -104,7 +104,7 @@ const SideDrawer = ({ toggle, isOpen }) => {
           >
             {drawerContent}
             {/* TODO: Dynamic sidebar content based on route */}
-            <SideMapControl />
+            <SideMapControl updateMapFilters={updateMapFilters} />
           </Drawer>
         </Hidden>
       </nav>
