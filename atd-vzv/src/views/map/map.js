@@ -8,8 +8,6 @@ import styled from "styled-components";
 import "mapbox-gl/dist/mapbox-gl.css";
 
 const MAPBOX_TOKEN = `pk.eyJ1Ijoiam9obmNsYXJ5IiwiYSI6ImNrM29wNnB3dDAwcXEzY29zMTU5bWkzOWgifQ.KKvoz6s4NKNHkFVSnGZonw`;
-const apiUrl =
-  "https://data.austintexas.gov/resource/y2wy-tgr5.geojson?$limit=1000&$where=crash_date between '2001-01-01T00:00:00' and '2019-12-04T23:59:59'";
 
 const StyledCard = styled.div`
   position: absolute;
@@ -32,12 +30,32 @@ const Map = ({ mapFilters }) => {
   const [mapData, setMapData] = useState("");
   const [hoveredFeature, setHoveredFeature] = useState(null);
 
-  // Fetch crash data and convert to GeoJSON
+  // Fetch crash data
   useEffect(() => {
+    const apiUrl =
+      "https://data.austintexas.gov/resource/y2wy-tgr5.geojson?$limit=1000&$where=crash_date between '2019-01-01T00:00:00' and '2019-12-04T23:59:59'";
     axios.get(apiUrl).then(res => {
       setMapData(res.data);
     });
   }, []);
+
+  // Set map filters and fetch data
+  useEffect(() => {
+    const createMapDataUrl = filters => {
+      let whereFilterString = "";
+      const urlFilters = filters.forEach(filter => {
+        if (filter.type === "where") {
+          whereFilterString += `${filter.syntax} ${filter.operator} `;
+        }
+      });
+      const apiUrl = `https://data.austintexas.gov/resource/y2wy-tgr5.geojson?$limit=1000&$where=${whereFilterString} crash_date between '2001-01-01T00:00:00' and '2019-12-04T23:59:59'`;
+      axios.get(apiUrl).then(res => {
+        setMapData(res.data);
+      });
+    };
+
+    createMapDataUrl(mapFilters);
+  }, [mapFilters]);
 
   const _onViewportChange = viewport => setViewport(viewport);
 
