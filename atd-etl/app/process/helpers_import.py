@@ -106,16 +106,18 @@ def get_crash_id(line):
         return ""
 
 
-def generate_gql(line, fieldnames, type):
+def generate_gql(line, fieldnames, file_type):
     """
     Returns a string with the final graphql query
-    :param type:
-    :param fields:
+    :param line: string - The raw csv line
+    :param fieldnames: array of strings - The name of fields
+    :param file_type: string - the type of insertion (crash, units, etc...)
     :return:
     """
-    filters = CRIS_TXDOT_FIELDS[type]["filters"]
-    query_name = CRIS_TXDOT_FIELDS[type]["query_name"]
-    function_name = CRIS_TXDOT_FIELDS[type]["function_name"]
+
+    filters = CRIS_TXDOT_FIELDS[file_type]["filters"]
+    query_name = CRIS_TXDOT_FIELDS[file_type]["query_name"]
+    function_name = CRIS_TXDOT_FIELDS[file_type]["function_name"]
 
     try:
         fields = generate_fields_with_filters(line=line,
@@ -123,8 +125,8 @@ def generate_gql(line, fieldnames, type):
                                               filters=filters)
 
         template = generate_template(name=query_name,
-                                 function=function_name,
-                                 fields=fields)
+                                     function=function_name,
+                                     fields=fields)
     except Exception as e:
         print("generate_gql() Error: " + str(e))
         template = ""
