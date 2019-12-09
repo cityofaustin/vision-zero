@@ -170,17 +170,19 @@ def record_exists_hook(line, file_type):
     return False
 
 
-def handle_record_error_hook(line, gql, type, response = {}, line_number = "n\a"):
+def handle_record_error_hook(line, gql, file_type, response={}, line_number="n\a"):
     """
     Returns true to stop the execution of this script, false to mark as a non-error and move on.
     :param line: string - the csv line being processed
     :param gql: string - the graphql query that was at fault
-    :param type: string - the type of record being processed
+    :param file_type: string - the type of record being processed
+    :param response: dict - The json response from the request output
+    :param line_number: string - The line number where the error occurs
     :return: bool - True to signal error and stop execution, False otherwise.
     """
 
     # If this is a crash, we want to know why it didn't insert, so we need to stop.
-    if type == "crash":
+    if file_type == "crash":
         print(gql)
         return True
 
@@ -209,20 +211,19 @@ Response: %s \n
             """ % (
                 line_number,
                 get_crash_id(line),
-                str(line).strip(), type, gql,
+                str(line).strip(), file_type, gql,
                 str(response)
             ))
             return True
 
 
-
-def get_file_list(type):
+def get_file_list(file_type):
     """
     Returns a list of all files to be processed
-    :param type: string - The type to be used: crash, charges, person, primaryperson, unit
+    :param file_type: string - The type to be used: crash, charges, person, primaryperson, unit
     :return: array
     """
-    return glob.glob("/data/extract_*_%s_*.csv" % type)
+    return glob.glob("/data/extract_*_%s_*.csv" % file_type)
 
 
 def generate_run_config():
@@ -267,7 +268,7 @@ def generate_run_config():
         print("Dry-run not defined, assuming running without dry-run mode.")
 
     # Gather the list of files
-    config["file_list_raw"] = get_file_list(type=config["file_type"])
+    config["file_list_raw"] = get_file_list(file_type=config["file_type"])
 
     # Final list placeholder
     finalFileList = []
@@ -371,7 +372,7 @@ def generate_crash_record(line, fieldnames):
     return json.loads(fields)
 
 
-def insert_crash_change_template():
+def insert_crash_change_template(new_record_dict):
     new_record_escaped = json.dumps(new_record_dict).replace("\"", "\\\"")
     return """
         mutation insertCrashChangeMutation {
