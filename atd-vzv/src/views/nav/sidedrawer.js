@@ -1,4 +1,5 @@
 import React from "react";
+import { StoreContext } from "../../utils/store";
 
 import { Nav, Alert } from "reactstrap";
 import CssBaseline from "@material-ui/core/CssBaseline";
@@ -48,9 +49,13 @@ const StyledDrawerHeader = styled.div`
   height: ${drawer.headerHeight}px;
 `;
 
-const SideDrawer = ({ toggle, isOpen }) => {
+const SideDrawer = () => {
   const classes = useStyles();
   const theme = useTheme();
+
+  const {
+    sidebarToggle: [isOpen, setIsOpen]
+  } = React.useContext(StoreContext);
 
   const drawerContent = (
     <div className="side-menu">
@@ -82,7 +87,7 @@ const SideDrawer = ({ toggle, isOpen }) => {
             variant="temporary"
             anchor={theme.direction === "rtl" ? "right" : "left"}
             open={isOpen}
-            onClose={toggle}
+            onClose={() => setIsOpen(!isOpen)}
             classes={{
               paper: classes.drawerPaper
             }}

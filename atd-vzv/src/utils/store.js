@@ -1,12 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 
 export const StoreContext = React.createContext(null);
 
 export default ({ children }) => {
-  const [mapFilters, setMapFilters] = React.useState([]);
+  const [isOpen, setIsOpen] = useState(false);
+  const [mapFilters, setMapFilters] = useState([]);
 
   const store = {
-    mapFilters: [mapFilters, setMapFilters]
+    mapFilters: [mapFilters, setMapFilters],
+    sidebarToggle: [isOpen, setIsOpen]
   };
 
   return (

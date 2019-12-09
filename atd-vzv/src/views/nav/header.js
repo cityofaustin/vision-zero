@@ -1,4 +1,5 @@
 import React from "react";
+import { StoreContext } from "../../utils/store";
 import { A } from "hookrouter";
 
 import { Container, Navbar, Button, Nav, NavItem, NavLink } from "reactstrap";
@@ -16,39 +17,45 @@ const StyledNavbar = styled.div`
   }
 `;
 
-const Header = ({ toggleSidebar }) => (
-  <Container fluid className="bg-light">
-    <StyledNavbar>
-      <Navbar
-        color="light"
-        light
-        className="navbar shadow-sm p-3 mb-4 mt-4 bg-white rounded"
-        expand="xs"
-      >
-        <Button
-          className="mr-2 collapse-toggle"
-          color="info"
-          onClick={toggleSidebar}
+const Header = () => {
+  const {
+    sidebarToggle: [isOpen, setIsOpen]
+  } = React.useContext(StoreContext);
+
+  return (
+    <Container fluid className="bg-light">
+      <StyledNavbar>
+        <Navbar
+          color="light"
+          light
+          className="navbar shadow-sm p-3 mb-4 mt-4 bg-white rounded"
+          expand="xs"
         >
-          <FontAwesomeIcon icon={faBars} />
-        </Button>
-        <Nav className="mr-auto" navbar>
-          <NavItem>
-            <NavLink tag={A} href="/">
-              <FontAwesomeIcon icon={faHome} className="mr-2" />
-              Dashboard
-            </NavLink>
-          </NavItem>
-          <NavItem>
-            <NavLink tag={A} href="/map">
-              <FontAwesomeIcon icon={faMap} className="mr-2" />
-              Map
-            </NavLink>
-          </NavItem>
-        </Nav>
-      </Navbar>
-    </StyledNavbar>
-  </Container>
-);
+          <Button
+            className="mr-2 collapse-toggle"
+            color="info"
+            onClick={() => setIsOpen(!isOpen)}
+          >
+            <FontAwesomeIcon icon={faBars} />
+          </Button>
+          <Nav className="mr-auto" navbar>
+            <NavItem>
+              <NavLink tag={A} href="/">
+                <FontAwesomeIcon icon={faHome} className="mr-2" />
+                Dashboard
+              </NavLink>
+            </NavItem>
+            <NavItem>
+              <NavLink tag={A} href="/map">
+                <FontAwesomeIcon icon={faMap} className="mr-2" />
+                Map
+              </NavLink>
+            </NavItem>
+          </Nav>
+        </Navbar>
+      </StyledNavbar>
+    </Container>
+  );
+};
 
 export default Header;
