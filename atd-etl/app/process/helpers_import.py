@@ -327,24 +327,49 @@ def get_crash_record(crash_id):
 
 
 def is_cris_date(string):
+    """
+    Returns True if the string is a date in mm/dd/yyyy format, False otherwise.
+    :param string: string - The string being evaluated
+    :return: boolean
+    """
     return bool(re.match(r'(\d{2})\/(\d{2})\/(\d{4})', string))
 
 
 def is_cris_time(string):
+    """
+    Returns True if string has a hh:mm (AM|PM) time format, returns False otherwise.
+    :param string:
+    :return:
+    """
     return bool(re.match(r'(\d{2}):(\d{2}) (AM|PM)', string))
 
 
 def convert_date(string):
+    """
+    Turns a mm/dd/yyyy date into a yyyy-mm-dd date.
+    :param string: string - The date being converted
+    :return: string
+    """
     input_date = datetime.datetime.strptime(string, "%m/%d/%Y")
     return input_date.strftime("%Y-%m-%d")
 
 
 def convert_time(string):
+    """
+    Converts a time string from a 12 hour format, to a 24 hour format
+    :param string: string - The string being converted
+    :return: string
+    """
     input_time = datetime.datetime.strptime(string, "%I:%M %p")
     return input_time.strftime("%H:%M:00")
 
 
 def clean_none_null(string):
+    """
+    Removes 'None' and 'null' from string
+    :param string: string - The string being evaluated
+    :return: string
+    """
     return str(string).replace("None", "").replace("null", "")
 
 
