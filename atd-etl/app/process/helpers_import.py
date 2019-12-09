@@ -373,7 +373,14 @@ def generate_crash_record(line, fieldnames):
 
 
 def insert_crash_change_template(new_record_dict):
+    """
+    Generates a crash insertion graphql query
+    :param new_record_dict: dict - The new record as a dictionary
+    :return:
+    """
+    # Turn the dictionary into a character-escaped json string
     new_record_escaped = json.dumps(new_record_dict).replace("\"", "\\\"")
+    # Build the template and inject required values
     return """
         mutation insertCrashChangeMutation {
       insert_atd_txdot_changes(objects: {
