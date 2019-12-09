@@ -53,35 +53,15 @@ def lowercase_group_match(match):
     return "%s:" % match.group(1).lower()
 
 
-def generate_fields(line, fieldnames, remove_fields = [], quoted_numeric = [], null_to_zero = []):
+def generate_fields_with_filters(line, fieldnames, filters=[]):
     """
     Generates a list of fields for graphql query
-    :param line:
-    :param fieldnames:
-    :param remove_fields:
+    :param line: string - The raw csv line
+    :param fieldnames: array of strings - The fields to be used as headers
+    :param filters: dict - The filters to be applied
     :return:
     """
-    reader = csv.DictReader(f=io.StringIO(line), fieldnames=fieldnames, delimiter=',') # parse line
-    fields = json.dumps([row for row in reader]) # Generate json
-    fields = re.sub(r'"([a-zA-Z0-9_]+)":', lowercase_group_match, fields) # Clean the keys
-    fields = re.sub(r'"([0-9\.]+)"', r'\1', fields) # Clean the values
-    fields = filter_remove_field(fields, fields=remove_fields) # Remove fields
-    fields = fields.replace('""', "null").replace ("[{", "").replace("}]", "") # Clean up
-    fields = fields.replace(", ", ", \n") # Break line
-    fields = filter_quote_numeric(fields, fields=quoted_numeric)  # Quote Numeric Text
-    fields = filter_numeric_null_to_zero(fields, fields=null_to_zero)
-    fields = fields.replace(", ", "") # Remove commas
-    return fields
 
-
-def generate_fields_with_filters(line, fieldnames, filters = []):
-    """
-    Generates a list of fields for graphql query
-    :param line:
-    :param fieldnames:
-    :param remove_fields:
-    :return:
-    """
     reader = csv.DictReader(f=io.StringIO(line), fieldnames=fieldnames, delimiter=',') # parse line
     fields = json.dumps([row for row in reader]) # Generate json
 
@@ -109,7 +89,7 @@ def generate_fields_with_filters(line, fieldnames, filters = []):
             print("Error when applying filter: %s" % str(e))
 
     # Remove ending commas
-    fields = fields.replace(", ", "") # Remove commas
+    fields = fields.replace(", ", "")  # Remove commas
     return fields
 
 
