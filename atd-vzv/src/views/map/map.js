@@ -43,19 +43,19 @@ const Map = ({ mapFilters }) => {
   useEffect(() => {
     const createMapDataUrl = filters => {
       let whereFilterString = "";
-      const urlFilters = filters.forEach(filter => {
+      filters.forEach(filter => {
         if (filter.type === "where") {
-          whereFilterString += `${filter.syntax} ${filter.operator} `;
+          whereFilterString += ` ${filter.operator} ${filter.syntax}`;
         }
       });
-      const apiUrl = `https://data.austintexas.gov/resource/y2wy-tgr5.geojson?$limit=1000&$where=${whereFilterString} crash_date between '2001-01-01T00:00:00' and '2019-12-04T23:59:59'`;
+      const apiUrl = `https://data.austintexas.gov/resource/y2wy-tgr5.geojson?$limit=1000&$where=crash_date between '2001-01-01T00:00:00' and '2019-12-04T23:59:59' ${whereFilterString}`;
       axios.get(apiUrl).then(res => {
         setMapData(res.data);
       });
     };
 
     createMapDataUrl(mapFilters);
-  }, [mapFilters]);
+  }, [mapFilters, setMapData]);
 
   const _onViewportChange = viewport => setViewport(viewport);
 

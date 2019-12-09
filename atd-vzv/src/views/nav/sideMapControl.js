@@ -31,8 +31,7 @@ const SideMapControl = ({ updateMapFilters }) => {
   }, [mapFilters, updateMapFilters]);
 
   const handleFilterClick = event => {
-    // Set filter
-    // TODO: Remove filter on click when already set
+    // Set filter or remove if already set
     const filterName = event.currentTarget.id;
     if (isFilterSet(filterName)) {
       const filterToRemove = queryParameters[filterName];
