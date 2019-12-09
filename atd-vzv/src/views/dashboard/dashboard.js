@@ -1,5 +1,6 @@
 import React from "react";
 import Fatalities from "./fatalities";
+import FatalitiesByMode from "./fatalitiesByMode";
 import SeriousInjuries from "./seriousInjuries";
 import SeriousInjuryAndFatalCrashesByMonth from "./seriousInjuryAndFatalCrashesByMonth";
 import SeriousInjuryAndFatalCrashesByMode from "./seriousInjuryAndFatalCrashesByMode";
@@ -31,7 +32,9 @@ const Dashboard = () => {
         <Col md="6">
           <YearsOfLifeLost />
         </Col>
-        <Col md="6"></Col>
+        <Col md="6">
+          <FatalitiesByMode />
+        </Col>
       </Row>
     </Container>
   );
