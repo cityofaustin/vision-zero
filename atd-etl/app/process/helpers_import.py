@@ -393,7 +393,6 @@ def record_compare(record_new, record_existing):
 
         # If the current field is a time string, then try to parse it
         if is_cris_time(record_new[field]):
-            print("We got time: %s" % record_new[field])
             record_new[field] = convert_time(record_new[field])
 
         # Make the comparison, if not equal important_difference = true
@@ -460,8 +459,14 @@ def record_compare_hook(line, fieldnames, file_type):
         record_existing = get_crash_record(get_crash_id(line))
         significant_difference = record_compare(record_new=record_new, record_existing=record_existing)
         if significant_difference:
-            print("Significant Difference for %s is: %s" % (crash_id, str(significant_difference)))
             mutation_template = insert_crash_change_template(new_record_dict=record_new)
             result = run_query(mutation_template)
-            web_pdb.set_trace()
-    web_pdb.set_trace()
+            try:
+                affected_rows = result["data"]["insert_atd_txdot_changes"]["affected_rows"]
+            except:
+                affected_rows = 0
+
+            if affected_rows == 1:
+                print("Crash Review Request Inserted: %s", (crash_id))
+            else:
+                print("Failed to insert crash review request: %s", crash_id)
