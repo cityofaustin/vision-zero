@@ -467,6 +467,6 @@ def record_compare_hook(line, fieldnames, file_type):
                 affected_rows = 0
 
             if affected_rows == 1:
-                print("Crash Review Request Inserted: %s", (crash_id))
+                print("Crash Review Request Inserted: %s" % (crash_id))
             else:
-                print("Failed to insert crash review request: %s", crash_id)
+                print("Failed to insert crash review request: %s" % crash_id)
