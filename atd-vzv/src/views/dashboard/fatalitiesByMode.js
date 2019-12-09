@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import moment from "moment";
-import { HorizontalBar } from "react-chartjs-2";
+import { Bar } from "react-chartjs-2";
 
 import { Container, Row, Col } from "reactstrap";
 
@@ -23,7 +23,7 @@ const FatalitiesByMode = () => {
     return years;
   })();
 
-  const [data, setData] = useState({});
+  const [chartData, setChartData] = useState({});
 
   useEffect(() => {
     const getChartData = async () => {
@@ -35,21 +35,69 @@ const FatalitiesByMode = () => {
           newData = { ...newData, ...{ [year]: res.data } };
         });
       }
-      setData(newData);
+      setChartData(newData);
     };
 
     getChartData();
   }, []);
 
+  const createChartLabels = () => years.sort().map(year => `${year}`);
+
+  const data = {
+    labels: createChartLabels(),
+    datasets: [
+      {
+        label: "My First dataset",
+        backgroundColor: "rgba(255,99,132,0.2)",
+        borderColor: "rgba(255,99,132,1)",
+        borderWidth: 1,
+        hoverBackgroundColor: "rgba(255,99,132,0.4)",
+        hoverBorderColor: "rgba(255,99,132,1)",
+        data: {
+          datasets: [
+            {
+              label: "test1",
+              data: [1]
+            },
+            {
+              label: "test2",
+              data: [2]
+            }
+          ],
+          labels: ["label"]
+        },
+        options: {
+          scales: {
+            xAxes: [
+              {
+                stacked: false
+              }
+            ],
+            yAxes: [
+              {
+                stacked: true
+              }
+            ]
+          }
+        }
+      }
+    ]
+  };
+
   return (
     <Container>
       <h3>Fatalities by Mode</h3>
       <Row>
-        <Col sm="6">
-          <h2>Test</h2>
-        </Col>
-        <Col sm="6">
-          <h2>Test</h2>
+        <Col sm="12">
+          <h2>Fatalities by Mode</h2>
+          <Bar
+            data={data}
+            width={100}
+            height={50}
+            options={{
+              maintainAspectRatio: true
+            }}
+          />
         </Col>
       </Row>
     </Container>
