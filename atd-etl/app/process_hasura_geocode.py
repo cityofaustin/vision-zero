@@ -36,9 +36,30 @@ print("Records to be processed: ")
 
 for record in records_to_geocode["data"]["atd_txdot_crashes"]:
     crash_id = record["crash_id"]
-    print(crash_id)
+    
     primary_address = build_address(record=record, primary=True)
     secondary_address = build_address(record=record, primary=False)
+    final_address = ""
+
+    # Check if both streets are faulty
+    if is_faulty_street(primary_address) and is_faulty_street(secondary_address):
+        print("[Error] Skipping geocode, both primary and secondary streets are faulty, crash_id: %s" % crash_id)
+        continue
+
+    # If primary is bad, then check if we can use the second one.
+    if is_faulty_street(primary_address):
+        final_address = secondary_address
+
+    # Otherwise, just use primary
+    else:
+        final_address = primary_address
+
+
+    print("primary_address: %s" % primary_address)
+    print("secondary_address: %s" % secondary_address)
+    print("final_address: %s" % final_address)
+
+    web_pdb.set_trace()
 
 # Loop:
 #   Until there aren't any more results:
