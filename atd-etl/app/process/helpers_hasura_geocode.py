@@ -16,7 +16,6 @@ The application requires the requests library:
 import requests
 import os
 import json
-import web_pdb
 
 #
 # We need to import our configuration, and the run_query method
@@ -71,15 +70,27 @@ def build_address(record, primary=True):
     final_address = ""
 
     if primary:
-        final_address = f'{record["rpt_block_num"]} {record["rpt_street_pfx"]} {record["rpt_street_name"]} {record["rpt_street_sfx"]}, Austin, TX'
+        final_address = f'{record["rpt_block_num"]} {record["rpt_street_pfx"]} {record["rpt_street_name"]} {record["rpt_street_sfx"]}'
     else:
-        final_address = f'{record["rpt_sec_block_num"]} {record["rpt_sec_street_pfx"]} {record["rpt_sec_street_name"]} {record["rpt_sec_street_sfx"]}, Austin, TX'
+        final_address = f'{record["rpt_sec_block_num"]} {record["rpt_sec_street_pfx"]} {record["rpt_sec_street_name"]} {record["rpt_sec_street_sfx"]}'
 
     final_address = final_address \
         .replace("None", "") \
         .replace("null", "") \
-        .replace("  ", " ")
-
-    web_pdb.set_trace()
+        .replace(" ,", ",") \
+        .replace("  ", " ").strip()
 
     return final_address
+
+
+def is_faulty_street(street):
+    """
+    Returns true if the street contains any of the below strings
+    :param street: string - The name of the string
+    :return: bool
+    """
+
+    if "NOT REPORTED" in street:
+        return True
+
+    return False
