@@ -25,29 +25,29 @@ client = Socrata("data.austintexas.gov", ATD_ETL_CONFIG["SOCRATA_APP_TOKEN"],
 
 # Define tables to query from Hasura and publish to Socrata
 query_configs = [
-    # {
-    #     "table": "crash",
-    #     "template": crashes_query_template,
-    #     "formatter": format_crash_data,
-    #     "formatter_config": {
-    #         "tables": ["atd_txdot_crashes"],
-    #         "columns_to_rename": {
-    #             "veh_body_styl_desc": "unit_desc",
-    #             "veh_unit_desc_desc": "unit_mode",
-    #             "latitude_primary": "latitude",
-    #             "longitude_primary": "longitude"
-    #         },
-    #         "flags_list": ["MOTOR VEHICLE",
-    #                        "TRAIN",
-    #                        "PEDALCYCLIST",
-    #                        "PEDESTRIAN",
-    #                        "MOTORIZED CONVEYANCE",
-    #                        "TOWED/PUSHED/TRAILER",
-    #                        "NON-CONTACT",
-    #                        "OTHER"]
-    #     },
-    #     "dataset_uid": "y2wy-tgr5"
-    # },
+    {
+        "table": "crash",
+        "template": crashes_query_template,
+        "formatter": format_crash_data,
+        "formatter_config": {
+            "tables": ["atd_txdot_crashes"],
+            "columns_to_rename": {
+                "veh_body_styl_desc": "unit_desc",
+                "veh_unit_desc_desc": "unit_mode",
+                "latitude_primary": "latitude",
+                "longitude_primary": "longitude"
+            },
+            "flags_list": ["MOTOR VEHICLE",
+                           "TRAIN",
+                           "PEDALCYCLIST",
+                           "PEDESTRIAN",
+                           "MOTORIZED CONVEYANCE",
+                           "TOWED/PUSHED/TRAILER",
+                           "NON-CONTACT",
+                           "OTHER"]
+        },
+        "dataset_uid": "y2wy-tgr5"
+    },
     {
         "table": "person",
         "template": people_query_template,
@@ -99,8 +99,7 @@ for config in query_configs:
         records = config["formatter"](data, config["formatter_config"])
 
         # Upsert records to Socrata
-        # client.upsert(config["dataset_uid"], records)
-        print(records[1])
+        client.upsert(config["dataset_uid"], records)
         total_records += len(records)
 
         if len(records) == 0:
