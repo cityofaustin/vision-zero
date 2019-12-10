@@ -37,7 +37,8 @@ print("Records to be processed: ")
 for record in records_to_geocode["data"]["atd_txdot_crashes"]:
     crash_id = record["crash_id"]
     print(crash_id)
-    
+    primary_address = build_address(record=record, primary=True)
+    secondary_address = build_address(record=record, primary=False)
 
 # Loop:
 #   Until there aren't any more results:
