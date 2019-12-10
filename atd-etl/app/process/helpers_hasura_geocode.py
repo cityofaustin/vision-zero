@@ -61,3 +61,25 @@ def get_geocode_list():
 
     return run_query(non_geocoded_records)
 
+
+def build_address(record, primary=True):
+    """
+    Builds a geo-codable street
+    :param record: dict - The individual record as provided by get_geocode_list
+    :return: string
+    """
+    final_address = ""
+
+    if primary:
+        final_address = f'{record["rpt_block_num"]} {record["rpt_street_pfx"]} {record["rpt_street_name"]} {record["rpt_street_sfx"]}, Austin, TX'
+    else:
+        final_address = f'{record["rpt_sec_block_num"]} {record["rpt_sec_street_pfx"]} {record["rpt_sec_street_name"]} {record["rpt_sec_street_sfx"]}, Austin, TX'
+
+    final_address = final_address \
+        .replace("None", "") \
+        .replace("null", "") \
+        .replace("  ", " ")
+
+    web_pdb.set_trace()
+
+    return final_address
