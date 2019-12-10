@@ -5,13 +5,6 @@ import { Bar } from "react-chartjs-2";
 
 import { Container, Row, Col } from "reactstrap";
 
-// TODO Need modes of vehicle in crash in dataset
-// TODO one legend for both pie charts (might need different library)
-// Endpoint: https://data.austintexas.gov/resource/y2wy-tgr5.json
-// Need to display pie chart (Motor Vehicle, Motorcycle, Pedestrian, Bicycle) of:
-// 1. Year-to-date
-// 2. Previous year
-
 const FatalitiesByMode = () => {
   const thisYear = moment().format("YYYY");
   const yearLimit = 2010;
@@ -73,52 +66,33 @@ const FatalitiesByMode = () => {
       return fatalities;
     });
 
+  const datasetTemplate = {
+    backgroundColor: "rgba(255,99,132,0.2)",
+    borderColor: "rgba(255,99,132,1)",
+    borderWidth: 1,
+    hoverBackgroundColor: "rgba(255,99,132,0.4)",
+    hoverBorderColor: "rgba(255,99,132,1)",
+    label: "",
+    data: []
+  };
+
+  const createTypeDatasets = () => {
+    let datasets = [];
+    let motorDataset = { ...datasetTemplate };
+    motorDataset["data"] = getMotorData();
+    motorDataset["label"] = "Motor";
+    let pedestrianDataset = { ...datasetTemplate };
+    pedestrianDataset["data"] = getPedestrianData();
+    pedestrianDataset["label"] = "Pedestrian";
+    let pedalcyclistDataset = { ...datasetTemplate };
+    pedalcyclistDataset["data"] = getPedalcyclistData();
+    pedalcyclistDataset["label"] = "Pedalcyclist";
+    return [...datasets, motorDataset, pedestrianDataset, pedalcyclistDataset];
+  };
+
   const data = {
     labels: createChartLabels(),
-    datasets: [
-      {
-        backgroundColor: "rgba(255,99,132,0.2)",
-        borderColor: "rgba(255,99,132,1)",
-        borderWidth: 1,
-        hoverBackgroundColor: "rgba(255,99,132,0.4)",
-        hoverBorderColor: "rgba(255,99,132,1)",
-        label: "Motor",
-        data: getMotorData()
-      },
-      {
-        backgroundColor: "rgba(255,99,132,0.2)",
-        borderColor: "rgba(255,99,132,1)",
-        borderWidth: 1,
-        hoverBackgroundColor: "rgba(255,99,132,0.4)",
-        hoverBorderColor: "rgba(255,99,132,1)",
-        label: "Pedestrian",
-        data: getPedestrianData()
-      },
-      {
-        backgroundColor: "rgba(255,99,132,0.2)",
-        borderColor: "rgba(255,99,132,1)",
-        borderWidth: 1,
-        hoverBackgroundColor: "rgba(255,99,132,0.4)",
-        hoverBorderColor: "rgba(255,99,132,1)",
-        label: "Pedalcyclist",
-        data: getPedalcyclistData()
-      }
-    ],
-    labels: ["label"],
-    options: {
-      scales: {
-        xAxes: [
-          {
-            stacked: true
-          }
-        ],
-        yAxes: [
-          {
-            stacked: true
-          }
-        ]
-      }
-    }
+    datasets: !!chartData && createTypeDatasets()
   };
 
   return (
@@ -126,13 +100,24 @@ const FatalitiesByMode = () => {
       <h3>Fatalities by Mode</h3>
       <Row>
         <Col sm="12">
-          <h2>Fatalities by Mode</h2>
           <Bar
             data={data}
             width={100}
-            height={50}
+            height={100}
             options={{
-              maintainAspectRatio: true
+              maintainAspectRatio: true,
+              scales: {
+                xAxes: [
+                  {
+                    stacked: true
+                  }
+                ],
+                yAxes: [
+                  {
+                    stacked: true
+                  }
+                ]
+              }
             }}
           />
         </Col>
