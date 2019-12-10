@@ -16,7 +16,7 @@ crashes_query_template = Template(
     query getCrashesSocrata {
         atd_txdot_crashes (limit: $limit, offset: $offset, order_by: {crash_id: asc}, where: {city_id: {_eq: 22}}) {
             crash_id
-    		crash_fatal_fl
+            crash_fatal_fl
             crash_date
             crash_time
             case_id
@@ -67,15 +67,17 @@ people_query_template = Template(
             prsn_injry_sev_id
             prsn_age
             prsn_gndr_id
+            unit_nbr
             crash {
                 crash_date
-            }
-            unit {
-                body_style {
-                    veh_body_styl_desc
-                }
-                unit_description {
-                    veh_unit_desc_desc
+                units {
+                    unit_nbr
+                    unit_description {
+                        veh_unit_desc_desc
+                    }
+                    body_style {
+                        veh_body_styl_desc
+                    }
                 }
             }
         }
@@ -84,18 +86,19 @@ people_query_template = Template(
             prsn_injry_sev_id
             prsn_age
             prsn_gndr_id
-            drvr_zip
+            unit_nbr
             crash {
                 crash_date
+                units {
+                    unit_nbr
+                    unit_description {
+                        veh_unit_desc_desc
+                    }
+                    body_style {
+                        veh_body_styl_desc
+                    }
+                }
             }
-            unit {
-                body_style {
-                    veh_body_styl_desc
-                }
-                unit_description {
-                    veh_unit_desc_desc
-                }
-            }   
         }
     }
 """

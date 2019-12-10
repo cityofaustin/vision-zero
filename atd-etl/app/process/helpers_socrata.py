@@ -84,19 +84,13 @@ def flatten_hasura_response(records):
             # If dict is found, iterate to bring key values to top-level
             elif type(first_level_value) == dict:
                 for dict_key, dict_value in first_level_value.items():
-                    # If dict contains nested dicts
-                    if(type(dict_value) == dict):
-                        for second_level_key, second_level_value in dict_value.items():
-                            formatted_record[second_level_key] = second_level_value
-                    else:
-                        formatted_record[dict_key] = dict_value
-                del formatted_record[first_level_key]
-        print(formatted_record)
+                    formatted_record[dict_key] = dict_value
+                    del formatted_record[first_level_key]
         formatted_records.append(formatted_record)
     return formatted_records
 
 
-def create_mode_flags(records, unit_modes):
+def create_crash_mode_flags(records, unit_modes):
     """
     Creates mode flag columns in data along with "Y" or "N" value
     :param records: list - List of record dicts
@@ -164,6 +158,30 @@ def add_value_prefix(records, prefix_dict):
     return records
 
 
+def set_person_mode(records):
+    for record in records:
+        mode = ""
+        description = ""
+
+        crash_record = record.get("crash")
+        unit_descriptions = crash_record.get("units", None)
+        person_unit_number = record.get("unit_nbr")
+        for unit in unit_descriptions:
+            if unit.get("unit_nbr") == person_unit_number:
+                unit_mode = unit.get(
+                    "unit_description", {})
+                unit_desc = unit.get(
+                    "body_style", {})
+                if unit_mode != None:
+                    record["unit_mode"] = unit_mode.get(
+                        "veh_unit_desc_desc", "")
+                if unit_desc != None:
+                    record["unit_desc"] = unit_desc.get(
+                        "veh_body_styl_desc", "")
+        del record["crash"]["units"]
+    return records
+
+
 def format_crash_data(data, formatter_config):
     """
     Prepares crash data for Socrata upsertion
@@ -176,7 +194,7 @@ def format_crash_data(data, formatter_config):
     formatted_records = flatten_hasura_response(records)
     formatted_records = rename_record_columns(
         formatted_records, formatter_config["columns_to_rename"])
-    formatted_records = create_mode_flags(
+    formatted_records = create_crash_mode_flags(
         formatted_records, formatter_config["flags_list"])
     formatted_records = create_point_datatype(formatted_records)
 
@@ -192,19 +210,23 @@ def format_person_data(data, formatter_config):
     person_records = data['data'][formatter_config["tables"][0]]
     primary_person_records = data['data'][formatter_config["tables"][1]]
 
-    # Make record IDs unique by adding prefixes
+    # Make record IDs unique by adding prefixes and set mode of person
     person_records = add_value_prefix(
         person_records, formatter_config["prefixes"])
+    person_records = set_person_mode(
+        person_records)
     primary_person_records = add_value_prefix(
         primary_person_records, formatter_config["prefixes"])
+    primary_person_records = set_person_mode(
+        primary_person_records)
 
     # Join records and format
     people_records = person_records + primary_person_records
-    formatted_records = flatten_hasura_response(
-        people_records)
     formatted_records = rename_record_columns(
-        formatted_records, formatter_config["columns_to_rename"])
-    formatted_records = create_mode_flags(
+        people_records, formatter_config["columns_to_rename"])
+    formatted_records = flatten_hasura_response(
+        formatted_records)
+    formatted_records = create_crash_mode_flags(
         formatted_records, formatter_config["flags_list"])
 
     return formatted_records

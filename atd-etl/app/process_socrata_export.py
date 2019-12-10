@@ -100,7 +100,7 @@ for config in query_configs:
 
         # Upsert records to Socrata
         # client.upsert(config["dataset_uid"], records)
-        # print(records[1])
+        print(records[1])
         total_records += len(records)
 
         if len(records) == 0:
