@@ -16,3 +16,48 @@ The application requires the requests library:
 import requests
 import os
 import json
+import web_pdb
+
+#
+# We need to import our configuration, and the run_query method
+#
+from .config import ATD_ETL_CONFIG
+from .request import run_query
+
+
+def get_geocode_list():
+    """
+    Returns a list of records that need to be geocoded.
+    :return: dict
+    """
+    non_geocoded_records = """
+    query getCrashesNoCoordinates {
+      atd_txdot_crashes(
+        where: {
+          longitude: {_is_null: true}
+          latitude: {_is_null: true}
+          latitude_geocoded: {_is_null: true}
+          longitude_geocoded: {_is_null: true}
+          latitude_primary: {_is_null: true}
+          longitude_primary: {_is_null: true}
+        },
+        limit: %s
+      ) {
+        crash_id
+        geocoded
+        rpt_block_num
+        rpt_street_pfx
+        rpt_street_name
+        rpt_street_sfx
+        rpt_sec_block_num
+        rpt_sec_street_pfx
+        rpt_sec_street_name
+        rpt_sec_street_sfx
+        rpt_city_id
+        rpt_cris_cnty_id
+      }
+    }
+    """ % (ATD_ETL_CONFIG["ATD_HERE_RECORDS_PER_RUN"])
+
+    return run_query(non_geocoded_records)
+
