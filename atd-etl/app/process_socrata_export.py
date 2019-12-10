@@ -99,7 +99,8 @@ for config in query_configs:
         records = config["formatter"](data, config["formatter_config"])
 
         # Upsert records to Socrata
-        client.upsert(config["dataset_uid"], records)
+        # client.upsert(config["dataset_uid"], records)
+        print(records[1])
         total_records += len(records)
 
         if len(records) == 0:

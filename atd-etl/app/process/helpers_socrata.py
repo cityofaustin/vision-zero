@@ -84,8 +84,12 @@ def flatten_hasura_response(records):
             # If dict is found, iterate to bring key values to top-level
             elif type(first_level_value) == dict:
                 for dict_key, dict_value in first_level_value.items():
-                    formatted_record[dict_key] = dict_value
-                    del formatted_record[first_level_key]
+                    if(type(dict_value) == dict):
+                        for second_level_key, second_level_value in dict_value.items():
+                            formatted_record[second_level_key] = second_level_value
+                    else:
+                        formatted_record[dict_key] = dict_value
+                del formatted_record[first_level_key]
         formatted_records.append(formatted_record)
     return formatted_records
 
@@ -194,10 +198,10 @@ def format_person_data(data, formatter_config):
 
     # Join records and format
     people_records = person_records + primary_person_records
-    formatted_records = rename_record_columns(
-        people_records, formatter_config["columns_to_rename"])
     formatted_records = flatten_hasura_response(
-        formatted_records)
+        people_records)
+    formatted_records = rename_record_columns(
+        formatted_records, formatter_config["columns_to_rename"])
     formatted_records = create_mode_flags(
         formatted_records, formatter_config["flags_list"])
 
