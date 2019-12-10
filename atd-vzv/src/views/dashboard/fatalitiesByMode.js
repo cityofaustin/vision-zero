@@ -7,17 +7,18 @@ import { Container, Row, Col } from "reactstrap";
 
 const FatalitiesByMode = () => {
   const thisYear = moment().format("YYYY");
-  const yearLimit = 2010;
+  const yearLimit = 10;
   const years = (() => {
     let years = [];
-    for (let i = parseInt(thisYear); i >= yearLimit; i--) {
-      years.push(i.toString());
+    for (let i = yearLimit; i > 0; i--) {
+      years.push(parseInt(thisYear) - i);
     }
     return years;
   })();
 
   const [chartData, setChartData] = useState("");
 
+  // Pull data from demographics (Mode of person who was killed in a crash)
   useEffect(() => {
     const getChartData = async () => {
       let newData = {};
@@ -66,6 +67,16 @@ const FatalitiesByMode = () => {
       return fatalities;
     });
 
+  const getMotorcycleData = () =>
+    years.map(year => {
+      let fatalities = 0;
+      !!chartData &&
+        chartData[year].forEach(
+          f => f["motorcycle_fl"] === "Y" && fatalities++
+        );
+      return fatalities;
+    });
+
   const datasetTemplate = {
     backgroundColor: "rgba(255,99,132,0.2)",
     borderColor: "rgba(255,99,132,1)",
@@ -81,13 +92,30 @@ const FatalitiesByMode = () => {
     let motorDataset = { ...datasetTemplate };
     motorDataset["data"] = getMotorData();
     motorDataset["label"] = "Motor";
+    motorDataset["backgroundColor"] = "#a50f15";
+    motorDataset["borderColor"] = "#a50f15";
+    let motorcycleDataset = { ...datasetTemplate };
+    motorcycleDataset["data"] = getMotorcycleData();
+    motorcycleDataset["label"] = "Motorcycle";
+    motorcycleDataset["backgroundColor"] = "#de2d26";
+    motorcycleDataset["borderColor"] = "#de2d26";
     let pedestrianDataset = { ...datasetTemplate };
     pedestrianDataset["data"] = getPedestrianData();
     pedestrianDataset["label"] = "Pedestrian";
+    pedestrianDataset["backgroundColor"] = "#fb6a4a";
+    pedestrianDataset["borderColor"] = "#fb6a4a";
     let pedalcyclistDataset = { ...datasetTemplate };
     pedalcyclistDataset["data"] = getPedalcyclistData();
     pedalcyclistDataset["label"] = "Pedalcyclist";
-    return [...datasets, motorDataset, pedestrianDataset, pedalcyclistDataset];
+    pedalcyclistDataset["backgroundColor"] = "#08519c";
+    pedalcyclistDataset["borderColor"] = "#08519c";
+    return [
+      ...datasets,
+      motorDataset,
+      pedestrianDataset,
+      motorcycleDataset,
+      pedalcyclistDataset
+    ];
   };
 
   const data = {

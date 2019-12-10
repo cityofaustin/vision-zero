@@ -34,6 +34,8 @@ query_configs = [
             "columns_to_rename": {
                 "veh_body_styl_desc": "unit_desc",
                 "veh_unit_desc_desc": "unit_mode",
+                "latitude_primary": "latitude",
+                "longitude_primary": "longitude"
             },
             "flags_list": ["MOTOR VEHICLE",
                            "TRAIN",

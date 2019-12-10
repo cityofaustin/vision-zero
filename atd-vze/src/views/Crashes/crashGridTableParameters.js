@@ -58,6 +58,12 @@ export const crashGridTableColumns = {
     label_table: "Unit Description",
     type: "String",
   },
+  "geocode_method { name }": {
+    searchable: false,
+    sortable: true,
+    label_table: "Geocode Provider",
+    type: "String",
+  },
 };
 
 export const crashGridTableAdvancedFilters = {

@@ -28,8 +28,8 @@ crashes_query_template = Template(
             rpt_street_sfx
             crash_speed_limit
             road_constr_zone_fl
-            latitude
-            longitude
+            latitude_primary
+            longitude_primary
             street_name
             street_nbr
             street_name_2

@@ -52,7 +52,7 @@ def run_hasura_query(query):
 def flatten_hasura_response(records):
     """
     Flattens data response from Hasura
-    :param records: list - List of record dicts 
+    :param records: list - List of record dicts
     """
     formatted_records = []
     for record in records:
@@ -118,6 +118,20 @@ def create_crash_mode_flags(records, unit_modes):
     return records
 
 
+def create_point_datatype(records):
+    """
+    Creates point datatype to enable fetching GeoJSON from Socrata
+    :param records: list - List of record dicts
+    """
+    for record in records:
+        latitude = record['latitude']
+        longitude = record['longitude']
+        # Socrata rejects point upserts with no lat/lon
+        if latitude != None and longitude != None:
+            record["point"] = f"POINT ({longitude} {latitude})"
+    return records
+
+
 def rename_record_columns(records, columns_to_rename):
     """
     Renames columns for better desc and to match Socrata column names
@@ -158,6 +172,7 @@ def format_crash_data(data, formatter_config):
         formatted_records, formatter_config["columns_to_rename"])
     formatted_records = create_crash_mode_flags(
         formatted_records, formatter_config["flags_list"])
+    formatted_records = create_point_datatype(formatted_records)
 
     return formatted_records
 
