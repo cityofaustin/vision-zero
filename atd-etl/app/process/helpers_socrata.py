@@ -90,9 +90,9 @@ def flatten_hasura_response(records):
     return formatted_records
 
 
-def create_crash_mode_flags(records, unit_modes):
+def create_mode_flags(records, unit_modes):
     """
-    Creates crash mode flag columns in data along with "Y" or "N" value
+    Creates mode flag columns in data along with "Y" or "N" value
     :param records: list - List of record dicts
     :param unit_modes: list - List of mode strings to create flag columns
     """
@@ -170,7 +170,7 @@ def format_crash_data(data, formatter_config):
     formatted_records = flatten_hasura_response(records)
     formatted_records = rename_record_columns(
         formatted_records, formatter_config["columns_to_rename"])
-    formatted_records = create_crash_mode_flags(
+    formatted_records = create_mode_flags(
         formatted_records, formatter_config["flags_list"])
     formatted_records = create_point_datatype(formatted_records)
 
@@ -198,5 +198,7 @@ def format_person_data(data, formatter_config):
         people_records, formatter_config["columns_to_rename"])
     formatted_records = flatten_hasura_response(
         formatted_records)
+    formatted_records = create_mode_flags(
+        formatted_records, formatter_config["flags_list"])
 
     return formatted_records

@@ -71,10 +71,13 @@ people_query_template = Template(
                 crash_date
             }
             unit {
+                body_style {
+                    veh_body_styl_desc
+                }
                 unit_description {
-                veh_unit_desc_desc
+                    veh_unit_desc_desc
+                }
             }
-    }
         }
         atd_txdot_primaryperson(limit: $limit, offset: $offset, order_by: {primaryperson_id: asc}, where: {_or: [{prsn_injry_sev_id: {_eq: 1}}, {prsn_injry_sev_id: {_eq: 4}}], _and: {crash: {city_id: {_eq: 22}}}}) {
             primaryperson_id
@@ -86,6 +89,9 @@ people_query_template = Template(
                 crash_date
             }
             unit {
+                body_style {
+                    veh_body_styl_desc
+                }
                 unit_description {
                     veh_unit_desc_desc
                 }

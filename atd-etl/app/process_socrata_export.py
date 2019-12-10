@@ -55,12 +55,22 @@ query_configs = [
         "formatter_config": {
             "tables": ["atd_txdot_person", "atd_txdot_primaryperson"],
             "columns_to_rename": {
+                "veh_body_styl_desc": "unit_desc",
+                "veh_unit_desc_desc": "unit_mode",
                 "primaryperson_id": "person_id"
             },
             "prefixes": {
                 "person_id": "P",
                 "primaryperson_id": "PP",
-            }
+            },
+            "flags_list": ["MOTOR VEHICLE",
+                           "TRAIN",
+                           "PEDALCYCLIST",
+                           "PEDESTRIAN",
+                           "MOTORIZED CONVEYANCE",
+                           "TOWED/PUSHED/TRAILER",
+                           "NON-CONTACT",
+                           "OTHER"]
         },
         "dataset_uid": "xecs-rpy9"
     }
