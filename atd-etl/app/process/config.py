@@ -31,6 +31,7 @@ ATD_ETL_CONFIG = {
     # HERE
     "ATD_HERE_API_ENDPOINT": "https://geocoder.api.here.com/6.2/geocode.json",
     "ATD_HERE_RECORDS_PER_RUN": os.getenv("ATD_HERE_RECORDS_PER_RUN", "500"),
+    "ATD_HERE_BOUNDING_BOX": "30.7113,-98.1464;30.0146,-97.1988",
 
     # SOCRATA
     "SOCRATA_KEY_ID": os.getenv("SOCRATA_KEY_ID", ""),
