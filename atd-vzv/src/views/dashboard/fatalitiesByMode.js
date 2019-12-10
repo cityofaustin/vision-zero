@@ -23,7 +23,7 @@ const FatalitiesByMode = () => {
     const getChartData = async () => {
       let newData = {};
       for (const year of years) {
-        const url = `https://data.austintexas.gov/resource/y2wy-tgr5.json?$where=(death_cnt > 0) AND crash_date between '${year}-01-01T00:00:00' and '${year}-12-31T23:59:59'`;
+        const url = `https://data.austintexas.gov/resource/xecs-rpy9.json?$where=(prsn_injry_sev_id = 4) AND crash_date between '${year}-01-01T00:00:00' and '${year}-12-31T23:59:59'`;
 
         await axios.get(url).then(res => {
           newData = { ...newData, ...{ [year]: res.data } };
@@ -78,11 +78,11 @@ const FatalitiesByMode = () => {
     });
 
   const datasetTemplate = {
-    backgroundColor: "rgba(255,99,132,0.2)",
-    borderColor: "rgba(255,99,132,1)",
-    borderWidth: 1,
-    hoverBackgroundColor: "rgba(255,99,132,0.4)",
-    hoverBorderColor: "rgba(255,99,132,1)",
+    backgroundColor: "",
+    borderColor: "",
+    borderWidth: 2,
+    hoverBackgroundColor: "",
+    hoverBorderColor: "",
     label: "",
     data: []
   };
