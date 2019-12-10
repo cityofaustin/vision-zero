@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-Process - Geocoder
+Process - GeoCoder
 Author: Austin Transportation Department, Data and Technology Services
 
 Description: The purpose of this script is to find records that do not have
@@ -28,6 +28,17 @@ start = time.time()
 print("Hasura endpoint: '%s' " % ATD_ETL_CONFIG["HASURA_ENDPOINT"])
 print("Here endpoint: '%s' " % ATD_ETL_CONFIG["ATD_HERE_API_ENDPOINT"])
 
+
+records_to_geocode=get_geocode_list()
+
+
+print("Records to be processed: ")
+
+for record in records_to_geocode["data"]["atd_txdot_crashes"]:
+    crash_id = record["crash_id"]
+    print(crash_id)
+    
+
 # Loop:
 #   Until there aren't any more results:
 #       1. Gather data from PostgreSQL (any records without lat-longs), limit to 10 records.
@@ -36,8 +47,6 @@ print("Here endpoint: '%s' " % ATD_ETL_CONFIG["ATD_HERE_API_ENDPOINT"])
 #           - GeoCode the address
 #           - If there is GeoCode data, then make update to record in PostgreSQL
 
-
-web_pdb.set_trace()
 
 end = time.time()
 hours, rem = divmod(end-start, 3600)
