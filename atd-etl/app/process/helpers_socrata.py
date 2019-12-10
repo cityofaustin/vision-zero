@@ -84,12 +84,14 @@ def flatten_hasura_response(records):
             # If dict is found, iterate to bring key values to top-level
             elif type(first_level_value) == dict:
                 for dict_key, dict_value in first_level_value.items():
+                    # If dict contains nested dicts
                     if(type(dict_value) == dict):
                         for second_level_key, second_level_value in dict_value.items():
                             formatted_record[second_level_key] = second_level_value
                     else:
                         formatted_record[dict_key] = dict_value
                 del formatted_record[first_level_key]
+        print(formatted_record)
         formatted_records.append(formatted_record)
     return formatted_records
 
