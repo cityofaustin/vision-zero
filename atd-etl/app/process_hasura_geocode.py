@@ -13,6 +13,7 @@ The application requires the requests library:
     https://pypi.org/project/requests/
 """
 import time
+import datetime
 import requests
 import os
 import json
@@ -23,7 +24,8 @@ from process.helpers_hasura_geocode import *
 
 # Start timer
 start = time.time()
-
+# Today
+today = datetime.date.today()
 
 print("Hasura endpoint: '%s' " % ATD_ETL_CONFIG["HASURA_ENDPOINT"])
 print("Here endpoint: '%s' " % ATD_ETL_CONFIG["ATD_HERE_API_ENDPOINT"])
@@ -40,7 +42,6 @@ for record in records_to_geocode["data"]["atd_txdot_crashes"]:
     primary_address = build_address(record=record, primary=True)
     secondary_address = build_address(record=record, primary=False)
     final_address = ""
-    web_pdb.set_trace()
 
     # Check if both streets are faulty
     if is_faulty_street(primary_address) and is_faulty_street(secondary_address):
@@ -56,17 +57,24 @@ for record in records_to_geocode["data"]["atd_txdot_crashes"]:
         final_address = primary_address
 
     # If this is an intersection, then mix things up
-    if is_intersection(primary_address, secondary_address):
+    is_intersection_response = is_intersection(record)
+    if is_intersection_response:
         final_address = "%s & %s" % (primary_address, secondary_address)
 
     final_address += ", Austin, TX"
 
     print("---------------------------------------------")
+    print("crash_id: %s" % crash_id)
     print("primary_address: %s" % primary_address)
     print("secondary_address: %s" % secondary_address)
     print("---------------------------------------------")
     print("final_address: %s" % final_address)
     print("---------------------------------------------")
+
+    # If it is not an intersection, and the final address does not have a block number, then skip
+    if is_intersection_response is False and address_has_numbers(final_address) is False:
+        print("[Error] Skipping geocode, incomplete final address for crash_id: %s" % crash_id)
+        continue
 
     geocode_response = geocode_address_here(final_address)
 
@@ -74,8 +82,9 @@ for record in records_to_geocode["data"]["atd_txdot_crashes"]:
 
     print("Clean Response: %s" % (json.dumps(clean_response)))
 
+    web_pdb.set_trace()
     mutation_query = update_record(crash_id=crash_id,
-                                 geocode_date="12/12/12",
+                                 geocode_date=today.strftime("%Y-%m-%d"),
                                  geocode_match_metadata=geocode_response,
                                  geocode_match_quality="1",
                                  latitude_geocoded=12.12,

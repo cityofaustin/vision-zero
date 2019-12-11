@@ -128,7 +128,11 @@ def is_faulty_street(street):
     :param street: string - The name of the string
     :return: bool
     """
+    # If the street is empty, then it is faulty.
+    if street == "":
+        return True
 
+    # If it contains the words NOT REPORTED
     if "NOT REPORTED" in street:
         return True
 
@@ -144,24 +148,37 @@ def address_has_numbers(address):
     return any(char.isdigit() for char in address)
 
 
-def is_intersection(address_a, address_b):
+def is_intersection(record):
     """
     Returns True if both streets have no block number.
     :param address_a: string - Address A
     :param address_b: string - Address B
     :return: bool
     """
+    rpt_street_name = record.get("rpt_street_name", "")
+    rpt_sec_street_name = record.get("rpt_sec_street_name", "")
+    rpt_block_num = record.get("rpt_block_num", "")
+    rpt_sec_block_num = record.get("rpt_sec_block_num", "")
 
-    if address_a == "" or address_b == "":
+    # If either street name is empty, return false
+    if rpt_street_name == "" and rpt_sec_street_name == "":
         return False
 
-    if address_has_numbers(address_a) is False \
-            and address_has_numbers(address_b) is False:
+    # True, if neither address has a block number.
+    if rpt_block_num == "" or rpt_sec_block_num == "":
         return True
 
+
+
+    web_pdb.set_trace()
+    # if address_a == "" or address_b == "":
+    #     return False
+    #
+    # if address_has_numbers(address_a) is False \
+    #         and address_has_numbers(address_b) is False:
+    #     return True
+
     return False
-
-
 
 
 def geocode_address_here(address):
@@ -210,15 +227,10 @@ def clean_geocode_response_here(response):
 
     # If our array is not empty, then we process our array
     # if len(results) > 0:
-    #
     #     # Remove anything that is interpolated
-    #
     #     # We just have to remove anything outside our bound box
-    #
     #     # Remove anything outside the United States
-    #
     #     # Remove anything outside of Texas
-    #
     #     # Remove anything outside of Travis, Williamson, Hays, Burnet, Bastrop
     #     web_pdb.set_trace()
 
