@@ -6,6 +6,13 @@ import { Bar } from "react-chartjs-2";
 import { Container, Row, Col } from "reactstrap";
 
 const FatalitiesByMode = () => {
+  // Define stacked bar chart properties in order of stack
+  const modes = [
+    { label: "Motor", flag: "motor_vehicle_fl", color: "#a50f15" },
+    { label: "Pedestrian", flag: "pedestrian_fl", color: "#fb6a4a" },
+    { label: "Motorcycle", flag: "motorcycle_fl", color: "#de2d26" },
+    { label: "Pedalcyclist", flag: "pedalcyclist_fl", color: "#08519c" }
+  ];
   const thisYear = moment().format("YYYY");
   const yearLimit = 10; // Number of years to display in chart
   const yearsArray = (() => {
@@ -19,11 +26,11 @@ const FatalitiesByMode = () => {
   const [chartData, setChartData] = useState("");
   const [latestRecordDate, setLatestRecordDate] = useState("");
 
-  // Fetch data (Mode of person who was killed in a crash)
+  // Fetch data (Mode of fatality in crash)
   useEffect(() => {
     const getChartData = async () => {
       let newData = {};
-      // Use Promise.all to await all requests to resolve before setting chart data by year
+      // Use Promise.all to let all requests resolve before setting chart data by year
       await Promise.all(
         yearsArray.map(async year => {
           const url = `https://data.austintexas.gov/resource/xecs-rpy9.json?$where=(prsn_injry_sev_id = 4) AND crash_date between '${year}-01-01T00:00:00' and '${year}-12-31T23:59:59'`;
@@ -41,7 +48,7 @@ const FatalitiesByMode = () => {
     getChartData();
   }, []);
 
-  // Request latest fatality record from Socrata and set for chart subheading
+  // Fetch latest record from demographics dataset and set for chart subheading
   useEffect(() => {
     const url = `https://data.austintexas.gov/resource/xecs-rpy9.json?$limit=1&$order=crash_date DESC&$where=crash_date < '${thisYear}-12-31T23:59:59'`;
 
@@ -54,6 +61,7 @@ const FatalitiesByMode = () => {
 
   const createChartLabels = () => yearsArray.sort().map(year => `${year}`);
 
+  // Tabulate fatalities by mode from data
   const getModeData = flag =>
     yearsArray.map(year => {
       let fatalities = 0;
@@ -62,50 +70,18 @@ const FatalitiesByMode = () => {
       return fatalities;
     });
 
-  const datasetTemplate = {
-    backgroundColor: "",
-    borderColor: "",
-    borderWidth: 2,
-    hoverBackgroundColor: "",
-    hoverBorderColor: "",
-    label: "",
-    data: []
-  };
-
-  const createTypeDatasets = () => {
-    let datasets = [];
-    let motorDataset = { ...datasetTemplate };
-    motorDataset["data"] = getModeData("motor_vehicle_fl");
-    motorDataset["label"] = "Motor";
-    motorDataset["backgroundColor"] = "#a50f15";
-    motorDataset["borderColor"] = "#a50f15";
-    motorDataset["hoverBackgroundColor"] = "#a50f15";
-    let motorcycleDataset = { ...datasetTemplate };
-    motorcycleDataset["data"] = getModeData("motorcycle_fl");
-    motorcycleDataset["label"] = "Motorcycle";
-    motorcycleDataset["backgroundColor"] = "#de2d26";
-    motorcycleDataset["borderColor"] = "#de2d26";
-    motorcycleDataset["hoverBackgroundColor"] = "#de2d26";
-    let pedestrianDataset = { ...datasetTemplate };
-    pedestrianDataset["data"] = getModeData("pedestrian_fl");
-    pedestrianDataset["label"] = "Pedestrian";
-    pedestrianDataset["backgroundColor"] = "#fb6a4a";
-    pedestrianDataset["borderColor"] = "#fb6a4a";
-    pedestrianDataset["hoverBackgroundColor"] = "#fb6a4a";
-    let pedalcyclistDataset = { ...datasetTemplate };
-    pedalcyclistDataset["data"] = getModeData("pedalcyclist_fl");
-    pedalcyclistDataset["label"] = "Pedalcyclist";
-    pedalcyclistDataset["backgroundColor"] = "#08519c";
-    pedalcyclistDataset["borderColor"] = "#08519c";
-    pedalcyclistDataset["hoverBackgroundColor"] = "#08519c";
-    return [
-      ...datasets,
-      motorDataset,
-      pedestrianDataset,
-      motorcycleDataset,
-      pedalcyclistDataset
-    ];
-  };
+  // Create dataset for each mode type
+  // data property is an array of fatality sums sorted chronologically
+  const createTypeDatasets = () =>
+    modes.map(mode => ({
+      backgroundColor: mode.color,
+      borderColor: mode.color,
+      borderWidth: 2,
+      hoverBackgroundColor: mode.color,
+      hoverBorderColor: mode.color,
+      label: mode.label,
+      data: getModeData(mode.flag)
+    }));
 
   const data = {
     labels: createChartLabels(),
