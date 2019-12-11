@@ -94,3 +94,31 @@ def is_faulty_street(street):
         return True
 
     return False
+
+
+def geocode_address_here(address):
+    """
+    Runs a geocode request against the Here API
+    :param address: string - The address to pass to the Here endpoint.
+    :return: string
+    """
+
+    # Build our parameters
+    parameters = {
+        "gen": "9",
+        "app_id": ATD_ETL_CONFIG["ATD_HERE_APP_ID"],
+        "app_code": ATD_ETL_CONFIG["ATD_HERE_APP_CODE"],
+        "mapview": ATD_ETL_CONFIG["ATD_HERE_BOUNDING_BOX"],
+        "searchtext": address,
+    }
+
+    try:
+        # Make request to API Endpoint
+        return requests.get(ATD_ETL_CONFIG["ATD_HERE_API_ENDPOINT"], params=parameters).json()
+        # coordinates = request.json()['Response']['View'][0]['Result'][0]['Location']['DisplayPosition']
+    except Exception as e:
+        return {
+            "error": str(e)
+        }
+
+    return {}
