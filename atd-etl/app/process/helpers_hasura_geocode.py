@@ -61,24 +61,19 @@ def get_geocode_list():
     return run_query(non_geocoded_records)
 
 
-def update_record(crash_id, metadata, **kwargs):
+def update_record(crash_id, **kwargs):
     """
     Inserts lat/long into database geocoded fields.
     :param crash_id: string - The crash id
-    :param metadata: dict - The python dictionary with the entire response from our GeoCoder
     :param kwargs: array - Additional variables we want to feed into the query
     :return: dict - JSON response from Hasura
     """
-    geocode_date = "a"
-    geocode_match_metadata = "b"
-    geocode_match_quality = "c"
-    latitude_geocoded = "123"
-    longitude_geocoded = "456"
+
 
     update_crash_latlong_query = """
     mutation updateCrashGeocoded {
       update_atd_txdot_crashes(
-        where: {crash_id: {_eq: 1234}},
+        where: {crash_id: {_eq: %s}},
         _set: {
           geocode_date: "%s",
           geocode_match_metadata: "%s",
@@ -93,11 +88,12 @@ def update_record(crash_id, metadata, **kwargs):
       }
     }
     """ % (
-        geocode_date,
-        geocode_match_metadata,
-        geocode_match_quality,
-        latitude_geocoded,
-        longitude_geocoded
+        crash_id,
+        kwargs["geocode_date"],
+        json.dumps(kwargs["geocode_match_metadata"]),
+        kwargs["geocode_match_quality"],
+        kwargs["latitude_geocoded"],
+        kwargs["longitude_geocoded"]
     )
 
     print(update_crash_latlong_query)
