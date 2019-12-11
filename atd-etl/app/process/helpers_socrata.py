@@ -90,9 +90,9 @@ def flatten_hasura_response(records):
     return formatted_records
 
 
-def create_crash_mode_flags(records, unit_modes):
+def create_mode_flags(records, unit_modes):
     """
-    Creates crash mode flag columns in data along with "Y" or "N" value
+    Creates mode flag columns in data along with "Y" or "N" value
     :param records: list - List of record dicts
     :param unit_modes: list - List of mode strings to create flag columns
     """
@@ -115,6 +115,8 @@ def create_crash_mode_flags(records, unit_modes):
                 record["motorcycle_fl"] = "Y"
             else:
                 record["motorcycle_fl"] = "N"
+        else:
+            record["motorcycle_fl"] = "N"
     return records
 
 
@@ -158,6 +160,36 @@ def add_value_prefix(records, prefix_dict):
     return records
 
 
+def set_person_mode(records):
+    """
+    Sets mode of person from crash record data
+    :param records: list - List of record dicts
+    """
+    for record in records:
+        # Gather unit and person data
+        crash_record = record.get("crash")
+        unit_descriptions = crash_record.get("units", [])
+        person_unit_number = record.get("unit_nbr")
+
+        # Find unit matching person unit_nbr from crash data
+        for unit in unit_descriptions:
+            if unit.get("unit_nbr") == person_unit_number:
+                unit_mode = unit.get(
+                    "unit_description", {})
+                unit_desc = unit.get(
+                    "body_style", {})
+                if unit_mode != None:
+                    record["unit_mode"] = unit_mode.get(
+                        "veh_unit_desc_desc", "")
+                if unit_desc != None:
+                    record["unit_desc"] = unit_desc.get(
+                        "veh_body_styl_desc", "")
+        # Remove unneeded keys to prevent Socrata error
+        del record["crash"]["units"]
+        del record["unit_nbr"]
+    return records
+
+
 def format_crash_data(data, formatter_config):
     """
     Prepares crash data for Socrata upsertion
@@ -170,7 +202,7 @@ def format_crash_data(data, formatter_config):
     formatted_records = flatten_hasura_response(records)
     formatted_records = rename_record_columns(
         formatted_records, formatter_config["columns_to_rename"])
-    formatted_records = create_crash_mode_flags(
+    formatted_records = create_mode_flags(
         formatted_records, formatter_config["flags_list"])
     formatted_records = create_point_datatype(formatted_records)
 
@@ -186,11 +218,15 @@ def format_person_data(data, formatter_config):
     person_records = data['data'][formatter_config["tables"][0]]
     primary_person_records = data['data'][formatter_config["tables"][1]]
 
-    # Make record IDs unique by adding prefixes
+    # Make record IDs unique by adding prefixes and set mode of person
     person_records = add_value_prefix(
         person_records, formatter_config["prefixes"])
+    person_records = set_person_mode(
+        person_records)
     primary_person_records = add_value_prefix(
         primary_person_records, formatter_config["prefixes"])
+    primary_person_records = set_person_mode(
+        primary_person_records)
 
     # Join records and format
     people_records = person_records + primary_person_records
@@ -198,5 +234,7 @@ def format_person_data(data, formatter_config):
         people_records, formatter_config["columns_to_rename"])
     formatted_records = flatten_hasura_response(
         formatted_records)
+    formatted_records = create_mode_flags(
+        formatted_records, formatter_config["flags_list"])
 
     return formatted_records

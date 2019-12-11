@@ -60,7 +60,15 @@ query_configs = [
             "prefixes": {
                 "person_id": "P",
                 "primaryperson_id": "PP",
-            }
+            },
+            "flags_list": ["MOTOR VEHICLE",
+                           "TRAIN",
+                           "PEDALCYCLIST",
+                           "PEDESTRIAN",
+                           "MOTORIZED CONVEYANCE",
+                           "TOWED/PUSHED/TRAILER",
+                           "NON-CONTACT",
+                           "OTHER"]
         },
         "dataset_uid": "xecs-rpy9"
     }
