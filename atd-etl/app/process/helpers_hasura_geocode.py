@@ -96,7 +96,6 @@ def update_record(crash_id, **kwargs):
         kwargs["longitude_geocoded"]
     )
 
-    web_pdb.set_trace()
     return update_crash_latlong_query
 
 
@@ -161,3 +160,28 @@ def geocode_address_here(address):
         }
 
     return {}
+
+
+def clean_geocode_response_here(response):
+    """
+    Specific to the Here geocoder. This function has the purpose of cleaning up
+    the response to avoid interpolated addresses, and anything outside the bounding box.
+    Returns the same dictionary.
+    :param response: dict
+    :return: dict
+    """
+    print(response)
+    results = []
+
+    # Try to get the results into our own array
+    try:
+        results = response["Response"]["View"][0]["Result"]
+    except:
+        results = []
+
+    # If our array is not empty, then we process our array
+    if len(results) > 0:
+        print(results)
+        web_pdb.set_trace()
+
+    return results
