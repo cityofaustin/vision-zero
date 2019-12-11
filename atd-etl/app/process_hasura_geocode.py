@@ -36,7 +36,7 @@ print("Records to be processed: ")
 
 for record in records_to_geocode["data"]["atd_txdot_crashes"]:
     crash_id = record["crash_id"]
-    
+
     primary_address = build_address(record=record, primary=True)
     secondary_address = build_address(record=record, primary=False)
     final_address = ""
@@ -54,10 +54,11 @@ for record in records_to_geocode["data"]["atd_txdot_crashes"]:
     else:
         final_address = primary_address
 
-
     print("primary_address: %s" % primary_address)
     print("secondary_address: %s" % secondary_address)
     print("final_address: %s" % final_address)
+
+    geocode_respose=geocode_address_here(final_address)
 
     web_pdb.set_trace()
 
