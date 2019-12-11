@@ -15,7 +15,7 @@ to whatever script is running them.
 def search_crash_query(crash_id):
     """
     Generates a graphql query to search for a crash
-    :param crash_id: stirng - The Crash ID to search for.
+    :param crash_id: string - The Crash ID to search for.
     :return: string
     """
     return """
@@ -79,7 +79,7 @@ def search_charges(line):
 def search_crash_query_full(crash_id, field_list):
     """
     Generates a graphql query to search for a crash
-    :param crash_id: stirng - The Crash ID to search for.
+    :param crash_id: string - The Crash ID to search for.
     :return: string
     """
     return """
