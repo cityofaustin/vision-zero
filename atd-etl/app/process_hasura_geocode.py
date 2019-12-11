@@ -55,14 +55,24 @@ for record in records_to_geocode["data"]["atd_txdot_crashes"]:
     else:
         final_address = primary_address
 
+    # If this is an intersection, then mix things up
+    if is_intersection(primary_address, secondary_address):
+        final_address = "%s & %s" % (primary_address, secondary_address)
+
+    final_address += ", Austin, TX"
+
+    print("---------------------------------------------")
     print("primary_address: %s" % primary_address)
     print("secondary_address: %s" % secondary_address)
+    print("---------------------------------------------")
     print("final_address: %s" % final_address)
+    print("---------------------------------------------")
 
     geocode_response = geocode_address_here(final_address)
 
     clean_response = clean_geocode_response_here(geocode_response)
 
+    print("Clean Response: %s" % (json.dumps(clean_response)))
 
     mutation_query = update_record(crash_id=crash_id,
                                  geocode_date="12/12/12",
