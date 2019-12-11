@@ -81,6 +81,8 @@ for record in records_to_geocode["data"]["atd_txdot_crashes"]:
 
     final_address += ", AUSTIN, TX"
 
+    final_address = remove_duplicates(final_address)
+
     print("---------------------------------------------")
     print("crash_id: %s" % crash_id)
     print("primary_address: %s" % primary_address)
