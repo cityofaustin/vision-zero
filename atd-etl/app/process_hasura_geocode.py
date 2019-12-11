@@ -58,7 +58,14 @@ for record in records_to_geocode["data"]["atd_txdot_crashes"]:
     print("secondary_address: %s" % secondary_address)
     print("final_address: %s" % final_address)
 
-    geocode_respose=geocode_address_here(final_address)
+    geocode_response=geocode_address_here(final_address)
+
+    mutation_query=update_record(crash_id=crash_id,
+                                 geocode_date="12/12/12",
+                                 geocode_match_metadata=geocode_response,
+                                 geocode_match_quality="1",
+                                 latitude_geocoded=12.12,
+                                 longitude_geocoded=13.13)
 
     web_pdb.set_trace()
 
