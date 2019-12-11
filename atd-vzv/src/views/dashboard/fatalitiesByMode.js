@@ -10,7 +10,7 @@ const FatalitiesByMode = () => {
   const yearLimit = 10;
   const years = (() => {
     let years = [];
-    for (let i = yearLimit; i > 0; i--) {
+    for (let i = 0; i < yearLimit; i++) {
       years.push(parseInt(thisYear) - i);
     }
     return years;
