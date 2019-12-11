@@ -132,9 +132,16 @@ def is_faulty_street(street):
     if street == "":
         return True
 
+    list_of_bad_keywords = [
+        "PARKING LOT",
+        "NOT REPORTED",
+        "PRIVATE ROAD",
+    ]
+
     # If it contains the words NOT REPORTED
-    if "NOT REPORTED" in street:
-        return True
+    for bad_keyword in list_of_bad_keywords:
+        if bad_keyword in street:
+            return True
 
     return False
 
@@ -148,37 +155,54 @@ def address_has_numbers(address):
     return any(char.isdigit() for char in address)
 
 
+def both_block_num_missing(record):
+    """
+    Returns true of both block numbers are missing
+    :param record: dict - The record being evaluated
+    :return: bool
+    """
+    rpt_block_num = record.get("rpt_block_num", "") or ""
+    rpt_sec_block_num = record.get("rpt_sec_block_num", "") or ""
+
+    # True, if neither address has a block number.
+    if rpt_block_num == "" and rpt_sec_block_num == "":
+        return True
+
+    return False
+
+
 def is_intersection(record):
     """
     Returns True if both streets have no block number.
-    :param address_a: string - Address A
-    :param address_b: string - Address B
+    :param record: dict - The record being evaluated
     :return: bool
     """
-    rpt_street_name = record.get("rpt_street_name", "")
-    rpt_sec_street_name = record.get("rpt_sec_street_name", "")
-    rpt_block_num = record.get("rpt_block_num", "")
-    rpt_sec_block_num = record.get("rpt_sec_block_num", "")
+    rpt_street_name = record.get("rpt_street_name", "") or ""
+    rpt_sec_street_name = record.get("rpt_sec_street_name", "") or ""
+
 
     # If either street name is empty, return false
     if rpt_street_name == "" and rpt_sec_street_name == "":
         return False
 
     # True, if neither address has a block number.
-    if rpt_block_num == "" or rpt_sec_block_num == "":
+    if both_block_num_missing(record):
         return True
 
-
-
-    web_pdb.set_trace()
-    # if address_a == "" or address_b == "":
-    #     return False
-    #
-    # if address_has_numbers(address_a) is False \
-    #         and address_has_numbers(address_b) is False:
-    #     return True
-
     return False
+
+
+def get_match_quality_here(response):
+    """
+    Returns the quality level from 0 to 1
+    :param response: dict - The full response from Here
+    :return: float
+    """
+
+    try:
+        return response["Response"]["View"][0]["Result"][0]["Relevance"]
+    except:
+        return 0
 
 
 def geocode_address_here(address):
@@ -235,3 +259,28 @@ def clean_geocode_response_here(response):
     #     web_pdb.set_trace()
 
     return results
+
+
+def render_final_address(record):
+    """
+    Gets either a primary and secondary address, or returns nothing.
+    :param record: dict - the record being evaluated
+    :return: string
+    """
+
+    rpt_street_name = record.get("rpt_street_name", "") or ""
+    rpt_sec_street_name = record.get("rpt_sec_street_name", "") or ""
+    rpt_block_num = record.get("rpt_block_num", "") or ""
+    rpt_sec_block_num = record.get("rpt_sec_block_num", "") or ""
+    primary_addr = None
+    secondary_addr = None
+
+    # If we have enough to build a primary address, use that
+    if rpt_block_num != "" and rpt_street_name != "":
+        primary_addr = build_address(record=record, primary=True)
+
+    # If we have enough to build a secondary address, use that
+    if rpt_sec_block_num != "" and rpt_sec_street_name != "":
+        secondary_addr = build_address(record=record, primary=False)
+
+    return secondary_addr if is_faulty_street(primary_addr) else primary_addr
