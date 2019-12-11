@@ -215,6 +215,7 @@ def geocode_address_here(address):
     # Build our parameters
     parameters = {
         "gen": "9",
+        "prox": "30.268064,-97.742814,1000",
         "app_id": ATD_ETL_CONFIG["ATD_HERE_APP_ID"],
         "app_code": ATD_ETL_CONFIG["ATD_HERE_APP_CODE"],
         "mapview": ATD_ETL_CONFIG["ATD_HERE_BOUNDING_BOX"],
@@ -284,3 +285,29 @@ def render_final_address(record):
         secondary_addr = build_address(record=record, primary=False)
 
     return secondary_addr if is_faulty_street(primary_addr) else primary_addr
+
+
+def remove_duplicates(address):
+    """
+    Removes duplicate prefix and postfixes from address string
+    :param address: string - The address being evaluated
+    :return: string
+    """
+    list_of_duplicates = {
+        "N N": "N",
+        "S S": "S",
+        "E E": "E",
+        "W W": "W",
+        "DR DR": "DR",
+        "LN LN": "LN",
+        "ST ST": "ST",
+        "RD RD": "RD",
+        "BLVD BLVD": "BLVD",
+        " ,": ",",
+        "  ": " ",
+    }
+
+    for k, v in list_of_duplicates.items():
+        address = address.replace(k, v).strip()
+
+    return address
