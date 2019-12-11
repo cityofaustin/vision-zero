@@ -16,6 +16,7 @@ The application requires the requests library:
 import requests
 import os
 import json
+import web_pdb
 
 #
 # We need to import our configuration, and the run_query method
@@ -69,7 +70,6 @@ def update_record(crash_id, **kwargs):
     :return: dict - JSON response from Hasura
     """
 
-
     update_crash_latlong_query = """
     mutation updateCrashGeocoded {
       update_atd_txdot_crashes(
@@ -96,7 +96,7 @@ def update_record(crash_id, **kwargs):
         kwargs["longitude_geocoded"]
     )
 
-    print(update_crash_latlong_query)
+    web_pdb.set_trace()
     return update_crash_latlong_query
 
 
