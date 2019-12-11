@@ -4,6 +4,7 @@ import SeriousInjuries from "./seriousInjuries";
 import SeriousInjuryAndFatalCrashesByMonth from "./seriousInjuryAndFatalCrashesByMonth";
 import SeriousInjuryAndFatalCrashesByMode from "./seriousInjuryAndFatalCrashesByMode";
 import YearsOfLifeLost from "./yearsOfLifeLost";
+import FatalitiesMultiYear from "./FatalitiesMultiYear";
 
 import { Container, Row, Col } from "reactstrap";
 
@@ -31,7 +32,9 @@ const Dashboard = () => {
         <Col md="6">
           <YearsOfLifeLost />
         </Col>
-        <Col md="6"></Col>
+        <Col md="6">
+          <FatalitiesMultiYear />
+        </Col>
       </Row>
     </Container>
   );

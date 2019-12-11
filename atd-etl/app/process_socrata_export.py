@@ -34,6 +34,8 @@ query_configs = [
             "columns_to_rename": {
                 "veh_body_styl_desc": "unit_desc",
                 "veh_unit_desc_desc": "unit_mode",
+                "latitude_primary": "latitude",
+                "longitude_primary": "longitude"
             },
             "flags_list": ["MOTOR VEHICLE",
                            "TRAIN",
@@ -58,7 +60,15 @@ query_configs = [
             "prefixes": {
                 "person_id": "P",
                 "primaryperson_id": "PP",
-            }
+            },
+            "flags_list": ["MOTOR VEHICLE",
+                           "TRAIN",
+                           "PEDALCYCLIST",
+                           "PEDESTRIAN",
+                           "MOTORIZED CONVEYANCE",
+                           "TOWED/PUSHED/TRAILER",
+                           "NON-CONTACT",
+                           "OTHER"]
         },
         "dataset_uid": "xecs-rpy9"
     }

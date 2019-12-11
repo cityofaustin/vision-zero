@@ -12,12 +12,13 @@ import csv
 import io
 import json
 import re
-
+import datetime
+import web_pdb
 
 # Dependencies
-from .queries import search_crash_query
+from .queries import search_crash_query, search_crash_query_full
 from .request import run_query
-from .helpers_import_fields import CRIS_TXDOT_FIELDS
+from .helpers_import_fields import CRIS_TXDOT_FIELDS, CRIS_TXDOT_COMPARE_FIELDS_LIST
 
 
 def generate_template(name, function, fields):
@@ -49,38 +50,18 @@ def lowercase_group_match(match):
     :param match: raw string of the group match
     :return: string in lower case
     """
-    return match.group(1).lower() + ":"
+    return "%s:" % match.group(1).lower()
 
 
-def generate_fields(line, fieldnames, remove_fields = [], quoted_numeric = [], null_to_zero = []):
+def generate_fields_with_filters(line, fieldnames, filters=[]):
     """
     Generates a list of fields for graphql query
-    :param line:
-    :param fieldnames:
-    :param remove_fields:
+    :param line: string - The raw csv line
+    :param fieldnames: array of strings - The fields to be used as headers
+    :param filters: dict - The filters to be applied
     :return:
     """
-    reader = csv.DictReader(f=io.StringIO(line), fieldnames=fieldnames, delimiter=',') # parse line
-    fields = json.dumps([row for row in reader]) # Generate json
-    fields = re.sub(r'"([a-zA-Z0-9_]+)":', lowercase_group_match, fields) # Clean the keys
-    fields = re.sub(r'"([0-9\.]+)"', r'\1', fields) # Clean the values
-    fields = filter_remove_field(fields, fields=remove_fields) # Remove fields
-    fields = fields.replace('""', "null").replace ("[{", "").replace("}]", "") # Clean up
-    fields = fields.replace(", ", ", \n") # Break line
-    fields = filter_quote_numeric(fields, fields=quoted_numeric)  # Quote Numeric Text
-    fields = filter_numeric_null_to_zero(fields, fields=null_to_zero)
-    fields = fields.replace(", ", "") # Remove commas
-    return fields
 
-
-def generate_fields_with_filters(line, fieldnames, filters = []):
-    """
-    Generates a list of fields for graphql query
-    :param line:
-    :param fieldnames:
-    :param remove_fields:
-    :return:
-    """
     reader = csv.DictReader(f=io.StringIO(line), fieldnames=fieldnames, delimiter=',') # parse line
     fields = json.dumps([row for row in reader]) # Generate json
 
@@ -108,7 +89,7 @@ def generate_fields_with_filters(line, fieldnames, filters = []):
             print("Error when applying filter: %s" % str(e))
 
     # Remove ending commas
-    fields = fields.replace(", ", "") # Remove commas
+    fields = fields.replace(", ", "")  # Remove commas
     return fields
 
 
@@ -125,16 +106,18 @@ def get_crash_id(line):
         return ""
 
 
-def generate_gql(line, fieldnames, type):
+def generate_gql(line, fieldnames, file_type):
     """
     Returns a string with the final graphql query
-    :param type:
-    :param fields:
+    :param line: string - The raw csv line
+    :param fieldnames: array of strings - The name of fields
+    :param file_type: string - the type of insertion (crash, units, etc...)
     :return:
     """
-    filters = CRIS_TXDOT_FIELDS[type]["filters"]
-    query_name = CRIS_TXDOT_FIELDS[type]["query_name"]
-    function_name = CRIS_TXDOT_FIELDS[type]["function_name"]
+
+    filters = CRIS_TXDOT_FIELDS[file_type]["filters"]
+    query_name = CRIS_TXDOT_FIELDS[file_type]["query_name"]
+    function_name = CRIS_TXDOT_FIELDS[file_type]["function_name"]
 
     try:
         fields = generate_fields_with_filters(line=line,
@@ -142,8 +125,8 @@ def generate_gql(line, fieldnames, type):
                                               filters=filters)
 
         template = generate_template(name=query_name,
-                                 function=function_name,
-                                 fields=fields)
+                                     function=function_name,
+                                     fields=fields)
     except Exception as e:
         print("generate_gql() Error: " + str(e))
         template = ""
@@ -151,16 +134,16 @@ def generate_gql(line, fieldnames, type):
     return template
 
 
-def record_exists_hook(line, type):
+def record_exists_hook(line, file_type):
     """
     Returns True if the record already exists, False if it cannot find it.
     :param line: string - The raw record in CSV format
-    :param type: string - The parameter as passed to the terminal
+    :param file_type: string - The parameter as passed to the terminal
     :return: boolean - True if the record exists, False otherwise.
     """
 
     # If the record type is a crash:
-    if type == "crash":
+    if file_type == "crash":
         """
             Approach: 
                 - Crashes:
@@ -187,17 +170,19 @@ def record_exists_hook(line, type):
     return False
 
 
-def handle_record_error_hook(line, gql, type, response = {}, line_number = "n\a"):
+def handle_record_error_hook(line, gql, file_type, response={}, line_number="n\a"):
     """
     Returns true to stop the execution of this script, false to mark as a non-error and move on.
     :param line: string - the csv line being processed
     :param gql: string - the graphql query that was at fault
-    :param type: string - the type of record being processed
+    :param file_type: string - the type of record being processed
+    :param response: dict - The json response from the request output
+    :param line_number: string - The line number where the error occurs
     :return: bool - True to signal error and stop execution, False otherwise.
     """
 
     # If this is a crash, we want to know why it didn't insert, so we need to stop.
-    if type == "crash":
+    if file_type == "crash":
         print(gql)
         return True
 
@@ -226,20 +211,19 @@ Response: %s \n
             """ % (
                 line_number,
                 get_crash_id(line),
-                str(line).strip(), type, gql,
+                str(line).strip(), file_type, gql,
                 str(response)
             ))
             return True
 
 
-
-def get_file_list(type):
+def get_file_list(file_type):
     """
     Returns a list of all files to be processed
-    :param type: string - The type to be used: crash, charges, person, primaryperson, unit
+    :param file_type: string - The type to be used: crash, charges, person, primaryperson, unit
     :return: array
     """
-    return glob.glob("/data/extract_*_%s_*.csv" % type)
+    return glob.glob("/data/extract_*_%s_*.csv" % file_type)
 
 
 def generate_run_config():
@@ -284,7 +268,7 @@ def generate_run_config():
         print("Dry-run not defined, assuming running without dry-run mode.")
 
     # Gather the list of files
-    config["file_list_raw"] = get_file_list(type=config["file_type"])
+    config["file_list_raw"] = get_file_list(file_type=config["file_type"])
 
     # Final list placeholder
     finalFileList = []
@@ -320,3 +304,169 @@ def generate_run_config():
 
     # Return the config
     return config
+
+
+def get_crash_record(crash_id):
+    """
+    Obtains a single crash record based on the crash_id
+    :param crash_id: string - The crash id to obtain from the database
+    :return: string
+    """
+    # First generate a query with a list of the columns we care about
+    query = search_crash_query_full(crash_id=crash_id,
+                                    field_list=CRIS_TXDOT_COMPARE_FIELDS_LIST)
+
+    # Then try to run the query to get the actual record
+    try:
+        result = run_query(query)
+        return result["data"]["atd_txdot_crashes"][0]
+
+    except Exception as e:
+        print("There was a problem getting crash_id: %s\n%s" % (crash_id, str(e)))
+        return None
+
+
+def is_cris_date(string):
+    """
+    Returns True if the string is a date in mm/dd/yyyy format, False otherwise.
+    :param string: string - The string being evaluated
+    :return: boolean
+    """
+    return bool(re.match(r'(\d{2})\/(\d{2})\/(\d{4})', string))
+
+
+def is_cris_time(string):
+    """
+    Returns True if string has a hh:mm (AM|PM) time format, returns False otherwise.
+    :param string:
+    :return:
+    """
+    return bool(re.match(r'(\d{2}):(\d{2}) (AM|PM)', string))
+
+
+def convert_date(string):
+    """
+    Turns a mm/dd/yyyy date into a yyyy-mm-dd date.
+    :param string: string - The date being converted
+    :return: string
+    """
+    input_date = datetime.datetime.strptime(string, "%m/%d/%Y")
+    return input_date.strftime("%Y-%m-%d")
+
+
+def convert_time(string):
+    """
+    Converts a time string from a 12 hour format, to a 24 hour format
+    :param string: string - The string being converted
+    :return: string
+    """
+    input_time = datetime.datetime.strptime(string, "%I:%M %p")
+    return input_time.strftime("%H:%M:00")
+
+
+def clean_none_null(string):
+    """
+    Removes 'None' and 'null' from string
+    :param string: string - The string being evaluated
+    :return: string
+    """
+    return str(string).replace("None", "").replace("null", "")
+
+
+def record_compare(record_new, record_existing):
+    """
+    Compares two dictionaries. It uses the CRIS_TXDOT_COMPARE_FIELDS_LIST
+    to determine what fields are important enough, and returns True if
+    there is one important difference. Returns False if none of the fields
+    present any differences.
+    :param record_new: dict - The new object being parsed from csv
+    :param record_existing: dict - The existing object, as parsed from an HTTP query
+    :return: bool
+    """
+    for field in CRIS_TXDOT_COMPARE_FIELDS_LIST:
+        # Remove None and null
+        record_existing[field] = clean_none_null(record_existing[field])
+
+        # If the current field is a date, then try to parse it
+        if is_cris_date(record_new[field]):
+            record_new[field] = convert_date(record_new[field])
+
+        # If the current field is a time string, then try to parse it
+        if is_cris_time(record_new[field]):
+            record_new[field] = convert_time(record_new[field])
+
+        # Make the comparison, if not equal important_difference = true
+        important_difference = record_new[field] != record_existing[field]
+
+        if important_difference:
+            return True
+
+    # Found no differences in any of the fields
+    return False
+
+
+def generate_crash_record(line, fieldnames):
+    """
+    Translates a raw csv line into a python dictionary
+    :param line: string - The raw csv line
+    :param fieldnames: array of strings - The strings to be used as headers
+    :return: dict
+    """
+    reader = csv.DictReader(f=io.StringIO(line), fieldnames=fieldnames, delimiter=',')  # parse line
+    fields = json.dumps([row for row in reader])  # Generate json
+    # Remove object characters
+    fields = fields.replace("[", "").replace("]", "")
+    # Return a dictionary
+    return json.loads(fields)
+
+
+def insert_crash_change_template(new_record_dict):
+    """
+    Generates a crash insertion graphql query
+    :param new_record_dict: dict - The new record as a dictionary
+    :return: string
+    """
+    # Turn the dictionary into a character-escaped json string
+    new_record_escaped = json.dumps(new_record_dict).replace("\"", "\\\"")
+    # Build the template and inject required values
+    return """
+        mutation insertCrashChangeMutation {
+      insert_atd_txdot_changes(objects: {
+        record_id: NEW_RECORD_ID,
+        record_json: "NEW_RECORD_ESCAPED_JSON",
+        record_type: "crash",
+        updated_by: "System"
+      }) {
+        affected_rows
+      }
+    }
+    """.replace("NEW_RECORD_ESCAPED_JSON", new_record_escaped)\
+        .replace("NEW_RECORD_ID", new_record_dict["crash_id"])
+
+
+def record_compare_hook(line, fieldnames, file_type):
+    """
+    Hook that finds an existing record, and compares it with a new incoming record built from a raw csv line.
+    :param line: string - The raw csv line
+    :param fieldnames: array of strings - The strings to be used as headers
+    :param file_type: string - The file type (crash, units, charges, etc...)
+    :return:
+    """
+    if file_type == "crash":
+        fieldnames = [column.lower() for column in fieldnames]
+        crash_id = get_crash_id(line)
+        record_new = generate_crash_record(line=line, fieldnames=fieldnames)
+        record_existing = get_crash_record(get_crash_id(line))
+        significant_difference = record_compare(record_new=record_new, record_existing=record_existing)
+        if significant_difference:
+            mutation_template = insert_crash_change_template(new_record_dict=record_new)
+            result = run_query(mutation_template)
+            try:
+                affected_rows = result["data"]["insert_atd_txdot_changes"]["affected_rows"]
+            except:
+                affected_rows = 0
+
+            if affected_rows == 1:
+                print("Crash Review Request Inserted: %s" % (crash_id))
+            else:
+                print("Failed to insert crash review request: %s" % crash_id)

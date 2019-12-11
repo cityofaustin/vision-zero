@@ -75,15 +75,17 @@ def process_line(file_type, line, fieldnames, current_line, dryrun=False):
     crash_id = line.strip().split(",")[0]
     mode = "[Dry-Run]" if dryrun else "[Live]"
     # First we need to check if the current record exists, skip if so.
-    if record_exists_hook(line=line, type=file_type):
+    if record_exists_hook(line=line, file_type=file_type):
+        if ATD_ETL_CONFIG["ATD_CRIS_IMPORT_COMPARE_FUNCTION"] == "ENABLED":
+            record_compare_hook(line=line, fieldnames=fieldnames, file_type=file_type)
+
         print("[%s] Exists: %s (%s)" % (str(current_line), str(crash_id), file_type))
         existing_records += 1
 
     # The record does not exist, insert.
     else:
         # Generate query and present to terminal
-        gql = generate_gql(line=line, fieldnames=fieldnames, type=file_type)
-
+        gql = generate_gql(line=line, fieldnames=fieldnames, file_type=file_type)
         # If this is not a dry-run, then make an actual insertion
         if dryrun:
             # Dry-run, we need a fake response
@@ -104,7 +106,7 @@ def process_line(file_type, line, fieldnames, current_line, dryrun=False):
 
             else:
                 # Gather from this function if we need to stop the execution.
-                stop_execution = handle_record_error_hook(line=line, gql=gql, type=file_type,
+                stop_execution = handle_record_error_hook(line=line, gql=gql, file_type=file_type,
                                                           response=response, line_number=str(current_line))
 
             # If we are stopping we must make signal of it
@@ -134,9 +136,10 @@ def process_line(file_type, line, fieldnames, current_line, dryrun=False):
 def process_file(file_path, file_type, skip_lines, dryrun=False):
     """
     It reads an individual CSV file and processes each line into the database.
-    :param file_path: string - the full path location of the csv file
-    :param file_type: string - the file type: crash, unit, person, primaryperson, charges
-    :param skip_lines: int - the number of lines to skip (0 if none)
+    :param file_path: string - The full path location of the csv file
+    :param file_type: string - The file type: crash, unit, person, primaryperson, charges
+    :param skip_lines: int - The number of lines to skip (0 if none)
+    :param dryrun: bool - True to enable a dry-run process, or false to run live.
     :return:
     """
     FILE_PATH = file_path
@@ -162,7 +165,8 @@ def process_file(file_path, file_type, skip_lines, dryrun=False):
     print("Processing file '%s' of type '%s', skipping: '%s'" % (FILE_PATH, FILE_TYPE, FILE_SKIP_ROWS))
     print("Endpoint: %s" % ATD_ETL_CONFIG["HASURA_ENDPOINT"])
     print("Max Threads: %s" % max_threads)
-    print("Dry-run mode enabled: " + str(dryrun))
+    print("Dry-run mode enabled: %s" % str(dryrun))
+    print("Compare-function: %s" % ATD_ETL_CONFIG["ATD_CRIS_IMPORT_COMPARE_FUNCTION"])
     print("------------------------------------------")
     # Current line tracker
     current_line = 0
