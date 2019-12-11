@@ -306,3 +306,39 @@ CRIS_TXDOT_FIELDS = {
         ]
     }
 }
+
+
+CRIS_TXDOT_COMPARE_FIELDS_LIST = [
+    "crash_fatal_fl",
+    "private_dr_fl",
+    "rpt_outside_city_limit_fl",
+    "crash_date",
+    "crash_time",
+    "case_id",
+    "rpt_latitude",
+    "rpt_longitude",
+    "rpt_hwy_num",
+    "rpt_block_num",
+    "rpt_street_name",
+    "rpt_sec_hwy_num",
+    "rpt_sec_block_num",
+    "rpt_sec_street_name",
+    "hwy_nbr",
+    "hwy_sys",
+    "hwy_sys_2",
+    "hwy_nbr_2",
+    "city_id",
+    "latitude",
+    "longitude",
+    "street_name",
+    "street_nbr",
+    "street_name_2",
+    "street_nbr_2",
+    "sus_serious_injry_cnt",
+    "nonincap_injry_cnt",
+    "poss_injry_cnt",
+    "non_injry_cnt",
+    "unkn_injry_cnt",
+    "tot_injry_cnt",
+    "death_cnt",
+]
