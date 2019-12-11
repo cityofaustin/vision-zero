@@ -7,7 +7,7 @@ import { Container, Row, Col } from "reactstrap";
 
 const FatalitiesByMode = () => {
   const thisYear = moment().format("YYYY");
-  const yearLimit = 10;
+  const yearLimit = 10; // Number of years to display in chart
   const years = (() => {
     let years = [];
     for (let i = 0; i < yearLimit; i++) {
@@ -17,8 +17,9 @@ const FatalitiesByMode = () => {
   })();
 
   const [chartData, setChartData] = useState("");
+  const [latestRecordDate, setLatestRecordDate] = useState("");
 
-  // Pull data from demographics (Mode of person who was killed in a crash)
+  // Fetch data (Mode of person who was killed in a crash)
   useEffect(() => {
     const getChartData = async () => {
       let newData = {};
@@ -29,51 +30,31 @@ const FatalitiesByMode = () => {
           newData = { ...newData, ...{ [year]: res.data } };
         });
       }
+      debugger;
       setChartData(newData);
     };
 
     getChartData();
   }, []);
 
+  // Request latest fatality record from Socrata and set for chart subheading
+  useEffect(() => {
+    const url = `https://data.austintexas.gov/resource/xecs-rpy9.json?$limit=1&$order=crash_date DESC&$where=crash_date < '${thisYear}-12-31T23:59:59'`;
+
+    axios.get(url).then(res => {
+      const latestRecordDate = res.data[0].crash_date;
+      const formattedLatestDate = moment(latestRecordDate).format("MMMM YYYY");
+      setLatestRecordDate(formattedLatestDate);
+    });
+  }, []);
+
   const createChartLabels = () => years.sort().map(year => `${year}`);
 
-  const getMotorData = () =>
+  const getModeData = flag =>
     years.map(year => {
       let fatalities = 0;
       !!chartData &&
-        chartData[year].forEach(
-          f => f["motor_vehicle_fl"] === "Y" && fatalities++
-        );
-      return fatalities;
-    });
-
-  const getPedestrianData = () =>
-    years.map(year => {
-      let fatalities = 0;
-      !!chartData &&
-        chartData[year].forEach(
-          f => f["pedestrian_fl"] === "Y" && fatalities++
-        );
-      return fatalities;
-    });
-
-  const getPedalcyclistData = () =>
-    years.map(year => {
-      let fatalities = 0;
-      !!chartData &&
-        chartData[year].forEach(
-          f => f["pedalcyclist_fl"] === "Y" && fatalities++
-        );
-      return fatalities;
-    });
-
-  const getMotorcycleData = () =>
-    years.map(year => {
-      let fatalities = 0;
-      !!chartData &&
-        chartData[year].forEach(
-          f => f["motorcycle_fl"] === "Y" && fatalities++
-        );
+        chartData[year].forEach(f => f[`${flag}`] === "Y" && fatalities++);
       return fatalities;
     });
 
@@ -90,25 +71,29 @@ const FatalitiesByMode = () => {
   const createTypeDatasets = () => {
     let datasets = [];
     let motorDataset = { ...datasetTemplate };
-    motorDataset["data"] = getMotorData();
+    motorDataset["data"] = getModeData("motor_vehicle_fl");
     motorDataset["label"] = "Motor";
     motorDataset["backgroundColor"] = "#a50f15";
     motorDataset["borderColor"] = "#a50f15";
+    motorDataset["hoverBackgroundColor"] = "#a50f15";
     let motorcycleDataset = { ...datasetTemplate };
-    motorcycleDataset["data"] = getMotorcycleData();
+    motorcycleDataset["data"] = getModeData("motorcycle_fl");
     motorcycleDataset["label"] = "Motorcycle";
     motorcycleDataset["backgroundColor"] = "#de2d26";
     motorcycleDataset["borderColor"] = "#de2d26";
+    motorcycleDataset["hoverBackgroundColor"] = "#de2d26";
     let pedestrianDataset = { ...datasetTemplate };
-    pedestrianDataset["data"] = getPedestrianData();
+    pedestrianDataset["data"] = getModeData("pedestrian_fl");
     pedestrianDataset["label"] = "Pedestrian";
     pedestrianDataset["backgroundColor"] = "#fb6a4a";
     pedestrianDataset["borderColor"] = "#fb6a4a";
+    pedestrianDataset["hoverBackgroundColor"] = "#fb6a4a";
     let pedalcyclistDataset = { ...datasetTemplate };
-    pedalcyclistDataset["data"] = getPedalcyclistData();
+    pedalcyclistDataset["data"] = getModeData("pedalcyclist_fl");
     pedalcyclistDataset["label"] = "Pedalcyclist";
     pedalcyclistDataset["backgroundColor"] = "#08519c";
     pedalcyclistDataset["borderColor"] = "#08519c";
+    pedalcyclistDataset["hoverBackgroundColor"] = "#08519c";
     return [
       ...datasets,
       motorDataset,
@@ -125,7 +110,7 @@ const FatalitiesByMode = () => {
 
   return (
     <Container>
-      <h3>Fatalities by Mode</h3>
+      <h3 className="text-center">Fatalities by Mode</h3>
       <Row>
         <Col sm="12">
           <Bar
@@ -148,6 +133,7 @@ const FatalitiesByMode = () => {
               }
             }}
           />
+          <p className="text-center">Data Through: {latestRecordDate}</p>
         </Col>
       </Row>
     </Container>
