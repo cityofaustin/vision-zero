@@ -40,6 +40,7 @@ def get_geocode_list():
           longitude_geocoded: {_is_null: true}
           latitude_primary: {_is_null: true}
           longitude_primary: {_is_null: true}
+          city_id: {_eq: 22}
         },
         limit: %s
       ) {
@@ -134,6 +135,35 @@ def is_faulty_street(street):
     return False
 
 
+def address_has_numbers(address):
+    """
+    Returns true if an address has a block number
+    :param address: string - The address being evaluated
+    :return: bool
+    """
+    return any(char.isdigit() for char in address)
+
+
+def is_intersection(address_a, address_b):
+    """
+    Returns True if both streets have no block number.
+    :param address_a: string - Address A
+    :param address_b: string - Address B
+    :return: bool
+    """
+
+    if address_a == "" or address_b == "":
+        return False
+
+    if address_has_numbers(address_a) is False \
+            and address_has_numbers(address_b) is False:
+        return True
+
+    return False
+
+
+
+
 def geocode_address_here(address):
     """
     Runs a geocode request against the Here API
@@ -170,7 +200,6 @@ def clean_geocode_response_here(response):
     :param response: dict
     :return: dict
     """
-    print(response)
     results = []
 
     # Try to get the results into our own array
@@ -180,8 +209,17 @@ def clean_geocode_response_here(response):
         results = []
 
     # If our array is not empty, then we process our array
-    if len(results) > 0:
-        print(results)
-        web_pdb.set_trace()
+    # if len(results) > 0:
+    #
+    #     # Remove anything that is interpolated
+    #
+    #     # We just have to remove anything outside our bound box
+    #
+    #     # Remove anything outside the United States
+    #
+    #     # Remove anything outside of Texas
+    #
+    #     # Remove anything outside of Travis, Williamson, Hays, Burnet, Bastrop
+    #     web_pdb.set_trace()
 
     return results
