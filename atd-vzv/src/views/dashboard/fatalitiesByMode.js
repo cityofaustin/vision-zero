@@ -8,7 +8,7 @@ import { Container, Row, Col } from "reactstrap";
 const FatalitiesByMode = () => {
   const thisYear = moment().format("YYYY");
   const yearLimit = 10; // Number of years to display in chart
-  const years = (() => {
+  const yearsArray = (() => {
     let years = [];
     for (let i = 0; i < yearLimit; i++) {
       years.push(parseInt(thisYear) - i);
@@ -23,14 +23,18 @@ const FatalitiesByMode = () => {
   useEffect(() => {
     const getChartData = async () => {
       let newData = {};
-      for (const year of years) {
-        const url = `https://data.austintexas.gov/resource/xecs-rpy9.json?$where=(prsn_injry_sev_id = 4) AND crash_date between '${year}-01-01T00:00:00' and '${year}-12-31T23:59:59'`;
+      // Use Promise.all to await all requests to resolve before setting chart data by year
+      await Promise.all(
+        yearsArray.map(async year => {
+          const url = `https://data.austintexas.gov/resource/xecs-rpy9.json?$where=(prsn_injry_sev_id = 4) AND crash_date between '${year}-01-01T00:00:00' and '${year}-12-31T23:59:59'`;
 
-        await axios.get(url).then(res => {
-          newData = { ...newData, ...{ [year]: res.data } };
-        });
-      }
-      debugger;
+          await axios.get(url).then(res => {
+            newData = { ...newData, ...{ [year]: res.data } };
+          });
+          return null;
+        })
+      );
+
       setChartData(newData);
     };
 
@@ -48,13 +52,13 @@ const FatalitiesByMode = () => {
     });
   }, []);
 
-  const createChartLabels = () => years.sort().map(year => `${year}`);
+  const createChartLabels = () => yearsArray.sort().map(year => `${year}`);
 
   const getModeData = flag =>
-    years.map(year => {
+    yearsArray.map(year => {
       let fatalities = 0;
-      !!chartData &&
-        chartData[year].forEach(f => f[`${flag}`] === "Y" && fatalities++);
+
+      chartData[year].forEach(f => f[`${flag}`] === "Y" && fatalities++);
       return fatalities;
     });
 
