@@ -410,4 +410,4 @@ def process_geocode_record(record):
 
     print(mutation_query)
 
-    # run_query(mutation_query)
+    run_query(mutation_query)
