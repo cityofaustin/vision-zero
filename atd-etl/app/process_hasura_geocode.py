@@ -36,6 +36,8 @@ with concurrent.futures.ThreadPoolExecutor(max_workers=max_threads) as executor:
     for crash_record in records_to_geocode["data"]["atd_txdot_crashes"]:
         executor.submit(process_geocode_record, crash_record)
 
+# for crash_record in records_to_geocode["data"]["atd_txdot_crashes"]:
+#     process_geocode_record(crash_record)
 
 end = time.time()
 hours, rem = divmod(end - start, 3600)

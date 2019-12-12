@@ -16,7 +16,6 @@ The application requires the requests library:
 import requests
 import datetime
 import json
-import web_pdb
 
 # Today
 today = datetime.date.today()
@@ -136,7 +135,7 @@ def is_faulty_street(street):
     :return: bool
     """
     # If the street is empty, then it is faulty.
-    if street == "":
+    if street == "" or street is None:
         return True
 
     list_of_bad_keywords = [
@@ -236,36 +235,6 @@ def geocode_address_here(address):
         # coordinates = request.json()['Response']['View'][0]['Result'][0]['Location']['DisplayPosition']
     except Exception as e:
         return {"error": str(e)}
-
-    return {}
-
-
-def clean_geocode_response_here(response):
-    """
-    Specific to the Here geocoder. This function has the purpose of cleaning up
-    the response to avoid interpolated addresses, and anything outside the bounding box.
-    Returns the same dictionary.
-    :param response: dict
-    :return: dict
-    """
-    results = []
-
-    # Try to get the results into our own array
-    try:
-        results = response["Response"]["View"][0]["Result"]
-    except:
-        results = []
-
-    # If our array is not empty, then we process our array
-    # if len(results) > 0:
-    #     # Remove anything that is interpolated
-    #     # We just have to remove anything outside our bound box
-    #     # Remove anything outside the United States
-    #     # Remove anything outside of Texas
-    #     # Remove anything outside of Travis, Williamson, Hays, Burnet, Bastrop
-    #     web_pdb.set_trace()
-
-    return results
 
 
 def render_final_address(record):
@@ -420,9 +389,15 @@ def process_geocode_record(record):
         return
 
     geocode_response = geocode_address_here(final_address)
-    clean_response = clean_geocode_response_here(geocode_response)
     calculated_match_quality = get_match_quality_here(geocode_response)
     latitude, longitude = get_coordinates_here(geocode_response)
+
+    if latitude == 0 or longitude == 0:
+        print(
+            "[Error] Skipping geocode, there are reported errors in the geocode for crash id: %s, error: %s"
+            % (crash_id, json.dumps(geocode_response))
+        )
+        return
 
     mutation_query = update_record(
         crash_id=crash_id,
@@ -435,4 +410,4 @@ def process_geocode_record(record):
 
     print(mutation_query)
 
-    run_query(mutation_query)
+    # run_query(mutation_query)
