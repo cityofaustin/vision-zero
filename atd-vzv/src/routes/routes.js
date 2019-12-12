@@ -3,6 +3,6 @@ import Dashboard from "../views/dashboard/dashboard";
 import Map from "../views/map/map";
 
 export const routes = {
-  "/": () => <Dashboard />,
+  "/charts": () => <Dashboard />,
   "/map": () => <Map />
 };

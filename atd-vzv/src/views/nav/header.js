@@ -34,7 +34,7 @@ const Header = ({ toggleSidebar }) => (
 
         <Nav className="mr-auto" navbar>
           <NavItem>
-            <NavLink tag={A} href="/">
+            <NavLink tag={A} href="/charts">
               <FontAwesomeIcon icon={faHome} className="mr-2" />
               Dashboard
             </NavLink>
