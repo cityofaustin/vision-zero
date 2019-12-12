@@ -37,7 +37,6 @@ with concurrent.futures.ThreadPoolExecutor(max_workers=max_threads) as executor:
         executor.submit(process_geocode_record, crash_record)
 
 
-
 end = time.time()
 hours, rem = divmod(end - start, 3600)
 minutes, seconds = divmod(rem, 60)

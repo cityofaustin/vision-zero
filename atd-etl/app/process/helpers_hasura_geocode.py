@@ -388,7 +388,8 @@ def process_geocode_record(record):
 
     final_address = remove_duplicates(final_address)
 
-    print("""
+    print(
+        """
     ---------------------------------------------
     crash_id: %s
     primary_address: %s
@@ -397,9 +398,15 @@ def process_geocode_record(record):
     ---------------------------------------------
     final_address: %s
     ---------------------------------------------
-    """ % (
-        crash_id, primary_address, secondary_address, is_intersection_response, final_address
-    ))
+    """
+        % (
+            crash_id,
+            primary_address,
+            secondary_address,
+            is_intersection_response,
+            final_address,
+        )
+    )
 
     # If it is not an intersection, and the final address does not have a block number, then skip
     if (
@@ -427,5 +434,5 @@ def process_geocode_record(record):
     )
 
     print(mutation_query)
-    
+
     # run_query(mutation_query)
