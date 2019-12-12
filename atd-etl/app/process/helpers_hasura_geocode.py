@@ -14,9 +14,12 @@ The application requires the requests library:
 """
 
 import requests
-import os
+import datetime
 import json
 import web_pdb
+
+# Today
+today = datetime.date.today()
 
 #
 # We need to import our configuration, and the run_query method
@@ -58,7 +61,9 @@ def get_geocode_list():
         rpt_cris_cnty_id
       }
     }
-    """ % (ATD_ETL_CONFIG["ATD_HERE_RECORDS_PER_RUN"])
+    """ % (
+        ATD_ETL_CONFIG["ATD_HERE_RECORDS_PER_RUN"]
+    )
 
     return run_query(non_geocoded_records)
 
@@ -91,10 +96,10 @@ def update_record(crash_id, **kwargs):
     """ % (
         crash_id,
         kwargs["geocode_date"],
-        json.dumps(kwargs["geocode_match_metadata"]),
+        json.dumps(kwargs["geocode_match_metadata"]).replace('"', '\\"'),
         kwargs["geocode_match_quality"],
         kwargs["latitude_geocoded"],
-        kwargs["longitude_geocoded"]
+        kwargs["longitude_geocoded"],
     )
 
     return update_crash_latlong_query
@@ -113,11 +118,13 @@ def build_address(record, primary=True):
     else:
         final_address = f'{record["rpt_sec_block_num"]} {record["rpt_sec_street_pfx"]} {record["rpt_sec_street_name"]} {record["rpt_sec_street_sfx"]}'
 
-    final_address = final_address \
-        .replace("None", "") \
-        .replace("null", "") \
-        .replace(" ,", ",") \
-        .replace("  ", " ").strip()
+    final_address = (
+        final_address.replace("None", "")
+        .replace("null", "")
+        .replace(" ,", ",")
+        .replace("  ", " ")
+        .strip()
+    )
 
     return final_address
 
@@ -180,7 +187,6 @@ def is_intersection(record):
     rpt_street_name = record.get("rpt_street_name", "") or ""
     rpt_sec_street_name = record.get("rpt_sec_street_name", "") or ""
 
-
     # If either street name is empty, return false
     if rpt_street_name == "" and rpt_sec_street_name == "":
         return False
@@ -224,12 +230,12 @@ def geocode_address_here(address):
 
     try:
         # Make request to API Endpoint
-        return requests.get(ATD_ETL_CONFIG["ATD_HERE_API_ENDPOINT"], params=parameters).json()
+        return requests.get(
+            ATD_ETL_CONFIG["ATD_HERE_API_ENDPOINT"], params=parameters
+        ).json()
         # coordinates = request.json()['Response']['View'][0]['Result'][0]['Location']['DisplayPosition']
     except Exception as e:
-        return {
-            "error": str(e)
-        }
+        return {"error": str(e)}
 
     return {}
 
@@ -311,3 +317,113 @@ def remove_duplicates(address):
         address = address.replace(k, v).strip()
 
     return address
+
+
+def get_coordinates_here(response):
+    """
+    Returns a tuple with the lat/long
+    :param response: dict - The here response object
+    :return: double, double
+    """
+    try:
+        lat = response["Response"]["View"][0]["Result"][0]["Location"][
+            "NavigationPosition"
+        ][0]["Latitude"]
+        long = response["Response"]["View"][0]["Result"][0]["Location"][
+            "NavigationPosition"
+        ][0]["Longitude"]
+        return lat, long
+    except:
+        return 0, 0
+
+
+def process_geocode_record(record):
+    """
+    This method will geocode a record and update it in the database
+    :param record: dict - The record as it comes straight from hasura
+    """
+
+    crash_id = record["crash_id"]
+
+    # First gather some data
+    primary_address = build_address(record=record, primary=True)
+    secondary_address = build_address(record=record, primary=False)
+    is_intersection_response = False
+    final_address = ""
+
+    # If both are not addresses, then why proceed?
+    if is_faulty_street(primary_address) and is_faulty_street(secondary_address):
+        print(
+            "[Error] Skipping geocode, both primary and secondary streets are faulty, crash_id: %s"
+            % crash_id
+        )
+        return  # Nothing to do here
+
+    # If either one of the streets is bad, then:
+    if is_faulty_street(primary_address) or is_faulty_street(secondary_address):
+        # It is not an intersection
+        is_intersection_response = False
+
+        # If both are missing the block number, then it will be a
+        # wild guess by just having one street, skip this record.
+        if both_block_num_missing(record):
+            return  # Nothing to do here
+
+    # Both addresses are ok
+    is_intersection_response = is_intersection(record)
+
+    # If it is an intersection (ie. both block numbers are missing) then:
+    if is_intersection_response:
+        final_address = "%s & %s" % (primary_address, secondary_address)
+
+    # Not an intersection (one of the two block numbers is present)
+    else:
+        final_address = render_final_address(record)
+
+    if final_address is None:
+        print("No street could be found for crash_id: %s" % crash_id)
+        return
+
+    final_address += ", AUSTIN, TX"
+
+    final_address = remove_duplicates(final_address)
+
+    print("""
+    ---------------------------------------------
+    crash_id: %s
+    primary_address: %s
+    secondary_address: %s
+    is_intersection: %s
+    ---------------------------------------------
+    final_address: %s
+    ---------------------------------------------
+    """ % (
+        crash_id, primary_address, secondary_address, is_intersection_response, final_address
+    ))
+
+    # If it is not an intersection, and the final address does not have a block number, then skip
+    if (
+        is_intersection_response is False
+        and address_has_numbers(final_address) is False
+    ):
+        print(
+            "[Error] Skipping geocode, incomplete final address for crash_id: %s"
+            % crash_id
+        )
+        return
+
+    geocode_response = geocode_address_here(final_address)
+    clean_response = clean_geocode_response_here(geocode_response)
+    calculated_match_quality = get_match_quality_here(geocode_response)
+    latitude, longitude = get_coordinates_here(geocode_response)
+
+    mutation_query = update_record(
+        crash_id=crash_id,
+        geocode_date=today.strftime("%Y-%m-%d"),
+        geocode_match_metadata=geocode_response,
+        geocode_match_quality=calculated_match_quality,
+        latitude_geocoded=latitude,
+        longitude_geocoded=longitude,
+    )
+    print(mutation_query)
+    web_pdb.set_trace()
