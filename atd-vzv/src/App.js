@@ -1,16 +1,19 @@
-import React from "react";
-import "./App.css";
-import Dashboard from "./views/dashboard/dashboard";
+import React, { useState } from "react";
+import SideDrawer from "./views/nav/sidedrawer";
+import Content from "./views/content/content";
 
-function App() {
+import "./App.css";
+
+const App = () => {
+  const [isOpen, setOpen] = useState(false);
+  const toggle = () => setOpen(!isOpen);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <h1>Vision Zero Viewer</h1>
-      </header>
-      <Dashboard />
+      <SideDrawer toggle={toggle} isOpen={isOpen} />
+      <Content toggle={toggle} isOpen={isOpen} />
     </div>
   );
-}
+};
 
 export default App;
