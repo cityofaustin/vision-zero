@@ -8,6 +8,7 @@ from .config import ATD_ETL_CONFIG
 MAX_ATTEMPTS = ATD_ETL_CONFIG["MAX_ATTEMPTS"]
 RETRY_WAIT_TIME = ATD_ETL_CONFIG["RETRY_WAIT_TIME"]
 
+
 def run_query(query):
     """
     Runs a GraphQL query against Hasura via an HTTP POST request.
@@ -34,8 +35,8 @@ def run_query(query):
                 "query": query
             }
 
-            # If the current attempt is 5, then exit with failure
-            if current_attempt == 5:
+            # If the current attempt is equal to MAX_ATTEMPTS, then exit with failure
+            if current_attempt == MAX_ATTEMPTS:
                 return response
 
             # If less than 5, then wait 5 seconds and try again
