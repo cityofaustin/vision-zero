@@ -61,22 +61,24 @@ function runetl {
     echo -e "ATD_DOCKER_IMAGE: \t${ATD_DOCKER_IMAGE}";
     echo -e "--------------------\n";
 
+    echo "--------------------------------------------------------------------";
+    echo "--- Running web-pdb debugger at http://localhost:${WEB_PDB_PORT} ---";
+    echo "--------------------------------------------------------------------";
 
-    # If the command is not bash, prepend the forward slash...
-    if [[ "$2" == "bash" ]]; then
-        FINAL_COMMAND=$RUN_COMMAND;
-    else
-        FINAL_COMMAND="/${RUN_COMMAND}";
+    # Prepend the forward slash if missing in the run command...
+    if [[ "${RUN_COMMAND}" =~ ^app/ ]]; then
+        RUN_COMMAND="/${RUN_COMMAND}";
     fi;
 
-    echo "--------------------------------------------------------------------"
-    echo "--- Running web-pdb debugger at http://localhost:${WEB_PDB_PORT} ---"
-    echo "--------------------------------------------------------------------"
+    FINAL_COMMAND="docker run -it --rm -p $WEB_PDB_PORT:5555/tcp \
+        -v $(pwd)/app:/app -v $(pwd)/data:/data -v $(pwd)/tmp:/app/tmp \
+        --env-file $ATD_CRIS_CONFIG $ATD_DOCKER_IMAGE $RUN_COMMAND;"
+
+    echo $FINAL_COMMAND;
+    echo "--------------------------------------------------------------------";
 
     # Run Docker
-    docker run -it --rm -p $WEB_PDB_PORT:5555/tcp \
-        -v $(pwd)/app:/app -v $(pwd)/data:/data -v $(pwd)/tmp:/app/tmp \
-        --env-file $ATD_CRIS_CONFIG $ATD_DOCKER_IMAGE $FINAL_COMMAND;
+    eval ${FINAL_COMMAND};
 
     # Reload Run Script into memory
     source $(pwd)/runetl.sh;
