@@ -3,8 +3,8 @@ import Fatalities from "./fatalities";
 import SeriousInjuries from "./seriousInjuries";
 import SeriousInjuryAndFatalCrashesByMonth from "./seriousInjuryAndFatalCrashesByMonth";
 import SeriousInjuryAndFatalCrashesByMode from "./seriousInjuryAndFatalCrashesByMode";
-import YearsOfLifeLost from "./yearsOfLifeLost";
 import FatalitiesMultiYear from "./FatalitiesMultiYear";
+import FatalitiesByTimeOfDayWeek from "./fatalitiesByTimeOfDayWeek";
 
 import { Container, Row, Col } from "reactstrap";
 
@@ -30,10 +30,10 @@ const Dashboard = () => {
       </Row>
       <Row>
         <Col md="6">
-          <YearsOfLifeLost />
+          <FatalitiesMultiYear />
         </Col>
         <Col md="6">
-          <FatalitiesMultiYear />
+          <FatalitiesByTimeOfDayWeek />
         </Col>
       </Row>
     </Container>
