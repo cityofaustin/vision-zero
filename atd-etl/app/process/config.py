@@ -21,6 +21,8 @@ ATD_ETL_CONFIG = {
     "HASURA_ENDPOINT": os.getenv("HASURA_ENDPOINT", ""),
     "HASURA_ADMIN_KEY": os.getenv("HASURA_ADMIN_KEY", ""),
     "MAX_THREADS": int(os.getenv("MAX_THREADS", "20")),
+    "MAX_ATTEMPTS": int(os.getenv("MAX_ATTEMPTS", "5")),
+    "RETRY_WAIT_TIME": int(os.getenv("RETRY_WAIT_TIME", "5")),
 
     # CRIS
     "ATD_CRIS_WEBSITE": "https://cris.dot.state.tx.us/",
