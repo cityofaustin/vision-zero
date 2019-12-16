@@ -345,6 +345,7 @@ rpt_street_sfx
 rpt_street_desc
 rr_relat_fl
 schl_bus_fl
+speed_mgmt_points
 street_name
 street_name_2
 street_nbr
