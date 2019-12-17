@@ -2,7 +2,7 @@ import React, { PureComponent } from "react";
 import styled, { keyframes, css } from "styled-components";
 import { colors } from "../../../styles/colors";
 import { pinStyles, PIN_ICON } from "../../../styles/mapPinStyles";
-export default class Pin extends PureComponent {
+export default class StaticPin extends PureComponent {
   render() {
     const {
       color = "warning",
@@ -16,7 +16,7 @@ export default class Pin extends PureComponent {
       stroke: pinStyles["stroke"],
       strokeWidth: pinStyles["strokeWidth"],
       // Move pin up on drag and down when dropped
-      transform: `translate(0px, ${isDragging && animated ? `-30px` : `0px`})`,
+      transform: `translate(${-size / 2}px,${-size}px)`,
     };
 
     const pulsate = keyframes`
@@ -56,7 +56,7 @@ export default class Pin extends PureComponent {
       left: 72%;
       top: 34%;
       margin: 11px 0px 0px -12px;
-      transform: rotateX(55deg);
+      transform: rotateX(55deg) translate(${-size / 2}px, ${-size}px);
       z-index: -2;
 
       /* Disable pulse animation while dragging map */
@@ -68,7 +68,7 @@ export default class Pin extends PureComponent {
         <svg height={size} viewBox="0 0 100 125" style={pinStyle}>
           <path d={PIN_ICON} />
         </svg>
-        {/* <Shadow color={color} /> */}
+        <Shadow color={color} />
       </>
     );
   }
