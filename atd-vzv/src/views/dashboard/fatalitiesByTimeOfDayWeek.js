@@ -3,6 +3,7 @@ import axios from "axios";
 import moment from "moment";
 
 import { Container, Row, Col } from "reactstrap";
+import { Heatmap } from "reaviz";
 
 const FatalitiesByTimeOfDayWeek = () => {
   const thisYear = moment().format("YYYY");
@@ -71,6 +72,7 @@ const FatalitiesByTimeOfDayWeek = () => {
   };
 
   const calculatHourBlockTotals = (data, dateString) => {
+    buildDataArray();
     data.data.forEach(record => {
       const date = new Date(record.crash_date);
       const dayOfWeek = date.getDay();
@@ -82,8 +84,6 @@ const FatalitiesByTimeOfDayWeek = () => {
     return dataArray;
   };
 
-  buildDataArray();
-
   useEffect(() => {
     // Fetch records from this year through last month
     axios.get(thisYearUrl).then(res => {
@@ -93,7 +93,23 @@ const FatalitiesByTimeOfDayWeek = () => {
 
   console.log(thisYearDeathArray);
 
-  return <Container></Container>;
+//   const data = [
+//     {
+//       key: hourBlockArray[0],
+//       data: [
+//         {
+//           key: dayOfWeekArray[0],
+//           data: thisYearDeathArray[0]
+//         }
+//       ]
+//     }
+//   ];
+
+  return (
+    <Container>
+      {/* <Heatmap height={350} width={350} data={thisYearDeathArray} /> */}
+    </Container>
+  );
 };
 
 export default FatalitiesByTimeOfDayWeek;
