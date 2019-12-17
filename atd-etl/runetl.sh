@@ -54,6 +54,11 @@ function runetl {
         return;
     fi;
 
+    # If the command is Hasura locations, then change the image accordingly
+    if [[ "$RUN_COMMAND" = "app/process_hasura_locations.py" ]]; then
+        export ATD_DOCKER_IMAGE="atddocker/atd-vz-etl-agol:local";
+    fi;
+
     echo -e "\n\n----- ETL RUN ------";
     echo -e "Run Environment: \t${RUN_ENVIRONMENT}";
     echo -e "Run File: \t\t${RUN_COMMAND}";
