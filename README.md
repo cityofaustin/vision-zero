@@ -8,13 +8,13 @@ This folder hosts our API that securely downloads a private file from S3. It is 
 
 [more info](./atd-cr3-api/README.md)
 
-## atd-cris-capybara
+## atd-etl (Extract-Transform-Load)
 
-Our current method for extracting data from the TxDOT C.R.I.S. data system uses Capybara to request, download and process data. It is deployed as a Docker container.
+Our current method for extracting data from the TxDOT C.R.I.S. data system uses a python library called [Splinter](https://splinter.readthedocs.io/en/latest/) to request, download and process data. It is deployed as a Docker container.
 
-For step-by-step details on how to prepare your environment and how to execute this process, please refer to the documentation in the [atd-cris-capybara folder.](https://github.com/cityofaustin/atd-vz-data/tree/master/atd-cris-capybara)
+For step-by-step details on how to prepare your environment and how to execute this process, please refer to the documentation in the [atd-etl folder.](https://github.com/cityofaustin/atd-vz-data/tree/master/atd-etl)
 
-[more info](./atd-cris-capybara/README.md)
+[more info](./atd-etl/README.md)
 
 ## atd-vzd (Vision Zero Database)
 
@@ -47,11 +47,11 @@ Staging site: https://visionzero-staging.austinmobility.io/viewer/
 
 Technologies, libraries, and languages used for this project include:
 
+- Docker
 - Hasura
 - PostgreSQL
 - React (Javascript)
 - Core UI (HTML & CSS)
-- Capybara (Ruby)
 - Python
 
 ## License
