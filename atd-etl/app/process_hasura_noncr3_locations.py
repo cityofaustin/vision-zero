@@ -37,9 +37,13 @@ query = """
     }
 """
 
-noncr3_query = """
+# Set constants to feed into the non-CR3 query
+LIMIT = "1000"
+OFFSET = "1000"
+
+noncr3_query = Template("""
     query getNonCR3Collision {
-        atd_apd_blueform(limit: 200, offset: 200)  {
+        atd_apd_blueform(limit: $limit, offset: $offset)  {
             address
             hour
             latitude
@@ -49,7 +53,7 @@ noncr3_query = """
             form_id
         }
     }
-"""
+""").substitute(limit=LIMIT, offset=OFFSET)
 
 find_location_query = Template("""
 query findLocation {
@@ -70,29 +74,42 @@ update_record_noncr3 = Template("""
 
 # web_pdb.set_trace()
 
-# Query for a list of Non-CR3 Collisions
-result = run_query(noncr3_query)
-non_CR3_collisions_array = result['data']['atd_apd_blueform']
 
-# Loop over each record
-for collision in non_CR3_collisions_array:
-    print("Processing NON CR3 RECORD: '%s' " % collision["form_id"])
-    collision_query = find_location_query.substitute(id=collision["form_id"])
+#
+# This method requests a set of nonCR3 collisions and loops through each one.
+# During each iteration of the loop, we check to see if the collision's coordinates
+# fall within any Location polygons. If so, it assigns a Location ID to the
+# nonCR3 collison's "location_id".
+#
 
-    # Query to see if the record has a matching Location
-    # using findLocation SQL function
-    location_result = run_query(collision_query)
-    location = location_result['data']['find_location_for_noncr3_collision']
+def add_locations_for_each_nonCR3_collison():
+    # Query for a list of Non-CR3 Collisons
+    result = run_query(noncr3_query)
+    non_CR3_collisions_array = result['data']['atd_apd_blueform']
 
-    # If there is a matching location...
-    if location:
-        location_id = location[0]['unique_id']
-        location_desc = location[0]['description']
-        non_cr3_mutation = update_record_noncr3.substitute(
-            id=collision["form_id"], location_id=location_id)
-        # ...run a mutation on the collision and update its location_id
-        mutation_result = run_query(non_cr3_mutation)
-        print(mutation_result)
+    # Loop over each record
+    for collision in non_CR3_collisions_array:
+        print("Processing NON CR3 RECORD: '%s' " % collision["form_id"])
+        collision_query = find_location_query.substitute(
+            id=collision["form_id"])
 
-end_time = datetime.now()
-print('Duration: {}'.format(end_time - start_time))
+        # Query to see if the record has a matching Location
+        # using findLocation SQL function
+        location_result = run_query(collision_query)
+        location = location_result['data']['find_location_for_noncr3_collision']
+
+        # If there is a matching location...
+        if location:
+            location_id = location[0]['unique_id']
+            location_desc = location[0]['description']
+            non_cr3_mutation = update_record_noncr3.substitute(
+                id=collision["form_id"], location_id=location_id)
+            # ...run a mutation on the collision and update its location_id
+            mutation_result = run_query(non_cr3_mutation)
+            print(mutation_result)
+
+    end_time = datetime.now()
+    print('Duration: {}'.format(end_time - start_time))
+
+
+add_locations_for_each_nonCR3_collison()
