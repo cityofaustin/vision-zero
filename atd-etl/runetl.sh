@@ -17,6 +17,7 @@ chmod +x app/*.py;
 # We also need to export the name of the docker image we are going to use
 #
 export ATD_DOCKER_IMAGE="atddocker/atd-vz-etl:local";
+export ATD_DOCKER_IMAGE_AGOL="atddocker/atd-vz-etl-agol:local";
 
 function runetl {
     # Let's establish our default web-pdb port:
@@ -29,7 +30,16 @@ function runetl {
 
     # If the first argumentis build, then we build the container
     if [[ "$1" == "build" ]]; then
-        docker build -f Dockerfile -t $ATD_DOCKER_IMAGE .
+        if [[ "$2" == "agol" ]]; then
+            docker build -f Dockerfile.agol -t $ATD_DOCKER_IMAGE_AGOL .;
+            return;
+        elif [[ "$2" == "clean" ]]; then
+            docker image prune;
+            return;
+        fi;
+
+
+        docker build -f Dockerfile -t $ATD_DOCKER_IMAGE .;
         return;
     fi;
 
@@ -56,7 +66,7 @@ function runetl {
 
     # If the command is Hasura locations, then change the image accordingly
     if [[ "$RUN_COMMAND" = "app/process_hasura_locations.py" ]]; then
-        export ATD_DOCKER_IMAGE="atddocker/atd-vz-etl-agol:local";
+        export ATD_DOCKER_IMAGE="$ATD_DOCKER_IMAGE_AGOL";
     fi;
 
     echo -e "\n\n----- ETL RUN ------";
