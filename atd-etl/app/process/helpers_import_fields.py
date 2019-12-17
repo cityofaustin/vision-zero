@@ -195,6 +195,12 @@ CRIS_TXDOT_FIELDS = {
                     "unit_id"
                 ]
             ],
+            [
+                filter_numeric_empty_to_null,
+                [
+                    "cmv_bus_type_id"
+                ]
+            ],
         ]
     },
 
