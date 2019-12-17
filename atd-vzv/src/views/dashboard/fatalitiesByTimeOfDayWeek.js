@@ -15,9 +15,9 @@ const FatalitiesByTimeOfDayWeek = () => {
     "YYYY-MM"
   ).daysInMonth();
   const lastMonthLastDayDate = `${thisYear}-${lastMonthNumber}-${lastMonthLastDayNumber}`;
-  const lastMonthString = moment()
-    .subtract(1, "month")
-    .format("MMMM");
+//   const lastMonthString = moment()
+//     .subtract(1, "month")
+//     .format("MMMM");
 
   const thisYearUrl = `https://data.austintexas.gov/resource/y2wy-tgr5.json?$where=death_cnt > 0 AND crash_date between '${thisYear}-01-01T00:00:00' and '${lastMonthLastDayDate}T23:59:59'`;
 
@@ -61,17 +61,24 @@ const FatalitiesByTimeOfDayWeek = () => {
   const dataArray = [];
 
   const buildDataArray = () => {
-    dayOfWeekArray.forEach(day => {
-      let dayArray = [day];
-      hourBlockArray.forEach(hour => {
-        let hourValue = 0;
-        dayArray.push(hourValue);
+    hourBlockArray.forEach(hour => {
+      let hourObject = {
+        key: hour,
+        data: []
+      };
+      dayOfWeekArray.forEach(day => {
+        let dayObject = {
+          key: day,
+          data: 0
+        };
+        hourObject.data.push(dayObject);
       });
-      dataArray.push(dayArray);
+      hourObject.data.reverse();
+      dataArray.push(hourObject);
     });
   };
 
-  const calculatHourBlockTotals = (data, dateString) => {
+  const calculatHourBlockTotals = (data) => {
     buildDataArray();
     data.data.forEach(record => {
       const date = new Date(record.crash_date);
@@ -79,7 +86,7 @@ const FatalitiesByTimeOfDayWeek = () => {
       const time = record.crash_time;
       const timeArray = time.split(":");
       const hour = parseInt(timeArray[0]);
-      dataArray[dayOfWeek][hour + 1]++;
+      dataArray[hour].data[dayOfWeek].data++;
     });
     return dataArray;
   };
@@ -93,21 +100,9 @@ const FatalitiesByTimeOfDayWeek = () => {
 
   console.log(thisYearDeathArray);
 
-//   const data = [
-//     {
-//       key: hourBlockArray[0],
-//       data: [
-//         {
-//           key: dayOfWeekArray[0],
-//           data: thisYearDeathArray[0]
-//         }
-//       ]
-//     }
-//   ];
-
   return (
     <Container>
-      {/* <Heatmap height={350} width={350} data={thisYearDeathArray} /> */}
+      <Heatmap height={350} width={350} data={thisYearDeathArray} />
     </Container>
   );
 };
