@@ -16,24 +16,6 @@ const FatalitiesByTimeOfDayWeek = () => {
   ).daysInMonth();
   const lastMonthLastDayDate = `${thisYear}-${lastMonthNumber}-${lastMonthLastDayNumber}`;
 
-  const getFatalitiesByYearsAgoUrl = yearsAgo => {
-    if (yearsAgo === 0) {
-      return `https://data.austintexas.gov/resource/y2wy-tgr5.json?$where=death_cnt > 0 AND crash_date between '${thisYear}-01-01T00:00:00' and '${lastMonthLastDayDate}T23:59:59'`;
-    } else {
-      let yearsAgoDate = moment()
-        .subtract(yearsAgo, "year")
-        .format("YYYY");
-      return `https://data.austintexas.gov/resource/y2wy-tgr5.json?$where=death_cnt > 0 AND crash_date between '${yearsAgoDate}-01-01T00:00:00' and '${yearsAgoDate}-12-31T23:59:59'`;
-    }
-  };
-
-  const [thisYearDeathArray, setThisYearDeathArray] = useState([]);
-//   const [lastYearDeathArray, setLastYearDeathArray] = useState([]);
-//   const [twoYearsAgoDeathArray, setTwoYearsAgoDeathArray] = useState([]);
-//   const [threeYearsAgoDeathArray, setThreeYearsAgoDeathArray] = useState([]);
-//   const [fourYearsAgoDeathArray, setFourYearsAgoDeathArray] = useState([]);
-//   const [fiveYearsAgoDeathArray, setFiveYearsAgoDeathArray] = useState([]);
-
   const dayOfWeekArray = [
     "Sunday",
     "Monday",
@@ -70,6 +52,19 @@ const FatalitiesByTimeOfDayWeek = () => {
     "11PM"
   ];
   let dataArray = [];
+
+  const [thisYearDeathArray, setThisYearDeathArray] = useState([]);
+
+  const getFatalitiesByYearsAgoUrl = yearsAgo => {
+    if (yearsAgo === 0) {
+      return `https://data.austintexas.gov/resource/y2wy-tgr5.json?$where=death_cnt > 0 AND crash_date between '${thisYear}-01-01T00:00:00' and '${lastMonthLastDayDate}T23:59:59'`;
+    } else {
+      let yearsAgoDate = moment()
+        .subtract(yearsAgo, "year")
+        .format("YYYY");
+      return `https://data.austintexas.gov/resource/y2wy-tgr5.json?$where=death_cnt > 0 AND crash_date between '${yearsAgoDate}-01-01T00:00:00' and '${yearsAgoDate}-12-31T23:59:59'`;
+    }
+  };
 
   const getYearsAgoLabel = yearsAgo => {
     return moment()
@@ -114,81 +109,41 @@ const FatalitiesByTimeOfDayWeek = () => {
     axios.get(getFatalitiesByYearsAgoUrl(0)).then(res => {
       setThisYearDeathArray(calculatHourBlockTotals(res, lastMonthLastDayDate));
     });
+  }, [getFatalitiesByYearsAgoUrl(0), lastMonthLastDayDate]);
 
-    // // Fetch records from last year
-    // axios.get(getFatalitiesByYearsAgoUrl(1)).then(res => {
-    //   setLastYearDeathArray(calculatHourBlockTotals(res));
-    // });
-
-    // // Fetch records from two years ago
-    // axios.get(getFatalitiesByYearsAgoUrl(2)).then(res => {
-    //   setTwoYearsAgoDeathArray(calculatHourBlockTotals(res));
-    // });
-
-    // // Fetch records from three years ago
-    // axios.get(getFatalitiesByYearsAgoUrl(3)).then(res => {
-    //   setThreeYearsAgoDeathArray(calculatHourBlockTotals(res));
-    // });
-
-    // // Fetch records from four years ago
-    // axios.get(getFatalitiesByYearsAgoUrl(4)).then(res => {
-    //   setFourYearsAgoDeathArray(calculatHourBlockTotals(res));
-    // });
-
-    // // Fetch records from five years ago
-    // axios.get(getFatalitiesByYearsAgoUrl(5)).then(res => {
-    //   setFiveYearsAgoDeathArray(calculatHourBlockTotals(res));
-    // });
-  }, [
-    getFatalitiesByYearsAgoUrl(0),
-    // getFatalitiesByYearsAgoUrl(1),
-    // getFatalitiesByYearsAgoUrl(2),
-    // getFatalitiesByYearsAgoUrl(3),
-    // getFatalitiesByYearsAgoUrl(4),
-    // getFatalitiesByYearsAgoUrl(5),
-    lastMonthLastDayDate
-  ]);
-
-  let data = thisYearDeathArray;
-
-  const updateData = (data) => {
-    data = axios.get(getFatalitiesByYearsAgoUrl(data)).then(res => {
-        setThisYearDeathArray(calculatHourBlockTotals(res, lastMonthLastDayDate));
-      });
+  const updateData = data => {
+    axios.get(getFatalitiesByYearsAgoUrl(data)).then(res => {
+      setThisYearDeathArray(calculatHourBlockTotals(res, lastMonthLastDayDate));
+    });
   };
 
   console.log(thisYearDeathArray);
-//   console.log(lastYearDeathArray);
-//   console.log(twoYearsAgoDeathArray);
-//   console.log(threeYearsAgoDeathArray);
-//   console.log(fourYearsAgoDeathArray);
-//   console.log(fiveYearsAgoDeathArray);
 
   return (
     <Container>
       <Row>
         <Col md="12">
-          <Heatmap height={200} width={450} data={data} />
+          <Heatmap height={200} width={450} data={thisYearDeathArray} />
         </Col>
       </Row>
       <Row>
         <Col md="2">
-          <h3 onClick={(() => updateData(5))}>{getYearsAgoLabel(5)}</h3>
+          <h3 onClick={() => updateData(5)}>{getYearsAgoLabel(5)}</h3>
         </Col>
         <Col md="2">
-          <h3 onClick={(() => updateData(4))}>{getYearsAgoLabel(4)}</h3>
+          <h3 onClick={() => updateData(4)}>{getYearsAgoLabel(4)}</h3>
         </Col>
         <Col md="2">
-          <h3 onClick={(() => updateData(3))}>{getYearsAgoLabel(3)}</h3>
+          <h3 onClick={() => updateData(3)}>{getYearsAgoLabel(3)}</h3>
         </Col>
         <Col md="2">
-          <h3 onClick={(() => updateData(2))}>{getYearsAgoLabel(2)}</h3>
+          <h3 onClick={() => updateData(2)}>{getYearsAgoLabel(2)}</h3>
         </Col>
         <Col md="2">
-          <h3 onClick={(() => updateData(1))}>{getYearsAgoLabel(1)}</h3>
+          <h3 onClick={() => updateData(1)}>{getYearsAgoLabel(1)}</h3>
         </Col>
         <Col md="2">
-          <h3 onClick={(() => updateData(0))}>{getYearsAgoLabel(0)}</h3>
+          <h3 onClick={() => updateData(0)}>{getYearsAgoLabel(0)}</h3>
         </Col>
       </Row>
     </Container>
