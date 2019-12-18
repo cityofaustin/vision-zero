@@ -17,7 +17,7 @@ export default class Pin extends PureComponent {
       strokeWidth: pinStyles["strokeWidth"],
       // Move pin up on drag and down when dropped
       transform: `translate(${-size / 2}px, ${
-        isDragging && animated ? `-50px` : `${-size}px`
+        isDragging && animated ? `-60px` : `${-size}px`
       })`,
     };
 
@@ -56,9 +56,9 @@ export default class Pin extends PureComponent {
       width: 10px;
       position: absolute;
       left: 72%;
-      top: 34%;
+      top: -10%;
       margin: 11px 0px 0px -12px;
-      transform: rotateX(55deg);
+      transform: rotateX(55deg) translate(${-size / 2}px, ${-size}px);
       z-index: -2;
 
       /* Disable pulse animation while dragging map */
@@ -70,7 +70,7 @@ export default class Pin extends PureComponent {
         <svg height={size} viewBox="0 0 100 125" style={pinStyle}>
           <path d={PIN_ICON} />
         </svg>
-        {/* <Shadow color={color} /> */}
+        <Shadow color={color} />
       </>
     );
   }

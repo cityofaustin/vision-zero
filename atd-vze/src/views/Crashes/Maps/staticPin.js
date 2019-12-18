@@ -54,7 +54,7 @@ export default class StaticPin extends PureComponent {
       width: 10px;
       position: absolute;
       left: 72%;
-      top: 34%;
+      top: -10%;
       margin: 11px 0px 0px -12px;
       transform: rotateX(55deg) translate(${-size / 2}px, ${-size}px);
       z-index: -2;
@@ -68,7 +68,7 @@ export default class StaticPin extends PureComponent {
         <svg height={size} viewBox="0 0 100 125" style={pinStyle}>
           <path d={PIN_ICON} />
         </svg>
-        {/* <Shadow color={color} /> */}
+        <Shadow color={color} />
       </>
     );
   }
