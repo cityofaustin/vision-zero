@@ -68,7 +68,7 @@ export default class StaticPin extends PureComponent {
         <svg height={size} viewBox="0 0 100 125" style={pinStyle}>
           <path d={PIN_ICON} />
         </svg>
-        <Shadow color={color} />
+        {/* <Shadow color={color} /> */}
       </>
     );
   }
