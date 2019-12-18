@@ -15,9 +15,11 @@ proper interval.
 The application requires the requests library:
     https://pypi.org/project/requests/
 """
-
+import agolutil
 import sys
 import signal
 import json
 import glob
 import concurrent.futures
+
+print("Done with agolutil")

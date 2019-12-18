@@ -2,7 +2,7 @@
 # ATD Vision Zero Processor
 # An ETL Processor that uses Python 3.8, Splinter, Selenium and Chrome/ChromeDriver
 #
-FROM python:3-alpine3.8
+FROM python:3.8-alpine3.10
 
 RUN mkdir /app && mkdir /app/tmp && mkdir /data
 
