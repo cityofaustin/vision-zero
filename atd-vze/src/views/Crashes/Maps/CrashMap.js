@@ -7,7 +7,6 @@ import MapGL, {
 
 // import ControlPanel from "./control-panel";
 import Pin from "./Pin";
-import StaticPin from "./staticPin";
 
 const TOKEN = process.env.REACT_APP_MAPBOX_TOKEN;
 
@@ -93,10 +92,8 @@ export default class CrashMap extends Component {
         <Marker
           latitude={this.props.data.latitude_primary}
           longitude={this.props.data.longitude_primary}
-          // offsetLeft={-20}
-          // offsetTop={-10}
         >
-          <StaticPin size={40} color={"warning"} />
+          <Pin size={40} color={"warning"} />
         </Marker>
       </MapGL>
     );

@@ -17,7 +17,7 @@ export default class Pin extends PureComponent {
       strokeWidth: pinStyles["strokeWidth"],
       // Move pin up on drag and down when dropped
       transform: `translate(${-size / 2}px, ${
-        isDragging && animated ? `-60px` : `${-size}px`
+        isDragging && animated ? `-65px` : `${-size}px`
       })`,
     };
 
