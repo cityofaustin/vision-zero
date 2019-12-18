@@ -92,8 +92,6 @@ export default class CrashMap extends Component {
         <Marker
           latitude={this.props.data.latitude_primary}
           longitude={this.props.data.longitude_primary}
-          offsetLeft={-20}
-          offsetTop={-10}
         >
           <Pin size={40} color={"warning"} />
         </Marker>

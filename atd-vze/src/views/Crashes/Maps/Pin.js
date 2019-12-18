@@ -16,7 +16,9 @@ export default class Pin extends PureComponent {
       stroke: pinStyles["stroke"],
       strokeWidth: pinStyles["strokeWidth"],
       // Move pin up on drag and down when dropped
-      transform: `translate(0px, ${isDragging && animated ? `-30px` : `0px`})`,
+      transform: `translate(${-size / 2}px, ${
+        isDragging && animated ? `-65px` : `${-size}px`
+      })`,
     };
 
     const pulsate = keyframes`
@@ -54,9 +56,9 @@ export default class Pin extends PureComponent {
       width: 10px;
       position: absolute;
       left: 72%;
-      top: 34%;
+      top: -10%;
       margin: 11px 0px 0px -12px;
-      transform: rotateX(55deg);
+      transform: rotateX(55deg) translate(${-size / 2}px, ${-size}px);
       z-index: -2;
 
       /* Disable pulse animation while dragging map */
