@@ -15,13 +15,22 @@ const FatalitiesByTimeOfDayWeek = () => {
     "YYYY-MM"
   ).daysInMonth();
   const lastMonthLastDayDate = `${thisYear}-${lastMonthNumber}-${lastMonthLastDayNumber}`;
-//   const lastMonthString = moment()
-//     .subtract(1, "month")
-//     .format("MMMM");
 
   const thisYearUrl = `https://data.austintexas.gov/resource/y2wy-tgr5.json?$where=death_cnt > 0 AND crash_date between '${thisYear}-01-01T00:00:00' and '${lastMonthLastDayDate}T23:59:59'`;
 
+  const getFatalitiesByYearsAgoUrl = yearsAgo => {
+    let yearsAgoDate = moment()
+      .subtract(yearsAgo, "year")
+      .format("YYYY");
+    return `https://data.austintexas.gov/resource/y2wy-tgr5.json?$where=death_cnt > 0 AND crash_date between '${yearsAgoDate}-01-01T00:00:00' and '${yearsAgoDate}-12-31T23:59:59'`;
+  };
+
   const [thisYearDeathArray, setThisYearDeathArray] = useState([]);
+//   const [lastYearDeathArray, setLastYearDeathArray] = useState([]);
+//   const [twoYearsAgoDeathArray, setTwoYearsAgoDeathArray] = useState([]);
+//   const [threeYearsAgoDeathArray, setThreeYearsAgoDeathArray] = useState([]);
+//   const [fourYearsAgoDeathArray, setFourYearsAgoDeathArray] = useState([]);
+//   const [fiveYearsAgoDeathArray, setFiveYearsAgoDeathArray] = useState([]);
 
   const dayOfWeekArray = [
     "Sunday",
@@ -78,7 +87,7 @@ const FatalitiesByTimeOfDayWeek = () => {
     });
   };
 
-  const calculatHourBlockTotals = (data) => {
+  const calculatHourBlockTotals = data => {
     buildDataArray();
     data.data.forEach(record => {
       const date = new Date(record.crash_date);
@@ -96,7 +105,40 @@ const FatalitiesByTimeOfDayWeek = () => {
     axios.get(thisYearUrl).then(res => {
       setThisYearDeathArray(calculatHourBlockTotals(res, lastMonthLastDayDate));
     });
-  }, [thisYearUrl, lastMonthLastDayDate]);
+
+    // // Fetch records from last year
+    // axios.get(getFatalitiesByYearsAgoUrl(1)).then(res => {
+    //   setLastYearDeathArray(calculatHourBlockTotals(res));
+    // });
+
+    // // Fetch records from two years ago
+    // axios.get(getFatalitiesByYearsAgoUrl(2)).then(res => {
+    //   setTwoYearsAgoDeathArray(calculatHourBlockTotals(res));
+    // });
+
+    // // Fetch records from three years ago
+    // axios.get(getFatalitiesByYearsAgoUrl(3)).then(res => {
+    //   setThreeYearsAgoDeathArray(calculatHourBlockTotals(res));
+    // });
+
+    // // Fetch records from four years ago
+    // axios.get(getFatalitiesByYearsAgoUrl(4)).then(res => {
+    //   setFourYearsAgoDeathArray(calculatHourBlockTotals(res));
+    // });
+
+    // // Fetch records from five years ago
+    // axios.get(getFatalitiesByYearsAgoUrl(5)).then(res => {
+    //   setFiveYearsAgoDeathArray(calculatHourBlockTotals(res));
+    // });
+  }, [
+    thisYearUrl,
+    // getFatalitiesByYearsAgoUrl(1),
+    // getFatalitiesByYearsAgoUrl(2),
+    // getFatalitiesByYearsAgoUrl(3),
+    // getFatalitiesByYearsAgoUrl(4),
+    // getFatalitiesByYearsAgoUrl(5),
+    lastMonthLastDayDate
+  ]);
 
   console.log(thisYearDeathArray);
 
