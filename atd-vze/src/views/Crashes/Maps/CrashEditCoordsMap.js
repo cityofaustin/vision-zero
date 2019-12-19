@@ -107,7 +107,9 @@ class CrashEditCoordsMap extends Component {
       crashId: this.props.crashId,
       latitude: this.state.markerLatitude,
       longitude: this.state.markerLongitude,
+      updatedBy: localStorage.getItem("hasura_user_email"),
     };
+
     this.props.client
       .mutate({
         mutation: UPDATE_COORDS,
