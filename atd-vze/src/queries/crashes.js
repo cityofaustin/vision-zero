@@ -167,6 +167,7 @@ export const UPDATE_COORDS = gql`
     $geocodeProvider: Int
     $latitude: float8
     $longitude: float8
+    $updatedBy: String
   ) {
     update_atd_txdot_crashes(
       where: { crash_id: { _eq: $crashId } }
@@ -175,6 +176,7 @@ export const UPDATE_COORDS = gql`
         geocode_provider: $geocodeProvider
         latitude_primary: $latitude
         longitude_primary: $longitude
+        updated_by: $updatedBy
       }
     ) {
       returning {
