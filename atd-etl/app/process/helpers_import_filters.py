@@ -106,7 +106,7 @@ def filter_numeric_null_to_zero(input, fields):
 
 def filter_numeric_empty_to_zero(input, fields):
     """
-    Converts null strings to zero
+    Converts empty strings to zero
     :param input:
     :param fields:
     :return:
@@ -114,6 +114,19 @@ def filter_numeric_empty_to_zero(input, fields):
     output = input
     for field in fields:
         output = re.sub(r"%s: \"\"(,?)" % field, r'%s: 0\1' % field, output)
+    return output
+
+
+def filter_numeric_empty_to_null(input, fields):
+    """
+    Converts empty strings to null
+    :param input:
+    :param fields:
+    :return:
+    """
+    output = input
+    for field in fields:
+        output = re.sub(r"%s: \"\"(,?)" % field, r'%s: null\1' % field, output)
     return output
 
 
