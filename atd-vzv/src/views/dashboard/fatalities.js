@@ -37,7 +37,7 @@ const Fatalities = () => {
   const renderFatalityIcons = fatalityTotal =>
     // Create array with length of fatalityTotal and use to iterate
     [...Array(fatalityTotal)].map((e, i) => (
-      <StyledIcon>
+      <StyledIcon key={i}>
         <FontAwesomeIcon icon={faMale} key={i} size="lg" />
       </StyledIcon>
     ));
