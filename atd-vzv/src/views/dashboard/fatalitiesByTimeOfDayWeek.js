@@ -2,7 +2,21 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import moment from "moment";
 
-import { Container, Row, Col } from "reactstrap";
+import {
+  TabContent,
+  TabPane,
+  Nav,
+  NavItem,
+  NavLink,
+  Card,
+  Button,
+  CardTitle,
+  CardText,
+  Row,
+  Col,
+  Container
+} from "reactstrap";
+import classnames from "classnames";
 import { Heatmap } from "reaviz";
 
 const FatalitiesByTimeOfDayWeek = () => {
@@ -99,12 +113,6 @@ const FatalitiesByTimeOfDayWeek = () => {
     return dataArray;
   };
 
-  const getYearsAgoLabel = yearsAgo => {
-    return moment()
-      .subtract(yearsAgo, "year")
-      .format("YYYY");
-  };
-
   useEffect(() => {
     // Fetch records for selected year
     axios.get(getFatalitiesByYearsAgoUrl(dataView)).then(res => {
@@ -113,32 +121,94 @@ const FatalitiesByTimeOfDayWeek = () => {
     console.log(getFatalitiesByYearsAgoUrl(dataView));
   }, [dataView]);
 
+  const getYearsAgoLabel = yearsAgo => {
+    return moment()
+      .subtract(yearsAgo, "year")
+      .format("YYYY");
+  };
+
+  const [activeTab, setActiveTab] = useState("1");
+
+  const toggle = tab => {
+    if (activeTab !== tab) setActiveTab(tab);
+  };
+
   return (
     <Container>
       <Row>
         <Col md="12">
-          <Heatmap height={200} width={450} data={heatmapData} />
+          <Heatmap height={200} width={400} data={heatmapData} />
         </Col>
       </Row>
       <Row>
-        <Col md="2">
-          <h3 onClick={() => setDataView(5)}>{getYearsAgoLabel(5)}</h3>
-        </Col>
-        <Col md="2">
-          <h3 onClick={() => setDataView(4)}>{getYearsAgoLabel(4)}</h3>
-        </Col>
-        <Col md="2">
-          <h3 onClick={() => setDataView(3)}>{getYearsAgoLabel(3)}</h3>
-        </Col>
-        <Col md="2">
-          <h3 onClick={() => setDataView(2)}>{getYearsAgoLabel(2)}</h3>
-        </Col>
-        <Col md="2">
-          <h3 onClick={() => setDataView(1)}>{getYearsAgoLabel(1)}</h3>
-        </Col>
-        <Col md="2">
-          <h3 onClick={() => setDataView(0)}>{getYearsAgoLabel(0)}</h3>
-        </Col>
+        <Nav tabs>
+          <NavItem>
+            <NavLink
+              className={classnames({ active: activeTab === "6" })}
+              onClick={() => {
+                toggle("6");
+                setDataView(5);
+              }}
+            >
+              {getYearsAgoLabel(5)}
+            </NavLink>
+          </NavItem>
+          <NavItem>
+            <NavLink
+              className={classnames({ active: activeTab === "5" })}
+              onClick={() => {
+                toggle("5");
+                setDataView(4);
+              }}
+            >
+              {getYearsAgoLabel(4)}
+            </NavLink>
+          </NavItem>
+          <NavItem>
+            <NavLink
+              className={classnames({ active: activeTab === "4" })}
+              onClick={() => {
+                toggle("4");
+                setDataView(3);
+              }}
+            >
+              {getYearsAgoLabel(3)}
+            </NavLink>
+          </NavItem>
+          <NavItem>
+            <NavLink
+              className={classnames({ active: activeTab === "3" })}
+              onClick={() => {
+                toggle("3");
+                setDataView(2);
+              }}
+            >
+              {getYearsAgoLabel(2)}
+            </NavLink>
+          </NavItem>
+          <NavItem>
+            <NavLink
+              className={classnames({ active: activeTab === "2" })}
+              onClick={() => {
+                toggle("2");
+                setDataView(1);
+              }}
+            >
+              {getYearsAgoLabel(1)}
+            </NavLink>
+          </NavItem>
+          <NavItem>
+            <NavLink
+              className={classnames({ active: activeTab === "1" })}
+              onClick={() => {
+                toggle("1");
+                setDataView(0);
+              }}
+            >
+              {getYearsAgoLabel(0)}
+            </NavLink>
+          </NavItem>
+        </Nav>
       </Row>
     </Container>
   );
