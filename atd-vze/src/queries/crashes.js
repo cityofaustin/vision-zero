@@ -281,6 +281,7 @@ export const UPDATE_CRASH = gql`
 
 export const crashQueryExportFields = `
 active_school_zone_fl
+apd_confirmed_death_count
 approval_date
 approved_by
 at_intrsct_fl
