@@ -3,21 +3,14 @@ import axios from "axios";
 import moment from "moment";
 
 import {
-  TabContent,
-  TabPane,
   Nav,
   NavItem,
   NavLink,
-  Card,
-  Button,
-  CardTitle,
-  CardText,
   Row,
-  Col,
   Container
 } from "reactstrap";
 import classnames from "classnames";
-import { Heatmap } from "reaviz";
+import { Heatmap, HeatmapSeries } from "reaviz";
 
 const FatalitiesByTimeOfDayWeek = () => {
   const [heatmapData, setHeatmapData] = useState([]);
@@ -136,9 +129,15 @@ const FatalitiesByTimeOfDayWeek = () => {
   return (
     <Container>
       <Row>
-        <Col md="12">
-          <Heatmap height={200} width={400} data={heatmapData} />
-        </Col>
+        <h3>Traffic fatalities by time and day</h3>
+      </Row>
+      <Row>
+          <Heatmap
+            height={200}
+            width={400}
+            data={heatmapData}
+            series={<HeatmapSeries colorScheme={["#fee5d9", "#fcae91", "#fb6a4a", "#de2d26", "#a50f15"]} />}
+            />
       </Row>
       <Row>
         <Nav tabs>
