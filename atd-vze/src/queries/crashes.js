@@ -356,7 +356,9 @@ tot_injry_cnt
 traffic_cntl_id
 unkn_injry_cnt
 updated_by
-wthr_cond_id`;
+wthr_cond_id
+units { body_style { veh_body_styl_desc } }
+units { unit_description { veh_unit_desc_desc } }`;
 
 export const locationCrashesQueryExportFields = `
 crash_id
