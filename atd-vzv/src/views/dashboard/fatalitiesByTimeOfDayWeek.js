@@ -111,7 +111,6 @@ const FatalitiesByTimeOfDayWeek = () => {
     axios.get(getFatalitiesByYearsAgoUrl(dataView)).then(res => {
       setHeatmapData(calculatHourBlockTotals(res));
     });
-    console.log(getFatalitiesByYearsAgoUrl(dataView));
   }, [dataView]);
 
   const getYearsAgoLabel = yearsAgo => {
