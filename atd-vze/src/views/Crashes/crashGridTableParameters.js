@@ -72,17 +72,17 @@ export const crashGridTableAdvancedFilters = {
     label: "Deaths & Injuries",
     filters: [
       {
-        id: "dni_apd_deaths",
-        label: "APD Confirmed Deaths",
-        filter: {
-          where: [{ or: { apd_confirmed_death_count: "_gt: 0" } }],
-        },
-      },
-      {
         id: "dni_cris_deaths",
         label: "CRIS Deaths",
         filter: {
           where: [{ or: { death_cnt: "_gt: 0" } }],
+        },
+      },
+      {
+        id: "dni_apd_deaths",
+        label: "APD Confirmed Deaths",
+        filter: {
+          where: [{ or: { apd_confirmed_death_count: "_gt: 0" } }],
         },
       },
       {
