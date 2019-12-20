@@ -18,6 +18,10 @@ Run development server
 
 In development, this project uses [Prettier](https://prettier.io/) for code formatting which is set in .prettierrc. Visit link for installation or install the [extension for VSCode](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode).
 
+## Adding Users
+
+[Here are the docs](https://github.com/cityofaustin/atd-vz-data/blob/master/atd-vze/ADDING_USERS.md) for how to login for the first time and how to set up new users as an admin.
+
 ## Nearmap API Keys
 
 For maintenance and troubleshooting of Nearmap API key for the Location aerial map (domains whitelisted, usage, etc.), contact CTM help desk.
