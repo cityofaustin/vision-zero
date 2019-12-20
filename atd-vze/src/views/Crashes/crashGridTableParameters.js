@@ -40,10 +40,10 @@ export const crashGridTableColumns = {
     label_table: "Serious Injury Count",
     type: "Int",
   },
-  apd_confirmed_death_count: {
+  death_cnt: {
     searchable: false,
     sortable: true,
-    label_table: "APD Death Count",
+    label_table: "CRIS Death Count",
     type: "Date",
   },
   "collision { collsn_desc } ": {
