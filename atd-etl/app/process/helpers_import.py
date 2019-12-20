@@ -61,7 +61,6 @@ def generate_fields_with_filters(line, fieldnames, filters=[]):
     :param filters: dict - The filters to be applied
     :return:
     """
-
     reader = csv.DictReader(f=io.StringIO(line), fieldnames=fieldnames, delimiter=',') # parse line
     fields = json.dumps([row for row in reader]) # Generate json
 
@@ -73,8 +72,10 @@ def generate_fields_with_filters(line, fieldnames, filters=[]):
     # Make empty strings null
     fields = re.sub(r'([a-zA-Z0-9_]+): "",', r'\1: null,', fields)
 
-    # Break lines
-    fields = re.sub(r'(, ?)([a-zA-Z0-9_]+):', r'\n\2:', fields)
+    # Break lines & remove ending commas
+    fields = re.sub(r'(\, )(([^"]+)(: ?)(\")([^"]+)(\"))', r'\n\2', fields)
+    fields = re.sub(r'(null, )([a-zA-Z0-9\_]+)', r'null\n\2', fields)
+    fields = re.sub(r'(, )([a-zA-Z0-9\_]+)(: null)', r'\n\2: null', fields)
 
     # Apply filters
     for filter_group in filters:
@@ -88,8 +89,6 @@ def generate_fields_with_filters(line, fieldnames, filters=[]):
         except Exception as e:
             print("Error when applying filter: %s" % str(e))
 
-    # Remove ending commas
-    fields = fields.replace(", ", "")  # Remove commas
     return fields
 
 
