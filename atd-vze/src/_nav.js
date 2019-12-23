@@ -21,6 +21,11 @@ export default {
       icon: "icon-shield",
     },
     {
+      name: "Crash Changes",
+      url: "/crash_changes",
+      icon: "icon-shield",
+    },
+    {
       name: "Locations",
       url: "/locations",
       icon: "icon-map",
