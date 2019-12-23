@@ -40,6 +40,7 @@ const Typography = React.lazy(() => import("./views/Theme/Typography"));
 const Widgets = React.lazy(() => import("./views/Widgets/Widgets"));
 const Dev = React.lazy(() => import("./views/Dev/Dev"));
 const Crashes = React.lazy(() => import("./views/Crashes/Crashes"));
+const CrashesChanges = React.lazy(() => import("./views/Crashes/CrashesChanges"));
 const Crash = React.lazy(() => import("./views/Crashes/Crash"));
 const Profile = React.lazy(() => import("./views/Profile/Profile"));
 const Locations = React.lazy(() => import("./views/Locations/Locations"));
@@ -137,6 +138,7 @@ const routes = [
     component: Location,
   },
   { path: "/crashes", exact: true, name: "Crashes", component: Crashes },
+  { path: "/crashes/changes", exact: true, name: "Crash Changes", component: CrashesChanges },
   {
     path: "/crashes/:id",
     exact: true,
