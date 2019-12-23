@@ -1,6 +1,5 @@
 export const crashChangesGridTableColumns = {
     change_id: {
-        primary_key: true,
         searchable: false,
         sortable: false,
         label_table: "Change ID",
@@ -13,6 +12,7 @@ export const crashChangesGridTableColumns = {
         type: "String",
     },
     record_id: {
+        primary_key: true,
         searchable: true,
         sortable: true,
         label_search: "Search by Record ID",
