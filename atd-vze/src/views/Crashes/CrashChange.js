@@ -47,7 +47,18 @@ function CrashChange(props) {
         .sort();
   };
 
-  return (
+  if (Object.keys(data).length > 0) {
+    console.log("These are all the different fields:");
+    let differentFields = generate_diff(data);
+    let originalRecord = data["atd_txdot_crashes"][0] || null;
+    let newRecord =
+        JSON.parse(data["atd_txdot_changes"][0]["record_json"]) || null;
+
+    console.log(newRecord);
+  }
+
+
+    return (
     <div className="animated fadeIn">
       <Row>
         <Col xs="12" sm="12" md="12">
