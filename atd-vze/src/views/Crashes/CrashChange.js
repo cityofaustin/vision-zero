@@ -27,6 +27,24 @@ function CrashChange(props) {
   // Allocate for diff rows array
   let diffRows = null;
 
+  /**
+   * Returns an array of strings with all the fields that have a different value.
+   * @param data
+   * @returns {array[string]}
+   */
+  const generate_diff = data => {
+    let originalRecord = data["atd_txdot_crashes"][0] || null;
+    let newRecord =
+      JSON.parse(data["atd_txdot_changes"][0]["record_json"]) || null;
+
+    return Object.keys(newRecord)
+      .map((currentKey, i) => {
+        return `${newRecord[currentKey]}` !== `${originalRecord[currentKey]}`
+          ? currentKey
+          : "/-n/a-/";
+      });
+  };
+
   return (
     <div className="animated fadeIn">
       <Row>
