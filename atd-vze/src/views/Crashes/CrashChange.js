@@ -24,7 +24,8 @@ function CrashChange(props) {
     variables: { crashId },
   });
 
-  if(data) console.log(data);
+  // Allocate for diff rows array
+  let diffRows = null;
 
   return (
     <div className="animated fadeIn">
@@ -70,47 +71,7 @@ function CrashChange(props) {
           </Card>
         </Col>
       </Row>
-
-      <Row>
-        <Col xs="12" sm="12" md="9">
-          <Card>
-            <CardHeader>Change</CardHeader>
-            <CardBody>
-              <Row>
-                <Col xs="12" sm="12" md="9">
-                  Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed
-                  diam nonummy nibh euismod tincidunt ut laoreet dolore magna
-                  aliquam erat volutpat. Ut wisi enim ad minim veniam, quis
-                  nostrud exerci tation ullamcorper suscipit lobortis nisl ut
-                  aliquip ex ea commodo consequat.
-                </Col>
-                <Col xs="12" sm="12" md="3" className="text-center">
-                  Ok
-                </Col>
-              </Row>
-            </CardBody>
-          </Card>
-        </Col>
-        <Col xs="12" sm="12" md="3">
-          <Card>
-            <CardHeader>Action</CardHeader>
-            <CardBody>
-              <Row className="align-items-center">
-                <Col sm xs="12" className="text-center">
-                  <Button color="primary">
-                    <i className="fa fa-lightbulb-o"></i>&nbsp;Accept
-                  </Button>
-                </Col>
-                <Col sm xs="12" className="text-center">
-                  <Button color="secondary" outline>
-                    <i className="fa fa-lightbulb-o"></i>&nbsp;Reject CR3
-                  </Button>
-                </Col>
-              </Row>
-            </CardBody>
-          </Card>
-        </Col>
-      </Row>
+      {diffRows}
     </div>
   );
 }
