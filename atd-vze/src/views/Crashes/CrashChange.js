@@ -42,7 +42,9 @@ function CrashChange(props) {
         return `${newRecord[currentKey]}` !== `${originalRecord[currentKey]}`
           ? currentKey
           : "/-n/a-/";
-      }).filter(e => e !== "/-n/a-/");
+      })
+        .filter(e => e !== "/-n/a-/")
+        .sort();
   };
 
   return (
