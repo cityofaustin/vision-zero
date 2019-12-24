@@ -43,8 +43,8 @@ function CrashChange(props) {
           ? currentKey
           : "/-n/a-/";
       })
-        .filter(e => e !== "/-n/a-/")
-        .sort();
+      .filter(e => e !== "/-n/a-/")
+      .sort();
   };
 
   if (Object.keys(data).length > 0) {
@@ -52,13 +52,53 @@ function CrashChange(props) {
     let differentFields = generate_diff(data);
     let originalRecord = data["atd_txdot_crashes"][0] || null;
     let newRecord =
-        JSON.parse(data["atd_txdot_changes"][0]["record_json"]) || null;
+      JSON.parse(data["atd_txdot_changes"][0]["record_json"]) || null;
 
-    console.log(newRecord);
+    diffRows = differentFields.map((key, i) => {
+      return (
+        <Row>
+          <Col xs="12" sm="12" md="9">
+            <Card>
+              <CardHeader>Change: {key}</CardHeader>
+              <CardBody>
+                <Row>
+                  <Col xs="12" sm="12" md="9">
+                    Original Record: {originalRecord[key]}
+                    <br />
+                    New Record: {newRecord[key]}
+                  </Col>
+                  <Col xs="12" sm="12" md="3" className="text-center">
+                    difference
+                  </Col>
+                </Row>
+              </CardBody>
+            </Card>
+          </Col>
+          <Col xs="12" sm="12" md="3">
+            <Card>
+              <CardHeader>Action</CardHeader>
+              <CardBody>
+                <Row className="align-items-center">
+                  <Col sm xs="12" className="text-center">
+                    <Button color="primary">
+                      <i className="fa fa-lightbulb-o"></i>&nbsp;Accept Change
+                    </Button>
+                  </Col>
+                  <Col sm xs="12" className="text-center">
+                    <Button color="secondary" outline>
+                      <i className="fa fa-lightbulb-o"></i>&nbsp;Reject Change
+                    </Button>
+                  </Col>
+                </Row>
+              </CardBody>
+            </Card>
+          </Col>
+        </Row>
+      );
+    });
   }
 
-
-    return (
+  return (
     <div className="animated fadeIn">
       <Row>
         <Col xs="12" sm="12" md="12">
