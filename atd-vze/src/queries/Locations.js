@@ -19,73 +19,7 @@ export const GET_LOCATION = gql`
       }
       crashes_count_cost_summary {
         est_comp_cost
-      }
-    }
-    atd_txdot_crashes_aggregate(
-      where: {
-        city_id: { _eq: 22 }
-        location: { location_id: { _eq: $id } }
-        private_dr_fl: { _neq: "Y" }
-      }
-    ) {
-      aggregate {
-        count
-        sum {
-          apd_confirmed_death_count
-        }
-      }
-    }
-    atd_txdot_primaryperson_aggregate(
-      where: {
-        crash: {
-          city_id: { _eq: 22 }
-          location: { location_id: { _eq: $id } }
-          private_dr_fl: { _neq: "Y" }
-        }
-      }
-    ) {
-      aggregate {
-        count
-        sum {
-          sus_serious_injry_cnt
-          years_of_life_lost
-        }
-      }
-    }
-    atd_txdot_person_aggregate(
-      where: {
-        crash: {
-          city_id: { _eq: 22 }
-          location: { location_id: { _eq: $id } }
-          private_dr_fl: { _neq: "Y" }
-        }
-      }
-    ) {
-      aggregate {
-        count
-        sum {
-          sus_serious_injry_cnt
-          years_of_life_lost
-        }
-      }
-    }
-    atd_txdot_units_aggregate(
-      where: {
-        crash: {
-          city_id: { _eq: 22 }
-          location: { location_id: { _eq: $id } }
-          private_dr_fl: { _neq: "Y" }
-        }
-      }
-    ) {
-      aggregate {
-        count
-      }
-    }
-    atd_txdot_locations(where: { location_id: { _eq: $id } }) {
-      crashes_by_veh_body_style {
-        veh_body_styl_desc
-        count
+        total_crashes
       }
     }
   }
