@@ -1,7 +1,7 @@
 import { gql } from "apollo-boost";
 
 export const GET_LOCATION = gql`
-  query GetLocation($id: String) {
+  query GetLocation($id: String, $fiveYearsAgo) {
     atd_txdot_locations(where: { location_id: { _eq: $id } }) {
       location_id
       address
@@ -20,6 +20,11 @@ export const GET_LOCATION = gql`
       crashes_count_cost_summary {
         est_comp_cost
         total_crashes
+      }
+    }
+    fiveYearCrashTotal: atd_txdot_crashes_aggregate(where: {city_id: { _eq: 22 }, crash_date: {_gte: $fiveYearsAgo}, location: {location_id: {_eq: "5554677"}}}) {
+      aggregate {
+        count
       }
     }
   }

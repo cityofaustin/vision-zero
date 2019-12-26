@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import moment from "moment";
 import DataTable from "../../Components/DataTable";
 import LocationMap from "./LocationMap";
 import LocationEditMap from "./LocationEditMap";
@@ -21,6 +22,11 @@ import LocationCrashes from "./LocationCrashes";
 import { GET_LOCATION, UPDATE_LOCATION } from "../../queries/Locations";
 
 function Location(props) {
+  // Date five years ago for crash totals and est. comp. cost totals
+  const fiveYearsAgo = moment()
+    .subtract(5, "years")
+    .format("YYYY=MM-DD");
+
   const locationId = props.match.params.id;
   const [mapSelected, setMapSelected] = useState("aerial");
   const { loading, error, data, refetch } = useQuery(GET_LOCATION, {
