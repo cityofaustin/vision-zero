@@ -30,8 +30,10 @@ function Location(props) {
   const locationId = props.match.params.id;
   const [mapSelected, setMapSelected] = useState("aerial");
   const { loading, error, data, refetch } = useQuery(GET_LOCATION, {
-    variables: { id: locationId },
+    variables: { id: locationId, fiveYearsAgo: fiveYearsAgo },
   });
+
+  console.log(data);
 
   const [editField, setEditField] = useState("");
   const [formData, setFormData] = useState({});
