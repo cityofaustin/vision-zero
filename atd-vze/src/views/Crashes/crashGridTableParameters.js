@@ -40,10 +40,10 @@ export const crashGridTableColumns = {
     label_table: "Serious Injury Count",
     type: "Int",
   },
-  apd_confirmed_death_count: {
+  death_cnt: {
     searchable: false,
     sortable: true,
-    label_table: "APD Death Count",
+    label_table: "CRIS Death Count",
     type: "Date",
   },
   "collision { collsn_desc } ": {
@@ -72,29 +72,29 @@ export const crashGridTableAdvancedFilters = {
     label: "Deaths & Injuries",
     filters: [
       {
-        id: "dni_apd_deaths",
-        label: "APD Confirmed Deaths",
-        filter: {
-          where: [{ or: { apd_confirmed_death_count: "_gt: 0" } }],
-        },
-      },
-      {
         id: "dni_cris_deaths",
-        label: "CRIS Deaths",
+        label: "CRIS Fatality Crashes",
         filter: {
           where: [{ or: { death_cnt: "_gt: 0" } }],
         },
       },
       {
+        id: "dni_apd_deaths",
+        label: "APD Confirmed Fatality Crashes",
+        filter: {
+          where: [{ or: { apd_confirmed_death_count: "_gt: 0" } }],
+        },
+      },
+      {
         id: "dni_serious_injuries",
-        label: "Serious Injuries",
+        label: "Serious Injury Crashes",
         filter: {
           where: [{ or: { sus_serious_injry_cnt: "_gt: 0" } }],
         },
       },
       {
         id: "dni_non_fatal",
-        label: "Non-serious Injuries",
+        label: "Non-serious Injury Crashes",
         filter: {
           where: [{ or: { nonincap_injry_cnt: "_gt: 0" } }],
         },
