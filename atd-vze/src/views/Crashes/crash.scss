@@ -1,3 +1,16 @@
 .edit-toggle:hover {
   color: #20a8d8;
 }
+
+span > strong {
+  line-height: 2rem;
+}
+
+/* Crash Changes */
+
+.crash-row {
+  padding-top: 4px;
+}
+.crash-row:hover {
+  background-color: lightgray;
+}
