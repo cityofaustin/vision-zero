@@ -162,6 +162,41 @@ function CrashChange(props) {
           </Card>
         </Col>
       </Row>
+
+      {/* IMPORTANT FIELDS */}
+      <Row>
+        <Col xs="12" sm="12" md="12">
+          <Card>
+            <CardHeader>
+              <span>
+                <strong>Main fields</strong>
+              </span>
+              <Button color="primary" className="btn-pill float-right">
+                <i className="fa fa-lightbulb-o"></i>&nbsp;Save Changes Record
+              </Button>
+            </CardHeader>
+            <CardBody>{importantFields}</CardBody>
+          </Card>
+        </Col>
+      </Row>
+
+      {/* OTHER FIELDS */}
+      <Row>
+        <Col xs="12" sm="12" md="12">
+          <Card>
+            <CardHeader>
+              <span>
+                <strong>All other fields</strong>
+              </span>
+              <Button color="primary" className="btn-pill float-right">
+                <i className="fa fa-lightbulb-o"></i>&nbsp;Save Changes Record
+              </Button>
+            </CardHeader>
+            <CardBody>{allFields}</CardBody>
+          </Card>
+        </Col>
+      </Row>
+    </div>
   );
 }
 
