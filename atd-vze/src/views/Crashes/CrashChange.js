@@ -1,21 +1,24 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { withApollo } from "react-apollo";
+import { useQuery } from "@apollo/react-hooks";
+
+import "./crash.scss";
+
 import {
   Card,
   CardBody,
   CardHeader,
   Col,
   Row,
-  Table,
   Alert,
   Button,
 } from "reactstrap";
-import { withApollo } from "react-apollo";
-import { useQuery } from "@apollo/react-hooks";
 
-import "./crash.scss";
+import { AppSwitch } from "@coreui/react";
 
 import { GET_CRASH_CHANGE } from "../../queries/crashes_changes";
+import { crashImportantDiffFields } from "./crashImportantDiffFields";
 
 function CrashChange(props) {
   const crashId = props.match.params.id;
@@ -25,7 +28,8 @@ function CrashChange(props) {
   });
 
   // Allocate for diff rows array
-  let diffRows = null;
+  let importantFields = null;
+  let allFields = null;
 
   /**
    * Returns an array of strings with all the fields that have a different value.
@@ -39,7 +43,8 @@ function CrashChange(props) {
 
     return Object.keys(newRecord)
       .map((currentKey, i) => {
-        return `${newRecord[currentKey]}` !== `${originalRecord[currentKey]}`
+        return `${newRecord[currentKey]}`.trim() !==
+          `${originalRecord[currentKey]}`.trim()
           ? currentKey
           : "/-n/a-/";
       })
@@ -47,54 +52,55 @@ function CrashChange(props) {
       .sort();
   };
 
+  const generateRow = (field, label, originalFieldValue, newFieldValue) => {
+    const originalValue = originalFieldValue
+      ? `${originalFieldValue}`.trim()
+      : "";
+
+    const newValue = newFieldValue ? `${newFieldValue}`.trim() : "";
+    const change = originalValue !== newValue;
+
+    return change ? (
+      <Row key={field} className={"crash-row"}>
+        <Col xs="6" sm="6" md="1">
+          <AppSwitch
+            className={"mx-1"}
+            variant={"pill"}
+            color={"primary"}
+            outline={"alt"}
+            label
+            dataOn={"\u2713"}
+            dataOff={"\u2715"}
+          />
+        </Col>
+        <Col xs="6" sm="6" md="3">
+          <strong>{field}</strong>
+        </Col>
+        <Col xs="12" sm="12" md="4">
+          Original Record: {originalValue}
+        </Col>
+        <Col xs="12" sm="12" md="4">
+          New Record: {newValue}
+        </Col>
+      </Row>
+    ) : null;
+  };
+
   if (Object.keys(data).length > 0) {
-    console.log("These are all the different fields:");
-    let differentFields = generate_diff(data);
     let originalRecord = data["atd_txdot_crashes"][0] || null;
     let newRecord =
       JSON.parse(data["atd_txdot_changes"][0]["record_json"]) || null;
 
-    diffRows = differentFields.map((key, i) => {
-      return (
-        <Row>
-          <Col xs="12" sm="12" md="9">
-            <Card>
-              <CardHeader>Change: {key}</CardHeader>
-              <CardBody>
-                <Row>
-                  <Col xs="12" sm="12" md="9">
-                    Original Record: {originalRecord[key]}
-                    <br />
-                    New Record: {newRecord[key]}
-                  </Col>
-                  <Col xs="12" sm="12" md="3" className="text-center">
-                    difference
-                  </Col>
-                </Row>
-              </CardBody>
-            </Card>
-          </Col>
-          <Col xs="12" sm="12" md="3">
-            <Card>
-              <CardHeader>Action</CardHeader>
-              <CardBody>
-                <Row className="align-items-center">
-                  <Col sm xs="12" className="text-center">
-                    <Button color="primary">
-                      <i className="fa fa-lightbulb-o"></i>&nbsp;Accept Change
-                    </Button>
-                  </Col>
-                  <Col sm xs="12" className="text-center">
-                    <Button color="secondary" outline>
-                      <i className="fa fa-lightbulb-o"></i>&nbsp;Reject Change
-                    </Button>
-                  </Col>
-                </Row>
-              </CardBody>
-            </Card>
-          </Col>
-        </Row>
-      );
+    // We need a list of all important fields as defined in crashImportantDiffFields
+    let importantFieldList = Object.keys(crashImportantDiffFields).map(
+      (field, i) => {
+        return field;
+      }
+    );
+
+    // Now we need the rest of all other fields
+    let differentFieldsList = generate_diff(data).filter((field, i) => {
+      return !importantFieldList.includes(field);
     });
   }
 
@@ -104,7 +110,7 @@ function CrashChange(props) {
         <Col xs="12" sm="12" md="12">
           <Card>
             <CardHeader>
-              <strong>With Icons</strong>
+              <strong>Main Options</strong>
             </CardHeader>
             <CardBody>
               <span>Select from the following menu:</span>
@@ -142,8 +148,6 @@ function CrashChange(props) {
           </Card>
         </Col>
       </Row>
-      {diffRows}
-    </div>
   );
 }
 
