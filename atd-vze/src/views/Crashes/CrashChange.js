@@ -102,6 +102,20 @@ function CrashChange(props) {
     let differentFieldsList = generate_diff(data).filter((field, i) => {
       return !importantFieldList.includes(field);
     });
+
+    // Now we get to build our component based on our list of importnt fields
+    importantFields = Object.keys(crashImportantDiffFields).map((field, i) => {
+      return generateRow(
+        field,
+        field.label,
+        originalRecord[field],
+        newRecord[field]
+      );
+    });
+
+    allFields = differentFieldsList.map((field, i) => {
+      return generateRow(field, field, originalRecord[field], newRecord[field]);
+    });
   }
 
   return (
