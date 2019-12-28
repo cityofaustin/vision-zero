@@ -29,9 +29,13 @@ function CrashChange(props) {
     variables: { crashId },
   });
 
-  // Allocate for diff rows array
-  let importantFields = null;
-  let allFields = null;
+  // Arrays of column names
+  let importantFieldList = [];
+  let differentFieldsList = [];
+
+  // Allocate for diff rows array for JSX components
+  let importantFields = [];
+  let allFields = [];
 
   /**
    * Returns true if fieldName exists within the selectedFields array.
@@ -60,6 +64,34 @@ function CrashChange(props) {
     }
 
     setSelectedFields(newFieldList);
+  };
+
+  /**
+   * Batch-enables a list of fields
+   * @param main {int} - The mode to operate: 1) Main, 2) All other fields, 3) All fields
+   */
+  const fieldsBatchEnable = mainMode => {
+    const mode = mainMode || 0;
+    let list = [];
+
+    // Loop through main fields only
+    if (mode === 1) {
+      list = importantFieldList;
+    }
+    // Loop through all other fields
+    else if (mode === 2) {
+      list = differentFieldsList;
+    }
+    // Loop through all fields
+    else if (mode === 3) {
+      list = [importantFieldList, ...differentFieldsList];
+    }
+
+    const enabledList = list.filter((field, i) => {
+      return field;
+    });
+
+    setSelectedFields(enabledList);
   };
 
   /**
@@ -118,11 +150,12 @@ function CrashChange(props) {
 
     const newValue = newFieldValue ? `${newFieldValue}`.trim() : "";
     const change = originalValue !== newValue;
+    const selectorEnabled = isFieldEnabled(field);
 
-    return change ? (
+    return (
       <Row key={field} className={"crash-row"}>
         <Col xs="6" sm="6" md="1">
-          <AppSwitch
+          {change && <AppSwitch
             className={"mx-1"}
             variant={"pill"}
             color={"primary"}
@@ -131,7 +164,8 @@ function CrashChange(props) {
             dataOn={"\u2713"}
             dataOff={"\u2715"}
             onClick={() => toggleField(field)}
-          />
+            checked={selectorEnabled}
+          /> }
         </Col>
         <Col xs="6" sm="6" md="3">
           <strong>{field}</strong>
@@ -149,7 +183,7 @@ function CrashChange(props) {
           <MiniDiff oldText={originalValue} newText={newValue} />
         </Col>
       </Row>
-    ) : null;
+    );
   };
 
   // If the data object has no keys, then wait...
@@ -159,14 +193,16 @@ function CrashChange(props) {
       JSON.parse(data["atd_txdot_changes"][0]["record_json"]) || null;
 
     // We need a list of all important fields as defined in crashImportantDiffFields
-    let importantFieldList = Object.keys(crashImportantDiffFields).map(
+    importantFieldList = Object.keys(crashImportantDiffFields).map(
       (field, i) => {
-        return field;
+        const originalValue = `${originalRecord[field]}`.trim();
+        const newValue = `${newRecord[field]}`.trim();
+        return originalValue !== newValue;
       }
     );
 
     // Now we need the rest of all other fields
-    let differentFieldsList = generate_diff(data).filter((field, i) => {
+    differentFieldsList = generate_diff(data).filter((field, i) => {
       return !importantFieldList.includes(field);
     });
 
@@ -247,7 +283,11 @@ function CrashChange(props) {
               <Button color="primary" className="float-right">
                 <i className="fa fa-lightbulb-o"></i>&nbsp;Save Changes
               </Button>
-              <Button color="light" className="float-right">
+              <Button
+                color="light"
+                className="float-right"
+                onClick={() => fieldsBatchEnable(1)}
+              >
                 <i className="fa fa-lightbulb-o"></i>&nbsp;Select All Changes
               </Button>
             </CardHeader>
