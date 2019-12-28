@@ -3,8 +3,6 @@ import React from "react";
 export const MiniDiff = ({ oldText, newText }) => {
   let output = [];
 
-  console.log("MeeniDeef");
-
   newText.split("").forEach((currentChar, i) => {
     output.push(
       <span
