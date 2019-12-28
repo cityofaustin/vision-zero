@@ -34,6 +34,25 @@ function CrashChange(props) {
   let allFields = null;
 
   /**
+   * Downloads a CR3
+   */
+  const downloadCR3 = () => {
+    const requestUrl = `${process.env.REACT_APP_CR3_API_DOMAIN}/cr3/download/${crashId}`;
+    const token = window.localStorage.getItem("id_token");
+    console.log("Downloading request url: " + requestUrl);
+    axios
+      .request(requestUrl, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then(res => {
+        const win = window.open(res.data.message, "_blank");
+        win.focus();
+      });
+  };
+
+  /**
    * Returns an array of strings with all the fields that have a different value.
    * @param data {object}
    * @returns {array[string]}
