@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { withApollo } from "react-apollo";
 import { useQuery } from "@apollo/react-hooks";
+import { MiniDiff } from "../../Components/MiniDiff";
+import axios from "axios";
 
 import "./crash.scss";
 
@@ -11,17 +13,17 @@ import {
   CardHeader,
   Col,
   Row,
-  Alert,
   Button,
+  Badge,
 } from "reactstrap";
 
 import { AppSwitch } from "@coreui/react";
-
 import { GET_CRASH_CHANGE } from "../../queries/crashes_changes";
 import { crashImportantDiffFields } from "./crashImportantDiffFields";
 
 function CrashChange(props) {
   const crashId = props.match.params.id;
+  const [selectedFields, setSelectedFields] = useState([]);
 
   const { loading, error, data, refetch } = useQuery(GET_CRASH_CHANGE, {
     variables: { crashId },
@@ -33,7 +35,7 @@ function CrashChange(props) {
 
   /**
    * Returns an array of strings with all the fields that have a different value.
-   * @param data
+   * @param data {object}
    * @returns {array[string]}
    */
   const generate_diff = data => {
@@ -52,6 +54,15 @@ function CrashChange(props) {
       .sort();
   };
 
+  /**
+   * Generates a JSX Row object, it returns null if there is no difference between the original value
+   * and the new value from the new record as provided by the ETL process.
+   * @param field {string} - The name of the field in the database (the column)
+   * @param label {string} - The name of the label to show (if not the name of the field)
+   * @param originalFieldValue {string} - The value of the record as it currently is in the database.
+   * @param newFieldValue {string} - The value of the new record as provided by the ETL process.
+   * @returns {Row}
+   */
   const generateRow = (field, label, originalFieldValue, newFieldValue) => {
     const originalValue = originalFieldValue
       ? `${originalFieldValue}`.trim()
@@ -77,15 +88,22 @@ function CrashChange(props) {
           <strong>{field}</strong>
         </Col>
         <Col xs="12" sm="12" md="4">
-          Original Record: {originalValue}
+          <Badge className="mr-1" color="light">
+            Original
+          </Badge>
+          <span className="minidiff"> {originalValue}</span>
         </Col>
         <Col xs="12" sm="12" md="4">
-          New Record: {newValue}
+          <Badge className="mr-1" color="danger">
+            Change
+          </Badge>
+          <MiniDiff oldText={originalValue} newText={newValue} />
         </Col>
       </Row>
     ) : null;
   };
 
+  // If the data object has no keys, then wait...
   if (Object.keys(data).length > 0) {
     let originalRecord = data["atd_txdot_crashes"][0] || null;
     let newRecord =
@@ -127,32 +145,38 @@ function CrashChange(props) {
               <strong>Main Options</strong>
             </CardHeader>
             <CardBody>
-              <span>Select from the following menu:</span>
               <Row className="align-items-center mt-3">
                 <Col sm xs="12" className="text-center mt-3">
-                  <Button color="primary">
-                    <i className="fa fa-lightbulb-o"></i>&nbsp;Current Record
-                  </Button>
+                  <Link
+                    className="btn btn-primary"
+                    color="primary"
+                    to={`/crashes/${crashId}`}
+                    target="_blank"
+                  >
+                    <i className="fa fa-lightbulb-o"></i>&nbsp;Open Current
+                    Record
+                  </Link>
                 </Col>
                 <Col sm xs="12" className="text-center mt-3">
-                  <Button color="secondary" outline>
+                  <Button color="secondary" onClick={downloadCR3}>
                     <i className="fa fa-lightbulb-o"></i>&nbsp;Download Current
                     CR3
                   </Button>
                 </Col>
                 <Col sm xs="12" className="text-center mt-3">
-                  <Button color="ghost-success">
+                  <Button color="success">
                     <i className="fa fa-lightbulb-o"></i>&nbsp;Approve All
                     Changes
                   </Button>
                 </Col>
                 <Col sm xs="12" className="text-center mt-3">
-                  <Button color="warning" className="btn-square">
-                    <i className="fa fa-lightbulb-o"></i>&nbsp;Undo all changes
+                  <Button color="warning">
+                    <i className="fa fa-lightbulb-o"></i>&nbsp;Unselect all
+                    changes
                   </Button>
                 </Col>
                 <Col sm xs="12" className="text-center mt-3">
-                  <Button color="danger" className="btn-pill">
+                  <Button color="danger">
                     <i className="fa fa-lightbulb-o"></i>&nbsp;Discard Incoming
                     Record
                   </Button>
@@ -171,8 +195,11 @@ function CrashChange(props) {
               <span>
                 <strong>Main fields</strong>
               </span>
-              <Button color="primary" className="btn-pill float-right">
-                <i className="fa fa-lightbulb-o"></i>&nbsp;Save Changes Record
+              <Button color="primary" className="float-right">
+                <i className="fa fa-lightbulb-o"></i>&nbsp;Save Changes
+              </Button>
+              <Button color="light" className="float-right">
+                <i className="fa fa-lightbulb-o"></i>&nbsp;Select All Changes
               </Button>
             </CardHeader>
             <CardBody>{importantFields}</CardBody>
@@ -188,8 +215,11 @@ function CrashChange(props) {
               <span>
                 <strong>All other fields</strong>
               </span>
-              <Button color="primary" className="btn-pill float-right">
-                <i className="fa fa-lightbulb-o"></i>&nbsp;Save Changes Record
+              <Button color="primary" className="float-right">
+                <i className="fa fa-lightbulb-o"></i>&nbsp;Save Changes
+              </Button>
+              <Button color="light" className="float-right">
+                <i className="fa fa-lightbulb-o"></i>&nbsp;Select All Changes
               </Button>
             </CardHeader>
             <CardBody>{allFields}</CardBody>
