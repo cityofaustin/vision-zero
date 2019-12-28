@@ -27,10 +27,16 @@ function Location(props) {
     .subtract(5, "years")
     .format("YYYY=MM-DD");
 
+  const nonCr3CostPerCrash = parseFloat(10);
+
   const locationId = props.match.params.id;
   const [mapSelected, setMapSelected] = useState("aerial");
   const { loading, error, data, refetch } = useQuery(GET_LOCATION, {
-    variables: { id: locationId, yearsAgoDate: fiveYearsAgo },
+    variables: {
+      id: locationId,
+      yearsAgoDate: fiveYearsAgo,
+      costPerCrash: nonCr3CostPerCrash,
+    },
   });
 
   console.log(data);
