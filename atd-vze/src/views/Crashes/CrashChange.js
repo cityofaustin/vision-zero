@@ -34,6 +34,35 @@ function CrashChange(props) {
   let allFields = null;
 
   /**
+   * Returns true if fieldName exists within the selectedFields array.
+   * @param fieldName {string} - The name of the field
+   * @returns {boolean}
+   */
+  const isFieldEnabled = fieldName => {
+    return selectedFields.includes(fieldName);
+  };
+
+  /**
+   * Adds or removes field name from the selectedFields array.
+   * @param fieldName {string} - The name of the field.
+   */
+  const toggleField = fieldName => {
+    let newFieldList = selectedFields;
+
+    // If it is there, remove it.
+    if (isFieldEnabled(fieldName)) {
+      const index = newFieldList.indexOf(fieldName);
+      if (index !== -1) newFieldList.splice(index, 1);
+
+      // If it isn't there, then add it.
+    } else {
+      newFieldList.push(fieldName);
+    }
+
+    setSelectedFields(newFieldList);
+  };
+
+  /**
    * Downloads a CR3
    */
   const downloadCR3 = () => {
@@ -101,6 +130,7 @@ function CrashChange(props) {
             label
             dataOn={"\u2713"}
             dataOff={"\u2715"}
+            onClick={() => toggleField(field)}
           />
         </Col>
         <Col xs="6" sm="6" md="3">
