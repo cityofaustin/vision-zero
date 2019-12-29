@@ -24,18 +24,17 @@ import { crashImportantDiffFields } from "./crashImportantDiffFields";
 function CrashChange(props) {
   const crashId = props.match.params.id;
   const [selectedFields, setSelectedFields] = useState([]);
+  const [recordData, setRecordData] = useState({});
+  // Arrays of column names
+  const [importantFieldList, setImportantFieldList] = useState([]);
+  const [differentFieldsList, setDifferentFieldsList] = useState([]);
+  // Arrays of Components
+  const [importantFields, setImportantFields] = useState([]);
+  const [differentFields, setDifferentFields] = useState([]);
 
   const { loading, error, data, refetch } = useQuery(GET_CRASH_CHANGE, {
     variables: { crashId },
   });
-
-  // Arrays of column names
-  let importantFieldList = [];
-  let differentFieldsList = [];
-
-  // Allocate for diff rows array for JSX components
-  let importantFields = [];
-  let allFields = [];
 
   /**
    * Returns true if fieldName exists within the selectedFields array.
@@ -63,7 +62,10 @@ function CrashChange(props) {
       newFieldList.push(fieldName);
     }
 
-    setSelectedFields(newFieldList);
+    console.log("Changing Selected Fields To: ");
+    console.log(newFieldList);
+
+    setSelectedFields([...newFieldList]);
   };
 
   /**
@@ -71,6 +73,7 @@ function CrashChange(props) {
    * @param main {int} - The mode to operate: 1) Main, 2) All other fields, 3) All fields
    */
   const fieldsBatchEnable = mainMode => {
+    console.log("Batch enabling stuff...");
     const mode = mainMode || 0;
     let list = [];
 
@@ -87,11 +90,41 @@ function CrashChange(props) {
       list = [importantFieldList, ...differentFieldsList];
     }
 
-    const enabledList = list.filter((field, i) => {
+    const enabledList = list.map((field, i) => {
       return field;
     });
 
-    setSelectedFields(enabledList);
+    setSelectedFields([...selectedFields, ...enabledList]);
+  };
+
+  /**
+   * Batch-enables a list of fields
+   * @param main {int} - The mode to operate: 1) Main, 2) All other fields, 3) All fields
+   */
+  const fieldsBatchClear = mainMode => {
+    console.log("Batch removing stuff...");
+
+    const mode = mainMode || 0;
+    let list = [];
+
+    // Loop through main fields only
+    if (mode === 1) {
+      list = importantFieldList;
+    }
+    // Loop through all other fields
+    else if (mode === 2) {
+      list = differentFieldsList;
+    }
+    // Loop through all fields
+    else if (mode === 3) {
+      list = [importantFieldList, ...differentFieldsList];
+    }
+
+    const enabledList = selectedFields.filter((field, i) => {
+      return !list.includes(field);
+    });
+
+    setSelectedFields([...enabledList]);
   };
 
   /**
@@ -155,17 +188,19 @@ function CrashChange(props) {
     return (
       <Row key={field} className={"crash-row"}>
         <Col xs="6" sm="6" md="1">
-          {change && <AppSwitch
-            className={"mx-1"}
-            variant={"pill"}
-            color={"primary"}
-            outline={"alt"}
-            label
-            dataOn={"\u2713"}
-            dataOff={"\u2715"}
-            onClick={() => toggleField(field)}
-            checked={selectorEnabled}
-          /> }
+          {change && (
+            <AppSwitch
+              className={"mx-1"}
+              variant={"pill"}
+              color={"primary"}
+              outline={"alt"}
+              label
+              dataOn={"\u2713"}
+              dataOff={"\u2715"}
+              onClick={() => toggleField(field)}
+              checked={selectorEnabled}
+            />
+          )}
         </Col>
         <Col xs="6" sm="6" md="3">
           <strong>{field}</strong>
@@ -187,39 +222,78 @@ function CrashChange(props) {
   };
 
   // If the data object has no keys, then wait...
-  if (Object.keys(data).length > 0) {
-    let originalRecord = data["atd_txdot_crashes"][0] || null;
-    let newRecord =
-      JSON.parse(data["atd_txdot_changes"][0]["record_json"]) || null;
-
-    // We need a list of all important fields as defined in crashImportantDiffFields
-    importantFieldList = Object.keys(crashImportantDiffFields).map(
-      (field, i) => {
-        const originalValue = `${originalRecord[field]}`.trim();
-        const newValue = `${newRecord[field]}`.trim();
-        return originalValue !== newValue;
-      }
-    );
-
-    // Now we need the rest of all other fields
-    differentFieldsList = generate_diff(data).filter((field, i) => {
-      return !importantFieldList.includes(field);
-    });
-
-    // Now we get to build our component based on our list of importnt fields
-    importantFields = Object.keys(crashImportantDiffFields).map((field, i) => {
-      return generateRow(
-        field,
-        field.label,
-        originalRecord[field],
-        newRecord[field]
-      );
-    });
-
-    allFields = differentFieldsList.map((field, i) => {
-      return generateRow(field, field, originalRecord[field], newRecord[field]);
-    });
+  if (data && Object.keys(data).length > 0) {
+    if (Object.keys(recordData).length === 0) {
+      setRecordData(data);
+    }
   }
+
+  useEffect(() => {
+    console.log("There was an update to the state:");
+    console.log("ue: recordData: ");
+    console.log(recordData);
+    console.log("ue: selectedFields: ");
+    console.log(selectedFields);
+
+    if (Object.keys(recordData).length > 0) {
+      let originalRecord = recordData["atd_txdot_crashes"][0] || null;
+      let newRecord =
+        JSON.parse(recordData["atd_txdot_changes"][0]["record_json"]) || null;
+
+      // We need a list of all important fields as defined in crashImportantDiffFields
+      setImportantFieldList(
+        Object.keys(crashImportantDiffFields).filter((field, i) => {
+          return field;
+        })
+      );
+
+      // Now we need the rest of all other fields
+      setDifferentFieldsList(
+        generate_diff(recordData).filter((field, i) => {
+          return !importantFieldList.includes(field);
+        })
+      );
+    }
+  }, [recordData, selectedFields]);
+
+  useEffect(() => {
+      if(Object.keys(recordData).length === 0) return;
+
+      let originalRecord = recordData["atd_txdot_crashes"][0] || null;
+      let newRecord =
+          JSON.parse(recordData["atd_txdot_changes"][0]["record_json"]) || null;
+
+      // Now we get to build our component based on our list of importnt fields
+      setImportantFields(
+          Object.keys(crashImportantDiffFields).map((field, i) => {
+              return generateRow(
+                  field,
+                  field.label,
+                  originalRecord[field],
+                  newRecord[field]
+              );
+          })
+      );
+  }, [importantFieldList]);
+
+  useEffect(() => {
+      if(Object.keys(recordData).length === 0) return;
+
+      let originalRecord = recordData["atd_txdot_crashes"][0] || null;
+      let newRecord =
+          JSON.parse(recordData["atd_txdot_changes"][0]["record_json"]) || null;
+
+      setDifferentFields(
+          differentFieldsList.map((field, i) => {
+              return generateRow(
+                  field,
+                  field,
+                  originalRecord[field],
+                  newRecord[field]
+              );
+          })
+      );
+  }, [differentFieldsList]);
 
   return (
     <div className="animated fadeIn">
@@ -281,14 +355,21 @@ function CrashChange(props) {
                 <strong>Main fields</strong>
               </span>
               <Button color="primary" className="float-right">
-                <i className="fa fa-lightbulb-o"></i>&nbsp;Save Changes
+                <i className="fa fa-lightbulb-o"></i>&nbsp;Here Save Changes
               </Button>
               <Button
-                color="light"
+                color="ghost-dark"
                 className="float-right"
                 onClick={() => fieldsBatchEnable(1)}
               >
-                <i className="fa fa-lightbulb-o"></i>&nbsp;Select All Changes
+                <i className="fa fa-lightbulb-o"></i>&nbsp;Select All
+              </Button>
+              <Button
+                color="ghost-dark"
+                className="float-right"
+                onClick={() => fieldsBatchClear(1)}
+              >
+                <i className="fa fa-lightbulb-o"></i>&nbsp;Clear All
               </Button>
             </CardHeader>
             <CardBody>{importantFields}</CardBody>
@@ -302,16 +383,27 @@ function CrashChange(props) {
           <Card>
             <CardHeader>
               <span>
-                <strong>All other fields</strong>
+                <strong>Main fields</strong>
               </span>
               <Button color="primary" className="float-right">
-                <i className="fa fa-lightbulb-o"></i>&nbsp;Save Changes
+                <i className="fa fa-lightbulb-o"></i>&nbsp;Here Save Changes
               </Button>
-              <Button color="light" className="float-right">
-                <i className="fa fa-lightbulb-o"></i>&nbsp;Select All Changes
+              <Button
+                color="ghost-dark"
+                className="float-right"
+                onClick={() => fieldsBatchEnable(2)}
+              >
+                <i className="fa fa-lightbulb-o"></i>&nbsp;Select All
+              </Button>
+              <Button
+                color="ghost-dark"
+                className="float-right"
+                onClick={() => fieldsBatchClear(2)}
+              >
+                <i className="fa fa-lightbulb-o"></i>&nbsp;Clear All
               </Button>
             </CardHeader>
-            <CardBody>{allFields}</CardBody>
+            <CardBody>{differentFields}</CardBody>
           </Card>
         </Col>
       </Row>
