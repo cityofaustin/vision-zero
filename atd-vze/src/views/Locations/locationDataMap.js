@@ -15,13 +15,27 @@ const locationDataMap = [
         editable: false,
         format: "datetime",
       },
-      est_comp_cost: {
-        label: "Estimated Comprehensive Cost",
-        // If data is nested in returned data object, define path in
-        //  lodash.get() format to expose in DataTable component
-        dataPath: ["crashes_count_cost_summary", "est_comp_cost"],
+      cr3_total_est_comp_cost: {
+        label: "CR3 Estimated Comprehensive Cost",
+        alternateTable: "cr3Totals",
         editable: false,
         format: "dollars",
+      },
+      cr3_total_crashes: {
+        label: "CR3 Total Crashes",
+        alternateTable: "cr3Totals",
+        editable: false,
+      },
+      noncr3_total_est_comp_cost: {
+        label: "Non-CR3 Estimated Comprehensive Cost",
+        alternateTable: "nonCr3Totals",
+        editable: false,
+        format: "dollars",
+      },
+      noncr3_total_crashes: {
+        label: "Non-CR3 Total Crashes",
+        alternateTable: "nonCr3Totals",
+        editable: false,
       },
       asmp_street_level: {
         label: "ASMP Street Level",
