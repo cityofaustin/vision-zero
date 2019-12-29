@@ -70,9 +70,6 @@ const DataTable = ({
                       // Set data table (alternate if defined in data map)
                       const fieldDataTable =
                         fieldConfigObject.alternateTable || dataTable;
-                      console.log(fieldDataTable);
-
-                      // TODO: Handle sums of data
 
                       // If data is nested in data object, define path in dataMap
                       const nestedData =

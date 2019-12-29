@@ -26,14 +26,7 @@ export const GET_LOCATION = gql`
         total_crashes
       }
     }
-    cr3Totals: get_cr3_location_totals(
-      args: { date: $yearsAgoDate, location: $id }
-    ) {
-      location_id
-      cr3_total_crashes: total_crashes
-      cr3_total_est_comp_cost: total_est_comp_cost
-    }
-    nonCr3Totals: get_noncr3_location_totals(
+    locationTotals: get_location_totals(
       args: {
         date: $yearsAgoDate
         location: $id
@@ -41,13 +34,8 @@ export const GET_LOCATION = gql`
       }
     ) {
       location_id
-      noncr3_total_crashes: total_crashes
-      noncr3_total_est_comp_cost: total_est_comp_cost
-    }
-    nonCr3EstCompCost: atd_txdot__est_comp_cost(
-      where: { est_comp_cost_id: { _eq: 6 } }
-    ) {
-      est_comp_cost_amount
+      total_crashes
+      total_est_comp_cost
     }
   }
 `;
