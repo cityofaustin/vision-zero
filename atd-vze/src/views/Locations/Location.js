@@ -29,7 +29,7 @@ function Location(props) {
 
   const fiveYearsAgo = moment()
     .subtract(5, "years")
-    .format("YYYY=MM-DD");
+    .format("YYYY-MM-DD");
 
   const [variables, setVariables] = useState({
     id: locationId,
@@ -45,7 +45,7 @@ function Location(props) {
   useEffect(() => {
     if (
       Object.entries(data).length !== 0 &&
-      data.nonCr3Totals[0].noncr3_total_est_comp_cost === 0
+      data.locationTotals[0].noncr3_est_comp_cost === 0
     ) {
       const costPerNonCr3Crash = data.nonCr3EstCompCost[0].est_comp_cost_amount;
       setVariables({ ...variables, costPerCrash: costPerNonCr3Crash });
@@ -56,8 +56,6 @@ function Location(props) {
   useEffect(() => {
     refetch(variables);
   }, [variables, refetch]);
-
-  console.log(data);
 
   const [editField, setEditField] = useState("");
   const [formData, setFormData] = useState({});

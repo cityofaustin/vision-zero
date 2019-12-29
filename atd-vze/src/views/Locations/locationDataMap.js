@@ -17,7 +17,7 @@ const locationDataMap = [
       },
       total_crashes: {
         label: "Total Crashes (Previous 5 years)",
-        alternateTable: "cr3Totals",
+        alternateTable: "locationTotals",
         editable: false,
       },
       total_est_comp_cost: {
