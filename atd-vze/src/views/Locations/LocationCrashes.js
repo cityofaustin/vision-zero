@@ -122,7 +122,7 @@ function LocationCrashes(props) {
       sum: true,
     },
     {
-      mainText: "Total Crashes",
+      mainText: "CR3 Crashes",
       icon: "fa fa-cab",
       color: "primary",
       dataPath: ["atd_txdot_crashes_aggregate", "aggregate", "count"],

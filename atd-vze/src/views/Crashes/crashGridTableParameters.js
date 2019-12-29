@@ -66,6 +66,60 @@ export const crashGridTableColumns = {
   },
 };
 
+export const nonCR3CrashGridTableColumns = {
+  form_id: {
+    primary_key: false, // We say no here bc there is no page to link to
+    searchable: true,
+    sortable: true,
+    label_search: "Search by Crash Form ID",
+    label_table: "Crash Form ID",
+    type: "Int",
+  },
+  date: {
+    primary_key: false,
+    searchable: true,
+    sortable: true,
+    label_table: "Date",
+    type: "Date",
+  },
+  hour: {
+    primary_key: false,
+    searchable: false,
+    sortable: false,
+    label_table: "Hour of Day",
+    type: "Int",
+  },
+  address: {
+    primary_key: false,
+    searchable: false,
+    sortable: true,
+    label_search: "Search by Address",
+    label_table: "Address",
+    type: "String",
+  },
+  speed_mgmt_points: {
+    primary_key: false,
+    searchable: false,
+    sortable: true,
+    label_table: "Speed Management Points",
+    type: "Int",
+  },
+  est_comp_cost: {
+    primary_key: false,
+    searchable: false,
+    sortable: true,
+    label_table: "Est Comprehensive Cost",
+    type: "Int",
+  },
+  est_econ_cost: {
+    primary_key: false,
+    searchable: false,
+    sortable: true,
+    label_table: "Est Economic Cost",
+    type: "Int",
+  },
+}
+
 export const crashGridTableAdvancedFilters = {
   groupInjuries: {
     icon: "cab",
