@@ -44,6 +44,11 @@ export const GET_LOCATION = gql`
       total_crashes
       total_est_comp_cost
     }
+    nonCr3EstCompCost: atd_txdot__est_comp_cost(
+      where: { est_comp_cost_id: { _eq: 6 } }
+    ) {
+      est_comp_cost_amount
+    }
   }
 `;
 

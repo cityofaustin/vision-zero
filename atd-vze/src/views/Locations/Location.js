@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import moment from "moment";
 import DataTable from "../../Components/DataTable";
 import LocationMap from "./LocationMap";
@@ -22,22 +22,40 @@ import LocationCrashes from "./LocationCrashes";
 import { GET_LOCATION, UPDATE_LOCATION } from "../../queries/Locations";
 
 function Location(props) {
-  // Date five years ago for crash totals and est. comp. cost totals
+  const [mapSelected, setMapSelected] = useState("aerial");
+
+  // Set initial variables for GET_LOCATION query
+  const locationId = props.match.params.id;
+
   const fiveYearsAgo = moment()
     .subtract(5, "years")
     .format("YYYY=MM-DD");
 
-  const nonCr3CostPerCrash = parseFloat(10);
-
-  const locationId = props.match.params.id;
-  const [mapSelected, setMapSelected] = useState("aerial");
-  const { loading, error, data, refetch } = useQuery(GET_LOCATION, {
-    variables: {
-      id: locationId,
-      yearsAgoDate: fiveYearsAgo,
-      costPerCrash: nonCr3CostPerCrash,
-    },
+  const [variables, setVariables] = useState({
+    id: locationId,
+    yearsAgoDate: fiveYearsAgo,
+    costPerCrash: parseFloat(0),
   });
+
+  const { loading, error, data, refetch } = useQuery(GET_LOCATION, {
+    variables,
+  });
+
+  // Retrieve est_comp_cost_amount of Non-CR3 crashes from DB and set updated variable
+  useEffect(() => {
+    if (
+      Object.entries(data).length !== 0 &&
+      data.nonCr3Totals[0].total_est_comp_cost === 0
+    ) {
+      const costPerNonCr3Crash = data.nonCr3EstCompCost[0].est_comp_cost_amount;
+      setVariables({ ...variables, costPerCrash: costPerNonCr3Crash });
+    }
+  }, [data, variables]);
+
+  // On variable change, refetch to get calculated Non-CR3 total_est_comp_cost
+  useEffect(() => {
+    refetch(variables);
+  }, [variables, refetch]);
 
   console.log(data);
 
