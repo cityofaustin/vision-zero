@@ -30,8 +30,8 @@ export const GET_LOCATION = gql`
       args: { date: $yearsAgoDate, location: $id }
     ) {
       location_id
-      total_crashes
-      total_est_comp_cost
+      cr3_total_crashes: total_crashes
+      cr3_total_est_comp_cost: total_est_comp_cost
     }
     nonCr3Totals: get_noncr3_location_totals(
       args: {
@@ -41,8 +41,8 @@ export const GET_LOCATION = gql`
       }
     ) {
       location_id
-      total_crashes
-      total_est_comp_cost
+      noncr3_total_crashes: total_crashes
+      noncr3_total_est_comp_cost: total_est_comp_cost
     }
     nonCr3EstCompCost: atd_txdot__est_comp_cost(
       where: { est_comp_cost_id: { _eq: 6 } }

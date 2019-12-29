@@ -45,7 +45,7 @@ function Location(props) {
   useEffect(() => {
     if (
       Object.entries(data).length !== 0 &&
-      data.nonCr3Totals[0].total_est_comp_cost === 0
+      data.nonCr3Totals[0].noncr3_total_est_comp_cost === 0
     ) {
       const costPerNonCr3Crash = data.nonCr3EstCompCost[0].est_comp_cost_amount;
       setVariables({ ...variables, costPerCrash: costPerNonCr3Crash });
