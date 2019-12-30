@@ -17,10 +17,6 @@ export const GET_LOCATION = gql`
         collsn_desc
         count
       }
-      crashes_count_cost_summary {
-        est_comp_cost
-        total_crashes
-      }
     }
     locationTotals: get_location_totals(
       args: {
