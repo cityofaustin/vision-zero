@@ -85,6 +85,10 @@ function CrashChange(props) {
     setShowFieldsDiffOnly(!showFieldsDiffOnly);
   };
 
+  /**
+   * Returns an deconstructable array with two objects containing the old record and the new record.
+   * @returns {object[]}
+   */
   const getOriginalNewRecords = () => {
     const originalRecord = recordData["atd_txdot_crashes"][0] || null;
     const newRecord =
@@ -190,7 +194,7 @@ function CrashChange(props) {
   /**
    * Returns an array of strings with all the fields that have a different value.
    * @param data {object}
-   * @returns {array[string]}
+   * @returns {string[]}
    */
   const generate_diff = data => {
     const [originalRecord, newRecord] = getOriginalNewRecords();
@@ -206,6 +210,10 @@ function CrashChange(props) {
       .sort();
   };
 
+  /**
+   * Returns an array of strings containing the fields that are selectable
+   * @returns {string[]}
+   */
   const generate_diff_selectable = () => {
     const [originalRecord, newRecord] = getOriginalNewRecords();
 
@@ -223,7 +231,7 @@ function CrashChange(props) {
    * Generates a mutation to update the original record.
    * @returns {string}
    */
-  const generateMutation = () => {
+  const generateMutationSave = () => {
     const newRecord =
       JSON.parse(recordData["atd_txdot_changes"][0]["record_json"]) || null;
 
@@ -277,20 +285,59 @@ function CrashChange(props) {
     return mutationTemplate.replace("%UPDATE_FIELDS%", updateFields.join("\n"));
   };
 
+  /**
+   * Generates a mutation to discard the current change
+   * @returns {string}
+   */
+  const generateMutationDiscard = () => {
+      return `
+        mutation discardChange($crashId: Int) {
+           update_atd_txdot_changes(
+              where: {
+                record_id:    { _eq: $crashId }
+                record_type:  { _eq: "crash" }
+                status:       { _eq: 0 }
+              },
+              
+              _set: {
+                status: { _eq: 2 }
+              }
+          ) {
+            affected_rows
+          }
+        }
+    `;
+  };
+
+  /**
+   * Saves the selected fields and discards the change
+   */
   const saveSelectedFields = () => {
-    const query = generateMutation();
-    console.log("Mutation Template");
-    console.log(query);
+    const mutation = generateMutationSave();
+    console.log("saveSelectedFields() : Mutation Template");
+    console.log(mutation);
+    toggleModal(1);
+  };
+
+  /**
+   * Discards the change
+   */
+  const discardChange = () => {
+    const mutation = generateMutationDiscard();
+    console.log("discardChange() : Mutation Template");
+    console.log(mutation);
+    toggleModal(3);
+    alert("The user should now be taken to the index page.");
   };
 
   /**
    * Returns a clean string (if null, then assume empty.
-   * @param str {string}
+   * @param input {string} - The string being cleaned
    * @returns {string}
    */
-  const cleanString = str => {
-    if (str === null) return "";
-    return `${str}`.trim();
+  const cleanString = input => {
+    if (input === null) return "";
+    return `${input}`.trim();
   };
 
   /**
@@ -644,7 +691,7 @@ function CrashChange(props) {
           <strong>This cannot be undone.</strong>
         </ModalBody>
         <ModalFooter>
-          <Button color="danger" onClick={() => toggleModal(3)}>
+          <Button color="danger" onClick={() => discardChange()}>
             I am sure, Discard
           </Button>{" "}
           <Button color="secondary" onClick={() => toggleModal(3)}>
