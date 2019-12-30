@@ -15,6 +15,10 @@ import {
   Row,
   Button,
   Badge,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
 } from "reactstrap";
 
 import { AppSwitch } from "@coreui/react";
@@ -31,6 +35,11 @@ function CrashChange(props) {
   // Arrays of Components
   const [importantFields, setImportantFields] = useState([]);
   const [differentFields, setDifferentFields] = useState([]);
+  const [showFieldsDiffOnly, setShowFieldsDiffOnly] = useState(false);
+  // Modals
+  const [approveAllChanges, setApproveAllChanges] = useState(false);
+  const [discardAllChanges, setDiscardAllChanges] = useState(false);
+  const [clearAllSelections, setClearAllSelections] = useState(false);
 
   const { loading, error, data, refetch } = useQuery(GET_CRASH_CHANGE, {
     variables: { crashId },
@@ -62,32 +71,51 @@ function CrashChange(props) {
       newFieldList.push(fieldName);
     }
 
-    console.log("Changing Selected Fields To: ");
-    console.log(newFieldList);
-
     setSelectedFields([...newFieldList]);
+  };
+
+  const toggleDiffOnly = () => {
+    let newShowFieldsDiffOnly = showFieldsDiffOnly;
+    setShowFieldsDiffOnly(!showFieldsDiffOnly);
+  };
+
+  /**
+   * Toggles a modal based on a number.
+   * @param mode {int} - The modal to toggle
+   */
+  const toggleModal = mode => {
+    switch (mode) {
+      case 1:
+        setApproveAllChanges(!approveAllChanges);
+        break;
+      case 2:
+        setDiscardAllChanges(!discardAllChanges);
+        break;
+      case 3:
+        setClearAllSelections(!clearAllSelections);
+        break;
+    }
   };
 
   /**
    * Batch-enables a list of fields
-   * @param main {int} - The mode to operate: 1) Main, 2) All other fields, 3) All fields
+   * @param mode {int} - The mode to operate: 1) Main, 2) All other fields, 3) All fields
    */
-  const fieldsBatchEnable = mainMode => {
-    console.log("Batch enabling stuff...");
-    const mode = mainMode || 0;
+  const fieldsBatchEnable = mode => {
+
     let list = [];
 
     // Loop through main fields only
     if (mode === 1) {
-      list = importantFieldList;
+      list = [...importantFieldList];
     }
     // Loop through all other fields
     else if (mode === 2) {
-      list = differentFieldsList;
+      list = [...differentFieldsList];
     }
     // Loop through all fields
     else if (mode === 3) {
-      list = [importantFieldList, ...differentFieldsList];
+      list = [...importantFieldList, ...differentFieldsList];
     }
 
     const enabledList = list.map((field, i) => {
@@ -99,25 +127,23 @@ function CrashChange(props) {
 
   /**
    * Batch-enables a list of fields
-   * @param main {int} - The mode to operate: 1) Main, 2) All other fields, 3) All fields
+   * @param mode {int} - The mode to operate: 1) Main, 2) All other fields, 3) All fields
    */
-  const fieldsBatchClear = mainMode => {
-    console.log("Batch removing stuff...");
+  const fieldsBatchClear = mode => {
 
-    const mode = mainMode || 0;
     let list = [];
 
     // Loop through main fields only
     if (mode === 1) {
-      list = importantFieldList;
+      list = [...importantFieldList];
     }
     // Loop through all other fields
     else if (mode === 2) {
-      list = differentFieldsList;
+      list = [...differentFieldsList];
     }
     // Loop through all fields
     else if (mode === 3) {
-      list = [importantFieldList, ...differentFieldsList];
+      list = [...importantFieldList, ...differentFieldsList];
     }
 
     const enabledList = selectedFields.filter((field, i) => {
@@ -133,7 +159,7 @@ function CrashChange(props) {
   const downloadCR3 = () => {
     const requestUrl = `${process.env.REACT_APP_CR3_API_DOMAIN}/cr3/download/${crashId}`;
     const token = window.localStorage.getItem("id_token");
-    console.log("Downloading request url: " + requestUrl);
+
     axios
       .request(requestUrl, {
         headers: {
@@ -182,8 +208,12 @@ function CrashChange(props) {
       : "";
 
     const newValue = newFieldValue ? `${newFieldValue}`.trim() : "";
-    const change = originalValue !== newValue;
+    let change = originalValue !== newValue;
     const selectorEnabled = isFieldEnabled(field);
+
+    if (showFieldsDiffOnly) {
+      if (!change) return null;
+    }
 
     return (
       <Row key={field} className={"crash-row"}>
@@ -229,12 +259,6 @@ function CrashChange(props) {
   }
 
   useEffect(() => {
-    console.log("There was an update to the state:");
-    console.log("ue: recordData: ");
-    console.log(recordData);
-    console.log("ue: selectedFields: ");
-    console.log(selectedFields);
-
     if (Object.keys(recordData).length > 0) {
       let originalRecord = recordData["atd_txdot_crashes"][0] || null;
       let newRecord =
@@ -257,43 +281,43 @@ function CrashChange(props) {
   }, [recordData, selectedFields]);
 
   useEffect(() => {
-      if(Object.keys(recordData).length === 0) return;
+    if (Object.keys(recordData).length === 0) return;
 
-      let originalRecord = recordData["atd_txdot_crashes"][0] || null;
-      let newRecord =
-          JSON.parse(recordData["atd_txdot_changes"][0]["record_json"]) || null;
+    let originalRecord = recordData["atd_txdot_crashes"][0] || null;
+    let newRecord =
+      JSON.parse(recordData["atd_txdot_changes"][0]["record_json"]) || null;
 
-      // Now we get to build our component based on our list of importnt fields
-      setImportantFields(
-          Object.keys(crashImportantDiffFields).map((field, i) => {
-              return generateRow(
-                  field,
-                  field.label,
-                  originalRecord[field],
-                  newRecord[field]
-              );
-          })
-      );
-  }, [importantFieldList]);
+    // Now we get to build our component based on our list of importnt fields
+    setImportantFields(
+      Object.keys(crashImportantDiffFields).map((field, i) => {
+        return generateRow(
+          field,
+          field.label,
+          originalRecord[field],
+          newRecord[field]
+        );
+      })
+    );
+  }, [importantFieldList, showFieldsDiffOnly]);
 
   useEffect(() => {
-      if(Object.keys(recordData).length === 0) return;
+    if (Object.keys(recordData).length === 0) return;
 
-      let originalRecord = recordData["atd_txdot_crashes"][0] || null;
-      let newRecord =
-          JSON.parse(recordData["atd_txdot_changes"][0]["record_json"]) || null;
+    let originalRecord = recordData["atd_txdot_crashes"][0] || null;
+    let newRecord =
+      JSON.parse(recordData["atd_txdot_changes"][0]["record_json"]) || null;
 
-      setDifferentFields(
-          differentFieldsList.map((field, i) => {
-              return generateRow(
-                  field,
-                  field,
-                  originalRecord[field],
-                  newRecord[field]
-              );
-          })
-      );
-  }, [differentFieldsList]);
+    setDifferentFields(
+      differentFieldsList.map((field, i) => {
+        return generateRow(
+          field,
+          field,
+          originalRecord[field],
+          newRecord[field]
+        );
+      })
+    );
+  }, [differentFieldsList, showFieldsDiffOnly]);
 
   return (
     <div className="animated fadeIn">
@@ -301,11 +325,24 @@ function CrashChange(props) {
         <Col xs="12" sm="12" md="12">
           <Card>
             <CardHeader>
-              <strong>Main Options</strong>
+              <span>
+                <strong>Main Options</strong>
+              </span>
+              <div className="float-right minidiff--switchrow">
+                <AppSwitch
+                  className={"mx-1"}
+                  color={"primary"}
+                  checked={showFieldsDiffOnly ? "checked" : ""}
+                  onClick={() => toggleDiffOnly()}
+                />
+                <span className="minidiff--switchlabel">
+                  Show only fields with differences
+                </span>
+              </div>
             </CardHeader>
             <CardBody>
-              <Row className="align-items-center mt-3">
-                <Col sm xs="12" className="text-center mt-3">
+              <Row className="align-items-center">
+                <Col sm xs="12" className="text-center">
                   <Link
                     className="btn btn-primary"
                     color="primary"
@@ -316,25 +353,35 @@ function CrashChange(props) {
                     Record
                   </Link>
                 </Col>
-                <Col sm xs="12" className="text-center mt-3">
+                <Col sm xs="12" className="text-center">
                   <Button color="secondary" onClick={downloadCR3}>
                     <i className="fa fa-lightbulb-o"></i>&nbsp;Download Current
                     CR3
                   </Button>
                 </Col>
-                <Col sm xs="12" className="text-center mt-3">
-                  <Button color="success">
+                <Col sm xs="12" className="text-center">
+                  <Button color="warning" onClick={() => toggleModal(1)}>
                     <i className="fa fa-lightbulb-o"></i>&nbsp;Approve All
                     Changes
                   </Button>
                 </Col>
-                <Col sm xs="12" className="text-center mt-3">
-                  <Button color="warning">
+                <Col
+                  sm
+                  xs="12"
+                  className="text-center"
+                  onClick={() => toggleModal(2)}
+                >
+                  <Button color="success">
                     <i className="fa fa-lightbulb-o"></i>&nbsp;Unselect all
                     changes
                   </Button>
                 </Col>
-                <Col sm xs="12" className="text-center mt-3">
+                <Col
+                  sm
+                  xs="12"
+                  className="text-center"
+                  onClick={() => toggleModal(3)}
+                >
                   <Button color="danger">
                     <i className="fa fa-lightbulb-o"></i>&nbsp;Discard Incoming
                     Record
@@ -383,7 +430,7 @@ function CrashChange(props) {
           <Card>
             <CardHeader>
               <span>
-                <strong>Main fields</strong>
+                <strong>Other Fields</strong>
               </span>
               <Button color="primary" className="float-right">
                 <i className="fa fa-lightbulb-o"></i>&nbsp;Here Save Changes
@@ -407,6 +454,80 @@ function CrashChange(props) {
           </Card>
         </Col>
       </Row>
+
+      <Modal
+        isOpen={approveAllChanges}
+        toggle={() => toggleModal(1)}
+        className={"modal-warning"}
+      >
+        <ModalHeader toggle={() => toggleModal(1)}>
+          Approve all changes?
+        </ModalHeader>
+        <ModalBody>
+          Click <strong>Save</strong> to save the selected changes into the
+          record. Click <strong>Cancel</strong> to stop and close this dialog
+          without changes.
+        </ModalBody>
+        <ModalFooter>
+          <Button color="primary" onClick={() => toggleModal(1)}>
+            Save
+          </Button>{" "}
+          <Button color="secondary" onClick={() => toggleModal(1)}>
+            Cancel
+          </Button>
+        </ModalFooter>
+      </Modal>
+
+      <Modal
+        isOpen={discardAllChanges}
+        toggle={() => toggleModal(2)}
+        className={"modal-success"}
+      >
+        <ModalHeader toggle={() => toggleModal(2)}>Unselect all?</ModalHeader>
+        <ModalBody>
+          Click <strong>Unselect All</strong> to turn off every selected item.
+          Click <strong>Cancel</strong> to stop and close this dialog without
+          changes.
+        </ModalBody>
+        <ModalFooter>
+          <Button
+            color="success"
+            onClick={() => {
+              fieldsBatchClear(3);
+              toggleModal(2);
+            }}
+          >
+            Unselect All
+          </Button>{" "}
+          <Button color="secondary" onClick={() => toggleModal(2)}>
+            Cancel
+          </Button>
+        </ModalFooter>
+      </Modal>
+
+      <Modal
+        isOpen={clearAllSelections}
+        toggle={() => toggleModal(3)}
+        className={"modal-danger"}
+      >
+        <ModalHeader toggle={() => toggleModal(3)}>
+          Discard incoming record?
+        </ModalHeader>
+        <ModalBody>
+          Click <strong>Discard</strong> to discard the new incoming record, and
+          leave the original the way it is without changes. Click{" "}
+          <strong>Cancel</strong> to stop and close this dialog without changes.{" "}
+          <strong>This cannot be undone.</strong>
+        </ModalBody>
+        <ModalFooter>
+          <Button color="danger" onClick={() => toggleModal(3)}>
+            I am sure, Discard
+          </Button>{" "}
+          <Button color="secondary" onClick={() => toggleModal(3)}>
+            Cancel
+          </Button>
+        </ModalFooter>
+      </Modal>
     </div>
   );
 }
