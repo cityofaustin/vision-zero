@@ -41,7 +41,7 @@ function CrashChange(props) {
   const [discardAllChanges, setDiscardAllChanges] = useState(false);
   const [clearAllSelections, setClearAllSelections] = useState(false);
 
-  const { loading, error, data, refetch } = useQuery(GET_CRASH_CHANGE, {
+  const { error, data } = useQuery(GET_CRASH_CHANGE, {
     variables: { crashId },
   });
 
@@ -102,7 +102,6 @@ function CrashChange(props) {
    * @param mode {int} - The mode to operate: 1) Main, 2) All other fields, 3) All fields
    */
   const fieldsBatchEnable = mode => {
-
     let list = [];
 
     // Loop through main fields only
@@ -130,7 +129,6 @@ function CrashChange(props) {
    * @param mode {int} - The mode to operate: 1) Main, 2) All other fields, 3) All fields
    */
   const fieldsBatchClear = mode => {
-
     let list = [];
 
     // Loop through main fields only
@@ -319,7 +317,9 @@ function CrashChange(props) {
     );
   }, [differentFieldsList, showFieldsDiffOnly]);
 
-  return (
+  return error ? (
+    <div>{error}</div>
+  ) : (
     <div className="animated fadeIn">
       <Row>
         <Col xs="12" sm="12" md="12">
