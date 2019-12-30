@@ -290,7 +290,7 @@ function CrashChange(props) {
    * @returns {string}
    */
   const generateMutationDiscard = () => {
-      return `
+    return `
         mutation discardChange($crashId: Int) {
            update_atd_txdot_changes(
               where: {
@@ -480,6 +480,11 @@ function CrashChange(props) {
   ) : (
     <div className="animated fadeIn">
       <Row>
+        <CardBody>
+          <h1>Crash ID: {crashId}</h1>
+        </CardBody>
+      </Row>
+      <Row>
         <Col xs="12" sm="12" md="12">
           <Card>
             <CardHeader>
@@ -528,8 +533,7 @@ function CrashChange(props) {
                 </Col>
                 <Col sm xs="12" className="text-center">
                   <Button color="warning" onClick={() => toggleModal(1)}>
-                    <i className="fa fa-save"></i>&nbsp;Save Selected
-                    Changes
+                    <i className="fa fa-save"></i>&nbsp;Save Selected Changes
                   </Button>
                 </Col>
                 <Col
@@ -550,8 +554,7 @@ function CrashChange(props) {
                   onClick={() => toggleModal(3)}
                 >
                   <Button color="danger">
-                    <i className="fa fa-trash"></i>&nbsp;Discard Incoming
-                    Record
+                    <i className="fa fa-trash"></i>&nbsp;Discard Incoming Record
                   </Button>
                 </Col>
               </Row>
@@ -634,7 +637,10 @@ function CrashChange(props) {
             </>
           )}
           {selectedFields.length === 0 && (
-            <>No changes have been selected. In order to make changes to the existing record, you must select at least one change.</>
+            <>
+              No changes have been selected. In order to make changes to the
+              existing record, you must select at least one change.
+            </>
           )}
         </ModalBody>
         <ModalFooter>
