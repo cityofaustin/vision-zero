@@ -23,7 +23,7 @@ export default {
     {
       name: "Crash Changes",
       url: "/crashes/changes",
-      icon: "icon-shield",
+      icon: "icon-list",
     },
     {
       name: "Locations",

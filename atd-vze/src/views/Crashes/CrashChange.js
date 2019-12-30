@@ -460,7 +460,7 @@ function CrashChange(props) {
                     to={`/crashes/${crashId}`}
                     target="_blank"
                   >
-                    <i className="fa fa-lightbulb-o"></i>&nbsp;Open Current
+                    <i className="fa fa-address-card-o"></i>&nbsp;Open Current
                     Record
                   </Link>
                 </Col>
@@ -475,13 +475,13 @@ function CrashChange(props) {
                     color="secondary"
                     onClick={downloadCR3}
                   >
-                    <i className="fa fa-lightbulb-o"></i>&nbsp;Download Current
+                    <i className="fa fa-file-pdf-o"></i>&nbsp;Download Current
                     CR3
                   </Button>
                 </Col>
                 <Col sm xs="12" className="text-center">
                   <Button color="warning" onClick={() => toggleModal(1)}>
-                    <i className="fa fa-lightbulb-o"></i>&nbsp;Save Selected
+                    <i className="fa fa-save"></i>&nbsp;Save Selected
                     Changes
                   </Button>
                 </Col>
@@ -492,7 +492,7 @@ function CrashChange(props) {
                   onClick={() => toggleModal(2)}
                 >
                   <Button color="success">
-                    <i className="fa fa-lightbulb-o"></i>&nbsp;Unselect all
+                    <i className="fa fa-window-close"></i>&nbsp;Unselect all
                     changes
                   </Button>
                 </Col>
@@ -503,7 +503,7 @@ function CrashChange(props) {
                   onClick={() => toggleModal(3)}
                 >
                   <Button color="danger">
-                    <i className="fa fa-lightbulb-o"></i>&nbsp;Discard Incoming
+                    <i className="fa fa-trash"></i>&nbsp;Discard Incoming
                     Record
                   </Button>
                 </Col>
@@ -576,7 +576,7 @@ function CrashChange(props) {
       >
         <ModalHeader toggle={() => toggleModal(1)}>
           {selectedFields.length > 0 && <>Save selected changes?</>}
-          {selectedFields.length === 0 && <>No selected changes.</>}
+          {selectedFields.length === 0 && <>No selected changes</>}
         </ModalHeader>
         <ModalBody>
           {selectedFields.length > 0 && (
