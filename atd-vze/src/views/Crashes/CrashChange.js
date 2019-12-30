@@ -24,6 +24,7 @@ import {
 import { AppSwitch } from "@coreui/react";
 import { GET_CRASH_CHANGE } from "../../queries/crashes_changes";
 import { crashImportantDiffFields } from "./crashImportantDiffFields";
+import { crashChangeQuotedFields } from "./crashChangeQuotedFields";
 
 function CrashChange(props) {
   const crashId = props.match.params.id;
@@ -32,6 +33,7 @@ function CrashChange(props) {
   // Arrays of column names
   const [importantFieldList, setImportantFieldList] = useState([]);
   const [differentFieldsList, setDifferentFieldsList] = useState([]);
+  const [selectableList, setSelectableList] = useState([]);
   // Arrays of Components
   const [importantFields, setImportantFields] = useState([]);
   const [differentFields, setDifferentFields] = useState([]);
@@ -71,8 +73,9 @@ function CrashChange(props) {
     } else {
       newFieldList.push(fieldName);
     }
-
-    setSelectedFields([...newFieldList]);
+    const newList = [...newFieldList];
+    console.log(newList);
+    setSelectedFields(newList);
   };
 
   /**
@@ -80,6 +83,14 @@ function CrashChange(props) {
    */
   const toggleDiffOnly = () => {
     setShowFieldsDiffOnly(!showFieldsDiffOnly);
+  };
+
+  const getOriginalNewRecords = () => {
+    const originalRecord = recordData["atd_txdot_crashes"][0] || null;
+    const newRecord =
+      JSON.parse(recordData["atd_txdot_changes"][0]["record_json"]) || null;
+
+    return [originalRecord, newRecord];
   };
 
   /**
@@ -120,11 +131,13 @@ function CrashChange(props) {
       list = [...importantFieldList, ...differentFieldsList];
     }
 
-    const enabledList = list.map((field, i) => {
-      return field;
+    // If selectable & not already there
+    const enabledList = list.filter(field => {
+      return selectableList.includes(field) && !selectedFields.includes(field);
     });
 
-    setSelectedFields([...selectedFields, ...enabledList]);
+    const newList = [...selectedFields, ...enabledList];
+    setSelectedFields(newList);
   };
 
   /**
@@ -147,11 +160,12 @@ function CrashChange(props) {
       list = [...importantFieldList, ...differentFieldsList];
     }
 
-    const enabledList = selectedFields.filter((field, i) => {
+    const enabledList = selectedFields.filter(field => {
       return !list.includes(field);
     });
 
-    setSelectedFields([...enabledList]);
+    const newList = [...enabledList];
+    setSelectedFields(newList);
   };
 
   /**
@@ -179,9 +193,7 @@ function CrashChange(props) {
    * @returns {array[string]}
    */
   const generate_diff = data => {
-    let originalRecord = data["atd_txdot_crashes"][0] || null;
-    let newRecord =
-      JSON.parse(data["atd_txdot_changes"][0]["record_json"]) || null;
+    const [originalRecord, newRecord] = getOriginalNewRecords();
 
     return Object.keys(newRecord)
       .map((currentKey, i) => {
@@ -194,6 +206,93 @@ function CrashChange(props) {
       .sort();
   };
 
+  const generate_diff_selectable = () => {
+    const [originalRecord, newRecord] = getOriginalNewRecords();
+
+    const selectable = Object.keys(newRecord).filter(field => {
+      return (
+        cleanString(originalRecord[field]) !== cleanString(newRecord[field])
+      );
+    });
+
+    console.log(selectable);
+    return selectable;
+  };
+
+  /**
+   * Generates a mutation to update the original record.
+   * @returns {string}
+   */
+  const generateMutation = () => {
+    const newRecord =
+      JSON.parse(recordData["atd_txdot_changes"][0]["record_json"]) || null;
+
+    const mutationTemplate = `
+      mutation processChange($crashId: Int) {
+        update_atd_txdot_crashes(
+            where: {
+              crash_id: { _eq: $crashId }
+            },
+            
+            _set: {
+              %UPDATE_FIELDS%
+            }
+        ) {
+          affected_rows
+        },
+        update_atd_txdot_changes(
+            where: {
+              record_id:    { _eq: $crashId }
+              record_type:  { _eq: "crash" }
+              status:       { _eq: 0 }
+            },
+            
+            _set: {
+              status: { _eq: 1 }
+            }
+        ) {
+          affected_rows
+        }
+      }
+    `;
+
+    let updateFields = [];
+
+    selectedFields.forEach(field => {
+      // Generate the value
+      let value = (crashChangeQuotedFields.includes(field)
+        ? `"${newRecord[field]}"`
+        : newRecord[field]
+      ).trim();
+
+      if (value && value !== '""' && value.length > 0) {
+        // Generate the line
+        const currentField = `${field}: ${value}`;
+
+        // Append the field
+        updateFields.push(currentField);
+      }
+    });
+
+    return mutationTemplate.replace("%UPDATE_FIELDS%", updateFields.join("\n"));
+  };
+
+  const saveSelectedFields = () => {
+    const query = generateMutation();
+    console.log("Mutation Template");
+    console.log(query);
+  };
+
+  /**
+   * Returns a clean string (if null, then assume empty.
+   * @param str {string}
+   * @returns {string}
+   */
+  const cleanString = str => {
+    if (str === null) return "";
+    return `${str}`.trim();
+  };
+
   /**
    * Generates a JSX Row object, it returns null if there is no difference between the original value
    * and the new value from the new record as provided by the ETL process.
@@ -204,14 +303,13 @@ function CrashChange(props) {
    * @returns {Row}
    */
   const generateRow = (field, label, originalFieldValue, newFieldValue) => {
-    const originalValue = originalFieldValue
-      ? `${originalFieldValue}`.trim()
-      : "";
+    const originalValue = cleanString(originalFieldValue);
+    const newValue = cleanString(newFieldValue);
 
-    const newValue = newFieldValue ? `${newFieldValue}`.trim() : "";
-    let change = originalValue !== newValue;
+    const change = originalValue !== newValue;
     const selectorEnabled = isFieldEnabled(field);
 
+    // if showFieldsDiffOnly is enabled, do not show if no change...
     if (showFieldsDiffOnly) {
       if (!change) return null;
     }
@@ -271,19 +369,14 @@ function CrashChange(props) {
 
       // We need a list of all important fields as defined in crashImportantDiffFields
       setImportantFieldList(
-        Object.keys(crashImportantDiffFields).filter((field, i) => {
+        Object.keys(crashImportantDiffFields).filter(field => {
           return field;
         })
       );
 
-      // Now we need the rest of all other fields
-      setDifferentFieldsList(
-        generate_diff(recordData).filter((field, i) => {
-          return !importantFieldList.includes(field);
-        })
-      );
+      setSelectableList(generate_diff_selectable());
     }
-  }, [recordData, selectedFields, importantFieldList]);
+  }, [recordData]);
 
   /**
    * In this useEffect, we listen for changes to the importantFieldList
@@ -292,13 +385,18 @@ function CrashChange(props) {
   useEffect(() => {
     if (Object.keys(recordData).length === 0) return;
 
-    let originalRecord = recordData["atd_txdot_crashes"][0] || null;
-    let newRecord =
-      JSON.parse(recordData["atd_txdot_changes"][0]["record_json"]) || null;
+    const [originalRecord, newRecord] = getOriginalNewRecords();
 
-    // Now we get to build our component based on our list of importnt fields
+    // Now we need the rest of all other fields
+    setDifferentFieldsList(
+      generate_diff(recordData).filter(field => {
+        return !importantFieldList.includes(field);
+      })
+    );
+
+    // Now we get to build our component based on our list of important fields
     setImportantFields(
-      Object.keys(crashImportantDiffFields).map((field, i) => {
+      Object.keys(crashImportantDiffFields).map(field => {
         return generateRow(
           field,
           field.label,
@@ -307,7 +405,7 @@ function CrashChange(props) {
         );
       })
     );
-  }, [importantFieldList, showFieldsDiffOnly, recordData]);
+  }, [importantFieldList, showFieldsDiffOnly, recordData, selectedFields]);
 
   /**
    * In this useEffect, we listen for changes to the differentFieldsList
@@ -316,12 +414,10 @@ function CrashChange(props) {
   useEffect(() => {
     if (Object.keys(recordData).length === 0) return;
 
-    let originalRecord = recordData["atd_txdot_crashes"][0] || null;
-    let newRecord =
-      JSON.parse(recordData["atd_txdot_changes"][0]["record_json"]) || null;
+    const [originalRecord, newRecord] = getOriginalNewRecords();
 
     setDifferentFields(
-      differentFieldsList.map((field, i) => {
+      differentFieldsList.map(field => {
         return generateRow(
           field,
           field,
@@ -330,7 +426,7 @@ function CrashChange(props) {
         );
       })
     );
-  }, [differentFieldsList, showFieldsDiffOnly, recordData]);
+  }, [differentFieldsList, showFieldsDiffOnly, recordData, selectedFields]);
 
   return error ? (
     <div>{error}</div>
@@ -371,7 +467,11 @@ function CrashChange(props) {
                 <Col sm xs="12" className="text-center">
                   <Button
                     disabled={cr3available ? "" : "disabled"}
-                    title={cr3available ? "Click to open in new window" : "No CR3 Available"}
+                    title={
+                      cr3available
+                        ? "Click to open in new window"
+                        : "No CR3 Available"
+                    }
                     color="secondary"
                     onClick={downloadCR3}
                   >
@@ -381,7 +481,7 @@ function CrashChange(props) {
                 </Col>
                 <Col sm xs="12" className="text-center">
                   <Button color="warning" onClick={() => toggleModal(1)}>
-                    <i className="fa fa-lightbulb-o"></i>&nbsp;Approve All
+                    <i className="fa fa-lightbulb-o"></i>&nbsp;Save Selected
                     Changes
                   </Button>
                 </Col>
@@ -421,9 +521,6 @@ function CrashChange(props) {
               <span>
                 <strong>Main fields</strong>
               </span>
-              <Button color="primary" className="float-right">
-                <i className="fa fa-lightbulb-o"></i>&nbsp;Here Save Changes
-              </Button>
               <Button
                 color="ghost-dark"
                 className="float-right"
@@ -452,9 +549,6 @@ function CrashChange(props) {
               <span>
                 <strong>Other Fields</strong>
               </span>
-              <Button color="primary" className="float-right">
-                <i className="fa fa-lightbulb-o"></i>&nbsp;Here Save Changes
-              </Button>
               <Button
                 color="ghost-dark"
                 className="float-right"
@@ -481,19 +575,29 @@ function CrashChange(props) {
         className={"modal-warning"}
       >
         <ModalHeader toggle={() => toggleModal(1)}>
-          Approve all changes?
+          {selectedFields.length > 0 && <>Save selected changes?</>}
+          {selectedFields.length === 0 && <>No selected changes.</>}
         </ModalHeader>
         <ModalBody>
-          Click <strong>Save</strong> to save the selected changes into the
-          record. Click <strong>Cancel</strong> to stop and close this dialog
-          without changes.
+          {selectedFields.length > 0 && (
+            <>
+              Click <strong>Save</strong> to save the selected changes into the
+              record. Click <strong>Cancel</strong> to stop and close this
+              dialog without changes.
+            </>
+          )}
+          {selectedFields.length === 0 && (
+            <>No changes have been selected. In order to make changes to the existing record, you must select at least one change.</>
+          )}
         </ModalBody>
         <ModalFooter>
-          <Button color="primary" onClick={() => toggleModal(1)}>
-            Save
-          </Button>{" "}
+          {selectedFields.length > 0 && (
+            <Button color="primary" onClick={() => saveSelectedFields()}>
+              Save
+            </Button>
+          )}
           <Button color="secondary" onClick={() => toggleModal(1)}>
-            Cancel
+            {selectedFields.length > 0 ? "Cancel" : "Close"}
           </Button>
         </ModalFooter>
       </Modal>
