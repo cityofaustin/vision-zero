@@ -176,6 +176,7 @@ export const GET_CRASH_CHANGE = gql`
             investigat_service_id
             investigat_da_id
             investigator_narrative
+            cr3_stored_flag
         }
         atd_txdot_changes(where: {record_type: {_eq: "crash"}, record_id: {_eq: $crashId}}) {
             change_id

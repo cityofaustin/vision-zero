@@ -40,7 +40,8 @@ function CrashChange(props) {
   const [approveAllChanges, setApproveAllChanges] = useState(false);
   const [discardAllChanges, setDiscardAllChanges] = useState(false);
   const [clearAllSelections, setClearAllSelections] = useState(false);
-
+  // CR3 Availbable
+  const [cr3available, setCR3Available] = useState(false);
   const { error, data } = useQuery(GET_CRASH_CHANGE, {
     variables: { crashId },
   });
@@ -264,6 +265,10 @@ function CrashChange(props) {
    */
   useEffect(() => {
     if (Object.keys(recordData).length > 0) {
+      if (recordData["setCR3Available"] || null === "Y") {
+        setCR3Available(true);
+      }
+
       // We need a list of all important fields as defined in crashImportantDiffFields
       setImportantFieldList(
         Object.keys(crashImportantDiffFields).filter((field, i) => {
@@ -364,7 +369,12 @@ function CrashChange(props) {
                   </Link>
                 </Col>
                 <Col sm xs="12" className="text-center">
-                  <Button color="secondary" onClick={downloadCR3}>
+                  <Button
+                    disabled={cr3available ? "" : "disabled"}
+                    title={cr3available ? "Click to open in new window" : "No CR3 Available"}
+                    color="secondary"
+                    onClick={downloadCR3}
+                  >
                     <i className="fa fa-lightbulb-o"></i>&nbsp;Download Current
                     CR3
                   </Button>
