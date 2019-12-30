@@ -10,6 +10,7 @@ span > strong {
 
 .crash-row {
   padding-top: 4px;
+  padding-bottom: 4px;
 }
 .crash-row:hover {
   background-color: lightgray;
@@ -21,4 +22,14 @@ span > strong {
 
 .minidiff--highlight {
   background-color: pink;
+}
+
+.minidiff--switchlabel {
+  position: relative;
+  top: -.5rem;
+  font-weight: bold;
+}
+
+.minidiff--switchrow {
+  margin-top: .25rem;
 }
