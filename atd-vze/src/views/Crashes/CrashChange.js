@@ -74,8 +74,10 @@ function CrashChange(props) {
     setSelectedFields([...newFieldList]);
   };
 
+  /**
+   * Toggles the diff only option in state
+   */
   const toggleDiffOnly = () => {
-    let newShowFieldsDiffOnly = showFieldsDiffOnly;
     setShowFieldsDiffOnly(!showFieldsDiffOnly);
   };
 
@@ -91,7 +93,7 @@ function CrashChange(props) {
       case 2:
         setDiscardAllChanges(!discardAllChanges);
         break;
-      case 3:
+      default:
         setClearAllSelections(!clearAllSelections);
         break;
     }
@@ -256,12 +258,12 @@ function CrashChange(props) {
     }
   }
 
+  /**
+   * In this useEffect, we listen for any changes to the data or to the
+   * selected fields. If they change, so does our two groups of fields.
+   */
   useEffect(() => {
     if (Object.keys(recordData).length > 0) {
-      let originalRecord = recordData["atd_txdot_crashes"][0] || null;
-      let newRecord =
-        JSON.parse(recordData["atd_txdot_changes"][0]["record_json"]) || null;
-
       // We need a list of all important fields as defined in crashImportantDiffFields
       setImportantFieldList(
         Object.keys(crashImportantDiffFields).filter((field, i) => {
@@ -276,8 +278,12 @@ function CrashChange(props) {
         })
       );
     }
-  }, [recordData, selectedFields]);
+  }, [recordData, selectedFields, importantFieldList]);
 
+  /**
+   * In this useEffect, we listen for changes to the importantFieldList
+   * group, as well as any changes to the showFieldsDiffOnly variable.
+   */
   useEffect(() => {
     if (Object.keys(recordData).length === 0) return;
 
@@ -296,8 +302,12 @@ function CrashChange(props) {
         );
       })
     );
-  }, [importantFieldList, showFieldsDiffOnly]);
+  }, [importantFieldList, showFieldsDiffOnly, recordData]);
 
+  /**
+   * In this useEffect, we listen for changes to the differentFieldsList
+   * group, as well as any changes to the showFieldsDiffOnly variable.
+   */
   useEffect(() => {
     if (Object.keys(recordData).length === 0) return;
 
@@ -315,7 +325,7 @@ function CrashChange(props) {
         );
       })
     );
-  }, [differentFieldsList, showFieldsDiffOnly]);
+  }, [differentFieldsList, showFieldsDiffOnly, recordData]);
 
   return error ? (
     <div>{error}</div>
