@@ -247,7 +247,7 @@ function LocationCrashes(props) {
   return (
     <GridTable
       query={crashesQuery}
-      title={"Location Crashes"}
+      title={"CR3 Crashes"}
       filters={customFilters}
       columnsToExport={locationCrashesQueryExportFields}
       aggregateQueryConfig={aggregateQueryConfig}

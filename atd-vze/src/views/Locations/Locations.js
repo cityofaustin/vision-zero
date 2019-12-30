@@ -22,7 +22,7 @@ let queryConf = {
       searchable: true,
       sortable: false,
       label_search: "Search by intersecting street name",
-      label_table: "Intersection",
+      label_table: "Location",
       type: "String",
     },
     "crashes_count_cost_summary { total_crashes }": {
