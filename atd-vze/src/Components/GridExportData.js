@@ -66,38 +66,38 @@ const GridExportData = ({ query, columnsToExport, totalRecords }) => {
     // Handles:
     // 1. Nested objects
     // 2. Nested arrays of objects
-    const newData = data.map(row => {
-      // Look through each row for nested objects or arrays and move all to top level
-      Object.entries(row).forEach(([key, value]) => {
+    const flattenRow = (row, flattenedRow) => {
+      debugger;
+      Object.entries(row).forEach(([columnName, columnValue]) => {
         // Remove __typename from export (contains table name which is already in filename)
-        if (key === "__typename") {
-          delete row["__typename"];
-        } else if (Array.isArray(value)) {
+        if (columnName === "__typename") {
+          return;
+        } else if (typeof columnValue === "string") {
+          if (flattenedRow[columnName]) {
+            flattenedRow[
+              columnName
+            ] = `${flattenedRow[columnName]}, ${columnValue}`;
+          } else {
+            flattenedRow[columnName] = columnValue;
+          }
+        } else if (Array.isArray(columnValue)) {
           // If value is array, recursive call and handle objects in array
-          value = formatExportData(value);
-          value.forEach(object => {
-            Object.entries(object).forEach(([key, value]) => {
-              if (row[key]) {
-                // If top level already has this key, concat
-                row[key] = `${row[key]}, ${value}`;
-              } else {
-                // Else use spread to add to top level
-                row = { ...row, ...object };
-              }
-            });
-            // Delete nested data after added to top level
-            delete row[key];
-          });
-        } else if (typeof value === "object" && value !== null) {
-          // If value is object, remove __typename and move to top level, then delete
-          "__typename" in value && delete value["__typename"];
-          row = { ...row, ...value };
-          delete row[key];
+          flattenRow(columnValue, flattenedRow);
+        } else if (typeof columnValue === "object" && columnValue !== null) {
+          flattenRow(columnValue, flattenedRow);
         }
       });
-      return row;
+      return flattenedRow;
+    };
+
+    const flattenedData = data.map(row => {
+      // Look through each row for nested objects or arrays and move all to top level
+      let flattenedRow = {};
+      flattenedRow = flattenRow(row, flattenedRow);
+      debugger;
     });
-    return newData;
+
+    return flattenedData;
   };
 
   return (
