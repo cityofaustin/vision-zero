@@ -21,7 +21,7 @@ import {
 } from "reactstrap";
 import { AppSwitch } from "@coreui/react";
 
-const defaultRowsPerExport = 4000;
+const exportWarningLimit = 4000;
 
 const StyledSaveLink = styled.i`
   color: ${colors.info};
@@ -61,11 +61,11 @@ const GridExportData = ({ query, columnsToExport, totalRecords }) => {
 
   /**
    * Returns an array of objects (each object is a row and each key of that object is a column in the export file)
-   * @param {Array} Data returned from DB with nested data structures
+   * @param {array} data - Data returned from DB with nested data structures
    * @returns {array}
    */
   const formatExportData = data => {
-    // Moves nested keys to top level object (CSVLink uses each top level key as a column header)
+    // Move nested keys to top level object (CSVLink uses each top level key as a column header)
     const flattenRow = (row, flattenedRow) => {
       Object.entries(row).forEach(([columnName, columnValue]) => {
         // Ignore __typename (contains table name which is already in filename)
@@ -146,7 +146,7 @@ const GridExportData = ({ query, columnsToExport, totalRecords }) => {
               </Col>
             </Row>
           </FormGroup>
-          {query.limit > defaultRowsPerExport && (
+          {query.limit > exportWarningLimit && (
             <Alert color="danger">
               For larger downloads, please expect a delay while the CSV file is
               generated. This may take multiple minutes.
