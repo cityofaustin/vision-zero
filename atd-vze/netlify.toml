@@ -16,7 +16,7 @@
 
 # Production context: all deploys from the Production branch set in your site's
 # deploy contexts will inherit these settings.
-[context.83-sg-crashdiff]
+[context.83-sg-crashediff]
   NODE_ENV = "staging"
   base    = "atd-vze"
   publish = "build"
