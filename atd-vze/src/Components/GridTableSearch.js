@@ -32,6 +32,9 @@ const GridTableSearch = ({
   const [fieldToSearch, setFieldToSearch] = useState(
     (searchParameters && searchParameters.column) || ""
   );
+  const [fieldToSearchType, setFieldToSearchType] = useState(
+      (searchParameters && searchParameters.type) || ""
+  );
   const [isFieldSelected, setIsFieldSelected] = useState(
     !!searchParameters || false
   );
@@ -47,6 +50,7 @@ const GridTableSearch = ({
 
     setSearchParameters({
       column: fieldToSearch,
+      type: fieldToSearchType,
       value: searchFieldValue,
     });
 
@@ -77,6 +81,7 @@ const GridTableSearch = ({
   const handleFieldSelect = e => {
     setIsFieldSelected(true);
     setFieldToSearch(e.target.value);
+    setFieldToSearchType(getFieldType(e.target.value));
   };
 
   /**
@@ -87,6 +92,17 @@ const GridTableSearch = ({
   const getFieldName = fieldKey => {
     return query.getLabel(fieldKey, "search");
   };
+
+  /**
+   * Returns the type from the query configuration
+   * @param fieldKey {string} the field in question
+   * @returns {string}
+   */
+  const getFieldType = fieldKey => {
+    return query.getType(fieldKey);
+  };
+
+
 
   return (
     <Col md={12}>
