@@ -67,21 +67,28 @@ const DataTable = ({
 
                       const fieldLabel = fieldConfigObject.label;
 
+                      // Set data table (alternate if defined in data map)
+                      const fieldDataTable =
+                        fieldConfigObject.alternateTable || dataTable;
+
                       // If data is nested in data object, define path in dataMap
                       const nestedData =
                         fieldConfigObject.dataPath &&
-                        get(data[dataTable][0], fieldConfigObject.dataPath);
+                        get(
+                          data[fieldDataTable][0],
+                          fieldConfigObject.dataPath
+                        );
 
                       const formattedDollarValue =
                         fieldConfigObject.format === "dollars" &&
                         formatCostToDollars(
-                          nestedData || data[dataTable][0][field]
+                          nestedData || data[fieldDataTable][0][field]
                         );
 
                       const formatDateTimeValue =
                         fieldConfigObject.format === "datetime" &&
                         formatDateTimeString(
-                          nestedData || data[dataTable][0][field]
+                          nestedData || data[fieldDataTable][0][field]
                         );
 
                       const fieldValue =
@@ -89,7 +96,7 @@ const DataTable = ({
                         formatDateTimeValue ||
                         nestedData ||
                         (formData && formData[field.data]) ||
-                        data[dataTable][0][field];
+                        data[fieldDataTable][0][field];
 
                       const fieldUiType = fieldConfigObject.uiType;
 
