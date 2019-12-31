@@ -37,7 +37,7 @@ const GridExportData = ({ query, columnsToExport, totalRecords }) => {
   // Use .queryCSV to insert columnsToExport prop into query
   let [getExport, { loading, data }] = useLazyQuery(
     query.queryCSV(columnsToExport),
-    { fetchPolicy: "no-cache" }
+    { fetchPolicy: "no-cache" } // Temporary fix for https://github.com/apollographql/react-apollo/issues/3361
   );
 
   const toggleModal = () => setIsModalOpen(!isModalOpen);
