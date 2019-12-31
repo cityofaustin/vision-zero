@@ -296,6 +296,15 @@ gqlAbstractTableAggregateName (
   }
 
   /**
+   * Returns the type of the field as implemented in the field configuration
+   * @param {string} columnName - The name of the column
+   * @returns {string|null}
+   */
+  getType(columnName) {
+    return this.config["columns"][columnName]["type"] || null;
+  }
+
+  /**
    * Returns an array with key-value pairs
    * @param {string} section - the 'key' name of the section in the config object
    * @returns {[string, any][]}
@@ -540,7 +549,7 @@ gqlAbstractTableAggregateName (
     });
     // Join each aggregate query into one string
     const aggregatesQueryString = aggregatesQueryArray.join(" ");
-    
+
     // Return GraphQL query
     return gql`query GetLocationStats {
       ${aggregatesQueryString}
