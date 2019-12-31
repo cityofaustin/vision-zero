@@ -21,6 +21,8 @@ import {
 } from "reactstrap";
 import { AppSwitch } from "@coreui/react";
 
+const defaultRowsPerExport = 4000;
+
 const StyledSaveLink = styled.i`
   color: ${colors.info};
   cursor: pointer;
@@ -63,9 +65,6 @@ const GridExportData = ({ query, columnsToExport, totalRecords }) => {
    */
   const formatExportData = data => {
     // Moves nested data to top level object (CSVLink uses each top level key as a column header)
-    // Handles:
-    // 1. Nested objects
-    // 2. Nested arrays of objects
     const flattenRow = (row, flattenedRow) => {
       Object.entries(row).forEach(([columnName, columnValue]) => {
         // Remove __typename from export (contains table name which is already in filename)
@@ -77,7 +76,7 @@ const GridExportData = ({ query, columnsToExport, totalRecords }) => {
         } else if (typeof columnValue === "object" && columnValue !== null) {
           // If value is array, recursive call and handle k/v pairs in object
           flattenRow(columnValue, flattenedRow);
-        } else if (!!columnValue) {
+        } else {
           // Do not return null values
           if (flattenedRow[columnName]) {
             flattenedRow[
@@ -91,12 +90,13 @@ const GridExportData = ({ query, columnsToExport, totalRecords }) => {
       return flattenedRow;
     };
 
+    // Flatten each row and return array of objects for CSVLink data
     const flattenedData = data.map(row => {
-      // Look through each row for nested objects or arrays and move all to top level
       let flattenedRow = {};
       flattenedRow = flattenRow(row, flattenedRow);
       return flattenedRow;
     });
+
     return flattenedData;
   };
 
@@ -145,7 +145,7 @@ const GridExportData = ({ query, columnsToExport, totalRecords }) => {
               </Col>
             </Row>
           </FormGroup>
-          {query.limit > 4000 && (
+          {query.limit > defaultRowsPerExport && (
             <Alert color="danger">
               For larger downloads, please expect a delay while the CSV file is
               generated. This may take multiple minutes.
