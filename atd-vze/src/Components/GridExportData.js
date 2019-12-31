@@ -36,7 +36,8 @@ const GridExportData = ({ query, columnsToExport, totalRecords }) => {
 
   // Use .queryCSV to insert columnsToExport prop into query
   let [getExport, { loading, data }] = useLazyQuery(
-    query.queryCSV(columnsToExport)
+    query.queryCSV(columnsToExport),
+    { fetchPolicy: "no-cache" }
   );
 
   const toggleModal = () => setIsModalOpen(!isModalOpen);
@@ -64,20 +65,20 @@ const GridExportData = ({ query, columnsToExport, totalRecords }) => {
    * @returns {array}
    */
   const formatExportData = data => {
-    // Moves nested data to top level object (CSVLink uses each top level key as a column header)
+    // Moves nested keys to top level object (CSVLink uses each top level key as a column header)
     const flattenRow = (row, flattenedRow) => {
       Object.entries(row).forEach(([columnName, columnValue]) => {
-        // Remove __typename from export (contains table name which is already in filename)
+        // Ignore __typename (contains table name which is already in filename)
         if (columnName === "__typename") {
           return;
         } else if (Array.isArray(columnValue)) {
           // If value is array, recursive call and handle objects in array
           flattenRow(columnValue, flattenedRow);
         } else if (typeof columnValue === "object" && columnValue !== null) {
-          // If value is array, recursive call and handle k/v pairs in object
+          // If value is object, recursive call and handle k/v pairs in object
           flattenRow(columnValue, flattenedRow);
         } else {
-          // Do not return null values
+          // Handle key/value pairs, concat if column already exists
           if (flattenedRow[columnName]) {
             flattenedRow[
               columnName
