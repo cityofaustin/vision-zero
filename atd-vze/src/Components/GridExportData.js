@@ -67,12 +67,18 @@ const GridExportData = ({ query, columnsToExport, totalRecords }) => {
     // 1. Nested objects
     // 2. Nested arrays of objects
     const flattenRow = (row, flattenedRow) => {
-      debugger;
       Object.entries(row).forEach(([columnName, columnValue]) => {
         // Remove __typename from export (contains table name which is already in filename)
         if (columnName === "__typename") {
           return;
-        } else if (typeof columnValue === "string") {
+        } else if (Array.isArray(columnValue)) {
+          // If value is array, recursive call and handle objects in array
+          flattenRow(columnValue, flattenedRow);
+        } else if (typeof columnValue === "object" && columnValue !== null) {
+          // If value is array, recursive call and handle k/v pairs in object
+          flattenRow(columnValue, flattenedRow);
+        } else if (!!columnValue) {
+          // Do not return null values
           if (flattenedRow[columnName]) {
             flattenedRow[
               columnName
@@ -80,11 +86,6 @@ const GridExportData = ({ query, columnsToExport, totalRecords }) => {
           } else {
             flattenedRow[columnName] = columnValue;
           }
-        } else if (Array.isArray(columnValue)) {
-          // If value is array, recursive call and handle objects in array
-          flattenRow(columnValue, flattenedRow);
-        } else if (typeof columnValue === "object" && columnValue !== null) {
-          flattenRow(columnValue, flattenedRow);
         }
       });
       return flattenedRow;
@@ -94,9 +95,8 @@ const GridExportData = ({ query, columnsToExport, totalRecords }) => {
       // Look through each row for nested objects or arrays and move all to top level
       let flattenedRow = {};
       flattenedRow = flattenRow(row, flattenedRow);
-      debugger;
+      return flattenedRow;
     });
-
     return flattenedData;
   };
 
