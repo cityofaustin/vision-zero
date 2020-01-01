@@ -6,12 +6,18 @@ import SeriousInjuryAndFatalCrashesByMonth from "./seriousInjuryAndFatalCrashesB
 import SeriousInjuryAndFatalCrashesByMode from "./seriousInjuryAndFatalCrashesByMode";
 import YearsOfLifeLost from "./yearsOfLifeLost";
 import FatalitiesMultiYear from "./FatalitiesMultiYear";
+import SummaryView from "./summaryView";
 
 import { Container, Row, Col } from "reactstrap";
 
 const Dashboard = () => {
   return (
     <Container fluid>
+      <Row>
+        <Col md="12">
+          <SummaryView />
+        </Col>
+      </Row>
       <Row>
         <Col md="6">
           <Fatalities />
