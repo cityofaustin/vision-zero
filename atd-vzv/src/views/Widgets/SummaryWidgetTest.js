@@ -1,37 +1,51 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSquare } from "@fortawesome/free-solid-svg-icons";
 import styled from "styled-components";
 import { colors } from "../../constants/colors";
-import { Card, CardBody, CardTitle, CardSubtitle } from "reactstrap";
+import { Card, CardBody, CardTitle, CardSubtitle, Row, Col } from "reactstrap";
 
 // Create widget out of reactstrap Card component and styled with styled components
 // Props: FA icon, blockIcon bg color, header, mainText
 
-const SummaryWidgetTest = (icon, backgroundColor, header, mainText) => {
+const SummaryWidgetTest = ({ header, mainText, icon, backgroundColor }) => {
   const StyledWidget = styled.div`
-    block-icon {
+    .block-icon-parent {
+      display: flex;
+      background-color: ${backgroundColor};
+      width: 50px;
+      height: 50px;
+    }
+
+    .block-icon {
+      align-content: center;
     }
   `;
 
   const blockIcon = () => (
-    <span class="fa-layers fa-fw">
-      <FontAwesomeIcon icon={faSquare} color="black" size="3x" />
-      <FontAwesomeIcon icon={icon} size="2x" color="white" />
-    </span>
+    <div className="block-icon-parent text-center">
+      <FontAwesomeIcon
+        className="block-icon"
+        icon={icon}
+        size="3x"
+        color={colors.light}
+      />
+    </div>
   );
 
   return (
-    <Card>
-      <CardBody>
-        {blockIcon()}
-        <CardTitle>
-          <FontAwesomeIcon icon={icon} size="2x" color="black" />
-          {header}
-        </CardTitle>
-        <CardSubtitle>{mainText}</CardSubtitle>
-      </CardBody>
-    </Card>
+    <StyledWidget>
+      <Card>
+        <CardBody>
+          <Row>
+            <Col md="3">{blockIcon()}</Col>
+            <Col md="9">
+              <CardTitle>{header}</CardTitle>
+              <CardSubtitle>{mainText}</CardSubtitle>
+            </Col>
+          </Row>
+        </CardBody>
+      </Card>
+    </StyledWidget>
   );
 };
 

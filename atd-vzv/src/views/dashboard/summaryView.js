@@ -1,52 +1,70 @@
-import React from "react";
-import SummaryWidget from "../Widgets/SummaryWidget";
-import SummaryWidgetTest from "../Widgets/SummaryWidget";
+import React, { useState, useEffect } from "react";
+import SummaryWidgetTest from "../Widgets/SummaryWidgetTest";
 import { colors } from "../../constants/colors";
+import moment from "moment";
+import axios from "axios";
 import {
   faHourglass,
   faHeartbeat,
   faMedkit
 } from "@fortawesome/free-solid-svg-icons";
-import { Container, Row, Col } from "reactstrap";
+import { Row, Col } from "reactstrap";
 
 const SummaryView = () => {
+  const thisYear = moment().format("YYYY");
+  const today = moment().format("YYYY-MM-DD");
+  const yearToDateUrl = `https://data.austintexas.gov/resource/y2wy-tgr5.json?$where=death_cnt > 0 AND crash_date between '${thisYear}-01-01T00:00:00' and '${today}T23:59:59'`;
+
+  const [fatalities, setFatalities] = useState(0);
+
+  const calculateTotalFatalities = data => {
+    let total = 0;
+    data.data.forEach(record => (total += parseInt(record.death_cnt)));
+    return total;
+  };
+
+  useEffect(() => {
+    // Fetch year-to-date records
+    axios.get(yearToDateUrl).then(res => {
+      setFatalities(calculateTotalFatalities(res));
+    });
+  }, [yearToDateUrl]);
+
   return (
-    <Container>
-      <Row>
-        <Col sm="3">
-          <SummaryWidgetTest
-            header={`Test`}
-            mainText="Fatalities"
-            icon={faHeartbeat}
-            color="danger"
-          />
-        </Col>
-        <Col sm="3">
-          <SummaryWidgetTest
-            header={`Test 2`}
-            mainText="Serious Injuries"
-            icon={faMedkit}
-            color="warning"
-          />
-        </Col>
-        <Col sm="3">
-          <SummaryWidgetTest
-            header={`Test 3`}
-            mainText="Years of Life Lost"
-            icon={faHourglass}
-            color="info"
-          />
-        </Col>
-        <Col sm="3">
-          <SummaryWidgetTest
-            header={`Test 4`}
-            mainText="Years of Life Lost"
-            icon={faHourglass}
-            backgroundColor={colors.info}
-          />
-        </Col>
-      </Row>
-    </Container>
+    <Row>
+      <Col sm="auto">
+        <SummaryWidgetTest
+          header={`Fatalities in ${thisYear}`}
+          mainText={fatalities.toString()}
+          icon={faHeartbeat}
+          backgroundColor={colors.danger}
+        />
+      </Col>
+      <Col sm="auto">
+        <SummaryWidgetTest
+          header={`Test 2`}
+          mainText={"Serious Injuries"}
+          icon={faMedkit}
+          backgroundColor={colors.warning}
+        />
+      </Col>
+      <Col sm="auto">
+        <SummaryWidgetTest
+          header={`Test 3`}
+          mainText={"Years of Life Lost"}
+          icon={faHourglass}
+          backgroundColor={colors.info}
+        />
+      </Col>
+      <Col sm="auto">
+        <SummaryWidgetTest
+          header={`Test 4`}
+          mainText={"Years of Life Lost"}
+          icon={faHourglass}
+          backgroundColor={colors.info}
+        />
+      </Col>
+    </Row>
   );
 };
 
