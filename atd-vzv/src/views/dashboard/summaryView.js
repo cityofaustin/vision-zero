@@ -13,9 +13,11 @@ import { Row, Col } from "reactstrap";
 const SummaryView = () => {
   const thisYear = moment().format("YYYY");
   const today = moment().format("YYYY-MM-DD");
-  const yearToDateUrl = `https://data.austintexas.gov/resource/y2wy-tgr5.json?$where=death_cnt > 0 AND crash_date between '${thisYear}-01-01T00:00:00' and '${today}T23:59:59'`;
+  const fatalitiesYearToDateUrl = `https://data.austintexas.gov/resource/y2wy-tgr5.json?$where=death_cnt > 0 AND crash_date between '${thisYear}-01-01T00:00:00' and '${today}T23:59:59'`;
+  const seriousInjuriesYearToDateUrl = `https://data.austintexas.gov/resource/y2wy-tgr5.json?$where=sus_serious_injry_cnt > 0 AND crash_date between '${thisYear}-01-01T00:00:00' and '${today}T23:59:59'`;
 
-  const [fatalities, setFatalities] = useState(0);
+  const [fatalities, setFatalities] = useState("-");
+  const [seriousInjuries, setSeriousInjuries] = useState("-");
 
   const calculateTotalFatalities = data => {
     let total = 0;
@@ -23,12 +25,24 @@ const SummaryView = () => {
     return total;
   };
 
+  const calculateTotalInjuries = data => {
+    let total = 0;
+    data.data.forEach(
+      record => (total += parseInt(record.sus_serious_injry_cnt))
+    );
+    return total;
+  };
+
   useEffect(() => {
     // Fetch year-to-date records
-    axios.get(yearToDateUrl).then(res => {
+    axios.get(fatalitiesYearToDateUrl).then(res => {
       setFatalities(calculateTotalFatalities(res));
     });
-  }, [yearToDateUrl]);
+
+    axios.get(seriousInjuriesYearToDateUrl).then(res => {
+      setSeriousInjuries(calculateTotalInjuries(res));
+    });
+  }, [fatalitiesYearToDateUrl, seriousInjuriesYearToDateUrl]);
 
   return (
     <Row>
@@ -42,8 +56,8 @@ const SummaryView = () => {
       </Col>
       <Col sm="auto">
         <SummaryWidgetTest
-          header={`Test 2`}
-          mainText={"Serious Injuries"}
+          header={`Serious Injuries in ${thisYear}`}
+          mainText={seriousInjuries.toString()}
           icon={faMedkit}
           backgroundColor={colors.warning}
         />
