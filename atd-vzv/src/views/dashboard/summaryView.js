@@ -15,9 +15,11 @@ const SummaryView = () => {
   const today = moment().format("YYYY-MM-DD");
   const fatalitiesYearToDateUrl = `https://data.austintexas.gov/resource/y2wy-tgr5.json?$where=death_cnt > 0 AND crash_date between '${thisYear}-01-01T00:00:00' and '${today}T23:59:59'`;
   const seriousInjuriesYearToDateUrl = `https://data.austintexas.gov/resource/y2wy-tgr5.json?$where=sus_serious_injry_cnt > 0 AND crash_date between '${thisYear}-01-01T00:00:00' and '${today}T23:59:59'`;
+  const totalCrashesUrl = `https://data.austintexas.gov/resource/y2wy-tgr5.json?$where= crash_date between '${thisYear}-01-01T00:00:00' and '${today}T23:59:59'`;
 
   const [fatalities, setFatalities] = useState("-");
   const [seriousInjuries, setSeriousInjuries] = useState("-");
+  const [totalCrashes, setTotalCrashes] = useState("-");
 
   const calculateTotalFatalities = data => {
     let total = 0;
@@ -33,6 +35,12 @@ const SummaryView = () => {
     return total;
   };
 
+  const calculateTotalCrashes = data => {
+    let total = 0;
+    data.data.forEach(record => (total += 1));
+    return total;
+  };
+
   useEffect(() => {
     // Fetch year-to-date records
     axios.get(fatalitiesYearToDateUrl).then(res => {
@@ -42,7 +50,11 @@ const SummaryView = () => {
     axios.get(seriousInjuriesYearToDateUrl).then(res => {
       setSeriousInjuries(calculateTotalInjuries(res));
     });
-  }, [fatalitiesYearToDateUrl, seriousInjuriesYearToDateUrl]);
+
+    axios.get(totalCrashesUrl).then(res => {
+      setTotalCrashes(calculateTotalCrashes(res));
+    });
+  }, [fatalitiesYearToDateUrl, seriousInjuriesYearToDateUrl, totalCrashesUrl]);
 
   return (
     <Row>
@@ -64,8 +76,8 @@ const SummaryView = () => {
       </Col>
       <Col sm="auto">
         <SummaryWidgetTest
-          header={`Test 3`}
-          mainText={"Years of Life Lost"}
+          header={`Total Crashes in ${thisYear}`}
+          mainText={totalCrashes.toString()}
           icon={faHourglass}
           backgroundColor={colors.info}
         />
