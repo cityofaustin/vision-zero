@@ -2,45 +2,62 @@ import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import styled from "styled-components";
 import { colors } from "../../constants/colors";
-import { Card, CardBody, CardTitle, CardSubtitle, Row, Col } from "reactstrap";
+import { Card, CardBody, Row, Col, CardTitle, CardSubtitle } from "reactstrap";
 
 // Create widget out of reactstrap Card component and styled with styled components
 // Props: FA icon, blockIcon bg color, header, mainText
 
-const SummaryWidgetTest = ({ header, mainText, icon, backgroundColor }) => {
+const SummaryWidgetTest = ({ total, text, icon, backgroundColor }) => {
   const StyledWidget = styled.div`
+    .widget-card {
+    }
+
+    .widget-header {
+      color: ${backgroundColor};
+      font-size: 2.75em;
+      font-weight: bold;
+    }
+
+    .widget-text {
+      color: ${colors.dark};
+      font-weight: bold;
+    }
+
     .block-icon-parent {
-      display: flex;
+      position: absolute;
       background-color: ${backgroundColor};
-      width: 50px;
-      height: 50px;
+      width: 4em;
+      height: 4em;
     }
 
     .block-icon {
-      align-content: center;
     }
   `;
 
   const blockIcon = () => (
-    <div className="block-icon-parent text-center">
+    <span className="block-icon-parent text-center">
       <FontAwesomeIcon
         className="block-icon"
         icon={icon}
         size="3x"
         color={colors.light}
       />
-    </div>
+    </span>
   );
 
   return (
     <StyledWidget>
-      <Card>
+      <Card className="widget-card m-1">
         <CardBody>
+          <Row className="mb-2">
+            <Col lg="3">{blockIcon()}</Col>
+            <Col lg="9" className="text-center">
+              <CardTitle className="widget-header">{total}</CardTitle>
+            </Col>
+          </Row>
           <Row>
-            <Col md="3">{blockIcon()}</Col>
-            <Col md="9">
-              <CardTitle>{header}</CardTitle>
-              <CardSubtitle>{mainText}</CardSubtitle>
+            <Col>
+              <CardSubtitle className="widget-text">{text}</CardSubtitle>
             </Col>
           </Row>
         </CardBody>

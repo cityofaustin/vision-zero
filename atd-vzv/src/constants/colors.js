@@ -5,5 +5,6 @@ export const colors = {
   secondary: "#c8ced3",
   primary: "#20a8d8",
   danger: "#f86c6b",
-  warning: "#ffc107"
+  warning: "#ffc107",
+  success: "#4dbd74"
 };

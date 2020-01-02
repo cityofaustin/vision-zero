@@ -12,7 +12,7 @@ import {
 import { Row, Col } from "reactstrap";
 
 const SummaryView = () => {
-  const thisYear = moment().format("YYYY");
+  const thisYear = "2018";
   const today = moment().format("YYYY-MM-DD");
   const fatalitiesYearToDateUrl = `https://data.austintexas.gov/resource/y2wy-tgr5.json?$where=death_cnt > 0 AND crash_date between '${thisYear}-01-01T00:00:00' and '${today}T23:59:59'`;
   const seriousInjuriesYearToDateUrl = `https://data.austintexas.gov/resource/y2wy-tgr5.json?$where=sus_serious_injry_cnt > 0 AND crash_date between '${thisYear}-01-01T00:00:00' and '${today}T23:59:59'`;
@@ -62,7 +62,6 @@ const SummaryView = () => {
   };
 
   useEffect(() => {
-    // Fetch year-to-date records
     axios.get(fatalitiesYearToDateUrl).then(res => {
       setFatalities(calculateTotalFatalities(res));
     });
@@ -87,34 +86,34 @@ const SummaryView = () => {
 
   return (
     <Row>
-      <Col sm="auto">
+      <Col lg="3" md="6">
         <SummaryWidgetTest
-          header={`Fatalities in ${thisYear}`}
-          mainText={fatalities.toString()}
+          text={`Fatalities in ${thisYear}`}
+          total={fatalities.toString()}
           icon={faHeartbeat}
           backgroundColor={colors.danger}
         />
       </Col>
-      <Col sm="auto">
+      <Col lg="3" md="6">
         <SummaryWidgetTest
-          header={`Serious Injuries in ${thisYear}`}
-          mainText={seriousInjuries.toString()}
+          text={`Serious Injuries in ${thisYear}`}
+          total={seriousInjuries.toString()}
           icon={faMedkit}
           backgroundColor={colors.warning}
         />
       </Col>
-      <Col sm="auto">
+      <Col lg="3" md="6">
         <SummaryWidgetTest
-          header={`Total Crashes in ${thisYear}`}
-          mainText={totalCrashes.toString()}
+          text={`Total Crashes in ${thisYear}`}
+          total={totalCrashes.toString()}
           icon={faCar}
-          backgroundColor={colors.info}
+          backgroundColor={colors.success}
         />
       </Col>
-      <Col sm="auto">
+      <Col lg="3" md="6">
         <SummaryWidgetTest
-          header={`Years of Life Lost in ${thisYear}`}
-          mainText={yearsOfLifeLost.toString()}
+          text={`Years of Life Lost in ${thisYear}`}
+          total={yearsOfLifeLost.toString()}
           icon={faHourglass}
           backgroundColor={colors.info}
         />

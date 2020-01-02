@@ -28,9 +28,7 @@ const YearsOfLifeLost = () => {
   const threeYearsAgoUrl = `https://data.austintexas.gov/resource/xecs-rpy9.json?$where=prsn_injry_sev_id = '4' AND crash_date between '${threeYearsAgo}-01-01T00:00:00' and '${threeYearsAgo}${todayMonthYear}T23:59:59'`;
   const fourYearsAgoUrl = `https://data.austintexas.gov/resource/xecs-rpy9.json?$where=prsn_injry_sev_id = '4' AND crash_date between '${fourYearsAgo}-01-01T00:00:00' and '${fourYearsAgo}${todayMonthYear}T23:59:59'`;
 
-  const [yearToDateYearsLostTotal,
-    setYearToDateYearsLostTotal
-  ] = useState(0);
+  const [yearToDateYearsLostTotal, setYearToDateYearsLostTotal] = useState(0);
   const [
     lastYearToDateYearsLostTotal,
     setLastYearToDateYearsLostTotal
