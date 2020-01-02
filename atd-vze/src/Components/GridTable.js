@@ -292,13 +292,13 @@ const GridTable = ({
     for (let item of section) {
       let val = responseValue(item, keys);
 
-      if (val !== null && map.has(val) === false) {
+      if (val !== null) {
         map.set(val, true);
         result.push(val);
       }
     }
     // Merge all into a string
-    return result.join(",");
+    return result.join(", ");
   };
 
   /**
