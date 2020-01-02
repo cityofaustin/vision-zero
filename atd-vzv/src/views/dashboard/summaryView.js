@@ -1,5 +1,12 @@
 import React from "react";
 import SummaryWidget from "../Widgets/SummaryWidget";
+import SummaryWidgetTest from "../Widgets/SummaryWidget";
+import { colors } from "../../constants/colors";
+import {
+  faHourglass,
+  faHeartbeat,
+  faMedkit
+} from "@fortawesome/free-solid-svg-icons";
 import { Container, Row, Col } from "reactstrap";
 
 const SummaryView = () => {
@@ -7,35 +14,35 @@ const SummaryView = () => {
     <Container>
       <Row>
         <Col sm="3">
-          <SummaryWidget
+          <SummaryWidgetTest
             header={`Test`}
             mainText="Fatalities"
-            icon="fa fa-heartbeat"
+            icon={faHeartbeat}
             color="danger"
           />
         </Col>
         <Col sm="3">
-          <SummaryWidget
+          <SummaryWidgetTest
             header={`Test 2`}
             mainText="Serious Injuries"
-            icon="fa fa-medkit"
+            icon={faMedkit}
             color="warning"
           />
         </Col>
         <Col sm="3">
-          <SummaryWidget
+          <SummaryWidgetTest
             header={`Test 3`}
             mainText="Years of Life Lost"
-            icon="fa fa-hourglass-end"
+            icon={faHourglass}
             color="info"
           />
         </Col>
         <Col sm="3">
-          <SummaryWidget
+          <SummaryWidgetTest
             header={`Test 4`}
             mainText="Years of Life Lost"
-            icon="fa fa-hourglass-end"
-            color="info"
+            icon={faHourglass}
+            backgroundColor={colors.info}
           />
         </Col>
       </Row>

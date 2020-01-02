@@ -3,7 +3,6 @@ import PropTypes from "prop-types";
 import { Card, CardBody, CardFooter } from "reactstrap";
 import classNames from "classnames";
 import { mapToCssModules } from "reactstrap/lib/utils";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const propTypes = {
   header: PropTypes.string,
