@@ -4,10 +4,7 @@ import { withApollo } from "react-apollo";
 import GridTable from "../../Components/GridTable";
 import gqlAbstract from "../../queries/gqlAbstract";
 import { locationCrashesQueryExportFields } from "../../queries/crashes";
-import {
-  nonCR3CrashGridTableColumns,
-  crashGridTableAdvancedFilters,
-} from "../Crashes/crashGridTableParameters";
+import { nonCR3CrashGridTableColumns } from "../Crashes/crashGridTableParameters";
 
 function LocationNonCR3Crashes(props) {
   // Our initial query configuration
@@ -26,13 +23,10 @@ function LocationNonCR3Crashes(props) {
 
   let crashesQuery = new gqlAbstract(queryConf);
 
-  let customFilters = crashGridTableAdvancedFilters;
-
   return (
     <GridTable
       query={crashesQuery}
       title={"Non-CR3 Crashes"}
-      filters={customFilters}
       columnsToExport={locationCrashesQueryExportFields}
     />
   );
