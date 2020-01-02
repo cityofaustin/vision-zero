@@ -86,7 +86,7 @@ const SummaryView = () => {
 
   return (
     <Row>
-      <Col lg="3" md="6">
+      <Col xl="3" md="6">
         <SummaryWidgetTest
           text={`Fatalities in ${thisYear}`}
           total={fatalities.toLocaleString()}
@@ -94,7 +94,7 @@ const SummaryView = () => {
           backgroundColor={colors.danger}
         />
       </Col>
-      <Col lg="3" md="6">
+      <Col xl="3" md="6">
         <SummaryWidgetTest
           text={`Serious Injuries in ${thisYear}`}
           total={seriousInjuries.toLocaleString()}
@@ -102,7 +102,7 @@ const SummaryView = () => {
           backgroundColor={colors.warning}
         />
       </Col>
-      <Col lg="3" md="6">
+      <Col xl="3" md="6">
         <SummaryWidgetTest
           text={`Total Crashes in ${thisYear}`}
           total={totalCrashes.toLocaleString()}
@@ -110,7 +110,7 @@ const SummaryView = () => {
           backgroundColor={colors.success}
         />
       </Col>
-      <Col lg="3" md="6">
+      <Col xl="3" md="6">
         <SummaryWidgetTest
           text={`Years of Life Lost in ${thisYear}`}
           total={yearsOfLifeLost.toLocaleString()}
