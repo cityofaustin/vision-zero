@@ -12,7 +12,7 @@ const SummaryWidgetTest = ({ total, text, icon, backgroundColor }) => {
     .widget-card {
     }
 
-    .widget-header {
+    .widget-title {
       color: ${backgroundColor};
       font-size: 2.75em;
       font-weight: bold;
@@ -25,12 +25,16 @@ const SummaryWidgetTest = ({ total, text, icon, backgroundColor }) => {
 
     .block-icon-parent {
       position: absolute;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       background-color: ${backgroundColor};
       width: 4em;
       height: 4em;
     }
 
     .block-icon {
+      font-size: 2.5em;
     }
   `;
 
@@ -39,7 +43,6 @@ const SummaryWidgetTest = ({ total, text, icon, backgroundColor }) => {
       <FontAwesomeIcon
         className="block-icon"
         icon={icon}
-        size="3x"
         color={colors.light}
       />
     </span>
@@ -50,9 +53,9 @@ const SummaryWidgetTest = ({ total, text, icon, backgroundColor }) => {
       <Card className="widget-card m-1">
         <CardBody>
           <Row className="mb-2">
-            <Col lg="3">{blockIcon()}</Col>
-            <Col lg="9" className="text-center">
-              <CardTitle className="widget-header">{total}</CardTitle>
+            <Col>{blockIcon()}</Col>
+            <Col className="text-right">
+              <CardTitle className="widget-title">{total}</CardTitle>
             </Col>
           </Row>
           <Row>

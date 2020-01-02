@@ -89,7 +89,7 @@ const SummaryView = () => {
       <Col lg="3" md="6">
         <SummaryWidgetTest
           text={`Fatalities in ${thisYear}`}
-          total={fatalities.toString()}
+          total={fatalities.toLocaleString()}
           icon={faHeartbeat}
           backgroundColor={colors.danger}
         />
@@ -97,7 +97,7 @@ const SummaryView = () => {
       <Col lg="3" md="6">
         <SummaryWidgetTest
           text={`Serious Injuries in ${thisYear}`}
-          total={seriousInjuries.toString()}
+          total={seriousInjuries.toLocaleString()}
           icon={faMedkit}
           backgroundColor={colors.warning}
         />
@@ -105,7 +105,7 @@ const SummaryView = () => {
       <Col lg="3" md="6">
         <SummaryWidgetTest
           text={`Total Crashes in ${thisYear}`}
-          total={totalCrashes.toString()}
+          total={totalCrashes.toLocaleString()}
           icon={faCar}
           backgroundColor={colors.success}
         />
@@ -113,7 +113,7 @@ const SummaryView = () => {
       <Col lg="3" md="6">
         <SummaryWidgetTest
           text={`Years of Life Lost in ${thisYear}`}
-          total={yearsOfLifeLost.toString()}
+          total={yearsOfLifeLost.toLocaleString()}
           icon={faHourglass}
           backgroundColor={colors.info}
         />

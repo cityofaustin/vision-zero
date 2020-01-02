@@ -9,7 +9,7 @@ import { faBars, faHome, faMap } from "@fortawesome/free-solid-svg-icons";
 
 const StyledNavbar = styled.div`
   .collapse-toggle {
-    @media only screen and (min-width: ${responsive.sm}px) {
+    @media only screen and (min-width: ${responsive.md}px) {
       display: none;
     }
   }

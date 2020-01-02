@@ -19,7 +19,7 @@ const useStyles = makeStyles(theme => ({
     display: "flex"
   },
   drawer: {
-    [theme.breakpoints.up("sm")]: {
+    [theme.breakpoints.up("md")]: {
       width: drawerWidth,
       flexShrink: 0
     }
@@ -79,7 +79,7 @@ const SideDrawer = ({ toggle, isOpen }) => {
     <div className={classes.root}>
       <CssBaseline />
       <nav className={classes.drawer} aria-label="mailbox folders">
-        <Hidden smUp implementation="css">
+        <Hidden mdUp implementation="css">
           <Drawer
             variant="temporary"
             anchor={theme.direction === "rtl" ? "right" : "left"}
@@ -95,7 +95,7 @@ const SideDrawer = ({ toggle, isOpen }) => {
             {drawerContent}
           </Drawer>
         </Hidden>
-        <Hidden xsDown implementation="css">
+        <Hidden smDown implementation="css">
           <Drawer
             classes={{
               paper: classes.drawerPaper
