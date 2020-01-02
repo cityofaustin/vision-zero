@@ -342,7 +342,9 @@ const GridTable = ({
       query.deleteWhere(column);
     });
 
-    if (searchParameters["column"] === "crash_id") {
+    const useEqSearch = searchParameters["column"] === "crash_id" || searchParameters["column"] === "form_id"
+
+    if (useEqSearch) {
       // Search Integer for exact value
       // If string contains integers, insert in gql query, if not insert 0 to return no matches
       const parsedValue = parseInt(searchParameters["value"]);
