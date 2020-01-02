@@ -307,16 +307,17 @@ const GridTable = ({
    *
    **/
 
-  const isCrashesPage = query.table === "atd_txdot_crashes";
-
+  // Allow for Date Range to be configured from the queryConf/gqlAbstract query props
+  const hasDateRange = query.showDateRange ? query.showDateRange : true; 
+  const dateField = query.table === "atd_apd_blueform" ? "date" : "crash_date";
   // Handle Date Range (only if available)
   if (
-    isCrashesPage &&
+    hasDateRange &&
     dateRangeFilter["startDate"] &&
     dateRangeFilter["endDate"]
   ) {
     query.setWhere(
-      "crash_date",
+      dateField,
       `_gte: "${dateRangeFilter["startDate"]}", _lte: "${
         dateRangeFilter["endDate"]
       }"`
@@ -482,7 +483,7 @@ const GridTable = ({
                 />
               </Row>
               <ButtonToolbar className="mb-3 justify-content-between">
-                {isCrashesPage && (
+                {hasDateRange && (
                   <ButtonGroup>
                     <GridDateRange
                       setDateRangeFilter={setDateRangeFilter}
