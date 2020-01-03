@@ -1,4 +1,5 @@
 import React from "react";
+import ColorSpinner from "../Spinner/ColorSpinner";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import styled from "styled-components";
 import { colors } from "../../constants/colors";
@@ -7,7 +8,7 @@ import { Card, CardBody, Row, Col, CardTitle, CardSubtitle } from "reactstrap";
 // Create widget out of reactstrap Card component and styled with styled components
 // Props: FA icon, blockIcon bg color, header, mainText
 
-const SummaryWidgetTest = ({ total, text, icon, backgroundColor }) => {
+const SummaryWidget = ({ total, text, icon, backgroundColor }) => {
   const StyledWidget = styled.div`
     .widget-card {
     }
@@ -56,7 +57,9 @@ const SummaryWidgetTest = ({ total, text, icon, backgroundColor }) => {
               {blockIcon()}
             </Col>
             <Col className="widget-column">
-              <CardTitle className="widget-title">{total}</CardTitle>
+              <CardTitle className="widget-title">
+                {!!total ? total.toLocaleString() : <ColorSpinner />}
+              </CardTitle>
             </Col>
           </Row>
           <Row>
@@ -70,4 +73,4 @@ const SummaryWidgetTest = ({ total, text, icon, backgroundColor }) => {
   );
 };
 
-export default SummaryWidgetTest;
+export default SummaryWidget;
