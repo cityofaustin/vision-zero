@@ -1,9 +1,10 @@
 import React from "react";
 import ColorSpinner from "../Spinner/ColorSpinner";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import styled from "styled-components";
-import { colors } from "../../constants/colors";
+
 import { Card, CardBody, Row, Col, CardTitle, CardSubtitle } from "reactstrap";
+import styled from "styled-components";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { colors } from "../../constants/colors";
 
 const SummaryWidget = ({ total, text, icon, backgroundColor }) => {
   const StyledWidget = styled.div`
@@ -45,7 +46,7 @@ const SummaryWidget = ({ total, text, icon, backgroundColor }) => {
 
   return (
     <StyledWidget>
-      <Card className="m-1">
+      <Card>
         <CardBody>
           <Row className="mb-2">
             {/* Set Bootstrap breakpoints to prevent overlap of icon and total */}

@@ -1,5 +1,5 @@
 import React from "react";
-import Fatalities from "./fatalities";
+import Fatalities from "./Fatalities";
 import FatalitiesByMode from "./fatalitiesByMode";
 import SeriousInjuries from "./seriousInjuries";
 import SeriousInjuryAndFatalCrashesByMonth from "./seriousInjuryAndFatalCrashesByMonth";

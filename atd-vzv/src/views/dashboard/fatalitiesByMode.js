@@ -46,7 +46,7 @@ const FatalitiesByMode = () => {
     };
 
     getChartData();
-  }, []);
+  }, [yearsArray]);
 
   // Fetch latest record from demographics dataset and set for chart subheading
   useEffect(() => {
@@ -57,7 +57,7 @@ const FatalitiesByMode = () => {
       const formattedLatestDate = moment(latestRecordDate).format("MMMM YYYY");
       setLatestRecordDate(formattedLatestDate);
     });
-  }, []);
+  }, [thisYear]);
 
   const createChartLabels = () => yearsArray.sort().map(year => `${year}`);
 
