@@ -1,11 +1,13 @@
 import React from "react";
-import { Card, CardBody } from "reactstrap";
+import { Card, CardBody, Col } from "reactstrap";
 
-const SummaryCard = component => {
+const SummaryCard = ({ subComponent }) => {
   return (
-    <Card>
-      <CardBody>{component}</CardBody>
-    </Card>
+    <Col md="6">
+      <Card>
+        <CardBody>{subComponent}</CardBody>
+      </Card>
+    </Col>
   );
 };
 

@@ -7,16 +7,18 @@ import SeriousInjuryAndFatalCrashesByMode from "./seriousInjuryAndFatalCrashesBy
 import YearsOfLifeLost from "./yearsOfLifeLost";
 import FatalitiesMultiYear from "./FatalitiesMultiYear";
 import SummaryView from "./SummaryView";
+import SummaryCard from "./SummaryCard";
 
 import { Container, Row, Col } from "reactstrap";
 
 const subComponents = [
-  Fatalities,
-  FatalitiesByMode,
-  SeriousInjuries,
-  SeriousInjuryAndFatalCrashesByMonth,
-  SeriousInjuryAndFatalCrashesByMode,
-  YearsOfLifeLost
+  <Fatalities />,
+  <FatalitiesByMode />,
+  <SeriousInjuries />,
+  <SeriousInjuryAndFatalCrashesByMonth />,
+  <SeriousInjuryAndFatalCrashesByMode />,
+  <YearsOfLifeLost />,
+  <FatalitiesMultiYear />
 ];
 
 const Dashboard = () => {
@@ -28,34 +30,9 @@ const Dashboard = () => {
         </Col>
       </Row>
       <Row>
-        <Col md="6">
-          <Fatalities />
-        </Col>
-        <Col md="6">
-          <SeriousInjuryAndFatalCrashesByMonth />
-        </Col>
-      </Row>
-      <Row>
-        <Col md="6">
-          <SeriousInjuries />
-        </Col>
-        {/* TODO Serious Injury + Fatal Crashes by Mode - populate real data */}
-        <Col md="6">
-          <SeriousInjuryAndFatalCrashesByMode />
-        </Col>
-      </Row>
-      <Row>
-        <Col md="6">
-          <YearsOfLifeLost />
-        </Col>
-        <Col md="6">
-          <FatalitiesMultiYear />
-        </Col>
-      </Row>
-      <Row>
-        <Col md="6">
-          <FatalitiesByMode />
-        </Col>
+        {subComponents.map(subComponent => (
+          <SummaryCard subComponent={subComponent} />
+        ))}
       </Row>
     </Container>
   );
