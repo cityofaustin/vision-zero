@@ -40,8 +40,6 @@ const SeriousInjuries = () => {
 
   return (
     <Container>
-      <h3>Year-to-Date Serious Injuries</h3>
-      <br />
       <Row>
         <Col>
           <h5>{thisYear}</h5>

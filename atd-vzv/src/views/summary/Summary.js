@@ -13,13 +13,19 @@ import { Container, Row } from "reactstrap";
 import styled from "styled-components";
 
 const children = [
-  <Fatalities />,
-  <FatalitiesByMode />,
-  <SeriousInjuries />,
-  <SeriousInjuryAndFatalCrashesByMonth />,
-  <SeriousInjuryAndFatalCrashesByMode />,
-  <YearsOfLifeLost />,
-  <FatalitiesMultiYear />
+  { component: <Fatalities />, title: "Year-to-Date Fatalities" },
+  { component: <FatalitiesByMode />, title: "Fatalities by Mode" },
+  { component: <SeriousInjuries />, title: "Year-to-Date Serious Injuries" },
+  {
+    component: <SeriousInjuryAndFatalCrashesByMonth />,
+    title: "Serious Injury and Fatal Crashes by Month"
+  },
+  {
+    component: <SeriousInjuryAndFatalCrashesByMode />,
+    title: "Serious Injury and Fatal Crashes by Mode"
+  },
+  { component: <YearsOfLifeLost />, title: "Year-to-Date Years of Life Lost" },
+  { component: <FatalitiesMultiYear />, title: "Traffic Fatalities by Year" }
 ];
 
 const Summary = () => {

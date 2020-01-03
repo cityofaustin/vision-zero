@@ -105,7 +105,6 @@ const SeriousInjuryAndFatalCrashesByMode = () => {
 
   return (
     <Container>
-      <h3>Serious Injury + Fatal Crashes by Mode</h3>
       <Row>
         <Col sm="6">
           <h4>{thisYear} YTD</h4>

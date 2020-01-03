@@ -3,7 +3,7 @@ import axios from "axios";
 import moment from "moment";
 import { Bar } from "react-chartjs-2";
 
-import { Container, Row, Col } from "reactstrap";
+import { Container } from "reactstrap";
 
 const FatalitiesByMode = () => {
   // Define stacked bar chart properties in order of stack
@@ -90,30 +90,25 @@ const FatalitiesByMode = () => {
 
   return (
     <Container>
-      <h3 className="text-center">Fatalities by Mode</h3>
-      <Row>
-        <Col sm="12">
-          <Bar
-            data={data}
-            options={{
-              maintainAspectRatio: true,
-              scales: {
-                xAxes: [
-                  {
-                    stacked: true
-                  }
-                ],
-                yAxes: [
-                  {
-                    stacked: true
-                  }
-                ]
+      <Bar
+        data={data}
+        options={{
+          maintainAspectRatio: true,
+          scales: {
+            xAxes: [
+              {
+                stacked: true
               }
-            }}
-          />
-          <p className="text-center">Data Through: {latestRecordDate}</p>
-        </Col>
-      </Row>
+            ],
+            yAxes: [
+              {
+                stacked: true
+              }
+            ]
+          }
+        }}
+      />
+      <p className="text-center">Data Through: {latestRecordDate}</p>
     </Container>
   );
 };

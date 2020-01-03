@@ -45,7 +45,6 @@ const Fatalities = () => {
 
   return (
     <Container>
-      <h3>Year-to-Date Fatalities</h3>
       <Row>
         <Col sm="6">
           <p>{thisYear}</p>
