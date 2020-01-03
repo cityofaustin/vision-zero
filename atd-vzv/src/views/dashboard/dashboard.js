@@ -6,7 +6,7 @@ import SeriousInjuryAndFatalCrashesByMonth from "./seriousInjuryAndFatalCrashesB
 import SeriousInjuryAndFatalCrashesByMode from "./seriousInjuryAndFatalCrashesByMode";
 import YearsOfLifeLost from "./yearsOfLifeLost";
 import FatalitiesMultiYear from "./FatalitiesMultiYear";
-import SummaryView from "./summaryView";
+import SummaryView from "./SummaryView";
 
 import { Container, Row, Col } from "reactstrap";
 

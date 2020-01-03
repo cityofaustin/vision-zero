@@ -5,10 +5,10 @@ import { Row, Col } from "reactstrap";
 
 import { thisYear } from "./helpers/time";
 import {
-  fatalitiesYearToDateUrl,
-  seriousInjuriesYearToDateUrl,
-  totalCrashesUrl,
-  yearsOfLifeLostUrl
+  fatalitiesYTDUrl,
+  seriousInjuriesYTDUrl,
+  totalCrashesYTDUrl,
+  yearsOfLifeLostYTDUrl
 } from "./helpers/socrataQueries";
 import {
   calculateTotalFatalities,
@@ -31,19 +31,19 @@ const SummaryView = () => {
   const [yearsOfLifeLost, setYearsOfLifeLost] = useState(null);
 
   useEffect(() => {
-    axios.get(fatalitiesYearToDateUrl).then(res => {
-      setFatalities(calculateTotalFatalities(res));
+    axios.get(fatalitiesYTDUrl).then(res => {
+      setFatalities(calculateTotalFatalities(res.data));
     });
 
-    axios.get(seriousInjuriesYearToDateUrl).then(res => {
-      setSeriousInjuries(calculateTotalInjuries(res));
+    axios.get(seriousInjuriesYTDUrl).then(res => {
+      setSeriousInjuries(calculateTotalInjuries(res.data));
     });
 
-    axios.get(totalCrashesUrl).then(res => {
-      setTotalCrashes(calculateTotalCrashes(res));
+    axios.get(totalCrashesYTDUrl).then(res => {
+      setTotalCrashes(calculateTotalCrashes(res.data));
     });
 
-    axios.get(yearsOfLifeLostUrl).then(res => {
+    axios.get(yearsOfLifeLostYTDUrl).then(res => {
       setYearsOfLifeLost(getYearsOfLifeLost(res.data));
     });
   }, []);
@@ -78,6 +78,7 @@ const SummaryView = () => {
   return (
     <Row>
       {summaryWidgetsConfig.map((config, i) => (
+        // Set Bootstrap breakpoints to divide into two rows on large mobile devices and below
         <Col key={i} xl="3" md="6">
           <SummaryWidget
             text={config.title}

@@ -5,15 +5,9 @@ import styled from "styled-components";
 import { colors } from "../../constants/colors";
 import { Card, CardBody, Row, Col, CardTitle, CardSubtitle } from "reactstrap";
 
-// Create widget out of reactstrap Card component and styled with styled components
-// Props: FA icon, blockIcon bg color, header, mainText
-
 const SummaryWidget = ({ total, text, icon, backgroundColor }) => {
   const StyledWidget = styled.div`
-    .widget-card {
-    }
-
-    .widget-title {
+    .widget-total {
       color: ${backgroundColor};
       font-size: 3em;
       font-weight: bold;
@@ -24,6 +18,7 @@ const SummaryWidget = ({ total, text, icon, backgroundColor }) => {
       font-size: 1.2em;
     }
 
+    /* Square background for FA icon */
     .block-icon-parent {
       display: flex;
       align-items: center;
@@ -53,12 +48,14 @@ const SummaryWidget = ({ total, text, icon, backgroundColor }) => {
       <Card className="m-1">
         <CardBody>
           <Row className="mb-2">
+            {/* Set Bootstrap breakpoints to prevent overlap of icon and total */}
             <Col xl="4" xs="3">
               {blockIcon()}
             </Col>
             <Col className="widget-column">
-              <CardTitle className="widget-title">
-                {!!total ? total.toLocaleString() : <ColorSpinner />}
+              <CardTitle className="widget-total">
+                {/* Show spinner while waiting for data, add thousands separator to total */}
+                {total !== null ? total.toLocaleString() : <ColorSpinner />}
               </CardTitle>
             </Col>
           </Row>

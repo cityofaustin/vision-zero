@@ -2,21 +2,19 @@
 
 export const calculateTotalFatalities = data => {
   let total = 0;
-  data.data.forEach(record => (total += parseInt(record.death_cnt)));
+  data.forEach(record => (total += parseInt(record.death_cnt)));
   return total;
 };
 
 export const calculateTotalInjuries = data => {
   let total = 0;
-  data.data.forEach(
-    record => (total += parseInt(record.sus_serious_injry_cnt))
-  );
+  data.forEach(record => (total += parseInt(record.sus_serious_injry_cnt)));
   return total;
 };
 
 export const calculateTotalCrashes = data => {
   let total = 0;
-  data.data.forEach(record => (total += 1));
+  data.forEach(record => (total += 1));
   return total;
 };
 
