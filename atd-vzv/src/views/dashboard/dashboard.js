@@ -10,6 +10,15 @@ import SummaryView from "./SummaryView";
 
 import { Container, Row, Col } from "reactstrap";
 
+const subComponents = [
+  Fatalities,
+  FatalitiesByMode,
+  SeriousInjuries,
+  SeriousInjuryAndFatalCrashesByMonth,
+  SeriousInjuryAndFatalCrashesByMode,
+  YearsOfLifeLost
+];
+
 const Dashboard = () => {
   return (
     <Container fluid>
