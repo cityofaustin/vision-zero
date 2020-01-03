@@ -9,7 +9,8 @@ import FatalitiesMultiYear from "./FatalitiesMultiYear";
 import SummaryView from "./SummaryView";
 import SummaryCard from "./SummaryCard";
 
-import { Container, Row, Col } from "reactstrap";
+import { Container, Row } from "reactstrap";
+import styled from "styled-components";
 
 const children = [
   <Fatalities />,
@@ -21,21 +22,27 @@ const children = [
   <FatalitiesMultiYear />
 ];
 
-const Dashboard = () => {
+const Summary = () => {
+  const StyledSummary = styled.div`
+    /* Set padding for all Summary children in grid */
+    .summary-child,
+    [class*=".col-"] {
+      padding: 0.75em;
+    }
+  `;
+
   return (
     <Container fluid>
-      <Row>
-        <Col md="12">
-          <SummaryView />
-        </Col>
-      </Row>
-      <Row>
-        {children.map((child, i) => (
-          <SummaryCard key={i} child={child} />
-        ))}
-      </Row>
+      <StyledSummary>
+        <SummaryView />
+        <Row>
+          {children.map((child, i) => (
+            <SummaryCard key={i} child={child} />
+          ))}
+        </Row>
+      </StyledSummary>
     </Container>
   );
 };
 
-export default Dashboard;
+export default Summary;
