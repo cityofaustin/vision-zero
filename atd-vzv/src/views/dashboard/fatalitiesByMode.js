@@ -95,8 +95,6 @@ const FatalitiesByMode = () => {
         <Col sm="12">
           <Bar
             data={data}
-            width={100}
-            height={100}
             options={{
               maintainAspectRatio: true,
               scales: {

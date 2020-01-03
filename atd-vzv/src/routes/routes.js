@@ -1,6 +1,6 @@
 import React from "react";
-import Dashboard from "../views/dashboard/dashboard";
-import Map from "../views/map/map";
+import Dashboard from "../views/dashboard/Dashboard";
+import Map from "../views/map/Map";
 
 export const routes = {
   "/charts": () => <Dashboard />,

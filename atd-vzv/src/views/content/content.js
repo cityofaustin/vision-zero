@@ -1,7 +1,7 @@
 import React from "react";
 import { useRoutes } from "hookrouter";
 import { routes } from "../../routes/routes";
-import Header from "../nav/header";
+import Header from "../nav/Header";
 import NotFound from "../NotFound/NotFound";
 
 import { Container, Row, Col, Alert } from "reactstrap";

@@ -1,11 +1,12 @@
 import React from "react";
 import { Card, CardBody, Col } from "reactstrap";
 
-const SummaryCard = ({ subComponent }) => {
+const SummaryCard = ({ child }) => {
   return (
-    <Col md="6">
-      <Card>
-        <CardBody>{subComponent}</CardBody>
+    <Col xl="6" md="12" className="mb-2 mt-2">
+      {/* Set height to fill parent column */}
+      <Card className="h-100">
+        <CardBody className="">{child}</CardBody>
       </Card>
     </Col>
   );
