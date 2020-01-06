@@ -13,12 +13,25 @@ import {
   NavbarToggler
 } from "reactstrap";
 import styled from "styled-components";
+import { drawer } from "../../constants/drawer";
 import { responsive } from "../../constants/responsive";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 
+// TODO: Center navbar vertically
 const StyledNavbar = styled.div`
+  .navbar-container {
+    display: flex !important;
+    align-items: center !important;
+    height: ${drawer.headerHeight}px;
+  }
+
+  .header-navbar {
+    flex: 1;
+  }
+
   .collapse-toggle {
+    /* Hide SideBar toggle button on larger devices */
     @media only screen and (min-width: ${responsive.md}px) {
       display: none;
     }
@@ -51,12 +64,12 @@ const Header = () => {
   } = React.useContext(StoreContext);
 
   return (
-    <Container fluid>
-      <StyledNavbar>
+    <StyledNavbar>
+      <Container className="navbar-container" fluid>
         <Navbar
           color="light"
           light
-          className="navbar shadow-sm p-3 mb-4 bg-white rounded"
+          className="navbar shadow-sm p-3 bg-white rounded fixed-top header-navbar"
           expand="md"
         >
           <Button
@@ -85,8 +98,8 @@ const Header = () => {
             </Nav>
           </Collapse>
         </Navbar>
-      </StyledNavbar>
-    </Container>
+      </Container>
+    </StyledNavbar>
   );
 };
 

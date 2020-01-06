@@ -23,7 +23,7 @@ const Content = ({ toggle }) => {
     }
 
     /* Fill space left behind by SideDrawer on mobile */
-    @media only screen and (max-width: ${responsive.sm}px) {
+    @media only screen and (max-width: ${responsive.md}px) {
       .content {
         width: 100vw;
         height: calc(100vh - ${drawer.headerHeight}px);
