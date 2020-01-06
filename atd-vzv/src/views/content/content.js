@@ -1,45 +1,44 @@
 import React from "react";
-import { useRoutes } from "hookrouter";
+import { useRoutes, usePath } from "hookrouter";
 import { routes } from "../../routes/routes";
 import Header from "../nav/Header";
 import NotFound from "../NotFound/NotFound";
 
-import { Container, Row, Col, Alert } from "reactstrap";
+import { Container } from "reactstrap";
 import styled from "styled-components";
 import { drawer } from "../../constants/drawer";
+import { responsive } from "../../constants/responsive";
 
-const StyledContent = styled.div`
-  .content {
-    padding: 20px;
-    margin-left: 0;
-    height: 100vh;
-    width: calc(100vw - ${drawer.width});
-    overflow-y: scroll;
-  }
-`;
+// TODO: overflow-y scroll on Dashboard
 
-const Content = ({ toggle }) => {
+const Content = ({ toggle, mapFilters }) => {
   const routeResult = useRoutes(routes);
+  const currentPath = usePath();
+
+  // No need for overflow with map and overflow-y: scroll; breaks Map
+  const StyledContent = styled.div`
+    .content {
+      padding: 0px;
+      width: calc(100vw - ${drawer.width}px);
+      height: calc(100vh - ${drawer.headerHeight}px);
+      ${currentPath !== "/map" && `overflow-y: scroll;`}
+    }
+
+    /* Fill space left behind by SideDrawer on mobile */
+    @media only screen and (max-width: ${responsive.sm}px) {
+      .content {
+        width: 100vw;
+        height: calc(100vh - ${drawer.headerHeight}px);
+        ${currentPath !== "/map" && `overflow-y: scroll;`}
+      }
+    }
+  `;
 
   return (
     <StyledContent>
       <Container fluid className="content">
         <Header toggleSidebar={toggle} />
-        {/* TODO: Remove disclaimer  */}
-        <Row>
-          <Col md="12">
-            <Alert color="primary" className="m-2">
-              <h4 className="alert-heading">
-                This site is a work in progress.
-              </h4>
-              <p>
-                The information displayed below may be outdated or incorrect.
-                Check back later for live Vision Zero data.
-              </p>
-            </Alert>
-          </Col>
-        </Row>
-        {routeResult || <NotFound />}
+        {routeResult(mapFilters) || <NotFound />}
       </Container>
     </StyledContent>
   );

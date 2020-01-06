@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { StoreContext } from "../../utils/store";
 import { A } from "hookrouter";
 
 import {
@@ -40,10 +41,14 @@ const navConfig = [
   { title: "Education", url: "/education" }
 ];
 
-const Header = ({ toggleSidebar }) => {
-  const [isOpen, setIsOpen] = useState(false);
+const Header = () => {
+  const [isNavOpen, setIsNavOpen] = useState(false);
 
-  const toggle = () => setIsOpen(!isOpen);
+  const toggle = () => setIsNavOpen(!isNavOpen);
+
+  const {
+    sidebarToggle: [isOpen, setIsOpen]
+  } = React.useContext(StoreContext);
 
   return (
     <Container fluid>
@@ -57,7 +62,7 @@ const Header = ({ toggleSidebar }) => {
           <Button
             className="mr-2 collapse-toggle"
             color="info"
-            onClick={toggleSidebar}
+            onClick={() => setIsOpen(!isOpen)}
           >
             <FontAwesomeIcon icon={faBars} />
           </Button>
