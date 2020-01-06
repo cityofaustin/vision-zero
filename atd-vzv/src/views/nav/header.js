@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { A } from "hookrouter";
+import { A, usePath } from "hookrouter";
 
 import {
   Container,
@@ -34,13 +34,11 @@ const navConfig = [
     title: "Summary",
     url: "/summary"
   },
-  { title: "Map", url: "/map" },
-  { title: "Engineering", url: "/engineering" },
-  { title: "Enforcement", url: "/enforcement" },
-  { title: "Education", url: "/education" }
+  { title: "Map", url: "/map" }
 ];
 
 const Header = ({ toggleSidebar }) => {
+  const currentPath = usePath();
   const [isOpen, setIsOpen] = useState(false);
 
   const toggle = () => setIsOpen(!isOpen);
@@ -67,7 +65,13 @@ const Header = ({ toggleSidebar }) => {
               {navConfig.map((config, i) => (
                 <NavItem key={i}>
                   <NavLink tag={A} href={config.url}>
-                    <Button className="nav-button">{config.title}</Button>
+                    {currentPath === config.url ? (
+                      <Button className="nav-button">{config.title}</Button>
+                    ) : (
+                      <Button outline className="nav-button">
+                        {config.title}
+                      </Button>
+                    )}
                   </NavLink>
                 </NavItem>
               ))}
