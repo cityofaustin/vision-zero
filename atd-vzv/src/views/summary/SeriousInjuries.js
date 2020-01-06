@@ -4,7 +4,7 @@ import axios from "axios";
 import { Container, Row, Col } from "reactstrap";
 import {
   seriousInjuriesYTDUrl,
-  previousYearSeriousInjuries
+  previousYearSeriousInjuriesUrl
 } from "./queries/socrataQueries";
 import { thisYear, lastYear } from "./helpers/time";
 import { calculateTotalInjuries } from "./helpers/helpers";
@@ -20,7 +20,7 @@ const SeriousInjuries = () => {
     });
 
     // Fetch last year-to-date records
-    axios.get(previousYearSeriousInjuries).then(res => {
+    axios.get(previousYearSeriousInjuriesUrl).then(res => {
       setLastYearToDateInjuryTotal(calculateTotalInjuries(res.data));
     });
   }, []);

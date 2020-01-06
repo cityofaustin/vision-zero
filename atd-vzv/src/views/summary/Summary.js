@@ -30,7 +30,7 @@ const children = [
 
 const Summary = () => {
   const StyledSummary = styled.div`
-    /* Set padding for all Summary children in grid */
+    /* Set padding for all Summary children in grid that are Bootstrap columns and have .summary-child class */
     .summary-child,
     [class*=".col-"] {
       padding: 0.75em;

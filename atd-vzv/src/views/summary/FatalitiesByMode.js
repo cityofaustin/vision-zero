@@ -4,6 +4,7 @@ import moment from "moment";
 import { Bar } from "react-chartjs-2";
 
 import { Container } from "reactstrap";
+import { thisYear } from "./helpers/time";
 
 const FatalitiesByMode = () => {
   // Define stacked bar chart properties in order of stack
@@ -13,7 +14,6 @@ const FatalitiesByMode = () => {
     { label: "Motorcycle", flag: "motorcycle_fl", color: "#de2d26" },
     { label: "Pedalcyclist", flag: "pedalcyclist_fl", color: "#08519c" }
   ];
-  const thisYear = moment().format("YYYY");
   const yearLimit = 10; // Number of years to display in chart
   const yearsArray = (() => {
     let years = [];
