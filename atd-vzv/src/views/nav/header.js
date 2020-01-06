@@ -5,7 +5,7 @@ import { Container, Navbar, Button, Nav, NavItem, NavLink } from "reactstrap";
 import styled from "styled-components";
 import { responsive } from "../../constants/responsive";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBars, faHome, faMap } from "@fortawesome/free-solid-svg-icons";
+import { faBars } from "@fortawesome/free-solid-svg-icons";
 
 const StyledNavbar = styled.div`
   .collapse-toggle {
@@ -16,7 +16,7 @@ const StyledNavbar = styled.div`
 `;
 
 const Header = ({ toggleSidebar }) => (
-  <Container fluid className="bg-light">
+  <Container fluid>
     <StyledNavbar>
       <Navbar
         color="light"
@@ -31,18 +31,30 @@ const Header = ({ toggleSidebar }) => (
         >
           <FontAwesomeIcon icon={faBars} />
         </Button>
-
         <Nav className="mr-auto" navbar>
           <NavItem>
             <NavLink tag={A} href="/summary">
-              <FontAwesomeIcon icon={faHome} className="mr-2" />
-              Summary
+              <Button>Summary</Button>
             </NavLink>
           </NavItem>
           <NavItem>
             <NavLink tag={A} href="/map">
-              <FontAwesomeIcon icon={faMap} className="mr-2" />
-              Map
+              <Button>Map</Button>
+            </NavLink>
+          </NavItem>
+          <NavItem>
+            <NavLink tag={A} href="/engineering">
+              <Button>Engineering</Button>
+            </NavLink>
+          </NavItem>
+          <NavItem>
+            <NavLink tag={A} href="/enforcement">
+              <Button>Enforcement</Button>
+            </NavLink>
+          </NavItem>
+          <NavItem>
+            <NavLink tag={A} href="/education">
+              <Button>Education</Button>
             </NavLink>
           </NavItem>
         </Nav>

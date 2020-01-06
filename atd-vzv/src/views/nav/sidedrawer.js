@@ -1,7 +1,5 @@
 import React from "react";
-import { A } from "hookrouter";
 
-import { NavItem, NavLink, Nav } from "reactstrap";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Drawer from "@material-ui/core/Drawer";
 import Hidden from "@material-ui/core/Hidden";
@@ -9,8 +7,6 @@ import { makeStyles, useTheme } from "@material-ui/core/styles";
 import styled from "styled-components";
 import { drawer } from "../../constants/drawer";
 import { colors } from "../../constants/colors";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHome, faMap } from "@fortawesome/free-solid-svg-icons";
 
 const drawerWidth = drawer.width;
 
@@ -43,10 +39,17 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const StyledDrawerHeader = styled.div`
-  background: ${colors.light};
+  background-color: ${colors.light};
   color: ${colors.dark};
   padding: 20px;
   height: ${drawer.height}px;
+
+  .logo {
+    position: absolute;
+    width: ${drawer.width}px;
+    left: 0;
+    top: 35px;
+  }
 `;
 
 const SideDrawer = ({ toggle, isOpen }) => {
@@ -55,23 +58,13 @@ const SideDrawer = ({ toggle, isOpen }) => {
 
   const drawerContent = (
     <div className="side-menu">
-      <Nav vertical className="list-unstyled pb-3">
-        <StyledDrawerHeader>
-          <h3>Vision Zero Viewer</h3>
-        </StyledDrawerHeader>
-        <NavItem>
-          <NavLink tag={A} href="/charts">
-            <FontAwesomeIcon icon={faHome} className="mr-2" />
-            Dashboard
-          </NavLink>
-        </NavItem>
-        <NavItem>
-          <NavLink tag={A} href="/map">
-            <FontAwesomeIcon icon={faMap} className="mr-2" />
-            Map
-          </NavLink>
-        </NavItem>
-      </Nav>
+      <StyledDrawerHeader>
+        <img
+          className="logo"
+          src="vz_logo.png"
+          alt="Vision Zero Austin Logo"
+        ></img>
+      </StyledDrawerHeader>
     </div>
   );
 

@@ -23,7 +23,7 @@ const Content = ({ toggle }) => {
 
   return (
     <StyledContent>
-      <Container fluid className="content bg-light">
+      <Container fluid className="content">
         <Header toggleSidebar={toggle} />
         {/* TODO: Remove disclaimer  */}
         <Row>
