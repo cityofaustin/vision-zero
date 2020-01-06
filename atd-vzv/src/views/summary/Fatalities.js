@@ -45,17 +45,17 @@ const Fatalities = () => {
 
   return (
     <Container>
-      <Row>
+      <Row className="text-center">
         <Col sm="6">
-          <p>{thisYear}</p>
-          <h2>{yearToDateFatalityTotal}</h2>
+          <h5>{thisYear}</h5>
+          <h1>{yearToDateFatalityTotal}</h1>
           <p className="text-left">
             {renderFatalityIcons(yearToDateFatalityTotal)}
           </p>
         </Col>
         <Col sm="6">
-          <p>{lastYear}</p>
-          <h2>{lastYearToDateFatalityTotal}</h2>
+          <h5>{lastYear}</h5>
+          <h1>{lastYearToDateFatalityTotal}</h1>
           <p className="text-left">
             {renderFatalityIcons(lastYearToDateFatalityTotal)}
           </p>

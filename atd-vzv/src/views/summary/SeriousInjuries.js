@@ -27,7 +27,7 @@ const SeriousInjuries = () => {
 
   return (
     <Container>
-      <Row>
+      <Row className="text-center">
         <Col>
           <h5>{thisYear}</h5>
           <h1>{yearToDateInjuryTotal}</h1>
