@@ -59,11 +59,11 @@ const SideDrawer = ({ toggle, isOpen }) => {
   const drawerContent = (
     <div className="side-menu">
       <StyledDrawerHeader>
-        <img
+        {/* <img
           className="logo"
           src="vz_logo.png"
           alt="Vision Zero Austin Logo"
-        ></img>
+        ></img> */}
       </StyledDrawerHeader>
     </div>
   );
