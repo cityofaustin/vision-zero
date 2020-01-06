@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { StoreContext } from "../../utils/store";
-import { A } from "hookrouter";
+import { A, usePath } from "hookrouter";
 
 import {
   Container,
@@ -35,17 +35,17 @@ const navConfig = [
     title: "Summary",
     url: "/summary"
   },
-  { title: "Map", url: "/map" },
-  { title: "Engineering", url: "/engineering" },
-  { title: "Enforcement", url: "/enforcement" },
-  { title: "Education", url: "/education" }
+  { title: "Map", url: "/map" }
 ];
 
 const Header = () => {
+  const currentPath = usePath();
+  // Set toggle state for navigation
   const [isNavOpen, setIsNavOpen] = useState(false);
 
   const toggle = () => setIsNavOpen(!isNavOpen);
 
+  // Use context to toggle state for SideDrawer toggle
   const {
     sidebarToggle: [isOpen, setIsOpen]
   } = React.useContext(StoreContext);
@@ -72,7 +72,13 @@ const Header = () => {
               {navConfig.map((config, i) => (
                 <NavItem key={i}>
                   <NavLink tag={A} href={config.url}>
-                    <Button className="nav-button">{config.title}</Button>
+                    {currentPath === config.url ? (
+                      <Button className="nav-button">{config.title}</Button>
+                    ) : (
+                      <Button outline className="nav-button">
+                        {config.title}
+                      </Button>
+                    )}
                   </NavLink>
                 </NavItem>
               ))}
