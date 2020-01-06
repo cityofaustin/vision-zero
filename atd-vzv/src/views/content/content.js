@@ -9,18 +9,16 @@ import styled from "styled-components";
 import { drawer } from "../../constants/drawer";
 import { responsive } from "../../constants/responsive";
 
-// TODO: overflow-y scroll on Dashboard
-
 const Content = ({ toggle }) => {
   const routeResult = useRoutes(routes);
   const currentPath = usePath();
 
-  // No need for overflow with map and overflow-y: scroll; breaks Map
   const StyledContent = styled.div`
     .content {
       padding: 0px;
       width: calc(100vw - ${drawer.width}px);
       height: calc(100vh - ${drawer.headerHeight}px);
+      /* overflow-y: scroll style breaks Map */
       ${currentPath !== "/map" && `overflow-y: scroll;`}
     }
 
@@ -29,6 +27,7 @@ const Content = ({ toggle }) => {
       .content {
         width: 100vw;
         height: calc(100vh - ${drawer.headerHeight}px);
+        /* overflow-y: scroll style breaks Map */
         ${currentPath !== "/map" && `overflow-y: scroll;`}
       }
     }
