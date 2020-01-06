@@ -80,10 +80,11 @@ const Map = () => {
   // Show tooltip if hovering over a feature
   const _renderTooltip = () => {
     const { feature, x, y } = hoveredFeature;
+
     return (
       feature && (
         <StyledCard>
-          <Card style={{ left: x, top: y }}>
+          <Card style={{ top: 10, left: 10 }}>
             <CardBody>
               <CardText>Crash ID: {feature.properties.crash_id}</CardText>
               <CardText>

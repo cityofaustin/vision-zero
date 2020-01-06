@@ -3,6 +3,6 @@ import Summary from "../views/summary/Summary";
 import Map from "../views/map/Map";
 
 export const routes = {
-  "/": () => <Summary />,
+  "/summary": () => <Summary />,
   "/map": () => <Map />
 };
