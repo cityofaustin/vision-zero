@@ -11,7 +11,7 @@ import { responsive } from "../../constants/responsive";
 
 // TODO: overflow-y scroll on Dashboard
 
-const Content = ({ toggle, mapFilters }) => {
+const Content = ({ toggle }) => {
   const routeResult = useRoutes(routes);
   const currentPath = usePath();
 
@@ -38,7 +38,7 @@ const Content = ({ toggle, mapFilters }) => {
     <StyledContent>
       <Container fluid className="content">
         <Header toggleSidebar={toggle} />
-        {routeResult(mapFilters) || <NotFound />}
+        {routeResult || <NotFound />}
       </Container>
     </StyledContent>
   );

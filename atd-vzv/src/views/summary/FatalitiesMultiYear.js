@@ -21,7 +21,7 @@ const FatalitiesMultiYear = () => {
     .format("MMMM");
 
   const getYearsAgoLabel = yearsAgo => {
-    return moment(
+    return moment()
       .subtract(yearsAgo, "year")
       .format("YYYY");
   };

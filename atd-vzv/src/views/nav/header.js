@@ -67,7 +67,7 @@ const Header = () => {
             <FontAwesomeIcon icon={faBars} />
           </Button>
           <NavbarToggler onClick={toggle} />
-          <Collapse isOpen={isOpen} navbar>
+          <Collapse className="float-right" isOpen={isNavOpen} navbar>
             <Nav className="mr-auto" navbar>
               {navConfig.map((config, i) => (
                 <NavItem key={i}>

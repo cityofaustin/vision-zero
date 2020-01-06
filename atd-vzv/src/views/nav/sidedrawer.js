@@ -46,7 +46,7 @@ const StyledDrawerHeader = styled.div`
   background-color: ${colors.light};
   color: ${colors.dark};
   padding: 20px;
-  height: ${drawer.height}px;
+  height: ${drawer.headerHeight}px;
 
   .logo {
     position: absolute;
@@ -67,11 +67,11 @@ const SideDrawer = () => {
   const drawerContent = (
     <div className="side-menu">
       <StyledDrawerHeader>
-        <img
+        {/* <img
           className="logo"
           src="vz_logo.png"
           alt="Vision Zero Austin Logo"
-        ></img>
+        ></img> */}
       </StyledDrawerHeader>
       {/* TODO: Remove disclaimer  */}
       <Nav vertical className="list-unstyled pb-3">
