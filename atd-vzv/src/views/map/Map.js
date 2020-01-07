@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { StoreContext } from "../../utils/store";
 import ReactMapGL, { Source, Layer } from "react-map-gl";
+import { createMapDataUrl } from "./helpers";
 import { dataLayer } from "./map-style";
 import axios from "axios";
+
 import { Card, CardBody, CardText } from "reactstrap";
 import styled from "styled-components";
 
@@ -35,32 +37,14 @@ const Map = () => {
     mapFilters: [filters]
   } = React.useContext(StoreContext);
 
-  // Fetch crash data
+  // Fetch initial crash data and refetch upon filters change
   useEffect(() => {
-    const apiUrl =
-      "https://data.austintexas.gov/resource/y2wy-tgr5.geojson?$limit=1000&$where=crash_date between '2019-01-01T00:00:00' and '2019-12-04T23:59:59'";
+    const apiUrl = createMapDataUrl(filters);
+
     axios.get(apiUrl).then(res => {
       setMapData(res.data);
     });
-  }, []);
-
-  // Set map filters and refetch data
-  useEffect(() => {
-    const createMapDataUrl = filters => {
-      let whereFilterString = "";
-      filters.forEach(filter => {
-        if (filter.type === "where") {
-          whereFilterString += ` ${filter.operator} ${filter.syntax}`;
-        }
-      });
-      const apiUrl = `https://data.austintexas.gov/resource/y2wy-tgr5.geojson?$limit=1000&$where=crash_date between '2019-01-01T00:00:00' and '2019-12-07T23:59:59' ${whereFilterString}`;
-      axios.get(apiUrl).then(res => {
-        setMapData(res.data);
-      });
-    };
-
-    createMapDataUrl(filters);
-  }, [filters, setMapData]);
+  }, [filters]);
 
   const _onViewportChange = viewport => setViewport(viewport);
 
