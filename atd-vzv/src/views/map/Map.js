@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import ReactMapGL, { Source, Layer } from "react-map-gl";
-import { dataLayer, heatmapLayer } from "./map-style";
+import { dataLayer } from "./map-style";
 import axios from "axios";
 import { Card, CardBody, CardText } from "reactstrap";
 import styled from "styled-components";

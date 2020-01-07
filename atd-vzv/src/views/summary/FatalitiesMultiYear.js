@@ -111,7 +111,7 @@ const FatalitiesMultiYear = () => {
     axios.get(getFatalitiesByYearsAgoUrl(5)).then(res => {
       setFiveYearsAgoDeathArray(calculateMonthlyTotals(res));
     });
-  }, [thisYearUrl, lastMonthLastDayDate]);
+  }, []);
 
   const data = {
     labels: [
@@ -260,11 +260,6 @@ const FatalitiesMultiYear = () => {
 
   return (
     <Container>
-      <Row>
-        <Col>
-          <h3>Traffic Fatalities by Year</h3>
-        </Col>
-      </Row>
       <Row>
         <Col md="12">
           <h5 style={{ color: "#08519c" }}>

@@ -107,7 +107,6 @@ const SideDrawer = () => {
             open
           >
             {drawerContent}
-            {/* TODO: Dynamic sidebar content based on route */}
           </Drawer>
         </Hidden>
       </nav>
