@@ -68,7 +68,7 @@ const SideDrawer = () => {
         <img src="vz_logo.png" alt="Vision Zero Austin Logo"></img>
       </StyledDrawerHeader>
       <Container className="pt-3 pb-3">
-        {/* TODO: Remove disclaimer when going */}
+        {/* TODO: Remove disclaimer when going live */}
         <Alert color="danger">
           <strong>This site is a work in progress.</strong>
           <br />
