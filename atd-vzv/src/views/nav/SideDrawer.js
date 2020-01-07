@@ -1,7 +1,8 @@
 import React from "react";
 import { StoreContext } from "../../utils/store";
 
-import { Nav, Alert } from "reactstrap";
+import SideMapControl from "./SideMapControl";
+import { Alert } from "reactstrap";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Drawer from "@material-ui/core/Drawer";
 import Hidden from "@material-ui/core/Hidden";
@@ -65,16 +66,15 @@ const SideDrawer = () => {
         <img src="vz_logo.png" alt="Vision Zero Austin Logo"></img>
       </StyledDrawerHeader>
       {/* TODO: Remove disclaimer  */}
-      <Nav vertical className="list-unstyled pb-3">
-        <Alert color="danger" className="m-2 p-1">
-          <strong>This site is a work in progress.</strong>
-          <br />
-          <span>
-            The information displayed may be outdated or incorrect. Check back
-            later for live Vision Zero data.
-          </span>
-        </Alert>
-      </Nav>
+      <Alert color="danger" className="m-2 p-1">
+        <strong>This site is a work in progress.</strong>
+        <br />
+        <span>
+          The information displayed may be outdated or incorrect. Check back
+          later for live Vision Zero data.
+        </span>
+      </Alert>
+      <SideMapControl />
     </div>
   );
 
