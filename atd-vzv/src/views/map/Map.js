@@ -44,7 +44,7 @@ const Map = () => {
     });
   }, []);
 
-  // Set map filters and fetch data
+  // Set map filters and refetch data
   useEffect(() => {
     const createMapDataUrl = filters => {
       let whereFilterString = "";

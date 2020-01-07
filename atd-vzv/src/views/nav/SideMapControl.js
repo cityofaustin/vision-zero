@@ -1,7 +1,8 @@
 import React from "react";
 import { StoreContext } from "../../utils/store";
 
-import { ButtonGroup, Button, Card } from "reactstrap";
+import styled from "styled-components";
+import { ButtonGroup, Button, Card, Label } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faWalking,
@@ -38,6 +39,10 @@ const modeParameters = {
 };
 
 const SideMapControl = () => {
+  const StyledCard = styled.div`
+    font-size: 1.2em;
+  `;
+
   const {
     mapFilters: [filters, setFilters]
   } = React.useContext(StoreContext);
@@ -65,22 +70,26 @@ const SideMapControl = () => {
   };
 
   return (
-    <Card className="p-3 bg-light">
-      <legend className="text-dark">Filters</legend>
-      <ButtonGroup>
-        {Object.entries(modeParameters).map(([k, v], i) => (
-          <Button
-            key={i}
-            color="info"
-            onClick={handleFilterClick}
-            id={k}
-            active={isFilterSet(k)}
-          >
-            <FontAwesomeIcon icon={v.icon} className="mr-1 ml-1" />
-          </Button>
-        ))}
-      </ButtonGroup>
-    </Card>
+    <StyledCard>
+      <Card className="p-3 bg-light">
+        <Label for="mode-buttons" className="text-dark">
+          Filters
+        </Label>
+        <ButtonGroup id="mode-buttons">
+          {Object.entries(modeParameters).map(([k, v], i) => (
+            <Button
+              key={i}
+              color="info"
+              onClick={handleFilterClick}
+              id={k}
+              active={isFilterSet(k)}
+            >
+              <FontAwesomeIcon icon={v.icon} className="mr-1 ml-1" />
+            </Button>
+          ))}
+        </ButtonGroup>
+      </Card>
+    </StyledCard>
   );
 };
 
