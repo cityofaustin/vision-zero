@@ -12,6 +12,10 @@ import {
   faMotorcycle
 } from "@fortawesome/free-solid-svg-icons";
 
+// TODO: Merge parameters into one
+// TODO: Preserve Fatal or Serious Injury selection when selecting "All" in mode group
+// TODO: Merge click event handlers into one
+
 const modeParameters = {
   pedestrian: {
     icon: faWalking,
@@ -39,6 +43,21 @@ const modeParameters = {
   }
 };
 
+const typeParameters = {
+  fatal: {
+    text: `Fatal`,
+    syntax: `death_cnt > 0`,
+    type: `where`,
+    operator: `AND`
+  },
+  seriousInjury: {
+    text: `Serious Injury`,
+    syntax: `sus_serious_injry_cnt > 0`,
+    type: `where`,
+    operator: `AND`
+  }
+};
+
 const SideMapControl = () => {
   const StyledCard = styled.div`
     font-size: 1.2em;
@@ -49,6 +68,8 @@ const SideMapControl = () => {
     }
 
     .card-body {
+      diplay: flex;
+      align-items: center;
       background-color: ${colors.white};
     }
   `;
@@ -57,11 +78,11 @@ const SideMapControl = () => {
     mapFilters: [filters, setFilters]
   } = React.useContext(StoreContext);
 
-  const handleFilterClick = event => {
+  const handleModeFilterClick = event => {
     // Set filter or remove if already set
     const filterName = event.currentTarget.id;
 
-    if (isFilterSet(filterName)) {
+    if (isModeFilterSet(filterName)) {
       const filterToRemove = modeParameters[filterName];
       const updatedFiltersArray = filters.filter(
         setFilter => setFilter !== filterToRemove
@@ -74,12 +95,34 @@ const SideMapControl = () => {
     }
   };
 
+  const handleTypeFilterClick = event => {
+    // Set filter or remove if already set
+    const filterName = event.currentTarget.id;
+
+    if (isTypeFilterSet(filterName)) {
+      const filterToRemove = typeParameters[filterName];
+      const updatedFiltersArray = filters.filter(
+        setFilter => setFilter !== filterToRemove
+      );
+      setFilters(updatedFiltersArray);
+    } else {
+      const filter = typeParameters[filterName];
+      const filtersArray = [...filters, filter];
+      setFilters(filtersArray);
+    }
+  };
+
   const handleAllFiltersClick = () => {
     setFilters([]);
   };
 
-  const isFilterSet = filterName => {
+  const isModeFilterSet = filterName => {
     const clickedFilter = modeParameters[filterName];
+    return !!filters.find(setFilter => setFilter === clickedFilter);
+  };
+
+  const isTypeFilterSet = filterName => {
+    const clickedFilter = typeParameters[filterName];
     return !!filters.find(setFilter => setFilter === clickedFilter);
   };
 
@@ -95,10 +138,10 @@ const SideMapControl = () => {
             <Button
               key={i}
               color="info"
-              onClick={handleFilterClick}
+              onClick={handleModeFilterClick}
               id={k}
-              active={isFilterSet(k)}
-              outline={!isFilterSet(k)}
+              active={isModeFilterSet(k)}
+              outline={!isModeFilterSet(k)}
             >
               <FontAwesomeIcon icon={v.icon} className="mr-1 ml-1" />
             </Button>
@@ -112,6 +155,20 @@ const SideMapControl = () => {
           >
             All
           </Button>
+        </ButtonGroup>
+        <ButtonGroup className="mt-3" id="type-buttons">
+          {Object.entries(typeParameters).map(([k, v], i) => (
+            <Button
+              key={i}
+              color="info"
+              onClick={handleTypeFilterClick}
+              id={k}
+              active={isTypeFilterSet(k)}
+              outline={!isTypeFilterSet(k)}
+            >
+              {v.text}
+            </Button>
+          ))}
         </ButtonGroup>
       </Card>
     </StyledCard>
