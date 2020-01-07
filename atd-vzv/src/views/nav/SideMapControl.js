@@ -2,11 +2,12 @@ import React from "react";
 import { StoreContext } from "../../utils/store";
 
 import styled from "styled-components";
+import { colors } from "../../constants/colors";
 import { ButtonGroup, Button, Card, Label } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faWalking,
-  faBicycle,
+  faBiking,
   faCar,
   faMotorcycle
 } from "@fortawesome/free-solid-svg-icons";
@@ -16,31 +17,36 @@ const modeParameters = {
     icon: faWalking,
     syntax: `pedestrian_fl = "Y"`,
     type: `where`,
-    operator: `AND`
+    operator: `OR`
   },
   pedalcyclist: {
-    icon: faBicycle,
+    icon: faBiking,
     syntax: `pedalcyclist_fl = "Y"`,
     type: `where`,
-    operator: `AND`
+    operator: `OR`
   },
   motor: {
     icon: faCar,
     syntax: `motor_vehicle_fl = "Y"`,
     type: `where`,
-    operator: `AND`
+    operator: `OR`
   },
   motorcycle: {
     icon: faMotorcycle,
     syntax: `motorcycle_fl = "Y"`,
     type: `where`,
-    operator: `AND`
+    operator: `OR`
   }
 };
 
 const SideMapControl = () => {
   const StyledCard = styled.div`
     font-size: 1.2em;
+
+    .card-title {
+      color: ${colors.white};
+      font-weight: bold;
+    }
   `;
 
   const {
@@ -64,6 +70,10 @@ const SideMapControl = () => {
     }
   };
 
+  const handleAllFiltersClick = () => {
+    setFilters([]);
+  };
+
   const isFilterSet = filterName => {
     const clickedFilter = modeParameters[filterName];
     return !!filters.find(setFilter => setFilter === clickedFilter);
@@ -71,6 +81,7 @@ const SideMapControl = () => {
 
   return (
     <StyledCard>
+      <div className="card-title">Traffic Crashes</div>
       <Card className="p-3 bg-light">
         <Label for="mode-buttons" className="text-dark">
           Filters
@@ -83,10 +94,20 @@ const SideMapControl = () => {
               onClick={handleFilterClick}
               id={k}
               active={isFilterSet(k)}
+              outline={!isFilterSet(k)}
             >
               <FontAwesomeIcon icon={v.icon} className="mr-1 ml-1" />
             </Button>
           ))}
+          <Button
+            color="info"
+            onClick={handleAllFiltersClick}
+            id="all"
+            active={filters.length === 0}
+            outline={filters.length !== 0}
+          >
+            All
+          </Button>
         </ButtonGroup>
       </Card>
     </StyledCard>
