@@ -21,18 +21,29 @@ import { faBars } from "@fortawesome/free-solid-svg-icons";
 // TODO: Center navbar vertically
 const StyledNavbar = styled.div`
   .navbar-container {
-    display: flex !important;
-    align-items: center !important;
     height: ${drawer.headerHeight}px;
   }
 
   .header-navbar {
-    flex: 1;
+    min-height: ${drawer.headerHeight}px;
+
+    left: ${drawer.width}px;
+
+    @media only screen and (max-width: ${responsive.materialMedium}px) {
+      left: 0;
+    }
+
+    @media only screen and (max-width: ${responsive.bootstrapMedium}px) {
+      /* Keep Navbar toggles centered vertically in header when Nav toggle appears */
+      /* NavbarToggler is 40px in height */
+      padding-top: ${(drawer.headerHeight - 40) / 2}px !important;
+      padding-bottom: ${(drawer.headerHeight - 40) / 2}px !important;
+    }
   }
 
   .collapse-toggle {
     /* Hide SideBar toggle button on larger devices */
-    @media only screen and (min-width: ${responsive.md}px) {
+    @media only screen and (min-width: ${responsive.materialMedium}px) {
       display: none;
     }
   }
