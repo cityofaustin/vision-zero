@@ -1,7 +1,7 @@
 import React from "react";
 import { StoreContext } from "../../utils/store";
 
-import { Container, ButtonGroup, Button, Card } from "reactstrap";
+import { ButtonGroup, Button, Card } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faWalking,
@@ -65,24 +65,22 @@ const SideMapControl = () => {
   };
 
   return (
-    <Container>
-      <Card className="p-2 bg-light">
-        <legend className="text-dark">Filters</legend>
-        <ButtonGroup>
-          {Object.entries(modeParameters).map(([k, v], i) => (
-            <Button
-              key={i}
-              color="info"
-              onClick={handleFilterClick}
-              id={k}
-              active={isFilterSet(k)}
-            >
-              <FontAwesomeIcon icon={v.icon} className="mr-1 ml-1" />
-            </Button>
-          ))}
-        </ButtonGroup>
-      </Card>
-    </Container>
+    <Card className="p-3 bg-light">
+      <legend className="text-dark">Filters</legend>
+      <ButtonGroup>
+        {Object.entries(modeParameters).map(([k, v], i) => (
+          <Button
+            key={i}
+            color="info"
+            onClick={handleFilterClick}
+            id={k}
+            active={isFilterSet(k)}
+          >
+            <FontAwesomeIcon icon={v.icon} className="mr-1 ml-1" />
+          </Button>
+        ))}
+      </ButtonGroup>
+    </Card>
   );
 };
 
