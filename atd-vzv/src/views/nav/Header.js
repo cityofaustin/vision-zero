@@ -18,18 +18,19 @@ import { responsive } from "../../constants/responsive";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 
-// TODO: Center navbar vertically
 const StyledNavbar = styled.div`
   .navbar-container {
+    /* Make Navbar container same height as SideDrawer header */
     height: ${drawer.headerHeight}px;
   }
 
   .header-navbar {
+    /* Keep Navbar same height as header in SideDrawer and move to right based on drawer width */
     min-height: ${drawer.headerHeight}px;
-
     left: ${drawer.width}px;
 
     @media only screen and (max-width: ${responsive.materialMedium}px) {
+      /* When SideDrawer collapses, move header to left of window */
       left: 0;
     }
 
@@ -42,7 +43,7 @@ const StyledNavbar = styled.div`
   }
 
   .collapse-toggle {
-    /* Hide SideBar toggle button on larger devices */
+    /* Hide SideBar toggle when SideBar is not collapsed */
     @media only screen and (min-width: ${responsive.materialMedium}px) {
       display: none;
     }
