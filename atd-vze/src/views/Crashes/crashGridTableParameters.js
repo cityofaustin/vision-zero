@@ -77,7 +77,7 @@ export const nonCR3CrashGridTableColumns = {
   },
   date: {
     primary_key: false,
-    searchable: true,
+    searchable: false,
     sortable: true,
     label_table: "Date",
     type: "Date",
@@ -118,7 +118,7 @@ export const nonCR3CrashGridTableColumns = {
     label_table: "Est Economic Cost",
     type: "Int",
   },
-}
+};
 
 export const crashGridTableAdvancedFilters = {
   groupInjuries: {
