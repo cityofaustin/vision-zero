@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { StoreContext } from "../../utils/store";
 import ReactMapGL, { Source, Layer } from "react-map-gl";
 import { dataLayer, heatmapLayer } from "./map-style";
 import axios from "axios";
@@ -31,10 +30,6 @@ const Map = () => {
   const [mapData, setMapData] = useState("");
   const [hoveredFeature, setHoveredFeature] = useState(null);
 
-  const {
-    mapFilters: [filters]
-  } = React.useContext(StoreContext);
-
   // Fetch crash data
   useEffect(() => {
     const apiUrl =
@@ -43,24 +38,6 @@ const Map = () => {
       setMapData(res.data);
     });
   }, []);
-
-  // Set map filters and fetch data
-  useEffect(() => {
-    const createMapDataUrl = filters => {
-      let whereFilterString = "";
-      filters.forEach(filter => {
-        if (filter.type === "where") {
-          whereFilterString += ` ${filter.operator} ${filter.syntax}`;
-        }
-      });
-      const apiUrl = `https://data.austintexas.gov/resource/y2wy-tgr5.geojson?$limit=1000&$where=crash_date between '2019-01-01T00:00:00' and '2019-12-07T23:59:59' ${whereFilterString}`;
-      axios.get(apiUrl).then(res => {
-        setMapData(res.data);
-      });
-    };
-
-    createMapDataUrl(filters);
-  }, [filters, setMapData]);
 
   const _onViewportChange = viewport => setViewport(viewport);
 

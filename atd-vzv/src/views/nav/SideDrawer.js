@@ -9,7 +9,6 @@ import { makeStyles, useTheme } from "@material-ui/core/styles";
 import styled from "styled-components";
 import { drawer } from "../../constants/drawer";
 import { colors } from "../../constants/colors";
-import SideMapControl from "./SideMapControl";
 
 const drawerWidth = drawer.width;
 
@@ -43,17 +42,13 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const StyledDrawerHeader = styled.div`
-  background-color: ${colors.light};
+  background-color: ${colors.white};
   color: ${colors.dark};
   padding: 20px;
   height: ${drawer.headerHeight}px;
-
-  .logo {
-    position: absolute;
-    width: ${drawer.width}px;
-    left: 0;
-    top: 35px;
-  }
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 const SideDrawer = () => {
@@ -67,11 +62,7 @@ const SideDrawer = () => {
   const drawerContent = (
     <div className="side-menu">
       <StyledDrawerHeader>
-        {/* <img
-          className="logo"
-          src="vz_logo.png"
-          alt="Vision Zero Austin Logo"
-        ></img> */}
+        <img src="vz_logo.png" alt="Vision Zero Austin Logo"></img>
       </StyledDrawerHeader>
       {/* TODO: Remove disclaimer  */}
       <Nav vertical className="list-unstyled pb-3">
@@ -105,7 +96,6 @@ const SideDrawer = () => {
             }}
           >
             {drawerContent}
-            <SideMapControl />
           </Drawer>
         </Hidden>
         <Hidden smDown implementation="css">
@@ -118,7 +108,6 @@ const SideDrawer = () => {
           >
             {drawerContent}
             {/* TODO: Dynamic sidebar content based on route */}
-            <SideMapControl />
           </Drawer>
         </Hidden>
       </nav>

@@ -15,6 +15,7 @@ import {
 import styled from "styled-components";
 import { drawer } from "../../constants/drawer";
 import { responsive } from "../../constants/responsive";
+import { colors } from "../../constants/colors";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 
@@ -28,7 +29,7 @@ const StyledNavbar = styled.div`
     /* Keep Navbar same height as header in SideDrawer and move to right based on drawer width */
     min-height: ${drawer.headerHeight}px;
     left: ${drawer.width}px;
-
+    background-color: ${colors.white};
     @media only screen and (max-width: ${responsive.materialMedium}px) {
       /* When SideDrawer collapses, move header to left of window */
       left: 0;
@@ -79,9 +80,8 @@ const Header = () => {
     <StyledNavbar>
       <Container className="navbar-container" fluid>
         <Navbar
-          color="light"
           light
-          className="navbar shadow-sm p-3 bg-white rounded fixed-top header-navbar"
+          className="navbar shadow-sm p-3 rounded fixed-top header-navbar"
           expand="md"
         >
           <Button
@@ -98,9 +98,11 @@ const Header = () => {
                 <NavItem key={i}>
                   <NavLink tag={A} href={config.url}>
                     {currentPath === config.url ? (
-                      <Button className="nav-button">{config.title}</Button>
+                      <Button className="nav-button btn-dark">
+                        {config.title}
+                      </Button>
                     ) : (
-                      <Button outline className="nav-button">
+                      <Button outline className="nav-button btn-outline-dark">
                         {config.title}
                       </Button>
                     )}
