@@ -1,9 +1,14 @@
 import React from "react";
 import { StoreContext } from "../../utils/store";
 
-import { Container, ButtonGroup, Button } from "reactstrap";
+import { Container, ButtonGroup, Button, Card } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faWalking, faBicycle, faCar } from "@fortawesome/free-solid-svg-icons";
+import {
+  faWalking,
+  faBicycle,
+  faCar,
+  faMotorcycle
+} from "@fortawesome/free-solid-svg-icons";
 
 const queryParameters = {
   pedestrian: {
@@ -18,6 +23,11 @@ const queryParameters = {
   },
   motor: {
     syntax: `motor_vehicle_fl = "Y"`,
+    type: `where`,
+    operator: `AND`
+  },
+  motorcycle: {
+    syntax: `motorcycle_fl = "Y"`,
     type: `where`,
     operator: `AND`
   }
@@ -51,34 +61,44 @@ const SideMapControl = () => {
   };
 
   return (
-    <Container className="text-center">
-      <legend>Mode</legend>
-      <ButtonGroup>
-        <Button
-          color="info"
-          onClick={handleFilterClick}
-          id="pedestrian"
-          active={isFilterSet("pedestrian")}
-        >
-          <FontAwesomeIcon icon={faWalking} className="mr-1 ml-1" />
-        </Button>
-        <Button
-          color="info"
-          onClick={handleFilterClick}
-          id="pedalcyclist"
-          active={isFilterSet("pedalcyclist")}
-        >
-          <FontAwesomeIcon icon={faBicycle} className="mr-1 ml-1" />
-        </Button>
-        <Button
-          color="info"
-          onClick={handleFilterClick}
-          id="motor"
-          active={isFilterSet("motor")}
-        >
-          <FontAwesomeIcon icon={faCar} className="mr-1 ml-1" />
-        </Button>
-      </ButtonGroup>
+    <Container>
+      <Card className="p-3 bg-light">
+        <legend className="text-dark">Filters</legend>
+        <ButtonGroup>
+          <Button
+            color="info"
+            onClick={handleFilterClick}
+            id="pedestrian"
+            active={isFilterSet("pedestrian")}
+          >
+            <FontAwesomeIcon icon={faWalking} className="mr-1 ml-1" />
+          </Button>
+          <Button
+            color="info"
+            onClick={handleFilterClick}
+            id="pedalcyclist"
+            active={isFilterSet("pedalcyclist")}
+          >
+            <FontAwesomeIcon icon={faBicycle} className="mr-1 ml-1" />
+          </Button>
+          <Button
+            color="info"
+            onClick={handleFilterClick}
+            id="motor"
+            active={isFilterSet("motor")}
+          >
+            <FontAwesomeIcon icon={faCar} className="mr-1 ml-1" />
+          </Button>
+          <Button
+            color="info"
+            onClick={handleFilterClick}
+            id="motorcycle"
+            active={isFilterSet("motorcycle")}
+          >
+            <FontAwesomeIcon icon={faMotorcycle} className="mr-1 ml-1" />
+          </Button>
+        </ButtonGroup>
+      </Card>
     </Container>
   );
 };
