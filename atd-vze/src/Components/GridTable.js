@@ -307,16 +307,17 @@ const GridTable = ({
    *
    **/
 
-  const isCrashesPage = query.table === "atd_txdot_crashes";
-
+  // Allow for Date Range to be configured from the queryConf/gqlAbstract query props
+  const hasDateRange = typeof query.config.showDateRange !== "undefined" ? query.config.showDateRange : true; 
+  const dateField = query.table === "atd_apd_blueform" ? "date" : "crash_date";
   // Handle Date Range (only if available)
   if (
-    isCrashesPage &&
+    hasDateRange &&
     dateRangeFilter["startDate"] &&
     dateRangeFilter["endDate"]
   ) {
     query.setWhere(
-      "crash_date",
+      dateField,
       `_gte: "${dateRangeFilter["startDate"]}", _lte: "${
         dateRangeFilter["endDate"]
       }"`
@@ -341,7 +342,9 @@ const GridTable = ({
       query.deleteWhere(column);
     });
 
-    if (searchParameters["column"] === "crash_id") {
+    const useEqSearch = searchParameters["column"] === "crash_id" || searchParameters["column"] === "form_id"
+
+    if (useEqSearch) {
       // Search Integer for exact value
       // If string contains integers, insert in gql query, if not insert 0 to return no matches
       const parsedValue = parseInt(searchParameters["value"]);
@@ -482,12 +485,13 @@ const GridTable = ({
                 />
               </Row>
               <ButtonToolbar className="mb-3 justify-content-between">
-                {isCrashesPage && (
+                {hasDateRange && (
                   <ButtonGroup>
                     <GridDateRange
                       setDateRangeFilter={setDateRangeFilter}
                       initStartDate={dateRangeFilter.startDate}
                       initEndDate={dateRangeFilter.endDate}
+                      uniqueKey={query.table}
                     />
                   </ButtonGroup>
                 )}
