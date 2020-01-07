@@ -44,8 +44,12 @@ const SideMapControl = () => {
     font-size: 1.2em;
 
     .card-title {
-      color: ${colors.white};
       font-weight: bold;
+      color: ${colors.white};
+    }
+
+    .card-body {
+      background-color: ${colors.white};
     }
   `;
 
@@ -82,7 +86,7 @@ const SideMapControl = () => {
   return (
     <StyledCard>
       <div className="card-title">Traffic Crashes</div>
-      <Card className="p-3 bg-light">
+      <Card className="p-3 card-body">
         <Label for="mode-buttons" className="text-dark">
           Filters
         </Label>
