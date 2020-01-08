@@ -38,7 +38,7 @@ function VZDashboard() {
   const seriousInjuriesYTD = seriousInjuryCount;
   const crashesYTD = crashesCount;
 
-  // Widget02 expects a string value
+  // Widget02 expects a string value, DB returns number or null
   const commaSeparator = number =>
     number === null ? "0" : number.toLocaleString();
 
