@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import moment from "moment";
 import DataTable from "../../Components/DataTable";
 import LocationMap from "./LocationMap";
 import LocationEditMap from "./LocationEditMap";
@@ -17,15 +18,45 @@ import { useQuery } from "@apollo/react-hooks";
 
 import locationDataMap from "./locationDataMap";
 import LocationCrashes from "./LocationCrashes";
+import LocationNonCR3Crashes from "./LocationNonCR3Crashes";
 
 import { GET_LOCATION, UPDATE_LOCATION } from "../../queries/Locations";
 
 function Location(props) {
-  const locationId = props.match.params.id;
   const [mapSelected, setMapSelected] = useState("aerial");
-  const { loading, error, data, refetch } = useQuery(GET_LOCATION, {
-    variables: { id: locationId },
+
+  // Set initial variables for GET_LOCATION query
+  const locationId = props.match.params.id;
+
+  const fiveYearsAgo = moment()
+    .subtract(5, "years")
+    .format("YYYY-MM-DD");
+
+  const [variables, setVariables] = useState({
+    id: locationId,
+    yearsAgoDate: fiveYearsAgo,
+    costPerCrash: parseFloat(0),
   });
+
+  const { loading, error, data, refetch } = useQuery(GET_LOCATION, {
+    variables,
+  });
+
+  // Retrieve est_comp_cost_amount of Non-CR3 crashes from DB and set updated variable
+  useEffect(() => {
+    if (
+      Object.entries(data).length !== 0 &&
+      data.locationTotals[0].noncr3_est_comp_cost === 0
+    ) {
+      const costPerNonCr3Crash = data.nonCr3EstCompCost[0].est_comp_cost_amount;
+      setVariables({ ...variables, costPerCrash: costPerNonCr3Crash });
+    }
+  }, [data, variables]);
+
+  // On variable change, refetch to get calculated Non-CR3 total_est_comp_cost
+  useEffect(() => {
+    refetch(variables);
+  }, [variables, refetch]);
 
   const [editField, setEditField] = useState("");
   const [formData, setFormData] = useState({});
@@ -116,6 +147,11 @@ function Location(props) {
       <Row>
         <Col>
           <LocationCrashes locationId={locationId} />
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <LocationNonCR3Crashes locationId={locationId} />
         </Col>
       </Row>
     </div>

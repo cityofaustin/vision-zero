@@ -28,13 +28,6 @@ const FatalitiesMultiYear = () => {
 
   const thisYearUrl = `https://data.austintexas.gov/resource/y2wy-tgr5.json?$where=death_cnt > 0 AND crash_date between '${thisYear}-01-01T00:00:00' and '${lastMonthLastDayDate}T23:59:59'`;
 
-  const getFatalitiesByYearsAgoUrl = yearsAgo => {
-    let yearsAgoDate = moment()
-      .subtract(yearsAgo, "year")
-      .format("YYYY");
-    return `https://data.austintexas.gov/resource/y2wy-tgr5.json?$where=death_cnt > 0 AND crash_date between '${yearsAgoDate}-01-01T00:00:00' and '${yearsAgoDate}-12-31T23:59:59'`;
-  };
-
   const [thisYearDeathArray, setThisYearDeathArray] = useState([]);
   const [lastYearDeathArray, setLastYearDeathArray] = useState([]);
   const [twoYearsAgoDeathArray, setTwoYearsAgoDeathArray] = useState([]);
@@ -82,6 +75,13 @@ const FatalitiesMultiYear = () => {
   };
 
   useEffect(() => {
+    const getFatalitiesByYearsAgoUrl = yearsAgo => {
+      let yearsAgoDate = moment()
+        .subtract(yearsAgo, "year")
+        .format("YYYY");
+      return `https://data.austintexas.gov/resource/y2wy-tgr5.json?$where=death_cnt > 0 AND crash_date between '${yearsAgoDate}-01-01T00:00:00' and '${yearsAgoDate}-12-31T23:59:59'`;
+    };
+
     // Fetch records from this year through last month
     axios.get(thisYearUrl).then(res => {
       setThisYearDeathArray(calculateMonthlyTotals(res, lastMonthLastDayDate));
@@ -111,15 +111,7 @@ const FatalitiesMultiYear = () => {
     axios.get(getFatalitiesByYearsAgoUrl(5)).then(res => {
       setFiveYearsAgoDeathArray(calculateMonthlyTotals(res));
     });
-  }, [
-    thisYearUrl,
-    getFatalitiesByYearsAgoUrl(1),
-    getFatalitiesByYearsAgoUrl(2),
-    getFatalitiesByYearsAgoUrl(3),
-    getFatalitiesByYearsAgoUrl(4),
-    getFatalitiesByYearsAgoUrl(5),
-    lastMonthLastDayDate
-  ]);
+  }, []);
 
   const data = {
     labels: [
@@ -296,7 +288,9 @@ const FatalitiesMultiYear = () => {
         <Col md="2">
           <Row>
             <Col md="12">
-              <h6><strong>{calculateYearlyTotals(lastYearDeathArray)}</strong></h6>
+              <h6>
+                <strong>{calculateYearlyTotals(lastYearDeathArray)}</strong>
+              </h6>
             </Col>
           </Row>
           <Row>
@@ -308,7 +302,9 @@ const FatalitiesMultiYear = () => {
         <Col md="2">
           <Row>
             <Col md="12">
-              <h6><strong>{calculateYearlyTotals(twoYearsAgoDeathArray)}</strong></h6>
+              <h6>
+                <strong>{calculateYearlyTotals(twoYearsAgoDeathArray)}</strong>
+              </h6>
             </Col>
           </Row>
           <Row>
@@ -320,7 +316,11 @@ const FatalitiesMultiYear = () => {
         <Col md="2">
           <Row>
             <Col md="12">
-              <h6><strong>{calculateYearlyTotals(threeYearsAgoDeathArray)}</strong></h6>
+              <h6>
+                <strong>
+                  {calculateYearlyTotals(threeYearsAgoDeathArray)}
+                </strong>
+              </h6>
             </Col>
           </Row>
           <Row>
@@ -332,7 +332,9 @@ const FatalitiesMultiYear = () => {
         <Col md="2">
           <Row>
             <Col md="12">
-              <h6><strong>{calculateYearlyTotals(fourYearsAgoDeathArray)}</strong></h6>
+              <h6>
+                <strong>{calculateYearlyTotals(fourYearsAgoDeathArray)}</strong>
+              </h6>
             </Col>
           </Row>
           <Row>
@@ -344,7 +346,9 @@ const FatalitiesMultiYear = () => {
         <Col md="2">
           <Row>
             <Col md="12">
-              <h6><strong>{calculateYearlyTotals(fiveYearsAgoDeathArray)}</strong></h6>
+              <h6>
+                <strong>{calculateYearlyTotals(fiveYearsAgoDeathArray)}</strong>
+              </h6>
             </Col>
           </Row>
           <Row>

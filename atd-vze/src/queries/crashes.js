@@ -167,6 +167,7 @@ export const UPDATE_COORDS = gql`
     $geocodeProvider: Int
     $latitude: float8
     $longitude: float8
+    $updatedBy: String
   ) {
     update_atd_txdot_crashes(
       where: { crash_id: { _eq: $crashId } }
@@ -175,6 +176,7 @@ export const UPDATE_COORDS = gql`
         geocode_provider: $geocodeProvider
         latitude_primary: $latitude
         longitude_primary: $longitude
+        updated_by: $updatedBy
       }
     ) {
       returning {
@@ -278,15 +280,16 @@ export const UPDATE_CRASH = gql`
 `;
 
 export const crashQueryExportFields = `
+crash_id
+case_id
 active_school_zone_fl
+apd_confirmed_death_count
 approval_date
 approved_by
 at_intrsct_fl
-case_id
 city_id
 crash_date
 crash_fatal_fl
-crash_id
 crash_sev_id
 crash_speed_limit
 crash_time
@@ -345,6 +348,7 @@ rpt_street_sfx
 rpt_street_desc
 rr_relat_fl
 schl_bus_fl
+speed_mgmt_points
 street_name
 street_name_2
 street_nbr
@@ -355,7 +359,9 @@ tot_injry_cnt
 traffic_cntl_id
 unkn_injry_cnt
 updated_by
-wthr_cond_id`;
+wthr_cond_id
+units { body_style { veh_body_styl_desc } }
+units { unit_description { veh_unit_desc_desc } }`;
 
 export const locationCrashesQueryExportFields = `
 crash_id

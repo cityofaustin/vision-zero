@@ -1,0 +1,19 @@
+#
+# ATD Vision Zero Processor
+# An ETL Processor with atd-agol-util that uses Python 3.8
+#
+
+FROM python:3.8.0-slim-buster
+RUN mkdir /app && mkdir /app/tmp && mkdir /data
+
+RUN apt-get update && apt-get install -y bash p7zip
+RUN pip install requests awscli boto3 web-pdb sodapy atd-agol-util
+
+WORKDIR /app
+COPY app /app
+EXPOSE 5555/tcp
+CMD ["bash"]
+
+
+
+

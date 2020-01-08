@@ -36,6 +36,11 @@ const Dashboard = () => {
           <FatalitiesByTimeOfDayWeek />
         </Col>
       </Row>
+      <Row>
+        <Col md="6">
+          <FatalitiesByMode />
+        </Col>
+      </Row>
     </Container>
   );
 };

@@ -15,11 +15,14 @@ const locationDataMap = [
         editable: false,
         format: "datetime",
       },
-      est_comp_cost: {
-        label: "Estimated Comprehensive Cost",
-        // If data is nested in returned data object, define path in
-        //  lodash.get() format to expose in DataTable component
-        dataPath: ["crashes_count_cost_summary", "est_comp_cost"],
+      total_crashes: {
+        label: "Total Crashes (Previous 5 years)",
+        alternateTable: "locationTotals",
+        editable: false,
+      },
+      total_est_comp_cost: {
+        label: "Total Estimated Comprehensive Cost (Previous 5 years)",
+        alternateTable: "locationTotals",
         editable: false,
         format: "dollars",
       },

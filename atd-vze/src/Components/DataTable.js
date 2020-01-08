@@ -67,21 +67,28 @@ const DataTable = ({
 
                       const fieldLabel = fieldConfigObject.label;
 
+                      // Set data table (alternate if defined in data map)
+                      const fieldDataTable =
+                        fieldConfigObject.alternateTable || dataTable;
+
                       // If data is nested in data object, define path in dataMap
                       const nestedData =
                         fieldConfigObject.dataPath &&
-                        get(data[dataTable][0], fieldConfigObject.dataPath);
+                        get(
+                          data[fieldDataTable][0],
+                          fieldConfigObject.dataPath
+                        );
 
                       const formattedDollarValue =
                         fieldConfigObject.format === "dollars" &&
                         formatCostToDollars(
-                          nestedData || data[dataTable][0][field]
+                          nestedData || data[fieldDataTable][0][field]
                         );
 
                       const formatDateTimeValue =
                         fieldConfigObject.format === "datetime" &&
                         formatDateTimeString(
-                          nestedData || data[dataTable][0][field]
+                          nestedData || data[fieldDataTable][0][field]
                         );
 
                       const fieldValue =
@@ -89,7 +96,7 @@ const DataTable = ({
                         formatDateTimeValue ||
                         nestedData ||
                         (formData && formData[field.data]) ||
-                        data[dataTable][0][field];
+                        data[fieldDataTable][0][field];
 
                       const fieldUiType = fieldConfigObject.uiType;
 
@@ -99,22 +106,33 @@ const DataTable = ({
 
                       // If there is no lookup options, we can assume the field value can be displayed as is.
                       // If there is a lookup option, then the value is an ID to be referenced in a lookup table.
-                      const fieldValueDisplay =
-                        // make sure the value isn't null blank
-                        fieldValue &&
-                        // make sure there is a lookup object in the config
-                        !!fieldConfigObject.lookupOptions &&
-                        // make sure the config lookup object matches with lookup queries
-                        lookupSelectOptions[fieldConfigObject.lookupOptions]
-                          ? lookupSelectOptions[
-                              fieldConfigObject.lookupOptions
-                            ].find(
-                              item => item[`${lookupPrefix}_id`] === fieldValue
-                            )[`${lookupPrefix}_desc`]
-                          : fieldValue;
-
                       const selectOptions =
                         lookupSelectOptions[fieldConfigObject.lookupOptions];
+
+                      const renderLookupDescString = () => {
+                        // make sure the value isn't null blank
+                        if (!fieldValue) return "";
+
+                        // make sure there is a lookup object in the config
+                        if (!selectOptions || !fieldConfigObject.lookupOptions)
+                          return fieldValue;
+
+                        // make sure the config lookup object matches with lookup queries
+                        const matchingLookupObject = selectOptions.find(
+                          item => item[`${lookupPrefix}_id`] === fieldValue
+                        );
+
+                        if (!matchingLookupObject) {
+                          console.warn(
+                            `${field} has a value of ${fieldValue} which has no match in the related lookup table. You should check to make sure the lookup table isn't missing any rows of data.`
+                          );
+                          return `ID: ${fieldValue}`;
+                        } else {
+                          return matchingLookupObject[`${lookupPrefix}_desc`];
+                        }
+                      };
+
+                      const fieldValueDisplay = renderLookupDescString();
 
                       return (
                         <tr key={i}>

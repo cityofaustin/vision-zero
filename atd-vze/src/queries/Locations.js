@@ -1,7 +1,7 @@
 import { gql } from "apollo-boost";
 
 export const GET_LOCATION = gql`
-  query GetLocation($id: String) {
+  query GetLocation($id: String, $yearsAgoDate: date, $costPerCrash: numeric) {
     atd_txdot_locations(where: { location_id: { _eq: $id } }) {
       location_id
       address
@@ -17,76 +17,24 @@ export const GET_LOCATION = gql`
         collsn_desc
         count
       }
-      crashes_count_cost_summary {
-        est_comp_cost
-      }
     }
-    atd_txdot_crashes_aggregate(
-      where: {
-        city_id: { _eq: 22 }
-        location: { location_id: { _eq: $id } }
-        private_dr_fl: { _neq: "Y" }
+    locationTotals: get_location_totals(
+      args: {
+        cr3_crash_date: $yearsAgoDate
+        noncr3_location: $id
+        noncr3_crash_date: $yearsAgoDate
+        cr3_location: $id
+        cost_per_crash: $costPerCrash
       }
     ) {
-      aggregate {
-        count
-        sum {
-          apd_confirmed_death_count
-        }
-      }
+      total_crashes
+      total_est_comp_cost
+      noncr3_est_comp_cost
     }
-    atd_txdot_primaryperson_aggregate(
-      where: {
-        crash: {
-          city_id: { _eq: 22 }
-          location: { location_id: { _eq: $id } }
-          private_dr_fl: { _neq: "Y" }
-        }
-      }
+    nonCr3EstCompCost: atd_txdot__est_comp_cost(
+      where: { est_comp_cost_id: { _eq: 6 } }
     ) {
-      aggregate {
-        count
-        sum {
-          sus_serious_injry_cnt
-          years_of_life_lost
-        }
-      }
-    }
-    atd_txdot_person_aggregate(
-      where: {
-        crash: {
-          city_id: { _eq: 22 }
-          location: { location_id: { _eq: $id } }
-          private_dr_fl: { _neq: "Y" }
-        }
-      }
-    ) {
-      aggregate {
-        count
-        sum {
-          sus_serious_injry_cnt
-          years_of_life_lost
-        }
-      }
-    }
-    atd_txdot_units_aggregate(
-      where: {
-        crash: {
-          city_id: { _eq: 22 }
-          location: { location_id: { _eq: $id } }
-          private_dr_fl: { _neq: "Y" }
-        }
-      }
-    ) {
-      aggregate {
-        count
-      }
-    }
-    atd_txdot_locations(where: { location_id: { _eq: $id } }) {
-      crashes_by_veh_body_style {
-        veh_body_styl_desc
-        count
-      }
+      est_comp_cost_amount
     }
   }
 `;

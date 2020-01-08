@@ -40,10 +40,10 @@ export const crashGridTableColumns = {
     label_table: "Serious Injury Count",
     type: "Int",
   },
-  apd_confirmed_death_count: {
+  death_cnt: {
     searchable: false,
     sortable: true,
-    label_table: "APD Death Count",
+    label_table: "CRIS Death Count",
     type: "Date",
   },
   "collision { collsn_desc } ": {
@@ -66,35 +66,89 @@ export const crashGridTableColumns = {
   },
 };
 
+export const nonCR3CrashGridTableColumns = {
+  form_id: {
+    primary_key: false, // We say no here bc there is no page to link to
+    searchable: true,
+    sortable: true,
+    label_search: "Search by Crash Form ID",
+    label_table: "Crash Form ID",
+    type: "Int",
+  },
+  date: {
+    primary_key: false,
+    searchable: false,
+    sortable: true,
+    label_table: "Date",
+    type: "Date",
+  },
+  hour: {
+    primary_key: false,
+    searchable: false,
+    sortable: false,
+    label_table: "Hour of Day",
+    type: "Int",
+  },
+  address: {
+    primary_key: false,
+    searchable: false,
+    sortable: true,
+    label_search: "Search by Address",
+    label_table: "Address",
+    type: "String",
+  },
+  speed_mgmt_points: {
+    primary_key: false,
+    searchable: false,
+    sortable: true,
+    label_table: "Speed Management Points",
+    type: "Int",
+  },
+  est_comp_cost: {
+    primary_key: false,
+    searchable: false,
+    sortable: true,
+    label_table: "Est Comprehensive Cost",
+    type: "Int",
+  },
+  est_econ_cost: {
+    primary_key: false,
+    searchable: false,
+    sortable: true,
+    label_table: "Est Economic Cost",
+    type: "Int",
+  },
+};
+
 export const crashGridTableAdvancedFilters = {
   groupInjuries: {
     icon: "cab",
     label: "Deaths & Injuries",
     filters: [
       {
-        id: "dni_apd_deaths",
-        label: "APD Confirmed Deaths",
-        filter: {
-          where: [{ or: { apd_confirmed_death_count: "_gt: 0" } }],
-        },
-      },
-      {
         id: "dni_cris_deaths",
-        label: "CRIS Deaths",
+        label: "CRIS Fatality Crashes",
         filter: {
           where: [{ or: { death_cnt: "_gt: 0" } }],
         },
       },
       {
+        id: "dni_apd_deaths",
+        label: "APD Confirmed Fatality Crashes",
+        filter: {
+          where: [{ or: { apd_confirmed_death_count: "_gt: 0" } }],
+        },
+      },
+      {
         id: "dni_serious_injuries",
-        label: "Serious Injuries",
+        label: "Serious Injury Crashes",
         filter: {
           where: [{ or: { sus_serious_injry_cnt: "_gt: 0" } }],
         },
       },
       {
         id: "dni_non_fatal",
-        label: "Non-serious Injuries",
+        label: "Non-serious Injury Crashes",
         filter: {
           where: [{ or: { nonincap_injry_cnt: "_gt: 0" } }],
         },
