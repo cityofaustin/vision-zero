@@ -11,6 +11,7 @@ import {
 } from "reactstrap";
 import classnames from "classnames";
 import { Heatmap, HeatmapSeries } from "reaviz";
+import { colors } from "../../constants/colors";
 
 const FatalitiesByTimeOfDayWeek = () => {
   const [heatmapData, setHeatmapData] = useState([]);
@@ -135,7 +136,7 @@ const FatalitiesByTimeOfDayWeek = () => {
             height={200}
             width={400}
             data={heatmapData}
-            series={<HeatmapSeries colorScheme={["#fee5d9", "#fcae91", "#fb6a4a", "#de2d26", "#a50f15"]} />}
+            series={<HeatmapSeries colorScheme={[colors.redGradient1Of5, colors.redGradient2Of5, colors.redGradient3Of5, colors.redGradient4Of5, colors.redGradient5Of5]} />}
             />
       </Row>
       <Row>

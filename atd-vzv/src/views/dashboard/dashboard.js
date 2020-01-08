@@ -1,10 +1,10 @@
 import React from "react";
-import Fatalities from "./fatalities";
-import SeriousInjuries from "./seriousInjuries";
-import SeriousInjuryAndFatalCrashesByMonth from "./seriousInjuryAndFatalCrashesByMonth";
-import SeriousInjuryAndFatalCrashesByMode from "./seriousInjuryAndFatalCrashesByMode";
+import Fatalities from "./Fatalities";
+import SeriousInjuries from "./SeriousInjuries";
+import SeriousInjuryAndFatalCrashesByMonth from "./SeriousInjuryAndFatalCrashesByMonth";
+import SeriousInjuryAndFatalCrashesByMode from "./SeriousInjuryAndFatalCrashesByMode";
 import FatalitiesMultiYear from "./FatalitiesMultiYear";
-import FatalitiesByTimeOfDayWeek from "./fatalitiesByTimeOfDayWeek";
+import FatalitiesByTimeOfDayWeek from "./FatalitiesByTimeOfDayWeek";
 
 import { Container, Row, Col } from "reactstrap";
 
