@@ -12,9 +12,7 @@ import {
   faMotorcycle
 } from "@fortawesome/free-solid-svg-icons";
 
-// TODO: Merge parameters into one
 // TODO: Preserve Fatal or Serious Injury selection when selecting "All" in mode group
-// TODO: Merge click event handlers into one
 
 const SideMapControl = () => {
   const StyledCard = styled.div`
@@ -89,7 +87,7 @@ const SideMapControl = () => {
     }
   };
 
-  const handleFilterClick = (event, section) => {
+  const handleFilterClick = (event, filterSection) => {
     // Set filter or remove if already set
     const filterName = event.currentTarget.id;
 
@@ -99,7 +97,7 @@ const SideMapControl = () => {
       );
       setFilters(updatedFiltersArray);
     } else {
-      const filter = mapFilters[section][filterName];
+      const filter = mapFilters[filterSection][filterName];
       // Add filterName to object to ID filter when removing
       filter["name"] = filterName;
       const filtersArray = [...filters, filter];
@@ -111,33 +109,38 @@ const SideMapControl = () => {
     return !!filters.find(setFilter => setFilter.name === filterName);
   };
 
-  const isTypeFilterSet = filterName => {
-    return !!filters.find(setFilter => setFilter.name === filterName);
-  };
-
   return (
     <StyledCard>
       <div className="card-title">Traffic Crashes</div>
       <Card className="p-3 card-body">
+        {/* Create a button group for each section of mapFilters */}
         {Object.entries(mapFilters).map(([section, sectionParameters], i) => (
           <ButtonGroup className="mb-3" id={`${section}-buttons`}>
-            {Object.entries(sectionParameters).map(([k, v], i) => (
+            {/* Create buttons for each filter within a section of mapFilters */}
+            {Object.entries(sectionParameters).map(([name, parameter], i) => (
               <Button
                 key={i}
                 color="info"
+                // Use alternate handler if defined
                 onClick={
-                  v.handler
-                    ? v.handler
+                  parameter.handler
+                    ? parameter.handler
                     : event => handleFilterClick(event, section)
                 }
-                id={k}
-                active={v.active ? v.active : isFilterSet(k)}
-                outline={v.inactive ? v.inactive : !isFilterSet(k)}
+                id={name}
+                // Use alternate active/inactive method if defined
+                active={parameter.active ? parameter.active : isFilterSet(name)}
+                outline={
+                  parameter.inactive ? parameter.inactive : !isFilterSet(name)
+                }
               >
-                {v.icon && (
-                  <FontAwesomeIcon icon={v.icon} className="mr-1 ml-1" />
+                {parameter.icon && (
+                  <FontAwesomeIcon
+                    icon={parameter.icon}
+                    className="mr-1 ml-1"
+                  />
                 )}
-                {v.text}
+                {parameter.text}
               </Button>
             ))}
           </ButtonGroup>
