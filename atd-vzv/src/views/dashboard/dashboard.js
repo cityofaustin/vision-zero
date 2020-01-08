@@ -5,6 +5,7 @@ import SeriousInjuryAndFatalCrashesByMonth from "./SeriousInjuryAndFatalCrashesB
 import SeriousInjuryAndFatalCrashesByMode from "./SeriousInjuryAndFatalCrashesByMode";
 import FatalitiesMultiYear from "./FatalitiesMultiYear";
 import FatalitiesByTimeOfDayWeek from "./FatalitiesByTimeOfDayWeek";
+import FatalitiesByMode from "./FatalitiesByMode";
 
 import { Container, Row, Col } from "reactstrap";
 
