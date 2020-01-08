@@ -1,11 +1,11 @@
 import React from "react";
-import Fatalities from "./fatalities";
-import FatalitiesByMode from "./fatalitiesByMode";
-import SeriousInjuries from "./seriousInjuries";
-import SeriousInjuryAndFatalCrashesByMonth from "./seriousInjuryAndFatalCrashesByMonth";
-import SeriousInjuryAndFatalCrashesByMode from "./seriousInjuryAndFatalCrashesByMode";
-import YearsOfLifeLost from "./yearsOfLifeLost";
+import Fatalities from "./Fatalities";
+import SeriousInjuries from "./SeriousInjuries";
+import SeriousInjuryAndFatalCrashesByMonth from "./SeriousInjuryAndFatalCrashesByMonth";
+import SeriousInjuryAndFatalCrashesByMode from "./SeriousInjuryAndFatalCrashesByMode";
 import FatalitiesMultiYear from "./FatalitiesMultiYear";
+import FatalitiesByTimeOfDayWeek from "./FatalitiesByTimeOfDayWeek";
+import FatalitiesByMode from "./FatalitiesByMode";
 
 import { Container, Row, Col } from "reactstrap";
 
@@ -31,10 +31,10 @@ const Dashboard = () => {
       </Row>
       <Row>
         <Col md="6">
-          <YearsOfLifeLost />
+          <FatalitiesMultiYear />
         </Col>
         <Col md="6">
-          <FatalitiesMultiYear />
+          <FatalitiesByTimeOfDayWeek />
         </Col>
       </Row>
       <Row>

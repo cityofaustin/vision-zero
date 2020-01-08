@@ -16,3 +16,7 @@ a:focus {
   text-decoration: none;
   transition: all 0.3s;
 }
+
+div.Tooltip-module_tooltip__omIxd {
+  background: rgb(54, 51, 51);
+}

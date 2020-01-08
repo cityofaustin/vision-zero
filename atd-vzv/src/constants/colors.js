@@ -3,5 +3,11 @@ export const colors = {
   dark: "#2f353a",
   light: "#f0f3f5",
   secondary: "#c8ced3",
-  primary: "#20a8d8"
+  primary: "#20a8d8",
+  blue: "#08519c",
+  redGradient1Of5: "#fee5d9",
+  redGradient2Of5: "#fcae91",
+  redGradient3Of5: "#fb6a4a",
+  redGradient4Of5: "#de2d26",
+  redGradient5Of5: "#a50f15"
 };
