@@ -23,9 +23,12 @@ const SideMapControl = () => {
       color: ${colors.white};
     }
 
+    .section-title {
+      font-size: 1em;
+      color: ${colors.dark};
+    }
+
     .card-body {
-      diplay: flex;
-      align-items: center;
       background-color: ${colors.white};
     }
   `;
@@ -72,15 +75,15 @@ const SideMapControl = () => {
       }
     },
     type: {
-      fatal: {
-        text: `Fatal`,
-        syntax: `death_cnt > 0`,
+      seriousInjury: {
+        text: `Injury`,
+        syntax: `sus_serious_injry_cnt > 0`,
         type: `where`,
         operator: `AND`
       },
-      seriousInjury: {
-        text: `Serious Injury`,
-        syntax: `sus_serious_injry_cnt > 0`,
+      fatal: {
+        text: `Fatal`,
+        syntax: `death_cnt > 0`,
         type: `where`,
         operator: `AND`
       }
@@ -113,14 +116,20 @@ const SideMapControl = () => {
     <StyledCard>
       <div className="card-title">Traffic Crashes</div>
       <Card className="p-3 card-body">
+        <Label className="section-title">Filters</Label>
         {/* Create a button group for each section of mapFilters */}
         {Object.entries(mapFilters).map(([section, sectionParameters], i) => (
-          <ButtonGroup className="mb-3" id={`${section}-buttons`}>
+          <ButtonGroup
+            key={i}
+            className="mb-3 d-flex"
+            id={`${section}-buttons`}
+          >
             {/* Create buttons for each filter within a section of mapFilters */}
             {Object.entries(sectionParameters).map(([name, parameter], i) => (
               <Button
                 key={i}
                 color="info"
+                className="w-100 pt-1 pb-1 pl-0 pr-0"
                 // Use alternate handler if defined
                 onClick={
                   parameter.handler
