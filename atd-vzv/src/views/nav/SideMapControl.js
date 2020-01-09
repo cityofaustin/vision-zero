@@ -41,6 +41,7 @@ const SideMapControl = () => {
     setFilters([]);
   };
 
+  // Define groups of map filters
   const mapFilters = {
     mode: {
       pedestrian: {
@@ -90,7 +91,7 @@ const SideMapControl = () => {
     }
   };
 
-  const handleFilterClick = (event, filterSection) => {
+  const handleFilterClick = (event, filterGroup) => {
     // Set filter or remove if already set
     const filterName = event.currentTarget.id;
 
@@ -100,10 +101,10 @@ const SideMapControl = () => {
       );
       setFilters(updatedFiltersArray);
     } else {
-      const filter = mapFilters[filterSection][filterName];
+      const filter = mapFilters[filterGroup][filterName];
       // Add filterName to object to ID filter when removing
       filter["name"] = filterName;
-      filter["section"] = filterSection;
+      filter["group"] = filterGroup;
       const filtersArray = [...filters, filter];
       setFilters(filtersArray);
     }
@@ -118,15 +119,11 @@ const SideMapControl = () => {
       <div className="card-title">Traffic Crashes</div>
       <Card className="p-3 card-body">
         <Label className="section-title">Filters</Label>
-        {/* Create a button group for each section of mapFilters */}
-        {Object.entries(mapFilters).map(([section, sectionParameters], i) => (
-          <ButtonGroup
-            key={i}
-            className="mb-3 d-flex"
-            id={`${section}-buttons`}
-          >
-            {/* Create buttons for each filter within a section of mapFilters */}
-            {Object.entries(sectionParameters).map(([name, parameter], i) => (
+        {/* Create a button group for each group of mapFilters */}
+        {Object.entries(mapFilters).map(([group, groupParameters], i) => (
+          <ButtonGroup key={i} className="mb-3 d-flex" id={`${group}-buttons`}>
+            {/* Create buttons for each filter within a group of mapFilters */}
+            {Object.entries(groupParameters).map(([name, parameter], i) => (
               <Button
                 key={i}
                 id={name}
@@ -136,7 +133,7 @@ const SideMapControl = () => {
                 onClick={
                   parameter.handler
                     ? parameter.handler
-                    : event => handleFilterClick(event, section)
+                    : event => handleFilterClick(event, group)
                 }
                 // Use alternate active/inactive method if defined
                 active={parameter.active ? parameter.active : isFilterSet(name)}
