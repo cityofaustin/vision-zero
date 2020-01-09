@@ -141,7 +141,7 @@ const SideMapControl = () => {
                     ? event => parameter.handler(event, group)
                     : event => handleFilterClick(event, group)
                 }
-                // Use alternate active/inactive method if defined
+                // Use alternate active/inactive fn if defined
                 active={
                   parameter.active ? parameter.active(group) : isFilterSet(name)
                 }
