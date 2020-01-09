@@ -1,12 +1,27 @@
 const generateWhereFilters = filters => {
   // TODO: Collect filters with same section and create groups
-  let whereFilterString = "(";
-  filters.forEach(filter => {
-    if (filter.type === "where") {
-      whereFilterString += ` ${filter.operator} ${filter.syntax}`;
-    }
+  let whereFiltersArray = [];
+  // Collect filter sections and remove duplicates
+  const sectionsArray = [...new Set(filters.map(filter => filter.section))];
+
+  sectionsArray.forEach(section => {
+    // For each section, create a string
+    let sectionFilterString = "(";
+    let filterCount = 0;
+    filters.forEach(filter => {
+      if (section === filter.section) {
+        if (filterCount === 0) {
+          sectionFilterString += `${filter.syntax}`;
+        } else {
+          sectionFilterString += ` ${filter.operator} ${filter.syntax}`;
+        }
+        filterCount += 1;
+      }
+    });
+    sectionFilterString += ")";
+    whereFiltersArray.push(sectionFilterString);
   });
-  return whereFilterString + `)`;
+  return whereFiltersArray.join(" AND ");
 };
 
 export const createMapDataUrl = filters => {
@@ -19,7 +34,7 @@ export const createMapDataUrl = filters => {
   return (
     `https://data.austintexas.gov/resource/y2wy-tgr5.geojson?$limit=1000` +
     `&$where=crash_date between '2019-01-01T00:00:00' and '2019-12-07T23:59:59'` +
-    `${filters.length > 0 && "AND"} ${whereFilterString}`
+    `${filters.length > 0 ? "AND" : ""} ${whereFilterString || ""}`
   );
 };
 

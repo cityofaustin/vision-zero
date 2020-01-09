@@ -103,6 +103,7 @@ const SideMapControl = () => {
       const filter = mapFilters[filterSection][filterName];
       // Add filterName to object to ID filter when removing
       filter["name"] = filterName;
+      filter["section"] = filterSection;
       const filtersArray = [...filters, filter];
       setFilters(filtersArray);
     }
