@@ -14,25 +14,25 @@ import {
 
 // TODO: Preserve Fatal or Serious Injury selection when selecting "All" in mode group
 
+const StyledCard = styled.div`
+  font-size: 1.2em;
+
+  .card-title {
+    font-weight: bold;
+    color: ${colors.white};
+  }
+
+  .section-title {
+    font-size: 1em;
+    color: ${colors.dark};
+  }
+
+  .card-body {
+    background-color: ${colors.white};
+  }
+`;
+
 const SideMapControl = () => {
-  const StyledCard = styled.div`
-    font-size: 1.2em;
-
-    .card-title {
-      font-weight: bold;
-      color: ${colors.white};
-    }
-
-    .section-title {
-      font-size: 1em;
-      color: ${colors.dark};
-    }
-
-    .card-body {
-      background-color: ${colors.white};
-    }
-  `;
-
   const {
     mapFilters: [filters, setFilters]
   } = React.useContext(StoreContext);
@@ -128,6 +128,7 @@ const SideMapControl = () => {
             {Object.entries(sectionParameters).map(([name, parameter], i) => (
               <Button
                 key={i}
+                id={name}
                 color="info"
                 className="w-100 pt-1 pb-1 pl-0 pr-0"
                 // Use alternate handler if defined
@@ -136,7 +137,6 @@ const SideMapControl = () => {
                     ? parameter.handler
                     : event => handleFilterClick(event, section)
                 }
-                id={name}
                 // Use alternate active/inactive method if defined
                 active={parameter.active ? parameter.active : isFilterSet(name)}
                 outline={
