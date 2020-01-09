@@ -12,8 +12,6 @@ import {
   faMotorcycle
 } from "@fortawesome/free-solid-svg-icons";
 
-// TODO: Preserve Fatal or Serious Injury selection when selecting "All" in mode group
-
 const StyledCard = styled.div`
   font-size: 1.2em;
 
@@ -37,8 +35,16 @@ const SideMapControl = () => {
     mapFilters: [filters, setFilters]
   } = React.useContext(StoreContext);
 
-  const handleAllFiltersClick = () => {
-    setFilters([]);
+  // Clear all filters that match group arg
+  const handleAllFiltersClick = (event, group) => {
+    const keepFilters = filters.filter(filter => filter.group !== group);
+    setFilters(keepFilters);
+  };
+
+  // Determine if no filters in a group are applied (used for "All" buttons active/inactive state)
+  const isUnfiltered = group => {
+    const result = filters.filter(filter => filter.group === group);
+    return result.length === 0;
   };
 
   // Define groups of map filters
@@ -71,8 +77,8 @@ const SideMapControl = () => {
       all: {
         text: "All",
         handler: handleAllFiltersClick,
-        active: filters.length === 0,
-        inactive: filters.length !== 0
+        active: isUnfiltered,
+        inactive: isUnfiltered
       }
     },
     type: {
@@ -102,7 +108,7 @@ const SideMapControl = () => {
       setFilters(updatedFiltersArray);
     } else {
       const filter = mapFilters[filterGroup][filterName];
-      // Add filterName to object to ID filter when removing
+      // Add filterName and group to object for IDing and grouping
       filter["name"] = filterName;
       filter["group"] = filterGroup;
       const filtersArray = [...filters, filter];
@@ -132,13 +138,17 @@ const SideMapControl = () => {
                 // Use alternate handler if defined
                 onClick={
                   parameter.handler
-                    ? parameter.handler
+                    ? event => parameter.handler(event, group)
                     : event => handleFilterClick(event, group)
                 }
                 // Use alternate active/inactive method if defined
-                active={parameter.active ? parameter.active : isFilterSet(name)}
+                active={
+                  parameter.active ? parameter.active(group) : isFilterSet(name)
+                }
                 outline={
-                  parameter.inactive ? parameter.inactive : !isFilterSet(name)
+                  parameter.inactive
+                    ? !parameter.inactive(group)
+                    : !isFilterSet(name)
                 }
               >
                 {parameter.icon && (
