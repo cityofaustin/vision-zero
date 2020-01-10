@@ -19,12 +19,16 @@ const locationDataMap = [
         label: "Total Crashes (Previous 5 years)",
         alternateTable: "locationTotals",
         editable: false,
+        // Set default value in case of no crashes in previous n years
+        defaultValue: "0",
       },
       total_est_comp_cost: {
         label: "Total Estimated Comprehensive Cost (Previous 5 years)",
         alternateTable: "locationTotals",
         editable: false,
         format: "dollars",
+        // Set default value in case of no crashes in previous n years
+        defaultValue: "0",
       },
       asmp_street_level: {
         label: "ASMP Street Level",
