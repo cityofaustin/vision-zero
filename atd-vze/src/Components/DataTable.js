@@ -82,9 +82,7 @@ const DataTable = ({
                       const formattedDollarValue =
                         fieldConfigObject.format === "dollars" &&
                         formatCostToDollars(
-                          nestedData ||
-                            (data[fieldDataTable].length > 0 &&
-                              data[fieldDataTable][0][field])
+                          nestedData || data[fieldDataTable][0][field]
                         );
 
                       const formatDateTimeValue =
@@ -98,8 +96,7 @@ const DataTable = ({
                         formatDateTimeValue ||
                         nestedData ||
                         (formData && formData[field.data]) ||
-                        (data[fieldDataTable].length > 0 &&
-                          data[fieldDataTable][0][field]);
+                        data[fieldDataTable][0][field];
 
                       const fieldUiType = fieldConfigObject.uiType;
 
