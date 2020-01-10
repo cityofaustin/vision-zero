@@ -1,8 +1,8 @@
 import React from "react";
-import Dashboard from "../views/dashboard/dashboard";
-import Map from "../views/map/map";
+import Summary from "../views/summary/Summary";
+import Map from "../views/map/Map";
 
 export const routes = {
-  "/charts": () => <Dashboard />,
+  "/summary": () => <Summary />,
   "/map": () => <Map />
 };

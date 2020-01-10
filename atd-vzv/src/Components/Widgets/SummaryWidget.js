@@ -48,7 +48,7 @@ const SummaryWidget = ({ total, text, icon, backgroundColor }) => {
     <StyledWidget>
       <Card>
         <CardBody>
-          <Row className="mb-2">
+          <Row>
             {/* Set Bootstrap breakpoints to prevent overlap of icon and total */}
             <Col xl="4" xs="3">
               {blockIcon()}

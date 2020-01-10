@@ -3,7 +3,8 @@ import axios from "axios";
 import moment from "moment";
 import { Bar } from "react-chartjs-2";
 
-import { Container, Row, Col } from "reactstrap";
+import { Container } from "reactstrap";
+import { thisYear } from "./helpers/time";
 
 const FatalitiesByMode = () => {
   // Define stacked bar chart properties in order of stack
@@ -13,7 +14,6 @@ const FatalitiesByMode = () => {
     { label: "Motorcycle", flag: "motorcycle_fl", color: "#de2d26" },
     { label: "Pedalcyclist", flag: "pedalcyclist_fl", color: "#08519c" }
   ];
-  const thisYear = moment().format("YYYY");
   const yearLimit = 10; // Number of years to display in chart
   const yearsArray = (() => {
     let years = [];
@@ -90,32 +90,25 @@ const FatalitiesByMode = () => {
 
   return (
     <Container>
-      <h3 className="text-center">Fatalities by Mode</h3>
-      <Row>
-        <Col sm="12">
-          <Bar
-            data={data}
-            width={100}
-            height={100}
-            options={{
-              maintainAspectRatio: true,
-              scales: {
-                xAxes: [
-                  {
-                    stacked: true
-                  }
-                ],
-                yAxes: [
-                  {
-                    stacked: true
-                  }
-                ]
+      <Bar
+        data={data}
+        options={{
+          maintainAspectRatio: true,
+          scales: {
+            xAxes: [
+              {
+                stacked: true
               }
-            }}
-          />
-          <p className="text-center">Data Through: {latestRecordDate}</p>
-        </Col>
-      </Row>
+            ],
+            yAxes: [
+              {
+                stacked: true
+              }
+            ]
+          }
+        }}
+      />
+      <p className="text-center">Data Through: {latestRecordDate}</p>
     </Container>
   );
 };

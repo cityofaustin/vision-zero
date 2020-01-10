@@ -132,7 +132,6 @@ const SeriousInjuryAndFatalCrashesByMonth = () => {
 
   return (
     <Container>
-      <h3>Serious Injury + Fatal Crashes by Month</h3>
       <Line data={data} />
     </Container>
   );

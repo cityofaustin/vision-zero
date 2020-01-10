@@ -137,7 +137,6 @@ const YearsOfLifeLost = () => {
 
   return (
     <Container>
-      <h3>Year-to-Date Years of Life Lost</h3>
       <Row>
         <Col>
           <Line

@@ -8,3 +8,4 @@ export const yearsOfLifeLostYTDUrl = `https://data.austintexas.gov/resource/xecs
 
 // Previous year queries
 export const previousYearFatalitiesUrl = `https://data.austintexas.gov/resource/y2wy-tgr5.json?$where=death_cnt > 0 AND crash_date between '${lastYear}-01-01T00:00:00' and '${lastYear}${todayMonthYear}T23:59:59'`;
+export const previousYearSeriousInjuriesUrl = `https://data.austintexas.gov/resource/y2wy-tgr5.json?$where=sus_serious_injry_cnt > 0 AND crash_date between '${lastYear}-01-01T00:00:00' and '${lastYear}${todayMonthYear}T23:59:59'`;
