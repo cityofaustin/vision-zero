@@ -38,16 +38,16 @@ function VZDashboard() {
   const seriousInjuriesYTD = seriousInjuryCount;
   const crashesYTD = crashesCount;
 
-  function commaSeparator(number) {
-    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-  }
+  // Widget02 expects a string value, DB returns number or null
+  const commaSeparator = number =>
+    number === null ? "0" : number.toLocaleString();
 
   return (
     <div className="animated fadeIn">
       <Row>
         <Col xs="12" sm="6" md="4">
           <Widget02
-            header={commaSeparator(`${yearsOfLifeLostYTD}`)}
+            header={commaSeparator(yearsOfLifeLostYTD)}
             mainText={`Years of life lost in ${year}`}
             icon="fa fa-hourglass-end"
             color="info"
@@ -55,7 +55,7 @@ function VZDashboard() {
         </Col>
         <Col xs="12" sm="6" md="4">
           <Widget02
-            header={commaSeparator(`${fatalitiesYTD}`)}
+            header={commaSeparator(fatalitiesYTD)}
             mainText={`Fatalities in ${year}`}
             icon="fa fa-heartbeat"
             color="danger"
@@ -63,7 +63,7 @@ function VZDashboard() {
         </Col>
         <Col xs="12" sm="6" md="4">
           <Widget02
-            header={commaSeparator(`${seriousInjuriesYTD}`)}
+            header={commaSeparator(seriousInjuriesYTD)}
             mainText={`Serious injuries in ${year}`}
             icon="fa fa-medkit"
             color="info"
@@ -71,7 +71,7 @@ function VZDashboard() {
         </Col>
         <Col xs="12" sm="6" md="4">
           <Widget02
-            header={commaSeparator(`${crashesYTD}`)}
+            header={commaSeparator(crashesYTD)}
             mainText={`Crashes in ${year}`}
             icon="fa fa-car"
             color="warning"
