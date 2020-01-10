@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import SideDrawer from "./views/nav/sidedrawer";
-import Content from "./views/content/content";
+import SideDrawer from "./views/nav/SideDrawer";
+import Content from "./views/content/Content";
 
 import "./App.css";
 
