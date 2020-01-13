@@ -13,6 +13,7 @@ import {
 let queryConf = {
   table: "atd_txdot_crashes",
   single_item: "crashes",
+  showDateRange: true,
   columns: crashGridTableColumns,
   order_by: {},
   where: {

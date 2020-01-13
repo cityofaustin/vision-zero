@@ -24,10 +24,13 @@ function VZDashboard() {
     years_of_life_lost: yearsOfLifeLostPerson,
   } = data.atd_txdot_person_aggregate.aggregate.sum;
   const {
-    apd_confirmed_death_count: deathCount,
     sus_serious_injry_cnt: seriousInjuryCount,
-  } = data.atd_txdot_crashes_aggregate.aggregate.sum;
-  const { count: crashesCount } = data.atd_txdot_crashes_aggregate.aggregate;
+  } = data.seriousInjuriesAndTotal.aggregate.sum;
+  const {
+    apd_confirmed_death_count: deathCount,
+  } = data.fatalities.aggregate.sum;
+
+  const { count: crashesCount } = data.seriousInjuriesAndTotal.aggregate;
 
   const yearsOfLifeLostYTD =
     yearsOfLifeLostPrimaryPerson + yearsOfLifeLostPerson;
@@ -35,16 +38,16 @@ function VZDashboard() {
   const seriousInjuriesYTD = seriousInjuryCount;
   const crashesYTD = crashesCount;
 
-  function commaSeparator(number) {
-    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-  }
+  // Widget02 expects a string value, DB returns number or null
+  const commaSeparator = number =>
+    number === null ? "0" : number.toLocaleString();
 
   return (
     <div className="animated fadeIn">
       <Row>
         <Col xs="12" sm="6" md="4">
           <Widget02
-            header={commaSeparator(`${yearsOfLifeLostYTD}`)}
+            header={commaSeparator(yearsOfLifeLostYTD)}
             mainText={`Years of life lost in ${year}`}
             icon="fa fa-hourglass-end"
             color="info"
@@ -52,7 +55,7 @@ function VZDashboard() {
         </Col>
         <Col xs="12" sm="6" md="4">
           <Widget02
-            header={commaSeparator(`${fatalitiesYTD}`)}
+            header={commaSeparator(fatalitiesYTD)}
             mainText={`Fatalities in ${year}`}
             icon="fa fa-heartbeat"
             color="danger"
@@ -60,7 +63,7 @@ function VZDashboard() {
         </Col>
         <Col xs="12" sm="6" md="4">
           <Widget02
-            header={commaSeparator(`${seriousInjuriesYTD}`)}
+            header={commaSeparator(seriousInjuriesYTD)}
             mainText={`Serious injuries in ${year}`}
             icon="fa fa-medkit"
             color="info"
@@ -68,7 +71,7 @@ function VZDashboard() {
         </Col>
         <Col xs="12" sm="6" md="4">
           <Widget02
-            header={commaSeparator(`${crashesYTD}`)}
+            header={commaSeparator(crashesYTD)}
             mainText={`Crashes in ${year}`}
             icon="fa fa-car"
             color="warning"

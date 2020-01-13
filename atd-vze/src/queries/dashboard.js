@@ -2,7 +2,7 @@ import { gql } from "apollo-boost";
 
 export const GET_CRASHES_YTD = gql`
   query GetCrashesYTD($yearStart: date, $yearEnd: date) {
-    atd_txdot_crashes_aggregate(
+    fatalities: atd_txdot_crashes_aggregate(
       where: {
         city_id: { _eq: 22 }
         crash_date: { _gte: $yearStart, _lte: $yearEnd }
@@ -11,9 +11,21 @@ export const GET_CRASHES_YTD = gql`
       }
     ) {
       aggregate {
-        count
         sum {
           apd_confirmed_death_count
+        }
+      }
+    }
+    seriousInjuriesAndTotal: atd_txdot_crashes_aggregate(
+      where: {
+        city_id: { _eq: 22 }
+        crash_date: { _gte: $yearStart, _lte: $yearEnd }
+        private_dr_fl: { _neq: "Y" }
+      }
+    ) {
+      aggregate {
+        count
+        sum {
           sus_serious_injry_cnt
         }
       }

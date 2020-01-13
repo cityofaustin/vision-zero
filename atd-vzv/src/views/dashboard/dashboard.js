@@ -1,28 +1,17 @@
 import React from "react";
-import Fatalities from "./fatalities";
-import SeriousInjuries from "./seriousInjuries";
-import SeriousInjuryAndFatalCrashesByMonth from "./seriousInjuryAndFatalCrashesByMonth";
-import SeriousInjuryAndFatalCrashesByMode from "./seriousInjuryAndFatalCrashesByMode";
-import YearsOfLifeLost from "./yearsOfLifeLost";
+import Fatalities from "./Fatalities";
+import SeriousInjuries from "./SeriousInjuries";
+import SeriousInjuryAndFatalCrashesByMonth from "./SeriousInjuryAndFatalCrashesByMonth";
+import SeriousInjuryAndFatalCrashesByMode from "./SeriousInjuryAndFatalCrashesByMode";
 import FatalitiesMultiYear from "./FatalitiesMultiYear";
+import FatalitiesByTimeOfDayWeek from "./FatalitiesByTimeOfDayWeek";
+import FatalitiesByMode from "./FatalitiesByMode";
 
-import { Container, Row, Col, Alert } from "reactstrap";
+import { Container, Row, Col } from "reactstrap";
 
 const Dashboard = () => {
   return (
     <Container fluid>
-      <Row>
-        <Col md="12">
-          <Alert color="primary">
-            <h4 className="alert-heading">This site is a work in progress.</h4>
-            <p>
-              The information displayed below may be outdated or incorrent.
-              <br></br>
-              Check back later for live Vision Zero data.
-            </p>
-          </Alert>
-        </Col>
-      </Row>
       <Row>
         <Col md="6">
           <Fatalities />
@@ -42,10 +31,15 @@ const Dashboard = () => {
       </Row>
       <Row>
         <Col md="6">
-          <YearsOfLifeLost />
+          <FatalitiesMultiYear />
         </Col>
         <Col md="6">
-          <FatalitiesMultiYear />
+          <FatalitiesByTimeOfDayWeek />
+        </Col>
+      </Row>
+      <Row>
+        <Col md="6">
+          <FatalitiesByMode />
         </Col>
       </Row>
     </Container>

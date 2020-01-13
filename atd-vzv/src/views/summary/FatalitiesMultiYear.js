@@ -3,8 +3,8 @@ import axios from "axios";
 import moment from "moment";
 
 import { Line } from "react-chartjs-2";
-
 import { Container, Row, Col } from "reactstrap";
+import { colors } from "../../constants/colors";
 
 const FatalitiesMultiYear = () => {
   const thisYear = moment().format("YYYY");
@@ -27,13 +27,6 @@ const FatalitiesMultiYear = () => {
   };
 
   const thisYearUrl = `https://data.austintexas.gov/resource/y2wy-tgr5.json?$where=death_cnt > 0 AND crash_date between '${thisYear}-01-01T00:00:00' and '${lastMonthLastDayDate}T23:59:59'`;
-
-  const getFatalitiesByYearsAgoUrl = yearsAgo => {
-    let yearsAgoDate = moment()
-      .subtract(yearsAgo, "year")
-      .format("YYYY");
-    return `https://data.austintexas.gov/resource/y2wy-tgr5.json?$where=death_cnt > 0 AND crash_date between '${yearsAgoDate}-01-01T00:00:00' and '${yearsAgoDate}-12-31T23:59:59'`;
-  };
 
   const [thisYearDeathArray, setThisYearDeathArray] = useState([]);
   const [lastYearDeathArray, setLastYearDeathArray] = useState([]);
@@ -82,6 +75,13 @@ const FatalitiesMultiYear = () => {
   };
 
   useEffect(() => {
+    const getFatalitiesByYearsAgoUrl = yearsAgo => {
+      let yearsAgoDate = moment()
+        .subtract(yearsAgo, "year")
+        .format("YYYY");
+      return `https://data.austintexas.gov/resource/y2wy-tgr5.json?$where=death_cnt > 0 AND crash_date between '${yearsAgoDate}-01-01T00:00:00' and '${yearsAgoDate}-12-31T23:59:59'`;
+    };
+
     // Fetch records from this year through last month
     axios.get(thisYearUrl).then(res => {
       setThisYearDeathArray(calculateMonthlyTotals(res, lastMonthLastDayDate));
@@ -111,15 +111,7 @@ const FatalitiesMultiYear = () => {
     axios.get(getFatalitiesByYearsAgoUrl(5)).then(res => {
       setFiveYearsAgoDeathArray(calculateMonthlyTotals(res));
     });
-  }, [
-    thisYearUrl,
-    getFatalitiesByYearsAgoUrl(1),
-    getFatalitiesByYearsAgoUrl(2),
-    getFatalitiesByYearsAgoUrl(3),
-    getFatalitiesByYearsAgoUrl(4),
-    getFatalitiesByYearsAgoUrl(5),
-    lastMonthLastDayDate
-  ]);
+  }, []);
 
   const data = {
     labels: [
@@ -141,18 +133,18 @@ const FatalitiesMultiYear = () => {
         label: `${thisYear}`,
         fill: false,
         lineTension: 0.1,
-        backgroundColor: "#08519c", // Legend box
-        borderColor: "#08519c",
+        backgroundColor: colors.blue, // Legend box
+        borderColor: colors.blue,
         borderCapStyle: "butt",
         borderDash: [],
         borderDashOffset: 0.0,
         borderJoinStyle: "miter",
-        pointBorderColor: "#08519c",
-        pointBackgroundColor: "#08519c",
+        pointBorderColor: colors.blue,
+        pointBackgroundColor: colors.blue,
         pointBorderWidth: 1,
         pointHoverRadius: 5,
-        pointHoverBackgroundColor: "#08519c",
-        pointHoverBorderColor: "#08519c",
+        pointHoverBackgroundColor: colors.blue,
+        pointHoverBorderColor: colors.blue,
         pointHoverBorderWidth: 2,
         pointRadius: 1,
         pointHitRadius: 10,
@@ -162,18 +154,18 @@ const FatalitiesMultiYear = () => {
         label: `${getYearsAgoLabel(1)}`,
         fill: false,
         lineTension: 0.1,
-        backgroundColor: "#a50f15", // Legend box
-        borderColor: "#a50f15",
+        backgroundColor: colors.redGradient5Of5, // Legend box
+        borderColor: colors.redGradient5Of5,
         borderCapStyle: "butt",
         borderDash: [],
         borderDashOffset: 0.0,
         borderJoinStyle: "miter",
-        pointBorderColor: "#a50f15",
-        pointBackgroundColor: "#a50f15",
+        pointBorderColor: colors.redGradient5Of5,
+        pointBackgroundColor: colors.redGradient5Of5,
         pointBorderWidth: 1,
         pointHoverRadius: 5,
-        pointHoverBackgroundColor: "#a50f15",
-        pointHoverBorderColor: "#a50f15",
+        pointHoverBackgroundColor: colors.redGradient5Of5,
+        pointHoverBorderColor: colors.redGradient5Of5,
         pointHoverBorderWidth: 2,
         pointRadius: 1,
         pointHitRadius: 10,
@@ -183,18 +175,18 @@ const FatalitiesMultiYear = () => {
         label: `${getYearsAgoLabel(2)}`,
         fill: false,
         lineTension: 0.1,
-        backgroundColor: "#de2d26", // Legend box
-        borderColor: "	#de2d26",
+        backgroundColor: colors.redGradient4Of5, // Legend box
+        borderColor: colors.redGradient4Of5,
         borderCapStyle: "butt",
         borderDash: [],
         borderDashOffset: 0.0,
         borderJoinStyle: "miter",
-        pointBorderColor: "	#de2d26",
-        pointBackgroundColor: "#fff",
+        pointBorderColor: colors.redGradient4Of5,
+        pointBackgroundColor: colors.redGradient4Of5,
         pointBorderWidth: 1,
         pointHoverRadius: 5,
-        pointHoverBackgroundColor: "#de2d26",
-        pointHoverBorderColor: "#de2d26",
+        pointHoverBackgroundColor: colors.redGradient4Of5,
+        pointHoverBorderColor: colors.redGradient4Of5,
         pointHoverBorderWidth: 2,
         pointRadius: 1,
         pointHitRadius: 10,
@@ -204,18 +196,18 @@ const FatalitiesMultiYear = () => {
         label: `${getYearsAgoLabel(3)}`,
         fill: false,
         lineTension: 0.1,
-        backgroundColor: "#fb6a4a", // Legend box
-        borderColor: "#fb6a4a",
+        backgroundColor: colors.redGradient3Of5, // Legend box
+        borderColor: colors.redGradient3Of5,
         borderCapStyle: "butt",
         borderDash: [],
         borderDashOffset: 0.0,
         borderJoinStyle: "miter",
-        pointBorderColor: "#fb6a4a",
-        pointBackgroundColor: "#fff",
+        pointBorderColor: colors.redGradient3Of5,
+        pointBackgroundColor: colors.redGradient3Of5,
         pointBorderWidth: 1,
         pointHoverRadius: 5,
-        pointHoverBackgroundColor: "#fb6a4a",
-        pointHoverBorderColor: "#fb6a4a",
+        pointHoverBackgroundColor: colors.redGradient3Of5,
+        pointHoverBorderColor: colors.redGradient3Of5,
         pointHoverBorderWidth: 2,
         pointRadius: 1,
         pointHitRadius: 10,
@@ -225,18 +217,18 @@ const FatalitiesMultiYear = () => {
         label: `${getYearsAgoLabel(4)}`,
         fill: false,
         lineTension: 0.1,
-        backgroundColor: "#fcae91", // Legend box
-        borderColor: "#fcae91",
+        backgroundColor: colors.redGradient2Of5, // Legend box
+        borderColor: colors.redGradient2Of5,
         borderCapStyle: "butt",
         borderDash: [],
         borderDashOffset: 0.0,
         borderJoinStyle: "miter",
-        pointBorderColor: "#fcae91",
-        pointBackgroundColor: "#fcae91",
+        pointBorderColor: colors.redGradient2Of5,
+        pointBackgroundColor: colors.redGradient2Of5,
         pointBorderWidth: 1,
         pointHoverRadius: 5,
-        pointHoverBackgroundColor: "#fcae91",
-        pointHoverBorderColor: "#fcae91",
+        pointHoverBackgroundColor: colors.redGradient2Of5,
+        pointHoverBorderColor: colors.redGradient2Of5,
         pointHoverBorderWidth: 2,
         pointRadius: 1,
         pointHitRadius: 10,
@@ -246,18 +238,18 @@ const FatalitiesMultiYear = () => {
         label: `${getYearsAgoLabel(5)}`,
         fill: false,
         lineTension: 0.1,
-        backgroundColor: "#fee5d9", // Legend box
-        borderColor: "#fee5d9",
+        backgroundColor: colors.redGradient1Of5, // Legend box
+        borderColor: colors.redGradient1Of5,
         borderCapStyle: "butt",
         borderDash: [],
         borderDashOffset: 0.0,
         borderJoinStyle: "miter",
-        pointBorderColor: "#fee5d9",
-        pointBackgroundColor: "#fee5d9",
+        pointBorderColor: colors.redGradient1Of5,
+        pointBackgroundColor: colors.redGradient1Of5,
         pointBorderWidth: 1,
         pointHoverRadius: 5,
-        pointHoverBackgroundColor: "#fee5d9",
-        pointHoverBorderColor: "#fee5d9",
+        pointHoverBackgroundColor: colors.redGradient1Of5,
+        pointHoverBorderColor: colors.redGradient1Of5,
         pointHoverBorderWidth: 2,
         pointRadius: 1,
         pointHitRadius: 10,
@@ -269,13 +261,8 @@ const FatalitiesMultiYear = () => {
   return (
     <Container>
       <Row>
-        <Col>
-          <h3>Traffic Fatalities by Year</h3>
-        </Col>
-      </Row>
-      <Row>
         <Col md="12">
-          <h5 style={{ color: "#08519c" }}>
+          <h5 style={{ color: colors.blue }}>
             As of {lastMonthString}, there have been <strong>{calculateYearlyTotals(thisYearDeathArray)}</strong> traffic fatalities in {thisYear}.
           </h5>
         </Col>
@@ -296,7 +283,9 @@ const FatalitiesMultiYear = () => {
         <Col md="2">
           <Row>
             <Col md="12">
-              <h6><strong>{calculateYearlyTotals(lastYearDeathArray)}</strong></h6>
+              <h6>
+                <strong>{calculateYearlyTotals(lastYearDeathArray)}</strong>
+              </h6>
             </Col>
           </Row>
           <Row>
@@ -308,7 +297,9 @@ const FatalitiesMultiYear = () => {
         <Col md="2">
           <Row>
             <Col md="12">
-              <h6><strong>{calculateYearlyTotals(twoYearsAgoDeathArray)}</strong></h6>
+              <h6>
+                <strong>{calculateYearlyTotals(twoYearsAgoDeathArray)}</strong>
+              </h6>
             </Col>
           </Row>
           <Row>
@@ -320,7 +311,11 @@ const FatalitiesMultiYear = () => {
         <Col md="2">
           <Row>
             <Col md="12">
-              <h6><strong>{calculateYearlyTotals(threeYearsAgoDeathArray)}</strong></h6>
+              <h6>
+                <strong>
+                  {calculateYearlyTotals(threeYearsAgoDeathArray)}
+                </strong>
+              </h6>
             </Col>
           </Row>
           <Row>
@@ -332,7 +327,9 @@ const FatalitiesMultiYear = () => {
         <Col md="2">
           <Row>
             <Col md="12">
-              <h6><strong>{calculateYearlyTotals(fourYearsAgoDeathArray)}</strong></h6>
+              <h6>
+                <strong>{calculateYearlyTotals(fourYearsAgoDeathArray)}</strong>
+              </h6>
             </Col>
           </Row>
           <Row>
@@ -344,7 +341,9 @@ const FatalitiesMultiYear = () => {
         <Col md="2">
           <Row>
             <Col md="12">
-              <h6><strong>{calculateYearlyTotals(fiveYearsAgoDeathArray)}</strong></h6>
+              <h6>
+                <strong>{calculateYearlyTotals(fiveYearsAgoDeathArray)}</strong>
+              </h6>
             </Col>
           </Row>
           <Row>

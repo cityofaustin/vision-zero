@@ -112,7 +112,13 @@ As of this moment, the ETL container should be able to run these scripts:
 - `app/process_socrata_export.py` - This script will export data unto the Socrata database.
 - `app/process_test_run.py` - A dummy script meant to test if the environment is working, it will print two environment variables.
 
-#### Creating New Scripts
+## GeoCoding
+
+We are using a bounding box to limit the geocode searches to a specific area. This area can be changed within the configuration as shown in [the ETL configuration file](https://github.com/cityofaustin/atd-vz-data/blob/master/atd-etl/app/process/config.py).
+
+![Bounding Box](https://images.zenhubusercontent.com/5b7edad7290aac725aec290c/5029f5e9-4f3c-4708-a54c-030c258d7092)
+
+## Creating New Scripts
 
 When creating new scripts, be sure to add some comments at the beginning of the file (as shown in any of the above files).
 

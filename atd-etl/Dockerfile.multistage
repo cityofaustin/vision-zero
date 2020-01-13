@@ -1,0 +1,47 @@
+#
+# ATD Vision Zero Processor
+# An ETL Processor that uses Python 3.8, Splinter, Selenium and Chrome/ChromeDriver
+#
+
+# We are going to use alpine as our build layer
+FROM python:3.8-alpine3.10 AS builder
+
+# Create
+RUN mkdir /install
+WORKDIR /install
+
+RUN apk add --no-cache python3-dev libstdc++ && \
+    apk add --no-cache g++ zeromq zeromq-dev freetype-dev libpng-dev openblas-dev libffi-dev libressl-dev && \
+    ln -s /usr/include/locale.h /usr/include/xlocale.h
+
+# Let's install dependencies:
+RUN pip install --upgrade cython #it fails if we do not install cython
+RUN pip install --install-option="--prefix=/install" numpy
+RUN pip install numpy # It fails we don't install numpy here too, atd-agol-util won't see it.
+RUN pip install --install-option="--prefix=/install" atd-agol-util
+
+
+# Now let's build the run-time image
+FROM python:3.8-alpine3.10 AS runtime
+
+# Make our application folders
+RUN mkdir /app && mkdir /app/tmp && mkdir /data
+
+# Install software dependencies
+RUN apk add bash chromium chromium-chromedriver p7zip
+
+# Now let's install our pip libraries
+RUN pip install splinter selenium requests awscli web-pdb sodapy boto3 mail-parser
+
+# Copy the built libraries from the builder image
+COPY --from=builder /install /usr/local
+
+# Finish the installation of our code into this container
+WORKDIR /app
+COPY app /app
+EXPOSE 5555/tcp
+CMD ["bash"]
+
+
+
+
