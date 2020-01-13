@@ -4,6 +4,7 @@ import FatalitiesByMode from "./FatalitiesByMode";
 import SeriousInjuries from "./SeriousInjuries";
 import SeriousInjuryAndFatalCrashesByMonth from "./SeriousInjuryAndFatalCrashesByMonth";
 import SeriousInjuryAndFatalCrashesByMode from "./SeriousInjuryAndFatalCrashesByMode";
+import FatalitiesByTimeOfDayWeek from "./FatalitiesByTimeOfDayWeek"
 import YearsOfLifeLost from "./YearsOfLifeLost";
 import FatalitiesMultiYear from "./FatalitiesMultiYear";
 import SummaryView from "./SummaryView";
@@ -24,7 +25,8 @@ const children = [
     component: <SeriousInjuryAndFatalCrashesByMode />,
     title: "Serious Injury and Fatal Crashes by Mode"
   },
-  { component: <YearsOfLifeLost />, title: "Year-to-Date Years of Life Lost" },
+  { component: <FatalitiesByTimeOfDayWeek />, title: "Fatalities by Time of Day" },
+  { component: <YearsOfLifeLost />, title: "Years of Life Lost" },
   { component: <FatalitiesMultiYear />, title: "Traffic Fatalities by Year" }
 ];
 
