@@ -261,98 +261,53 @@ const FatalitiesMultiYear = () => {
   return (
     <Container>
       <Row>
-        <Col md="12">
-          <h5 style={{ color: colors.blue }}>
-            As of {lastMonthString}, there have been <strong>{calculateYearlyTotals(thisYearDeathArray)}</strong> traffic fatalities in {thisYear}.
-          </h5>
+        <Col md="2"></Col>
+        <Col md="8">
+          <h6 style={{ color: colors.blue }}>
+            As of {lastMonthString}, there have been{" "}
+            <strong>{calculateYearlyTotals(thisYearDeathArray)}</strong> traffic
+            fatalities in {thisYear}.
+          </h6>
         </Col>
+        <Col md="2"></Col>
       </Row>
+      <br></br>
       <Row>
-        <Col md="2">
-          <Row>
-            <Col md="12">
-              <h6>Prior</h6>
-            </Col>
-          </Row>
-          <Row>
-            <Col md="12">
-              <h6>Years:</h6>
-            </Col>
-          </Row>
+        <Col xs="6" sm="4" md="2">
+          <h6>Prior Years:</h6>
         </Col>
-        <Col md="2">
-          <Row>
-            <Col md="12">
-              <h6>
-                <strong>{calculateYearlyTotals(lastYearDeathArray)}</strong>
-              </h6>
-            </Col>
-          </Row>
-          <Row>
-            <Col md="12">
-              <h6>in {getYearsAgoLabel(1)}</h6>
-            </Col>
-          </Row>
+        <Col xs="6" sm="4" md="2">
+          <h6>
+            <strong>{calculateYearlyTotals(lastYearDeathArray)}</strong> in{" "}
+            {getYearsAgoLabel(1)}
+          </h6>
         </Col>
-        <Col md="2">
-          <Row>
-            <Col md="12">
-              <h6>
-                <strong>{calculateYearlyTotals(twoYearsAgoDeathArray)}</strong>
-              </h6>
-            </Col>
-          </Row>
-          <Row>
-            <Col md="12">
-              <h6>in {getYearsAgoLabel(2)}</h6>
-            </Col>
-          </Row>
+        <Col xs="6" sm="4" md="2">
+          <h6>
+            <strong>{calculateYearlyTotals(twoYearsAgoDeathArray)}</strong> in{" "}
+            {getYearsAgoLabel(2)}
+          </h6>
         </Col>
-        <Col md="2">
-          <Row>
-            <Col md="12">
-              <h6>
-                <strong>
-                  {calculateYearlyTotals(threeYearsAgoDeathArray)}
-                </strong>
-              </h6>
-            </Col>
-          </Row>
-          <Row>
-            <Col md="12">
-              <h6>in {getYearsAgoLabel(3)}</h6>
-            </Col>
-          </Row>
+        <Col xs="6" sm="4" md="2">
+          <h6>
+            <strong>{calculateYearlyTotals(threeYearsAgoDeathArray)}</strong> in{" "}
+            {getYearsAgoLabel(3)}
+          </h6>
         </Col>
-        <Col md="2">
-          <Row>
-            <Col md="12">
-              <h6>
-                <strong>{calculateYearlyTotals(fourYearsAgoDeathArray)}</strong>
-              </h6>
-            </Col>
-          </Row>
-          <Row>
-            <Col md="12">
-              <h6>in {getYearsAgoLabel(4)}</h6>
-            </Col>
-          </Row>
+        <Col xs="6" sm="4" md="2">
+          <h6>
+            <strong>{calculateYearlyTotals(fourYearsAgoDeathArray)}</strong> in{" "}
+            {getYearsAgoLabel(4)}
+          </h6>
         </Col>
-        <Col md="2">
-          <Row>
-            <Col md="12">
-              <h6>
-                <strong>{calculateYearlyTotals(fiveYearsAgoDeathArray)}</strong>
-              </h6>
-            </Col>
-          </Row>
-          <Row>
-            <Col md="12">
-              <h6>in {getYearsAgoLabel(5)}</h6>
-            </Col>
-          </Row>
+        <Col xs="6" sm="4" md="2">
+          <h6>
+            <strong>{calculateYearlyTotals(fiveYearsAgoDeathArray)}</strong> in{" "}
+            {getYearsAgoLabel(5)}
+          </h6>
         </Col>
       </Row>
+      <br></br>
       <Line
         data={data}
         options={{

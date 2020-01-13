@@ -7,6 +7,7 @@ import {
   NavItem,
   NavLink,
   Row,
+  Col,
   Container
 } from "reactstrap";
 import classnames from "classnames";
@@ -129,85 +130,95 @@ const FatalitiesByTimeOfDayWeek = () => {
   return (
     <Container>
       <Row>
-        <h3>Traffic fatalities by time and day</h3>
+        <Col md="2"></Col>
+        <Col md="8">
+          <Nav tabs>
+            <NavItem>
+              <NavLink
+                className={classnames({ active: activeTab === "6" })}
+                onClick={() => {
+                  toggle("6");
+                  setDataView(5);
+                }}
+              >
+                {getYearsAgoLabel(5)}
+              </NavLink>
+            </NavItem>
+            <NavItem>
+              <NavLink
+                className={classnames({ active: activeTab === "5" })}
+                onClick={() => {
+                  toggle("5");
+                  setDataView(4);
+                }}
+              >
+                {getYearsAgoLabel(4)}
+              </NavLink>
+            </NavItem>
+            <NavItem>
+              <NavLink
+                className={classnames({ active: activeTab === "4" })}
+                onClick={() => {
+                  toggle("4");
+                  setDataView(3);
+                }}
+              >
+                {getYearsAgoLabel(3)}
+              </NavLink>
+            </NavItem>
+            <NavItem>
+              <NavLink
+                className={classnames({ active: activeTab === "3" })}
+                onClick={() => {
+                  toggle("3");
+                  setDataView(2);
+                }}
+              >
+                {getYearsAgoLabel(2)}
+              </NavLink>
+            </NavItem>
+            <NavItem>
+              <NavLink
+                className={classnames({ active: activeTab === "2" })}
+                onClick={() => {
+                  toggle("2");
+                  setDataView(1);
+                }}
+              >
+                {getYearsAgoLabel(1)}
+              </NavLink>
+            </NavItem>
+            <NavItem>
+              <NavLink
+                className={classnames({ active: activeTab === "1" })}
+                onClick={() => {
+                  toggle("1");
+                  setDataView(0);
+                }}
+              >
+                {getYearsAgoLabel(0)}
+              </NavLink>
+            </NavItem>
+          </Nav>
+        </Col>
+        <Col md="2"></Col>
       </Row>
       <Row>
-          <Heatmap
-            height={200}
-            width={400}
-            data={heatmapData}
-            series={<HeatmapSeries colorScheme={[colors.redGradient1Of5, colors.redGradient2Of5, colors.redGradient3Of5, colors.redGradient4Of5, colors.redGradient5Of5]} />}
+        <Heatmap
+          height={200}
+          data={heatmapData}
+          series={
+            <HeatmapSeries
+              colorScheme={[
+                colors.redGradient1Of5,
+                colors.redGradient2Of5,
+                colors.redGradient3Of5,
+                colors.redGradient4Of5,
+                colors.redGradient5Of5
+              ]}
             />
-      </Row>
-      <Row>
-        <Nav tabs>
-          <NavItem>
-            <NavLink
-              className={classnames({ active: activeTab === "6" })}
-              onClick={() => {
-                toggle("6");
-                setDataView(5);
-              }}
-            >
-              {getYearsAgoLabel(5)}
-            </NavLink>
-          </NavItem>
-          <NavItem>
-            <NavLink
-              className={classnames({ active: activeTab === "5" })}
-              onClick={() => {
-                toggle("5");
-                setDataView(4);
-              }}
-            >
-              {getYearsAgoLabel(4)}
-            </NavLink>
-          </NavItem>
-          <NavItem>
-            <NavLink
-              className={classnames({ active: activeTab === "4" })}
-              onClick={() => {
-                toggle("4");
-                setDataView(3);
-              }}
-            >
-              {getYearsAgoLabel(3)}
-            </NavLink>
-          </NavItem>
-          <NavItem>
-            <NavLink
-              className={classnames({ active: activeTab === "3" })}
-              onClick={() => {
-                toggle("3");
-                setDataView(2);
-              }}
-            >
-              {getYearsAgoLabel(2)}
-            </NavLink>
-          </NavItem>
-          <NavItem>
-            <NavLink
-              className={classnames({ active: activeTab === "2" })}
-              onClick={() => {
-                toggle("2");
-                setDataView(1);
-              }}
-            >
-              {getYearsAgoLabel(1)}
-            </NavLink>
-          </NavItem>
-          <NavItem>
-            <NavLink
-              className={classnames({ active: activeTab === "1" })}
-              onClick={() => {
-                toggle("1");
-                setDataView(0);
-              }}
-            >
-              {getYearsAgoLabel(0)}
-            </NavLink>
-          </NavItem>
-        </Nav>
+          }
+        />
       </Row>
     </Container>
   );
