@@ -5,6 +5,8 @@ import styled from "styled-components";
 import { colors } from "../../constants/colors";
 import { ButtonGroup, Button, Card, Label } from "reactstrap";
 import DateRangePicker from "@wojtekmaj/react-daterange-picker";
+import moment from "moment";
+import { mapStartDate, mapEndDate } from "../../views/summary/helpers/time";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faWalking,
@@ -30,7 +32,7 @@ const StyledCard = styled.div`
     background: ${colors.white};
   }
 
-  /* Make the parent container flex to keep calendar within Filter card */
+  /* Make the date picker parent flex to keep calendar within Filter card */
   .react-daterange-picker {
     display: flex;
   }
@@ -51,6 +53,12 @@ const StyledCard = styled.div`
       flex: 1 0 auto;
       justify-content: center;
       min-width: 50px;
+      font-size: 0.9em;
+    }
+
+    /* Center divider between date inputs */
+    .react-daterange-picker__range-divider {
+      padding-top: 3px;
     }
 
     /* Color x and calendar icons */
@@ -65,9 +73,19 @@ const StyledCard = styled.div`
     background: ${colors.white};
     border: 1px solid ${colors.info};
     border-radius: 5px;
-    z-index: 1;
-    width: 350px;
 
+    /* Prevent word wrap */
+    .react-calendar__month-view__weekdays {
+      color: ${colors.dark};
+      font-size: 0.65em;
+    }
+
+    /* Remove whitespace above weekdays */
+    .react-calendar__navigation {
+      margin-bottom: 0em;
+    }
+
+    /* Change selected day background */
     .react-calendar__tile--active {
       background: ${colors.info};
     }
@@ -76,7 +94,8 @@ const StyledCard = styled.div`
 
 const SideMapControl = () => {
   const {
-    mapFilters: [filters, setFilters]
+    mapFilters: [filters, setFilters],
+    mapDateRange: [date, setDate]
   } = React.useContext(StoreContext);
 
   // Clear all filters that match group arg
@@ -164,6 +183,26 @@ const SideMapControl = () => {
     return !!filters.find(setFilter => setFilter.name === filterName);
   };
 
+  const convertToDatePickerFormat = date => {
+    const startDate = moment(date.start).format("MM/DD/YYYY");
+    const endDate = moment(date.end).format("MM/DD/YYYY");
+    return [new Date(startDate), new Date(endDate)];
+  };
+
+  // Called when date range changes OR when "x" is clicked to clear
+  const convertToSocrataDateFormat = date => {
+    // If date === null, "x" was clicked to clear. Reset to default range.
+    if (date === null) {
+      const updatedDates = { start: mapStartDate, end: mapEndDate };
+      setDate(updatedDates);
+    } else {
+      const startDate = moment(date[0]).format("YYYY-MM-DD") + "T00:00:00";
+      const endDate = moment(date[1]).format("YYYY-MM-DD") + "T23:59:59";
+      const updatedDates = { start: startDate, end: endDate };
+      setDate(updatedDates);
+    }
+  };
+
   return (
     <StyledCard>
       <div className="card-title">Traffic Crashes</div>
@@ -206,7 +245,11 @@ const SideMapControl = () => {
             ))}
           </ButtonGroup>
         ))}
-        <DateRangePicker className="date-picker" />
+        <DateRangePicker
+          className="date-picker"
+          value={convertToDatePickerFormat(date)}
+          onChange={convertToSocrataDateFormat}
+        />
       </Card>
     </StyledCard>
   );
