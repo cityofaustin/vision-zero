@@ -5,6 +5,7 @@ import { Bar } from "react-chartjs-2";
 
 import { Container } from "reactstrap";
 import { thisYear } from "./helpers/time";
+import { demographicsEndpointUrl } from "./queries/socrataQueries";
 
 const FatalitiesByMode = () => {
   // Define stacked bar chart properties in order of stack
@@ -33,7 +34,7 @@ const FatalitiesByMode = () => {
       // Use Promise.all to let all requests resolve before setting chart data by year
       await Promise.all(
         yearsArray.map(async year => {
-          const url = `https://data.austintexas.gov/resource/xecs-rpy9.json?$where=(prsn_injry_sev_id = 4) AND crash_date between '${year}-01-01T00:00:00' and '${year}-12-31T23:59:59'`;
+          const url = `${demographicsEndpointUrl}?$where=(prsn_injry_sev_id = 4) AND crash_date between '${year}-01-01T00:00:00' and '${year}-12-31T23:59:59'`;
 
           await axios.get(url).then(res => {
             newData = { ...newData, ...{ [year]: res.data } };
@@ -50,7 +51,7 @@ const FatalitiesByMode = () => {
 
   // Fetch latest record from demographics dataset and set for chart subheading
   useEffect(() => {
-    const url = `https://data.austintexas.gov/resource/xecs-rpy9.json?$limit=1&$order=crash_date DESC&$where=crash_date < '${thisYear}-12-31T23:59:59'`;
+    const url = `${demographicsEndpointUrl}?$limit=1&$order=crash_date DESC&$where=crash_date < '${thisYear}-12-31T23:59:59'`;
 
     axios.get(url).then(res => {
       const latestRecordDate = res.data[0].crash_date;

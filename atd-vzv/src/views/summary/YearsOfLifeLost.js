@@ -4,14 +4,15 @@ import moment from "moment";
 import { Line } from "react-chartjs-2";
 
 import { Container, Row, Col } from "reactstrap";
+import { getYearsOfLifeLost } from "./helpers/helpers";
+import { todayMonthYear, thisYear, lastYear } from "./helpers/time";
+import {
+  demographicsEndpointUrl,
+  yearsOfLifeLostYTDUrl,
+  previousYearYearsOfLifeLostYTDUrl
+} from "./queries/socrataQueries";
 
 const YearsOfLifeLost = () => {
-  const today = moment().format("YYYY-MM-DD");
-  const todayMonthYear = moment().format("-MM-DD");
-  const thisYear = moment().format("YYYY");
-  const lastYear = moment()
-    .subtract(1, "year")
-    .format("YYYY");
   const twoYearsAgo = moment()
     .subtract(2, "year")
     .format("YYYY");
@@ -22,11 +23,9 @@ const YearsOfLifeLost = () => {
     .subtract(4, "year")
     .format("YYYY");
 
-  const yearToDateUrl = `https://data.austintexas.gov/resource/xecs-rpy9.json?$where=prsn_injry_sev_id = '4' AND crash_date between '${thisYear}-01-01T00:00:00' and '${today}T23:59:59'`;
-  const previousYearUrl = `https://data.austintexas.gov/resource/xecs-rpy9.json?$where=prsn_injry_sev_id = '4' AND crash_date between '${lastYear}-01-01T00:00:00' and '${lastYear}${todayMonthYear}T23:59:59'`;
-  const twoYearsAgoUrl = `https://data.austintexas.gov/resource/xecs-rpy9.json?$where=prsn_injry_sev_id = '4' AND crash_date between '${twoYearsAgo}-01-01T00:00:00' and '${twoYearsAgo}${todayMonthYear}T23:59:59'`;
-  const threeYearsAgoUrl = `https://data.austintexas.gov/resource/xecs-rpy9.json?$where=prsn_injry_sev_id = '4' AND crash_date between '${threeYearsAgo}-01-01T00:00:00' and '${threeYearsAgo}${todayMonthYear}T23:59:59'`;
-  const fourYearsAgoUrl = `https://data.austintexas.gov/resource/xecs-rpy9.json?$where=prsn_injry_sev_id = '4' AND crash_date between '${fourYearsAgo}-01-01T00:00:00' and '${fourYearsAgo}${todayMonthYear}T23:59:59'`;
+  const twoYearsAgoUrl = `${demographicsEndpointUrl}?$where=prsn_injry_sev_id = '4' AND crash_date between '${twoYearsAgo}-01-01T00:00:00' and '${twoYearsAgo}${todayMonthYear}T23:59:59'`;
+  const threeYearsAgoUrl = `${demographicsEndpointUrl}?$where=prsn_injry_sev_id = '4' AND crash_date between '${threeYearsAgo}-01-01T00:00:00' and '${threeYearsAgo}${todayMonthYear}T23:59:59'`;
+  const fourYearsAgoUrl = `${demographicsEndpointUrl}?$where=prsn_injry_sev_id = '4' AND crash_date between '${fourYearsAgo}-01-01T00:00:00' and '${fourYearsAgo}${todayMonthYear}T23:59:59'`;
 
   const [yearToDateYearsLostTotal, setYearToDateYearsLostTotal] = useState(0);
   const [
@@ -46,31 +45,14 @@ const YearsOfLifeLost = () => {
     setFourYearsAgoYearToDateYearsLostTotal
   ] = useState(0);
 
-  const getYearsOfLifeLost = fatalityData => {
-    // Assume 75 year life expectancy,
-    // Find the difference between person.prsn_age & 75
-    // Sum over the list of ppl with .reduce
-    return fatalityData.reduce((accumulator, fatalityRecord) => {
-      let years = 0;
-      if (fatalityRecord.prsn_age !== undefined) {
-        let yearsLifeLost = 75 - Number(fatalityRecord.prsn_age);
-        // What if the person is older than 75?
-        // For now, so we don't have negative numbers,
-        // Assume years of life lost is 0
-        years = yearsLifeLost < 0 ? 0 : yearsLifeLost;
-      }
-      return accumulator + years;
-    }, 0); // start with a count at 0 years
-  };
-
   useEffect(() => {
     // Fetch year-to-date records
-    axios.get(yearToDateUrl).then(res => {
+    axios.get(yearsOfLifeLostYTDUrl).then(res => {
       setYearToDateYearsLostTotal(getYearsOfLifeLost(res.data));
     });
 
     // Fetch last year-to-date records
-    axios.get(previousYearUrl).then(res => {
+    axios.get(previousYearYearsOfLifeLostYTDUrl).then(res => {
       setLastYearToDateYearsLostTotal(getYearsOfLifeLost(res.data));
     });
 
@@ -88,13 +70,7 @@ const YearsOfLifeLost = () => {
     axios.get(fourYearsAgoUrl).then(res => {
       setFourYearsAgoYearToDateYearsLostTotal(getYearsOfLifeLost(res.data));
     });
-  }, [
-    yearToDateUrl,
-    previousYearUrl,
-    twoYearsAgoUrl,
-    threeYearsAgoUrl,
-    fourYearsAgoUrl
-  ]);
+  }, [twoYearsAgoUrl, threeYearsAgoUrl, fourYearsAgoUrl]);
 
   const data = {
     labels: [
