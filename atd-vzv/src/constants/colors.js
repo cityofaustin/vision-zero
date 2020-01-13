@@ -7,5 +7,9 @@ export const colors = {
   primary: "#20a8d8",
   danger: "#f86c6b",
   warning: "#ffc107",
-  success: "#4dbd74"
+  success: "#4dbd74",
+  chartRed: "#a50f15",
+  chartOrange: "#fb6a4a",
+  chartRedOrange: "#de2d26",
+  chartBlue: "#08519c"
 };

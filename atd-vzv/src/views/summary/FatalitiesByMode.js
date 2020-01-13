@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import moment from "moment";
 import { Bar } from "react-chartjs-2";
+import { colors } from "../../constants/colors";
 
 import { Container } from "reactstrap";
 import { thisYear } from "./helpers/time";
@@ -10,10 +11,14 @@ import { demographicsEndpointUrl } from "./queries/socrataQueries";
 const FatalitiesByMode = () => {
   // Define stacked bar chart properties in order of stack
   const modes = [
-    { label: "Motor", flag: "motor_vehicle_fl", color: "#a50f15" },
-    { label: "Pedestrian", flag: "pedestrian_fl", color: "#fb6a4a" },
-    { label: "Motorcycle", flag: "motorcycle_fl", color: "#de2d26" },
-    { label: "Pedalcyclist", flag: "pedalcyclist_fl", color: "#08519c" }
+    { label: "Motor", flag: "motor_vehicle_fl", color: colors.chartRed },
+    { label: "Pedestrian", flag: "pedestrian_fl", color: colors.chartOrange },
+    {
+      label: "Motorcycle",
+      flag: "motorcycle_fl",
+      color: colors.chartRedOrange
+    },
+    { label: "Pedalcyclist", flag: "pedalcyclist_fl", color: colors.chartBlue }
   ];
   const yearLimit = 10; // Number of years to display in chart
   const yearsArray = (() => {
