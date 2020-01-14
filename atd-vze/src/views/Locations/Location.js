@@ -18,6 +18,7 @@ import { useQuery } from "@apollo/react-hooks";
 
 import locationDataMap from "./locationDataMap";
 import LocationCrashes from "./LocationCrashes";
+import LocationNonCR3Crashes from "./LocationNonCR3Crashes";
 
 import { GET_LOCATION, UPDATE_LOCATION } from "../../queries/Locations";
 
@@ -146,6 +147,11 @@ function Location(props) {
       <Row>
         <Col>
           <LocationCrashes locationId={locationId} />
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <LocationNonCR3Crashes locationId={locationId} />
         </Col>
       </Row>
     </div>

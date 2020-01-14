@@ -280,16 +280,16 @@ export const UPDATE_CRASH = gql`
 `;
 
 export const crashQueryExportFields = `
+crash_id
+case_id
 active_school_zone_fl
 apd_confirmed_death_count
 approval_date
 approved_by
 at_intrsct_fl
-case_id
 city_id
 crash_date
 crash_fatal_fl
-crash_id
 crash_sev_id
 crash_speed_limit
 crash_time

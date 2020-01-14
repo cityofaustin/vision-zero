@@ -9,6 +9,7 @@ import { locationQueryExportFields } from "../../queries/Locations";
 let queryConf = {
   table: "atd_txdot_locations",
   single_item: "locations",
+  showDateRange: false,
   columns: {
     location_id: {
       primary_key: true,

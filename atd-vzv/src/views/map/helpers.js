@@ -1,3 +1,5 @@
+import { crashEndpointUrl } from "../../views/summary/queries/socrataQueries";
+
 const generateWhereFilters = filters => {
   // Store filter group query strings
   let whereFiltersArray = [];
@@ -31,7 +33,7 @@ export const createMapDataUrl = (filters, dateRange) => {
   const whereFilterString = generateWhereFilters(filters);
 
   return (
-    `https://data.austintexas.gov/resource/y2wy-tgr5.geojson?$limit=1000` +
+    `${crashEndpointUrl}?$limit=1000` +
     `&$where=crash_date between '${dateRange.start}' and '${dateRange.end}'` +
     // if there are filters applied, add AND operator to create valid query url
     `${filters.length > 0 ? "AND" : ""} ${whereFilterString || ""}`
