@@ -1,12 +1,12 @@
 import React from "react";
 import { StoreContext } from "../../utils/store";
-
-import styled from "styled-components";
-import { colors } from "../../constants/colors";
-import { ButtonGroup, Button, Card, Label } from "reactstrap";
-import DateRangePicker from "@wojtekmaj/react-daterange-picker";
 import moment from "moment";
-import { mapStartDate, mapEndDate } from "../../views/summary/helpers/time";
+import DateRangePicker from "@wojtekmaj/react-daterange-picker";
+
+import { colors } from "../../constants/colors";
+import { mapStartDate, mapEndDate } from "../../constants/time";
+import { ButtonGroup, Button, Card, Label } from "reactstrap";
+import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faWalking,
@@ -183,7 +183,7 @@ const SideMapControl = () => {
     return !!filters.find(setFilter => setFilter.name === filterName);
   };
 
-  const convertToDatePickerFormat = date => {
+  const convertToDatePickerDateFormat = date => {
     const startDate = moment(date.start).format("MM/DD/YYYY");
     const endDate = moment(date.end).format("MM/DD/YYYY");
     return [new Date(startDate), new Date(endDate)];
@@ -247,7 +247,7 @@ const SideMapControl = () => {
         ))}
         <DateRangePicker
           className="date-picker"
-          value={convertToDatePickerFormat(date)}
+          value={convertToDatePickerDateFormat(date)}
           onChange={convertToSocrataDateFormat}
         />
       </Card>

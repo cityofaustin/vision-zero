@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { mapStartDate, mapEndDate } from "../views/summary/helpers/time";
+import { mapStartDate, mapEndDate } from "../constants/time";
 
 export const StoreContext = React.createContext(null);
 

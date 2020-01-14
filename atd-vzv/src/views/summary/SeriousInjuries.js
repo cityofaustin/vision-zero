@@ -6,7 +6,7 @@ import {
   seriousInjuriesYTDUrl,
   previousYearSeriousInjuriesUrl
 } from "./queries/socrataQueries";
-import { thisYear, lastYear } from "./helpers/time";
+import { thisYear, lastYear } from "../../constants/time";
 import { calculateTotalInjuries } from "./helpers/helpers";
 
 const SeriousInjuries = () => {

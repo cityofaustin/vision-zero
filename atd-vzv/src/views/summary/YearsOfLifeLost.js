@@ -5,7 +5,7 @@ import { Line } from "react-chartjs-2";
 
 import { Container, Row, Col } from "reactstrap";
 import { getYearsOfLifeLost } from "./helpers/helpers";
-import { todayMonthYear, thisYear, lastYear } from "./helpers/time";
+import { todayMonthYear, thisYear, lastYear } from "../../constants/time";
 import {
   demographicsEndpointUrl,
   yearsOfLifeLostYTDUrl,

@@ -5,7 +5,7 @@ import { Bar } from "react-chartjs-2";
 import { colors } from "../../constants/colors";
 
 import { Container } from "reactstrap";
-import { thisYear } from "./helpers/time";
+import { thisYear } from "../../constants/time";
 import { demographicsEndpointUrl } from "./queries/socrataQueries";
 
 const FatalitiesByMode = () => {
