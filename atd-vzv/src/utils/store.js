@@ -4,8 +4,10 @@ export const StoreContext = React.createContext(null);
 
 export default ({ children }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [mapFilters, setMapFilters] = useState([]);
 
   const store = {
+    mapFilters: [mapFilters, setMapFilters],
     sidebarToggle: [isOpen, setIsOpen]
   };
 
