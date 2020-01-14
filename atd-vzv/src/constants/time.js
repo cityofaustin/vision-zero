@@ -12,7 +12,8 @@ export const lastYear = moment()
   .format("YYYY");
 
 // Map time data
-export const mapStartDate = moment()
-  .subtract(1, "year")
-  .format("YYYY-MM-DD");
-export const mapEndDate = moment().format("YYYY-MM-DD");
+export const mapStartDate =
+  moment()
+    .subtract(1, "year")
+    .format("YYYY-MM-DD") + "T00:00:00";
+export const mapEndDate = moment().format("YYYY-MM-DD") + "T23:59:59";
