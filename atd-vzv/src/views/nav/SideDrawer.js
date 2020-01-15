@@ -11,6 +11,7 @@ import { makeStyles, useTheme } from "@material-ui/core/styles";
 import styled from "styled-components";
 import { drawer } from "../../constants/drawer";
 import { colors } from "../../constants/colors";
+import { responsive } from "../../constants/responsive";
 import SideDrawerMobileNav from "./SideDrawerMobileNav";
 
 const drawerWidth = drawer.width;
@@ -52,6 +53,9 @@ const StyledDrawerHeader = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  @media only screen and (max-width: ${responsive.bootstrapMedium}px) {
+    display: none;
+  }
 `;
 
 const SideDrawer = () => {

@@ -10,7 +10,8 @@ import {
   NavItem,
   NavLink,
   Collapse,
-  NavbarToggler
+  Row,
+  Col
 } from "reactstrap";
 import styled from "styled-components";
 import { drawer } from "../../constants/drawer";
@@ -43,16 +44,28 @@ const StyledNavbar = styled.div`
     }
   }
 
-  .collapse-toggle {
-    /* Hide SideBar toggle when SideBar is not collapsed */
+  .nav-button {
+    /* Set width to keep buttons equal width */
+    width: 140px;
+  }
+
+  .sidedrawer-toggle {
+    /* Hide toggle button in header when SideDrawer is open by default */
     @media only screen and (min-width: ${responsive.materialMedium}px) {
       display: none;
     }
   }
 
-  .nav-button {
-    /* Set width to keep buttons equal width */
-    width: 140px;
+  .vz-logo {
+    /* Center VZ logo and only show when toggler is present */
+    transform: translateX(-50%);
+    left: 50%;
+    position: absolute;
+
+    /* Hide logo in header when SideDrawer is closed and toggle is present (mobile) */
+    @media only screen and (min-width: ${responsive.bootstrapMedium}px) {
+      display: none;
+    }
   }
 `;
 
@@ -66,10 +79,6 @@ const navConfig = [
 
 const Header = () => {
   const currentPath = usePath();
-  // Set toggle state for navigation
-  const [isNavOpen, setIsNavOpen] = useState(false);
-
-  const toggle = () => setIsNavOpen(!isNavOpen);
 
   // Use context to toggle state for SideDrawer toggle
   const {
@@ -85,14 +94,13 @@ const Header = () => {
           expand="md"
         >
           <Button
-            className="mr-2 collapse-toggle"
+            className="mr-2 sidedrawer-toggle"
             color="info"
             onClick={() => setIsOpen(!isOpen)}
           >
             <FontAwesomeIcon icon={faBars} />
           </Button>
-          <NavbarToggler onClick={toggle} />
-          <Collapse className="float-right" isOpen={isNavOpen} navbar>
+          <Collapse className="float-right" navbar>
             <Nav className="mr-auto" navbar>
               {navConfig.map((config, i) => (
                 <NavItem key={i}>
@@ -111,6 +119,11 @@ const Header = () => {
               ))}
             </Nav>
           </Collapse>
+          <img
+            className="vz-logo"
+            src="vz_logo.png"
+            alt="Vision Zero Austin Logo"
+          ></img>
         </Navbar>
       </Container>
     </StyledNavbar>
