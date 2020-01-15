@@ -33,7 +33,7 @@ const Content = ({ toggle }) => {
     }
 
     /* Fill space left behind by SideDrawer on mobile */
-    @media only screen and (max-width: ${responsive.materialMedium}px) {
+    @media only screen and (max-width: ${responsive.bootstrapMedium}px) {
       .content {
         width: 100vw;
         ${mapStyleExceptions}

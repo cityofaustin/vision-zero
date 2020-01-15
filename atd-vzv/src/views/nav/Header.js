@@ -31,7 +31,7 @@ const StyledNavbar = styled.div`
     min-height: ${drawer.headerHeight}px;
     left: ${drawer.width}px;
     background-color: ${colors.white};
-    @media only screen and (max-width: ${responsive.materialMedium}px) {
+    @media only screen and (max-width: ${responsive.bootstrapMedium}px) {
       /* When SideDrawer collapses, move header to left of window */
       left: 0;
     }
@@ -51,9 +51,15 @@ const StyledNavbar = styled.div`
 
   .sidedrawer-toggle {
     /* Hide toggle button in header when SideDrawer is open by default */
-    @media only screen and (min-width: ${responsive.materialMedium}px) {
+    @media only screen and (min-width: ${responsive.bootstrapMedium}px) {
       display: none;
     }
+  }
+
+  .vz-logo-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .vz-logo {
@@ -65,6 +71,11 @@ const StyledNavbar = styled.div`
     /* Hide logo in header when SideDrawer is closed and toggle is present (mobile) */
     @media only screen and (min-width: ${responsive.bootstrapMedium}px) {
       display: none;
+    }
+
+    /* Change position to prevent overlap of logo and toggle button on small devices */
+    @media only screen and (max-width: ${responsive.bootstrapExtraSmall}px) {
+      position: relative;
     }
   }
 `;
@@ -100,6 +111,13 @@ const Header = () => {
           >
             <FontAwesomeIcon icon={faBars} />
           </Button>
+          <div className="vz-logo-wrapper">
+            <img
+              className="vz-logo"
+              src="vz_logo.png"
+              alt="Vision Zero Austin Logo"
+            ></img>
+          </div>
           <Collapse className="float-right" navbar>
             <Nav className="mr-auto" navbar>
               {navConfig.map((config, i) => (
@@ -119,11 +137,6 @@ const Header = () => {
               ))}
             </Nav>
           </Collapse>
-          <img
-            className="vz-logo"
-            src="vz_logo.png"
-            alt="Vision Zero Austin Logo"
-          ></img>
         </Navbar>
       </Container>
     </StyledNavbar>

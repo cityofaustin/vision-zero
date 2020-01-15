@@ -6,7 +6,6 @@ import SideMapControl from "./SideMapControl";
 import { Container, Alert } from "reactstrap";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Drawer from "@material-ui/core/Drawer";
-import Hidden from "@material-ui/core/Hidden";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import styled from "styled-components";
 import { drawer } from "../../constants/drawer";
@@ -17,33 +16,30 @@ import SideDrawerMobileNav from "./SideDrawerMobileNav";
 const drawerWidth = drawer.width;
 
 // Styles for MUI drawer
-const useStyles = makeStyles(theme => ({
-  root: {
-    display: "flex"
-  },
-  drawer: {
-    [theme.breakpoints.up("md")]: {
+const useStyles = makeStyles(theme => {
+  return {
+    root: {
+      display: "flex"
+    },
+    drawer: {
+      // Feed MUI a media query to align with Bootstrap breakpoints
+      [`@media (min-width:${responsive.bootstrapMedium}px)`]: {
+        width: drawerWidth,
+        flexShrink: 0
+      }
+    },
+    drawerPaper: {
       width: drawerWidth,
-      flexShrink: 0
+      background: colors.dark,
+      color: colors.light,
+      border: 0
+    },
+    content: {
+      flexGrow: 1,
+      padding: theme.spacing(3)
     }
-  },
-  menuButton: {
-    marginRight: theme.spacing(2),
-    [theme.breakpoints.up("sm")]: {
-      display: "none"
-    }
-  },
-  drawerPaper: {
-    width: drawerWidth,
-    background: colors.dark,
-    color: colors.light,
-    border: 0
-  },
-  content: {
-    flexGrow: 1,
-    padding: theme.spacing(3)
-  }
-}));
+  };
+});
 
 const StyledDrawerHeader = styled.div`
   background-color: ${colors.white};
@@ -55,6 +51,20 @@ const StyledDrawerHeader = styled.div`
   justify-content: center;
   @media only screen and (max-width: ${responsive.bootstrapMedium}px) {
     display: none;
+  }
+`;
+
+const StyledDrawer = styled.div`
+  #temporary-drawer {
+    @media only screen and (min-width: ${responsive.bootstrapMedium}px) {
+      display: none;
+    }
+  }
+
+  #permanent-drawer {
+    @media only screen and (max-width: ${responsive.bootstrapMedium}px) {
+      display: none;
+    }
   }
 `;
 
@@ -92,8 +102,9 @@ const SideDrawer = () => {
     <div className={classes.root}>
       <CssBaseline />
       <nav className={classes.drawer} aria-label="mailbox folders">
-        <Hidden mdUp implementation="css">
+        <StyledDrawer>
           <Drawer
+            id="temporary-drawer"
             variant="temporary"
             anchor={theme.direction === "rtl" ? "right" : "left"}
             open={isOpen}
@@ -107,18 +118,17 @@ const SideDrawer = () => {
           >
             {drawerContent}
           </Drawer>
-        </Hidden>
-        <Hidden smDown implementation="css">
           <Drawer
             classes={{
               paper: classes.drawerPaper
             }}
+            id="permanent-drawer"
             variant="permanent"
             open
           >
             {drawerContent}
           </Drawer>
-        </Hidden>
+        </StyledDrawer>
       </nav>
     </div>
   );
