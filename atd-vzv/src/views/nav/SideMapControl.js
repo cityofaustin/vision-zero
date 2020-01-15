@@ -1,11 +1,9 @@
 import React from "react";
 import { StoreContext } from "../../utils/store";
-import moment from "moment";
-import InfiniteCalendar, { Calendar, withRange } from "react-infinite-calendar";
 import "react-infinite-calendar/styles.css";
 
+import SideMapControlDateRange from "./SideMapControlDateRange";
 import { colors } from "../../constants/colors";
-import { mapDataMinDate, mapDataMaxDate } from "../../constants/time";
 import { ButtonGroup, Button, Card, Label } from "reactstrap";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -15,8 +13,6 @@ import {
   faCar,
   faMotorcycle
 } from "@fortawesome/free-solid-svg-icons";
-
-const CalendarWithRange = withRange(Calendar);
 
 const StyledCard = styled.div`
   font-size: 1.2em;
@@ -36,34 +32,9 @@ const StyledCard = styled.div`
   }
 `;
 
-const StyledDateRangePicker = styled.div`
-  /* Resize month and day in header */
-  .Cal__Header__day {
-    font-size: 1.4em;
-  }
-`;
-
-const calendarTheme = {
-  accentColor: `${colors.infoDark}`,
-  floatingNav: {
-    background: `${colors.infoDark}`,
-    chevron: `${colors.warning}`,
-    color: `${colors.white}`
-  },
-  headerColor: `${colors.infoDark}`,
-  selectionColor: `${colors.info}`,
-  textColor: {
-    active: `${colors.white}`,
-    default: `${colors.dark}`
-  },
-  todayColor: `${colors.warning}`,
-  weekdayColor: `${colors.info}`
-};
-
 const SideMapControl = () => {
   const {
-    mapFilters: [filters, setFilters],
-    mapDateRange: [date, setDate]
+    mapFilters: [filters, setFilters]
   } = React.useContext(StoreContext);
 
   // Clear all filters that match group arg
@@ -151,22 +122,6 @@ const SideMapControl = () => {
     return !!filters.find(setFilter => setFilter.name === filterName);
   };
 
-  const convertToDatePickerDateFormat = date => {
-    const startDate = moment(date.start).format("MM/DD/YYYY");
-    const endDate = moment(date.end).format("MM/DD/YYYY");
-    return { start: new Date(startDate), end: new Date(endDate) };
-  };
-
-  const convertToSocrataDateFormat = date => {
-    // eventType 3 occurs when selecting the end of date range
-    if (date.eventType === 3) {
-      const startDate = moment(date.start).format("YYYY-MM-DD") + "T00:00:00";
-      const endDate = moment(date.end).format("YYYY-MM-DD") + "T23:59:59";
-      const updatedDates = { start: startDate, end: endDate };
-      setDate(updatedDates);
-    }
-  };
-
   return (
     <StyledCard>
       <div className="card-title">Traffic Crashes</div>
@@ -209,26 +164,7 @@ const SideMapControl = () => {
             ))}
           </ButtonGroup>
         ))}
-        <StyledDateRangePicker>
-          <InfiniteCalendar
-            Component={CalendarWithRange}
-            selected={convertToDatePickerDateFormat(date)}
-            onSelect={convertToSocrataDateFormat}
-            width={236}
-            height={300}
-            min={mapDataMinDate}
-            max={mapDataMaxDate}
-            minDate={mapDataMinDate}
-            maxDate={mapDataMaxDate}
-            theme={calendarTheme}
-            locale={{
-              headerFormat: "MMM Do"
-            }}
-            displayOptions={{
-              showTodayHelper: false
-            }}
-          />
-        </StyledDateRangePicker>
+        <SideMapControlDateRange />
       </Card>
     </StyledCard>
   );
