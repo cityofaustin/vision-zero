@@ -19,12 +19,7 @@ export const mapDataMinDate = new Date(
     .subtract(rollingYearsOfData, "year")
     .format("MM/DD/YYYY")
 );
-
-export const mapDataMaxDate = (() => {
-  const date = new Date();
-  debugger;
-  return date;
-})();
+export const mapDataMaxDate = new Date(moment());
 
 export const mapStartDate =
   moment()

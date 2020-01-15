@@ -1,15 +1,11 @@
 import React from "react";
 import { StoreContext } from "../../utils/store";
 import moment from "moment";
-import DateRangePicker from "@wojtekmaj/react-daterange-picker";
+import InfiniteCalendar, { Calendar, withRange } from "react-infinite-calendar";
+import "react-infinite-calendar/styles.css";
 
 import { colors } from "../../constants/colors";
-import {
-  mapStartDate,
-  mapEndDate,
-  mapDataMinDate,
-  mapDataMaxDate
-} from "../../constants/time";
+import { mapDataMinDate, mapDataMaxDate } from "../../constants/time";
 import { ButtonGroup, Button, Card, Label } from "reactstrap";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -19,6 +15,8 @@ import {
   faCar,
   faMotorcycle
 } from "@fortawesome/free-solid-svg-icons";
+
+const CalendarWithRange = withRange(Calendar);
 
 const StyledCard = styled.div`
   font-size: 1.2em;
@@ -36,76 +34,31 @@ const StyledCard = styled.div`
   .card-body {
     background: ${colors.white};
   }
+`;
 
-  /* Make the date picker parent flex to keep calendar within Filter card */
-  .react-daterange-picker {
-    display: flex;
-  }
-
-  /* Set flex and give width to contain picker in card */
-  .react-daterange-picker__wrapper {
-    flex: 1 0 auto;
-    width: 200px;
-    /* Bootstrapify */
-    border: 1px solid ${colors.info};
-    border-radius: 5px;
-    color: ${colors.dark};
-    height: 32px;
-    text-align: center;
-
-    /* Set flex and give width to contain picker in card and center dates */
-    .react-daterange-picker__inputGroup {
-      flex: 1 0 auto;
-      justify-content: center;
-      min-width: 50px;
-      font-size: 0.9em;
-    }
-
-    /* Center divider between date inputs */
-    .react-daterange-picker__range-divider {
-      padding-top: 3px;
-      color: ${colors.dark};
-    }
-
-    /* Color x and calendar icons */
-    svg {
-      stroke: ${colors.info};
-    }
-
-    /* Color calendar icon when calendar is open */
-    .react-daterange-picker__button:focus > svg {
-      stroke: ${colors.infoDark};
-    }
-  }
-
-  /* Bootstrapify and align colors in calendar */
-  .react-calendar {
-    font-size: 1em;
-    background: ${colors.white};
-    border: 1px solid ${colors.info};
-    border-radius: 5px;
-
-    /* Prevent word wrap */
-    .react-calendar__month-view__weekdays {
-      color: ${colors.dark};
-      font-size: 0.65em;
-    }
-
-    /* Remove whitespace above weekdays */
-    .react-calendar__navigation {
-      margin-bottom: 0em;
-    }
-
-    /* Change selected day background */
-    .react-calendar__tile--active {
-      background: ${colors.info};
-    }
-
-    .react-calendar__tile--hasActive {
-      background: ${colors.secondary};
-    }
+const StyledDateRangePicker = styled.div`
+  /* Resize month and day in header */
+  .Cal__Header__day {
+    font-size: 1.4em;
   }
 `;
+
+const calendarTheme = {
+  accentColor: `${colors.infoDark}`,
+  floatingNav: {
+    background: `${colors.infoDark}`,
+    chevron: `${colors.warning}`,
+    color: `${colors.white}`
+  },
+  headerColor: `${colors.infoDark}`,
+  selectionColor: `${colors.info}`,
+  textColor: {
+    active: `${colors.white}`,
+    default: `${colors.dark}`
+  },
+  todayColor: `${colors.warning}`,
+  weekdayColor: `${colors.info}`
+};
 
 const SideMapControl = () => {
   const {
@@ -201,18 +154,14 @@ const SideMapControl = () => {
   const convertToDatePickerDateFormat = date => {
     const startDate = moment(date.start).format("MM/DD/YYYY");
     const endDate = moment(date.end).format("MM/DD/YYYY");
-    return [new Date(startDate), new Date(endDate)];
+    return { start: new Date(startDate), end: new Date(endDate) };
   };
 
-  // Called when date range changes OR when "x" is clicked to clear
   const convertToSocrataDateFormat = date => {
-    // If date === null, "x" was clicked to clear. Reset to default range.
-    if (date === null) {
-      const updatedDates = { start: mapStartDate, end: mapEndDate };
-      setDate(updatedDates);
-    } else {
-      const startDate = moment(date[0]).format("YYYY-MM-DD") + "T00:00:00";
-      const endDate = moment(date[1]).format("YYYY-MM-DD") + "T23:59:59";
+    // eventType 3 occurs when selecting the end of date range
+    if (date.eventType === 3) {
+      const startDate = moment(date.start).format("YYYY-MM-DD") + "T00:00:00";
+      const endDate = moment(date.end).format("YYYY-MM-DD") + "T23:59:59";
       const updatedDates = { start: startDate, end: endDate };
       setDate(updatedDates);
     }
@@ -260,14 +209,26 @@ const SideMapControl = () => {
             ))}
           </ButtonGroup>
         ))}
-        {/* TODO: Add React Infinite Calendar component */}
-        <DateRangePicker
-          className="date-picker"
-          value={convertToDatePickerDateFormat(date)}
-          onChange={convertToSocrataDateFormat}
-          minDate={mapDataMinDate}
-          maxDate={mapDataMaxDate}
-        />
+        <StyledDateRangePicker>
+          <InfiniteCalendar
+            Component={CalendarWithRange}
+            selected={convertToDatePickerDateFormat(date)}
+            onSelect={convertToSocrataDateFormat}
+            width={236}
+            height={300}
+            min={mapDataMinDate}
+            max={mapDataMaxDate}
+            minDate={mapDataMinDate}
+            maxDate={mapDataMaxDate}
+            theme={calendarTheme}
+            locale={{
+              headerFormat: "MMM Do"
+            }}
+            displayOptions={{
+              showTodayHelper: false
+            }}
+          />
+        </StyledDateRangePicker>
       </Card>
     </StyledCard>
   );
