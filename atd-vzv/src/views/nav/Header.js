@@ -1,18 +1,8 @@
-import React, { useState } from "react";
+import React from "react";
 import { StoreContext } from "../../utils/store";
 import { A, usePath } from "hookrouter";
 
-import {
-  Container,
-  Navbar,
-  Button,
-  Nav,
-  NavItem,
-  NavLink,
-  Collapse,
-  Row,
-  Col
-} from "reactstrap";
+import { Container, Navbar, Button, Nav, NavItem, NavLink } from "reactstrap";
 import styled from "styled-components";
 import { drawer } from "../../constants/drawer";
 import { responsive } from "../../constants/responsive";
@@ -34,13 +24,6 @@ const StyledNavbar = styled.div`
     @media only screen and (max-width: ${responsive.bootstrapMedium}px) {
       /* When SideDrawer collapses, move header to left of window */
       left: 0;
-    }
-
-    @media only screen and (max-width: ${responsive.bootstrapMedium}px) {
-      /* Keep Navbar toggles centered vertically in header when Nav toggle appears */
-      /* NavbarToggler is 40px in height */
-      padding-top: ${(drawer.headerHeight - 40) / 2}px !important;
-      padding-bottom: ${(drawer.headerHeight - 40) / 2}px !important;
     }
   }
 
