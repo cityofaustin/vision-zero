@@ -95,7 +95,6 @@ const SideMapControlDateRange = () => {
             />
           )}
         </AutoSizer>
-        // </div>
       )}
     </StyledDateRangePicker>
   );
