@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { StoreContext } from "../../utils/store";
 import moment from "moment";
+import { AutoSizer } from "react-virtualized";
+import "react-virtualized/styles.css";
 import InfiniteCalendar, { Calendar, withRange } from "react-infinite-calendar";
 import "react-infinite-calendar/styles.css";
 
@@ -70,24 +72,30 @@ const SideMapControlDateRange = () => {
         Choose Date Range
       </Button>
       {isCalendarOpen && (
-        <InfiniteCalendar
-          Component={CalendarWithRange}
-          selected={convertToDatePickerDateFormat(date)}
-          onSelect={convertToSocrataDateFormat}
-          width={236}
-          height={225}
-          min={mapDataMinDate}
-          max={mapDataMaxDate}
-          minDate={mapDataMinDate}
-          maxDate={mapDataMaxDate}
-          theme={calendarTheme}
-          locale={{
-            headerFormat: "MMM Do"
-          }}
-          displayOptions={{
-            showTodayHelper: false
-          }}
-        />
+        // Autosize as recommended in InfiniteCalendar docs
+        <AutoSizer disableHeight>
+          {({ width }) => (
+            <InfiniteCalendar
+              Component={CalendarWithRange}
+              selected={convertToDatePickerDateFormat(date)}
+              onSelect={convertToSocrataDateFormat}
+              width={width}
+              height={225}
+              min={mapDataMinDate}
+              max={mapDataMaxDate}
+              minDate={mapDataMinDate}
+              maxDate={mapDataMaxDate}
+              theme={calendarTheme}
+              locale={{
+                headerFormat: "MMM Do"
+              }}
+              displayOptions={{
+                showTodayHelper: false
+              }}
+            />
+          )}
+        </AutoSizer>
+        // </div>
       )}
     </StyledDateRangePicker>
   );
