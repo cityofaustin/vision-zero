@@ -4,7 +4,12 @@ import moment from "moment";
 import DateRangePicker from "@wojtekmaj/react-daterange-picker";
 
 import { colors } from "../../constants/colors";
-import { mapStartDate, mapEndDate } from "../../constants/time";
+import {
+  mapStartDate,
+  mapEndDate,
+  mapDataMinDate,
+  mapDataMaxDate
+} from "../../constants/time";
 import { ButtonGroup, Button, Card, Label } from "reactstrap";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -44,7 +49,7 @@ const StyledCard = styled.div`
     /* Bootstrapify */
     border: 1px solid ${colors.info};
     border-radius: 5px;
-    color: ${colors.info};
+    color: ${colors.dark};
     height: 32px;
     text-align: center;
 
@@ -59,15 +64,21 @@ const StyledCard = styled.div`
     /* Center divider between date inputs */
     .react-daterange-picker__range-divider {
       padding-top: 3px;
+      color: ${colors.dark};
     }
 
     /* Color x and calendar icons */
     svg {
       stroke: ${colors.info};
     }
+
+    /* Color calendar icon when calendar is open */
+    .react-daterange-picker__button:focus > svg {
+      stroke: ${colors.infoDark};
+    }
   }
 
-  /* Bootstrapify and align colors */
+  /* Bootstrapify and align colors in calendar */
   .react-calendar {
     font-size: 1em;
     background: ${colors.white};
@@ -88,6 +99,10 @@ const StyledCard = styled.div`
     /* Change selected day background */
     .react-calendar__tile--active {
       background: ${colors.info};
+    }
+
+    .react-calendar__tile--hasActive {
+      background: ${colors.secondary};
     }
   }
 `;
@@ -245,10 +260,13 @@ const SideMapControl = () => {
             ))}
           </ButtonGroup>
         ))}
+        {/* TODO: Add React Infinite Calendar component */}
         <DateRangePicker
           className="date-picker"
           value={convertToDatePickerDateFormat(date)}
           onChange={convertToSocrataDateFormat}
+          minDate={mapDataMinDate}
+          maxDate={mapDataMaxDate}
         />
       </Card>
     </StyledCard>

@@ -1,5 +1,6 @@
 export const colors = {
   info: "#18A2B8",
+  infoDark: "#257A8B",
   dark: "#343A41",
   light: "#f0f3f5",
   white: "#ffffff",

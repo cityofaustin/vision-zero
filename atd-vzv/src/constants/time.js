@@ -12,8 +12,22 @@ export const lastYear = moment()
   .format("YYYY");
 
 // Map time data
+const rollingYearsOfData = 5;
+
+export const mapDataMinDate = new Date(
+  moment()
+    .subtract(rollingYearsOfData, "year")
+    .format("MM/DD/YYYY")
+);
+
+export const mapDataMaxDate = (() => {
+  const date = new Date();
+  debugger;
+  return date;
+})();
+
 export const mapStartDate =
   moment()
-    .subtract(1, "year")
+    .subtract(rollingYearsOfData, "year")
     .format("YYYY-MM-DD") + "T00:00:00";
 export const mapEndDate = moment().format("YYYY-MM-DD") + "T23:59:59";
