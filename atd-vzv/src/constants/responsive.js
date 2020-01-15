@@ -1,5 +1,6 @@
 // Use to convert Material-UI breakpoints to pixels
 export const responsive = {
-  bootstrapMedium: 768,
+  // Add one to bootstrapMedium breakpoint to avoid media query conflicts
+  bootstrapMedium: 769,
   bootstrapExtraSmall: 576
 };

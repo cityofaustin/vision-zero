@@ -44,6 +44,12 @@ const StyledNavbar = styled.div`
     }
   }
 
+  .navbar-links {
+    @media only screen and (max-width: ${responsive.bootstrapMedium}px) {
+      display: none;
+    }
+  }
+
   .nav-button {
     /* Set width to keep buttons equal width */
     width: 140px;
@@ -118,25 +124,23 @@ const Header = () => {
               alt="Vision Zero Austin Logo"
             ></img>
           </div>
-          <Collapse className="float-right" navbar>
-            <Nav className="mr-auto" navbar>
-              {navConfig.map((config, i) => (
-                <NavItem key={i}>
-                  <NavLink tag={A} href={config.url}>
-                    {currentPath === config.url ? (
-                      <Button className="nav-button btn-dark">
-                        {config.title}
-                      </Button>
-                    ) : (
-                      <Button outline className="nav-button btn-outline-dark">
-                        {config.title}
-                      </Button>
-                    )}
-                  </NavLink>
-                </NavItem>
-              ))}
-            </Nav>
-          </Collapse>
+          <Nav className="navbar-links" navbar>
+            {navConfig.map((config, i) => (
+              <NavItem key={i}>
+                <NavLink tag={A} href={config.url}>
+                  {currentPath === config.url ? (
+                    <Button className="nav-button btn-dark">
+                      {config.title}
+                    </Button>
+                  ) : (
+                    <Button outline className="nav-button btn-outline-dark">
+                      {config.title}
+                    </Button>
+                  )}
+                </NavLink>
+              </NavItem>
+            ))}
+          </Nav>
         </Navbar>
       </Container>
     </StyledNavbar>

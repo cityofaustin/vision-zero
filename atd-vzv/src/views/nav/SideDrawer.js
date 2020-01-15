@@ -22,7 +22,7 @@ const useStyles = makeStyles(theme => {
       display: "flex"
     },
     drawer: {
-      // Feed MUI a media query to align with Bootstrap breakpoints
+      // Feed drawer component a media query to align with Bootstrap breakpoints
       [`@media (min-width:${responsive.bootstrapMedium}px)`]: {
         width: drawerWidth,
         flexShrink: 0
