@@ -260,62 +260,62 @@ const FatalitiesMultiYear = () => {
 
   return (
     <Container>
-      <Row>
-        <Col md="2"></Col>
-        <Col md="8">
-          <h6 style={{ color: colors.blue }}>
+      <Row style={{ paddingBottom: 20 }}>
+        <Col>
+          <h6 style={{ color: colors.blue, textAlign: "center" }}>
             As of {lastMonthString}, there have been{" "}
             <strong>{calculateYearlyTotals(thisYearDeathArray)}</strong> traffic
             fatalities in {thisYear}.
           </h6>
         </Col>
-        <Col md="2"></Col>
       </Row>
-      <br></br>
-      <Row>
+      <Row style={{ paddingBottom: 20 }}>
         <Col xs="6" sm="4" md="2">
-          <h6>Prior Years:</h6>
+          <h6 style={{ textAlign: "center" }}>Prior Years:</h6>
         </Col>
         <Col xs="6" sm="4" md="2">
-          <h6>
+          <h6 style={{ textAlign: "center" }}>
             <strong>{calculateYearlyTotals(lastYearDeathArray)}</strong> in{" "}
             {getYearsAgoLabel(1)}
           </h6>
         </Col>
         <Col xs="6" sm="4" md="2">
-          <h6>
+          <h6 style={{ textAlign: "center" }}>
             <strong>{calculateYearlyTotals(twoYearsAgoDeathArray)}</strong> in{" "}
             {getYearsAgoLabel(2)}
           </h6>
         </Col>
         <Col xs="6" sm="4" md="2">
-          <h6>
+          <h6 style={{ textAlign: "center" }}>
             <strong>{calculateYearlyTotals(threeYearsAgoDeathArray)}</strong> in{" "}
             {getYearsAgoLabel(3)}
           </h6>
         </Col>
         <Col xs="6" sm="4" md="2">
-          <h6>
+          <h6 style={{ textAlign: "center" }}>
             <strong>{calculateYearlyTotals(fourYearsAgoDeathArray)}</strong> in{" "}
             {getYearsAgoLabel(4)}
           </h6>
         </Col>
         <Col xs="6" sm="4" md="2">
-          <h6>
+          <h6 style={{ textAlign: "center" }}>
             <strong>{calculateYearlyTotals(fiveYearsAgoDeathArray)}</strong> in{" "}
             {getYearsAgoLabel(5)}
           </h6>
         </Col>
       </Row>
-      <br></br>
-      <Line
-        data={data}
-        options={{
-          tooltips: {
-            mode: "x"
-          }
-        }}
-      />
+      <Row>
+        <Col>
+          <Line
+            data={data}
+            options={{
+              tooltips: {
+                mode: "x"
+              }
+            }}
+          />
+        </Col>
+      </Row>
     </Container>
   );
 };

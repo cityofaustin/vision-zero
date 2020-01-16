@@ -17,6 +17,7 @@ import { colors } from "../../constants/colors";
 const FatalitiesByTimeOfDayWeek = () => {
   const [heatmapData, setHeatmapData] = useState([]);
   const [dataView, setDataView] = useState(0);
+  const [activeTab, setActiveTab] = useState(0);
 
   const thisYear = moment().format("YYYY");
   const lastMonthNumber = moment()
@@ -121,8 +122,6 @@ const FatalitiesByTimeOfDayWeek = () => {
       .format("YYYY");
   };
 
-  const [activeTab, setActiveTab] = useState("1");
-
   const toggle = tab => {
     if (activeTab !== tab) setActiveTab(tab);
   };
@@ -130,14 +129,13 @@ const FatalitiesByTimeOfDayWeek = () => {
   return (
     <Container>
       <Row>
-        <Col md="2"></Col>
-        <Col md="8">
-          <Nav tabs>
+        <Col>
+          <Nav tabs className="justify-content-center">
             <NavItem>
               <NavLink
-                className={classnames({ active: activeTab === "6" })}
+                className={classnames({ active: activeTab === 5 })}
                 onClick={() => {
-                  toggle("6");
+                  toggle(5);
                   setDataView(5);
                 }}
               >
@@ -146,9 +144,9 @@ const FatalitiesByTimeOfDayWeek = () => {
             </NavItem>
             <NavItem>
               <NavLink
-                className={classnames({ active: activeTab === "5" })}
+                className={classnames({ active: activeTab === 4 })}
                 onClick={() => {
-                  toggle("5");
+                  toggle(4);
                   setDataView(4);
                 }}
               >
@@ -157,9 +155,9 @@ const FatalitiesByTimeOfDayWeek = () => {
             </NavItem>
             <NavItem>
               <NavLink
-                className={classnames({ active: activeTab === "4" })}
+                className={classnames({ active: activeTab === 3 })}
                 onClick={() => {
-                  toggle("4");
+                  toggle(3);
                   setDataView(3);
                 }}
               >
@@ -168,9 +166,9 @@ const FatalitiesByTimeOfDayWeek = () => {
             </NavItem>
             <NavItem>
               <NavLink
-                className={classnames({ active: activeTab === "3" })}
+                className={classnames({ active: activeTab === 2 })}
                 onClick={() => {
-                  toggle("3");
+                  toggle(2);
                   setDataView(2);
                 }}
               >
@@ -179,9 +177,9 @@ const FatalitiesByTimeOfDayWeek = () => {
             </NavItem>
             <NavItem>
               <NavLink
-                className={classnames({ active: activeTab === "2" })}
+                className={classnames({ active: activeTab === 1 })}
                 onClick={() => {
-                  toggle("2");
+                  toggle(1);
                   setDataView(1);
                 }}
               >
@@ -190,9 +188,9 @@ const FatalitiesByTimeOfDayWeek = () => {
             </NavItem>
             <NavItem>
               <NavLink
-                className={classnames({ active: activeTab === "1" })}
+                className={classnames({ active: activeTab === 0 })}
                 onClick={() => {
-                  toggle("1");
+                  toggle(0);
                   setDataView(0);
                 }}
               >
@@ -201,24 +199,25 @@ const FatalitiesByTimeOfDayWeek = () => {
             </NavItem>
           </Nav>
         </Col>
-        <Col md="2"></Col>
       </Row>
       <Row>
-        <Heatmap
-          height={200}
-          data={heatmapData}
-          series={
-            <HeatmapSeries
-              colorScheme={[
-                colors.redGradient1Of5,
-                colors.redGradient2Of5,
-                colors.redGradient3Of5,
-                colors.redGradient4Of5,
-                colors.redGradient5Of5
-              ]}
-            />
-          }
-        />
+        <Col>
+          <Heatmap
+            height={200}
+            data={heatmapData}
+            series={
+              <HeatmapSeries
+                colorScheme={[
+                  colors.redGradient1Of5,
+                  colors.redGradient2Of5,
+                  colors.redGradient3Of5,
+                  colors.redGradient4Of5,
+                  colors.redGradient5Of5
+                ]}
+              />
+            }
+          />
+        </Col>
       </Row>
     </Container>
   );
