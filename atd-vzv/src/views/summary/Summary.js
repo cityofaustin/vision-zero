@@ -4,8 +4,8 @@ import FatalitiesByMode from "./FatalitiesByMode";
 import SeriousInjuries from "./SeriousInjuries";
 import SeriousInjuryAndFatalCrashesByMonth from "./SeriousInjuryAndFatalCrashesByMonth";
 import SeriousInjuryAndFatalCrashesByMode from "./SeriousInjuryAndFatalCrashesByMode";
-import YearsOfLifeLost from "./YearsOfLifeLost";
 import FatalitiesMultiYear from "./FatalitiesMultiYear";
+import FatalitiesByTimeOfDay from "./FatalitiesByTimeOfDay"
 import SummaryView from "./SummaryView";
 import SummaryCard from "./SummaryCard";
 
@@ -24,8 +24,8 @@ const children = [
     component: <SeriousInjuryAndFatalCrashesByMode />,
     title: "Serious Injury and Fatal Crashes by Mode"
   },
-  { component: <YearsOfLifeLost />, title: "Year-to-Date Years of Life Lost" },
-  { component: <FatalitiesMultiYear />, title: "Traffic Fatalities by Year" }
+  { component: <FatalitiesMultiYear />, title: "Traffic Fatalities by Year" },
+  { component: <FatalitiesByTimeOfDay />, title: "Traffic Fatalities by Time of Day" },
 ];
 
 const Summary = () => {

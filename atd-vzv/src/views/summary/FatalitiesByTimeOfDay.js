@@ -2,20 +2,14 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import moment from "moment";
 
-import {
-  Nav,
-  NavItem,
-  NavLink,
-  Row,
-  Container
-} from "reactstrap";
+import { Nav, NavItem, NavLink, Row, Col, Container } from "reactstrap";
 import classnames from "classnames";
 import { Heatmap, HeatmapSeries } from "reaviz";
 import { colors } from "../../constants/colors";
 
 const FatalitiesByTimeOfDayWeek = () => {
   const [heatmapData, setHeatmapData] = useState([]);
-  const [dataView, setDataView] = useState(0);
+  const [activeTab, setActiveTab] = useState(0);
 
   const thisYear = moment().format("YYYY");
   const lastMonthNumber = moment()
@@ -65,11 +59,11 @@ const FatalitiesByTimeOfDayWeek = () => {
   let dataArray = [];
 
   const getFatalitiesByYearsAgoUrl = () => {
-    if (dataView === 0) {
+    if (activeTab === 0) {
       return `https://data.austintexas.gov/resource/y2wy-tgr5.json?$where=death_cnt > 0 AND crash_date between '${thisYear}-01-01T00:00:00' and '${lastMonthLastDayDate}T23:59:59'`;
     } else {
       let yearsAgoDate = moment()
-        .subtract(dataView, "year")
+        .subtract(activeTab, "year")
         .format("YYYY");
       return `https://data.austintexas.gov/resource/y2wy-tgr5.json?$where=death_cnt > 0 AND crash_date between '${yearsAgoDate}-01-01T00:00:00' and '${yearsAgoDate}-12-31T23:59:59'`;
     }
@@ -107,107 +101,109 @@ const FatalitiesByTimeOfDayWeek = () => {
     return dataArray;
   };
 
-  useEffect(() => {
-    // Fetch records for selected year
-    axios.get(getFatalitiesByYearsAgoUrl(dataView)).then(res => {
-      setHeatmapData(calculatHourBlockTotals(res));
-    });
-  }, [dataView]);
-
   const getYearsAgoLabel = yearsAgo => {
     return moment()
       .subtract(yearsAgo, "year")
       .format("YYYY");
   };
 
-  const [activeTab, setActiveTab] = useState("1");
-
   const toggle = tab => {
     if (activeTab !== tab) setActiveTab(tab);
   };
 
+  useEffect(() => {
+    // Fetch records for selected year
+    axios.get(getFatalitiesByYearsAgoUrl(activeTab)).then(res => {
+      setHeatmapData(calculatHourBlockTotals(res));
+    });
+  }, [activeTab]);
+
   return (
     <Container>
       <Row>
-        <h3>Traffic fatalities by time and day</h3>
+        <Col>
+          <Nav tabs className="justify-content-center">
+            <NavItem>
+              <NavLink
+                className={classnames({ active: activeTab === 5 })}
+                onClick={() => {
+                  toggle(5);
+                }}
+              >
+                {getYearsAgoLabel(5)}
+              </NavLink>
+            </NavItem>
+            <NavItem>
+              <NavLink
+                className={classnames({ active: activeTab === 4 })}
+                onClick={() => {
+                  toggle(4);
+                }}
+              >
+                {getYearsAgoLabel(4)}
+              </NavLink>
+            </NavItem>
+            <NavItem>
+              <NavLink
+                className={classnames({ active: activeTab === 3 })}
+                onClick={() => {
+                  toggle(3);
+                }}
+              >
+                {getYearsAgoLabel(3)}
+              </NavLink>
+            </NavItem>
+            <NavItem>
+              <NavLink
+                className={classnames({ active: activeTab === 2 })}
+                onClick={() => {
+                  toggle(2);
+                }}
+              >
+                {getYearsAgoLabel(2)}
+              </NavLink>
+            </NavItem>
+            <NavItem>
+              <NavLink
+                className={classnames({ active: activeTab === 1 })}
+                onClick={() => {
+                  toggle(1);
+                }}
+              >
+                {getYearsAgoLabel(1)}
+              </NavLink>
+            </NavItem>
+            <NavItem>
+              <NavLink
+                className={classnames({ active: activeTab === 0 })}
+                onClick={() => {
+                  toggle(0);
+                }}
+              >
+                {getYearsAgoLabel(0)}
+              </NavLink>
+            </NavItem>
+          </Nav>
+        </Col>
       </Row>
       <Row>
+        <Col>
           <Heatmap
             height={200}
-            width={400}
             data={heatmapData}
-            series={<HeatmapSeries colorScheme={[colors.redGradient1Of5, colors.redGradient2Of5, colors.redGradient3Of5, colors.redGradient4Of5, colors.redGradient5Of5]} />}
-            />
-      </Row>
-      <Row>
-        <Nav tabs>
-          <NavItem>
-            <NavLink
-              className={classnames({ active: activeTab === "6" })}
-              onClick={() => {
-                toggle("6");
-                setDataView(5);
-              }}
-            >
-              {getYearsAgoLabel(5)}
-            </NavLink>
-          </NavItem>
-          <NavItem>
-            <NavLink
-              className={classnames({ active: activeTab === "5" })}
-              onClick={() => {
-                toggle("5");
-                setDataView(4);
-              }}
-            >
-              {getYearsAgoLabel(4)}
-            </NavLink>
-          </NavItem>
-          <NavItem>
-            <NavLink
-              className={classnames({ active: activeTab === "4" })}
-              onClick={() => {
-                toggle("4");
-                setDataView(3);
-              }}
-            >
-              {getYearsAgoLabel(3)}
-            </NavLink>
-          </NavItem>
-          <NavItem>
-            <NavLink
-              className={classnames({ active: activeTab === "3" })}
-              onClick={() => {
-                toggle("3");
-                setDataView(2);
-              }}
-            >
-              {getYearsAgoLabel(2)}
-            </NavLink>
-          </NavItem>
-          <NavItem>
-            <NavLink
-              className={classnames({ active: activeTab === "2" })}
-              onClick={() => {
-                toggle("2");
-                setDataView(1);
-              }}
-            >
-              {getYearsAgoLabel(1)}
-            </NavLink>
-          </NavItem>
-          <NavItem>
-            <NavLink
-              className={classnames({ active: activeTab === "1" })}
-              onClick={() => {
-                toggle("1");
-                setDataView(0);
-              }}
-            >
-              {getYearsAgoLabel(0)}
-            </NavLink>
-          </NavItem>
-        </Nav>
+            series={
+              <HeatmapSeries
+                colorScheme={[
+                  colors.redGradient1Of5,
+                  colors.redGradient2Of5,
+                  colors.redGradient3Of5,
+                  colors.redGradient4Of5,
+                  colors.redGradient5Of5
+                ]}
+              />
+            }
+          />
+        </Col>
       </Row>
     </Container>
   );
