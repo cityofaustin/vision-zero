@@ -1,9 +1,11 @@
 import React from "react";
 import { StoreContext } from "../../utils/store";
+import "react-infinite-calendar/styles.css";
 
-import styled from "styled-components";
+import SideMapControlDateRange from "./SideMapControlDateRange";
 import { colors } from "../../constants/colors";
 import { ButtonGroup, Button, Card, Label } from "reactstrap";
+import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faWalking,
@@ -26,7 +28,7 @@ const StyledCard = styled.div`
   }
 
   .card-body {
-    background-color: ${colors.white};
+    background: ${colors.white};
   }
 `;
 
@@ -162,6 +164,7 @@ const SideMapControl = () => {
             ))}
           </ButtonGroup>
         ))}
+        <SideMapControlDateRange />
       </Card>
     </StyledCard>
   );

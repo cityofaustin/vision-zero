@@ -5,101 +5,12 @@ import moment from "moment";
 import { Nav, NavItem, NavLink, Row, Col, Container } from "reactstrap";
 import classnames from "classnames";
 import { Heatmap, HeatmapSeries } from "reaviz";
+import { thisYear } from "../../constants/time";
 import { colors } from "../../constants/colors";
 
 const FatalitiesByTimeOfDayWeek = () => {
   const [heatmapData, setHeatmapData] = useState([]);
   const [activeTab, setActiveTab] = useState(0);
-
-  const thisYear = moment().format("YYYY");
-  const lastMonthNumber = moment()
-    .subtract(1, "month")
-    .format("MM");
-  const lastMonthLastDayNumber = moment(
-    `${thisYear}-${lastMonthNumber}`,
-    "YYYY-MM"
-  ).daysInMonth();
-  const lastMonthLastDayDate = `${thisYear}-${lastMonthNumber}-${lastMonthLastDayNumber}`;
-
-  const dayOfWeekArray = [
-    "Sunday",
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday"
-  ];
-  const hourBlockArray = [
-    "12AM",
-    "01AM",
-    "02AM",
-    "03AM",
-    "04AM",
-    "05AM",
-    "06AM",
-    "07AM",
-    "08AM",
-    "09AM",
-    "10AM",
-    "11AM",
-    "12PM",
-    "01PM",
-    "02PM",
-    "03PM",
-    "04PM",
-    "05PM",
-    "06PM",
-    "07PM",
-    "08PM",
-    "09PM",
-    "10PM",
-    "11PM"
-  ];
-  let dataArray = [];
-
-  const getFatalitiesByYearsAgoUrl = () => {
-    if (activeTab === 0) {
-      return `https://data.austintexas.gov/resource/y2wy-tgr5.json?$where=death_cnt > 0 AND crash_date between '${thisYear}-01-01T00:00:00' and '${lastMonthLastDayDate}T23:59:59'`;
-    } else {
-      let yearsAgoDate = moment()
-        .subtract(activeTab, "year")
-        .format("YYYY");
-      return `https://data.austintexas.gov/resource/y2wy-tgr5.json?$where=death_cnt > 0 AND crash_date between '${yearsAgoDate}-01-01T00:00:00' and '${yearsAgoDate}-12-31T23:59:59'`;
-    }
-  };
-
-  const buildDataArray = () => {
-    dataArray = [];
-    hourBlockArray.forEach(hour => {
-      let hourObject = {
-        key: hour,
-        data: []
-      };
-      dayOfWeekArray.forEach(day => {
-        let dayObject = {
-          key: day,
-          data: 0
-        };
-        hourObject.data.push(dayObject);
-      });
-      hourObject.data.reverse();
-      dataArray.push(hourObject);
-    });
-  };
-
-  const calculatHourBlockTotals = data => {
-    buildDataArray();
-    data.data.forEach(record => {
-      const date = new Date(record.crash_date);
-      const dayOfWeek = date.getDay();
-      const time = record.crash_time;
-      const timeArray = time.split(":");
-      const hour = parseInt(timeArray[0]);
-      dataArray[hour].data[dayOfWeek].data++;
-    });
-    return dataArray;
-  };
 
   const getYearsAgoLabel = yearsAgo => {
     return moment()
@@ -112,9 +23,100 @@ const FatalitiesByTimeOfDayWeek = () => {
   };
 
   useEffect(() => {
+    const lastMonthNumber = moment()
+      .subtract(1, "month")
+      .format("MM");
+    const lastMonthLastDayNumber = moment(
+      `${thisYear}-${lastMonthNumber}`,
+      "YYYY-MM"
+    ).daysInMonth();
+
+    const lastMonthLastDayDate = `${thisYear}-${lastMonthNumber}-${lastMonthLastDayNumber}`;
+
+    const dayOfWeekArray = [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday"
+    ];
+    const hourBlockArray = [
+      "12AM",
+      "01AM",
+      "02AM",
+      "03AM",
+      "04AM",
+      "05AM",
+      "06AM",
+      "07AM",
+      "08AM",
+      "09AM",
+      "10AM",
+      "11AM",
+      "12PM",
+      "01PM",
+      "02PM",
+      "03PM",
+      "04PM",
+      "05PM",
+      "06PM",
+      "07PM",
+      "08PM",
+      "09PM",
+      "10PM",
+      "11PM"
+    ];
+
+    const getFatalitiesByYearsAgoUrl = () => {
+      if (activeTab === 0) {
+        return `https://data.austintexas.gov/resource/y2wy-tgr5.json?$where=death_cnt > 0 AND crash_date between '${thisYear}-01-01T00:00:00' and '${lastMonthLastDayDate}T23:59:59'`;
+      } else {
+        let yearsAgoDate = moment()
+          .subtract(activeTab, "year")
+          .format("YYYY");
+        return `https://data.austintexas.gov/resource/y2wy-tgr5.json?$where=death_cnt > 0 AND crash_date between '${yearsAgoDate}-01-01T00:00:00' and '${yearsAgoDate}-12-31T23:59:59'`;
+      }
+    };
+
+    let dataArray = [];
+
+    const buildDataArray = () => {
+      dataArray = [];
+      hourBlockArray.forEach(hour => {
+        let hourObject = {
+          key: hour,
+          data: []
+        };
+        dayOfWeekArray.forEach(day => {
+          let dayObject = {
+            key: day,
+            data: 0
+          };
+          hourObject.data.push(dayObject);
+        });
+        hourObject.data.reverse();
+        dataArray.push(hourObject);
+      });
+    };
+
+    const calculateHourBlockTotals = data => {
+      buildDataArray();
+      data.data.forEach(record => {
+        const date = new Date(record.crash_date);
+        const dayOfWeek = date.getDay();
+        const time = record.crash_time;
+        const timeArray = time.split(":");
+        const hour = parseInt(timeArray[0]);
+        dataArray[hour].data[dayOfWeek].data++;
+      });
+      return dataArray;
+    };
+
     // Fetch records for selected year
     axios.get(getFatalitiesByYearsAgoUrl(activeTab)).then(res => {
-      setHeatmapData(calculatHourBlockTotals(res));
+      setHeatmapData(calculateHourBlockTotals(res));
     });
   }, [activeTab]);
 

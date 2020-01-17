@@ -3,7 +3,7 @@ import axios from "axios";
 import SummaryWidget from "../../Components/Widgets/SummaryWidget";
 import { Row, Col } from "reactstrap";
 
-import { thisYear } from "./helpers/time";
+import { thisYear } from "../../constants/time";
 import {
   fatalitiesYTDUrl,
   seriousInjuriesYTDUrl,

@@ -1,5 +1,6 @@
 export const colors = {
   info: "#18A2B8",
+  infoDark: "#257A8B",
   dark: "#343A41",
   light: "#f0f3f5",
   white: "#ffffff",
@@ -9,6 +10,10 @@ export const colors = {
   danger: "#f86c6b",
   warning: "#ffc107",
   success: "#4dbd74",
+  chartRed: "#a50f15",
+  chartOrange: "#fb6a4a",
+  chartRedOrange: "#de2d26",
+  chartBlue: "#08519c",
   redGradient1Of5: "#fee5d9",
   redGradient2Of5: "#fcae91",
   redGradient3Of5: "#fb6a4a",

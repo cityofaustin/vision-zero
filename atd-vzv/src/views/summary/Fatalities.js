@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { calculateTotalFatalities } from "./helpers/helpers";
-import { thisYear, lastYear } from "./helpers/time";
+import { thisYear, lastYear } from "../../constants/time";
 import {
   fatalitiesYTDUrl,
   previousYearFatalitiesUrl

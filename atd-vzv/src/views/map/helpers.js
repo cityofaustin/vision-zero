@@ -1,3 +1,5 @@
+import { crashGeoJSONEndpointUrl } from "../../views/summary/queries/socrataQueries";
+
 const generateWhereFilters = filters => {
   // Store filter group query strings
   let whereFiltersArray = [];
@@ -27,12 +29,12 @@ const generateWhereFilters = filters => {
   return whereFiltersArray.join(" AND ");
 };
 
-export const createMapDataUrl = filters => {
+export const createMapDataUrl = (filters, dateRange) => {
   const whereFilterString = generateWhereFilters(filters);
 
   return (
-    `https://data.austintexas.gov/resource/y2wy-tgr5.geojson?$limit=1000` +
-    `&$where=crash_date between '2019-01-01T00:00:00' and '2019-12-07T23:59:59'` +
+    `${crashGeoJSONEndpointUrl}?$limit=1000` +
+    `&$where=crash_date between '${dateRange.start}' and '${dateRange.end}'` +
     // if there are filters applied, add AND operator to create valid query url
     `${filters.length > 0 ? "AND" : ""} ${whereFilterString || ""}`
   );

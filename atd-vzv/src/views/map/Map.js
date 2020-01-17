@@ -34,17 +34,18 @@ const Map = () => {
   const [hoveredFeature, setHoveredFeature] = useState(null);
 
   const {
-    mapFilters: [filters]
+    mapFilters: [filters],
+    mapDateRange: [dateRange]
   } = React.useContext(StoreContext);
 
   // Fetch initial crash data and refetch upon filters change
   useEffect(() => {
-    const apiUrl = createMapDataUrl(filters);
+    const apiUrl = createMapDataUrl(filters, dateRange);
 
     axios.get(apiUrl).then(res => {
       setMapData(res.data);
     });
-  }, [filters]);
+  }, [filters, dateRange]);
 
   const _onViewportChange = viewport => setViewport(viewport);
 
@@ -63,7 +64,7 @@ const Map = () => {
 
   // Show tooltip if hovering over a feature
   const _renderTooltip = () => {
-    const { feature, x, y } = hoveredFeature;
+    const { feature } = hoveredFeature;
 
     return (
       feature && (
