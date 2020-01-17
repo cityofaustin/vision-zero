@@ -40,7 +40,7 @@ const StyledNavbar = styled.div`
 
   .sidedrawer-toggle {
     /* Hide toggle button in header when SideDrawer is open by default */
-    @media only screen and (min-width: ${responsive.bootstrapMedium}px) {
+    @media only screen and (min-width: ${responsive.bootstrapMediumMin}px) {
       display: none;
     }
   }
@@ -58,7 +58,7 @@ const StyledNavbar = styled.div`
     position: absolute;
 
     /* Hide logo in header when SideDrawer is closed and toggle is present (mobile) */
-    @media only screen and (min-width: ${responsive.bootstrapMedium}px) {
+    @media only screen and (min-width: ${responsive.bootstrapMediumMin}px) {
       display: none;
     }
 
@@ -90,7 +90,7 @@ const Header = () => {
       <Container className="navbar-container" fluid>
         <Navbar
           light
-          className="navbar shadow-sm p-3 rounded fixed-top header-navbar"
+          className="navbar shadow-sm p-3 fixed-top header-navbar"
           expand="md"
         >
           <Button

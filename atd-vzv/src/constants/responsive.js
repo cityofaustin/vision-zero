@@ -1,6 +1,7 @@
 // Use to unify Bootstrap breakpoints with media queries
 export const responsive = {
-  // Add one to bootstrapMedium breakpoint to avoid media query conflicts
-  bootstrapMedium: 769,
+  bootstrapMedium: 768,
+  // Use for media queries with min-width defined to avoid style conflicts
+  bootstrapMediumMin: 769,
   bootstrapExtraSmall: 576
 };

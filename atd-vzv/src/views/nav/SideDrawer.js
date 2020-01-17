@@ -23,7 +23,7 @@ const useStyles = makeStyles(theme => {
     },
     drawer: {
       // Feed drawer component a media query to align with Bootstrap breakpoints
-      [`@media (min-width:${responsive.bootstrapMedium}px)`]: {
+      [`@media (min-width:${responsive.bootstrapMediumMin}px)`]: {
         width: drawerWidth,
         flexShrink: 0
       }
@@ -56,7 +56,7 @@ const StyledDrawerHeader = styled.div`
 
 const StyledDrawer = styled.div`
   #temporary-drawer {
-    @media only screen and (min-width: ${responsive.bootstrapMedium}px) {
+    @media only screen and (min-width: ${responsive.bootstrapMediumMin}px) {
       display: none;
     }
   }
