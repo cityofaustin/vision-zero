@@ -13,7 +13,7 @@ const navConfig = [
 ];
 
 const StyledMobileNav = styled.div`
-  @media only screen and (min-width: ${responsive.bootstrapMedium}px) {
+  @media only screen and (min-width: ${responsive.bootstrapMediumMin}px) {
     display: none;
   }
 `;
