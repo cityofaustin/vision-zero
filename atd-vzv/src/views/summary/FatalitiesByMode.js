@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import moment from "moment";
 import { Bar } from "react-chartjs-2";
@@ -21,13 +21,13 @@ const FatalitiesByMode = () => {
     { label: "Pedalcyclist", flag: "pedalcyclist_fl", color: colors.chartBlue }
   ];
   const yearLimit = 10; // Number of years to display in chart
-  const yearsArray = (() => {
+  const yearsArray = useCallback(() => {
     let years = [];
     for (let i = 0; i < yearLimit; i++) {
       years.push(parseInt(thisYear) - i);
     }
     return years;
-  })();
+  }, []);
 
   const [chartData, setChartData] = useState("");
   const [latestRecordDate, setLatestRecordDate] = useState("");
@@ -38,7 +38,7 @@ const FatalitiesByMode = () => {
       let newData = {};
       // Use Promise.all to let all requests resolve before setting chart data by year
       await Promise.all(
-        yearsArray.map(async year => {
+        yearsArray().map(async year => {
           const url = `${demographicsEndpointUrl}?$where=(prsn_injry_sev_id = 4) AND crash_date between '${year}-01-01T00:00:00' and '${year}-12-31T23:59:59'`;
 
           await axios.get(url).then(res => {
@@ -52,7 +52,7 @@ const FatalitiesByMode = () => {
     };
 
     getChartData();
-  }, []);
+  }, [yearsArray]);
 
   // Fetch latest record from demographics dataset and set for chart subheading
   useEffect(() => {
@@ -65,16 +65,20 @@ const FatalitiesByMode = () => {
     });
   }, []);
 
-  const createChartLabels = () => yearsArray.sort().map(year => `${year}`);
+  const createChartLabels = () =>
+    yearsArray()
+      .sort()
+      .map(year => `${year}`);
 
   // Tabulate fatalities by mode from data
   const getModeData = flag =>
-    yearsArray.map(year => {
-      let fatalities = 0;
-
-      chartData[year].forEach(f => f[`${flag}`] === "Y" && fatalities++);
-      return fatalities;
-    });
+    yearsArray()
+      .sort()
+      .map(year => {
+        let fatalities = 0;
+        chartData[year].forEach(f => f[`${flag}`] === "Y" && fatalities++);
+        return fatalities;
+      });
 
   // Create dataset for each mode type
   // data property is an array of fatality sums sorted chronologically

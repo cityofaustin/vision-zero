@@ -5,18 +5,10 @@ import moment from "moment";
 import { Line } from "react-chartjs-2";
 import { Container, Row, Col } from "reactstrap";
 import { crashEndpointUrl } from "./queries/socrataQueries";
+import { thisYear } from "../../constants/time";
 import { colors } from "../../constants/colors";
 
 const FatalitiesMultiYear = () => {
-  const thisYear = moment().format("YYYY");
-  const lastMonthNumber = moment()
-    .subtract(1, "month")
-    .format("MM");
-  const lastMonthLastDayNumber = moment(
-    `${thisYear}-${lastMonthNumber}`,
-    "YYYY-MM"
-  ).daysInMonth();
-  const lastMonthLastDayDate = `${thisYear}-${lastMonthNumber}-${lastMonthLastDayNumber}`;
   const lastMonthString = moment()
     .subtract(1, "month")
     .format("MMMM");
@@ -26,8 +18,6 @@ const FatalitiesMultiYear = () => {
       .subtract(yearsAgo, "year")
       .format("YYYY");
   };
-
-  const thisYearUrl = `${crashEndpointUrl}?$where=death_cnt > 0 AND crash_date between '${thisYear}-01-01T00:00:00' and '${lastMonthLastDayDate}T23:59:59'`;
 
   const [thisYearDeathArray, setThisYearDeathArray] = useState([]);
   const [lastYearDeathArray, setLastYearDeathArray] = useState([]);
@@ -76,6 +66,17 @@ const FatalitiesMultiYear = () => {
   };
 
   useEffect(() => {
+    const lastMonthNumber = moment()
+      .subtract(1, "month")
+      .format("MM");
+    const lastMonthLastDayNumber = moment(
+      `${thisYear}-${lastMonthNumber}`,
+      "YYYY-MM"
+    ).daysInMonth();
+    const lastMonthLastDayDate = `${thisYear}-${lastMonthNumber}-${lastMonthLastDayNumber}`;
+
+    const thisYearUrl = `${crashEndpointUrl}?$where=death_cnt > 0 AND crash_date between '${thisYear}-01-01T00:00:00' and '${lastMonthLastDayDate}T23:59:59'`;
+
     const getFatalitiesByYearsAgoUrl = yearsAgo => {
       let yearsAgoDate = moment()
         .subtract(yearsAgo, "year")
@@ -261,107 +262,62 @@ const FatalitiesMultiYear = () => {
 
   return (
     <Container>
-      <Row>
-        <Col md="12">
-          <h5 style={{ color: colors.blue }}>
-            As of {lastMonthString}, there have been <strong>{calculateYearlyTotals(thisYearDeathArray)}</strong> traffic fatalities in {thisYear}.
-          </h5>
+      <Row style={{ paddingBottom: 20 }}>
+        <Col>
+          <h6 style={{ color: colors.blue, textAlign: "center" }}>
+            As of {lastMonthString}, there have been{" "}
+            <strong>{calculateYearlyTotals(thisYearDeathArray)}</strong> traffic
+            fatalities in {thisYear}.
+          </h6>
+        </Col>
+      </Row>
+      <Row style={{ paddingBottom: 20 }}>
+        <Col xs="6" sm="4" md="2">
+          <h6 style={{ textAlign: "center" }}>Prior Years:</h6>
+        </Col>
+        <Col xs="6" sm="4" md="2">
+          <h6 style={{ textAlign: "center" }}>
+            <strong>{calculateYearlyTotals(lastYearDeathArray)}</strong> in{" "}
+            {getYearsAgoLabel(1)}
+          </h6>
+        </Col>
+        <Col xs="6" sm="4" md="2">
+          <h6 style={{ textAlign: "center" }}>
+            <strong>{calculateYearlyTotals(twoYearsAgoDeathArray)}</strong> in{" "}
+            {getYearsAgoLabel(2)}
+          </h6>
+        </Col>
+        <Col xs="6" sm="4" md="2">
+          <h6 style={{ textAlign: "center" }}>
+            <strong>{calculateYearlyTotals(threeYearsAgoDeathArray)}</strong> in{" "}
+            {getYearsAgoLabel(3)}
+          </h6>
+        </Col>
+        <Col xs="6" sm="4" md="2">
+          <h6 style={{ textAlign: "center" }}>
+            <strong>{calculateYearlyTotals(fourYearsAgoDeathArray)}</strong> in{" "}
+            {getYearsAgoLabel(4)}
+          </h6>
+        </Col>
+        <Col xs="6" sm="4" md="2">
+          <h6 style={{ textAlign: "center" }}>
+            <strong>{calculateYearlyTotals(fiveYearsAgoDeathArray)}</strong> in{" "}
+            {getYearsAgoLabel(5)}
+          </h6>
         </Col>
       </Row>
       <Row>
-        <Col md="2">
-          <Row>
-            <Col md="12">
-              <h6>Prior</h6>
-            </Col>
-          </Row>
-          <Row>
-            <Col md="12">
-              <h6>Years:</h6>
-            </Col>
-          </Row>
-        </Col>
-        <Col md="2">
-          <Row>
-            <Col md="12">
-              <h6>
-                <strong>{calculateYearlyTotals(lastYearDeathArray)}</strong>
-              </h6>
-            </Col>
-          </Row>
-          <Row>
-            <Col md="12">
-              <h6>in {getYearsAgoLabel(1)}</h6>
-            </Col>
-          </Row>
-        </Col>
-        <Col md="2">
-          <Row>
-            <Col md="12">
-              <h6>
-                <strong>{calculateYearlyTotals(twoYearsAgoDeathArray)}</strong>
-              </h6>
-            </Col>
-          </Row>
-          <Row>
-            <Col md="12">
-              <h6>in {getYearsAgoLabel(2)}</h6>
-            </Col>
-          </Row>
-        </Col>
-        <Col md="2">
-          <Row>
-            <Col md="12">
-              <h6>
-                <strong>
-                  {calculateYearlyTotals(threeYearsAgoDeathArray)}
-                </strong>
-              </h6>
-            </Col>
-          </Row>
-          <Row>
-            <Col md="12">
-              <h6>in {getYearsAgoLabel(3)}</h6>
-            </Col>
-          </Row>
-        </Col>
-        <Col md="2">
-          <Row>
-            <Col md="12">
-              <h6>
-                <strong>{calculateYearlyTotals(fourYearsAgoDeathArray)}</strong>
-              </h6>
-            </Col>
-          </Row>
-          <Row>
-            <Col md="12">
-              <h6>in {getYearsAgoLabel(4)}</h6>
-            </Col>
-          </Row>
-        </Col>
-        <Col md="2">
-          <Row>
-            <Col md="12">
-              <h6>
-                <strong>{calculateYearlyTotals(fiveYearsAgoDeathArray)}</strong>
-              </h6>
-            </Col>
-          </Row>
-          <Row>
-            <Col md="12">
-              <h6>in {getYearsAgoLabel(5)}</h6>
-            </Col>
-          </Row>
+        <Col>
+          <Line
+            data={data}
+            options={{
+              tooltips: {
+                mode: "x"
+              }
+            }}
+          />
         </Col>
       </Row>
-      <Line
-        data={data}
-        options={{
-          tooltips: {
-            mode: "x"
-          }
-        }}
-      />
     </Container>
   );
 };
