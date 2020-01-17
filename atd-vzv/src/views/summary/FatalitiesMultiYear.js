@@ -5,18 +5,10 @@ import moment from "moment";
 import { Line } from "react-chartjs-2";
 import { Container, Row, Col } from "reactstrap";
 import { crashEndpointUrl } from "./queries/socrataQueries";
+import { thisYear } from "../../constants/time";
 import { colors } from "../../constants/colors";
 
 const FatalitiesMultiYear = () => {
-  const thisYear = moment().format("YYYY");
-  const lastMonthNumber = moment()
-    .subtract(1, "month")
-    .format("MM");
-  const lastMonthLastDayNumber = moment(
-    `${thisYear}-${lastMonthNumber}`,
-    "YYYY-MM"
-  ).daysInMonth();
-  const lastMonthLastDayDate = `${thisYear}-${lastMonthNumber}-${lastMonthLastDayNumber}`;
   const lastMonthString = moment()
     .subtract(1, "month")
     .format("MMMM");
@@ -26,8 +18,6 @@ const FatalitiesMultiYear = () => {
       .subtract(yearsAgo, "year")
       .format("YYYY");
   };
-
-  const thisYearUrl = `${crashEndpointUrl}?$where=death_cnt > 0 AND crash_date between '${thisYear}-01-01T00:00:00' and '${lastMonthLastDayDate}T23:59:59'`;
 
   const [thisYearDeathArray, setThisYearDeathArray] = useState([]);
   const [lastYearDeathArray, setLastYearDeathArray] = useState([]);
@@ -76,6 +66,17 @@ const FatalitiesMultiYear = () => {
   };
 
   useEffect(() => {
+    const lastMonthNumber = moment()
+      .subtract(1, "month")
+      .format("MM");
+    const lastMonthLastDayNumber = moment(
+      `${thisYear}-${lastMonthNumber}`,
+      "YYYY-MM"
+    ).daysInMonth();
+    const lastMonthLastDayDate = `${thisYear}-${lastMonthNumber}-${lastMonthLastDayNumber}`;
+
+    const thisYearUrl = `${crashEndpointUrl}?$where=death_cnt > 0 AND crash_date between '${thisYear}-01-01T00:00:00' and '${lastMonthLastDayDate}T23:59:59'`;
+
     const getFatalitiesByYearsAgoUrl = yearsAgo => {
       let yearsAgoDate = moment()
         .subtract(yearsAgo, "year")

@@ -64,7 +64,7 @@ const Map = () => {
 
   // Show tooltip if hovering over a feature
   const _renderTooltip = () => {
-    const { feature, x, y } = hoveredFeature;
+    const { feature } = hoveredFeature;
 
     return (
       feature && (
