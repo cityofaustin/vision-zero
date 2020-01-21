@@ -1,16 +1,9 @@
 import React from "react";
 import { A, usePath } from "hookrouter";
 import { Button, Nav, NavItem, NavLink } from "reactstrap";
+import { navConfig } from "../../constants/nav";
 import { responsive } from "../../constants/responsive";
 import styled from "styled-components";
-
-const navConfig = [
-  {
-    title: "Summary",
-    url: "/summary"
-  },
-  { title: "Map", url: "/map" }
-];
 
 const StyledMobileNav = styled.div`
   @media only screen and (min-width: ${responsive.bootstrapMediumMin}px) {

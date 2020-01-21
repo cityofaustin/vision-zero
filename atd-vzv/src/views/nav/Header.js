@@ -4,6 +4,7 @@ import { A, usePath } from "hookrouter";
 
 import { Container, Navbar, Button, Nav, NavItem, NavLink } from "reactstrap";
 import styled from "styled-components";
+import { navConfig } from "../../constants/nav";
 import { drawer } from "../../constants/drawer";
 import { responsive } from "../../constants/responsive";
 import { colors } from "../../constants/colors";
@@ -68,14 +69,6 @@ const StyledNavbar = styled.div`
     }
   }
 `;
-
-const navConfig = [
-  {
-    title: "Summary",
-    url: "/summary"
-  },
-  { title: "Map", url: "/map" }
-];
 
 const Header = () => {
   const currentPath = usePath();
