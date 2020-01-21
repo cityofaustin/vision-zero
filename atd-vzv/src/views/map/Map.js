@@ -32,11 +32,22 @@ const Map = () => {
 
   const [mapData, setMapData] = useState("");
   const [hoveredFeature, setHoveredFeature] = useState(null);
+  const [overlay, setOverlay] = useState("");
 
   const {
     mapFilters: [filters],
     mapDateRange: [dateRange]
   } = React.useContext(StoreContext);
+
+  useEffect(() => {
+    const overlayUrl = `https://services.arcgis.com/0L95CJ0VTaxqcmED/ArcGIS/rest/services/TRANSPORTATION_asmp_street_network/FeatureServer/0/query?where=1=1&f=geojson`;
+    // TODO: Need to get street level metadata from ArcGIS in order to style the layer based on level
+    // Street Level 2
+    // https://services.arcgis.com/0L95CJ0VTaxqcmED/ArcGIS/rest/services/TRANSPORTATION_asmp_street_network/FeatureServer/0/query?where=STREET_LEVEL=2&f=geojson
+    axios.get(overlayUrl).then(res => {
+      setOverlay(res.data);
+    });
+  }, []);
 
   // Fetch initial crash data and refetch upon filters change
   useEffect(() => {
@@ -96,6 +107,11 @@ const Map = () => {
     >
       {!!mapData && (
         <Source type="geojson" data={mapData}>
+          <Layer {...dataLayer} />
+        </Source>
+      )}
+      {!!overlay && (
+        <Source type="geojson" data={overlay}>
           <Layer {...dataLayer} />
         </Source>
       )}
