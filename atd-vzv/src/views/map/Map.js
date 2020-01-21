@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { StoreContext } from "../../utils/store";
 import ReactMapGL, { Source, Layer } from "react-map-gl";
 import { createMapDataUrl } from "./helpers";
-import { dataLayer } from "./map-style";
+import { crashDataLayer, asmpDataLayer } from "./map-style";
 import axios from "axios";
 
 import { Card, CardBody, CardText } from "reactstrap";
@@ -40,10 +40,12 @@ const Map = () => {
   } = React.useContext(StoreContext);
 
   useEffect(() => {
-    const overlayUrl = `https://services.arcgis.com/0L95CJ0VTaxqcmED/ArcGIS/rest/services/TRANSPORTATION_asmp_street_network/FeatureServer/0/query?where=1=1&f=geojson`;
-    // TODO: Need to get street level metadata from ArcGIS in order to style the layer based on level
-    // Street Level 2
-    // https://services.arcgis.com/0L95CJ0VTaxqcmED/ArcGIS/rest/services/TRANSPORTATION_asmp_street_network/FeatureServer/0/query?where=STREET_LEVEL=2&f=geojson
+    const overlayUrl = `https://services.arcgis.com/0L95CJ0VTaxqcmED/ArcGIS/rest/services/TRANSPORTATION_asmp_street_network/FeatureServer/0/query?where=STREET_LEVEL%20%3E=%200&orderByFields=OBJECTID%20ASC&resultRecordCount=1000&resultOffset=0&outFields=*&f=geojson`;
+    // TODO: Use viewport as parameter to query ArcGIS? Don't need to query all records for entire map at once
+    // Url needs &outFields=* in query to get all metadata
+    // Street Level >= 0 & orderByFields=OBJECTID ASC & 1000 results with 0 offset
+    // https://services.arcgis.com/0L95CJ0VTaxqcmED/ArcGIS/rest/services/TRANSPORTATION_asmp_street_network/FeatureServer/0/query?where=STREET_LEVEL%20%3E=%200&orderByFields=OBJECTID%20ASC&resultRecordCount=1000&resultOffset=0&outFields=*&f=geojson
+    // Paging through data https://github.com/koopjs/FeatureServer/issues/141
     axios.get(overlayUrl).then(res => {
       setOverlay(res.data);
     });
@@ -105,14 +107,14 @@ const Map = () => {
       getCursor={_getCursor}
       onHover={_onHover}
     >
-      {!!mapData && (
+      {/* {!!mapData && (
         <Source type="geojson" data={mapData}>
-          <Layer {...dataLayer} />
+          <Layer {...crashDataLayer} />
         </Source>
-      )}
+      )} */}
       {!!overlay && (
         <Source type="geojson" data={overlay}>
-          <Layer {...dataLayer} />
+          <Layer {...asmpDataLayer} />
         </Source>
       )}
       {hoveredFeature && _renderTooltip()}
