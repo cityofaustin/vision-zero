@@ -32,7 +32,7 @@ const Map = () => {
 
   const [mapData, setMapData] = useState("");
   const [hoveredFeature, setHoveredFeature] = useState(null);
-  const [overlay, setOverlay] = useState("");
+  const [overlayDataFeatures, setOverlayData] = useState([]);
 
   const {
     mapFilters: [filters],
@@ -40,15 +40,38 @@ const Map = () => {
   } = React.useContext(StoreContext);
 
   useEffect(() => {
-    const overlayUrl = `https://services.arcgis.com/0L95CJ0VTaxqcmED/ArcGIS/rest/services/TRANSPORTATION_asmp_street_network/FeatureServer/0/query?where=STREET_LEVEL%20%3E=%200&orderByFields=OBJECTID%20ASC&resultRecordCount=1000&resultOffset=0&outFields=*&f=geojson`;
     // TODO: Use viewport as parameter to query ArcGIS? Don't need to query all records for entire map at once
     // Url needs &outFields=* in query to get all metadata
     // Street Level >= 0 & orderByFields=OBJECTID ASC & 1000 results with 0 offset
     // https://services.arcgis.com/0L95CJ0VTaxqcmED/ArcGIS/rest/services/TRANSPORTATION_asmp_street_network/FeatureServer/0/query?where=STREET_LEVEL%20%3E=%200&orderByFields=OBJECTID%20ASC&resultRecordCount=1000&resultOffset=0&outFields=*&f=geojson
     // Paging through data https://github.com/koopjs/FeatureServer/issues/141
-    axios.get(overlayUrl).then(res => {
-      setOverlay(res.data);
-    });
+
+    let offset = 0;
+    const getOverlayData = offset => {
+      const overlayUrl = `https://services.arcgis.com/0L95CJ0VTaxqcmED/ArcGIS/rest/services/TRANSPORTATION_asmp_street_network/FeatureServer/0/query?where=STREET_LEVEL%20%3E=%200&orderByFields=OBJECTID%20ASC&resultRecordCount=1000&resultOffset=${offset}&outFields=*&f=geojson`;
+      axios.get(overlayUrl).then(res => {
+        const transferLimitResult =
+          (res.data.properties && res.data.properties.exceededTransferLimit) ||
+          false;
+        if (offset === 0) {
+          offset += 1000;
+          const newFeatures = res.data.features;
+          setOverlayData(prevState => [...prevState, ...newFeatures]);
+          setTimeout(() => {
+            getOverlayData(offset);
+          }, 1000);
+        } else if (transferLimitResult && offset >= 1000) {
+          offset += 1000;
+          const newFeatures = res.data.features;
+          setOverlayData(prevState => [...prevState, ...newFeatures]);
+          setTimeout(() => {
+            getOverlayData(offset);
+          }, 1000);
+        }
+      });
+    };
+
+    getOverlayData(offset);
   }, []);
 
   // Fetch initial crash data and refetch upon filters change
@@ -112,8 +135,11 @@ const Map = () => {
           <Layer {...crashDataLayer} />
         </Source>
       )} */}
-      {!!overlay && (
-        <Source type="geojson" data={overlay}>
+      {!!overlayDataFeatures && (
+        <Source
+          type="geojson"
+          data={{ type: "FeatureCollection", features: overlayDataFeatures }}
+        >
           <Layer {...asmpDataLayer} />
         </Source>
       )}
