@@ -100,16 +100,12 @@ const FatalitiesMultiYear = () => {
       let yearsAgoDate = moment()
         .subtract(yearsAgo, "year")
         .format("YYYY");
-      console.log(
-        `${crashEndpointUrl}?$where=death_cnt > 0 AND crash_date between '${yearsAgoDate}-01-01T00:00:00' and '${yearsAgoDate}-12-31T23:59:59'`
-      );
       return `${crashEndpointUrl}?$where=death_cnt > 0 AND crash_date between '${yearsAgoDate}-01-01T00:00:00' and '${yearsAgoDate}-12-31T23:59:59'`;
     };
 
     // If there is a full month of data available for the current year (i.e., we are past January),
     // fetch records for this year through last month
     if (thisMonth > "01") {
-      console.log(thisYearUrl);
       axios.get(thisYearUrl).then(res => {
         setThisYearDeathArray(
           calculateMonthlyTotals(res, lastMonthLastDayDate)
