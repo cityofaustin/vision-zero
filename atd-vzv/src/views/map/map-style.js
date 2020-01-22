@@ -36,6 +36,7 @@ export const asmpConfig = {
   }
 };
 
+// Build Mapbox GL layers for each ASMP Street Level in config
 export const buildAsmpLayers = (config, overlay) =>
   Object.entries(config).map(([level, parameters], i) => {
     const asmpLayerConfig = {

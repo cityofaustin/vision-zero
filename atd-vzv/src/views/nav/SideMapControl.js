@@ -3,6 +3,7 @@ import { StoreContext } from "../../utils/store";
 import "react-infinite-calendar/styles.css";
 
 import SideMapControlDateRange from "./SideMapControlDateRange";
+import SideMapControlOverlays from "./SideMapControlOverlays";
 import { colors } from "../../constants/colors";
 import { ButtonGroup, Button, Card, Label } from "reactstrap";
 import styled from "styled-components";
@@ -34,8 +35,7 @@ const StyledCard = styled.div`
 
 const SideMapControl = () => {
   const {
-    mapFilters: [filters, setFilters],
-    mapOverlay: [overlay, setOverlay]
+    mapFilters: [filters, setFilters]
   } = React.useContext(StoreContext);
 
   // Clear all filters that match group arg
@@ -97,23 +97,6 @@ const SideMapControl = () => {
         type: `where`,
         operator: `AND`
       }
-    }
-  };
-
-  const overlays = {
-    asmp: {
-      title: "ASMP Street Levels"
-    }
-  };
-
-  const handleOverlayClick = event => {
-    // Set overlay in Context store or remove it
-    const overlayName = event.currentTarget.id;
-
-    if (overlay !== overlayName) {
-      setOverlay(overlayName);
-    } else if (overlay === overlayName) {
-      setOverlay("");
     }
   };
 
@@ -184,23 +167,7 @@ const SideMapControl = () => {
         ))}
         <SideMapControlDateRange />
       </Card>
-      <Card className="mt-3 p-3 card-body">
-        <Label className="section-title">Overlays</Label>
-        {/* Create a button group for each overlay */}
-        {Object.entries(overlays).map(([name, parameters], i) => (
-          <Button
-            key={i}
-            id={name}
-            color="info"
-            className="w-100 pt-1 pb-1 pl-0 pr-0"
-            onClick={handleOverlayClick}
-            active={name === overlay}
-            outline={name !== overlay}
-          >
-            {parameters.title}
-          </Button>
-        ))}
-      </Card>
+      <SideMapControlOverlays />
     </StyledCard>
   );
 };
