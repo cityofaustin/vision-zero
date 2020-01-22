@@ -111,6 +111,27 @@ const Map = () => {
     );
   };
 
+  const asmpLayer = {
+    id: "asmp_street_network/4",
+    type: "line",
+    source: {
+      type: "vector",
+      tiles: [
+        "https://tiles.arcgis.com/tiles/0L95CJ0VTaxqcmED/arcgis/rest/services/ASMP_Streets_VectorTile/VectorTileServer/tile/{z}/{y}/{x}.pbf"
+      ]
+    },
+    "source-layer": "asmp_street_network",
+    filter: ["==", "_symbol", 4],
+    layout: {
+      "line-cap": "round",
+      "line-join": "round"
+    },
+    paint: {
+      "line-color": "#1B519D",
+      "line-width": 2.66667
+    }
+  };
+
   return (
     <ReactMapGL
       {...viewport}
@@ -121,7 +142,7 @@ const Map = () => {
       getCursor={_getCursor}
       onHover={_onHover}
     >
-      {!!overlayDataFeatures && overlay === "asmp" && (
+      {/* {!!overlayDataFeatures && overlay === "asmp" && (
         <Source
           id="asmp"
           type="geojson"
@@ -129,7 +150,8 @@ const Map = () => {
         >
           <Layer beforeId="crashes" {...asmpDataLayer} />
         </Source>
-      )}
+      )} */}
+      <Layer {...asmpLayer} />
       {!!mapData && (
         <Source id="crashes" type="geojson" data={mapData}>
           <Layer {...crashDataLayer} />
