@@ -66,23 +66,22 @@ const FatalitiesMultiYear = () => {
   };
 
   const renderHeader = () => {
+    let deathArray;
+    let year;
     if (thisMonth > "01") {
-      return (
-        <h6 style={{ color: colors.blue, textAlign: "center" }}>
-          As of {lastMonthString}, there have been{" "}
-          <strong>{calculateYearlyTotals(thisYearDeathArray)}</strong> traffic
-          fatalities in {thisYear}.
-        </h6>
-      );
+      deathArray = thisYearDeathArray;
+      year = thisYear;
     } else {
-      return (
-        <h6 style={{ color: colors.blue, textAlign: "center" }}>
-          As of {lastMonthString}, there have been{" "}
-          <strong>{calculateYearlyTotals(lastYearDeathArray)}</strong> traffic
-          fatalities in {lastYear}.
-        </h6>
-      );
+      deathArray = lastYearDeathArray;
+      year = lastYear;
     }
+    return (
+      <h6 style={{ color: colors.blue, textAlign: "center" }}>
+        As of {lastMonthString}, there have been{" "}
+        <strong>{calculateYearlyTotals(deathArray)}</strong> traffic fatalities
+        in {year}.
+      </h6>
+    );
   };
 
   useEffect(() => {
