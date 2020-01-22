@@ -5,7 +5,7 @@ import moment from "moment";
 import { Line } from "react-chartjs-2";
 import { Container, Row, Col } from "reactstrap";
 import { crashEndpointUrl } from "./queries/socrataQueries";
-import { thisYear } from "../../constants/time";
+import { thisMonth, thisYear, lastYear } from "../../constants/time";
 import { colors } from "../../constants/colors";
 
 const FatalitiesMultiYear = () => {
@@ -31,6 +31,7 @@ const FatalitiesMultiYear = () => {
   };
 
   const calculateMonthlyTotals = (data, dateString) => {
+    console.log(dateString);
     // Limit returned data to months of data available and prevent line from zeroing out
     // If dataString is passed in, convert to month string and use to truncate monthIntegerArray
     const monthLimit = dateString ? moment(dateString).format("MM") : "12";
@@ -73,9 +74,22 @@ const FatalitiesMultiYear = () => {
       `${thisYear}-${lastMonthNumber}`,
       "YYYY-MM"
     ).daysInMonth();
-    const lastMonthLastDayDate = `${thisYear}-${lastMonthNumber}-${lastMonthLastDayNumber}`;
 
-    const thisYearUrl = `${crashEndpointUrl}?$where=death_cnt > 0 AND crash_date between '${thisYear}-01-01T00:00:00' and '${lastMonthLastDayDate}T23:59:59'`;
+    let lastMonthLastDayDate;
+    let thisYearUrl;
+
+    if (thisMonth === "01") {
+      console.log("It's January");
+      const thisYear = "2019";
+      lastMonthLastDayDate = `${lastYear}-${lastMonthNumber}-${lastMonthLastDayNumber}`;
+      thisYearUrl = `${crashEndpointUrl}?$where=death_cnt > 0 AND crash_date between '${lastYear}-01-01T00:00:00' and '${lastMonthLastDayDate}T23:59:59'`;
+    } else {
+      console.log("It's not January");
+      lastMonthLastDayDate = `${thisYear}-${lastMonthNumber}-${lastMonthLastDayNumber}`;
+      thisYearUrl = `${crashEndpointUrl}?$where=death_cnt > 0 AND crash_date between '${thisYear}-01-01T00:00:00' and '${lastMonthLastDayDate}T23:59:59'`;
+    };
+
+    console.log(thisYearUrl)
 
     const getFatalitiesByYearsAgoUrl = yearsAgo => {
       let yearsAgoDate = moment()
