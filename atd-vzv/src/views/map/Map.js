@@ -36,7 +36,8 @@ const Map = () => {
 
   const {
     mapFilters: [filters],
-    mapDateRange: [dateRange]
+    mapDateRange: [dateRange],
+    mapOverlay: [overlay]
   } = React.useContext(StoreContext);
 
   useEffect(() => {
@@ -45,7 +46,7 @@ const Map = () => {
     // Street Level >= 0 & orderByFields=OBJECTID ASC & 1000 results with 0 offset
     let offset = 0;
     const getOverlayData = offset => {
-      const overlayUrl = `https://services.arcgis.com/0L95CJ0VTaxqcmED/ArcGIS/rest/services/TRANSPORTATION_asmp_street_network/FeatureServer/0/query?where=STREET_LEVEL%20%3E=%204&orderByFields=OBJECTID%20ASC&resultRecordCount=1000&resultOffset=${offset}&outFields=STREET_LEVEL,NAME&f=geojson`;
+      const overlayUrl = `https://services.arcgis.com/0L95CJ0VTaxqcmED/ArcGIS/rest/services/TRANSPORTATION_asmp_street_network/FeatureServer/0/query?where=STREET_LEVEL%20%3E=%203&orderByFields=OBJECTID%20ASC&resultRecordCount=1000&resultOffset=${offset}&outFields=STREET_LEVEL,NAME&f=geojson`;
       axios.get(overlayUrl).then(res => {
         const transferLimitResult =
           (res.data.properties && res.data.properties.exceededTransferLimit) ||
@@ -120,13 +121,13 @@ const Map = () => {
       getCursor={_getCursor}
       onHover={_onHover}
     >
-      {!!overlayDataFeatures && (
+      {!!overlayDataFeatures && overlay === "asmp" && (
         <Source
           id="asmp"
           type="geojson"
           data={{ type: "FeatureCollection", features: overlayDataFeatures }}
         >
-          <Layer {...asmpDataLayer} />
+          <Layer beforeId="crashes" {...asmpDataLayer} />
         </Source>
       )}
       {!!mapData && (
