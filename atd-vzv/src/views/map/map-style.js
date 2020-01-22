@@ -9,28 +9,3 @@ export const crashDataLayer = {
     "circle-color": `${colors.info}`
   }
 };
-
-export const asmpDataLayer = {
-  id: "asmp",
-  type: "line",
-  paint: {
-    "line-width": 3,
-    "line-color": [
-      "interpolate",
-      ["linear"],
-      ["get", "STREET_LEVEL"],
-      0,
-      colors.warning,
-      1,
-      colors.redGradient2Of5,
-      2,
-      colors.chartOrange,
-      3,
-      colors.chartRedOrange,
-      4,
-      colors.chartRed,
-      5,
-      colors.chartBlue
-    ]
-  }
-};

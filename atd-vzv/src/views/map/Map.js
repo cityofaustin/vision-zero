@@ -32,38 +32,12 @@ const Map = () => {
 
   const [mapData, setMapData] = useState("");
   const [hoveredFeature, setHoveredFeature] = useState(null);
-  const [overlayDataFeatures, setOverlayData] = useState([]);
 
   const {
     mapFilters: [filters],
     mapDateRange: [dateRange],
     mapOverlay: [overlay]
   } = React.useContext(StoreContext);
-
-  useEffect(() => {
-    // TODO: Use viewport as parameter to query ArcGIS? Don't need to query all records for entire map at once
-    // Url needs &outFields=* in query to get all metadata
-    // Street Level >= 0 & orderByFields=OBJECTID ASC & 1000 results with 0 offset
-    let offset = 0;
-    const getOverlayData = offset => {
-      const overlayUrl = `https://services.arcgis.com/0L95CJ0VTaxqcmED/ArcGIS/rest/services/TRANSPORTATION_asmp_street_network/FeatureServer/0/query?where=STREET_LEVEL%20%3E=%203&orderByFields=OBJECTID%20ASC&resultRecordCount=1000&resultOffset=${offset}&outFields=STREET_LEVEL,NAME&f=geojson`;
-      axios.get(overlayUrl).then(res => {
-        const transferLimitResult =
-          (res.data.properties && res.data.properties.exceededTransferLimit) ||
-          false;
-        if (transferLimitResult) {
-          offset += 1000;
-          const newFeatures = res.data.features;
-          setOverlayData(prevState => [...prevState, ...newFeatures]);
-          setTimeout(() => {
-            getOverlayData(offset);
-          }, 1000);
-        }
-      });
-    };
-
-    getOverlayData(offset);
-  }, []);
 
   // Fetch initial crash data and refetch upon filters change
   useEffect(() => {
@@ -111,8 +85,8 @@ const Map = () => {
     );
   };
 
-  const asmpLayer = {
-    id: "asmp_street_network/4",
+  const asmp5Layer = {
+    id: "asmp_street_network/5",
     type: "line",
     source: {
       type: "vector",
@@ -124,11 +98,100 @@ const Map = () => {
     filter: ["==", "_symbol", 4],
     layout: {
       "line-cap": "round",
-      "line-join": "round"
+      "line-join": "round",
+      visibility: `${overlay === "asmp" ? "visible" : "none"}`
     },
     paint: {
       "line-color": "#1B519D",
-      "line-width": 2.66667
+      "line-width": 2
+    }
+  };
+
+  const asmp4Layer = {
+    id: "asmp_street_network/4",
+    type: "line",
+    source: {
+      type: "vector",
+      tiles: [
+        "https://tiles.arcgis.com/tiles/0L95CJ0VTaxqcmED/arcgis/rest/services/ASMP_Streets_VectorTile/VectorTileServer/tile/{z}/{y}/{x}.pbf"
+      ]
+    },
+    "source-layer": "asmp_street_network",
+    filter: ["==", "_symbol", 3],
+    layout: {
+      "line-cap": "round",
+      "line-join": "round",
+      visibility: `${overlay === "asmp" ? "visible" : "none"}`
+    },
+    paint: {
+      "line-color": "#A50F15",
+      "line-width": 2
+    }
+  };
+
+  const asmp3Layer = {
+    id: "asmp_street_network/3",
+    type: "line",
+    source: {
+      type: "vector",
+      tiles: [
+        "https://tiles.arcgis.com/tiles/0L95CJ0VTaxqcmED/arcgis/rest/services/ASMP_Streets_VectorTile/VectorTileServer/tile/{z}/{y}/{x}.pbf"
+      ]
+    },
+    "source-layer": "asmp_street_network",
+    filter: ["==", "_symbol", 2],
+    layout: {
+      "line-cap": "round",
+      "line-join": "round",
+      visibility: `${overlay === "asmp" ? "visible" : "none"}`
+    },
+    paint: {
+      "line-color": "#E60000",
+      "line-width": 2
+    }
+  };
+
+  const asmp2Layer = {
+    id: "asmp_street_network/2",
+    type: "line",
+    source: {
+      type: "vector",
+      tiles: [
+        "https://tiles.arcgis.com/tiles/0L95CJ0VTaxqcmED/arcgis/rest/services/ASMP_Streets_VectorTile/VectorTileServer/tile/{z}/{y}/{x}.pbf"
+      ]
+    },
+    "source-layer": "asmp_street_network",
+    filter: ["==", "_symbol", 1],
+    layout: {
+      "line-cap": "round",
+      "line-join": "round",
+      visibility: `${overlay === "asmp" ? "visible" : "none"}`
+    },
+    paint: {
+      "line-color": "#F66A4A",
+      "line-width": 2
+    }
+  };
+
+  const asmp1Layer = {
+    id: "asmp_street_network/1",
+    type: "line",
+    source: {
+      type: "vector",
+      tiles: [
+        "https://tiles.arcgis.com/tiles/0L95CJ0VTaxqcmED/arcgis/rest/services/ASMP_Streets_VectorTile/VectorTileServer/tile/{z}/{y}/{x}.pbf"
+      ]
+    },
+    "source-layer": "asmp_street_network",
+    filter: ["==", "_symbol", 0],
+    layout: {
+      "line-cap": "round",
+      "line-join": "round",
+      visibility: `${overlay === "asmp" ? "visible" : "none"}`
+    },
+    paint: {
+      "line-color": "#F9AE91",
+      "line-width": 2
     }
   };
 
@@ -142,21 +205,17 @@ const Map = () => {
       getCursor={_getCursor}
       onHover={_onHover}
     >
-      {/* {!!overlayDataFeatures && overlay === "asmp" && (
-        <Source
-          id="asmp"
-          type="geojson"
-          data={{ type: "FeatureCollection", features: overlayDataFeatures }}
-        >
-          <Layer beforeId="crashes" {...asmpDataLayer} />
-        </Source>
-      )} */}
-      <Layer {...asmpLayer} />
       {!!mapData && (
         <Source id="crashes" type="geojson" data={mapData}>
           <Layer {...crashDataLayer} />
         </Source>
       )}
+      {/* ASMP Street Levels */}
+      <Layer {...asmp5Layer} />
+      <Layer {...asmp4Layer} />
+      <Layer {...asmp3Layer} />
+      <Layer {...asmp2Layer} />
+      <Layer {...asmp1Layer} />
       {hoveredFeature && _renderTooltip()}
     </ReactMapGL>
   );
