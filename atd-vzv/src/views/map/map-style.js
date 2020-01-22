@@ -2,7 +2,7 @@ import { colors } from "../../constants/colors";
 
 // For more information on data-driven styles, see https://www.mapbox.com/help/gl-dds-ref/
 export const crashDataLayer = {
-  id: "data",
+  id: "crashes",
   type: "circle",
   paint: {
     "circle-radius": 5,
@@ -11,15 +11,13 @@ export const crashDataLayer = {
 };
 
 export const asmpDataLayer = {
-  id: "data",
+  id: "asmp",
   type: "line",
   paint: {
     "line-width": 3,
-    // "line-color": `${colors.info}`
     "line-color": [
       "interpolate",
       ["linear"],
-      // "match", ["string", ["get", ""]],
       ["get", "STREET_LEVEL"],
       0,
       colors.warning,
