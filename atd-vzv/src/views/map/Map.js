@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { StoreContext } from "../../utils/store";
 import ReactMapGL, { Source, Layer } from "react-map-gl";
 import { createMapDataUrl } from "./helpers";
-import { crashDataLayer, asmpDataLayer } from "./map-style";
+import { crashDataLayer, buildAsmpLayers, asmpConfig } from "./map-style";
 import axios from "axios";
 
 import { Card, CardBody, CardText } from "reactstrap";
@@ -85,116 +85,6 @@ const Map = () => {
     );
   };
 
-  const asmp5Layer = {
-    id: "asmp_street_network/5",
-    type: "line",
-    source: {
-      type: "vector",
-      tiles: [
-        "https://tiles.arcgis.com/tiles/0L95CJ0VTaxqcmED/arcgis/rest/services/ASMP_Streets_VectorTile/VectorTileServer/tile/{z}/{y}/{x}.pbf"
-      ]
-    },
-    "source-layer": "asmp_street_network",
-    filter: ["==", "_symbol", 4],
-    layout: {
-      "line-cap": "round",
-      "line-join": "round",
-      visibility: `${overlay === "asmp" ? "visible" : "none"}`
-    },
-    paint: {
-      "line-color": "#1B519D",
-      "line-width": 2
-    }
-  };
-
-  const asmp4Layer = {
-    id: "asmp_street_network/4",
-    type: "line",
-    source: {
-      type: "vector",
-      tiles: [
-        "https://tiles.arcgis.com/tiles/0L95CJ0VTaxqcmED/arcgis/rest/services/ASMP_Streets_VectorTile/VectorTileServer/tile/{z}/{y}/{x}.pbf"
-      ]
-    },
-    "source-layer": "asmp_street_network",
-    filter: ["==", "_symbol", 3],
-    layout: {
-      "line-cap": "round",
-      "line-join": "round",
-      visibility: `${overlay === "asmp" ? "visible" : "none"}`
-    },
-    paint: {
-      "line-color": "#A50F15",
-      "line-width": 2
-    }
-  };
-
-  const asmp3Layer = {
-    id: "asmp_street_network/3",
-    type: "line",
-    source: {
-      type: "vector",
-      tiles: [
-        "https://tiles.arcgis.com/tiles/0L95CJ0VTaxqcmED/arcgis/rest/services/ASMP_Streets_VectorTile/VectorTileServer/tile/{z}/{y}/{x}.pbf"
-      ]
-    },
-    "source-layer": "asmp_street_network",
-    filter: ["==", "_symbol", 2],
-    layout: {
-      "line-cap": "round",
-      "line-join": "round",
-      visibility: `${overlay === "asmp" ? "visible" : "none"}`
-    },
-    paint: {
-      "line-color": "#E60000",
-      "line-width": 2
-    }
-  };
-
-  const asmp2Layer = {
-    id: "asmp_street_network/2",
-    type: "line",
-    source: {
-      type: "vector",
-      tiles: [
-        "https://tiles.arcgis.com/tiles/0L95CJ0VTaxqcmED/arcgis/rest/services/ASMP_Streets_VectorTile/VectorTileServer/tile/{z}/{y}/{x}.pbf"
-      ]
-    },
-    "source-layer": "asmp_street_network",
-    filter: ["==", "_symbol", 1],
-    layout: {
-      "line-cap": "round",
-      "line-join": "round",
-      visibility: `${overlay === "asmp" ? "visible" : "none"}`
-    },
-    paint: {
-      "line-color": "#F66A4A",
-      "line-width": 2
-    }
-  };
-
-  const asmp1Layer = {
-    id: "asmp_street_network/1",
-    type: "line",
-    source: {
-      type: "vector",
-      tiles: [
-        "https://tiles.arcgis.com/tiles/0L95CJ0VTaxqcmED/arcgis/rest/services/ASMP_Streets_VectorTile/VectorTileServer/tile/{z}/{y}/{x}.pbf"
-      ]
-    },
-    "source-layer": "asmp_street_network",
-    filter: ["==", "_symbol", 0],
-    layout: {
-      "line-cap": "round",
-      "line-join": "round",
-      visibility: `${overlay === "asmp" ? "visible" : "none"}`
-    },
-    paint: {
-      "line-color": "#F9AE91",
-      "line-width": 2
-    }
-  };
-
   return (
     <ReactMapGL
       {...viewport}
@@ -210,12 +100,11 @@ const Map = () => {
           <Layer {...crashDataLayer} />
         </Source>
       )}
-      {/* ASMP Street Levels */}
-      <Layer {...asmp5Layer} />
-      <Layer {...asmp4Layer} />
-      <Layer {...asmp3Layer} />
-      <Layer {...asmp2Layer} />
-      <Layer {...asmp1Layer} />
+
+      {/* ASMP Street Level Layers */}
+      {buildAsmpLayers(asmpConfig, overlay)}
+
+      {/* Render crash point tooltips */}
       {hoveredFeature && _renderTooltip()}
     </ReactMapGL>
   );
