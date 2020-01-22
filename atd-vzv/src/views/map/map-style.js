@@ -39,6 +39,8 @@ export const asmpConfig = {
 // Build Mapbox GL layers for each ASMP Street Level in config
 export const buildAsmpLayers = (config, overlay) =>
   Object.entries(config).map(([level, parameters], i) => {
+    const asmpLevel = level.split("").pop();
+
     const asmpLayerConfig = {
       id: level,
       type: "line",
@@ -53,7 +55,11 @@ export const buildAsmpLayers = (config, overlay) =>
       layout: {
         "line-cap": "round",
         "line-join": "round",
-        visibility: `${overlay === "asmp" ? "visible" : "none"}`
+        visibility: `${
+          overlay.overlayOptions && overlay.overlayOptions.includes(asmpLevel)
+            ? "visible"
+            : "none"
+        }`
       },
       paint: {
         "line-color": parameters.color,
