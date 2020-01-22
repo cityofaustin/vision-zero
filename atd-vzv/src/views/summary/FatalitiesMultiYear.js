@@ -31,7 +31,6 @@ const FatalitiesMultiYear = () => {
   };
 
   const calculateMonthlyTotals = (data, dateString) => {
-    console.log(dateString);
     // Limit returned data to months of data available and prevent line from zeroing out
     // If dataString is passed in, convert to month string and use to truncate monthIntegerArray
     const monthLimit = dateString ? moment(dateString).format("MM") : "12";
@@ -66,6 +65,26 @@ const FatalitiesMultiYear = () => {
     });
   };
 
+  const renderHeader = () => {
+    if (thisMonth > "01") {
+      return (
+        <h6 style={{ color: colors.blue, textAlign: "center" }}>
+          As of {lastMonthString}, there have been{" "}
+          <strong>{calculateYearlyTotals(thisYearDeathArray)}</strong> traffic
+          fatalities in {thisYear}.
+        </h6>
+      );
+    } else {
+      return (
+        <h6 style={{ color: colors.blue, textAlign: "center" }}>
+          As of {lastMonthString}, there have been{" "}
+          <strong>{calculateYearlyTotals(lastYearDeathArray)}</strong> traffic
+          fatalities in {lastYear}.
+        </h6>
+      );
+    }
+  };
+
   useEffect(() => {
     const lastMonthNumber = moment()
       .subtract(1, "month")
@@ -74,34 +93,30 @@ const FatalitiesMultiYear = () => {
       `${thisYear}-${lastMonthNumber}`,
       "YYYY-MM"
     ).daysInMonth();
+    const lastMonthLastDayDate = `${thisYear}-${lastMonthNumber}-${lastMonthLastDayNumber}`;
 
-    let lastMonthLastDayDate;
-    let thisYearUrl;
-
-    if (thisMonth === "01") {
-      console.log("It's January");
-      const thisYear = "2019";
-      lastMonthLastDayDate = `${lastYear}-${lastMonthNumber}-${lastMonthLastDayNumber}`;
-      thisYearUrl = `${crashEndpointUrl}?$where=death_cnt > 0 AND crash_date between '${lastYear}-01-01T00:00:00' and '${lastMonthLastDayDate}T23:59:59'`;
-    } else {
-      console.log("It's not January");
-      lastMonthLastDayDate = `${thisYear}-${lastMonthNumber}-${lastMonthLastDayNumber}`;
-      thisYearUrl = `${crashEndpointUrl}?$where=death_cnt > 0 AND crash_date between '${thisYear}-01-01T00:00:00' and '${lastMonthLastDayDate}T23:59:59'`;
-    };
-
-    console.log(thisYearUrl)
+    const thisYearUrl = `${crashEndpointUrl}?$where=death_cnt > 0 AND crash_date between '${thisYear}-01-01T00:00:00' and '${lastMonthLastDayDate}T23:59:59'`;
 
     const getFatalitiesByYearsAgoUrl = yearsAgo => {
       let yearsAgoDate = moment()
         .subtract(yearsAgo, "year")
         .format("YYYY");
+      console.log(
+        `${crashEndpointUrl}?$where=death_cnt > 0 AND crash_date between '${yearsAgoDate}-01-01T00:00:00' and '${yearsAgoDate}-12-31T23:59:59'`
+      );
       return `${crashEndpointUrl}?$where=death_cnt > 0 AND crash_date between '${yearsAgoDate}-01-01T00:00:00' and '${yearsAgoDate}-12-31T23:59:59'`;
     };
 
-    // Fetch records from this year through last month
-    axios.get(thisYearUrl).then(res => {
-      setThisYearDeathArray(calculateMonthlyTotals(res, lastMonthLastDayDate));
-    });
+    // If there is a full month of data available for the current year (i.e., we are past January),
+    // fetch records for this year through last month
+    if (thisMonth > "01") {
+      console.log(thisYearUrl);
+      axios.get(thisYearUrl).then(res => {
+        setThisYearDeathArray(
+          calculateMonthlyTotals(res, lastMonthLastDayDate)
+        );
+      });
+    }
 
     // Fetch records from last year
     axios.get(getFatalitiesByYearsAgoUrl(1)).then(res => {
@@ -129,6 +144,7 @@ const FatalitiesMultiYear = () => {
     });
   }, []);
 
+  // Build data object with data from the previous five years
   const data = {
     labels: [
       "January",
@@ -145,27 +161,6 @@ const FatalitiesMultiYear = () => {
       "December"
     ],
     datasets: [
-      {
-        label: `${thisYear}`,
-        fill: false,
-        lineTension: 0.1,
-        backgroundColor: colors.blue, // Legend box
-        borderColor: colors.blue,
-        borderCapStyle: "butt",
-        borderDash: [],
-        borderDashOffset: 0.0,
-        borderJoinStyle: "miter",
-        pointBorderColor: colors.blue,
-        pointBackgroundColor: colors.blue,
-        pointBorderWidth: 1,
-        pointHoverRadius: 5,
-        pointHoverBackgroundColor: colors.blue,
-        pointHoverBorderColor: colors.blue,
-        pointHoverBorderWidth: 2,
-        pointRadius: 1,
-        pointHitRadius: 10,
-        data: thisYearDeathArray
-      },
       {
         label: `${getYearsAgoLabel(1)}`,
         fill: false,
@@ -274,16 +269,35 @@ const FatalitiesMultiYear = () => {
     ]
   };
 
+  // Add current year to data object if we are past January
+  if (thisMonth > "01") {
+    data.datasets.unshift({
+      label: `${thisYear}`,
+      fill: false,
+      lineTension: 0.1,
+      backgroundColor: colors.blue, // Legend box
+      borderColor: colors.blue,
+      borderCapStyle: "butt",
+      borderDash: [],
+      borderDashOffset: 0.0,
+      borderJoinStyle: "miter",
+      pointBorderColor: colors.blue,
+      pointBackgroundColor: colors.blue,
+      pointBorderWidth: 1,
+      pointHoverRadius: 5,
+      pointHoverBackgroundColor: colors.blue,
+      pointHoverBorderColor: colors.blue,
+      pointHoverBorderWidth: 2,
+      pointRadius: 1,
+      pointHitRadius: 10,
+      data: thisYearDeathArray
+    });
+  }
+
   return (
     <Container>
       <Row style={{ paddingBottom: 20 }}>
-        <Col>
-          <h6 style={{ color: colors.blue, textAlign: "center" }}>
-            As of {lastMonthString}, there have been{" "}
-            <strong>{calculateYearlyTotals(thisYearDeathArray)}</strong> traffic
-            fatalities in {thisYear}.
-          </h6>
-        </Col>
+        <Col>{renderHeader()}</Col>
       </Row>
       <Row style={{ paddingBottom: 20 }}>
         <Col xs="6" sm="4" md="2">
