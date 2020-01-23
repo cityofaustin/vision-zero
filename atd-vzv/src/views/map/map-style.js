@@ -16,23 +16,23 @@ export const crashDataLayer = {
 export const asmpConfig = {
   asmp_1: {
     filter: 0,
-    color: "#F9AE91"
+    color: colors.mapAsmp1
   },
   asmp_2: {
     filter: 1,
-    color: "#F66A4A"
+    color: colors.mapAsmp2
   },
   asmp_3: {
     filter: 2,
-    color: "#E60000"
+    color: colors.mapAsmp3
   },
   asmp_4: {
     filter: 3,
-    color: "#A50F15"
+    color: colors.mapAsmp4
   },
   asmp_5: {
     filter: 4,
-    color: "#1B519D"
+    color: colors.mapAsmp5
   }
 };
 
@@ -41,6 +41,7 @@ export const buildAsmpLayers = (config, overlay) =>
   Object.entries(config).map(([level, parameters], i) => {
     const asmpLevel = level.split("").pop();
 
+    // Set config for each ASMP level layer
     const asmpLayerConfig = {
       id: level,
       type: "line",
@@ -67,5 +68,6 @@ export const buildAsmpLayers = (config, overlay) =>
       }
     };
 
+    // Return a Layer component with config prop passed for each level
     return <Layer key={i} {...asmpLayerConfig} />;
   });

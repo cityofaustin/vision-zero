@@ -8,6 +8,7 @@ const SideMapControlOverlays = () => {
     mapOverlay: [overlay, setOverlay]
   } = React.useContext(StoreContext);
 
+  // Set overlay title and optional options
   const overlays = {
     asmp: {
       title: "ASMP Street Levels",
@@ -53,7 +54,7 @@ const SideMapControlOverlays = () => {
       <Label className="section-title">Overlays</Label>
       {/* Create a button group for each overlay */}
       {Object.entries(overlays).map(([name, parameters], i) => (
-        <ButtonGroup vertical={true} key={i}>
+        <ButtonGroup vertical key={i}>
           <Button
             key={i}
             id={name}
@@ -65,8 +66,8 @@ const SideMapControlOverlays = () => {
           >
             {parameters.title}
           </Button>
-
-          {overlay.name === name && (
+          {/* If options set in config, render button group for each option */}
+          {overlay.name === name && parameters.options && (
             <ButtonGroup>
               {parameters.options.map((option, i) => (
                 <Button
