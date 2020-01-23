@@ -41,7 +41,8 @@ export const buildAsmpLayers = (config, overlay) =>
   Object.entries(config).map(([level, parameters], i) => {
     const asmpLevel = level.split("").pop();
 
-    // Set config for each ASMP level layer
+    // Set config for each ASMP level layer based on ArcGIS VectorTileServer styles
+    // https://tiles.arcgis.com/tiles/0L95CJ0VTaxqcmED/arcgis/rest/services/ASMP_Streets_VectorTile/VectorTileServer/resources/styles/root.json?f=pjson
     const asmpLayerConfig = {
       id: level,
       type: "line",
