@@ -10,7 +10,10 @@ export default ({ children }) => {
     start: mapStartDate,
     end: mapEndDate
   });
-  const [mapOverlay, setMapOverlay] = useState("");
+  const [mapOverlay, setMapOverlay] = useState({
+    name: "",
+    options: []
+  });
 
   const store = {
     mapFilters: [mapFilters, setMapFilters],

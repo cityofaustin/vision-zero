@@ -19,7 +19,7 @@ const SideMapControlOverlays = () => {
     // Set overlay in Context store or remove it
     const overlayName = event.currentTarget.id;
 
-    if (overlay === "" || overlay.name !== overlayName) {
+    if (overlay.name !== overlayName) {
       setOverlay({
         name: overlayName,
         options: parameters.options
@@ -53,36 +53,38 @@ const SideMapControlOverlays = () => {
       <Label className="section-title">Overlays</Label>
       {/* Create a button group for each overlay */}
       {Object.entries(overlays).map(([name, parameters], i) => (
-        <Button
-          key={i}
-          id={name}
-          color="info"
-          className="w-100 pt-1 pb-1 pl-0 pr-0"
-          onClick={event => handleOverlayClick(event, parameters)}
-          active={name === overlay.name}
-          outline={name !== overlay.name}
-        >
-          {parameters.title}
-        </Button>
-      ))}
-      {overlay.name === "asmp" && (
-        <ButtonGroup>
-          {overlays.asmp.options.map((level, i) => (
-            <Button
-              key={i}
-              id={level}
-              color="info"
-              className="w-100 pt-1 pb-1 pl-0 pr-0"
-              //   TODO: Fix active and outline logic
-              active={overlay.options.includes(level)}
-              outline={!overlay.options.includes(level)}
-              onClick={handleOverlayOptionClick}
-            >
-              {level}
-            </Button>
-          ))}
+        <ButtonGroup vertical={true} key={i}>
+          <Button
+            key={i}
+            id={name}
+            color="info"
+            className="w-100 pt-1 pb-1 pl-0 pr-0"
+            onClick={event => handleOverlayClick(event, parameters)}
+            active={name === overlay.name}
+            outline={name !== overlay.name}
+          >
+            {parameters.title}
+          </Button>
+
+          {overlay.name === name && (
+            <ButtonGroup>
+              {parameters.options.map((option, i) => (
+                <Button
+                  key={i}
+                  id={option}
+                  color="info"
+                  className="w-100 pt-1 pb-1 pl-0 pr-0"
+                  active={overlay.options.includes(option)}
+                  outline={!overlay.options.includes(option)}
+                  onClick={handleOverlayOptionClick}
+                >
+                  {option}
+                </Button>
+              ))}
+            </ButtonGroup>
+          )}
         </ButtonGroup>
-      )}
+      ))}
     </Card>
   );
 };
