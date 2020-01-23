@@ -56,7 +56,7 @@ export const buildAsmpLayers = (config, overlay) =>
         "line-cap": "round",
         "line-join": "round",
         visibility: `${
-          overlay.overlayOptions && overlay.overlayOptions.includes(asmpLevel)
+          overlay.options && overlay.options.includes(asmpLevel)
             ? "visible"
             : "none"
         }`

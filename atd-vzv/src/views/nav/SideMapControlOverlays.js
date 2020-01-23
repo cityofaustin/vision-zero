@@ -19,12 +19,12 @@ const SideMapControlOverlays = () => {
     // Set overlay in Context store or remove it
     const overlayName = event.currentTarget.id;
 
-    if (overlay === "" || overlay.overlayName !== overlayName) {
+    if (overlay === "" || overlay.name !== overlayName) {
       setOverlay({
-        overlayName: overlayName,
-        overlayOptions: parameters.options
+        name: overlayName,
+        options: parameters.options
       });
-    } else if (overlay.overlayName === overlayName) {
+    } else if (overlay.name === overlayName) {
       setOverlay("");
     }
   };
@@ -33,22 +33,18 @@ const SideMapControlOverlays = () => {
     // Set overlay in Context store or remove it
     const overlayOption = event.currentTarget.id;
 
-    if (!overlay.overlayOptions.includes(overlayOption)) {
-      // set overlay level
-      const updatedOverlay = overlay;
-      updatedOverlay.overlayOptions = [
-        ...overlay.overlayOptions,
-        ...overlayOption
-      ];
-      setOverlay(updatedOverlay);
-    } else if (overlay.overlayOptions.includes(overlayOption)) {
-      // remove overlay level
-      const updatedOverlay = overlay;
-      updatedOverlay.overlayOptions = overlay.overlayOptions.filter(
-        option => option !== overlayOption
-      );
-
-      setOverlay(updatedOverlay);
+    if (!overlay.options.includes(overlayOption)) {
+      // Add clicked option to state
+      setOverlay(prevState => ({
+        ...prevState,
+        options: [...prevState.options, ...overlayOption]
+      }));
+    } else if (overlay.options.includes(overlayOption)) {
+      // Remove clicked option from state
+      setOverlay(prevState => ({
+        ...prevState,
+        options: prevState.options.filter(option => option !== overlayOption)
+      }));
     }
   };
 
@@ -63,13 +59,13 @@ const SideMapControlOverlays = () => {
           color="info"
           className="w-100 pt-1 pb-1 pl-0 pr-0"
           onClick={event => handleOverlayClick(event, parameters)}
-          active={name === overlay.overlayName}
-          outline={name !== overlay.overlayName}
+          active={name === overlay.name}
+          outline={name !== overlay.name}
         >
           {parameters.title}
         </Button>
       ))}
-      {overlay.overlayName === "asmp" && (
+      {overlay.name === "asmp" && (
         <ButtonGroup>
           {overlays.asmp.options.map((level, i) => (
             <Button
@@ -78,8 +74,8 @@ const SideMapControlOverlays = () => {
               color="info"
               className="w-100 pt-1 pb-1 pl-0 pr-0"
               //   TODO: Fix active and outline logic
-              active={overlay.overlayOptions.includes(level)}
-              outline={!overlay.overlayOptions.includes(level)}
+              active={overlay.options.includes(level)}
+              outline={!overlay.options.includes(level)}
               onClick={handleOverlayOptionClick}
             >
               {level}
