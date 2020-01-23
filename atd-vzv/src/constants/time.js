@@ -6,6 +6,7 @@ export const oneYearAgo = moment()
   .subtract(1, "year")
   .format("YYYY-MM-DD");
 export const todayMonthYear = moment().format("-MM-DD");
+export const thisMonth = moment().format("MM");
 export const thisYear = moment().format("YYYY");
 export const lastYear = moment()
   .subtract(1, "year")
