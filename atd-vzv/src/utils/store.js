@@ -10,11 +10,16 @@ export default ({ children }) => {
     start: mapStartDate,
     end: mapEndDate
   });
+  const [mapOverlay, setMapOverlay] = useState({
+    name: "",
+    options: []
+  });
 
   const store = {
     mapFilters: [mapFilters, setMapFilters],
     mapDateRange: [mapDateRange, setMapDateRange],
-    sidebarToggle: [isOpen, setIsOpen]
+    sidebarToggle: [isOpen, setIsOpen],
+    mapOverlay: [mapOverlay, setMapOverlay]
   };
 
   return (

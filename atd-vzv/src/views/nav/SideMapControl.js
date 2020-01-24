@@ -3,6 +3,7 @@ import { StoreContext } from "../../utils/store";
 import "react-infinite-calendar/styles.css";
 
 import SideMapControlDateRange from "./SideMapControlDateRange";
+import SideMapControlOverlays from "./SideMapControlOverlays";
 import { colors } from "../../constants/colors";
 import { ButtonGroup, Button, Card, Label } from "reactstrap";
 import styled from "styled-components";
@@ -166,6 +167,7 @@ const SideMapControl = () => {
         ))}
         <SideMapControlDateRange />
       </Card>
+      <SideMapControlOverlays />
     </StyledCard>
   );
 };

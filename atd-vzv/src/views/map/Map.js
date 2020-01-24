@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { StoreContext } from "../../utils/store";
 import ReactMapGL, { Source, Layer } from "react-map-gl";
 import { createMapDataUrl } from "./helpers";
-import { dataLayer } from "./map-style";
+import { crashDataLayer, buildAsmpLayers, asmpConfig } from "./map-style";
 import axios from "axios";
 
 import { Card, CardBody, CardText } from "reactstrap";
@@ -35,7 +35,8 @@ const Map = () => {
 
   const {
     mapFilters: [filters],
-    mapDateRange: [dateRange]
+    mapDateRange: [dateRange],
+    mapOverlay: [overlay]
   } = React.useContext(StoreContext);
 
   // Fetch initial crash data and refetch upon filters change
@@ -56,7 +57,7 @@ const Map = () => {
       srcEvent: { offsetX, offsetY }
     } = event;
     const hoveredFeature =
-      features && features.find(f => f.layer.id === "data");
+      features && features.find(f => f.layer.id === "crashes");
     setHoveredFeature({ feature: hoveredFeature, x: offsetX, y: offsetY });
   };
 
@@ -95,10 +96,15 @@ const Map = () => {
       onHover={_onHover}
     >
       {!!mapData && (
-        <Source type="geojson" data={mapData}>
-          <Layer {...dataLayer} />
+        <Source id="crashes" type="geojson" data={mapData}>
+          <Layer {...crashDataLayer} />
         </Source>
       )}
+
+      {/* ASMP Street Level Layers */}
+      {buildAsmpLayers(asmpConfig, overlay)}
+
+      {/* Render crash point tooltips */}
       {hoveredFeature && _renderTooltip()}
     </ReactMapGL>
   );
