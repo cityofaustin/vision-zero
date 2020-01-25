@@ -13,6 +13,9 @@ const SideMapControlOverlays = () => {
     asmp: {
       title: "ASMP Street Levels",
       options: ["1", "2", "3", "4", "5"]
+    },
+    highInjury: {
+      title: "High Injury Network"
     }
   };
 

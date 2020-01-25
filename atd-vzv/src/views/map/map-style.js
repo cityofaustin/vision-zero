@@ -72,3 +72,31 @@ export const buildAsmpLayers = (config, overlay) =>
     // Return a Layer component with config prop passed for each level
     return <Layer key={i} {...asmpLayerConfig} />;
   });
+
+// Build Mapbox GL layer High Injury Network
+export const buildHighInjuryLayer = overlay => {
+  // Set config for each ASMP level layer based on ArcGIS VectorTileServer styles
+  // https://tiles.arcgis.com/tiles/0L95CJ0VTaxqcmED/arcgis/rest/services/HIN_Vector_Tile/VectorTileServer/resources/styles/root.json?f=pjson
+  const highInjuryLayerConfig = {
+    id: overlay.name,
+    type: "line",
+    source: {
+      type: "vector",
+      tiles: [
+        "https://tiles.arcgis.com/tiles/0L95CJ0VTaxqcmED/arcgis/rest/services/HIN_Vector_Tile/VectorTileServer/tile/{z}/{y}/{x}.pbf"
+      ]
+    },
+    "source-layer": "High-Injury Network",
+    layout: {
+      "line-join": "round",
+      visibility: `${overlay.name === "highInjury" ? "visible" : "none"}`
+    },
+    paint: {
+      "line-color": "#0070FF",
+      "line-width": 2
+    }
+  };
+
+  // Return a Layer component with config prop passed for each level
+  return <Layer key={overlay.name} {...highInjuryLayerConfig} />;
+};
