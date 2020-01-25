@@ -2,7 +2,12 @@ import React, { useState, useEffect } from "react";
 import { StoreContext } from "../../utils/store";
 import ReactMapGL, { Source, Layer } from "react-map-gl";
 import { createMapDataUrl } from "./helpers";
-import { crashDataLayer, buildAsmpLayers, asmpConfig } from "./map-style";
+import {
+  crashDataLayer,
+  buildAsmpLayers,
+  asmpConfig,
+  buildHighInjuryLayer
+} from "./map-style";
 import axios from "axios";
 
 import { Card, CardBody, CardText } from "reactstrap";
@@ -103,6 +108,9 @@ const Map = () => {
 
       {/* ASMP Street Level Layers */}
       {buildAsmpLayers(asmpConfig, overlay)}
+
+      {/* High Injury Network Layer */}
+      {buildHighInjuryLayer(overlay)}
 
       {/* Render crash point tooltips */}
       {hoveredFeature && _renderTooltip()}
