@@ -9,10 +9,11 @@ import styled from "styled-components";
 import { drawer } from "../../constants/drawer";
 import { responsive } from "../../constants/responsive";
 
-const Content = ({ toggle }) => {
+const Content = () => {
   const routeResult = useRoutes(routes);
   const currentPath = usePath();
 
+  // TODO: Adjust left of content when sidebar opens on mobile
   // Map view needs to consider header height and have no overflow scroll to fill view
   // Non-map views need to scroll to show all content
   const mapStyleExceptions = `
@@ -44,7 +45,7 @@ const Content = ({ toggle }) => {
   return (
     <StyledContent>
       <Container fluid className="content">
-        <Header toggleSidebar={toggle} />
+        <Header />
         {routeResult || <NotFound />}
       </Container>
     </StyledContent>
