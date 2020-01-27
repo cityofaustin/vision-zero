@@ -5,7 +5,7 @@ import { Bar } from "react-chartjs-2";
 import { colors } from "../../constants/colors";
 
 import { Container } from "reactstrap";
-import { thisMonth, thisYear, lastYear } from "../../constants/time";
+import { thisMonth, thisYear, lastYear, lastMonth, lastDayOfLastMonth } from "../../constants/time";
 import { demographicsEndpointUrl } from "./queries/socrataQueries";
 
 const FatalitiesByMode = () => {
@@ -24,6 +24,8 @@ const FatalitiesByMode = () => {
   const yearsArray = useCallback(() => {
     let year;
     let years = [];
+    // If it is past January, display data up to and including current year,
+    // else if it is January, only display data up to the end of last year
     if (thisMonth > "01") {
       year = thisYear;
     } else {
@@ -38,14 +40,6 @@ const FatalitiesByMode = () => {
   const [chartData, setChartData] = useState("");
   const [latestRecordDate, setLatestRecordDate] = useState("");
 
-  const lastMonthNumber = moment()
-    .subtract(1, "month")
-    .format("MM");
-  const lastMonthLastDayNumber = moment(
-    `${thisYear}-${lastMonthNumber}`,
-    "YYYY-MM"
-  ).daysInMonth();
-
   // Fetch data (Mode of fatality in crash)
   useEffect(() => {
     const getChartData = async () => {
@@ -53,7 +47,14 @@ const FatalitiesByMode = () => {
       // Use Promise.all to let all requests resolve before setting chart data by year
       await Promise.all(
         yearsArray().map(async year => {
-          const url = `${demographicsEndpointUrl}?$where=(prsn_injry_sev_id = 4) AND crash_date between '${year}-01-01T00:00:00' and '${year}-${lastMonthNumber}-${lastMonthLastDayNumber}T23:59:59'`;
+          let url;
+          // If getting data for current year (only including years past January), set end of query to last day of previous month,
+          // else if getting data for previous years, set end of query to last day of year
+          if (year.toString() === thisYear) {
+            url = `${demographicsEndpointUrl}?$where=(prsn_injry_sev_id = 4) AND crash_date between '${year}-01-01T00:00:00' and '${year}-${lastMonth}-${lastDayOfLastMonth}T23:59:59'`;
+          } else {
+            url = `${demographicsEndpointUrl}?$where=(prsn_injry_sev_id = 4) AND crash_date between '${year}-01-01T00:00:00' and '${year}-12-31T23:59:59'`;
+          }
           await axios.get(url).then(res => {
             newData = { ...newData, ...{ [year]: res.data } };
           });
@@ -65,13 +66,15 @@ const FatalitiesByMode = () => {
     };
 
     getChartData();
-  }, [yearsArray, lastMonthNumber, lastMonthLastDayNumber]);
+  }, [yearsArray]);
 
   // Fetch latest record from demographics dataset and set for chart subheading
   useEffect(() => {
     let url;
+    // If it is past January, set end of query to last day of previous month,
+    // else if it is January, set end of query to last day of last year
     if (thisMonth > "01") {
-      url = `${demographicsEndpointUrl}?$limit=1&$order=crash_date DESC&$where=crash_date < '${thisYear}-${lastMonthNumber}-${lastMonthLastDayNumber}T23:59:59'`;
+      url = `${demographicsEndpointUrl}?$limit=1&$order=crash_date DESC&$where=crash_date < '${thisYear}-${lastMonth}-${lastDayOfLastMonth}T23:59:59'`;
     } else {
       url = `${demographicsEndpointUrl}?$limit=1&$order=crash_date DESC&$where=crash_date < '${lastYear}-12-31T23:59:59'`;
     }
@@ -80,7 +83,7 @@ const FatalitiesByMode = () => {
       const formattedLatestDate = moment(latestRecordDate).format("MMMM YYYY");
       setLatestRecordDate(formattedLatestDate);
     });
-  }, [lastMonthNumber, lastMonthLastDayNumber]);
+  }, []);
 
   const createChartLabels = () =>
     yearsArray()
