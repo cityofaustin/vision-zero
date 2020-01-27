@@ -107,25 +107,27 @@ export const buildHighInjuryLayer = overlay => {
   return <Layer key={"highInjury"} {...highInjuryLayerConfig} />;
 };
 
+// Style geojson returned from ArcGIS that populates the Source and Layer in Map component
+// https://services.arcgis.com/0L95CJ0VTaxqcmED/arcgis/rest/services/BOUNDARIES_single_member_districts/FeatureServer/0?f=pjson
 export const cityCouncilDataLayer = {
   id: "data",
   type: "fill",
   paint: {
     "fill-color": {
-      property: "OBJECTID",
+      property: "COUNCIL_DISTRICT",
       stops: [
-        [0, "#3288bd"],
-        [1, "#66c2a5"],
-        [2, "#abdda4"],
-        [3, "#e6f598"],
-        [4, "#ffffbf"],
-        [5, "#fee08b"],
-        [6, "#fdae61"],
-        [7, "#f46d43"],
-        [8, "#d53e4f"],
-        [9, "#e076dc"]
+        [1, colors.mapCityCouncil1],
+        [2, colors.mapCityCouncil2],
+        [3, colors.mapCityCouncil3],
+        [4, colors.mapCityCouncil4],
+        [5, colors.mapCityCouncil5],
+        [6, colors.mapCityCouncil6],
+        [7, colors.mapCityCouncil7],
+        [8, colors.mapCityCouncil8],
+        [9, colors.mapCityCouncil9],
+        [10, colors.mapCityCouncil10]
       ]
     },
-    "fill-opacity": 0.4
+    "fill-opacity": 0.5
   }
 };

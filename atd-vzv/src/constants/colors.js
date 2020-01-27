@@ -24,5 +24,15 @@ export const colors = {
   mapAsmp3: "#E60000",
   mapAsmp4: "#A50F15",
   mapAsmp5: "#1B519D",
-  mapHighInjuryNetwork: "#E60000"
+  mapHighInjuryNetwork: "#E60000",
+  mapCityCouncil1: " #ffffbf",
+  mapCityCouncil2: "#66c2a5",
+  mapCityCouncil3: "#d53e4f",
+  mapCityCouncil4: "#e076dc",
+  mapCityCouncil5: "#3288bd",
+  mapCityCouncil6: "#fee08b",
+  mapCityCouncil7: "#fdae61",
+  mapCityCouncil8: "#f46d43",
+  mapCityCouncil9: "#abdda4",
+  mapCityCouncil10: "#A50F15"
 };

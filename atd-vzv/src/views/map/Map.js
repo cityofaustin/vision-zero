@@ -57,7 +57,7 @@ const Map = () => {
 
   useEffect(() => {
     // Fetch City Council Districts geojson and return OBJECTID metadata for styling in map-style.js
-    const overlayUrl = `https://services.arcgis.com/0L95CJ0VTaxqcmED/ArcGIS/rest/services/BOUNDARIES_single_member_districts/FeatureServer/0/query?where=COUNCIL_DISTRICT%20%3E=%200&outFields=OBJECTID&f=geojson`;
+    const overlayUrl = `https://services.arcgis.com/0L95CJ0VTaxqcmED/ArcGIS/rest/services/BOUNDARIES_single_member_districts/FeatureServer/0/query?where=COUNCIL_DISTRICT%20%3E=%200&f=geojson`;
     axios.get(overlayUrl).then(res => {
       setCityCouncilOverlay(res.data);
     });
