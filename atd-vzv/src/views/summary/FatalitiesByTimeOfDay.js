@@ -5,7 +5,7 @@ import moment from "moment";
 import { Nav, NavItem, NavLink, Row, Col, Container } from "reactstrap";
 import classnames from "classnames";
 import { Heatmap, HeatmapSeries } from "reaviz";
-import { thisMonth, thisYear } from "../../constants/time";
+import { thisMonth, thisYear, lastMonth, lastDayOfLastMonth } from "../../constants/time";
 import { colors } from "../../constants/colors";
 
 const FatalitiesByTimeOfDayWeek = () => {
@@ -34,15 +34,6 @@ const FatalitiesByTimeOfDayWeek = () => {
   };
 
   useEffect(() => {
-    const lastMonthNumber = moment()
-      .subtract(1, "month")
-      .format("MM");
-    const lastMonthLastDayNumber = moment(
-      `${thisYear}-${lastMonthNumber}`,
-      "YYYY-MM"
-    ).daysInMonth();
-
-    const lastMonthLastDayDate = `${thisYear}-${lastMonthNumber}-${lastMonthLastDayNumber}`;
 
     const dayOfWeekArray = [
       "Sunday",
@@ -82,7 +73,7 @@ const FatalitiesByTimeOfDayWeek = () => {
 
     const getFatalitiesByYearsAgoUrl = () => {
       if (activeTab === 0) {
-        return `https://data.austintexas.gov/resource/y2wy-tgr5.json?$where=death_cnt > 0 AND crash_date between '${thisYear}-01-01T00:00:00' and '${lastMonthLastDayDate}T23:59:59'`;
+        return `https://data.austintexas.gov/resource/y2wy-tgr5.json?$where=death_cnt > 0 AND crash_date between '${thisYear}-01-01T00:00:00' and '${thisYear}-${lastMonth}-${lastDayOfLastMonth}T23:59:59'`;
       } else {
         let yearsAgoDate = moment()
           .subtract(activeTab, "year")
