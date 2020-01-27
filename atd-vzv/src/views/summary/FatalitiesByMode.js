@@ -75,7 +75,6 @@ const FatalitiesByMode = () => {
     } else {
       url = `${demographicsEndpointUrl}?$limit=1&$order=crash_date DESC&$where=crash_date < '${lastYear}-12-31T23:59:59'`;
     }
-    console.log(url);
     axios.get(url).then(res => {
       const latestRecordDate = res.data[0].crash_date;
       const formattedLatestDate = moment(latestRecordDate).format("MMMM YYYY");
@@ -115,8 +114,6 @@ const FatalitiesByMode = () => {
     labels: createChartLabels(),
     datasets: !!chartData && createTypeDatasets()
   };
-
-  console.log(data);
 
   return (
     <Container>
