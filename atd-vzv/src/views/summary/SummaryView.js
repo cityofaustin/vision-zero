@@ -3,18 +3,22 @@ import axios from "axios";
 import SummaryWidget from "../../Components/Widgets/SummaryWidget";
 import { Row, Col } from "reactstrap";
 
-import { thisYear } from "../../constants/time";
+import { thisYear, thisMonth, lastYear } from "../../constants/time";
 import {
-  fatalitiesYTDUrl,
-  seriousInjuriesYTDUrl,
-  totalCrashesYTDUrl,
-  yearsOfLifeLostYTDUrl
+  thisYearFatalitiesUrl,
+  thisYearYearsOfLifeLostUrl,
+  thisYearSeriousInjuriesUrl,
+  thisYearTotalCrashesUrl,
+  previousYearFatalitiesUrl,
+  previousYearYearsOfLifeLostUrl,
+  previousYearSeriousInjuriesUrl,
+  previousYearTotalCrashesUrl
 } from "./queries/socrataQueries";
 import {
   calculateTotalFatalities,
+  getYearsOfLifeLost,
   calculateTotalInjuries,
-  calculateTotalCrashes,
-  getYearsOfLifeLost
+  calculateTotalCrashes
 } from "./helpers/helpers";
 import { colors } from "../../constants/colors";
 import {
@@ -26,54 +30,96 @@ import {
 
 const SummaryView = () => {
   const [fatalities, setFatalities] = useState(null);
+  const [yearsOfLifeLost, setYearsOfLifeLost] = useState(null);
   const [seriousInjuries, setSeriousInjuries] = useState(null);
   const [totalCrashes, setTotalCrashes] = useState(null);
-  const [yearsOfLifeLost, setYearsOfLifeLost] = useState(null);
 
   useEffect(() => {
-    axios.get(fatalitiesYTDUrl).then(res => {
+    let fatalitiesUrl, yearsOfLifeLostUrl, seriousInjuriesUrl, totalCrashesUrl;
+
+    if (thisMonth > "01") {
+      fatalitiesUrl = thisYearFatalitiesUrl;
+      yearsOfLifeLostUrl = thisYearYearsOfLifeLostUrl;
+      seriousInjuriesUrl = thisYearSeriousInjuriesUrl;
+      totalCrashesUrl = thisYearTotalCrashesUrl;
+    } else {
+      fatalitiesUrl = previousYearFatalitiesUrl;
+      yearsOfLifeLostUrl = previousYearYearsOfLifeLostUrl;
+      seriousInjuriesUrl = previousYearSeriousInjuriesUrl;
+      totalCrashesUrl = previousYearTotalCrashesUrl;
+    }
+
+    axios.get(fatalitiesUrl).then(res => {
       setFatalities(calculateTotalFatalities(res.data));
     });
 
-    axios.get(seriousInjuriesYTDUrl).then(res => {
+    axios.get(yearsOfLifeLostUrl).then(res => {
+      setYearsOfLifeLost(getYearsOfLifeLost(res.data));
+    });
+
+    axios.get(seriousInjuriesUrl).then(res => {
       setSeriousInjuries(calculateTotalInjuries(res.data));
     });
 
-    axios.get(totalCrashesYTDUrl).then(res => {
+    axios.get(totalCrashesUrl).then(res => {
       setTotalCrashes(calculateTotalCrashes(res.data));
-    });
-
-    axios.get(yearsOfLifeLostYTDUrl).then(res => {
-      setYearsOfLifeLost(getYearsOfLifeLost(res.data));
     });
   }, []);
 
-  const summaryWidgetsConfig = [
-    {
-      title: `Fatalities in ${thisYear}`,
-      total: fatalities,
-      icon: faHeartbeat,
-      color: colors.danger
-    },
-    {
-      title: `Serious Injuries in ${thisYear}`,
-      total: seriousInjuries,
-      icon: faMedkit,
-      color: colors.warning
-    },
-    {
-      title: `Total Crashes in ${thisYear}`,
-      total: totalCrashes,
-      icon: faCar,
-      color: colors.success
-    },
-    {
-      title: `Years of Life Lost in ${thisYear}`,
-      total: yearsOfLifeLost,
-      icon: faHourglass,
-      color: colors.info
-    }
-  ];
+  const summaryWidgetsConfig =
+    thisMonth > "01"
+      ? [
+          {
+            title: `Fatalities in ${thisYear}`,
+            total: fatalities,
+            icon: faHeartbeat,
+            color: colors.danger
+          },
+          {
+            title: `Years of Life Lost in ${thisYear}`,
+            total: yearsOfLifeLost,
+            icon: faHourglass,
+            color: colors.info
+          },
+          {
+            title: `Serious Injuries in ${thisYear}`,
+            total: seriousInjuries,
+            icon: faMedkit,
+            color: colors.warning
+          },
+          {
+            title: `Total Crashes in ${thisYear}`,
+            total: totalCrashes,
+            icon: faCar,
+            color: colors.success
+          }
+        ]
+      : [
+          {
+            title: `Fatalities in ${lastYear}`,
+            total: fatalities,
+            icon: faHeartbeat,
+            color: colors.danger
+          },
+          {
+            title: `Years of Life Lost in ${lastYear}`,
+            total: yearsOfLifeLost,
+            icon: faHourglass,
+            color: colors.info
+          },
+          {
+            title: `Serious Injuries in ${lastYear}`,
+            total: seriousInjuries,
+            icon: faMedkit,
+            color: colors.warning
+          },
+          {
+            title: `Total Crashes in ${lastYear}`,
+            total: totalCrashes,
+            icon: faCar,
+            color: colors.success
+          }
+        ];
 
   return (
     <Row>
