@@ -122,30 +122,10 @@ export const cityCouncilDataLayer = {
         [5, "#fee08b"],
         [6, "#fdae61"],
         [7, "#f46d43"],
-        [8, "#d53e4f"]
+        [8, "#d53e4f"],
+        [9, "#e076dc"]
       ]
     },
-    "fill-opacity": 0.8
+    "fill-opacity": 0.4
   }
-  //   "line-width": 3,
-  //   // "line-color": `${colors.info}`
-  //   "line-color": [
-  //     "interpolate",
-  //     ["linear"],
-  //     // "match", ["string", ["get", ""]],
-  //     ["get", "OBJECTID"],
-  //     0,
-  //     colors.warning,
-  //     1,
-  //     colors.redGradient2Of5,
-  //     2,
-  //     colors.chartOrange,
-  //     3,
-  //     colors.chartRedOrange,
-  //     4,
-  //     colors.chartRed,
-  //     5,
-  //     colors.chartBlue
-  //   ]
-  // }
 };
