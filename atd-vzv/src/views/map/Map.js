@@ -122,7 +122,7 @@ const Map = () => {
       {/* High Injury Network Layer */}
       {buildHighInjuryLayer(overlay)}
 
-      {!!cityCouncilOverlay && (
+      {!!cityCouncilOverlay && overlay.name === "cityCouncil" && (
         <Source type="geojson" data={cityCouncilOverlay}>
           {/* Add beforeId to render beneath crash points */}
           <Layer beforeId="crashes" {...cityCouncilDataLayer} />
