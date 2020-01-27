@@ -103,6 +103,6 @@ export const buildHighInjuryLayer = overlay => {
     }
   };
 
-  // Return a Layer component with config prop passed for each level
+  // Return a Layer component with config prop passed
   return <Layer key={"highInjury"} {...highInjuryLayerConfig} />;
 };
