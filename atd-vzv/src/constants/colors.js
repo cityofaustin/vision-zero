@@ -23,5 +23,6 @@ export const colors = {
   mapAsmp2: "#F66A4A",
   mapAsmp3: "#E60000",
   mapAsmp4: "#A50F15",
-  mapAsmp5: "#1B519D"
+  mapAsmp5: "#1B519D",
+  mapHighInjuryNetwork: "#E60000"
 };

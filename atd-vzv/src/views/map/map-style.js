@@ -36,6 +36,10 @@ export const asmpConfig = {
   }
 };
 
+// Map Overlay configuration
+// Hide/show based on overlay state, add layers only once and let state determine visibility
+// Using state in any other config parameters will cause layer to add again and break map layer
+
 // Build Mapbox GL layers for each ASMP Street Level in config
 export const buildAsmpLayers = (config, overlay) =>
   Object.entries(config).map(([level, parameters], i) => {
@@ -76,9 +80,11 @@ export const buildAsmpLayers = (config, overlay) =>
 // Build Mapbox GL layer High Injury Network
 export const buildHighInjuryLayer = overlay => {
   // Set config for each ASMP level layer based on ArcGIS VectorTileServer styles
+  const overlayId = "highInjury";
+
   // https://tiles.arcgis.com/tiles/0L95CJ0VTaxqcmED/arcgis/rest/services/HIN_Vector_Tile/VectorTileServer/resources/styles/root.json?f=pjson
   const highInjuryLayerConfig = {
-    id: overlay.name,
+    id: overlayId,
     type: "line",
     source: {
       type: "vector",
@@ -89,14 +95,14 @@ export const buildHighInjuryLayer = overlay => {
     "source-layer": "High-Injury Network",
     layout: {
       "line-join": "round",
-      visibility: `${overlay.name === "highInjury" ? "visible" : "none"}`
+      visibility: `${overlay.name === overlayId ? "visible" : "none"}`
     },
     paint: {
-      "line-color": "#0070FF",
+      "line-color": colors.mapHighInjuryNetwork,
       "line-width": 2
     }
   };
 
   // Return a Layer component with config prop passed for each level
-  return <Layer key={overlay.name} {...highInjuryLayerConfig} />;
+  return <Layer key={"highInjury"} {...highInjuryLayerConfig} />;
 };
