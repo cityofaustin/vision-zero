@@ -38,7 +38,7 @@ const Map = () => {
 
   const [mapData, setMapData] = useState("");
   const [hoveredFeature, setHoveredFeature] = useState(null);
-  const [cityCouncilOverlay, setCityCouncilOverlay] = useState("");
+  const [cityCouncilOverlay, setCityCouncilOverlay] = useState(null);
 
   const {
     mapFilters: [filters],
@@ -126,7 +126,7 @@ const Map = () => {
       {/* High Injury Network Layer */}
       {buildHighInjuryLayer(overlay)}
 
-      {!!overlay && (
+      {!!cityCouncilOverlay && (
         <Source type="geojson" data={cityCouncilOverlay}>
           <Layer {...cityCouncilDataLayer} />
         </Source>
