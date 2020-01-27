@@ -57,7 +57,7 @@ const SideMapControlOverlays = () => {
       <Label className="section-title">Overlays</Label>
       {/* Create a button group for each overlay */}
       {Object.entries(overlays).map(([name, parameters], i) => (
-        <ButtonGroup vertical key={i}>
+        <ButtonGroup vertical className="mb-3" key={i}>
           <Button
             key={i}
             id={name}
