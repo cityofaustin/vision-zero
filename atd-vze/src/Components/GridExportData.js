@@ -111,7 +111,7 @@ const GridExportData = ({ query, columnsToExport, totalRecords }) => {
         "rpt_sec_street_name",
       ];
 
-      columnsToClean.map(col => {
+      columnsToClean.forEach(col => {
         if (item[col]) {
           // remove return carriage and replace with space
           item[col] = item[col].replace(/(\r\n|\n|\r|")/gm, " ");
@@ -183,7 +183,6 @@ const GridExportData = ({ query, columnsToExport, totalRecords }) => {
               className=""
               data={formatExportData(data[query.table])}
               filename={query.table + moment(Date.now()).format()}
-              // separator={"|"}
             >
               <Button color="primary" onClick={toggleModal}>
                 Save
