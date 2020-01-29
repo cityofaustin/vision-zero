@@ -61,7 +61,6 @@ const FatalitiesByMode = () => {
           return null;
         })
       );
-
       setChartData(newData);
     };
 

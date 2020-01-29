@@ -66,60 +66,34 @@ const SummaryView = () => {
     });
   }, []);
 
-  const summaryWidgetsConfig =
-    thisMonth > "01"
-      ? [
-          {
-            title: `Fatalities in ${thisYear}`,
-            total: fatalities,
-            icon: faHeartbeat,
-            color: colors.danger
-          },
-          {
-            title: `Years of Life Lost in ${thisYear}`,
-            total: yearsOfLifeLost,
-            icon: faHourglass,
-            color: colors.info
-          },
-          {
-            title: `Serious Injuries in ${thisYear}`,
-            total: seriousInjuries,
-            icon: faMedkit,
-            color: colors.warning
-          },
-          {
-            title: `Total Crashes in ${thisYear}`,
-            total: totalCrashes,
-            icon: faCar,
-            color: colors.success
-          }
-        ]
-      : [
-          {
-            title: `Fatalities in ${lastYear}`,
-            total: fatalities,
-            icon: faHeartbeat,
-            color: colors.danger
-          },
-          {
-            title: `Years of Life Lost in ${lastYear}`,
-            total: yearsOfLifeLost,
-            icon: faHourglass,
-            color: colors.info
-          },
-          {
-            title: `Serious Injuries in ${lastYear}`,
-            total: seriousInjuries,
-            icon: faMedkit,
-            color: colors.warning
-          },
-          {
-            title: `Total Crashes in ${lastYear}`,
-            total: totalCrashes,
-            icon: faCar,
-            color: colors.success
-          }
-        ];
+  let displayYear = thisMonth > "01" ? thisYear : lastYear;
+
+  const summaryWidgetsConfig = [
+    {
+      title: `Fatalities in ${displayYear}`,
+      total: fatalities,
+      icon: faHeartbeat,
+      color: colors.danger
+    },
+    {
+      title: `Years of Life Lost in ${displayYear}`,
+      total: yearsOfLifeLost,
+      icon: faHourglass,
+      color: colors.info
+    },
+    {
+      title: `Serious Injuries in ${displayYear}`,
+      total: seriousInjuries,
+      icon: faMedkit,
+      color: colors.warning
+    },
+    {
+      title: `Total Crashes in ${displayYear}`,
+      total: totalCrashes,
+      icon: faCar,
+      color: colors.success
+    }
+  ];
 
   return (
     <Row>
