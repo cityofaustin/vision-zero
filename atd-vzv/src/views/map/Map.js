@@ -2,7 +2,13 @@ import React, { useState, useEffect } from "react";
 import { StoreContext } from "../../utils/store";
 import ReactMapGL, { Source, Layer } from "react-map-gl";
 import { createMapDataUrl } from "./helpers";
-import { crashDataLayer, buildAsmpLayers, asmpConfig } from "./map-style";
+import {
+  crashDataLayer,
+  buildAsmpLayers,
+  asmpConfig,
+  buildHighInjuryLayer,
+  cityCouncilDataLayer
+} from "./map-style";
 import axios from "axios";
 
 import { Card, CardBody, CardText } from "reactstrap";
@@ -32,6 +38,7 @@ const Map = () => {
 
   const [mapData, setMapData] = useState("");
   const [hoveredFeature, setHoveredFeature] = useState(null);
+  const [cityCouncilOverlay, setCityCouncilOverlay] = useState(null);
 
   const {
     mapFilters: [filters],
@@ -47,6 +54,14 @@ const Map = () => {
       setMapData(res.data);
     });
   }, [filters, dateRange]);
+
+  useEffect(() => {
+    // Fetch City Council Districts geojson and return OBJECTID metadata for styling in map-style.js
+    const overlayUrl = `https://services.arcgis.com/0L95CJ0VTaxqcmED/ArcGIS/rest/services/BOUNDARIES_single_member_districts/FeatureServer/0/query?where=COUNCIL_DISTRICT%20%3E=%200&f=geojson`;
+    axios.get(overlayUrl).then(res => {
+      setCityCouncilOverlay(res.data);
+    });
+  }, []);
 
   const _onViewportChange = viewport => setViewport(viewport);
 
@@ -103,6 +118,16 @@ const Map = () => {
 
       {/* ASMP Street Level Layers */}
       {buildAsmpLayers(asmpConfig, overlay)}
+
+      {/* High Injury Network Layer */}
+      {buildHighInjuryLayer(overlay)}
+
+      {!!cityCouncilOverlay && overlay.name === "cityCouncil" && (
+        <Source type="geojson" data={cityCouncilOverlay}>
+          {/* Add beforeId to render beneath crash points */}
+          <Layer beforeId="crashes" {...cityCouncilDataLayer} />
+        </Source>
+      )}
 
       {/* Render crash point tooltips */}
       {hoveredFeature && _renderTooltip()}
