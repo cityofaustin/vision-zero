@@ -1,7 +1,7 @@
 export const navConfig = [
   {
     title: "Summary",
-    url: "/summary"
+    url: "/"
   },
   { title: "Map", url: "/map" }
 ];

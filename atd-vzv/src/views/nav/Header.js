@@ -96,7 +96,8 @@ const Header = () => {
           <div className="vz-logo-wrapper">
             <img
               className="vz-logo"
-              src="vz_logo.png"
+              // Need to adjust location of public folder to account for /viewer/ basepath
+              src="../vz_logo.png"
               alt="Vision Zero Austin Logo"
             ></img>
           </div>
