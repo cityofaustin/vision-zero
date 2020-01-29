@@ -65,7 +65,8 @@ const SideDrawer = () => {
   const drawerContent = (
     <div className="side-menu">
       <StyledDrawerHeader>
-        <img src="vz_logo.png" alt="Vision Zero Austin Logo"></img>
+        {/* Need to adjust location of public folder to account for /viewer/ basepath */}
+        <img src="../vz_logo.png" alt="Vision Zero Austin Logo"></img>
       </StyledDrawerHeader>
       <Container className="pt-3 pb-3">
         {/* TODO: Remove disclaimer when going live */}
