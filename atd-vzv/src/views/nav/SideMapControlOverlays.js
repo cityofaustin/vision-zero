@@ -13,6 +13,12 @@ const SideMapControlOverlays = () => {
     asmp: {
       title: "ASMP Street Levels",
       options: ["1", "2", "3", "4", "5"]
+    },
+    highInjury: {
+      title: "High Injury Network"
+    },
+    cityCouncil: {
+      title: "Austin City Council Districts"
     }
   };
 
@@ -54,7 +60,7 @@ const SideMapControlOverlays = () => {
       <Label className="section-title">Overlays</Label>
       {/* Create a button group for each overlay */}
       {Object.entries(overlays).map(([name, parameters], i) => (
-        <ButtonGroup vertical key={i}>
+        <ButtonGroup vertical className="mb-3" key={i}>
           <Button
             key={i}
             id={name}

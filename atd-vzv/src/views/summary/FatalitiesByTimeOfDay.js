@@ -5,12 +5,23 @@ import moment from "moment";
 import { Nav, NavItem, NavLink, Row, Col, Container } from "reactstrap";
 import classnames from "classnames";
 import { Heatmap, HeatmapSeries } from "reaviz";
-import { thisYear } from "../../constants/time";
+import { thisMonth, thisYear, lastMonth, lastDayOfLastMonth } from "../../constants/time";
 import { colors } from "../../constants/colors";
 
 const FatalitiesByTimeOfDayWeek = () => {
+  // Check current month before setting the active tab.
+  // If current month is January, display last year's data,
+  // if past January, display this year's data.
+  const checkMonth = () => {
+    if (thisMonth > "01") {
+      return 0;
+    } else {
+      return 1;
+    }
+  };
+
+  const [activeTab, setActiveTab] = useState(checkMonth());
   const [heatmapData, setHeatmapData] = useState([]);
-  const [activeTab, setActiveTab] = useState(0);
 
   const getYearsAgoLabel = yearsAgo => {
     return moment()
@@ -23,15 +34,6 @@ const FatalitiesByTimeOfDayWeek = () => {
   };
 
   useEffect(() => {
-    const lastMonthNumber = moment()
-      .subtract(1, "month")
-      .format("MM");
-    const lastMonthLastDayNumber = moment(
-      `${thisYear}-${lastMonthNumber}`,
-      "YYYY-MM"
-    ).daysInMonth();
-
-    const lastMonthLastDayDate = `${thisYear}-${lastMonthNumber}-${lastMonthLastDayNumber}`;
 
     const dayOfWeekArray = [
       "Sunday",
@@ -71,7 +73,7 @@ const FatalitiesByTimeOfDayWeek = () => {
 
     const getFatalitiesByYearsAgoUrl = () => {
       if (activeTab === 0) {
-        return `https://data.austintexas.gov/resource/y2wy-tgr5.json?$where=death_cnt > 0 AND crash_date between '${thisYear}-01-01T00:00:00' and '${lastMonthLastDayDate}T23:59:59'`;
+        return `https://data.austintexas.gov/resource/y2wy-tgr5.json?$where=death_cnt > 0 AND crash_date between '${thisYear}-01-01T00:00:00' and '${thisYear}-${lastMonth}-${lastDayOfLastMonth}T23:59:59'`;
       } else {
         let yearsAgoDate = moment()
           .subtract(activeTab, "year")
@@ -115,7 +117,7 @@ const FatalitiesByTimeOfDayWeek = () => {
     };
 
     // Fetch records for selected year
-    axios.get(getFatalitiesByYearsAgoUrl(activeTab)).then(res => {
+    axios.get(getFatalitiesByYearsAgoUrl()).then(res => {
       setHeatmapData(calculateHourBlockTotals(res));
     });
   }, [activeTab]);
@@ -175,16 +177,18 @@ const FatalitiesByTimeOfDayWeek = () => {
                 {getYearsAgoLabel(1)}
               </NavLink>
             </NavItem>
-            <NavItem>
-              <NavLink
-                className={classnames({ active: activeTab === 0 })}
-                onClick={() => {
-                  toggle(0);
-                }}
-              >
-                {getYearsAgoLabel(0)}
-              </NavLink>
-            </NavItem>
+            {thisMonth > "01" && (
+              <NavItem>
+                <NavLink
+                  className={classnames({ active: activeTab === 0 })}
+                  onClick={() => {
+                    toggle(0);
+                  }}
+                >
+                  {getYearsAgoLabel(0)}
+                </NavLink>
+              </NavItem>
+            )}
           </Nav>
         </Col>
       </Row>
