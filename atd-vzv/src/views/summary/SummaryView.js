@@ -35,19 +35,23 @@ const SummaryView = () => {
   const [totalCrashes, setTotalCrashes] = useState(null);
 
   useEffect(() => {
-    let fatalitiesUrl, yearsOfLifeLostUrl, seriousInjuriesUrl, totalCrashesUrl;
+    // If it is past January, set URLs to query data for current year,
+    // else if it is January, set URLs to query data for previous year
+    let fatalitiesUrl =
+      thisMonth > "01" ? thisYearFatalitiesUrl : previousYearFatalitiesUrl;
 
-    if (thisMonth > "01") {
-      fatalitiesUrl = thisYearFatalitiesUrl;
-      yearsOfLifeLostUrl = thisYearYearsOfLifeLostUrl;
-      seriousInjuriesUrl = thisYearSeriousInjuriesUrl;
-      totalCrashesUrl = thisYearTotalCrashesUrl;
-    } else {
-      fatalitiesUrl = previousYearFatalitiesUrl;
-      yearsOfLifeLostUrl = previousYearYearsOfLifeLostUrl;
-      seriousInjuriesUrl = previousYearSeriousInjuriesUrl;
-      totalCrashesUrl = previousYearTotalCrashesUrl;
-    }
+    let yearsOfLifeLostUrl =
+      thisMonth > "01"
+        ? thisYearYearsOfLifeLostUrl
+        : previousYearYearsOfLifeLostUrl;
+
+    let seriousInjuriesUrl =
+      thisMonth > "01"
+        ? thisYearSeriousInjuriesUrl
+        : previousYearSeriousInjuriesUrl;
+
+    let totalCrashesUrl =
+      thisMonth > "01" ? thisYearTotalCrashesUrl : previousYearTotalCrashesUrl;
 
     axios.get(fatalitiesUrl).then(res => {
       setFatalities(calculateTotalFatalities(res.data));
