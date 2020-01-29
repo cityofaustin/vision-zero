@@ -16,6 +16,9 @@ const SideMapControlOverlays = () => {
     },
     highInjury: {
       title: "High Injury Network"
+    },
+    cityCouncil: {
+      title: "Austin City Council Districts"
     }
   };
 
