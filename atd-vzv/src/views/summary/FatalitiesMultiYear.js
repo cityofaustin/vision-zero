@@ -5,7 +5,7 @@ import moment from "moment";
 import { Line } from "react-chartjs-2";
 import { Container, Row, Col } from "reactstrap";
 import { crashEndpointUrl } from "./queries/socrataQueries";
-import { thisYear } from "../../constants/time";
+import { thisMonth, thisYear, lastYear } from "../../constants/time";
 import { colors } from "../../constants/colors";
 
 const FatalitiesMultiYear = () => {
@@ -65,6 +65,25 @@ const FatalitiesMultiYear = () => {
     });
   };
 
+  const renderHeader = () => {
+    let deathArray;
+    let year;
+    if (thisMonth > "01") {
+      deathArray = thisYearDeathArray;
+      year = thisYear;
+    } else {
+      deathArray = lastYearDeathArray;
+      year = lastYear;
+    }
+    return (
+      <h6 style={{ color: colors.blue, textAlign: "center" }}>
+        As of {lastMonthString}, there have been{" "}
+        <strong>{calculateYearlyTotals(deathArray)}</strong> traffic fatalities
+        in {year}.
+      </h6>
+    );
+  };
+
   useEffect(() => {
     const lastMonthNumber = moment()
       .subtract(1, "month")
@@ -84,10 +103,15 @@ const FatalitiesMultiYear = () => {
       return `${crashEndpointUrl}?$where=death_cnt > 0 AND crash_date between '${yearsAgoDate}-01-01T00:00:00' and '${yearsAgoDate}-12-31T23:59:59'`;
     };
 
-    // Fetch records from this year through last month
-    axios.get(thisYearUrl).then(res => {
-      setThisYearDeathArray(calculateMonthlyTotals(res, lastMonthLastDayDate));
-    });
+    // If there is a full month of data available for the current year (i.e., we are past January),
+    // fetch records for this year through last month
+    if (thisMonth > "01") {
+      axios.get(thisYearUrl).then(res => {
+        setThisYearDeathArray(
+          calculateMonthlyTotals(res, lastMonthLastDayDate)
+        );
+      });
+    }
 
     // Fetch records from last year
     axios.get(getFatalitiesByYearsAgoUrl(1)).then(res => {
@@ -115,6 +139,7 @@ const FatalitiesMultiYear = () => {
     });
   }, []);
 
+  // Build data object with data from the previous five years
   const data = {
     labels: [
       "January",
@@ -131,27 +156,6 @@ const FatalitiesMultiYear = () => {
       "December"
     ],
     datasets: [
-      {
-        label: `${thisYear}`,
-        fill: false,
-        lineTension: 0.1,
-        backgroundColor: colors.blue, // Legend box
-        borderColor: colors.blue,
-        borderCapStyle: "butt",
-        borderDash: [],
-        borderDashOffset: 0.0,
-        borderJoinStyle: "miter",
-        pointBorderColor: colors.blue,
-        pointBackgroundColor: colors.blue,
-        pointBorderWidth: 1,
-        pointHoverRadius: 5,
-        pointHoverBackgroundColor: colors.blue,
-        pointHoverBorderColor: colors.blue,
-        pointHoverBorderWidth: 2,
-        pointRadius: 1,
-        pointHitRadius: 10,
-        data: thisYearDeathArray
-      },
       {
         label: `${getYearsAgoLabel(1)}`,
         fill: false,
@@ -260,16 +264,35 @@ const FatalitiesMultiYear = () => {
     ]
   };
 
+  // Add current year to data object if we are past January
+  if (thisMonth > "01") {
+    data.datasets.unshift({
+      label: `${thisYear}`,
+      fill: false,
+      lineTension: 0.1,
+      backgroundColor: colors.blue, // Legend box
+      borderColor: colors.blue,
+      borderCapStyle: "butt",
+      borderDash: [],
+      borderDashOffset: 0.0,
+      borderJoinStyle: "miter",
+      pointBorderColor: colors.blue,
+      pointBackgroundColor: colors.blue,
+      pointBorderWidth: 1,
+      pointHoverRadius: 5,
+      pointHoverBackgroundColor: colors.blue,
+      pointHoverBorderColor: colors.blue,
+      pointHoverBorderWidth: 2,
+      pointRadius: 1,
+      pointHitRadius: 10,
+      data: thisYearDeathArray
+    });
+  }
+
   return (
     <Container>
       <Row style={{ paddingBottom: 20 }}>
-        <Col>
-          <h6 style={{ color: colors.blue, textAlign: "center" }}>
-            As of {lastMonthString}, there have been{" "}
-            <strong>{calculateYearlyTotals(thisYearDeathArray)}</strong> traffic
-            fatalities in {thisYear}.
-          </h6>
-        </Col>
+        <Col>{renderHeader()}</Col>
       </Row>
       <Row style={{ paddingBottom: 20 }}>
         <Col xs="6" sm="4" md="2">

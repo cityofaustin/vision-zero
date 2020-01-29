@@ -18,5 +18,10 @@ export const colors = {
   redGradient2Of5: "#fcae91",
   redGradient3Of5: "#fb6a4a",
   redGradient4Of5: "#de2d26",
-  redGradient5Of5: "#a50f15"
+  redGradient5Of5: "#a50f15",
+  mapAsmp1: "#F9AE91",
+  mapAsmp2: "#F66A4A",
+  mapAsmp3: "#E60000",
+  mapAsmp4: "#A50F15",
+  mapAsmp5: "#1B519D"
 };
