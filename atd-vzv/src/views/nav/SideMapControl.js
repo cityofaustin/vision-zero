@@ -93,7 +93,7 @@ const SideMapControl = () => {
       },
       fatal: {
         text: `Fatal`,
-        syntax: `death_cnt > 0`,
+        syntax: `apd_confirmed_death_count > 0`,
         type: `where`,
         operator: `AND`
       }

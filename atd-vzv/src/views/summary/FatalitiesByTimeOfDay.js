@@ -73,12 +73,12 @@ const FatalitiesByTimeOfDayWeek = () => {
 
     const getFatalitiesByYearsAgoUrl = () => {
       if (activeTab === 0) {
-        return `https://data.austintexas.gov/resource/y2wy-tgr5.json?$where=death_cnt > 0 AND crash_date between '${thisYear}-01-01T00:00:00' and '${thisYear}-${lastMonth}-${lastDayOfLastMonth}T23:59:59'`;
+        return `https://data.austintexas.gov/resource/y2wy-tgr5.json?$where=apd_confirmed_death_count > 0 AND crash_date between '${thisYear}-01-01T00:00:00' and '${thisYear}-${lastMonth}-${lastDayOfLastMonth}T23:59:59'`;
       } else {
         let yearsAgoDate = moment()
           .subtract(activeTab, "year")
           .format("YYYY");
-        return `https://data.austintexas.gov/resource/y2wy-tgr5.json?$where=death_cnt > 0 AND crash_date between '${yearsAgoDate}-01-01T00:00:00' and '${yearsAgoDate}-12-31T23:59:59'`;
+        return `https://data.austintexas.gov/resource/y2wy-tgr5.json?$where=apd_confirmed_death_count > 0 AND crash_date between '${yearsAgoDate}-01-01T00:00:00' and '${yearsAgoDate}-12-31T23:59:59'`;
       }
     };
 
