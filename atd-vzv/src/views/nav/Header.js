@@ -1,18 +1,10 @@
-import React, { useState } from "react";
+import React from "react";
 import { StoreContext } from "../../utils/store";
 import { A, usePath } from "hookrouter";
 
-import {
-  Container,
-  Navbar,
-  Button,
-  Nav,
-  NavItem,
-  NavLink,
-  Collapse,
-  NavbarToggler
-} from "reactstrap";
+import { Container, Navbar, Button, Nav, NavItem, NavLink } from "reactstrap";
 import styled from "styled-components";
+import { navConfig } from "../../constants/nav";
 import { drawer } from "../../constants/drawer";
 import { responsive } from "../../constants/responsive";
 import { colors } from "../../constants/colors";
@@ -30,22 +22,14 @@ const StyledNavbar = styled.div`
     min-height: ${drawer.headerHeight}px;
     left: ${drawer.width}px;
     background-color: ${colors.white};
-    @media only screen and (max-width: ${responsive.materialMedium}px) {
+    @media only screen and (max-width: ${responsive.bootstrapMedium}px) {
       /* When SideDrawer collapses, move header to left of window */
       left: 0;
     }
-
-    @media only screen and (max-width: ${responsive.bootstrapMedium}px) {
-      /* Keep Navbar toggles centered vertically in header when Nav toggle appears */
-      /* NavbarToggler is 40px in height */
-      padding-top: ${(drawer.headerHeight - 40) / 2}px !important;
-      padding-bottom: ${(drawer.headerHeight - 40) / 2}px !important;
-    }
   }
 
-  .collapse-toggle {
-    /* Hide SideBar toggle when SideBar is not collapsed */
-    @media only screen and (min-width: ${responsive.materialMedium}px) {
+  .navbar-links {
+    @media only screen and (max-width: ${responsive.bootstrapMedium}px) {
       display: none;
     }
   }
@@ -54,22 +38,40 @@ const StyledNavbar = styled.div`
     /* Set width to keep buttons equal width */
     width: 140px;
   }
-`;
 
-const navConfig = [
-  {
-    title: "Summary",
-    url: "/summary"
-  },
-  { title: "Map", url: "/map" }
-];
+  .sidedrawer-toggle {
+    /* Hide toggle button in header when SideDrawer is open by default */
+    @media only screen and (min-width: ${responsive.bootstrapMediumMin}px) {
+      display: none;
+    }
+  }
+
+  .vz-logo-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .vz-logo {
+    /* Center VZ logo and only show when toggler is present */
+    transform: translateX(-50%);
+    left: 50%;
+    position: absolute;
+
+    /* Hide logo in header when SideDrawer is closed and toggle is present (mobile) */
+    @media only screen and (min-width: ${responsive.bootstrapMediumMin}px) {
+      display: none;
+    }
+
+    /* Change position to prevent overlap of logo and toggle button on small devices */
+    @media only screen and (max-width: ${responsive.bootstrapExtraSmall}px) {
+      position: relative;
+    }
+  }
+`;
 
 const Header = () => {
   const currentPath = usePath();
-  // Set toggle state for navigation
-  const [isNavOpen, setIsNavOpen] = useState(false);
-
-  const toggle = () => setIsNavOpen(!isNavOpen);
 
   // Use context to toggle state for SideDrawer toggle
   const {
@@ -81,36 +83,40 @@ const Header = () => {
       <Container className="navbar-container" fluid>
         <Navbar
           light
-          className="navbar shadow-sm p-3 rounded fixed-top header-navbar"
+          className="navbar shadow-sm p-3 fixed-top header-navbar"
           expand="md"
         >
           <Button
-            className="mr-2 collapse-toggle"
+            className="mr-2 sidedrawer-toggle"
             color="info"
             onClick={() => setIsOpen(!isOpen)}
           >
             <FontAwesomeIcon icon={faBars} />
           </Button>
-          <NavbarToggler onClick={toggle} />
-          <Collapse className="float-right" isOpen={isNavOpen} navbar>
-            <Nav className="mr-auto" navbar>
-              {navConfig.map((config, i) => (
-                <NavItem key={i}>
-                  <NavLink tag={A} href={config.url}>
-                    {currentPath === config.url ? (
-                      <Button className="nav-button btn-dark">
-                        {config.title}
-                      </Button>
-                    ) : (
-                      <Button outline className="nav-button btn-outline-dark">
-                        {config.title}
-                      </Button>
-                    )}
-                  </NavLink>
-                </NavItem>
-              ))}
-            </Nav>
-          </Collapse>
+          <div className="vz-logo-wrapper">
+            <img
+              className="vz-logo"
+              src="vz_logo.png"
+              alt="Vision Zero Austin Logo"
+            ></img>
+          </div>
+          <Nav className="navbar-links" navbar>
+            {navConfig.map((config, i) => (
+              <NavItem key={i}>
+                <NavLink tag={A} href={config.url}>
+                  {currentPath === config.url ? (
+                    <Button className="nav-button btn-dark">
+                      {config.title}
+                    </Button>
+                  ) : (
+                    <Button outline className="nav-button btn-outline-dark">
+                      {config.title}
+                    </Button>
+                  )}
+                </NavLink>
+              </NavItem>
+            ))}
+          </Nav>
         </Navbar>
       </Container>
     </StyledNavbar>
