@@ -14,6 +14,10 @@ const Content = () => {
   const currentPath = usePath();
 
   // TODO: Adjust left of content when sidebar opens on mobile
+  // Adding conditional styles based on sidebarToggle in the store causes children to re-render on toggle
+  // which causes map or summary views to refetch all data on sidebar toggle
+  // https://github.com/facebook/react/issues/14110
+
   // Map view needs to consider header height and have no overflow scroll to fill view
   // Non-map views need to scroll to show all content
   const mapStyleExceptions = `
