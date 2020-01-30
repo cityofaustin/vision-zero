@@ -94,7 +94,7 @@ BEGIN
     estCompEconList = ARRAY(SELECT est_econ_cost_amount FROM atd_txdot__est_econ_cost ORDER BY est_econ_cost_id ASC);
 
     NEW.est_comp_cost = (0
-       + (NEW.apd_confirmed_death_count * (estCompCostList[2]))
+       + (NEW.death_cnt * (estCompCostList[2]))
        + (NEW.sus_serious_injry_cnt * (estCompCostList[3]))
        + (NEW.nonincap_injry_cnt * (estCompCostList[4]))
        + (NEW.poss_injry_cnt * (estCompCostList[5]))
@@ -102,7 +102,7 @@ BEGIN
    )::decimal(10,2);
 
     NEW.est_econ_cost = (0
-       + (NEW.apd_confirmed_death_count * (estCompEconList[2]))
+       + (NEW.death_cnt * (estCompEconList[2]))
        + (NEW.sus_serious_injry_cnt * (estCompEconList[3]))
        + (NEW.nonincap_injry_cnt * (estCompEconList[4]))
        + (NEW.poss_injry_cnt * (estCompEconList[5]))
@@ -117,7 +117,7 @@ BEGIN
     speedMgmtList = ARRAY (SELECT speed_mgmt_points FROM atd_txdot__speed_mgmt_lkp ORDER BY speed_mgmt_id ASC);
 
 	NEW.speed_mgmt_points = (0 
-		+ (NEW.apd_confirmed_death_count * (speedMgmtList [2])) 
+		+ (NEW.death_cnt * (speedMgmtList [2])) 
         + (NEW.sus_serious_injry_cnt * (speedMgmtList [3])) 
         + (NEW.nonincap_injry_cnt * (speedMgmtList [4])) 
         + (NEW.poss_injry_cnt * (speedMgmtList [5])) 
@@ -130,5 +130,3 @@ BEGIN
     RETURN NEW;
 END;
 $function$
-
-ALTER FUNCTION atd_txdot_crashes_updates_audit_log() OWNER TO atd_vz_data;
