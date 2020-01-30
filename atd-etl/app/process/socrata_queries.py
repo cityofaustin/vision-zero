@@ -69,6 +69,7 @@ people_query_template = Template(
             prsn_injry_sev_id
             prsn_age
             prsn_gndr_id
+            prsn_ethnicity_id
             unit_nbr
             crash {
                 crash_date
@@ -88,6 +89,7 @@ people_query_template = Template(
             prsn_injry_sev_id
             prsn_age
             prsn_gndr_id
+            prsn_ethnicity_id
             unit_nbr
             crash {
                 crash_date
