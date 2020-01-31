@@ -102,9 +102,12 @@ def extract_email_download_link(email_body):
     :return: string
     """
     download_link_string = re.search(AWS_CRIS_REQUEST_DOWNLOAD_LINK_PATTERN, email_body, re.IGNORECASE)
-    url = download_link_string.group(1) + download_link_string.group(2)
-    token = download_link_string.group(2)
-    return url, token
+    if download_link_string:
+        url = download_link_string.group(1) + download_link_string.group(2)
+        token = download_link_string.group(2)
+        return url, token
+    else:
+        return None, None
 
 
 def request_zip_file_url(cris_download_token, cookies):
