@@ -9,9 +9,14 @@ import styled from "styled-components";
 import { drawer } from "../../constants/drawer";
 import { responsive } from "../../constants/responsive";
 
-const Content = ({ toggle }) => {
+const Content = () => {
   const routeResult = useRoutes(routes);
   const currentPath = usePath();
+
+  // TODO: Adjust left of content when sidebar opens on mobile
+  // Adding conditional styles based on sidebarToggle in the store causes children to re-render on toggle
+  // which causes map or summary views to refetch all data on sidebar toggle
+  // https://github.com/facebook/react/issues/14110
 
   // Map view needs to consider header height and have no overflow scroll to fill view
   // Non-map views need to scroll to show all content
@@ -33,7 +38,7 @@ const Content = ({ toggle }) => {
     }
 
     /* Fill space left behind by SideDrawer on mobile */
-    @media only screen and (max-width: ${responsive.materialMedium}px) {
+    @media only screen and (max-width: ${responsive.bootstrapMedium}px) {
       .content {
         width: 100vw;
         ${mapStyleExceptions}
@@ -44,7 +49,7 @@ const Content = ({ toggle }) => {
   return (
     <StyledContent>
       <Container fluid className="content">
-        <Header toggleSidebar={toggle} />
+        <Header />
         {routeResult || <NotFound />}
       </Container>
     </StyledContent>
