@@ -60,7 +60,7 @@ const FatalitiesMultiYear = () => {
       let monthTotal = 0;
       data.data.forEach(record => {
         if (moment(record.crash_date).format("MM") === month) {
-          monthTotal += parseInt(record.death_cnt);
+          monthTotal += parseInt(record.apd_confirmed_death_count);
         }
       });
       cumulativeMonthTotal += monthTotal;
@@ -89,13 +89,13 @@ const FatalitiesMultiYear = () => {
 
   useEffect(() => {
     const lastMonthLastDayDate = `${thisYear}-${lastMonth}-${lastDayOfLastMonth}`;
-    const thisYearUrl = `${crashEndpointUrl}?$where=death_cnt > 0 AND crash_date between '${thisYear}-01-01T00:00:00' and '${lastMonthLastDayDate}T23:59:59'`;
+    const thisYearUrl = `${crashEndpointUrl}?$where=apd_confirmed_death_count > 0 AND crash_date between '${thisYear}-01-01T00:00:00' and '${lastMonthLastDayDate}T23:59:59'`;
 
     const getFatalitiesByYearsAgoUrl = yearsAgo => {
       let yearsAgoDate = moment()
         .subtract(yearsAgo, "year")
         .format("YYYY");
-      return `${crashEndpointUrl}?$where=death_cnt > 0 AND crash_date between '${yearsAgoDate}-01-01T00:00:00' and '${yearsAgoDate}-12-31T23:59:59'`;
+      return `${crashEndpointUrl}?$where=apd_confirmed_death_count > 0 AND crash_date between '${yearsAgoDate}-01-01T00:00:00' and '${yearsAgoDate}-12-31T23:59:59'`;
     };
 
     // If there is a full month of data available for the current year (i.e., we are past January),

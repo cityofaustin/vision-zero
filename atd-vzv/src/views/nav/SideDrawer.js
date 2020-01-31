@@ -81,7 +81,7 @@ const SideDrawer = () => {
     <div className="side-menu">
       <StyledDrawerHeader>
         {/* Need to adjust location of public folder to account for /viewer/ basepath */}
-        <img src="../vz_logo.png" alt="Vision Zero Austin Logo"></img>
+        <img src="/vz_logo.png" alt="Vision Zero Austin Logo"></img>
       </StyledDrawerHeader>
       <Container className="pt-3 pb-3">
         <SideDrawerMobileNav />
