@@ -7,7 +7,6 @@ import { dataEndDate, thisYear } from "../../constants/time";
 import { demographicsEndpointUrl } from "./queries/socrataQueries";
 
 const FatalitiesByMode = () => {
-  // Define stacked bar chart properties in order of stack
   const modes = [
     { label: "Motor", flags: ["motor_vehicle_fl"], color: colors.chartRed },
     {
@@ -82,16 +81,24 @@ const FatalitiesByMode = () => {
   // Tabulate fatalities by mode flags in data
   const getModeData = flags =>
     yearsArray().map(year => {
-      let fatalities = 0;
-      chartData[year].forEach(record =>
-        flags.forEach(flag => record[`${flag}`] === "Y" && fatalities++)
-      );
-      return fatalities;
+      return chartData[year].reduce((accumulator, record) => {
+        flags.forEach(flag => record[`${flag}`] === "Y" && accumulator++);
+        return accumulator;
+      }, 0);
     });
 
+  // Sort mode order in stack by averaging total mode fatalities across all years in chart
+  const sortModeData = modeData => {
+    const averageModeFatalities = modeDataArray =>
+      modeDataArray.reduce((a, b) => a + b) / modeDataArray.length;
+    return modeData.sort(
+      (a, b) => averageModeFatalities(b.data) - averageModeFatalities(a.data)
+    );
+  };
+
   // Create dataset for each mode type, data property is an array of fatality sums sorted chronologically
-  const createTypeDatasets = () =>
-    modes.map(mode => ({
+  const createTypeDatasets = () => {
+    const modeData = modes.map(mode => ({
       backgroundColor: mode.color,
       borderColor: mode.color,
       borderWidth: 2,
@@ -100,6 +107,9 @@ const FatalitiesByMode = () => {
       label: mode.label,
       data: getModeData(mode.flags)
     }));
+    // Determine order of modes in each year stack
+    return sortModeData(modeData);
+  };
 
   const data = {
     labels: createChartLabels(),
