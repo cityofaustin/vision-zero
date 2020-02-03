@@ -2,8 +2,7 @@ import moment from "moment";
 
 // Time data
 
-// Last date of records that should be referenced in VZV
-// Show the last complete month of data
+// Last date of records that should be referenced in VZV (through last complete month of data)
 export const dataEndDate = moment()
   .subtract(1, "month")
   .endOf("month");

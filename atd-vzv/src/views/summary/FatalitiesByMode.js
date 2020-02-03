@@ -38,7 +38,7 @@ const FatalitiesByMode = () => {
     }
   ];
 
-  const yearLimit = 5; // Number of years to display in chart
+  const yearLimit = 5; // Set number of years to display in chart
 
   // Create array of ints of last 5 years
   const yearsArray = useCallback(() => {
@@ -59,8 +59,7 @@ const FatalitiesByMode = () => {
       // Use Promise.all to let all requests resolve before setting chart data by year
       await Promise.all(
         yearsArray().map(async year => {
-          // If getting data for current year (only including years past January), set end of query to last day of previous month,
-          // else if getting data for previous years, set end of query to last day of year
+          // If current year, set end of query to last day of previous month, else set to last day of year
           let endDate =
             year.toString() === thisYear
               ? `${dataEndDate.format("YYYY-MM-DD")}T23:59:59`
@@ -80,7 +79,7 @@ const FatalitiesByMode = () => {
 
   const createChartLabels = () => yearsArray().map(year => `${year}`);
 
-  // Tabulate fatalities by mode from data
+  // Tabulate fatalities by mode flags in data
   const getModeData = flags =>
     yearsArray().map(year => {
       let fatalities = 0;
@@ -90,8 +89,7 @@ const FatalitiesByMode = () => {
       return fatalities;
     });
 
-  // Create dataset for each mode type
-  // data property is an array of fatality sums sorted chronologically
+  // Create dataset for each mode type, data property is an array of fatality sums sorted chronologically
   const createTypeDatasets = () =>
     modes.map(mode => ({
       backgroundColor: mode.color,
