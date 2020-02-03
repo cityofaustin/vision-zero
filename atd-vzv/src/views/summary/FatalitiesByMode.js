@@ -31,7 +31,7 @@ const FatalitiesByMode = () => {
     {
       label: "Pedalcyclist",
       flags: ["pedalcyclist_fl"],
-      color: colors.chartLightBlue
+      color: colors.chartBlue
     },
     {
       label: "Other",
@@ -42,17 +42,20 @@ const FatalitiesByMode = () => {
         "non_contact_fl",
         "towed_push_trailer_fl"
       ],
-      color: colors.chartBlue
+      color: colors.chartLightBlue
     }
   ];
+
   const yearLimit = 5; // Number of years to display in chart
+
+  // Create array of ints of last 5 years
   const yearsArray = useCallback(() => {
     let years = [];
     // If it is past January, display data up to and including current year,
     // else if it is January, only display data up to the end of last year
     let year = thisMonth > "01" ? thisYear : lastYear;
     for (let i = 0; i < yearLimit; i++) {
-      years.push(parseInt(year) - i);
+      years.unshift(parseInt(year) - i);
     }
     return years;
   }, []);
@@ -60,7 +63,7 @@ const FatalitiesByMode = () => {
   const [chartData, setChartData] = useState("");
   const [latestRecordDate, setLatestRecordDate] = useState("");
 
-  // Fetch data (Mode of fatality in crash)
+  // Fetch data (Mode of fatality in crash) in one go this time
   useEffect(() => {
     const getChartData = async () => {
       let newData = {};
@@ -86,6 +89,32 @@ const FatalitiesByMode = () => {
     getChartData();
   }, [yearsArray]);
 
+  // Fetch data (Mode of fatality in crash)
+  // useEffect(() => {
+  //   const getChartData = async () => {
+  //     let newData = {};
+  //     // Use Promise.all to let all requests resolve before setting chart data by year
+  //     await Promise.all(
+  //       yearsArray().map(async year => {
+  //         // If getting data for current year (only including years past January), set end of query to last day of previous month,
+  //         // else if getting data for previous years, set end of query to last day of year
+  //         let endDate =
+  //           year.toString() === thisYear
+  //             ? `${year}-${lastMonth}-${lastDayOfLastMonth}T23:59:59`
+  //             : `${year}-12-31T23:59:59`;
+  //         let url = `${demographicsEndpointUrl}?$where=(prsn_injry_sev_id = 4) AND crash_date between '${year}-01-01T00:00:00' and '${endDate}'`;
+  //         await axios.get(url).then(res => {
+  //           newData = { ...newData, ...{ [year]: res.data } };
+  //         });
+  //         return null;
+  //       })
+  //     );
+  //     setChartData(newData);
+  //   };
+
+  //   getChartData();
+  // }, [yearsArray]);
+
   // Fetch latest record from demographics dataset and set for chart subheading
   useEffect(() => {
     // If it is past January, set end of query to last day of previous month,
@@ -102,22 +131,17 @@ const FatalitiesByMode = () => {
     });
   }, []);
 
-  const createChartLabels = () =>
-    yearsArray()
-      .sort()
-      .map(year => `${year}`);
+  const createChartLabels = () => yearsArray().map(year => `${year}`);
 
   // Tabulate fatalities by mode from data
   const getModeData = flags =>
-    yearsArray()
-      .sort()
-      .map(year => {
-        let fatalities = 0;
-        chartData[year].forEach(record =>
-          flags.forEach(flag => record[`${flag}`] === "Y" && fatalities++)
-        );
-        return fatalities;
-      });
+    yearsArray().map(year => {
+      let fatalities = 0;
+      chartData[year].forEach(record =>
+        flags.forEach(flag => record[`${flag}`] === "Y" && fatalities++)
+      );
+      return fatalities;
+    });
 
   // Create dataset for each mode type
   // data property is an array of fatality sums sorted chronologically
