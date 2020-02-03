@@ -5,8 +5,14 @@ import moment from "moment";
 import { Nav, NavItem, NavLink, Row, Col, Container } from "reactstrap";
 import classnames from "classnames";
 import { Heatmap, HeatmapSeries } from "reaviz";
-import { thisMonth, thisYear, lastMonth, lastDayOfLastMonth } from "../../constants/time";
+import {
+  thisMonth,
+  thisYear,
+  lastMonth,
+  lastDayOfLastMonth
+} from "../../constants/time";
 import { colors } from "../../constants/colors";
+import CrashTypeSelector from "../nav/CrashTypeSelector";
 
 const FatalitiesByTimeOfDayWeek = () => {
   // Check current month before setting the active tab.
@@ -20,7 +26,10 @@ const FatalitiesByTimeOfDayWeek = () => {
     }
   };
 
-  const [activeTab, setActiveTab] = useState(checkMonth());
+  const [activeTabYear, setActiveTabYear] = useState(checkMonth());
+  const [crashType, setCrashType] = useState([
+    "death_cnt > 0 OR sus_serious_injry_cnt > 0"
+  ]);
   const [heatmapData, setHeatmapData] = useState([]);
 
   const getYearsAgoLabel = yearsAgo => {
@@ -29,12 +38,13 @@ const FatalitiesByTimeOfDayWeek = () => {
       .format("YYYY");
   };
 
-  const toggle = tab => {
-    if (activeTab !== tab) setActiveTab(tab);
+  const toggleYear = tabYear => {
+    if (activeTabYear !== tabYear) {
+      setActiveTabYear(tabYear);
+    }
   };
 
   useEffect(() => {
-
     const dayOfWeekArray = [
       "Sunday",
       "Monday",
@@ -72,14 +82,15 @@ const FatalitiesByTimeOfDayWeek = () => {
     ];
 
     const getFatalitiesByYearsAgoUrl = () => {
-      if (activeTab === 0) {
-        return `https://data.austintexas.gov/resource/y2wy-tgr5.json?$where=death_cnt > 0 AND crash_date between '${thisYear}-01-01T00:00:00' and '${thisYear}-${lastMonth}-${lastDayOfLastMonth}T23:59:59'`;
-      } else {
-        let yearsAgoDate = moment()
-          .subtract(activeTab, "year")
-          .format("YYYY");
-        return `https://data.austintexas.gov/resource/y2wy-tgr5.json?$where=death_cnt > 0 AND crash_date between '${yearsAgoDate}-01-01T00:00:00' and '${yearsAgoDate}-12-31T23:59:59'`;
-      }
+      const yearsAgoDate = moment()
+        .subtract(activeTabYear, "year")
+        .format("YYYY");
+      let queryUrl =
+        activeTabYear === 0
+          ? `https://data.austintexas.gov/resource/y2wy-tgr5.json?$where=${crashType} AND crash_date between '${thisYear}-01-01T00:00:00' and '${thisYear}-${lastMonth}-${lastDayOfLastMonth}T23:59:59'`
+          : `https://data.austintexas.gov/resource/y2wy-tgr5.json?$where=${crashType} AND crash_date between '${yearsAgoDate}-01-01T00:00:00' and '${yearsAgoDate}-12-31T23:59:59'`;
+      console.log(queryUrl);
+      return queryUrl;
     };
 
     let dataArray = [];
@@ -120,18 +131,23 @@ const FatalitiesByTimeOfDayWeek = () => {
     axios.get(getFatalitiesByYearsAgoUrl()).then(res => {
       setHeatmapData(calculateHourBlockTotals(res));
     });
-  }, [activeTab]);
+  }, [activeTabYear, crashType]);
 
   return (
     <Container>
+      <Row style={{ paddingBottom: 20 }}>
+        <Col>
+          <CrashTypeSelector setCrashType={setCrashType} />
+        </Col>
+      </Row>
       <Row>
         <Col>
           <Nav tabs className="justify-content-center">
             <NavItem>
               <NavLink
-                className={classnames({ active: activeTab === 5 })}
+                className={classnames({ active: activeTabYear === 5 })}
                 onClick={() => {
-                  toggle(5);
+                  toggleYear(5);
                 }}
               >
                 {getYearsAgoLabel(5)}
@@ -139,9 +155,9 @@ const FatalitiesByTimeOfDayWeek = () => {
             </NavItem>
             <NavItem>
               <NavLink
-                className={classnames({ active: activeTab === 4 })}
+                className={classnames({ active: activeTabYear === 4 })}
                 onClick={() => {
-                  toggle(4);
+                  toggleYear(4);
                 }}
               >
                 {getYearsAgoLabel(4)}
@@ -149,9 +165,9 @@ const FatalitiesByTimeOfDayWeek = () => {
             </NavItem>
             <NavItem>
               <NavLink
-                className={classnames({ active: activeTab === 3 })}
+                className={classnames({ active: activeTabYear === 3 })}
                 onClick={() => {
-                  toggle(3);
+                  toggleYear(3);
                 }}
               >
                 {getYearsAgoLabel(3)}
@@ -159,9 +175,9 @@ const FatalitiesByTimeOfDayWeek = () => {
             </NavItem>
             <NavItem>
               <NavLink
-                className={classnames({ active: activeTab === 2 })}
+                className={classnames({ active: activeTabYear === 2 })}
                 onClick={() => {
-                  toggle(2);
+                  toggleYear(2);
                 }}
               >
                 {getYearsAgoLabel(2)}
@@ -169,9 +185,9 @@ const FatalitiesByTimeOfDayWeek = () => {
             </NavItem>
             <NavItem>
               <NavLink
-                className={classnames({ active: activeTab === 1 })}
+                className={classnames({ active: activeTabYear === 1 })}
                 onClick={() => {
-                  toggle(1);
+                  toggleYear(1);
                 }}
               >
                 {getYearsAgoLabel(1)}
@@ -180,9 +196,9 @@ const FatalitiesByTimeOfDayWeek = () => {
             {thisMonth > "01" && (
               <NavItem>
                 <NavLink
-                  className={classnames({ active: activeTab === 0 })}
+                  className={classnames({ active: activeTabYear === 0 })}
                   onClick={() => {
-                    toggle(0);
+                    toggleYear(0);
                   }}
                 >
                   {getYearsAgoLabel(0)}

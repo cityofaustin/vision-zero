@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import moment from "moment";
-
 import { Line } from "react-chartjs-2";
 import { Container, Row, Col } from "reactstrap";
+
 import { crashEndpointUrl } from "./queries/socrataQueries";
 import {
   thisMonth,
