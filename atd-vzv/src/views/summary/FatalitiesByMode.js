@@ -2,14 +2,8 @@ import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import { Bar } from "react-chartjs-2";
 import { colors } from "../../constants/colors";
-
 import { Container } from "reactstrap";
-import {
-  dataEndDate,
-  thisYear,
-  lastMonth,
-  lastDayOfLastMonth
-} from "../../constants/time";
+import { dataEndDate, thisYear } from "../../constants/time";
 import { demographicsEndpointUrl } from "./queries/socrataQueries";
 
 const FatalitiesByMode = () => {
@@ -56,9 +50,9 @@ const FatalitiesByMode = () => {
     return years;
   }, []);
 
-  const [chartData, setChartData] = useState("");
+  const [chartData, setChartData] = useState(""); // {yearInt: [{record}, {record}, ...]}
 
-  // Fetch data (Mode of fatality in crash)
+  // Fetch data and set in state by years in yearsArray
   useEffect(() => {
     const getChartData = async () => {
       let newData = {};
@@ -69,7 +63,7 @@ const FatalitiesByMode = () => {
           // else if getting data for previous years, set end of query to last day of year
           let endDate =
             year.toString() === thisYear
-              ? `${year}-${lastMonth}-${lastDayOfLastMonth}T23:59:59`
+              ? `${dataEndDate.format("YYYY-MM-DD")}T23:59:59`
               : `${year}-12-31T23:59:59`;
           let url = `${demographicsEndpointUrl}?$where=(prsn_injry_sev_id = 4) AND crash_date between '${year}-01-01T00:00:00' and '${endDate}'`;
           await axios.get(url).then(res => {
