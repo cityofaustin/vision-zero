@@ -1,6 +1,13 @@
 import moment from "moment";
 
 // Time data
+
+// Last date of records that should be referenced in VZV
+// Show the last complete month of data
+export const dataEndDate = moment()
+  .subtract(1, "month")
+  .endOf("month");
+
 export const today = moment().format("YYYY-MM-DD");
 export const thisYear = moment().format("YYYY");
 export const oneYearAgo = moment()
