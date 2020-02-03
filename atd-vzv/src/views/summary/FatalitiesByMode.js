@@ -17,16 +17,35 @@ import { demographicsEndpointUrl } from "./queries/socrataQueries";
 const FatalitiesByMode = () => {
   // Define stacked bar chart properties in order of stack
   const modes = [
-    { label: "Motor", flag: "motor_vehicle_fl", color: colors.chartRed },
-    { label: "Pedestrian", flag: "pedestrian_fl", color: colors.chartOrange },
+    { label: "Motor", flags: ["motor_vehicle_fl"], color: colors.chartRed },
+    {
+      label: "Pedestrian",
+      flags: ["pedestrian_fl"],
+      color: colors.chartOrange
+    },
     {
       label: "Motorcycle",
-      flag: "motorcycle_fl",
+      flags: ["motorcycle_fl"],
       color: colors.chartRedOrange
     },
-    { label: "Pedalcyclist", flag: "pedalcyclist_fl", color: colors.chartBlue }
+    {
+      label: "Pedalcyclist",
+      flags: ["pedalcyclist_fl"],
+      color: colors.chartLightBlue
+    },
+    {
+      label: "Other",
+      flags: [
+        "other_fl",
+        "train_fl",
+        "motorized_conveyance_fl",
+        "non_contact_fl",
+        "towed_push_trailer_fl"
+      ],
+      color: colors.chartBlue
+    }
   ];
-  const yearLimit = 10; // Number of years to display in chart
+  const yearLimit = 5; // Number of years to display in chart
   const yearsArray = useCallback(() => {
     let years = [];
     // If it is past January, display data up to and including current year,
@@ -89,12 +108,14 @@ const FatalitiesByMode = () => {
       .map(year => `${year}`);
 
   // Tabulate fatalities by mode from data
-  const getModeData = flag =>
+  const getModeData = flags =>
     yearsArray()
       .sort()
       .map(year => {
         let fatalities = 0;
-        chartData[year].forEach(f => f[`${flag}`] === "Y" && fatalities++);
+        chartData[year].forEach(record =>
+          flags.forEach(flag => record[`${flag}`] === "Y" && fatalities++)
+        );
         return fatalities;
       });
 
@@ -108,7 +129,7 @@ const FatalitiesByMode = () => {
       hoverBackgroundColor: mode.color,
       hoverBorderColor: mode.color,
       label: mode.label,
-      data: getModeData(mode.flag)
+      data: getModeData(mode.flags)
     }));
 
   const data = {
