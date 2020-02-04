@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { StoreContext } from "../../utils/store";
 import "react-infinite-calendar/styles.css";
 
@@ -39,6 +39,9 @@ const SideMapControl = () => {
     mapFilters: [filters, setFilters]
   } = React.useContext(StoreContext);
 
+  const [filterGroupCounts, setFilterGroupCounts] = useState({});
+
+  // Build filter string for Other modes
   const buildOtherFiltersString = () =>
     otherFiltersArray
       .reduce((accumulator, filterString) => {
@@ -86,22 +89,50 @@ const SideMapControl = () => {
         text: `Injury`,
         syntax: `sus_serious_injry_cnt > 0`,
         type: `where`,
-        operator: `AND`
+        operator: `OR`
       },
       fatal: {
         text: `Fatal`,
         syntax: `apd_confirmed_death_count > 0`,
         type: `where`,
-        operator: `AND`
+        operator: `OR`
       }
     }
   };
+
+  useEffect(() => {
+    // Reduce all filters and set active filters (apply all filters on render)
+    const initialFiltersArray = Object.entries(mapFilters).reduce(
+      (accumulator, [type, filters]) => {
+        const groupFilters = Object.entries(filters).reduce(
+          (accumulator, [name, filterConfig]) => {
+            filterConfig["name"] = name;
+            filterConfig["group"] = type;
+            accumulator.push(filterConfig);
+            return accumulator;
+          },
+          []
+        );
+        accumulator = [...accumulator, ...groupFilters];
+        return accumulator;
+      },
+      []
+    );
+    setFilters(initialFiltersArray);
+  }, []);
+
+  // useEffect(() => {
+  //   const filtersCount = Object.entries(filters).reduce((accumulator, [type, filterConfig]) => {
+
+  //   }, {})
+  // }, [filters])
 
   const handleFilterClick = (event, filterGroup) => {
     // Set filter or remove if already set
     const filterName = event.currentTarget.id;
 
     if (isFilterSet(filterName)) {
+      // if there is at least one type of each filter set, remove, else don't!
       const updatedFiltersArray = filters.filter(
         setFilter => setFilter.name !== filterName
       );
