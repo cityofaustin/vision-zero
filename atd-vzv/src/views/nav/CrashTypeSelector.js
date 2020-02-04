@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from "react";
 import classnames from "classnames";
 import { Container, Nav } from "reactstrap";
+import {
+  fatalities,
+  seriousInjuries,
+  fatalitiesAndSeriousInjuries
+} from "../../constants/crashTypeQueryStrings";
 
 const CrashTypeSelector = ({ setCrashType }) => {
-    
   const [activeTabType, setActiveTabType] = useState(
-    "death_cnt > 0 OR sus_serious_injry_cnt > 0"
+    fatalitiesAndSeriousInjuries
   );
 
   const toggleType = tabType => {
@@ -15,6 +19,7 @@ const CrashTypeSelector = ({ setCrashType }) => {
   };
 
   useEffect(() => {
+    console.log(activeTabType);
     setCrashType(activeTabType);
   });
 
@@ -28,11 +33,11 @@ const CrashTypeSelector = ({ setCrashType }) => {
         <button
           type="button"
           className={classnames(
-            { active: activeTabType === "death_cnt > 0" },
+            { active: activeTabType === fatalities },
             "btn btn-secondary"
           )}
           onClick={() => {
-            toggleType("death_cnt > 0");
+            toggleType(fatalities);
           }}
         >
           Fatalities
@@ -40,11 +45,11 @@ const CrashTypeSelector = ({ setCrashType }) => {
         <button
           type="button"
           className={classnames(
-            { active: activeTabType === "sus_serious_injry_cnt > 0" },
+            { active: activeTabType === seriousInjuries },
             "btn btn-secondary"
           )}
           onClick={() => {
-            toggleType("sus_serious_injry_cnt > 0");
+            toggleType(seriousInjuries);
           }}
         >
           Serious Injuries
@@ -53,13 +58,12 @@ const CrashTypeSelector = ({ setCrashType }) => {
           type="button"
           className={classnames(
             {
-              active:
-                activeTabType === "death_cnt > 0 OR sus_serious_injry_cnt > 0"
+              active: activeTabType === fatalitiesAndSeriousInjuries
             },
             "btn btn-secondary"
           )}
           onClick={() => {
-            toggleType("death_cnt > 0 OR sus_serious_injry_cnt > 0");
+            toggleType(fatalitiesAndSeriousInjuries);
           }}
         >
           Both

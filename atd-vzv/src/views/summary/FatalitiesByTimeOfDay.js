@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import moment from "moment";
 
+import CrashTypeSelector from "../nav/CrashTypeSelector";
+import { fatalitiesAndSeriousInjuries } from "../../constants/crashTypeQueryStrings";
 import { Nav, NavItem, NavLink, Row, Col, Container } from "reactstrap";
 import classnames from "classnames";
 import { Heatmap, HeatmapSeries } from "reaviz";
@@ -12,7 +14,6 @@ import {
   lastDayOfLastMonth
 } from "../../constants/time";
 import { colors } from "../../constants/colors";
-import CrashTypeSelector from "../nav/CrashTypeSelector";
 
 const FatalitiesByTimeOfDayWeek = () => {
   // Check current month before setting the active tab.
@@ -27,9 +28,7 @@ const FatalitiesByTimeOfDayWeek = () => {
   };
 
   const [activeTabYear, setActiveTabYear] = useState(checkMonth());
-  const [crashType, setCrashType] = useState([
-    "death_cnt > 0 OR sus_serious_injry_cnt > 0"
-  ]);
+  const [crashType, setCrashType] = useState([fatalitiesAndSeriousInjuries]);
   const [heatmapData, setHeatmapData] = useState([]);
 
   const getYearsAgoLabel = yearsAgo => {
@@ -82,6 +81,7 @@ const FatalitiesByTimeOfDayWeek = () => {
     ];
 
     const getFatalitiesByYearsAgoUrl = () => {
+      console.log(crashType);
       const yearsAgoDate = moment()
         .subtract(activeTabYear, "year")
         .format("YYYY");
