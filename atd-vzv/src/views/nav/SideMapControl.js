@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { StoreContext } from "../../utils/store";
 import "react-infinite-calendar/styles.css";
 
@@ -54,34 +54,39 @@ const SideMapControl = () => {
   const mapFilters = {
     mode: {
       pedestrian: {
-        icon: faWalking,
-        syntax: `pedestrian_fl = "Y"`,
-        type: `where`,
-        operator: `OR`
+        icon: faWalking, // Font Awesome icon object
+        syntax: `pedestrian_fl = "Y"`, // Socrata SoQL query string
+        type: `where`, // Socrata SoQL query type
+        operator: `OR`, // Logical operator for joining multiple query strings
+        default: true // Apply filter as default on render
       },
       pedalcyclist: {
         icon: faBiking,
         syntax: `pedalcyclist_fl = "Y"`,
         type: `where`,
-        operator: `OR`
+        operator: `OR`,
+        default: true
       },
       motor: {
         icon: faCar,
         syntax: `motor_vehicle_fl = "Y"`,
         type: `where`,
-        operator: `OR`
+        operator: `OR`,
+        default: true
       },
       motorcycle: {
         icon: faMotorcycle,
         syntax: `motorcycle_fl = "Y"`,
         type: `where`,
-        operator: `OR`
+        operator: `OR`,
+        default: true
       },
       other: {
         text: "Other",
         syntax: buildOtherFiltersString(),
         type: `where`,
-        operator: `OR`
+        operator: `OR`,
+        default: true
       }
     },
     type: {
@@ -89,13 +94,15 @@ const SideMapControl = () => {
         text: `Injury`,
         syntax: `sus_serious_injry_cnt > 0`,
         type: `where`,
-        operator: `OR`
+        operator: `OR`,
+        default: true
       },
       fatal: {
         text: `Fatal`,
         syntax: `apd_confirmed_death_count > 0`,
         type: `where`,
-        operator: `OR`
+        operator: `OR`,
+        default: false
       }
     }
   };
@@ -108,9 +115,12 @@ const SideMapControl = () => {
         (accumulator, [type, filtersGroup]) => {
           const groupFilters = Object.entries(filtersGroup).reduce(
             (accumulator, [name, filterConfig]) => {
-              filterConfig["name"] = name;
-              filterConfig["group"] = type;
-              accumulator.push(filterConfig);
+              // Apply filter only if set as a default on render
+              if (filterConfig.default) {
+                filterConfig["name"] = name;
+                filterConfig["group"] = type;
+                accumulator.push(filterConfig);
+              }
               return accumulator;
             },
             []
