@@ -5,6 +5,7 @@ import "react-infinite-calendar/styles.css";
 import SideMapControlDateRange from "./SideMapControlDateRange";
 import SideMapControlOverlays from "./SideMapControlOverlays";
 import { colors } from "../../constants/colors";
+import { otherFiltersArray } from "../../constants/filters";
 import { ButtonGroup, Button, Card, Label } from "reactstrap";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -39,16 +40,24 @@ const SideMapControl = () => {
   } = React.useContext(StoreContext);
 
   // Clear all filters that match group arg
-  const handleAllFiltersClick = (event, group) => {
-    const keepFilters = filters.filter(filter => filter.group !== group);
-    setFilters(keepFilters);
-  };
+  // const handleAllFiltersClick = (event, group) => {
+  //   const keepFilters = filters.filter(filter => filter.group !== group);
+  //   setFilters(keepFilters);
+  // };
 
-  // Determine if no filters in a group are applied (used for "All" buttons active/inactive state)
-  const isUnfiltered = group => {
-    const result = filters.filter(filter => filter.group === group);
-    return result.length === 0;
-  };
+  // // Determine if no filters in a group are applied (used for "All" buttons active/inactive state)
+  // const isUnfiltered = group => {
+  //   const result = filters.filter(filter => filter.group === group);
+  //   return result.length === 0;
+  // };
+
+  const buildOtherFiltersString = () =>
+    otherFiltersArray
+      .reduce((accumulator, filterString) => {
+        accumulator.push(`${filterString} = "Y"`);
+        return accumulator;
+      }, [])
+      .join(" OR ");
 
   // Define groups of map filters
   const mapFilters = {
@@ -77,12 +86,18 @@ const SideMapControl = () => {
         type: `where`,
         operator: `OR`
       },
-      all: {
-        text: "All",
-        handler: handleAllFiltersClick,
-        active: isUnfiltered,
-        inactive: isUnfiltered
+      other: {
+        text: "Other",
+        syntax: buildOtherFiltersString(),
+        type: `where`,
+        operator: `OR`
       }
+      // all: {
+      //   text: "All",
+      //   handler: handleAllFiltersClick,
+      //   active: isUnfiltered,
+      //   inactive: isUnfiltered
+      // }
     },
     type: {
       seriousInjury: {

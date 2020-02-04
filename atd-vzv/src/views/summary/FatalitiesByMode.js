@@ -1,8 +1,10 @@
 import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import { Bar } from "react-chartjs-2";
-import { colors } from "../../constants/colors";
+
 import { Container } from "reactstrap";
+import { colors } from "../../constants/colors";
+import { otherFiltersArray } from "../../constants/filters";
 import { dataEndDate, thisYear } from "../../constants/time";
 import { demographicsEndpointUrl } from "./queries/socrataQueries";
 
@@ -26,13 +28,7 @@ const FatalitiesByMode = () => {
     },
     {
       label: "Other",
-      flags: [
-        "other_fl",
-        "train_fl",
-        "motorized_conveyance_fl",
-        "non_contact_fl",
-        "towed_push_trailer_fl"
-      ],
+      flags: otherFiltersArray,
       color: colors.chartLightBlue
     }
   ];

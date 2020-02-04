@@ -36,6 +36,6 @@ export const createMapDataUrl = (filters, dateRange) => {
     `${crashGeoJSONEndpointUrl}?$limit=1000` +
     `&$where=crash_date between '${dateRange.start}' and '${dateRange.end}'` +
     // if there are filters applied, add AND operator to create valid query url
-    `${filters.length > 0 ? "AND" : ""} ${whereFilterString || ""}`
+    `${filters.length > 0 ? " AND" : ""} ${whereFilterString || ""}`
   );
 };
