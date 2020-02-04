@@ -154,15 +154,15 @@ const SideMapControl = () => {
     return !!filters.find(setFilter => setFilter.name === filterName);
   };
 
-  const isOneFilterOfEachTypeApplied = group => filterGroupCounts[group] > 1;
+  const isOneFilterOfGroupApplied = group => filterGroupCounts[group] > 1;
 
   // Set filter or remove if already set
   const handleFilterClick = (event, filterGroup) => {
     const filterName = event.currentTarget.id;
 
     if (isFilterSet(filterName)) {
-      // If there is at least one filter from each group set, remove it
-      const updatedFiltersArray = isOneFilterOfEachTypeApplied(filterGroup)
+      // Always leave one filter applied per group
+      const updatedFiltersArray = isOneFilterOfGroupApplied(filterGroup)
         ? filters.filter(setFilter => setFilter.name !== filterName)
         : filters;
       setFilters(updatedFiltersArray);

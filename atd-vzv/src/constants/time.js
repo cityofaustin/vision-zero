@@ -1,12 +1,14 @@
 import moment from "moment";
 
-// Time data
-
 // Last date of records that should be referenced in VZV (through last complete month of data)
 export const dataEndDate = moment()
   .subtract(1, "month")
   .endOf("month");
 
+// Number of past years data to fetch
+export const rollingYearsOfData = 5;
+
+// Common time variables
 export const today = moment().format("YYYY-MM-DD");
 export const thisYear = moment().format("YYYY");
 export const oneYearAgo = moment()
@@ -29,8 +31,6 @@ export const lastMonthString = moment()
   .format("MMMM");
 
 // Map time data
-const rollingYearsOfData = 5;
-
 export const mapDataMinDate = new Date(
   moment()
     .subtract(rollingYearsOfData, "year")

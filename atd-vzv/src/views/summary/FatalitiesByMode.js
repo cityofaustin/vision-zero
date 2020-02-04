@@ -5,7 +5,11 @@ import { Bar } from "react-chartjs-2";
 import { Container } from "reactstrap";
 import { colors } from "../../constants/colors";
 import { otherFiltersArray } from "../../constants/filters";
-import { dataEndDate, thisYear } from "../../constants/time";
+import {
+  dataEndDate,
+  thisYear,
+  rollingYearsOfData
+} from "../../constants/time";
 import { demographicsEndpointUrl } from "./queries/socrataQueries";
 
 const FatalitiesByMode = () => {
@@ -33,13 +37,11 @@ const FatalitiesByMode = () => {
     }
   ];
 
-  const yearLimit = 5; // Set number of years to display in chart
-
   // Create array of ints of last 5 years
   const yearsArray = useCallback(() => {
     let years = [];
     let year = parseInt(dataEndDate.format("YYYY"));
-    for (let i = 0; i < yearLimit; i++) {
+    for (let i = 0; i < rollingYearsOfData; i++) {
       years.unshift(year - i);
     }
     return years;
