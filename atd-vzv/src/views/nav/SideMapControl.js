@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useCallback, useState } from "react";
 import { StoreContext } from "../../utils/store";
 import "react-infinite-calendar/styles.css";
 
@@ -102,24 +102,27 @@ const SideMapControl = () => {
 
   // Reduce all filters and set all as active on render
   useEffect(() => {
-    const initialFiltersArray = Object.entries(mapFilters).reduce(
-      (accumulator, [type, filters]) => {
-        const groupFilters = Object.entries(filters).reduce(
-          (accumulator, [name, filterConfig]) => {
-            filterConfig["name"] = name;
-            filterConfig["group"] = type;
-            accumulator.push(filterConfig);
-            return accumulator;
-          },
-          []
-        );
-        accumulator = [...accumulator, ...groupFilters];
-        return accumulator;
-      },
-      []
-    );
-    setFilters(initialFiltersArray);
-  }, []);
+    // If no filters are applied (initial render), set all filters
+    if (Object.keys(filters).length === 0) {
+      const initialFiltersArray = Object.entries(mapFilters).reduce(
+        (accumulator, [type, filtersGroup]) => {
+          const groupFilters = Object.entries(filtersGroup).reduce(
+            (accumulator, [name, filterConfig]) => {
+              filterConfig["name"] = name;
+              filterConfig["group"] = type;
+              accumulator.push(filterConfig);
+              return accumulator;
+            },
+            []
+          );
+          accumulator = [...accumulator, ...groupFilters];
+          return accumulator;
+        },
+        []
+      );
+      setFilters(initialFiltersArray);
+    }
+  }, [mapFilters, setFilters, filters]);
 
   // Set count of filters applied to keep one of each type applied at all times
   useEffect(() => {
