@@ -100,8 +100,8 @@ const SideMapControl = () => {
     }
   };
 
+  // Reduce all filters and set active filters (apply all filters on render)
   useEffect(() => {
-    // Reduce all filters and set active filters (apply all filters on render)
     const initialFiltersArray = Object.entries(mapFilters).reduce(
       (accumulator, [type, filters]) => {
         const groupFilters = Object.entries(filters).reduce(
@@ -121,11 +121,20 @@ const SideMapControl = () => {
     setFilters(initialFiltersArray);
   }, []);
 
-  // useEffect(() => {
-  //   const filtersCount = Object.entries(filters).reduce((accumulator, [type, filterConfig]) => {
-
-  //   }, {})
-  // }, [filters])
+  useEffect(() => {
+    const filtersCount = filters.reduce((accumulator, filter) => {
+      if (accumulator[filter.group]) {
+        accumulator = {
+          ...accumulator,
+          [filter.group]: accumulator[filter.group] + 1
+        };
+      } else {
+        accumulator = { ...accumulator, [filter.group]: 1 };
+      }
+      return accumulator;
+    }, {});
+    setFilterGroupCounts(filtersCount);
+  }, [filters]);
 
   const handleFilterClick = (event, filterGroup) => {
     // Set filter or remove if already set
