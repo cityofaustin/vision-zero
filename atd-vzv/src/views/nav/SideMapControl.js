@@ -100,7 +100,7 @@ const SideMapControl = () => {
     }
   };
 
-  // Reduce all filters and set active filters (apply all filters on render)
+  // Reduce all filters and set all as active on render
   useEffect(() => {
     const initialFiltersArray = Object.entries(mapFilters).reduce(
       (accumulator, [type, filters]) => {
@@ -121,6 +121,7 @@ const SideMapControl = () => {
     setFilters(initialFiltersArray);
   }, []);
 
+  // Set count of filters applied to keep one of each type applied at all times
   useEffect(() => {
     const filtersCount = filters.reduce((accumulator, filter) => {
       if (accumulator[filter.group]) {
@@ -136,15 +137,21 @@ const SideMapControl = () => {
     setFilterGroupCounts(filtersCount);
   }, [filters]);
 
+  const isFilterSet = filterName => {
+    return !!filters.find(setFilter => setFilter.name === filterName);
+  };
+
+  const isOneFilterOfEachTypeApplied = group => filterGroupCounts[group] > 1;
+
+  // Set filter or remove if already set
   const handleFilterClick = (event, filterGroup) => {
-    // Set filter or remove if already set
     const filterName = event.currentTarget.id;
 
     if (isFilterSet(filterName)) {
-      // if there is at least one type of each filter set, remove, else don't!
-      const updatedFiltersArray = filters.filter(
-        setFilter => setFilter.name !== filterName
-      );
+      // If there is at least one filter from each group set, remove it
+      const updatedFiltersArray = isOneFilterOfEachTypeApplied(filterGroup)
+        ? filters.filter(setFilter => setFilter.name !== filterName)
+        : filters;
       setFilters(updatedFiltersArray);
     } else {
       const filter = mapFilters[filterGroup][filterName];
@@ -154,10 +161,6 @@ const SideMapControl = () => {
       const filtersArray = [...filters, filter];
       setFilters(filtersArray);
     }
-  };
-
-  const isFilterSet = filterName => {
-    return !!filters.find(setFilter => setFilter.name === filterName);
   };
 
   return (
