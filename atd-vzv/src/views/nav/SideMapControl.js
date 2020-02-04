@@ -107,9 +107,9 @@ const SideMapControl = () => {
     }
   };
 
-  // Reduce all filters and set all as active on render
+  // Reduce all filters and set defaults as active on render
   useEffect(() => {
-    // If no filters are applied (initial render), set all filters
+    // If no filters are applied (initial render), set all default filters
     if (Object.keys(filters).length === 0) {
       const initialFiltersArray = Object.entries(mapFilters).reduce(
         (accumulator, [type, filtersGroup]) => {
