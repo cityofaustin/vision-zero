@@ -39,18 +39,6 @@ const SideMapControl = () => {
     mapFilters: [filters, setFilters]
   } = React.useContext(StoreContext);
 
-  // Clear all filters that match group arg
-  // const handleAllFiltersClick = (event, group) => {
-  //   const keepFilters = filters.filter(filter => filter.group !== group);
-  //   setFilters(keepFilters);
-  // };
-
-  // // Determine if no filters in a group are applied (used for "All" buttons active/inactive state)
-  // const isUnfiltered = group => {
-  //   const result = filters.filter(filter => filter.group === group);
-  //   return result.length === 0;
-  // };
-
   const buildOtherFiltersString = () =>
     otherFiltersArray
       .reduce((accumulator, filterString) => {
@@ -92,12 +80,6 @@ const SideMapControl = () => {
         type: `where`,
         operator: `OR`
       }
-      // all: {
-      //   text: "All",
-      //   handler: handleAllFiltersClick,
-      //   active: isUnfiltered,
-      //   inactive: isUnfiltered
-      // }
     },
     type: {
       seriousInjury: {
@@ -153,21 +135,9 @@ const SideMapControl = () => {
                 id={name}
                 color="info"
                 className="w-100 pt-1 pb-1 pl-0 pr-0"
-                // Use alternate handler if defined
-                onClick={
-                  parameter.handler
-                    ? event => parameter.handler(event, group)
-                    : event => handleFilterClick(event, group)
-                }
-                // Use alternate active/inactive fn if defined
-                active={
-                  parameter.active ? parameter.active(group) : isFilterSet(name)
-                }
-                outline={
-                  parameter.inactive
-                    ? !parameter.inactive(group)
-                    : !isFilterSet(name)
-                }
+                onClick={event => handleFilterClick(event, group)}
+                active={isFilterSet(name)}
+                outline={!isFilterSet(name)}
               >
                 {parameter.icon && (
                   <FontAwesomeIcon
