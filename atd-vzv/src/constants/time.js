@@ -1,12 +1,18 @@
 import moment from "moment";
 
+// Number of past years data to fetch
+// 4 full years of data, plus data up to the last complete month of the current year
+export const rollingYearsOfData = 4;
+
 // Last date of records that should be referenced in VZV (through last complete month of data)
+export const dataStartDate = moment()
+  .subtract(1, "month")
+  .subtract(rollingYearsOfData, "year")
+  .startOf("year");
+
 export const dataEndDate = moment()
   .subtract(1, "month")
   .endOf("month");
-
-// Number of past years data to fetch
-export const rollingYearsOfData = 5;
 
 // Common time variables
 export const today = moment().format("YYYY-MM-DD");
@@ -31,15 +37,8 @@ export const lastMonthString = moment()
   .format("MMMM");
 
 // Map time data
-export const mapDataMinDate = new Date(
-  moment()
-    .subtract(rollingYearsOfData, "year")
-    .format("MM/DD/YYYY")
-);
-export const mapDataMaxDate = new Date(moment());
+export const mapDataMinDate = new Date(dataStartDate.format("MM/DD/YYYY"));
+export const mapDataMaxDate = new Date(dataEndDate);
 
-export const mapStartDate =
-  moment()
-    .subtract(rollingYearsOfData, "year")
-    .format("YYYY-MM-DD") + "T00:00:00";
-export const mapEndDate = moment().format("YYYY-MM-DD") + "T23:59:59";
+export const mapStartDate = dataStartDate.format("YYYY-MM-DD") + "T00:00:00";
+export const mapEndDate = dataEndDate.format("YYYY-MM-DD") + "T23:59:59";
