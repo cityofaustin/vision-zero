@@ -6,7 +6,6 @@ import { Container } from "reactstrap";
 import { colors } from "../../constants/colors";
 import { otherFiltersArray } from "../../constants/filters";
 import {
-  dataStartDate,
   dataEndDate,
   thisYear,
   rollingYearsOfData
@@ -42,7 +41,7 @@ const FatalitiesByMode = () => {
   const yearsArray = useCallback(() => {
     let years = [];
     let year = parseInt(dataEndDate.format("YYYY"));
-    for (let i = 0; i < rollingYearsOfData; i++) {
+    for (let i = 0; i <= rollingYearsOfData; i++) {
       years.unshift(year - i);
     }
     return years;

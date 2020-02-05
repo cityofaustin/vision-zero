@@ -4,12 +4,13 @@ import moment from "moment";
 // 4 full years of data, plus data up to the last complete month of the current year
 export const rollingYearsOfData = 4;
 
-// Last date of records that should be referenced in VZV (through last complete month of data)
+// First date of records that should be referenced in VZV (start of first year in rolling window)
 export const dataStartDate = moment()
   .subtract(1, "month")
   .subtract(rollingYearsOfData, "year")
   .startOf("year");
 
+// Last date of records that should be referenced in VZV (through last complete month of data)
 export const dataEndDate = moment()
   .subtract(1, "month")
   .endOf("month");
