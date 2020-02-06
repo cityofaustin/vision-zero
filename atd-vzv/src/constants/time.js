@@ -15,9 +15,6 @@ export const dataEndDate = moment()
   .subtract(1, "month")
   .endOf("month");
 
-// Common time variables
-export const thisYear = moment().format("YYYY");
-
 // Map time data
 export const mapDataMinDate = new Date(dataStartDate.format("MM/DD/YYYY"));
 export const mapDataMaxDate = new Date(dataEndDate);

@@ -5,11 +5,7 @@ import { Bar } from "react-chartjs-2";
 import { Container } from "reactstrap";
 import { colors } from "../../constants/colors";
 import { otherFiltersArray } from "../../constants/filters";
-import {
-  dataEndDate,
-  thisYear,
-  rollingYearsOfData
-} from "../../constants/time";
+import { dataEndDate, rollingYearsOfData } from "../../constants/time";
 import { demographicsEndpointUrl } from "./queries/socrataQueries";
 
 const FatalitiesByMode = () => {
@@ -58,7 +54,7 @@ const FatalitiesByMode = () => {
         yearsArray().map(async year => {
           // If current year, set end of query to last day of previous month, else set to last day of year
           let endDate =
-            year.toString() === thisYear
+            year.toString() === dataEndDate.format("YYYY")
               ? `${dataEndDate.format("YYYY-MM-DD")}T23:59:59`
               : `${year}-12-31T23:59:59`;
           let url = `${demographicsEndpointUrl}?$where=(prsn_injry_sev_id = 4) AND crash_date between '${year}-01-01T00:00:00' and '${endDate}'`;
