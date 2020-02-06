@@ -5,12 +5,13 @@ import moment from "moment";
 import { Line } from "react-chartjs-2";
 import { Container, Row, Col } from "reactstrap";
 import { crashEndpointUrl } from "./queries/socrataQueries";
-import { thisMonth, thisYear, dataEndDate } from "../../constants/time";
+import { dataEndDate } from "../../constants/time";
 import { colors } from "../../constants/colors";
 
 const FatalitiesMultiYear = () => {
   const getYearsAgoLabel = yearsAgo => {
-    return moment()
+    return dataEndDate
+      .clone()
       .subtract(yearsAgo, "year")
       .format("YYYY");
   };
@@ -44,6 +45,7 @@ const FatalitiesMultiYear = () => {
       "11",
       "12"
     ];
+
     const truncatedMonthIntegerArray = monthIntegerArray.slice(
       0,
       monthIntegerArray.indexOf(monthLimit) + 1
@@ -114,23 +116,31 @@ const FatalitiesMultiYear = () => {
 
   // Build data object with data from the previous five years
   const data = {
-    labels: [
-      "January",
-      "February",
-      "March",
-      "April",
-      "May",
-      "June",
-      "July",
-      "August",
-      "September",
-      "October",
-      "November",
-      "December"
-    ],
+    labels: moment.months(),
     datasets: [
       {
-        label: `${getYearsAgoLabel(1)}`,
+        label: getYearsAgoLabel(0),
+        fill: false,
+        lineTension: 0.1,
+        backgroundColor: colors.blue, // Legend box
+        borderColor: colors.blue,
+        borderCapStyle: "butt",
+        borderDash: [],
+        borderDashOffset: 0.0,
+        borderJoinStyle: "miter",
+        pointBorderColor: colors.blue,
+        pointBackgroundColor: colors.blue,
+        pointBorderWidth: 1,
+        pointHoverRadius: 5,
+        pointHoverBackgroundColor: colors.blue,
+        pointHoverBorderColor: colors.blue,
+        pointHoverBorderWidth: 2,
+        pointRadius: 1,
+        pointHitRadius: 10,
+        data: thisYearDeathArray
+      },
+      {
+        label: getYearsAgoLabel(1),
         fill: false,
         lineTension: 0.1,
         backgroundColor: colors.redGradient5Of5, // Legend box
@@ -151,7 +161,7 @@ const FatalitiesMultiYear = () => {
         data: lastYearDeathArray
       },
       {
-        label: `${getYearsAgoLabel(2)}`,
+        label: getYearsAgoLabel(2),
         fill: false,
         lineTension: 0.1,
         backgroundColor: colors.redGradient4Of5, // Legend box
@@ -172,7 +182,7 @@ const FatalitiesMultiYear = () => {
         data: twoYearsAgoDeathArray
       },
       {
-        label: `${getYearsAgoLabel(3)}`,
+        label: getYearsAgoLabel(3),
         fill: false,
         lineTension: 0.1,
         backgroundColor: colors.redGradient3Of5, // Legend box
@@ -193,7 +203,7 @@ const FatalitiesMultiYear = () => {
         data: threeYearsAgoDeathArray
       },
       {
-        label: `${getYearsAgoLabel(4)}`,
+        label: getYearsAgoLabel(4),
         fill: false,
         lineTension: 0.1,
         backgroundColor: colors.redGradient2Of5, // Legend box
@@ -215,31 +225,6 @@ const FatalitiesMultiYear = () => {
       }
     ]
   };
-
-  // Add current year to data object if we are past January
-  if (thisMonth > "01") {
-    data.datasets.unshift({
-      label: `${thisYear}`,
-      fill: false,
-      lineTension: 0.1,
-      backgroundColor: colors.blue, // Legend box
-      borderColor: colors.blue,
-      borderCapStyle: "butt",
-      borderDash: [],
-      borderDashOffset: 0.0,
-      borderJoinStyle: "miter",
-      pointBorderColor: colors.blue,
-      pointBackgroundColor: colors.blue,
-      pointBorderWidth: 1,
-      pointHoverRadius: 5,
-      pointHoverBackgroundColor: colors.blue,
-      pointHoverBorderColor: colors.blue,
-      pointHoverBorderWidth: 2,
-      pointRadius: 1,
-      pointHitRadius: 10,
-      data: thisYearDeathArray
-    });
-  }
 
   return (
     <Container>
