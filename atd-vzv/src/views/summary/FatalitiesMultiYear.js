@@ -27,7 +27,6 @@ const FatalitiesMultiYear = () => {
   const [twoYearsAgoDeathArray, setTwoYearsAgoDeathArray] = useState([]);
   const [threeYearsAgoDeathArray, setThreeYearsAgoDeathArray] = useState([]);
   const [fourYearsAgoDeathArray, setFourYearsAgoDeathArray] = useState([]);
-  const [fiveYearsAgoDeathArray, setFiveYearsAgoDeathArray] = useState([]);
 
   const calculateYearlyTotals = deathArray => {
     return deathArray[deathArray.length - 1];
@@ -126,11 +125,6 @@ const FatalitiesMultiYear = () => {
     // Fetch records from four years ago
     axios.get(getFatalitiesByYearsAgoUrl(4)).then(res => {
       setFourYearsAgoDeathArray(calculateMonthlyTotals(res));
-    });
-
-    // Fetch records from five years ago
-    axios.get(getFatalitiesByYearsAgoUrl(5)).then(res => {
-      setFiveYearsAgoDeathArray(calculateMonthlyTotals(res));
     });
   }, []);
 
@@ -234,27 +228,6 @@ const FatalitiesMultiYear = () => {
         pointRadius: 1,
         pointHitRadius: 10,
         data: fourYearsAgoDeathArray
-      },
-      {
-        label: `${getYearsAgoLabel(5)}`,
-        fill: false,
-        lineTension: 0.1,
-        backgroundColor: colors.redGradient1Of5, // Legend box
-        borderColor: colors.redGradient1Of5,
-        borderCapStyle: "butt",
-        borderDash: [],
-        borderDashOffset: 0.0,
-        borderJoinStyle: "miter",
-        pointBorderColor: colors.redGradient1Of5,
-        pointBackgroundColor: colors.redGradient1Of5,
-        pointBorderWidth: 1,
-        pointHoverRadius: 5,
-        pointHoverBackgroundColor: colors.redGradient1Of5,
-        pointHoverBorderColor: colors.redGradient1Of5,
-        pointHoverBorderWidth: 2,
-        pointRadius: 1,
-        pointHitRadius: 10,
-        data: fiveYearsAgoDeathArray
       }
     ]
   };
@@ -315,12 +288,6 @@ const FatalitiesMultiYear = () => {
           <h6 style={{ textAlign: "center" }}>
             <strong>{calculateYearlyTotals(fourYearsAgoDeathArray)}</strong> in{" "}
             {getYearsAgoLabel(4)}
-          </h6>
-        </Col>
-        <Col xs="6" sm="4" md="2">
-          <h6 style={{ textAlign: "center" }}>
-            <strong>{calculateYearlyTotals(fiveYearsAgoDeathArray)}</strong> in{" "}
-            {getYearsAgoLabel(5)}
           </h6>
         </Col>
       </Row>
