@@ -16,23 +16,7 @@ export const dataEndDate = moment()
   .endOf("month");
 
 // Common time variables
-export const today = moment().format("YYYY-MM-DD");
 export const thisYear = moment().format("YYYY");
-export const oneYearAgo = moment()
-  .subtract(1, "year")
-  .format("YYYY-MM-DD");
-export const todayMonthYear = moment().format("-MM-DD");
-export const thisMonth = moment().format("MM");
-export const lastMonth = moment()
-  .subtract(1, "month")
-  .format("MM");
-export const lastDayOfLastMonth = moment(
-  `${thisYear}-${lastMonth}`,
-  "YYYY-MM"
-).daysInMonth();
-export const lastMonthString = moment()
-  .subtract(1, "month")
-  .format("MMMM");
 
 // Map time data
 export const mapDataMinDate = new Date(dataStartDate.format("MM/DD/YYYY"));

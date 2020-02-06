@@ -5,31 +5,16 @@ import moment from "moment";
 import { Nav, NavItem, NavLink, Row, Col, Container } from "reactstrap";
 import classnames from "classnames";
 import { Heatmap, HeatmapSeries } from "reaviz";
-import {
-  thisMonth,
-  thisYear,
-  lastMonth,
-  lastDayOfLastMonth
-} from "../../constants/time";
+import { dataEndDate } from "../../constants/time";
 import { colors } from "../../constants/colors";
 
 const FatalitiesByTimeOfDayWeek = () => {
-  // Check current month before setting the active tab.
-  // If current month is January, display last year's data,
-  // if past January, display this year's data.
-  const checkMonth = () => {
-    if (thisMonth > "01") {
-      return 0;
-    } else {
-      return 1;
-    }
-  };
-
-  const [activeTab, setActiveTab] = useState(checkMonth());
+  const [activeTab, setActiveTab] = useState(0);
   const [heatmapData, setHeatmapData] = useState([]);
 
   const getYearsAgoLabel = yearsAgo => {
-    return moment()
+    return dataEndDate
+      .clone()
       .subtract(yearsAgo, "year")
       .format("YYYY");
   };
@@ -39,15 +24,7 @@ const FatalitiesByTimeOfDayWeek = () => {
   };
 
   useEffect(() => {
-    const dayOfWeekArray = [
-      "Sunday",
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday"
-    ];
+    const dayOfWeekArray = moment.weekdays();
     const hourBlockArray = [
       "12AM",
       "01AM",
@@ -76,8 +53,14 @@ const FatalitiesByTimeOfDayWeek = () => {
     ];
 
     const getFatalitiesByYearsAgoUrl = () => {
+      const currentYearEndDate = dataEndDate.format("YYYY-MM-DD");
+      const currentYearStartDate = dataEndDate
+        .clone()
+        .startOf("year")
+        .format("YYYY-MM-DD");
+
       if (activeTab === 0) {
-        return `https://data.austintexas.gov/resource/y2wy-tgr5.json?$where=apd_confirmed_death_count > 0 AND crash_date between '${thisYear}-01-01T00:00:00' and '${thisYear}-${lastMonth}-${lastDayOfLastMonth}T23:59:59'`;
+        return `https://data.austintexas.gov/resource/y2wy-tgr5.json?$where=apd_confirmed_death_count > 0 AND crash_date between '${currentYearStartDate}T00:00:00' and '${currentYearEndDate}T23:59:59'`;
       } else {
         let yearsAgoDate = moment()
           .subtract(activeTab, "year")
@@ -171,18 +154,16 @@ const FatalitiesByTimeOfDayWeek = () => {
                 {getYearsAgoLabel(1)}
               </NavLink>
             </NavItem>
-            {thisMonth > "01" && (
-              <NavItem>
-                <NavLink
-                  className={classnames({ active: activeTab === 0 })}
-                  onClick={() => {
-                    toggle(0);
-                  }}
-                >
-                  {getYearsAgoLabel(0)}
-                </NavLink>
-              </NavItem>
-            )}
+            <NavItem>
+              <NavLink
+                className={classnames({ active: activeTab === 0 })}
+                onClick={() => {
+                  toggle(0);
+                }}
+              >
+                {getYearsAgoLabel(0)}
+              </NavLink>
+            </NavItem>
           </Nav>
         </Col>
       </Row>
