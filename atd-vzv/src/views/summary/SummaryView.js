@@ -3,7 +3,11 @@ import axios from "axios";
 import SummaryWidget from "../../Components/Widgets/SummaryWidget";
 import { Row, Col } from "reactstrap";
 
-import { dataEndDate } from "../../constants/time";
+import {
+  dataEndDate,
+  summaryCurrentYearStartDate,
+  summaryCurrentYearEndDate
+} from "../../constants/time";
 import {
   demographicsEndpointUrl,
   crashEndpointUrl
@@ -29,19 +33,13 @@ const SummaryView = () => {
   const [totalCrashes, setTotalCrashes] = useState(null);
 
   useEffect(() => {
-    const summaryStartDate = dataEndDate
-      .clone() // Moment objects are mutable
-      .startOf("year")
-      .format("YYYY-MM-DD");
-    const summaryEndDate = dataEndDate.format("YYYY-MM-DD");
+    const fatalitiesUrl = `${crashEndpointUrl}?$where=apd_confirmed_death_count > 0 AND crash_date between '${summaryCurrentYearStartDate}T00:00:00' and '${summaryCurrentYearEndDate}T23:59:59'`;
 
-    const fatalitiesUrl = `${crashEndpointUrl}?$where=apd_confirmed_death_count > 0 AND crash_date between '${summaryStartDate}T00:00:00' and '${summaryEndDate}T23:59:59'`;
+    const yearsOfLifeLostUrl = `${demographicsEndpointUrl}?$where=prsn_injry_sev_id = '4' AND crash_date between '${summaryCurrentYearStartDate}T00:00:00' and '${summaryCurrentYearEndDate}T23:59:59'`;
 
-    const yearsOfLifeLostUrl = `${demographicsEndpointUrl}?$where=prsn_injry_sev_id = '4' AND crash_date between '${summaryStartDate}T00:00:00' and '${summaryEndDate}T23:59:59'`;
+    const seriousInjuriesUrl = `${crashEndpointUrl}?$where=sus_serious_injry_cnt > 0 AND crash_date between '${summaryCurrentYearStartDate}T00:00:00' and '${summaryCurrentYearEndDate}T23:59:59'`;
 
-    const seriousInjuriesUrl = `${crashEndpointUrl}?$where=sus_serious_injry_cnt > 0 AND crash_date between '${summaryStartDate}T00:00:00' and '${summaryEndDate}T23:59:59'`;
-
-    const totalCrashesUrl = `${crashEndpointUrl}?$where=crash_date between '${summaryStartDate}T00:00:00' and '${summaryEndDate}T23:59:59'&$limit=100000`;
+    const totalCrashesUrl = `${crashEndpointUrl}?$where=crash_date between '${summaryCurrentYearStartDate}T00:00:00' and '${summaryCurrentYearEndDate}T23:59:59'&$limit=100000`;
 
     axios.get(fatalitiesUrl).then(res => {
       setFatalities(calculateTotalFatalities(res.data));

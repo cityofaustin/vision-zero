@@ -15,6 +15,13 @@ export const dataEndDate = moment()
   .subtract(1, "month")
   .endOf("month");
 
+// Summary time data
+export const summaryCurrentYearStartDate = dataEndDate
+  .clone() // Moment objects are mutable
+  .startOf("year")
+  .format("YYYY-MM-DD");
+export const summaryCurrentYearEndDate = dataEndDate.format("YYYY-MM-DD");
+
 // Map time data
 export const mapDataMinDate = new Date(dataStartDate.format("MM/DD/YYYY"));
 export const mapDataMaxDate = new Date(dataEndDate);

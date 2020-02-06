@@ -5,19 +5,16 @@ import moment from "moment";
 import { Nav, NavItem, NavLink, Row, Col, Container } from "reactstrap";
 import classnames from "classnames";
 import { Heatmap, HeatmapSeries } from "reaviz";
-import { dataEndDate } from "../../constants/time";
+import {
+  summaryCurrentYearStartDate,
+  summaryCurrentYearEndDate
+} from "../../constants/time";
+import { getYearsAgoLabel } from "./helpers/helpers";
 import { colors } from "../../constants/colors";
 
 const FatalitiesByTimeOfDayWeek = () => {
   const [activeTab, setActiveTab] = useState(0);
   const [heatmapData, setHeatmapData] = useState([]);
-
-  const getYearsAgoLabel = yearsAgo => {
-    return dataEndDate
-      .clone()
-      .subtract(yearsAgo, "year")
-      .format("YYYY");
-  };
 
   const toggle = tab => {
     if (activeTab !== tab) setActiveTab(tab);
@@ -53,14 +50,8 @@ const FatalitiesByTimeOfDayWeek = () => {
     ];
 
     const getFatalitiesByYearsAgoUrl = () => {
-      const currentYearEndDate = dataEndDate.format("YYYY-MM-DD");
-      const currentYearStartDate = dataEndDate
-        .clone()
-        .startOf("year")
-        .format("YYYY-MM-DD");
-
       if (activeTab === 0) {
-        return `https://data.austintexas.gov/resource/y2wy-tgr5.json?$where=apd_confirmed_death_count > 0 AND crash_date between '${currentYearStartDate}T00:00:00' and '${currentYearEndDate}T23:59:59'`;
+        return `https://data.austintexas.gov/resource/y2wy-tgr5.json?$where=apd_confirmed_death_count > 0 AND crash_date between '${summaryCurrentYearStartDate}T00:00:00' and '${summaryCurrentYearEndDate}T23:59:59'`;
       } else {
         let yearsAgoDate = moment()
           .subtract(activeTab, "year")

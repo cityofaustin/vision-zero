@@ -5,17 +5,15 @@ import moment from "moment";
 import { Line } from "react-chartjs-2";
 import { Container, Row, Col } from "reactstrap";
 import { crashEndpointUrl } from "./queries/socrataQueries";
-import { dataEndDate } from "../../constants/time";
+import {
+  dataEndDate,
+  summaryCurrentYearStartDate,
+  summaryCurrentYearEndDate
+} from "../../constants/time";
+import { getYearsAgoLabel } from "./helpers/helpers";
 import { colors } from "../../constants/colors";
 
 const FatalitiesMultiYear = () => {
-  const getYearsAgoLabel = yearsAgo => {
-    return dataEndDate
-      .clone()
-      .subtract(yearsAgo, "year")
-      .format("YYYY");
-  };
-
   const [thisYearDeathArray, setThisYearDeathArray] = useState([]);
   const [lastYearDeathArray, setLastYearDeathArray] = useState([]);
   const [twoYearsAgoDeathArray, setTwoYearsAgoDeathArray] = useState([]);
@@ -74,12 +72,7 @@ const FatalitiesMultiYear = () => {
   };
 
   useEffect(() => {
-    const currentYearEndDate = dataEndDate.format("YYYY-MM-DD");
-    const currentYearStartDate = dataEndDate
-      .clone()
-      .startOf("year")
-      .format("YYYY-MM-DD");
-    const thisYearUrl = `${crashEndpointUrl}?$where=apd_confirmed_death_count > 0 AND crash_date between '${currentYearStartDate}T00:00:00' and '${currentYearEndDate}T23:59:59'`;
+    const thisYearUrl = `${crashEndpointUrl}?$where=apd_confirmed_death_count > 0 AND crash_date between '${summaryCurrentYearStartDate}T00:00:00' and '${summaryCurrentYearEndDate}T23:59:59'`;
 
     const getFatalitiesByYearsAgoUrl = yearsAgo => {
       let yearsAgoDate = moment()
@@ -90,7 +83,9 @@ const FatalitiesMultiYear = () => {
 
     // Fetch records for this year through last full month of data
     axios.get(thisYearUrl).then(res => {
-      setThisYearDeathArray(calculateMonthlyTotals(res, currentYearEndDate));
+      setThisYearDeathArray(
+        calculateMonthlyTotals(res, summaryCurrentYearEndDate)
+      );
     });
 
     // Fetch records from last year
