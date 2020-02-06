@@ -30,9 +30,6 @@ export const lastDayOfLastMonth = moment(
   `${thisYear}-${lastMonth}`,
   "YYYY-MM"
 ).daysInMonth();
-export const lastYear = moment()
-  .subtract(1, "year")
-  .format("YYYY");
 export const lastMonthString = moment()
   .subtract(1, "month")
   .format("MMMM");

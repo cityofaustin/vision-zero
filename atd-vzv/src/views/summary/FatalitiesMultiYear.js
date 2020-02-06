@@ -5,14 +5,7 @@ import moment from "moment";
 import { Line } from "react-chartjs-2";
 import { Container, Row, Col } from "reactstrap";
 import { crashEndpointUrl } from "./queries/socrataQueries";
-import {
-  thisMonth,
-  thisYear,
-  lastYear,
-  lastMonth,
-  lastDayOfLastMonth,
-  lastMonthString
-} from "../../constants/time";
+import { thisMonth, thisYear, dataEndDate } from "../../constants/time";
 import { colors } from "../../constants/colors";
 
 const FatalitiesMultiYear = () => {
@@ -36,6 +29,7 @@ const FatalitiesMultiYear = () => {
     // Limit returned data to months of data available and prevent line from zeroing out
     // If dataString is passed in, convert to month string and use to truncate monthIntegerArray
     const monthLimit = dateString ? moment(dateString).format("MM") : "12";
+
     const monthIntegerArray = [
       "01",
       "02",
@@ -68,27 +62,22 @@ const FatalitiesMultiYear = () => {
   };
 
   const renderHeader = () => {
-    let deathArray;
-    let year;
-    if (thisMonth > "01") {
-      deathArray = thisYearDeathArray;
-      year = thisYear;
-    } else {
-      deathArray = lastYearDeathArray;
-      year = lastYear;
-    }
     return (
       <h6 style={{ color: colors.blue, textAlign: "center" }}>
-        As of {lastMonthString}, there have been{" "}
-        <strong>{calculateYearlyTotals(deathArray)}</strong> traffic fatalities
-        in {year}.
+        As of {dataEndDate.format("MMMM")}, there have been{" "}
+        <strong>{calculateYearlyTotals(thisYearDeathArray)}</strong> traffic
+        fatalities in {dataEndDate.format("YYYY")}.
       </h6>
     );
   };
 
   useEffect(() => {
-    const lastMonthLastDayDate = `${thisYear}-${lastMonth}-${lastDayOfLastMonth}`;
-    const thisYearUrl = `${crashEndpointUrl}?$where=apd_confirmed_death_count > 0 AND crash_date between '${thisYear}-01-01T00:00:00' and '${lastMonthLastDayDate}T23:59:59'`;
+    const currentYearEndDate = dataEndDate.format("YYYY-MM-DD");
+    const currentYearStartDate = dataEndDate
+      .clone()
+      .startOf("year")
+      .format("YYYY-MM-DD");
+    const thisYearUrl = `${crashEndpointUrl}?$where=apd_confirmed_death_count > 0 AND crash_date between '${currentYearStartDate}T00:00:00' and '${currentYearEndDate}T23:59:59'`;
 
     const getFatalitiesByYearsAgoUrl = yearsAgo => {
       let yearsAgoDate = moment()
@@ -97,15 +86,10 @@ const FatalitiesMultiYear = () => {
       return `${crashEndpointUrl}?$where=apd_confirmed_death_count > 0 AND crash_date between '${yearsAgoDate}-01-01T00:00:00' and '${yearsAgoDate}-12-31T23:59:59'`;
     };
 
-    // If there is a full month of data available for the current year (i.e., we are past January),
-    // fetch records for this year through last month
-    if (thisMonth > "01") {
-      axios.get(thisYearUrl).then(res => {
-        setThisYearDeathArray(
-          calculateMonthlyTotals(res, lastMonthLastDayDate)
-        );
-      });
-    }
+    // Fetch records for this year through last full month of data
+    axios.get(thisYearUrl).then(res => {
+      setThisYearDeathArray(calculateMonthlyTotals(res, currentYearEndDate));
+    });
 
     // Fetch records from last year
     axios.get(getFatalitiesByYearsAgoUrl(1)).then(res => {
