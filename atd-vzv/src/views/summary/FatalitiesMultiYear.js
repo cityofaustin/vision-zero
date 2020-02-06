@@ -263,28 +263,28 @@ const FatalitiesMultiYear = () => {
         <Col>{renderHeader()}</Col>
       </Row>
       <Row style={{ paddingBottom: 20 }}>
-        <Col xs="6" sm="4" md="2">
+        <Col>
           <h6 style={{ textAlign: "center" }}>Prior Years:</h6>
         </Col>
-        <Col xs="6" sm="4" md="2">
+        <Col>
           <h6 style={{ textAlign: "center" }}>
             <strong>{calculateYearlyTotals(lastYearDeathArray)}</strong> in{" "}
             {getYearsAgoLabel(1)}
           </h6>
         </Col>
-        <Col xs="6" sm="4" md="2">
+        <Col>
           <h6 style={{ textAlign: "center" }}>
             <strong>{calculateYearlyTotals(twoYearsAgoDeathArray)}</strong> in{" "}
             {getYearsAgoLabel(2)}
           </h6>
         </Col>
-        <Col xs="6" sm="4" md="2">
+        <Col>
           <h6 style={{ textAlign: "center" }}>
             <strong>{calculateYearlyTotals(threeYearsAgoDeathArray)}</strong> in{" "}
             {getYearsAgoLabel(3)}
           </h6>
         </Col>
-        <Col xs="6" sm="4" md="2">
+        <Col>
           <h6 style={{ textAlign: "center" }}>
             <strong>{calculateYearlyTotals(fourYearsAgoDeathArray)}</strong> in{" "}
             {getYearsAgoLabel(4)}

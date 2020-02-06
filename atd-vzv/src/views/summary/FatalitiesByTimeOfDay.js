@@ -5,7 +5,12 @@ import moment from "moment";
 import { Nav, NavItem, NavLink, Row, Col, Container } from "reactstrap";
 import classnames from "classnames";
 import { Heatmap, HeatmapSeries } from "reaviz";
-import { thisMonth, thisYear, lastMonth, lastDayOfLastMonth } from "../../constants/time";
+import {
+  thisMonth,
+  thisYear,
+  lastMonth,
+  lastDayOfLastMonth
+} from "../../constants/time";
 import { colors } from "../../constants/colors";
 
 const FatalitiesByTimeOfDayWeek = () => {
@@ -34,7 +39,6 @@ const FatalitiesByTimeOfDayWeek = () => {
   };
 
   useEffect(() => {
-
     const dayOfWeekArray = [
       "Sunday",
       "Monday",
@@ -127,16 +131,6 @@ const FatalitiesByTimeOfDayWeek = () => {
       <Row>
         <Col>
           <Nav tabs className="justify-content-center">
-            <NavItem>
-              <NavLink
-                className={classnames({ active: activeTab === 5 })}
-                onClick={() => {
-                  toggle(5);
-                }}
-              >
-                {getYearsAgoLabel(5)}
-              </NavLink>
-            </NavItem>
             <NavItem>
               <NavLink
                 className={classnames({ active: activeTab === 4 })}
