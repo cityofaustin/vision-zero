@@ -1,58 +1,65 @@
 import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
-import moment from "moment";
 import { Bar } from "react-chartjs-2";
-import { colors } from "../../constants/colors";
 
 import { Container } from "reactstrap";
+import { colors } from "../../constants/colors";
+import { otherFiltersArray } from "../../constants/filters";
 import {
-  thisMonth,
+  dataEndDate,
   thisYear,
-  lastYear,
-  lastMonth,
-  lastDayOfLastMonth
+  ROLLING_YEARS_OF_DATA
 } from "../../constants/time";
 import { demographicsEndpointUrl } from "./queries/socrataQueries";
 
 const FatalitiesByMode = () => {
-  // Define stacked bar chart properties in order of stack
   const modes = [
-    { label: "Motor", flag: "motor_vehicle_fl", color: colors.chartRed },
-    { label: "Pedestrian", flag: "pedestrian_fl", color: colors.chartOrange },
+    { label: "Motor", flags: ["motor_vehicle_fl"], color: colors.chartRed },
+    {
+      label: "Pedestrian",
+      flags: ["pedestrian_fl"],
+      color: colors.chartOrange
+    },
     {
       label: "Motorcycle",
-      flag: "motorcycle_fl",
+      flags: ["motorcycle_fl"],
       color: colors.chartRedOrange
     },
-    { label: "Pedalcyclist", flag: "pedalcyclist_fl", color: colors.chartBlue }
+    {
+      label: "Pedalcyclist",
+      flags: ["pedalcyclist_fl"],
+      color: colors.chartBlue
+    },
+    {
+      label: "Other",
+      flags: otherFiltersArray,
+      color: colors.chartLightBlue
+    }
   ];
-  const yearLimit = 10; // Number of years to display in chart
+
+  // Create array of ints of last 5 years
   const yearsArray = useCallback(() => {
     let years = [];
-    // If it is past January, display data up to and including current year,
-    // else if it is January, only display data up to the end of last year
-    let year = thisMonth > "01" ? thisYear : lastYear;
-    for (let i = 0; i < yearLimit; i++) {
-      years.push(parseInt(year) - i);
+    let year = parseInt(dataEndDate.format("YYYY"));
+    for (let i = 0; i <= ROLLING_YEARS_OF_DATA; i++) {
+      years.unshift(year - i);
     }
     return years;
   }, []);
 
-  const [chartData, setChartData] = useState("");
-  const [latestRecordDate, setLatestRecordDate] = useState("");
+  const [chartData, setChartData] = useState(""); // {yearInt: [{record}, {record}, ...]}
 
-  // Fetch data (Mode of fatality in crash)
+  // Fetch data and set in state by years in yearsArray
   useEffect(() => {
     const getChartData = async () => {
       let newData = {};
       // Use Promise.all to let all requests resolve before setting chart data by year
       await Promise.all(
         yearsArray().map(async year => {
-          // If getting data for current year (only including years past January), set end of query to last day of previous month,
-          // else if getting data for previous years, set end of query to last day of year
+          // If current year, set end of query to last day of previous month, else set to last day of year
           let endDate =
             year.toString() === thisYear
-              ? `${year}-${lastMonth}-${lastDayOfLastMonth}T23:59:59`
+              ? `${dataEndDate.format("YYYY-MM-DD")}T23:59:59`
               : `${year}-12-31T23:59:59`;
           let url = `${demographicsEndpointUrl}?$where=(prsn_injry_sev_id = 4) AND crash_date between '${year}-01-01T00:00:00' and '${endDate}'`;
           await axios.get(url).then(res => {
@@ -67,49 +74,40 @@ const FatalitiesByMode = () => {
     getChartData();
   }, [yearsArray]);
 
-  // Fetch latest record from demographics dataset and set for chart subheading
-  useEffect(() => {
-    // If it is past January, set end of query to last day of previous month,
-    // else if it is January, set end of query to last day of last year
-    let endDate =
-      thisMonth > "01"
-        ? `${thisYear}-${lastMonth}-${lastDayOfLastMonth}T23:59:59`
-        : `${lastYear}-12-31T23:59:59`;
-    let url = `${demographicsEndpointUrl}?$limit=1&$order=crash_date DESC&$where=crash_date < '${endDate}'`;
-    axios.get(url).then(res => {
-      const latestRecordDate = res.data[0].crash_date;
-      const formattedLatestDate = moment(latestRecordDate).format("MMMM YYYY");
-      setLatestRecordDate(formattedLatestDate);
+  const createChartLabels = () => yearsArray().map(year => `${year}`);
+
+  // Tabulate fatalities by mode flags in data
+  const getModeData = flags =>
+    yearsArray().map(year => {
+      return chartData[year].reduce((accumulator, record) => {
+        flags.forEach(flag => record[`${flag}`] === "Y" && accumulator++);
+        return accumulator;
+      }, 0);
     });
-  }, []);
 
-  const createChartLabels = () =>
-    yearsArray()
-      .sort()
-      .map(year => `${year}`);
+  // Sort mode order in stack by averaging total mode fatalities across all years in chart
+  const sortModeData = modeData => {
+    const averageModeFatalities = modeDataArray =>
+      modeDataArray.reduce((a, b) => a + b) / modeDataArray.length;
+    return modeData.sort(
+      (a, b) => averageModeFatalities(b.data) - averageModeFatalities(a.data)
+    );
+  };
 
-  // Tabulate fatalities by mode from data
-  const getModeData = flag =>
-    yearsArray()
-      .sort()
-      .map(year => {
-        let fatalities = 0;
-        chartData[year].forEach(f => f[`${flag}`] === "Y" && fatalities++);
-        return fatalities;
-      });
-
-  // Create dataset for each mode type
-  // data property is an array of fatality sums sorted chronologically
-  const createTypeDatasets = () =>
-    modes.map(mode => ({
+  // Create dataset for each mode type, data property is an array of fatality sums sorted chronologically
+  const createTypeDatasets = () => {
+    const modeData = modes.map(mode => ({
       backgroundColor: mode.color,
       borderColor: mode.color,
       borderWidth: 2,
       hoverBackgroundColor: mode.color,
       hoverBorderColor: mode.color,
       label: mode.label,
-      data: getModeData(mode.flag)
+      data: getModeData(mode.flags)
     }));
+    // Determine order of modes in each year stack
+    return sortModeData(modeData);
+  };
 
   const data = {
     labels: createChartLabels(),
@@ -136,7 +134,9 @@ const FatalitiesByMode = () => {
           }
         }}
       />
-      <p className="text-center">Data Through: {latestRecordDate}</p>
+      <p className="text-center">
+        Data Through: {dataEndDate.format("MMMM YYYY")}
+      </p>
     </Container>
   );
 };

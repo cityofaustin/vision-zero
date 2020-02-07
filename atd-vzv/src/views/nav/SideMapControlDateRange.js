@@ -16,7 +16,7 @@ const CalendarWithRange = withRange(Calendar);
 const StyledDateRangePicker = styled.div`
   /* Resize month and day in header */
   .Cal__Header__day {
-    font-size: 1.3em;
+    font-size: 1.3em !important;
   }
 `;
 
