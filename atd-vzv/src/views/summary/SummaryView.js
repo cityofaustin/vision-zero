@@ -65,8 +65,6 @@ const SummaryView = () => {
       setSeriousInjuries(calculateTotalInjuries(res.data));
     });
 
-    console.log(seriousInjuriesUrl);
-
     axios.get(totalCrashesUrl).then(res => {
       setTotalCrashes(calculateTotalCrashes(res.data));
     });

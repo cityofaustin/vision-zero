@@ -9,9 +9,9 @@ import { Container, Row } from "reactstrap";
 import styled from "styled-components";
 
 const children = [
-  { component: <FatalitiesMultiYear />, title: "Traffic Fatalities by Year" },
+  // { component: <FatalitiesMultiYear /> },
   { component: <FatalitiesByMode />, title: "Fatalities by Mode" },
-  { component: <FatalitiesByTimeOfDay />, title: "Traffic Fatalities by Time of Day" },
+  { component: <FatalitiesByTimeOfDay />},
 ];
 
 const Summary = () => {

@@ -3,7 +3,6 @@ import axios from "axios";
 import moment from "moment";
 
 import CrashTypeSelector from "../nav/CrashTypeSelector";
-import { fatalitiesAndSeriousInjuries } from "../../constants/crashTypeQueryStrings";
 import { Nav, NavItem, NavLink, Row, Col, Container } from "reactstrap";
 import classnames from "classnames";
 import { Heatmap, HeatmapSeries } from "reaviz";
@@ -28,7 +27,7 @@ const FatalitiesByTimeOfDayWeek = () => {
   };
 
   const [activeTabYear, setActiveTabYear] = useState(checkMonth());
-  const [crashType, setCrashType] = useState([fatalitiesAndSeriousInjuries]);
+  const [crashType, setCrashType] = useState([]);
   const [heatmapData, setHeatmapData] = useState([]);
 
   const getYearsAgoLabel = yearsAgo => {
@@ -80,19 +79,6 @@ const FatalitiesByTimeOfDayWeek = () => {
       "11PM"
     ];
 
-    const getFatalitiesByYearsAgoUrl = () => {
-      console.log(crashType);
-      const yearsAgoDate = moment()
-        .subtract(activeTabYear, "year")
-        .format("YYYY");
-      let queryUrl =
-        activeTabYear === 0
-          ? `https://data.austintexas.gov/resource/y2wy-tgr5.json?$where=${crashType} AND crash_date between '${thisYear}-01-01T00:00:00' and '${thisYear}-${lastMonth}-${lastDayOfLastMonth}T23:59:59'`
-          : `https://data.austintexas.gov/resource/y2wy-tgr5.json?$where=${crashType} AND crash_date between '${yearsAgoDate}-01-01T00:00:00' and '${yearsAgoDate}-12-31T23:59:59'`;
-      console.log(queryUrl);
-      return queryUrl;
-    };
-
     let dataArray = [];
 
     const buildDataArray = () => {
@@ -127,15 +113,35 @@ const FatalitiesByTimeOfDayWeek = () => {
       return dataArray;
     };
 
+    const getFatalitiesByYearsAgoUrl = () => {
+      const yearsAgoDate = moment()
+        .subtract(activeTabYear, "year")
+        .format("YYYY");
+      let queryUrl =
+        activeTabYear === 0
+          ? `https://data.austintexas.gov/resource/y2wy-tgr5.json?$where=${crashType.queryString} AND crash_date between '${thisYear}-01-01T00:00:00' and '${thisYear}-${lastMonth}-${lastDayOfLastMonth}T23:59:59'`
+          : `https://data.austintexas.gov/resource/y2wy-tgr5.json?$where=${crashType.queryString} AND crash_date between '${yearsAgoDate}-01-01T00:00:00' and '${yearsAgoDate}-12-31T23:59:59'`;
+      console.log(queryUrl);
+      return queryUrl;
+    };
+
     // Fetch records for selected year
-    axios.get(getFatalitiesByYearsAgoUrl()).then(res => {
-      setHeatmapData(calculateHourBlockTotals(res));
-    });
+    if (crashType.queryString)
+      axios.get(getFatalitiesByYearsAgoUrl()).then(res => {
+        setHeatmapData(calculateHourBlockTotals(res));
+      });
   }, [activeTabYear, crashType]);
 
   return (
     <Container>
-      <Row style={{ paddingBottom: 20 }}>
+      <Row style={{ paddingBottom: "0.75em" }}>
+        <Col>
+          <h3 style={{ textAlign: "center" }}>
+            {crashType.textString} by Time of Day
+          </h3>
+        </Col>
+      </Row>
+      <Row style={{ paddingBottom: "0.75em" }}>
         <Col>
           <CrashTypeSelector setCrashType={setCrashType} />
         </Col>

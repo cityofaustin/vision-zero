@@ -5,7 +5,6 @@ import { Line } from "react-chartjs-2";
 import { Container, Row, Col } from "reactstrap";
 
 import CrashTypeSelector from "../nav/CrashTypeSelector";
-import { fatalitiesAndSeriousInjuries } from "../../constants/crashTypeQueryStrings";
 import { crashEndpointUrl } from "./queries/socrataQueries";
 import {
   thisMonth,
@@ -30,7 +29,7 @@ const FatalitiesMultiYear = () => {
   const [threeYearsAgoDeathArray, setThreeYearsAgoDeathArray] = useState([]);
   const [fourYearsAgoDeathArray, setFourYearsAgoDeathArray] = useState([]);
   const [fiveYearsAgoDeathArray, setFiveYearsAgoDeathArray] = useState([]);
-  const [crashType, setCrashType] = useState([fatalitiesAndSeriousInjuries]);
+  const [crashType, setCrashType] = useState([]);
 
   const calculateYearlyTotals = deathArray => {
     return deathArray[deathArray.length - 1];
@@ -92,51 +91,58 @@ const FatalitiesMultiYear = () => {
 
   useEffect(() => {
     const lastMonthLastDayDate = `${thisYear}-${lastMonth}-${lastDayOfLastMonth}`;
-    const thisYearUrl = `${crashEndpointUrl}?$where=${crashType} AND crash_date between '${thisYear}-01-01T00:00:00' and '${lastMonthLastDayDate}T23:59:59'`;
+    const thisYearUrl = `${crashEndpointUrl}?$where=${crashType.queryString} AND crash_date between '${thisYear}-01-01T00:00:00' and '${lastMonthLastDayDate}T23:59:59'`;
     console.log(thisYearUrl);
+    const queryCurrentYear = () => {
+      // If there is a full month of data available for the current year (i.e., we are past January),
+      // fetch records for this year through last month
+      if (thisMonth > "01") {
+        axios.get(thisYearUrl).then(res => {
+          setThisYearDeathArray(
+            calculateMonthlyTotals(res, lastMonthLastDayDate)
+          );
+        });
+      }
+    };
     const getFatalitiesByYearsAgoUrl = yearsAgo => {
       let yearsAgoDate = moment()
         .subtract(yearsAgo, "year")
         .format("YYYY");
-      let Url = `${crashEndpointUrl}?$where=${crashType} AND crash_date between '${yearsAgoDate}-01-01T00:00:00' and '${yearsAgoDate}-12-31T23:59:59'`;
+      let Url = `${crashEndpointUrl}?$where=${crashType.queryString} AND crash_date between '${yearsAgoDate}-01-01T00:00:00' and '${yearsAgoDate}-12-31T23:59:59'`;
       return Url;
     };
-
-    // If there is a full month of data available for the current year (i.e., we are past January),
-    // fetch records for this year through last month
-    if (thisMonth > "01") {
-      axios.get(thisYearUrl).then(res => {
-        setThisYearDeathArray(
-          calculateMonthlyTotals(res, lastMonthLastDayDate)
-        );
+    const queryPreviousYears = () => {
+      // Fetch records from last year
+      axios.get(getFatalitiesByYearsAgoUrl(1)).then(res => {
+        setLastYearDeathArray(calculateMonthlyTotals(res));
       });
+
+      // Fetch records from two years ago
+      axios.get(getFatalitiesByYearsAgoUrl(2)).then(res => {
+        setTwoYearsAgoDeathArray(calculateMonthlyTotals(res));
+      });
+
+      // Fetch records from three years ago
+      axios.get(getFatalitiesByYearsAgoUrl(3)).then(res => {
+        setThreeYearsAgoDeathArray(calculateMonthlyTotals(res));
+      });
+
+      // Fetch records from four years ago
+      axios.get(getFatalitiesByYearsAgoUrl(4)).then(res => {
+        setFourYearsAgoDeathArray(calculateMonthlyTotals(res));
+      });
+
+      // Fetch records from five years ago
+      axios.get(getFatalitiesByYearsAgoUrl(5)).then(res => {
+        setFiveYearsAgoDeathArray(calculateMonthlyTotals(res));
+      });
+    };
+
+    if (crashType.queryString) {
+      queryCurrentYear();
+      queryPreviousYears();
     }
-
-    // Fetch records from last year
-    axios.get(getFatalitiesByYearsAgoUrl(1)).then(res => {
-      setLastYearDeathArray(calculateMonthlyTotals(res));
-    });
-
-    // Fetch records from two years ago
-    axios.get(getFatalitiesByYearsAgoUrl(2)).then(res => {
-      setTwoYearsAgoDeathArray(calculateMonthlyTotals(res));
-    });
-
-    // Fetch records from three years ago
-    axios.get(getFatalitiesByYearsAgoUrl(3)).then(res => {
-      setThreeYearsAgoDeathArray(calculateMonthlyTotals(res));
-    });
-
-    // Fetch records from four years ago
-    axios.get(getFatalitiesByYearsAgoUrl(4)).then(res => {
-      setFourYearsAgoDeathArray(calculateMonthlyTotals(res));
-    });
-
-    // Fetch records from five years ago
-    axios.get(getFatalitiesByYearsAgoUrl(5)).then(res => {
-      setFiveYearsAgoDeathArray(calculateMonthlyTotals(res));
-    });
-  }, [ crashType ]);
+  }, [crashType]);
 
   // Build data object with data from the previous five years
   const data = {
@@ -290,7 +296,14 @@ const FatalitiesMultiYear = () => {
 
   return (
     <Container>
-      <Row style={{ paddingBottom: 20 }}>
+      <Row style={{ paddingBottom: "0.75em" }}>
+        <Col>
+          <h3 style={{ textAlign: "center" }}>
+            {crashType.textString} by Year
+          </h3>
+        </Col>
+      </Row>
+      <Row style={{ paddingBottom: "0.75em" }}>
         <Col>
           <CrashTypeSelector setCrashType={setCrashType} />
         </Col>
