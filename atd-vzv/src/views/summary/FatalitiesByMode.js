@@ -7,7 +7,7 @@ import { colors } from "../../constants/colors";
 import { otherFiltersArray } from "../../constants/filters";
 import {
   dataEndDate,
-  rollingYearsOfData,
+  ROLLING_YEARS_OF_DATA,
   summaryCurrentYearEndDate
 } from "../../constants/time";
 import { demographicsEndpointUrl } from "./queries/socrataQueries";
@@ -41,7 +41,7 @@ const FatalitiesByMode = () => {
   const yearsArray = useCallback(() => {
     let years = [];
     let year = parseInt(dataEndDate.format("YYYY"));
-    for (let i = 0; i <= rollingYearsOfData; i++) {
+    for (let i = 0; i <= ROLLING_YEARS_OF_DATA; i++) {
       years.unshift(year - i);
     }
     return years;

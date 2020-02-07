@@ -112,21 +112,21 @@ const SideMapControl = () => {
     // If no filters are applied (initial render), set all default filters
     if (Object.keys(filters).length === 0) {
       const initialFiltersArray = Object.entries(mapFilters).reduce(
-        (accumulator, [type, filtersGroup]) => {
+        (allFiltersAccumulator, [type, filtersGroup]) => {
           const groupFilters = Object.entries(filtersGroup).reduce(
-            (accumulator, [name, filterConfig]) => {
+            (groupFiltersAccumulator, [name, filterConfig]) => {
               // Apply filter only if set as a default on render
               if (filterConfig.default) {
                 filterConfig["name"] = name;
                 filterConfig["group"] = type;
-                accumulator.push(filterConfig);
+                groupFiltersAccumulator.push(filterConfig);
               }
-              return accumulator;
+              return groupFiltersAccumulator;
             },
             []
           );
-          accumulator = [...accumulator, ...groupFilters];
-          return accumulator;
+          allFiltersAccumulator = [...allFiltersAccumulator, ...groupFilters];
+          return allFiltersAccumulator;
         },
         []
       );
