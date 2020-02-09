@@ -1,5 +1,5 @@
 alter table atd_txdot_units
-	add atd_mode_cat int default 0;
+	add atd_mode_category int default 0;
 
 
 create trigger atd_txdot_units_create_update
