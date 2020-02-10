@@ -100,7 +100,7 @@ def set_mode_columns(records):
         # Create copy of record to mutate
         formatted_record = deepcopy(record)
         metadata_column = "atd_mode_category_metadata"
-        if metadata_column in record.keys():
+        if metadata_column in record.keys() and record[metadata_column] != None:
             # Concat mode_desc strings for all units
             units_involved = []
             for unit in record[metadata_column]:
@@ -223,11 +223,11 @@ def format_crash_data(data, formatter_config):
     records = data['data'][formatter_config["tables"][0]]
 
     # Format records
-    formatted_records = flatten_hasura_response(records)
+    formatted_records = set_mode_columns(
+        records)
+    formatted_records = flatten_hasura_response(formatted_records)
     formatted_records = rename_record_columns(
         formatted_records, formatter_config["columns_to_rename"])
-    formatted_records = set_mode_columns(
-        formatted_records)
     formatted_records = create_point_datatype(formatted_records)
 
     return formatted_records
