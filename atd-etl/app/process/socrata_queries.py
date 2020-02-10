@@ -44,15 +44,10 @@ crashes_query_template = Template(
             unkn_injry_cnt
             tot_injry_cnt
             death_cnt
+            atd_mode_category_metadata
             units {
                 contrib_factr_p1_id
                 contrib_factr_p2_id
-                body_style {
-                    veh_body_styl_desc
-                }
-                unit_description {
-                    veh_unit_desc_desc
-                }
             }
         }
     }
@@ -73,6 +68,7 @@ people_query_template = Template(
             unit_nbr
             crash {
                 crash_date
+                atd_mode_category_metadata
                 units {
                     unit_nbr
                     unit_description {
@@ -93,6 +89,7 @@ people_query_template = Template(
             unit_nbr
             crash {
                 crash_date
+                atd_mode_category_metadata
                 units {
                     unit_nbr
                     unit_description {
