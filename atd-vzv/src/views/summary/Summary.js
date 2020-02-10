@@ -9,7 +9,7 @@ import { Container, Row } from "reactstrap";
 import styled from "styled-components";
 
 const children = [
-  // { component: <FatalitiesMultiYear /> },
+  { component: <FatalitiesMultiYear /> },
   { component: <FatalitiesByMode />, title: "Fatalities by Mode" },
   { component: <FatalitiesByTimeOfDay />},
 ];

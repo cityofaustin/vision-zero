@@ -12,16 +12,10 @@ const CrashTypeSelector = ({ setCrashType }) => {
     textString: "Serious Injuries"
   };
 
-  const fatalitiesAndSeriousInjuries = {
-    queryString: "(apd_confirmed_death_count > 0 OR sus_serious_injry_cnt > 0)",
-    textString: "Fatalities and Serious Injuries"
-  };
-
   const [activeTab, setActiveTab] = useState([fatalities, seriousInjuries]);
   const [previousTabClicked, setPreviousTabClicked] = useState([]);
 
   const toggle = tab => {
-      console.log(tab);
     // Make a copy of the activeTab array that exists in state in order to mutate it
     let placeHolder = [...activeTab];
     // Attempt to filter out the object in the activeTab copy that matches the clicked tab
@@ -68,9 +62,24 @@ const CrashTypeSelector = ({ setCrashType }) => {
   };
 
   useEffect(() => {
-    setCrashType(fatalitiesAndSeriousInjuries);
-    debugger
-  }, [fatalitiesAndSeriousInjuries, setCrashType]);
+    const fatalitiesAndSeriousInjuries = {
+      queryString:
+        "(apd_confirmed_death_count > 0 OR sus_serious_injry_cnt > 0)",
+      textString: "Fatalities and Serious Injuries"
+    };
+
+    const handleCrashType = () => {
+      let selectedCrashType;
+      if (activeTab.length > 1) {
+        selectedCrashType = fatalitiesAndSeriousInjuries;
+      } else {
+        selectedCrashType = activeTab[0];
+      }
+      return selectedCrashType;
+    };
+
+    setCrashType(handleCrashType());
+  }, [setCrashType, activeTab]);
 
   return (
     <ButtonGroup className="mb-3 d-flex">
