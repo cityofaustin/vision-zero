@@ -90,6 +90,30 @@ def flatten_hasura_response(records):
     return formatted_records
 
 
+def set_mode_columns(records):
+    """
+    Stringify atd_mode_category_metadata and concat mode descriptions
+    :param records: list - List of record dicts
+    """
+    formatted_records = []
+    for record in records:
+        # Create copy of record to mutate
+        formatted_record = deepcopy(record)
+        metadata_column = "atd_mode_category_metadata"
+        if metadata_column in record.keys():
+            # Concat mode_desc strings for all units
+            units_involved = []
+            for unit in record[metadata_column]:
+                units_involved.append(unit.get("mode_desc"))
+            formatted_record["units_involved"] = " & ".join(units_involved)
+
+            # Stringify metadata
+            formatted_record[metadata_column] = json.dumps(
+                record[metadata_column])
+        formatted_records.append(formatted_record)
+    return formatted_records
+
+
 def create_mode_flags(records, unit_modes):
     """
     Creates mode flag columns in data along with "Y" or "N" value
@@ -202,8 +226,8 @@ def format_crash_data(data, formatter_config):
     formatted_records = flatten_hasura_response(records)
     formatted_records = rename_record_columns(
         formatted_records, formatter_config["columns_to_rename"])
-    formatted_records = create_mode_flags(
-        formatted_records, formatter_config["flags_list"])
+    formatted_records = set_mode_columns(
+        formatted_records)
     formatted_records = create_point_datatype(formatted_records)
 
     return formatted_records

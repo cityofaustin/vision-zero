@@ -71,12 +71,7 @@ people_query_template = Template(
                 atd_mode_category_metadata
                 units {
                     unit_nbr
-                    unit_description {
-                        veh_unit_desc_desc
-                    }
-                    body_style {
-                        veh_body_styl_desc
-                    }
+                    unit_id
                 }
             }
         }
@@ -92,12 +87,7 @@ people_query_template = Template(
                 atd_mode_category_metadata
                 units {
                     unit_nbr
-                    unit_description {
-                        veh_unit_desc_desc
-                    }
-                    body_style {
-                        veh_body_styl_desc
-                    }
+                    unit_id
                 }
             }
         }
