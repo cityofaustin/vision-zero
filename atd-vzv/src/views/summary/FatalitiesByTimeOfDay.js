@@ -108,7 +108,21 @@ const FatalitiesByTimeOfDayWeek = () => {
         const time = record.crash_time;
         const timeArray = time.split(":");
         const hour = parseInt(timeArray[0]);
-        dataArray[hour].data[dayOfWeek].data++;
+        switch (crashType.name) {
+          case "fatalities":
+            dataArray[hour].data[dayOfWeek].data += parseInt(record.death_cnt);
+            break;
+          case "seriousInjuries":
+            dataArray[hour].data[dayOfWeek].data += parseInt(
+              record.sus_serious_injry_cnt
+            );
+            break;
+          default:
+            dataArray[hour].data[dayOfWeek].data +=
+              parseInt(record.death_cnt) +
+              parseInt(record.sus_serious_injry_cnt);
+            break;
+        }
       });
       return dataArray;
     };
@@ -119,14 +133,14 @@ const FatalitiesByTimeOfDayWeek = () => {
         .format("YYYY");
       let queryUrl =
         activeTabYear === 0
-          ? `https://data.austintexas.gov/resource/y2wy-tgr5.json?$where=${crashType.queryString} AND crash_date between '${thisYear}-01-01T00:00:00' and '${thisYear}-${lastMonth}-${lastDayOfLastMonth}T23:59:59'`
-          : `https://data.austintexas.gov/resource/y2wy-tgr5.json?$where=${crashType.queryString} AND crash_date between '${yearsAgoDate}-01-01T00:00:00' and '${yearsAgoDate}-12-31T23:59:59'`;
-      console.log(queryUrl);
+          ? `https://data.austintexas.gov/resource/y2wy-tgr5.json?$where=${crashType.queryStringCrash} AND crash_date between '${thisYear}-01-01T00:00:00' and '${thisYear}-${lastMonth}-${lastDayOfLastMonth}T23:59:59'`
+          : `https://data.austintexas.gov/resource/y2wy-tgr5.json?$where=${crashType.queryStringCrash} AND crash_date between '${yearsAgoDate}-01-01T00:00:00' and '${yearsAgoDate}-12-31T23:59:59'`;
       return queryUrl;
     };
 
-    // Fetch records for selected year
-    if (crashType.queryString)
+    // Wait for crashType to be passed up from setCrashType component,
+    // then fetch records for selected year
+    if (crashType.queryStringCrash)
       axios.get(getFatalitiesByYearsAgoUrl()).then(res => {
         setHeatmapData(calculateHourBlockTotals(res));
       });
@@ -139,11 +153,6 @@ const FatalitiesByTimeOfDayWeek = () => {
           <h3 style={{ textAlign: "center" }}>
             {crashType.textString} by Time of Day
           </h3>
-        </Col>
-      </Row>
-      <Row style={{ paddingBottom: "0.75em" }}>
-        <Col>
-          <CrashTypeSelector setCrashType={setCrashType} />
         </Col>
       </Row>
       <Row>
@@ -231,6 +240,11 @@ const FatalitiesByTimeOfDayWeek = () => {
               />
             }
           />
+        </Col>
+      </Row>
+      <Row style={{ paddingTop: "0.75em" }}>
+        <Col>
+          <CrashTypeSelector setCrashType={setCrashType} />
         </Col>
       </Row>
     </Container>

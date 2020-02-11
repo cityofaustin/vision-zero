@@ -10,8 +10,8 @@ import styled from "styled-components";
 
 const children = [
   { component: <FatalitiesMultiYear /> },
-  { component: <FatalitiesByMode />, title: "Fatalities by Mode" },
-  { component: <FatalitiesByTimeOfDay />},
+  { component: <FatalitiesByMode /> },
+  { component: <FatalitiesByTimeOfDay /> },
 ];
 
 const Summary = () => {

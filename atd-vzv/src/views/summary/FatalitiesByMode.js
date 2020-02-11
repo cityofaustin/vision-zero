@@ -2,9 +2,11 @@ import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import moment from "moment";
 import { Bar } from "react-chartjs-2";
+
+import CrashTypeSelector from "../nav/CrashTypeSelector";
 import { colors } from "../../constants/colors";
 
-import { Container } from "reactstrap";
+import { Container, Row, Col } from "reactstrap";
 import {
   thisMonth,
   thisYear,
@@ -40,32 +42,35 @@ const FatalitiesByMode = () => {
 
   const [chartData, setChartData] = useState("");
   const [latestRecordDate, setLatestRecordDate] = useState("");
+  const [crashType, setCrashType] = useState([]);
 
   // Fetch data (Mode of fatality in crash)
   useEffect(() => {
-    const getChartData = async () => {
-      let newData = {};
-      // Use Promise.all to let all requests resolve before setting chart data by year
-      await Promise.all(
-        yearsArray().map(async year => {
-          // If getting data for current year (only including years past January), set end of query to last day of previous month,
-          // else if getting data for previous years, set end of query to last day of year
-          let endDate =
-            year.toString() === thisYear
-              ? `${year}-${lastMonth}-${lastDayOfLastMonth}T23:59:59`
-              : `${year}-12-31T23:59:59`;
-          let url = `${demographicsEndpointUrl}?$where=(prsn_injry_sev_id = 4) AND crash_date between '${year}-01-01T00:00:00' and '${endDate}'`;
-          await axios.get(url).then(res => {
-            newData = { ...newData, ...{ [year]: res.data } };
-          });
-          return null;
-        })
-      );
-      setChartData(newData);
-    };
-
-    getChartData();
-  }, [yearsArray]);
+    // Wait for crashType to be passed up from setCrashType component
+    if (crashType.queryStringDemographics) {
+      const getChartData = async () => {
+        let newData = {};
+        // Use Promise.all to let all requests resolve before setting chart data by year
+        await Promise.all(
+          yearsArray().map(async year => {
+            // If getting data for current year (only including years past January), set end of query to last day of previous month,
+            // else if getting data for previous years, set end of query to last day of year
+            let endDate =
+              year.toString() === thisYear
+                ? `${year}-${lastMonth}-${lastDayOfLastMonth}T23:59:59`
+                : `${year}-12-31T23:59:59`;
+            let url = `${demographicsEndpointUrl}?$where=${crashType.queryStringDemographics} AND crash_date between '${year}-01-01T00:00:00' and '${endDate}'`;
+            await axios.get(url).then(res => {
+              newData = { ...newData, ...{ [year]: res.data } };
+            });
+            return null;
+          })
+        );
+        setChartData(newData);
+      };
+      getChartData();
+    }
+  }, [yearsArray, crashType]);
 
   // Fetch latest record from demographics dataset and set for chart subheading
   useEffect(() => {
@@ -88,14 +93,14 @@ const FatalitiesByMode = () => {
       .sort()
       .map(year => `${year}`);
 
-  // Tabulate fatalities by mode from data
+  // Tabulate crashes by mode from data
   const getModeData = flag =>
     yearsArray()
       .sort()
       .map(year => {
-        let fatalities = 0;
-        chartData[year].forEach(f => f[`${flag}`] === "Y" && fatalities++);
-        return fatalities;
+        let crashes = 0;
+        chartData[year].forEach(f => f[`${flag}`] === "Y" && crashes++);
+        return crashes;
       });
 
   // Create dataset for each mode type
@@ -118,25 +123,45 @@ const FatalitiesByMode = () => {
 
   return (
     <Container>
-      <Bar
-        data={data}
-        options={{
-          maintainAspectRatio: true,
-          scales: {
-            xAxes: [
-              {
-                stacked: true
+      <Row style={{ paddingBottom: "0.75em" }}>
+        <Col>
+          <h3 style={{ textAlign: "center" }}>
+            {crashType.textString} by Mode
+          </h3>
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <Bar
+            data={data}
+            options={{
+              maintainAspectRatio: true,
+              scales: {
+                xAxes: [
+                  {
+                    stacked: true
+                  }
+                ],
+                yAxes: [
+                  {
+                    stacked: true
+                  }
+                ]
               }
-            ],
-            yAxes: [
-              {
-                stacked: true
-              }
-            ]
-          }
-        }}
-      />
-      <p className="text-center">Data Through: {latestRecordDate}</p>
+            }}
+          />
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <p className="text-center">Data Through: {latestRecordDate}</p>
+        </Col>
+      </Row>
+      <Row style={{ paddingTop: "0.75em" }}>
+        <Col>
+          <CrashTypeSelector setCrashType={setCrashType} />
+        </Col>
+      </Row>
     </Container>
   );
 };
