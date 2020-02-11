@@ -46,7 +46,8 @@ query_configs = [
                            "NON-CONTACT",
                            "OTHER"]
         },
-        "dataset_uid": "y2wy-tgr5"
+        # "dataset_uid": "3aut-fhzp"  # TEST
+        "dataset_uid": "y2wy-tgr5"  # PROD
     },
     {
         "table": "person",
@@ -70,7 +71,8 @@ query_configs = [
                            "NON-CONTACT",
                            "OTHER"]
         },
-        "dataset_uid": "xecs-rpy9"
+        # "dataset_uid": "v3x4-fjgm"  # TEST
+        "dataset_uid": "xecs-rpy9"  # PROD
     }
 ]
 

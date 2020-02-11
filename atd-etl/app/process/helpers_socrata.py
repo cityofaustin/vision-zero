@@ -229,6 +229,5 @@ def format_person_data(data, formatter_config):
         people_records, formatter_config["columns_to_rename"])
     formatted_records = flatten_hasura_response(
         formatted_records)
-    for record in formatted_records:
-        print(record)
+
     return formatted_records
