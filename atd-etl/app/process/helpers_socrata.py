@@ -85,7 +85,7 @@ def flatten_hasura_response(records):
             elif type(first_level_value) == dict:
                 for dict_key, dict_value in first_level_value.items():
                     formatted_record[dict_key] = dict_value
-                    del formatted_record[first_level_key]
+                del formatted_record[first_level_key]
         formatted_records.append(formatted_record)
     return formatted_records
 
@@ -186,30 +186,31 @@ def add_value_prefix(records, prefix_dict):
 
 def set_person_mode(records):
     """
-    Sets mode of person from crash record data
+    Sets mode of person from crash record metadata
+    Person (unit_nbr) => Units (unit_nbr & unit_id) => Crash metadata (unit_id)
     :param records: list - List of record dicts
     """
     for record in records:
-        # Gather unit and person data
-        crash_record = record.get("crash")
-        unit_descriptions = crash_record.get("units", [])
+        # Gather person, unit, and crash data
         person_unit_number = record.get("unit_nbr")
+        crash = record.get("crash")
+        units = crash.get("units", [])
 
-        # Find unit matching person unit_nbr from crash data
-        for unit in unit_descriptions:
+        # Find unit_id
+        unit_id = ""
+        for unit in units:
             if unit.get("unit_nbr") == person_unit_number:
-                unit_mode = unit.get(
-                    "unit_description", {})
-                unit_desc = unit.get(
-                    "body_style", {})
-                if unit_mode != None:
-                    record["unit_mode"] = unit_mode.get(
-                        "veh_unit_desc_desc", "")
-                if unit_desc != None:
-                    record["unit_desc"] = unit_desc.get(
-                        "veh_body_styl_desc", "")
-        # Remove unneeded keys to prevent Socrata error
+                unit_id = unit.get("unit_id")
+
+        # Find unit in metadata and set mode_desc and mode_id columns
+        crash_metadata = crash.get("atd_mode_category_metadata", [])
+        if crash_metadata != None:
+            for unit in crash_metadata:
+                if unit.get("unit_id") == unit_id:
+                    record["mode_desc"] = unit.get("mode_desc")
+                    record["mode_id"] = unit.get("mode_id")
         del record["crash"]["units"]
+        del record["crash"]["atd_mode_category_metadata"]
         del record["unit_nbr"]
     return records
 
@@ -258,7 +259,5 @@ def format_person_data(data, formatter_config):
         people_records, formatter_config["columns_to_rename"])
     formatted_records = flatten_hasura_response(
         formatted_records)
-    formatted_records = create_mode_flags(
-        formatted_records, formatter_config["flags_list"])
 
     return formatted_records
