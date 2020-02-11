@@ -15,6 +15,9 @@ import json
 from copy import deepcopy
 from process.config import ATD_ETL_CONFIG
 
+# Dict to translate canonical modes to broader categories for VZV
+modeCategories = {}
+
 
 def replace_chars(target_str, char_list, replacement_str):
     """
@@ -112,6 +115,38 @@ def set_mode_columns(records):
                 record[metadata_column])
         formatted_records.append(formatted_record)
     return formatted_records
+
+
+def create_mode_flags(records, unit_modes):
+
+
+"""
+Creates mode flag columns in data along with "Y" or "N" value
+:param records: list - List of record dicts
+:param unit_modes: list - List of mode strings to create flag columns
+"""
+for record in records:
+    if "unit_mode" in record.keys():
+        for mode in unit_modes:
+            chars_to_replace = ["/", " ", "-"]
+
+            # Need flag to be camelcase with "_fl" suffix
+            formatted_mode = replace_chars(
+                mode, chars_to_replace, "_").lower()
+            record_flag_column = f"{formatted_mode}_fl"
+            if mode in record["unit_mode"]:
+                record[record_flag_column] = "Y"
+            else:
+                record[record_flag_column] = "N"
+    # Motorcycle crashes are documented in unit desc not mode
+    if "unit_desc" in record.keys():
+        if "MOTORCYCLE" in record["unit_desc"]:
+            record["motorcycle_fl"] = "Y"
+        else:
+            record["motorcycle_fl"] = "N"
+    else:
+        record["motorcycle_fl"] = "N"
+return records
 
 
 def create_point_datatype(records):
