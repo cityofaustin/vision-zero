@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { StoreContext } from "../../utils/store";
 import "react-infinite-calendar/styles.css";
 
 import SideMapControlDateRange from "./SideMapControlDateRange";
 import SideMapControlOverlays from "./SideMapControlOverlays";
 import { colors } from "../../constants/colors";
+import { otherFiltersArray } from "../../constants/filters";
 import { ButtonGroup, Button, Card, Label } from "reactstrap";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -38,50 +39,54 @@ const SideMapControl = () => {
     mapFilters: [filters, setFilters]
   } = React.useContext(StoreContext);
 
-  // Clear all filters that match group arg
-  const handleAllFiltersClick = (event, group) => {
-    const keepFilters = filters.filter(filter => filter.group !== group);
-    setFilters(keepFilters);
-  };
+  const [filterGroupCounts, setFilterGroupCounts] = useState({});
 
-  // Determine if no filters in a group are applied (used for "All" buttons active/inactive state)
-  const isUnfiltered = group => {
-    const result = filters.filter(filter => filter.group === group);
-    return result.length === 0;
-  };
+  // Build filter string for Other modes
+  const buildOtherFiltersString = () =>
+    otherFiltersArray
+      .reduce((accumulator, filterString) => {
+        accumulator.push(`${filterString} = "Y"`);
+        return accumulator;
+      }, [])
+      .join(" OR ");
 
   // Define groups of map filters
   const mapFilters = {
     mode: {
       pedestrian: {
-        icon: faWalking,
-        syntax: `pedestrian_fl = "Y"`,
-        type: `where`,
-        operator: `OR`
+        icon: faWalking, // Font Awesome icon object
+        syntax: `pedestrian_fl = "Y"`, // Socrata SoQL query string
+        type: `where`, // Socrata SoQL query type
+        operator: `OR`, // Logical operator for joining multiple query strings
+        default: true // Apply filter as default on render
       },
       pedalcyclist: {
         icon: faBiking,
         syntax: `pedalcyclist_fl = "Y"`,
         type: `where`,
-        operator: `OR`
+        operator: `OR`,
+        default: true
       },
       motor: {
         icon: faCar,
         syntax: `motor_vehicle_fl = "Y"`,
         type: `where`,
-        operator: `OR`
+        operator: `OR`,
+        default: true
       },
       motorcycle: {
         icon: faMotorcycle,
         syntax: `motorcycle_fl = "Y"`,
         type: `where`,
-        operator: `OR`
+        operator: `OR`,
+        default: true
       },
-      all: {
-        text: "All",
-        handler: handleAllFiltersClick,
-        active: isUnfiltered,
-        inactive: isUnfiltered
+      other: {
+        text: "Other",
+        syntax: buildOtherFiltersString(),
+        type: `where`,
+        operator: `OR`,
+        default: true
       }
     },
     type: {
@@ -89,25 +94,77 @@ const SideMapControl = () => {
         text: `Injury`,
         syntax: `sus_serious_injry_cnt > 0`,
         type: `where`,
-        operator: `AND`
+        operator: `OR`,
+        default: true
       },
       fatal: {
         text: `Fatal`,
-        syntax: `death_cnt > 0`,
+        syntax: `apd_confirmed_death_count > 0`,
         type: `where`,
-        operator: `AND`
+        operator: `OR`,
+        default: false
       }
     }
   };
 
+  // Reduce all filters and set defaults as active on render
+  useEffect(() => {
+    // If no filters are applied (initial render), set all default filters
+    if (Object.keys(filters).length === 0) {
+      const initialFiltersArray = Object.entries(mapFilters).reduce(
+        (allFiltersAccumulator, [type, filtersGroup]) => {
+          const groupFilters = Object.entries(filtersGroup).reduce(
+            (groupFiltersAccumulator, [name, filterConfig]) => {
+              // Apply filter only if set as a default on render
+              if (filterConfig.default) {
+                filterConfig["name"] = name;
+                filterConfig["group"] = type;
+                groupFiltersAccumulator.push(filterConfig);
+              }
+              return groupFiltersAccumulator;
+            },
+            []
+          );
+          allFiltersAccumulator = [...allFiltersAccumulator, ...groupFilters];
+          return allFiltersAccumulator;
+        },
+        []
+      );
+      setFilters(initialFiltersArray);
+    }
+  }, [mapFilters, setFilters, filters]);
+
+  // Set count of filters applied to keep one of each type applied at all times
+  useEffect(() => {
+    const filtersCount = filters.reduce((accumulator, filter) => {
+      if (accumulator[filter.group]) {
+        accumulator = {
+          ...accumulator,
+          [filter.group]: accumulator[filter.group] + 1
+        };
+      } else {
+        accumulator = { ...accumulator, [filter.group]: 1 };
+      }
+      return accumulator;
+    }, {});
+    setFilterGroupCounts(filtersCount);
+  }, [filters]);
+
+  const isFilterSet = filterName => {
+    return !!filters.find(setFilter => setFilter.name === filterName);
+  };
+
+  const isOneFilterOfGroupApplied = group => filterGroupCounts[group] > 1;
+
+  // Set filter or remove if already set
   const handleFilterClick = (event, filterGroup) => {
-    // Set filter or remove if already set
     const filterName = event.currentTarget.id;
 
     if (isFilterSet(filterName)) {
-      const updatedFiltersArray = filters.filter(
-        setFilter => setFilter.name !== filterName
-      );
+      // Always leave one filter applied per group
+      const updatedFiltersArray = isOneFilterOfGroupApplied(filterGroup)
+        ? filters.filter(setFilter => setFilter.name !== filterName)
+        : filters;
       setFilters(updatedFiltersArray);
     } else {
       const filter = mapFilters[filterGroup][filterName];
@@ -117,10 +174,6 @@ const SideMapControl = () => {
       const filtersArray = [...filters, filter];
       setFilters(filtersArray);
     }
-  };
-
-  const isFilterSet = filterName => {
-    return !!filters.find(setFilter => setFilter.name === filterName);
   };
 
   return (
@@ -138,21 +191,9 @@ const SideMapControl = () => {
                 id={name}
                 color="info"
                 className="w-100 pt-1 pb-1 pl-0 pr-0"
-                // Use alternate handler if defined
-                onClick={
-                  parameter.handler
-                    ? event => parameter.handler(event, group)
-                    : event => handleFilterClick(event, group)
-                }
-                // Use alternate active/inactive fn if defined
-                active={
-                  parameter.active ? parameter.active(group) : isFilterSet(name)
-                }
-                outline={
-                  parameter.inactive
-                    ? !parameter.inactive(group)
-                    : !isFilterSet(name)
-                }
+                onClick={event => handleFilterClick(event, group)}
+                active={isFilterSet(name)}
+                outline={!isFilterSet(name)}
               >
                 {parameter.icon && (
                   <FontAwesomeIcon

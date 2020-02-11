@@ -1,7 +1,7 @@
 import React from "react";
 import FatalitiesByMode from "./FatalitiesByMode";
 import FatalitiesMultiYear from "./FatalitiesMultiYear";
-import FatalitiesByTimeOfDay from "./FatalitiesByTimeOfDay"
+import FatalitiesByTimeOfDay from "./FatalitiesByTimeOfDay";
 import SummaryView from "./SummaryView";
 import SummaryCard from "./SummaryCard";
 

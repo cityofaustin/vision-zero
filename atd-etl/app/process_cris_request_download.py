@@ -90,6 +90,10 @@ for email_file in email_file_list:
     print("Url Download: '%s'" % cris_download_link)
     print("Download Token: '%s'" % cris_download_token)
 
+    if cris_download_link is None or cris_download_token is None:
+        print("\n\nFailed to obtain file url from email.\n\n")
+        continue
+
     request_download_url = request_zip_file_url(cris_download_token,
                                                 cookies=browser.cookies.all())
 

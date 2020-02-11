@@ -13,6 +13,7 @@ export const colors = {
   chartRed: "#a50f15",
   chartOrange: "#fb6a4a",
   chartRedOrange: "#de2d26",
+  chartLightBlue: "#67a9cf",
   chartBlue: "#08519c",
   redGradient1Of5: "#fee5d9",
   redGradient2Of5: "#fcae91",
