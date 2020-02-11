@@ -4,7 +4,7 @@ import { Bar } from "react-chartjs-2";
 
 import { Container } from "reactstrap";
 import { colors } from "../../constants/colors";
-import { otherFiltersArray } from "../../constants/filters";
+import { modeCategories } from "../../constants/filters";
 import {
   dataEndDate,
   thisYear,
@@ -14,25 +14,29 @@ import { demographicsEndpointUrl } from "./queries/socrataQueries";
 
 const FatalitiesByMode = () => {
   const modes = [
-    { label: "Motor", flags: ["motor_vehicle_fl"], color: colors.chartRed },
+    {
+      label: "Motor",
+      flags: modeCategories.motorVehicleIds,
+      color: colors.chartRed
+    },
     {
       label: "Pedestrian",
-      flags: ["pedestrian_fl"],
+      flags: modeCategories.pedestrianIds,
       color: colors.chartOrange
     },
     {
       label: "Motorcycle",
-      flags: ["motorcycle_fl"],
+      flags: modeCategories.motorVehicleIds,
       color: colors.chartRedOrange
     },
     {
-      label: "Pedalcyclist",
-      flags: ["pedalcyclist_fl"],
+      label: "Bicycle",
+      flags: modeCategories.bicycleIds,
       color: colors.chartBlue
     },
     {
       label: "Other",
-      flags: otherFiltersArray,
+      flags: modeCategories.otherIds,
       color: colors.chartLightBlue
     }
   ];
