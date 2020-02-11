@@ -31,11 +31,13 @@ const generateWhereFilters = filters => {
 
 export const createMapDataUrl = (filters, dateRange) => {
   const whereFilterString = generateWhereFilters(filters);
+  const filterCount = filters.length;
 
-  return (
-    `${crashGeoJSONEndpointUrl}?$limit=100000` +
-    `&$where=crash_date between '${dateRange.start}' and '${dateRange.end}'` +
-    // if there are filters applied, add AND operator to create valid query url
-    `${filters.length > 0 ? " AND" : ""} ${whereFilterString || ""}`
-  );
+  // Return empty URL to prevent momentarily populating map unfiltered map data
+  return filterCount === 0
+    ? ``
+    : `${crashGeoJSONEndpointUrl}?$limit=100000` +
+        `&$where=crash_date between '${dateRange.start}' and '${dateRange.end}'` +
+        // if there are filters applied, add AND operator to create valid query url
+        `${filters.length > 0 ? " AND" : ""} ${whereFilterString || ""}`;
 };
