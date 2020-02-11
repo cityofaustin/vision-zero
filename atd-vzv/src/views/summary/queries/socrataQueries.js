@@ -7,7 +7,7 @@ import {
 
 export const crashEndpointUrl = `https://data.austintexas.gov/resource/y2wy-tgr5.json`;
 export const crashGeoJSONEndpointUrl = `https://data.austintexas.gov/resource/y2wy-tgr5.geojson`;
-export const demographicsEndpointUrl = `https://data.austintexas.gov/resource/xecs-rpy9.json`;
+export const demographicsEndpointUrl = `https://data.austintexas.gov/resource/v3x4-fjgm.json`;
 
 // Year to date queries
 export const thisYearFatalitiesUrl = `${crashEndpointUrl}?$where=apd_confirmed_death_count > 0 AND crash_date between '${thisYear}-01-01T00:00:00' and '${thisYear}-${lastMonth}-${lastDayOfLastMonth}T23:59:59'`;

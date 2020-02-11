@@ -26,7 +26,7 @@ const FatalitiesByMode = () => {
     },
     {
       label: "Motorcycle",
-      flags: modeCategories.motorVehicleIds,
+      flags: modeCategories.motorcycleIds,
       color: colors.chartRedOrange
     },
     {
@@ -81,10 +81,10 @@ const FatalitiesByMode = () => {
   const createChartLabels = () => yearsArray().map(year => `${year}`);
 
   // Tabulate fatalities by mode flags in data
-  const getModeData = flags =>
+  const getModeData = ids =>
     yearsArray().map(year => {
       return chartData[year].reduce((accumulator, record) => {
-        flags.forEach(flag => record[`${flag}`] === "Y" && accumulator++);
+        ids.forEach(id => parseInt(record["mode_id"]) === id && accumulator++);
         return accumulator;
       }, 0);
     });
