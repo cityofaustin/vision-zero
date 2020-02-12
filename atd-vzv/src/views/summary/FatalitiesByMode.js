@@ -4,7 +4,6 @@ import { Bar } from "react-chartjs-2";
 
 import { Container } from "reactstrap";
 import { colors } from "../../constants/colors";
-import { modeCategories } from "../../constants/filters";
 import {
   dataEndDate,
   thisYear,
@@ -16,27 +15,27 @@ const FatalitiesByMode = () => {
   const modes = [
     {
       label: "Motorist",
-      flags: modeCategories.motorVehicleIds,
+      flags: ["motor_vehicle_fl"],
       color: colors.chartRed
     },
     {
       label: "Pedestrian",
-      flags: modeCategories.pedestrianIds,
+      flags: ["pedestrian_fl"],
       color: colors.chartOrange
     },
     {
       label: "Motorcyclist",
-      flags: modeCategories.motorcycleIds,
+      flags: ["motorcycle_fl"],
       color: colors.chartRedOrange
     },
     {
       label: "Bicyclist",
-      flags: modeCategories.bicycleIds,
+      flags: ["bicycle_fl"],
       color: colors.chartBlue
     },
     {
       label: "Other",
-      flags: modeCategories.otherIds,
+      flags: ["other_fl"],
       color: colors.chartLightBlue
     }
   ];
@@ -81,10 +80,10 @@ const FatalitiesByMode = () => {
   const createChartLabels = () => yearsArray().map(year => `${year}`);
 
   // Tabulate fatalities by mode flags in data
-  const getModeData = ids =>
+  const getModeData = flags =>
     yearsArray().map(year => {
       return chartData[year].reduce((accumulator, record) => {
-        ids.forEach(id => parseInt(record["mode_id"]) === id && accumulator++);
+        flags.forEach(flag => record[`${flag}`] === "Y" && accumulator++);
         return accumulator;
       }, 0);
     });
