@@ -211,6 +211,7 @@ def set_person_mode(records):
                 if unit.get("unit_id") == unit_id:
                     record["mode_desc"] = unit.get("mode_desc")
                     mode_id = unit.get("mode_id")
+                    record["mode_id"] = mode_id
         del record["crash"]["units"]
         del record["crash"]["atd_mode_category_metadata"]
         del record["unit_nbr"]
