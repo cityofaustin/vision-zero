@@ -14,7 +14,7 @@ from string import Template
 crashes_query_template = Template(
     """
     query getCrashesSocrata {
-        atd_txdot_crashes (limit: $limit, offset: $offset, order_by: {crash_id: asc}, where: {city_id: {_eq: 22}}) {
+        atd_txdot_crashes (limit: $limit, offset: $offset, order_by: {crash_id: desc}, where: {city_id: {_eq: 22}}) {
             apd_confirmed_fatality
             apd_confirmed_death_count
             crash_id

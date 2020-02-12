@@ -16,7 +16,13 @@ from copy import deepcopy
 from process.config import ATD_ETL_CONFIG
 
 # Dict to translate canonical modes to broader categories for VZV
-modeCategories = {}
+mode_category_flags = {
+    "motor_vehicle_fl": [1, 2, 4],
+    "motorcycle_fl": [3],
+    "bicycle_fl": [5],
+    "pedestrian_fl": [7],
+    "other_fl": [6, 8, 9]
+}
 
 
 def replace_chars(target_str, char_list, replacement_str):
@@ -117,36 +123,49 @@ def set_mode_columns(records):
     return formatted_records
 
 
-def create_mode_flags(records, unit_modes):
+def create_mode_flags(records):
+    """
+    Creates mode flag columns in data along with "Y" or "N" value
+    :param records: list - List of record dicts
+    :param unit_modes: list - List of mode strings to create flag columns
+    """
+    for record in records:
+        crash_metadata = record.get("atd_mode_category_metadata")
+        # Gather mode IDs in record
+        mode_ids = []
+        if crash_metadata != None:
+            for unit in crash_metadata:
+                mode_ids.append(unit.get("mode_id"))
 
+        # Check for id matches in flags dict and set flags to Y for matches
+        for id in mode_ids:
+            for flag_key, flag_value in mode_category_flags.items():
+                if id in flag_value:
+                    record[flag_key] = "Y"
+    return records
 
-"""
-Creates mode flag columns in data along with "Y" or "N" value
-:param records: list - List of record dicts
-:param unit_modes: list - List of mode strings to create flag columns
-"""
-for record in records:
-    if "unit_mode" in record.keys():
-        for mode in unit_modes:
-            chars_to_replace = ["/", " ", "-"]
+# for record in records:
+#     if "unit_mode" in record.keys():
+#         for mode in unit_modes:
+#             chars_to_replace = ["/", " ", "-"]
 
-            # Need flag to be camelcase with "_fl" suffix
-            formatted_mode = replace_chars(
-                mode, chars_to_replace, "_").lower()
-            record_flag_column = f"{formatted_mode}_fl"
-            if mode in record["unit_mode"]:
-                record[record_flag_column] = "Y"
-            else:
-                record[record_flag_column] = "N"
-    # Motorcycle crashes are documented in unit desc not mode
-    if "unit_desc" in record.keys():
-        if "MOTORCYCLE" in record["unit_desc"]:
-            record["motorcycle_fl"] = "Y"
-        else:
-            record["motorcycle_fl"] = "N"
-    else:
-        record["motorcycle_fl"] = "N"
-return records
+#             # Need flag to be camelcase with "_fl" suffix
+#             formatted_mode = replace_chars(
+#                 mode, chars_to_replace, "_").lower()
+#             record_flag_column = f"{formatted_mode}_fl"
+#             if mode in record["unit_mode"]:
+#                 record[record_flag_column] = "Y"
+#             else:
+#                 record[record_flag_column] = "N"
+#     # Motorcycle crashes are documented in unit desc not mode
+#     if "unit_desc" in record.keys():
+#         if "MOTORCYCLE" in record["unit_desc"]:
+#             record["motorcycle_fl"] = "Y"
+#         else:
+#             record["motorcycle_fl"] = "N"
+#     else:
+#         record["motorcycle_fl"] = "N"
+# return records
 
 
 def create_point_datatype(records):
@@ -229,8 +248,9 @@ def format_crash_data(data, formatter_config):
     records = data['data'][formatter_config["tables"][0]]
 
     # Format records
+    formatted_records = create_mode_flags(records)
     formatted_records = set_mode_columns(
-        records)
+        formatted_records)
     formatted_records = flatten_hasura_response(formatted_records)
     formatted_records = rename_record_columns(
         formatted_records, formatter_config["columns_to_rename"])
@@ -259,6 +279,9 @@ def format_person_data(data, formatter_config):
         primary_person_records)
 
     # Join records and format
+    # for record in records:
+    #     if record.get("atd_mode_category_metadata"):
+    #         print(record)
     people_records = person_records + primary_person_records
     formatted_records = rename_record_columns(
         people_records, formatter_config["columns_to_rename"])
