@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { ButtonGroup, Button } from "reactstrap";
 import styled, { css } from "styled-components";
 
 const CrashTypeSelector = ({ setCrashType }) => {
@@ -55,8 +54,8 @@ const CrashTypeSelector = ({ setCrashType }) => {
 
   const isUnselected = tab => {
     let filteredObject = activeTab.find(element => element.name === tab.name);
-    let filteredBoolean = filteredObject ? false : true;
-    return filteredBoolean;
+    let unselected = filteredObject ? false : true;
+    return unselected;
   };
 
   useEffect(() => {
@@ -88,21 +87,24 @@ const CrashTypeSelector = ({ setCrashType }) => {
     ${props =>
       props.unselected &&
       css`
-      background: transparent;
-      color: #5bc0de;
-    `}
+        background: transparent;
+        color: #5bc0de;
+      `
+    }
 
     ${props =>
       props.fatalities &&
       css`
-      border-radius: 3px 0 0 3px;
-    `}
+        border-radius: 3px 0 0 3px;
+      `
+    }
 
     ${props =>
       props.seriousInjuries &&
       css`
-      border-radius: 0 3px 3px 0;
-    `}
+        border-radius: 0 3px 3px 0;
+      `
+    }
   `;
 
   const Container = styled.div`
