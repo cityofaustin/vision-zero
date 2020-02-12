@@ -15,7 +15,7 @@ import { demographicsEndpointUrl } from "./queries/socrataQueries";
 const FatalitiesByMode = () => {
   const modes = [
     {
-      label: "Motor",
+      label: "Motorist",
       flags: modeCategories.motorVehicleIds,
       color: colors.chartRed
     },
@@ -25,12 +25,12 @@ const FatalitiesByMode = () => {
       color: colors.chartOrange
     },
     {
-      label: "Motorcycle",
+      label: "Motorcyclist",
       flags: modeCategories.motorcycleIds,
       color: colors.chartRedOrange
     },
     {
-      label: "Bicycle",
+      label: "Bicyclist",
       flags: modeCategories.bicycleIds,
       color: colors.chartBlue
     },
