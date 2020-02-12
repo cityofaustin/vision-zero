@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { ButtonGroup, Button } from "reactstrap";
+import styled, { css } from "styled-components";
 
 const CrashTypeSelector = ({ setCrashType }) => {
   const fatalities = {
@@ -52,7 +53,7 @@ const CrashTypeSelector = ({ setCrashType }) => {
     setActiveTab(placeHolder);
   };
 
-  const isFilterSet = tab => {
+  const isUnselected = tab => {
     let filteredObject = activeTab.find(element => element.name === tab.name);
     let filteredBoolean = filteredObject ? false : true;
     return filteredBoolean;
@@ -76,33 +77,63 @@ const CrashTypeSelector = ({ setCrashType }) => {
     setCrashType(handleCrashType());
   }, [setCrashType, activeTab]);
 
+  const Button = styled.button`
+    background: #5bc0de;
+    border: 2px solid #5bc0de;
+    color: white;
+    margin: 0.5em 0;
+    padding: 0.25em 1em;
+    width: 40%;
+
+    ${props =>
+      props.unselected &&
+      css`
+      background: transparent;
+      color: #5bc0de;
+    `}
+
+    ${props =>
+      props.fatalities &&
+      css`
+      border-radius: 3px 0 0 3px;
+    `}
+
+    ${props =>
+      props.seriousInjuries &&
+      css`
+      border-radius: 0 3px 3px 0;
+    `}
+  `;
+
+  const Container = styled.div`
+    text-align: center;
+  `;
+
   return (
-    <ButtonGroup className="mb-3 d-flex">
+    <Container>
       <Button
+        fatalities
         id="fatalities-btn"
         type="button"
-        color="info"
-        className={`w-100 pt-1 pb-1 pl-0 pr-0`}
+        unselected={isUnselected(fatalities)}
         onClick={() => {
           toggle(fatalities);
         }}
-        outline={isFilterSet(fatalities)}
       >
         Fatalities
       </Button>
       <Button
+        seriousInjuries
         id="serious-injuries-btn"
         type="button"
-        color="info"
-        className={`w-100 pt-1 pb-1 pl-0 pr-0`}
+        unselected={isUnselected(seriousInjuries)}
         onClick={() => {
           toggle(seriousInjuries);
         }}
-        outline={isFilterSet(seriousInjuries)}
       >
         Serious Injuries
       </Button>
-    </ButtonGroup>
+    </Container>
   );
 };
 
