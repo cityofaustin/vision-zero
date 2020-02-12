@@ -144,29 +144,6 @@ def create_mode_flags(records):
                     record[flag_key] = "Y"
     return records
 
-# for record in records:
-#     if "unit_mode" in record.keys():
-#         for mode in unit_modes:
-#             chars_to_replace = ["/", " ", "-"]
-
-#             # Need flag to be camelcase with "_fl" suffix
-#             formatted_mode = replace_chars(
-#                 mode, chars_to_replace, "_").lower()
-#             record_flag_column = f"{formatted_mode}_fl"
-#             if mode in record["unit_mode"]:
-#                 record[record_flag_column] = "Y"
-#             else:
-#                 record[record_flag_column] = "N"
-#     # Motorcycle crashes are documented in unit desc not mode
-#     if "unit_desc" in record.keys():
-#         if "MOTORCYCLE" in record["unit_desc"]:
-#             record["motorcycle_fl"] = "Y"
-#         else:
-#             record["motorcycle_fl"] = "N"
-#     else:
-#         record["motorcycle_fl"] = "N"
-# return records
-
 
 def create_point_datatype(records):
     """
@@ -210,7 +187,7 @@ def add_value_prefix(records, prefix_dict):
 
 def set_person_mode(records):
     """
-    Sets mode of person from crash record metadata
+    Sets mode of person from crash record metadata and person mode flag
     Person (unit_nbr) => Units (unit_nbr & unit_id) => Crash metadata (unit_id)
     :param records: list - List of record dicts
     """
@@ -226,16 +203,22 @@ def set_person_mode(records):
             if unit.get("unit_nbr") == person_unit_number:
                 unit_id = unit.get("unit_id")
 
-        # Find unit in metadata and set mode_desc and mode_id columns
+        # Find unit in metadata and set mode_desc column and set mode id
+        mode_id = ""
         crash_metadata = crash.get("atd_mode_category_metadata", [])
         if crash_metadata != None:
             for unit in crash_metadata:
                 if unit.get("unit_id") == unit_id:
                     record["mode_desc"] = unit.get("mode_desc")
-                    record["mode_id"] = unit.get("mode_id")
+                    mode_id = unit.get("mode_id")
         del record["crash"]["units"]
         del record["crash"]["atd_mode_category_metadata"]
         del record["unit_nbr"]
+
+        # Set mode flag for person
+        for flag_key, flag_value in mode_category_flags.items():
+            if mode_id in flag_value:
+                record[flag_key] = "Y"
     return records
 
 
@@ -279,9 +262,6 @@ def format_person_data(data, formatter_config):
         primary_person_records)
 
     # Join records and format
-    # for record in records:
-    #     if record.get("atd_mode_category_metadata"):
-    #         print(record)
     people_records = person_records + primary_person_records
     formatted_records = rename_record_columns(
         people_records, formatter_config["columns_to_rename"])
