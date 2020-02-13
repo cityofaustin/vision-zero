@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
+import moment from "moment";
 import { Bar } from "react-chartjs-2";
 
 import { Container } from "reactstrap";
@@ -118,6 +119,10 @@ const FatalitiesByMode = () => {
     <Container>
       <Bar
         data={data}
+        onElementsClick={elems => {
+          console.log(elems);
+          console.log(moment("11:28:00", "h:mm:ss").format("ha"));
+        }}
         options={{
           maintainAspectRatio: true,
           scales: {
@@ -132,6 +137,9 @@ const FatalitiesByMode = () => {
               }
             ]
           }
+          // onClick: (e, item) => {
+          //   console.log(item);
+          // }
         }}
       />
       <p className="text-center">
