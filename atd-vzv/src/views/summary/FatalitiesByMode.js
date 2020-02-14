@@ -121,6 +121,7 @@ const FatalitiesByMode = () => {
         data={data}
         onElementsClick={elems => {
           console.log(elems);
+          // elem[0]._model.label or elem[0]._model.datasetLabel
           console.log(moment("11:28:00", "h:mm:ss").format("ha"));
         }}
         options={{
