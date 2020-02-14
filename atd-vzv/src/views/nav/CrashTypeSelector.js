@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import styled, { css } from "styled-components";
+import { colors } from "../../constants/colors";
 
 const CrashTypeSelector = ({ setCrashType }) => {
   const fatalities = {
@@ -77,9 +78,9 @@ const CrashTypeSelector = ({ setCrashType }) => {
   }, [setCrashType, activeTab]);
 
   const Button = styled.button`
-    background: #5bc0de;
-    border: 2px solid #5bc0de;
-    color: white;
+    background: ${colors.info};
+    border: 1px solid ${colors.info};
+    color: ${colors.white};
     margin: 0.5em 0;
     padding: 0.25em 1em;
     width: 40%;
@@ -88,7 +89,7 @@ const CrashTypeSelector = ({ setCrashType }) => {
       props.unselected &&
       css`
         background: transparent;
-        color: #5bc0de;
+        color: ${colors.info};
       `
     }
 
