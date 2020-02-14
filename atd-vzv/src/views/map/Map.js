@@ -50,9 +50,10 @@ const Map = () => {
   useEffect(() => {
     const apiUrl = createMapDataUrl(filters, dateRange);
 
-    axios.get(apiUrl).then(res => {
-      setMapData(res.data);
-    });
+    !!apiUrl &&
+      axios.get(apiUrl).then(res => {
+        setMapData(res.data);
+      });
   }, [filters, dateRange]);
 
   useEffect(() => {
