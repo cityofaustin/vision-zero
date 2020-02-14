@@ -84,6 +84,7 @@ const DemographicsByYear = () => {
 
   // Sort mode order in stack by averaging total mode fatalities across all years in chart
   const sortSexData = sexData => {
+    console.log(sexData);
     const averageSexCrashes = sexDataArray =>
       sexDataArray.reduce((a, b) => a + b) / sexDataArray.length;
     return sexData.sort(
