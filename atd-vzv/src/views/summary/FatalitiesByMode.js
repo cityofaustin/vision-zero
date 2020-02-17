@@ -1,9 +1,9 @@
 import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
-import moment from "moment";
 import { Bar } from "react-chartjs-2";
-import { Container } from "reactstrap";
+import { Container, Row, Col } from "reactstrap";
 
+import CrashTypeSelector from "../nav/CrashTypeSelector";
 import { colors } from "../../constants/colors";
 import {
   dataEndDate,
@@ -52,7 +52,7 @@ const FatalitiesByMode = () => {
   }, []);
 
   const [chartData, setChartData] = useState(""); // {yearInt: [{record}, {record}, ...]}
-  const [crashType ] = useState([]);
+  const [crashType, setCrashType] = useState([]);
 
   // Fetch data and set in state by years in yearsArray
   useEffect(() => {
@@ -124,35 +124,47 @@ const FatalitiesByMode = () => {
 
   return (
     <Container>
-      <Bar
-        data={data}
-        onElementsClick={elems => {
-          console.log(elems);
-          // elem[0]._model.label or elem[0]._model.datasetLabel
-          console.log(moment("11:28:00", "h:mm:ss").format("ha"));
-        }}
-        options={{
-          maintainAspectRatio: true,
-          scales: {
-            xAxes: [
-              {
-                stacked: true
+      <Row style={{ paddingBottom: "0.75em" }}>
+        <Col>
+          <h3 style={{ textAlign: "center" }}>
+            {crashType.textString} by Mode
+          </h3>
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <Bar
+            data={data}
+            options={{
+              maintainAspectRatio: true,
+              scales: {
+                xAxes: [
+                  {
+                    stacked: true
+                  }
+                ],
+                yAxes: [
+                  {
+                    stacked: true
+                  }
+                ]
               }
-            ],
-            yAxes: [
-              {
-                stacked: true
-              }
-            ]
-          }
-          // onClick: (e, item) => {
-          //   console.log(item);
-          // }
-        }}
-      />
-      <p className="text-center">
-        Data Through: {dataEndDate.format("MMMM YYYY")}
-      </p>
+            }}
+          />
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <p className="text-center">
+            Data Through: {dataEndDate.format("MMMM YYYY")}
+          </p>
+        </Col>
+      </Row>
+      <Row style={{ paddingTop: "0.75em" }}>
+        <Col>
+          <CrashTypeSelector setCrashType={setCrashType} />
+        </Col>
+      </Row>
     </Container>
   );
 };

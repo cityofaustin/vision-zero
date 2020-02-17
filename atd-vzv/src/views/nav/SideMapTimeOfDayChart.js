@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from "react";
+import moment from "moment";
 
 import { Container } from "reactstrap";
 import { HorizontalBar } from "react-chartjs-2";
@@ -75,8 +76,17 @@ export const SideMapTimeOfDayChart = () => {
         <HorizontalBar
           data={data}
           height={250}
+          onElementsClick={elems => {
+            console.log(elems);
+            // elem[0]._model.label or elem[0]._model.datasetLabel
+            console.log(moment("11:28:00", "h:mm:ss").format("ha"));
+          }}
           options={{
             legend: { display: false },
+            scales: {
+              // onClick: (e, item) => {
+              //   console.log(item);
+            },
             tooltips: {
               callbacks: {
                 label: calcDataPercentage
@@ -97,6 +107,9 @@ export const SideMapTimeOfDayChart = () => {
               // return data.datasets[tooltipItem[0].datasetIndex].label;
             }
           }}
+          // onClick: (e, item) => {
+          //   console.log(item);
+          // }
         />
       )}
     </Container>
