@@ -5,6 +5,21 @@ import { HorizontalBar } from "react-chartjs-2";
 import { colors } from "../../constants/colors";
 
 export const SideMapTimeOfDayChart = () => {
+  const calcDataPercentage = (tooltipItem, data) => {
+    const selectedTimeWindowValue = tooltipItem.value;
+    const timeWindowsTotal = data.datasets[0].data.reduce(
+      (accumulator, timeWindowTotal) => {
+        return (accumulator += timeWindowTotal);
+      },
+      0
+    );
+    const percentage = (
+      (selectedTimeWindowValue / timeWindowsTotal) *
+      100
+    ).toFixed(0);
+    return `${percentage}% (${selectedTimeWindowValue})`;
+  };
+
   const data = {
     labels: [
       "12AM–4AM",
@@ -36,36 +51,32 @@ export const SideMapTimeOfDayChart = () => {
       TODO: Set onClick handler to filter by time range of bar clicked
       TODO: Create "All" time range button and disable time filters onClick 
       */}
-      <HorizontalBar data={data} height="250px" options={{ legend: { display: false }, tooltips: {
-  callbacks: {
-    label: (tooltipItem, data) => console.log(tooltipItem, data)
-      // function(tooltipItem, data) {
-      // var index = tooltipItem.index;
-      // var currentValue = data.datasets[tooltipItem.datasetIndex].data[index];
-      // var total = 0;
-      // data.datasets.forEach(function(el){
-      //   total = total + el.data[index];
-      // });
-      // var percentage = parseFloat((currentValue/total*100).toFixed(1));
-      // return currentValue + ' (' + percentage + '%)';
-      // Data Object data
-      // Same as line 8 (line 20)
-      // tooltipItem Object data
-      // xLabel: 80
-      // yLabel: "4AM–8AM"
-      // label: "4AM–8AM"
-      // value: "80"
-      // index: 2
-      // datasetIndex: 0
-      // x: 175.06855456034344
-      // y: 63
-    },
-    title: (tooltipItem, data) => "Title"
-      // function(tooltipItem, data) {
-      // return data.datasets[tooltipItem[0].datasetIndex].label;
-    }
-  }
-} />
+      <HorizontalBar
+        data={data}
+        height="250px"
+        options={{
+          legend: { display: false },
+          tooltips: {
+            callbacks: {
+              label: calcDataPercentage
+              // Data Object data
+              // Same as line 8 (line 20)
+              // tooltipItem Object data
+              // xLabel: 80
+              // yLabel: "4AM–8AM"
+              // label: "4AM–8AM"
+              // value: "80"
+              // index: 2
+              // datasetIndex: 0
+              // x: 175.06855456034344
+              // y: 63
+            },
+            title: (tooltipItem, data) => null
+            // function(tooltipItem, data) {
+            // return data.datasets[tooltipItem[0].datasetIndex].label;
+          }
+        }}
+      />
     </Container>
   );
 };
