@@ -26,55 +26,71 @@ const FatalitiesMultiYear = () => {
     return deathArray[deathArray.length - 1];
   };
 
-  const calculateMonthlyTotals = (data, dateString) => {
-    // Limit returned data to months of data available and prevent line from zeroing out
-    // If dataString is passed in, convert to month string and use to truncate monthIntegerArray
-    const monthLimit = dateString ? moment(dateString).format("MM") : "12";
-
-    const monthIntegerArray = [
-      "01",
-      "02",
-      "03",
-      "04",
-      "05",
-      "06",
-      "07",
-      "08",
-      "09",
-      "10",
-      "11",
-      "12"
-    ];
-
-    const truncatedMonthIntegerArray = monthIntegerArray.slice(
-      0,
-      monthIntegerArray.indexOf(monthLimit) + 1
-    );
-    let cumulativeMonthTotal = 0;
-    return truncatedMonthIntegerArray.map(month => {
-      let monthTotal = 0;
-      data.data.forEach(record => {
-        if (moment(record.crash_date).format("MM") === month) {
-          monthTotal += parseInt(record.apd_confirmed_death_count);
-        }
-      });
-      cumulativeMonthTotal += monthTotal;
-      return cumulativeMonthTotal;
-    });
-  };
-
   const renderHeader = () => {
     return (
       <h6 style={{ color: colors.blue, textAlign: "center" }}>
         As of {dataEndDate.format("MMMM")}, there have been{" "}
-        <strong>{calculateYearlyTotals(thisYearDeathArray)}</strong> traffic
-        fatalities in {dataEndDate.format("YYYY")}.
+        <strong>{calculateYearlyTotals(thisYearDeathArray)}</strong>{" "}
+        traffic-related{" "}
+        {crashType.textString && crashType.textString.toLowerCase()} in{" "}
+        {dataEndDate.format("YYYY")}.
       </h6>
     );
   };
 
   useEffect(() => {
     const thisYearUrl = `${crashEndpointUrl}?$where=${crashType.queryStringCrash} AND crash_date between '${summaryCurrentYearStartDate}T00:00:00' and '${summaryCurrentYearEndDate}T23:59:59'`;
+
+    const calculateMonthlyTotals = (data, dateString) => {
+      // Limit returned data to months of data available and prevent line from zeroing out
+      // If dataString is passed in, convert to month string and use to truncate monthIntegerArray
+      const monthLimit = dateString ? moment(dateString).format("MM") : "12";
+
+      const monthIntegerArray = [
+        "01",
+        "02",
+        "03",
+        "04",
+        "05",
+        "06",
+        "07",
+        "08",
+        "09",
+        "10",
+        "11",
+        "12"
+      ];
+
+      const truncatedMonthIntegerArray = monthIntegerArray.slice(
+        0,
+        monthIntegerArray.indexOf(monthLimit) + 1
+      );
+      let cumulativeMonthTotal = 0;
+      return truncatedMonthIntegerArray.map(month => {
+        let monthTotal = 0;
+        data.data.forEach(record => {
+          // If the crash date is in the current month, compile data
+          if (moment(record.crash_date).format("MM") === month) {
+            // Compile data based on the selected crash type
+            switch (crashType.name) {
+              case "fatalities":
+                monthTotal += parseInt(record.death_cnt);
+                break;
+              case "seriousInjuries":
+                monthTotal += parseInt(record.sus_serious_injry_cnt);
+                break;
+              default:
+                monthTotal +=
+                  parseInt(record.death_cnt) +
+                  parseInt(record.sus_serious_injry_cnt);
+                break;
+            }
+          }
+        });
+        cumulativeMonthTotal += monthTotal;
+        return cumulativeMonthTotal;
+      });
+    };
 
     const getFatalitiesByYearsAgoUrl = yearsAgo => {
       let yearsAgoDate = moment()
