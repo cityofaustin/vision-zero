@@ -7,7 +7,7 @@ import CrashTypeSelector from "../nav/CrashTypeSelector";
 import { colors } from "../../constants/colors";
 import {
   dataEndDate,
-  ROLLING_YEARS_OF_DATA,
+  yearsArray,
   summaryCurrentYearEndDate
 } from "../../constants/time";
 import { demographicsEndpointUrl } from "./queries/socrataQueries";
@@ -41,16 +41,6 @@ const FatalitiesByMode = () => {
     }
   ];
 
-  // Create array of ints of last 5 years
-  const yearsArray = useCallback(() => {
-    let years = [];
-    let year = parseInt(dataEndDate.format("YYYY"));
-    for (let i = 0; i <= ROLLING_YEARS_OF_DATA; i++) {
-      years.unshift(year - i);
-    }
-    return years;
-  }, []);
-
   const [chartData, setChartData] = useState(""); // {yearInt: [{record}, {record}, ...]}
   const [crashType, setCrashType] = useState([]);
 
@@ -80,7 +70,7 @@ const FatalitiesByMode = () => {
       };
       getChartData();
     }
-  }, [yearsArray, crashType]);
+  }, [crashType]);
 
   const createChartLabels = () => yearsArray().map(year => `${year}`);
 

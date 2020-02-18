@@ -4,6 +4,16 @@ import moment from "moment";
 // 4 full years of data, plus data up to the last complete month of the current year
 export const ROLLING_YEARS_OF_DATA = 4;
 
+// Create array of ints of last n years
+export const yearsArray = () => {
+  let years = [];
+  let year = parseInt(dataEndDate.format("YYYY"));
+  for (let i = 0; i <= ROLLING_YEARS_OF_DATA; i++) {
+    years.unshift(year - i);
+  }
+  return years;
+};
+
 // First date of records that should be referenced in VZV (start of first year in rolling window)
 export const dataStartDate = moment()
   .subtract(1, "month")
