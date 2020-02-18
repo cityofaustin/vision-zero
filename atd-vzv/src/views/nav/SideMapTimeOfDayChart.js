@@ -68,9 +68,8 @@ export const SideMapTimeOfDayChart = () => {
       {/* 
       TODO: Update ETL to make crash time queryable
       TODO: Populate with map crash data
-      TODO: Populate bar percentages
-      TODO: Set onClick handler to filter by time range of bar clicked
-      TODO: Create "All" time range button and disable time filters onClick 
+      TODO: Set onClick handler to filter by time range of bar clicked, https://dev.socrata.com/docs/functions/date_extract_hh.html
+      TODO: Create "All" time range button and disable time filters onClick, clears date extract filters, active when no date extract filters
       */}
       {!!timeWindowData.dataPercentages && (
         <HorizontalBar
