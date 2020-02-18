@@ -5,7 +5,7 @@ import { Container } from "reactstrap";
 import { HorizontalBar } from "react-chartjs-2";
 import { colors } from "../../constants/colors";
 
-export const SideMapTimeOfDayChart = () => {
+export const SideMapTimeOfDayChart = ({ filters }) => {
   const [timeWindowData, setTimeWindowData] = useState({
     dataPercentages: null,
     data: [50, 50, 50, 50, 50, 50, 50] // TODO: Replace with real data
@@ -41,16 +41,10 @@ export const SideMapTimeOfDayChart = () => {
     return `${timeWindowData.dataPercentages[index]}% (${timeWindowData.data[index]})`;
   };
 
+  const createTimeLabels = () => Object.keys(filters).map(label => label);
+
   const data = {
-    labels: [
-      "12AM–4AM",
-      "4AM–8AM",
-      "4AM–8AM",
-      "8AM–12PM",
-      "12PM–4PM",
-      "4PM–8PM",
-      "8PM–12AM"
-    ],
+    labels: createTimeLabels(),
     datasets: [
       {
         backgroundColor: colors.info,
@@ -69,6 +63,7 @@ export const SideMapTimeOfDayChart = () => {
       TODO: Update ETL to make crash time queryable
       TODO: Populate with map crash data
       TODO: Set onClick handler to filter by time range of bar clicked, https://dev.socrata.com/docs/functions/date_extract_hh.html
+      https://data.austintexas.gov/resource/3aut-fhzp.json?$where=date_extract_hh(crash_date) between 16 and 17 (NEED to add minutes as well)
       TODO: Create "All" time range button and disable time filters onClick, clears date extract filters, active when no date extract filters
       */}
       {!!timeWindowData.dataPercentages && (
