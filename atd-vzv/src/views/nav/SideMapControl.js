@@ -5,7 +5,6 @@ import "react-infinite-calendar/styles.css";
 import SideMapControlDateRange from "./SideMapControlDateRange";
 import SideMapControlOverlays from "./SideMapControlOverlays";
 import { colors } from "../../constants/colors";
-import { otherFiltersArray } from "../../constants/filters";
 import { ButtonGroup, Button, Card, Label } from "reactstrap";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -41,15 +40,6 @@ const SideMapControl = () => {
 
   const [filterGroupCounts, setFilterGroupCounts] = useState({});
 
-  // Build filter string for Other modes
-  const buildOtherFiltersString = () =>
-    otherFiltersArray
-      .reduce((accumulator, filterString) => {
-        accumulator.push(`${filterString} = "Y"`);
-        return accumulator;
-      }, [])
-      .join(" OR ");
-
   // Define groups of map filters
   const mapFilters = {
     mode: {
@@ -62,7 +52,7 @@ const SideMapControl = () => {
       },
       pedalcyclist: {
         icon: faBiking,
-        syntax: `pedalcyclist_fl = "Y"`,
+        syntax: `bicycle_fl = "Y"`,
         type: `where`,
         operator: `OR`,
         default: true
@@ -83,7 +73,7 @@ const SideMapControl = () => {
       },
       other: {
         text: "Other",
-        syntax: buildOtherFiltersString(),
+        syntax: `other_fl = "Y"`,
         type: `where`,
         operator: `OR`,
         default: true

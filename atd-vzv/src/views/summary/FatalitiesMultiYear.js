@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import moment from "moment";
-
 import { Line } from "react-chartjs-2";
 import { Container, Row, Col } from "reactstrap";
+
+import CrashTypeSelector from "../nav/CrashTypeSelector";
 import { crashEndpointUrl } from "./queries/socrataQueries";
 import {
   dataEndDate,
@@ -19,6 +20,7 @@ const FatalitiesMultiYear = () => {
   const [twoYearsAgoDeathArray, setTwoYearsAgoDeathArray] = useState([]);
   const [threeYearsAgoDeathArray, setThreeYearsAgoDeathArray] = useState([]);
   const [fourYearsAgoDeathArray, setFourYearsAgoDeathArray] = useState([]);
+  const [crashType, setCrashType] = useState([]);
 
   const calculateYearlyTotals = deathArray => {
     return deathArray[deathArray.length - 1];
@@ -72,42 +74,51 @@ const FatalitiesMultiYear = () => {
   };
 
   useEffect(() => {
-    const thisYearUrl = `${crashEndpointUrl}?$where=apd_confirmed_death_count > 0 AND crash_date between '${summaryCurrentYearStartDate}T00:00:00' and '${summaryCurrentYearEndDate}T23:59:59'`;
+    const thisYearUrl = `${crashEndpointUrl}?$where=${crashType.queryStringCrash} AND crash_date between '${summaryCurrentYearStartDate}T00:00:00' and '${summaryCurrentYearEndDate}T23:59:59'`;
 
     const getFatalitiesByYearsAgoUrl = yearsAgo => {
       let yearsAgoDate = moment()
         .subtract(yearsAgo, "year")
         .format("YYYY");
-      return `${crashEndpointUrl}?$where=apd_confirmed_death_count > 0 AND crash_date between '${yearsAgoDate}-01-01T00:00:00' and '${yearsAgoDate}-12-31T23:59:59'`;
+      console.log(crashType.queryStringCrash);
+      return `${crashEndpointUrl}?$where=${crashType.queryStringCrash} AND crash_date between '${yearsAgoDate}-01-01T00:00:00' and '${yearsAgoDate}-12-31T23:59:59'`;
     };
 
-    // Fetch records for this year through last full month of data
-    axios.get(thisYearUrl).then(res => {
-      setThisYearDeathArray(
-        calculateMonthlyTotals(res, summaryCurrentYearEndDate)
-      );
-    });
+    const queryYears = () => {
+      // Fetch records for this year through last full month of data
+      axios.get(thisYearUrl).then(res => {
+        setThisYearDeathArray(
+          calculateMonthlyTotals(res, summaryCurrentYearEndDate)
+        );
+      });
 
-    // Fetch records from last year
-    axios.get(getFatalitiesByYearsAgoUrl(1)).then(res => {
-      setLastYearDeathArray(calculateMonthlyTotals(res));
-    });
+      // Fetch records from last year
+      axios.get(getFatalitiesByYearsAgoUrl(1)).then(res => {
+        setLastYearDeathArray(calculateMonthlyTotals(res));
+      });
 
-    // Fetch records from two years ago
-    axios.get(getFatalitiesByYearsAgoUrl(2)).then(res => {
-      setTwoYearsAgoDeathArray(calculateMonthlyTotals(res));
-    });
+      // Fetch records from two years ago
+      axios.get(getFatalitiesByYearsAgoUrl(2)).then(res => {
+        setTwoYearsAgoDeathArray(calculateMonthlyTotals(res));
+      });
 
-    // Fetch records from three years ago
-    axios.get(getFatalitiesByYearsAgoUrl(3)).then(res => {
-      setThreeYearsAgoDeathArray(calculateMonthlyTotals(res));
-    });
+      // Fetch records from three years ago
+      axios.get(getFatalitiesByYearsAgoUrl(3)).then(res => {
+        setThreeYearsAgoDeathArray(calculateMonthlyTotals(res));
+      });
 
-    // Fetch records from four years ago
-    axios.get(getFatalitiesByYearsAgoUrl(4)).then(res => {
-      setFourYearsAgoDeathArray(calculateMonthlyTotals(res));
-    });
-  }, []);
+      // Fetch records from four years ago
+      axios.get(getFatalitiesByYearsAgoUrl(4)).then(res => {
+        setFourYearsAgoDeathArray(calculateMonthlyTotals(res));
+      });
+    };
+
+    // Wait for crashType to be passed up from setCrashType component,
+    // then fetch records
+    if (crashType.queryStringCrash) {
+      queryYears();
+    }
+  }, [crashType]);
 
   // Build data object with data from the previous five years
   const data = {
@@ -223,6 +234,13 @@ const FatalitiesMultiYear = () => {
 
   return (
     <Container>
+      <Row style={{ paddingBottom: "0.75em" }}>
+        <Col>
+          <h3 style={{ textAlign: "center" }}>
+            {crashType.textString} by Year
+          </h3>
+        </Col>
+      </Row>
       <Row style={{ paddingBottom: 20 }}>
         <Col>{renderHeader()}</Col>
       </Row>
@@ -265,6 +283,11 @@ const FatalitiesMultiYear = () => {
               }
             }}
           />
+        </Col>
+      </Row>
+      <Row style={{ paddingTop: "0.75em" }}>
+        <Col>
+          <CrashTypeSelector setCrashType={setCrashType} />
         </Col>
       </Row>
     </Container>
