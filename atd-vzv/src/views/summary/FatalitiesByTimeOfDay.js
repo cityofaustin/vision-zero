@@ -8,7 +8,9 @@ import classnames from "classnames";
 import { Heatmap, HeatmapSeries } from "reaviz";
 import {
   summaryCurrentYearStartDate,
-  summaryCurrentYearEndDate
+  summaryCurrentYearEndDate,
+  yearsArray,
+  dataEndDate
 } from "../../constants/time";
 import { getYearsAgoLabel } from "./helpers/helpers";
 import { colors } from "../../constants/colors";
@@ -130,19 +132,24 @@ const FatalitiesByTimeOfDayWeek = () => {
       <Row>
         <Col>
           <Nav tabs className="justify-content-center">
-            {[4, 3, 2, 1, 0].map(yearsAgo => (
-              <NavItem key={yearsAgo}>
-                <NavLink
-                  key={yearsAgo}
-                  className={classnames({ active: activeTab === yearsAgo })}
-                  onClick={() => {
-                    toggle(yearsAgo);
-                  }}
-                >
-                  {getYearsAgoLabel(yearsAgo)}
-                </NavLink>
-              </NavItem>
-            ))}
+            {yearsArray() // Calculate years ago for each year in data window
+              .map(year => {
+                const currentYear = parseInt(dataEndDate.format("YYYY"));
+                return currentYear - year;
+              })
+              .map(yearsAgo => (
+                <NavItem key={yearsAgo}>
+                  <NavLink
+                    key={yearsAgo}
+                    className={classnames({ active: activeTab === yearsAgo })}
+                    onClick={() => {
+                      toggle(yearsAgo);
+                    }}
+                  >
+                    {getYearsAgoLabel(yearsAgo)}
+                  </NavLink>
+                </NavItem>
+              ))}
           </Nav>
         </Col>
       </Row>
