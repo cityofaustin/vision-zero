@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Bar } from "react-chartjs-2";
 import { Container, Row, Col } from "reactstrap";
@@ -41,7 +41,7 @@ const FatalitiesByMode = () => {
     }
   ];
 
-  const [chartData, setChartData] = useState(""); // {yearInt: [{record}, {record}, ...]}
+  const [chartData, setChartData] = useState(null); // {yearInt: [{record}, {record}, ...]}
   const [crashType, setCrashType] = useState([]);
 
   // Fetch data and set in state by years in yearsArray
