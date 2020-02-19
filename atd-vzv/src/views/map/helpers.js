@@ -29,7 +29,7 @@ const generateWhereFilters = filters => {
   return whereFiltersArray.join(" AND ");
 };
 
-export const createMapDataUrl = (filters, dateRange) => {
+export const createMapDataUrl = (filters, dateRange, mapTimeWindow) => {
   const whereFilterString = generateWhereFilters(filters);
   const filterCount = filters.length;
 
@@ -39,5 +39,6 @@ export const createMapDataUrl = (filters, dateRange) => {
     : `${crashGeoJSONEndpointUrl}?$limit=100000` +
         `&$where=crash_date between '${dateRange.start}' and '${dateRange.end}'` +
         // if there are filters applied, add AND operator to create valid query url
-        `${filters.length > 0 ? " AND" : ""} ${whereFilterString || ""}`;
+        `${filters.length > 0 ? " AND" : ""} ${whereFilterString || ""}` +
+        `${mapTimeWindow}`;
 };

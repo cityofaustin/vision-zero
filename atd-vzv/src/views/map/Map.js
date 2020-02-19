@@ -43,18 +43,19 @@ const Map = () => {
     mapFilters: [filters],
     mapDateRange: [dateRange],
     mapOverlay: [overlay],
+    mapTimeWindow: [mapTimeWindow],
     mapData: [mapData, setMapData]
   } = React.useContext(StoreContext);
 
   // Fetch initial crash data and refetch upon filters change
   useEffect(() => {
-    const apiUrl = createMapDataUrl(filters, dateRange);
+    const apiUrl = createMapDataUrl(filters, dateRange, mapTimeWindow);
 
     !!apiUrl &&
       axios.get(apiUrl).then(res => {
         setMapData(res.data);
       });
-  }, [filters, dateRange, setMapData]);
+  }, [filters, dateRange, mapTimeWindow, setMapData]);
 
   useEffect(() => {
     // Fetch City Council Districts geojson and return OBJECTID metadata for styling in map-style.js

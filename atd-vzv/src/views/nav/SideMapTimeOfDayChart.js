@@ -20,7 +20,9 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
     // When mapData is set, accumulate time window data
     // Retain totals of unfiltered data
     if (!!crashes && !mapTimeWindow) {
-      const crashTimeWindowTotals = Object.keys(filters).map(filter => 0);
+      const crashTimeWindowAccumulatorArray = Object.keys(filters).map(
+        filter => 0
+      );
       const crashTimeWindows = Object.values(filters).map(filter => filter);
       const crashTimeTotals = crashes.reduce((accumulator, crash) => {
         crashTimeWindows.forEach((timeWindow, i) => {
@@ -31,7 +33,7 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
             accumulator[i]++;
         });
         return accumulator;
-      }, crashTimeWindowTotals);
+      }, crashTimeWindowAccumulatorArray);
 
       setTimeWindowData(crashTimeTotals);
     }
@@ -62,12 +64,12 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
     // Store bar label, if click is within a bar
     const timeWindow = elems.length > 0 ? elems[0]._model.label : null;
 
-    // If valid click, log array containing start and end of window
+    // If valid click, set mapTimeWindow state
     if (!!timeWindow) {
       const timeWindowArray = filters[timeWindow];
       const timeWindowStart = timeWindowArray[0];
       const timeWindowEnd = timeWindowArray[1];
-      const timeWindowFilterString = `date_extract_hh(crash_date) between ${timeWindowStart} and ${timeWindowEnd} AND date_extract_mm(crash_date) between 0 and 59`;
+      const timeWindowFilterString = ` AND date_extract_hh(crash_date) between ${timeWindowStart} and ${timeWindowEnd} AND date_extract_mm(crash_date) between 0 and 59`;
       setMapTimeWindow(timeWindowFilterString);
     }
 
