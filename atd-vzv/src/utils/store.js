@@ -12,7 +12,7 @@ export default ({ children }) => {
     start: mapStartDate,
     end: mapEndDate
   });
-  const [mapTimeWindow, setMapTimeWindow] = useState([]);
+  const [mapTimeWindow, setMapTimeWindow] = useState("");
   const [mapOverlay, setMapOverlay] = useState({
     name: "",
     options: []

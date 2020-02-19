@@ -16,9 +16,10 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
   } = React.useContext(StoreContext);
 
   useMemo(() => {
-    // When mapData is set, accumulate time window data
     const crashes = mapData.features;
-    if (!!crashes) {
+    // When mapData is set, accumulate time window data
+    // Retain totals of unfiltered data
+    if (!!crashes && !mapTimeWindow) {
       const crashTimeWindowTotals = Object.keys(filters).map(filter => 0);
       const crashTimeWindows = Object.values(filters).map(filter => filter);
       const crashTimeTotals = crashes.reduce((accumulator, crash) => {
@@ -34,11 +35,12 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
 
       setTimeWindowData(crashTimeTotals);
     }
-  }, [mapData, filters]);
+  }, [mapData, filters, mapTimeWindow]);
 
   useMemo(() => {
-    // If data has loaded, create percentages
-    if (!!timeWindowData) {
+    // When timeWindowData is set, create percentages
+    // Retain percentages of unfiltered data
+    if (!!timeWindowData && !mapTimeWindow) {
       const timeWindowPercentages = timeWindowData.map(timeWindow => {
         const timeWindowsTotal = timeWindowData.reduce(
           (accumulator, timeWindowTotal) => {
@@ -54,11 +56,29 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
 
       setTimeWindowPercentages(timeWindowPercentages);
     }
-  }, [timeWindowData]);
+  }, [timeWindowData, mapTimeWindow]);
+
+  const handleBarClick = elems => {
+    // Store bar label, if click is within a bar
+    const timeWindow = elems.length > 0 ? elems[0]._model.label : null;
+
+    // If valid click, log array containing start and end of window
+    if (!!timeWindow) {
+      const timeWindowArray = filters[timeWindow];
+      const timeWindowStart = timeWindowArray[0];
+      const timeWindowEnd = timeWindowArray[1];
+      const timeWindowFilterString = `date_extract_hh(crash_date) between ${timeWindowStart} and ${timeWindowEnd} AND date_extract_mm(crash_date) between 0 and 59`;
+      setMapTimeWindow(timeWindowFilterString);
+    }
+
+    // TODO: Modify map url helper to handle time window filter
+    // https://data.austintexas.gov/resource/3aut-fhzp.json?$where=date_extract_hh(crash_date) between 16 and 17 AND date_extract_mm(crash_date) between 0 and 59
+    // console.log(moment("11:28:00", "h:mm:ss").format("ha"));
+  };
 
   const calcDataPercentage = (tooltipItem, data) => {
     const index = tooltipItem.index;
-    return `${timeWindowData.dataPercentages[index]}% (${timeWindowData.data[index]})`;
+    return `${timeWindowPercentages[index]}% (${timeWindowData[index]})`;
   };
 
   const createTimeLabels = () => Object.keys(filters).map(label => label);
@@ -81,7 +101,6 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
     <Container className="px-0 mt-3">
       {/* 
       TODO: Set onClick handler to filter by time range of bar clicked, https://dev.socrata.com/docs/functions/date_extract_hh.html
-      https://data.austintexas.gov/resource/3aut-fhzp.json?$where=date_extract_hh(crash_date) between 16 and 17 AND date_extract_mm(crash_date) between 0 and 59
       TODO: Create "All" time range button and disable time filters onClick, clears date extract filters, active when no date extract filters
       TODO: Only update percentages if there is no time window filter set
       */}
@@ -89,11 +108,7 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
         <HorizontalBar
           data={data}
           height={250}
-          onElementsClick={elems => {
-            const timeWindow = elems.length > 0 ? elems[0]._model.label : null;
-            // console.log(moment("11:28:00", "h:mm:ss").format("ha"));
-            !!timeWindow && console.log(filters[timeWindow]);
-          }}
+          onElementsClick={handleBarClick}
           options={{
             legend: { display: false },
             scales: {
@@ -109,7 +124,7 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
             },
             tooltips: {
               callbacks: {
-                label: calcDataPercentage
+                label: calcDataPercentage,
                 // Data Object data
                 // Same as line 8 (line 20)
                 // tooltipItem Object data
@@ -121,15 +136,10 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
                 // datasetIndex: 0
                 // x: 175.06855456034344
                 // y: 63
-              },
-              title: (tooltipItem, data) => null
-              // function(tooltipItem, data) {
-              // return data.datasets[tooltipItem[0].datasetIndex].label;
+                title: (tooltipItem, data) => null // Render nothing for tooltip title
+              }
             }
           }}
-          // onClick: (e, item) => {
-          //   console.log(item);
-          // }
         />
       )}
     </Container>
