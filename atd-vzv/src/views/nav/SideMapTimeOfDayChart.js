@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from "react";
+import { StoreContext } from "../../utils/store";
 import moment from "moment";
 
 import { Container } from "reactstrap";
@@ -8,8 +9,39 @@ import { colors } from "../../constants/colors";
 export const SideMapTimeOfDayChart = ({ filters }) => {
   const [timeWindowData, setTimeWindowData] = useState({
     dataPercentages: null,
-    data: [50, 50, 50, 50, 50, 50, 50] // TODO: Replace with real data
+    data: []
   });
+
+  const {
+    mapDateRange: [dateRange],
+    mapData: [mapData]
+  } = React.useContext(StoreContext);
+
+  useMemo(() => {
+    // When mapData is set, accumulate time window data
+    const crashes = mapData.features;
+    if (!!crashes) {
+      const crashTimeWindowTotals = Object.keys(filters).map(filter => 0);
+      const crashTimeWindows = Object.values(filters).map(filter => filter);
+      const crashTimeTotals = crashes.reduce((accumulator, crash) => {
+        crashTimeWindows.forEach((timeWindow, i) => {
+          const crashDate = crash.properties.crash_date;
+          const crashHour = parseInt(moment(crashDate).format("HH"));
+          crashHour >= timeWindow[0] &&
+            crashHour <= timeWindow[1] &&
+            accumulator[i]++;
+        });
+        return accumulator;
+      }, crashTimeWindowTotals);
+
+      const newTimeWindowData = {
+        ...timeWindowData,
+        data: crashTimeTotals
+      };
+
+      setTimeWindowData(newTimeWindowData);
+    }
+  }, [mapData]);
 
   useMemo(() => {
     // If data has loaded, create percentages
@@ -60,10 +92,10 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
   return (
     <Container className="px-0 mt-3">
       {/* 
-      TODO: Populate with map crash data
       TODO: Set onClick handler to filter by time range of bar clicked, https://dev.socrata.com/docs/functions/date_extract_hh.html
       https://data.austintexas.gov/resource/3aut-fhzp.json?$where=date_extract_hh(crash_date) between 16 and 17 AND date_extract_mm(crash_date) between 0 and 59
       TODO: Create "All" time range button and disable time filters onClick, clears date extract filters, active when no date extract filters
+      TODO: Only update percentages if there is no time window filter set
       */}
       {!!timeWindowData.dataPercentages && (
         <HorizontalBar
@@ -77,6 +109,13 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
           options={{
             legend: { display: false },
             scales: {
+              xAxes: [
+                {
+                  ticks: {
+                    beginAtZero: true
+                  }
+                }
+              ]
               // onClick: (e, item) => {
               //   console.log(item);
             },
