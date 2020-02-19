@@ -2,13 +2,24 @@ import React, { useState, useMemo } from "react";
 import { StoreContext } from "../../utils/store";
 import moment from "moment";
 
-import { Container } from "reactstrap";
+import { Container, Button } from "reactstrap";
 import { HorizontalBar } from "react-chartjs-2";
 import { colors } from "../../constants/colors";
 
 export const SideMapTimeOfDayChart = ({ filters }) => {
+  const defaultBarColors = [
+    colors.info,
+    colors.info,
+    colors.info,
+    colors.info,
+    colors.info,
+    colors.info
+  ];
+  const inactiveBarColor = colors.secondary;
+
   const [timeWindowData, setTimeWindowData] = useState([]);
   const [timeWindowPercentages, setTimeWindowPercentages] = useState([]);
+  const [barColors, setBarColors] = useState(defaultBarColors);
 
   const {
     mapData: [mapData],
@@ -63,6 +74,7 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
   const handleBarClick = elems => {
     // Store bar label, if click is within a bar
     const timeWindow = elems.length > 0 ? elems[0]._model.label : null;
+    const index = elems.length > 0 ? elems[0]._index : null;
 
     // If valid click, set mapTimeWindow state
     if (!!timeWindow) {
@@ -73,9 +85,11 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
       setMapTimeWindow(timeWindowFilterString);
     }
 
-    // TODO: Modify map url helper to handle time window filter
-    // https://data.austintexas.gov/resource/3aut-fhzp.json?$where=date_extract_hh(crash_date) between 16 and 17 AND date_extract_mm(crash_date) between 0 and 59
-    // console.log(moment("11:28:00", "h:mm:ss").format("ha"));
+    // Style unselected bars as inactive
+    const newBarColors = barColors.map((color, i) =>
+      i === index ? defaultBarColors[0] : inactiveBarColor
+    );
+    setBarColors(newBarColors);
   };
 
   const calcDataPercentage = (tooltipItem, data) => {
@@ -85,12 +99,19 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
 
   const createTimeLabels = () => Object.keys(filters).map(label => label);
 
+  const isMapTimeWindowSet = !!mapTimeWindow;
+
+  const handleAllButtonClick = event => {
+    setMapTimeWindow("");
+    setBarColors(defaultBarColors);
+  };
+
   const data = {
     labels: createTimeLabels(),
     datasets: [
       {
-        backgroundColor: colors.info,
-        borderColor: colors.info,
+        backgroundColor: barColors,
+        borderColor: barColors,
         borderWidth: 1,
         hoverBackgroundColor: colors.infoDark,
         hoverBorderColor: colors.infoDark,
@@ -101,11 +122,6 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
 
   return (
     <Container className="px-0 mt-3">
-      {/* 
-      TODO: Set onClick handler to filter by time range of bar clicked, https://dev.socrata.com/docs/functions/date_extract_hh.html
-      TODO: Create "All" time range button and disable time filters onClick, clears date extract filters, active when no date extract filters
-      TODO: Only update percentages if there is no time window filter set
-      */}
       {!!timeWindowData && !!timeWindowPercentages && (
         <HorizontalBar
           data={data}
@@ -121,29 +137,24 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
                   }
                 }
               ]
-              // onClick: (e, item) => {
-              //   console.log(item);
             },
             tooltips: {
               callbacks: {
                 label: calcDataPercentage,
-                // Data Object data
-                // Same as line 8 (line 20)
-                // tooltipItem Object data
-                // xLabel: 80
-                // yLabel: "4AM–8AM"
-                // label: "4AM–8AM"
-                // value: "80"
-                // index: 2
-                // datasetIndex: 0
-                // x: 175.06855456034344
-                // y: 63
                 title: (tooltipItem, data) => null // Render nothing for tooltip title
               }
             }
           }}
         />
       )}
+      <Button
+        size="sm"
+        color="info"
+        outline={isMapTimeWindowSet}
+        onClick={handleAllButtonClick}
+      >
+        All Times
+      </Button>
     </Container>
   );
 };
