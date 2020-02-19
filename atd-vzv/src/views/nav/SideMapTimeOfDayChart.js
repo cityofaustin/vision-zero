@@ -7,19 +7,12 @@ import { HorizontalBar } from "react-chartjs-2";
 import { colors } from "../../constants/colors";
 
 export const SideMapTimeOfDayChart = ({ filters }) => {
-  const defaultBarColors = [
-    colors.info,
-    colors.info,
-    colors.info,
-    colors.info,
-    colors.info,
-    colors.info
-  ];
+  const defaultBarColor = colors.info;
   const inactiveBarColor = colors.dark;
 
   const [timeWindowData, setTimeWindowData] = useState([]);
   const [timeWindowPercentages, setTimeWindowPercentages] = useState([]);
-  const [barColors, setBarColors] = useState(defaultBarColors);
+  const [barColors, setBarColors] = useState(defaultBarColor);
 
   const {
     mapData: [mapData],
@@ -87,8 +80,8 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
 
     // Style unselected bars as inactive
     if (index !== null) {
-      const newBarColors = barColors.map((color, i) =>
-        i === index ? defaultBarColors[0] : inactiveBarColor
+      const newBarColors = Object.keys(filters).map((filter, i) =>
+        i === index ? defaultBarColor : inactiveBarColor
       );
       setBarColors(newBarColors);
     }
@@ -105,7 +98,7 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
 
   const handleAllButtonClick = event => {
     setMapTimeWindow("");
-    setBarColors(defaultBarColors);
+    setBarColors(defaultBarColor);
   };
 
   const data = {
