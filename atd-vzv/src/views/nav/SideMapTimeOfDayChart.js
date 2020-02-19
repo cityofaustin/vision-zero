@@ -15,7 +15,7 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
     colors.info,
     colors.info
   ];
-  const inactiveBarColor = colors.secondary;
+  const inactiveBarColor = colors.dark;
 
   const [timeWindowData, setTimeWindowData] = useState([]);
   const [timeWindowPercentages, setTimeWindowPercentages] = useState([]);
@@ -29,7 +29,7 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
   useMemo(() => {
     const crashes = mapData.features;
     // When mapData is set, accumulate time window data
-    // Retain totals of unfiltered data
+    // Don't update totals when time window is selected, only update map view
     if (!!crashes && !mapTimeWindow) {
       const crashTimeWindowAccumulatorArray = Object.keys(filters).map(
         filter => 0
@@ -51,8 +51,8 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
   }, [mapData, filters, mapTimeWindow]);
 
   useMemo(() => {
-    // When timeWindowData is set, create percentages
-    // Retain percentages of unfiltered data
+    // When timeWindowData is set, calc percentages
+    // Don't update percentages when time window is selected, only update map view
     if (!!timeWindowData && !mapTimeWindow) {
       const timeWindowPercentages = timeWindowData.map(timeWindow => {
         const timeWindowsTotal = timeWindowData.reduce(
