@@ -14,48 +14,49 @@ import {
 import { demographicsEndpointUrl } from "./queries/socrataQueries";
 
 const DemographicsByYear = () => {
-
   const ageCategories = [
-    { label: "Age", categoryValue: [0], color: colors.chartRed },
+    { label: "Under 18", categoryValue: [1], color: colors.chartRed },
     {
-      label: "Male",
-      categoryValue: [1],
+      label: "18 to 44",
+      categoryValue: [2],
       color: colors.chartOrange
     },
     {
-      label: "Female",
-      categoryValue: [2],
+      label: "45 to 64",
+      categoryValue: [3],
       color: colors.chartRedOrange
-    }
+    },
+    { label: "65 and older", categoryValue: [4], color: colors.chartRed },
+    { label: "No data", categoryValue: ["noData"], color: colors.chartOrange }
   ];
 
   const sexCategories = [
-    { label: "Unknown", categoryValue: [0], color: colors.chartRed },
     {
       label: "Male",
       categoryValue: [1],
-      color: colors.chartOrange
+      color: colors.chartRed
     },
     {
       label: "Female",
       categoryValue: [2],
-      color: colors.chartRedOrange
-    }
+      color: colors.chartOrange
+    },
+    { label: "Unknown", categoryValue: [0], color: colors.chartRedOrange },
+    { label: "No data", categoryValue: ["noData"], color: colors.chartRed }
   ];
 
   const raceCategories = [
-    { label: "Unkown", categoryValue: [0], color: colors.chartRed },
     {
       label: "White",
       categoryValue: [1],
-      color: colors.chartOrange
+      color: colors.chartRed
     },
     {
       label: "Hispanic",
       categoryValue: [2],
-      color: colors.chartRedOrange
+      color: colors.chartOrange
     },
-    { label: "Black", categoryValue: [3], color: colors.chartRed },
+    { label: "Black", categoryValue: [3], color: colors.chartRedOrange },
     {
       label: "Asian",
       categoryValue: [4],
@@ -70,7 +71,9 @@ const DemographicsByYear = () => {
       label: "American Indian or Alaska Native",
       categoryValue: [6],
       color: colors.chartRedOrange
-    }
+    },
+    { label: "Unkown", categoryValue: [0], color: colors.chartRed },
+    { label: "No data", categoryValue: "noData", color: colors.chartOrange }
   ];
 
   // Create array of ints of last 5 years
@@ -83,7 +86,7 @@ const DemographicsByYear = () => {
     return years;
   }, []);
 
-  const [activeTab, setActiveTab] = useState("prsn_ethnicity_id");
+  const [activeTab, setActiveTab] = useState("prsn_age");
   const [chartData, setChartData] = useState([""]); // {yearInt: [{record}, {record}, ...]}
   const [crashType, setCrashType] = useState([]);
 
@@ -123,24 +126,6 @@ const DemographicsByYear = () => {
 
   const createChartLabels = () => yearsArray().map(year => `${year}`);
 
-  const roundNumber = (n, digits) => {
-    var negative = false;
-    if (digits === undefined) {
-      digits = 0;
-    }
-    if (n < 0) {
-      negative = true;
-      n = n * -1;
-    }
-    var multiplicator = Math.pow(10, digits);
-    n = parseFloat((n * multiplicator).toFixed(11));
-    n = (Math.round(n) / multiplicator).toFixed(2);
-    if (negative) {
-      n = (n * -1).toFixed(2);
-    }
-    return n;
-  };
-
   // Tabulate fatalities by demographics in data
   const getData = categoryValue =>
     yearsArray().map(year => {
@@ -152,47 +137,74 @@ const DemographicsByYear = () => {
         let categoryTotal = chartData[year].reduce((accumulator, record) => {
           switch (activeTab) {
             case "prsn_age":
+              switch (categoryValue[0]) {
+                case 1:
+                  record.prsn_age < 18 && accumulator++;
+                  break;
+                case 2:
+                  record.prsn_age >= 18 &&
+                    record.prsn_age <= 44 &&
+                    accumulator++;
+                  break;
+                case 3:
+                  record.prsn_age > 44 &&
+                    record.prsn_age <= 64 &&
+                    accumulator++;
+                  break;
+                case 4:
+                  record.prsn_age > 64 && accumulator++;
+                  break;
+                case "noData":
+                  record.prsn_age === undefined && accumulator++;
+                  break;
+                default:
+                  break;
+              }
               break;
             case "prsn_gndr_id":
               record.prsn_gndr_id === `${categoryValue}` && accumulator++;
               break;
             case "prsn_ethnicity_id":
+              // If the ethnicity id value matches the category value, increment the count for the associated category
               record.prsn_ethnicity_id === `${categoryValue}` && accumulator++;
+              // If the ethnicity id value is missing and the category value is "noData", increment the count for the "No data" category
+              !record.prsn_ethnicity_id &&
+                categoryValue === "noData" &&
+                accumulator++;
               break;
             default:
               break;
           }
           return accumulator;
         }, 0);
-        return roundNumber((categoryTotal / overallTotal) * 100, 2);
+        const percentage = (categoryTotal / overallTotal) * 100;
+        return percentage;
       }
     });
 
-  // Sort mode order in stack by averaging total mode fatalities across all years in chart
+  // Sort category order in stack by averaging total demographic stats across all years in chart
   const sortData = data => {
     const averageCrashes = dataArray =>
       dataArray.reduce((a, b) => a + b) / dataArray.length;
-    return data.sort(
-      (a, b) => averageCrashes(b.data) - averageCrashes(a.data)
-    );
+    return data.sort((a, b) => averageCrashes(b.data) - averageCrashes(a.data));
   };
 
-  // Create dataset for each mode type, data property is an array of fatality sums sorted chronologically
+  // Create dataset for each demographic type
   const createTypeDatasets = () => {
     let categories;
-      switch (activeTab) {
-        case "prsn_age":
-          categories = ageCategories;
-          break;
-        case "prsn_gndr_id":
-          categories = sexCategories;
-          break;
-        case "prsn_ethnicity_id":
-          categories = raceCategories;
-          break;
-        default:
-          break;
-      }
+    switch (activeTab) {
+      case "prsn_age":
+        categories = ageCategories;
+        break;
+      case "prsn_gndr_id":
+        categories = sexCategories;
+        break;
+      case "prsn_ethnicity_id":
+        categories = raceCategories;
+        break;
+      default:
+        break;
+    }
     const data = categories.map(category => ({
       backgroundColor: category.color,
       borderColor: category.color,
@@ -202,7 +214,7 @@ const DemographicsByYear = () => {
       label: category.label,
       data: getData(category.categoryValue)
     }));
-    // Determine order of modes in each year stack
+    // Determine order of category in each year stack
     return sortData(data);
   };
 
@@ -210,117 +222,6 @@ const DemographicsByYear = () => {
     labels: createChartLabels(),
     datasets: !!chartData && createTypeDatasets()
   };
-
-  // const dataAge = {
-  //   labels: ["Age"],
-  //   datasets: [
-  //     {
-  //       backgroundColor: "red",
-  //       borderColor: "red",
-  //       borderWidth: 2,
-  //       hoverBackgroundColor: "red",
-  //       hoverBorderColor: "red",
-  //       label: ["Under 18"],
-  //       data: [15]
-  //     },
-  //     {
-  //       backgroundColor: "green",
-  //       borderColor: "green",
-  //       borderWidth: 2,
-  //       hoverBackgroundColor: "green",
-  //       hoverBorderColor: "green",
-  //       label: ["18 to 44"],
-  //       data: [30]
-  //     },
-  //     {
-  //       backgroundColor: "blue",
-  //       borderColor: "blue",
-  //       borderWidth: 2,
-  //       hoverBackgroundColor: "blue",
-  //       hoverBorderColor: "blue",
-  //       label: ["45 to 64"],
-  //       data: [25]
-  //     },
-  //     {
-  //       backgroundColor: "yellow",
-  //       borderColor: "yellow",
-  //       borderWidth: 2,
-  //       hoverBackgroundColor: "yellow",
-  //       hoverBorderColor: "yellow",
-  //       label: ["65 and Over"],
-  //       data: [20]
-  //     }
-  //   ]
-  // };
-
-  // const dataRace = {
-  //   labels: ["Race"],
-  //   datasets: [
-  //     {
-  //       backgroundColor: "red",
-  //       borderColor: "red",
-  //       borderWidth: 2,
-  //       hoverBackgroundColor: "red",
-  //       hoverBorderColor: "red",
-  //       label: ["Unknown"],
-  //       data: [25]
-  //     },
-  //     {
-  //       backgroundColor: "green",
-  //       borderColor: "green",
-  //       borderWidth: 2,
-  //       hoverBackgroundColor: "green",
-  //       hoverBorderColor: "green",
-  //       label: ["White"],
-  //       data: [15]
-  //     },
-  //     {
-  //       backgroundColor: "blue",
-  //       borderColor: "blue",
-  //       borderWidth: 2,
-  //       hoverBackgroundColor: "blue",
-  //       hoverBorderColor: "blue",
-  //       label: ["Hispanic"],
-  //       data: [20]
-  //     },
-  //     {
-  //       backgroundColor: "yellow",
-  //       borderColor: "yellow",
-  //       borderWidth: 2,
-  //       hoverBackgroundColor: "yellow",
-  //       hoverBorderColor: "yellow",
-  //       label: ["Black"],
-  //       data: [10]
-  //     },
-  //     {
-  //       backgroundColor: "pink",
-  //       borderColor: "pink",
-  //       borderWidth: 2,
-  //       hoverBackgroundColor: "pink",
-  //       hoverBorderColor: "pink",
-  //       label: ["Asian"],
-  //       data: [7]
-  //     },
-  //     {
-  //       backgroundColor: "red",
-  //       borderColor: "red",
-  //       borderWidth: 2,
-  //       hoverBackgroundColor: "red",
-  //       hoverBorderColor: "red",
-  //       label: ["Other"],
-  //       data: [13]
-  //     },
-  //     {
-  //       backgroundColor: "green",
-  //       borderColor: "green",
-  //       borderWidth: 2,
-  //       hoverBackgroundColor: "green",
-  //       hoverBorderColor: "green",
-  //       label: ["American Indian or Alaska Native"],
-  //       data: [10]
-  //     }
-  //   ]
-  // };
 
   return (
     <Container>
@@ -355,15 +256,17 @@ const DemographicsByYear = () => {
               </NavLink>
             </NavItem>
             <NavItem>
-                <NavLink
-                  className={classnames({ active: activeTab === "prsn_ethnicity_id" })}
-                  onClick={() => {
-                    toggle("prsn_ethnicity_id");
-                  }}
-                >
-                  Race
-                </NavLink>
-              </NavItem>
+              <NavLink
+                className={classnames({
+                  active: activeTab === "prsn_ethnicity_id"
+                })}
+                onClick={() => {
+                  toggle("prsn_ethnicity_id");
+                }}
+              >
+                Race
+              </NavLink>
+            </NavItem>
           </Nav>
         </Col>
       </Row>
@@ -376,7 +279,10 @@ const DemographicsByYear = () => {
               scales: {
                 xAxes: [
                   {
-                    stacked: true
+                    stacked: true,
+                    ticks: {
+                      max: 100
+                    }
                   }
                 ],
                 yAxes: [
@@ -384,6 +290,16 @@ const DemographicsByYear = () => {
                     stacked: true
                   }
                 ]
+              },
+              tooltips: {
+                callbacks: {
+                  label: function(tooltipItem, data) {
+                    let label = data.datasets[tooltipItem.datasetIndex].label;
+                    let roundedValue =
+                      Math.round(tooltipItem.value * 100) / 100;
+                    return `${label}: ${roundedValue}%`;
+                  }
+                }
               }
             }}
           />
