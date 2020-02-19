@@ -86,10 +86,12 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
     }
 
     // Style unselected bars as inactive
-    const newBarColors = barColors.map((color, i) =>
-      i === index ? defaultBarColors[0] : inactiveBarColor
-    );
-    setBarColors(newBarColors);
+    if (index !== null) {
+      const newBarColors = barColors.map((color, i) =>
+        i === index ? defaultBarColors[0] : inactiveBarColor
+      );
+      setBarColors(newBarColors);
+    }
   };
 
   const createTooltipData = (tooltipItem, data) => {
