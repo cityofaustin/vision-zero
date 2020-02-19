@@ -92,12 +92,12 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
     setBarColors(newBarColors);
   };
 
-  const calcDataPercentage = (tooltipItem, data) => {
+  const createTooltipData = (tooltipItem, data) => {
     const index = tooltipItem.index;
     return `${timeWindowPercentages[index]}% (${timeWindowData[index]})`;
   };
 
-  const createTimeLabels = () => Object.keys(filters).map(label => label);
+  const createChartTimeLabels = () => Object.keys(filters).map(label => label);
 
   const isMapTimeWindowSet = !!mapTimeWindow;
 
@@ -107,7 +107,7 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
   };
 
   const data = {
-    labels: createTimeLabels(),
+    labels: createChartTimeLabels(),
     datasets: [
       {
         backgroundColor: barColors,
@@ -140,7 +140,7 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
             },
             tooltips: {
               callbacks: {
-                label: calcDataPercentage,
+                label: createTooltipData,
                 title: (tooltipItem, data) => null // Render nothing for tooltip title
               }
             }
