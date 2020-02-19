@@ -38,26 +38,26 @@ query_configs = [
                 "longitude_primary": "longitude"
             }
         },
-        "dataset_uid": "3aut-fhzp"  # TEST
-        # "dataset_uid": "y2wy-tgr5"  # PROD
+        # "dataset_uid": "3aut-fhzp"  # TEST
+        "dataset_uid": "y2wy-tgr5"  # PROD
     },
-    # {
-    #     "table": "person",
-    #     "template": people_query_template,
-    #     "formatter": format_person_data,
-    #     "formatter_config": {
-    #         "tables": ["atd_txdot_person", "atd_txdot_primaryperson"],
-    #         "columns_to_rename": {
-    #             "primaryperson_id": "person_id"
-    #         },
-    #         "prefixes": {
-    #             "person_id": "P",
-    #             "primaryperson_id": "PP",
-    #         }
-    #     },
-    #     # "dataset_uid": "v3x4-fjgm"  # TEST
-    #     "dataset_uid": "xecs-rpy9"  # PROD
-    # }
+    {
+        "table": "person",
+        "template": people_query_template,
+        "formatter": format_person_data,
+        "formatter_config": {
+            "tables": ["atd_txdot_person", "atd_txdot_primaryperson"],
+            "columns_to_rename": {
+                "primaryperson_id": "person_id"
+            },
+            "prefixes": {
+                "person_id": "P",
+                "primaryperson_id": "PP",
+            }
+        },
+        # "dataset_uid": "v3x4-fjgm"  # TEST
+        "dataset_uid": "xecs-rpy9"  # PROD
+    }
 ]
 
 # Start timer
