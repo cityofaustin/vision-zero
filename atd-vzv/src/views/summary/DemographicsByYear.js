@@ -19,15 +19,15 @@ const DemographicsByYear = () => {
     {
       label: "18 to 44",
       categoryValue: [2],
-      color: colors.chartOrange
+      color: colors.chartLightBlue
     },
     {
       label: "45 to 64",
       categoryValue: [3],
-      color: colors.chartRedOrange
+      color: colors.chartOrange
     },
-    { label: "65 and older", categoryValue: [4], color: colors.chartRed },
-    { label: "No data", categoryValue: ["noData"], color: colors.chartOrange }
+    { label: "65 and older", categoryValue: [4], color: colors.chartBlue },
+    { label: "No data", categoryValue: ["noData"], color: colors.warning }
   ];
 
   const sexCategories = [
@@ -39,10 +39,10 @@ const DemographicsByYear = () => {
     {
       label: "Female",
       categoryValue: [2],
-      color: colors.chartOrange
+      color: colors.chartLightBlue
     },
-    { label: "Unknown", categoryValue: [0], color: colors.chartRedOrange },
-    { label: "No data", categoryValue: ["noData"], color: colors.chartRed }
+    { label: "Unknown", categoryValue: [0], color: colors.chartOrange },
+    { label: "No data", categoryValue: ["noData"], color: colors.chartBlue }
   ];
 
   const raceCategories = [
@@ -54,26 +54,26 @@ const DemographicsByYear = () => {
     {
       label: "Hispanic",
       categoryValue: [2],
-      color: colors.chartOrange
+      color: colors.chartLightBlue
     },
-    { label: "Black", categoryValue: [3], color: colors.chartRedOrange },
+    { label: "Black", categoryValue: [3], color: colors.chartOrange },
     {
       label: "Asian",
       categoryValue: [4],
-      color: colors.chartRed
+      color: colors.chartBlue
     },
     {
       label: "Other",
       categoryValue: [5],
-      color: colors.chartOrange
+      color: colors.chartRedOrange
     },
     {
       label: "American Indian or Alaska Native",
       categoryValue: [6],
-      color: colors.chartRedOrange
+      color: colors.success
     },
-    { label: "Unkown", categoryValue: [0], color: colors.chartRed },
-    { label: "No data", categoryValue: "noData", color: colors.chartOrange }
+    { label: "Unkown", categoryValue: [0], color: colors.warning },
+    { label: "No data", categoryValue: "noData", color: colors.infoDark }
   ];
 
   // Create array of ints of last 5 years
