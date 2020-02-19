@@ -36,14 +36,14 @@ const Map = () => {
     zoom: 11
   });
 
-  const [mapData, setMapData] = useState("");
   const [hoveredFeature, setHoveredFeature] = useState(null);
   const [cityCouncilOverlay, setCityCouncilOverlay] = useState(null);
 
   const {
     mapFilters: [filters],
     mapDateRange: [dateRange],
-    mapOverlay: [overlay]
+    mapOverlay: [overlay],
+    mapData: [mapData, setMapData]
   } = React.useContext(StoreContext);
 
   // Fetch initial crash data and refetch upon filters change
@@ -54,7 +54,7 @@ const Map = () => {
       axios.get(apiUrl).then(res => {
         setMapData(res.data);
       });
-  }, [filters, dateRange]);
+  }, [filters, dateRange, setMapData]);
 
   useEffect(() => {
     // Fetch City Council Districts geojson and return OBJECTID metadata for styling in map-style.js

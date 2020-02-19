@@ -14,12 +14,14 @@ export default ({ children }) => {
     name: "",
     options: []
   });
+  const [mapData, setMapData] = useState("");
 
   const store = {
     mapFilters: [mapFilters, setMapFilters],
     mapDateRange: [mapDateRange, setMapDateRange],
     sidebarToggle: [isOpen, setIsOpen],
-    mapOverlay: [mapOverlay, setMapOverlay]
+    mapOverlay: [mapOverlay, setMapOverlay],
+    mapData: [mapData, setMapData]
   };
 
   return (

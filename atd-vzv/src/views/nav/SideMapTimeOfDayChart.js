@@ -60,10 +60,9 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
   return (
     <Container className="px-0 mt-3">
       {/* 
-      TODO: Update ETL to make crash time queryable
       TODO: Populate with map crash data
       TODO: Set onClick handler to filter by time range of bar clicked, https://dev.socrata.com/docs/functions/date_extract_hh.html
-      https://data.austintexas.gov/resource/3aut-fhzp.json?$where=date_extract_hh(crash_date) between 16 and 17 (NEED to add minutes as well)
+      https://data.austintexas.gov/resource/3aut-fhzp.json?$where=date_extract_hh(crash_date) between 16 and 17 AND date_extract_mm(crash_date) between 0 and 59
       TODO: Create "All" time range button and disable time filters onClick, clears date extract filters, active when no date extract filters
       */}
       {!!timeWindowData.dataPercentages && (
