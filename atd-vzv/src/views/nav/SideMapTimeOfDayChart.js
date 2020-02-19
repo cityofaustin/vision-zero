@@ -7,14 +7,12 @@ import { HorizontalBar } from "react-chartjs-2";
 import { colors } from "../../constants/colors";
 
 export const SideMapTimeOfDayChart = ({ filters }) => {
-  const [timeWindowData, setTimeWindowData] = useState({
-    dataPercentages: null,
-    data: []
-  });
+  const [timeWindowData, setTimeWindowData] = useState([]);
+  const [timeWindowPercentages, setTimeWindowPercentages] = useState([]);
 
   const {
-    mapDateRange: [dateRange],
-    mapData: [mapData]
+    mapData: [mapData],
+    mapTimeWindow: [mapTimeWindow, setMapTimeWindow]
   } = React.useContext(StoreContext);
 
   useMemo(() => {
@@ -34,20 +32,15 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
         return accumulator;
       }, crashTimeWindowTotals);
 
-      const newTimeWindowData = {
-        ...timeWindowData,
-        data: crashTimeTotals
-      };
-
-      setTimeWindowData(newTimeWindowData);
+      setTimeWindowData(crashTimeTotals);
     }
-  }, [mapData]);
+  }, [mapData, filters]);
 
   useMemo(() => {
     // If data has loaded, create percentages
-    if (!!timeWindowData.data) {
-      const timeWindowPercentages = timeWindowData.data.map(timeWindow => {
-        const timeWindowsTotal = timeWindowData.data.reduce(
+    if (!!timeWindowData) {
+      const timeWindowPercentages = timeWindowData.map(timeWindow => {
+        const timeWindowsTotal = timeWindowData.reduce(
           (accumulator, timeWindowTotal) => {
             return (accumulator += timeWindowTotal);
           },
@@ -59,14 +52,9 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
         return parseInt(percentString);
       });
 
-      const newTimeWindowData = {
-        ...timeWindowData,
-        dataPercentages: timeWindowPercentages
-      };
-
-      setTimeWindowData(newTimeWindowData);
+      setTimeWindowPercentages(timeWindowPercentages);
     }
-  }, [timeWindowData.data, setTimeWindowData]);
+  }, [timeWindowData]);
 
   const calcDataPercentage = (tooltipItem, data) => {
     const index = tooltipItem.index;
@@ -84,7 +72,7 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
         borderWidth: 1,
         hoverBackgroundColor: colors.infoDark,
         hoverBorderColor: colors.infoDark,
-        data: !!timeWindowData.dataPercentages && timeWindowData.dataPercentages
+        data: timeWindowPercentages
       }
     ]
   };
@@ -97,14 +85,14 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
       TODO: Create "All" time range button and disable time filters onClick, clears date extract filters, active when no date extract filters
       TODO: Only update percentages if there is no time window filter set
       */}
-      {!!timeWindowData.dataPercentages && (
+      {!!timeWindowData && !!timeWindowPercentages && (
         <HorizontalBar
           data={data}
           height={250}
           onElementsClick={elems => {
-            console.log(elems);
-            // elem[0]._model.label or elem[0]._model.datasetLabel
-            console.log(moment("11:28:00", "h:mm:ss").format("ha"));
+            const timeWindow = elems.length > 0 ? elems[0]._model.label : null;
+            // console.log(moment("11:28:00", "h:mm:ss").format("ha"));
+            !!timeWindow && console.log(filters[timeWindow]);
           }}
           options={{
             legend: { display: false },
@@ -112,7 +100,7 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
               xAxes: [
                 {
                   ticks: {
-                    beginAtZero: true
+                    beginAtZero: true // Keep small %s viewable in chart
                   }
                 }
               ]
