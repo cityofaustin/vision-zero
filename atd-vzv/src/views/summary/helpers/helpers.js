@@ -3,8 +3,7 @@ import { lifespanYears } from "../../../constants/calc";
 
 export const calculateTotalFatalities = data =>
   data.reduce(
-    (accumulator, record) =>
-      (accumulator += parseInt(record.apd_confirmed_death_count)),
+    (accumulator, record) => (accumulator += parseInt(record.death_cnt)),
     0
   );
 
