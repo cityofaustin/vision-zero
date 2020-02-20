@@ -1,14 +1,3 @@
-create function atd_txdot_units_updates_audit_log() returns trigger
-    language plpgsql
-as
-$$
-BEGIN
-    INSERT INTO atd_txdot_change_log (record_id, record_crash_id, record_type, record_json)
-    VALUES (old.unit_id, old.crash_id, 'units', row_to_json(old));
-
-   RETURN NEW;
-END;
-$$;
-
-alter function atd_txdot_units_updates_audit_log() owner to atd_vz_data;
-
+version https://git-lfs.github.com/spec/v1
+oid sha256:76ca089495e173f10c4fefaa9bba876ddcebbb9c98a33f6235bd4cdf57db7fa1
+size 360
