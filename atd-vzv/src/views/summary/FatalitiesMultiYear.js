@@ -157,11 +157,9 @@ const FatalitiesMultiYear = () => {
 
   return (
     <Container>
-      <Row style={{ paddingBottom: "0.75em" }}>
+      <Row className="pb-3">
         <Col>
-          <h3 style={{ textAlign: "center" }}>
-            {crashType.textString} by Year
-          </h3>
+          <h3 className="text-center">{crashType.textString} by Year</h3>
         </Col>
       </Row>
       <Row style={{ paddingBottom: 20 }}>
@@ -199,7 +197,7 @@ const FatalitiesMultiYear = () => {
           />
         </Col>
       </Row>
-      <Row style={{ paddingTop: "0.75em" }}>
+      <Row className="pt-3">
         <Col>
           <CrashTypeSelector setCrashType={setCrashType} />
         </Col>
