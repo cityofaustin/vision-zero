@@ -50,7 +50,7 @@ const FatalitiesMultiYear = () => {
         year = lastYear;
       }
       return (
-        <h6 style={{ color: colors.blue, textAlign: "center" }}>
+        <h6 style={{ color: colors.blue }} className="text-center">
           As of {lastMonthString}, there have been{" "}
           <strong>{calculateYearlyTotals(deathArray)}</strong> traffic-related{" "}
           {crashType.textString.toLowerCase()} in {year}.
@@ -319,46 +319,46 @@ const FatalitiesMultiYear = () => {
 
   return (
     <Container>
-      <Row style={{ paddingBottom: "0.75em" }}>
+      <Row className="pb-3">
         <Col>
-          <h3 style={{ textAlign: "center" }}>
+        <h3 className="text-center">
             {crashType.textString} by Year
           </h3>
         </Col>
       </Row>
-      <Row style={{ paddingBottom: 20 }}>
+      <Row className="pb-3">
         <Col>{renderHeader()}</Col>
       </Row>
-      <Row style={{ paddingBottom: 20 }}>
+      <Row className="pb-3">
         <Col xs="6" sm="4" md="2">
-          <h6 style={{ textAlign: "center" }}>Prior Years:</h6>
+          <h6 className="text-center">Prior Years</h6>
         </Col>
         <Col xs="6" sm="4" md="2">
-          <h6 style={{ textAlign: "center" }}>
+          <h6 className="text-center">
             <strong>{calculateYearlyTotals(lastYearDeathArray)}</strong> in{" "}
             {getYearsAgoLabel(1)}
           </h6>
         </Col>
         <Col xs="6" sm="4" md="2">
-          <h6 style={{ textAlign: "center" }}>
+          <h6 className="text-center">
             <strong>{calculateYearlyTotals(twoYearsAgoDeathArray)}</strong> in{" "}
             {getYearsAgoLabel(2)}
           </h6>
         </Col>
         <Col xs="6" sm="4" md="2">
-          <h6 style={{ textAlign: "center" }}>
+          <h6 className="text-center">
             <strong>{calculateYearlyTotals(threeYearsAgoDeathArray)}</strong> in{" "}
             {getYearsAgoLabel(3)}
           </h6>
         </Col>
         <Col xs="6" sm="4" md="2">
-          <h6 style={{ textAlign: "center" }}>
+          <h6 className="text-center">
             <strong>{calculateYearlyTotals(fourYearsAgoDeathArray)}</strong> in{" "}
             {getYearsAgoLabel(4)}
           </h6>
         </Col>
         <Col xs="6" sm="4" md="2">
-          <h6 style={{ textAlign: "center" }}>
+          <h6 className="text-center">
             <strong>{calculateYearlyTotals(fiveYearsAgoDeathArray)}</strong> in{" "}
             {getYearsAgoLabel(5)}
           </h6>
@@ -376,7 +376,7 @@ const FatalitiesMultiYear = () => {
           />
         </Col>
       </Row>
-      <Row style={{ paddingTop: "0.75em" }}>
+      <Row className="pt-3">
         <Col>
           <CrashTypeSelector setCrashType={setCrashType} />
         </Col>

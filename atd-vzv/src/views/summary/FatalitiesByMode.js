@@ -121,9 +121,9 @@ const FatalitiesByMode = () => {
 
   return (
     <Container>
-      <Row style={{ paddingBottom: "0.75em" }}>
+      <Row className="pb-3">
         <Col>
-          <h3 style={{ textAlign: "center" }}>
+        <h3 className="text-center">
             {crashType.textString} by Mode
           </h3>
         </Col>
@@ -155,7 +155,7 @@ const FatalitiesByMode = () => {
           <p className="text-center">Data Through: {dataEndDate.format("MMMM YYYY")}</p>
         </Col>
       </Row>
-      <Row style={{ paddingTop: "0.75em" }}>
+      <Row className="pt-3">
         <Col>
           <CrashTypeSelector setCrashType={setCrashType} />
         </Col>

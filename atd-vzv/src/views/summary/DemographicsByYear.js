@@ -24,10 +24,10 @@ const DemographicsByYear = () => {
     {
       label: "45 to 64",
       categoryValue: 3,
-      color: colors.chartOrange
+      color: colors.chartGreen
     },
-    { label: "65 and older", categoryValue: 4, color: colors.chartBlue },
-    { label: "No data", categoryValue: "noData", color: colors.warning }
+    { label: "65 and older", categoryValue: 4, color: colors.chartPurple },
+    { label: "No data", categoryValue: "noData", color: colors.danger }
   ];
 
   const sexCategories = [
@@ -41,8 +41,8 @@ const DemographicsByYear = () => {
       categoryValue: 2,
       color: colors.chartLightBlue
     },
-    { label: "Unknown", categoryValue: 0, color: colors.chartOrange },
-    { label: "No data", categoryValue: "noData", color: colors.chartBlue }
+    { label: "Unknown", categoryValue: 0, color: colors.warning },
+    { label: "No data", categoryValue: "noData", color: colors.danger }
   ];
 
   const raceCategories = [
@@ -56,24 +56,24 @@ const DemographicsByYear = () => {
       categoryValue: 2,
       color: colors.chartLightBlue
     },
-    { label: "Black", categoryValue: 3, color: colors.chartOrange },
+    { label: "Black", categoryValue: 3, color: colors.chartGreen },
     {
       label: "Asian",
       categoryValue: 4,
-      color: colors.chartBlue
+      color: colors.chartPurple
     },
     {
       label: "Other",
       categoryValue: 5,
-      color: colors.chartRedOrange
+      color: colors.chartAqua
     },
     {
       label: "American Indian or Alaska Native",
       categoryValue: 6,
-      color: colors.success
+      color: colors.chartBlue
     },
     { label: "Unknown", categoryValue: 0, color: colors.warning },
-    { label: "No data", categoryValue: "noData", color: colors.infoDark }
+    { label: "No data", categoryValue: "noData", color: colors.danger }
   ];
 
   // Create array of ints of last 5 years
@@ -220,9 +220,9 @@ const DemographicsByYear = () => {
 
   return (
     <Container>
-      <Row style={{ paddingBottom: "0.75em" }}>
+      <Row className="pb-3">
         <Col>
-          <h3 style={{ textAlign: "center" }}>
+          <h3 className="text-center">
             {crashType.textString} Demographics
           </h3>
         </Col>
@@ -300,7 +300,7 @@ const DemographicsByYear = () => {
           />
         </Col>
       </Row>
-      <Row style={{ paddingTop: "0.75em" }}>
+      <Row className="pt-3">
         <Col>
           <CrashTypeSelector setCrashType={setCrashType} />
         </Col>
