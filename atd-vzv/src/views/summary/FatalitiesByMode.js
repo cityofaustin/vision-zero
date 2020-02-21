@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Bar } from "react-chartjs-2";
 import { Container, Row, Col } from "reactstrap";
@@ -7,8 +7,8 @@ import CrashTypeSelector from "../nav/CrashTypeSelector";
 import { colors } from "../../constants/colors";
 import {
   dataEndDate,
-  thisYear,
-  ROLLING_YEARS_OF_DATA
+  yearsArray,
+  summaryCurrentYearEndDate
 } from "../../constants/time";
 import { demographicsEndpointUrl } from "./queries/socrataQueries";
 
@@ -41,17 +41,7 @@ const FatalitiesByMode = () => {
     }
   ];
 
-  // Create array of ints of last 5 years
-  const yearsArray = useCallback(() => {
-    let years = [];
-    let year = parseInt(dataEndDate.format("YYYY"));
-    for (let i = 0; i <= ROLLING_YEARS_OF_DATA; i++) {
-      years.unshift(year - i);
-    }
-    return years;
-  }, []);
-
-  const [chartData, setChartData] = useState(""); // {yearInt: [{record}, {record}, ...]}
+  const [chartData, setChartData] = useState(null); // {yearInt: [{record}, {record}, ...]}
   const [crashType, setCrashType] = useState([]);
 
   // Fetch data and set in state by years in yearsArray
@@ -66,8 +56,8 @@ const FatalitiesByMode = () => {
             // If getting data for current year (only including years past January), set end of query to last day of previous month,
             // else if getting data for previous years, set end of query to last day of year
             let endDate =
-              year.toString() === thisYear
-                ? `${dataEndDate.format("YYYY-MM-DD")}T23:59:59`
+              year.toString() === dataEndDate.format("YYYY")
+                ? `${summaryCurrentYearEndDate}T23:59:59`
                 : `${year}-12-31T23:59:59`;
             let url = `${demographicsEndpointUrl}?$where=${crashType.queryStringDemographics} AND crash_date between '${year}-01-01T00:00:00' and '${endDate}'`;
             await axios.get(url).then(res => {
@@ -80,7 +70,7 @@ const FatalitiesByMode = () => {
       };
       getChartData();
     }
-  }, [yearsArray, crashType]);
+  }, [crashType]);
 
   const createChartLabels = () => yearsArray().map(year => `${year}`);
 
@@ -155,7 +145,9 @@ const FatalitiesByMode = () => {
       </Row>
       <Row>
         <Col>
-          <p className="text-center">Data Through: {dataEndDate.format("MMMM YYYY")}</p>
+          <p className="text-center">
+            Data Through: {dataEndDate.format("MMMM YYYY")}
+          </p>
         </Col>
       </Row>
       <Row className="pt-3">

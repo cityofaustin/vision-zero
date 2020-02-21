@@ -1,4 +1,5 @@
 import { lifespanYears } from "../../../constants/calc";
+import { dataEndDate } from "../../../constants/time";
 // Helpers to handle Socrata responses for Summary view components
 
 export const calculateTotalFatalities = data =>
@@ -33,4 +34,11 @@ export const getYearsOfLifeLost = fatalityData => {
     }
     return accumulator + years;
   }, 0); // start with a count at 0 years
+};
+
+export const getYearsAgoLabel = yearsAgo => {
+  return dataEndDate
+    .clone()
+    .subtract(yearsAgo, "year")
+    .format("YYYY");
 };
