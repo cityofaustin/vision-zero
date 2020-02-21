@@ -2,6 +2,7 @@ import React from "react";
 import FatalitiesByMode from "./FatalitiesByMode";
 import FatalitiesMultiYear from "./FatalitiesMultiYear";
 import FatalitiesByTimeOfDay from "./FatalitiesByTimeOfDay";
+import DemographicsByYear from "./DemographicsByYear";
 import SummaryView from "./SummaryView";
 import SummaryCard from "./SummaryCard";
 
@@ -12,6 +13,7 @@ const children = [
   { component: <FatalitiesMultiYear /> },
   { component: <FatalitiesByMode /> },
   { component: <FatalitiesByTimeOfDay /> },
+  { component: <DemographicsByYear /> }
 ];
 
 const Summary = () => {
