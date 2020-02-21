@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { StoreContext } from "../../utils/store";
 import ReactMapGL, { Source, Layer } from "react-map-gl";
 import { createMapDataUrl } from "./helpers";
+import { crashGeoJSONEndpointUrl } from "../../views/summary/queries/socrataQueries";
 import {
   crashDataLayer,
   buildAsmpLayers,
@@ -49,7 +50,12 @@ const Map = () => {
 
   // Fetch initial crash data and refetch upon filters change
   useEffect(() => {
-    const apiUrl = createMapDataUrl(filters, dateRange, mapTimeWindow);
+    const apiUrl = createMapDataUrl(
+      crashGeoJSONEndpointUrl,
+      filters,
+      dateRange,
+      mapTimeWindow
+    );
 
     !!apiUrl &&
       axios.get(apiUrl).then(res => {

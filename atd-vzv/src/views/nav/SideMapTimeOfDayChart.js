@@ -1,6 +1,9 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { StoreContext } from "../../utils/store";
+import axios from "axios";
 import moment from "moment";
+import { createMapDataUrl } from "../map/helpers";
+import { crashEndpointUrl } from "../summary/queries/socrataQueries";
 
 import { Container, Button } from "reactstrap";
 import { HorizontalBar } from "react-chartjs-2";
@@ -10,27 +13,37 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
   const defaultBarColor = colors.info;
   const inactiveBarColor = colors.dark;
 
+  const [chartData, setChartData] = useState(null);
   const [timeWindowData, setTimeWindowData] = useState([]);
   const [timeWindowPercentages, setTimeWindowPercentages] = useState([]);
   const [barColors, setBarColors] = useState(defaultBarColor);
 
   const {
-    mapData: [mapData],
-    mapTimeWindow: [mapTimeWindow, setMapTimeWindow]
+    mapTimeWindow: [mapTimeWindow, setMapTimeWindow],
+    mapFilters: [mapFilters],
+    mapDateRange: [dateRange]
   } = React.useContext(StoreContext);
 
+  // Get crash data without mapTimeWindow filter to populate chart
+  useEffect(() => {
+    const apiUrl = createMapDataUrl(crashEndpointUrl, mapFilters, dateRange);
+    !!apiUrl &&
+      axios.get(apiUrl).then(res => {
+        setChartData(res.data);
+      });
+  }, [dateRange, mapFilters]);
+
   useMemo(() => {
-    const crashes = mapData.features;
-    // When mapData is set, accumulate time window data
-    // Don't update totals when time window is selected, only update map view
-    if (!!crashes && !mapTimeWindow) {
+    const crashes = chartData;
+    // When chartData is set, accumulate time window data
+    if (!!crashes) {
       const crashTimeWindowAccumulatorArray = Object.keys(filters).map(
         filter => 0
       );
       const crashTimeWindows = Object.values(filters).map(filter => filter);
       const crashTimeTotals = crashes.reduce((accumulator, crash) => {
         crashTimeWindows.forEach((timeWindow, i) => {
-          const crashDate = crash.properties.crash_date;
+          const crashDate = crash.crash_date;
           const crashHour = parseInt(moment(crashDate).format("HH"));
           crashHour >= timeWindow[0] &&
             crashHour <= timeWindow[1] &&
@@ -41,12 +54,12 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
 
       setTimeWindowData(crashTimeTotals);
     }
-  }, [mapData, filters, mapTimeWindow]);
+  }, [chartData, filters]);
 
   useMemo(() => {
     // When timeWindowData is set, calc percentages
     // Don't update percentages when time window is selected, only update map view
-    if (!!timeWindowData && !mapTimeWindow) {
+    if (!!timeWindowData) {
       const timeWindowPercentages = timeWindowData.map(timeWindow => {
         const timeWindowsTotal = timeWindowData.reduce(
           (accumulator, timeWindowTotal) => {
@@ -62,7 +75,7 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
 
       setTimeWindowPercentages(timeWindowPercentages);
     }
-  }, [timeWindowData, mapTimeWindow]);
+  }, [timeWindowData]);
 
   const handleBarClick = elems => {
     // Store bar label, if click is within a bar
