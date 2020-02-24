@@ -58,7 +58,6 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
 
   useMemo(() => {
     // When timeWindowData is set, calc percentages
-    // Don't update percentages when time window is selected, only update map view
     if (!!timeWindowData) {
       const timeWindowPercentages = timeWindowData.map(timeWindow => {
         const timeWindowsTotal = timeWindowData.reduce(

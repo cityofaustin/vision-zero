@@ -5,8 +5,6 @@ export const StoreContext = React.createContext(null);
 
 export default ({ children }) => {
   const [isOpen, setIsOpen] = useState(false);
-
-  const [mapData, setMapData] = useState("");
   const [mapFilters, setMapFilters] = useState([]);
   const [mapDateRange, setMapDateRange] = useState({
     start: mapStartDate,
@@ -19,7 +17,6 @@ export default ({ children }) => {
   });
 
   const store = {
-    mapData: [mapData, setMapData],
     mapFilters: [mapFilters, setMapFilters],
     mapDateRange: [mapDateRange, setMapDateRange],
     mapTimeWindow: [mapTimeWindow, setMapTimeWindow],

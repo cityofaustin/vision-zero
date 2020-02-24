@@ -37,6 +37,7 @@ const Map = () => {
     zoom: 11
   });
 
+  const [mapData, setMapData] = useState("");
   const [hoveredFeature, setHoveredFeature] = useState(null);
   const [cityCouncilOverlay, setCityCouncilOverlay] = useState(null);
 
@@ -44,8 +45,7 @@ const Map = () => {
     mapFilters: [filters],
     mapDateRange: [dateRange],
     mapOverlay: [overlay],
-    mapTimeWindow: [mapTimeWindow],
-    mapData: [mapData, setMapData]
+    mapTimeWindow: [mapTimeWindow]
   } = React.useContext(StoreContext);
 
   // Fetch initial crash data and refetch upon filters change
