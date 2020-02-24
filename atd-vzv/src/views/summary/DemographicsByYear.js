@@ -6,7 +6,7 @@ import classnames from "classnames";
 
 import CrashTypeSelector from "../nav/CrashTypeSelector";
 import { colors } from "../../constants/colors";
-import { dataEndDate, thisYear, yearsArray } from "../../constants/time";
+import { dataEndDate, yearsArray } from "../../constants/time";
 import { demographicsEndpointUrl } from "./queries/socrataQueries";
 
 const DemographicsByYear = () => {
@@ -108,7 +108,7 @@ const DemographicsByYear = () => {
       };
       getChartData();
     }
-  }, [yearsArray, crashType]);
+  }, [crashType]);
 
   const createChartLabels = () => yearsArray().map(year => `${year}`);
 
