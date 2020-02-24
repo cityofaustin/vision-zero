@@ -4,6 +4,16 @@ import moment from "moment";
 // 4 full years of data, plus data up to the last complete month of the current year
 export const ROLLING_YEARS_OF_DATA = 4;
 
+// Create array of ints of last n years
+export const yearsArray = () => {
+  let years = [];
+  let year = parseInt(dataEndDate.format("YYYY"));
+  for (let i = 0; i <= ROLLING_YEARS_OF_DATA; i++) {
+    years.unshift(year - i);
+  }
+  return years;
+};
+
 // First date of records that should be referenced in VZV (start of first year in rolling window)
 export const dataStartDate = moment()
   .subtract(1, "month")
@@ -15,27 +25,12 @@ export const dataEndDate = moment()
   .subtract(1, "month")
   .endOf("month");
 
-// Common time variables
-export const today = moment().format("YYYY-MM-DD");
-export const thisYear = moment().format("YYYY");
-export const oneYearAgo = moment()
-  .subtract(1, "year")
+// Summary time data
+export const summaryCurrentYearStartDate = dataEndDate
+  .clone() // Moment objects are mutable
+  .startOf("year")
   .format("YYYY-MM-DD");
-export const todayMonthYear = moment().format("-MM-DD");
-export const thisMonth = moment().format("MM");
-export const lastMonth = moment()
-  .subtract(1, "month")
-  .format("MM");
-export const lastDayOfLastMonth = moment(
-  `${thisYear}-${lastMonth}`,
-  "YYYY-MM"
-).daysInMonth();
-export const lastYear = moment()
-  .subtract(1, "year")
-  .format("YYYY");
-export const lastMonthString = moment()
-  .subtract(1, "month")
-  .format("MMMM");
+export const summaryCurrentYearEndDate = dataEndDate.format("YYYY-MM-DD");
 
 // Map time data
 export const mapDataMinDate = new Date(dataStartDate.format("MM/DD/YYYY"));

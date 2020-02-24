@@ -97,7 +97,7 @@ const Map = () => {
             <CardBody>
               <CardText>Crash ID: {feature.properties.crash_id}</CardText>
               <CardText>
-                Fatality Count: {feature.properties.apd_confirmed_death_count}
+                Fatality Count: {feature.properties.death_cnt}
               </CardText>
               <CardText>Modes: {feature.properties.unit_mode}</CardText>
               <CardText>Description: {feature.properties.unit_desc}</CardText>
