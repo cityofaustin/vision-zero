@@ -31,7 +31,10 @@ const FatalitiesMultiYear = () => {
   useEffect(() => {
     const calculateYearMonthlyTotals = data => {
       // Data query is ordered by crash_date ASC so truncate dataset by month of latest record
-      const monthLimit = moment(data[data.length - 1].crash_date).format("MM");
+      const monthLimit =
+        data.length > 0
+          ? moment(data[data.length - 1].crash_date).format("MM")
+          : "12";
 
       const monthIntegerArray = [
         "01",
