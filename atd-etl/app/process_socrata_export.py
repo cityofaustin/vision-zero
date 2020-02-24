@@ -36,15 +36,7 @@ query_configs = [
                 "veh_unit_desc_desc": "unit_mode",
                 "latitude_primary": "latitude",
                 "longitude_primary": "longitude"
-            },
-            "flags_list": ["MOTOR VEHICLE",
-                           "TRAIN",
-                           "PEDALCYCLIST",
-                           "PEDESTRIAN",
-                           "MOTORIZED CONVEYANCE",
-                           "TOWED/PUSHED/TRAILER",
-                           "NON-CONTACT",
-                           "OTHER"]
+            }
         },
         # "dataset_uid": "3aut-fhzp"  # TEST
         "dataset_uid": "y2wy-tgr5"  # PROD
@@ -61,15 +53,7 @@ query_configs = [
             "prefixes": {
                 "person_id": "P",
                 "primaryperson_id": "PP",
-            },
-            "flags_list": ["MOTOR VEHICLE",
-                           "TRAIN",
-                           "PEDALCYCLIST",
-                           "PEDESTRIAN",
-                           "MOTORIZED CONVEYANCE",
-                           "TOWED/PUSHED/TRAILER",
-                           "NON-CONTACT",
-                           "OTHER"]
+            }
         },
         # "dataset_uid": "v3x4-fjgm"  # TEST
         "dataset_uid": "xecs-rpy9"  # PROD

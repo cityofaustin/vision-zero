@@ -66,6 +66,16 @@ const StyledDrawer = styled.div`
       display: none;
     }
   }
+
+  /* Keep logo fixed and scroll content below */
+  .MuiDrawer-paper {
+    overflow-y: unset;
+  }
+
+  .drawer-content {
+    overflow-y: scroll;
+    height: calc(100vh - ${drawer.headerHeight}px);
+  }
 `;
 
 const SideDrawer = () => {
@@ -86,7 +96,7 @@ const SideDrawer = () => {
           alt="Vision Zero Austin Logo"
         ></img>
       </StyledDrawerHeader>
-      <Container className="pt-3 pb-3">
+      <Container className="pt-3 pb-3 drawer-content">
         <SideDrawerMobileNav />
         {/* TODO: Remove disclaimer when going live */}
         <Alert color="danger">

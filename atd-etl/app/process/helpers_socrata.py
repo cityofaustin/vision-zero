@@ -127,7 +127,6 @@ def create_mode_flags(records):
     """
     Creates mode flag columns in data along with "Y" or "N" value
     :param records: list - List of record dicts
-    :param unit_modes: list - List of mode strings to create flag columns
     """
     for record in records:
         crash_metadata = record.get("atd_mode_category_metadata")
@@ -142,6 +141,18 @@ def create_mode_flags(records):
             for flag_key, flag_value in mode_category_flags.items():
                 if id in flag_value:
                     record[flag_key] = "Y"
+    return records
+
+
+def concatTimeAndDate(records):
+    """
+    Concat crash date and time to make date/time queryable
+    :param records: list - List of record dicts
+    """
+    for record in records:
+        concatDateAndTime = record.get(
+            "crash_date") + "T" + record.get("crash_time")
+        record["crash_date"] = concatDateAndTime
     return records
 
 
@@ -233,6 +244,7 @@ def format_crash_data(data, formatter_config):
 
     # Format records
     formatted_records = create_mode_flags(records)
+    formatted_records = concatTimeAndDate(formatted_records)
     formatted_records = set_mode_columns(
         formatted_records)
     formatted_records = flatten_hasura_response(formatted_records)
