@@ -15,17 +15,19 @@ const locationDataMap = [
         editable: false,
         format: "datetime",
       },
-      total_crashes: {
-        label: "Total Crashes (Previous 5 years)",
-        alternateTable: "locationTotals",
-        editable: false,
-      },
-      total_est_comp_cost: {
-        label: "Total Estimated Comprehensive Cost (Previous 5 years)",
-        alternateTable: "locationTotals",
-        editable: false,
-        format: "dollars",
-      },
+      // TODO: add these fields back to a Location Details
+      //
+      // total_crashes: {
+      //   label: "Total Crashes (Previous 5 years)",
+      //   alternateTable: "locationTotals",
+      //   editable: false,
+      // },
+      // total_est_comp_cost: {
+      //   label: "Total Estimated Comprehensive Cost (Previous 5 years)",
+      //   alternateTable: "locationTotals",
+      //   editable: false,
+      //   format: "dollars",
+      // },
       asmp_street_level: {
         label: "ASMP Street Level",
         editable: true,
