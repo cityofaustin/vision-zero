@@ -102,21 +102,26 @@ const Map = () => {
     !!apiUrl &&
       axios.get(apiUrl).then(res => {
         setMapData(res.data);
-        // Keep the needle around while rendering
+        // Give the map some time to render after data has returned
         setTimeout(() => setIsMapDataLoading(false), 2000);
       });
   }, [filters, dateRange, mapTimeWindow, setMapData]);
 
   useEffect(() => {
-    // Fetch City Council Districts geojson and return OBJECTID metadata for styling in map-style.js
-    setIsMapDataLoading(true);
+    // Fetch City Council Districts geojson and return COUNCIL_DISTRICT metadata for styling in map-style.js
     const overlayUrl = `https://services.arcgis.com/0L95CJ0VTaxqcmED/ArcGIS/rest/services/BOUNDARIES_single_member_districts/FeatureServer/0/query?where=COUNCIL_DISTRICT%20%3E=%200&f=geojson`;
     axios.get(overlayUrl).then(res => {
       setCityCouncilOverlay(res.data);
-      // Give the map some time to render after data has returned
-      setTimeout(() => setIsMapDataLoading(false), 3000);
     });
   }, []);
+
+  // Show spinner on overlay change
+  useEffect(() => {
+    if (overlay !== null) {
+      setIsMapDataLoading(true);
+      setTimeout(() => setIsMapDataLoading(false), 1000);
+    }
+  }, [overlay]);
 
   const _onViewportChange = viewport => setViewport(viewport);
 
