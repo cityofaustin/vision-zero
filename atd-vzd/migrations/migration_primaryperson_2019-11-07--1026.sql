@@ -1,3 +1,5 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:11b50cf05e603e77fefe9e5d74c67ea42c5233a3d244836737400aaa68bec6d4
-size 206
+--
+-- Enforces unique records in the primary person table.
+--
+create index atd_txdot_primaryperson_unique_index
+	on atd_txdot_primaryperson (crash_id, unit_nbr, prsn_nbr, prsn_type_id, prsn_occpnt_pos_id);

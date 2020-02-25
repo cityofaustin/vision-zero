@@ -1,3 +1,14 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:7c4ec929f98fa16d62d2081c0cc3fbc01443ccdb7cbdceba9c0310862d344368
-size 365
+create function atd_txdot_person_updates_audit_log() returns trigger
+    language plpgsql
+as
+$$
+BEGIN
+    INSERT INTO atd_txdot_change_log (record_id, record_crash_id, record_type, record_json)
+    VALUES (old.person_id, old.crash_id, 'person', row_to_json(old));
+
+   RETURN NEW;
+END;
+$$;
+
+alter function atd_txdot_person_updates_audit_log() owner to atd_vz_data;
+

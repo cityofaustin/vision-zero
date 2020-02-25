@@ -1,3 +1,18 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:cc7a6727a0a777674fcaebf4b762984c222ebd174accf66d738b14f9144e4d02
-size 386
+CREATE OR REPLACE FUNCTION public.find_noncr3_collisions_for_location
+(id integer)
+ RETURNS SETOF atd_apd_blueform
+ LANGUAGE sql
+ STABLE
+AS $function$
+SELECT
+  *
+FROM
+  atd_apd_blueform AS blueform
+WHERE
+	ST_Contains((
+		SELECT
+  atd_loc.shape
+FROM atd_txdot_locations AS atd_loc
+WHERE
+			atd_loc.unique_id::INTEGER=id), ST_MakePoint (blueform.longitude, blueform.latitude))
+$function$

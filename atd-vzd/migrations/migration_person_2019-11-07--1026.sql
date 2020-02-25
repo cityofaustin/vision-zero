@@ -1,3 +1,5 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:d7fb9062ad7a814ed82c4ba0dfdad7bae591d5fec83310271d1b2924261c9897
-size 203
+--
+-- This unique index enforces unique records in the persons table.
+--
+create index atd_txdot_person_unique_index
+	on atd_txdot_person (crash_id, unit_nbr, prsn_nbr, prsn_type_id, prsn_occpnt_pos_id);
