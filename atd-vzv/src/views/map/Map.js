@@ -14,6 +14,9 @@ import axios from "axios";
 
 import { Card, CardBody, CardText, Button } from "reactstrap";
 import styled from "styled-components";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCompass } from "@fortawesome/free-solid-svg-icons";
+import { colors } from "../../constants/colors";
 
 import "mapbox-gl/dist/mapbox-gl.css";
 
@@ -34,6 +37,36 @@ const StyledMapSpinner = styled.div`
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  border: 2px solid ${colors.dark};
+  border-radius: 0.25rem;
+
+  .needle {
+    animation-name: waggle;
+    animation-duration: 2500ms;
+    animation-iteration-count: infinite;
+    animation-timing-function: ease-in-out;
+  }
+
+  @keyframes waggle {
+    0% {
+      transform: rotate(0deg);
+    }
+    10% {
+      transform: rotate(12deg);
+    }
+    40% {
+      transform: rotate(-25deg);
+    }
+    60% {
+      transform: rotate(20deg);
+    }
+    80% {
+      transform: rotate(-15deg);
+    }
+    100% {
+      transform: rotate(0deg);
+    }
+  }
 `;
 
 const Map = () => {
@@ -149,7 +182,14 @@ const Map = () => {
 
       {/* Show spinner when mapData is loading */}
       <StyledMapSpinner>
-        <Button color="danger">Test</Button>
+        <Button color="light">
+          <FontAwesomeIcon
+            className="needle"
+            icon={faCompass}
+            color={colors.infoDark}
+            size="3x"
+          />
+        </Button>
       </StyledMapSpinner>
     </ReactMapGL>
   );
