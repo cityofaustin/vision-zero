@@ -12,7 +12,7 @@ import {
 } from "./map-style";
 import axios from "axios";
 
-import { Card, CardBody, CardText } from "reactstrap";
+import { Card, CardBody, CardText, Button } from "reactstrap";
 import styled from "styled-components";
 
 import "mapbox-gl/dist/mapbox-gl.css";
@@ -27,6 +27,13 @@ const StyledCard = styled.div`
   font-size: 12px !important;
   z-index: 9 !important;
   pointer-events: none;
+`;
+
+const StyledMapSpinner = styled.div`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 `;
 
 const Map = () => {
@@ -139,6 +146,11 @@ const Map = () => {
 
       {/* Render crash point tooltips */}
       {hoveredFeature && _renderTooltip()}
+
+      {/* Show spinner when mapData is loading */}
+      <StyledMapSpinner>
+        <Button color="danger">Test</Button>
+      </StyledMapSpinner>
     </ReactMapGL>
   );
 };
