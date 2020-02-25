@@ -80,6 +80,7 @@ const Map = () => {
   const [mapData, setMapData] = useState("");
   const [hoveredFeature, setHoveredFeature] = useState(null);
   const [cityCouncilOverlay, setCityCouncilOverlay] = useState(null);
+  const [isMapDataLoading, setIsMapDataLoading] = useState(false);
 
   const {
     mapFilters: [filters],
@@ -97,17 +98,23 @@ const Map = () => {
       mapTimeWindow
     );
 
+    setIsMapDataLoading(true);
     !!apiUrl &&
       axios.get(apiUrl).then(res => {
         setMapData(res.data);
+        // Keep the needle around while rendering
+        setTimeout(() => setIsMapDataLoading(false), 2000);
       });
   }, [filters, dateRange, mapTimeWindow, setMapData]);
 
   useEffect(() => {
     // Fetch City Council Districts geojson and return OBJECTID metadata for styling in map-style.js
+    setIsMapDataLoading(true);
     const overlayUrl = `https://services.arcgis.com/0L95CJ0VTaxqcmED/ArcGIS/rest/services/BOUNDARIES_single_member_districts/FeatureServer/0/query?where=COUNCIL_DISTRICT%20%3E=%200&f=geojson`;
     axios.get(overlayUrl).then(res => {
       setCityCouncilOverlay(res.data);
+      // Give the map some time to render after data has returned
+      setTimeout(() => setIsMapDataLoading(false), 3000);
     });
   }, []);
 
@@ -181,16 +188,18 @@ const Map = () => {
       {hoveredFeature && _renderTooltip()}
 
       {/* Show spinner when mapData is loading */}
-      <StyledMapSpinner>
-        <Button color="light">
-          <FontAwesomeIcon
-            className="needle"
-            icon={faCompass}
-            color={colors.infoDark}
-            size="3x"
-          />
-        </Button>
-      </StyledMapSpinner>
+      {isMapDataLoading && (
+        <StyledMapSpinner>
+          <Button color="light">
+            <FontAwesomeIcon
+              className="needle"
+              icon={faCompass}
+              color={colors.infoDark}
+              size="3x"
+            />
+          </Button>
+        </StyledMapSpinner>
+      )}
     </ReactMapGL>
   );
 };
