@@ -47,6 +47,78 @@ const StyledMapSpinner = styled.div`
     animation-timing-function: ease-in-out;
   }
 
+  /* Add outline to FA icon */
+  .fa-compass svg {
+    stroke: ${colors.secondary};
+    stroke-width: 3;
+  }
+
+  @keyframes waggle {
+    0% {
+      transform: rotate(0deg);
+    }
+    10% {
+      transform: rotate(12deg);
+    }
+    40% {
+      transform: rotate(-25deg);
+    }
+    60% {
+      transform: rotate(20deg);
+    }
+    80% {
+      transform: rotate(-15deg);
+    }
+    100% {
+      transform: rotate(0deg);
+    }
+  }
+`;
+
+const StyledMapSpinnerTwo = styled.div`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  /* background: ${colors.dark}; */
+  /* border-radius: 0.25rem; */
+
+  .compass {
+    border: 2px solid ${colors.dark};
+    display: block;
+    width: 25px;
+    height: 25px;
+    border-radius: 100%;
+    margin: 10% auto 0 auto;
+  }
+
+  .needle {
+    width: 6px;
+    margin: 12px auto 0 auto;
+    animation-name: waggle;
+    animation-duration: 2500ms;
+    animation-iteration-count: infinite;
+    animation-timing-function: ease-in-out;
+  }
+
+  .needle:after {
+    content: "";
+    display: block;
+    border-color: ${colors.chartRedOrange} transparent;
+    border-style: solid;
+    border-width: 0px 3px 10px 3px;
+    margin-top: -15px;
+  }
+
+  .needle:before {
+    content: "";
+    display: block;
+    border-color: ${colors.dark} transparent;
+    border-style: solid;
+    border-width: 10px 3px 0px 3px;
+    margin-bottom: -20px;
+  }
+
   @keyframes waggle {
     0% {
       transform: rotate(0deg);
@@ -195,7 +267,7 @@ const Map = () => {
       {/* Show spinner when mapData is loading */}
       {isMapDataLoading && (
         <StyledMapSpinner>
-          <Button color="light">
+          <Button color="dark">
             <FontAwesomeIcon
               className="needle"
               icon={faCompass}
@@ -205,6 +277,14 @@ const Map = () => {
           </Button>
         </StyledMapSpinner>
       )}
+
+      {/* {isMapDataLoading && (
+        <StyledMapSpinnerTwo>
+          <div className="compass">
+            <div className="needle"></div>
+          </div>
+        </StyledMapSpinnerTwo>
+      )} */}
     </ReactMapGL>
   );
 };
