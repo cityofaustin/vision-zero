@@ -22,6 +22,11 @@ import "mapbox-gl/dist/mapbox-gl.css";
 
 const MAPBOX_TOKEN = `pk.eyJ1Ijoiam9obmNsYXJ5IiwiYSI6ImNrM29wNnB3dDAwcXEzY29zMTU5bWkzOWgifQ.KKvoz6s4NKNHkFVSnGZonw`;
 
+// TODO: Find reliable loading events for spinner
+// TODO: If not, mock longer initial load with setTimeout
+// TODO: Cover overlay changes with spinner logic
+// TODO: Finish out second style of spinner
+
 const StyledCard = styled.div`
   position: absolute;
   margin: 8px;
@@ -37,8 +42,6 @@ const StyledMapSpinner = styled.div`
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  /* border: 2px solid ${colors.dark};
-  border-radius: 0.25rem; */
 
   .needle {
     animation-name: waggle;
@@ -178,6 +181,8 @@ const Map = () => {
         // Give the map some time to render after data has returned
         setTimeout(() => setIsMapDataLoading(false), 2000);
       });
+
+    // TODO Maybe call mapref.getMap() here to force one more render and stop spinner?
   }, [filters, dateRange, mapTimeWindow, setMapData]);
 
   useEffect(() => {
@@ -216,10 +221,6 @@ const Map = () => {
   //     console.log("Loaded!");
   //   }
   // };
-
-  const _onViewStateChange = event => {
-    console.log(event);
-  };
 
   const _getCursor = ({ isDragging }) => (isDragging ? "grab" : "default");
 
@@ -279,7 +280,7 @@ const Map = () => {
       {hoveredFeature && _renderTooltip()}
 
       {/* Show spinner when mapData is loading */}
-      {!!mapRef.current && !mapRef.current.style.loaded() && (
+      {!!mapRef.current && !mapRef.current.loaded() && (
         <StyledMapSpinner className="fa-layers fa-fw">
           <FontAwesomeIcon icon={faCircle} color={colors.infoDark} size="4x" />
           <FontAwesomeIcon
