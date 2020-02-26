@@ -22,14 +22,7 @@ import "mapbox-gl/dist/mapbox-gl.css";
 
 const MAPBOX_TOKEN = `pk.eyJ1Ijoiam9obmNsYXJ5IiwiYSI6ImNrM29wNnB3dDAwcXEzY29zMTU5bWkzOWgifQ.KKvoz6s4NKNHkFVSnGZonw`;
 
-// TODO: Find reliable loading events for spinner
-// TODO: If not, mock longer initial load with setTimeout
-// TODO: Cover overlay changes with spinner logic
 // TODO: Finish out second style of spinner
-// TODO: 1. Spinner starts initial render because of mapRef.current.loaded()
-// TODO: 2. Spinner stops because of onLoad() event handler
-// TODO: 3. Spinner starts and stops when adding/removing overlay because of mapRed.current.loaded()
-// TODO: 4. Spinner starts and stops in useEffect for map data (setTimeout 1000ms)
 
 const StyledCard = styled.div`
   position: absolute;
@@ -153,15 +146,11 @@ const Map = () => {
   const [hoveredFeature, setHoveredFeature] = useState(null);
   const [cityCouncilOverlay, setCityCouncilOverlay] = useState(null);
   const [isMapDataLoading, setIsMapDataLoading] = useState(false);
-  const [hasMapInitialized, setHasMapInitialized] = useState(false);
 
   !!mapRef.current &&
     mapRef.current.on("data", function() {
       setIsMapDataLoading(true);
-      console.log("Setting loading to true!");
     });
-
-  !!mapRef.current && console.log(mapRef.current.areTilesLoaded());
 
   const {
     mapFilters: [filters],
@@ -173,7 +162,6 @@ const Map = () => {
   useEffect(() => {
     const mapDataListener = mapRef.current.on("data", function() {
       setIsMapDataLoading(true);
-      console.log("Setting loading to true!");
     });
     return () => {
       mapRef.current.off("data", mapDataListener);
@@ -183,7 +171,6 @@ const Map = () => {
   useEffect(() => {
     const mapLoadListener = mapRef.current.on("idle", function() {
       setIsMapDataLoading(false);
-      console.log("Setting loading to false!");
     });
     return () => {
       mapRef.current.off("idle", mapLoadListener);
@@ -199,19 +186,11 @@ const Map = () => {
       mapTimeWindow
     );
 
-    // setIsMapDataLoading(true);
     !!apiUrl &&
       axios.get(apiUrl).then(res => {
         setMapData(res.data);
-        // Give the map some time to render after data has returned
-        // console.log("Turning off spinner in useEffect!");
-
-        // hasMapInitialized && setTimeout(() => setIsMapDataLoading(false), 2000);
-        // hasMapInitialized && setIsMapDataLoading(false);
       });
-
-    // TODO Maybe call mapref.getMap() here to force one more render and stop spinner?
-  }, [filters, dateRange, mapTimeWindow, setMapData, hasMapInitialized]);
+  }, [filters, dateRange, mapTimeWindow, setMapData]);
 
   useEffect(() => {
     // Fetch City Council Districts geojson and return COUNCIL_DISTRICT metadata for styling in map-style.js
@@ -220,14 +199,6 @@ const Map = () => {
       setCityCouncilOverlay(res.data);
     });
   }, []);
-
-  // Show spinner on overlay change
-  useEffect(() => {
-    // if (overlay !== null) {
-    //   setIsMapDataLoading(true);
-    //   setTimeout(() => setIsMapDataLoading(false), 1000);
-    // }
-  }, [overlay]);
 
   const _onViewportChange = viewport => setViewport(viewport);
 
@@ -240,16 +211,6 @@ const Map = () => {
     const hoveredFeature =
       features && features.find(f => f.layer.id === "crashes");
     setHoveredFeature({ feature: hoveredFeature, x: offsetX, y: offsetY });
-  };
-
-  // TODO Use this in combo with mapRef in order to turn off spinner onLoad
-  const _onLoad = event => {
-    // console.log(event);
-    if (event.type === "load") {
-      setIsMapDataLoading(false);
-      setHasMapInitialized(true);
-      console.log("Turning off spinner in onLoad!");
-    }
   };
 
   const _getCursor = ({ isDragging }) => (isDragging ? "grab" : "default");
@@ -285,7 +246,6 @@ const Map = () => {
       mapboxApiAccessToken={MAPBOX_TOKEN}
       getCursor={_getCursor}
       onHover={_onHover}
-      onLoad={_onLoad}
       ref={ref => (mapRef.current = ref && ref.getMap())}
     >
       {!!mapData && (
