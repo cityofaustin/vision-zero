@@ -12,7 +12,7 @@ import {
 } from "./map-style";
 import axios from "axios";
 
-import { Card, CardBody, CardText, Button } from "reactstrap";
+import { Card, CardBody, CardText } from "reactstrap";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCompass, faCircle } from "@fortawesome/free-solid-svg-icons";
@@ -26,6 +26,10 @@ const MAPBOX_TOKEN = `pk.eyJ1Ijoiam9obmNsYXJ5IiwiYSI6ImNrM29wNnB3dDAwcXEzY29zMTU
 // TODO: If not, mock longer initial load with setTimeout
 // TODO: Cover overlay changes with spinner logic
 // TODO: Finish out second style of spinner
+// TODO: 1. Spinner starts initial render because of mapRef.current.loaded()
+// TODO: 2. Spinner stops because of onLoad() event handler
+// TODO: 3. Spinner starts and stops when adding/removing overlay because of mapRed.current.loaded()
+// TODO: 4. Spinner starts and stops in useEffect for map data (setTimeout 1000ms)
 
 const StyledCard = styled.div`
   position: absolute;
@@ -49,12 +53,6 @@ const StyledMapSpinner = styled.div`
     animation-iteration-count: infinite;
     animation-timing-function: ease-in-out;
   }
-
-  /* Add outline to FA icon */
-  /* .fa-compass svg d {
-    stroke: ${colors.secondary};
-    stroke-width: 3;
-  } */
 
   @keyframes waggle {
     0% {
@@ -83,8 +81,6 @@ const StyledMapSpinnerTwo = styled.div`
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  /* background: ${colors.dark}; */
-  /* border-radius: 0.25rem; */
 
   .compass {
     border: 2px solid ${colors.dark};
@@ -152,11 +148,19 @@ const Map = () => {
     zoom: 11
   });
   const mapRef = useRef();
-  !!mapRef.current && console.log(mapRef.current);
+
   const [mapData, setMapData] = useState("");
   const [hoveredFeature, setHoveredFeature] = useState(null);
   const [cityCouncilOverlay, setCityCouncilOverlay] = useState(null);
   const [isMapDataLoading, setIsMapDataLoading] = useState(false);
+  const [hasMapInitialized, setHasMapInitialized] = useState(false);
+  !!mapRef.current &&
+    mapRef.current.on("data", function() {
+      setIsMapDataLoading(true);
+      console.log("Setting loading to true!");
+    });
+
+  !!mapRef.current && console.log(mapRef.current.areTilesLoaded());
 
   const {
     mapFilters: [filters],
@@ -174,16 +178,18 @@ const Map = () => {
       mapTimeWindow
     );
 
-    setIsMapDataLoading(true);
+    // setIsMapDataLoading(true);
     !!apiUrl &&
       axios.get(apiUrl).then(res => {
         setMapData(res.data);
         // Give the map some time to render after data has returned
-        setTimeout(() => setIsMapDataLoading(false), 2000);
+        console.log("Turning off spinner in useEffect!");
+
+        hasMapInitialized && setTimeout(() => setIsMapDataLoading(false), 2000);
       });
 
     // TODO Maybe call mapref.getMap() here to force one more render and stop spinner?
-  }, [filters, dateRange, mapTimeWindow, setMapData]);
+  }, [filters, dateRange, mapTimeWindow, setMapData, hasMapInitialized]);
 
   useEffect(() => {
     // Fetch City Council Districts geojson and return COUNCIL_DISTRICT metadata for styling in map-style.js
@@ -195,10 +201,10 @@ const Map = () => {
 
   // Show spinner on overlay change
   useEffect(() => {
-    if (overlay !== null) {
-      setIsMapDataLoading(true);
-      setTimeout(() => setIsMapDataLoading(false), 1000);
-    }
+    // if (overlay !== null) {
+    //   setIsMapDataLoading(true);
+    //   setTimeout(() => setIsMapDataLoading(false), 1000);
+    // }
   }, [overlay]);
 
   const _onViewportChange = viewport => setViewport(viewport);
@@ -214,13 +220,15 @@ const Map = () => {
     setHoveredFeature({ feature: hoveredFeature, x: offsetX, y: offsetY });
   };
 
-  // For initial load
-  // const _onLoad = event => {
-  //   console.log(event);
-  //   if (event.type === "load") {
-  //     console.log("Loaded!");
-  //   }
-  // };
+  // TODO Use this in combo with mapRef in order to turn off spinner onLoad
+  const _onLoad = event => {
+    // console.log(event);
+    if (event.type === "load") {
+      setIsMapDataLoading(false);
+      setHasMapInitialized(true);
+      console.log("Turning off spinner in onLoad!");
+    }
+  };
 
   const _getCursor = ({ isDragging }) => (isDragging ? "grab" : "default");
 
@@ -255,6 +263,7 @@ const Map = () => {
       mapboxApiAccessToken={MAPBOX_TOKEN}
       getCursor={_getCursor}
       onHover={_onHover}
+      onLoad={_onLoad}
       ref={ref => (mapRef.current = ref && ref.getMap())}
     >
       {!!mapData && (
@@ -280,7 +289,7 @@ const Map = () => {
       {hoveredFeature && _renderTooltip()}
 
       {/* Show spinner when mapData is loading */}
-      {!!mapRef.current && !mapRef.current.loaded() && (
+      {isMapDataLoading && (
         <StyledMapSpinner className="fa-layers fa-fw">
           <FontAwesomeIcon icon={faCircle} color={colors.infoDark} size="4x" />
           <FontAwesomeIcon
