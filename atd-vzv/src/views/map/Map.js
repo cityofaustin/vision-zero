@@ -147,11 +147,6 @@ const Map = () => {
   const [cityCouncilOverlay, setCityCouncilOverlay] = useState(null);
   const [isMapDataLoading, setIsMapDataLoading] = useState(false);
 
-  !!mapRef.current &&
-    mapRef.current.on("data", function() {
-      setIsMapDataLoading(true);
-    });
-
   const {
     mapFilters: [filters],
     mapDateRange: [dateRange],
@@ -159,23 +154,9 @@ const Map = () => {
     mapTimeWindow: [mapTimeWindow]
   } = React.useContext(StoreContext);
 
-  useEffect(() => {
-    const mapDataListener = mapRef.current.on("data", function() {
-      setIsMapDataLoading(true);
-    });
-    return () => {
-      mapRef.current.off("data", mapDataListener);
-    };
-  }, [mapData]);
-
-  useEffect(() => {
-    const mapLoadListener = mapRef.current.on("idle", function() {
-      setIsMapDataLoading(false);
-    });
-    return () => {
-      mapRef.current.off("idle", mapLoadListener);
-    };
-  }, [mapData]);
+  // Add/remove listeners for spinner logic
+  useMapEventHandler("data", () => setIsMapDataLoading(true), mapRef, mapData);
+  useMapEventHandler("idle", () => setIsMapDataLoading(false), mapRef, mapData);
 
   // Fetch initial crash data and refetch upon filters change
   useEffect(() => {
@@ -295,3 +276,15 @@ const Map = () => {
 };
 
 export default Map;
+
+function useMapEventHandler(eventName, callback, mapRef, dependency) {
+  useEffect(() => {
+    const currentMapRef = mapRef.current;
+    const mapDataListener = currentMapRef.on(eventName, function() {
+      callback();
+    });
+    return () => {
+      currentMapRef.off(eventName, mapDataListener);
+    };
+  }, [eventName, callback, mapRef, dependency]);
+}
