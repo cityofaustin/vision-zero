@@ -22,8 +22,6 @@ import "mapbox-gl/dist/mapbox-gl.css";
 
 const MAPBOX_TOKEN = `pk.eyJ1Ijoiam9obmNsYXJ5IiwiYSI6ImNrM29wNnB3dDAwcXEzY29zMTU5bWkzOWgifQ.KKvoz6s4NKNHkFVSnGZonw`;
 
-// TODO: Finish out second style of spinner
-
 const StyledCard = styled.div`
   position: absolute;
   margin: 8px;
@@ -41,13 +39,13 @@ const StyledMapSpinner = styled.div`
   transform: translate(-50%, -50%);
 
   .needle {
-    animation-name: waggle;
+    animation-name: wiggle;
     animation-duration: 2500ms;
     animation-iteration-count: infinite;
     animation-timing-function: ease-in-out;
   }
 
-  @keyframes waggle {
+  @keyframes wiggle {
     0% {
       transform: rotate(0deg);
     }
@@ -69,69 +67,17 @@ const StyledMapSpinner = styled.div`
   }
 `;
 
-const StyledMapSpinnerTwo = styled.div`
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-
-  .compass {
-    border: 2px solid ${colors.dark};
-    display: block;
-    width: 25px;
-    height: 25px;
-    border-radius: 100%;
-    margin: 10% auto 0 auto;
-  }
-
-  .needle {
-    width: 6px;
-    margin: 12px auto 0 auto;
-    animation-name: waggle;
-    animation-duration: 2500ms;
-    animation-iteration-count: infinite;
-    animation-timing-function: ease-in-out;
-  }
-
-  .needle:after {
-    content: "";
-    display: block;
-    border-color: ${colors.chartRedOrange} transparent;
-    border-style: solid;
-    border-width: 0px 3px 10px 3px;
-    margin-top: -15px;
-  }
-
-  .needle:before {
-    content: "";
-    display: block;
-    border-color: ${colors.dark} transparent;
-    border-style: solid;
-    border-width: 10px 3px 0px 3px;
-    margin-bottom: -20px;
-  }
-
-  @keyframes waggle {
-    0% {
-      transform: rotate(0deg);
-    }
-    10% {
-      transform: rotate(12deg);
-    }
-    40% {
-      transform: rotate(-25deg);
-    }
-    60% {
-      transform: rotate(20deg);
-    }
-    80% {
-      transform: rotate(-15deg);
-    }
-    100% {
-      transform: rotate(0deg);
-    }
-  }
-`;
+function useMapEventHandler(eventName, callback, mapRef, dependency) {
+  useEffect(() => {
+    const currentMapRef = mapRef.current;
+    const mapDataListener = currentMapRef.on(eventName, function() {
+      callback();
+    });
+    return () => {
+      currentMapRef.off(eventName, mapDataListener);
+    };
+  }, [eventName, callback, mapRef, dependency]);
+}
 
 const Map = () => {
   // Set initial map config
@@ -140,6 +86,8 @@ const Map = () => {
     longitude: -97.742828,
     zoom: 11
   });
+
+  // Create ref to map to call Mapbox GL functions on instance
   const mapRef = useRef();
 
   const [mapData, setMapData] = useState("");
@@ -173,8 +121,8 @@ const Map = () => {
       });
   }, [filters, dateRange, mapTimeWindow, setMapData]);
 
+  // Fetch City Council Districts geojson
   useEffect(() => {
-    // Fetch City Council Districts geojson and return COUNCIL_DISTRICT metadata for styling in map-style.js
     const overlayUrl = `https://services.arcgis.com/0L95CJ0VTaxqcmED/ArcGIS/rest/services/BOUNDARIES_single_member_districts/FeatureServer/0/query?where=COUNCIL_DISTRICT%20%3E=%200&f=geojson`;
     axios.get(overlayUrl).then(res => {
       setCityCouncilOverlay(res.data);
@@ -251,7 +199,7 @@ const Map = () => {
       {/* Render crash point tooltips */}
       {hoveredFeature && _renderTooltip()}
 
-      {/* Show spinner when mapData is loading */}
+      {/* Show spinner when map is updating */}
       {isMapDataLoading && (
         <StyledMapSpinner className="fa-layers fa-fw">
           <FontAwesomeIcon icon={faCircle} color={colors.infoDark} size="4x" />
@@ -263,28 +211,8 @@ const Map = () => {
           />
         </StyledMapSpinner>
       )}
-
-      {/* {isMapDataLoading && (
-        <StyledMapSpinnerTwo>
-          <div className="compass">
-            <div className="needle"></div>
-          </div>
-        </StyledMapSpinnerTwo>
-      )} */}
     </ReactMapGL>
   );
 };
 
 export default Map;
-
-function useMapEventHandler(eventName, callback, mapRef, dependency) {
-  useEffect(() => {
-    const currentMapRef = mapRef.current;
-    const mapDataListener = currentMapRef.on(eventName, function() {
-      callback();
-    });
-    return () => {
-      currentMapRef.off(eventName, mapDataListener);
-    };
-  }, [eventName, callback, mapRef, dependency]);
-}
