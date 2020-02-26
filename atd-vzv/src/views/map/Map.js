@@ -154,6 +154,7 @@ const Map = () => {
   const [cityCouncilOverlay, setCityCouncilOverlay] = useState(null);
   const [isMapDataLoading, setIsMapDataLoading] = useState(false);
   const [hasMapInitialized, setHasMapInitialized] = useState(false);
+
   !!mapRef.current &&
     mapRef.current.on("data", function() {
       setIsMapDataLoading(true);
@@ -169,6 +170,26 @@ const Map = () => {
     mapTimeWindow: [mapTimeWindow]
   } = React.useContext(StoreContext);
 
+  useEffect(() => {
+    const mapDataListener = mapRef.current.on("data", function() {
+      setIsMapDataLoading(true);
+      console.log("Setting loading to true!");
+    });
+    return () => {
+      mapRef.current.off("data", mapDataListener);
+    };
+  }, [mapData]);
+
+  useEffect(() => {
+    const mapLoadListener = mapRef.current.on("idle", function() {
+      setIsMapDataLoading(false);
+      console.log("Setting loading to false!");
+    });
+    return () => {
+      mapRef.current.off("idle", mapLoadListener);
+    };
+  }, [mapData]);
+
   // Fetch initial crash data and refetch upon filters change
   useEffect(() => {
     const apiUrl = createMapDataUrl(
@@ -183,9 +204,10 @@ const Map = () => {
       axios.get(apiUrl).then(res => {
         setMapData(res.data);
         // Give the map some time to render after data has returned
-        console.log("Turning off spinner in useEffect!");
+        // console.log("Turning off spinner in useEffect!");
 
-        hasMapInitialized && setTimeout(() => setIsMapDataLoading(false), 2000);
+        // hasMapInitialized && setTimeout(() => setIsMapDataLoading(false), 2000);
+        // hasMapInitialized && setIsMapDataLoading(false);
       });
 
     // TODO Maybe call mapref.getMap() here to force one more render and stop spinner?
