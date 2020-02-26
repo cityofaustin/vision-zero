@@ -15,7 +15,7 @@ import {
 import { getYearsAgoLabel } from "./helpers/helpers";
 import { colors } from "../../constants/colors";
 
-const FatalitiesByTimeOfDayWeek = () => {
+const CrashesByTimeOfDay = () => {
   const [activeTab, setActiveTab] = useState(0);
   const [crashType, setCrashType] = useState([]);
   const [heatmapData, setHeatmapData] = useState([]);
@@ -181,4 +181,4 @@ const FatalitiesByTimeOfDayWeek = () => {
   );
 };
 
-export default FatalitiesByTimeOfDayWeek;
+export default CrashesByTimeOfDay;

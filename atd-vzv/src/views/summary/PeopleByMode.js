@@ -10,9 +10,9 @@ import {
   yearsArray,
   summaryCurrentYearEndDate
 } from "../../constants/time";
-import { demographicsEndpointUrl } from "./queries/socrataQueries";
+import { personEndpointUrl } from "./queries/socrataQueries";
 
-const FatalitiesByMode = () => {
+const PeopleByMode = () => {
   const modes = [
     {
       label: "Motorist",
@@ -47,7 +47,7 @@ const FatalitiesByMode = () => {
   // Fetch data and set in state by years in yearsArray
   useEffect(() => {
     // Wait for crashType to be passed up from setCrashType component
-    if (crashType.queryStringDemographics) {
+    if (crashType.queryStringPerson) {
       const getChartData = async () => {
         let newData = {};
         // Use Promise.all to let all requests resolve before setting chart data by year
@@ -59,7 +59,7 @@ const FatalitiesByMode = () => {
               year.toString() === dataEndDate.format("YYYY")
                 ? `${summaryCurrentYearEndDate}T23:59:59`
                 : `${year}-12-31T23:59:59`;
-            let url = `${demographicsEndpointUrl}?$where=${crashType.queryStringDemographics} AND crash_date between '${year}-01-01T00:00:00' and '${endDate}'`;
+            let url = `${personEndpointUrl}?$where=${crashType.queryStringPerson} AND crash_date between '${year}-01-01T00:00:00' and '${endDate}'`;
             await axios.get(url).then(res => {
               newData = { ...newData, ...{ [year]: res.data } };
             });
@@ -159,4 +159,4 @@ const FatalitiesByMode = () => {
   );
 };
 
-export default FatalitiesByMode;
+export default PeopleByMode;
