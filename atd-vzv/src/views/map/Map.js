@@ -67,7 +67,7 @@ const StyledMapSpinner = styled.div`
   }
 `;
 
-function useMapEventHandler(eventName, callback, mapRef, dependency) {
+function useMapEventHandler(eventName, callback, mapRef) {
   useEffect(() => {
     const currentMapRef = mapRef.current;
     const mapDataListener = currentMapRef.on(eventName, function() {
@@ -76,7 +76,7 @@ function useMapEventHandler(eventName, callback, mapRef, dependency) {
     return () => {
       currentMapRef.off(eventName, mapDataListener);
     };
-  }, [eventName, callback, mapRef, dependency]);
+  }, [eventName, callback, mapRef]);
 }
 
 const Map = () => {
@@ -103,8 +103,8 @@ const Map = () => {
   } = React.useContext(StoreContext);
 
   // Add/remove listeners for spinner logic
-  useMapEventHandler("data", () => setIsMapDataLoading(true), mapRef, mapData);
-  useMapEventHandler("idle", () => setIsMapDataLoading(false), mapRef, mapData);
+  useMapEventHandler("data", () => setIsMapDataLoading(true), mapRef);
+  useMapEventHandler("idle", () => setIsMapDataLoading(false), mapRef);
 
   // Fetch initial crash data and refetch upon filters change
   useEffect(() => {
