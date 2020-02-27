@@ -34,8 +34,10 @@ const StyledCard = styled.div`
 
 const StyledMapSpinner = styled.div`
   position: absolute;
+  width: 0px;
   top: 50%;
-  left: 50%;
+  /* Adjust centering with half FA spinner width */
+  left: calc(50% - 28px);
   transform: translate(-50%, -50%);
 
   .needle {
