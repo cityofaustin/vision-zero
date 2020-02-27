@@ -24,14 +24,9 @@ mode_categories = {
     "other": [6, 8, 9]
 }
 
-
-# TODO Look through objects in atd_mode_category_metadata array
-# TODO For each record, initialize totals list per 5 flags and each injury type (in same order as mode_count_flags)
-# TODO At end of each record, assign mode_count_flags[0] = totals_list[0] to each record
-
-# List of mode fatality and serious injury counts (preserve order to assign totals correctly)
+# List of mode fatality and serious injury counts
 mode_count_flags = ["motor_vehicle_death_count", "motor_vehicle_serious_injury_count", "bicycle_death_count", "bicycle_serious_injury_count", "pedestrian_death_count",
-                    "pedestrian_serious_injury_count", "pedestrian_serious_injury_count", "motorcycle_serious_injury_count", "other_death_count", "other_serious_injury_count"]
+                    "pedestrian_serious_injury_count", "motorcycle_death_count", "motorcycle_serious_injury_count", "other_death_count", "other_serious_injury_count"]
 
 
 def replace_chars(target_str, char_list, replacement_str):
@@ -165,6 +160,35 @@ def concatTimeAndDate(records):
     return records
 
 
+def calc_mode_injury_totals(records):
+    """
+    Totals number of fatalities and serious injuries per mode type
+    :param records: list - List of record dicts
+    """
+    fatality_field = "death_cnt"
+    serious_injury_field = "sus_serious_injry_cnt"
+
+    for record in records:
+        # Initialize counts
+        total_dict = {}
+        for flag in mode_count_flags:
+            total_dict[flag] = 0
+
+        crash_metadata = record.get("atd_mode_category_metadata")
+        # Total number of injuries per mode of units in metadata
+        if crash_metadata != None:
+            for unit in crash_metadata:
+                unit_mode_id = unit.get("mode_id")
+                for [mode, id_list] in mode_categories.items():
+                    if unit_mode_id in id_list:
+                        total_dict[mode +
+                                   "_death_count"] += unit[fatality_field]
+                        total_dict[mode +
+                                   "_serious_injury_count"] += unit[serious_injury_field]
+        record = record.update(total_dict)
+    return records
+
+
 def create_point_datatype(records):
     """
     Creates point datatype to enable fetching GeoJSON from Socrata
@@ -253,6 +277,7 @@ def format_crash_data(data, formatter_config):
 
     # Format records
     formatted_records = create_mode_flags(records)
+    formatted_records = calc_mode_injury_totals(formatted_records)
     formatted_records = concatTimeAndDate(formatted_records)
     formatted_records = set_mode_columns(
         formatted_records)
