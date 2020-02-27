@@ -16,13 +16,22 @@ from copy import deepcopy
 from process.config import ATD_ETL_CONFIG
 
 # Dict to translate canonical modes to broader categories for VZV
-mode_category_flags = {
-    "motor_vehicle_fl": [1, 2, 4],
-    "motorcycle_fl": [3],
-    "bicycle_fl": [5],
-    "pedestrian_fl": [7],
-    "other_fl": [6, 8, 9]
+mode_categories = {
+    "motor_vehicle": [1, 2, 4],
+    "motorcycle": [3],
+    "bicycle": [5],
+    "pedestrian": [7],
+    "other": [6, 8, 9]
 }
+
+
+# TODO Look through objects in atd_mode_category_metadata array
+# TODO For each record, initialize totals list per 5 flags and each injury type (in same order as mode_count_flags)
+# TODO At end of each record, assign mode_count_flags[0] = totals_list[0] to each record
+
+# List of mode fatality and serious injury counts (preserve order to assign totals correctly)
+mode_count_flags = ["motor_vehicle_death_count", "motor_vehicle_serious_injury_count", "bicycle_death_count", "bicycle_serious_injury_count", "pedestrian_death_count",
+                    "pedestrian_serious_injury_count", "pedestrian_serious_injury_count", "motorcycle_serious_injury_count", "other_death_count", "other_serious_injury_count"]
 
 
 def replace_chars(target_str, char_list, replacement_str):
@@ -138,9 +147,9 @@ def create_mode_flags(records):
 
         # Check for id matches in flags dict and set flags to Y for matches
         for id in mode_ids:
-            for flag_key, flag_value in mode_category_flags.items():
+            for flag_key, flag_value in mode_categories.items():
                 if id in flag_value:
-                    record[flag_key] = "Y"
+                    record[flag_key + "_fl"] = "Y"
     return records
 
 
