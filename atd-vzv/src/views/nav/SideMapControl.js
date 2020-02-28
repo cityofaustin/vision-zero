@@ -40,6 +40,8 @@ const SideMapControl = () => {
   } = React.useContext(StoreContext);
 
   const [filterGroupCounts, setFilterGroupCounts] = useState({});
+  const [isFatalSet, setIsFatalSet] = useState(false);
+  const [isInjurySet, setIsInjurySet] = useState(true);
 
   // Define groups of map filters
   const mapButtonFilters = {
@@ -48,8 +50,8 @@ const SideMapControl = () => {
     mode: {
       pedestrian: {
         icon: faWalking, // Font Awesome icon object
-        fatalSyntax: `pedestrian_death_count > 0`, // Socrata SoQL query string
-        injurySyntax: `pedestrian_serious_injury_count > 0`,
+        fatalSyntax: `pedestrian_death_count > 0`, // Socrata SoQL fatality query string
+        injurySyntax: `pedestrian_serious_injury_count > 0`, // Socrata SoQL injury query string
         type: `where`, // Socrata SoQL query type
         operator: `OR`, // Logical operator for joining multiple query strings
         default: true // Apply filter as default on render
@@ -85,6 +87,26 @@ const SideMapControl = () => {
         type: `where`,
         operator: `OR`,
         default: true
+      }
+    },
+    type: {
+      seriousInjury: {
+        text: `Injury`,
+        syntax: `sus_serious_injry_cnt > 0`,
+        type: `where`,
+        operator: `OR`,
+        handler: event => setIsInjurySet(!isInjurySet),
+        isSelected: isInjurySet,
+        default: false
+      },
+      fatal: {
+        text: `Fatal`,
+        syntax: `death_cnt > 0`,
+        type: `where`,
+        operator: `OR`,
+        handler: event => setIsFatalSet(!isFatalSet),
+        isSelected: isFatalSet,
+        default: false
       }
     }
   };
@@ -185,9 +207,21 @@ const SideMapControl = () => {
                 id={name}
                 color="info"
                 className="w-100 pt-1 pb-1 pl-0 pr-0"
-                onClick={event => handleFilterClick(event, group)}
-                active={isFilterSet(name)}
-                outline={!isFilterSet(name)}
+                onClick={
+                  parameter.handler
+                    ? parameter.handler
+                    : event => handleFilterClick(event, group)
+                }
+                active={
+                  parameter.isSelected
+                    ? parameter.isSelected
+                    : isFilterSet(name)
+                }
+                outline={
+                  parameter.isSelected
+                    ? !parameter.isSelected
+                    : !isFilterSet(name)
+                }
               >
                 {parameter.icon && (
                   <FontAwesomeIcon
