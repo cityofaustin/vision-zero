@@ -39,6 +39,7 @@ const SideMapControl = () => {
     mapFilters: [filters, setFilters]
   } = React.useContext(StoreContext);
 
+  const [buttonFilters, setButtonFilters] = useState({});
   const [filterGroupCounts, setFilterGroupCounts] = useState({});
   const [isFatalSet, setIsFatalSet] = useState(false);
   const [isInjurySet, setIsInjurySet] = useState(true);
@@ -50,8 +51,9 @@ const SideMapControl = () => {
     mode: {
       pedestrian: {
         icon: faWalking, // Font Awesome icon object
-        fatalSyntax: `pedestrian_death_count > 0`, // Socrata SoQL fatality query string
-        injurySyntax: `pedestrian_serious_injury_count > 0`, // Socrata SoQL injury query string
+        fatalSyntax: `pedestrian_death_count > 0`, // Fatality query string
+        injurySyntax: `pedestrian_serious_injury_count > 0`, // Injury query string
+        syntax: "", // Socrata SoQL query string
         type: `where`, // Socrata SoQL query type
         operator: `OR`, // Logical operator for joining multiple query strings
         default: true // Apply filter as default on render
@@ -60,6 +62,7 @@ const SideMapControl = () => {
         icon: faBiking,
         fatalSyntax: `bicycle_death_count > 0`,
         injurySyntax: `bicycle_serious_injury_count > 0`,
+        syntax: "",
         type: `where`,
         operator: `OR`,
         default: true
@@ -68,6 +71,7 @@ const SideMapControl = () => {
         icon: faCar,
         fatalSyntax: `motor_vehicle_death_count > 0`,
         injurySyntax: `motor_vehicle_serious_injury_count > 0`,
+        syntax: "",
         type: `where`,
         operator: `OR`,
         default: true
@@ -76,6 +80,7 @@ const SideMapControl = () => {
         icon: faMotorcycle,
         fatalSyntax: `motorcycle_death_count > 0`,
         injurySyntax: `motorcycle_serious_injury_count > 0`,
+        syntax: "",
         type: `where`,
         operator: `OR`,
         default: true
@@ -84,6 +89,7 @@ const SideMapControl = () => {
         text: "Other",
         fatalSyntax: `other_death_count > 0`,
         injurySyntax: `other_serious_injury_count > 0`,
+        syntax: "",
         type: `where`,
         operator: `OR`,
         default: true
@@ -92,18 +98,12 @@ const SideMapControl = () => {
     type: {
       seriousInjury: {
         text: `Injury`,
-        syntax: `sus_serious_injry_cnt > 0`,
-        type: `where`,
-        operator: `OR`,
         handler: event => setIsInjurySet(!isInjurySet),
         isSelected: isInjurySet,
         default: false
       },
       fatal: {
         text: `Fatal`,
-        syntax: `death_cnt > 0`,
-        type: `where`,
-        operator: `OR`,
         handler: event => setIsFatalSet(!isFatalSet),
         isSelected: isFatalSet,
         default: false
@@ -126,7 +126,7 @@ const SideMapControl = () => {
   // Reduce all filters and set defaults as active on render
   useEffect(() => {
     // If no filters are applied (initial render), set all default filters
-    if (Object.keys(filters).length === 0) {
+    if (Object.keys(buttonFilters).length === 0) {
       const initialFiltersArray = Object.entries(mapButtonFilters).reduce(
         (allFiltersAccumulator, [type, filtersGroup]) => {
           const groupFilters = Object.entries(filtersGroup).reduce(
@@ -146,9 +146,31 @@ const SideMapControl = () => {
         },
         []
       );
-      setFilters(initialFiltersArray);
+      setButtonFilters(initialFiltersArray);
     }
-  }, [mapButtonFilters, setFilters, filters]);
+  }, [mapButtonFilters, setButtonFilters, buttonFilters]);
+
+  useEffect(() => {
+    // Each time buttonFilters changes or fatal/injury buttons clicked, format filters and set filters state in Context store
+    if (Object.keys(buttonFilters).length !== 0) {
+      const filterModeSyntaxByType = filtersArray =>
+        // If fatal is not selected filter out fatal syntax
+        filtersArray.map(filter => {
+          if (isFatalSet && isInjurySet) {
+            filter.syntax = `${filter.fatalSyntax} ${filter.operator} ${filter.injurySyntax}`;
+          } else if (isFatalSet) {
+            // return filtersArray.map(filter => ({ ...filter, fatalSyntax: "" }));
+            filter.syntax = filter.fatalSyntax;
+          } else if (isInjurySet) {
+            filter.syntax = filter.injurySyntax;
+          }
+          return filter;
+        });
+
+      const updatedFiltersArray = filterModeSyntaxByType(buttonFilters);
+      setFilters(updatedFiltersArray);
+    }
+  }, [buttonFilters, isFatalSet, isInjurySet, setFilters]);
 
   // Set count of filters applied to keep one of each type applied at all times
   useEffect(() => {
@@ -178,17 +200,17 @@ const SideMapControl = () => {
 
     if (isFilterSet(filterName)) {
       // Always leave one filter applied per group
-      const updatedFiltersArray = isOneFilterOfGroupApplied(filterGroup)
+      let updatedFiltersArray = isOneFilterOfGroupApplied(filterGroup)
         ? filters.filter(setFilter => setFilter.name !== filterName)
         : filters;
-      setFilters(updatedFiltersArray);
+      setButtonFilters(updatedFiltersArray);
     } else {
       const filter = mapButtonFilters[filterGroup][filterName];
       // Add filterName and group to object for IDing and grouping
       filter["name"] = filterName;
       filter["group"] = filterGroup;
       const filtersArray = [...filters, filter];
-      setFilters(filtersArray);
+      setButtonFilters(filtersArray);
     }
   };
 
