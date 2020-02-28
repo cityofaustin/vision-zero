@@ -43,6 +43,9 @@ const SideMapControl = () => {
 
   // Define groups of map filters
   const mapButtonFilters = {
+    // TODO Create fatalSyntax and injurySyntax
+    // TODO Extract fatal/serious injury logic
+    // TODO Use type button choice to insert fatalSyntax/injurySyntax/both
     mode: {
       pedestrian: {
         icon: faWalking, // Font Awesome icon object
@@ -79,23 +82,23 @@ const SideMapControl = () => {
         operator: `OR`,
         default: true
       }
-    },
-    type: {
-      seriousInjury: {
-        text: `Injury`,
-        syntax: `sus_serious_injry_cnt > 0`,
-        type: `where`,
-        operator: `OR`,
-        default: true
-      },
-      fatal: {
-        text: `Fatal`,
-        syntax: `death_cnt > 0`,
-        type: `where`,
-        operator: `OR`,
-        default: false
-      }
     }
+    // type: {
+    //   seriousInjury: {
+    //     text: `Injury`,
+    //     syntax: `sus_serious_injry_cnt > 0`,
+    //     type: `where`,
+    //     operator: `OR`,
+    //     default: true
+    //   },
+    //   fatal: {
+    //     text: `Fatal`,
+    //     syntax: `death_cnt > 0`,
+    //     type: `where`,
+    //     operator: `OR`,
+    //     default: false
+    //   }
+    // }
   };
 
   const mapOtherFilters = {
