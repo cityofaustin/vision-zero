@@ -24,10 +24,6 @@ mode_categories = {
     "other": [6, 8, 9]
 }
 
-# List of mode fatality and serious injury counts
-mode_count_flags = ["motor_vehicle_death_count", "motor_vehicle_serious_injury_count", "bicycle_death_count", "bicycle_serious_injury_count", "pedestrian_death_count",
-                    "pedestrian_serious_injury_count", "motorcycle_death_count", "motorcycle_serious_injury_count", "other_death_count", "other_serious_injury_count"]
-
 
 def replace_chars(target_str, char_list, replacement_str):
     """
@@ -171,11 +167,12 @@ def calc_mode_injury_totals(records):
     for record in records:
         # Initialize counts
         total_dict = {}
-        for flag in mode_count_flags:
-            total_dict[flag] = 0
+        for mode in mode_categories.keys():
+            total_dict[mode + "_death_count"] = 0
+            total_dict[mode + "_serious_injury_count"] = 0
 
         crash_metadata = record.get("atd_mode_category_metadata")
-        # Total number of injuries per mode of units in metadata
+        # Count number of injuries per mode of units in metadata
         if crash_metadata != None:
             for unit in crash_metadata:
                 unit_mode_id = unit.get("mode_id")
