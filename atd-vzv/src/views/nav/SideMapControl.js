@@ -43,62 +43,50 @@ const SideMapControl = () => {
 
   // Define groups of map filters
   const mapButtonFilters = {
-    // TODO Create fatalSyntax and injurySyntax
     // TODO Extract fatal/serious injury logic
     // TODO Use type button choice to insert fatalSyntax/injurySyntax/both
     mode: {
       pedestrian: {
         icon: faWalking, // Font Awesome icon object
-        syntax: `pedestrian_fl = "Y"`, // Socrata SoQL query string
+        fatalSyntax: `pedestrian_death_count > 0`, // Socrata SoQL query string
+        injurySyntax: `pedestrian_serious_injury_count > 0`,
         type: `where`, // Socrata SoQL query type
         operator: `OR`, // Logical operator for joining multiple query strings
         default: true // Apply filter as default on render
       },
       pedalcyclist: {
         icon: faBiking,
-        syntax: `bicycle_fl = "Y"`,
+        fatalSyntax: `bicycle_death_count > 0`,
+        injurySyntax: `bicycle_serious_injury_count > 0`,
         type: `where`,
         operator: `OR`,
         default: true
       },
       motor: {
         icon: faCar,
-        syntax: `motor_vehicle_fl = "Y"`,
+        fatalSyntax: `motor_vehicle_death_count > 0`,
+        injurySyntax: `motor_vehicle_serious_injury_count > 0`,
         type: `where`,
         operator: `OR`,
         default: true
       },
       motorcycle: {
         icon: faMotorcycle,
-        syntax: `motorcycle_fl = "Y"`,
+        fatalSyntax: `motorcycle_death_count > 0`,
+        injurySyntax: `motorcycle_serious_injury_count > 0`,
         type: `where`,
         operator: `OR`,
         default: true
       },
       other: {
         text: "Other",
-        syntax: `other_fl = "Y"`,
+        fatalSyntax: `other_death_count > 0`,
+        injurySyntax: `other_serious_injury_count > 0`,
         type: `where`,
         operator: `OR`,
         default: true
       }
     }
-    // type: {
-    //   seriousInjury: {
-    //     text: `Injury`,
-    //     syntax: `sus_serious_injry_cnt > 0`,
-    //     type: `where`,
-    //     operator: `OR`,
-    //     default: true
-    //   },
-    //   fatal: {
-    //     text: `Fatal`,
-    //     syntax: `death_cnt > 0`,
-    //     type: `where`,
-    //     operator: `OR`,
-    //     default: false
-    //   }
-    // }
   };
 
   const mapOtherFilters = {
