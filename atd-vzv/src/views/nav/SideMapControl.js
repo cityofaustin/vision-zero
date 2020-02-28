@@ -46,8 +46,6 @@ const SideMapControl = () => {
 
   // Define groups of map filters
   const mapButtonFilters = {
-    // TODO Extract fatal/serious injury logic
-    // TODO Use type button choice to insert fatalSyntax/injurySyntax/both
     mode: {
       pedestrian: {
         icon: faWalking, // Font Awesome icon object
@@ -123,9 +121,8 @@ const SideMapControl = () => {
     }
   };
 
-  // Reduce all filters and set defaults as active on render
+  // On inital render, reduce all default filters and apply to map data
   useEffect(() => {
-    // If no filters are applied (initial render), set all default filters
     if (Object.keys(buttonFilters).length === 0) {
       const initialFiltersArray = Object.entries(mapButtonFilters).reduce(
         (allFiltersAccumulator, [type, filtersGroup]) => {
@@ -150,16 +147,14 @@ const SideMapControl = () => {
     }
   }, [mapButtonFilters, setButtonFilters, buttonFilters]);
 
+  // After inital render, create mode syntax and set filters state for map data
   useEffect(() => {
-    // Each time buttonFilters changes or fatal/injury buttons clicked, format filters and set filters state in Context store
     if (Object.keys(buttonFilters).length !== 0) {
       const filterModeSyntaxByType = filtersArray =>
-        // If fatal is not selected filter out fatal syntax
         filtersArray.map(filter => {
           if (isFatalSet && isInjurySet) {
             filter.syntax = `${filter.fatalSyntax} ${filter.operator} ${filter.injurySyntax}`;
           } else if (isFatalSet) {
-            // return filtersArray.map(filter => ({ ...filter, fatalSyntax: "" }));
             filter.syntax = filter.fatalSyntax;
           } else if (isInjurySet) {
             filter.syntax = filter.injurySyntax;
@@ -172,7 +167,7 @@ const SideMapControl = () => {
     }
   }, [buttonFilters, isFatalSet, isInjurySet, setFilters]);
 
-  // Set count of filters applied to keep one of each type applied at all times
+  // Set count of filters applied per type
   useEffect(() => {
     const filtersCount = filters.reduce((accumulator, filter) => {
       if (accumulator[filter.group]) {
