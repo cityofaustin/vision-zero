@@ -41,8 +41,16 @@ const SideMapControl = () => {
 
   const [buttonFilters, setButtonFilters] = useState({});
   const [filterGroupCounts, setFilterGroupCounts] = useState({});
-  const [isFatalSet, setIsFatalSet] = useState(false);
-  const [isInjurySet, setIsInjurySet] = useState(true);
+  const [isTypeSet, setIsTypeSet] = useState({ fatal: false, injury: true });
+
+  const setTypeFilters = type => {
+    if (Object.values(isTypeSet).includes(false) && isTypeSet[type] === true) {
+      return;
+    } else {
+      const updatedState = { ...isTypeSet, [type]: !isTypeSet[type] };
+      setIsTypeSet(updatedState);
+    }
+  };
 
   // Define groups of map filters
   const mapButtonFilters = {
@@ -96,14 +104,14 @@ const SideMapControl = () => {
     type: {
       seriousInjury: {
         text: `Injury`,
-        handler: event => setIsInjurySet(!isInjurySet),
-        isSelected: isInjurySet,
+        handler: () => setTypeFilters("injury"),
+        isSelected: isTypeSet.injury,
         default: false
       },
       fatal: {
         text: `Fatal`,
-        handler: event => setIsFatalSet(!isFatalSet),
-        isSelected: isFatalSet,
+        handler: () => setTypeFilters("fatal"),
+        isSelected: isTypeSet.fatal,
         default: false
       }
     }
@@ -152,11 +160,11 @@ const SideMapControl = () => {
     if (Object.keys(buttonFilters).length !== 0) {
       const filterModeSyntaxByType = filtersArray =>
         filtersArray.map(filter => {
-          if (isFatalSet && isInjurySet) {
+          if (isTypeSet.fatal && isTypeSet.injury) {
             filter.syntax = `${filter.fatalSyntax} ${filter.operator} ${filter.injurySyntax}`;
-          } else if (isFatalSet) {
+          } else if (isTypeSet.fatal) {
             filter.syntax = filter.fatalSyntax;
-          } else if (isInjurySet) {
+          } else if (isTypeSet.injury) {
             filter.syntax = filter.injurySyntax;
           }
           return filter;
@@ -165,7 +173,7 @@ const SideMapControl = () => {
       const updatedFiltersArray = filterModeSyntaxByType(buttonFilters);
       setFilters(updatedFiltersArray);
     }
-  }, [buttonFilters, isFatalSet, isInjurySet, setFilters]);
+  }, [buttonFilters, isTypeSet, setFilters]);
 
   // Set count of filters applied per type
   useEffect(() => {
