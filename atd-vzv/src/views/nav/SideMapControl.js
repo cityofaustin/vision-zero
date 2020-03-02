@@ -59,7 +59,6 @@ const SideMapControl = () => {
         icon: faWalking, // Font Awesome icon object
         fatalSyntax: `pedestrian_death_count > 0`, // Fatality query string
         injurySyntax: `pedestrian_serious_injury_count > 0`, // Injury query string
-        syntax: "", // Socrata SoQL query string
         type: `where`, // Socrata SoQL query type
         operator: `OR`, // Logical operator for joining multiple query strings
         default: true // Apply filter as default on render
@@ -68,7 +67,6 @@ const SideMapControl = () => {
         icon: faBiking,
         fatalSyntax: `bicycle_death_count > 0`,
         injurySyntax: `bicycle_serious_injury_count > 0`,
-        syntax: "",
         type: `where`,
         operator: `OR`,
         default: true
@@ -77,7 +75,6 @@ const SideMapControl = () => {
         icon: faCar,
         fatalSyntax: `motor_vehicle_death_count > 0`,
         injurySyntax: `motor_vehicle_serious_injury_count > 0`,
-        syntax: "",
         type: `where`,
         operator: `OR`,
         default: true
@@ -86,7 +83,6 @@ const SideMapControl = () => {
         icon: faMotorcycle,
         fatalSyntax: `motorcycle_death_count > 0`,
         injurySyntax: `motorcycle_serious_injury_count > 0`,
-        syntax: "",
         type: `where`,
         operator: `OR`,
         default: true
@@ -95,7 +91,6 @@ const SideMapControl = () => {
         text: "Other",
         fatalSyntax: `other_death_count > 0`,
         injurySyntax: `other_serious_injury_count > 0`,
-        syntax: "",
         type: `where`,
         operator: `OR`,
         default: true
@@ -160,6 +155,7 @@ const SideMapControl = () => {
     if (Object.keys(buttonFilters).length !== 0) {
       const filterModeSyntaxByType = filtersArray =>
         filtersArray.map(filter => {
+          // Set syntax for generateWhereFilters() map helper
           if (isTypeSet.fatal && isTypeSet.injury) {
             filter.syntax = `${filter.fatalSyntax} ${filter.operator} ${filter.injurySyntax}`;
           } else if (isTypeSet.fatal) {
