@@ -90,22 +90,19 @@ const CrashTypeSelector = ({ setCrashType }) => {
       css`
         background: transparent;
         color: ${colors.info};
-      `
-    }
+      `}
 
     ${props =>
       props.fatalities &&
       css`
         border-radius: 3px 0 0 3px;
-      `
-    }
+      `}
 
     ${props =>
       props.seriousInjuries &&
       css`
         border-radius: 0 3px 3px 0;
-      `
-    }
+      `}
   `;
 
   const Container = styled.div`

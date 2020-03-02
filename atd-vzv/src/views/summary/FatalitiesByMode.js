@@ -17,26 +17,36 @@ const FatalitiesByMode = () => {
     {
       label: "Motorist",
       flags: ["motor_vehicle_fl"],
+      fatalSyntax: `motor_vehicle_death_count > 0`,
+      injurySyntax: `motor_vehicle_serious_injury_count > 0`,
       color: colors.chartRed
     },
     {
       label: "Pedestrian",
       flags: ["pedestrian_fl"],
+      fatalSyntax: `pedestrian_death_count > 0`, // Fatality query string
+      injurySyntax: `pedestrian_serious_injury_count > 0`, // Injury query string
       color: colors.chartOrange
     },
     {
       label: "Motorcyclist",
       flags: ["motorcycle_fl"],
+      fatalSyntax: `motorcycle_death_count > 0`,
+      injurySyntax: `motorcycle_serious_injury_count > 0`,
       color: colors.chartRedOrange
     },
     {
       label: "Bicyclist",
       flags: ["bicycle_fl"],
+      fatalSyntax: `bicycle_death_count > 0`,
+      injurySyntax: `bicycle_serious_injury_count > 0`,
       color: colors.chartBlue
     },
     {
       label: "Other",
       flags: ["other_fl"],
+      fatalSyntax: `other_death_count > 0`,
+      injurySyntax: `other_serious_injury_count > 0`,
       color: colors.chartLightBlue
     }
   ];
@@ -74,11 +84,13 @@ const FatalitiesByMode = () => {
 
   const createChartLabels = () => yearsArray().map(year => `${year}`);
 
-  // Tabulate fatalities by mode flags in data
+  // Tabulate fatalities/injuries by mode flags in data
   const getModeData = flags =>
     yearsArray().map(year => {
       return chartData[year].reduce((accumulator, record) => {
         flags.forEach(flag => record[`${flag}`] === "Y" && accumulator++);
+        // accumulator += crashType.name === "fatalities" && record[flags.fatalSyntax];
+        // accumulator += crashType.name === "seriousInjuries" && record[flags.injurySyntax];
         return accumulator;
       }, 0);
     });
@@ -116,9 +128,7 @@ const FatalitiesByMode = () => {
     <Container>
       <Row className="pb-3">
         <Col>
-        <h3 className="text-center">
-            {crashType.textString} by Mode
-          </h3>
+          <h3 className="text-center">{crashType.textString} by Mode</h3>
         </Col>
       </Row>
       <Row>
