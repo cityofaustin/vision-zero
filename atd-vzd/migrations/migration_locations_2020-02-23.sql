@@ -121,5 +121,30 @@ FROM "public"
 ."polygons";
 
 
+-----------------------------------------
+-- Convert shape column records from 2277 to 4326 Web Mercator projection
+
+UPDATE
+	atd_txdot_locations
+SET
+	shape = ST_Transform(ST_SetSRID(geometry, 2277), 4326)
+WHERE
+	location_id IS NOT NULL;
 
 
+-----------------------------------------
+--- Add centroid lat lon to all records
+
+UPDATE
+	atd_txdot_locations
+SET
+	longitude = ST_X(ST_CENTROID(shape))
+WHERE
+	location_id IS NOT NULL;
+
+UPDATE
+	atd_txdot_locations
+SET
+	latitude = ST_Y(ST_CENTROID(shape))
+WHERE
+	location_id IS NOT NULL;
