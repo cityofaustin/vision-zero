@@ -10,43 +10,48 @@ import {
   yearsArray,
   summaryCurrentYearEndDate
 } from "../../constants/time";
-import { demographicsEndpointUrl } from "./queries/socrataQueries";
+import { crashEndpointUrl } from "./queries/socrataQueries";
 
 const FatalitiesByMode = () => {
   const modes = [
     {
       label: "Motorist",
-      flags: ["motor_vehicle_fl"],
-      fatalSyntax: `motor_vehicle_death_count > 0`,
-      injurySyntax: `motor_vehicle_serious_injury_count > 0`,
+      fields: {
+        fatal: `motor_vehicle_death_count`,
+        injury: `motor_vehicle_serious_injury_count`
+      },
       color: colors.chartRed
     },
     {
       label: "Pedestrian",
-      flags: ["pedestrian_fl"],
-      fatalSyntax: `pedestrian_death_count > 0`, // Fatality query string
-      injurySyntax: `pedestrian_serious_injury_count > 0`, // Injury query string
+      fields: {
+        fatal: `pedestrian_death_count`,
+        injury: `pedestrian_serious_injury_count`
+      },
       color: colors.chartOrange
     },
     {
       label: "Motorcyclist",
-      flags: ["motorcycle_fl"],
-      fatalSyntax: `motorcycle_death_count > 0`,
-      injurySyntax: `motorcycle_serious_injury_count > 0`,
+      fields: {
+        fatal: `motorcycle_death_count`,
+        injury: `motorcycle_serious_injury_count`
+      },
       color: colors.chartRedOrange
     },
     {
       label: "Bicyclist",
-      flags: ["bicycle_fl"],
-      fatalSyntax: `bicycle_death_count > 0`,
-      injurySyntax: `bicycle_serious_injury_count > 0`,
+      fields: {
+        fatal: `bicycle_death_count`,
+        injury: `bicycle_serious_injury_count`
+      },
       color: colors.chartBlue
     },
     {
       label: "Other",
-      flags: ["other_fl"],
-      fatalSyntax: `other_death_count > 0`,
-      injurySyntax: `other_serious_injury_count > 0`,
+      fields: {
+        fatal: `other_death_count`,
+        injury: `other_serious_injury_count`
+      },
       color: colors.chartLightBlue
     }
   ];
@@ -69,7 +74,7 @@ const FatalitiesByMode = () => {
               year.toString() === dataEndDate.format("YYYY")
                 ? `${summaryCurrentYearEndDate}T23:59:59`
                 : `${year}-12-31T23:59:59`;
-            let url = `${demographicsEndpointUrl}?$where=${crashType.queryStringDemographics} AND crash_date between '${year}-01-01T00:00:00' and '${endDate}'`;
+            let url = `${crashEndpointUrl}?$where=${crashType.queryStringCrash} AND crash_date between '${year}-01-01T00:00:00' and '${endDate}'`;
             await axios.get(url).then(res => {
               newData = { ...newData, ...{ [year]: res.data } };
             });
@@ -85,12 +90,19 @@ const FatalitiesByMode = () => {
   const createChartLabels = () => yearsArray().map(year => `${year}`);
 
   // Tabulate fatalities/injuries by mode flags in data
-  const getModeData = flags =>
+  const getModeData = fields =>
     yearsArray().map(year => {
       return chartData[year].reduce((accumulator, record) => {
-        flags.forEach(flag => record[`${flag}`] === "Y" && accumulator++);
-        // accumulator += crashType.name === "fatalities" && record[flags.fatalSyntax];
-        // accumulator += crashType.name === "seriousInjuries" && record[flags.injurySyntax];
+        const isFatalQuery =
+          crashType.name === "fatalities" ||
+          crashType.name === "fatalitiesAndSeriousInjuries";
+        const isInjuryQuery =
+          crashType.name === "seriousInjuries" ||
+          crashType.name === "fatalitiesAndSeriousInjuries";
+
+        accumulator += isFatalQuery && parseInt(record[fields.fatal]);
+        accumulator += isInjuryQuery && parseInt(record[fields.injury]);
+
         return accumulator;
       }, 0);
     });
@@ -113,7 +125,7 @@ const FatalitiesByMode = () => {
       hoverBackgroundColor: mode.color,
       hoverBorderColor: mode.color,
       label: mode.label,
-      data: getModeData(mode.flags)
+      data: getModeData(mode.fields)
     }));
     // Determine order of modes in each year stack
     return sortModeData(modeData);
