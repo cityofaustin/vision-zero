@@ -89,7 +89,7 @@ const FatalitiesByMode = () => {
 
   const createChartLabels = () => yearsArray().map(year => `${year}`);
 
-  // Tabulate fatalities/injuries by mode flags in data
+  // Tabulate fatalities/injuries by mode fields in data
   const getModeData = fields =>
     yearsArray().map(year => {
       return chartData[year].reduce((accumulator, record) => {

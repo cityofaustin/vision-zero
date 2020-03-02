@@ -52,7 +52,7 @@ const SideMapControl = () => {
     }
   };
 
-  // Define groups of map filters
+  // Define groups of map button filters
   const mapButtonFilters = {
     mode: {
       pedestrian: {

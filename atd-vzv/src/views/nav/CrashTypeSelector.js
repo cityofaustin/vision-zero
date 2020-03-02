@@ -92,12 +92,14 @@ const CrashTypeSelector = ({ setCrashType }) => {
         color: ${colors.info};
       `
     }
+
     ${props =>
       props.fatalities &&
       css`
         border-radius: 3px 0 0 3px;
       `
     }
+    
     ${props =>
       props.seriousInjuries &&
       css`
