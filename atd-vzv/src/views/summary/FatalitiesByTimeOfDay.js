@@ -12,6 +12,7 @@ import {
   yearsArray,
   dataEndDate
 } from "../../constants/time";
+import { crashEndpointUrl } from "./queries/socrataQueries";
 import { getYearsAgoLabel } from "./helpers/helpers";
 import { colors } from "../../constants/colors";
 
@@ -107,8 +108,8 @@ const FatalitiesByTimeOfDayWeek = () => {
         .format("YYYY");
       let queryUrl =
         activeTab === 0
-          ? `https://data.austintexas.gov/resource/y2wy-tgr5.json?$where=${crashType.queryStringCrash} AND crash_date between '${summaryCurrentYearStartDate}T00:00:00' and '${summaryCurrentYearEndDate}T23:59:59'`
-          : `https://data.austintexas.gov/resource/y2wy-tgr5.json?$where=${crashType.queryStringCrash} AND crash_date between '${yearsAgoDate}-01-01T00:00:00' and '${yearsAgoDate}-12-31T23:59:59'`;
+          ? `https://data.austintexas.gov/resource/${crashEndpointUrl}.json?$where=${crashType.queryStringCrash} AND crash_date between '${summaryCurrentYearStartDate}T00:00:00' and '${summaryCurrentYearEndDate}T23:59:59'`
+          : `https://data.austintexas.gov/resource/${crashEndpointUrl}.json?$where=${crashType.queryStringCrash} AND crash_date between '${yearsAgoDate}-01-01T00:00:00' and '${yearsAgoDate}-12-31T23:59:59'`;
       return queryUrl;
     };
 
@@ -124,9 +125,7 @@ const FatalitiesByTimeOfDayWeek = () => {
     <Container>
       <Row className="pb-3">
         <Col>
-        <h3 className="text-center">
-            {crashType.textString} by Time of Day
-          </h3>
+          <h3 className="text-center">{crashType.textString} by Time of Day</h3>
         </Col>
       </Row>
       <Row>
