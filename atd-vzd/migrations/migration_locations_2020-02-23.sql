@@ -148,3 +148,11 @@ SET
 	latitude = ST_Y(ST_CENTROID(shape))
 WHERE
 	location_id IS NOT NULL;
+
+
+-----------------------------------------
+--- Add location ID to exisiting crash records
+ALTER TABLE "public"."atd_txdot_crashes" ADD COLUMN "location_id" varchar;
+
+-- Run create function script from triggers/find_cr3_collision_for_location.sql
+
