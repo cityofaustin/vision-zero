@@ -45,6 +45,11 @@ class DefaultHeader extends Component {
               Dashboard
             </NavLink>
           </NavItem>
+          <NavItem className="px-3">
+            <NavLink to="/users" className="nav-link">
+              Users
+            </NavLink>
+          </NavItem>
         </Nav>
         <Nav className="ml-auto" navbar>
           <UncontrolledDropdown nav direction="down">

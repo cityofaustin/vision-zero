@@ -44,6 +44,8 @@ const Crash = React.lazy(() => import("./views/Crashes/Crash"));
 const Profile = React.lazy(() => import("./views/Profile/Profile"));
 const Locations = React.lazy(() => import("./views/Locations/Locations"));
 const Location = React.lazy(() => import("./views/Locations/Location"));
+const Users = React.lazy(() => import("./views/Users/Users"));
+const User = React.lazy(() => import("./views/Users/User"));
 
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 const routes = [
@@ -149,6 +151,8 @@ const routes = [
     name: "Demo UI Components",
     component: Dev,
   },
+  { path: "/users", exact: true, name: "Users", component: Users },
+  { path: "/users/:id", exact: true, name: "User Details", component: User },
 ];
 
 export default routes;
