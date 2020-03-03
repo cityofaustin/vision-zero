@@ -14,7 +14,7 @@ import { crashTestEndpointUrl } from "./queries/socrataQueries";
 
 const CrashesBySystem = () => {
 
-  const systems = [
+  const categories = [
     {
       label: "TxDOT System",
       flags: ["onsys_fl"],
@@ -61,7 +61,7 @@ const CrashesBySystem = () => {
   const createChartLabels = () => yearsArray().map(year => `${year}`);
 
   // Tabulate fatalities by flags in data
-  const getData = flags =>
+  const getCategoryData = flags =>
     yearsArray().map(year => {
       return chartData[year].reduce((accumulator, record) => {
         flags.forEach(flag => record[`${flag}`] === "Y" && accumulator++);
@@ -69,33 +69,33 @@ const CrashesBySystem = () => {
       }, 0);
     });
 
-  // Sort system order in stack by averaging total system crashes across all years in chart
-  const sortData = data => {
-    const averageCrashes = dataArray =>
-      dataArray.reduce((a, b) => a + b) / dataArray.length;
+  // Sort category order in stack by averaging total category crashes across all years in chart
+  const sortCategoryData = data => {
+    const averageCategoryCrashes = categoryDataArray =>
+      categoryDataArray.reduce((a, b) => a + b) / categoryDataArray.length;
     return data.sort(
-      (a, b) => averageCrashes(b.data) - averageCrashes(a.data)
+      (a, b) => averageCategoryCrashes(b.data) - averageCategoryCrashes(a.data)
     );
   };
 
-  // Create dataset for each system type, data property is an array of crash sums sorted chronologically
-  const createTypeDatasets = () => {
-    const data = systems.map(system => ({
-      backgroundColor: system.color,
-      borderColor: system.color,
+  // Create dataset for each category, data property is an array of crash sums sorted chronologically
+  const createCategoryDatasets = () => {
+    const data = categories.map(category => ({
+      backgroundColor: category.color,
+      borderColor: category.color,
       borderWidth: 2,
-      hoverBackgroundColor: system.color,
-      hoverBorderColor: system.color,
-      label: system.label,
-      data: getData(system.flags)
+      hoverBackgroundColor: category.color,
+      hoverBorderColor: category.color,
+      label: category.label,
+      data: getCategoryData(category.flags)
     }));
-    // Determine order of systems in each year stack
-    return sortData(data);
+    // Determine order of categoriess in each year stack
+    return sortCategoryData(data);
   };
 
   const data = {
     labels: createChartLabels(),
-    datasets: !!chartData && createTypeDatasets()
+    datasets: !!chartData && createCategoryDatasets()
   };
 
   !!data.datasets && console.log(data);
