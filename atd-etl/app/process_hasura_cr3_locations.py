@@ -73,8 +73,6 @@ def add_locations_to_cr3s_by_location():
         collisions_query = find_cr3_collisions_for_location_query.substitute(
             id=location['location_id'])
 
-        print(collisions_query)
-
         collisions_result = run_query(collisions_query)
 
         collisions_array = collisions_result['data']['find_cr3_collisions_for_location']
