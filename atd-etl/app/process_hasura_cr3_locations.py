@@ -37,8 +37,8 @@ locations_query = """
 find_cr3_collisions_for_location_query = Template("""
 query cr3LocationsByLocation {
   find_cr3_collisions_for_location(args: {id: "$id"}) {
-    latitude
-    longitude
+    latitude_primary
+    longitude_primary
     location_id
     crash_id
   }
