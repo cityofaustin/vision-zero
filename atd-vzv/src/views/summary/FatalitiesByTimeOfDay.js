@@ -108,8 +108,8 @@ const FatalitiesByTimeOfDayWeek = () => {
         .format("YYYY");
       let queryUrl =
         activeTab === 0
-          ? `https://data.austintexas.gov/resource/${crashEndpointUrl}.json?$where=${crashType.queryStringCrash} AND crash_date between '${summaryCurrentYearStartDate}T00:00:00' and '${summaryCurrentYearEndDate}T23:59:59'`
-          : `https://data.austintexas.gov/resource/${crashEndpointUrl}.json?$where=${crashType.queryStringCrash} AND crash_date between '${yearsAgoDate}-01-01T00:00:00' and '${yearsAgoDate}-12-31T23:59:59'`;
+          ? `${crashEndpointUrl}?$where=${crashType.queryStringCrash} AND crash_date between '${summaryCurrentYearStartDate}T00:00:00' and '${summaryCurrentYearEndDate}T23:59:59'`
+          : `${crashEndpointUrl}?$where=${crashType.queryStringCrash} AND crash_date between '${yearsAgoDate}-01-01T00:00:00' and '${yearsAgoDate}-12-31T23:59:59'`;
       return queryUrl;
     };
 
