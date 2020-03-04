@@ -252,7 +252,7 @@ def download_crash_id(crash_id):
     return jsonify(message=url)
 
 
-def isValidUser(userDict):
+def isValidUser(user_dict):
     valid_fields = [
         "email",
         "name",
@@ -263,20 +263,22 @@ def isValidUser(userDict):
 
     # Check for valid fields
     for field in valid_fields:
-        if userDict.get(field, False) == False:
+        if user_dict.get(field, False) == False:
             return False
 
     # Check for verified email
-    if userDict["email_verified"] != True:
+    if user_dict["email_verified"] != True:
         return False
 
-    # Check email for austin.gov
+    # Check email for austintexas.gov
+    if not "austintexas.gov" in user_dict["email"]:
+        return False
 
     return True
 
 
-def hasUserRole(role, userDict):
-    claims = userDict.get("https://hasura.io/jwt/claims", False)
+def hasUserRole(role, user_dict):
+    claims = user_dict.get("https://hasura.io/jwt/claims", False)
     if claims != False:
         roles = claims.get("x-hasura-allowed-roles")
         if role in roles:
@@ -289,8 +291,8 @@ def hasUserRole(role, userDict):
 @cross_origin(headers=["Access-Control-Allow-Origin", CORS_URL])
 @requires_auth
 def user_test():
-    userDict = current_user._get_current_object()
-    if isValidUser(userDict):
+    user_dict = current_user._get_current_object()
+    if isValidUser(user_dict):
         return jsonify(message=current_user._get_current_object())
     else:
         abort(403)
@@ -301,8 +303,8 @@ def user_test():
 @cross_origin(headers=["Access-Control-Allow-Origin", CORS_URL])
 @requires_auth
 def user_list_users():
-    userDict = current_user._get_current_object()
-    if isValidUser(userDict) and hasUserRole("admin", userDict):
+    user_dict = current_user._get_current_object()
+    if isValidUser(user_dict) and hasUserRole("admin", user_dict):
         endpoint = "https://atd-datatech.auth0.com/api/v2/users"
         headers = {"Authorization": "Bearer "}
         response = requests.get(endpoint, headers=headers).json()
@@ -316,8 +318,8 @@ def user_list_users():
 @cross_origin(headers=["Access-Control-Allow-Origin", CORS_URL])
 @requires_auth
 def user_get_user(id):
-    userDict = current_user._get_current_object()
-    if isValidUser(userDict) and hasUserRole("admin", userDict):
+    user_dict = current_user._get_current_object()
+    if isValidUser(user_dict) and hasUserRole("admin", user_dict):
         endpoint = "https://atd-datatech.auth0.com/api/v2/users/" + id
         headers = {"Authorization": "Bearer "}
         response = requests.get(endpoint, headers=headers).json()
@@ -330,9 +332,7 @@ def user_get_user(id):
 # {
 #   "email": "test.test@test.com",
 #   "blocked": false,
-#   "email_verified": false,
 #   "name": "John Doe",
-#   "nickname": "Johnny",
 #   "connection": "Username-Password-Authentication",
 #   "password": "thisissecure123!",
 #   "verify_email": true
@@ -342,8 +342,8 @@ def user_get_user(id):
 @cross_origin(headers=["Access-Control-Allow-Origin", CORS_URL])
 @requires_auth
 def user_create_user():
-    userDict = current_user._get_current_object()
-    if isValidUser(userDict) and hasUserRole("admin", userDict):
+    user_dict = current_user._get_current_object()
+    if isValidUser(user_dict) and hasUserRole("admin", user_dict):
         json_data = request.json
         endpoint = "https://atd-datatech.auth0.com/api/v2/users"
         headers = {"Authorization": "Bearer "}
@@ -353,18 +353,42 @@ def user_create_user():
         abort(403)
 
 
-@APP.route("/user/update_user/<id>", methods=["POST"])
+# Update format
+# {
+# 	"app_metadata": {
+#         "roles": [
+#             "example_role_1",
+#             "example_role_2"
+#         ]
+#     }
+# }
+@APP.route("/user/update_user/<id>", methods=["PUT"])
 @cross_origin(headers=["Content-Type", "Authorization"])
 @cross_origin(headers=["Access-Control-Allow-Origin", CORS_URL])
 @requires_auth
 def user_update_user(id):
-    userDict = current_user._get_current_object()
-    if isValidUser(userDict) and hasUserRole("admin", userDict):
+    user_dict = current_user._get_current_object()
+    if isValidUser(user_dict) and hasUserRole("admin", user_dict):
         json_data = request.json
         endpoint = "https://atd-datatech.auth0.com/api/v2/users/" + id
         headers = {"Authorization": "Bearer "}
         response = requests.patch(endpoint, headers=headers, json=json_data).json()
         return jsonify(response)
+    else:
+        abort(403)
+
+
+@APP.route("/user/delete_user/<id>", methods=["DELETE"])
+@cross_origin(headers=["Content-Type", "Authorization"])
+@cross_origin(headers=["Access-Control-Allow-Origin", CORS_URL])
+@requires_auth
+def user_delete_user(id):
+    user_dict = current_user._get_current_object()
+    if isValidUser(user_dict) and hasUserRole("admin", user_dict):
+        endpoint = "https://atd-datatech.auth0.com/api/v2/users/" + id
+        headers = {"Authorization": "Bearer "}
+        response = requests.delete(endpoint, headers=headers)
+        return f"{response.status_code}"
     else:
         abort(403)
 
