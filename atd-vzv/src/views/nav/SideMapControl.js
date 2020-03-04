@@ -3,6 +3,7 @@ import { StoreContext } from "../../utils/store";
 import "react-infinite-calendar/styles.css";
 
 import SideMapControlDateRange from "./SideMapControlDateRange";
+import SideMapTimeOfDayChart from "./SideMapTimeOfDayChart";
 import SideMapControlOverlays from "./SideMapControlOverlays";
 import { colors } from "../../constants/colors";
 import { ButtonGroup, Button, Card, Label } from "reactstrap";
@@ -41,7 +42,7 @@ const SideMapControl = () => {
   const [filterGroupCounts, setFilterGroupCounts] = useState({});
 
   // Define groups of map filters
-  const mapFilters = {
+  const mapButtonFilters = {
     mode: {
       pedestrian: {
         icon: faWalking, // Font Awesome icon object
@@ -89,7 +90,7 @@ const SideMapControl = () => {
       },
       fatal: {
         text: `Fatal`,
-        syntax: `apd_confirmed_death_count > 0`,
+        syntax: `death_cnt > 0`,
         type: `where`,
         operator: `OR`,
         default: false
@@ -97,11 +98,23 @@ const SideMapControl = () => {
     }
   };
 
+  const mapOtherFilters = {
+    timeOfDay: {
+      // Labels and corresponding time windows considering HH:00 to HH:59 notation
+      "12AM–4AM": [0, 3],
+      "4AM–8AM": [4, 7],
+      "8AM–12PM": [8, 11],
+      "12PM–4PM": [12, 15],
+      "4PM–8PM": [16, 19],
+      "8PM–12AM": [20, 23]
+    }
+  };
+
   // Reduce all filters and set defaults as active on render
   useEffect(() => {
     // If no filters are applied (initial render), set all default filters
     if (Object.keys(filters).length === 0) {
-      const initialFiltersArray = Object.entries(mapFilters).reduce(
+      const initialFiltersArray = Object.entries(mapButtonFilters).reduce(
         (allFiltersAccumulator, [type, filtersGroup]) => {
           const groupFilters = Object.entries(filtersGroup).reduce(
             (groupFiltersAccumulator, [name, filterConfig]) => {
@@ -122,7 +135,7 @@ const SideMapControl = () => {
       );
       setFilters(initialFiltersArray);
     }
-  }, [mapFilters, setFilters, filters]);
+  }, [mapButtonFilters, setFilters, filters]);
 
   // Set count of filters applied to keep one of each type applied at all times
   useEffect(() => {
@@ -157,7 +170,7 @@ const SideMapControl = () => {
         : filters;
       setFilters(updatedFiltersArray);
     } else {
-      const filter = mapFilters[filterGroup][filterName];
+      const filter = mapButtonFilters[filterGroup][filterName];
       // Add filterName and group to object for IDing and grouping
       filter["name"] = filterName;
       filter["group"] = filterGroup;
@@ -172,7 +185,7 @@ const SideMapControl = () => {
       <Card className="p-3 card-body">
         <Label className="section-title">Filters</Label>
         {/* Create a button group for each group of mapFilters */}
-        {Object.entries(mapFilters).map(([group, groupParameters], i) => (
+        {Object.entries(mapButtonFilters).map(([group, groupParameters], i) => (
           <ButtonGroup key={i} className="mb-3 d-flex" id={`${group}-buttons`}>
             {/* Create buttons for each filter within a group of mapFilters */}
             {Object.entries(groupParameters).map(([name, parameter], i) => (
@@ -197,6 +210,7 @@ const SideMapControl = () => {
           </ButtonGroup>
         ))}
         <SideMapControlDateRange />
+        <SideMapTimeOfDayChart filters={mapOtherFilters.timeOfDay} />
       </Card>
       <SideMapControlOverlays />
     </StyledCard>

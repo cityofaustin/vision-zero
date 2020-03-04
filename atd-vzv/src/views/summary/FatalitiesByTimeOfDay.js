@@ -7,51 +7,25 @@ import { Nav, NavItem, NavLink, Row, Col, Container } from "reactstrap";
 import classnames from "classnames";
 import { Heatmap, HeatmapSeries } from "reaviz";
 import {
-  thisMonth,
-  thisYear,
-  lastMonth,
-  lastDayOfLastMonth
+  summaryCurrentYearStartDate,
+  summaryCurrentYearEndDate,
+  yearsArray,
+  dataEndDate
 } from "../../constants/time";
+import { getYearsAgoLabel } from "./helpers/helpers";
 import { colors } from "../../constants/colors";
 
 const FatalitiesByTimeOfDayWeek = () => {
-  // Check current month before setting the active tab.
-  // If current month is January, display last year's data,
-  // if past January, display this year's data.
-  const checkMonth = () => {
-    if (thisMonth > "01") {
-      return 0;
-    } else {
-      return 1;
-    }
-  };
-
-  const [activeTabYear, setActiveTabYear] = useState(checkMonth());
+  const [activeTab, setActiveTab] = useState(0);
   const [crashType, setCrashType] = useState([]);
   const [heatmapData, setHeatmapData] = useState([]);
 
-  const getYearsAgoLabel = yearsAgo => {
-    return moment()
-      .subtract(yearsAgo, "year")
-      .format("YYYY");
-  };
-
-  const toggleYear = tabYear => {
-    if (activeTabYear !== tabYear) {
-      setActiveTabYear(tabYear);
-    }
+  const toggle = tab => {
+    if (activeTab !== tab) setActiveTab(tab);
   };
 
   useEffect(() => {
-    const dayOfWeekArray = [
-      "Sunday",
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday"
-    ];
+    const dayOfWeekArray = moment.weekdays();
     const hourBlockArray = [
       "12AM",
       "01AM",
@@ -129,11 +103,11 @@ const FatalitiesByTimeOfDayWeek = () => {
 
     const getFatalitiesByYearsAgoUrl = () => {
       const yearsAgoDate = moment()
-        .subtract(activeTabYear, "year")
+        .subtract(activeTab, "year")
         .format("YYYY");
       let queryUrl =
-        activeTabYear === 0
-          ? `https://data.austintexas.gov/resource/y2wy-tgr5.json?$where=${crashType.queryStringCrash} AND crash_date between '${thisYear}-01-01T00:00:00' and '${thisYear}-${lastMonth}-${lastDayOfLastMonth}T23:59:59'`
+        activeTab === 0
+          ? `https://data.austintexas.gov/resource/y2wy-tgr5.json?$where=${crashType.queryStringCrash} AND crash_date between '${summaryCurrentYearStartDate}T00:00:00' and '${summaryCurrentYearEndDate}T23:59:59'`
           : `https://data.austintexas.gov/resource/y2wy-tgr5.json?$where=${crashType.queryStringCrash} AND crash_date between '${yearsAgoDate}-01-01T00:00:00' and '${yearsAgoDate}-12-31T23:59:59'`;
       return queryUrl;
     };
@@ -144,13 +118,13 @@ const FatalitiesByTimeOfDayWeek = () => {
       axios.get(getFatalitiesByYearsAgoUrl()).then(res => {
         setHeatmapData(calculateHourBlockTotals(res));
       });
-  }, [activeTabYear, crashType]);
+  }, [activeTab, crashType]);
 
   return (
     <Container>
-      <Row style={{ paddingBottom: "0.75em" }}>
+      <Row className="pb-3">
         <Col>
-          <h3 style={{ textAlign: "center" }}>
+        <h3 className="text-center">
             {crashType.textString} by Time of Day
           </h3>
         </Col>
@@ -158,68 +132,24 @@ const FatalitiesByTimeOfDayWeek = () => {
       <Row>
         <Col>
           <Nav tabs className="justify-content-center">
-            <NavItem>
-              <NavLink
-                className={classnames({ active: activeTabYear === 5 })}
-                onClick={() => {
-                  toggleYear(5);
-                }}
-              >
-                {getYearsAgoLabel(5)}
-              </NavLink>
-            </NavItem>
-            <NavItem>
-              <NavLink
-                className={classnames({ active: activeTabYear === 4 })}
-                onClick={() => {
-                  toggleYear(4);
-                }}
-              >
-                {getYearsAgoLabel(4)}
-              </NavLink>
-            </NavItem>
-            <NavItem>
-              <NavLink
-                className={classnames({ active: activeTabYear === 3 })}
-                onClick={() => {
-                  toggleYear(3);
-                }}
-              >
-                {getYearsAgoLabel(3)}
-              </NavLink>
-            </NavItem>
-            <NavItem>
-              <NavLink
-                className={classnames({ active: activeTabYear === 2 })}
-                onClick={() => {
-                  toggleYear(2);
-                }}
-              >
-                {getYearsAgoLabel(2)}
-              </NavLink>
-            </NavItem>
-            <NavItem>
-              <NavLink
-                className={classnames({ active: activeTabYear === 1 })}
-                onClick={() => {
-                  toggleYear(1);
-                }}
-              >
-                {getYearsAgoLabel(1)}
-              </NavLink>
-            </NavItem>
-            {thisMonth > "01" && (
-              <NavItem>
-                <NavLink
-                  className={classnames({ active: activeTabYear === 0 })}
-                  onClick={() => {
-                    toggleYear(0);
-                  }}
-                >
-                  {getYearsAgoLabel(0)}
-                </NavLink>
-              </NavItem>
-            )}
+            {yearsArray() // Calculate years ago for each year in data window
+              .map(year => {
+                const currentYear = parseInt(dataEndDate.format("YYYY"));
+                return currentYear - year;
+              })
+              .map(yearsAgo => (
+                <NavItem key={yearsAgo}>
+                  <NavLink
+                    key={yearsAgo}
+                    className={classnames({ active: activeTab === yearsAgo })}
+                    onClick={() => {
+                      toggle(yearsAgo);
+                    }}
+                  >
+                    {getYearsAgoLabel(yearsAgo)}
+                  </NavLink>
+                </NavItem>
+              ))}
           </Nav>
         </Col>
       </Row>
@@ -242,7 +172,7 @@ const FatalitiesByTimeOfDayWeek = () => {
           />
         </Col>
       </Row>
-      <Row style={{ paddingTop: "0.75em" }}>
+      <Row className="pt-3">
         <Col>
           <CrashTypeSelector setCrashType={setCrashType} />
         </Col>

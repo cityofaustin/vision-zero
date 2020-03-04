@@ -7,66 +7,35 @@ import { Container, Row, Col } from "reactstrap";
 import CrashTypeSelector from "../nav/CrashTypeSelector";
 import { crashEndpointUrl } from "./queries/socrataQueries";
 import {
-  thisMonth,
-  thisYear,
-  lastYear,
-  lastMonth,
-  lastDayOfLastMonth,
-  lastMonthString
+  dataEndDate,
+  summaryCurrentYearEndDate,
+  yearsArray
 } from "../../constants/time";
 import { colors } from "../../constants/colors";
 
 const FatalitiesMultiYear = () => {
-  const getYearsAgoLabel = yearsAgo => {
-    return moment()
-      .subtract(yearsAgo, "year")
-      .format("YYYY");
-  };
+  // Set years order ascending
+  const chartYearsArray = yearsArray().sort((a, b) => b - a);
 
-  const [thisYearDeathArray, setThisYearDeathArray] = useState([]);
-  const [lastYearDeathArray, setLastYearDeathArray] = useState([]);
-  const [twoYearsAgoDeathArray, setTwoYearsAgoDeathArray] = useState([]);
-  const [threeYearsAgoDeathArray, setThreeYearsAgoDeathArray] = useState([]);
-  const [fourYearsAgoDeathArray, setFourYearsAgoDeathArray] = useState([]);
-  const [fiveYearsAgoDeathArray, setFiveYearsAgoDeathArray] = useState([]);
+  const chartColors = [
+    colors.blue,
+    colors.redGradient5Of5,
+    colors.redGradient4Of5,
+    colors.redGradient3Of5,
+    colors.redGradient2Of5
+  ];
+
+  const [chartData, setChartData] = useState(null); // {yearInt: [monthTotal, monthTotal, ...]}
   const [crashType, setCrashType] = useState([]);
 
-  const calculateYearlyTotals = deathArray => {
-    return deathArray[deathArray.length - 1];
-  };
-
-  const renderHeader = () => {
-    // Wait for textString to be passed up from setCrashType component, then render
-    if (crashType.textString) {
-      let deathArray;
-      let year;
-      // If there is a full month of data available for the current year (i.e., we are past January),
-      // set year to current year, else set year to last year
-      if (thisMonth > "01") {
-        deathArray = thisYearDeathArray;
-        year = thisYear;
-      } else {
-        deathArray = lastYearDeathArray;
-        year = lastYear;
-      }
-      return (
-        <h6 style={{ color: colors.blue, textAlign: "center" }}>
-          As of {lastMonthString}, there have been{" "}
-          <strong>{calculateYearlyTotals(deathArray)}</strong> traffic-related{" "}
-          {crashType.textString.toLowerCase()} in {year}.
-        </h6>
-      );
-    }
-  };
-
   useEffect(() => {
-    const lastMonthLastDayDate = `${thisYear}-${lastMonth}-${lastDayOfLastMonth}`;
-    const thisYearUrl = `${crashEndpointUrl}?$where=${crashType.queryStringCrash} AND crash_date between '${thisYear}-01-01T00:00:00' and '${lastMonthLastDayDate}T23:59:59'`;
+    const calculateYearMonthlyTotals = data => {
+      // Data query is ordered by crash_date ASC so truncate dataset by month of latest record
+      const monthLimit =
+        data.length > 0
+          ? moment(data[data.length - 1].crash_date).format("MM")
+          : "12";
 
-    const calculateMonthlyTotals = (data, dateString) => {
-      // Limit returned data to months of data available and prevent line from zeroing out
-      // If dataString is passed in, convert to month string and use to truncate monthIntegerArray
-      const monthLimit = dateString ? moment(dateString).format("MM") : "12";
       const monthIntegerArray = [
         "01",
         "02",
@@ -81,14 +50,15 @@ const FatalitiesMultiYear = () => {
         "11",
         "12"
       ];
+
       const truncatedMonthIntegerArray = monthIntegerArray.slice(
         0,
         monthIntegerArray.indexOf(monthLimit) + 1
       );
       let cumulativeMonthTotal = 0;
-      return truncatedMonthIntegerArray.map(month => {
+      const monthTotalArray = truncatedMonthIntegerArray.map(month => {
         let monthTotal = 0;
-        data.data.forEach(record => {
+        data.forEach(record => {
           // If the crash date is in the current month, compile data
           if (moment(record.crash_date).format("MM") === month) {
             // Compile data based on the selected crash type
@@ -110,259 +80,113 @@ const FatalitiesMultiYear = () => {
         cumulativeMonthTotal += monthTotal;
         return cumulativeMonthTotal;
       });
+
+      return monthTotalArray;
     };
 
-    const getFatalitiesByYearsAgoUrl = yearsAgo => {
-      let yearsAgoDate = moment()
-        .subtract(yearsAgo, "year")
-        .format("YYYY");
-      let Url = `${crashEndpointUrl}?$where=${crashType.queryStringCrash} AND crash_date between '${yearsAgoDate}-01-01T00:00:00' and '${yearsAgoDate}-12-31T23:59:59'`;
-      return Url;
-    };
-
-    const queryCurrentYear = () => {
-      // If there is a full month of data available for the current year (i.e., we are past January),
-      // fetch records for this year through last month
-      if (thisMonth > "01") {
-        axios.get(thisYearUrl).then(res => {
-          setThisYearDeathArray(
-            calculateMonthlyTotals(res, lastMonthLastDayDate)
-          );
-        });
-      }
-    };
-
-    const queryPreviousYears = () => {
-      // Fetch records from last year
-      axios.get(getFatalitiesByYearsAgoUrl(1)).then(res => {
-        setLastYearDeathArray(calculateMonthlyTotals(res));
-      });
-
-      // Fetch records from two years ago
-      axios.get(getFatalitiesByYearsAgoUrl(2)).then(res => {
-        setTwoYearsAgoDeathArray(calculateMonthlyTotals(res));
-      });
-
-      // Fetch records from three years ago
-      axios.get(getFatalitiesByYearsAgoUrl(3)).then(res => {
-        setThreeYearsAgoDeathArray(calculateMonthlyTotals(res));
-      });
-
-      // Fetch records from four years ago
-      axios.get(getFatalitiesByYearsAgoUrl(4)).then(res => {
-        setFourYearsAgoDeathArray(calculateMonthlyTotals(res));
-      });
-
-      // Fetch records from five years ago
-      axios.get(getFatalitiesByYearsAgoUrl(5)).then(res => {
-        setFiveYearsAgoDeathArray(calculateMonthlyTotals(res));
-      });
-    };
-
-    // Wait for crashType to be passed up from setCrashType component,
-    // then fetch records
-    if (crashType.queryStringCrash) {
-      queryCurrentYear();
-      queryPreviousYears();
+    // Wait for crashType to be passed up from setCrashType component
+    if (crashType.queryStringDemographics) {
+      const getChartData = async () => {
+        let newData = {};
+        // Use Promise.all to let all requests resolve before setting chart data by year
+        await Promise.all(
+          yearsArray().map(async year => {
+            // If getting data for current year (only including years past January), set end of query to last day of previous month,
+            // else if getting data for previous years, set end of query to last day of year
+            let endDate =
+              year.toString() === dataEndDate.format("YYYY")
+                ? `${summaryCurrentYearEndDate}T23:59:59`
+                : `${year}-12-31T23:59:59`;
+            let url = `${crashEndpointUrl}?$where=${crashType.queryStringCrash} AND crash_date between '${year}-01-01T00:00:00' and '${endDate}'&$order=crash_date ASC`;
+            await axios.get(url).then(res => {
+              const yearData = calculateYearMonthlyTotals(res.data);
+              newData = { ...newData, ...{ [year]: yearData } };
+            });
+            return null;
+          })
+        );
+        setChartData(newData);
+      };
+      getChartData();
     }
   }, [crashType]);
 
-  // Build data object with data from the previous five years
-  const data = {
-    labels: [
-      "January",
-      "February",
-      "March",
-      "April",
-      "May",
-      "June",
-      "July",
-      "August",
-      "September",
-      "October",
-      "November",
-      "December"
-    ],
-    datasets: [
-      {
-        label: `${getYearsAgoLabel(1)}`,
-        fill: false,
-        lineTension: 0.1,
-        backgroundColor: colors.redGradient5Of5, // Legend box
-        borderColor: colors.redGradient5Of5,
-        borderCapStyle: "butt",
-        borderDash: [],
-        borderDashOffset: 0.0,
-        borderJoinStyle: "miter",
-        pointBorderColor: colors.redGradient5Of5,
-        pointBackgroundColor: colors.redGradient5Of5,
-        pointBorderWidth: 1,
-        pointHoverRadius: 5,
-        pointHoverBackgroundColor: colors.redGradient5Of5,
-        pointHoverBorderColor: colors.redGradient5Of5,
-        pointHoverBorderWidth: 2,
-        pointRadius: 1,
-        pointHitRadius: 10,
-        data: lastYearDeathArray
-      },
-      {
-        label: `${getYearsAgoLabel(2)}`,
-        fill: false,
-        lineTension: 0.1,
-        backgroundColor: colors.redGradient4Of5, // Legend box
-        borderColor: colors.redGradient4Of5,
-        borderCapStyle: "butt",
-        borderDash: [],
-        borderDashOffset: 0.0,
-        borderJoinStyle: "miter",
-        pointBorderColor: colors.redGradient4Of5,
-        pointBackgroundColor: colors.redGradient4Of5,
-        pointBorderWidth: 1,
-        pointHoverRadius: 5,
-        pointHoverBackgroundColor: colors.redGradient4Of5,
-        pointHoverBorderColor: colors.redGradient4Of5,
-        pointHoverBorderWidth: 2,
-        pointRadius: 1,
-        pointHitRadius: 10,
-        data: twoYearsAgoDeathArray
-      },
-      {
-        label: `${getYearsAgoLabel(3)}`,
-        fill: false,
-        lineTension: 0.1,
-        backgroundColor: colors.redGradient3Of5, // Legend box
-        borderColor: colors.redGradient3Of5,
-        borderCapStyle: "butt",
-        borderDash: [],
-        borderDashOffset: 0.0,
-        borderJoinStyle: "miter",
-        pointBorderColor: colors.redGradient3Of5,
-        pointBackgroundColor: colors.redGradient3Of5,
-        pointBorderWidth: 1,
-        pointHoverRadius: 5,
-        pointHoverBackgroundColor: colors.redGradient3Of5,
-        pointHoverBorderColor: colors.redGradient3Of5,
-        pointHoverBorderWidth: 2,
-        pointRadius: 1,
-        pointHitRadius: 10,
-        data: threeYearsAgoDeathArray
-      },
-      {
-        label: `${getYearsAgoLabel(4)}`,
-        fill: false,
-        lineTension: 0.1,
-        backgroundColor: colors.redGradient2Of5, // Legend box
-        borderColor: colors.redGradient2Of5,
-        borderCapStyle: "butt",
-        borderDash: [],
-        borderDashOffset: 0.0,
-        borderJoinStyle: "miter",
-        pointBorderColor: colors.redGradient2Of5,
-        pointBackgroundColor: colors.redGradient2Of5,
-        pointBorderWidth: 1,
-        pointHoverRadius: 5,
-        pointHoverBackgroundColor: colors.redGradient2Of5,
-        pointHoverBorderColor: colors.redGradient2Of5,
-        pointHoverBorderWidth: 2,
-        pointRadius: 1,
-        pointHitRadius: 10,
-        data: fourYearsAgoDeathArray
-      },
-      {
-        label: `${getYearsAgoLabel(5)}`,
-        fill: false,
-        lineTension: 0.1,
-        backgroundColor: colors.redGradient1Of5, // Legend box
-        borderColor: colors.redGradient1Of5,
-        borderCapStyle: "butt",
-        borderDash: [],
-        borderDashOffset: 0.0,
-        borderJoinStyle: "miter",
-        pointBorderColor: colors.redGradient1Of5,
-        pointBackgroundColor: colors.redGradient1Of5,
-        pointBorderWidth: 1,
-        pointHoverRadius: 5,
-        pointHoverBackgroundColor: colors.redGradient1Of5,
-        pointHoverBorderColor: colors.redGradient1Of5,
-        pointHoverBorderWidth: 2,
-        pointRadius: 1,
-        pointHitRadius: 10,
-        data: fiveYearsAgoDeathArray
-      }
-    ]
+  const renderHeader = () => {
+    const yearTotalData = chartData[dataEndDate.format("YYYY")];
+    // Last item in data array is total YTD
+    const yearTotal = yearTotalData[yearTotalData.length - 1];
+    return (
+      <h6 style={{ color: colors.blue, textAlign: "center" }}>
+        As of {dataEndDate.format("MMMM")}, there have been{" "}
+        <strong>{yearTotal}</strong> traffic-related{" "}
+        {crashType.textString && crashType.textString.toLowerCase()} in{" "}
+        {dataEndDate.format("YYYY")}.
+      </h6>
+    );
   };
 
-  // Add current year to data object if we are past January
-  if (thisMonth > "01") {
-    data.datasets.unshift({
-      label: `${thisYear}`,
+  // Create dataset for each year, data property is an array of cumulative totals by month
+  const createDatasets = () => {
+    const chartDatasets = chartYearsArray.map((year, i) => ({
+      label: year,
       fill: false,
       lineTension: 0.1,
-      backgroundColor: colors.blue, // Legend box
-      borderColor: colors.blue,
+      backgroundColor: chartColors[i], // Legend box
+      borderColor: chartColors[i],
       borderCapStyle: "butt",
       borderDash: [],
       borderDashOffset: 0.0,
       borderJoinStyle: "miter",
-      pointBorderColor: colors.blue,
-      pointBackgroundColor: colors.blue,
+      pointBorderColor: chartColors[i],
+      pointBackgroundColor: chartColors[i],
       pointBorderWidth: 1,
       pointHoverRadius: 5,
-      pointHoverBackgroundColor: colors.blue,
-      pointHoverBorderColor: colors.blue,
+      pointHoverBackgroundColor: chartColors[i],
+      pointHoverBorderColor: chartColors[i],
       pointHoverBorderWidth: 2,
       pointRadius: 1,
       pointHitRadius: 10,
-      data: thisYearDeathArray
-    });
-  }
+      data: chartData[year]
+    }));
+
+    return chartDatasets;
+  };
+
+  // Build data objects
+  const data = {
+    labels: moment.months(),
+    datasets: !!chartData && createDatasets()
+  };
 
   return (
     <Container>
-      <Row style={{ paddingBottom: "0.75em" }}>
+      <Row className="pb-3">
         <Col>
-          <h3 style={{ textAlign: "center" }}>
-            {crashType.textString} by Year
-          </h3>
+          <h3 className="text-center">{crashType.textString} by Year</h3>
         </Col>
       </Row>
       <Row style={{ paddingBottom: 20 }}>
-        <Col>{renderHeader()}</Col>
+        <Col>{!!chartData && renderHeader()}</Col>
       </Row>
       <Row style={{ paddingBottom: 20 }}>
-        <Col xs="6" sm="4" md="2">
+        <Col>
           <h6 style={{ textAlign: "center" }}>Prior Years:</h6>
         </Col>
-        <Col xs="6" sm="4" md="2">
-          <h6 style={{ textAlign: "center" }}>
-            <strong>{calculateYearlyTotals(lastYearDeathArray)}</strong> in{" "}
-            {getYearsAgoLabel(1)}
-          </h6>
-        </Col>
-        <Col xs="6" sm="4" md="2">
-          <h6 style={{ textAlign: "center" }}>
-            <strong>{calculateYearlyTotals(twoYearsAgoDeathArray)}</strong> in{" "}
-            {getYearsAgoLabel(2)}
-          </h6>
-        </Col>
-        <Col xs="6" sm="4" md="2">
-          <h6 style={{ textAlign: "center" }}>
-            <strong>{calculateYearlyTotals(threeYearsAgoDeathArray)}</strong> in{" "}
-            {getYearsAgoLabel(3)}
-          </h6>
-        </Col>
-        <Col xs="6" sm="4" md="2">
-          <h6 style={{ textAlign: "center" }}>
-            <strong>{calculateYearlyTotals(fourYearsAgoDeathArray)}</strong> in{" "}
-            {getYearsAgoLabel(4)}
-          </h6>
-        </Col>
-        <Col xs="6" sm="4" md="2">
-          <h6 style={{ textAlign: "center" }}>
-            <strong>{calculateYearlyTotals(fiveYearsAgoDeathArray)}</strong> in{" "}
-            {getYearsAgoLabel(5)}
-          </h6>
-        </Col>
+        {!!chartData &&
+          chartYearsArray.map((year, i) => {
+            const yearTotalData = chartData[year];
+            const yearTotal = yearTotalData[yearTotalData.length - 1];
+            // Return only data from previous years
+            return (
+              i > 0 && (
+                <Col key={i}>
+                  <h6 style={{ textAlign: "center" }}>
+                    <strong>{!!chartData && yearTotal}</strong> in {year}
+                  </h6>
+                </Col>
+              )
+            );
+          })}
       </Row>
       <Row>
         <Col>
@@ -376,7 +200,7 @@ const FatalitiesMultiYear = () => {
           />
         </Col>
       </Row>
-      <Row style={{ paddingTop: "0.75em" }}>
+      <Row className="pt-3">
         <Col>
           <CrashTypeSelector setCrashType={setCrashType} />
         </Col>
