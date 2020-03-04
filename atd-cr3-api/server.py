@@ -7,7 +7,7 @@ import re
 import datetime
 import boto3
 import os
-
+import pdb
 from dotenv import load_dotenv, find_dotenv
 from os import environ as env
 from functools import wraps
@@ -15,6 +15,7 @@ from six.moves.urllib.request import urlopen
 
 from flask import Flask, request, redirect, jsonify, _request_ctx_stack
 from flask_cors import cross_origin
+from werkzeug.local import LocalProxy
 from jose import jwt
 
 #
@@ -25,7 +26,7 @@ if ENV_FILE:
     load_dotenv(ENV_FILE, verbose=True)
 
 # We need the Auth0 domain, Client ID and current api environment.
-AUTH0_DOMAIN = os.getenv("AUTH0_DOMAIN", "") 
+AUTH0_DOMAIN = os.getenv("AUTH0_DOMAIN", "")
 CLIENT_ID = os.getenv("CLIENT_ID", "")
 API_ENVIRONMENT = os.getenv("API_ENVIRONMENT", "STAGING")
 
@@ -37,9 +38,7 @@ AWS_S3_CR3_LOCATION = os.getenv("AWS_S3_CR3_LOCATION", "")
 AWS_S3_BUCKET = os.getenv("AWS_S3_BUCKET", "")
 
 
-
-
-CORS_URL="*"
+CORS_URL = "*"
 ALGORITHMS = ["RS256"]
 APP = Flask(__name__)
 
@@ -63,25 +62,36 @@ def get_token_auth_header():
     """
     auth = request.headers.get("Authorization", None)
     if not auth:
-        raise AuthError({"code": "authorization_header_missing",
-                        "description":
-                            "Authorization header is expected"}, 401)
+        raise AuthError(
+            {
+                "code": "authorization_header_missing",
+                "description": "Authorization header is expected",
+            },
+            401,
+        )
 
     parts = auth.split()
 
     if parts[0].lower() != "bearer":
-        raise AuthError({"code": "invalid_header",
-                        "description":
-                            "Authorization header must start with"
-                            " Bearer"}, 401)
+        raise AuthError(
+            {
+                "code": "invalid_header",
+                "description": "Authorization header must start with" " Bearer",
+            },
+            401,
+        )
     elif len(parts) == 1:
-        raise AuthError({"code": "invalid_header",
-                        "description": "Token not found"}, 401)
+        raise AuthError(
+            {"code": "invalid_header", "description": "Token not found"}, 401
+        )
     elif len(parts) > 2:
-        raise AuthError({"code": "invalid_header",
-                        "description":
-                            "Authorization header must be"
-                            " Bearer token"}, 401)
+        raise AuthError(
+            {
+                "code": "invalid_header",
+                "description": "Authorization header must be" " Bearer token",
+            },
+            401,
+        )
 
     token = parts[1]
     return token
@@ -105,23 +115,32 @@ def requires_scope(required_scope):
 def requires_auth(f):
     """Determines if the access token is valid
     """
+
     @wraps(f)
     def decorated(*args, **kwargs):
         token = get_token_auth_header()
-        jsonurl = urlopen("https://"+AUTH0_DOMAIN+"/.well-known/jwks.json")
+        jsonurl = urlopen("https://" + AUTH0_DOMAIN + "/.well-known/jwks.json")
         jwks = json.loads(jsonurl.read())
         try:
             unverified_header = jwt.get_unverified_header(token)
         except jwt.JWTError:
-            raise AuthError({"code": "invalid_header",
-                            "description":
-                                "Invalid header. "
-                                "Use an RS256 signed JWT Access Token"}, 401)
+            raise AuthError(
+                {
+                    "code": "invalid_header",
+                    "description": "Invalid header. "
+                    "Use an RS256 signed JWT Access Token",
+                },
+                401,
+            )
         if unverified_header["alg"] == "HS256":
-            raise AuthError({"code": "invalid_header",
-                            "description":
-                                "Invalid header. "
-                                "Use an RS256 signed JWT Access Token"}, 401)
+            raise AuthError(
+                {
+                    "code": "invalid_header",
+                    "description": "Invalid header. "
+                    "Use an RS256 signed JWT Access Token",
+                },
+                401,
+            )
         rsa_key = {}
         for key in jwks["keys"]:
             if key["kid"] == unverified_header["kid"]:
@@ -130,13 +149,13 @@ def requires_auth(f):
                     "kid": key["kid"],
                     "use": key["use"],
                     "n": key["n"],
-                    "e": key["e"]
+                    "e": key["e"],
                 }
         if rsa_key:
             dataConfig = {
-                "verify_signature": True, 
+                "verify_signature": True,
                 "verify_aud": True,
-                "verify_iat": True, 
+                "verify_iat": True,
                 "verify_exp": True,
                 "verify_nbf": False,
                 "verify_iss": True,
@@ -152,28 +171,42 @@ def requires_auth(f):
                     algorithms=ALGORITHMS,
                     issuer="https://" + AUTH0_DOMAIN + "/",
                     audience=CLIENT_ID,
-                    options=dataConfig
+                    options=dataConfig,
                 )
             except jwt.ExpiredSignatureError:
-                raise AuthError({"code": "token_expired",
-                                "description": "token is expired"}, 401)
+                raise AuthError(
+                    {"code": "token_expired", "description": "token is expired"}, 401
+                )
             except jwt.JWTClaimsError:
-                raise AuthError({"code": "invalid_claims",
-                                "description":
-                                    "incorrect claims,"
-                                    " please check the audience and issuer"}, 401)
+                raise AuthError(
+                    {
+                        "code": "invalid_claims",
+                        "description": "incorrect claims,"
+                        " please check the audience and issuer",
+                    },
+                    401,
+                )
             except Exception:
-                raise AuthError({"code": "invalid_header",
-                                "description":
-                                    "Unable to parse authentication"
-                                    " token."}, 401)
-
+                raise AuthError(
+                    {
+                        "code": "invalid_header",
+                        "description": "Unable to parse authentication" " token.",
+                    },
+                    401,
+                )
             _request_ctx_stack.top.current_user = payload
             return f(*args, **kwargs)
-        raise AuthError({"code": "invalid_header",
-                        "description": "Unable to find appropriate key"}, 401)
+        raise AuthError(
+            {"code": "invalid_header", "description": "Unable to find appropriate key"},
+            401,
+        )
+
     return decorated
 
+
+current_user = LocalProxy(
+    lambda: getattr(_request_ctx_stack.top, "current_user", None)
+)
 
 # Controllers API
 @APP.route("/")
@@ -182,7 +215,9 @@ def healthcheck():
     """No access token required to access this route
     """
     now = datetime.datetime.now()
-    response = "CR3 Download API - Health Check - Available @ %s" % now.strftime("%Y-%m-%d %H:%M:%S")
+    response = "CR3 Download API - Health Check - Available @ %s" % now.strftime(
+        "%Y-%m-%d %H:%M:%S"
+    )
     return jsonify(message=response)
 
 
@@ -196,24 +231,34 @@ def download_crash_id(crash_id):
     # We only care for an integer string, anything else is not safe:
     safe_crash_id = re.sub("[^0-9]", "", crash_id)
 
-    s3 = boto3.client("s3",region_name=AWS_DEFALUT_REGION, aws_access_key_id=AWS_S3_KEY, aws_secret_access_key=AWS_S3_SECRET)
+    s3 = boto3.client(
+        "s3",
+        region_name=AWS_DEFALUT_REGION,
+        aws_access_key_id=AWS_S3_KEY,
+        aws_secret_access_key=AWS_S3_SECRET,
+    )
 
     url = s3.generate_presigned_url(
-        ExpiresIn=60, # seconds
-        ClientMethod='get_object',
+        ExpiresIn=60,  # seconds
+        ClientMethod="get_object",
         Params={
-            'Bucket': AWS_S3_BUCKET,
-            'Key': AWS_S3_CR3_LOCATION + "/" + safe_crash_id + ".pdf"
-        }
+            "Bucket": AWS_S3_BUCKET,
+            "Key": AWS_S3_CR3_LOCATION + "/" + safe_crash_id + ".pdf",
+        },
     )
 
     # For testing uncomment:
     # response = "Private Download, CrashID: %s , %s" % (safe_crash_id, url)
     # return redirect(url, code=302)
     return jsonify(message=url)
-    
 
 
+@APP.route("/user/test")
+@cross_origin(headers=["Content-Type", "Authorization"])
+@cross_origin(headers=["Access-Control-Allow-Origin", CORS_URL])
+@requires_auth
+def user_test():
+    return jsonify(message=current_user._get_current_object())
 
 if __name__ == "__main__":
     APP.run(host="0.0.0.0", port=env.get("PORT", 3010))
