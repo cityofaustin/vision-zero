@@ -311,6 +311,22 @@ def user_list_users():
         abort(403)
 
 
+@APP.route("/user/get_user", methods=["POST"])
+@cross_origin(headers=["Content-Type", "Authorization"])
+@cross_origin(headers=["Access-Control-Allow-Origin", CORS_URL])
+@requires_auth
+def user_get_user():
+    userDict = current_user._get_current_object()
+    if isValidUser(userDict) and hasUserRole("admin", userDict):
+        user_id = request.json.get("user_id")
+        endpoint = "https://atd-datatech.auth0.com/api/v2/users/" + user_id
+        headers = {"Authorization": "Bearer "}
+        response = requests.get(endpoint, headers=headers).json()
+        return jsonify(response)
+    else:
+        abort(403)
+
+
 # Create user payload
 # {
 #   "email": "test.test@test.com",
