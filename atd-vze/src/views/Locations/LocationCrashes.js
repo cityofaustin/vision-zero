@@ -20,7 +20,7 @@ function LocationCrashes(props) {
     order_by: {},
     where: {
       city_id: "_eq: 22",
-      location: `location_id: {_eq: "${props.locationId}"}`,
+      location_id: `_eq: "${props.locationId}"`,
     },
     limit: 25,
     offset: 0,
