@@ -13,19 +13,23 @@ import {
 import { crashTestEndpointUrl } from "./queries/socrataQueries";
 
 const CrashesBySystem = () => {
-
+  // Both categories use the same flag but are based on different ("Y" or "N") values.
+  // In the future we may consider adding another category using the "private_dr_fl" flag
+  // to show crashes that have occurred on private driveways.
   const categories = [
     {
-      label: "TxDOT System",
+      label: "On TxDOT System",
       flags: ["onsys_fl"],
+      value: "Y",
       color: `${colors.chartRed}`
     },
     {
-      label: "Private",
-      flags: ["private_dr_fl"],
+      label: "Off TxDOT System",
+      flags: ["onsys_fl"],
+      value: "N",
       color: `${colors.chartLightBlue}`
     }
-  ]
+  ];
 
   const [chartData, setChartData] = useState(null); // {yearInt: [{record}, {record}, ...]}
   const [crashType, setCrashType] = useState([]);
@@ -60,11 +64,12 @@ const CrashesBySystem = () => {
 
   const createChartLabels = () => yearsArray().map(year => `${year}`);
 
-  // Tabulate fatalities by flags in data
-  const getCategoryData = flags =>
+  // Tabulate crashes by flags in data
+  const getCategoryData = (flags, value) =>
     yearsArray().map(year => {
       return chartData[year].reduce((accumulator, record) => {
-        flags.forEach(flag => record[`${flag}`] === "Y" && accumulator++);
+        // For each flag, count records where the record's flag value matches the category's flag value ("Y" or "N")
+        flags.forEach(flag => record[`${flag}`] === value && accumulator++);
         return accumulator;
       }, 0);
     });
@@ -87,7 +92,7 @@ const CrashesBySystem = () => {
       hoverBackgroundColor: category.color,
       hoverBorderColor: category.color,
       label: category.label,
-      data: getCategoryData(category.flags)
+      data: getCategoryData(category.flags, category.value)
     }));
     // Determine order of categoriess in each year stack
     return sortCategoryData(data);
@@ -98,24 +103,44 @@ const CrashesBySystem = () => {
     datasets: !!chartData && createCategoryDatasets()
   };
 
-  !!data.datasets && console.log(data);
-
   return (
     <Container>
       <Row className="pb-3">
         <Col>
-        <h3 className="text-center">
-            {crashType.textString} by System
+          <h3 className="text-center">
+            {crashType.textString} by Jurisdiction
           </h3>
         </Col>
-      </Row>        
+      </Row>
+      <Row>
+        <Col>
+          <Bar
+            data={data}
+            options={{
+              maintainAspectRatio: true,
+              scales: {
+                xAxes: [
+                  {
+                    stacked: true
+                  }
+                ],
+                yAxes: [
+                  {
+                    stacked: true
+                  }
+                ]
+              }
+            }}
+          />
+        </Col>
+      </Row>
       <Row className="pt-3">
         <Col>
           <CrashTypeSelector setCrashType={setCrashType} />
         </Col>
       </Row>
     </Container>
-  )
-}
+  );
+};
 
 export default CrashesBySystem;
