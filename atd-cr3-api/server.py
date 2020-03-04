@@ -8,6 +8,7 @@ import datetime
 import boto3
 import os
 import pdb
+import requests
 from dotenv import load_dotenv, find_dotenv
 from os import environ as env
 from functools import wraps
@@ -204,9 +205,7 @@ def requires_auth(f):
     return decorated
 
 
-current_user = LocalProxy(
-    lambda: getattr(_request_ctx_stack.top, "current_user", None)
-)
+current_user = LocalProxy(lambda: getattr(_request_ctx_stack.top, "current_user", None))
 
 # Controllers API
 @APP.route("/")
@@ -258,7 +257,21 @@ def download_crash_id(crash_id):
 @cross_origin(headers=["Access-Control-Allow-Origin", CORS_URL])
 @requires_auth
 def user_test():
+    # Auth0 url
+    # TODO Check current user object for specific data/roles, if not valid return 404
     return jsonify(message=current_user._get_current_object())
+
+
+@APP.route("/user/list_users")
+@cross_origin(headers=["Content-Type", "Authorization"])
+@cross_origin(headers=["Access-Control-Allow-Origin", CORS_URL])
+@requires_auth
+def user_list_users():
+    endpoint = "https://atd-datatech.auth0.com/api/v2/users"
+    headers = {"Authorization": "Bearer "}
+    response = requests.get(endpoint, headers=headers).json()
+    return jsonify(response)
+
 
 if __name__ == "__main__":
     APP.run(host="0.0.0.0", port=env.get("PORT", 3010))
