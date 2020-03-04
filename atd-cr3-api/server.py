@@ -311,15 +311,14 @@ def user_list_users():
         abort(403)
 
 
-@APP.route("/user/get_user", methods=["POST"])
+@APP.route("/user/get_user/<id>", methods=["POST"])
 @cross_origin(headers=["Content-Type", "Authorization"])
 @cross_origin(headers=["Access-Control-Allow-Origin", CORS_URL])
 @requires_auth
-def user_get_user():
+def user_get_user(id):
     userDict = current_user._get_current_object()
     if isValidUser(userDict) and hasUserRole("admin", userDict):
-        user_id = request.json.get("user_id")
-        endpoint = "https://atd-datatech.auth0.com/api/v2/users/" + user_id
+        endpoint = "https://atd-datatech.auth0.com/api/v2/users/" + id
         headers = {"Authorization": "Bearer "}
         response = requests.get(endpoint, headers=headers).json()
         return jsonify(response)
@@ -349,6 +348,22 @@ def user_create_user():
         endpoint = "https://atd-datatech.auth0.com/api/v2/users"
         headers = {"Authorization": "Bearer "}
         response = requests.post(endpoint, headers=headers, json=json_data).json()
+        return jsonify(response)
+    else:
+        abort(403)
+
+
+@APP.route("/user/update_user/<id>", methods=["POST"])
+@cross_origin(headers=["Content-Type", "Authorization"])
+@cross_origin(headers=["Access-Control-Allow-Origin", CORS_URL])
+@requires_auth
+def user_update_user(id):
+    userDict = current_user._get_current_object()
+    if isValidUser(userDict) and hasUserRole("admin", userDict):
+        json_data = request.json
+        endpoint = "https://atd-datatech.auth0.com/api/v2/users/" + id
+        headers = {"Authorization": "Bearer "}
+        response = requests.patch(endpoint, headers=headers, json=json_data).json()
         return jsonify(response)
     else:
         abort(403)
