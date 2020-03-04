@@ -16,12 +16,12 @@ from copy import deepcopy
 from process.config import ATD_ETL_CONFIG
 
 # Dict to translate canonical modes to broader categories for VZV
-mode_category_flags = {
-    "motor_vehicle_fl": [1, 2, 4],
-    "motorcycle_fl": [3],
-    "bicycle_fl": [5],
-    "pedestrian_fl": [7],
-    "other_fl": [6, 8, 9]
+mode_categories = {
+    "motor_vehicle": [1, 2, 4],
+    "motorcycle": [3],
+    "bicycle": [5],
+    "pedestrian": [7],
+    "other": [6, 8, 9]
 }
 
 
@@ -138,9 +138,9 @@ def create_mode_flags(records):
 
         # Check for id matches in flags dict and set flags to Y for matches
         for id in mode_ids:
-            for flag_key, flag_value in mode_category_flags.items():
+            for flag_key, flag_value in mode_categories.items():
                 if id in flag_value:
-                    record[flag_key] = "Y"
+                    record[flag_key + "_fl"] = "Y"
     return records
 
 
@@ -153,6 +153,36 @@ def concatTimeAndDate(records):
         concatDateAndTime = record.get(
             "crash_date") + "T" + record.get("crash_time")
         record["crash_date"] = concatDateAndTime
+    return records
+
+
+def calc_mode_injury_totals(records):
+    """
+    Totals number of fatalities and serious injuries per mode type
+    :param records: list - List of record dicts
+    """
+    fatality_field = "death_cnt"
+    serious_injury_field = "sus_serious_injry_cnt"
+
+    for record in records:
+        # Initialize counts
+        total_dict = {}
+        for mode in mode_categories.keys():
+            total_dict[mode + "_death_count"] = 0
+            total_dict[mode + "_serious_injury_count"] = 0
+
+        crash_metadata = record.get("atd_mode_category_metadata")
+        # Count number of injuries per mode of units in metadata
+        if crash_metadata != None:
+            for unit in crash_metadata:
+                unit_mode_id = unit.get("mode_id")
+                for [mode, id_list] in mode_categories.items():
+                    if unit_mode_id in id_list:
+                        total_dict[mode +
+                                   "_death_count"] += unit[fatality_field]
+                        total_dict[mode +
+                                   "_serious_injury_count"] += unit[serious_injury_field]
+        record = record.update(total_dict)
     return records
 
 
@@ -244,6 +274,7 @@ def format_crash_data(data, formatter_config):
 
     # Format records
     formatted_records = create_mode_flags(records)
+    formatted_records = calc_mode_injury_totals(formatted_records)
     formatted_records = concatTimeAndDate(formatted_records)
     formatted_records = set_mode_columns(
         formatted_records)
