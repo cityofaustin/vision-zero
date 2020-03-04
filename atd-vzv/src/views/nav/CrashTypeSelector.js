@@ -62,10 +62,8 @@ const CrashTypeSelector = ({ setCrashType }) => {
   };
 
   // Set hover class based on whether button is unselected
-  const setHoverClass = (unselected) => {
-    return unselected
-    ? "unselected"
-    : "selected"
+  const setHoverClass = unselected => {
+    return unselected ? "unselected" : "selected";
   };
 
   useEffect(() => {
@@ -107,7 +105,9 @@ const CrashTypeSelector = ({ setCrashType }) => {
           id="fatalities-btn"
           type="button"
           color="info"
-          className={`${setHoverClass(isUnselected(fatalities))} w-100 pt-1 pb-1 pl-0 pr-0`}
+          className={`${setHoverClass(
+            isUnselected(fatalities)
+          )} w-100 pt-1 pb-1 pl-0 pr-0`}
           onClick={() => {
             toggle(fatalities);
           }}
@@ -119,7 +119,9 @@ const CrashTypeSelector = ({ setCrashType }) => {
           id="serious-injuries-btn"
           type="button"
           color="info"
-          className={`${setHoverClass(isUnselected(seriousInjuries))} w-100 pt-1 pb-1 pl-0 pr-0`}
+          className={`${setHoverClass(
+            isUnselected(seriousInjuries)
+          )} w-100 pt-1 pb-1 pl-0 pr-0`}
           onClick={() => {
             toggle(seriousInjuries);
           }}
