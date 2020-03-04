@@ -328,9 +328,9 @@ def user_get_user(id):
         abort(403)
 
 
-# Create user payload
+# Payload to create user
 # {
-#   "email": "test.test@test.com",
+#   "email": "test_email",
 #   "blocked": false,
 #   "name": "John Doe",
 #   "connection": "Username-Password-Authentication",
@@ -353,7 +353,7 @@ def user_create_user():
         abort(403)
 
 
-# Update format
+# Format to update user app_metadata
 # {
 # 	"app_metadata": {
 #         "roles": [
