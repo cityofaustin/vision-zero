@@ -270,10 +270,20 @@ def isValidUser(userDict):
     if userDict["email_verified"] != True:
         return False
 
+    # Check email for austin.gov
+
     return True
 
 
-# TODO Add check for roles in userDict for each endpoint (ex. only admin should be able to delete users)
+def hasUserRole(role, userDict):
+    claims = userDict.get("https://hasura.io/jwt/claims", False)
+    if claims != False:
+        roles = claims.get("x-hasura-allowed-roles")
+        if role in roles:
+            return True
+    return False
+
+
 @APP.route("/user/test")
 @cross_origin(headers=["Content-Type", "Authorization"])
 @cross_origin(headers=["Access-Control-Allow-Origin", CORS_URL])
@@ -292,10 +302,37 @@ def user_test():
 @requires_auth
 def user_list_users():
     userDict = current_user._get_current_object()
-    if isValidUser(userDict):
+    if isValidUser(userDict) and hasUserRole("admin", userDict):
         endpoint = "https://atd-datatech.auth0.com/api/v2/users"
         headers = {"Authorization": "Bearer "}
         response = requests.get(endpoint, headers=headers).json()
+        return jsonify(response)
+    else:
+        abort(403)
+
+
+# Create user payload
+# {
+#   "email": "test.test@test.com",
+#   "blocked": false,
+#   "email_verified": false,
+#   "name": "John Doe",
+#   "nickname": "Johnny",
+#   "connection": "Username-Password-Authentication",
+#   "password": "thisissecure123!",
+#   "verify_email": true
+# }
+@APP.route("/user/create_user", methods=["POST"])
+@cross_origin(headers=["Content-Type", "Authorization"])
+@cross_origin(headers=["Access-Control-Allow-Origin", CORS_URL])
+@requires_auth
+def user_create_user():
+    userDict = current_user._get_current_object()
+    if isValidUser(userDict) and hasUserRole("admin", userDict):
+        json_data = request.json
+        endpoint = "https://atd-datatech.auth0.com/api/v2/users"
+        headers = {"Authorization": "Bearer "}
+        response = requests.post(endpoint, headers=headers, json=json_data).json()
         return jsonify(response)
     else:
         abort(403)
