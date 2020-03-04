@@ -12,7 +12,7 @@ import {
 } from "../../constants/time";
 import { personEndpointUrl } from "./queries/socrataQueries";
 
-const PeopleByMode = () => {
+const CrashesByMode = () => {
   const modes = [
     {
       label: "Motorist",
@@ -159,4 +159,4 @@ const PeopleByMode = () => {
   );
 };
 
-export default PeopleByMode;
+export default CrashesByMode;

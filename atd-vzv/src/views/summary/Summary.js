@@ -3,7 +3,7 @@ import CrashesByMonth from "./CrashesByMonth";
 import CrashesBySystem from "./CrashesBySystem";
 import CrashesByTimeOfDay from "./CrashesByTimeOfDay";
 import PeopleByDemographics from "./PeopleByDemographics";
-import PeopleByMode from "./PeopleByMode";
+import CrashesByMode from "./CrashesByMode";
 import SummaryView from "./SummaryView";
 import SummaryCard from "./SummaryCard";
 
@@ -12,7 +12,7 @@ import styled from "styled-components";
 
 const children = [
   { component: <CrashesByMonth /> },
-  { component: <PeopleByMode /> },
+  { component: <CrashesByMode /> },
   { component: <CrashesByTimeOfDay /> },
   { component: <PeopleByDemographics /> },
   { component: <CrashesBySystem />}
