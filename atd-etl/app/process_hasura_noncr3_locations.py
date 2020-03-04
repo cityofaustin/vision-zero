@@ -68,7 +68,7 @@ def add_locations_to_non_cr3s_by_location():
     locations = result['data']['atd_txdot_locations']
 
     # Loop over each location
-    for location in locations:
+    for idx, location in enumerate(locations):
 
         # Using findNonCR3crashesForLocation SQL function, get all the nonCR3s whose coordinates are
         # inside the location polygon
@@ -81,6 +81,7 @@ def add_locations_to_non_cr3s_by_location():
 
         print("Processing LOCATION ID: {}. {} NON CR3s found.".format(
             location["location_id"], len(collisions_array)))
+        print("{} of {} Locations".format(idx + 1, len(locations)))
 
         # Loop through the values and update their location ID
         for collision in collisions_array:

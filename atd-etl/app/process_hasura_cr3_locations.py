@@ -66,8 +66,7 @@ def add_locations_to_cr3s_by_location():
     locations = result['data']['atd_txdot_locations']
 
     # Loop over each location
-    for location in locations:
-
+    for idx, location in enumerate(locations):
         # Using findCR3crashesForLocation SQL function, get all the CR3s whose coordinates are
         # inside the location polygon
         collisions_query = find_cr3_collisions_for_location_query.substitute(
@@ -79,6 +78,7 @@ def add_locations_to_cr3s_by_location():
 
         print("Processing LOCATION ID: {}. {} CR3s found.".format(
             location["location_id"], len(collisions_array)))
+        print("{} of {} Locations".format(idx + 1, len(locations)))
 
         # Loop through the values and update their location ID
         for collision in collisions_array:
