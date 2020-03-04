@@ -28,7 +28,7 @@ start_time = datetime.now()
 locations_query = """
     query getLocations {
         atd_txdot_locations {
-            unique_id
+            location_id
             description
         }
     }
@@ -36,7 +36,7 @@ locations_query = """
 
 find_noncr3_collisions_for_location_query = Template("""
 query nonCR3LocationsByLocation {
-    find_noncr3_collisions_for_location(args: {id: $id}) {
+    find_noncr3_collisions_for_location(args: {id: "$id"}) {
         address
         hour
         latitude
@@ -73,21 +73,20 @@ def add_locations_to_non_cr3s_by_location():
         # Using findNonCR3crashesForLocation SQL function, get all the nonCR3s whose coordinates are
         # inside the location polygon
         collisions_query = find_noncr3_collisions_for_location_query.substitute(
-            id=location['unique_id'])
+            id=location['location_id'])
 
         collisions_result = run_query(collisions_query)
+        print("collisions_result")
+        print(collisions_result)
         collisions_array = collisions_result['data']['find_noncr3_collisions_for_location']
 
         print("Processing LOCATION ID: {}. {} NON CR3s found.".format(
-            location["unique_id"], len(collisions_array)))
+            location["location_id"], len(collisions_array)))
 
         # Loop through the values and update their location ID
         for collision in collisions_array:
-            # Skip if there is already an associated record.
-            if collision['location_id']:
-                continue
             non_cr3_mutation = update_record_noncr3.substitute(
-                id=collision["form_id"], location_id=location["unique_id"])
+                id=collision["form_id"], location_id=location["location_id"])
             mutation_result = run_query(non_cr3_mutation)
             print(mutation_result)
 
