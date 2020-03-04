@@ -82,9 +82,9 @@ def add_locations_to_cr3s_by_location():
 
         # Loop through the values and update their location ID
         for collision in collisions_array:
-            # # Skip if there is already an associated record.
-            # if collision['location_id']:
-            #     continue
+            # Skip if there is already an associated record.
+            if collision['location_id']:
+                continue
             cr3_mutation = update_record_cr3.substitute(
                 id=collision["crash_id"], location_id=location["location_id"])
             mutation_result = run_query(cr3_mutation)
