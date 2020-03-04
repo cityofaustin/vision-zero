@@ -14,7 +14,7 @@ from os import environ as env
 from functools import wraps
 from six.moves.urllib.request import urlopen
 
-from flask import Flask, request, redirect, jsonify, _request_ctx_stack
+from flask import Flask, request, redirect, jsonify, _request_ctx_stack, abort
 from flask_cors import cross_origin
 from werkzeug.local import LocalProxy
 from jose import jwt
@@ -252,14 +252,38 @@ def download_crash_id(crash_id):
     return jsonify(message=url)
 
 
+def isValidUser(userDict):
+    valid_fields = [
+        "email",
+        "name",
+        "https://hasura.io/jwt/claims",
+        "email_verified",
+        "aud",
+    ]
+
+    # Check for valid fields
+    for field in valid_fields:
+        if userDict.get(field, False) == False:
+            return False
+
+    # Check for verified email
+    if userDict["email_verified"] != True:
+        return False
+
+    return True
+
+
+# TODO Add check for roles in userDict for each endpoint (ex. only admin should be able to delete users)
 @APP.route("/user/test")
 @cross_origin(headers=["Content-Type", "Authorization"])
 @cross_origin(headers=["Access-Control-Allow-Origin", CORS_URL])
 @requires_auth
 def user_test():
-    # Auth0 url
-    # TODO Check current user object for specific data/roles, if not valid return 404
-    return jsonify(message=current_user._get_current_object())
+    userDict = current_user._get_current_object()
+    if isValidUser(userDict):
+        return jsonify(message=current_user._get_current_object())
+    else:
+        abort(403)
 
 
 @APP.route("/user/list_users")
@@ -267,10 +291,14 @@ def user_test():
 @cross_origin(headers=["Access-Control-Allow-Origin", CORS_URL])
 @requires_auth
 def user_list_users():
-    endpoint = "https://atd-datatech.auth0.com/api/v2/users"
-    headers = {"Authorization": "Bearer "}
-    response = requests.get(endpoint, headers=headers).json()
-    return jsonify(response)
+    userDict = current_user._get_current_object()
+    if isValidUser(userDict):
+        endpoint = "https://atd-datatech.auth0.com/api/v2/users"
+        headers = {"Authorization": "Bearer "}
+        response = requests.get(endpoint, headers=headers).json()
+        return jsonify(response)
+    else:
+        abort(403)
 
 
 if __name__ == "__main__":
