@@ -47,12 +47,12 @@
     "react-map-gl-draw": "^0.15.0",
     "react-map-gl-geocoder": "^2.0.11",
     "react-router-config": "^5.0.1",
-    "react-router-dom": "^5.0.1",
+    "react-router-dom": "^5.1.2",
     "react-test-renderer": "^16.8.6",
     "reactstrap": "^8.0.0",
+    "serialize-javascript": ">=2.1.1",
     "simple-line-icons": "^2.4.1",
-    "styled-components": "^4.3.2",
-    "serialize-javascript": ">=2.1.1"
+    "styled-components": "^4.3.2"
   },
   "devDependencies": {
     "eslint-config-prettier": "^6.0.0",
