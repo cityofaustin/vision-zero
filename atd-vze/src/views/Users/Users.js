@@ -1,6 +1,15 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
-import { Badge, Card, CardBody, CardHeader, Col, Row, Table } from "reactstrap";
+import {
+  Badge,
+  Card,
+  CardBody,
+  CardHeader,
+  Col,
+  Row,
+  Table,
+  Button,
+} from "reactstrap";
 
 import usersData from "./UsersData";
 
@@ -52,6 +61,25 @@ class Users extends Component {
                 <i className="fa fa-align-justify"></i> Users{" "}
               </CardHeader>
               <CardBody>
+                <Row className="align-items-center mb-3">
+                  <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
+                    <Link to="/users/add" className="link">
+                      <Button color="primary">
+                        <i className="fa fa-user-plus"></i> Add User
+                      </Button>
+                    </Link>
+                  </Col>
+                  {/* <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
+                    <Button block color="secondary">
+                      Secondary
+                    </Button>
+                  </Col>
+                  <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
+                    <Button block color="success">
+                      Success
+                    </Button>
+                  </Col> */}
+                </Row>
                 <Table responsive hover>
                   <thead>
                     <tr>
