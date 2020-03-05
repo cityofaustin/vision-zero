@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import {
   Button,
   Card,
@@ -12,6 +13,7 @@ import {
   Input,
   Label,
   Row,
+  Alert,
 } from "reactstrap";
 
 const AddUser = () => {
@@ -19,7 +21,7 @@ const AddUser = () => {
     name: "",
     email: "",
     blocked: false, // Initialize blocked status
-    connection: "Username-Password-Authentication", // Tie user to VZ app
+    connection: "Username-Password-Authentication", // Set account type
     verify_email: true, // Send email verification
     app_metadata: {
       roles: ["readOnly"], // Default to lowest level access
@@ -27,6 +29,7 @@ const AddUser = () => {
   };
 
   const [userFormData, setUserFormData] = useState(defaultFormData);
+  const [isSubmissionError, setIsSubmissionError] = useState(false);
 
   const roles = [
     { id: "itSupervisor", label: "IT Supervisor" },
@@ -36,27 +39,54 @@ const AddUser = () => {
   ];
 
   const handleTextInputChange = event => {
-    const text = event.target.value;
-    const field = event.target.id;
-    const updatedFormData = { ...userFormData, [field]: text };
-
+    const updatedFormData = {
+      ...userFormData,
+      [event.target.id]: event.target.value,
+    };
     setUserFormData(updatedFormData);
   };
 
   const handleRoleRadioInputChange = event => {
-    const role = event.target.value;
     const field = "app_metadata";
     const appMetadata = {
-      roles: [role],
+      roles: [event.target.value],
     };
     const updatedFormData = { ...userFormData, [field]: appMetadata };
 
     setUserFormData(updatedFormData);
   };
 
+  const handleFormSubmit = () => {
+    // TODO POST form data to real api endpoint
+    const endpoint = "endpoint/user/create_user";
+    axios
+      .post(endpoint, userFormData, {
+        headers: { Authorization: "user_token_here" },
+      })
+      .then(() => {
+        // TODO Redirect to Users page
+      })
+      .catch(() => {
+        setIsSubmissionError(true);
+      });
+  };
+
+  // Remove error message after rendered
+  useEffect(() => {
+    setTimeout(() => {
+      setIsSubmissionError(false);
+    }, 5000);
+  }, [isSubmissionError]);
+
   const resetForm = () => {
     setUserFormData(defaultFormData);
   };
+
+  const renderErrorMessage = () => (
+    <Alert className="mt-3" color="danger">
+      Failed to add new user - please try again.
+    </Alert>
+  );
 
   return (
     <div className="animated fadeIn">
@@ -140,12 +170,18 @@ const AddUser = () => {
               </Form>
             </CardBody>
             <CardFooter>
-              <Button type="submit" size="sm" color="primary">
+              <Button
+                type="submit"
+                size="sm"
+                color="primary"
+                onClick={handleFormSubmit}
+              >
                 <i className="fa fa-dot-circle-o"></i> Submit
               </Button>{" "}
               <Button type="reset" size="sm" color="danger" onClick={resetForm}>
                 <i className="fa fa-ban"></i> Reset
               </Button>
+              {isSubmissionError && renderErrorMessage()}
             </CardFooter>
           </Card>
         </Col>
