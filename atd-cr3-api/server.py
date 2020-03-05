@@ -293,10 +293,7 @@ def isValidUser(user_dict):
         return False
 
     # Check email for austintexas.gov
-    if (
-        isinstance(user_email, str) is False
-        and user_email.endswith("@austintexas.gov") is False
-    ):
+    if str(user_email).endswith("@austintexas.gov") is False:
         return False
 
     return True
