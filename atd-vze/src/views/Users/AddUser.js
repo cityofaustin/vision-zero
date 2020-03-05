@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { Redirect } from "react-router-dom";
 import {
   Button,
   Card,
@@ -30,6 +31,7 @@ const AddUser = () => {
 
   const [userFormData, setUserFormData] = useState(defaultFormData);
   const [isSubmissionError, setIsSubmissionError] = useState(false);
+  const [isFormSubmitted, setIsFormSubmitted] = useState(false);
 
   const roles = [
     { id: "itSupervisor", label: "IT Supervisor" },
@@ -64,19 +66,12 @@ const AddUser = () => {
         headers: { Authorization: "user_token_here" },
       })
       .then(() => {
-        // TODO Redirect to Users page
+        setIsFormSubmitted(true);
       })
       .catch(() => {
         setIsSubmissionError(true);
       });
   };
-
-  // Remove error message after rendered
-  useEffect(() => {
-    setTimeout(() => {
-      setIsSubmissionError(false);
-    }, 5000);
-  }, [isSubmissionError]);
 
   const resetForm = () => {
     setUserFormData(defaultFormData);
@@ -88,7 +83,19 @@ const AddUser = () => {
     </Alert>
   );
 
-  return (
+  // Remove error message after rendered
+  useEffect(() => {
+    let errorMessageTimer = setTimeout(() => {
+      setIsSubmissionError(false);
+    }, 5000);
+    return () => {
+      clearTimeout(errorMessageTimer);
+    };
+  }, [isSubmissionError, setIsSubmissionError]);
+
+  return isFormSubmitted ? (
+    <Redirect to="/users" />
+  ) : (
     <div className="animated fadeIn">
       <Row>
         <Col xs="12" md="6">

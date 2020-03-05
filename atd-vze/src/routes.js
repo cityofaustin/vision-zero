@@ -47,6 +47,7 @@ const Location = React.lazy(() => import("./views/Locations/Location"));
 const Users = React.lazy(() => import("./views/Users/Users"));
 const User = React.lazy(() => import("./views/Users/User"));
 const AddUser = React.lazy(() => import("./views/Users/AddUser"));
+const EditUser = React.lazy(() => import("./views/Users/EditUser"));
 
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 const routes = [
@@ -154,6 +155,12 @@ const routes = [
   },
   { path: "/users", exact: true, name: "Users", component: Users },
   { path: "/users/add", exact: true, name: "Add User", component: AddUser },
+  {
+    path: "/users/edit/:id",
+    exact: true,
+    name: "Edit User",
+    component: EditUser,
+  },
   { path: "/users/:id", exact: true, name: "User Details", component: User },
 ];
 
