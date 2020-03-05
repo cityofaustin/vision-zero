@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import {
-  Badge,
   Button,
   Card,
   CardBody,
@@ -17,9 +16,14 @@ import {
 
 const AddUser = () => {
   const defaultFormData = {
-    blocked: false,
-    connection: "Username-Password-Authentication",
-    verify_email: true,
+    name: "",
+    email: "",
+    blocked: false, // Initialize blocked status
+    connection: "Username-Password-Authentication", // Tie user to VZ app
+    verify_email: true, // Send email verification
+    app_metadata: {
+      roles: ["readOnly"], // Default to lowest level access
+    },
   };
 
   const [userFormData, setUserFormData] = useState(defaultFormData);
@@ -31,21 +35,31 @@ const AddUser = () => {
     { id: "readOnly", label: "Read-only" },
   ];
 
+  const handleTextInputChange = event => {
+    const text = event.target.value;
+    const field = event.target.id;
+    const updatedFormData = { ...userFormData, [field]: text };
+
+    setUserFormData(updatedFormData);
+  };
+
+  const handleRoleRadioInputChange = event => {
+    const role = event.target.value;
+    const field = "app_metadata";
+    const appMetadata = {
+      roles: [role],
+    };
+    const updatedFormData = { ...userFormData, [field]: appMetadata };
+
+    setUserFormData(updatedFormData);
+  };
+
+  const resetForm = () => {
+    setUserFormData(defaultFormData);
+  };
+
   return (
     <div className="animated fadeIn">
-      {/* {
-   "email": "test_email",
-   "blocked": false,
-   "name": "John Doe",
-   "connection": "Username-Password-Authentication",
-   "password": "thisissecure123!",
-   "verify_email": true,
-   "app_metadata": {
-        "roles": [
-            "role",
-        ]
-    }
- } */}
       <Row>
         <Col xs="12" md="6">
           <Card>
@@ -66,9 +80,11 @@ const AddUser = () => {
                   <Col xs="12" md="9">
                     <Input
                       type="text"
-                      id="text-input"
+                      id="name"
                       name="text-input"
                       placeholder="Name"
+                      value={userFormData.name}
+                      onChange={handleTextInputChange}
                     />
                     <FormText color="muted">This is a help text</FormText>
                   </Col>
@@ -80,30 +96,15 @@ const AddUser = () => {
                   <Col xs="12" md="9">
                     <Input
                       type="email"
-                      id="email-input"
+                      id="email"
                       name="email-input"
                       placeholder="Enter Email"
                       autoComplete="email"
+                      value={userFormData.email}
+                      onChange={handleTextInputChange}
                     />
                     <FormText color="muted">
                       Please enter an austintexas.gov address
-                    </FormText>
-                  </Col>
-                </FormGroup>
-                <FormGroup row>
-                  <Col md="3">
-                    <Label htmlFor="password-input">Password</Label>
-                  </Col>
-                  <Col xs="12" md="9">
-                    <Input
-                      type="password"
-                      id="password-input"
-                      name="password-input"
-                      placeholder="Password"
-                      autoComplete="new-password"
-                    />
-                    <FormText className="help-block">
-                      Please enter a complex password
                     </FormText>
                   </Col>
                 </FormGroup>
@@ -113,13 +114,17 @@ const AddUser = () => {
                   </Col>
                   <Col md="9">
                     {roles.map(role => (
-                      <FormGroup check className="radio">
+                      <FormGroup key={role.id} check className="radio">
                         <Input
                           className="form-check-input"
                           type="radio"
                           id={role.id}
                           name="radios"
                           value={role.id}
+                          checked={
+                            userFormData.app_metadata.roles[0] === role.id
+                          }
+                          onChange={handleRoleRadioInputChange}
                         />
                         <Label
                           check
@@ -138,7 +143,7 @@ const AddUser = () => {
               <Button type="submit" size="sm" color="primary">
                 <i className="fa fa-dot-circle-o"></i> Submit
               </Button>{" "}
-              <Button type="reset" size="sm" color="danger">
+              <Button type="reset" size="sm" color="danger" onClick={resetForm}>
                 <i className="fa fa-ban"></i> Reset
               </Button>
             </CardFooter>
