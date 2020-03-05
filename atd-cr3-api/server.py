@@ -338,7 +338,7 @@ def user_list_users():
         abort(403)
 
 
-@APP.route("/user/get_user/<id>", methods=["POST"])
+@APP.route("/user/get_user/<id>")
 @cross_origin(headers=["Content-Type", "Authorization"])
 @cross_origin(headers=["Access-Control-Allow-Origin", CORS_URL])
 @requires_auth
@@ -353,15 +353,6 @@ def user_get_user(id):
         abort(403)
 
 
-# Payload to create user
-# {
-#   "email": "test_email",
-#   "blocked": false,
-#   "name": "John Doe",
-#   "connection": "Username-Password-Authentication",
-#   "password": "thisissecure123!",
-#   "verify_email": true
-# }
 @APP.route("/user/create_user", methods=["POST"])
 @cross_origin(headers=["Content-Type", "Authorization"])
 @cross_origin(headers=["Access-Control-Allow-Origin", CORS_URL])
@@ -378,15 +369,6 @@ def user_create_user():
         abort(403)
 
 
-# Format to update user app_metadata
-# {
-# 	"app_metadata": {
-#         "roles": [
-#             "example_role_1",
-#             "example_role_2"
-#         ]
-#     }
-# }
 @APP.route("/user/update_user/<id>", methods=["PUT"])
 @cross_origin(headers=["Content-Type", "Authorization"])
 @cross_origin(headers=["Access-Control-Allow-Origin", CORS_URL])
