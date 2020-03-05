@@ -7,8 +7,8 @@ import re
 import datetime
 import boto3
 import os
-import pdb
 import requests
+
 from dotenv import load_dotenv, find_dotenv
 from os import environ as env
 from functools import wraps
@@ -29,6 +29,8 @@ if ENV_FILE:
 # We need the Auth0 domain, Client ID and current api environment.
 AUTH0_DOMAIN = os.getenv("AUTH0_DOMAIN", "")
 CLIENT_ID = os.getenv("CLIENT_ID", "")
+API_CLIENT_ID = os.getenv("API_CLIENT_ID", "")
+API_CLIENT_SECRET = os.getenv("API_CLIENT_SECRET", "")
 API_ENVIRONMENT = os.getenv("API_ENVIRONMENT", "STAGING")
 
 # AWS Configuration
@@ -37,6 +39,24 @@ AWS_S3_KEY = os.getenv("AWS_S3_KEY", "")
 AWS_S3_SECRET = os.getenv("AWS_S3_SECRET", "")
 AWS_S3_CR3_LOCATION = os.getenv("AWS_S3_CR3_LOCATION", "")
 AWS_S3_BUCKET = os.getenv("AWS_S3_BUCKET", "")
+
+
+def get_api_token():
+    """
+    Obtains a token from the Auth0 API
+    :return str:
+    """
+    response = requests.post(
+        f"https://{AUTH0_DOMAIN}/oauth/token",
+        {
+            "grant_type": "client_credentials",
+            "client_id": API_CLIENT_ID,
+            "client_secret": API_CLIENT_SECRET,
+            "audience": f"https://{AUTH0_DOMAIN}/api/v2/",
+        },
+        {"content-type": "application/json",},
+    )
+    return response.json().get("access_token", None)
 
 
 CORS_URL = "*"
@@ -261,6 +281,8 @@ def isValidUser(user_dict):
         "aud",
     ]
 
+    user_email = user_dict.get("email", None)
+
     # Check for valid fields
     for field in valid_fields:
         if user_dict.get(field, False) == False:
@@ -271,7 +293,10 @@ def isValidUser(user_dict):
         return False
 
     # Check email for austintexas.gov
-    if not "austintexas.gov" in user_dict["email"]:
+    if (
+        isinstance(user_email, str) is False
+        and user_email.endswith("@austintexas.gov") is False
+    ):
         return False
 
     return True
@@ -305,8 +330,8 @@ def user_test():
 def user_list_users():
     user_dict = current_user._get_current_object()
     if isValidUser(user_dict) and hasUserRole("admin", user_dict):
-        endpoint = "https://atd-datatech.auth0.com/api/v2/users"
-        headers = {"Authorization": "Bearer "}
+        endpoint = f"https://{AUTH0_DOMAIN}/api/v2/users"
+        headers = {"Authorization": f"Bearer {get_api_token()}"}
         response = requests.get(endpoint, headers=headers).json()
         return jsonify(response)
     else:
@@ -320,8 +345,8 @@ def user_list_users():
 def user_get_user(id):
     user_dict = current_user._get_current_object()
     if isValidUser(user_dict) and hasUserRole("admin", user_dict):
-        endpoint = "https://atd-datatech.auth0.com/api/v2/users/" + id
-        headers = {"Authorization": "Bearer "}
+        endpoint = f"https://{AUTH0_DOMAIN}/api/v2/users/" + id
+        headers = {"Authorization": f"Bearer {get_api_token()}"}
         response = requests.get(endpoint, headers=headers).json()
         return jsonify(response)
     else:
@@ -345,8 +370,8 @@ def user_create_user():
     user_dict = current_user._get_current_object()
     if isValidUser(user_dict) and hasUserRole("admin", user_dict):
         json_data = request.json
-        endpoint = "https://atd-datatech.auth0.com/api/v2/users"
-        headers = {"Authorization": "Bearer "}
+        endpoint = f"https://{AUTH0_DOMAIN}/api/v2/users"
+        headers = {"Authorization": f"Bearer {get_api_token()}"}
         response = requests.post(endpoint, headers=headers, json=json_data).json()
         return jsonify(response)
     else:
@@ -370,8 +395,8 @@ def user_update_user(id):
     user_dict = current_user._get_current_object()
     if isValidUser(user_dict) and hasUserRole("admin", user_dict):
         json_data = request.json
-        endpoint = "https://atd-datatech.auth0.com/api/v2/users/" + id
-        headers = {"Authorization": "Bearer "}
+        endpoint = f"https://{AUTH0_DOMAIN}/api/v2/users/" + id
+        headers = {"Authorization": f"Bearer {get_api_token()}"}
         response = requests.patch(endpoint, headers=headers, json=json_data).json()
         return jsonify(response)
     else:
@@ -385,8 +410,8 @@ def user_update_user(id):
 def user_delete_user(id):
     user_dict = current_user._get_current_object()
     if isValidUser(user_dict) and hasUserRole("admin", user_dict):
-        endpoint = "https://atd-datatech.auth0.com/api/v2/users/" + id
-        headers = {"Authorization": "Bearer "}
+        endpoint = f"https://{AUTH0_DOMAIN}/api/v2/users/" + id
+        headers = {"Authorization": f"Bearer {get_api_token()}"}
         response = requests.delete(endpoint, headers=headers)
         return f"{response.status_code}"
     else:
