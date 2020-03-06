@@ -59,7 +59,7 @@ const UserForm = ({ type, id = null }) => {
           setIsFormDataLoaded(true);
         });
     }
-  }, []);
+  }, [id, type, token]);
 
   const handleTextInputChange = event => {
     const updatedFormData = {

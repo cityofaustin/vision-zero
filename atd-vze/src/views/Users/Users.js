@@ -1,5 +1,7 @@
-import React, { Component } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import axios from "axios";
+import moment from "moment";
 import {
   Badge,
   Card,
@@ -9,13 +11,11 @@ import {
   Row,
   Table,
   Button,
+  Spinner,
 } from "reactstrap";
 
-import usersData from "./UsersData";
-
-function UserRow(props) {
-  const user = props.user;
-  const userLink = `/users/${user.id}`;
+const UserRow = ({ user }) => {
+  const userLink = `/users/${user.user_id}`;
 
   const isBlocked = status => status === false || status === undefined;
 
@@ -28,15 +28,15 @@ function UserRow(props) {
   };
 
   return (
-    <tr key={user.id.toString()}>
+    <tr key={user.user_id.toString()}>
       <th scope="row">
         <Link to={userLink}>{user.name}</Link>
       </th>
       <td>
         <Link to={userLink}>{user.email}</Link>
       </td>
-      <td>{user.created_at}</td>
-      <td>{user.role}</td>
+      <td>{moment(user.created_at).format("MM/DD/YYYY")}</td>
+      <td>{user.app_metadata.roles[0]}</td>
       <td>
         <Link to={userLink}>
           <Badge color={getBadge(user.blocked)}>
@@ -46,59 +46,70 @@ function UserRow(props) {
       </td>
     </tr>
   );
-}
+};
 
-class Users extends Component {
-  render() {
-    const userList = usersData;
+const Users = () => {
+  const token = window.localStorage.getItem("id_token");
 
-    return (
-      <div className="animated fadeIn">
-        <Row>
-          <Col xl={6}>
-            <Card>
-              <CardHeader>
-                <i className="fa fa-align-justify"></i> Users{" "}
-              </CardHeader>
-              <CardBody>
-                <Row className="align-items-center mb-3">
-                  <Col col="6" sm="4" md="2" xl className="mb-xl-0">
-                    <Link to="/users/add" className="link">
-                      <Button color="primary">
-                        <i className="fa fa-user-plus"></i> Add User
-                      </Button>
-                    </Link>
-                  </Col>
-                </Row>
-                <Table responsive striped hover>
-                  <thead>
-                    <tr>
-                      {/* "name" */}
-                      <th scope="col">Name</th>
-                      {/* "email" */}
-                      <th scope="col">Email</th>
-                      {/* "created_at" */}
-                      <th scope="col">Registered</th>
-                      {/* app_metadata.roles (returns an array) */}
-                      <th scope="col">Role</th>
-                      {/* status = "blocked" === undefined || "blocked"  ? "Blocked" : "Active"  */}
-                      {/* "blocked" field doesn't appear until user is blocked for the first time */}
-                      <th scope="col">Status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {userList.map((user, index) => (
+  const [userList, setUserList] = useState(null);
+
+  useEffect(() => {
+    const endpoint = `${process.env.REACT_APP_CR3_API_DOMAIN}/user/list_users`;
+    axios
+      .get(endpoint, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then(res => {
+        setUserList(res.data);
+      });
+  }, [token]);
+
+  return (
+    <div className="animated fadeIn">
+      <Row>
+        <Col>
+          <Card>
+            <CardHeader>
+              <i className="fa fa-align-justify"></i> Users{" "}
+            </CardHeader>
+            <CardBody>
+              <Row className="align-items-center mb-3">
+                <Col col="6" sm="4" md="2" xl className="mb-xl-0">
+                  <Link to="/users/add" className="link">
+                    <Button color="primary">
+                      <i className="fa fa-user-plus"></i> Add User
+                    </Button>
+                  </Link>
+                </Col>
+              </Row>
+              <Table responsive striped hover>
+                <thead>
+                  <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Created</th>
+                    <th scope="col">Role</th>
+                    <th scope="col">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {!!userList ? (
+                    userList.map((user, index) => (
                       <UserRow key={index} user={user} />
-                    ))}
-                  </tbody>
-                </Table>
-              </CardBody>
-            </Card>
-          </Col>
-        </Row>
-      </div>
-    );
-  }
-}
+                    ))
+                  ) : (
+                    <Spinner className="mt-2" color="primary" />
+                  )}
+                </tbody>
+              </Table>
+            </CardBody>
+          </Card>
+        </Col>
+      </Row>
+    </div>
+  );
+};
 
 export default Users;
