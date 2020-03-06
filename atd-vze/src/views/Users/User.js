@@ -32,6 +32,7 @@ const User = () => {
 
   const [user, setUser] = useState(null);
   const [isUserDeleted, setIsUserDeleted] = useState(false);
+  const [isUserBlocked, setIsUserBlocked] = useState(false);
 
   useEffect(() => {
     const endpoint = `${process.env.REACT_APP_CR3_API_DOMAIN}/user/get_user/${id}`;
@@ -46,6 +47,9 @@ const User = () => {
           setIsUserDeleted(true);
         } else {
           setUser(res.data);
+          if (!!res.data.blocked) {
+            setIsUserBlocked(true);
+          }
         }
       });
   }, [token, id]);
@@ -60,7 +64,7 @@ const User = () => {
       if (format === "string") {
         formattedValue = user[key];
       } else if (format === "bool") {
-        formattedValue = user[key] ? "Yes" : "No";
+        formattedValue = !!user[key] ? "Yes" : "No";
       } else if (format === "time") {
         formattedValue = moment(user[key]).format("MM/DD/YYYY, h:mm:ss a");
       } else if (format === "object") {
@@ -91,6 +95,19 @@ const User = () => {
         });
   };
 
+  const handleUnblockUserClick = () => {
+    const endpoint = `${process.env.REACT_APP_CR3_API_DOMAIN}/user/unblock_user/${id}`;
+    axios
+      .delete(endpoint, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then(() => {
+        setIsUserBlocked(false);
+      });
+  };
+
   return isUserDeleted ? (
     <Redirect to="/users" />
   ) : (
@@ -113,7 +130,12 @@ const User = () => {
                   </Link>{" "}
                   <Button color="danger" onClick={handleDeleteUserClick}>
                     <i className="fa fa-user-times"></i> Delete User
-                  </Button>
+                  </Button>{" "}
+                  {isUserBlocked && (
+                    <Button color="warning" onClick={handleUnblockUserClick}>
+                      <i className="fa fa-key"></i> Unblock User
+                    </Button>
+                  )}
                 </Col>
               </Row>
               {!!user ? (
