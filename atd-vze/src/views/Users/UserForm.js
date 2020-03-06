@@ -19,9 +19,12 @@ import {
 } from "reactstrap";
 
 const UserForm = ({ type, id = null }) => {
+  const token = window.localStorage.getItem("id_token");
+
   const defaultFormData = {
     name: "",
     email: "",
+    password: "",
     blocked: false, // Initialize blocked status
     connection: "Username-Password-Authentication", // Set account type
     verify_email: true, // Send email verification
@@ -44,10 +47,13 @@ const UserForm = ({ type, id = null }) => {
 
   useEffect(() => {
     if (type === "Edit") {
-      const endpoint = `endpoint/user/get_user/${id}`;
-      // TODO POST form data to real api endpoint
+      const endpoint = `${process.env.REACT_APP_CR3_API_DOMAIN}/user/get_user/${id}`;
       axios
-        .get(endpoint, { headers: { Authorization: "user_token_here" } })
+        .get(endpoint, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
         .then(res => {
           setUserFormData(res.data);
           setIsFormDataLoaded(true);
@@ -73,13 +79,29 @@ const UserForm = ({ type, id = null }) => {
     setUserFormData(updatedFormData);
   };
 
+  // Remove fields not needed for edited (so req does not fail)
+  const cleanFormDataForEdit = userFormData => {
+    const editFields = ["name", "email", "app_metadata"];
+
+    // If resetting password, include password and required connection field
+    userFormData.password !== "" &&
+      editFields.push("password") &&
+      editFields.push("connection");
+
+    const cleanedFormData = editFields.reduce((acc, field) => {
+      return { ...acc, [field]: userFormData[field] };
+    }, {});
+
+    return cleanedFormData;
+  };
+
   const handleFormSubmit = () => {
-    // TODO POST form data to real api endpoint
     if (type === "Edit") {
-      const endpoint = "endpoint/user/update_user";
+      const endpoint = `${process.env.REACT_APP_CR3_API_DOMAIN}/user/update_user/${id}`;
+      const updatedFormData = cleanFormDataForEdit(userFormData);
       axios
-        .put(endpoint, userFormData, {
-          headers: { Authorization: "user_token_here" },
+        .put(endpoint, updatedFormData, {
+          headers: { Authorization: `Bearer ${token}` },
         })
         .then(() => {
           setIsFormSubmitted(true);
@@ -88,11 +110,10 @@ const UserForm = ({ type, id = null }) => {
           setIsSubmissionError(true);
         });
     } else if (type === "Add") {
-      // TODO POST form data to real api endpoint
-      const endpoint = "endpoint/user/create_user";
+      const endpoint = `${process.env.REACT_APP_CR3_API_DOMAIN}/user/create_user`;
       axios
         .post(endpoint, userFormData, {
-          headers: { Authorization: "user_token_here" },
+          headers: { Authorization: `Bearer ${token}` },
         })
         .then(() => {
           setIsFormSubmitted(true);
@@ -179,6 +200,31 @@ const UserForm = ({ type, id = null }) => {
                   </FormGroup>
                   <FormGroup row>
                     <Col md="3">
+                      <Label htmlFor="hf-password">Password</Label>
+                    </Col>
+                    <Col xs="12" md="9">
+                      <Input
+                        type="password"
+                        id="password"
+                        name="password"
+                        placeholder={
+                          type === "Add"
+                            ? "Enter Password..."
+                            : "Enter a password to reset..."
+                        }
+                        autoComplete="current-password"
+                        onChange={handleTextInputChange}
+                      />
+                      <FormText className="help-block">
+                        {type === "Add"
+                          ? "Please enter a password"
+                          : "Only enter a password if you need to reset it"}
+                      </FormText>
+                    </Col>
+                  </FormGroup>
+
+                  <FormGroup row>
+                    <Col md="3">
                       <Label>Role</Label>
                     </Col>
                     <Col md="9">
@@ -220,9 +266,16 @@ const UserForm = ({ type, id = null }) => {
               >
                 <i className="fa fa-dot-circle-o"></i> Submit
               </Button>{" "}
-              <Button type="reset" size="sm" color="danger" onClick={resetForm}>
-                <i className="fa fa-ban"></i> Reset
-              </Button>
+              {type === "Add" && (
+                <Button
+                  type="reset"
+                  size="sm"
+                  color="danger"
+                  onClick={resetForm}
+                >
+                  <i className="fa fa-ban"></i> Reset
+                </Button>
+              )}
               {isSubmissionError && renderErrorMessage()}
             </CardFooter>
           </Card>
