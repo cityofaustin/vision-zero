@@ -29,35 +29,6 @@ class User extends Component {
           ],
         ];
 
-    // User info response
-    // {
-    //   "email": "user_email",
-    //   "email_verified": true,
-    //   "updated_at": "2020-03-04T17:15:01.221Z",
-    //   "user_id": "user_id",
-    //   "name": "user_email",
-    //   "picture": "picture_link",
-    //   "nickname": "nickname",
-    //   "identities": [
-    //     {
-    //       "user_id": "user_id",
-    //       "provider": "auth0",
-    //       "connection": "Username-Password-Authentication",
-    //       "isSocial": false
-    //     }
-    //   ],
-    //   "created_at": "2019-08-16T19:49:49.758Z",
-    //   "user_metadata": {},
-    //   "last_login": "2020-03-04T17:15:01.221Z",
-    //   "last_ip": "",
-    //   "logins_count": 38,
-    //   "app_metadata": {
-    //     "roles": [
-    //       "role",
-    //     ]
-    //   }
-    // },
-
     return (
       <div className="animated fadeIn">
         <Row>
