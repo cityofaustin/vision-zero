@@ -385,6 +385,21 @@ def user_update_user(id):
         abort(403)
 
 
+@APP.route("/user/unblock_user/<id>", methods=["DELETE"])
+@cross_origin(headers=["Content-Type", "Authorization"])
+@cross_origin(headers=["Access-Control-Allow-Origin", CORS_URL])
+@requires_auth
+def user_unblock_user(id):
+    user_dict = current_user._get_current_object()
+    if isValidUser(user_dict) and hasUserRole("admin", user_dict):
+        endpoint = f"https://{AUTH0_DOMAIN}/api/v2/user_blocks/" + id
+        headers = {"Authorization": f"Bearer {get_api_token()}"}
+        response = requests.delete(endpoint, headers=headers)
+        return f"{response.status_code}"
+    else:
+        abort(403)
+
+
 @APP.route("/user/delete_user/<id>", methods=["DELETE"])
 @cross_origin(headers=["Content-Type", "Authorization"])
 @cross_origin(headers=["Access-Control-Allow-Origin", CORS_URL])
