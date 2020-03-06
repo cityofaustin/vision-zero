@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, Redirect, useParams } from "react-router-dom";
 import axios from "axios";
+import moment from "moment";
 import {
   Button,
   Card,
@@ -9,13 +10,28 @@ import {
   Col,
   Row,
   Table,
+  Spinner,
 } from "reactstrap";
 
 const User = () => {
   const token = window.localStorage.getItem("id_token");
   const { id } = useParams();
 
+  const userAttributes = {
+    user_id: { label: "User ID", format: "string" },
+    name: { label: "Name", format: "string" },
+    email: { label: "Email", format: "string" },
+    app_metadata: { label: "Roles", format: "object", nestedKey: "roles" },
+    created_at: { label: "Created", format: "time" },
+    blocked: { label: "Blocked", format: "bool" },
+    last_login: { label: "Last login", format: "time" },
+    updated_at: { label: "Update at", format: "time" },
+    logins_count: { label: "Logins count", format: "string" },
+    last_ip: { label: "Last IP", format: "string" },
+  };
+
   const [user, setUser] = useState(null);
+  const [isUserDeleted, setIsUserDeleted] = useState(false);
 
   useEffect(() => {
     const endpoint = `${process.env.REACT_APP_CR3_API_DOMAIN}/user/get_user/${id}`;
@@ -26,14 +42,61 @@ const User = () => {
         },
       })
       .then(res => {
-        setUser(res.data);
+        if (res.data.statusCode === 404) {
+          setIsUserDeleted(true);
+        } else {
+          setUser(res.data);
+        }
       });
-  }, [token]);
+  }, [token, id]);
 
-  return (
+  const formatUserData = user =>
+    Object.entries(userAttributes).map(([key, value]) => {
+      const label = userAttributes[key].label;
+      let formattedValue = null;
+
+      const format = userAttributes[key].format;
+
+      if (format === "string") {
+        formattedValue = user[key];
+      } else if (format === "bool") {
+        formattedValue = user[key] ? "Yes" : "No";
+      } else if (format === "time") {
+        formattedValue = moment(user[key]).format("MM/DD/YYYY, h:mm:ss a");
+      } else if (format === "object") {
+        const nestedKey = value.nestedKey;
+        formattedValue = user[key][nestedKey].join(", ");
+      }
+      return (
+        <tr key={key}>
+          <td>{`${label}:`}</td>
+          <td>
+            <strong>{formattedValue}</strong>
+          </td>
+        </tr>
+      );
+    });
+
+  const handleDeleteUserClick = () => {
+    const endpoint = `${process.env.REACT_APP_CR3_API_DOMAIN}/user/delete_user/${id}`;
+    window.confirm("Are you sure that you want to delete this user?") &&
+      axios
+        .delete(endpoint, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then(() => {
+          setIsUserDeleted(true);
+        });
+  };
+
+  return isUserDeleted ? (
+    <Redirect to="/users" />
+  ) : (
     <div className="animated fadeIn">
       <Row>
-        <Col xl={6}>
+        <Col>
           <Card>
             <CardHeader>
               <strong>
@@ -45,29 +108,21 @@ const User = () => {
                 <Col col="6" sm="4" md="2" xl className="mb-xl-0">
                   <Link to={`/users/edit/${id}`} className="link">
                     <Button color="primary">
-                      <i className="fa fa-user-plus"></i> Edit User
+                      <i className="fa fa-edit"></i> Edit User
                     </Button>
-                  </Link>
+                  </Link>{" "}
+                  <Button color="danger" onClick={handleDeleteUserClick}>
+                    <i className="fa fa-user-times"></i> Delete User
+                  </Button>
                 </Col>
               </Row>
-              <Table responsive striped hover>
-                <tbody>
-                  {!!user &&
-                    Object.entries(user).map(([key, value]) => (
-                      <tr key={key}>
-                        <td>{`${key}:`}</td>
-                        <td>
-                          <strong>
-                            {key !== "identities" &&
-                              key !== "app_metadata" &&
-                              key !== "user_metadata" &&
-                              value}
-                          </strong>
-                        </td>
-                      </tr>
-                    ))}
-                </tbody>
-              </Table>
+              {!!user ? (
+                <Table responsive striped hover>
+                  <tbody>{formatUserData(user)}</tbody>
+                </Table>
+              ) : (
+                <Spinner className="mt-2" color="primary" />
+              )}
             </CardBody>
           </Card>
         </Col>

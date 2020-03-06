@@ -84,26 +84,26 @@ const Users = () => {
                   </Link>
                 </Col>
               </Row>
-              <Table responsive striped hover>
-                <thead>
-                  <tr>
-                    <th scope="col">Name</th>
-                    <th scope="col">Email</th>
-                    <th scope="col">Created</th>
-                    <th scope="col">Role</th>
-                    <th scope="col">Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {!!userList ? (
-                    userList.map((user, index) => (
+              {!!userList ? (
+                <Table responsive striped hover>
+                  <thead>
+                    <tr>
+                      <th scope="col">Name</th>
+                      <th scope="col">Email</th>
+                      <th scope="col">Created</th>
+                      <th scope="col">Role</th>
+                      <th scope="col">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {userList.map((user, index) => (
                       <UserRow key={index} user={user} />
-                    ))
-                  ) : (
-                    <Spinner className="mt-2" color="primary" />
-                  )}
-                </tbody>
-              </Table>
+                    ))}
+                  </tbody>
+                </Table>
+              ) : (
+                <Spinner className="mt-2" color="primary" />
+              )}
             </CardBody>
           </Card>
         </Col>
