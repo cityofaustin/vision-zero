@@ -145,7 +145,11 @@ const UserForm = ({ type, id = null }) => {
   }, [isSubmissionError, setIsSubmissionError]);
 
   return isFormSubmitted ? (
-    <Redirect to="/users" />
+    type === "Edit" ? (
+      <Redirect to={`/users/${id}`} />
+    ) : (
+      <Redirect to="/users" />
+    )
   ) : (
     <div className="animated fadeIn">
       <Row>
