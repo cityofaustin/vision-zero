@@ -1,82 +1,72 @@
+import React, { useState } from "react";
 import auth0 from "auth0-js";
 
-export default class Auth {
-  constructor(history) {
-    this.history = history;
-    this.userProfile = null;
-    this.urlPath =
-      process.env.NODE_ENV === "development"
-        ? window.location.origin
-        : `${window.location.origin}/editor`;
-    this.auth0 = new auth0.WebAuth({
-      domain: process.env.REACT_APP_AUTH0_DOMAIN,
-      clientID: process.env.REACT_APP_AUTH0_CLIENT_ID,
-      redirectUri: `${this.urlPath}/callback`,
-      responseType: "token id_token",
-      scope: "openid profile email",
-    });
-  }
+import { AuthProvider } from "../store/AuthContext";
 
-  login = () => {
-    this.auth0.authorize();
+const Auth = ({ children }) => {
+  const urlPath =
+    process.env.NODE_ENV === "development"
+      ? window.location.origin
+      : `${window.location.origin}/editor`;
+
+  const auth = new auth0.WebAuth({
+    domain: process.env.REACT_APP_AUTH0_DOMAIN,
+    clientID: process.env.REACT_APP_AUTH0_CLIENT_ID,
+    redirectUri: `${urlPath}/callback`,
+    responseType: "token id_token",
+    scope: "openid profile email",
+  });
+
+  const [authenticated, setAuthenticated] = useState(false);
+  const [user, setUser] = useState({
+    roles: "",
+  });
+  const [accessToken, setAccessToken] = useState(false);
+
+  const login = () => {
+    auth.authorize();
   };
 
-  handleAuthentication = () => {
-    this.auth0.parseHash((err, authResult) => {
+  const handleAuthentication = () => {
+    auth.parseHash((err, authResult) => {
       if (authResult && authResult.accessToken && authResult.idToken) {
-        this.setSession(authResult);
-        this.history.push("/");
+        setSession(authResult);
+        // TODO: Redirect to "/"
+        // this.history.push("/");
       } else if (err) {
-        this.history.push("/");
+        // TODO: Redirect to "/"
+        // this.history.push("/");
         alert(`Error: ${err.error}. Check the console for further details.`);
       }
     });
   };
 
-  setSession = authResult => {
-    // set the time that the access token will expire
-    const expiresAt = JSON.stringify(
-      authResult.expiresIn * 1000 + new Date().getTime()
-    );
+  const setSession = authResult => {
+    const user = {
+      id: authResult.sub,
+      email: authResult.email,
+      roles: authResult.app_metadata.roles,
+    };
 
-    localStorage.setItem("access_token", authResult.accessToken);
-    localStorage.setItem("id_token", authResult.idToken);
-    localStorage.setItem("expires_at", expiresAt);
+    setAuthenticated(true);
+    setAccessToken(authResult.accessToken);
+    setUser(user);
   };
 
-  isAuthenticated() {
-    const expiresAt = JSON.parse(localStorage.getItem("expires_at"));
-    const currentTime = new Date().getTime();
-    let isAuth = currentTime < expiresAt;
-    return isAuth;
-  }
-
-  logout = () => {
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("id_token");
-    localStorage.removeItem("expires_at");
-    localStorage.removeItem("hasura_user_role");
-    localStorage.removeItem("hasura_user_email");
-    this.userProfile = null;
-    this.auth0.logout({
-      clientID: process.env.REACT_APP_AUTH0_CLIENT_ID,
-      returnTo: this.urlPath,
+  const logout = () => {
+    setAuthenticated(false);
+    setAccessToken("");
+    setUser({
+      roles: "",
     });
+
+  const authProviderValue = {
+    login: login,
+    handleAuthentication: handleAuthentication,
+    logout: logout,
   };
 
-  getAccessToken = () => {
-    const accessToken = localStorage.getItem("access_token");
-    if (!accessToken) {
-      throw new Error("No access token found.");
-    }
-    return accessToken;
-  };
+  return <AuthProvider value={authProviderValue}>{children}</AuthProvider>;
+};
 
-  getProfile = cb => {
-    if (this.userProfile) return cb(this.userProfile);
-    this.auth0.client.userInfo(this.getAccessToken(), (err, profile) => {
-      if (profile) this.userProfile = profile;
-      cb(profile, err);
-    });
-  };
-}
+export default Auth;

@@ -41,7 +41,7 @@ class App extends Component {
     };
 
     // We first instantiate our auth helper class
-    this.auth = new Auth(this.props.history);
+    // this.auth = new Auth(this.props.history);
 
     // Now we handle callbacks (if any)
     this.callbackHandler();
@@ -50,13 +50,14 @@ class App extends Component {
   }
 
   // Helper function that hasura_user_role from localstorage, or any value we need to get for defaults. Null for the time being.
-  getRole() {
-    return localStorage.getItem("hasura_user_role") || null;
-  }
+  // TODO: Get this data from Context store
+  // getRole() {
+  //   return localStorage.getItem("hasura_user_role") || null;
+  // }
 
-  getToken() {
-    return localStorage.getItem("id_token") || null;
-  }
+  // getToken() {
+  //   return localStorage.getItem("id_token") || null;
+  // }
 
   initializeProfile() {
     // If we already have a role, then let's not worry about it...
@@ -83,122 +84,125 @@ class App extends Component {
   }
 
   initializeClient() {
-    if (this.auth.isAuthenticated()) {
-      if (this.state.role !== null) {
-        client = new ApolloClient({
-          uri: HASURA_ENDPOINT,
-          headers: {
-            Authorization: `Bearer ${this.state.token}`,
-            "x-hasura-role": this.state.role,
-          },
-        });
-      }
-    }
-  }
-
-  callbackHandler() {
-    /*
-      This seems to work for now, let's see if we can make the router take care
-      of this at some point.
-    */
-    if (
-      window.location.pathname.startsWith("/callback") ||
-      window.location.pathname.startsWith("/editor/callback")
-    ) {
-      // Handle authentication if expected values are in the URL.
-      if (/access_token|id_token|error/.test(window.location.hash)) {
-        this.handleAuthentication();
-      } else {
-        const prefix = window.location.pathname.startsWith("/editor")
-          ? "/editor"
-          : "";
-        window.location = prefix + "/#/login";
-      }
-    }
-  }
-
-  setSession = authResult => {
-    // set the time that the access token will expire
-    const expiresAt = JSON.stringify(
-      authResult.expiresIn * 1000 + new Date().getTime()
-    );
-
-    localStorage.setItem("access_token", authResult.accessToken);
-    localStorage.setItem("id_token", authResult.idToken);
-    localStorage.setItem("expires_at", expiresAt);
-
-    this.setState({ token: authResult.idToken });
-  };
-
-  handleAuthentication() {
-    this.auth.auth0.parseHash((err, authResult) => {
-      if (authResult && authResult.accessToken && authResult.idToken) {
-        this.setSession(authResult);
-        const prefix = window.location.pathname.startsWith("/editor")
-            ? "/editor"
-            : "";
-        window.location = prefix + "/#/dashboard";
-      } else if (err) {
-        alert(`Error: ${err.error}. Check the console for further details.`);
-      }
+    // TODO: Start Apollo if auth in Context store
+    // if (this.auth.isAuthenticated()) {
+    //   if (this.state.role !== null) {
+    client = new ApolloClient({
+      uri: HASURA_ENDPOINT,
+      headers: {
+        Authorization: `Bearer ${this.state.token}`,
+        "x-hasura-role": this.state.role,
+      },
     });
+    //   }
+    // }
   }
+
+  // callbackHandler() {
+  //   /*
+  //     This seems to work for now, let's see if we can make the router take care
+  //     of this at some point.
+  //   */
+  //   if (
+  //     window.location.pathname.startsWith("/callback") ||
+  //     window.location.pathname.startsWith("/editor/callback")
+  //   ) {
+  //     // Handle authentication if expected values are in the URL.
+  //     if (/access_token|id_token|error/.test(window.location.hash)) {
+  //       this.handleAuthentication();
+  //     } else {
+  //       const prefix = window.location.pathname.startsWith("/editor")
+  //         ? "/editor"
+  //         : "";
+  //       window.location = prefix + "/#/login";
+  //     }
+  //   }
+  // }
+
+  // setSession = authResult => {
+  //   // set the time that the access token will expire
+  //   const expiresAt = JSON.stringify(
+  //     authResult.expiresIn * 1000 + new Date().getTime()
+  //   );
+
+  //   localStorage.setItem("access_token", authResult.accessToken);
+  //   localStorage.setItem("id_token", authResult.idToken);
+  //   localStorage.setItem("expires_at", expiresAt);
+
+  //   this.setState({ token: authResult.idToken });
+  // };
+
+  // handleAuthentication() {
+  //   this.auth.auth0.parseHash((err, authResult) => {
+  //     if (authResult && authResult.accessToken && authResult.idToken) {
+  //       this.setSession(authResult);
+  //       const prefix = window.location.pathname.startsWith("/editor")
+  //         ? "/editor"
+  //         : "";
+  //       window.location = prefix + "/#/dashboard";
+  //     } else if (err) {
+  //       alert(`Error: ${err.error}. Check the console for further details.`);
+  //     }
+  //   });
+  // }
 
   render() {
     return (
-      <ApolloProvider client={client}>
-        <HashRouter>
-          <React.Suspense fallback={loading()}>
-            <Switch>
-              {/* Uncomment these whenever we find a way to implement the
+      <Auth>
+        <ApolloProvider client={client}>
+          <HashRouter>
+            <React.Suspense fallback={loading()}>
+              <Switch>
+                {/* Uncomment these whenever we find a way to implement the
               /callback route. */}
-              {/*<Route*/}
-              {/*  exact*/}
-              {/*  path="/callback"*/}
-              {/*  name="Callback Page"*/}
-              {/*  render={props => <Callback auth={this.auth} {...props} />}*/}
-              {/*/>*/}
-              <Route
-                exact
-                path="/login"
-                name="Login Page"
-                render={props => <Login auth={this.auth} {...props} />}
-              />
-              <Route
-                exact
-                path="/register"
-                name="Register Page"
-                render={props => <Register {...props} />}
-              />
-              <Route
-                exact
-                path="/404"
-                name="Page 404"
-                render={props => <Page404 {...props} />}
-              />
-              <Route
-                exact
-                path="/500"
-                name="Page 500"
-                render={props => <Page500 {...props} />}
-              />
-              <Route
-                path="/"
-                name="Home"
-                // If authenticated, render, if not log in.
-                render={props =>
-                  this.auth.isAuthenticated() ? (
-                    <DefaultLayout auth={this.auth} {...props} />
-                  ) : (
-                    <Redirect to="/login" />
-                  )
-                }
-              />
-              } />
-            </Switch>
-          </React.Suspense>
-        </HashRouter>
-      </ApolloProvider>
+                {/*<Route*/}
+                {/*  exact*/}
+                {/*  path="/callback"*/}
+                {/*  name="Callback Page"*/}
+                {/*  render={props => <Callback auth={this.auth} {...props} />}*/}
+                {/*/>*/}
+                <Route
+                  exact
+                  path="/login"
+                  name="Login Page"
+                  render={props => <Login auth={this.auth} {...props} />}
+                />
+                <Route
+                  exact
+                  path="/register"
+                  name="Register Page"
+                  render={props => <Register {...props} />}
+                />
+                <Route
+                  exact
+                  path="/404"
+                  name="Page 404"
+                  render={props => <Page404 {...props} />}
+                />
+                <Route
+                  exact
+                  path="/500"
+                  name="Page 500"
+                  render={props => <Page500 {...props} />}
+                />
+                <Route
+                  path="/"
+                  name="Home"
+                  // If authenticated, render, if not log in.
+                  render={props =>
+                    this.auth.isAuthenticated() ? (
+                      <DefaultLayout auth={this.auth} {...props} />
+                    ) : (
+                      <Redirect to="/login" />
+                    )
+                  }
+                />
+                } />
+              </Switch>
+            </React.Suspense>
+          </HashRouter>
+        </ApolloProvider>
+      </Auth>
     );
   }
 }
