@@ -257,10 +257,6 @@ def set_person_mode(records):
         del record["crash"]["atd_mode_category_metadata"]
         del record["unit_nbr"]
 
-        # Set mode flag for person
-        for flag_key, flag_value in mode_category_flags.items():
-            if mode_id in flag_value:
-                record[flag_key] = "Y"
     return records
 
 
