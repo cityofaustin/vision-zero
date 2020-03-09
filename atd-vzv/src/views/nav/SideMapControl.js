@@ -39,42 +39,58 @@ const SideMapControl = () => {
     mapFilters: [filters, setFilters]
   } = React.useContext(StoreContext);
 
+  const [buttonFilters, setButtonFilters] = useState({});
   const [filterGroupCounts, setFilterGroupCounts] = useState({});
+  const [isTypeSet, setIsTypeSet] = useState({ fatal: false, injury: true });
 
-  // Define groups of map filters
+  const setTypeFilters = type => {
+    if (Object.values(isTypeSet).includes(false) && isTypeSet[type] === true) {
+      return;
+    } else {
+      const updatedState = { ...isTypeSet, [type]: !isTypeSet[type] };
+      setIsTypeSet(updatedState);
+    }
+  };
+
+  // Define groups of map button filters
   const mapButtonFilters = {
     mode: {
       pedestrian: {
         icon: faWalking, // Font Awesome icon object
-        syntax: `pedestrian_fl = "Y"`, // Socrata SoQL query string
+        fatalSyntax: `pedestrian_death_count > 0`, // Fatality query string
+        injurySyntax: `pedestrian_serious_injury_count > 0`, // Injury query string
         type: `where`, // Socrata SoQL query type
         operator: `OR`, // Logical operator for joining multiple query strings
         default: true // Apply filter as default on render
       },
       pedalcyclist: {
         icon: faBiking,
-        syntax: `bicycle_fl = "Y"`,
+        fatalSyntax: `bicycle_death_count > 0`,
+        injurySyntax: `bicycle_serious_injury_count > 0`,
         type: `where`,
         operator: `OR`,
         default: true
       },
       motor: {
         icon: faCar,
-        syntax: `motor_vehicle_fl = "Y"`,
+        fatalSyntax: `motor_vehicle_death_count > 0`,
+        injurySyntax: `motor_vehicle_serious_injury_count > 0`,
         type: `where`,
         operator: `OR`,
         default: true
       },
       motorcycle: {
         icon: faMotorcycle,
-        syntax: `motorcycle_fl = "Y"`,
+        fatalSyntax: `motorcycle_death_count > 0`,
+        injurySyntax: `motorcycle_serious_injury_count > 0`,
         type: `where`,
         operator: `OR`,
         default: true
       },
       other: {
         text: "Other",
-        syntax: `other_fl = "Y"`,
+        fatalSyntax: `other_death_count > 0`,
+        injurySyntax: `other_serious_injury_count > 0`,
         type: `where`,
         operator: `OR`,
         default: true
@@ -83,16 +99,14 @@ const SideMapControl = () => {
     type: {
       seriousInjury: {
         text: `Injury`,
-        syntax: `sus_serious_injry_cnt > 0`,
-        type: `where`,
-        operator: `OR`,
-        default: true
+        handler: () => setTypeFilters("injury"),
+        isSelected: isTypeSet.injury,
+        default: false
       },
       fatal: {
         text: `Fatal`,
-        syntax: `death_cnt > 0`,
-        type: `where`,
-        operator: `OR`,
+        handler: () => setTypeFilters("fatal"),
+        isSelected: isTypeSet.fatal,
         default: false
       }
     }
@@ -110,10 +124,9 @@ const SideMapControl = () => {
     }
   };
 
-  // Reduce all filters and set defaults as active on render
+  // On inital render, reduce all default filters and apply to map data
   useEffect(() => {
-    // If no filters are applied (initial render), set all default filters
-    if (Object.keys(filters).length === 0) {
+    if (Object.keys(buttonFilters).length === 0) {
       const initialFiltersArray = Object.entries(mapButtonFilters).reduce(
         (allFiltersAccumulator, [type, filtersGroup]) => {
           const groupFilters = Object.entries(filtersGroup).reduce(
@@ -133,11 +146,32 @@ const SideMapControl = () => {
         },
         []
       );
-      setFilters(initialFiltersArray);
+      setButtonFilters(initialFiltersArray);
     }
-  }, [mapButtonFilters, setFilters, filters]);
+  }, [mapButtonFilters, setButtonFilters, buttonFilters]);
 
-  // Set count of filters applied to keep one of each type applied at all times
+  // After inital render, create mode syntax and set filters state for map data
+  useEffect(() => {
+    if (Object.keys(buttonFilters).length !== 0) {
+      const filterModeSyntaxByType = filtersArray =>
+        filtersArray.map(filter => {
+          // Set syntax for generateWhereFilters() map helper
+          if (isTypeSet.fatal && isTypeSet.injury) {
+            filter.syntax = `${filter.fatalSyntax} ${filter.operator} ${filter.injurySyntax}`;
+          } else if (isTypeSet.fatal) {
+            filter.syntax = filter.fatalSyntax;
+          } else if (isTypeSet.injury) {
+            filter.syntax = filter.injurySyntax;
+          }
+          return filter;
+        });
+
+      const updatedFiltersArray = filterModeSyntaxByType(buttonFilters);
+      setFilters(updatedFiltersArray);
+    }
+  }, [buttonFilters, isTypeSet, setFilters]);
+
+  // Set count of filters applied per type
   useEffect(() => {
     const filtersCount = filters.reduce((accumulator, filter) => {
       if (accumulator[filter.group]) {
@@ -165,17 +199,17 @@ const SideMapControl = () => {
 
     if (isFilterSet(filterName)) {
       // Always leave one filter applied per group
-      const updatedFiltersArray = isOneFilterOfGroupApplied(filterGroup)
+      let updatedFiltersArray = isOneFilterOfGroupApplied(filterGroup)
         ? filters.filter(setFilter => setFilter.name !== filterName)
         : filters;
-      setFilters(updatedFiltersArray);
+      setButtonFilters(updatedFiltersArray);
     } else {
       const filter = mapButtonFilters[filterGroup][filterName];
       // Add filterName and group to object for IDing and grouping
       filter["name"] = filterName;
       filter["group"] = filterGroup;
       const filtersArray = [...filters, filter];
-      setFilters(filtersArray);
+      setButtonFilters(filtersArray);
     }
   };
 
@@ -194,9 +228,21 @@ const SideMapControl = () => {
                 id={name}
                 color="info"
                 className="w-100 pt-1 pb-1 pl-0 pr-0"
-                onClick={event => handleFilterClick(event, group)}
-                active={isFilterSet(name)}
-                outline={!isFilterSet(name)}
+                onClick={
+                  parameter.handler
+                    ? parameter.handler
+                    : event => handleFilterClick(event, group)
+                }
+                active={
+                  parameter.isSelected
+                    ? parameter.isSelected
+                    : isFilterSet(name)
+                }
+                outline={
+                  parameter.isSelected
+                    ? !parameter.isSelected
+                    : !isFilterSet(name)
+                }
               >
                 {parameter.icon && (
                   <FontAwesomeIcon
