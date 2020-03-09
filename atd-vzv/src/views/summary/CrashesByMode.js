@@ -12,7 +12,7 @@ import {
 } from "../../constants/time";
 import { crashEndpointUrl } from "./queries/socrataQueries";
 
-const FatalitiesByMode = () => {
+const CrashesByMode = () => {
   const modes = [
     {
       label: "Motorist",
@@ -62,7 +62,7 @@ const FatalitiesByMode = () => {
   // Fetch data and set in state by years in yearsArray
   useEffect(() => {
     // Wait for crashType to be passed up from setCrashType component
-    if (crashType.queryStringDemographics) {
+    if (crashType.queryStringPerson) {
       const getChartData = async () => {
         let newData = {};
         // Use Promise.all to let all requests resolve before setting chart data by year
@@ -181,4 +181,4 @@ const FatalitiesByMode = () => {
   );
 };
 
-export default FatalitiesByMode;
+export default CrashesByMode;

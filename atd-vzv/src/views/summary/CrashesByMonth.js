@@ -13,7 +13,7 @@ import {
 } from "../../constants/time";
 import { colors } from "../../constants/colors";
 
-const FatalitiesMultiYear = () => {
+const CrashesByMonth = () => {
   // Set years order ascending
   const chartYearsArray = yearsArray().sort((a, b) => b - a);
 
@@ -85,7 +85,7 @@ const FatalitiesMultiYear = () => {
     };
 
     // Wait for crashType to be passed up from setCrashType component
-    if (crashType.queryStringDemographics) {
+    if (crashType.queryStringCrash) {
       const getChartData = async () => {
         let newData = {};
         // Use Promise.all to let all requests resolve before setting chart data by year
@@ -209,4 +209,4 @@ const FatalitiesMultiYear = () => {
   );
 };
 
-export default FatalitiesMultiYear;
+export default CrashesByMonth;

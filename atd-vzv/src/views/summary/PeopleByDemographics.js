@@ -7,9 +7,9 @@ import classnames from "classnames";
 import CrashTypeSelector from "../nav/CrashTypeSelector";
 import { colors } from "../../constants/colors";
 import { dataEndDate, yearsArray } from "../../constants/time";
-import { demographicsEndpointUrl } from "./queries/socrataQueries";
+import { personEndpointUrl } from "./queries/socrataQueries";
 
-const DemographicsByYear = () => {
+const PeopleByDemographics = () => {
   const ageCategories = [
     { label: "Under 18", categoryValue: 1, color: colors.chartRed },
     {
@@ -73,7 +73,7 @@ const DemographicsByYear = () => {
   ];
 
   const [activeTab, setActiveTab] = useState("prsn_age");
-  const [chartData, setChartData] = useState(); // {yearInt: [{record}, {record}, ...]}
+  const [chartData, setChartData] = useState(null); // {yearInt: [{record}, {record}, ...]}
   const [crashType, setCrashType] = useState([]);
 
   const toggle = tab => {
@@ -85,7 +85,7 @@ const DemographicsByYear = () => {
   // Fetch data and set in state by years in yearsArray
   useEffect(() => {
     // Wait for crashType to be passed up from setCrashType component
-    if (crashType.queryStringDemographics) {
+    if (crashType.queryStringPerson) {
       const getChartData = async () => {
         let newData = {};
         // Use Promise.all to let all requests resolve before setting chart data by year
@@ -97,7 +97,7 @@ const DemographicsByYear = () => {
               year.toString() === dataEndDate.format("YYYY")
                 ? `${dataEndDate.format("YYYY-MM-DD")}T23:59:59`
                 : `${year}-12-31T23:59:59`;
-            let url = `${demographicsEndpointUrl}?$where=${crashType.queryStringDemographics} AND crash_date between '${year}-01-01T00:00:00' and '${endDate}'`;
+            let url = `${personEndpointUrl}?$where=${crashType.queryStringPerson} AND crash_date between '${year}-01-01T00:00:00' and '${endDate}'`;
             await axios.get(url).then(res => {
               newData = { ...newData, ...{ [year]: res.data } };
             });
@@ -293,4 +293,4 @@ const DemographicsByYear = () => {
   );
 };
 
-export default DemographicsByYear;
+export default PeopleByDemographics;
