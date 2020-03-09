@@ -201,7 +201,6 @@ const PeopleByDemographics = () => {
       data: getData(category.categoryValue),
       dataFull: getData(category.categoryValue, true)
     }));
-    console.log(data);
     // If age is selected, keep original sorting to make chart more readable
     // For other categories, determine order of category (highest to lowest proportion)
     if (activeTab === "prsn_age") {
