@@ -156,7 +156,7 @@ const routes = [
   { path: "/users", exact: true, name: "Users", component: Users },
   { path: "/users/add", exact: true, name: "Add User", component: AddUser },
   {
-    path: "/users/edit/:id",
+    path: "/users/:id/edit",
     exact: true,
     name: "Edit User",
     component: EditUser,

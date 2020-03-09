@@ -36,6 +36,7 @@ const UserForm = ({ type, id = null }) => {
   const [userFormData, setUserFormData] = useState(defaultFormData);
   const [isFormDataLoaded, setIsFormDataLoaded] = useState(false);
   const [isSubmissionError, setIsSubmissionError] = useState(false);
+  const [submissionErrorMessage, setSubmissionErrorMessage] = useState("");
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
 
   const roles = [
@@ -103,11 +104,13 @@ const UserForm = ({ type, id = null }) => {
         .put(endpoint, updatedFormData, {
           headers: { Authorization: `Bearer ${token}` },
         })
-        .then(() => {
-          setIsFormSubmitted(true);
-        })
-        .catch(() => {
-          setIsSubmissionError(true);
+        .then(res => {
+          if (res.data.error) {
+            setIsSubmissionError(true);
+            setSubmissionErrorMessage(res.data.message);
+          } else {
+            setIsFormSubmitted(true);
+          }
         });
     } else if (type === "Add") {
       const endpoint = `${process.env.REACT_APP_CR3_API_DOMAIN}/user/create_user`;
@@ -115,22 +118,25 @@ const UserForm = ({ type, id = null }) => {
         .post(endpoint, userFormData, {
           headers: { Authorization: `Bearer ${token}` },
         })
-        .then(() => {
-          setIsFormSubmitted(true);
-        })
-        .catch(() => {
-          setIsSubmissionError(true);
+        .then(res => {
+          if (res.data.error) {
+            setIsSubmissionError(true);
+            setSubmissionErrorMessage(res.data.message);
+          } else {
+            setIsFormSubmitted(true);
+          }
         });
     }
   };
 
   const resetForm = () => {
     setUserFormData(defaultFormData);
+    setIsSubmissionError(false);
   };
 
   const renderErrorMessage = () => (
     <Alert className="mt-3" color="danger">
-      Failed to {type.toLowerCase()} user - please try again.
+      {submissionErrorMessage} Please try again.
     </Alert>
   );
 

@@ -113,7 +113,7 @@ const User = () => {
   ) : (
     <div className="animated fadeIn">
       <Row>
-        <Col>
+        <Col xs="12" md="6">
           <Card>
             <CardHeader>
               <strong>
@@ -123,7 +123,7 @@ const User = () => {
             <CardBody>
               <Row className="align-items-center mb-3">
                 <Col col="6" sm="4" md="2" xl className="mb-xl-0">
-                  <Link to={`/users/edit/${id}`} className="link">
+                  <Link to={`/users/${id}/edit`} className="link">
                     <Button color="primary">
                       <i className="fa fa-edit"></i> Edit User
                     </Button>
