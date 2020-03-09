@@ -1,11 +1,9 @@
 import React from "react";
-import Fatalities from "./Fatalities";
-import FatalitiesByMode from "./FatalitiesByMode";
-import SeriousInjuries from "./SeriousInjuries";
-import SeriousInjuryAndFatalCrashesByMonth from "./SeriousInjuryAndFatalCrashesByMonth";
-import SeriousInjuryAndFatalCrashesByMode from "./SeriousInjuryAndFatalCrashesByMode";
-import YearsOfLifeLost from "./YearsOfLifeLost";
-import FatalitiesMultiYear from "./FatalitiesMultiYear";
+import CrashesByMonth from "./CrashesByMonth";
+import CrashesBySystem from "./CrashesBySystem";
+import CrashesByTimeOfDay from "./CrashesByTimeOfDay";
+import PeopleByDemographics from "./PeopleByDemographics";
+import CrashesByMode from "./CrashesByMode";
 import SummaryView from "./SummaryView";
 import SummaryCard from "./SummaryCard";
 
@@ -13,19 +11,11 @@ import { Container, Row } from "reactstrap";
 import styled from "styled-components";
 
 const children = [
-  { component: <Fatalities />, title: "Year-to-Date Fatalities" },
-  { component: <FatalitiesByMode />, title: "Fatalities by Mode" },
-  { component: <SeriousInjuries />, title: "Year-to-Date Serious Injuries" },
-  {
-    component: <SeriousInjuryAndFatalCrashesByMonth />,
-    title: "Serious Injury and Fatal Crashes by Month"
-  },
-  {
-    component: <SeriousInjuryAndFatalCrashesByMode />,
-    title: "Serious Injury and Fatal Crashes by Mode"
-  },
-  { component: <YearsOfLifeLost />, title: "Year-to-Date Years of Life Lost" },
-  { component: <FatalitiesMultiYear />, title: "Traffic Fatalities by Year" }
+  { component: <CrashesByMonth /> },
+  { component: <CrashesByMode /> },
+  { component: <CrashesByTimeOfDay /> },
+  { component: <PeopleByDemographics /> },
+  { component: <CrashesBySystem />}
 ];
 
 const Summary = () => {
