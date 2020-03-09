@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import auth0 from "auth0-js";
 
-import { AuthProvider } from "../store/AuthContext";
+import { AuthProvider } from "../utils/AuthContext";
 
 const Auth = ({ children }) => {
   const urlPath =
