@@ -10,7 +10,7 @@ import {
   yearsArray,
   summaryCurrentYearEndDate
 } from "../../constants/time";
-import { crashTestEndpointUrl } from "./queries/socrataQueries";
+import { crashEndpointUrl } from "./queries/socrataQueries";
 
 const CrashesBySystem = () => {
   // Both categories use the same flag but are based on different ("Y" or "N") values.
@@ -49,7 +49,7 @@ const CrashesBySystem = () => {
               year.toString() === dataEndDate.format("YYYY")
                 ? `${summaryCurrentYearEndDate}T23:59:59`
                 : `${year}-12-31T23:59:59`;
-            let url = `${crashTestEndpointUrl}?$where=${crashType.queryStringCrash} AND crash_date between '${year}-01-01T00:00:00' and '${endDate}'`;
+            let url = `${crashEndpointUrl}?$where=${crashType.queryStringCrash} AND crash_date between '${year}-01-01T00:00:00' and '${endDate}'`;
             await axios.get(url).then(res => {
               newData = { ...newData, ...{ [year]: res.data } };
             });
