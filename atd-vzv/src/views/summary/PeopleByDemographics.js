@@ -156,16 +156,18 @@ const PeopleByDemographics = () => {
       }, 0);
       const overallTotal = chartData[year].length;
       const percentage = (categoryTotal / overallTotal) * 100;
-      const dataObject = {
+      const fullData = {
         percentage: percentage,
         categoryTotal: categoryTotal,
         overallTotal: overallTotal
       }
-      if (getFullData) {
-        return dataObject;
-      } else {
-        return percentage
-      }
+      // If getFullData is true, return the fullData Object for display in tooltips,
+      // else return percentage for chartJS to render the chart
+      const data = getFullData ?
+      fullData
+      : percentage
+
+      return data
     });
 
   // Sort category order in stack by averaging total demographic stats across all years in chart
@@ -199,7 +201,7 @@ const PeopleByDemographics = () => {
       hoverBorderColor: category.color,
       label: category.label,
       data: getData(category.categoryValue),
-      dataFull: getData(category.categoryValue, true)
+      fullData: getData(category.categoryValue, true)
     }));
     // If age is selected, keep original sorting to make chart more readable
     // For other categories, determine order of category (highest to lowest proportion)
@@ -285,16 +287,9 @@ const PeopleByDemographics = () => {
                 callbacks: {
                   label: function(tooltipItem, data) {
                     let label = data.datasets[tooltipItem.datasetIndex].label;
-                    let roundedValue =
-                    Math.round(tooltipItem.value * 100) / 100;
-                    let categoryTotal = data.datasets[tooltipItem.datasetIndex].dataFull[tooltipItem.index].categoryTotal
-                    return `${label}: ${categoryTotal} (${roundedValue}%)`;
-                  },
-                  title: function(tooltipItem, data) {
-                    let label = tooltipItem[0].label;
-                    let overallTotal = data.datasets[tooltipItem[0].datasetIndex].dataFull[tooltipItem[0].index].overallTotal
-                    let lowerCaseTextString = crashType.textString.toLowerCase()
-                    return `${label}: ${overallTotal} ${lowerCaseTextString}`;
+                    let categoryTotal = data.datasets[tooltipItem.datasetIndex].fullData[tooltipItem.index].categoryTotal
+                    let roundedPercentage = Math.round(tooltipItem.value * 100) / 100;
+                    return `${label}: ${categoryTotal} (${roundedPercentage}%)`;
                   }
                 }
               }
