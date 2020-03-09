@@ -1,8 +1,9 @@
-import React, { Component } from "react";
+import React, { useContext } from "react";
 import { HashRouter, Route, Switch, Redirect } from "react-router-dom";
+import { StoreContext } from "./utils/authContextStore";
 
 // Authentication
-import Auth from "./auth/Auth";
+
 // import Callback from "./auth/Callback";
 
 // Apollo GraphQL Client
@@ -31,23 +32,27 @@ const Page500 = React.lazy(() => import("./views/Pages/Page500"));
 // Hasura Endpoint
 const HASURA_ENDPOINT = process.env.REACT_APP_HASURA_ENDPOINT;
 
-class App extends Component {
-  constructor(props) {
-    super(props);
+const App = () => {
+  const {
+    authenticated: [authenticated],
+    login: login,
+  } = useContext(StoreContext);
+  // constructor(props) {
+  //   super(props);
 
-    this.state = {
-      token: this.getToken(),
-      role: this.getRole(),
-    };
+  //   this.state = {
+  //     token: this.getToken(),
+  //     role: this.getRole(),
+  //   };
 
-    // We first instantiate our auth helper class
-    // this.auth = new Auth(this.props.history);
+  //   // We first instantiate our auth helper class
+  //   // this.auth = new Auth(this.props.history);
 
-    // Now we handle callbacks (if any)
-    this.callbackHandler();
-    this.initializeProfile();
-    this.initializeClient();
-  }
+  //   // Now we handle callbacks (if any)
+  //   this.callbackHandler();
+  //   this.initializeProfile();
+  //   this.initializeClient();
+  // }
 
   // Helper function that hasura_user_role from localstorage, or any value we need to get for defaults. Null for the time being.
   // TODO: Get this data from Context store
@@ -59,7 +64,7 @@ class App extends Component {
   //   return localStorage.getItem("id_token") || null;
   // }
 
-  initializeProfile() {
+  const initializeProfile = () => {
     // If we already have a role, then let's not worry about it...
     if (this.getRole() !== null) return;
 
@@ -81,9 +86,9 @@ class App extends Component {
         this.setState({ profile, error });
       });
     }
-  }
+  };
 
-  initializeClient() {
+  const initializeClient = () => {
     // TODO: Start Apollo if auth in Context store
     // if (this.auth.isAuthenticated()) {
     //   if (this.state.role !== null) {
@@ -96,7 +101,7 @@ class App extends Component {
     });
     //   }
     // }
-  }
+  };
 
   // callbackHandler() {
   //   /*
@@ -146,65 +151,61 @@ class App extends Component {
   //   });
   // }
 
-  render() {
-    return (
-      <Auth>
-        <ApolloProvider client={client}>
-          <HashRouter>
-            <React.Suspense fallback={loading()}>
-              <Switch>
-                {/* Uncomment these whenever we find a way to implement the
+  return (
+    <ApolloProvider client={client}>
+      <HashRouter>
+        <React.Suspense fallback={loading()}>
+          <Switch>
+            {/* Uncomment these whenever we find a way to implement the
               /callback route. */}
-                {/*<Route*/}
-                {/*  exact*/}
-                {/*  path="/callback"*/}
-                {/*  name="Callback Page"*/}
-                {/*  render={props => <Callback auth={this.auth} {...props} />}*/}
-                {/*/>*/}
-                <Route
-                  exact
-                  path="/login"
-                  name="Login Page"
-                  render={props => <Login auth={this.auth} {...props} />}
-                />
-                <Route
-                  exact
-                  path="/register"
-                  name="Register Page"
-                  render={props => <Register {...props} />}
-                />
-                <Route
-                  exact
-                  path="/404"
-                  name="Page 404"
-                  render={props => <Page404 {...props} />}
-                />
-                <Route
-                  exact
-                  path="/500"
-                  name="Page 500"
-                  render={props => <Page500 {...props} />}
-                />
-                <Route
-                  path="/"
-                  name="Home"
-                  // If authenticated, render, if not log in.
-                  render={props =>
-                    this.auth.isAuthenticated() ? (
-                      <DefaultLayout auth={this.auth} {...props} />
-                    ) : (
-                      <Redirect to="/login" />
-                    )
-                  }
-                />
-                } />
-              </Switch>
-            </React.Suspense>
-          </HashRouter>
-        </ApolloProvider>
-      </Auth>
-    );
-  }
-}
+            {/*<Route*/}
+            {/*  exact*/}
+            {/*  path="/callback"*/}
+            {/*  name="Callback Page"*/}
+            {/*  render={props => <Callback auth={this.auth} {...props} />}*/}
+            {/*/>*/}
+            <Route
+              exact
+              path="/login"
+              name="Login Page"
+              render={props => <Login login={login} {...props} />}
+            />
+            <Route
+              exact
+              path="/register"
+              name="Register Page"
+              render={props => <Register {...props} />}
+            />
+            <Route
+              exact
+              path="/404"
+              name="Page 404"
+              render={props => <Page404 {...props} />}
+            />
+            <Route
+              exact
+              path="/500"
+              name="Page 500"
+              render={props => <Page500 {...props} />}
+            />
+            <Route
+              path="/"
+              name="Home"
+              // If authenticated, render, if not log in.
+              render={props =>
+                authenticated ? (
+                  <DefaultLayout auth={this.auth} {...props} />
+                ) : (
+                  <Redirect to="/login" />
+                )
+              }
+            />
+            } />
+          </Switch>
+        </React.Suspense>
+      </HashRouter>
+    </ApolloProvider>
+  );
+};
 
 export default App;

@@ -30,7 +30,7 @@ class Login extends Component {
                           <Button
                             color="primary"
                             className="px-4"
-                            onClick={this.props.auth.login}
+                            onClick={this.props.login}
                           >
                             Login
                           </Button>
@@ -39,7 +39,7 @@ class Login extends Component {
                           <Button
                             color="link"
                             className="px-0"
-                            onClick={this.props.auth.login}
+                            onClick={this.props.login}
                           >
                             Forgot password?
                           </Button>
