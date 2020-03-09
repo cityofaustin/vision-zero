@@ -77,6 +77,8 @@ def add_locations_to_non_cr3s_by_location():
 
         collisions_result = run_query(collisions_query)
 
+        print(collisions_result)
+
         collisions_array = collisions_result['data']['find_noncr3_collisions_for_location']
 
         print("Processing LOCATION ID: {}. {} NON CR3s found.".format(

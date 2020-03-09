@@ -64,15 +64,14 @@ update_record_cr3 = Template("""
 def add_locations_to_cr3s_by_location(starting_index):
     result = run_query(locations_query)
     all_locations = result['data']['atd_txdot_locations']
-    # starting_index = 68970
-    remaining = len(all_locations) - starting_index
-    print(remaining)
+
     locations = all_locations[starting_index:]
-    print(len(locations))
+
     # Loop over each location
     for idx, location in enumerate(locations):
         # Using findCR3crashesForLocation SQL function, get all the CR3s whose coordinates are
         # inside the location polygon
+        print("{} of {} Locations".format(idx + 1, len(locations)))
         collisions_query = find_cr3_collisions_for_location_query.substitute(
             id=location['location_id'])
 
@@ -82,7 +81,6 @@ def add_locations_to_cr3s_by_location(starting_index):
 
         print("Processing LOCATION ID: {}. {} CR3s found.".format(
             location["location_id"], len(collisions_array)))
-        print("{} of {} Locations".format(idx + 1, len(locations)))
 
         # Loop through the values and update their location ID
         for collision in collisions_array:
@@ -95,7 +93,7 @@ def add_locations_to_cr3s_by_location(starting_index):
             print(mutation_result)
 
 
-add_locations_to_cr3s_by_location(68970)
+add_locations_to_cr3s_by_location(0)
 
 end_time = datetime.now()
 print('Duration: {}'.format(end_time - start_time))
