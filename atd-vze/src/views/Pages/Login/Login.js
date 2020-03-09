@@ -13,6 +13,8 @@ import {
 
 class Login extends Component {
   render() {
+    const login = this.props.login;
+    debugger;
     return (
       <div className="app flex-row align-items-center">
         <Container>
@@ -30,17 +32,13 @@ class Login extends Component {
                           <Button
                             color="primary"
                             className="px-4"
-                            onClick={this.props.login}
+                            onClick={login}
                           >
                             Login
                           </Button>
                         </Col>
                         <Col xs="6" className="text-right">
-                          <Button
-                            color="link"
-                            className="px-0"
-                            onClick={this.props.login}
-                          >
+                          <Button color="link" className="px-0" onClick={login}>
                             Forgot password?
                           </Button>
                         </Col>

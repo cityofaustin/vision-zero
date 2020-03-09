@@ -1,6 +1,7 @@
 import React, { useContext } from "react";
 import { HashRouter, Route, Switch, Redirect } from "react-router-dom";
 import { StoreContext } from "./utils/authContextStore";
+import Callback from "./auth/Callback";
 
 // Authentication
 
@@ -35,7 +36,8 @@ const HASURA_ENDPOINT = process.env.REACT_APP_HASURA_ENDPOINT;
 const App = () => {
   const {
     authenticated: [authenticated],
-    login: login,
+    login,
+    handleAuthentication,
   } = useContext(StoreContext);
   // constructor(props) {
   //   super(props);
@@ -56,6 +58,7 @@ const App = () => {
 
   // Helper function that hasura_user_role from localstorage, or any value we need to get for defaults. Null for the time being.
   // TODO: Get this data from Context store
+  // TODO: Change this to roles (permissions will be determined by .includes)
   // getRole() {
   //   return localStorage.getItem("hasura_user_role") || null;
   // }
@@ -90,17 +93,17 @@ const App = () => {
 
   const initializeClient = () => {
     // TODO: Start Apollo if auth in Context store
-    // if (this.auth.isAuthenticated()) {
-    //   if (this.state.role !== null) {
-    client = new ApolloClient({
-      uri: HASURA_ENDPOINT,
-      headers: {
-        Authorization: `Bearer ${this.state.token}`,
-        "x-hasura-role": this.state.role,
-      },
-    });
-    //   }
-    // }
+    if (authenticated) {
+      //   if (this.state.role !== null) {
+      client = new ApolloClient({
+        uri: HASURA_ENDPOINT,
+        headers: {
+          Authorization: `Bearer ${this.state.token}`,
+          "x-hasura-role": this.state.role,
+        },
+      });
+      //   }
+    }
   };
 
   // callbackHandler() {
@@ -124,33 +127,6 @@ const App = () => {
   //   }
   // }
 
-  // setSession = authResult => {
-  //   // set the time that the access token will expire
-  //   const expiresAt = JSON.stringify(
-  //     authResult.expiresIn * 1000 + new Date().getTime()
-  //   );
-
-  //   localStorage.setItem("access_token", authResult.accessToken);
-  //   localStorage.setItem("id_token", authResult.idToken);
-  //   localStorage.setItem("expires_at", expiresAt);
-
-  //   this.setState({ token: authResult.idToken });
-  // };
-
-  // handleAuthentication() {
-  //   this.auth.auth0.parseHash((err, authResult) => {
-  //     if (authResult && authResult.accessToken && authResult.idToken) {
-  //       this.setSession(authResult);
-  //       const prefix = window.location.pathname.startsWith("/editor")
-  //         ? "/editor"
-  //         : "";
-  //       window.location = prefix + "/#/dashboard";
-  //     } else if (err) {
-  //       alert(`Error: ${err.error}. Check the console for further details.`);
-  //     }
-  //   });
-  // }
-
   return (
     <ApolloProvider client={client}>
       <HashRouter>
@@ -158,12 +134,17 @@ const App = () => {
           <Switch>
             {/* Uncomment these whenever we find a way to implement the
               /callback route. */}
-            {/*<Route*/}
-            {/*  exact*/}
-            {/*  path="/callback"*/}
-            {/*  name="Callback Page"*/}
-            {/*  render={props => <Callback auth={this.auth} {...props} />}*/}
-            {/*/>*/}
+            <Route
+              exact
+              path="/callback"
+              name="Callback Page"
+              render={props => (
+                <Callback
+                  handleAuthentication={handleAuthentication}
+                  {...props}
+                />
+              )}
+            />
             <Route
               exact
               path="/login"
