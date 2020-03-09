@@ -61,10 +61,14 @@ update_record_cr3 = Template("""
 #
 
 
-def add_locations_to_cr3s_by_location():
+def add_locations_to_cr3s_by_location(starting_index):
     result = run_query(locations_query)
-    locations = result['data']['atd_txdot_locations']
-
+    all_locations = result['data']['atd_txdot_locations']
+    # starting_index = 68970
+    remaining = len(all_locations) - starting_index
+    print(remaining)
+    locations = all_locations[starting_index:]
+    print(len(locations))
     # Loop over each location
     for idx, location in enumerate(locations):
         # Using findCR3crashesForLocation SQL function, get all the CR3s whose coordinates are
@@ -91,7 +95,7 @@ def add_locations_to_cr3s_by_location():
             print(mutation_result)
 
 
-add_locations_to_cr3s_by_location()
+add_locations_to_cr3s_by_location(68970)
 
 end_time = datetime.now()
 print('Duration: {}'.format(end_time - start_time))
