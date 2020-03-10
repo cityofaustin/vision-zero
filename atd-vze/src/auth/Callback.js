@@ -4,7 +4,6 @@ import { StoreContext } from "../auth/authContextStore";
 
 const Callback = () => {
   const location = useLocation();
-  debugger;
   const { handleAuthentication } = useContext(StoreContext);
 
   if (/access_token|id_token|error/.test(location.hash)) {

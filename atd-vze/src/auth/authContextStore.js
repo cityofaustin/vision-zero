@@ -26,7 +26,6 @@ export default ({ children }) => {
     const urlPrefix = window.location.origin;
 
     auth.parseHash((err, authResult) => {
-      debugger;
       if (authResult && authResult.accessToken && authResult.idToken) {
         setSession(authResult);
         // TODO: Redirect to "/"
@@ -48,6 +47,7 @@ export default ({ children }) => {
       email: result.email,
       roles: result["https://hasura.io/jwt/claims"]["x-hasura-allowed-roles"],
     };
+    debugger;
 
     // set the time that the access token will expire
     const expiresAt = JSON.stringify(
@@ -58,7 +58,7 @@ export default ({ children }) => {
     localStorage.setItem("expires_at", expiresAt);
 
     setAuthenticated(true);
-    setAccessToken(authResult.accessToken);
+    setAccessToken(authResult.idToken);
     setUser(user);
   };
 

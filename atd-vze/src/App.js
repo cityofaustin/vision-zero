@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useRef } from "react";
 import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
 import { StoreContext } from "./auth/authContextStore";
 
@@ -19,53 +19,43 @@ const Register = React.lazy(() => import("./views/Pages/Register"));
 const Page404 = React.lazy(() => import("./views/Pages/Page404"));
 const Page500 = React.lazy(() => import("./views/Pages/Page500"));
 
-// Hasura Endpoint
-const HASURA_ENDPOINT = process.env.REACT_APP_HASURA_ENDPOINT;
-
 const App = () => {
   const {
     authenticated: [authenticated],
     accessToken: [accessToken],
     login,
   } = useContext(StoreContext);
-  // if (
-  //   !authenticated &&
-  //   (window.location.pathname.startsWith("/callback") ||
-  //     window.location.pathname.startsWith("/editor/callback"))
-  // ) {
-  //   // Handle authentication if expected values are in the URL.
-  //   if (/access_token|id_token|error/.test(window.location.hash)) {
-  //     handleAuthentication();
-  //   }
-  // }
 
   const getToken = () => {
     return localStorage.getItem("id_token") || null;
   };
 
   // Apollo client settings.
-  let client = new ApolloClient();
+  let client = useRef(new ApolloClient(new ApolloClient()));
 
-  const initializeClient = () => {
-    // TODO: Start Apollo if auth in Context store
-    if (authenticated) {
-      client = new ApolloClient({
+  useEffect(() => {
+    // Hasura Endpoint
+    const HASURA_ENDPOINT = process.env.REACT_APP_HASURA_ENDPOINT;
+
+    if (authenticated && accessToken) {
+      const clientData = {
         uri: HASURA_ENDPOINT,
         headers: {
           Authorization: `Bearer ${accessToken}`,
-          // TODO: Update with actual role
           "x-hasura-role": "editor",
         },
-      });
+      };
+
+      client.current = new ApolloClient(clientData);
     }
-  };
+  }, [authenticated, client, accessToken]);
 
   const loading = () => (
     <div className="animated fadeIn pt-3 text-center">Loading...</div>
   );
 
   return (
-    <ApolloProvider client={client}>
+    <ApolloProvider client={client.current}>
       <BrowserRouter>
         <React.Suspense fallback={loading()}>
           <Switch>
