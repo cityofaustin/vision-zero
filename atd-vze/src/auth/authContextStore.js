@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+
 import auth0 from "auth0-js";
 
 export const StoreContext = React.createContext(null);
@@ -9,7 +10,7 @@ export default ({ children }) => {
       ? window.location.origin
       : `${window.location.origin}/editor`;
 
-  const auth = new auth0.WebAuth({
+  const authInstance = new auth0.WebAuth({
     domain: process.env.REACT_APP_AUTH0_DOMAIN,
     clientID: process.env.REACT_APP_AUTH0_CLIENT_ID,
     redirectUri: `${urlPath}/callback`,
@@ -22,28 +23,31 @@ export default ({ children }) => {
   };
 
   const handleAuthentication = () => {
-    debugger;
     const urlPrefix = window.location.origin;
-    auth.parseHash((err, authResult) => {
-      if (authResult && authResult.accessToken && authResult.idToken) {
-        setSession(authResult);
-        // TODO: Redirect to "/"
-        window.location = urlPrefix + "/";
-        // this.history.push("/");
-      } else if (err) {
-        // TODO: Redirect to "/"
-        window.location = urlPrefix + "/";
-        // this.history.push("/");
-        alert(`Error: ${err.error}. Check the console for further details.`);
-      }
-    });
+    if (!authenticated) {
+      auth.parseHash((err, authResult) => {
+        debugger;
+        if (authResult && authResult.accessToken && authResult.idToken) {
+          setSession(authResult);
+          // TODO: Redirect to "/"
+          // window.location = urlPrefix + "/";
+          // this.history.push("/");
+        } else if (err) {
+          // TODO: Redirect to "/"
+          // window.location = urlPrefix + "/";
+          // this.history.push("/");
+          alert(`Error: ${err.error}. Check the console for further details.`);
+        }
+      });
+    }
   };
 
   const setSession = authResult => {
+    const result = authResult.idTokenPayload;
     const user = {
-      id: authResult.sub,
-      email: authResult.email,
-      roles: authResult.app_metadata.roles,
+      id: result.sub,
+      email: result.email,
+      roles: result["https://hasura.io/jwt/claims"]["x-hasura-allowed-roles"],
     };
 
     // set the time that the access token will expire
@@ -66,7 +70,7 @@ export default ({ children }) => {
 
     auth.logout({
       clientID: process.env.REACT_APP_AUTH0_CLIENT_ID,
-      returnTo: this.urlPath,
+      returnTo: urlPath,
     });
 
     const urlPrefix = window.location.origin;
@@ -83,11 +87,13 @@ export default ({ children }) => {
     roles: "",
   });
   const [accessToken, setAccessToken] = useState(false);
+  const [auth, setAuth] = useState(authInstance);
 
   const store = {
     authenticated: [authenticated, setAuthenticated],
     user: [user, setUser],
     accessToken: [accessToken, setAccessToken],
+    auth: [auth, setAuth],
     login: login,
     logout: logout,
     handleAuthentication: handleAuthentication,

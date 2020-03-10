@@ -22,27 +22,30 @@ const Page500 = React.lazy(() => import("./views/Pages/Page500"));
 const HASURA_ENDPOINT = process.env.REACT_APP_HASURA_ENDPOINT;
 
 const App = () => {
-  const { authenticated, login, handleAuthentication } = useContext(
-    StoreContext
-  );
+  const {
+    authenticated: [authenticated],
+    login,
+    handleAuthentication,
+  } = useContext(StoreContext);
+
+  console.log(authenticated);
 
   useEffect(() => {
     if (
-      window.location.pathname.startsWith("/callback") ||
-      window.location.pathname.startsWith("/editor/callback")
+      !authenticated &&
+      (window.location.pathname.startsWith("/callback") ||
+        window.location.pathname.startsWith("/editor/callback"))
     ) {
-      debugger;
       // Handle authentication if expected values are in the URL.
       if (/access_token|id_token|error/.test(window.location.hash)) {
         handleAuthentication();
-      } else {
-        const prefix = window.location.pathname.startsWith("/editor")
-          ? "/editor"
-          : "";
-        window.location = prefix + "/#/login";
       }
     }
   });
+
+  const getToken = () => {
+    return localStorage.getItem("id_token") || null;
+  };
 
   // Apollo client settings.
   let client = new ApolloClient();
@@ -97,6 +100,7 @@ const App = () => {
               path="/"
               name="Home"
               // If authenticated, render, if not log in.
+              exact
               render={props =>
                 authenticated ? (
                   <DefaultLayout {...props} />
