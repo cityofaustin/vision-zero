@@ -59,8 +59,6 @@ const App = () => {
       <BrowserRouter>
         <React.Suspense fallback={loading()}>
           <Switch>
-            {/* Uncomment these whenever we find a way to implement the
-              /callback route. */}
             <Route
               exact
               path="/callback"
@@ -72,6 +70,7 @@ const App = () => {
               path="/login"
               name="Login Page"
               render={props =>
+                // If not authenticated, otherwise render.
                 !authenticated ? (
                   <Login login={login} {...props} />
                 ) : (
