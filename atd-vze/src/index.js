@@ -6,7 +6,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
 import App from "./App";
-import StoreProvider from "./utils/authContextStore";
+import StoreProvider from "./auth/authContextStore";
 import * as serviceWorker from "./serviceWorker";
 
 ReactDOM.render(

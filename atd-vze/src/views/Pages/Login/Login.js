@@ -14,7 +14,7 @@ import {
 class Login extends Component {
   render() {
     const login = this.props.login;
-    debugger;
+
     return (
       <div className="app flex-row align-items-center">
         <Container>

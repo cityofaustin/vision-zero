@@ -1,5 +1,6 @@
-import React, { Component } from "react";
+import React, { useContext } from "react";
 import { NavLink } from "react-router-dom";
+import { StoreContext } from "../../auth/authContextStore";
 import {
   UncontrolledDropdown,
   DropdownItem,
@@ -19,64 +20,61 @@ const propTypes = {
 
 const defaultProps = {};
 
-class DefaultHeader extends Component {
-  render() {
-    // eslint-disable-next-line
-    const { children, ...attributes } = this.props;
-    const { logout } = this.props.auth;
+const DefaultHeader = props => {
+  const { logout } = useContext(StoreContext);
+  // eslint-disable-next-line
+  const { children, ...attributes } = props;
 
-    return (
-      <React.Fragment>
-        <AppSidebarToggler className="d-lg-none" display="md" mobile />
-        <AppNavbarBrand
-          full={{
-            src: logo,
-            width: 140,
-            height: 25,
-            alt: "Vision Zero Austin",
-          }}
-          // minimized={{ src: sygnet, width: 30, height: 30, alt: "CoreUI Logo" }}
-        />
-        <AppSidebarToggler className="d-md-down-none" display="lg" />
+  return (
+    <React.Fragment>
+      <AppSidebarToggler className="d-lg-none" display="md" mobile />
+      <AppNavbarBrand
+        full={{
+          src: logo,
+          width: 140,
+          height: 25,
+          alt: "Vision Zero Austin",
+        }}
+      />
+      <AppSidebarToggler className="d-md-down-none" display="lg" />
 
-        <Nav className="d-md-down-none" navbar>
-          <NavItem className="px-3">
-            <NavLink to="/dashboard" className="nav-link">
-              Dashboard
-            </NavLink>
-          </NavItem>
-          <NavItem className="px-3">
-            <NavLink to="/users" className="nav-link">
-              Users
-            </NavLink>
-          </NavItem>
-        </Nav>
-        <Nav className="ml-auto" navbar>
-          <UncontrolledDropdown nav direction="down">
-            <DropdownToggle nav>
-              <img
-                src={"./assets/img/avatars/1.png"}
-                className="img-avatar"
-                alt="admin@bootstrapmaster.com"
-              />
-            </DropdownToggle>
-            <DropdownMenu right>
-              <DropdownItem header tag="div" className="text-center">
-                <strong>Account</strong>
-              </DropdownItem>
-              <DropdownItem href="#/profile">
-                <i className="fa fa-user" /> Profile
-              </DropdownItem>
-              <DropdownItem onClick={logout}>
-                <i className="fa fa-lock" /> Log Out
-              </DropdownItem>
-            </DropdownMenu>
-          </UncontrolledDropdown>
-        </Nav>
-      </React.Fragment>
-    );
-  }
-}
+      <Nav className="d-md-down-none" navbar>
+        <NavItem className="px-3">
+          <NavLink to="/dashboard" className="nav-link">
+            Dashboard
+          </NavLink>
+        </NavItem>
+        <NavItem className="px-3">
+          <NavLink to="/users" className="nav-link">
+            Users
+          </NavLink>
+        </NavItem>
+      </Nav>
+      <Nav className="ml-auto" navbar>
+        <UncontrolledDropdown nav direction="down">
+          <DropdownToggle nav>
+            <img
+              src={"./assets/img/avatars/1.png"}
+              className="img-avatar"
+              alt="admin@bootstrapmaster.com"
+            />
+          </DropdownToggle>
+          <DropdownMenu right>
+            <DropdownItem header tag="div" className="text-center">
+              <strong>Account</strong>
+            </DropdownItem>
+            <DropdownItem href="#/profile">
+              <i className="fa fa-user" /> Profile
+            </DropdownItem>
+            <DropdownItem onClick={logout}>
+              <i className="fa fa-lock" /> Log Out
+            </DropdownItem>
+          </DropdownMenu>
+        </UncontrolledDropdown>
+      </Nav>
+    </React.Fragment>
+  );
+};
 
 DefaultHeader.propTypes = propTypes;
 DefaultHeader.defaultProps = defaultProps;
