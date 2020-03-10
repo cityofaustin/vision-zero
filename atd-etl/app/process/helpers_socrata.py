@@ -15,6 +15,15 @@ import json
 from copy import deepcopy
 from process.config import ATD_ETL_CONFIG
 
+# Dict to translate canonical modes to broader categories for VZV
+mode_categories = {
+    "motor_vehicle": [1, 2, 4],
+    "motorcycle": [3],
+    "bicycle": [5],
+    "pedestrian": [7],
+    "other": [6, 8, 9]
+}
+
 
 def replace_chars(target_str, char_list, replacement_str):
     """
@@ -85,38 +94,95 @@ def flatten_hasura_response(records):
             elif type(first_level_value) == dict:
                 for dict_key, dict_value in first_level_value.items():
                     formatted_record[dict_key] = dict_value
-                    del formatted_record[first_level_key]
+                del formatted_record[first_level_key]
         formatted_records.append(formatted_record)
     return formatted_records
 
 
-def create_mode_flags(records, unit_modes):
+def set_mode_columns(records):
+    """
+    Stringify atd_mode_category_metadata and concat mode descriptions
+    :param records: list - List of record dicts
+    """
+    formatted_records = []
+    for record in records:
+        # Create copy of record to mutate
+        formatted_record = deepcopy(record)
+        metadata_column = "atd_mode_category_metadata"
+        if metadata_column in record.keys() and record[metadata_column] != None:
+            # Concat mode_desc strings for all units
+            units_involved = []
+            for unit in record[metadata_column]:
+                units_involved.append(unit.get("mode_desc"))
+            formatted_record["units_involved"] = " & ".join(units_involved)
+
+            # Stringify metadata
+            formatted_record[metadata_column] = json.dumps(
+                record[metadata_column])
+        formatted_records.append(formatted_record)
+    return formatted_records
+
+
+def create_mode_flags(records):
     """
     Creates mode flag columns in data along with "Y" or "N" value
     :param records: list - List of record dicts
-    :param unit_modes: list - List of mode strings to create flag columns
     """
     for record in records:
-        if "unit_mode" in record.keys():
-            for mode in unit_modes:
-                chars_to_replace = ["/", " ", "-"]
+        crash_metadata = record.get("atd_mode_category_metadata")
+        # Gather mode IDs in record
+        mode_ids = []
+        if crash_metadata != None:
+            for unit in crash_metadata:
+                mode_ids.append(unit.get("mode_id"))
 
-                # Need flag to be camelcase with "_fl" suffix
-                formatted_mode = replace_chars(
-                    mode, chars_to_replace, "_").lower()
-                record_flag_column = f"{formatted_mode}_fl"
-                if mode in record["unit_mode"]:
-                    record[record_flag_column] = "Y"
-                else:
-                    record[record_flag_column] = "N"
-        # Motorcycle crashes are documented in unit desc not mode
-        if "unit_desc" in record.keys():
-            if "MOTORCYCLE" in record["unit_desc"]:
-                record["motorcycle_fl"] = "Y"
-            else:
-                record["motorcycle_fl"] = "N"
-        else:
-            record["motorcycle_fl"] = "N"
+        # Check for id matches in flags dict and set flags to Y for matches
+        for id in mode_ids:
+            for flag_key, flag_value in mode_categories.items():
+                if id in flag_value:
+                    record[flag_key + "_fl"] = "Y"
+    return records
+
+
+def concatTimeAndDate(records):
+    """
+    Concat crash date and time to make date/time queryable
+    :param records: list - List of record dicts
+    """
+    for record in records:
+        concatDateAndTime = record.get(
+            "crash_date") + "T" + record.get("crash_time")
+        record["crash_date"] = concatDateAndTime
+    return records
+
+
+def calc_mode_injury_totals(records):
+    """
+    Totals number of fatalities and serious injuries per mode type
+    :param records: list - List of record dicts
+    """
+    fatality_field = "death_cnt"
+    serious_injury_field = "sus_serious_injry_cnt"
+
+    for record in records:
+        # Initialize counts
+        total_dict = {}
+        for mode in mode_categories.keys():
+            total_dict[mode + "_death_count"] = 0
+            total_dict[mode + "_serious_injury_count"] = 0
+
+        crash_metadata = record.get("atd_mode_category_metadata")
+        # Count number of injuries per mode of units in metadata
+        if crash_metadata != None:
+            for unit in crash_metadata:
+                unit_mode_id = unit.get("mode_id")
+                for [mode, id_list] in mode_categories.items():
+                    if unit_mode_id in id_list:
+                        total_dict[mode +
+                                   "_death_count"] += unit[fatality_field]
+                        total_dict[mode +
+                                   "_serious_injury_count"] += unit[serious_injury_field]
+        record = record.update(total_dict)
     return records
 
 
@@ -162,31 +228,35 @@ def add_value_prefix(records, prefix_dict):
 
 def set_person_mode(records):
     """
-    Sets mode of person from crash record data
+    Sets mode of person from crash record metadata and person mode flag
+    Person (unit_nbr) => Units (unit_nbr & unit_id) => Crash metadata (unit_id)
     :param records: list - List of record dicts
     """
     for record in records:
-        # Gather unit and person data
-        crash_record = record.get("crash")
-        unit_descriptions = crash_record.get("units", [])
+        # Gather person, unit, and crash data
         person_unit_number = record.get("unit_nbr")
+        crash = record.get("crash")
+        units = crash.get("units", [])
 
-        # Find unit matching person unit_nbr from crash data
-        for unit in unit_descriptions:
+        # Find unit_id
+        unit_id = ""
+        for unit in units:
             if unit.get("unit_nbr") == person_unit_number:
-                unit_mode = unit.get(
-                    "unit_description", {})
-                unit_desc = unit.get(
-                    "body_style", {})
-                if unit_mode != None:
-                    record["unit_mode"] = unit_mode.get(
-                        "veh_unit_desc_desc", "")
-                if unit_desc != None:
-                    record["unit_desc"] = unit_desc.get(
-                        "veh_body_styl_desc", "")
-        # Remove unneeded keys to prevent Socrata error
+                unit_id = unit.get("unit_id")
+
+        # Find unit in metadata and set mode_desc column and set mode id
+        mode_id = ""
+        crash_metadata = crash.get("atd_mode_category_metadata", [])
+        if crash_metadata != None:
+            for unit in crash_metadata:
+                if unit.get("unit_id") == unit_id:
+                    record["mode_desc"] = unit.get("mode_desc")
+                    mode_id = unit.get("mode_id")
+                    record["mode_id"] = mode_id
         del record["crash"]["units"]
+        del record["crash"]["atd_mode_category_metadata"]
         del record["unit_nbr"]
+
     return records
 
 
@@ -199,11 +269,14 @@ def format_crash_data(data, formatter_config):
     records = data['data'][formatter_config["tables"][0]]
 
     # Format records
-    formatted_records = flatten_hasura_response(records)
+    formatted_records = create_mode_flags(records)
+    formatted_records = calc_mode_injury_totals(formatted_records)
+    formatted_records = concatTimeAndDate(formatted_records)
+    formatted_records = set_mode_columns(
+        formatted_records)
+    formatted_records = flatten_hasura_response(formatted_records)
     formatted_records = rename_record_columns(
         formatted_records, formatter_config["columns_to_rename"])
-    formatted_records = create_mode_flags(
-        formatted_records, formatter_config["flags_list"])
     formatted_records = create_point_datatype(formatted_records)
 
     return formatted_records
@@ -234,7 +307,5 @@ def format_person_data(data, formatter_config):
         people_records, formatter_config["columns_to_rename"])
     formatted_records = flatten_hasura_response(
         formatted_records)
-    formatted_records = create_mode_flags(
-        formatted_records, formatter_config["flags_list"])
 
     return formatted_records

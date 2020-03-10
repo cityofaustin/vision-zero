@@ -15,11 +15,15 @@ crashes_query_template = Template(
     """
     query getCrashesSocrata {
         atd_txdot_crashes (limit: $limit, offset: $offset, order_by: {crash_id: asc}, where: {city_id: {_eq: 22}}) {
+            apd_confirmed_fatality
+            apd_confirmed_death_count
             crash_id
             crash_fatal_fl
             crash_date
             crash_time
             case_id
+            onsys_fl
+            private_dr_fl
             rpt_latitude
             rpt_longitude
             rpt_block_num
@@ -42,15 +46,10 @@ crashes_query_template = Template(
             unkn_injry_cnt
             tot_injry_cnt
             death_cnt
+            atd_mode_category_metadata
             units {
                 contrib_factr_p1_id
                 contrib_factr_p2_id
-                body_style {
-                    veh_body_styl_desc
-                }
-                unit_description {
-                    veh_unit_desc_desc
-                }
             }
         }
     }
@@ -67,17 +66,14 @@ people_query_template = Template(
             prsn_injry_sev_id
             prsn_age
             prsn_gndr_id
+            prsn_ethnicity_id
             unit_nbr
             crash {
                 crash_date
+                atd_mode_category_metadata
                 units {
                     unit_nbr
-                    unit_description {
-                        veh_unit_desc_desc
-                    }
-                    body_style {
-                        veh_body_styl_desc
-                    }
+                    unit_id
                 }
             }
         }
@@ -86,17 +82,14 @@ people_query_template = Template(
             prsn_injry_sev_id
             prsn_age
             prsn_gndr_id
+            prsn_ethnicity_id
             unit_nbr
             crash {
                 crash_date
+                atd_mode_category_metadata
                 units {
                     unit_nbr
-                    unit_description {
-                        veh_unit_desc_desc
-                    }
-                    body_style {
-                        veh_body_styl_desc
-                    }
+                    unit_id
                 }
             }
         }

@@ -98,7 +98,31 @@ const GridExportData = ({ query, columnsToExport, totalRecords }) => {
       return flattenedRow;
     });
 
-    return flattenedData;
+    const cleanedAndFlattenedData = flattenedData.map(item => {
+      // Some fields are presenting issues when they are exported as .csv and
+      // imported into MSFT Excel, Acces & Power BI. For now, we're just going to
+      // modify the data for export to solve issues related to returns and double-quotes
+      // In the future, we may choose to clean these values at the database level.
+
+      const columnsToClean = [
+        "rpt_street_name",
+        "rpt_street_desc",
+        "rpt_sec_street_desc",
+        "rpt_sec_street_name",
+      ];
+
+      columnsToClean.forEach(col => {
+        if (item[col]) {
+          // remove return carriage and replace with space
+          item[col] = item[col].replace(/(\r\n|\n|\r|")/gm, " ");
+          // remove double-quotes
+          item[col] = item[col].replace(/"/g, "");
+        }
+      });
+      return item;
+    });
+
+    return cleanedAndFlattenedData;
   };
 
   return (

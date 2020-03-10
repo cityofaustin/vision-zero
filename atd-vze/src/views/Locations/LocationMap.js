@@ -78,8 +78,8 @@ export default class LocationMap extends Component {
     super(props);
     this.state = {
       viewport: {
-        latitude: this.props.data.atd_txdot_locations[0].latitude,
-        longitude: this.props.data.atd_txdot_locations[0].longitude,
+        latitude: this.props.data.atd_txdot_locations[0].latitude || 30.2672,
+        longitude: this.props.data.atd_txdot_locations[0].longitude || -97.7431,
         zoom: 17,
         bearing: 0,
         pitch: 0,

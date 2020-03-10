@@ -1,4 +1,6 @@
+// Set SideDrawer dimensions
+// headerHeight is referenced to set the height of the Header component
 export const drawer = {
-  height: 110,
+  headerHeight: 110,
   width: 300
 };

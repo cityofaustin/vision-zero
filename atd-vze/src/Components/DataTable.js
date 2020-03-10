@@ -111,7 +111,11 @@ const DataTable = ({
 
                       const renderLookupDescString = () => {
                         // make sure the value isn't null blank
-                        if (!fieldValue) return "";
+                        if (
+                          fieldValue === null ||
+                          typeof fieldValue === "undefined"
+                        )
+                          return "";
 
                         // make sure there is a lookup object in the config
                         if (!selectOptions || !fieldConfigObject.lookupOptions)

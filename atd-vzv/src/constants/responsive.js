@@ -1,5 +1,7 @@
-// Use to convert Material-UI breakpoints to pixels
+// Use to unify Bootstrap breakpoints with media queries
 export const responsive = {
-  sm: 600,
-  md: 960
+  bootstrapMedium: 768,
+  // Use for media queries with min-width defined to avoid style conflicts
+  bootstrapMediumMin: 769,
+  bootstrapExtraSmall: 576
 };
