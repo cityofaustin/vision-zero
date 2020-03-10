@@ -24,22 +24,21 @@ export default ({ children }) => {
 
   const handleAuthentication = () => {
     const urlPrefix = window.location.origin;
-    if (!authenticated) {
-      auth.parseHash((err, authResult) => {
-        debugger;
-        if (authResult && authResult.accessToken && authResult.idToken) {
-          setSession(authResult);
-          // TODO: Redirect to "/"
-          // window.location = urlPrefix + "/";
-          // this.history.push("/");
-        } else if (err) {
-          // TODO: Redirect to "/"
-          // window.location = urlPrefix + "/";
-          // this.history.push("/");
-          alert(`Error: ${err.error}. Check the console for further details.`);
-        }
-      });
-    }
+
+    auth.parseHash((err, authResult) => {
+      debugger;
+      if (authResult && authResult.accessToken && authResult.idToken) {
+        setSession(authResult);
+        // TODO: Redirect to "/"
+        // window.location = urlPrefix + "/";
+        // this.history.push("/");
+      } else if (err) {
+        // TODO: Redirect to "/"
+        // window.location = urlPrefix + "/";
+        // this.history.push("/");
+        alert(`Error: ${err.error}. Check the console for further details.`);
+      }
+    });
   };
 
   const setSession = authResult => {

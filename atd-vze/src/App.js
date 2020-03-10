@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from "react";
-import { HashRouter, Route, Switch, Redirect } from "react-router-dom";
+import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
 import { StoreContext } from "./auth/authContextStore";
 
 // Apollo GraphQL Client
@@ -14,6 +14,7 @@ const DefaultLayout = React.lazy(() => import("./containers/DefaultLayout"));
 
 // Pages
 const Login = React.lazy(() => import("./views/Pages/Login"));
+const Callback = React.lazy(() => import("./auth/Callback"));
 const Register = React.lazy(() => import("./views/Pages/Register"));
 const Page404 = React.lazy(() => import("./views/Pages/Page404"));
 const Page500 = React.lazy(() => import("./views/Pages/Page500"));
@@ -24,24 +25,19 @@ const HASURA_ENDPOINT = process.env.REACT_APP_HASURA_ENDPOINT;
 const App = () => {
   const {
     authenticated: [authenticated],
+    accessToken: [accessToken],
     login,
-    handleAuthentication,
   } = useContext(StoreContext);
-
-  console.log(authenticated);
-
-  useEffect(() => {
-    if (
-      !authenticated &&
-      (window.location.pathname.startsWith("/callback") ||
-        window.location.pathname.startsWith("/editor/callback"))
-    ) {
-      // Handle authentication if expected values are in the URL.
-      if (/access_token|id_token|error/.test(window.location.hash)) {
-        handleAuthentication();
-      }
-    }
-  });
+  // if (
+  //   !authenticated &&
+  //   (window.location.pathname.startsWith("/callback") ||
+  //     window.location.pathname.startsWith("/editor/callback"))
+  // ) {
+  //   // Handle authentication if expected values are in the URL.
+  //   if (/access_token|id_token|error/.test(window.location.hash)) {
+  //     handleAuthentication();
+  //   }
+  // }
 
   const getToken = () => {
     return localStorage.getItem("id_token") || null;
@@ -56,8 +52,9 @@ const App = () => {
       client = new ApolloClient({
         uri: HASURA_ENDPOINT,
         headers: {
-          Authorization: `Bearer ${this.state.token}`,
-          "x-hasura-role": this.state.role,
+          Authorization: `Bearer ${accessToken}`,
+          // TODO: Update with actual role
+          "x-hasura-role": "editor",
         },
       });
     }
@@ -69,14 +66,28 @@ const App = () => {
 
   return (
     <ApolloProvider client={client}>
-      <HashRouter>
+      <BrowserRouter>
         <React.Suspense fallback={loading()}>
           <Switch>
+            {/* Uncomment these whenever we find a way to implement the
+              /callback route. */}
+            <Route
+              exact
+              path="/callback"
+              name="Callback Page"
+              render={props => <Callback {...props} />}
+            />
             <Route
               exact
               path="/login"
               name="Login Page"
-              render={props => <Login login={login} {...props} />}
+              render={props =>
+                !authenticated ? (
+                  <Login login={login} {...props} />
+                ) : (
+                  <Redirect to="/" />
+                )
+              }
             />
             <Route
               exact
@@ -100,7 +111,6 @@ const App = () => {
               path="/"
               name="Home"
               // If authenticated, render, if not log in.
-              exact
               render={props =>
                 authenticated ? (
                   <DefaultLayout {...props} />
@@ -109,10 +119,9 @@ const App = () => {
                 )
               }
             />
-            } />
           </Switch>
         </React.Suspense>
-      </HashRouter>
+      </BrowserRouter>
     </ApolloProvider>
   );
 };
