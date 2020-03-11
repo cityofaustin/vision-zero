@@ -26,12 +26,8 @@ const App = () => {
     login,
   } = useContext(StoreContext);
 
-  const getToken = () => {
-    return localStorage.getItem("id_token") || null;
-  };
-
   // Apollo client settings.
-  let client = useRef(new ApolloClient(new ApolloClient()));
+  let client = useRef(new ApolloClient());
 
   useEffect(() => {
     // Hasura Endpoint
@@ -42,6 +38,7 @@ const App = () => {
         uri: HASURA_ENDPOINT,
         headers: {
           Authorization: `Bearer ${accessToken}`,
+          // TODO: Add actual role from Context here
           "x-hasura-role": "editor",
         },
       };

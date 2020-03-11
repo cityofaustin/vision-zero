@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 
 import auth0 from "auth0-js";
 
@@ -23,8 +23,6 @@ export default ({ children }) => {
   };
 
   const handleAuthentication = () => {
-    const urlPrefix = window.location.origin;
-
     auth.parseHash((err, authResult) => {
       if (authResult && authResult.accessToken && authResult.idToken) {
         setSession(authResult);
@@ -49,10 +47,15 @@ export default ({ children }) => {
     localStorage.setItem("access_token", authResult.accessToken);
     localStorage.setItem("id_token", authResult.idToken);
     localStorage.setItem("expires_at", expiresAt);
+    localStorage.setItem("hasura_user_email", result.email);
+    localStorage.setItem(
+      "hasura_user_roles",
+      result["https://hasura.io/jwt/claims"]["x-hasura-allowed-roles"]
+    );
 
     setAuthenticated(true);
     setAccessToken(authResult.idToken);
-    setUser(user);
+    setUser(result);
   };
 
   const logout = () => {
@@ -72,6 +75,14 @@ export default ({ children }) => {
       roles: "",
     });
     window.location = urlPrefix + "/";
+  };
+
+  const getRole = () => {
+    return localStorage.getItem("hasura_user_role") || null;
+  };
+
+  const getToken = () => {
+    return localStorage.getItem("id_token") || null;
   };
 
   const [authenticated, setAuthenticated] = useState(false);
@@ -95,39 +106,3 @@ export default ({ children }) => {
     <StoreContext.Provider value={store}>{children}</StoreContext.Provider>
   );
 };
-
-// Helper function that hasura_user_role from localstorage, or any value we need to get for defaults. Null for the time being.
-// TODO: Decide if we need this data for permissions
-// TODO: Get this data from Context store
-// TODO: Change this to roles (permissions will be determined by .includes)
-// getRole() {
-//   return localStorage.getItem("hasura_user_role") || null;
-// }
-
-// getToken() {
-//   return localStorage.getItem("id_token") || null;
-// }
-
-// const initializeProfile = () => {
-//   // If we already have a role, then let's not worry about it...
-//   if (this.getRole() !== null) return;
-
-//   // Else, we need to initialize it if we are authenticated
-//   if (this.auth.isAuthenticated()) {
-//     this.auth.getProfile((profile, error) => {
-//       try {
-//         const role =
-//           profile["https://hasura.io/jwt/claims"][
-//             "x-hasura-allowed-roles"
-//           ][0];
-//         localStorage.setItem("hasura_user_email", profile["email"]);
-//         localStorage.setItem("hasura_user_role", role);
-//         this.setState({ role: role });
-//         this.initializeClient();
-//       } catch (error) {
-//         alert("Error: " + error);
-//       }
-//       this.setState({ profile, error });
-//     });
-//   }
-// };

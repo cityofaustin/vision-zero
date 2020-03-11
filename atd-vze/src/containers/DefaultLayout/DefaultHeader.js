@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, Link } from "react-router-dom";
 import { StoreContext } from "../../auth/authContextStore";
 import {
   UncontrolledDropdown,
@@ -63,8 +63,13 @@ const DefaultHeader = props => {
             <DropdownItem header tag="div" className="text-center">
               <strong>Account</strong>
             </DropdownItem>
-            <DropdownItem href="#/profile">
-              <i className="fa fa-user" /> Profile
+            <DropdownItem>
+              <Link
+                to="/profile"
+                style={{ color: "inherit", textDecoration: "inherit" }}
+              >
+                <i className="fa fa-user" /> Profile
+              </Link>
             </DropdownItem>
             <DropdownItem onClick={logout}>
               <i className="fa fa-lock" /> Log Out
