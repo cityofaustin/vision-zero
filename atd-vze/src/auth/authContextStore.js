@@ -18,12 +18,14 @@ export default ({ children }) => {
     scope: "openid profile email",
   });
 
+  let auth = useRef(authInstance);
+
   const login = () => {
-    auth.authorize();
+    auth.current.authorize();
   };
 
   const handleAuthentication = () => {
-    auth.parseHash((err, authResult) => {
+    auth.current.parseHash((err, authResult) => {
       if (authResult && authResult.accessToken && authResult.idToken) {
         setSession(authResult);
       } else if (err) {
@@ -34,11 +36,6 @@ export default ({ children }) => {
 
   const setSession = authResult => {
     const result = authResult.idTokenPayload;
-    const user = {
-      id: result.sub,
-      email: result.email,
-      roles: result["https://hasura.io/jwt/claims"]["x-hasura-allowed-roles"],
-    };
 
     // set the time that the access token will expire
     const expiresAt = JSON.stringify(
@@ -78,11 +75,11 @@ export default ({ children }) => {
   };
 
   const getRole = () => {
-    return localStorage.getItem("hasura_user_role") || null;
+    return localStorage.getItem("hasura_user_roles") || null;
   };
 
   const getToken = () => {
-    return localStorage.getItem("id_token") || null;
+    return !!localStorage.getItem("id_token") || null;
   };
 
   const [authenticated, setAuthenticated] = useState(false);
@@ -90,16 +87,18 @@ export default ({ children }) => {
     roles: "",
   });
   const [accessToken, setAccessToken] = useState(false);
-  const [auth, setAuth] = useState(authInstance);
+  console.log("Context initialized", authenticated);
 
   const store = {
     authenticated: [authenticated, setAuthenticated],
     user: [user, setUser],
     accessToken: [accessToken, setAccessToken],
-    auth: [auth, setAuth],
+    auth: auth,
     login: login,
     logout: logout,
     handleAuthentication: handleAuthentication,
+    getToken: getToken,
+    getRole: getRole,
   };
 
   return (

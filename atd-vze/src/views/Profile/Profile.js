@@ -4,13 +4,12 @@ import { StoreContext } from "../../auth/authContextStore";
 const Profile = () => {
   const {
     user: [user],
+    getToken,
   } = useContext(StoreContext);
-  debugger;
-  if (!user) return null;
 
-  let token = localStorage.getItem("id_token");
+  let token = getToken();
 
-  return (
+  return !user ? null : (
     <>
       <h1>Profile</h1>
       <p>{user.nickname}</p>
