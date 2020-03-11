@@ -6,13 +6,13 @@ import React from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
 import App from "./App";
-import StoreProvider from "./auth/authContextStore";
+import { Auth0Provider } from "./auth/authContextStore";
 import * as serviceWorker from "./serviceWorker";
 
 ReactDOM.render(
-  <StoreProvider>
+  <Auth0Provider>
     <App />
-  </StoreProvider>,
+  </Auth0Provider>,
   document.getElementById("root")
 );
 

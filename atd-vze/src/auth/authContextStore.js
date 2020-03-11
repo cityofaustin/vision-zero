@@ -1,107 +1,169 @@
-import React, { useState, useRef } from "react";
+// import React, { useState, useRef } from "react";
 
-import auth0 from "auth0-js";
+// export const StoreContext = React.createContext(null);
 
-export const StoreContext = React.createContext(null);
+// export default ({ children, auth, urlPath }) => {
+//   const login = () => {
+//     debugger;
+//     auth.loginWithRedirect();
+//   };
 
-export default ({ children }) => {
-  const urlPath =
-    process.env.NODE_ENV === "development"
-      ? window.location.origin
-      : `${window.location.origin}/editor`;
+//   const handleAuthentication = () => {
+//     auth.handleRedirectCallback().then(result => {
+//       auth.getUser().then(user => {
+//         debugger;
+//         setSession(result);
+//       });
+//     });
+//   };
 
-  const authInstance = new auth0.WebAuth({
+//   const setSession = authResult => {
+//     const result = authResult.idTokenPayload;
+
+//     // set the time that the access token will expire
+//     const expiresAt = JSON.stringify(
+//       authResult.expiresIn * 1000 + new Date().getTime()
+//     );
+//     localStorage.setItem("access_token", authResult.accessToken);
+//     localStorage.setItem("id_token", authResult.idToken);
+//     localStorage.setItem("expires_at", expiresAt);
+//     localStorage.setItem("hasura_user_email", result.email);
+//     localStorage.setItem(
+//       "hasura_user_roles",
+//       result["https://hasura.io/jwt/claims"]["x-hasura-allowed-roles"]
+//     );
+
+//     setAuthenticated(true);
+//     setAccessToken(authResult.idToken);
+//     setUser(result);
+//   };
+
+//   const logout = () => {
+//     localStorage.removeItem("access_token");
+//     localStorage.removeItem("id_token");
+//     localStorage.removeItem("expires_at");
+
+//     auth.logout({
+//       clientID: process.env.REACT_APP_AUTH0_CLIENT_ID,
+//       returnTo: urlPath,
+//     });
+
+//     const urlPrefix = window.location.origin;
+//     setAuthenticated(false);
+//     setAccessToken("");
+//     setUser({
+//       roles: "",
+//     });
+//     window.location = urlPrefix + "/";
+//   };
+
+//   const getRole = () => {
+//     return localStorage.getItem("hasura_user_roles") || null;
+//   };
+
+//   const getToken = () => {
+//     return !!localStorage.getItem("id_token") || null;
+//   };
+
+//   const [authenticated, setAuthenticated] = useState(false);
+//   const [user, setUser] = useState({
+//     roles: "",
+//   });
+//   const [accessToken, setAccessToken] = useState(false);
+//   console.log("Context initialized", authenticated);
+
+//   const store = {
+//     authenticated: [authenticated, setAuthenticated],
+//     user: [user, setUser],
+//     accessToken: [accessToken, setAccessToken],
+//     auth: auth,
+//     login: login,
+//     logout: logout,
+//     handleAuthentication: handleAuthentication,
+//     getToken: getToken,
+//     getRole: getRole,
+//   };
+
+//   return (
+//     <StoreContext.Provider value={store}>{children}</StoreContext.Provider>
+//   );
+// };
+
+import React, { Component, createContext } from "react";
+import createAuth0Client from "@auth0/auth0-spa-js";
+
+// create the context
+export const Auth0Context = createContext();
+
+const urlPath =
+  process.env.NODE_ENV === "development"
+    ? window.location.origin
+    : `${window.location.origin}/editor`;
+
+// create a provider
+export class Auth0Provider extends Component {
+  state = {
+    auth0Client: null,
+    isLoading: true,
+    isAuthenticated: false,
+    user: null,
+  };
+  config = {
     domain: process.env.REACT_APP_AUTH0_DOMAIN,
-    clientID: process.env.REACT_APP_AUTH0_CLIENT_ID,
-    redirectUri: `${urlPath}/callback`,
-    responseType: "token id_token",
+    client_id: process.env.REACT_APP_AUTH0_CLIENT_ID,
+    redirect_uri: `${urlPath}/callback`,
+    response_type: "token id_token",
     scope: "openid profile email",
-  });
-
-  let auth = useRef(authInstance);
-
-  const login = () => {
-    auth.current.authorize();
   };
 
-  const handleAuthentication = () => {
-    auth.current.parseHash((err, authResult) => {
-      if (authResult && authResult.accessToken && authResult.idToken) {
-        setSession(authResult);
-      } else if (err) {
-        alert(`Error: ${err.error}. Check the console for further details.`);
-      }
-    });
+  componentDidMount() {
+    this.initializeAuth0();
+  }
+
+  // initialize the auth0 library
+  initializeAuth0 = async () => {
+    const auth0Client = await createAuth0Client(this.config);
+
+    if (window.location.search.includes("code=")) {
+      return this.handleRedirectCallback();
+    }
+
+    const isAuthenticated = await auth0Client.isAuthenticated();
+    const user = isAuthenticated ? await auth0Client.getUser() : null;
+
+    this.setState({ auth0Client, isLoading: false, isAuthenticated, user });
   };
 
-  const setSession = authResult => {
-    const result = authResult.idTokenPayload;
+  handleRedirectCallback = async () => {
+    this.setState({ isLoading: true });
 
-    // set the time that the access token will expire
-    const expiresAt = JSON.stringify(
-      authResult.expiresIn * 1000 + new Date().getTime()
+    await this.state.auth0Client.handleRedirectCallback();
+    const user = await this.state.auth0Client.getUser();
+
+    this.setState({ user, isAuthenticated: true, isLoading: false });
+    window.history.replaceState({}, document.title, window.location.pathname);
+  };
+
+  render() {
+    const { auth0Client, isLoading, isAuthenticated, user } = this.state;
+    const { children } = this.props;
+
+    const configObject = {
+      isLoading,
+      isAuthenticated,
+      user,
+      loginWithRedirect: (...p) => auth0Client.loginWithRedirect(...p),
+      handleRedirectCallback: (...p) =>
+        auth0Client.handleRedirectCallback(...p),
+      getTokenSilently: (...p) => auth0Client.getTokenSilently(...p),
+      getIdTokenClaims: (...p) => auth0Client.getIdTokenClaims(...p),
+      logout: (...p) => auth0Client.logout(...p),
+    };
+
+    return (
+      <Auth0Context.Provider value={configObject}>
+        {children}
+      </Auth0Context.Provider>
     );
-    localStorage.setItem("access_token", authResult.accessToken);
-    localStorage.setItem("id_token", authResult.idToken);
-    localStorage.setItem("expires_at", expiresAt);
-    localStorage.setItem("hasura_user_email", result.email);
-    localStorage.setItem(
-      "hasura_user_roles",
-      result["https://hasura.io/jwt/claims"]["x-hasura-allowed-roles"]
-    );
-
-    setAuthenticated(true);
-    setAccessToken(authResult.idToken);
-    setUser(result);
-  };
-
-  const logout = () => {
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("id_token");
-    localStorage.removeItem("expires_at");
-
-    auth.logout({
-      clientID: process.env.REACT_APP_AUTH0_CLIENT_ID,
-      returnTo: urlPath,
-    });
-
-    const urlPrefix = window.location.origin;
-    setAuthenticated(false);
-    setAccessToken("");
-    setUser({
-      roles: "",
-    });
-    window.location = urlPrefix + "/";
-  };
-
-  const getRole = () => {
-    return localStorage.getItem("hasura_user_roles") || null;
-  };
-
-  const getToken = () => {
-    return !!localStorage.getItem("id_token") || null;
-  };
-
-  const [authenticated, setAuthenticated] = useState(false);
-  const [user, setUser] = useState({
-    roles: "",
-  });
-  const [accessToken, setAccessToken] = useState(false);
-  console.log("Context initialized", authenticated);
-
-  const store = {
-    authenticated: [authenticated, setAuthenticated],
-    user: [user, setUser],
-    accessToken: [accessToken, setAccessToken],
-    auth: auth,
-    login: login,
-    logout: logout,
-    handleAuthentication: handleAuthentication,
-    getToken: getToken,
-    getRole: getRole,
-  };
-
-  return (
-    <StoreContext.Provider value={store}>{children}</StoreContext.Provider>
-  );
-};
+  }
+}

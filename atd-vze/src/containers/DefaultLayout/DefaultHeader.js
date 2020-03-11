@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { NavLink, Link } from "react-router-dom";
-import { StoreContext } from "../../auth/authContextStore";
+import { Auth0Context } from "../../auth/authContextStore";
 import {
   UncontrolledDropdown,
   DropdownItem,
@@ -21,7 +21,7 @@ const propTypes = {
 const defaultProps = {};
 
 const DefaultHeader = props => {
-  const { logout } = useContext(StoreContext);
+  const { logout } = useContext(Auth0Context);
   // eslint-disable-next-line
   const { children, ...attributes } = props;
 

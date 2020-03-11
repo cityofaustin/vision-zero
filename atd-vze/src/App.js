@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useRef } from "react";
 import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
-import { StoreContext } from "./auth/authContextStore";
+import { Auth0Context } from "./auth/authContextStore";
 
 // Apollo GraphQL Client
 import ApolloClient from "apollo-boost";
@@ -21,10 +21,12 @@ const Page500 = React.lazy(() => import("./views/Pages/Page500"));
 
 const App = () => {
   const {
-    authenticated: [authenticated],
-    accessToken: [accessToken],
-    login,
-  } = useContext(StoreContext);
+    isLoading,
+    user,
+    loginWithRedirect,
+    isAuthenticated,
+    getIdTokenClaims,
+  } = useContext(Auth0Context);
 
   // Apollo client settings.
   let client = useRef(new ApolloClient());
@@ -33,47 +35,45 @@ const App = () => {
     // Hasura Endpoint
     const HASURA_ENDPOINT = process.env.REACT_APP_HASURA_ENDPOINT;
 
-    if (authenticated && accessToken) {
-      const clientData = {
-        uri: HASURA_ENDPOINT,
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          // TODO: Add actual role from Context here
-          "x-hasura-role": "editor",
-        },
-      };
+    if (isAuthenticated) {
+      getIdTokenClaims().then(claims => {
+        const clientData = {
+          uri: HASURA_ENDPOINT,
+          headers: {
+            Authorization: `Bearer ${claims.__raw}`,
 
-      client.current = new ApolloClient(clientData);
+            "x-hasura-role": "editor",
+          },
+        };
+        client.current = new ApolloClient(clientData);
+      });
     }
-  }, [authenticated, client, accessToken]);
+  }, [isAuthenticated, client, getIdTokenClaims]);
 
   const loading = () => (
     <div className="animated fadeIn pt-3 text-center">Loading...</div>
   );
 
   return (
+    // TODO: Need to update the ref assignment here
     <ApolloProvider client={client.current}>
       <BrowserRouter>
         <React.Suspense fallback={loading()}>
           <Switch>
-            <Route
+            {/* <Route
               exact
               path="/callback"
               name="Callback Page"
               render={props => <Callback {...props} />}
-            />
+            /> */}
             <Route
               exact
               path="/login"
               name="Login Page"
-              render={props =>
+              render={props => (
                 // If not authenticated, otherwise render.
-                !authenticated ? (
-                  <Login login={login} {...props} />
-                ) : (
-                  <Redirect to="/" />
-                )
-              }
+                <Login login={loginWithRedirect} {...props} />
+              )}
             />
             <Route
               exact
@@ -98,7 +98,7 @@ const App = () => {
               name="Home"
               // If authenticated, render, if not log in.
               render={props =>
-                authenticated ? (
+                !isLoading && user ? (
                   <DefaultLayout {...props} />
                 ) : (
                   <Redirect to="/login" />

@@ -1,14 +1,13 @@
 import React, { useContext } from "react";
 import { Redirect, useLocation } from "react-router-dom";
-import { StoreContext } from "../auth/authContextStore";
+import { Auth0Provider } from "../auth/authContextStore";
 
 const Callback = () => {
   const location = useLocation();
-  const { handleAuthentication } = useContext(StoreContext);
+  const { handleAuthentication } = useContext(Auth0Provider);
 
-  if (/access_token|id_token|error/.test(location.hash)) {
-    handleAuthentication();
-  }
+  handleAuthentication();
+
   return <Redirect to="/" />;
 };
 
