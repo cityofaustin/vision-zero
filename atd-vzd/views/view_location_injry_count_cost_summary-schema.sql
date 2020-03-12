@@ -24,25 +24,27 @@ SET row_security = off;
 --
 
 CREATE VIEW public.view_location_injry_count_cost_summary AS
-SELECT atcloc.location_id
-        , coalesce(ccs.total_crashes, 0) AS total_crashes
-        , coalesce(ccs.total_deaths, 0) AS total_deaths
-        , coalesce(ccs.total_serious_injuries, 0) AS total_serious_injuries
-        , coalesce(ccs.est_comp_cost, 0) AS total_deaths
 
-        FROM
-             atd_txdot_locations AS atcloc
-        LEFT JOIN (
-                SELECT atcloc.location_id,
-                         count(1)                           AS total_crashes,
-                         sum(atc.apd_confirmed_death_count) AS total_deaths,
-                         sum(atc.sus_serious_injry_cnt)     AS total_serious_injuries,
-                         sum(atc.est_comp_cost)             AS est_comp_cost
-                FROM (atd_txdot_crashes atc
-                           LEFT JOIN atd_txdot_crash_locations atcloc ON ((atcloc.crash_id = atc.crash_id)))
-                WHERE ((1 = 1) AND (atcloc.location_id IS NOT NULL) AND ((atcloc.location_id)::text <> 'None'::text))
-                GROUP BY atcloc.location_id
-        ) AS ccs ON (ccs.location_id = atcloc.location_id);
+SELECT
+	(atcloc.location_id)::character varying (32) AS location_id,
+	COALESCE(ccs.total_crashes, (0)::bigint) AS total_crashes,
+	COALESCE(ccs.total_deaths, (0)::bigint) AS total_deaths,
+	COALESCE(ccs.total_serious_injuries, (0)::bigint) AS total_serious_injuries,
+	COALESCE(ccs.est_comp_cost, (0)::numeric) AS est_comp_cost
+FROM (atd_txdot_locations atcloc
+	LEFT JOIN (
+		SELECT
+			atc.location_id,
+			count(1) AS total_crashes,
+			sum(atc.death_cnt) AS total_deaths,
+			sum(atc.sus_serious_injry_cnt) AS total_serious_injuries,
+			sum(atc.est_comp_cost) AS est_comp_cost
+		FROM atd_txdot_crashes AS atc
+	WHERE ((1 = 1)
+		AND(atc.location_id IS NOT NULL)
+		AND((atc.location_id)::text <> 'None'::text))
+GROUP BY
+	atc.location_id) ccs ON (((ccs.location_id)::text = (atcloc.location_id)::text)));
 
 
 ALTER TABLE public.view_location_injry_count_cost_summary OWNER TO atd_vz_data;
