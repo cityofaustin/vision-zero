@@ -9,6 +9,7 @@ import {
   Form,
   InputGroup,
   Row,
+  Spinner,
 } from "reactstrap";
 
 class Login extends Component {
@@ -29,13 +30,17 @@ class Login extends Component {
                       <InputGroup className="mb-3" />
                       <Row>
                         <Col xs="6">
-                          <Button
-                            color="primary"
-                            className="px-4"
-                            onClick={login}
-                          >
-                            {loading ? "Loading..." : "Login"}
-                          </Button>
+                          {loading ? (
+                            <Spinner className="mt-2" color="primary" />
+                          ) : (
+                            <Button
+                              color="primary"
+                              className="px-4"
+                              onClick={login}
+                            >
+                              Login
+                            </Button>
+                          )}
                         </Col>
                         <Col xs="6" className="text-right">
                           <Button color="link" className="px-0" onClick={login}>

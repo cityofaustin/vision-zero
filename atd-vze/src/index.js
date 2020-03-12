@@ -6,8 +6,9 @@ import React from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
 import App from "./App";
-import { Auth0Provider } from "./auth/authContextStore";
 import history from "./auth/history";
+import { Auth0Provider } from "./auth/authContextStore";
+import { HashRouter } from "react-router-dom";
 import * as serviceWorker from "./serviceWorker";
 
 const urlPath =
@@ -15,21 +16,24 @@ const urlPath =
     ? window.location.origin
     : `${window.location.origin}/editor`;
 
-const onRedirectCallback = () => {
-  history.push("/");
+const onRedirectCallback = appState => {
+  history.push(appState && appState.targetUrl ? appState.targetUrl : "/");
 };
 
 ReactDOM.render(
-  <Auth0Provider
-    domain={process.env.REACT_APP_AUTH0_DOMAIN}
-    client_id={process.env.REACT_APP_AUTH0_CLIENT_ID}
-    redirect_uri={`${urlPath}/callback`}
-    onRedirectCallback={onRedirectCallback}
-    response_type={"token id_token"}
-    scope={"openid profile email"}
-  >
-    <App />
-  </Auth0Provider>,
+  <HashRouter history={history}>
+    <Auth0Provider
+      domain={process.env.REACT_APP_AUTH0_DOMAIN}
+      client_id={process.env.REACT_APP_AUTH0_CLIENT_ID}
+      redirect_uri={`${urlPath}/callback`}
+      onRedirectCallback={onRedirectCallback}
+      response_type={"token id_token"}
+      scope={"openid profile email"}
+      prompt={"none"}
+    >
+      <App />
+    </Auth0Provider>
+  </HashRouter>,
   document.getElementById("root")
 );
 

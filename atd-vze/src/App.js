@@ -1,5 +1,6 @@
-import React, { useEffect, useRef } from "react";
-import { HashRouter, Route, Switch, Redirect } from "react-router-dom";
+import React, { useEffect, useRef, useState } from "react";
+import { Route, Switch } from "react-router-dom";
+
 import { useAuth0 } from "./auth/authContextStore";
 
 // Apollo GraphQL Client
@@ -29,6 +30,8 @@ const App = () => {
   // Apollo client settings.
   let client = useRef(new ApolloClient());
 
+  const [isApolloLoaded, setIsApolloLoaded] = useState(false);
+
   useEffect(() => {
     // Hasura Endpoint
     const HASURA_ENDPOINT = process.env.REACT_APP_HASURA_ENDPOINT;
@@ -39,76 +42,59 @@ const App = () => {
           uri: HASURA_ENDPOINT,
           headers: {
             Authorization: `Bearer ${claims.__raw}`,
-
             "x-hasura-role": "editor",
           },
         };
         client.current = new ApolloClient(clientData);
+        setIsApolloLoaded(true);
       });
     }
-  }, [isAuthenticated, client, getIdTokenClaims]);
+  }, [isAuthenticated, client, getIdTokenClaims, setIsApolloLoaded]);
 
   const renderLoading = () => (
     <div className="animated fadeIn pt-3 text-center">Loading...</div>
   );
 
   return (
-    // TODO: Need to update the ref assignment here
-
     <ApolloProvider client={client.current}>
-      <HashRouter>
-        <React.Suspense fallback={renderLoading()}>
-          <Switch>
-            <Route
-              exact
-              path="/login"
-              name="Login Page"
-              render={props =>
-                // If not authenticated, otherwise render.
-                !isAuthenticated ? (
-                  <Login
-                    login={loginWithRedirect}
-                    loading={loading}
-                    {...props}
-                  />
-                ) : (
-                  <Redirect to="/" />
-                )
-              }
-            />
-            <Route
-              exact
-              path="/register"
-              name="Register Page"
-              render={props => <Register {...props} />}
-            />
-            <Route
-              exact
-              path="/404"
-              name="Page 404"
-              render={props => <Page404 {...props} />}
-            />
-            <Route
-              exact
-              path="/500"
-              name="Page 500"
-              render={props => <Page500 {...props} />}
-            />
+      <React.Suspense fallback={renderLoading()}>
+        <Switch>
+          {!isAuthenticated && (
             <Route
               path="/"
               name="Home"
-              // If authenticated, render, if not log in.
-              render={props =>
-                isAuthenticated ? (
-                  <DefaultLayout {...props} />
-                ) : (
-                  <Redirect to="/login" />
-                )
-              }
+              render={props => (
+                <Login login={loginWithRedirect} loading={loading} {...props} />
+              )}
             />
-          </Switch>
-        </React.Suspense>
-      </HashRouter>
+          )}
+          {isAuthenticated && isApolloLoaded && (
+            <Route
+              path="/"
+              name="Home"
+              render={props => <DefaultLayout {...props} />}
+            />
+          )}
+          <Route
+            exact
+            path="/register"
+            name="Register Page"
+            render={props => <Register {...props} />}
+          />
+          <Route
+            exact
+            path="/404"
+            name="Page 404"
+            render={props => <Page404 {...props} />}
+          />
+          <Route
+            exact
+            path="/500"
+            name="Page 500"
+            render={props => <Page500 {...props} />}
+          />
+        </Switch>
+      </React.Suspense>
     </ApolloProvider>
   );
 };
