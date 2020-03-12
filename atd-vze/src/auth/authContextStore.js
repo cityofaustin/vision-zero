@@ -198,8 +198,9 @@ export const Auth0Provider = ({
         window.location.search.includes("code=") &&
         window.location.search.includes("state=")
       ) {
-        const { appState } = await auth0FromHook.handleRedirectCallback();
-        onRedirectCallback(appState);
+        // const { appState } =
+        await auth0FromHook.handleRedirectCallback();
+        onRedirectCallback();
       }
 
       const isAuthenticated = await auth0FromHook.isAuthenticated();
@@ -210,7 +211,7 @@ export const Auth0Provider = ({
         const user = await auth0FromHook.getUser();
         setUser(user);
       }
-      debugger;
+
       setLoading(false);
     };
     initAuth0();

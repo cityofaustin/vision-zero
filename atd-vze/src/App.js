@@ -23,7 +23,7 @@ const App = () => {
   const {
     loading,
     user,
-    loginWithPopup,
+    loginWithRedirect,
     isAuthenticated,
     getIdTokenClaims,
   } = useAuth0();
@@ -73,7 +73,7 @@ const App = () => {
               name="Login Page"
               render={props => (
                 // If not authenticated, otherwise render.
-                <Login login={loginWithPopup} loading={loading} {...props} />
+                <Login login={loginWithRedirect} loading={loading} {...props} />
               )}
             />
             <Route
