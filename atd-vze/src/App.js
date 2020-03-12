@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { HashRouter, Route, Switch, Redirect } from "react-router-dom";
 import { useAuth0 } from "./auth/authContextStore";
 
@@ -14,7 +14,6 @@ const DefaultLayout = React.lazy(() => import("./containers/DefaultLayout"));
 
 // Pages
 const Login = React.lazy(() => import("./views/Pages/Login"));
-const Callback = React.lazy(() => import("./auth/Callback"));
 const Register = React.lazy(() => import("./views/Pages/Register"));
 const Page404 = React.lazy(() => import("./views/Pages/Page404"));
 const Page500 = React.lazy(() => import("./views/Pages/Page500"));
@@ -22,7 +21,6 @@ const Page500 = React.lazy(() => import("./views/Pages/Page500"));
 const App = () => {
   const {
     loading,
-    user,
     loginWithRedirect,
     isAuthenticated,
     getIdTokenClaims,
@@ -63,18 +61,20 @@ const App = () => {
           <Switch>
             <Route
               exact
-              path="/callback"
-              name="Callback Page"
-              render={props => <Callback {...props} />}
-            />
-            <Route
-              exact
               path="/login"
               name="Login Page"
-              render={props => (
+              render={props =>
                 // If not authenticated, otherwise render.
-                <Login login={loginWithRedirect} loading={loading} {...props} />
-              )}
+                !isAuthenticated ? (
+                  <Login
+                    login={loginWithRedirect}
+                    loading={loading}
+                    {...props}
+                  />
+                ) : (
+                  <Redirect to="/" />
+                )
+              }
             />
             <Route
               exact
@@ -97,10 +97,9 @@ const App = () => {
             <Route
               path="/"
               name="Home"
-              exact
               // If authenticated, render, if not log in.
               render={props =>
-                isAuthenticated && user ? (
+                isAuthenticated ? (
                   <DefaultLayout {...props} />
                 ) : (
                   <Redirect to="/login" />
