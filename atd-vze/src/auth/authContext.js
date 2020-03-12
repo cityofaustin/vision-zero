@@ -2,7 +2,16 @@ import React, { useState, useEffect, useContext } from "react";
 import createAuth0Client from "@auth0/auth0-spa-js";
 
 export const Auth0Context = React.createContext();
+
+// Custom hook to make accessing the context a bit easier
 export const useAuth0 = () => useContext(Auth0Context);
+
+// Set app url based on environment
+export const urlPath =
+  process.env.NODE_ENV === "development"
+    ? window.location.origin
+    : `${window.location.origin}/editor`;
+
 export const Auth0Provider = ({
   children,
   onRedirectCallback,
@@ -10,9 +19,11 @@ export const Auth0Provider = ({
 }) => {
   const [isAuthenticated, setIsAuthenticated] = useState();
   const [user, setUser] = useState();
+  const [userClaims, setUserClaims] = useState();
   const [auth0Client, setAuth0] = useState();
   const [loading, setLoading] = useState(true);
 
+  // Instantiate Auth0, handle auth callback, and set loading and user params
   useEffect(() => {
     const initAuth0 = async () => {
       const auth0FromHook = await createAuth0Client(initOptions);
@@ -32,11 +43,15 @@ export const Auth0Provider = ({
       if (isAuthenticated) {
         const user = await auth0FromHook.getUser();
         setUser(user);
+
+        const claims = await auth0FromHook.getIdTokenClaims();
+        setUserClaims(claims);
       }
 
       setLoading(false);
     };
     initAuth0();
+    // eslint-disable-next-line
   }, []);
 
   const handleRedirectCallback = async () => {
@@ -48,6 +63,11 @@ export const Auth0Provider = ({
     setUser(user);
   };
 
+  const logout = () => {
+    auth0Client.logout({ returnTo: urlPath });
+  };
+
+  // Context provider supplies value below at index.js level
   return (
     <Auth0Context.Provider
       value={{
@@ -55,11 +75,10 @@ export const Auth0Provider = ({
         user,
         loading,
         handleRedirectCallback,
+        userClaims,
         getIdTokenClaims: (...p) => auth0Client.getIdTokenClaims(...p),
         loginWithRedirect: (...p) => auth0Client.loginWithRedirect(...p),
-        getTokenSilently: (...p) => auth0Client.getTokenSilently(...p),
-        getTokenWithPopup: (...p) => auth0Client.getTokenWithPopup(...p),
-        logout: (...p) => auth0Client.logout(...p),
+        logout,
       }}
     >
       {children}

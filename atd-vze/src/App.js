@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Route, Switch } from "react-router-dom";
-
-import { useAuth0 } from "./auth/authContextStore";
+import { useAuth0 } from "./auth/authContext";
 
 // Apollo GraphQL Client
 import ApolloClient from "apollo-boost";
@@ -24,32 +23,32 @@ const App = () => {
     loading,
     loginWithRedirect,
     isAuthenticated,
-    getIdTokenClaims,
+    userClaims,
   } = useAuth0();
 
-  // Apollo client settings.
+  // Setup initial Apollo instance
   let client = useRef(new ApolloClient());
 
+  // Keep track of if Apollo is connected to Hasura
   const [isApolloLoaded, setIsApolloLoaded] = useState(false);
 
+  // Setup Apollo connection to Hasura with Auth0 token and roles
   useEffect(() => {
-    // Hasura Endpoint
     const HASURA_ENDPOINT = process.env.REACT_APP_HASURA_ENDPOINT;
 
-    if (isAuthenticated) {
-      getIdTokenClaims().then(claims => {
-        const clientData = {
-          uri: HASURA_ENDPOINT,
-          headers: {
-            Authorization: `Bearer ${claims.__raw}`,
-            "x-hasura-role": "editor",
-          },
-        };
-        client.current = new ApolloClient(clientData);
-        setIsApolloLoaded(true);
-      });
+    if (isAuthenticated && !!userClaims) {
+      const clientData = {
+        uri: HASURA_ENDPOINT,
+        headers: {
+          Authorization: `Bearer ${userClaims.__raw}`,
+          "x-hasura-role": "editor",
+        },
+      };
+
+      client.current = new ApolloClient(clientData);
+      setIsApolloLoaded(true);
     }
-  }, [isAuthenticated, client, getIdTokenClaims, setIsApolloLoaded]);
+  }, [isAuthenticated, client, userClaims, setIsApolloLoaded]);
 
   const renderLoading = () => (
     <div className="animated fadeIn pt-3 text-center">Loading...</div>

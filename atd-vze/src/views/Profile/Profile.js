@@ -1,13 +1,10 @@
-import React, { useContext } from "react";
-import { Auth0Provider } from "../../auth/authContextStore";
+import React from "react";
+import { useAuth0 } from "../../auth/authContext";
 
 const Profile = () => {
-  const {
-    user: [user],
-    getToken,
-  } = useContext(Auth0Provider);
+  const { user, userClaims } = useAuth0();
 
-  let token = getToken();
+  let token = userClaims.__raw;
 
   return !user ? null : (
     <>
