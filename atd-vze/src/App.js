@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useRef } from "react";
-import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
-import { Auth0Context } from "./auth/authContextStore";
+import { HashRouter, Route, Switch, Redirect } from "react-router-dom";
+import { useAuth0 } from "./auth/authContextStore";
 
 // Apollo GraphQL Client
 import ApolloClient from "apollo-boost";
@@ -21,12 +21,12 @@ const Page500 = React.lazy(() => import("./views/Pages/Page500"));
 
 const App = () => {
   const {
-    isLoading,
+    loading,
     user,
-    loginWithRedirect,
+    loginWithPopup,
     isAuthenticated,
     getIdTokenClaims,
-  } = useContext(Auth0Context);
+  } = useAuth0();
 
   // Apollo client settings.
   let client = useRef(new ApolloClient());
@@ -50,29 +50,30 @@ const App = () => {
     }
   }, [isAuthenticated, client, getIdTokenClaims]);
 
-  const loading = () => (
+  const renderLoading = () => (
     <div className="animated fadeIn pt-3 text-center">Loading...</div>
   );
 
   return (
     // TODO: Need to update the ref assignment here
+
     <ApolloProvider client={client.current}>
-      <BrowserRouter>
-        <React.Suspense fallback={loading()}>
+      <HashRouter>
+        <React.Suspense fallback={renderLoading()}>
           <Switch>
-            {/* <Route
+            <Route
               exact
               path="/callback"
               name="Callback Page"
               render={props => <Callback {...props} />}
-            /> */}
+            />
             <Route
               exact
               path="/login"
               name="Login Page"
               render={props => (
                 // If not authenticated, otherwise render.
-                <Login login={loginWithRedirect} {...props} />
+                <Login login={loginWithPopup} loading={loading} {...props} />
               )}
             />
             <Route
@@ -96,9 +97,10 @@ const App = () => {
             <Route
               path="/"
               name="Home"
+              exact
               // If authenticated, render, if not log in.
               render={props =>
-                !isLoading && user ? (
+                isAuthenticated && user ? (
                   <DefaultLayout {...props} />
                 ) : (
                   <Redirect to="/login" />
@@ -107,7 +109,7 @@ const App = () => {
             />
           </Switch>
         </React.Suspense>
-      </BrowserRouter>
+      </HashRouter>
     </ApolloProvider>
   );
 };

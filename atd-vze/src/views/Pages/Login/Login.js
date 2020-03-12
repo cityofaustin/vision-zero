@@ -13,7 +13,7 @@ import {
 
 class Login extends Component {
   render() {
-    const login = this.props.login;
+    const { login, loading } = this.props;
 
     return (
       <div className="app flex-row align-items-center">
@@ -34,7 +34,7 @@ class Login extends Component {
                             className="px-4"
                             onClick={login}
                           >
-                            Login
+                            {loading ? "Loading..." : "Login"}
                           </Button>
                         </Col>
                         <Col xs="6" className="text-right">

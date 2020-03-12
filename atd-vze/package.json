@@ -19,7 +19,6 @@
     "@coreui/react": "^2.5.1",
     "@turf/difference": "6.0.1",
     "apollo-boost": "^0.4.4",
-    "auth0-js": "^9.11.3",
     "axios": "^0.19.0",
     "bootstrap": "^4.3.1",
     "chart.js": "^2.8.0",

@@ -3,10 +3,10 @@ import { Redirect, useLocation } from "react-router-dom";
 import { Auth0Provider } from "../auth/authContextStore";
 
 const Callback = () => {
-  const location = useLocation();
-  const { handleAuthentication } = useContext(Auth0Provider);
+  // const location = useLocation();
+  // const { handleAuthentication } = useContext(Auth0Provider);
 
-  handleAuthentication();
+  // handleAuthentication();
 
   return <Redirect to="/" />;
 };
