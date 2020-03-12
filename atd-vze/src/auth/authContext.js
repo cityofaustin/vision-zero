@@ -28,6 +28,8 @@ export const Auth0Provider = ({
     const initAuth0 = async () => {
       const auth0FromHook = await createAuth0Client(initOptions);
       setAuth0(auth0FromHook);
+
+      // If callback URL, handle it
       if (
         window.location.search.includes("code=") &&
         window.location.search.includes("state=")
@@ -37,7 +39,6 @@ export const Auth0Provider = ({
       }
 
       const isAuthenticated = await auth0FromHook.isAuthenticated();
-
       setIsAuthenticated(isAuthenticated);
 
       if (isAuthenticated) {
@@ -46,6 +47,13 @@ export const Auth0Provider = ({
 
         const claims = await auth0FromHook.getIdTokenClaims();
         setUserClaims(claims);
+
+        localStorage.setItem("hasura_user_email", user["email"]);
+        localStorage.setItem(
+          "hasura_user_role",
+          user["https://hasura.io/jwt/claims"]["x-hasura-allowed-roles"]
+        );
+        localStorage.setItem("id_token", claims.__raw);
       }
 
       setLoading(false);
