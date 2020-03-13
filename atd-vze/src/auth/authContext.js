@@ -49,7 +49,6 @@ export const Auth0Provider = ({
         setUserClaims(claims);
 
         localStorage.setItem("hasura_user_email", user["email"]);
-        // TODO: Create helper to set highest level of access in roles to Hasura role
         localStorage.setItem(
           "hasura_user_role",
           user["https://hasura.io/jwt/claims"]["x-hasura-allowed-roles"]
@@ -76,6 +75,10 @@ export const Auth0Provider = ({
     auth0Client.logout({ returnTo: urlPath });
   };
 
+  const getRoles = () => {
+    return user["https://hasura.io/jwt/claims"]["x-hasura-allowed-roles"];
+  };
+
   // Context provider supplies value below at index.js level
   return (
     <Auth0Context.Provider
@@ -85,6 +88,7 @@ export const Auth0Provider = ({
         loading,
         handleRedirectCallback,
         userClaims,
+        getRoles,
         getIdTokenClaims: (...p) => auth0Client.getIdTokenClaims(...p),
         loginWithRedirect: (...p) => auth0Client.loginWithRedirect(...p),
         logout,

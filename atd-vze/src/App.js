@@ -41,6 +41,7 @@ const App = () => {
         uri: HASURA_ENDPOINT,
         headers: {
           Authorization: `Bearer ${userClaims.__raw}`,
+          // TODO: Create helper to set either editor or readonly here
           "x-hasura-role": "editor",
         },
       };

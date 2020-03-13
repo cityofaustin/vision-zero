@@ -43,7 +43,8 @@ const UserForm = ({ type, id = null }) => {
     { id: "itSupervisor", label: "IT Supervisor" },
     { id: "admin", label: "Admin" },
     { id: "editor", label: "Editor" },
-    { id: "readOnly", label: "Read-only" },
+    // Changing readonly to camelCase will break Hasura permissions
+    { id: "readonly", label: "Read-only" },
   ];
 
   // Fetch existing user data if editing

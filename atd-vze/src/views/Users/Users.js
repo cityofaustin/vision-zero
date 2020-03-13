@@ -14,6 +14,7 @@ import {
   Spinner,
 } from "reactstrap";
 import Can from "../../auth/Can";
+import { useAuth0 } from "../../auth/authContext";
 
 const UserRow = ({ user }) => {
   const userLink = `/users/${user.user_id}`;
@@ -50,6 +51,7 @@ const UserRow = ({ user }) => {
 };
 
 const Users = () => {
+  const { getRoles } = useAuth0();
   const token = window.localStorage.getItem("id_token");
 
   const [userList, setUserList] = useState(null);
@@ -69,7 +71,7 @@ const Users = () => {
 
   return (
     <Can
-      role={"admin"}
+      roles={getRoles()}
       perform="users:get"
       yes={() => (
         <div className="animated fadeIn">

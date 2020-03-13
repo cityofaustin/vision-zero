@@ -21,7 +21,8 @@ const adminStaticRules = [
 const itSupervisorStaticRules = ["user:makeAdmin"];
 
 const rules = {
-  readOnly: {
+  // Changing readonly to camelCase will break Hasura permissions
+  readonly: {
     static: readOnlyStaticRules,
     // dynamic: {
     //   "posts:edit": ({ userId, postOwnerId }) => {
