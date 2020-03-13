@@ -11,6 +11,11 @@ export default {
       class: "", // optional class names space delimited list for title item ex: "text-center"
     },
     {
+      name: "Users",
+      url: "/users",
+      icon: "icon-people",
+    },
+    {
       name: "Dashboard",
       url: "/dashboard",
       icon: "icon-speedometer",
