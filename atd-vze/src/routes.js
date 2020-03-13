@@ -45,6 +45,7 @@ const Profile = React.lazy(() => import("./views/Profile/Profile"));
 const Locations = React.lazy(() => import("./views/Locations/Locations"));
 const Location = React.lazy(() => import("./views/Locations/Location"));
 const Users = React.lazy(() => import("./views/Users/Users"));
+const User = React.lazy(() => import("./views/Users/User"));
 const AddUser = React.lazy(() => import("./views/Users/AddUser"));
 const EditUser = React.lazy(() => import("./views/Users/EditUser"));
 
@@ -160,6 +161,7 @@ const routes = [
     name: "Edit User",
     component: EditUser,
   },
+  { path: "/users/:id", exact: true, name: "User Details", component: User },
 ];
 
 export default routes;
