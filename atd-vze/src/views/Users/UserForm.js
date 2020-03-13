@@ -45,6 +45,7 @@ const UserForm = ({ type, id = null }) => {
     { id: "readOnly", label: "Read-only" },
   ];
 
+  // Fetch existing user data if editing
   useEffect(() => {
     if (type === "Edit") {
       const endpoint = `${process.env.REACT_APP_CR3_API_DOMAIN}/user/get_user/${id}`;
@@ -79,11 +80,11 @@ const UserForm = ({ type, id = null }) => {
     setUserFormData(updatedFormData);
   };
 
-  // Remove fields not needed for edited (so req does not fail)
+  // Remove fields not needed for edits (so req does not fail)
   const cleanFormDataForEdit = userFormData => {
     const editFields = ["name", "email", "app_metadata"];
 
-    // If resetting password, include password and required connection field
+    // If resetting password, must include password and required connection field
     userFormData.password !== "" &&
       editFields.push("password") &&
       editFields.push("connection");
@@ -134,7 +135,7 @@ const UserForm = ({ type, id = null }) => {
     </Alert>
   );
 
-  // Remove error message after rendered
+  // Remove error message after render
   useEffect(() => {
     let errorMessageTimer = setTimeout(() => {
       setIsSubmissionError(false);
