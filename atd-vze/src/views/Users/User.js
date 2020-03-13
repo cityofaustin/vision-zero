@@ -12,6 +12,7 @@ import {
   Table,
   Spinner,
 } from "reactstrap";
+import Can from "../../auth/Can";
 
 const User = () => {
   const token = window.localStorage.getItem("id_token");
@@ -114,45 +115,76 @@ const User = () => {
   return isUserDeleted ? (
     <Redirect to="/users" />
   ) : (
-    <div className="animated fadeIn">
-      <Row>
-        <Col xs="12" md="6">
-          <Card>
-            <CardHeader>
-              <strong>
-                <i className="icon-info pr-1"></i>User ID: {id}
-              </strong>
-            </CardHeader>
-            <CardBody>
-              <Row className="align-items-center mb-3">
-                <Col col="6" sm="4" md="2" xl className="mb-xl-0">
-                  <Link to={`/users/${id}/edit`} className="link">
-                    <Button color="primary">
-                      <i className="fa fa-edit"></i> Edit User
-                    </Button>
-                  </Link>{" "}
-                  <Button color="danger" onClick={handleDeleteUserClick}>
-                    <i className="fa fa-user-times"></i> Delete User
-                  </Button>{" "}
-                  {isUserBlocked && (
-                    <Button color="warning" onClick={handleUnblockUserClick}>
-                      <i className="fa fa-key"></i> Unblock User
-                    </Button>
+    <Can
+      role={"admin"}
+      perform="user:get"
+      yes={() => (
+        <div className="animated fadeIn">
+          <Row>
+            <Col xs="12" md="6">
+              <Card>
+                <CardHeader>
+                  <strong>
+                    <i className="icon-info pr-1"></i>User ID: {id}
+                  </strong>
+                </CardHeader>
+                <CardBody>
+                  <Row className="align-items-center mb-3">
+                    <Col col="6" sm="4" md="2" xl className="mb-xl-0">
+                      <Can
+                        role={"admin"}
+                        perform="user:edit"
+                        yes={() => (
+                          <Link to={`/users/${id}/edit`} className="link">
+                            <Button color="primary" className="mr-2">
+                              <i className="fa fa-edit"></i> Edit User
+                            </Button>
+                          </Link>
+                        )}
+                      />
+                      <Can
+                        role={"admin"}
+                        perform="user:delete"
+                        yes={() => (
+                          <Button
+                            color="danger"
+                            onClick={handleDeleteUserClick}
+                            className="mr-2"
+                          >
+                            <i className="fa fa-user-times"></i> Delete User
+                          </Button>
+                        )}
+                      />
+                      <Can
+                        role={"admin"}
+                        perform="user:delete"
+                        yes={() =>
+                          isUserBlocked && (
+                            <Button
+                              color="warning"
+                              onClick={handleUnblockUserClick}
+                            >
+                              <i className="fa fa-key"></i> Unblock User
+                            </Button>
+                          )
+                        }
+                      />
+                    </Col>
+                  </Row>
+                  {!!user ? (
+                    <Table responsive striped hover>
+                      <tbody>{formatUserData(user)}</tbody>
+                    </Table>
+                  ) : (
+                    <Spinner className="mt-2" color="primary" />
                   )}
-                </Col>
-              </Row>
-              {!!user ? (
-                <Table responsive striped hover>
-                  <tbody>{formatUserData(user)}</tbody>
-                </Table>
-              ) : (
-                <Spinner className="mt-2" color="primary" />
-              )}
-            </CardBody>
-          </Card>
-        </Col>
-      </Row>
-    </div>
+                </CardBody>
+              </Card>
+            </Col>
+          </Row>
+        </div>
+      )}
+    />
   );
 };
 

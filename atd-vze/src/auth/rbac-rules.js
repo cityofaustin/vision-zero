@@ -10,7 +10,7 @@ const editorStaticRules = ["crash: edit", "location: edit"];
 
 const adminStaticRules = [
   "users:get",
-  "user:view",
+  "user:get",
   "user:create",
   "user:edit",
   "user:editRole",
