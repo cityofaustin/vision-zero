@@ -93,7 +93,7 @@ def add_locations_to_cr3s_by_location(starting_index):
             print(mutation_result)
 
 
-add_locations_to_cr3s_by_location(0)
+add_locations_to_cr3s_by_location(67300)
 
 end_time = datetime.now()
 print('Duration: {}'.format(end_time - start_time))
