@@ -6,19 +6,19 @@ const readOnlyStaticRules = [
   "location:visit",
 ];
 
-const editorStaticRules = [];
+const editorStaticRules = ["crash: edit", "location: edit"];
 
 const adminStaticRules = [
   "users:get",
   "user:view",
+  "user:create",
   "user:edit",
+  "user:editRole",
   "user:delete",
   "user:unblock",
-  "home-page:visit",
-  "dashboard-page:visit",
 ];
 
-const itSupervisorStaticRules = [];
+const itSupervisorStaticRules = ["user:makeAdmin"];
 
 const rules = {
   readOnly: {
@@ -50,3 +50,4 @@ export default rules;
 
 // TODO: Restrict routes
 // TODO: Restrict edit logic in crash details view
+// TODO: Restrict giving admin role to itSupervisor
