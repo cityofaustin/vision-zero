@@ -17,6 +17,7 @@ const User = () => {
   const token = window.localStorage.getItem("id_token");
   const { id } = useParams();
 
+  // Define attributes to render in view and their labels and format for handling
   const userAttributes = {
     user_id: { label: "User ID", format: "string" },
     name: { label: "Name", format: "string" },
@@ -43,6 +44,7 @@ const User = () => {
         },
       })
       .then(res => {
+        // If user not found, redirect to users list
         if (res.data.statusCode === 404) {
           setIsUserDeleted(true);
         } else {
@@ -54,6 +56,7 @@ const User = () => {
       });
   }, [token, id]);
 
+  // Handle formats of data defined in userAttributes
   const formatUserData = user =>
     Object.entries(userAttributes).map(([key, value]) => {
       const label = userAttributes[key].label;
