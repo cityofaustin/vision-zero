@@ -1,3 +1,5 @@
+// Read-only permissions not enforced by Can component
+// since all authorized users should have accesss
 const readOnlyStaticRules = [
   "dashboard:visit",
   "crashes:visit",

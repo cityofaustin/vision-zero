@@ -1,6 +1,7 @@
 import rules from "./rbac-rules";
 
 const check = (rules, roles, action, data) => {
+  // Collect user roles and check if any are authorized to render child component
   const isAuthorizedArray = roles.reduce((acc, role) => {
     const permissions = rules[role];
     if (!permissions) {
