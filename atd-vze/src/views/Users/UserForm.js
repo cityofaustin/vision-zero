@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { useAuth0, isItSupervisor } from "../../auth/authContext";
+import { rules } from "../../auth/rbac-rules";
 import axios from "axios";
 import { Redirect } from "react-router-dom";
 import {
@@ -21,6 +23,9 @@ import {
 const UserForm = ({ type, id = null }) => {
   const token = window.localStorage.getItem("id_token");
 
+  const { getRoles } = useAuth0();
+  const roles = getRoles();
+
   const defaultFormData = {
     name: "",
     email: "",
@@ -39,14 +44,19 @@ const UserForm = ({ type, id = null }) => {
   const [submissionErrorMessage, setSubmissionErrorMessage] = useState("");
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
 
-  // TODO: Get from rbac-rules.js
-  const roles = [
-    { id: "itSupervisor", label: "IT Supervisor" },
-    { id: "admin", label: "Admin" },
-    { id: "editor", label: "Editor" },
-    // Changing readonly to camelCase will break Hasura permissions
-    { id: "readonly", label: "Read-only" },
-  ];
+  // Disable giving admin or IT Supervisor role unless user is IT Supervisor
+  const roleExceptions = ["admin", "itSupervisor"];
+
+  const radioButtonRoles = roles =>
+    Object.entries(rules).reduce((acc, [role, roleConfig]) => {
+      if (isItSupervisor(roles)) {
+        acc.push({ id: role, label: roleConfig.label });
+      } else {
+        !roleExceptions.includes(role) &&
+          acc.push({ id: role, label: roleConfig.label });
+      }
+      return acc;
+    }, []);
 
   // Fetch existing user data if editing
   useEffect(() => {
@@ -241,28 +251,30 @@ const UserForm = ({ type, id = null }) => {
                       <Label>Role</Label>
                     </Col>
                     <Col md="9">
-                      {roles.map(role => (
-                        <FormGroup key={role.id} check className="radio">
-                          <Input
-                            className="form-check-input"
-                            type="radio"
-                            id={role.id}
-                            name="radios"
-                            value={role.id}
-                            checked={
-                              userFormData.app_metadata.roles[0] === role.id
-                            }
-                            onChange={handleRoleRadioInputChange}
-                          />
-                          <Label
-                            check
-                            className="form-check-label"
-                            htmlFor={role.id}
-                          >
-                            {role.label}
-                          </Label>
-                        </FormGroup>
-                      ))}
+                      {radioButtonRoles(roles)
+                        .filter(role => !!role)
+                        .map(role => (
+                          <FormGroup key={role.id} check className="radio">
+                            <Input
+                              className="form-check-input"
+                              type="radio"
+                              id={role.id}
+                              name="radios"
+                              value={role.id}
+                              checked={
+                                userFormData.app_metadata.roles[0] === role.id
+                              }
+                              onChange={handleRoleRadioInputChange}
+                            />
+                            <Label
+                              check
+                              className="form-check-label"
+                              htmlFor={role.id}
+                            >
+                              {role.label}
+                            </Label>
+                          </FormGroup>
+                        ))}
                     </Col>
                   </FormGroup>
                 </Form>
