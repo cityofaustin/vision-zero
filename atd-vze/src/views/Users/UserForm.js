@@ -39,6 +39,7 @@ const UserForm = ({ type, id = null }) => {
   const [submissionErrorMessage, setSubmissionErrorMessage] = useState("");
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
 
+  // TODO: Get from rbac-rules.js
   const roles = [
     { id: "itSupervisor", label: "IT Supervisor" },
     { id: "admin", label: "Admin" },

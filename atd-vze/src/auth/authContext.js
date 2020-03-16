@@ -12,6 +12,14 @@ export const urlPath =
     ? window.location.origin
     : `${window.location.origin}/editor`;
 
+// Roles helpers for rules-based access
+export const isReadOnly = rolesArray =>
+  rolesArray.includes("readonly") && rolesArray.length === 1;
+
+export const isAdmin = rolesArray => rolesArray.includes("admin");
+
+export const isItSupervisor = rolesArray => rolesArray.includes("itSupervisor");
+
 export const Auth0Provider = ({
   children,
   onRedirectCallback,

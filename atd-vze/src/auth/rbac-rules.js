@@ -51,6 +51,4 @@ const rules = {
 
 export default rules;
 
-// TODO: Restrict routes
-// TODO: Restrict edit logic in crash details view
 // TODO: Restrict giving admin role to itSupervisor

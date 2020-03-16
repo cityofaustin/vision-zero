@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useQuery } from "@apollo/react-hooks";
-import { useAuth0 } from "../auth/authContext";
+import { useAuth0, isReadOnly } from "../auth/authContext";
 import ConfirmModal from "./ConfirmModal";
 import get from "lodash.get";
 import { formatCostToDollars, formatDateTimeString } from "../helpers/format";
@@ -30,7 +30,7 @@ const DataTable = ({
 }) => {
   // Disable edit features if only role is "readonly"
   const { getRoles } = useAuth0();
-  const isReadOnly = getRoles().includes("readonly") && getRoles().length === 1;
+  const roles = getRoles();
 
   const [showModal, setShowModal] = useState(false);
 
@@ -73,7 +73,7 @@ const DataTable = ({
                       const fieldLabel = fieldConfigObject.label;
 
                       // Disable editing if user is only "readonly"
-                      if (fieldConfigObject.editable && isReadOnly) {
+                      if (fieldConfigObject.editable && isReadOnly(roles)) {
                         fieldConfigObject.editable = false;
                       }
 
