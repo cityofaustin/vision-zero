@@ -87,6 +87,13 @@ export const Auth0Provider = ({
     return user["https://hasura.io/jwt/claims"]["x-hasura-allowed-roles"];
   };
 
+  // Get Hasura role needed for Hasura role permissions
+  const getHasuraRole = () => {
+    const role = user["https://hasura.io/jwt/claims"]["x-hasura-allowed-roles"];
+    // If user has more than one role, they are itSupervisor and need admin role for Hasura to return data
+    return role.length > 1 ? "admin" : role[0];
+  };
+
   // Context provider supplies value below at index.js level
   return (
     <Auth0Context.Provider
@@ -97,6 +104,7 @@ export const Auth0Provider = ({
         handleRedirectCallback,
         userClaims,
         getRoles,
+        getHasuraRole,
         getIdTokenClaims: (...p) => auth0Client.getIdTokenClaims(...p),
         loginWithRedirect: (...p) => auth0Client.loginWithRedirect(...p),
         logout,

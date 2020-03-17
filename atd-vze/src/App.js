@@ -24,6 +24,7 @@ const App = () => {
     loginWithRedirect,
     isAuthenticated,
     userClaims,
+    getHasuraRole,
   } = useAuth0();
 
   // Setup initial Apollo instance
@@ -41,8 +42,7 @@ const App = () => {
         uri: HASURA_ENDPOINT,
         headers: {
           Authorization: `Bearer ${userClaims.__raw}`,
-          // TODO: Create helper to set either admin, editor, or readonly here
-          "x-hasura-role": "readonly",
+          "x-hasura-role": getHasuraRole(),
         },
       };
 

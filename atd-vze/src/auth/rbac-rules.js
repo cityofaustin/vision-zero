@@ -27,12 +27,6 @@ export const rules = {
   readonly: {
     label: "Read-only",
     static: readOnlyStaticRules,
-    // dynamic: {
-    //   "posts:edit": ({ userId, postOwnerId }) => {
-    //     if (!userId || !postOwnerId) return false;
-    //     return userId === postOwnerId;
-    //   },
-    // },
   },
   editor: {
     label: "Editor",
