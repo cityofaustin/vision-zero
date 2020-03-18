@@ -95,12 +95,11 @@ const UserForm = ({ type, id = null }) => {
 
   // Remove fields not needed for edits (so req does not fail)
   const cleanFormDataForEdit = userFormData => {
-    const editFields = ["name", "email", "app_metadata"];
+    let editFields = ["name", "email", "app_metadata"];
 
-    // If resetting password, must include password and required connection field
-    userFormData.password !== "" &&
-      editFields.push("password") &&
-      editFields.push("connection");
+    // If resetting password, must include only password and required connection field
+    editFields =
+      userFormData.password !== "" ? ["password", "connection"] : editFields;
 
     const cleanedFormData = editFields.reduce((acc, field) => {
       return { ...acc, [field]: userFormData[field] };
@@ -149,7 +148,7 @@ const UserForm = ({ type, id = null }) => {
 
   const renderErrorMessage = () => (
     <Alert className="mt-3" color="danger">
-      {submissionErrorMessage} Please try again.
+      {submissionErrorMessage}. Please try again.
     </Alert>
   );
 
@@ -241,7 +240,7 @@ const UserForm = ({ type, id = null }) => {
                       <FormText className="help-block">
                         {type === "Add"
                           ? "Please enter a password"
-                          : "Only enter a password if you need to reset it"}
+                          : "No other fields will update if resetting password."}
                       </FormText>
                     </Col>
                   </FormGroup>

@@ -11,6 +11,7 @@ const readOnlyStaticRules = [
 const editorStaticRules = ["crash: edit", "location: edit"];
 
 const adminStaticRules = [
+  "users:visit",
   "users:get",
   "user:get",
   "user:create",

@@ -17,7 +17,7 @@ import {
   AppSidebarNav2 as AppSidebarNav,
 } from "@coreui/react";
 // sidebar nav config
-import navigation from "../../_nav";
+import { navigation } from "../../_nav";
 // routes config
 import routes from "../../routes";
 
@@ -50,7 +50,11 @@ const DefaultLayout = props => {
           <AppSidebarHeader />
           <AppSidebarForm />
           <Suspense>
-            <AppSidebarNav navConfig={navigation} {...props} router={router} />
+            <AppSidebarNav
+              navConfig={navigation(roles)}
+              {...props}
+              router={router}
+            />
           </Suspense>
           <AppSidebarFooter />
           <AppSidebarMinimizer />

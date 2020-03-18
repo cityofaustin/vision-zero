@@ -1,6 +1,7 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
 import { useAuth0 } from "../../auth/authContext";
+import Can from "../../auth/Can";
 import {
   UncontrolledDropdown,
   DropdownItem,
@@ -21,7 +22,7 @@ const propTypes = {
 const defaultProps = {};
 
 const DefaultHeader = props => {
-  const { logout } = useAuth0();
+  const { logout, getRoles } = useAuth0();
   // eslint-disable-next-line
   const { children, ...attributes } = props;
 
@@ -44,11 +45,17 @@ const DefaultHeader = props => {
             Dashboard
           </NavLink>
         </NavItem>
-        <NavItem className="px-3">
-          <NavLink to="/users" className="nav-link">
-            Users
-          </NavLink>
-        </NavItem>
+        <Can
+          roles={getRoles()}
+          perform="users:visit"
+          yes={() => (
+            <NavItem className="px-3">
+              <NavLink to="/users" className="nav-link">
+                Users
+              </NavLink>
+            </NavItem>
+          )}
+        />
       </Nav>
       <Nav className="ml-auto" navbar>
         <UncontrolledDropdown nav direction="down">
