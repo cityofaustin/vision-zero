@@ -19,19 +19,6 @@ const check = (rules, roles, action, data) => {
   }, []);
 
   return isAuthorizedArray.includes(true);
-
-  //   const dynamicPermissions = permissions.dynamic;
-
-  //   if (dynamicPermissions) {
-  //     const permissionCondition = dynamicPermissions[action];
-  //     if (!permissionCondition) {
-  //       // dynamic rule not provided for action
-  //       return false;
-  //     }
-
-  //     return permissionCondition(data);
-  //   }
-  //   return false;
 };
 
 const Can = props =>
