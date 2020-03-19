@@ -19,7 +19,8 @@ const drawerWidth = drawer.width;
 const useStyles = makeStyles(theme => {
   return {
     root: {
-      display: "flex"
+      display: "flex",
+      zIndex: 1
     },
     drawer: {
       // Feed drawer component a media query to align with Bootstrap breakpoints
