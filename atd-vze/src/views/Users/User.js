@@ -19,6 +19,7 @@ const User = () => {
   const token = window.localStorage.getItem("id_token");
   const { id } = useParams();
   const { getRoles } = useAuth0();
+  const roles = getRoles();
 
   // Define attributes to render in view and their labels and format for handling
   const userAttributes = {
@@ -118,7 +119,7 @@ const User = () => {
     <Redirect to="/users" />
   ) : (
     <Can
-      roles={getRoles()}
+      roles={roles}
       perform="user:get"
       yes={() => (
         <div className="animated fadeIn">
@@ -134,7 +135,7 @@ const User = () => {
                   <Row className="align-items-center mb-3">
                     <Col col="6" sm="4" md="2" xl className="mb-xl-0">
                       <Can
-                        roles={getRoles()}
+                        roles={roles}
                         perform="user:edit"
                         yes={() => (
                           <Link to={`/users/${id}/edit`} className="link">
@@ -145,7 +146,7 @@ const User = () => {
                         )}
                       />
                       <Can
-                        roles={getRoles()}
+                        roles={roles}
                         perform="user:delete"
                         yes={() => (
                           <Button
@@ -158,7 +159,7 @@ const User = () => {
                         )}
                       />
                       <Can
-                        roles={getRoles()}
+                        roles={roles}
                         perform="user:delete"
                         yes={() =>
                           isUserBlocked && (

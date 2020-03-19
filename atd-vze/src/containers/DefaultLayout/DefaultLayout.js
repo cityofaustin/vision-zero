@@ -51,6 +51,7 @@ const DefaultLayout = props => {
           <AppSidebarForm />
           <Suspense>
             <AppSidebarNav
+              // Render nav links based on roles
               navConfig={navigation(roles)}
               {...props}
               router={router}
@@ -64,6 +65,7 @@ const DefaultLayout = props => {
           <Container fluid>
             <Suspense fallback={loading()}>
               <Switch>
+                {/* Render routes based on roles */}
                 {routes(roles).map((route, idx) => {
                   return route.component ? (
                     <Route

@@ -1,5 +1,6 @@
 import { isAdmin, isItSupervisor } from "./auth/authContext";
 
+// Accept roles arg to restrict nav links by role
 export const navigation = roles => {
   // Default sidebar nav items
   const nav = {

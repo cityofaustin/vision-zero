@@ -49,7 +49,7 @@ const App = () => {
       client.current = new ApolloClient(clientData);
       setIsApolloLoaded(true);
     }
-  }, [isAuthenticated, client, userClaims, setIsApolloLoaded]);
+  }, [isAuthenticated, client, userClaims, setIsApolloLoaded, getHasuraRole]);
 
   const renderLoading = () => (
     <div className="animated fadeIn pt-3 text-center">Loading...</div>
