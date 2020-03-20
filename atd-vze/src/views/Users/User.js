@@ -124,7 +124,7 @@ const User = () => {
       yes={() => (
         <div className="animated fadeIn">
           <Row>
-            <Col xs="12" md="6">
+            <Col xs="12" lg="8" xl="6">
               <Card>
                 <CardHeader>
                   <strong>
@@ -133,7 +133,7 @@ const User = () => {
                 </CardHeader>
                 <CardBody>
                   <Row className="align-items-center mb-3">
-                    <Col col="6" sm="4" md="2" xl className="mb-xl-0">
+                    <Col col="12" xl className="mb-xl-0">
                       <Can
                         roles={roles}
                         perform="user:edit"
