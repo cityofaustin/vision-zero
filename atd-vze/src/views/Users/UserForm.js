@@ -98,8 +98,9 @@ const UserForm = ({ type, id = null }) => {
     let editFields = ["name", "email", "app_metadata"];
 
     // If resetting password, must include only password and required connection field
-    editFields =
-      userFormData.password !== "" ? ["password", "connection"] : editFields;
+    editFields = !!userFormData.password
+      ? ["password", "connection"]
+      : editFields;
 
     const cleanedFormData = editFields.reduce((acc, field) => {
       return { ...acc, [field]: userFormData[field] };
