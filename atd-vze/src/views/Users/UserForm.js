@@ -110,36 +110,30 @@ const UserForm = ({ type, id = null }) => {
   };
 
   const handleFormSubmit = () => {
+    let submitForm;
+    const headers = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
     if (type === "Edit") {
       const endpoint = `${process.env.REACT_APP_CR3_API_DOMAIN}/user/update_user/${id}`;
       const updatedFormData = cleanFormDataForEdit(userFormData);
-      axios
-        .put(endpoint, updatedFormData, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-        .then(res => {
-          if (res.data.error) {
-            setIsSubmissionError(true);
-            setSubmissionErrorMessage(res.data.message);
-          } else {
-            setIsFormSubmitted(true);
-          }
-        });
+      submitForm = axios.put(endpoint, updatedFormData, headers);
     } else if (type === "Add") {
       const endpoint = `${process.env.REACT_APP_CR3_API_DOMAIN}/user/create_user`;
-      axios
-        .post(endpoint, userFormData, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-        .then(res => {
-          if (res.data.error) {
-            setIsSubmissionError(true);
-            setSubmissionErrorMessage(res.data.message);
-          } else {
-            setIsFormSubmitted(true);
-          }
-        });
+      submitForm = axios.post(endpoint, userFormData, headers);
     }
+
+    submitForm.then(res => {
+      if (res.data.error) {
+        setIsSubmissionError(true);
+        setSubmissionErrorMessage(res.data.message);
+      } else {
+        setIsFormSubmitted(true);
+      }
+    });
   };
 
   const resetForm = () => {
