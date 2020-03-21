@@ -135,8 +135,8 @@ class App extends Component {
       if (authResult && authResult.accessToken && authResult.idToken) {
         this.setSession(authResult);
         const prefix = window.location.pathname.startsWith("/editor")
-            ? "/editor"
-            : "";
+          ? "/editor"
+          : "";
         window.location = prefix + "/#/dashboard";
       } else if (err) {
         alert(`Error: ${err.error}. Check the console for further details.`);

@@ -308,7 +308,10 @@ const GridTable = ({
    **/
 
   // Allow for Date Range to be configured from the queryConf/gqlAbstract query props
-  const hasDateRange = typeof query.config.showDateRange !== "undefined" ? query.config.showDateRange : true; 
+  const hasDateRange =
+    typeof query.config.showDateRange !== "undefined"
+      ? query.config.showDateRange
+      : true;
   const dateField = query.table === "atd_apd_blueform" ? "date" : "crash_date";
   // Handle Date Range (only if available)
   if (
@@ -342,7 +345,9 @@ const GridTable = ({
       query.deleteWhere(column);
     });
 
-    const useEqSearch = searchParameters["column"] === "crash_id" || searchParameters["column"] === "form_id"
+    const useEqSearch =
+      searchParameters["column"] === "crash_id" ||
+      searchParameters["column"] === "form_id";
 
     if (useEqSearch) {
       // Search Integer for exact value

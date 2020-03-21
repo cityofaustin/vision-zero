@@ -55,6 +55,7 @@
     "serialize-javascript": ">=2.1.1"
   },
   "devDependencies": {
+    "babel-eslint": "^10.1.0",
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.0.0",
     "eslint-plugin-prettier": "^3.1.0",
@@ -68,10 +69,10 @@
     "build:production": "env-cmd -f .env.production npm run build",
     "build:staging": "env-cmd -f .env.staging npm run build",
     "fix": "run-s fix:*",
-    "fix:format": "prettier --write \"pages/**/*.js\" \"components/**/*.js\"",
-    "fix:javascript": "eslint --ext js,html --fix pages components csp.js server.js",
+    "fix:format": "prettier --write \"src/**/*.js\" ",
+    "fix:javascript": "eslint --ext js,html --fix src",
     "lint": "run-s lint:*",
-    "lint:javascript": "eslint --ext js,html pages components csp.js server.js",
+    "lint:javascript": "eslint --ext js,html src",
     "test": "react-scripts test",
     "test:cov": "npm test -- --coverage --watchAll=false",
     "test:debug": "react-scripts --inspect-brk test --runInBand",
