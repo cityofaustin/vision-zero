@@ -57,7 +57,8 @@ const calendarTheme = {
 
 const SideMapControlDateRange = () => {
   const {
-    mapDateRange: [date, setDate]
+    mapDateRange: [date, setDate],
+    sidebarToggle: [isOpen, setIsOpen]
   } = React.useContext(StoreContext);
 
   const mount = document.getElementById("root");
@@ -87,9 +88,20 @@ const SideMapControlDateRange = () => {
     }
   };
 
+  const handleCalendarPortalContainerClick = event => {
+    // Close out the modal if the background container is clicked
+    if (event.target.id !== "calendar-container") return;
+    setIsCalendarOpen(false);
+  };
+
+  const handleDataRangeButtonClick = () => {
+    setIsCalendarOpen(!isCalendarOpen);
+    setIsOpen(false);
+  };
+
   const calendarPortal = createPortal(
     <StyledDateRangePicker>
-      <div id="calendar-container">
+      <div id="calendar-container" onClick={handleCalendarPortalContainerClick}>
         <div id="calendar">
           <InfiniteCalendar
             Component={CalendarWithRange}
@@ -117,7 +129,7 @@ const SideMapControlDateRange = () => {
   return (
     <>
       <Button
-        onClick={() => setIsCalendarOpen(!isCalendarOpen)}
+        onClick={handleDataRangeButtonClick}
         // Add some margin below button when calendar is open
         className={`w-100`}
         color="info"
