@@ -17,6 +17,11 @@ jobs:
           command: |
             source .circleci/docker-helper.sh
             build_containers
+      - run:
+          name: "Build VZE API"
+          command: |
+            source .circleci/aws-helper.sh
+            update_cr3_api
 
 workflows:
   version: 2.1
