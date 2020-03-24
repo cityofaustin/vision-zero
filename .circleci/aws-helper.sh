@@ -24,7 +24,7 @@ function update_cr3_api {
     fi;
 
     cd "atd-cr3-api";
-    sudo pip install -r requirements.txt;
+    pipenv install;
     echo $ZAPPA_SETTINGS > zappa_settings.json;
-    zappa update $WORKING_STAGE;
+    pipenv run zappa update $WORKING_STAGE;
 }
