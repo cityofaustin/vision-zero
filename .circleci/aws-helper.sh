@@ -26,7 +26,12 @@ function deploy_aws_lambda {
         exit 1;
     fi;
 
-    #
+    if [[ "${AWS_ACCESS_KEY_ID}" == "" ]] || [[ "${AWS_SECRET_ACCESS_KEY}" = "" ]]; then
+        echo "The AWS keys are not set"
+        exit 1;
+    fi;
+
+    # Check ATD CR3 API
     cd "atd-cr3-api";
 
     python3 -m venv venv;
