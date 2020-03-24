@@ -24,7 +24,15 @@ function update_cr3_api {
     fi;
 
     cd "atd-cr3-api";
-    pipenv install;
+
+    # Create the virtual environment & Activate
+    python3 -m venv venv
+    . venv/bin/activate
+
+    # Install requirements
+    pip install -r requirements.txt
+
+    # Run zappa
     echo $ZAPPA_SETTINGS > zappa_settings.json;
-    pipenv run zappa update $WORKING_STAGE;
+    zappa update $WORKING_STAGE;
 }
