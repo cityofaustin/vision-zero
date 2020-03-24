@@ -1,37 +1,53 @@
-export default {
-  items: [
-    {
-      title: true,
-      name: "Data",
-      wrapper: {
-        // optional wrapper object
-        element: "", // required valid HTML5 element tag
-        attributes: {}, // optional valid JS object with JS API naming ex: { className: "my-class", style: { fontFamily: "Verdana" }, id: "my-id"}
+import { isAdmin, isItSupervisor } from "./auth/authContext";
+
+// Accept roles arg to restrict nav links by role
+export const navigation = roles => {
+  // Default sidebar nav items
+  const nav = {
+    items: [
+      {
+        title: true,
+        name: "Data",
+        wrapper: {
+          // optional wrapper object
+          element: "", // required valid HTML5 element tag
+          attributes: {}, // optional valid JS object with JS API naming ex: { className: "my-class", style: { fontFamily: "Verdana" }, id: "my-id"}
+        },
+        class: "", // optional class names space delimited list for title item ex: "text-center"
       },
-      class: "", // optional class names space delimited list for title item ex: "text-center"
-    },
+      {
+        name: "Dashboard",
+        url: "/dashboard",
+        icon: "icon-speedometer",
+      },
+      {
+        name: "Crashes",
+        url: "/crashes",
+        icon: "icon-shield",
+      },
+      {
+        name: "Locations",
+        url: "/locations",
+        icon: "icon-map",
+      },
+      {
+        divider: true,
+      },
+    ],
+  };
+
+  // Admin nav items
+  const adminNavItems = [
     {
       name: "Users",
       url: "/users",
       icon: "icon-people",
     },
-    {
-      name: "Dashboard",
-      url: "/dashboard",
-      icon: "icon-speedometer",
-    },
-    {
-      name: "Crashes",
-      url: "/crashes",
-      icon: "icon-shield",
-    },
-    {
-      name: "Locations",
-      url: "/locations",
-      icon: "icon-map",
-    },
-    {
-      divider: true,
-    },
-  ],
+  ];
+
+  if (isAdmin(roles) || isItSupervisor(roles)) {
+    adminNavItems.forEach(item => nav.items.splice(1, 0, item));
+  }
+
+  return nav;
 };
