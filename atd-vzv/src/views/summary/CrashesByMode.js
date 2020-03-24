@@ -10,33 +10,48 @@ import {
   yearsArray,
   summaryCurrentYearEndDate
 } from "../../constants/time";
-import { personEndpointUrl } from "./queries/socrataQueries";
+import { crashEndpointUrl } from "./queries/socrataQueries";
 
 const CrashesByMode = () => {
   const modes = [
     {
       label: "Motorist",
-      flags: ["motor_vehicle_fl"],
+      fields: {
+        fatal: `motor_vehicle_death_count`,
+        injury: `motor_vehicle_serious_injury_count`
+      },
       color: colors.chartRed
     },
     {
       label: "Pedestrian",
-      flags: ["pedestrian_fl"],
+      fields: {
+        fatal: `pedestrian_death_count`,
+        injury: `pedestrian_serious_injury_count`
+      },
       color: colors.chartOrange
     },
     {
       label: "Motorcyclist",
-      flags: ["motorcycle_fl"],
+      fields: {
+        fatal: `motorcycle_death_count`,
+        injury: `motorcycle_serious_injury_count`
+      },
       color: colors.chartRedOrange
     },
     {
       label: "Bicyclist",
-      flags: ["bicycle_fl"],
+      fields: {
+        fatal: `bicycle_death_count`,
+        injury: `bicycle_serious_injury_count`
+      },
       color: colors.chartBlue
     },
     {
       label: "Other",
-      flags: ["other_fl"],
+      fields: {
+        fatal: `other_death_count`,
+        injury: `other_serious_injury_count`
+      },
       color: colors.chartLightBlue
     }
   ];
@@ -59,7 +74,7 @@ const CrashesByMode = () => {
               year.toString() === dataEndDate.format("YYYY")
                 ? `${summaryCurrentYearEndDate}T23:59:59`
                 : `${year}-12-31T23:59:59`;
-            let url = `${personEndpointUrl}?$where=${crashType.queryStringPerson} AND crash_date between '${year}-01-01T00:00:00' and '${endDate}'`;
+            let url = `${crashEndpointUrl}?$where=${crashType.queryStringCrash} AND crash_date between '${year}-01-01T00:00:00' and '${endDate}'`;
             await axios.get(url).then(res => {
               newData = { ...newData, ...{ [year]: res.data } };
             });
@@ -74,11 +89,20 @@ const CrashesByMode = () => {
 
   const createChartLabels = () => yearsArray().map(year => `${year}`);
 
-  // Tabulate fatalities by mode flags in data
-  const getModeData = flags =>
+  // Tabulate fatalities/injuries by mode fields in data
+  const getModeData = fields =>
     yearsArray().map(year => {
       return chartData[year].reduce((accumulator, record) => {
-        flags.forEach(flag => record[`${flag}`] === "Y" && accumulator++);
+        const isFatalQuery =
+          crashType.name === "fatalities" ||
+          crashType.name === "fatalitiesAndSeriousInjuries";
+        const isInjuryQuery =
+          crashType.name === "seriousInjuries" ||
+          crashType.name === "fatalitiesAndSeriousInjuries";
+
+        accumulator += isFatalQuery && parseInt(record[fields.fatal]);
+        accumulator += isInjuryQuery && parseInt(record[fields.injury]);
+
         return accumulator;
       }, 0);
     });
@@ -101,7 +125,7 @@ const CrashesByMode = () => {
       hoverBackgroundColor: mode.color,
       hoverBorderColor: mode.color,
       label: mode.label,
-      data: getModeData(mode.flags)
+      data: getModeData(mode.fields)
     }));
     // Determine order of modes in each year stack
     return sortModeData(modeData);
@@ -116,9 +140,7 @@ const CrashesByMode = () => {
     <Container>
       <Row className="pb-3">
         <Col>
-        <h3 className="text-center">
-            {crashType.textString} by Mode
-          </h3>
+          <h3 className="text-center">{crashType.textString} by Mode</h3>
         </Col>
       </Row>
       <Row>
