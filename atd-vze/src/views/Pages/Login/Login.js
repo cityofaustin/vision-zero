@@ -9,10 +9,13 @@ import {
   Form,
   InputGroup,
   Row,
+  Spinner,
 } from "reactstrap";
 
 class Login extends Component {
   render() {
+    const { login, loading } = this.props;
+
     return (
       <div className="app flex-row align-items-center">
         <Container>
@@ -27,20 +30,20 @@ class Login extends Component {
                       <InputGroup className="mb-3" />
                       <Row>
                         <Col xs="6">
-                          <Button
-                            color="primary"
-                            className="px-4"
-                            onClick={this.props.auth.login}
-                          >
-                            Login
-                          </Button>
+                          {loading ? (
+                            <Spinner className="mt-2" color="primary" />
+                          ) : (
+                            <Button
+                              color="primary"
+                              className="px-4"
+                              onClick={login}
+                            >
+                              Login
+                            </Button>
+                          )}
                         </Col>
                         <Col xs="6" className="text-right">
-                          <Button
-                            color="link"
-                            className="px-0"
-                            onClick={this.props.auth.login}
-                          >
+                          <Button color="link" className="px-0" onClick={login}>
                             Forgot password?
                           </Button>
                         </Col>
