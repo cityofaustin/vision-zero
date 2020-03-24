@@ -13,7 +13,7 @@ import * as serviceWorker from "./serviceWorker";
 
 // Redirect after auth
 export const redirectUrl =
-  process.env.NODE_ENV === "development" ? "/" : "/editor";
+  process.env.NODE_ENV === "development" ? "/" : "/editor/";
 
 const onRedirectCallback = appState => {
   history.push(
