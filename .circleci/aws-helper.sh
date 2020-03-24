@@ -9,6 +9,9 @@ case "${CIRCLE_BRANCH}" in
   "master")
     export WORKING_STAGE="staging";
     ;;
+  "sg-fix-circleci")
+    export WORKING_STAGE="staging";
+    ;;
   *)
     unset WORKING_STAGE;
     echo "We can only deploy master or production.";
@@ -23,7 +26,7 @@ function deploy_aws_lambda {
         exit 1;
     fi;
 
-    # 
+    #
     cd "atd-cr3-api";
 
     python3 -m venv venv;
