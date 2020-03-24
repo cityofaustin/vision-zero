@@ -13,6 +13,8 @@ import {
   Button,
   Spinner,
 } from "reactstrap";
+import Can from "../../auth/Can";
+import { useAuth0 } from "../../auth/authContext";
 
 const UserRow = ({ user }) => {
   const userLink = `/users/${user.user_id}`;
@@ -49,6 +51,7 @@ const UserRow = ({ user }) => {
 };
 
 const Users = () => {
+  const { getRoles } = useAuth0();
   const token = window.localStorage.getItem("id_token");
 
   const [userList, setUserList] = useState(null);
@@ -67,48 +70,54 @@ const Users = () => {
   }, [token]);
 
   return (
-    <div className="animated fadeIn">
-      <Row>
-        <Col>
-          <Card>
-            <CardHeader>
-              <i className="fa fa-align-justify"></i> Users{" "}
-            </CardHeader>
-            <CardBody>
-              <Row className="align-items-center mb-3">
-                <Col col="6" sm="4" md="2" xl className="mb-xl-0">
-                  <Link to="/users/add" className="link">
-                    <Button color="primary">
-                      <i className="fa fa-user-plus"></i> Add User
-                    </Button>
-                  </Link>
-                </Col>
-              </Row>
-              <Table responsive striped hover>
-                <thead>
-                  <tr>
-                    <th scope="col">Name</th>
-                    <th scope="col">Email</th>
-                    <th scope="col">Created</th>
-                    <th scope="col">Role</th>
-                    <th scope="col">Status</th>
-                  </tr>
-                </thead>
-                <tbody>
+    <Can
+      roles={getRoles()}
+      perform="users:get"
+      yes={() => (
+        <div className="animated fadeIn">
+          <Row>
+            <Col>
+              <Card>
+                <CardHeader>
+                  <i className="fa fa-align-justify"></i> Users{" "}
+                </CardHeader>
+                <CardBody>
+                  <Row className="align-items-center mb-3">
+                    <Col col="6" sm="4" md="2" xl className="mb-xl-0">
+                      <Link to="/users/add" className="link">
+                        <Button color="primary">
+                          <i className="fa fa-user-plus"></i> Add User
+                        </Button>
+                      </Link>
+                    </Col>
+                  </Row>
                   {!!userList ? (
-                    userList.map((user, index) => (
-                      <UserRow key={index} user={user} />
-                    ))
+                    <Table responsive striped hover>
+                      <thead>
+                        <tr>
+                          <th scope="col">Name</th>
+                          <th scope="col">Email</th>
+                          <th scope="col">Created</th>
+                          <th scope="col">Role</th>
+                          <th scope="col">Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {userList.map((user, index) => (
+                          <UserRow key={index} user={user} />
+                        ))}
+                      </tbody>
+                    </Table>
                   ) : (
                     <Spinner className="mt-2" color="primary" />
                   )}
-                </tbody>
-              </Table>
-            </CardBody>
-          </Card>
-        </Col>
-      </Row>
-    </div>
+                </CardBody>
+              </Card>
+            </Col>
+          </Row>
+        </div>
+      )}
+    />
   );
 };
 

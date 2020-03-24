@@ -1,4 +1,5 @@
 import React from "react";
+import { isAdmin, isItSupervisor } from "./auth/authContext";
 
 const Breadcrumbs = React.lazy(() => import("./views/Base/Breadcrumbs"));
 const Cards = React.lazy(() => import("./views/Base/Cards"));
@@ -50,7 +51,8 @@ const AddUser = React.lazy(() => import("./views/Users/AddUser"));
 const EditUser = React.lazy(() => import("./views/Users/EditUser"));
 
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
-const routes = [
+// Accept roles arg for role-based access to routes
+const routes = roles => [
   { path: "/", exact: true, name: "Home" },
   { path: "/dev/dashboard", name: "Dashboard", component: Dashboard },
   { path: "/dev/theme", exact: true, name: "Theme", component: Colors },
@@ -153,15 +155,30 @@ const routes = [
     name: "Demo UI Components",
     component: Dev,
   },
-  { path: "/users", exact: true, name: "Users", component: Users },
-  { path: "/users/add", exact: true, name: "Add User", component: AddUser },
-  {
-    path: "/users/edit/:id",
+  (isAdmin(roles) || isItSupervisor(roles)) && {
+    path: "/users",
+    exact: true,
+    name: "Users",
+    component: Users,
+  },
+  (isAdmin(roles) || isItSupervisor(roles)) && {
+    path: "/users/add",
+    exact: true,
+    name: "Add User",
+    component: AddUser,
+  },
+  (isAdmin(roles) || isItSupervisor(roles)) && {
+    path: "/users/:id/edit",
     exact: true,
     name: "Edit User",
     component: EditUser,
   },
-  { path: "/users/:id", exact: true, name: "User Details", component: User },
+  (isAdmin(roles) || isItSupervisor(roles)) && {
+    path: "/users/:id",
+    exact: true,
+    name: "User Details",
+    component: User,
+  },
 ];
 
 export default routes;
