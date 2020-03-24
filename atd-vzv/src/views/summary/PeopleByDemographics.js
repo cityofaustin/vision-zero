@@ -113,7 +113,7 @@ const PeopleByDemographics = () => {
   const createChartLabels = () => yearsArray().map(year => `${year}`);
 
   // Tabulate fatalities by demographics in data
-  const getData = (categoryValue, getFullData) =>
+  const getData = (categoryValue, isWholeNumber) =>
     yearsArray().map(year => {
       let categoryTotal = chartData[year].reduce((accumulator, record) => {
         switch (activeTab) {
@@ -156,18 +156,15 @@ const PeopleByDemographics = () => {
       }, 0);
       const overallTotal = chartData[year].length;
       const percentage = (categoryTotal / overallTotal) * 100;
-      const fullData = {
-        percentage: percentage,
+      const wholeNumbers = {
         categoryTotal: categoryTotal,
         overallTotal: overallTotal
-      }
-      // If getFullData is true, return the fullData Object for display in tooltips,
+      };
+      // If isWholeNumber is true, return the wholeNumbers Object for display in tooltips,
       // else return percentage for chartJS to render the chart
-      const data = getFullData ?
-      fullData
-      : percentage
+      const data = isWholeNumber ? wholeNumbers : percentage;
 
-      return data
+      return data;
     });
 
   // Sort category order in stack by averaging total demographic stats across all years in chart
@@ -200,8 +197,8 @@ const PeopleByDemographics = () => {
       hoverBackgroundColor: category.color,
       hoverBorderColor: category.color,
       label: category.label,
-      data: getData(category.categoryValue),
-      fullData: getData(category.categoryValue, true)
+      data: getData(category.categoryValue, false),
+      wholeNumbers: getData(category.categoryValue, true)
     }));
     // If age is selected, keep original sorting to make chart more readable
     // For other categories, determine order of category (highest to lowest proportion)
@@ -287,8 +284,12 @@ const PeopleByDemographics = () => {
                 callbacks: {
                   label: function(tooltipItem, data) {
                     let label = data.datasets[tooltipItem.datasetIndex].label;
-                    let categoryTotal = data.datasets[tooltipItem.datasetIndex].fullData[tooltipItem.index].categoryTotal
-                    let roundedPercentage = Math.round(tooltipItem.value * 100) / 100;
+                    let categoryTotal =
+                      data.datasets[tooltipItem.datasetIndex].wholeNumbers[
+                        tooltipItem.index
+                      ].categoryTotal;
+                    let roundedPercentage =
+                      Math.round(tooltipItem.value * 100) / 100;
                     return `${label}: ${categoryTotal} (${roundedPercentage}%)`;
                   }
                 }
