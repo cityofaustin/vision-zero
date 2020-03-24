@@ -32,4 +32,3 @@ workflows:
               only:
                 - master
                 - production
-                - "sg-fix-circleci"

@@ -9,9 +9,6 @@ case "${CIRCLE_BRANCH}" in
   "master")
     export WORKING_STAGE="staging";
     ;;
-  "sg-fix-circleci")
-    export WORKING_STAGE="staging";
-    ;;
   *)
     unset WORKING_STAGE;
     echo "We can only deploy master or production.";
