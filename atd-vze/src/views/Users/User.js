@@ -68,16 +68,24 @@ const User = () => {
 
       const format = userAttributes[key].format;
 
-      if (format === "string") {
-        formattedValue = user[key];
-      } else if (format === "bool") {
-        formattedValue = !!user[key] ? "Yes" : "No";
-      } else if (format === "time") {
-        formattedValue = moment(user[key]).format("MM/DD/YYYY, h:mm:ss a");
-      } else if (format === "object") {
-        const nestedKey = value.nestedKey;
-        formattedValue = user[key][nestedKey].join(", ");
+      switch (format) {
+        case "string":
+          formattedValue = user[key];
+          break;
+        case "bool":
+          formattedValue = !!user[key] ? "Yes" : "No";
+          break;
+        case "time":
+          formattedValue = moment(user[key]).format("MM/DD/YYYY, h:mm:ss a");
+          break;
+        case "object":
+          const nestedKey = value.nestedKey;
+          formattedValue = user[key][nestedKey].join(", ");
+          break;
+        default:
+          console.log("No User view field format match");
       }
+
       return (
         <tr key={key}>
           <td>{`${label}:`}</td>
