@@ -12,20 +12,16 @@ jobs:
       - checkout
       - setup_remote_docker:
           version: 18.09.3
-      - add_ssh_keys:
-          fingerprints:
-            - "79:8a:6c:cf:0a:91:76:46:91:8f:4b:98:5e:54:ad:98"
-#      - run:
-#          name: "Building Docker"
-#          command: |
-#            source .circleci/docker-helper.sh
-#            build_containers
+      - run:
+          name: "Building Docker"
+          command: |
+            source .circleci/docker-helper.sh
+            build_containers
       - run:
           name: "Build VZE API"
           command: |
             source .circleci/aws-helper.sh
             deploy_aws_lambda
-
 workflows:
   version: 2.1
   build-and-deploy:
