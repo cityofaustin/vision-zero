@@ -24,6 +24,7 @@ const App = () => {
     loginWithRedirect,
     isAuthenticated,
     userClaims,
+    getHasuraRole,
   } = useAuth0();
 
   // Setup initial Apollo instance
@@ -41,14 +42,14 @@ const App = () => {
         uri: HASURA_ENDPOINT,
         headers: {
           Authorization: `Bearer ${userClaims.__raw}`,
-          "x-hasura-role": "editor",
+          "x-hasura-role": getHasuraRole(),
         },
       };
 
       client.current = new ApolloClient(clientData);
       setIsApolloLoaded(true);
     }
-  }, [isAuthenticated, client, userClaims, setIsApolloLoaded]);
+  }, [isAuthenticated, client, userClaims, setIsApolloLoaded, getHasuraRole]);
 
   const renderLoading = () => (
     <div className="animated fadeIn pt-3 text-center">Loading...</div>

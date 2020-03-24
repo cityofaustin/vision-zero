@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { useAuth0, isItSupervisor } from "../../auth/authContext";
+import { rules } from "../../auth/rbac-rules";
 import axios from "axios";
 import { Redirect } from "react-router-dom";
 import {
@@ -21,6 +23,9 @@ import {
 const UserForm = ({ type, id = null }) => {
   const token = window.localStorage.getItem("id_token");
 
+  const { getRoles } = useAuth0();
+  const roles = getRoles();
+
   const defaultFormData = {
     name: "",
     email: "",
@@ -39,12 +44,19 @@ const UserForm = ({ type, id = null }) => {
   const [submissionErrorMessage, setSubmissionErrorMessage] = useState("");
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
 
-  const roles = [
-    { id: "itSupervisor", label: "IT Supervisor" },
-    { id: "admin", label: "Admin" },
-    { id: "editor", label: "Editor" },
-    { id: "readOnly", label: "Read-only" },
-  ];
+  // Disable giving admin or IT Supervisor role unless user is IT Supervisor
+  const roleExceptions = ["admin", "itSupervisor"];
+
+  const radioButtonRoles = roles =>
+    Object.entries(rules).reduce((acc, [role, roleConfig]) => {
+      if (isItSupervisor(roles)) {
+        acc.push({ id: role, label: roleConfig.label });
+      } else {
+        !roleExceptions.includes(role) &&
+          acc.push({ id: role, label: roleConfig.label });
+      }
+      return acc;
+    }, []);
 
   // Fetch existing user data if editing
   useEffect(() => {
@@ -83,12 +95,12 @@ const UserForm = ({ type, id = null }) => {
 
   // Remove fields not needed for edits (so req does not fail)
   const cleanFormDataForEdit = userFormData => {
-    const editFields = ["name", "email", "app_metadata"];
+    let editFields = ["name", "email", "app_metadata"];
 
-    // If resetting password, must include password and required connection field
-    userFormData.password !== "" &&
-      editFields.push("password") &&
-      editFields.push("connection");
+    // If resetting password, must include only password and required connection field
+    editFields = !!userFormData.password
+      ? ["password", "connection"]
+      : editFields;
 
     const cleanedFormData = editFields.reduce((acc, field) => {
       return { ...acc, [field]: userFormData[field] };
@@ -98,36 +110,30 @@ const UserForm = ({ type, id = null }) => {
   };
 
   const handleFormSubmit = () => {
+    let submitForm;
+    const headers = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
     if (type === "Edit") {
       const endpoint = `${process.env.REACT_APP_CR3_API_DOMAIN}/user/update_user/${id}`;
       const updatedFormData = cleanFormDataForEdit(userFormData);
-      axios
-        .put(endpoint, updatedFormData, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-        .then(res => {
-          if (res.data.error) {
-            setIsSubmissionError(true);
-            setSubmissionErrorMessage(res.data.message);
-          } else {
-            setIsFormSubmitted(true);
-          }
-        });
+      submitForm = axios.put(endpoint, updatedFormData, headers);
     } else if (type === "Add") {
       const endpoint = `${process.env.REACT_APP_CR3_API_DOMAIN}/user/create_user`;
-      axios
-        .post(endpoint, userFormData, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-        .then(res => {
-          if (res.data.error) {
-            setIsSubmissionError(true);
-            setSubmissionErrorMessage(res.data.message);
-          } else {
-            setIsFormSubmitted(true);
-          }
-        });
+      submitForm = axios.post(endpoint, userFormData, headers);
     }
+
+    submitForm.then(res => {
+      if (res.data.error) {
+        setIsSubmissionError(true);
+        setSubmissionErrorMessage(res.data.message);
+      } else {
+        setIsFormSubmitted(true);
+      }
+    });
   };
 
   const resetForm = () => {
@@ -137,7 +143,7 @@ const UserForm = ({ type, id = null }) => {
 
   const renderErrorMessage = () => (
     <Alert className="mt-3" color="danger">
-      {submissionErrorMessage} Please try again.
+      {submissionErrorMessage}. Please try again.
     </Alert>
   );
 
@@ -229,7 +235,7 @@ const UserForm = ({ type, id = null }) => {
                       <FormText className="help-block">
                         {type === "Add"
                           ? "Please enter a password"
-                          : "Only enter a password if you need to reset it"}
+                          : "No other fields will update if resetting password."}
                       </FormText>
                     </Col>
                   </FormGroup>
@@ -239,28 +245,30 @@ const UserForm = ({ type, id = null }) => {
                       <Label>Role</Label>
                     </Col>
                     <Col md="9">
-                      {roles.map(role => (
-                        <FormGroup key={role.id} check className="radio">
-                          <Input
-                            className="form-check-input"
-                            type="radio"
-                            id={role.id}
-                            name="radios"
-                            value={role.id}
-                            checked={
-                              userFormData.app_metadata.roles[0] === role.id
-                            }
-                            onChange={handleRoleRadioInputChange}
-                          />
-                          <Label
-                            check
-                            className="form-check-label"
-                            htmlFor={role.id}
-                          >
-                            {role.label}
-                          </Label>
-                        </FormGroup>
-                      ))}
+                      {radioButtonRoles(roles)
+                        .filter(role => !!role)
+                        .map(role => (
+                          <FormGroup key={role.id} check className="radio">
+                            <Input
+                              className="form-check-input"
+                              type="radio"
+                              id={role.id}
+                              name="radios"
+                              value={role.id}
+                              checked={
+                                userFormData.app_metadata.roles[0] === role.id
+                              }
+                              onChange={handleRoleRadioInputChange}
+                            />
+                            <Label
+                              check
+                              className="form-check-label"
+                              htmlFor={role.id}
+                            >
+                              {role.label}
+                            </Label>
+                          </FormGroup>
+                        ))}
                     </Col>
                   </FormGroup>
                 </Form>

@@ -12,6 +12,14 @@ export const urlPath =
     ? window.location.origin
     : `${window.location.origin}/editor`;
 
+// Roles helpers for rules-based access
+export const isReadOnly = rolesArray =>
+  rolesArray.includes("readonly") && rolesArray.length === 1;
+
+export const isAdmin = rolesArray => rolesArray.includes("admin");
+
+export const isItSupervisor = rolesArray => rolesArray.includes("itSupervisor");
+
 export const Auth0Provider = ({
   children,
   onRedirectCallback,
@@ -75,6 +83,17 @@ export const Auth0Provider = ({
     auth0Client.logout({ returnTo: urlPath });
   };
 
+  const getRoles = () => {
+    return user["https://hasura.io/jwt/claims"]["x-hasura-allowed-roles"];
+  };
+
+  // Get Hasura role needed for Hasura role permissions
+  const getHasuraRole = () => {
+    const role = user["https://hasura.io/jwt/claims"]["x-hasura-allowed-roles"];
+    // If user has more than one role, they are itSupervisor and need admin role for Hasura to return data
+    return role.length > 1 ? "admin" : role[0];
+  };
+
   // Context provider supplies value below at index.js level
   return (
     <Auth0Context.Provider
@@ -84,6 +103,8 @@ export const Auth0Provider = ({
         loading,
         handleRedirectCallback,
         userClaims,
+        getRoles,
+        getHasuraRole,
         getIdTokenClaims: (...p) => auth0Client.getIdTokenClaims(...p),
         loginWithRedirect: (...p) => auth0Client.loginWithRedirect(...p),
         logout,
