@@ -11,9 +11,14 @@ import { Auth0Provider, urlPath } from "./auth/authContext";
 import { HashRouter } from "react-router-dom";
 import * as serviceWorker from "./serviceWorker";
 
-// Redirect to "/" after auth
+// Redirect after auth
+export const redirectUrl =
+  process.env.NODE_ENV === "development" ? "/" : "/editor";
+
 const onRedirectCallback = appState => {
-  history.push(appState && appState.targetUrl ? appState.targetUrl : "/");
+  history.push(
+    appState && appState.targetUrl ? appState.targetUrl : redirectUrl
+  );
 };
 
 // Setup Auth0 config for Auth0Provider component
