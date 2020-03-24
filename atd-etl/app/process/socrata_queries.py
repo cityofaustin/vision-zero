@@ -22,6 +22,8 @@ crashes_query_template = Template(
             crash_date
             crash_time
             case_id
+            onsys_fl
+            private_dr_fl
             rpt_latitude
             rpt_longitude
             rpt_block_num

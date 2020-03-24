@@ -1,8 +1,9 @@
 import React from "react";
-import FatalitiesByMode from "./FatalitiesByMode";
-import FatalitiesMultiYear from "./FatalitiesMultiYear";
-import FatalitiesByTimeOfDay from "./FatalitiesByTimeOfDay";
-import DemographicsByYear from "./DemographicsByYear";
+import CrashesByMonth from "./CrashesByMonth";
+import CrashesBySystem from "./CrashesBySystem";
+import CrashesByTimeOfDay from "./CrashesByTimeOfDay";
+import PeopleByDemographics from "./PeopleByDemographics";
+import CrashesByMode from "./CrashesByMode";
 import SummaryView from "./SummaryView";
 import SummaryCard from "./SummaryCard";
 
@@ -10,10 +11,11 @@ import { Container, Row } from "reactstrap";
 import styled from "styled-components";
 
 const children = [
-  { component: <FatalitiesMultiYear /> },
-  { component: <FatalitiesByMode /> },
-  { component: <FatalitiesByTimeOfDay /> },
-  { component: <DemographicsByYear /> }
+  { component: <CrashesByMonth /> },
+  { component: <CrashesByMode /> },
+  { component: <CrashesByTimeOfDay /> },
+  { component: <PeopleByDemographics /> },
+  { component: <CrashesBySystem />}
 ];
 
 const Summary = () => {

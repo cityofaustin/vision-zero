@@ -10,34 +10,24 @@ import {
   yearsArray,
   summaryCurrentYearEndDate
 } from "../../constants/time";
-import { demographicsEndpointUrl } from "./queries/socrataQueries";
+import { crashEndpointUrl } from "./queries/socrataQueries";
 
-const FatalitiesByMode = () => {
-  const modes = [
+const CrashesBySystem = () => {
+  // Both categories use the same flag but are based on different ("Y" or "N") values.
+  // In the future we may consider adding another category using the "private_dr_fl" flag
+  // to show crashes that have occurred on private driveways.
+  const categories = [
     {
-      label: "Motorist",
-      flags: ["motor_vehicle_fl"],
-      color: colors.chartRed
+      label: "On TxDOT System",
+      flags: ["onsys_fl"],
+      value: "Y",
+      color: `${colors.chartRed}`
     },
     {
-      label: "Pedestrian",
-      flags: ["pedestrian_fl"],
-      color: colors.chartOrange
-    },
-    {
-      label: "Motorcyclist",
-      flags: ["motorcycle_fl"],
-      color: colors.chartRedOrange
-    },
-    {
-      label: "Bicyclist",
-      flags: ["bicycle_fl"],
-      color: colors.chartBlue
-    },
-    {
-      label: "Other",
-      flags: ["other_fl"],
-      color: colors.chartLightBlue
+      label: "Off TxDOT System",
+      flags: ["onsys_fl"],
+      value: "N",
+      color: `${colors.chartLightBlue}`
     }
   ];
 
@@ -47,7 +37,7 @@ const FatalitiesByMode = () => {
   // Fetch data and set in state by years in yearsArray
   useEffect(() => {
     // Wait for crashType to be passed up from setCrashType component
-    if (crashType.queryStringDemographics) {
+    if (crashType.queryStringCrash) {
       const getChartData = async () => {
         let newData = {};
         // Use Promise.all to let all requests resolve before setting chart data by year
@@ -59,7 +49,7 @@ const FatalitiesByMode = () => {
               year.toString() === dataEndDate.format("YYYY")
                 ? `${summaryCurrentYearEndDate}T23:59:59`
                 : `${year}-12-31T23:59:59`;
-            let url = `${demographicsEndpointUrl}?$where=${crashType.queryStringDemographics} AND crash_date between '${year}-01-01T00:00:00' and '${endDate}'`;
+            let url = `${crashEndpointUrl}?$where=${crashType.queryStringCrash} AND crash_date between '${year}-01-01T00:00:00' and '${endDate}'`;
             await axios.get(url).then(res => {
               newData = { ...newData, ...{ [year]: res.data } };
             });
@@ -74,50 +64,51 @@ const FatalitiesByMode = () => {
 
   const createChartLabels = () => yearsArray().map(year => `${year}`);
 
-  // Tabulate fatalities by mode flags in data
-  const getModeData = flags =>
+  // Tabulate crashes by flags in data
+  const getCategoryData = (flags, value) =>
     yearsArray().map(year => {
       return chartData[year].reduce((accumulator, record) => {
-        flags.forEach(flag => record[`${flag}`] === "Y" && accumulator++);
+        // For each flag, count records where the record's flag value matches the category's flag value ("Y" or "N")
+        flags.forEach(flag => record[`${flag}`] === value && accumulator++);
         return accumulator;
       }, 0);
     });
 
-  // Sort mode order in stack by averaging total mode fatalities across all years in chart
-  const sortModeData = modeData => {
-    const averageModeFatalities = modeDataArray =>
-      modeDataArray.reduce((a, b) => a + b) / modeDataArray.length;
-    return modeData.sort(
-      (a, b) => averageModeFatalities(b.data) - averageModeFatalities(a.data)
+  // Sort category order in stack by averaging total category crashes across all years in chart
+  const sortCategoryData = data => {
+    const averageCategoryCrashes = categoryDataArray =>
+      categoryDataArray.reduce((a, b) => a + b) / categoryDataArray.length;
+    return data.sort(
+      (a, b) => averageCategoryCrashes(b.data) - averageCategoryCrashes(a.data)
     );
   };
 
-  // Create dataset for each mode type, data property is an array of fatality sums sorted chronologically
-  const createTypeDatasets = () => {
-    const modeData = modes.map(mode => ({
-      backgroundColor: mode.color,
-      borderColor: mode.color,
+  // Create dataset for each category, data property is an array of crash sums sorted chronologically
+  const createCategoryDatasets = () => {
+    const data = categories.map(category => ({
+      backgroundColor: category.color,
+      borderColor: category.color,
       borderWidth: 2,
-      hoverBackgroundColor: mode.color,
-      hoverBorderColor: mode.color,
-      label: mode.label,
-      data: getModeData(mode.flags)
+      hoverBackgroundColor: category.color,
+      hoverBorderColor: category.color,
+      label: category.label,
+      data: getCategoryData(category.flags, category.value)
     }));
-    // Determine order of modes in each year stack
-    return sortModeData(modeData);
+    // Determine order of categoriess in each year stack
+    return sortCategoryData(data);
   };
 
   const data = {
     labels: createChartLabels(),
-    datasets: !!chartData && createTypeDatasets()
+    datasets: !!chartData && createCategoryDatasets()
   };
 
   return (
     <Container>
       <Row className="pb-3">
         <Col>
-        <h3 className="text-center">
-            {crashType.textString} by Mode
+          <h3 className="text-center">
+            {crashType.textString} by Jurisdiction
           </h3>
         </Col>
       </Row>
@@ -143,13 +134,6 @@ const FatalitiesByMode = () => {
           />
         </Col>
       </Row>
-      <Row>
-        <Col>
-          <p className="text-center">
-            Data Through: {dataEndDate.format("MMMM YYYY")}
-          </p>
-        </Col>
-      </Row>
       <Row className="pt-3">
         <Col>
           <CrashTypeSelector setCrashType={setCrashType} />
@@ -159,4 +143,4 @@ const FatalitiesByMode = () => {
   );
 };
 
-export default FatalitiesByMode;
+export default CrashesBySystem;

@@ -9,7 +9,7 @@ import {
   summaryCurrentYearEndDate
 } from "../../constants/time";
 import {
-  demographicsEndpointUrl,
+  personEndpointUrl,
   crashEndpointUrl
 } from "./queries/socrataQueries";
 import {
@@ -34,7 +34,7 @@ const SummaryView = () => {
 
   useEffect(() => {
     const fatalitiesUrl = `${crashEndpointUrl}?$where=death_cnt > 0 AND crash_date between '${summaryCurrentYearStartDate}T00:00:00' and '${summaryCurrentYearEndDate}T23:59:59'`;
-    const yearsOfLifeLostUrl = `${demographicsEndpointUrl}?$where=prsn_injry_sev_id = '4' AND crash_date between '${summaryCurrentYearStartDate}T00:00:00' and '${summaryCurrentYearEndDate}T23:59:59'`;
+    const yearsOfLifeLostUrl = `${personEndpointUrl}?$where=prsn_injry_sev_id = '4' AND crash_date between '${summaryCurrentYearStartDate}T00:00:00' and '${summaryCurrentYearEndDate}T23:59:59'`;
     const seriousInjuriesUrl = `${crashEndpointUrl}?$where=sus_serious_injry_cnt > 0 AND crash_date between '${summaryCurrentYearStartDate}T00:00:00' and '${summaryCurrentYearEndDate}T23:59:59'`;
     const totalCrashesUrl = `${crashEndpointUrl}?$where=crash_date between '${summaryCurrentYearStartDate}T00:00:00' and '${summaryCurrentYearEndDate}T23:59:59'&$limit=100000`;
 

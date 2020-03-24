@@ -84,6 +84,7 @@ for config in query_configs:
 
         # Upsert records to Socrata
         client.upsert(config["dataset_uid"], records)
+        print(f'{offset} records upserted')
         total_records += len(records)
 
         if len(records) == 0:
