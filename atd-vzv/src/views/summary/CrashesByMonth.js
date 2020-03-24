@@ -193,11 +193,6 @@ const CrashesByMonth = () => {
           <Line
             data={data}
             options={{
-              height: null,
-              width: null,
-              aspectRatio: 1,
-              // maintainAspectRatio: true,
-              responsive: true,
               tooltips: {
                 mode: "x"
               }
