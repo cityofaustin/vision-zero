@@ -12,9 +12,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 
 const StyledNavbar = styled.div`
-  /* Set z-index to let SideMapControlDateRange container overlap */
+  /* Allow SideMapControlDateRange to grey out this header */
   .fixed-top {
-    z-index: 2;
+    z-index: 1;
   }
 
   .navbar-container {

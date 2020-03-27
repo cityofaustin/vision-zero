@@ -75,6 +75,7 @@ const StyledDrawer = styled.div`
 
   .drawer-content {
     overflow-y: scroll;
+    z-index: 10;
     height: calc(100vh - ${drawer.headerHeight}px);
   }
 `;
