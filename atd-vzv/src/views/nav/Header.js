@@ -12,6 +12,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 
 const StyledNavbar = styled.div`
+  /* Set z-index to let SideMapControlDateRange container overlap */
+  .fixed-top {
+    z-index: 2;
+  }
+
   .navbar-container {
     /* Make Navbar container same height as SideDrawer header */
     height: ${drawer.headerHeight}px;

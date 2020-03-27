@@ -1,143 +1,55 @@
-import React, { useState, useEffect } from "react";
-import { createPortal } from "react-dom";
+import React, { useState } from "react";
 import { StoreContext } from "../../utils/store";
+import { DateRangePicker } from "react-dates";
 import moment from "moment";
-import "react-virtualized/styles.css";
-import InfiniteCalendar, { Calendar, withRange } from "react-infinite-calendar";
-import "react-infinite-calendar/styles.css";
 
 import { colors } from "../../constants/colors";
 import { Button } from "reactstrap";
 import { mapDataMinDate, mapDataMaxDate } from "../../constants/time";
 import styled from "styled-components";
+import "react-dates/initialize";
+import "react-dates/lib/css/_datepicker.css";
 
-const CalendarWithRange = withRange(Calendar);
-
-const StyledDateRangePicker = styled.div`
-  /* Resize month and day in header */
-  #calendar-container {
-    z-index: 2;
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 100vh;
-    width: 100vw;
-    background-color: ${colors.dark + "54"};
-  }
-
-  #calendar {
-    z-index: 3;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-  }
-
-  .Cal__Header__day {
-    font-size: 1.3em !important;
-  }
-`;
-
-const calendarTheme = {
-  accentColor: `${colors.infoDark}`,
-  floatingNav: {
-    background: `${colors.infoDark}`,
-    chevron: `${colors.warning}`,
-    color: `${colors.white}`
-  },
-  headerColor: `${colors.infoDark}`,
-  selectionColor: `${colors.info}`,
-  textColor: {
-    active: `${colors.white}`,
-    default: `${colors.dark}`
-  },
-  todayColor: `${colors.warning}`,
-  weekdayColor: `${colors.info}`
-};
+const StyledDateRangePicker = styled.div``;
 
 const SideMapControlDateRange = () => {
   const {
-    mapDateRange: [date, setDate],
-    sidebarToggle: [isOpen, setIsOpen]
+    mapDateRange: [date, setDate]
   } = React.useContext(StoreContext);
 
-  const mount = document.getElementById("root");
-  const el = document.createElement("div");
-
-  useEffect(() => {
-    mount.appendChild(el);
-    return () => mount.removeChild(el);
-  }, [el, mount]);
-
-  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
-
-  const convertToDatePickerDateFormat = date => {
-    const startDate = moment(date.start).format("MM/DD/YYYY");
-    const endDate = moment(date.end).format("MM/DD/YYYY");
-    return { start: new Date(startDate), end: new Date(endDate) };
-  };
+  const [focusedInput, setFocusInput] = useState(null);
 
   const convertToSocrataDateFormat = date => {
-    // eventType 3 occurs when selecting the end of date range
-    if (date.eventType === 3) {
-      const startDate = moment(date.start).format("YYYY-MM-DD") + "T00:00:00";
-      const endDate = moment(date.end).format("YYYY-MM-DD") + "T23:59:59";
-      const updatedDates = { start: startDate, end: endDate };
-      setDate(updatedDates);
-      setIsCalendarOpen(false);
-    }
+    debugger;
+    // Dates are passed as moments
+    const startDate = date.startDate.format("YYYY-MM-DD") + "T00:00:00";
+    const endDate = date.endDate.format("YYYY-MM-DD") + "T23:59:59";
+    const updatedDates = { start: startDate, end: endDate };
+    setDate(updatedDates);
   };
 
-  const handleCalendarPortalContainerClick = event => {
-    // Close out the modal if the background container is clicked
-    if (event.target.id !== "calendar-container") return;
-    setIsCalendarOpen(false);
-  };
+  // const handleCalendarPortalContainerClick = event => {
+  //   // Close out the modal if the background container is clicked
+  //   if (event.target.id !== "calendar-container") return;
+  //   setIsCalendarOpen(false);
+  // };
 
-  const handleDataRangeButtonClick = () => {
-    setIsCalendarOpen(!isCalendarOpen);
-    setIsOpen(false);
-  };
-
-  const calendarPortal = createPortal(
-    <StyledDateRangePicker>
-      <div id="calendar-container" onClick={handleCalendarPortalContainerClick}>
-        <div id="calendar">
-          <InfiniteCalendar
-            Component={CalendarWithRange}
-            selected={convertToDatePickerDateFormat(date)}
-            onSelect={convertToSocrataDateFormat}
-            min={mapDataMinDate}
-            max={mapDataMaxDate}
-            minDate={mapDataMinDate}
-            maxDate={mapDataMaxDate}
-            theme={calendarTheme}
-            locale={{
-              headerFormat: "MMM Do"
-            }}
-            displayOptions={{
-              showTodayHelper: false
-            }}
-          />
-          )}
-        </div>
-      </div>
-    </StyledDateRangePicker>,
-    el
-  );
+  // const handleDataRangeButtonClick = () => {
+  //   setIsCalendarOpen(!isCalendarOpen);
+  // };
 
   return (
-    <>
-      <Button
-        onClick={handleDataRangeButtonClick}
-        // Add some margin below button when calendar is open
-        className={`w-100`}
-        color="info"
-      >
-        Choose Date Range
-      </Button>
-      {isCalendarOpen && calendarPortal}
-    </>
+    <DateRangePicker
+      startDate={moment(date.start)} // momentPropTypes.momentObj or null,
+      startDateId="start-date" // PropTypes.string.isRequired,
+      endDate={moment(date.end)} // momentPropTypes.momentObj or null,
+      endDateId="end-date" // PropTypes.string.isRequired,
+      onDatesChange={({ startDate, endDate }) =>
+        convertToSocrataDateFormat({ startDate, endDate })
+      } // PropTypes.func.isRequired,
+      focusedInput={focusedInput} // PropTypes.oneOf([START_DATE, END_DATE]) or null,
+      onFocusChange={focusedInput => setFocusInput(focusedInput)} // PropTypes.func.isRequired,
+    />
   );
 };
 
