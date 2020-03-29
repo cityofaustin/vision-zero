@@ -13,7 +13,6 @@ import io
 import json
 import re
 import datetime
-import web_pdb
 
 # Dependencies
 from .queries import search_crash_query, search_crash_query_full
@@ -21,27 +20,51 @@ from .request import run_query
 from .helpers_import_fields import CRIS_TXDOT_FIELDS, CRIS_TXDOT_COMPARE_FIELDS_LIST
 
 
-def generate_template(name, function, fields):
+def generate_template(name, function, fields, fieldnames=[], upsert=False, constraint=""):
     """
     Returns a string with a graphql template
-    :param name:
-    :param function:
-    :param fields:
-    :return:
+    :param str name: The name of the graphql mutation
+    :param str function: The name of the graphql function
+    :param str fields: The value of the fields in graphql expression
+    :param str[] fieldnames: An array of strings containing the names of the columns
+    :param bool upsert: If true, adds upsert logic; false otherwise.
+    :param str constraint: The name of the constraint on_conflict
+    :return str:
     """
+    if upsert:
+        on_conflict = """
+            , on_conflict: {
+              constraint: %CONFLICT_CONSTRAINT%,
+              update_columns: [
+                %CONFLICT_FIELDS%
+              ]
+            }
+        """.replace(
+            "%CONFLICT_CONSTRAINT%",
+            constraint
+        ).replace(
+            "%CONFLICT_FIELDS%",
+            ",\n".join([f.lower() for f in fieldnames])
+        )
+
+    else:
+        on_conflict = ""
+
     return """
         mutation %NAME% {
           %FUNCTION%(
             objects: {
             %FIELDS%
             }
+            %ON_CONFLICT%
           ){
             affected_rows
-          }
+          } 
         }
     """.replace("%NAME%", name)\
-        .replace("%FUNCTION%", function)\
-        .replace("%FIELDS%", fields)
+       .replace("%FUNCTION%", function)\
+       .replace("%FIELDS%", fields)\
+       .replace("%ON_CONFLICT%", on_conflict)
 
 
 def lowercase_group_match(match):
@@ -122,10 +145,22 @@ def generate_gql(line, fieldnames, file_type):
         fields = generate_fields_with_filters(line=line,
                                               fieldnames=fieldnames,
                                               filters=filters)
-
-        template = generate_template(name=query_name,
-                                     function=function_name,
-                                     fields=fields)
+        # Clean field list
+        template_fields = [field.lower() for field in fieldnames if field.lower() not in filters[0][1]]
+        # Generate Template
+        template = generate_template(
+            name=query_name,
+            function=function_name,
+            fields=fields,
+            fieldnames=template_fields,
+            upsert=(file_type != "crash"),
+            constraint={
+                "unit": "atd_txdot_units_unique",
+                "person": "atd_txdot_person_unique",
+                "primaryperson": "atd_txdot_primaryperson_unique",
+                "charges": "atd_txdot_charges_pkey"
+            }.get(file_type, None),
+        )
     except Exception as e:
         print("generate_gql() Error: " + str(e))
         template = ""
