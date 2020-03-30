@@ -19,8 +19,7 @@ const drawerWidth = drawer.width;
 const useStyles = makeStyles(theme => {
   return {
     root: {
-      display: "flex",
-      zIndex: 1
+      display: "flex"
     },
     drawer: {
       // Feed drawer component a media query to align with Bootstrap breakpoints
@@ -75,7 +74,6 @@ const StyledDrawer = styled.div`
 
   .drawer-content {
     overflow-y: scroll;
-    z-index: 10;
     height: calc(100vh - ${drawer.headerHeight}px);
   }
 `;

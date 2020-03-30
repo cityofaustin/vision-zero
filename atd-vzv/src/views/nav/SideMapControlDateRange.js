@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { StoreContext } from "../../utils/store";
 import { DateRangePicker } from "react-dates";
 import moment from "moment";
@@ -9,6 +9,9 @@ import "react-dates/lib/css/_datepicker.css";
 
 const SideMapControlDateRange = () => {
   // TODO Troublshoot initial dates
+  const calendarStartDate = dataStartDate.clone();
+  const calendarEndDate = dataEndDate.clone();
+
   const [focused, setFocused] = useState(null);
   const [start, setStart] = useState(null);
   const [end, setEnd] = useState(null);
@@ -17,22 +20,24 @@ const SideMapControlDateRange = () => {
     mapDateRange: [date, setDate]
   } = React.useContext(StoreContext);
 
-  const convertToSocrataDateFormat = dates => {
-    // Dates are passed as moment obj
-    const startDate = dates.startDate.format("YYYY-MM-DD") + "T00:00:00";
-    const endDate = dates.endDate.format("YYYY-MM-DD") + "T23:59:59";
+  useEffect(() => {
+    const convertToSocrataDateFormat = dates => {
+      // Dates are passed as moment obj
+      const startDate = dates.start.format("YYYY-MM-DD") + "T00:00:00";
+      const endDate = dates.end.format("YYYY-MM-DD") + "T23:59:59";
 
-    return { start: startDate, end: endDate };
-  };
+      return { start: startDate, end: endDate };
+    };
+
+    if (start !== null && end !== null) {
+      const formattedDates = convertToSocrataDateFormat({ start, end });
+      setDate(formattedDates);
+    }
+  }, [start, end, setStart, setEnd, setDate]);
 
   const handleDateChange = dates => {
     setStart(dates.startDate);
     setEnd(dates.endDate);
-
-    if (dates.startDate !== null && dates.endDate !== null) {
-      const formattedDates = convertToSocrataDateFormat(dates);
-      setDate(formattedDates);
-    }
   };
 
   return (

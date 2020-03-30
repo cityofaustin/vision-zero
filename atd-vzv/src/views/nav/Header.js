@@ -12,7 +12,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 
 const StyledNavbar = styled.div`
-  /* Allow SideMapControlDateRange to grey out this header */
+  /* Allow SideMapControlDateRange to grey out this header in full screen mode */
   .fixed-top {
     z-index: 1;
   }
