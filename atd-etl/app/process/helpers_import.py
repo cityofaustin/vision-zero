@@ -432,8 +432,7 @@ def record_compare(record_new, record_existing):
     :param dict record_existing: The existing object, as parsed from an HTTP query
     :return: bool
     """
-    final_check_dict_existing = {}
-    final_check_dict_new = {}
+    differences = []
     for field in FIELD_LIST:
         # Remove None and null
         record_existing[field] = clean_none_null(record_existing[field])
@@ -449,24 +448,13 @@ def record_compare(record_new, record_existing):
         if field_type == "decimal":
             record_existing[field] = convert_decimal(record_existing[field])
             record_new[field] = convert_decimal(record_new[field])
+
         # Make the comparison, if not equal important_difference = true
-        important_difference = record_new[field] != record_existing[field]
-
-        # Copy the existing record to the final check dictionary
-        final_check_dict_existing[field] = record_existing[field]
-        final_check_dict_new[field] = record_new[field]
-
-        if important_difference:
-            return True
-
-    # One Final Check
-    json_dump_final_ex = json.dumps(final_check_dict_existing)
-    json_dump_new_new = json.dumps(final_check_dict_new)
-    if json_dump_final_ex != json_dump_new_new:
-        return True
+        if record_new[field] != record_existing[field]:
+            differences.append(field)
 
     # Found no differences in any of the fields
-    return False
+    return differences
 
 
 def generate_crash_record(line, fieldnames):
@@ -484,28 +472,44 @@ def generate_crash_record(line, fieldnames):
     return json.loads(fields)
 
 
-def insert_crash_change_template(new_record_dict):
+def insert_crash_change_template(new_record_dict, differences):
     """
     Generates a crash insertion graphql query
     :param new_record_dict: dict - The new record as a dictionary
     :return: string
     """
     # Turn the dictionary into a character-escaped json string
-    new_record_escaped = json.dumps(new_record_dict).replace("\"", "\\\"")
+    new_record_escaped = json.dumps(json.dumps(new_record_dict))
     # Build the template and inject required values
     return """
         mutation insertCrashChangeMutation {
-      insert_atd_txdot_changes(objects: {
-        record_id: NEW_RECORD_ID,
-        record_json: "NEW_RECORD_ESCAPED_JSON",
-        record_type: "crash",
-        updated_by: "System"
-      }) {
-        affected_rows
-      }
-    }
-    """.replace("NEW_RECORD_ESCAPED_JSON", new_record_escaped)\
-        .replace("NEW_RECORD_ID", new_record_dict["crash_id"])
+          insert_atd_txdot_changes(
+            objects: {
+              record_id: %NEW_RECORD_ID%,
+              record_json: %NEW_RECORD_ESCAPED_JSON%,
+              record_type: "crash",
+              affected_columns: %AFFECTED_COLUMNS%,
+              status_id: 0,
+              updated_by: "System"
+            },
+            on_conflict: {
+              constraint: atd_txdot_changes_unique,
+              update_columns: [
+                record_id,
+                record_json,
+                record_type,
+                affected_columns,
+                status_id,
+                updated_by
+              ]
+            }
+          ) {
+            affected_rows
+          }
+        }
+        """.replace("%NEW_RECORD_ESCAPED_JSON%", new_record_escaped) \
+        .replace("%NEW_RECORD_ID%", new_record_dict["crash_id"]) \
+        .replace("%AFFECTED_COLUMNS%", json.dumps(json.dumps(differences)))
 
 
 def record_compare_hook(line, fieldnames, file_type):
@@ -521,9 +525,13 @@ def record_compare_hook(line, fieldnames, file_type):
         crash_id = get_crash_id(line)
         record_new = generate_crash_record(line=line, fieldnames=fieldnames)
         record_existing = get_crash_record(get_crash_id(line))
-        significant_difference = record_compare(record_new=record_new, record_existing=record_existing)
-        if significant_difference:
-            mutation_template = insert_crash_change_template(new_record_dict=record_new)
+        differences = record_compare(record_new=record_new, record_existing=record_existing)
+
+        if len(differences) > 0:
+            mutation_template = insert_crash_change_template(
+                new_record_dict=record_new,
+                differences=differences
+            )
             result = run_query(mutation_template)
             try:
                 affected_rows = result["data"]["insert_atd_txdot_changes"]["affected_rows"]
