@@ -31,7 +31,3 @@ export const summaryCurrentYearStartDate = dataEndDate
   .startOf("year")
   .format("YYYY-MM-DD");
 export const summaryCurrentYearEndDate = dataEndDate.format("YYYY-MM-DD");
-
-// Map time data
-export const mapStartDate = dataStartDate.format("YYYY-MM-DD") + "T00:00:00";
-export const mapEndDate = dataEndDate.format("YYYY-MM-DD") + "T23:59:59";
