@@ -39,6 +39,9 @@ export const createMapDataUrl = (
   const whereFilterString = generateWhereFilters(filters);
   const filterCount = filters.length;
 
+  // SideMapControlDateRange uses null to check if user set dates so
+  // need to handle it and avoid unnecessary API calls
+  if (dateRange.start === null || dateRange.end === null) return null;
   const startDate = convertDateToSocrataFormat(dateRange.start, "T00:00:00");
   const endDate = convertDateToSocrataFormat(dateRange.end, "T23:59:59");
 
