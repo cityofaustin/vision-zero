@@ -13,12 +13,15 @@ import io
 import json
 import re
 import datetime
+import web_pdb
 
 # Dependencies
 from .queries import search_crash_query, search_crash_query_full
 from .request import run_query
 from .helpers_import_fields import CRIS_TXDOT_FIELDS, CRIS_TXDOT_COMPARE_FIELDS_LIST
 
+# We need to gather a list of all keys in fields list (not the values)
+FIELD_LIST = [field for field in CRIS_TXDOT_COMPARE_FIELDS_LIST.keys()]
 
 def generate_template(name, function, fields, fieldnames=[], upsert=False, constraint=""):
     """
