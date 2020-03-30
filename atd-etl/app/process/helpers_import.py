@@ -410,6 +410,18 @@ def clean_none_null(string):
     return str(string).replace("None", "").replace("null", "")
 
 
+def convert_decimal(string):
+    """
+    Takes a string and converts is into a decimal
+    :param str string:
+    :return float:
+    """
+    try:
+        return float(string)
+    except:
+        return None
+
+
 def record_compare(record_new, record_existing):
     """
     Compares two dictionaries. It uses the CRIS_TXDOT_COMPARE_FIELDS_LIST
