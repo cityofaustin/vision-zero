@@ -428,27 +428,42 @@ def record_compare(record_new, record_existing):
     to determine what fields are important enough, and returns True if
     there is one important difference. Returns False if none of the fields
     present any differences.
-    :param record_new: dict - The new object being parsed from csv
-    :param record_existing: dict - The existing object, as parsed from an HTTP query
+    :param dict record_new: The new object being parsed from csv
+    :param dict record_existing: The existing object, as parsed from an HTTP query
     :return: bool
     """
-    for field in CRIS_TXDOT_COMPARE_FIELDS_LIST:
+    final_check_dict_existing = {}
+    final_check_dict_new = {}
+    for field in FIELD_LIST:
         # Remove None and null
         record_existing[field] = clean_none_null(record_existing[field])
+        # Get the field type
+        field_type = CRIS_TXDOT_COMPARE_FIELDS_LIST[field]
 
-        # If the current field is a date, then try to parse it
-        if is_cris_date(record_new[field]):
+        if field_type == "date":
             record_new[field] = convert_date(record_new[field])
 
-        # If the current field is a time string, then try to parse it
-        if is_cris_time(record_new[field]):
+        if field_type == "time":
             record_new[field] = convert_time(record_new[field])
 
+        if field_type == "decimal":
+            record_existing[field] = convert_decimal(record_existing[field])
+            record_new[field] = convert_decimal(record_new[field])
         # Make the comparison, if not equal important_difference = true
         important_difference = record_new[field] != record_existing[field]
 
+        # Copy the existing record to the final check dictionary
+        final_check_dict_existing[field] = record_existing[field]
+        final_check_dict_new[field] = record_new[field]
+
         if important_difference:
             return True
+
+    # One Final Check
+    json_dump_final_ex = json.dumps(final_check_dict_existing)
+    json_dump_new_new = json.dumps(final_check_dict_new)
+    if json_dump_final_ex != json_dump_new_new:
+        return True
 
     # Found no differences in any of the fields
     return False
