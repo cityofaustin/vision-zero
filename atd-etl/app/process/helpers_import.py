@@ -13,7 +13,6 @@ import io
 import json
 import re
 import datetime
-import web_pdb
 
 # Dependencies
 from .queries import search_crash_query, search_crash_query_full
