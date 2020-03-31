@@ -60,7 +60,10 @@ let queryConf = {
     },
   },
   order_by: {},
-  where: {},
+  where: {
+    // Only show Locations inside CoA Limits.
+    council_district: "_gt: 0",
+  },
   limit: 25,
   offset: 0,
 };
