@@ -15,6 +15,7 @@ import {
 } from "reactstrap";
 import Can from "../../auth/Can";
 import { useAuth0 } from "../../auth/authContext";
+import { rules } from "../../auth/rbac-rules";
 
 const UserRow = ({ user }) => {
   const userLink = `/users/${user.user_id}`;
@@ -38,7 +39,7 @@ const UserRow = ({ user }) => {
         <Link to={userLink}>{user.email}</Link>
       </td>
       <td>{moment(user.created_at).format("MM/DD/YYYY")}</td>
-      <td>{user.app_metadata.roles[0]}</td>
+      <td>{rules[user.app_metadata.roles[0]].label}</td>
       <td>
         <Link to={userLink}>
           <Badge color={getBadge(user.blocked)}>
