@@ -540,7 +540,7 @@ gqlAbstractTableAggregateName (
     });
     // Join each aggregate query into one string
     const aggregatesQueryString = aggregatesQueryArray.join(" ");
-
+    
     // Return GraphQL query
     return gql`query GetLocationStats {
       ${aggregatesQueryString}
