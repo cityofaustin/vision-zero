@@ -44,7 +44,7 @@ const UserForm = ({ type, id = null }) => {
   const [submissionErrorMessage, setSubmissionErrorMessage] = useState("");
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
 
-  // Disable giving admin or IT Supervisor role unless user is IT Supervisor
+  // Roles that admin is not allowed to set
   const adminRoleExceptions = ["itSupervisor"];
 
   const radioButtonRoles = roles =>
