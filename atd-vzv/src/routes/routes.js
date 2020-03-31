@@ -1,8 +1,11 @@
 import React from "react";
-import Dashboard from "../views/dashboard/dashboard";
-import Map from "../views/map/map";
+import Summary from "../views/summary/Summary";
+import Map from "../views/map/Map";
+
+// Set basepath for VZV url
+export const basepath = "/viewer";
 
 export const routes = {
-  "/charts": () => <Dashboard />,
+  "/": () => <Summary />,
   "/map": () => <Map />
 };

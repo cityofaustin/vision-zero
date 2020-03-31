@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useQuery } from "@apollo/react-hooks";
+import { useAuth0, isReadOnly } from "../auth/authContext";
 import ConfirmModal from "./ConfirmModal";
 import get from "lodash.get";
 import { formatCostToDollars, formatDateTimeString } from "../helpers/format";
@@ -27,6 +28,10 @@ const DataTable = ({
   handleFieldUpdate,
   handleButtonClick,
 }) => {
+  // Disable edit features if only role is "readonly"
+  const { getRoles } = useAuth0();
+  const roles = getRoles();
+
   const [showModal, setShowModal] = useState(false);
 
   // Import Lookup tables and aggregate an object of uiType= "select" options
@@ -66,6 +71,11 @@ const DataTable = ({
                       const fieldConfigObject = section.fields[field];
 
                       const fieldLabel = fieldConfigObject.label;
+
+                      // Disable editing if user is only "readonly"
+                      if (fieldConfigObject.editable && isReadOnly(roles)) {
+                        fieldConfigObject.editable = false;
+                      }
 
                       // Set data table (alternate if defined in data map)
                       const fieldDataTable =
@@ -111,7 +121,11 @@ const DataTable = ({
 
                       const renderLookupDescString = () => {
                         // make sure the value isn't null blank
-                        if (!fieldValue) return "";
+                        if (
+                          fieldValue === null ||
+                          typeof fieldValue === "undefined"
+                        )
+                          return "";
 
                         // make sure there is a lookup object in the config
                         if (!selectOptions || !fieldConfigObject.lookupOptions)

@@ -15,11 +15,12 @@ function LocationCrashes(props) {
   let queryConf = {
     table: "atd_txdot_crashes",
     single_item: "crashes",
+    showDateRange: true,
     columns: crashGridTableColumns,
     order_by: {},
     where: {
       city_id: "_eq: 22",
-      location: `location_id: {_eq: "${props.locationId}"}`,
+      location_id: `_eq: "${props.locationId}"`,
     },
     limit: 25,
     offset: 0,
@@ -122,7 +123,7 @@ function LocationCrashes(props) {
       sum: true,
     },
     {
-      mainText: "Total Crashes",
+      mainText: "CR3 Crashes",
       icon: "fa fa-cab",
       color: "primary",
       dataPath: ["atd_txdot_crashes_aggregate", "aggregate", "count"],
