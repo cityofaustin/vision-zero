@@ -52,14 +52,17 @@ const UserForm = ({ type, id = null }) => {
       acc.push({
         id: role,
         label: roleConfig.label,
+        // Disable radio buttons based on role
         disabled:
-          // Non-supervisor cannot edit supervisor role
+          // Non-supervisors cannot edit other supervisor's role
           (!isItSupervisor(roles) &&
             userFormData.app_metadata.roles.includes("itSupervisor")) ||
-          // No one can edit their own roles
+          // Prevent editing own role
           user.email === userFormData.email ||
           // Admin can give all roles except supervisor
-          (isAdmin(roles) && adminRoleExceptions.includes(role)),
+          (isAdmin(roles) &&
+            !isItSupervisor(roles) &&
+            adminRoleExceptions.includes(role)),
       });
       return acc;
     }, []);
