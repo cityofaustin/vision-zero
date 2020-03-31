@@ -49,6 +49,7 @@ const App = () => {
       client.current = new ApolloClient(clientData);
       setIsApolloLoaded(true);
     }
+
   }, [isAuthenticated, client, userClaims, setIsApolloLoaded, getHasuraRole]);
 
   const renderLoading = () => (
