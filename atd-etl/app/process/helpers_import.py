@@ -147,8 +147,12 @@ def generate_gql(line, fieldnames, file_type):
         fields = generate_fields_with_filters(line=line,
                                               fieldnames=fieldnames,
                                               filters=filters)
-        # Clean field list
+
+        # The variable `filters[0][1]` contains all the columns we need to remove.
+        # We need `template_fields` to contain a lower-case array of all strings
+        # in `fieldnames` as long as they are not in the removed list `filters[0][1]`
         template_fields = [field.lower() for field in fieldnames if field.lower() not in filters[0][1]]
+
         # Generate Template
         template = generate_template(
             name=query_name,
