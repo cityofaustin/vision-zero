@@ -13,6 +13,7 @@ create table atd_txdot_changes
 	updated_by varchar(128) default 'System'::character varying,
 	status_id integer default 0 not null,
 	affected_columns text,
+	crash_date date NULL,
 	constraint atd_txdot_changes_unique
 		unique (record_id, record_type, status_id)
 );
