@@ -462,20 +462,26 @@ def insert_crash_change_template(new_record_dict):
     """
     # Turn the dictionary into a character-escaped json string
     new_record_escaped = json.dumps(new_record_dict).replace("\"", "\\\"")
+    new_record_crash_date = convert_date(new_record_dict["crash_date"])
     # Build the template and inject required values
     return """
         mutation insertCrashChangeMutation {
       insert_atd_txdot_changes(objects: {
-        record_id: NEW_RECORD_ID,
-        record_json: "NEW_RECORD_ESCAPED_JSON",
+        record_id: %NEW_RECORD_ID%,
+        record_json: "%NEW_RECORD_ESCAPED_JSON%",
         record_type: "crash",
         updated_by: "System"
+        crash_date: %NEW_RECORD_CRASH_DATE%
       }) {
         affected_rows
       }
     }
-    """.replace("NEW_RECORD_ESCAPED_JSON", new_record_escaped)\
-        .replace("NEW_RECORD_ID", new_record_dict["crash_id"])
+    """.replace("%NEW_RECORD_ESCAPED_JSON%", new_record_escaped)\
+       .replace("%NEW_RECORD_ID%", new_record_dict["crash_id"])\
+       .replace(
+            "%NEW_RECORD_CRASH_DATE%",
+            "null" if new_record_crash_date is None else f'"{new_record_crash_date}"'
+       )
 
 
 def record_compare_hook(line, fieldnames, file_type):
