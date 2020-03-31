@@ -3,16 +3,14 @@ import axios from "axios";
 import SummaryWidget from "../../Components/Widgets/SummaryWidget";
 import { Row, Col } from "reactstrap";
 
-import { thisYear, thisMonth, lastYear } from "../../constants/time";
 import {
-  thisYearFatalitiesUrl,
-  thisYearYearsOfLifeLostUrl,
-  thisYearSeriousInjuriesUrl,
-  thisYearTotalCrashesUrl,
-  previousYearFatalitiesUrl,
-  previousYearYearsOfLifeLostUrl,
-  previousYearSeriousInjuriesUrl,
-  previousYearTotalCrashesUrl
+  dataEndDate,
+  summaryCurrentYearStartDate,
+  summaryCurrentYearEndDate
+} from "../../constants/time";
+import {
+  personEndpointUrl,
+  crashEndpointUrl
 } from "./queries/socrataQueries";
 import {
   calculateTotalFatalities,
@@ -35,23 +33,10 @@ const SummaryView = () => {
   const [totalCrashes, setTotalCrashes] = useState(null);
 
   useEffect(() => {
-    // If it is past January, set URLs to query data for current year,
-    // else if it is January, set URLs to query data for previous year
-    let fatalitiesUrl =
-      thisMonth > "01" ? thisYearFatalitiesUrl : previousYearFatalitiesUrl;
-
-    let yearsOfLifeLostUrl =
-      thisMonth > "01"
-        ? thisYearYearsOfLifeLostUrl
-        : previousYearYearsOfLifeLostUrl;
-
-    let seriousInjuriesUrl =
-      thisMonth > "01"
-        ? thisYearSeriousInjuriesUrl
-        : previousYearSeriousInjuriesUrl;
-
-    let totalCrashesUrl =
-      thisMonth > "01" ? thisYearTotalCrashesUrl : previousYearTotalCrashesUrl;
+    const fatalitiesUrl = `${crashEndpointUrl}?$where=death_cnt > 0 AND crash_date between '${summaryCurrentYearStartDate}T00:00:00' and '${summaryCurrentYearEndDate}T23:59:59'`;
+    const yearsOfLifeLostUrl = `${personEndpointUrl}?$where=prsn_injry_sev_id = '4' AND crash_date between '${summaryCurrentYearStartDate}T00:00:00' and '${summaryCurrentYearEndDate}T23:59:59'`;
+    const seriousInjuriesUrl = `${crashEndpointUrl}?$where=sus_serious_injry_cnt > 0 AND crash_date between '${summaryCurrentYearStartDate}T00:00:00' and '${summaryCurrentYearEndDate}T23:59:59'`;
+    const totalCrashesUrl = `${crashEndpointUrl}?$where=crash_date between '${summaryCurrentYearStartDate}T00:00:00' and '${summaryCurrentYearEndDate}T23:59:59'&$limit=100000`;
 
     axios.get(fatalitiesUrl).then(res => {
       setFatalities(calculateTotalFatalities(res.data));
@@ -70,7 +55,7 @@ const SummaryView = () => {
     });
   }, []);
 
-  let displayYear = thisMonth > "01" ? thisYear : lastYear;
+  const displayYear = dataEndDate.format("YYYY");
 
   const summaryWidgetsConfig = [
     {

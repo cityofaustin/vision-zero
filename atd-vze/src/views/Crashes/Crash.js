@@ -148,12 +148,12 @@ function Crash(props) {
           {primaryAddress && secondaryAddress ? (
             <h2 className="h2 mb-3">{`${primaryAddress} & ${secondaryAddress}`}</h2>
           ) : (
-            <h2 className="h2 mb-3">{`${
-              primaryAddress ? primaryAddress : "PRIMARY ADDRESS MISSING"
-            } & ${
-              secondaryAddress ? secondaryAddress : "SECONDARY ADDRESS MISSING"
-            }`}</h2>
-          )}
+              <h2 className="h2 mb-3">{`${
+                primaryAddress ? primaryAddress : "PRIMARY ADDRESS MISSING"
+                } & ${
+                secondaryAddress ? secondaryAddress : "SECONDARY ADDRESS MISSING"
+                }`}</h2>
+            )}
         </Col>
       </Row>
       <Row>
@@ -169,7 +169,7 @@ function Crash(props) {
           <Widget02
             header={`${
               seriousInjuryCount === null ? "--" : seriousInjuryCount
-            }`}
+              }`}
             mainText="Serious Injuries"
             icon="fa fa-medkit"
             color="warning"
@@ -179,7 +179,7 @@ function Crash(props) {
           <Widget02
             header={`${
               yearsLifeLostCount === null ? "--" : yearsLifeLostCount
-            }`}
+              }`}
             mainText="Years of Life Lost"
             icon="fa fa-hourglass-end"
             color="info"
@@ -199,7 +199,7 @@ function Crash(props) {
                         <Link
                           to={`/locations/${
                             data.atd_txdot_crash_locations[0]["location_id"]
-                          }`}
+                            }`}
                         >
                           {data.atd_txdot_crash_locations[0]["location_id"]}
                         </Link>
@@ -241,21 +241,21 @@ function Crash(props) {
                     </Table>
                   </>
                 ) : (
-                  <>
-                    <CrashEditCoordsMap
-                      data={data.atd_txdot_crashes[0]}
-                      mapGeocoderAddress={mapGeocoderAddress}
-                      crashId={crashId}
-                      refetchCrashData={refetch}
-                      setIsEditingCoords={setIsEditingCoords}
-                    />
-                  </>
-                )}
+                    <>
+                      <CrashEditCoordsMap
+                        data={data.atd_txdot_crashes[0]}
+                        mapGeocoderAddress={mapGeocoderAddress}
+                        crashId={crashId}
+                        refetchCrashData={refetch}
+                        setIsEditingCoords={setIsEditingCoords}
+                      />
+                    </>
+                  )}
               </CardBody>
             </Card>
           </div>
         </Col>
-        <Col>
+        <Col xs="12" md="6">
           <CR3Record crashId={crashId} isCr3Stored={cr3StoredFlag === "Y"} />
           <CrashCollapses data={data} />
         </Col>

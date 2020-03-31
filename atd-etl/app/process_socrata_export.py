@@ -36,17 +36,10 @@ query_configs = [
                 "veh_unit_desc_desc": "unit_mode",
                 "latitude_primary": "latitude",
                 "longitude_primary": "longitude"
-            },
-            "flags_list": ["MOTOR VEHICLE",
-                           "TRAIN",
-                           "PEDALCYCLIST",
-                           "PEDESTRIAN",
-                           "MOTORIZED CONVEYANCE",
-                           "TOWED/PUSHED/TRAILER",
-                           "NON-CONTACT",
-                           "OTHER"]
+            }
         },
-        "dataset_uid": "y2wy-tgr5"
+        # "dataset_uid": "3aut-fhzp"  # TEST
+        "dataset_uid": "y2wy-tgr5"  # PROD
     },
     {
         "table": "person",
@@ -60,17 +53,10 @@ query_configs = [
             "prefixes": {
                 "person_id": "P",
                 "primaryperson_id": "PP",
-            },
-            "flags_list": ["MOTOR VEHICLE",
-                           "TRAIN",
-                           "PEDALCYCLIST",
-                           "PEDESTRIAN",
-                           "MOTORIZED CONVEYANCE",
-                           "TOWED/PUSHED/TRAILER",
-                           "NON-CONTACT",
-                           "OTHER"]
+            }
         },
-        "dataset_uid": "xecs-rpy9"
+        # "dataset_uid": "v3x4-fjgm"  # TEST
+        "dataset_uid": "xecs-rpy9"  # PROD
     }
 ]
 
@@ -98,6 +84,7 @@ for config in query_configs:
 
         # Upsert records to Socrata
         client.upsert(config["dataset_uid"], records)
+        print(f'{offset} records upserted')
         total_records += len(records)
 
         if len(records) == 0:
