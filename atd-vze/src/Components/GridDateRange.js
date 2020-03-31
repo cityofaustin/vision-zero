@@ -47,12 +47,7 @@ const StyledDatePicker = styled.div`
   }
 `;
 
-const GridDateRange = ({
-  setDateRangeFilter,
-  initStartDate,
-  initEndDate,
-  uniqueKey,
-}) => {
+const GridDateRange = ({ setDateRangeFilter, initStartDate, initEndDate, uniqueKey }) => {
   /**
    * Parses a string into proper format
    * @param {string} date - date string to be formatted
