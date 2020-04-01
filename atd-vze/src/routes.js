@@ -145,8 +145,8 @@ const routes = roles => [
     component: Location,
   },
   { path: "/crashes", exact: true, name: "Crashes", component: Crashes },
-  { path: "/crashes/changes", exact: true, name: "Crash Changes", component: CrashesChanges },
-  { path: "/crashes/changes/:id", exact: true, name: "Crash Change", component: CrashChange },
+  { path: "/changes", exact: true, name: "Crash Changes", component: CrashesChanges },
+  { path: "/changes/:id", exact: true, name: "Crash Change", component: CrashChange },
   {
     path: "/crashes/:id",
     exact: true,

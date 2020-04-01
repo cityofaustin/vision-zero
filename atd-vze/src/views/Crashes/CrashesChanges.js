@@ -9,7 +9,7 @@ import { crashChangesGridTableColumns } from "./crashChangesGridTableParameters"
 // Our initial query configuration
 let queryConf = {
   table: "atd_txdot_changes",
-  single_item: "crashes/changes",
+  single_item: "changes",
   columns: crashChangesGridTableColumns,
   order_by: {},
   where: {
