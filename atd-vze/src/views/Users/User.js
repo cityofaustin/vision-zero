@@ -14,6 +14,7 @@ import {
 } from "reactstrap";
 import Can from "../../auth/Can";
 import { useAuth0 } from "../../auth/authContext";
+import { rules } from "../../auth/rbac-rules";
 
 const User = () => {
   const token = window.localStorage.getItem("id_token");
@@ -26,7 +27,7 @@ const User = () => {
     user_id: { label: "User ID", format: "string" },
     name: { label: "Name", format: "string" },
     email: { label: "Email", format: "string" },
-    app_metadata: { label: "Roles", format: "object", nestedKey: "roles" },
+    app_metadata: { label: "Roles", format: "roleObject", nestedKey: "roles" },
     created_at: { label: "Created", format: "time" },
     blocked: { label: "Blocked", format: "bool" },
     last_login: { label: "Last login", format: "time" },
@@ -78,9 +79,11 @@ const User = () => {
         case "time":
           formattedValue = moment(user[key]).format("MM/DD/YYYY, h:mm:ss a");
           break;
-        case "object":
+        case "roleObject":
           const nestedKey = value.nestedKey;
-          formattedValue = user[key][nestedKey].join(", ");
+          const roleArray = user[key][nestedKey];
+          const readableRoleArray = roleArray.map(role => rules[role].label);
+          formattedValue = readableRoleArray.join(", ");
           break;
         default:
           console.log("No User view field format match");

@@ -38,7 +38,7 @@ let queryConf = {
       searchable: false,
       sortable: true,
       label_search: null,
-      label_table: "Total Deaths (APD)",
+      label_table: "Total Deaths (CRIS)",
       default: 0,
       type: "Integer",
     },
@@ -54,13 +54,16 @@ let queryConf = {
       searchable: false,
       sortable: true,
       label_search: null,
-      label_table: "Comp. Cost",
+      label_table: "Comp. Cost (CR3s)",
       default: 0,
       type: "Currency",
     },
   },
   order_by: {},
-  where: {},
+  where: {
+    // Only show Locations inside CoA Limits.
+    council_district: "_gt: 0",
+  },
   limit: 25,
   offset: 0,
 };

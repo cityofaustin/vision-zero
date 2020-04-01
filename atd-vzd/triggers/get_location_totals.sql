@@ -17,14 +17,13 @@ SELECT
 FROM
   (
     SELECT
-      atdcl.location_id AS location_id,
+      atdl.location_id AS location_id,
       count(atdc) AS total_crashes,
       coalesce(sum(atdc.est_comp_cost), 0) AS est_comp_cost
     FROM
       atd_txdot_locations AS atdl
-      LEFT JOIN atd_txdot_crash_locations AS atdcl ON (atdcl.location_id = atdl.location_id)
       LEFT JOIN atd_txdot_crashes AS atdc ON (
-        atdcl.crash_id = atdc.crash_id
+        atdl.location_id = atdc.location_id
         AND atdc.city_id = 22
         AND atdc.crash_date >= cr3_crash_date :: date
       )
@@ -33,7 +32,7 @@ FROM
       AND atdl.location_id IS NOT NULL
       AND atdl.location_id :: text <> 'None' :: text
     GROUP BY
-      atdcl.location_id
+      atdl.location_id
   ) cr3
   JOIN (
     SELECT
