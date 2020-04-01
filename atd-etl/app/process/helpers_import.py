@@ -13,35 +13,59 @@ import io
 import json
 import re
 import datetime
-import web_pdb
 
 # Dependencies
 from .queries import search_crash_query, search_crash_query_full
 from .request import run_query
-from .helpers_import_fields import CRIS_TXDOT_FIELDS, CRIS_TXDOT_COMPARE_FIELDS_LIST
+from .helpers_import_fields import CRIS_TXDOT_FIELDS, \
+    CRIS_TXDOT_COMPARE_FIELDS_LIST, CRIS_TXDOT_COMPARE_FIELD_TYPE
 
 
-def generate_template(name, function, fields):
+def generate_template(name, function, fields, fieldnames=[], upsert=False, constraint=""):
     """
     Returns a string with a graphql template
-    :param name:
-    :param function:
-    :param fields:
-    :return:
+    :param str name: The name of the graphql mutation
+    :param str function: The name of the graphql function
+    :param str fields: The value of the fields in graphql expression
+    :param str[] fieldnames: An array of strings containing the names of the columns
+    :param bool upsert: If true, adds upsert logic; false otherwise.
+    :param str constraint: The name of the constraint on_conflict
+    :return str:
     """
+    if upsert:
+        on_conflict = """
+            , on_conflict: {
+              constraint: %CONFLICT_CONSTRAINT%,
+              update_columns: [
+                %CONFLICT_FIELDS%
+              ]
+            }
+        """.replace(
+            "%CONFLICT_CONSTRAINT%",
+            constraint
+        ).replace(
+            "%CONFLICT_FIELDS%",
+            ",\n".join([f.lower() for f in fieldnames])
+        )
+
+    else:
+        on_conflict = ""
+
     return """
         mutation %NAME% {
           %FUNCTION%(
             objects: {
             %FIELDS%
             }
+            %ON_CONFLICT%
           ){
             affected_rows
-          }
+          } 
         }
     """.replace("%NAME%", name)\
-        .replace("%FUNCTION%", function)\
-        .replace("%FIELDS%", fields)
+       .replace("%FUNCTION%", function)\
+       .replace("%FIELDS%", fields)\
+       .replace("%ON_CONFLICT%", on_conflict)
 
 
 def lowercase_group_match(match):
@@ -123,9 +147,25 @@ def generate_gql(line, fieldnames, file_type):
                                               fieldnames=fieldnames,
                                               filters=filters)
 
-        template = generate_template(name=query_name,
-                                     function=function_name,
-                                     fields=fields)
+        # The variable `filters[0][1]` contains all the columns we need to remove.
+        # We need `template_fields` to contain a lower-case array of all strings
+        # in `fieldnames` as long as they are not in the removed list `filters[0][1]`
+        template_fields = [field.lower() for field in fieldnames if field.lower() not in filters[0][1]]
+
+        # Generate Template
+        template = generate_template(
+            name=query_name,
+            function=function_name,
+            fields=fields,
+            fieldnames=template_fields,
+            upsert=(file_type != "crash"),
+            constraint={
+                "unit": "atd_txdot_units_unique",
+                "person": "atd_txdot_person_unique",
+                "primaryperson": "atd_txdot_primaryperson_unique",
+                "charges": "atd_txdot_charges_pkey"
+            }.get(file_type, None),
+        )
     except Exception as e:
         print("generate_gql() Error: " + str(e))
         template = ""
@@ -349,8 +389,11 @@ def convert_date(string):
     :param string: string - The date being converted
     :return: string
     """
-    input_date = datetime.datetime.strptime(string, "%m/%d/%Y")
-    return input_date.strftime("%Y-%m-%d")
+    if is_cris_date(string):
+        input_date = datetime.datetime.strptime(string, "%m/%d/%Y")
+        return input_date.strftime("%Y-%m-%d")
+    else:
+        return string
 
 
 def convert_time(string):
@@ -359,8 +402,11 @@ def convert_time(string):
     :param string: string - The string being converted
     :return: string
     """
-    input_time = datetime.datetime.strptime(string, "%I:%M %p")
-    return input_time.strftime("%H:%M:00")
+    if is_cris_time(string):
+        input_time = datetime.datetime.strptime(string, "%I:%M %p")
+        return input_time.strftime("%H:%M:00")
+    else:
+        return string
 
 
 def clean_none_null(string):
@@ -372,36 +418,88 @@ def clean_none_null(string):
     return str(string).replace("None", "").replace("null", "")
 
 
+def convert_decimal(string):
+    """
+    Takes a string and converts is into a decimal
+    :param str string:
+    :return float:
+    """
+    try:
+        return float(string)
+    except:
+        return ""
+
+
+def convert_integer(string):
+    """
+    Takes a string and converts is into a decimal
+    :param str string:
+    :return int:
+    """
+    try:
+        return int(string)
+    except:
+        return ""
+
+
+def clean_up_record(record):
+    # Remove the crash_id record if present
+    if "crash_id" in record:
+        del record["crash_id"]
+
+    # Get the lower case list of fields in CRIS_TXDOT_COMPARE_FIELD_TYPE
+    field_names = [key.lower() for key in CRIS_TXDOT_COMPARE_FIELD_TYPE.keys()]
+
+    # For each field, make necessary conversions...
+    for field in field_names:
+        if field not in record:
+            continue
+        # Remove None and null
+        record[field] = clean_none_null(record[field])
+
+        # Get the field type
+        field_type = CRIS_TXDOT_COMPARE_FIELD_TYPE[field]
+
+        # If not a date, time, decimal or int, skip...
+        if field_type not in ["date", "time", "decimal", "int"]:
+            continue
+
+        # Convert CSV's date format to postgres format
+        if field_type == "date":
+            record[field] = convert_date(record[field])
+        # Convert CSV's time format to postgres format
+        if field_type == "time":
+            record[field] = convert_time(record[field])
+        # Parse Decimals
+        if field_type == "decimal":
+            record[field] = convert_decimal(record[field])
+        # Parse Decimals
+        if field_type == "int":
+            record[field] = convert_integer(record[field])
+
+    return record
+
+
 def record_compare(record_new, record_existing):
     """
     Compares two dictionaries. It uses the CRIS_TXDOT_COMPARE_FIELDS_LIST
     to determine what fields are important enough, and returns True if
     there is one important difference. Returns False if none of the fields
     present any differences.
-    :param record_new: dict - The new object being parsed from csv
-    :param record_existing: dict - The existing object, as parsed from an HTTP query
+    :param dict record_new: The new object being parsed from csv
+    :param dict record_existing: The existing object, as parsed from an HTTP query
     :return: bool
     """
+    differences = []
+    record_new = clean_up_record(record_new)
+    record_existing = clean_up_record(record_existing)
+
     for field in CRIS_TXDOT_COMPARE_FIELDS_LIST:
-        # Remove None and null
-        record_existing[field] = clean_none_null(record_existing[field])
-
-        # If the current field is a date, then try to parse it
-        if is_cris_date(record_new[field]):
-            record_new[field] = convert_date(record_new[field])
-
-        # If the current field is a time string, then try to parse it
-        if is_cris_time(record_new[field]):
-            record_new[field] = convert_time(record_new[field])
-
-        # Make the comparison, if not equal important_difference = true
-        important_difference = record_new[field] != record_existing[field]
-
-        if important_difference:
-            return True
+        if record_new.get(field, "") != record_existing.get(field, ""):
+            differences.append(field)
 
     # Found no differences in any of the fields
-    return False
+    return differences
 
 
 def generate_crash_record(line, fieldnames):
@@ -419,28 +517,52 @@ def generate_crash_record(line, fieldnames):
     return json.loads(fields)
 
 
-def insert_crash_change_template(new_record_dict):
+def insert_crash_change_template(new_record_dict, differences, crash_id):
     """
     Generates a crash insertion graphql query
     :param new_record_dict: dict - The new record as a dictionary
     :return: string
     """
     # Turn the dictionary into a character-escaped json string
-    new_record_escaped = json.dumps(new_record_dict).replace("\"", "\\\"")
+    new_record_escaped = json.dumps(json.dumps(new_record_dict))
+    new_record_crash_date = convert_date(new_record_dict["crash_date"])
     # Build the template and inject required values
-    return """
+    output = """
         mutation insertCrashChangeMutation {
-      insert_atd_txdot_changes(objects: {
-        record_id: NEW_RECORD_ID,
-        record_json: "NEW_RECORD_ESCAPED_JSON",
-        record_type: "crash",
-        updated_by: "System"
-      }) {
-        affected_rows
-      }
-    }
-    """.replace("NEW_RECORD_ESCAPED_JSON", new_record_escaped)\
-        .replace("NEW_RECORD_ID", new_record_dict["crash_id"])
+          insert_atd_txdot_changes(
+            objects: {
+              record_id: %NEW_RECORD_ID%,
+              record_json: %NEW_RECORD_ESCAPED_JSON%,
+              record_type: "crash",
+              affected_columns: %AFFECTED_COLUMNS%,
+              status_id: 0,
+              updated_by: "System",
+              crash_date: %NEW_RECORD_CRASH_DATE%
+            },
+            on_conflict: {
+              constraint: atd_txdot_changes_unique,
+              update_columns: [
+                record_id,
+                record_json,
+                record_type,
+                affected_columns,
+                status_id,
+                updated_by
+                crash_date
+              ]
+            }
+          ) {
+            affected_rows
+          }
+        }
+        """.replace("%NEW_RECORD_ESCAPED_JSON%", new_record_escaped) \
+        .replace("%NEW_RECORD_ID%", crash_id) \
+        .replace("%AFFECTED_COLUMNS%", json.dumps(json.dumps(differences))) \
+        .replace(
+            "%NEW_RECORD_CRASH_DATE%",
+            "null" if new_record_crash_date is None else f'"{new_record_crash_date}"'
+        )
+    return output
 
 
 def record_compare_hook(line, fieldnames, file_type):
@@ -456,9 +578,14 @@ def record_compare_hook(line, fieldnames, file_type):
         crash_id = get_crash_id(line)
         record_new = generate_crash_record(line=line, fieldnames=fieldnames)
         record_existing = get_crash_record(get_crash_id(line))
-        significant_difference = record_compare(record_new=record_new, record_existing=record_existing)
-        if significant_difference:
-            mutation_template = insert_crash_change_template(new_record_dict=record_new)
+        differences = record_compare(record_new=record_new, record_existing=record_existing)
+
+        if len(differences) > 0:
+            mutation_template = insert_crash_change_template(
+                new_record_dict=record_new,
+                differences=differences,
+                crash_id=crash_id
+            )
             result = run_query(mutation_template)
             try:
                 affected_rows = result["data"]["insert_atd_txdot_changes"]["affected_rows"]
