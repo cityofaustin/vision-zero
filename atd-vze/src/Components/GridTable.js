@@ -523,22 +523,19 @@ const GridTable = ({
                   )}
                 </ButtonGroup>
               </ButtonToolbar>
-              <Table responsive>
-                <GridTableHeader
-                  query={query}
-                  handleTableHeaderClick={handleTableHeaderClick}
-                  sortColumn={sortColumn}
-                  sortOrder={sortOrder}
-                />
-
-                <tbody>
-                  {loading ? (
-                    <Spinner className="mt-2" color="primary" />
-                  ) : (
-                    data && dataEntries
-                  )}
-                </tbody>
-              </Table>
+              {loading ? (
+                <Spinner className="mt-2" color="primary" />
+              ) : (
+                <Table responsive>
+                  <GridTableHeader
+                    query={query}
+                    handleTableHeaderClick={handleTableHeaderClick}
+                    sortColumn={sortColumn}
+                    sortOrder={sortOrder}
+                  />
+                  <tbody>{data && dataEntries}</tbody>
+                </Table>
+              )}
             </CardBody>
           </Card>
         </Col>
