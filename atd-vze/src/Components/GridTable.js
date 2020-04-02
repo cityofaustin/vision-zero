@@ -345,7 +345,9 @@ const GridTable = ({
       query.deleteWhere(column);
     });
 
-    const useEqSearch = searchParameters["column"] === "crash_id" || searchParameters["column"] === "form_id"
+    const useEqSearch =
+      searchParameters["column"] === "crash_id" ||
+      searchParameters["column"] === "form_id";
 
     if (useEqSearch) {
       // Search Integer for exact value
