@@ -97,7 +97,8 @@ const PeopleByDemographics = () => {
         // Use Promise.all to let all requests resolve before setting chart data by year
         await Promise.all(
           yearsArray().map(async year => {
-            // If getting data for current year (only including years past January), set end of query to last day of previous month,
+            // If getting data for current year (only including years past January),
+            // set end of query to last day of previous month,
             // else if getting data for previous years, set end of query to last day of year
             let endDate =
               year.toString() === dataEndDate.format("YYYY")
@@ -125,11 +126,13 @@ const PeopleByDemographics = () => {
         switch (activeTab) {
           case "prsn_age":
             switch (categoryValue) {
-              // If the person age value is missing, increment the count for the category value 0 ("Unknown") in the chart
+              // If the person age value is missing, increment the count for
+              // category value 0 ("Unknown") in the chart
               case 0:
                 !record.prsn_age && accumulator++;
                 break;
-              // For all other cases, if the person age value falls within the category value range, increment the count for the associated category
+              // For all other cases, if the person age value falls within the category value range,
+              // increment the count for the associated category
               case 1:
                 record.prsn_age < 18 && accumulator++;
                 break;
@@ -148,12 +151,14 @@ const PeopleByDemographics = () => {
             break;
           case "prsn_gndr_id":
             switch (categoryValue) {
-              // If the gender id is missing or 0 ("Unknown"), increment the count for category value 0 ("Unknown") in the chart
+              // If the gender id is missing or 0 ("Unknown"), increment the count for
+              // category value 0 ("Unknown") in the chart
               case 0:
                 (!record.prsn_gndr_id || parseInt(record.prsn_gndr_id) === 0) &&
                   accumulator++;
                 break;
-              // For all other cases, if the gender id value matches the category value, increment the count for the associated category
+              // For all other cases, if the gender id value matches the category value,
+              // increment the count for the associated category
               default:
                 record.prsn_gndr_id === `${categoryValue}` && accumulator++;
                 break;
@@ -161,14 +166,16 @@ const PeopleByDemographics = () => {
             break;
           case "prsn_ethnicity_id":
             switch (categoryValue) {
-              // If the ethnicity id is either missing, 5 ("Other") or 0 ("Unknown"), increment the count for category value 5 ("Other or unknown") in the chart
+              // If the ethnicity id is either missing, 5 ("Other") or 0 ("Unknown"),
+              // increment the count for category value 5 ("Other or unknown") in the chart
               case 5:
                 (!record.prsn_ethnicity_id ||
                   parseInt(record.prsn_ethnicity_id) === 5 ||
                   parseInt(record.prsn_ethnicity_id) === 0) &&
                   accumulator++;
                 break;
-              // For all other cases, if the ethnicity id value matches the category value, increment the count for the associated category
+              // For all other cases, if the ethnicity id value matches the category value,
+              // increment the count for the associated category
               default:
                 record.prsn_ethnicity_id === `${categoryValue}` &&
                   accumulator++;

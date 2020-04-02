@@ -102,8 +102,10 @@ const CrashesByMode = () => {
         const isInjuryQuery =
           crashType.name === "seriousInjuries" ||
           crashType.name === "fatalitiesAndSeriousInjuries";
+
         accumulator += isFatalQuery && parseInt(record[fields.fatal]);
         accumulator += isInjuryQuery && parseInt(record[fields.injury]);
+        
         return accumulator;
       }, 0);
     });
