@@ -308,7 +308,10 @@ const GridTable = ({
    **/
 
   // Allow for Date Range to be configured from the queryConf/gqlAbstract query props
-  const hasDateRange = typeof query.config.showDateRange !== "undefined" ? query.config.showDateRange : true; 
+  const hasDateRange =
+    typeof query.config.showDateRange !== "undefined"
+      ? query.config.showDateRange
+      : true;
   const dateField = query.table === "atd_apd_blueform" ? "date" : "crash_date";
   // Handle Date Range (only if available)
   if (
@@ -396,19 +399,26 @@ const GridTable = ({
     data[query.table].map((row, index) =>
       dataEntries.push(
         <tr key={index}>
-          {query.columns.map((column, ci) => (
-            <td key={ci}>
-              {query.isPK(column) ? (
-                <Link to={`/${query.singleItem}/${row[column]}`}>
-                  {row[column]}
-                </Link>
-              ) : isAlphanumeric(column) ? (
-                query.getFormattedValue(column, row[column])
-              ) : (
-                query.getFormattedValue(column, getSummary(row, column.trim()))
-              )}
-            </td>
-          ))}
+          {query.columns.map(
+            (column, ci) =>
+              // If column is hidden, don't render <td>
+              !query.isHidden(column) && (
+                <td key={ci}>
+                  {query.isPK(column) ? (
+                    <Link to={`/${query.singleItem}/${row[column]}`}>
+                      {row[column]}
+                    </Link>
+                  ) : isAlphanumeric(column) ? (
+                    query.getFormattedValue(column, row[column])
+                  ) : (
+                    query.getFormattedValue(
+                      column,
+                      getSummary(row, column.trim())
+                    )
+                  )}
+                </td>
+              )
+          )}
         </tr>
       )
     );
@@ -516,22 +526,19 @@ const GridTable = ({
                   )}
                 </ButtonGroup>
               </ButtonToolbar>
-              <Table responsive>
-                <GridTableHeader
-                  query={query}
-                  handleTableHeaderClick={handleTableHeaderClick}
-                  sortColumn={sortColumn}
-                  sortOrder={sortOrder}
-                />
-
-                <tbody>
-                  {loading ? (
-                    <Spinner className="mt-2" color="primary" />
-                  ) : (
-                    data && dataEntries
-                  )}
-                </tbody>
-              </Table>
+              {loading ? (
+                <Spinner className="mt-2" color="primary" />
+              ) : (
+                <Table responsive>
+                  <GridTableHeader
+                    query={query}
+                    handleTableHeaderClick={handleTableHeaderClick}
+                    sortColumn={sortColumn}
+                    sortOrder={sortOrder}
+                  />
+                  <tbody>{data && dataEntries}</tbody>
+                </Table>
+              )}
             </CardBody>
           </Card>
         </Col>
