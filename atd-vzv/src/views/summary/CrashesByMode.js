@@ -19,41 +19,44 @@ const CrashesByMode = () => {
       fields: {
         fatal: `motor_vehicle_death_count`,
         injury: `motor_vehicle_serious_injury_count`
-      },
-      color: colors.chartRed
+      }
     },
     {
       label: "Pedestrian",
       fields: {
         fatal: `pedestrian_death_count`,
         injury: `pedestrian_serious_injury_count`
-      },
-      color: colors.chartOrange
+      }
     },
     {
       label: "Motorcyclist",
       fields: {
         fatal: `motorcycle_death_count`,
         injury: `motorcycle_serious_injury_count`
-      },
-      color: colors.chartRedOrange
+      }
     },
     {
       label: "Bicyclist",
       fields: {
         fatal: `bicycle_death_count`,
         injury: `bicycle_serious_injury_count`
-      },
-      color: colors.chartBlue
+      }
     },
     {
       label: "Other",
       fields: {
         fatal: `other_death_count`,
         injury: `other_serious_injury_count`
-      },
-      color: colors.chartLightBlue
+      }
     }
+  ];
+
+  const chartColors = [
+    colors.viridis1Of6Highest,
+    colors.viridis2Of6,
+    colors.viridis3Of6,
+    colors.viridis4Of6,
+    colors.viridis5Of6
   ];
 
   const [chartData, setChartData] = useState(null); // {yearInt: [{record}, {record}, ...]}
@@ -99,36 +102,38 @@ const CrashesByMode = () => {
         const isInjuryQuery =
           crashType.name === "seriousInjuries" ||
           crashType.name === "fatalitiesAndSeriousInjuries";
-
         accumulator += isFatalQuery && parseInt(record[fields.fatal]);
         accumulator += isInjuryQuery && parseInt(record[fields.injury]);
-
         return accumulator;
       }, 0);
     });
 
-  // Sort mode order in stack by averaging total mode fatalities across all years in chart
-  const sortModeData = modeData => {
+  // Sort mode order in stack and apply colors by averaging total mode fatalities across all years in chart
+  const sortAndColorModeData = modeData => {
     const averageModeFatalities = modeDataArray =>
       modeDataArray.reduce((a, b) => a + b) / modeDataArray.length;
-    return modeData.sort(
+    const modeDataSorted = modeData.sort(
       (a, b) => averageModeFatalities(b.data) - averageModeFatalities(a.data)
     );
+    modeDataSorted.forEach((category, i) => {
+      const color = chartColors[i];
+      category.backgroundColor = color;
+      category.borderColor = color;
+      category.hoverBackgroundColor = color;
+      category.hoverBorderColor = color;
+    });
+    return modeDataSorted;
   };
 
   // Create dataset for each mode type, data property is an array of fatality sums sorted chronologically
   const createTypeDatasets = () => {
     const modeData = modes.map(mode => ({
-      backgroundColor: mode.color,
-      borderColor: mode.color,
       borderWidth: 2,
-      hoverBackgroundColor: mode.color,
-      hoverBorderColor: mode.color,
       label: mode.label,
       data: getModeData(mode.fields)
     }));
-    // Determine order of modes in each year stack
-    return sortModeData(modeData);
+    // Determine order of modes in each year stack and color appropriately
+    return sortAndColorModeData(modeData);
   };
 
   const data = {
