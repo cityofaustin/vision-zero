@@ -42,19 +42,16 @@ function Location(props) {
     variables,
   });
 
-  // TOOD: Fix the crash/location total DB views
-  // https://vzd-staging.austinmobility.io/console/data/schema/public/functions/get_location_totals/modify
-  //
   // Retrieve est_comp_cost_amount of Non-CR3 crashes from DB and set updated variable
-  // useEffect(() => {
-  //   if (
-  //     Object.entries(data).length !== 0 &&
-  //     data.locationTotals[0].noncr3_est_comp_cost === 0
-  //   ) {
-  //     const costPerNonCr3Crash = data.nonCr3EstCompCost[0].est_comp_cost_amount;
-  //     setVariables({ ...variables, costPerCrash: costPerNonCr3Crash });
-  //   }
-  // }, [data, variables]);
+  useEffect(() => {
+    if (
+      Object.entries(data).length !== 0 &&
+      data.locationTotals[0].noncr3_est_comp_cost === 0
+    ) {
+      const costPerNonCr3Crash = data.nonCr3EstCompCost[0].est_comp_cost_amount;
+      setVariables({ ...variables, costPerCrash: costPerNonCr3Crash });
+    }
+  }, [data, variables]);
 
   // On variable change, refetch to get calculated Non-CR3 total_est_comp_cost
   useEffect(() => {

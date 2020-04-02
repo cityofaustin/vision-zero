@@ -17,7 +17,11 @@ jobs:
           command: |
             source .circleci/docker-helper.sh
             build_containers
-
+      - run:
+          name: "Build VZE API"
+          command: |
+            source .circleci/aws-helper.sh
+            deploy_aws_lambda
 workflows:
   version: 2.1
   build-and-deploy:

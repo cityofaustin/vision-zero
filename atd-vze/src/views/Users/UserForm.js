@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useAuth0, isItSupervisor } from "../../auth/authContext";
+import { useAuth0, isItSupervisor, isAdmin } from "../../auth/authContext";
 import { rules } from "../../auth/rbac-rules";
 import axios from "axios";
 import { Redirect } from "react-router-dom";
@@ -23,7 +23,7 @@ import {
 const UserForm = ({ type, id = null }) => {
   const token = window.localStorage.getItem("id_token");
 
-  const { getRoles } = useAuth0();
+  const { getRoles, user } = useAuth0();
   const roles = getRoles();
 
   const defaultFormData = {
@@ -44,17 +44,26 @@ const UserForm = ({ type, id = null }) => {
   const [submissionErrorMessage, setSubmissionErrorMessage] = useState("");
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
 
-  // Disable giving admin or IT Supervisor role unless user is IT Supervisor
-  const roleExceptions = ["admin", "itSupervisor"];
+  // Roles that admin is not allowed to set
+  const adminRoleExceptions = ["itSupervisor"];
 
   const radioButtonRoles = roles =>
     Object.entries(rules).reduce((acc, [role, roleConfig]) => {
-      if (isItSupervisor(roles)) {
-        acc.push({ id: role, label: roleConfig.label });
-      } else {
-        !roleExceptions.includes(role) &&
-          acc.push({ id: role, label: roleConfig.label });
-      }
+      acc.push({
+        id: role,
+        label: roleConfig.label,
+        // Disable radio buttons based on role
+        disabled:
+          // Non-supervisors cannot edit other supervisor's role
+          (!isItSupervisor(roles) &&
+            userFormData.app_metadata.roles.includes("itSupervisor")) ||
+          // Prevent editing own role
+          user.email === userFormData.email ||
+          // Admin can give all roles except supervisor
+          (isAdmin(roles) &&
+            !isItSupervisor(roles) &&
+            adminRoleExceptions.includes(role)),
+      });
       return acc;
     }, []);
 
@@ -258,6 +267,7 @@ const UserForm = ({ type, id = null }) => {
                               checked={
                                 userFormData.app_metadata.roles[0] === role.id
                               }
+                              disabled={role.disabled}
                               onChange={handleRoleRadioInputChange}
                             />
                             <Label

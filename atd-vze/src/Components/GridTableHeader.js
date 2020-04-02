@@ -19,7 +19,13 @@ const GridTableHeader = ({
    * @param {boolean} ascending - true if ordering in ascending mode
    * @returns {object} jsx component
    */
-  const renderLabel = (col, sortable = false, ascending = false) => {
+  const renderLabel = (
+    col,
+    sortable = false,
+    ascending = false,
+    hidden = false
+  ) => {
+    if (hidden) return false;
     if (sortable) {
       return (
         <StyledArrow>
@@ -35,25 +41,28 @@ const GridTableHeader = ({
   return (
     <thead>
       <tr>
-        {query.columns.map((column, index) => (
-          <th
-            onClick={
-              query.isSortable(column)
-                ? e => handleTableHeaderClick(column)
-                : null
-            }
-            key={`th-${index}`}
-          >
-            {renderLabel(
-              // Get a human-readable label string
-              query.getLabel(column, "table"),
-              // If it is sortable, render as such
-              query.isSortable(column),
-              // If sort column is defined, use sort order, or false as default
-              sortColumn === column ? sortOrder === "asc" : false
-            )}
-          </th>
-        ))}
+        {query.columns.map(
+          (column, index) =>
+            !query.isHidden(column) && ( // If column is hidden, don't render <th>
+              <th
+                onClick={
+                  query.isSortable(column)
+                    ? e => handleTableHeaderClick(column)
+                    : null
+                }
+                key={`th-${index}`}
+              >
+                {renderLabel(
+                  // Get a human-readable label string
+                  query.getLabel(column, "table"),
+                  // If it is sortable, render as such
+                  query.isSortable(column),
+                  // If sort column is defined, use sort order, or false as default
+                  sortColumn === column ? sortOrder === "asc" : false
+                )}
+              </th>
+            )
+        )}
       </tr>
     </thead>
   );
