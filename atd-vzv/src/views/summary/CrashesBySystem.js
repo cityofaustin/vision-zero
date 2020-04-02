@@ -21,13 +21,13 @@ const CrashesBySystem = () => {
       label: "On TxDOT System",
       flags: ["onsys_fl"],
       value: "Y",
-      color: `${colors.chartRed}`
+      color: `${colors.viridis1Of6Highest}`
     },
     {
       label: "Off TxDOT System",
       flags: ["onsys_fl"],
       value: "N",
-      color: `${colors.chartLightBlue}`
+      color: `${colors.viridis2Of6}`
     }
   ];
 
