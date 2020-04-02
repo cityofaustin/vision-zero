@@ -396,19 +396,26 @@ const GridTable = ({
     data[query.table].map((row, index) =>
       dataEntries.push(
         <tr key={index}>
-          {query.columns.map((column, ci) => (
-            <td key={ci}>
-              {query.isPK(column) ? (
-                <Link to={`/${query.singleItem}/${row[column]}`}>
-                  {row[column]}
-                </Link>
-              ) : isAlphanumeric(column) ? (
-                query.getFormattedValue(column, row[column])
-              ) : (
-                query.getFormattedValue(column, getSummary(row, column.trim()))
-              )}
-            </td>
-          ))}
+          {query.columns.map(
+            (column, ci) =>
+              // If column is hidden, don't render <td>
+              !query.isHidden(column) && (
+                <td key={ci}>
+                  {query.isPK(column) ? (
+                    <Link to={`/${query.singleItem}/${row[column]}`}>
+                      {row[column]}
+                    </Link>
+                  ) : isAlphanumeric(column) ? (
+                    query.getFormattedValue(column, row[column])
+                  ) : (
+                    query.getFormattedValue(
+                      column,
+                      getSummary(row, column.trim())
+                    )
+                  )}
+                </td>
+              )
+          )}
         </tr>
       )
     );
