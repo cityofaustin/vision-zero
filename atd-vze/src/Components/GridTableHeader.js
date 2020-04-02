@@ -19,13 +19,7 @@ const GridTableHeader = ({
    * @param {boolean} ascending - true if ordering in ascending mode
    * @returns {object} jsx component
    */
-  const renderLabel = (
-    col,
-    sortable = false,
-    ascending = false,
-    hidden = false
-  ) => {
-    if (hidden) return false;
+  const renderLabel = (col, sortable = false, ascending = false) => {
     if (sortable) {
       return (
         <StyledArrow>
@@ -43,7 +37,8 @@ const GridTableHeader = ({
       <tr>
         {query.columns.map(
           (column, index) =>
-            !query.isHidden(column) && ( // If column is hidden, don't render <th>
+            // If column is hidden, don't render <th>
+            !query.isHidden(column) && (
               <th
                 onClick={
                   query.isSortable(column)
