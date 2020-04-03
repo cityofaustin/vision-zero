@@ -8,68 +8,81 @@ import { dataStartDate, dataEndDate } from "../../constants/time";
 import { colors } from "../../constants/colors";
 import { responsive } from "../../constants/responsive";
 
-export const vzTheme = {
-  reactDates: {
-    ...DefaultTheme.reactDates,
-    zIndex: 1301,
-    border: {
-      ...DefaultTheme.reactDates.border,
-      input: {
-        ...DefaultTheme.reactDates.border.input,
-        borderBottomFocused: `2px solid ${colors.infoDark}`
-      }
-    },
-    color: {
-      ...DefaultTheme.reactDates.color,
-      selected: {
-        backgroundColor: `${colors.infoDark}`,
-        backgroundColor_active: `${colors.infoDark}`,
-        backgroundColor_hover: `${colors.infoDark}`,
-        borderColor: `${colors.light}`,
-        borderColor_active: `${colors.light}`,
-        borderColor_hover: `${colors.light}`,
-        color: `${colors.light}`,
-        color_active: `${colors.light}`,
-        color_hover: `${colors.light}`
-      },
-      selectedSpan: {
-        backgroundColor: `${colors.info}`,
-        backgroundColor_active: `${colors.info}`,
-        backgroundColor_hover: `${colors.infoDark}`,
-        borderColor: `${colors.light}`,
-        borderColor_active: `${colors.light}`,
-        borderColor_hover: `${colors.light}`,
-        color: `${colors.light}`,
-        color_active: `${colors.light}`,
-        color_hover: `${colors.light}`
-      },
-      hoveredSpan: {
-        backgroundColor: `${colors.secondary}`,
-        backgroundColor_active: `${colors.infoDark}`,
-        backgroundColor_hover: `${colors.infoDark}`,
-        borderColor: `${colors.light}`,
-        borderColor_active: `${colors.light}`,
-        borderColor_hover: `${colors.light}`,
-        color: `${colors.dark}`,
-        color_active: `${colors.light}`,
-        color_hover: `${colors.light}`
-      }
-    },
-    sizing: {
-      inputWidth: 90,
-      inputWidth_small: 99,
-      arrowWidth: 10
-    }
-  }
-};
-
-ThemedStyleSheet.registerTheme(vzTheme);
-ThemedStyleSheet.registerInterface(aphroditeInterface);
-
 const SideMapControlDateRange = () => {
   const [focused, setFocused] = useState(null);
   const [start, setStart] = useState(dataStartDate);
   const [end, setEnd] = useState(dataEndDate);
+
+  const vzTheme = {
+    reactDates: {
+      ...DefaultTheme.reactDates,
+      zIndex: 1301, // MUI SideDrawer is 1300 so need to exceed to show picker
+      border: {
+        ...DefaultTheme.reactDates.border,
+        input: {
+          ...DefaultTheme.reactDates.border.input,
+          borderBottomFocused: `2px solid ${colors.infoDark}`
+        },
+        pickerInput: {
+          ...DefaultTheme.reactDates.border.pickerInput,
+          borderRadius: 4 // Match Bootstrap style
+        }
+      },
+      color: {
+        ...DefaultTheme.reactDates.color,
+        // Prevent background breaking through border when not focused, when focused need calendar background to be set
+        background: `${focused ? colors.white : "transparent"}`,
+        border: `${colors.info}`,
+        backgroundFocused: `${focused ? colors.white : "transparent"}`,
+        selected: {
+          backgroundColor: `${colors.infoDark}`,
+          backgroundColor_active: `${colors.infoDark}`,
+          backgroundColor_hover: `${colors.infoDark}`,
+          borderColor: `${colors.light}`,
+          borderColor_active: `${colors.light}`,
+          borderColor_hover: `${colors.light}`,
+          color: `${colors.light}`,
+          color_active: `${colors.light}`,
+          color_hover: `${colors.light}`
+        },
+        selectedSpan: {
+          backgroundColor: `${colors.info}`,
+          backgroundColor_active: `${colors.info}`,
+          backgroundColor_hover: `${colors.infoDark}`,
+          borderColor: `${colors.light}`,
+          borderColor_active: `${colors.light}`,
+          borderColor_hover: `${colors.light}`,
+          color: `${colors.light}`,
+          color_active: `${colors.light}`,
+          color_hover: `${colors.light}`
+        },
+        hoveredSpan: {
+          backgroundColor: `${colors.secondary}`,
+          backgroundColor_active: `${colors.infoDark}`,
+          backgroundColor_hover: `${colors.infoDark}`,
+          borderColor: `${colors.light}`,
+          borderColor_active: `${colors.light}`,
+          borderColor_hover: `${colors.light}`,
+          color: `${colors.dark}`,
+          color_active: `${colors.light}`,
+          color_hover: `${colors.light}`
+        }
+      },
+      sizing: {
+        inputWidth: 90,
+        inputWidth_small: 99,
+        arrowWidth: 10
+      },
+      spacing: {
+        ...DefaultTheme.reactDates.spacing,
+        displayTextPaddingLeft_small: 10,
+        displayTextPaddingRight_small: 4
+      }
+    }
+  };
+
+  ThemedStyleSheet.registerTheme(vzTheme);
+  ThemedStyleSheet.registerInterface(aphroditeInterface);
 
   const {
     mapDateRange: [mapDate, setMapDate]
@@ -82,6 +95,12 @@ const SideMapControlDateRange = () => {
 
   const handleDateChange = dates => {
     let { startDate, endDate } = dates;
+
+    // If both null, dates have been cleared - set to default
+    if (startDate === null && endDate === null) {
+      startDate = dataStartDate;
+      endDate = dataEndDate;
+    }
 
     startDate =
       // If startDate is not null and before n year window, set to dataStartDate
@@ -99,11 +118,11 @@ const SideMapControlDateRange = () => {
     setEnd(endDate);
   };
 
-  const isMobile = () => window.innerWidth < responsive.bootstrapMedium;
-
   // Check if date is outside n year rolling window
   const isOutsideDateLimits = date =>
     date.isBefore(dataStartDate, "day") || date.isAfter(dataEndDate, "day");
+
+  const isMobile = () => window.innerWidth < responsive.bootstrapMedium;
 
   return (
     <DateRangePicker
@@ -117,9 +136,9 @@ const SideMapControlDateRange = () => {
       minDate={dataStartDate}
       maxDate={dataEndDate}
       appendToBody // Allow calendar to pop out over SideDrawer and Map components
-      withFullScreenPortal={isMobile()}
+      withFullScreenPortal={isMobile()} // Show full screen picker on mobile
       small
-      showClearDates
+      showClearDates // Show X to reset dates
       orientation={isMobile() ? "vertical" : "horizontal"} // More mobile friendly than horizontal
       isOutsideRange={() => false} // Enable past dates
       isDayBlocked={isOutsideDateLimits} // Grey out dates
