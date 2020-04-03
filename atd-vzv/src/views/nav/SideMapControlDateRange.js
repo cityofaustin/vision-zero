@@ -156,6 +156,10 @@ const SideMapControlDateRange = () => {
     );
   };
 
+  // TODO: 1. Match input picker height to bootstrap (34px)? if possible
+  // TODO: 2. Fix clear x button that is warped if possible
+  // TODO: 3. Fix x button in full screen portal (Focus issue?) MUST FIX
+
   return (
     <DateRangePicker
       startDateId="start_date" // PropTypes.string.isRequired,
