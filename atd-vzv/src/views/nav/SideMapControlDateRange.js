@@ -5,7 +5,7 @@ import aphroditeInterface from "react-with-styles-interface-aphrodite";
 import DefaultTheme from "react-dates/lib/theme/DefaultTheme";
 import styled from "styled-components";
 import { DateRangePicker } from "react-dates";
-import { Input, FormGroup, Form, Col } from "reactstrap";
+import { Input, FormGroup, Form, Col, Button, Row } from "reactstrap";
 import { dataStartDate, dataEndDate } from "../../constants/time";
 import { colors } from "../../constants/colors";
 import { responsive } from "../../constants/responsive";
@@ -17,6 +17,7 @@ const SideMapControlDateRange = () => {
   const [start, setStart] = useState(dataStartDate);
   const [end, setEnd] = useState(dataEndDate);
 
+  // Override defaultTheme https://github.com/airbnb/react-dates/blob/master/src/theme/DefaultTheme.js
   const vzTheme = {
     reactDates: {
       ...DefaultTheme.reactDates,
@@ -35,9 +36,9 @@ const SideMapControlDateRange = () => {
       color: {
         ...DefaultTheme.reactDates.color,
         // Prevent background breaking through border when not focused, when focused need calendar background to be set
-        background: `${focused ? colors.white : "transparent"}`,
-        border: `${colors.info}`,
-        backgroundFocused: `${focused ? colors.white : "transparent"}`,
+        // background: `${focused ? colors.white : "transparent"}`,
+        border: `transparent`,
+        // backgroundFocused: `${focused ? colors.white : "transparent"}`,
         selected: {
           backgroundColor: `${colors.infoDark}`,
           backgroundColor_active: `${colors.infoDark}`,
@@ -100,11 +101,11 @@ const SideMapControlDateRange = () => {
   const handleDateChange = dates => {
     let { startDate, endDate } = dates;
 
-    // If both null, dates have been cleared - set to default
-    if (startDate === null && endDate === null) {
-      startDate = dataStartDate;
-      endDate = dataEndDate;
-    }
+    // // If both null, dates have been cleared - set to default
+    // if (startDate === null && endDate === null) {
+    //   startDate = dataStartDate;
+    //   endDate = dataEndDate;
+    // }
 
     startDate =
       // If startDate is not null and before n year window, set to dataStartDate
@@ -128,6 +129,7 @@ const SideMapControlDateRange = () => {
 
   const isMobile = () => window.innerWidth < responsive.bootstrapMedium;
 
+  // Create year dropdown picker in calendar
   const renderMonthElement = ({ month, onYearSelect }) => {
     let yearArray = [];
     for (let i = dataStartDate.year(); i <= dataEndDate.year(); i++) {
@@ -159,6 +161,7 @@ const SideMapControlDateRange = () => {
     );
   };
 
+  // Create and style custom close button (for mobile full screen view)
   const StyledCalendarInfo = styled.div`
     position: absolute;
     right: 10px;
@@ -171,7 +174,6 @@ const SideMapControlDateRange = () => {
     <StyledCalendarInfo>
       <FontAwesomeIcon
         icon={faTimesCircle}
-        className="fa-align-right"
         color={colors.info}
         size="2x"
         onClick={() => setFocused(null)}
@@ -179,31 +181,50 @@ const SideMapControlDateRange = () => {
     </StyledCalendarInfo>
   );
 
-  // TODO: 1. Match input picker height to bootstrap (34px)? if possible
-  // TODO: 2. Fix clear x button that is warped if possible
+  const StyledButtonContainer = styled.div`
+    /* Override button background color change on hover */
+    button:hover {
+      background-color: ${colors.white};
+    }
+  `;
+
+  // TODO: 1. Align clear button
 
   return (
-    <DateRangePicker
-      startDateId="start_date" // PropTypes.string.isRequired,
-      endDateId="end_date" // PropTypes.string.isRequired,
-      startDate={start} // momentPropTypes.momentObj or null,
-      endDate={end} // momentPropTypes.momentObj or null,
-      onDatesChange={handleDateChange} // PropTypes.func.isRequired,
-      focusedInput={focused} // PropTypes.oneOf([START_DATE, END_DATE]) or null,
-      onFocusChange={focusedInput => setFocused(focusedInput)} // PropTypes.func.isRequired,
-      minDate={dataStartDate}
-      maxDate={dataEndDate}
-      calendarInfoPosition="top"
-      renderCalendarInfo={() => isMobile() && renderCalendarInfo()}
-      appendToBody // Allow calendar to pop out over SideDrawer and Map components
-      withFullScreenPortal={isMobile()} // Show full screen picker on mobile
-      small
-      renderMonthElement={renderMonthElement} // Render year picker
-      showClearDates // Show X to reset dates to defaults
-      orientation={isMobile() ? "vertical" : "horizontal"} // More mobile friendly than horizontal
-      isOutsideRange={() => false} // Enable past dates
-      isDayBlocked={isOutsideDateLimits} // Grey out dates
-    />
+    <StyledButtonContainer>
+      <Button outline color="info" block className="p-0">
+        <DateRangePicker
+          startDateId="start_date" // PropTypes.string.isRequired,
+          endDateId="end_date" // PropTypes.string.isRequired,
+          startDate={start} // momentPropTypes.momentObj or null,
+          endDate={end} // momentPropTypes.momentObj or null,
+          onDatesChange={handleDateChange} // PropTypes.func.isRequired,
+          focusedInput={focused} // PropTypes.oneOf([START_DATE, END_DATE]) or null,
+          onFocusChange={focusedInput => setFocused(focusedInput)} // PropTypes.func.isRequired,
+          minDate={dataStartDate}
+          maxDate={dataEndDate}
+          renderCalendarInfo={() => isMobile() && renderCalendarInfo()} // Render custom close button on mobile
+          calendarInfoPosition="top" // Position custom close button
+          appendToBody // Allow calendar to pop out over SideDrawer and Map components
+          withFullScreenPortal={isMobile()} // Show full screen picker on mobile
+          small
+          renderMonthElement={renderMonthElement} // Render year picker
+          orientation={isMobile() ? "vertical" : "horizontal"} // More mobile friendly than horizontal
+          isOutsideRange={() => false} // Enable past dates
+          isDayBlocked={isOutsideDateLimits} // Grey out dates
+        />
+        {/* Reset button to restore default date range */}
+        <FontAwesomeIcon
+          className="reset-button"
+          icon={faTimesCircle}
+          color={colors.info}
+          onClick={() => {
+            setStart(dataStartDate);
+            setEnd(dataEndDate);
+          }}
+        />
+      </Button>
+    </StyledButtonContainer>
   );
 };
 
