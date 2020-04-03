@@ -4,6 +4,7 @@ import ThemedStyleSheet from "react-with-styles/lib/ThemedStyleSheet";
 import aphroditeInterface from "react-with-styles-interface-aphrodite";
 import DefaultTheme from "react-dates/lib/theme/DefaultTheme";
 import { DateRangePicker } from "react-dates";
+import { Input, FormGroup, Form, Col } from "reactstrap";
 import { dataStartDate, dataEndDate } from "../../constants/time";
 import { colors } from "../../constants/colors";
 import { responsive } from "../../constants/responsive";
@@ -124,6 +125,37 @@ const SideMapControlDateRange = () => {
 
   const isMobile = () => window.innerWidth < responsive.bootstrapMedium;
 
+  const renderMonthElement = ({ month, onYearSelect }) => {
+    let yearArray = [];
+    for (let i = dataStartDate.year(); i <= dataEndDate.year(); i++) {
+      yearArray.push(i);
+    }
+
+    return (
+      <Form className="form-inline justify-content-center">
+        <FormGroup row className="w-75">
+          <Col>
+            <Input
+              type="select"
+              name="select"
+              id="yearSelect"
+              value={month.year()}
+              onChange={e => {
+                onYearSelect(month, e.target.value);
+              }}
+            >
+              {yearArray.map(year => (
+                <option value={year}>
+                  {month.format("MMMM")} {year}
+                </option>
+              ))}
+            </Input>
+          </Col>
+        </FormGroup>
+      </Form>
+    );
+  };
+
   return (
     <DateRangePicker
       startDateId="start_date" // PropTypes.string.isRequired,
@@ -138,7 +170,8 @@ const SideMapControlDateRange = () => {
       appendToBody // Allow calendar to pop out over SideDrawer and Map components
       withFullScreenPortal={isMobile()} // Show full screen picker on mobile
       small
-      showClearDates // Show X to reset dates
+      renderMonthElement={renderMonthElement} // Render year picker
+      showClearDates // Show X to reset dates to defaults
       orientation={isMobile() ? "vertical" : "horizontal"} // More mobile friendly than horizontal
       isOutsideRange={() => false} // Enable past dates
       isDayBlocked={isOutsideDateLimits} // Grey out dates
