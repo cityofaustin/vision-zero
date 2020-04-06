@@ -4,42 +4,46 @@ import ColorSpinner from "../Spinner/ColorSpinner";
 import { Card, CardBody, Row, Col, CardTitle, CardSubtitle } from "reactstrap";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCircle } from "@fortawesome/free-solid-svg-icons";
 import { colors } from "../../constants/colors";
 
 const SummaryWidget = ({ total, text, icon, backgroundColor }) => {
   const StyledWidget = styled.div`
-    .widget-total {
-      color: ${backgroundColor};
-      font-size: 3em;
-      font-weight: bold;
+    .total {
+      /* color: ${backgroundColor}; */
+      font-size: 4em;
+      /* font-weight: bold; */
     }
 
-    .widget-text {
+    /* .widget-text {
       color: ${colors.dark};
       font-size: 1.2em;
-    }
+    } */
 
     /* Square background for FA icon */
-    .block-icon-parent {
+    /* .block-icon-parent {
       display: flex;
       align-items: center;
       justify-content: center;
       background-color: ${backgroundColor};
       width: 4em;
       height: 4em;
-    }
+    } */
 
-    .block-icon {
+    /* .block-icon {
       font-size: 2.5em;
-    }
+    } */
   `;
 
-  const blockIcon = () => (
-    <span className="block-icon-parent">
+  const renderIcon = () => (
+    <span className="fa-layers fa-fw">
+      <FontAwesomeIcon size="lg" icon={faCircle} color={backgroundColor} />
       <FontAwesomeIcon
-        className="block-icon"
+        size="lg"
         icon={icon}
-        color={colors.light}
+        inverse
+        transform="shrink-6"
+        color={colors.white}
       />
     </span>
   );
@@ -50,20 +54,16 @@ const SummaryWidget = ({ total, text, icon, backgroundColor }) => {
         <CardBody>
           <Row>
             {/* Set Bootstrap breakpoints to prevent overlap of icon and total */}
-            <Col xl="4" xs="3">
-              {blockIcon()}
-            </Col>
-            <Col className="widget-column">
-              <CardTitle className="widget-total">
-                {/* Show spinner while waiting for data, add thousands separator to total */}
+            <Col>
+              {/* Show spinner while waiting for data, add thousands separator to total */}
+              <h1 className="total">
                 {total !== null ? total.toLocaleString() : <ColorSpinner />}
-              </CardTitle>
+              </h1>
             </Col>
           </Row>
           <Row>
-            <Col>
-              <CardSubtitle className="widget-text">{text}</CardSubtitle>
-            </Col>
+            <Col xl="6">{renderIcon()}</Col>
+            <Col xl="6">{text}</Col>
           </Row>
         </CardBody>
       </Card>
