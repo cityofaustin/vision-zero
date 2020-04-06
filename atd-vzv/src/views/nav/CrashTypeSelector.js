@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Button, ButtonGroup } from "reactstrap";
+import { Button } from "reactstrap";
 import styled from "styled-components";
 import { colors } from "../../constants/colors";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faHeartbeat,
+  faMedkit
+} from "@fortawesome/free-solid-svg-icons";
 
 const CrashTypeSelector = ({ setCrashType }) => {
   const fatalities = {
@@ -86,50 +91,72 @@ const CrashTypeSelector = ({ setCrashType }) => {
 
   // Set styles to override Bootstrap hover behavior based on whether button is selected
   const StyledButton = styled.div`
-    .selected:hover {
-      background-color: ${colors.info};
-      border: 1px solid ${colors.info};
-      color: ${colors.white};
-    }
-    .unselected:hover {
-      background-color: ${colors.white};
-      border: 1px solid ${colors.info};
-      color: ${colors.info};
+    .crash-type {
+      color: #171717;
+      background: #F6F6F6 0% 0% no-repeat padding-box;
+      border-style: none;
+      border-radius: 18px;
+      opacity: 1;
+      margin-right: 10px;
     }
   `;
 
+  const fatalitiesIcon = (
+    <FontAwesomeIcon
+      className="block-icon"
+      icon={faHeartbeat}
+      color={colors.fatalities}
+    />
+  );
+
+  const seriousInjuriesIcon = (
+    <FontAwesomeIcon
+      className="block-icon"
+      icon={faMedkit}
+      color={colors.seriousInjuries}
+    />
+  )
+
   return (
     <StyledButton>
-      <ButtonGroup className="mb-3 d-flex">
+      {/* <ButtonGroup className="d-flex"> */}
+      <Button
+          id="all-btn"
+          type="button"
+          // color="#171717"
+          className="crash-type"
+          // onClick={() => {
+          //   toggle(fatalities);
+          // }}
+          // outline={isUnselected(fatalities)}
+        >
+          All
+        </Button>      
         <Button
           id="fatalities-btn"
           type="button"
-          color="info"
-          className={`${setHoverClass(
-            isUnselected(fatalities)
-          )} w-100 pt-1 pb-1 pl-0 pr-0`}
-          onClick={() => {
-            toggle(fatalities);
-          }}
-          outline={isUnselected(fatalities)}
-        >
-          Fatalities
+          // color="#171717"
+          className="crash-type"
+          // onClick={() => {
+          //   toggle(fatalities);
+          // }}
+          // outline={isUnselected(fatalities)}
+        >       
+          {fatalitiesIcon} Fatalities
         </Button>
         <Button
           id="serious-injuries-btn"
           type="button"
-          color="info"
-          className={`${setHoverClass(
-            isUnselected(seriousInjuries)
-          )} w-100 pt-1 pb-1 pl-0 pr-0`}
-          onClick={() => {
-            toggle(seriousInjuries);
-          }}
-          outline={isUnselected(seriousInjuries)}
+          // color="#171717"
+          className="crash-type"
+          // onClick={() => {
+          //   toggle(seriousInjuries);
+          // }}
+          // outline={isUnselected(seriousInjuries)}
         >
-          Serious Injuries
+          {seriousInjuriesIcon} Serious Injuries
         </Button>
-      </ButtonGroup>
+      {/* </ButtonGroup> */}
     </StyledButton>
   );
 };

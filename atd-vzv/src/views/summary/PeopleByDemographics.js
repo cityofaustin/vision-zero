@@ -203,7 +203,7 @@ const PeopleByDemographics = () => {
   const sortAndColorData = data => {
     const averageCrashes = dataArray =>
       dataArray.reduce((a, b) => a + b) / dataArray.length;
-    const dataSorted = data.sort(
+    const dataSorted = [...data].sort(
       (a, b) => averageCrashes(b.data) - averageCrashes(a.data)
     );
     // If age is selected, keep original sorting to make chart more readable
@@ -251,9 +251,19 @@ const PeopleByDemographics = () => {
 
   return (
     <Container>
-      <Row className="pb-3">
+      <Row>
         <Col>
-          <h3 className="text-center">{crashType.textString} Demographics</h3>
+          <h1 className="text-left, font-weight-bold">Demographics</h1>
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <CrashTypeSelector setCrashType={setCrashType} />
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <hr/>
         </Col>
       </Row>
       <Row>
@@ -331,11 +341,6 @@ const PeopleByDemographics = () => {
               }
             }}
           />
-        </Col>
-      </Row>
-      <Row className="pt-3">
-        <Col>
-          <CrashTypeSelector setCrashType={setCrashType} />
         </Col>
       </Row>
     </Container>

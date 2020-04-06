@@ -105,11 +105,19 @@ const CrashesBySystem = () => {
 
   return (
     <Container>
-      <Row className="pb-3">
+      <Row>
         <Col>
-          <h3 className="text-center">
-            {crashType.textString} by Jurisdiction
-          </h3>
+          <h1 className="text-left, font-weight-bold">By Jurisdiction</h1>
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <CrashTypeSelector setCrashType={setCrashType} />
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <hr/>
         </Col>
       </Row>
       <Row>
@@ -132,11 +140,6 @@ const CrashesBySystem = () => {
               }
             }}
           />
-        </Col>
-      </Row>
-      <Row className="pt-3">
-        <Col>
-          <CrashTypeSelector setCrashType={setCrashType} />
         </Col>
       </Row>
     </Container>

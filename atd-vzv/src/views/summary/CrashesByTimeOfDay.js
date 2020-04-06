@@ -123,9 +123,19 @@ const CrashesByTimeOfDay = () => {
 
   return (
     <Container>
-      <Row className="pb-3">
+      <Row>
         <Col>
-          <h3 className="text-center">{crashType.textString} by Time of Day</h3>
+          <h1 className="text-left, font-weight-bold">By Time of Day</h1>
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <CrashTypeSelector setCrashType={setCrashType} />
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <hr/>
         </Col>
       </Row>
       <Row>
@@ -169,11 +179,6 @@ const CrashesByTimeOfDay = () => {
               />
             }
           />
-        </Col>
-      </Row>
-      <Row className="pt-3">
-        <Col>
-          <CrashTypeSelector setCrashType={setCrashType} />
         </Col>
       </Row>
     </Container>
