@@ -5,7 +5,7 @@ import aphroditeInterface from "react-with-styles-interface-aphrodite";
 import DefaultTheme from "react-dates/lib/theme/DefaultTheme";
 import styled from "styled-components";
 import { DateRangePicker } from "react-dates";
-import { Input, FormGroup, Form, Col, Button, Row } from "reactstrap";
+import { Input, FormGroup, Form, Col } from "reactstrap";
 import { dataStartDate, dataEndDate } from "../../constants/time";
 import { colors } from "../../constants/colors";
 import { responsive } from "../../constants/responsive";
@@ -26,19 +26,16 @@ const SideMapControlDateRange = () => {
         ...DefaultTheme.reactDates.border,
         input: {
           ...DefaultTheme.reactDates.border.input,
-          borderBottomFocused: `2px solid ${colors.infoDark}`
+          borderBottomFocused: `2px solid ${colors.infoDark}`,
         },
         pickerInput: {
           ...DefaultTheme.reactDates.border.pickerInput,
-          borderRadius: 4 // Match Bootstrap style
-        }
+          borderWidth: 0, // Remove any space between picker and StyledButtonContainer
+        },
       },
       color: {
         ...DefaultTheme.reactDates.color,
-        // Prevent background breaking through border when not focused, when focused need calendar background to be set
-        // background: `${focused ? colors.white : "transparent"}`,
-        border: `transparent`,
-        // backgroundFocused: `${focused ? colors.white : "transparent"}`,
+        border: `transparent`, // Hide DateRangePicker border and show StyledButtonContainer instead
         selected: {
           backgroundColor: `${colors.infoDark}`,
           backgroundColor_active: `${colors.infoDark}`,
@@ -48,7 +45,7 @@ const SideMapControlDateRange = () => {
           borderColor_hover: `${colors.light}`,
           color: `${colors.light}`,
           color_active: `${colors.light}`,
-          color_hover: `${colors.light}`
+          color_hover: `${colors.light}`,
         },
         selectedSpan: {
           backgroundColor: `${colors.info}`,
@@ -59,7 +56,7 @@ const SideMapControlDateRange = () => {
           borderColor_hover: `${colors.light}`,
           color: `${colors.light}`,
           color_active: `${colors.light}`,
-          color_hover: `${colors.light}`
+          color_hover: `${colors.light}`,
         },
         hoveredSpan: {
           backgroundColor: `${colors.secondary}`,
@@ -70,42 +67,35 @@ const SideMapControlDateRange = () => {
           borderColor_hover: `${colors.light}`,
           color: `${colors.dark}`,
           color_active: `${colors.light}`,
-          color_hover: `${colors.light}`
-        }
+          color_hover: `${colors.light}`,
+        },
       },
       sizing: {
         inputWidth: 90,
         inputWidth_small: 99,
-        arrowWidth: 10
+        arrowWidth: 10,
       },
       spacing: {
         ...DefaultTheme.reactDates.spacing,
         displayTextPaddingLeft_small: 10,
-        displayTextPaddingRight_small: 4
-      }
-    }
+        displayTextPaddingRight_small: 4,
+        displayTextPaddingBottom_small: 4,
+      },
+    },
   };
 
   ThemedStyleSheet.registerTheme(vzTheme);
   ThemedStyleSheet.registerInterface(aphroditeInterface);
 
-  const {
-    mapDateRange: [mapDate, setMapDate]
-  } = React.useContext(StoreContext);
+  const { setMapDateRange: setMapDate } = React.useContext(StoreContext);
 
-  // Update map date range in Context on picker selection
+  // Update map date range in Context when picker dates update
   useEffect(() => {
     setMapDate({ start, end });
   }, [start, end, setMapDate]);
 
-  const handleDateChange = dates => {
+  const handleDateChange = (dates) => {
     let { startDate, endDate } = dates;
-
-    // // If both null, dates have been cleared - set to default
-    // if (startDate === null && endDate === null) {
-    //   startDate = dataStartDate;
-    //   endDate = dataEndDate;
-    // }
 
     startDate =
       // If startDate is not null and before n year window, set to dataStartDate
@@ -124,7 +114,7 @@ const SideMapControlDateRange = () => {
   };
 
   // Check if date is outside n year rolling window
-  const isOutsideDateLimits = date =>
+  const isOutsideDateLimits = (date) =>
     date.isBefore(dataStartDate, "day") || date.isAfter(dataEndDate, "day");
 
   const isMobile = () => window.innerWidth < responsive.bootstrapMedium;
@@ -145,11 +135,11 @@ const SideMapControlDateRange = () => {
               name="select"
               id="yearSelect"
               value={month.year()}
-              onChange={e => {
+              onChange={(e) => {
                 onYearSelect(month, e.target.value);
               }}
             >
-              {yearArray.map(year => (
+              {yearArray.map((year) => (
                 <option value={year}>
                   {month.format("MMMM")} {year}
                 </option>
@@ -182,48 +172,54 @@ const SideMapControlDateRange = () => {
   );
 
   const StyledButtonContainer = styled.div`
-    /* Override button background color change on hover */
-    button:hover {
-      background-color: ${colors.white};
+    /* Mock a Bootstrap outline button */
+    border: 1px solid ${colors.info};
+    height: 34px;
+    border-radius: 4px;
+    padding-left: 2px;
+
+    /* Center and enlarge picker reset button */
+    .reset-button {
+      position: relative;
+      top: 5px;
+      right: 2px;
+      width: 22px;
+      height: 22px;
     }
   `;
 
-  // TODO: 1. Align clear button
-
   return (
-    <StyledButtonContainer>
-      <Button outline color="info" block className="p-0">
-        <DateRangePicker
-          startDateId="start_date" // PropTypes.string.isRequired,
-          endDateId="end_date" // PropTypes.string.isRequired,
-          startDate={start} // momentPropTypes.momentObj or null,
-          endDate={end} // momentPropTypes.momentObj or null,
-          onDatesChange={handleDateChange} // PropTypes.func.isRequired,
-          focusedInput={focused} // PropTypes.oneOf([START_DATE, END_DATE]) or null,
-          onFocusChange={focusedInput => setFocused(focusedInput)} // PropTypes.func.isRequired,
-          minDate={dataStartDate}
-          maxDate={dataEndDate}
-          renderCalendarInfo={() => isMobile() && renderCalendarInfo()} // Render custom close button on mobile
-          calendarInfoPosition="top" // Position custom close button
-          appendToBody // Allow calendar to pop out over SideDrawer and Map components
-          withFullScreenPortal={isMobile()} // Show full screen picker on mobile
-          small
-          renderMonthElement={renderMonthElement} // Render year picker
-          orientation={isMobile() ? "vertical" : "horizontal"} // More mobile friendly than horizontal
-          isOutsideRange={() => false} // Enable past dates
-          isDayBlocked={isOutsideDateLimits} // Grey out dates
-        />
-        {/* Reset button to restore default date range */}
-        <FontAwesomeIcon
-          className="reset-button"
-          icon={faTimesCircle}
-          color={colors.info}
-          onClick={() => {
-            setStart(dataStartDate);
-            setEnd(dataEndDate);
-          }}
-        />
-      </Button>
+    <StyledButtonContainer className="pr-0 picker-outline w-100">
+      <DateRangePicker
+        startDateId="start_date" // PropTypes.string.isRequired,
+        endDateId="end_date" // PropTypes.string.isRequired,
+        startDate={start} // momentPropTypes.momentObj or null,
+        endDate={end} // momentPropTypes.momentObj or null,
+        onDatesChange={handleDateChange} // PropTypes.func.isRequired,
+        focusedInput={focused} // PropTypes.oneOf([START_DATE, END_DATE]) or null,
+        onFocusChange={(focusedInput) => setFocused(focusedInput)} // PropTypes.func.isRequired,
+        minDate={dataStartDate}
+        maxDate={dataEndDate}
+        renderCalendarInfo={() => isMobile() && renderCalendarInfo()} // Render custom close button on mobile
+        calendarInfoPosition="top" // Position custom close button
+        appendToBody // Allow calendar to pop out over SideDrawer and Map components
+        withFullScreenPortal={isMobile()} // Show full screen picker on mobile
+        small
+        renderMonthElement={renderMonthElement} // Render year picker
+        orientation={isMobile() ? "vertical" : "horizontal"} // More mobile friendly than horizontal
+        isOutsideRange={() => false} // Enable past dates
+        isDayBlocked={isOutsideDateLimits} // Grey out dates
+      />
+      {/* Reset button to restore default date range */}
+      <FontAwesomeIcon
+        className="reset-button"
+        icon={faTimesCircle}
+        color={colors.info}
+        onClick={() => {
+          setStart(dataStartDate);
+          setEnd(dataEndDate);
+        }}
+      />
     </StyledButtonContainer>
   );
 };
