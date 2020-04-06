@@ -11,65 +11,71 @@ import { personEndpointUrl } from "./queries/socrataQueries";
 
 const PeopleByDemographics = () => {
   const ageCategories = [
-    { label: "Under 18", categoryValue: 1, color: colors.chartRed },
+    { label: "Under 18", categoryValue: 1 },
     {
       label: "18 to 44",
-      categoryValue: 2,
-      color: colors.chartLightBlue
+      categoryValue: 2
     },
     {
       label: "45 to 64",
-      categoryValue: 3,
-      color: colors.chartGreen
+      categoryValue: 3
     },
-    { label: "65 and older", categoryValue: 4, color: colors.chartPurple },
-    { label: "No data", categoryValue: "noData", color: colors.danger }
+    {
+      label: "65 and older",
+      categoryValue: 4
+    },
+    {
+      label: "Unknown",
+      categoryValue: 0
+    }
   ];
 
   const sexCategories = [
     {
       label: "Male",
-      categoryValue: 1,
-      color: colors.chartRed
+      categoryValue: 1
     },
     {
       label: "Female",
-      categoryValue: 2,
-      color: colors.chartLightBlue
+      categoryValue: 2
     },
-    { label: "Unknown", categoryValue: 0, color: colors.warning },
-    { label: "No data", categoryValue: "noData", color: colors.danger }
+    {
+      label: "Unknown",
+      categoryValue: 0
+    }
   ];
 
   const raceCategories = [
     {
       label: "White",
-      categoryValue: 1,
-      color: colors.chartRed
+      categoryValue: 1
     },
     {
       label: "Hispanic",
-      categoryValue: 2,
-      color: colors.chartLightBlue
+      categoryValue: 2
     },
-    { label: "Black", categoryValue: 3, color: colors.chartGreen },
+    { label: "Black", categoryValue: 3 },
     {
       label: "Asian",
-      categoryValue: 4,
-      color: colors.chartPurple
+      categoryValue: 4
     },
     {
-      label: "Other",
-      categoryValue: 5,
-      color: colors.chartAqua
+      label: "Other or unknown",
+      categoryValue: 5
     },
     {
       label: "American Indian or Alaska Native",
-      categoryValue: 6,
-      color: colors.chartBlue
-    },
-    { label: "Unknown", categoryValue: 0, color: colors.warning },
-    { label: "No data", categoryValue: "noData", color: colors.danger }
+      categoryValue: 6
+    }
+  ];
+
+  const chartColors = [
+    colors.viridis1Of6Highest,
+    colors.viridis2Of6,
+    colors.viridis3Of6,
+    colors.viridis4Of6,
+    colors.viridis5Of6,
+    colors.viridis6Of6Lowest
   ];
 
   const [activeTab, setActiveTab] = useState("prsn_age");
@@ -91,7 +97,8 @@ const PeopleByDemographics = () => {
         // Use Promise.all to let all requests resolve before setting chart data by year
         await Promise.all(
           yearsArray().map(async year => {
-            // If getting data for current year (only including years past January), set end of query to last day of previous month,
+            // If getting data for current year (only including years past January),
+            // set end of query to last day of previous month,
             // else if getting data for previous years, set end of query to last day of year
             let endDate =
               year.toString() === dataEndDate.format("YYYY")
@@ -112,13 +119,20 @@ const PeopleByDemographics = () => {
 
   const createChartLabels = () => yearsArray().map(year => `${year}`);
 
-  // Tabulate fatalities by demographics in data
+  // Tabulate crashes by demographics in data
   const getData = (categoryValue, isWholeNumber) =>
     yearsArray().map(year => {
       let categoryTotal = chartData[year].reduce((accumulator, record) => {
         switch (activeTab) {
           case "prsn_age":
             switch (categoryValue) {
+              // If the person age value is missing, increment the count for
+              // category value 0 ("Unknown") in the chart
+              case 0:
+                !record.prsn_age && accumulator++;
+                break;
+              // For all other cases, if the person age value falls within the category value range,
+              // increment the count for the associated category
               case 1:
                 record.prsn_age < 18 && accumulator++;
                 break;
@@ -131,23 +145,42 @@ const PeopleByDemographics = () => {
               case 4:
                 record.prsn_age > 64 && accumulator++;
                 break;
-              case "noData":
-                !record.prsn_age && accumulator++;
-                break;
               default:
                 break;
             }
             break;
           case "prsn_gndr_id":
-            record.prsn_gndr_id === `${categoryValue}` && accumulator++;
+            switch (categoryValue) {
+              // If the gender id is missing or 0 ("Unknown"), increment the count for
+              // category value 0 ("Unknown") in the chart
+              case 0:
+                (!record.prsn_gndr_id || parseInt(record.prsn_gndr_id) === 0) &&
+                  accumulator++;
+                break;
+              // For all other cases, if the gender id value matches the category value,
+              // increment the count for the associated category
+              default:
+                record.prsn_gndr_id === `${categoryValue}` && accumulator++;
+                break;
+            }
             break;
           case "prsn_ethnicity_id":
-            // If the ethnicity id value matches the category value, increment the count for the associated category
-            record.prsn_ethnicity_id === `${categoryValue}` && accumulator++;
-            // If the ethnicity id value is missing and the category value is "noData", increment the count for the "No data" category
-            !record.prsn_ethnicity_id &&
-              categoryValue === "noData" &&
-              accumulator++;
+            switch (categoryValue) {
+              // If the ethnicity id is either missing, 5 ("Other") or 0 ("Unknown"),
+              // increment the count for category value 5 ("Other or unknown") in the chart
+              case 5:
+                (!record.prsn_ethnicity_id ||
+                  parseInt(record.prsn_ethnicity_id) === 5 ||
+                  parseInt(record.prsn_ethnicity_id) === 0) &&
+                  accumulator++;
+                break;
+              // For all other cases, if the ethnicity id value matches the category value,
+              // increment the count for the associated category
+              default:
+                record.prsn_ethnicity_id === `${categoryValue}` &&
+                  accumulator++;
+                break;
+            }
             break;
           default:
             break;
@@ -163,15 +196,27 @@ const PeopleByDemographics = () => {
       // If isWholeNumber is true, return the wholeNumbers Object for display in tooltips,
       // else return percentage for chartJS to render the chart
       const data = isWholeNumber ? wholeNumbers : percentage;
-
       return data;
     });
 
-  // Sort category order in stack by averaging total demographic stats across all years in chart
-  const sortData = data => {
+  // Sort category order in stack and apply colors by averaging total demographic stats across all years in chart
+  const sortAndColorData = data => {
     const averageCrashes = dataArray =>
       dataArray.reduce((a, b) => a + b) / dataArray.length;
-    return data.sort((a, b) => averageCrashes(b.data) - averageCrashes(a.data));
+    const dataSorted = data.sort(
+      (a, b) => averageCrashes(b.data) - averageCrashes(a.data)
+    );
+    // If age is selected, keep original sorting to make chart more readable
+    // For other categories, determine order of category (highest to lowest proportion)
+    data = activeTab === "prsn_age" ? data : dataSorted;
+    data.forEach((category, i) => {
+      const color = chartColors[i];
+      category.backgroundColor = color;
+      category.borderColor = color;
+      category.hoverBackgroundColor = color;
+      category.hoverBorderColor = color;
+    });
+    return data;
   };
 
   // Create dataset for each demographic type
@@ -191,22 +236,12 @@ const PeopleByDemographics = () => {
         break;
     }
     const data = categories.map(category => ({
-      backgroundColor: category.color,
-      borderColor: category.color,
       borderWidth: 2,
-      hoverBackgroundColor: category.color,
-      hoverBorderColor: category.color,
       label: category.label,
       data: getData(category.categoryValue, false),
       wholeNumbers: getData(category.categoryValue, true)
     }));
-    // If age is selected, keep original sorting to make chart more readable
-    // For other categories, determine order of category (highest to lowest proportion)
-    if (activeTab === "prsn_age") {
-      return data;
-    } else {
-      return sortData(data);
-    }
+    return sortAndColorData(data);
   };
 
   const data = {

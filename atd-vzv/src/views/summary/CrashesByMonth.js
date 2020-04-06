@@ -18,11 +18,11 @@ const CrashesByMonth = () => {
   const chartYearsArray = yearsArray().sort((a, b) => b - a);
 
   const chartColors = [
-    colors.blue,
-    colors.redGradient5Of5,
-    colors.redGradient4Of5,
-    colors.redGradient3Of5,
-    colors.redGradient2Of5
+    colors.viridis1Of6Highest,
+    colors.viridis2Of6,
+    colors.viridis3Of6,
+    colors.viridis4Of6,
+    colors.viridis5Of6
   ];
 
   const [chartData, setChartData] = useState(null); // {yearInt: [monthTotal, monthTotal, ...]}
