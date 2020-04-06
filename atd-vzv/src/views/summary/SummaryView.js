@@ -4,7 +4,6 @@ import SummaryWidget from "../../Components/Widgets/SummaryWidget";
 import { Row, Col } from "reactstrap";
 
 import {
-  dataEndDate,
   summaryCurrentYearStartDate,
   summaryCurrentYearEndDate,
 } from "../../constants/time";
@@ -52,29 +51,27 @@ const SummaryView = () => {
     });
   }, []);
 
-  const displayYear = dataEndDate.format("YYYY");
-
   const summaryWidgetsConfig = [
     {
-      title: `Fatalities in ${displayYear}`,
+      title: `Fatalities`,
       total: fatalities,
       icon: faHeartbeat,
       color: colors.danger,
     },
     {
-      title: `Years of Life Lost in ${displayYear}`,
+      title: `Years of Life Lost`,
       total: yearsOfLifeLost,
       icon: faHourglassHalf,
       color: colors.info,
     },
     {
-      title: `Serious Injuries in ${displayYear}`,
+      title: `Serious Injuries`,
       total: seriousInjuries,
       icon: faMedkit,
       color: colors.warning,
     },
     {
-      title: `Total Crashes in ${displayYear}`,
+      title: `Total Crashes`,
       total: totalCrashes,
       icon: faCar,
       color: colors.success,
