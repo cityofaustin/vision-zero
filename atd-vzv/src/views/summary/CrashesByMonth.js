@@ -172,11 +172,16 @@ const CrashesByMonth = () => {
       </Row>
       <Row>
         <Col>
-          <hr/>
+          <hr />
         </Col>
       </Row>
-      <Row style={{ paddingBottom: 20 }}>
+      <Row>
         <Col>{!!chartData && renderHeader()}</Col>
+      </Row>
+      <Row>
+        <Col>
+          <hr style={{ marginTop: 3 }} />
+        </Col>
       </Row>
       <Row style={{ paddingBottom: 20 }}>
         <Col>

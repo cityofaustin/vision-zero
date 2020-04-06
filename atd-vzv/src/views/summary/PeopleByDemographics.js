@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { HorizontalBar } from "react-chartjs-2";
-import { Container, Row, Col, Nav, NavItem, NavLink } from "reactstrap";
+import { Container, Row, Col, Button } from "reactstrap";
+import styled from "styled-components";
 import classnames from "classnames";
 
 import CrashTypeSelector from "../nav/CrashTypeSelector";
@@ -249,6 +250,18 @@ const PeopleByDemographics = () => {
     datasets: !!chartData && createTypeDatasets()
   };
 
+  // Set styles to override Bootstrap default styling
+  const StyledButton = styled.div`
+    .demographic-type {
+      color: #171717;
+      background: #f6f6f6 0% 0% no-repeat padding-box;
+      border-style: none;
+      opacity: 1;
+      margin-left: 5px;
+      margin-right: 5px;
+    }
+  `;
+
   return (
     <Container>
       <Row>
@@ -263,45 +276,48 @@ const PeopleByDemographics = () => {
       </Row>
       <Row>
         <Col>
-          <hr/>
+          <hr />
         </Col>
       </Row>
-      <Row>
-        <Col>
-          <Nav tabs className="justify-content-center">
-            <NavItem>
-              <NavLink
-                className={classnames({ active: activeTab === "prsn_age" })}
-                onClick={() => {
-                  toggle("prsn_age");
-                }}
-              >
-                Age
-              </NavLink>
-            </NavItem>
-            <NavItem>
-              <NavLink
-                className={classnames({ active: activeTab === "prsn_gndr_id" })}
-                onClick={() => {
-                  toggle("prsn_gndr_id");
-                }}
-              >
-                Sex
-              </NavLink>
-            </NavItem>
-            <NavItem>
-              <NavLink
-                className={classnames({
+      <Row className="text-center">
+        <Col className="pb-2">
+          <StyledButton>
+            <Button
+              className={classnames(
+                { active: activeTab === "prsn_age" },
+                "demographic-type"
+              )}
+              onClick={() => {
+                toggle("prsn_age");
+              }}
+            >
+              Age
+            </Button>
+            <Button
+              className={classnames(
+                { active: activeTab === "prsn_gndr_id" },
+                "demographic-type"
+              )}
+              onClick={() => {
+                toggle("prsn_gndr_id");
+              }}
+            >
+              Sex
+            </Button>
+            <Button
+              className={classnames(
+                {
                   active: activeTab === "prsn_ethnicity_id"
-                })}
-                onClick={() => {
-                  toggle("prsn_ethnicity_id");
-                }}
-              >
-                Race/Ethnicity
-              </NavLink>
-            </NavItem>
-          </Nav>
+                },
+                "demographic-type"
+              )}
+              onClick={() => {
+                toggle("prsn_ethnicity_id");
+              }}
+            >
+              Race/Ethnicity
+            </Button>
+          </StyledButton>
         </Col>
       </Row>
       <Row>

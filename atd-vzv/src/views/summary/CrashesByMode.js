@@ -105,7 +105,7 @@ const CrashesByMode = () => {
 
         accumulator += isFatalQuery && parseInt(record[fields.fatal]);
         accumulator += isInjuryQuery && parseInt(record[fields.injury]);
-        
+
         return accumulator;
       }, 0);
     });
@@ -157,7 +157,7 @@ const CrashesByMode = () => {
       </Row>
       <Row>
         <Col>
-          <hr/>
+          <hr />
         </Col>
       </Row>
       <Row>

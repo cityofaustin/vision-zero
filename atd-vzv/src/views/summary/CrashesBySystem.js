@@ -117,7 +117,7 @@ const CrashesBySystem = () => {
       </Row>
       <Row>
         <Col>
-          <hr/>
+          <hr />
         </Col>
       </Row>
       <Row>
