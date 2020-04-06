@@ -160,11 +160,11 @@ const CrashesByTimeOfDay = () => {
             series={
               <HeatmapSeries
                 colorScheme={[
-                  colors.redGradient1Of5,
-                  colors.redGradient2Of5,
-                  colors.redGradient3Of5,
-                  colors.redGradient4Of5,
-                  colors.redGradient5Of5
+                  colors.intensity1Of5Lowest,
+                  colors.intensity2Of5,
+                  colors.intensity3Of5,
+                  colors.intensity4Of5,
+                  colors.intensity5Of5Highest
                 ]}
               />
             }

@@ -62,25 +62,25 @@ const SummaryView = () => {
       title: `Fatalities in ${displayYear}`,
       total: fatalities,
       icon: faHeartbeat,
-      color: colors.danger
+      color: colors.fatalities
     },
     {
       title: `Years of Life Lost in ${displayYear}`,
       total: yearsOfLifeLost,
       icon: faHourglass,
-      color: colors.info
+      color: colors.yearsOfLifeLost
     },
     {
       title: `Serious Injuries in ${displayYear}`,
       total: seriousInjuries,
       icon: faMedkit,
-      color: colors.warning
+      color: colors.seriousInjuries
     },
     {
       title: `Total Crashes in ${displayYear}`,
       total: totalCrashes,
       icon: faCar,
-      color: colors.success
+      color: colors.totalCrashes
     }
   ];
 
