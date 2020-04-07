@@ -16,6 +16,7 @@ export const colors = {
   intensity3Of5: '#ff8b8f',
   intensity4Of5: '#ff343b',
   intensity5Of5Highest: '#990428',
+  buttonBackground: '#f6f6f6',
   info: "#18A2B8",
   infoDark: "#257A8B",
   dark: "#343A41",

@@ -180,7 +180,7 @@ const CrashesByMonth = () => {
       </Row>
       <Row>
         <Col>
-          <hr style={{ marginTop: 3 }} />
+          <hr className="mt-1"/>
         </Col>
       </Row>
       <Row style={{ paddingBottom: 20 }}>

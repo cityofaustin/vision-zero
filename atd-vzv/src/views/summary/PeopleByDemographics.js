@@ -253,8 +253,8 @@ const PeopleByDemographics = () => {
   // Set styles to override Bootstrap default styling
   const StyledButton = styled.div`
     .demographic-type {
-      color: #171717;
-      background: #f6f6f6 0% 0% no-repeat padding-box;
+      color: ${colors.dark};
+      background: ${colors.buttonBackground} 0% 0% no-repeat padding-box;
       border-style: none;
       opacity: 1;
       margin-left: 5px;
