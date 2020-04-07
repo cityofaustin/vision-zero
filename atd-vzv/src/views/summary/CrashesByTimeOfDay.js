@@ -188,7 +188,7 @@ const CrashesByTimeOfDay = () => {
                   colors.intensity2Of5,
                   colors.intensity3Of5,
                   colors.intensity4Of5,
-                  colors.intensity5Of5Highest
+                  colors.viridis1Of6Highest
                 ]}
               />
             }
