@@ -19,7 +19,7 @@ from .queries import search_crash_query, search_crash_query_full
 from .request import run_query
 from .helpers_import_fields import CRIS_TXDOT_FIELDS, \
     CRIS_TXDOT_COMPARE_FIELDS_LIST, CRIS_TXDOT_COMPARE_FIELD_TYPE
-
+from .config import ATD_ETL_CONFIG
 
 def generate_template(name, function, fields, fieldnames=[], upsert=False, constraint=""):
     """
@@ -158,12 +158,13 @@ def generate_gql(line, fieldnames, file_type):
             function=function_name,
             fields=fields,
             fieldnames=template_fields,
-            upsert=(file_type != "crash"),
+            upsert=True,
             constraint={
+                "crash": "atd_txdot_crashes_pkey",
+                "charges": "atd_txdot_charges_pkey",
                 "unit": "atd_txdot_units_unique",
                 "person": "atd_txdot_person_unique",
                 "primaryperson": "atd_txdot_primaryperson_unique",
-                "charges": "atd_txdot_charges_pkey"
             }.get(file_type, None),
         )
     except Exception as e:
@@ -352,8 +353,10 @@ def get_crash_record(crash_id):
     :return: string
     """
     # First generate a query with a list of the columns we care about
-    query = search_crash_query_full(crash_id=crash_id,
-                                    field_list=CRIS_TXDOT_COMPARE_FIELDS_LIST)
+    query = search_crash_query_full(
+        crash_id=crash_id,
+        field_list=CRIS_TXDOT_COMPARE_FIELDS_LIST+["apd_human_update"]
+    )
 
     # Then try to run the query to get the actual record
     try:
@@ -565,22 +568,37 @@ def insert_crash_change_template(new_record_dict, differences, crash_id):
     return output
 
 
-def record_compare_hook(line, fieldnames, file_type):
+def record_crash_compare(line, fieldnames, crash_id, record_existing):
     """
     Hook that finds an existing record, and compares it with a new incoming record built from a raw csv line.
     :param line: string - The raw csv line
     :param fieldnames: array of strings - The strings to be used as headers
-    :param file_type: string - The file type (crash, units, charges, etc...)
     :return:
     """
-    if file_type == "crash":
-        fieldnames = [column.lower() for column in fieldnames]
-        crash_id = get_crash_id(line)
+    # Gather the field names
+    fieldnames = [column.lower() for column in fieldnames]
+
+    # If compare crash record is disabled, then exit.
+    if ATD_ETL_CONFIG["ATD_CRIS_IMPORT_COMPARE_FUNCTION"] != "ENABLED":
+        return False
+
+    # Double check if the record is valid, if not exit.
+    if record_existing is None:
+        return True
+
+    # The record is valid, it needs queueing or an upsert.
+    else:
+        # First generate a new crash record object from line
         record_new = generate_crash_record(line=line, fieldnames=fieldnames)
-        record_existing = get_crash_record(get_crash_id(line))
+        # Now calculate the differences
         differences = record_compare(record_new=record_new, record_existing=record_existing)
 
-        if len(differences) > 0:
+        # If there are no differences, just ignore...
+        if len(differences) == 0:
+            return False
+
+        # There are differences...
+        if record_existing["apd_human_update"] == "Y":
             mutation_template = insert_crash_change_template(
                 new_record_dict=record_new,
                 differences=differences,
@@ -593,6 +611,8 @@ def record_compare_hook(line, fieldnames, file_type):
                 affected_rows = 0
 
             if affected_rows == 1:
-                print("Crash Review Request Inserted: %s" % (crash_id))
+                return False
             else:
-                print("Failed to insert crash review request: %s" % crash_id)
+                raise Exception("Failed to insert crash review request: %s" % crash_id)
+        else:
+            return True
