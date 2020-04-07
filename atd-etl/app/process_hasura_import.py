@@ -85,7 +85,7 @@ def process_line(file_type, line, fieldnames, current_line, dryrun=False):
         # If not found, then insert
         if record_existing is None:
             insert_crash = True
-        # Else, we need to compare
+        # Else, record exists we need to compare
         else:
             print("[%s] Exists: %s (%s)" % (str(current_line), str(crash_id), file_type))
             existing_records += 1
