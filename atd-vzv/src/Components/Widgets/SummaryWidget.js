@@ -1,6 +1,10 @@
 import React from "react";
 import ColorSpinner from "../Spinner/ColorSpinner";
-import { dataEndDate } from "../../constants/time";
+import {
+  dataEndDate,
+  currentYearString as currentYear,
+  prevYearString as prevYear,
+} from "../../constants/time";
 
 import { Card, CardBody, Row, Col, CardFooter } from "reactstrap";
 import styled from "styled-components";
@@ -102,7 +106,7 @@ const SummaryWidget = ({ totalsObject, text, icon, backgroundColor }) => {
               {/* Show spinner while waiting for data, add thousands separator to total */}
               <h1 className="total">
                 {!!totalsObject ? (
-                  totalsObject.currentYearTotal.toLocaleString()
+                  totalsObject[currentYear].toLocaleString()
                 ) : (
                   <ColorSpinner color={backgroundColor} />
                 )}
@@ -126,8 +130,8 @@ const SummaryWidget = ({ totalsObject, text, icon, backgroundColor }) => {
         {!!totalsObject && (
           <CardFooter className="widget-footer">
             {renderFooterBasedOnChange(
-              totalsObject.currentYearTotal,
-              totalsObject.prevYearTotal
+              totalsObject[currentYear],
+              totalsObject[prevYear]
             )}
           </CardFooter>
         )}

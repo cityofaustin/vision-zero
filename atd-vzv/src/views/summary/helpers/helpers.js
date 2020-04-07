@@ -9,24 +9,14 @@ export const calculateTotalFatalitiesOfCurrentAndPrevYear = (
 ) =>
   data.reduce(
     (accumulator, record) => {
-      if (record.crash_date.includes(currentYear)) {
-        accumulator = {
-          ...accumulator,
-          currentYearTotal: (accumulator.currentYearTotal += parseInt(
-            record.death_cnt
-          )),
-        };
-      } else if (record.crash_date.includes(prevYear)) {
-        accumulator = {
-          ...accumulator,
-          prevYearTotal: (accumulator.prevYearTotal += parseInt(
-            record.death_cnt
-          )),
-        };
-      }
+      const recordYear = record.crash_date.slice(0, 4);
+      accumulator = {
+        ...accumulator,
+        [recordYear]: (accumulator[recordYear] += parseInt(record.death_cnt)),
+      };
       return accumulator;
     },
-    { currentYearTotal: 0, prevYearTotal: 0 }
+    { [prevYear]: 0, [currentYear]: 0 }
   );
 
 export const calculateTotalInjuriesOfCurrentAndPrevYear = (
@@ -36,43 +26,29 @@ export const calculateTotalInjuriesOfCurrentAndPrevYear = (
 ) =>
   data.reduce(
     (accumulator, record) => {
-      if (record.crash_date.includes(currentYear)) {
-        accumulator = {
-          ...accumulator,
-          currentYearTotal: (accumulator.currentYearTotal += parseInt(
-            record.sus_serious_injry_cnt
-          )),
-        };
-      } else if (record.crash_date.includes(prevYear)) {
-        accumulator = {
-          ...accumulator,
-          prevYearTotal: (accumulator.prevYearTotal += parseInt(
-            record.sus_serious_injry_cnt
-          )),
-        };
-      }
+      const recordYear = record.crash_date.slice(0, 4);
+      accumulator = {
+        ...accumulator,
+        [recordYear]: (accumulator[recordYear] += parseInt(
+          record.sus_serious_injry_cnt
+        )),
+      };
       return accumulator;
     },
-    { currentYearTotal: 0, prevYearTotal: 0 }
+    { [prevYear]: 0, [currentYear]: 0 }
   );
 
 export const calculateTotalCrashes = (data, prevYear, currentYear) =>
   data.reduce(
     (accumulator, record) => {
-      if (record.crash_date.includes(currentYear)) {
-        accumulator = {
-          ...accumulator,
-          currentYearTotal: (accumulator.currentYearTotal += 1),
-        };
-      } else if (record.crash_date.includes(prevYear)) {
-        accumulator = {
-          ...accumulator,
-          prevYearTotal: (accumulator.prevYearTotal += 1),
-        };
-      }
+      const recordYear = record.crash_date.slice(0, 4);
+      accumulator = {
+        ...accumulator,
+        [recordYear]: (accumulator[recordYear] += 1),
+      };
       return accumulator;
     },
-    { currentYearTotal: 0, prevYearTotal: 0 }
+    { [prevYear]: 0, [currentYear]: 0 }
   );
 
 const calcYearsOfLifeLost = (record) => {
@@ -92,24 +68,14 @@ const calcYearsOfLifeLost = (record) => {
 export const getYearsOfLifeLost = (data, prevYear, currentYear) => {
   return data.reduce(
     (accumulator, record) => {
-      if (record.crash_date.includes(currentYear)) {
-        accumulator = {
-          ...accumulator,
-          currentYearTotal: (accumulator.currentYearTotal += calcYearsOfLifeLost(
-            record
-          )),
-        };
-      } else if (record.crash_date.includes(prevYear)) {
-        accumulator = {
-          ...accumulator,
-          prevYearTotal: (accumulator.prevYearTotal += calcYearsOfLifeLost(
-            record
-          )),
-        };
-      }
+      const recordYear = record.crash_date.slice(0, 4);
+      accumulator = {
+        ...accumulator,
+        [recordYear]: (accumulator[recordYear] += calcYearsOfLifeLost(record)),
+      };
       return accumulator;
     },
-    { currentYearTotal: 0, prevYearTotal: 0 }
+    { [prevYear]: 0, [currentYear]: 0 }
   ); // start with a count at 0 years
 };
 

@@ -8,6 +8,8 @@ import {
   summaryCurrentYearEndDate,
   summaryLastYearStartDate,
   summaryLastYearEndDate,
+  currentYearString as currentYear,
+  prevYearString as prevYear,
 } from "../../constants/time";
 import { personEndpointUrl, crashEndpointUrl } from "./queries/socrataQueries";
 import {
@@ -29,9 +31,6 @@ const SummaryView = () => {
   const [yearsOfLifeLost, setYearsOfLifeLost] = useState(null);
   const [seriousInjuries, setSeriousInjuries] = useState(null);
   const [totalCrashes, setTotalCrashes] = useState(null);
-
-  const currentYear = summaryCurrentYearStartDate.slice(0, 4);
-  const prevYear = summaryLastYearStartDate.slice(0, 4);
 
   useEffect(() => {
     const fatalitiesUrl = `${crashEndpointUrl}?$where=(death_cnt > 0 AND crash_date between '${summaryCurrentYearStartDate}T00:00:00' and '${summaryCurrentYearEndDate}T23:59:59') OR (death_cnt > 0 AND crash_date between '${summaryLastYearStartDate}T00:00:00' and '${summaryLastYearEndDate}T23:59:59')`;
@@ -66,7 +65,7 @@ const SummaryView = () => {
     axios.get(totalCrashesUrl).then((res) => {
       setTotalCrashes(calculateTotalCrashes(res.data, prevYear, currentYear));
     });
-  }, [currentYear, prevYear]);
+  }, []);
 
   const summaryWidgetsConfig = [
     {
