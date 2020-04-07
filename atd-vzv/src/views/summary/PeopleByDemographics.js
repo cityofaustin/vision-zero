@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { HorizontalBar } from "react-chartjs-2";
-import { Container, Row, Col, Nav, NavItem, NavLink } from "reactstrap";
+import { Container, Row, Col, Button } from "reactstrap";
+import styled from "styled-components";
 import classnames from "classnames";
 
 import CrashTypeSelector from "../nav/CrashTypeSelector";
@@ -203,7 +204,7 @@ const PeopleByDemographics = () => {
   const sortAndColorData = data => {
     const averageCrashes = dataArray =>
       dataArray.reduce((a, b) => a + b) / dataArray.length;
-    const dataSorted = data.sort(
+    const dataSorted = [...data].sort(
       (a, b) => averageCrashes(b.data) - averageCrashes(a.data)
     );
     // If age is selected, keep original sorting to make chart more readable
@@ -249,49 +250,74 @@ const PeopleByDemographics = () => {
     datasets: !!chartData && createTypeDatasets()
   };
 
+  // Set styles to override Bootstrap default styling
+  const StyledButton = styled.div`
+    .demographic-type {
+      color: ${colors.dark};
+      background: ${colors.buttonBackground} 0% 0% no-repeat padding-box;
+      border-style: none;
+      opacity: 1;
+      margin-left: 5px;
+      margin-right: 5px;
+    }
+  `;
+
   return (
     <Container>
-      <Row className="pb-3">
+      <Row>
         <Col>
-          <h3 className="text-center">{crashType.textString} Demographics</h3>
+          <h1 className="text-left, font-weight-bold">Demographics</h1>
         </Col>
       </Row>
       <Row>
         <Col>
-          <Nav tabs className="justify-content-center">
-            <NavItem>
-              <NavLink
-                className={classnames({ active: activeTab === "prsn_age" })}
-                onClick={() => {
-                  toggle("prsn_age");
-                }}
-              >
-                Age
-              </NavLink>
-            </NavItem>
-            <NavItem>
-              <NavLink
-                className={classnames({ active: activeTab === "prsn_gndr_id" })}
-                onClick={() => {
-                  toggle("prsn_gndr_id");
-                }}
-              >
-                Sex
-              </NavLink>
-            </NavItem>
-            <NavItem>
-              <NavLink
-                className={classnames({
+          <CrashTypeSelector setCrashType={setCrashType} />
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <hr />
+        </Col>
+      </Row>
+      <Row className="text-center">
+        <Col className="pb-2">
+          <StyledButton>
+            <Button
+              className={classnames(
+                { active: activeTab === "prsn_age" },
+                "demographic-type"
+              )}
+              onClick={() => {
+                toggle("prsn_age");
+              }}
+            >
+              Age
+            </Button>
+            <Button
+              className={classnames(
+                { active: activeTab === "prsn_gndr_id" },
+                "demographic-type"
+              )}
+              onClick={() => {
+                toggle("prsn_gndr_id");
+              }}
+            >
+              Sex
+            </Button>
+            <Button
+              className={classnames(
+                {
                   active: activeTab === "prsn_ethnicity_id"
-                })}
-                onClick={() => {
-                  toggle("prsn_ethnicity_id");
-                }}
-              >
-                Race/Ethnicity
-              </NavLink>
-            </NavItem>
-          </Nav>
+                },
+                "demographic-type"
+              )}
+              onClick={() => {
+                toggle("prsn_ethnicity_id");
+              }}
+            >
+              Race/Ethnicity
+            </Button>
+          </StyledButton>
         </Col>
       </Row>
       <Row>
@@ -331,11 +357,6 @@ const PeopleByDemographics = () => {
               }
             }}
           />
-        </Col>
-      </Row>
-      <Row className="pt-3">
-        <Col>
-          <CrashTypeSelector setCrashType={setCrashType} />
         </Col>
       </Row>
     </Container>

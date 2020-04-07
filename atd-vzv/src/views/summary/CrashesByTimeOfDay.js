@@ -3,7 +3,8 @@ import axios from "axios";
 import moment from "moment";
 
 import CrashTypeSelector from "../nav/CrashTypeSelector";
-import { Nav, NavItem, NavLink, Row, Col, Container } from "reactstrap";
+import { Row, Col, Container, Button } from "reactstrap";
+import styled from "styled-components";
 import classnames from "classnames";
 import { Heatmap, HeatmapSeries } from "reaviz";
 import {
@@ -121,35 +122,58 @@ const CrashesByTimeOfDay = () => {
       });
   }, [activeTab, crashType]);
 
+  // Set styles to override Bootstrap default styling
+  const StyledButton = styled.div`
+    .year-selector {
+      color: ${colors.dark};
+      background: ${colors.buttonBackground} 0% 0% no-repeat padding-box;
+      border-style: none;
+      opacity: 1;
+      margin-left: 5px;
+      margin-right: 5px;
+    }
+  `;
+
   return (
     <Container>
-      <Row className="pb-3">
+      <Row>
         <Col>
-          <h3 className="text-center">{crashType.textString} by Time of Day</h3>
+          <h1 className="text-left, font-weight-bold">By Time of Day</h1>
         </Col>
       </Row>
       <Row>
         <Col>
-          <Nav tabs className="justify-content-center">
+          <CrashTypeSelector setCrashType={setCrashType} />
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <hr />
+        </Col>
+      </Row>
+      <Row className="text-center">
+        <Col className="pb-2">
+          <StyledButton>
             {yearsArray() // Calculate years ago for each year in data window
               .map(year => {
                 const currentYear = parseInt(dataEndDate.format("YYYY"));
                 return currentYear - year;
               })
               .map(yearsAgo => (
-                <NavItem key={yearsAgo}>
-                  <NavLink
-                    key={yearsAgo}
-                    className={classnames({ active: activeTab === yearsAgo })}
-                    onClick={() => {
-                      toggle(yearsAgo);
-                    }}
-                  >
-                    {getYearsAgoLabel(yearsAgo)}
-                  </NavLink>
-                </NavItem>
+                <Button
+                  key={yearsAgo}
+                  className={classnames(
+                    { active: activeTab === yearsAgo },
+                    "year-selector"
+                  )}
+                  onClick={() => {
+                    toggle(yearsAgo);
+                  }}
+                >
+                  {getYearsAgoLabel(yearsAgo)}
+                </Button>
               ))}
-          </Nav>
+          </StyledButton>
         </Col>
       </Row>
       <Row>
@@ -169,11 +193,6 @@ const CrashesByTimeOfDay = () => {
               />
             }
           />
-        </Col>
-      </Row>
-      <Row className="pt-3">
-        <Col>
-          <CrashTypeSelector setCrashType={setCrashType} />
         </Col>
       </Row>
     </Container>

@@ -160,13 +160,28 @@ const CrashesByMonth = () => {
 
   return (
     <Container>
-      <Row className="pb-3">
+      <Row>
         <Col>
-          <h3 className="text-center">{crashType.textString} by Year</h3>
+          <h1 className="text-left, font-weight-bold">By Year</h1>
         </Col>
       </Row>
-      <Row style={{ paddingBottom: 20 }}>
+      <Row>
+        <Col>
+          <CrashTypeSelector setCrashType={setCrashType} />
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <hr />
+        </Col>
+      </Row>
+      <Row>
         <Col>{!!chartData && renderHeader()}</Col>
+      </Row>
+      <Row>
+        <Col>
+          <hr className="mt-1"/>
+        </Col>
       </Row>
       <Row style={{ paddingBottom: 20 }}>
         <Col>
@@ -198,11 +213,6 @@ const CrashesByMonth = () => {
               }
             }}
           />
-        </Col>
-      </Row>
-      <Row className="pt-3">
-        <Col>
-          <CrashTypeSelector setCrashType={setCrashType} />
         </Col>
       </Row>
     </Container>
