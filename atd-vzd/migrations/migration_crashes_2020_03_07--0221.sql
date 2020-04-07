@@ -5,3 +5,6 @@ drop index idx_atd_txdot_crashes_crash_id;
 alter table atd_txdot_crashes
 	add constraint atd_txdot_crashes_pkey
 		primary key (crash_id);
+
+alter table atd_txdot_crashes
+	add changes_approved_date timestamp default NULL;
