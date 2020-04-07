@@ -12,14 +12,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { colors } from "../../constants/colors";
 
-const SummaryWidget = ({
-  // total,
-  // lastYearTotal,
-  totalsObject,
-  text,
-  icon,
-  backgroundColor,
-}) => {
+const SummaryWidget = ({ totalsObject, text, icon, backgroundColor }) => {
   console.log(totalsObject);
   const StyledWidget = styled.div`
     .total {
@@ -93,14 +86,12 @@ const SummaryWidget = ({
             xl="9"
             className="text-muted text-wrap pl-0 pt-1"
           >
-            {`${text} ${lastYearTotal} this time last year`}
+            {`${text} ${lastYearTotal.toLocaleString()} this time last year`}
           </Col>
         )}
       </Row>
     );
   };
-
-  // TODO Optimize API calls
 
   return (
     <StyledWidget>
@@ -110,8 +101,8 @@ const SummaryWidget = ({
             <Col>
               {/* Show spinner while waiting for data, add thousands separator to total */}
               <h1 className="total">
-                {totalsObject !== null ? (
-                  totalsObject.currentYearTotal
+                {!!totalsObject ? (
+                  totalsObject.currentYearTotal.toLocaleString()
                 ) : (
                   <ColorSpinner color={backgroundColor} />
                 )}
@@ -132,13 +123,14 @@ const SummaryWidget = ({
             </Col>
           </Row>
         </CardBody>
-        <CardFooter className="widget-footer">
-          {totalsObject !== null &&
-            renderFooterBasedOnChange(
+        {!!totalsObject && (
+          <CardFooter className="widget-footer">
+            {renderFooterBasedOnChange(
               totalsObject.currentYearTotal,
               totalsObject.prevYearTotal
             )}
-        </CardFooter>
+          </CardFooter>
+        )}
       </Card>
     </StyledWidget>
   );

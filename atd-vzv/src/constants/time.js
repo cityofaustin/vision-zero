@@ -31,7 +31,7 @@ export const summaryCurrentYearStartDate = dataEndDate
 export const summaryCurrentYearEndDate = dataEndDate.format("YYYY-MM-DD");
 
 export const summaryLastYearStartDate = dataEndDate
-  .clone() // Moment objects are mutable
+  .clone()
   .startOf("year")
   .subtract(1, "year")
   .format("YYYY-MM-DD");

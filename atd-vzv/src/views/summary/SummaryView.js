@@ -11,7 +11,7 @@ import {
 } from "../../constants/time";
 import { personEndpointUrl, crashEndpointUrl } from "./queries/socrataQueries";
 import {
-  calculateTotalFatalities,
+  calculateTotalFatalitiesOfCurrentAndPrevYear,
   getYearsOfLifeLost,
   calculateTotalInjuriesOfCurrentAndPrevYear,
   calculateTotalCrashes,
@@ -30,83 +30,66 @@ const SummaryView = () => {
   const [seriousInjuries, setSeriousInjuries] = useState(null);
   const [totalCrashes, setTotalCrashes] = useState(null);
 
-  const [fatalitiesLastYear, setFatalitiesLastYear] = useState(null);
-  const [yearsOfLifeLostLastYear, setYearsOfLifeLostLastYear] = useState(null);
-  const [seriousInjuriesLastYear, setSeriousInjuriesLastYear] = useState(null);
-  const [totalCrashesLastYear, setTotalCrashesLastYear] = useState(null);
+  const currentYear = summaryCurrentYearStartDate.slice(0, 4);
+  const prevYear = summaryLastYearStartDate.slice(0, 4);
 
   useEffect(() => {
-    const fatalitiesUrl = `${crashEndpointUrl}?$where=death_cnt > 0 AND crash_date between '${summaryCurrentYearStartDate}T00:00:00' and '${summaryCurrentYearEndDate}T23:59:59'`;
-    const yearsOfLifeLostUrl = `${personEndpointUrl}?$where=prsn_injry_sev_id = '4' AND crash_date between '${summaryCurrentYearStartDate}T00:00:00' and '${summaryCurrentYearEndDate}T23:59:59'`;
+    const fatalitiesUrl = `${crashEndpointUrl}?$where=(death_cnt > 0 AND crash_date between '${summaryCurrentYearStartDate}T00:00:00' and '${summaryCurrentYearEndDate}T23:59:59') OR (death_cnt > 0 AND crash_date between '${summaryLastYearStartDate}T00:00:00' and '${summaryLastYearEndDate}T23:59:59')`;
+    const yearsOfLifeLostUrl = `${personEndpointUrl}?$where=(prsn_injry_sev_id = '4' AND crash_date between '${summaryCurrentYearStartDate}T00:00:00' and '${summaryCurrentYearEndDate}T23:59:59') OR (prsn_injry_sev_id = '4' AND crash_date between '${summaryLastYearStartDate}T00:00:00' and '${summaryLastYearEndDate}T23:59:59')`;
     const seriousInjuriesUrl = `${crashEndpointUrl}?$where=(sus_serious_injry_cnt > 0 AND crash_date between '${summaryCurrentYearStartDate}T00:00:00' and '${summaryCurrentYearEndDate}T23:59:59') OR (sus_serious_injry_cnt > 0 AND crash_date between '${summaryLastYearStartDate}T00:00:00' and '${summaryLastYearEndDate}T23:59:59')`;
-    const totalCrashesUrl = `${crashEndpointUrl}?$where=crash_date between '${summaryCurrentYearStartDate}T00:00:00' and '${summaryCurrentYearEndDate}T23:59:59'&$limit=100000`;
+    const totalCrashesUrl = `${crashEndpointUrl}?$limit=100000&$where=(crash_date between '${summaryCurrentYearStartDate}T00:00:00' and '${summaryCurrentYearEndDate}T23:59:59') OR (crash_date between '${summaryLastYearStartDate}T00:00:00' and '${summaryLastYearEndDate}T23:59:59')`;
 
-    const fatalitiesLastYearUrl = `${crashEndpointUrl}?$where=death_cnt > 0 AND crash_date between '${summaryLastYearStartDate}T00:00:00' and '${summaryLastYearEndDate}T23:59:59'`;
-    const yearsOfLifeLostLastYearUrl = `${personEndpointUrl}?$where=prsn_injry_sev_id = '4' AND crash_date between '${summaryLastYearStartDate}T00:00:00' and '${summaryLastYearEndDate}T23:59:59'`;
-    const seriousInjuriesLastYearUrl = `${crashEndpointUrl}?$where=sus_serious_injry_cnt > 0 AND crash_date between '${summaryLastYearStartDate}T00:00:00' and '${summaryLastYearEndDate}T23:59:59'`;
-    const totalCrashesLastYearUrl = `${crashEndpointUrl}?$where=crash_date between '${summaryLastYearStartDate}T00:00:00' and '${summaryLastYearEndDate}T23:59:59'&$limit=100000`;
-
-    // axios.get(fatalitiesUrl).then((res) => {
-    //   setFatalities(calculateTotalFatalities(res.data));
-    // });
-
-    // axios.get(yearsOfLifeLostUrl).then((res) => {
-    //   setYearsOfLifeLost(getYearsOfLifeLost(res.data));
-    // });
-
-    axios.get(seriousInjuriesUrl).then((res) => {
-      setSeriousInjuries(
-        calculateTotalInjuriesOfCurrentAndPrevYear(res.data, "2019", "2020")
+    axios.get(fatalitiesUrl).then((res) => {
+      setFatalities(
+        calculateTotalFatalitiesOfCurrentAndPrevYear(
+          res.data,
+          prevYear,
+          currentYear
+        )
       );
     });
 
-    // axios.get(totalCrashesUrl).then((res) => {
-    //   setTotalCrashes(calculateTotalCrashes(res.data));
-    // });
+    axios.get(yearsOfLifeLostUrl).then((res) => {
+      setYearsOfLifeLost(getYearsOfLifeLost(res.data, prevYear, currentYear));
+    });
 
-    // axios.get(fatalitiesLastYearUrl).then((res) => {
-    //   setFatalitiesLastYear(calculateTotalFatalities(res.data));
-    // });
+    axios.get(seriousInjuriesUrl).then((res) => {
+      setSeriousInjuries(
+        calculateTotalInjuriesOfCurrentAndPrevYear(
+          res.data,
+          prevYear,
+          currentYear
+        )
+      );
+    });
 
-    // axios.get(yearsOfLifeLostLastYearUrl).then((res) => {
-    //   setYearsOfLifeLostLastYear(getYearsOfLifeLost(res.data));
-    // });
-
-    // axios.get(seriousInjuriesLastYearUrl).then((res) => {
-    //   setSeriousInjuriesLastYear(calculateTotalInjuries(res.data));
-    // });
-
-    // axios.get(totalCrashesLastYearUrl).then((res) => {
-    //   setTotalCrashesLastYear(calculateTotalCrashes(res.data));
-    // });
-  }, []);
+    axios.get(totalCrashesUrl).then((res) => {
+      setTotalCrashes(calculateTotalCrashes(res.data, prevYear, currentYear));
+    });
+  }, [currentYear, prevYear]);
 
   const summaryWidgetsConfig = [
     {
       title: `Fatalities`,
-      total: fatalities,
-      lastYearTotal: fatalitiesLastYear,
+      totalsObject: fatalities,
       icon: faHeartbeat,
       color: colors.fatalities,
     },
     {
       title: `Years of Life Lost`,
-      total: yearsOfLifeLost,
-      lastYearTotal: yearsOfLifeLostLastYear,
+      totalsObject: yearsOfLifeLost,
       icon: faHourglassHalf,
       color: colors.yearsOfLifeLost,
     },
     {
       title: `Serious Injuries`,
-      total: seriousInjuries,
-      lastYearTotal: seriousInjuriesLastYear,
+      totalsObject: seriousInjuries,
       icon: faMedkit,
       color: colors.seriousInjuries,
     },
     {
       title: `Total Crashes`,
-      total: totalCrashes,
-      lastYearTotal: totalCrashesLastYear,
+      totalsObject: totalCrashes,
       icon: faCar,
       color: colors.totalCrashes,
     },
@@ -119,11 +102,9 @@ const SummaryView = () => {
         <Col className="summary-child" key={i} xs="12" md="6" xl="3">
           <SummaryWidget
             text={config.title}
-            // total={config.total}
-            totalsObject={config.total}
+            totalsObject={config.totalsObject}
             icon={config.icon}
             backgroundColor={config.color}
-            // lastYearTotal={config.lastYearTotal}
           />
         </Col>
       ))}
