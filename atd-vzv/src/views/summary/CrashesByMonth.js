@@ -116,12 +116,22 @@ const CrashesByMonth = () => {
     // Last item in data array is total YTD
     const yearTotal = yearTotalData[yearTotalData.length - 1];
     return (
-      <h6 style={{ color: colors.blue, textAlign: "center" }}>
-        As of {dataEndDate.format("MMMM")}, there have been{" "}
-        <strong>{yearTotal}</strong> traffic-related{" "}
-        {crashType.textString && crashType.textString.toLowerCase()} in{" "}
-        {dataEndDate.format("YYYY")}.
-      </h6>
+      <Row>
+        <Col className="col-auto">
+          <h2><strong>{yearTotal}</strong></h2>
+        </Col>
+        <Col>
+          <h6>
+            As of{" "}
+            <strong>
+              {dataEndDate.format("MMMM")} {dataEndDate.format("YYYY")}
+            </strong>
+            , there have been <strong>{yearTotal}</strong> traffic-related{" "}
+            <u>{crashType.textString && crashType.textString.toLowerCase()}</u>
+            .
+          </h6>
+        </Col>
+      </Row>
     );
   };
 
@@ -175,17 +185,18 @@ const CrashesByMonth = () => {
           <hr />
         </Col>
       </Row>
-      <Row>
-        <Col>{!!chartData && renderHeader()}</Col>
-      </Row>
+      {!!chartData && renderHeader()}
       <Row>
         <Col>
           <hr className="mt-1"/>
         </Col>
       </Row>
-      <Row style={{ paddingBottom: 20 }}>
+
+      <Row>
         <Col>
-          <h6 style={{ textAlign: "center" }}>Prior Years:</h6>
+          <h6 className="text-center"><strong>Year</strong></h6>
+          <hr></hr>
+          <h6 className="text-center"><strong>Total</strong></h6>          
         </Col>
         {!!chartData &&
           chartYearsArray.map((year, i) => {
@@ -195,15 +206,20 @@ const CrashesByMonth = () => {
             return (
               i > 0 && (
                 <Col key={i}>
-                  <h6 style={{ textAlign: "center" }}>
-                    <strong>{!!chartData && yearTotal}</strong> in {year}
+                  <h6 className="text-center">
+                    <strong>{!!chartData && year}</strong>
+                  </h6>
+                  <hr></hr>
+                  <h6 className="text-center">
+                    <strong>{!!chartData && yearTotal}</strong>
                   </h6>
                 </Col>
               )
             );
           })}
       </Row>
-      <Row>
+
+      <Row className="mt-1">
         <Col>
           <Line
             data={data}
