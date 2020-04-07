@@ -9,7 +9,6 @@ import {
   faCircle,
   faCaretDown,
   faCaretUp,
-  faSlash,
 } from "@fortawesome/free-solid-svg-icons";
 import { colors } from "../../constants/colors";
 
@@ -63,7 +62,7 @@ const SummaryWidget = ({
     const icon =
       (total > lastYearTotal && faCaretUp) ||
       (total < lastYearTotal && faCaretDown) ||
-      faSlash;
+      null;
     const text =
       (total > lastYearTotal && "Up from") ||
       (total < lastYearTotal && "Down from") ||
@@ -71,19 +70,35 @@ const SummaryWidget = ({
 
     return (
       <Row className="card-bottom">
-        <Col xl="3" className="text-left widget-change-icon">
-          <FontAwesomeIcon size="2x" icon={icon} color={colors.dark} />
+        <Col
+          xs="3"
+          md="3"
+          lg="4"
+          xl="3"
+          className="text-left widget-change-icon"
+        >
+          {!!icon ? (
+            <FontAwesomeIcon size="2x" icon={icon} color={colors.dark} />
+          ) : (
+            "--"
+          )}
         </Col>
-        <Col xl="9" className="text-muted pl-0 pt-1">
-          {`${text} ${lastYearTotal} this time last year`}
-        </Col>
+        {!!lastYearTotal && (
+          <Col
+            xs="9"
+            md="9"
+            lg="8"
+            xl="9"
+            className="text-muted text-wrap pl-0 pt-1"
+          >
+            {`${text} ${lastYearTotal.toLocaleString()} this time last year`}
+          </Col>
+        )}
       </Row>
     );
   };
 
-  // 1. TODO Fix mobile styles xl and down
-  // 2. TODO Write logic for change from previous year
-  // 3. TODO Optimize API calls
+  // TODO Optimize API calls
 
   return (
     <StyledWidget>
@@ -102,10 +117,10 @@ const SummaryWidget = ({
             </Col>
           </Row>
           <Row>
-            <Col xl="3" className="text-left">
+            <Col xs="3" md="3" lg="4" xl="3" className="text-left">
               {renderIcon()}
             </Col>
-            <Col xl="9">
+            <Col xs="9" md="9" lg="8" xl="9">
               <Row>
                 <h5 className="mb-0">{text}</h5>
               </Row>

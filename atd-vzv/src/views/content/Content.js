@@ -13,7 +13,7 @@ const Content = () => {
   const routeResult = useRoutes(routes);
   const currentPath = usePath();
 
-  // TODO: Adjust left of content when sidebar opens on mobile
+  // TODO: Slide content to the right when SideDrawer opens
   // Adding conditional styles based on sidebarToggle in the store causes children to re-render on toggle
   // which causes map or summary views to refetch all data on sidebar toggle
   // https://github.com/facebook/react/issues/14110
