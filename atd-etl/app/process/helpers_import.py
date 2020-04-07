@@ -13,6 +13,7 @@ import io
 import json
 import re
 import datetime
+from dateutil import parser
 
 # Dependencies
 from .queries import search_crash_query, search_crash_query_full
@@ -355,7 +356,16 @@ def get_crash_record(crash_id):
     # First generate a query with a list of the columns we care about
     query = search_crash_query_full(
         crash_id=crash_id,
-        field_list=CRIS_TXDOT_COMPARE_FIELDS_LIST+["apd_human_update"]
+        field_list=(
+           CRIS_TXDOT_COMPARE_FIELDS_LIST +
+           [
+               "apd_human_update",
+               "geocode_provider",
+               "qa_status",
+               "updated_by",
+               "changes_approved_date"
+           ]
+        )
     )
 
     # Then try to run the query to get the actual record
@@ -568,12 +578,43 @@ def insert_crash_change_template(new_record_dict, differences, crash_id):
     return output
 
 
+def can_record_update(record):
+    """
+    Return true if changes_approved_date is greater than 3 days
+    :param dict record: The current record being evaluated
+    :return bool:
+    """
+    # Try getting changes_approved_date from record
+    try:
+        approved_time = parser.parse(record["changes_approved_date"])
+        delta = datetime.datetime.now() - approved_time
+        return delta.days > 3
+    except:
+        return True
+
+
+def is_human_updated(record):
+    """
+    Returns true if the record has been edited by a human.
+    :param dict record:
+    :return bool:
+    """
+    return (
+        record["apd_human_update"] == "Y"
+    ) or (
+        record["geocode_provider"] == 5 and
+        record["qa_status"] == 3
+    ) or (
+        str(record["updated_by"]).endswith("@austintexas.gov")
+    )
+
+
 def record_crash_compare(line, fieldnames, crash_id, record_existing):
     """
     Hook that finds an existing record, and compares it with a new incoming record built from a raw csv line.
     :param line: string - The raw csv line
     :param fieldnames: array of strings - The strings to be used as headers
-    :return:
+    :return bool: False if we want to ignore changes.
     """
     # Gather the field names
     fieldnames = [column.lower() for column in fieldnames]
@@ -592,13 +633,22 @@ def record_crash_compare(line, fieldnames, crash_id, record_existing):
         record_new = generate_crash_record(line=line, fieldnames=fieldnames)
         # Now calculate the differences
         differences = record_compare(record_new=record_new, record_existing=record_existing)
+        # Determine if record is updated by human:
+        human_updated = is_human_updated(record=record_existing)
+        # Check if it can update based on changes_approved_date
+        can_update = can_record_update(record=record_existing)
 
         # If there are no differences, just ignore...
         if len(differences) == 0:
             return False
+        # If no changes approved, or longer than 3 days
+        if can_update is False:
+            # It's too soon, ignore change.
+            return False
 
-        # There are differences...
-        if record_existing["apd_human_update"] == "Y":
+        # There are differences, and it can update...
+        # If human_updated, create a request:
+        if human_updated:
             mutation_template = insert_crash_change_template(
                 new_record_dict=record_new,
                 differences=differences,
@@ -611,8 +661,12 @@ def record_crash_compare(line, fieldnames, crash_id, record_existing):
                 affected_rows = 0
 
             if affected_rows == 1:
+                print("\tCreated (or updated existing) change request (%s)" % crash_id)
+                # We return false because we captured the changes into
+                # a request on the database via run_query (Hasura)
                 return False
             else:
                 raise Exception("Failed to insert crash review request: %s" % crash_id)
+        # Not human edited, update everything automatically.
         else:
             return True
