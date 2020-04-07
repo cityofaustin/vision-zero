@@ -13,12 +13,14 @@ import {
 import { colors } from "../../constants/colors";
 
 const SummaryWidget = ({
-  total,
-  lastYearTotal,
+  // total,
+  // lastYearTotal,
+  totalsObject,
   text,
   icon,
   backgroundColor,
 }) => {
+  console.log(totalsObject);
   const StyledWidget = styled.div`
     .total {
       font-size: 4em;
@@ -58,14 +60,14 @@ const SummaryWidget = ({
     </span>
   );
 
-  const renderFooterBasedOnChange = (total, lastYearTotal) => {
+  const renderFooterBasedOnChange = (currentYearTotal, lastYearTotal) => {
     const icon =
-      (total > lastYearTotal && faCaretUp) ||
-      (total < lastYearTotal && faCaretDown) ||
+      (currentYearTotal > lastYearTotal && faCaretUp) ||
+      (currentYearTotal < lastYearTotal && faCaretDown) ||
       null;
     const text =
-      (total > lastYearTotal && "Up from") ||
-      (total < lastYearTotal && "Down from") ||
+      (currentYearTotal > lastYearTotal && "Up from") ||
+      (currentYearTotal < lastYearTotal && "Down from") ||
       "Same as";
 
     return (
@@ -91,7 +93,7 @@ const SummaryWidget = ({
             xl="9"
             className="text-muted text-wrap pl-0 pt-1"
           >
-            {`${text} ${lastYearTotal.toLocaleString()} this time last year`}
+            {`${text} ${lastYearTotal} this time last year`}
           </Col>
         )}
       </Row>
@@ -108,8 +110,8 @@ const SummaryWidget = ({
             <Col>
               {/* Show spinner while waiting for data, add thousands separator to total */}
               <h1 className="total">
-                {total !== null ? (
-                  total.toLocaleString()
+                {totalsObject !== null ? (
+                  totalsObject.currentYearTotal
                 ) : (
                   <ColorSpinner color={backgroundColor} />
                 )}
@@ -131,7 +133,11 @@ const SummaryWidget = ({
           </Row>
         </CardBody>
         <CardFooter className="widget-footer">
-          {renderFooterBasedOnChange(total, lastYearTotal)}
+          {totalsObject !== null &&
+            renderFooterBasedOnChange(
+              totalsObject.currentYearTotal,
+              totalsObject.prevYearTotal
+            )}
         </CardFooter>
       </Card>
     </StyledWidget>
