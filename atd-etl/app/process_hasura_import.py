@@ -74,16 +74,31 @@ def process_line(file_type, line, fieldnames, current_line, dryrun=False):
     # Applies to: crashes, unit, person, primary person, charges
     crash_id = line.strip().split(",")[0]
     mode = "[Dry-Run]" if dryrun else "[Live]"
+    insert_crash = False
     # First we need to check if the current record exists, skip if so.
-    if record_exists_hook(line=line, file_type=file_type):
-        if ATD_ETL_CONFIG["ATD_CRIS_IMPORT_COMPARE_FUNCTION"] == "ENABLED":
-            record_compare_hook(line=line, fieldnames=fieldnames, file_type=file_type)
+    if file_type == "crash":
+        # Gather the crash_id from the current line
+        crash_id = get_crash_id(line)
+        # Using the crash_id, try to find an existing record
+        record_existing = get_crash_record(crash_id)
 
-        print("[%s] Exists: %s (%s)" % (str(current_line), str(crash_id), file_type))
-        existing_records += 1
+        # If not found, then insert
+        if record_existing is None:
+            insert_crash = True
+        # Else, we need to compare
+        else:
+            print("[%s] Exists: %s (%s)" % (str(current_line), str(crash_id), file_type))
+            existing_records += 1
+
+            insert_crash = record_crash_compare(
+                line=line,
+                fieldnames=fieldnames,
+                crash_id=crash_id,
+                record_existing=record_existing
+            )
 
     # The record does not exist, insert.
-    else:
+    if file_type != "crash" or insert_crash:
         # Generate query and present to terminal
         gql = generate_gql(line=line, fieldnames=fieldnames, file_type=file_type)
         # If this is not a dry-run, then make an actual insertion
@@ -95,7 +110,6 @@ def process_line(file_type, line, fieldnames, current_line, dryrun=False):
         else:
             # Live Execution
             response = run_query(gql)
-
         # For any other errors, run the error handler hook:
         if "errors" in str(response):
             stop_execution = False
