@@ -12,11 +12,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 
 const StyledNavbar = styled.div`
-  /* Allow SideMapControlDateRange to grey out this header in full screen mode */
-  .fixed-top {
-    z-index: 1;
-  }
-
   .navbar-container {
     /* Make Navbar container same height as SideDrawer header */
     height: ${drawer.headerHeight}px;
@@ -80,7 +75,7 @@ const Header = () => {
 
   // Use context to toggle state for SideDrawer toggle
   const {
-    sidebarToggle: [isOpen, setIsOpen]
+    sidebarToggle: [isOpen, setIsOpen],
   } = React.useContext(StoreContext);
 
   return (

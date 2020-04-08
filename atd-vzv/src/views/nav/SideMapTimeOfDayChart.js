@@ -21,14 +21,14 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
   const {
     mapTimeWindow: [mapTimeWindow, setMapTimeWindow],
     mapFilters: [mapFilters],
-    mapDateRange: dateRange,
+    mapDateRange: dateRange
   } = React.useContext(StoreContext);
 
   // Get crash data without mapTimeWindow filter to populate chart
   useEffect(() => {
     const apiUrl = createMapDataUrl(crashEndpointUrl, mapFilters, dateRange);
     !!apiUrl &&
-      axios.get(apiUrl).then((res) => {
+      axios.get(apiUrl).then(res => {
         setChartData(res.data);
       });
   }, [dateRange, mapFilters]);
@@ -38,9 +38,9 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
     // When chartData is set, accumulate time window data
     if (!!crashes) {
       const crashTimeWindowAccumulatorArray = Object.keys(filters).map(
-        (filter) => 0
+        filter => 0
       );
-      const crashTimeWindows = Object.values(filters).map((filter) => filter);
+      const crashTimeWindows = Object.values(filters).map(filter => filter);
       const crashTimeTotals = crashes.reduce((accumulator, crash) => {
         crashTimeWindows.forEach((timeWindow, i) => {
           const crashDate = crash.crash_date;
@@ -59,7 +59,7 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
   useMemo(() => {
     // When timeWindowData is set, calc percentages
     if (!!timeWindowData) {
-      const timeWindowPercentages = timeWindowData.map((timeWindow) => {
+      const timeWindowPercentages = timeWindowData.map(timeWindow => {
         const timeWindowsTotal = timeWindowData.reduce(
           (accumulator, timeWindowTotal) => {
             return (accumulator += timeWindowTotal);
@@ -76,7 +76,7 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
     }
   }, [timeWindowData]);
 
-  const handleBarClick = (elems) => {
+  const handleBarClick = elems => {
     // Store bar label, if click is within a bar
     const timeWindow = elems.length > 0 ? elems[0]._model.label : null;
     const index = elems.length > 0 ? elems[0]._index : null;
@@ -104,12 +104,11 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
     return `${timeWindowPercentages[index]}% (${timeWindowData[index]})`;
   };
 
-  const createChartTimeLabels = () =>
-    Object.keys(filters).map((label) => label);
+  const createChartTimeLabels = () => Object.keys(filters).map(label => label);
 
   const isMapTimeWindowSet = !!mapTimeWindow;
 
-  const handleAllButtonClick = (event) => {
+  const handleAllButtonClick = event => {
     setMapTimeWindow("");
     setBarColors(defaultBarColor);
   };
@@ -123,9 +122,9 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
         borderWidth: 1,
         hoverBackgroundColor: colors.infoDark,
         hoverBorderColor: colors.infoDark,
-        data: timeWindowPercentages,
-      },
-    ],
+        data: timeWindowPercentages
+      }
+    ]
   };
 
   return (
@@ -141,17 +140,17 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
               xAxes: [
                 {
                   ticks: {
-                    beginAtZero: true, // Keep small %s viewable in chart
-                  },
-                },
-              ],
+                    beginAtZero: true // Keep small %s viewable in chart
+                  }
+                }
+              ]
             },
             tooltips: {
               callbacks: {
                 label: createTooltipData,
-                title: (tooltipItem, data) => null, // Render nothing for tooltip title
-              },
-            },
+                title: (tooltipItem, data) => null // Render nothing for tooltip title
+              }
+            }
           }}
         />
       )}

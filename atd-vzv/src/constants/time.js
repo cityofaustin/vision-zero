@@ -21,9 +21,7 @@ export const dataStartDate = moment()
   .startOf("year");
 
 // Last date of records that should be referenced in VZV (through last complete month of data)
-export const dataEndDate = moment()
-  .subtract(1, "month")
-  .endOf("month");
+export const dataEndDate = moment().subtract(1, "month").endOf("month");
 
 // Summary time data
 export const summaryCurrentYearStartDate = dataEndDate
