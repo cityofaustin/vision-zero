@@ -68,6 +68,11 @@ const StyledNavbar = styled.div`
       position: relative;
     }
   }
+
+  .nav-button {
+    height: 56px;
+    font-size: 18px;
+  }
 `;
 
 const Header = () => {
@@ -101,7 +106,7 @@ const Header = () => {
               alt="Vision Zero Austin Logo"
             ></img>
           </div>
-          <Nav className="navbar-links" navbar>
+          <Nav className="navbar-links ml-auto" navbar>
             {navConfig.map((config, i) => (
               <NavItem key={i}>
                 <NavLink tag={A} href={config.url}>
