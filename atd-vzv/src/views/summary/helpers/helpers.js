@@ -2,32 +2,28 @@ import { lifespanYears } from "../../../constants/calc";
 import { dataEndDate } from "../../../constants/time";
 // Helpers to handle Socrata responses for Summary view components
 
-export const calcSummaryTotalFatalities = (data, prevYear, currentYear) =>
+const calcFieldTotalsFromRecords = (data, prevYear, currentYear, field) =>
   data.reduce(
     (accumulator, record) => {
       const recordYear = record.crash_date.slice(0, 4);
       accumulator = {
         ...accumulator,
-        [recordYear]: (accumulator[recordYear] += parseInt(record.death_cnt)),
+        [recordYear]: (accumulator[recordYear] += parseInt(record[field])),
       };
       return accumulator;
     },
     { [prevYear]: 0, [currentYear]: 0 }
   );
 
+export const calcSummaryTotalFatalities = (data, prevYear, currentYear) =>
+  calcFieldTotalsFromRecords(data, prevYear, currentYear, "death_cnt");
+
 export const calcSummaryTotalSeriousInjuries = (data, prevYear, currentYear) =>
-  data.reduce(
-    (accumulator, record) => {
-      const recordYear = record.crash_date.slice(0, 4);
-      accumulator = {
-        ...accumulator,
-        [recordYear]: (accumulator[recordYear] += parseInt(
-          record.sus_serious_injry_cnt
-        )),
-      };
-      return accumulator;
-    },
-    { [prevYear]: 0, [currentYear]: 0 }
+  calcFieldTotalsFromRecords(
+    data,
+    prevYear,
+    currentYear,
+    "sus_serious_injry_cnt"
   );
 
 export const calcSummaryTotalCrashes = (data, prevYear, currentYear) =>
