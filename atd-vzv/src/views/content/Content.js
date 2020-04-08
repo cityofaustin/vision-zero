@@ -4,13 +4,10 @@ import { routes } from "../../routes/routes";
 import Header from "../nav/Header";
 import NotFound from "../NotFound/NotFound";
 
-import { Container } from "reactstrap";
+import { Container, Row } from "reactstrap";
 import styled from "styled-components";
 import { drawer } from "../../constants/drawer";
-import {
-  responsive,
-  shouldContentContainerBeFluid
-} from "../../constants/responsive";
+import { responsive } from "../../constants/responsive";
 
 const Content = () => {
   const routeResult = useRoutes(routes);
@@ -51,13 +48,12 @@ const Content = () => {
   `;
 
   return (
-    <StyledContent className={!shouldContentContainerBeFluid() && `mx-auto`}>
-      <Container
-        fluid={shouldContentContainerBeFluid() || currentPath !== "/"}
-        className="content"
-      >
-        <Header />
-        {routeResult || <NotFound />}
+    <StyledContent>
+      <Container fluid className="content ">
+        <Row className="px-xs-0 px-lg-5 mx-lg-5">
+          <Header />
+          {routeResult || <NotFound />}
+        </Row>
       </Container>
     </StyledContent>
   );
