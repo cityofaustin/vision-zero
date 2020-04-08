@@ -33,7 +33,7 @@ const Content = () => {
     .content {
       padding: 0px;
       top: ${drawer.headerHeight}px;
-      width: calc(100vw - ${drawer.width}px);
+      width: 100vw;
       ${mapStyleExceptions}
     }
 
@@ -48,7 +48,7 @@ const Content = () => {
 
   return (
     <StyledContent>
-      <Container fluid className="content">
+      <Container fluid={currentPath !== "/"} className="content">
         <Header />
         {routeResult || <NotFound />}
       </Container>

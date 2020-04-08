@@ -5,3 +5,5 @@ export const responsive = {
   bootstrapMediumMin: 769,
   bootstrapExtraSmall: 576
 };
+
+export const isMobile = () => window.innerWidth < responsive.bootstrapMedium;
