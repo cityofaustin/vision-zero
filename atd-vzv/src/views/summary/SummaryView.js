@@ -13,10 +13,10 @@ import {
 } from "../../constants/time";
 import { personEndpointUrl, crashEndpointUrl } from "./queries/socrataQueries";
 import {
-  calculateTotalFatalitiesOfCurrentAndPrevYear,
-  getYearsOfLifeLost,
-  calculateTotalInjuriesOfCurrentAndPrevYear,
-  calculateTotalCrashes,
+  calcSummaryTotalFatalities,
+  getSummaryYearsOfLifeLost,
+  calcSummaryTotalSeriousInjuries,
+  calcSummaryTotalCrashes,
 } from "./helpers/helpers";
 import { colors } from "../../constants/colors";
 import {
@@ -38,32 +38,34 @@ const SummaryView = () => {
     const seriousInjuriesUrl = `${crashEndpointUrl}?$where=(sus_serious_injry_cnt > 0 AND crash_date between '${summaryCurrentYearStartDate}T00:00:00' and '${summaryCurrentYearEndDate}T23:59:59') OR (sus_serious_injry_cnt > 0 AND crash_date between '${summaryLastYearStartDate}T00:00:00' and '${summaryLastYearEndDate}T23:59:59')`;
     const totalCrashesUrl = `${crashEndpointUrl}?$limit=100000&$where=(crash_date between '${summaryCurrentYearStartDate}T00:00:00' and '${summaryCurrentYearEndDate}T23:59:59') OR (crash_date between '${summaryLastYearStartDate}T00:00:00' and '${summaryLastYearEndDate}T23:59:59')`;
 
-    axios.get(fatalitiesUrl).then((res) => {
-      setFatalities(
-        calculateTotalFatalitiesOfCurrentAndPrevYear(
-          res.data,
-          prevYear,
-          currentYear
-        )
-      );
-    });
+    const requestConfigs = [
+      {
+        url: fatalitiesUrl,
+        handler: calcSummaryTotalFatalities,
+        setter: setFatalities,
+      },
+      {
+        url: yearsOfLifeLostUrl,
+        handler: getSummaryYearsOfLifeLost,
+        setter: setYearsOfLifeLost,
+      },
+      {
+        url: seriousInjuriesUrl,
+        handler: calcSummaryTotalSeriousInjuries,
+        setter: setSeriousInjuries,
+      },
+      {
+        url: totalCrashesUrl,
+        handler: calcSummaryTotalCrashes,
+        setter: setTotalCrashes,
+      },
+    ];
 
-    axios.get(yearsOfLifeLostUrl).then((res) => {
-      setYearsOfLifeLost(getYearsOfLifeLost(res.data, prevYear, currentYear));
-    });
-
-    axios.get(seriousInjuriesUrl).then((res) => {
-      setSeriousInjuries(
-        calculateTotalInjuriesOfCurrentAndPrevYear(
-          res.data,
-          prevYear,
-          currentYear
-        )
-      );
-    });
-
-    axios.get(totalCrashesUrl).then((res) => {
-      setTotalCrashes(calculateTotalCrashes(res.data, prevYear, currentYear));
+    requestConfigs.forEach((config) => {
+      const { url, setter, handler } = config;
+      axios
+        .get(url)
+        .then((res) => setter(handler(res.data, prevYear, currentYear)));
     });
   }, []);
 

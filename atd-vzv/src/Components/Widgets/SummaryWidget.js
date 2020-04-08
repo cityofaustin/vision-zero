@@ -1,9 +1,9 @@
 import React from "react";
 import ColorSpinner from "../Spinner/ColorSpinner";
 import {
-  dataEndDate,
   currentYearString as currentYear,
   prevYearString as prevYear,
+  currentYearString,
 } from "../../constants/time";
 
 import { Card, CardBody, Row, Col, CardFooter } from "reactstrap";
@@ -17,14 +17,9 @@ import {
 import { colors } from "../../constants/colors";
 
 const SummaryWidget = ({ totalsObject, text, icon, backgroundColor }) => {
-  console.log(totalsObject);
   const StyledWidget = styled.div`
     .total {
       font-size: 4em;
-    }
-
-    .secondary-text {
-      color: ${colors.secondary};
     }
 
     /* Shift icon left to align with Bootstrap card text */
@@ -43,7 +38,6 @@ const SummaryWidget = ({ totalsObject, text, icon, backgroundColor }) => {
       left: 12.25px;
     }
   `;
-  const displayYear = dataEndDate.format("YYYY");
 
   const renderIcon = () => (
     <span className="fa-layers fa-3x fa-fw widget-icon">
@@ -122,7 +116,7 @@ const SummaryWidget = ({ totalsObject, text, icon, backgroundColor }) => {
                 <h5 className="mb-0">{text}</h5>
               </Row>
               <Row>
-                <h5 className="text-muted">{`in ${displayYear}`}</h5>
+                <h5 className="text-muted">{`in ${currentYearString}`}</h5>
               </Row>
             </Col>
           </Row>
