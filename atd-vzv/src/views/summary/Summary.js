@@ -7,7 +7,7 @@ import CrashesByMode from "./CrashesByMode";
 import SummaryView from "./SummaryView";
 import SummaryCard from "./SummaryCard";
 
-import { Container, Row } from "reactstrap";
+import { Container, Row, Col } from "reactstrap";
 import styled from "styled-components";
 
 const children = [
@@ -30,15 +30,17 @@ const Summary = () => {
   return (
     <Container fluid>
       {/* Create whitespace on sides of view until mobile */}
-      <Row className="px-xs-0 px-lg-5 mx-lg-5">
-        <StyledSummary>
-          <SummaryView />
-          <Row>
-            {children.map((child, i) => (
-              <SummaryCard key={i} child={child} />
-            ))}
-          </Row>
-        </StyledSummary>
+      <Row className="px-xs-0 mx-xs-0 px-lg-5 mx-lg-5">
+        <Col className="px-xs-0">
+          <StyledSummary>
+            <SummaryView />
+            <Row>
+              {children.map((child, i) => (
+                <SummaryCard key={i} child={child} />
+              ))}
+            </Row>
+          </StyledSummary>
+        </Col>
       </Row>
     </Container>
   );

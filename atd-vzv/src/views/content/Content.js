@@ -19,11 +19,10 @@ const Content = () => {
   // https://github.com/facebook/react/issues/14110
 
   // Map view needs to consider header height and have no overflow scroll to fill view
-  // Non-map views need to scroll to show all content
+  // Summary view needs to scroll to show all content
   const mapStyles = `
     height: calc(100vh - ${drawer.headerHeight}px);
     width: calc(100vw - ${drawer.width}px);
-    padding: 0px;
   `;
 
   const summaryStyles = `
@@ -49,7 +48,8 @@ const Content = () => {
 
   return (
     <StyledContent>
-      <Container fluid className="content ">
+      {/* Remove padding from all content */}
+      <Container fluid className="content px-0">
         <Header />
         {routeResult || <NotFound />}
       </Container>

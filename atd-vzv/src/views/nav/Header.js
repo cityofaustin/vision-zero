@@ -56,14 +56,17 @@ const Header = () => {
   }
 
   .vz-logo {
+    @media only screen and (max-width: ${responsive.bootstrapMediumMin}px) {
     /* Center VZ logo and only show when toggler is present */
     transform: translateX(-50%);
     left: 50%;
     position: absolute;
+    }
 
-    /* Hide logo in header when SideDrawer is closed and toggle is present (mobile) */
+    /* Hide logo in header when SideDrawer is closed and toggle is present (mobile)
+    but show in Summary view at all times */
     @media only screen and (min-width: ${responsive.bootstrapMediumMin}px) {
-      display: none;
+      ${currentPath !== "/" && "display: none;"}
     }
 
     /* Change position to prevent overlap of logo and toggle button on small devices */
@@ -101,7 +104,7 @@ const Header = () => {
               alt="Vision Zero Austin Logo"
             ></img>
           </div>
-          <Nav className="navbar-links" navbar>
+          <Nav className="navbar-links ml-auto" navbar>
             {navConfig.map((config, i) => (
               <NavItem key={i}>
                 <NavLink tag={A} href={config.url}>
