@@ -16,28 +16,28 @@ import SideDrawerMobileNav from "./SideDrawerMobileNav";
 const drawerWidth = drawer.width;
 
 // Styles for MUI drawer
-const useStyles = makeStyles(theme => {
+const useStyles = makeStyles((theme) => {
   return {
     root: {
-      display: "flex"
+      display: "flex",
     },
     drawer: {
       // Feed drawer component a media query to align with Bootstrap breakpoints
       [`@media (min-width:${responsive.bootstrapMediumMin}px)`]: {
         width: drawerWidth,
-        flexShrink: 0
-      }
+        flexShrink: 0,
+      },
     },
     drawerPaper: {
       width: drawerWidth,
       background: colors.dark,
       color: colors.light,
-      border: 0
+      border: 0,
     },
     content: {
       flexGrow: 1,
-      padding: theme.spacing(3)
-    }
+      padding: theme.spacing(3),
+    },
   };
 });
 
@@ -84,7 +84,7 @@ const SideDrawer = () => {
   const theme = useTheme();
 
   const {
-    sidebarToggle: [isOpen, setIsOpen]
+    sidebarToggle: [isOpen, setIsOpen],
   } = React.useContext(StoreContext);
 
   const drawerContent = (
@@ -124,17 +124,17 @@ const SideDrawer = () => {
             open={isOpen}
             onClose={() => setIsOpen(!isOpen)}
             classes={{
-              paper: classes.drawerPaper
+              paper: classes.drawerPaper,
             }}
             ModalProps={{
-              keepMounted: true // Better open performance on mobile.
+              keepMounted: true, // Better open performance on mobile.
             }}
           >
             {drawerContent}
           </Drawer>
           <Drawer
             classes={{
-              paper: classes.drawerPaper
+              paper: classes.drawerPaper,
             }}
             id="permanent-drawer"
             variant="permanent"

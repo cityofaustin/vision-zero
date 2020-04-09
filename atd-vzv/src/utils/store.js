@@ -8,12 +8,12 @@ export default ({ children }) => {
   const [mapFilters, setMapFilters] = useState([]);
   const [mapDateRange, setMapDateRange] = useState({
     start: mapStartDate,
-    end: mapEndDate
+    end: mapEndDate,
   });
   const [mapTimeWindow, setMapTimeWindow] = useState("");
   const [mapOverlay, setMapOverlay] = useState({
     name: "",
-    options: []
+    options: [],
   });
 
   const store = {
@@ -21,7 +21,7 @@ export default ({ children }) => {
     mapDateRange: [mapDateRange, setMapDateRange],
     mapTimeWindow: [mapTimeWindow, setMapTimeWindow],
     sidebarToggle: [isOpen, setIsOpen],
-    mapOverlay: [mapOverlay, setMapOverlay]
+    mapOverlay: [mapOverlay, setMapOverlay],
   };
 
   return (

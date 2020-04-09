@@ -6,24 +6,21 @@ import { Row, Col } from "reactstrap";
 import {
   dataEndDate,
   summaryCurrentYearStartDate,
-  summaryCurrentYearEndDate
+  summaryCurrentYearEndDate,
 } from "../../constants/time";
-import {
-  personEndpointUrl,
-  crashEndpointUrl
-} from "./queries/socrataQueries";
+import { personEndpointUrl, crashEndpointUrl } from "./queries/socrataQueries";
 import {
   calculateTotalFatalities,
   getYearsOfLifeLost,
   calculateTotalInjuries,
-  calculateTotalCrashes
+  calculateTotalCrashes,
 } from "./helpers/helpers";
 import { colors } from "../../constants/colors";
 import {
   faCar,
   faHourglass,
   faHeartbeat,
-  faMedkit
+  faMedkit,
 } from "@fortawesome/free-solid-svg-icons";
 
 const SummaryView = () => {
@@ -38,19 +35,19 @@ const SummaryView = () => {
     const seriousInjuriesUrl = `${crashEndpointUrl}?$where=sus_serious_injry_cnt > 0 AND crash_date between '${summaryCurrentYearStartDate}T00:00:00' and '${summaryCurrentYearEndDate}T23:59:59'`;
     const totalCrashesUrl = `${crashEndpointUrl}?$where=crash_date between '${summaryCurrentYearStartDate}T00:00:00' and '${summaryCurrentYearEndDate}T23:59:59'&$limit=100000`;
 
-    axios.get(fatalitiesUrl).then(res => {
+    axios.get(fatalitiesUrl).then((res) => {
       setFatalities(calculateTotalFatalities(res.data));
     });
 
-    axios.get(yearsOfLifeLostUrl).then(res => {
+    axios.get(yearsOfLifeLostUrl).then((res) => {
       setYearsOfLifeLost(getYearsOfLifeLost(res.data));
     });
 
-    axios.get(seriousInjuriesUrl).then(res => {
+    axios.get(seriousInjuriesUrl).then((res) => {
       setSeriousInjuries(calculateTotalInjuries(res.data));
     });
 
-    axios.get(totalCrashesUrl).then(res => {
+    axios.get(totalCrashesUrl).then((res) => {
       setTotalCrashes(calculateTotalCrashes(res.data));
     });
   }, []);
@@ -62,26 +59,26 @@ const SummaryView = () => {
       title: `Fatalities in ${displayYear}`,
       total: fatalities,
       icon: faHeartbeat,
-      color: colors.fatalities
+      color: colors.fatalities,
     },
     {
       title: `Years of Life Lost in ${displayYear}`,
       total: yearsOfLifeLost,
       icon: faHourglass,
-      color: colors.yearsOfLifeLost
+      color: colors.yearsOfLifeLost,
     },
     {
       title: `Serious Injuries in ${displayYear}`,
       total: seriousInjuries,
       icon: faMedkit,
-      color: colors.seriousInjuries
+      color: colors.seriousInjuries,
     },
     {
       title: `Total Crashes in ${displayYear}`,
       total: totalCrashes,
       icon: faCar,
-      color: colors.totalCrashes
-    }
+      color: colors.totalCrashes,
+    },
   ];
 
   return (

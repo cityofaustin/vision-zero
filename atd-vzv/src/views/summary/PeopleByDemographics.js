@@ -15,59 +15,59 @@ const PeopleByDemographics = () => {
     { label: "Under 18", categoryValue: 1 },
     {
       label: "18 to 44",
-      categoryValue: 2
+      categoryValue: 2,
     },
     {
       label: "45 to 64",
-      categoryValue: 3
+      categoryValue: 3,
     },
     {
       label: "65 and older",
-      categoryValue: 4
+      categoryValue: 4,
     },
     {
       label: "Unknown",
-      categoryValue: 0
-    }
+      categoryValue: 0,
+    },
   ];
 
   const sexCategories = [
     {
       label: "Male",
-      categoryValue: 1
+      categoryValue: 1,
     },
     {
       label: "Female",
-      categoryValue: 2
+      categoryValue: 2,
     },
     {
       label: "Unknown",
-      categoryValue: 0
-    }
+      categoryValue: 0,
+    },
   ];
 
   const raceCategories = [
     {
       label: "White",
-      categoryValue: 1
+      categoryValue: 1,
     },
     {
       label: "Hispanic",
-      categoryValue: 2
+      categoryValue: 2,
     },
     { label: "Black", categoryValue: 3 },
     {
       label: "Asian",
-      categoryValue: 4
+      categoryValue: 4,
     },
     {
       label: "Other or unknown",
-      categoryValue: 5
+      categoryValue: 5,
     },
     {
       label: "American Indian or Alaska Native",
-      categoryValue: 6
-    }
+      categoryValue: 6,
+    },
   ];
 
   const chartColors = [
@@ -76,14 +76,14 @@ const PeopleByDemographics = () => {
     colors.viridis3Of6,
     colors.viridis4Of6,
     colors.viridis5Of6,
-    colors.viridis6Of6Lowest
+    colors.viridis6Of6Lowest,
   ];
 
   const [activeTab, setActiveTab] = useState("prsn_age");
   const [chartData, setChartData] = useState(null); // {yearInt: [{record}, {record}, ...]}
   const [crashType, setCrashType] = useState([]);
 
-  const toggle = tab => {
+  const toggle = (tab) => {
     if (activeTab !== tab) {
       setActiveTab(tab);
     }
@@ -97,7 +97,7 @@ const PeopleByDemographics = () => {
         let newData = {};
         // Use Promise.all to let all requests resolve before setting chart data by year
         await Promise.all(
-          yearsArray().map(async year => {
+          yearsArray().map(async (year) => {
             // If getting data for current year (only including years past January),
             // set end of query to last day of previous month,
             // else if getting data for previous years, set end of query to last day of year
@@ -106,7 +106,7 @@ const PeopleByDemographics = () => {
                 ? `${dataEndDate.format("YYYY-MM-DD")}T23:59:59`
                 : `${year}-12-31T23:59:59`;
             let url = `${personEndpointUrl}?$where=${crashType.queryStringPerson} AND crash_date between '${year}-01-01T00:00:00' and '${endDate}'`;
-            await axios.get(url).then(res => {
+            await axios.get(url).then((res) => {
               newData = { ...newData, ...{ [year]: res.data } };
             });
             return null;
@@ -118,11 +118,11 @@ const PeopleByDemographics = () => {
     }
   }, [crashType]);
 
-  const createChartLabels = () => yearsArray().map(year => `${year}`);
+  const createChartLabels = () => yearsArray().map((year) => `${year}`);
 
   // Tabulate crashes by demographics in data
   const getData = (categoryValue, isWholeNumber) =>
-    yearsArray().map(year => {
+    yearsArray().map((year) => {
       let categoryTotal = chartData[year].reduce((accumulator, record) => {
         switch (activeTab) {
           case "prsn_age":
@@ -192,7 +192,7 @@ const PeopleByDemographics = () => {
       const percentage = (categoryTotal / overallTotal) * 100;
       const wholeNumbers = {
         categoryTotal: categoryTotal,
-        overallTotal: overallTotal
+        overallTotal: overallTotal,
       };
       // If isWholeNumber is true, return the wholeNumbers Object for display in tooltips,
       // else return percentage for chartJS to render the chart
@@ -201,8 +201,8 @@ const PeopleByDemographics = () => {
     });
 
   // Sort category order in stack and apply colors by averaging total demographic stats across all years in chart
-  const sortAndColorData = data => {
-    const averageCrashes = dataArray =>
+  const sortAndColorData = (data) => {
+    const averageCrashes = (dataArray) =>
       dataArray.reduce((a, b) => a + b) / dataArray.length;
     const dataSorted = [...data].sort(
       (a, b) => averageCrashes(b.data) - averageCrashes(a.data)
@@ -236,18 +236,18 @@ const PeopleByDemographics = () => {
       default:
         break;
     }
-    const data = categories.map(category => ({
+    const data = categories.map((category) => ({
       borderWidth: 2,
       label: category.label,
       data: getData(category.categoryValue, false),
-      wholeNumbers: getData(category.categoryValue, true)
+      wholeNumbers: getData(category.categoryValue, true),
     }));
     return sortAndColorData(data);
   };
 
   const data = {
     labels: createChartLabels(),
-    datasets: !!chartData && createTypeDatasets()
+    datasets: !!chartData && createTypeDatasets(),
   };
 
   // Set styles to override Bootstrap default styling
@@ -307,7 +307,7 @@ const PeopleByDemographics = () => {
             <Button
               className={classnames(
                 {
-                  active: activeTab === "prsn_ethnicity_id"
+                  active: activeTab === "prsn_ethnicity_id",
                 },
                 "demographic-type"
               )}
@@ -331,19 +331,19 @@ const PeopleByDemographics = () => {
                   {
                     stacked: true,
                     ticks: {
-                      max: 100
-                    }
-                  }
+                      max: 100,
+                    },
+                  },
                 ],
                 yAxes: [
                   {
-                    stacked: true
-                  }
-                ]
+                    stacked: true,
+                  },
+                ],
               },
               tooltips: {
                 callbacks: {
-                  label: function(tooltipItem, data) {
+                  label: function (tooltipItem, data) {
                     let label = data.datasets[tooltipItem.datasetIndex].label;
                     let categoryTotal =
                       data.datasets[tooltipItem.datasetIndex].wholeNumbers[
@@ -352,9 +352,9 @@ const PeopleByDemographics = () => {
                     let roundedPercentage =
                       Math.round(tooltipItem.value * 100) / 100;
                     return `${label}: ${categoryTotal} (${roundedPercentage}%)`;
-                  }
-                }
-              }
+                  },
+                },
+              },
             }}
           />
         </Col>
