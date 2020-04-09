@@ -61,11 +61,11 @@ const SummaryView = () => {
       },
     ];
 
-    requestConfigs.forEach((config) => {
+    requestConfigs.forEach(config => {
       const { url, setter, handler } = config;
       axios
         .get(url)
-        .then((res) => setter(handler(res.data, prevYear, currentYear)));
+        .then(res => setter(handler(res.data, prevYear, currentYear)));
     });
   }, []);
 

@@ -15,7 +15,7 @@ const children = [
   { component: <CrashesByMode /> },
   { component: <CrashesByTimeOfDay /> },
   { component: <PeopleByDemographics /> },
-  { component: <CrashesBySystem />}
+  { component: <CrashesBySystem /> }
 ];
 
 const Summary = () => {
@@ -29,14 +29,17 @@ const Summary = () => {
 
   return (
     <Container fluid>
-      <StyledSummary>
-        <SummaryView />
-        <Row>
-          {children.map((child, i) => (
-            <SummaryCard key={i} child={child} />
-          ))}
-        </Row>
-      </StyledSummary>
+      {/* Create whitespace on sides of view until mobile */}
+      <Row className="px-xs-0 px-lg-5 mx-lg-5">
+        <StyledSummary>
+          <SummaryView />
+          <Row>
+            {children.map((child, i) => (
+              <SummaryCard key={i} child={child} />
+            ))}
+          </Row>
+        </StyledSummary>
+      </Row>
     </Container>
   );
 };

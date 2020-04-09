@@ -4,7 +4,7 @@ import { routes } from "../../routes/routes";
 import Header from "../nav/Header";
 import NotFound from "../NotFound/NotFound";
 
-import { Container, Row } from "reactstrap";
+import { Container } from "reactstrap";
 import styled from "styled-components";
 import { drawer } from "../../constants/drawer";
 import { responsive } from "../../constants/responsive";
@@ -29,7 +29,7 @@ const Content = () => {
   const summaryStyles = `
     width: 100vw;
     height: 100vh;
-    overflow-y: scroll; 
+    overflow-y: scroll;
   `;
 
   const StyledContent = styled.div`
@@ -50,10 +50,8 @@ const Content = () => {
   return (
     <StyledContent>
       <Container fluid className="content ">
-        <Row className="px-xs-0 px-lg-5 mx-lg-5">
-          <Header />
-          {routeResult || <NotFound />}
-        </Row>
+        <Header />
+        {routeResult || <NotFound />}
       </Container>
     </StyledContent>
   );
