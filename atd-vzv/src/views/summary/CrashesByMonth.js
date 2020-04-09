@@ -3,6 +3,7 @@ import axios from "axios";
 import moment from "moment";
 import { Line } from "react-chartjs-2";
 import { Container, Row, Col } from "reactstrap";
+import styled from "styled-components";
 
 import CrashTypeSelector from "../nav/CrashTypeSelector";
 import { crashEndpointUrl } from "./queries/socrataQueries";
@@ -168,11 +169,21 @@ const CrashesByMonth = () => {
     datasets: !!chartData && createDatasets()
   };
 
+  const StyledDiv = styled.div`
+  .year-total-div {
+    color: ${colors.dark};
+    background: ${colors.buttonBackground} 0% 0% no-repeat padding-box;
+    border-radius: 4px;
+    border-style: none;
+    opacity: 1;
+  }
+`;
+
   return (
     <Container>
       <Row>
         <Col>
-          <h1 className="text-left, font-weight-bold">By Year</h1>
+          <h1 className="text-left font-weight-bold">By Month/Year</h1>
         </Col>
       </Row>
       <Row>
@@ -182,39 +193,45 @@ const CrashesByMonth = () => {
       </Row>
       <Row>
         <Col>
-          <hr />
+          <hr className="mb-2"/>
         </Col>
       </Row>
       {!!chartData && renderHeader()}
       <Row>
         <Col>
-          <hr className="mt-1"/>
+          <hr className="mt-0"/>
         </Col>
       </Row>
 
       <Row>
         <Col>
-          <h6 className="text-center"><strong>Year</strong></h6>
-          <hr></hr>
-          <h6 className="text-center"><strong>Total</strong></h6>          
+          <div>
+            <hr className="my-1" style={{ border: `2px solid ${colors.buttonBackground}` }}></hr>
+            <h6 className="text-center py-1 mb-0"><strong>Year</strong></h6>
+            <hr className="my-1"></hr>
+            <h6 className="text-center py-1"><strong>Total</strong></h6>
+          </div>        
         </Col>
         {!!chartData &&
-          chartYearsArray.map((year, i) => {
+          [...chartYearsArray].reverse().map((year, i) => {
             const yearTotalData = chartData[year];
             const yearTotal = yearTotalData[yearTotalData.length - 1];
-            // Return only data from previous years
+            // Reverse data and colors arrays and render so they appear chronologically
             return (
-              i > 0 && (
-                <Col key={i}>
-                  <h6 className="text-center">
-                    <strong>{!!chartData && year}</strong>
-                  </h6>
-                  <hr></hr>
-                  <h6 className="text-center">
-                    <strong>{!!chartData && yearTotal}</strong>
-                  </h6>
-                </Col>
-              )
+              <Col key={i}>
+                <StyledDiv>
+                  <div className="year-total-div">
+                    <hr className="my-1" style={{ border: `2px solid ${[...chartColors].reverse()[i]}` }}></hr>
+                    <h6 className="text-center py-1 mb-0">
+                      <strong>{!!chartData && year}</strong>
+                    </h6>
+                    <hr className="my-1"></hr>
+                    <h6 className="text-center py-1">
+                      <strong>{!!chartData && yearTotal}</strong>
+                    </h6>
+                  </div>
+                </StyledDiv>
+              </Col>
             );
           })}
       </Row>
@@ -226,6 +243,9 @@ const CrashesByMonth = () => {
             options={{
               tooltips: {
                 mode: "x"
+              },
+              legend: {
+                display: false
               }
             }}
           />
