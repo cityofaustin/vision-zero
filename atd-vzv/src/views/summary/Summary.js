@@ -15,7 +15,7 @@ const children = [
   { component: <CrashesByMode /> },
   { component: <CrashesByTimeOfDay /> },
   { component: <PeopleByDemographics /> },
-  { component: <CrashesBySystem />}
+  { component: <CrashesBySystem /> },
 ];
 
 const Summary = () => {

@@ -219,6 +219,15 @@ gqlAbstractTableAggregateName (
   }
 
   /**
+   * Returns true if a column is defined as hidden in the config, assumes false if not found.
+   * @param {string} columnName - The name of the column in the config
+   * @returns {boolean}
+   */
+  isHidden(columnName) {
+    return this.config["columns"][columnName]["hidden"] || false;
+  }
+
+  /**
    * Returns true if a column is defined as searchable in the config, assumes false if not found.
    * @param {string} columnName - The name of the column in the config
    * @returns {boolean}

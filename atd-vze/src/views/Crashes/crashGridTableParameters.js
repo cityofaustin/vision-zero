@@ -46,6 +46,12 @@ export const crashGridTableColumns = {
     label_table: "CRIS Death Count",
     type: "Date",
   },
+  est_comp_cost: {
+    searchable: false,
+    sortable: true,
+    label_table: "Est Comprehensive Cost",
+    type: "Currency",
+  },
   "collision { collsn_desc } ": {
     searchable: false,
     sortable: false,
@@ -57,6 +63,7 @@ export const crashGridTableColumns = {
     sortable: false,
     label_table: "Unit Description",
     type: "String",
+    hidden: true,
   },
   "geocode_method { name }": {
     searchable: false,

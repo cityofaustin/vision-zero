@@ -26,12 +26,12 @@ const SideMapControlDateRange = () => {
         ...DefaultTheme.reactDates.border,
         input: {
           ...DefaultTheme.reactDates.border.input,
-          borderBottomFocused: `2px solid ${colors.infoDark}`
+          borderBottomFocused: `2px solid ${colors.infoDark}`,
         },
         pickerInput: {
           ...DefaultTheme.reactDates.border.pickerInput,
-          borderWidth: 0 // Remove any space between picker and StyledButtonContainer
-        }
+          borderWidth: 0, // Remove any space between picker and StyledButtonContainer
+        },
       },
       color: {
         ...DefaultTheme.reactDates.color,
@@ -45,7 +45,7 @@ const SideMapControlDateRange = () => {
           borderColor_hover: `${colors.light}`,
           color: `${colors.light}`,
           color_active: `${colors.light}`,
-          color_hover: `${colors.light}`
+          color_hover: `${colors.light}`,
         },
         selectedSpan: {
           backgroundColor: `${colors.info}`,
@@ -56,7 +56,7 @@ const SideMapControlDateRange = () => {
           borderColor_hover: `${colors.light}`,
           color: `${colors.light}`,
           color_active: `${colors.light}`,
-          color_hover: `${colors.light}`
+          color_hover: `${colors.light}`,
         },
         hoveredSpan: {
           backgroundColor: `${colors.secondary}`,
@@ -67,21 +67,21 @@ const SideMapControlDateRange = () => {
           borderColor_hover: `${colors.light}`,
           color: `${colors.dark}`,
           color_active: `${colors.light}`,
-          color_hover: `${colors.light}`
-        }
+          color_hover: `${colors.light}`,
+        },
       },
       sizing: {
         inputWidth: 90,
         inputWidth_small: 99,
-        arrowWidth: 10
+        arrowWidth: 10,
       },
       spacing: {
         ...DefaultTheme.reactDates.spacing,
         displayTextPaddingLeft_small: 10,
         displayTextPaddingRight_small: 4,
-        displayTextPaddingBottom_small: 4
-      }
-    }
+        displayTextPaddingBottom_small: 4,
+      },
+    },
   };
 
   ThemedStyleSheet.registerTheme(vzTheme);
@@ -94,7 +94,7 @@ const SideMapControlDateRange = () => {
     setMapDate({ start, end });
   }, [start, end, setMapDate]);
 
-  const handleDateChange = dates => {
+  const handleDateChange = (dates) => {
     let { startDate, endDate } = dates;
 
     startDate =
@@ -114,7 +114,7 @@ const SideMapControlDateRange = () => {
   };
 
   // Check if date is outside n year rolling window
-  const isOutsideDateLimits = date =>
+  const isOutsideDateLimits = (date) =>
     date.isBefore(dataStartDate, "day") || date.isAfter(dataEndDate, "day");
 
   const isMobile = () => window.innerWidth < responsive.bootstrapMedium;
@@ -135,11 +135,11 @@ const SideMapControlDateRange = () => {
               name="select"
               id="yearSelect"
               value={month.year()}
-              onChange={e => {
+              onChange={(e) => {
                 onYearSelect(month, e.target.value);
               }}
             >
-              {yearArray.map(year => (
+              {yearArray.map((year) => (
                 <option value={year}>
                   {month.format("MMMM")} {year}
                 </option>
@@ -197,7 +197,7 @@ const SideMapControlDateRange = () => {
         endDate={end} // momentPropTypes.momentObj or null,
         onDatesChange={handleDateChange} // PropTypes.func.isRequired,
         focusedInput={focused} // PropTypes.oneOf([START_DATE, END_DATE]) or null,
-        onFocusChange={focusedInput => setFocused(focusedInput)} // PropTypes.func.isRequired,
+        onFocusChange={(focusedInput) => setFocused(focusedInput)} // PropTypes.func.isRequired,
         minDate={dataStartDate}
         maxDate={dataEndDate}
         renderCalendarInfo={() => isMobile() && renderCalendarInfo()} // Render custom close button on mobile

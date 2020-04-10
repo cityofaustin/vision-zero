@@ -5,6 +5,7 @@
 **/data
 **/tmp
 **/app/tmp
+**/tests
 
 # Ignore files with these extensions:
 **/*.csv

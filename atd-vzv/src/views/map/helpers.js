@@ -1,18 +1,18 @@
 const convertDateToSocrataFormat = (date, suffix) =>
   date.format("YYYY-MM-DD") + suffix;
 
-const generateWhereFilters = filters => {
+const generateWhereFilters = (filters) => {
   // Store filter group query strings
   let whereFiltersArray = [];
   // Collect filter group names and remove duplicates to build query parameters by groups
-  const groupArray = [...new Set(filters.map(filter => filter.group))];
+  const groupArray = [...new Set(filters.map((filter) => filter.group))];
 
-  groupArray.forEach(group => {
+  groupArray.forEach((group) => {
     // For each group, create a query string enclosed in parentheses
     let groupFilterString = "(";
     // Increment to keep track of when to insert logical operator
     let filterCount = 0;
-    filters.forEach(filter => {
+    filters.forEach((filter) => {
       if (group === filter.group) {
         // Don't insert logical operator for first filter, we want ( filter OR filter ) format
         if (filterCount === 0) {
