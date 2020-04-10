@@ -13,8 +13,8 @@ const SummaryCard = ({ child }) => {
   return (
     <Col className="summary-child" xl="6" md="12">
       {/* Set height to fill parent column */}
-      <Card className="h-100">
-        <CardBody className="pt-0">
+      <Card>
+        <CardBody className="py-0">
           <StyledCardTitle>{child.title}</StyledCardTitle>
           {child.component}
         </CardBody>

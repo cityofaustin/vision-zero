@@ -136,7 +136,7 @@ const CrashesByTimeOfDay = () => {
     <Container>
       <Row>
         <Col>
-          <h1 className="text-left, font-weight-bold">By Time of Day</h1>
+          <h2 className="text-left, font-weight-bold">By Time of Day</h2>
         </Col>
       </Row>
       <Row>

@@ -156,10 +156,10 @@ const CrashesByMonth = () => {
   `;
 
   return (
-    <Container className="h-100 m-0 p-0">
+    <Container className="m-0 p-0">
       <Row>
         <Col>
-          <h1 className="text-left font-weight-bold">By Month/Year</h1>
+          <h2 className="text-left font-weight-bold">By Month/Year</h2>
         </Col>
       </Row>
       <Row>
@@ -214,12 +214,15 @@ const CrashesByMonth = () => {
             );
           })}
       </Row>
-      <Row className="h-50 mt-1">
+      <Row className="mt-1">
         <Col>
           <Line
-            data={data}
+            data={data}          
+            height={null}
+            width={null}
             options={{
               responsive: true,
+              aspectRatio: 1,
               maintainAspectRatio: false,
               tooltips: {
                 mode: "x",
