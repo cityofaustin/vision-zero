@@ -144,7 +144,7 @@ const CrashesByMode = () => {
   };
 
   return (
-    <Container>
+    <Container className="h-100 m-0 p-0">
       <Row>
         <Col>
           <h1 className="text-left, font-weight-bold">By Mode</h1>
@@ -160,7 +160,7 @@ const CrashesByMode = () => {
           <hr />
         </Col>
       </Row>
-      <Row>
+      <Row className="h-50 mt-1">
         <Col>
           <Bar
             data={data}
@@ -182,13 +182,13 @@ const CrashesByMode = () => {
           />
         </Col>
       </Row>
-      <Row>
+      {/* <Row>
         <Col>
           <p className="text-center">
             Data Through: {dataEndDate.format("MMMM YYYY")}
           </p>
         </Col>
-      </Row>
+      </Row> */}
     </Container>
   );
 };

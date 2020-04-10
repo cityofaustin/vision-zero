@@ -43,12 +43,13 @@ const CrashTypeSelector = ({ setCrashType }) => {
   // Set styles to override Bootstrap default styling
   const StyledButton = styled.div`
     .crash-type {
+      font-size: 14px;
       color: ${colors.dark};
       background: ${colors.buttonBackground} 0% 0% no-repeat padding-box;
       border-style: none;
       border-radius: 18px;
       opacity: 1;
-      margin-right: 10px;
+      margin-right: 2px;
     }
   `;
 

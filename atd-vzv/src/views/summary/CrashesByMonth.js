@@ -112,30 +112,6 @@ const CrashesByMonth = () => {
     }
   }, [crashType]);
 
-  const renderHeader = () => {
-    const yearTotalData = chartData[dataEndDate.format("YYYY")];
-    // Last item in data array is total YTD
-    const yearTotal = yearTotalData[yearTotalData.length - 1];
-    return (
-      <Row>
-        <Col className="col-auto">
-          <h2><strong>{yearTotal}</strong></h2>
-        </Col>
-        <Col>
-          <h6>
-            As of{" "}
-            <strong>
-              {dataEndDate.format("MMMM")} {dataEndDate.format("YYYY")}
-            </strong>
-            , there have been <strong>{yearTotal}</strong> traffic-related{" "}
-            <u>{crashType.textString && crashType.textString.toLowerCase()}</u>
-            .
-          </h6>
-        </Col>
-      </Row>
-    );
-  };
-
   // Create dataset for each year, data property is an array of cumulative totals by month
   const createDatasets = () => {
     const chartDatasets = chartYearsArray.map((year, i) => ({
@@ -180,7 +156,7 @@ const CrashesByMonth = () => {
 `;
 
   return (
-    <Container>
+    <Container className="h-100 m-0 p-0">
       <Row>
         <Col>
           <h1 className="text-left font-weight-bold">By Month/Year</h1>
@@ -196,20 +172,14 @@ const CrashesByMonth = () => {
           <hr className="mb-2"/>
         </Col>
       </Row>
-      {!!chartData && renderHeader()}
-      <Row>
-        <Col>
-          <hr className="mt-0"/>
-        </Col>
-      </Row>
 
       <Row>
-        <Col>
+        <Col xs={4} s={2} m={2} l={2} xl={2}>
           <div>
             <hr className="my-1" style={{ border: `2px solid ${colors.buttonBackground}` }}></hr>
             <h6 className="text-center py-1 mb-0"><strong>Year</strong></h6>
             <hr className="my-1"></hr>
-            <h6 className="text-center py-1"><strong>Total</strong></h6>
+            <h6 className="text-center py-1">Total</h6>
           </div>        
         </Col>
         {!!chartData &&
@@ -218,7 +188,7 @@ const CrashesByMonth = () => {
             const yearTotal = yearTotalData[yearTotalData.length - 1];
             // Reverse data and colors arrays and render so they appear chronologically
             return (
-              <Col key={i}>
+              <Col xs={4} s={2} m={2} l={2} xl={2} key={i}>
                 <StyledDiv>
                   <div className="year-total-div">
                     <hr className="my-1" style={{ border: `2px solid ${[...chartColors].reverse()[i]}` }}></hr>
@@ -227,7 +197,7 @@ const CrashesByMonth = () => {
                     </h6>
                     <hr className="my-1"></hr>
                     <h6 className="text-center py-1">
-                      <strong>{!!chartData && yearTotal}</strong>
+                      {!!chartData && yearTotal}
                     </h6>
                   </div>
                 </StyledDiv>
@@ -236,11 +206,13 @@ const CrashesByMonth = () => {
           })}
       </Row>
 
-      <Row className="mt-1">
+      <Row className="h-50 mt-1">
         <Col>
           <Line
             data={data}
             options={{
+              responsive: true,
+              maintainAspectRatio: false,
               tooltips: {
                 mode: "x"
               },
