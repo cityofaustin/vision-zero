@@ -22,7 +22,8 @@ from .helpers_import_fields import CRIS_TXDOT_FIELDS, \
     CRIS_TXDOT_COMPARE_FIELDS_LIST, CRIS_TXDOT_COMPARE_FIELD_TYPE
 from .config import ATD_ETL_CONFIG
 
-def generate_template(name, function, fields, fieldnames=[], upsert=False, constraint=""):
+
+def generate_template(name, function, fields, fieldnames=[], upsert=False, constraint="", crash=False):
     """
     Returns a string with a graphql template
     :param str name: The name of the graphql mutation
@@ -33,6 +34,12 @@ def generate_template(name, function, fields, fieldnames=[], upsert=False, const
     :param str constraint: The name of the constraint on_conflict
     :return str:
     """
+    if crash:
+        update_cr3 = "cr3_stored_flag: \"Y\""
+        fieldnames += ["cr3_stored_flag"]
+    else:
+        update_cr3 = ""
+
     if upsert:
         on_conflict = """
             , on_conflict: {
@@ -56,7 +63,8 @@ def generate_template(name, function, fields, fieldnames=[], upsert=False, const
         mutation %NAME% {
           %FUNCTION%(
             objects: {
-            %FIELDS%
+                %FIELDS%
+                %UPDATE_CR3%
             }
             %ON_CONFLICT%
           ){
@@ -66,6 +74,7 @@ def generate_template(name, function, fields, fieldnames=[], upsert=False, const
     """.replace("%NAME%", name)\
        .replace("%FUNCTION%", function)\
        .replace("%FIELDS%", fields)\
+       .replace("%UPDATE_CR3%", update_cr3)\
        .replace("%ON_CONFLICT%", on_conflict)
 
 
@@ -167,6 +176,7 @@ def generate_gql(line, fieldnames, file_type):
                 "person": "atd_txdot_person_unique",
                 "primaryperson": "atd_txdot_primaryperson_unique",
             }.get(file_type, None),
+            crash=(file_type == "crash")
         )
     except Exception as e:
         print("generate_gql() Error: " + str(e))
