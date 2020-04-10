@@ -3,7 +3,7 @@ import ColorSpinner from "../Spinner/ColorSpinner";
 import {
   currentYearString as currentYear,
   prevYearString as prevYear,
-  currentYearString
+  currentYearString,
 } from "../../constants/time";
 
 import { Card, CardBody, Row, Col, CardFooter } from "reactstrap";
@@ -12,7 +12,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCircle,
   faCaretDown,
-  faCaretUp
+  faCaretUp,
 } from "@fortawesome/free-solid-svg-icons";
 import { colors } from "../../constants/colors";
 

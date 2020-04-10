@@ -11,7 +11,7 @@ import {
   summaryCurrentYearStartDate,
   summaryCurrentYearEndDate,
   yearsArray,
-  dataEndDate
+  dataEndDate,
 } from "../../constants/time";
 import { crashEndpointUrl } from "./queries/socrataQueries";
 import { getYearsAgoLabel } from "./helpers/helpers";
@@ -22,7 +22,7 @@ const CrashesByTimeOfDay = () => {
   const [crashType, setCrashType] = useState([]);
   const [heatmapData, setHeatmapData] = useState([]);
 
-  const toggle = tab => {
+  const toggle = (tab) => {
     if (activeTab !== tab) setActiveTab(tab);
   };
 
@@ -52,22 +52,22 @@ const CrashesByTimeOfDay = () => {
       "08PM",
       "09PM",
       "10PM",
-      "11PM"
+      "11PM",
     ];
 
     let dataArray = [];
 
     const buildDataArray = () => {
       dataArray = [];
-      hourBlockArray.forEach(hour => {
+      hourBlockArray.forEach((hour) => {
         let hourObject = {
           key: hour,
-          data: []
+          data: [],
         };
-        dayOfWeekArray.forEach(day => {
+        dayOfWeekArray.forEach((day) => {
           let dayObject = {
             key: day,
-            data: 0
+            data: 0,
           };
           hourObject.data.push(dayObject);
         });
@@ -76,9 +76,9 @@ const CrashesByTimeOfDay = () => {
       });
     };
 
-    const calculateHourBlockTotals = data => {
+    const calculateHourBlockTotals = (data) => {
       buildDataArray();
-      data.data.forEach(record => {
+      data.data.forEach((record) => {
         const date = new Date(record.crash_date);
         const dayOfWeek = date.getDay();
         const time = record.crash_time;
@@ -104,9 +104,7 @@ const CrashesByTimeOfDay = () => {
     };
 
     const getFatalitiesByYearsAgoUrl = () => {
-      const yearsAgoDate = moment()
-        .subtract(activeTab, "year")
-        .format("YYYY");
+      const yearsAgoDate = moment().subtract(activeTab, "year").format("YYYY");
       let queryUrl =
         activeTab === 0
           ? `${crashEndpointUrl}?$where=${crashType.queryStringCrash} AND crash_date between '${summaryCurrentYearStartDate}T00:00:00' and '${summaryCurrentYearEndDate}T23:59:59'`
@@ -117,7 +115,7 @@ const CrashesByTimeOfDay = () => {
     // Wait for crashType to be passed up from setCrashType component,
     // then fetch records for selected year
     if (crashType.queryStringCrash)
-      axios.get(getFatalitiesByYearsAgoUrl()).then(res => {
+      axios.get(getFatalitiesByYearsAgoUrl()).then((res) => {
         setHeatmapData(calculateHourBlockTotals(res));
       });
   }, [activeTab, crashType]);
@@ -155,11 +153,11 @@ const CrashesByTimeOfDay = () => {
         <Col className="pb-2">
           <StyledButton>
             {yearsArray() // Calculate years ago for each year in data window
-              .map(year => {
+              .map((year) => {
                 const currentYear = parseInt(dataEndDate.format("YYYY"));
                 return currentYear - year;
               })
-              .map(yearsAgo => (
+              .map((yearsAgo) => (
                 <Button
                   key={yearsAgo}
                   className={classnames(
@@ -188,7 +186,7 @@ const CrashesByTimeOfDay = () => {
                   colors.intensity2Of5,
                   colors.intensity3Of5,
                   colors.intensity4Of5,
-                  colors.intensity5Of5Highest
+                  colors.viridis1Of6Highest,
                 ]}
               />
             }

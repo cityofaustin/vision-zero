@@ -9,7 +9,7 @@ import { crashEndpointUrl } from "./queries/socrataQueries";
 import {
   dataEndDate,
   summaryCurrentYearEndDate,
-  yearsArray
+  yearsArray,
 } from "../../constants/time";
 import { colors } from "../../constants/colors";
 
@@ -22,14 +22,14 @@ const CrashesByMonth = () => {
     colors.viridis2Of6,
     colors.viridis3Of6,
     colors.viridis4Of6,
-    colors.viridis5Of6
+    colors.viridis5Of6,
   ];
 
   const [chartData, setChartData] = useState(null); // {yearInt: [monthTotal, monthTotal, ...]}
   const [crashType, setCrashType] = useState([]);
 
   useEffect(() => {
-    const calculateYearMonthlyTotals = data => {
+    const calculateYearMonthlyTotals = (data) => {
       // Data query is ordered by crash_date ASC so truncate dataset by month of latest record
       const monthLimit =
         data.length > 0
@@ -48,7 +48,7 @@ const CrashesByMonth = () => {
         "09",
         "10",
         "11",
-        "12"
+        "12",
       ];
 
       const truncatedMonthIntegerArray = monthIntegerArray.slice(
@@ -56,9 +56,9 @@ const CrashesByMonth = () => {
         monthIntegerArray.indexOf(monthLimit) + 1
       );
       let cumulativeMonthTotal = 0;
-      const monthTotalArray = truncatedMonthIntegerArray.map(month => {
+      const monthTotalArray = truncatedMonthIntegerArray.map((month) => {
         let monthTotal = 0;
-        data.forEach(record => {
+        data.forEach((record) => {
           // If the crash date is in the current month, compile data
           if (moment(record.crash_date).format("MM") === month) {
             // Compile data based on the selected crash type
@@ -90,7 +90,7 @@ const CrashesByMonth = () => {
         let newData = {};
         // Use Promise.all to let all requests resolve before setting chart data by year
         await Promise.all(
-          yearsArray().map(async year => {
+          yearsArray().map(async (year) => {
             // If getting data for current year (only including years past January), set end of query to last day of previous month,
             // else if getting data for previous years, set end of query to last day of year
             let endDate =
@@ -98,7 +98,7 @@ const CrashesByMonth = () => {
                 ? `${summaryCurrentYearEndDate}T23:59:59`
                 : `${year}-12-31T23:59:59`;
             let url = `${crashEndpointUrl}?$where=${crashType.queryStringCrash} AND crash_date between '${year}-01-01T00:00:00' and '${endDate}'&$order=crash_date ASC`;
-            await axios.get(url).then(res => {
+            await axios.get(url).then((res) => {
               const yearData = calculateYearMonthlyTotals(res.data);
               newData = { ...newData, ...{ [year]: yearData } };
             });
@@ -146,7 +146,7 @@ const CrashesByMonth = () => {
       pointHoverBorderWidth: 2,
       pointRadius: 1,
       pointHitRadius: 10,
-      data: chartData[year]
+      data: chartData[year],
     }));
 
     return chartDatasets;
@@ -155,7 +155,7 @@ const CrashesByMonth = () => {
   // Build data objects
   const data = {
     labels: moment.months(),
-    datasets: !!chartData && createDatasets()
+    datasets: !!chartData && createDatasets(),
   };
 
   return (
@@ -180,7 +180,7 @@ const CrashesByMonth = () => {
       </Row>
       <Row>
         <Col>
-          <hr className="mt-1"/>
+          <hr className="mt-1" />
         </Col>
       </Row>
       <Row style={{ paddingBottom: 20 }}>
@@ -209,8 +209,8 @@ const CrashesByMonth = () => {
             data={data}
             options={{
               tooltips: {
-                mode: "x"
-              }
+                mode: "x",
+              },
             }}
           />
         </Col>

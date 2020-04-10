@@ -13,7 +13,7 @@ import {
   faWalking,
   faBiking,
   faCar,
-  faMotorcycle
+  faMotorcycle,
 } from "@fortawesome/free-solid-svg-icons";
 
 const StyledCard = styled.div`
@@ -36,14 +36,14 @@ const StyledCard = styled.div`
 
 const SideMapControl = () => {
   const {
-    mapFilters: [filters, setFilters]
+    mapFilters: [filters, setFilters],
   } = React.useContext(StoreContext);
 
   const [buttonFilters, setButtonFilters] = useState({});
   const [filterGroupCounts, setFilterGroupCounts] = useState({});
   const [isTypeSet, setIsTypeSet] = useState({ fatal: false, injury: true });
 
-  const setTypeFilters = type => {
+  const setTypeFilters = (type) => {
     if (Object.values(isTypeSet).includes(false) && isTypeSet[type] === true) {
       return;
     } else {
@@ -61,7 +61,7 @@ const SideMapControl = () => {
         injurySyntax: `pedestrian_serious_injury_count > 0`, // Injury query string
         type: `where`, // Socrata SoQL query type
         operator: `OR`, // Logical operator for joining multiple query strings
-        default: true // Apply filter as default on render
+        default: true, // Apply filter as default on render
       },
       pedalcyclist: {
         icon: faBiking,
@@ -69,7 +69,7 @@ const SideMapControl = () => {
         injurySyntax: `bicycle_serious_injury_count > 0`,
         type: `where`,
         operator: `OR`,
-        default: true
+        default: true,
       },
       motor: {
         icon: faCar,
@@ -77,7 +77,7 @@ const SideMapControl = () => {
         injurySyntax: `motor_vehicle_serious_injury_count > 0`,
         type: `where`,
         operator: `OR`,
-        default: true
+        default: true,
       },
       motorcycle: {
         icon: faMotorcycle,
@@ -85,7 +85,7 @@ const SideMapControl = () => {
         injurySyntax: `motorcycle_serious_injury_count > 0`,
         type: `where`,
         operator: `OR`,
-        default: true
+        default: true,
       },
       other: {
         text: "Other",
@@ -93,23 +93,23 @@ const SideMapControl = () => {
         injurySyntax: `other_serious_injury_count > 0`,
         type: `where`,
         operator: `OR`,
-        default: true
-      }
+        default: true,
+      },
     },
     type: {
       seriousInjury: {
         text: `Injury`,
         handler: () => setTypeFilters("injury"),
         isSelected: isTypeSet.injury,
-        default: false
+        default: false,
       },
       fatal: {
         text: `Fatal`,
         handler: () => setTypeFilters("fatal"),
         isSelected: isTypeSet.fatal,
-        default: false
-      }
-    }
+        default: false,
+      },
+    },
   };
 
   const mapOtherFilters = {
@@ -120,8 +120,8 @@ const SideMapControl = () => {
       "8AM–12PM": [8, 11],
       "12PM–4PM": [12, 15],
       "4PM–8PM": [16, 19],
-      "8PM–12AM": [20, 23]
-    }
+      "8PM–12AM": [20, 23],
+    },
   };
 
   // On inital render, reduce all default filters and apply to map data
@@ -153,8 +153,8 @@ const SideMapControl = () => {
   // After inital render, create mode syntax and set filters state for map data
   useEffect(() => {
     if (Object.keys(buttonFilters).length !== 0) {
-      const filterModeSyntaxByType = filtersArray =>
-        filtersArray.map(filter => {
+      const filterModeSyntaxByType = (filtersArray) =>
+        filtersArray.map((filter) => {
           // Set syntax for generateWhereFilters() map helper
           if (isTypeSet.fatal && isTypeSet.injury) {
             filter.syntax = `${filter.fatalSyntax} ${filter.operator} ${filter.injurySyntax}`;
@@ -177,7 +177,7 @@ const SideMapControl = () => {
       if (accumulator[filter.group]) {
         accumulator = {
           ...accumulator,
-          [filter.group]: accumulator[filter.group] + 1
+          [filter.group]: accumulator[filter.group] + 1,
         };
       } else {
         accumulator = { ...accumulator, [filter.group]: 1 };
@@ -187,11 +187,11 @@ const SideMapControl = () => {
     setFilterGroupCounts(filtersCount);
   }, [filters]);
 
-  const isFilterSet = filterName => {
-    return !!filters.find(setFilter => setFilter.name === filterName);
+  const isFilterSet = (filterName) => {
+    return !!filters.find((setFilter) => setFilter.name === filterName);
   };
 
-  const isOneFilterOfGroupApplied = group => filterGroupCounts[group] > 1;
+  const isOneFilterOfGroupApplied = (group) => filterGroupCounts[group] > 1;
 
   // Set filter or remove if already set
   const handleFilterClick = (event, filterGroup) => {
@@ -200,7 +200,7 @@ const SideMapControl = () => {
     if (isFilterSet(filterName)) {
       // Always leave one filter applied per group
       let updatedFiltersArray = isOneFilterOfGroupApplied(filterGroup)
-        ? filters.filter(setFilter => setFilter.name !== filterName)
+        ? filters.filter((setFilter) => setFilter.name !== filterName)
         : filters;
       setButtonFilters(updatedFiltersArray);
     } else {
@@ -231,7 +231,7 @@ const SideMapControl = () => {
                 onClick={
                   parameter.handler
                     ? parameter.handler
-                    : event => handleFilterClick(event, group)
+                    : (event) => handleFilterClick(event, group)
                 }
                 active={
                   parameter.isSelected
