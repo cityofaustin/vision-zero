@@ -1,29 +1,28 @@
-import React from "react";
+import React, { useState, useRef } from "react";
 import { Editor, EditorModes } from "react-map-gl-draw";
 import ControlPanel from "./control-panel";
 import { getFeatureStyle, getEditHandleStyle } from "./map-style";
 
 const MapPolygonFilter = () => {
-  const mode = EditorModes.READ_ONLY;
+  const _editorRef = useRef();
+
+  const [mode, setMode] = useState(EditorModes.READ_ONLY);
+  const [selectedFeatureIndex, setSelectedFeatureIndex] = useState(null);
 
   const _onSelect = (options) => {
-    this.setState({
-      selectedFeatureIndex: options && options.selectedFeatureIndex,
-    });
+    setSelectedFeatureIndex(options && options.selectedFeatureIndex);
   };
 
   const _onDelete = () => {
-    const selectedIndex = this.state.selectedFeatureIndex;
+    const selectedIndex = selectedFeatureIndex;
     if (selectedIndex !== null && selectedIndex >= 0) {
-      this._editorRef.deleteFeatures(selectedIndex);
+      _editorRef.current.deleteFeatures(selectedIndex);
     }
   };
 
   const _onUpdate = ({ editType }) => {
     if (editType === "addFeature") {
-      this.setState({
-        mode: EditorModes.EDITING,
-      });
+      setMode(EditorModes.EDITING);
     }
   };
 
@@ -35,7 +34,7 @@ const MapPolygonFilter = () => {
           <button
             className="mapbox-gl-draw_ctrl-draw-btn mapbox-gl-draw_polygon"
             title="Polygon tool (p)"
-            onClick={() => this.setState({ mode: EditorModes.DRAW_POLYGON })}
+            onClick={() => setMode(EditorModes.DRAW_POLYGON)}
           />
           <button
             className="mapbox-gl-draw_ctrl-draw-btn mapbox-gl-draw_trash"
@@ -48,8 +47,8 @@ const MapPolygonFilter = () => {
   };
 
   const _renderControlPanel = () => {
-    const features = _editorRef && _editorRef.getFeatures();
-    let featureIndex = this.state.selectedFeatureIndex;
+    const features = _editorRef.current && _editorRef.current.getFeatures();
+    let featureIndex = selectedFeatureIndex;
     if (features && featureIndex === null) {
       featureIndex = features.length - 1;
     }
@@ -64,7 +63,7 @@ const MapPolygonFilter = () => {
 
   return (
     <Editor
-      ref={(_) => (_editorRef = _)}
+      ref={(ref) => (_editorRef.current = ref)}
       style={{ width: "100%", height: "100%" }}
       clickRadius={12}
       mode={mode}
