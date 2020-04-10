@@ -9,21 +9,21 @@ import {
   summaryLastYearStartDate,
   summaryLastYearEndDate,
   currentYearString as currentYear,
-  prevYearString as prevYear,
+  prevYearString as prevYear
 } from "../../constants/time";
 import { personEndpointUrl, crashEndpointUrl } from "./queries/socrataQueries";
 import {
   calcSummaryTotalFatalities,
   getSummaryYearsOfLifeLost,
   calcSummaryTotalSeriousInjuries,
-  calcSummaryTotalCrashes,
+  calcSummaryTotalCrashes
 } from "./helpers/helpers";
 import { colors } from "../../constants/colors";
 import {
   faCar,
   faHourglassHalf,
   faHeartbeat,
-  faMedkit,
+  faMedkit
 } from "@fortawesome/free-solid-svg-icons";
 
 const SummaryView = () => {
@@ -42,23 +42,23 @@ const SummaryView = () => {
       {
         url: fatalitiesUrl,
         handler: calcSummaryTotalFatalities,
-        setter: setFatalities,
+        setter: setFatalities
       },
       {
         url: yearsOfLifeLostUrl,
         handler: getSummaryYearsOfLifeLost,
-        setter: setYearsOfLifeLost,
+        setter: setYearsOfLifeLost
       },
       {
         url: seriousInjuriesUrl,
         handler: calcSummaryTotalSeriousInjuries,
-        setter: setSeriousInjuries,
+        setter: setSeriousInjuries
       },
       {
         url: totalCrashesUrl,
         handler: calcSummaryTotalCrashes,
-        setter: setTotalCrashes,
-      },
+        setter: setTotalCrashes
+      }
     ];
 
     requestConfigs.forEach(config => {
@@ -74,33 +74,33 @@ const SummaryView = () => {
       title: `Fatalities`,
       totalsObject: fatalities,
       icon: faHeartbeat,
-      color: colors.fatalities,
+      color: colors.fatalities
     },
     {
       title: `Years of Life Lost`,
       totalsObject: yearsOfLifeLost,
       icon: faHourglassHalf,
-      color: colors.yearsOfLifeLost,
+      color: colors.yearsOfLifeLost
     },
     {
       title: `Serious Injuries`,
       totalsObject: seriousInjuries,
       icon: faMedkit,
-      color: colors.seriousInjuries,
+      color: colors.seriousInjuries
     },
     {
       title: `Total Crashes`,
       totalsObject: totalCrashes,
       icon: faCar,
-      color: colors.totalCrashes,
-    },
+      color: colors.totalCrashes
+    }
   ];
 
   return (
     <Row>
       {summaryWidgetsConfig.map((config, i) => (
         // Set Bootstrap breakpoints to divide into two rows on large mobile devices and below
-        <Col className="summary-child" key={i} xs="12" md="6" xl="3">
+        <Col className="summary-child" key={i} xs="12" sm="6" xl="3">
           <SummaryWidget
             text={config.title}
             totalsObject={config.totalsObject}
