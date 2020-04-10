@@ -80,7 +80,7 @@ const Header = () => {
 
   // Use context to toggle state for SideDrawer toggle
   const {
-    sidebarToggle: [isOpen, setIsOpen]
+    sidebarToggle: [isOpen, setIsOpen],
   } = React.useContext(StoreContext);
 
   return (
