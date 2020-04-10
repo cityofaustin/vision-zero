@@ -25,32 +25,32 @@ const calendarTheme = {
   floatingNav: {
     background: `${colors.infoDark}`,
     chevron: `${colors.warning}`,
-    color: `${colors.white}`
+    color: `${colors.white}`,
   },
   headerColor: `${colors.infoDark}`,
   selectionColor: `${colors.info}`,
   textColor: {
     active: `${colors.white}`,
-    default: `${colors.dark}`
+    default: `${colors.dark}`,
   },
   todayColor: `${colors.warning}`,
-  weekdayColor: `${colors.info}`
+  weekdayColor: `${colors.info}`,
 };
 
 const SideMapControlDateRange = () => {
   const {
-    mapDateRange: [date, setDate]
+    mapDateRange: [date, setDate],
   } = React.useContext(StoreContext);
 
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
-  const convertToDatePickerDateFormat = date => {
+  const convertToDatePickerDateFormat = (date) => {
     const startDate = moment(date.start).format("MM/DD/YYYY");
     const endDate = moment(date.end).format("MM/DD/YYYY");
     return { start: new Date(startDate), end: new Date(endDate) };
   };
 
-  const convertToSocrataDateFormat = date => {
+  const convertToSocrataDateFormat = (date) => {
     // eventType 3 occurs when selecting the end of date range
     if (date.eventType === 3) {
       const startDate = moment(date.start).format("YYYY-MM-DD") + "T00:00:00";
@@ -87,10 +87,10 @@ const SideMapControlDateRange = () => {
               maxDate={mapDataMaxDate}
               theme={calendarTheme}
               locale={{
-                headerFormat: "MMM Do"
+                headerFormat: "MMM Do",
               }}
               displayOptions={{
-                showTodayHelper: false
+                showTodayHelper: false,
               }}
             />
           )}

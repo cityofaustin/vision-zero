@@ -5,7 +5,7 @@ export const isDevelopment =
 export const navConfig = [
   {
     title: "Summary",
-    url: "/"
+    url: "/",
   },
-  { title: "Map", url: "/map" }
+  { title: "Map", url: "/map" },
 ];
