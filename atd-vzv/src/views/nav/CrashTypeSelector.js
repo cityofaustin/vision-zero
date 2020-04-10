@@ -11,26 +11,26 @@ const CrashTypeSelector = ({ setCrashType }) => {
     name: "fatalitiesAndSeriousInjuries",
     textString: "Fatalities and Serious Injuries",
     queryStringCrash: "(death_cnt > 0 OR sus_serious_injry_cnt > 0)",
-    queryStringPerson: "(prsn_injry_sev_id = 4 OR prsn_injry_sev_id = 1)"
+    queryStringPerson: "(prsn_injry_sev_id = 4 OR prsn_injry_sev_id = 1)",
   };
 
   const fatalities = {
     name: "fatalities",
     textString: "Fatalities",
     queryStringCrash: "(death_cnt > 0)",
-    queryStringPerson: "(prsn_injry_sev_id = 4)"
+    queryStringPerson: "(prsn_injry_sev_id = 4)",
   };
 
   const seriousInjuries = {
     name: "seriousInjuries",
     textString: "Serious Injuries",
     queryStringCrash: "(sus_serious_injry_cnt > 0)",
-    queryStringPerson: "(prsn_injry_sev_id = 1)"
+    queryStringPerson: "(prsn_injry_sev_id = 1)",
   };
 
   const [activeTab, setActiveTab] = useState(fatalitiesAndSeriousInjuries);
 
-  const toggle = tab => {
+  const toggle = (tab) => {
     if (activeTab.name !== tab.name) {
       setActiveTab(tab);
     }

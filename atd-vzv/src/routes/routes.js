@@ -7,5 +7,5 @@ export const basepath = "/viewer";
 
 export const routes = {
   "/": () => <Summary />,
-  "/map": () => <Map />
+  "/map": () => <Map />,
 };
