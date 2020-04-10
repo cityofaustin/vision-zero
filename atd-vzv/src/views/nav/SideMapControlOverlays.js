@@ -5,21 +5,21 @@ import { ButtonGroup, Button, Card, Label } from "reactstrap";
 
 const SideMapControlOverlays = () => {
   const {
-    mapOverlay: [overlay, setOverlay]
+    mapOverlay: [overlay, setOverlay],
   } = React.useContext(StoreContext);
 
   // Set overlay title and optional options
   const overlays = {
     asmp: {
       title: "ASMP Street Levels",
-      options: ["1", "2", "3", "4", "5"]
+      options: ["1", "2", "3", "4", "5"],
     },
     highInjury: {
-      title: "High Injury Network"
+      title: "High Injury Network",
     },
     cityCouncil: {
-      title: "Austin City Council Districts"
-    }
+      title: "Austin City Council Districts",
+    },
   };
 
   const handleOverlayClick = (event, parameters) => {
@@ -29,28 +29,28 @@ const SideMapControlOverlays = () => {
     if (overlay.name !== overlayName) {
       setOverlay({
         name: overlayName,
-        options: parameters.options
+        options: parameters.options,
       });
     } else if (overlay.name === overlayName) {
       setOverlay("");
     }
   };
 
-  const handleOverlayOptionClick = event => {
+  const handleOverlayOptionClick = (event) => {
     // Set overlay in Context store or remove it
     const overlayOption = event.currentTarget.id;
 
     if (!overlay.options.includes(overlayOption)) {
       // Add clicked option to state
-      setOverlay(prevState => ({
+      setOverlay((prevState) => ({
         ...prevState,
-        options: [...prevState.options, ...overlayOption]
+        options: [...prevState.options, ...overlayOption],
       }));
     } else if (overlay.options.includes(overlayOption)) {
       // Remove clicked option from state
-      setOverlay(prevState => ({
+      setOverlay((prevState) => ({
         ...prevState,
-        options: prevState.options.filter(option => option !== overlayOption)
+        options: prevState.options.filter((option) => option !== overlayOption),
       }));
     }
   };
@@ -66,7 +66,7 @@ const SideMapControlOverlays = () => {
             id={name}
             color="info"
             className="w-100 pt-1 pb-1 pl-0 pr-0"
-            onClick={event => handleOverlayClick(event, parameters)}
+            onClick={(event) => handleOverlayClick(event, parameters)}
             active={name === overlay.name}
             outline={name !== overlay.name}
           >

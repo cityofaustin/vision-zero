@@ -3,5 +3,5 @@ export const responsive = {
   bootstrapMedium: 768,
   // Use for media queries with min-width defined to avoid style conflicts
   bootstrapMediumMin: 769,
-  bootstrapExtraSmall: 576
+  bootstrapExtraSmall: 576,
 };
