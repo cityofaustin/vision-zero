@@ -68,7 +68,6 @@ const SummaryWidget = ({ totalsObject, text, icon, backgroundColor }) => {
       "Same as";
 
     return (
-      // <div className="d-flex flex-row card-bottom">
       <div className="text-left widget-footer-icon d-flex flex-row card-bottom">
         {!!icon ? (
           <FontAwesomeIcon size="2x" icon={icon} color={colors.dark} />
@@ -76,20 +75,17 @@ const SummaryWidget = ({ totalsObject, text, icon, backgroundColor }) => {
           "--"
         )}
         {!!lastYearTotal && (
-          // <div className="d-flex flex-column">
           <div className="text-muted text-wrap pt-1 pr-1 widget-footer-text">
             {`${text} ${lastYearTotal.toLocaleString()} this time last year`}
           </div>
-          // </div>
         )}
       </div>
-      // </div>
     );
   };
 
   return (
-    <StyledWidget>
-      <Card>
+    <Card>
+      <StyledWidget>
         <CardBody className="pb-2">
           <Row>
             <Col>
@@ -119,8 +115,8 @@ const SummaryWidget = ({ totalsObject, text, icon, backgroundColor }) => {
             )}
           </CardFooter>
         )}
-      </Card>
-    </StyledWidget>
+      </StyledWidget>
+    </Card>
   );
 };
 
