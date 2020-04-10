@@ -146,14 +146,14 @@ const CrashesByMonth = () => {
   };
 
   const StyledDiv = styled.div`
-  .year-total-div {
-    color: ${colors.dark};
-    background: ${colors.buttonBackground} 0% 0% no-repeat padding-box;
-    border-radius: 4px;
-    border-style: none;
-    opacity: 1;
-  }
-`;
+    .year-total-div {
+      color: ${colors.dark};
+      background: ${colors.buttonBackground} 0% 0% no-repeat padding-box;
+      border-radius: 4px;
+      border-style: none;
+      opacity: 1;
+    }
+  `;
 
   return (
     <Container className="h-100 m-0 p-0">
@@ -169,18 +169,22 @@ const CrashesByMonth = () => {
       </Row>
       <Row>
         <Col>
-          <hr className="mb-2"/>
+          <hr className="mb-2" />
         </Col>
       </Row>
-
       <Row>
         <Col xs={4} s={2} m={2} l={2} xl={2}>
           <div>
-            <hr className="my-1" style={{ border: `2px solid ${colors.buttonBackground}` }}></hr>
-            <h6 className="text-center py-1 mb-0"><strong>Year</strong></h6>
+            <hr
+              className="my-1"
+              style={{ border: `2px solid ${colors.buttonBackground}` }}
+            ></hr>
+            <h6 className="text-center py-1 mb-0">
+              <strong>Year</strong>
+            </h6>
             <hr className="my-1"></hr>
             <h6 className="text-center py-1">Total</h6>
-          </div>        
+          </div>
         </Col>
         {!!chartData &&
           [...chartYearsArray].reverse().map((year, i) => {
@@ -191,7 +195,12 @@ const CrashesByMonth = () => {
               <Col xs={4} s={2} m={2} l={2} xl={2} key={i}>
                 <StyledDiv>
                   <div className="year-total-div">
-                    <hr className="my-1" style={{ border: `2px solid ${[...chartColors].reverse()[i]}` }}></hr>
+                    <hr
+                      className="my-1"
+                      style={{
+                        border: `2px solid ${[...chartColors].reverse()[i]}`,
+                      }}
+                    ></hr>
                     <h6 className="text-center py-1 mb-0">
                       <strong>{!!chartData && year}</strong>
                     </h6>
@@ -205,7 +214,6 @@ const CrashesByMonth = () => {
             );
           })}
       </Row>
-
       <Row className="h-50 mt-1">
         <Col>
           <Line
@@ -214,11 +222,11 @@ const CrashesByMonth = () => {
               responsive: true,
               maintainAspectRatio: false,
               tooltips: {
-                mode: "x"
+                mode: "x",
               },
               legend: {
-                display: false
-              }
+                display: false,
+              },
             }}
           />
         </Col>
