@@ -106,6 +106,8 @@ const CrashesByTimeOfDay = () => {
             break;
         }
       });
+      // Set any 0 values to null so that the reaviz library
+      // recognizes them as "blank cells" and fills them accordingly
       dataArray.forEach((hour) => {
         hour.data.forEach((day) => {
           if (day.data === 0) {
