@@ -6,7 +6,14 @@ import CrashTypeSelector from "../nav/CrashTypeSelector";
 import { Row, Col, Container, Button } from "reactstrap";
 import styled from "styled-components";
 import classnames from "classnames";
-import { Heatmap, HeatmapSeries } from "reaviz";
+import {
+  Heatmap,
+  HeatmapSeries,
+  HeatmapCell,
+  ChartTooltip,
+  SequentialLegend,
+  TooltipArea,
+} from "reaviz";
 import {
   summaryCurrentYearStartDate,
   summaryCurrentYearEndDate,
@@ -100,6 +107,13 @@ const CrashesByTimeOfDay = () => {
             break;
         }
       });
+      dataArray.forEach((hour) => {
+        hour.data.forEach((day) => {
+          if (day.data === 0) {
+            day.data = null;
+          }
+        });
+      });
       return dataArray;
     };
 
@@ -119,6 +133,14 @@ const CrashesByTimeOfDay = () => {
         setHeatmapData(calculateHourBlockTotals(res));
       });
   }, [activeTab, crashType]);
+
+  const formatOutput = (d) => {
+    const value = d.data.value ? d.data.value : 0;
+    const output = `${d.x} ${
+      value
+    }`;
+    return output;
+  };
 
   // Set styles to override Bootstrap default styling
   const StyledButton = styled.div`
@@ -182,14 +204,37 @@ const CrashesByTimeOfDay = () => {
             series={
               <HeatmapSeries
                 colorScheme={[
-                  colors.intensity1Of5Lowest,
                   colors.intensity2Of5,
                   colors.intensity3Of5,
                   colors.intensity4Of5,
                   colors.viridis1Of6Highest,
                 ]}
+                emptyColor={colors.intensity1Of5Lowest}
+                cell={
+                  <HeatmapCell
+                    tooltip={
+                      <ChartTooltip
+                        content={(d) => formatOutput(d)}
+                      />
+                    }
+                  />
+                }
               />
             }
+          />
+        </Col>
+      </Row>
+      <Row>
+        <Col className="pb-2">
+          <SequentialLegend
+            data={heatmapData}
+            orientation="horizontal"
+            colorScheme={[
+              colors.intensity2Of5,
+              colors.intensity3Of5,
+              colors.intensity4Of5,
+              colors.viridis1Of6Highest,
+            ]}
           />
         </Col>
       </Row>
