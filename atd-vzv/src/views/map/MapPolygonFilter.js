@@ -3,10 +3,18 @@ import { Editor, EditorModes } from "react-map-gl-draw";
 import ControlPanel from "./control-panel";
 import { getFeatureStyle, getEditHandleStyle } from "./map-style";
 
+const MODES = [
+  { id: EditorModes.EDITING, text: "Select and Edit Feature" },
+  { id: EditorModes.DRAW_POINT, text: "Draw Point" },
+  { id: EditorModes.DRAW_PATH, text: "Draw Polyline" },
+  { id: EditorModes.DRAW_POLYGON, text: "Draw Polygon" },
+  { id: EditorModes.DRAW_RECTANGLE, text: "Draw Rectangle" },
+];
+
 const MapPolygonFilter = () => {
   const _editorRef = useRef();
 
-  const [mode, setMode] = useState(EditorModes.READ_ONLY);
+  const [mode, setMode] = useState(MODES.READ_ONLY);
   const [selectedFeatureIndex, setSelectedFeatureIndex] = useState(null);
 
   const _onSelect = (options) => {
@@ -22,7 +30,7 @@ const MapPolygonFilter = () => {
 
   const _onUpdate = ({ editType }) => {
     if (editType === "addFeature") {
-      setMode(EditorModes.EDITING);
+      setMode(MODES.EDITING);
     }
   };
 
@@ -34,7 +42,7 @@ const MapPolygonFilter = () => {
           <button
             className="mapbox-gl-draw_ctrl-draw-btn mapbox-gl-draw_polygon"
             title="Polygon tool (p)"
-            onClick={() => setMode(EditorModes.DRAW_POLYGON)}
+            onClick={() => setMode(MODES.DRAW_POLYGON)}
           />
           <button
             className="mapbox-gl-draw_ctrl-draw-btn mapbox-gl-draw_trash"

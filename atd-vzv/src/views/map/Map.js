@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { StoreContext } from "../../utils/store";
 import ReactMapGL, { Source, Layer } from "react-map-gl";
+import MapPolygonFilter from "./MapPolygonFilter";
 import { createMapDataUrl } from "./helpers";
 import { crashGeoJSONEndpointUrl } from "../../views/summary/queries/socrataQueries";
 import {
@@ -213,6 +214,8 @@ const Map = () => {
           />
         </StyledMapSpinner>
       )}
+
+      <MapPolygonFilter />
     </ReactMapGL>
   );
 };
