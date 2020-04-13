@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { StoreContext } from "../../utils/store";
 import ReactMapGL, { Source, Layer } from "react-map-gl";
-import MapPolygonFilter from "./MapPolygonFilter";
 import { createMapDataUrl } from "./helpers";
 import { crashGeoJSONEndpointUrl } from "../../views/summary/queries/socrataQueries";
 import {
@@ -19,7 +18,19 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCompass, faCircle } from "@fortawesome/free-solid-svg-icons";
 import { colors } from "../../constants/colors";
 
+import { Editor, EditorModes } from "react-map-gl-draw";
+import ControlPanel from "./control-panel";
+import { getFeatureStyle, getEditHandleStyle } from "./map-style";
+
 import "mapbox-gl/dist/mapbox-gl.css";
+
+// const MODES = [
+//   { id: EditorModes.EDITING, text: "Select and Edit Feature" },
+//   { id: EditorModes.DRAW_POINT, text: "Draw Point" },
+//   { id: EditorModes.DRAW_PATH, text: "Draw Polyline" },
+//   { id: EditorModes.DRAW_POLYGON, text: "Draw Polygon" },
+//   { id: EditorModes.DRAW_RECTANGLE, text: "Draw Rectangle" },
+// ];
 
 const MAPBOX_TOKEN = `pk.eyJ1Ijoiam9obmNsYXJ5IiwiYSI6ImNrM29wNnB3dDAwcXEzY29zMTU5bWkzOWgifQ.KKvoz6s4NKNHkFVSnGZonw`;
 
@@ -169,6 +180,64 @@ const Map = () => {
     );
   };
 
+  // Polygon editor
+  const _editorRef = useRef();
+
+  const [mode, setMode] = useState(EditorModes.READ_ONLY);
+  const [selectedFeatureIndex, setSelectedFeatureIndex] = useState(null);
+
+  const _onSelect = (options) => {
+    setSelectedFeatureIndex(options && options.selectedFeatureIndex);
+  };
+
+  const _onDelete = () => {
+    const selectedIndex = selectedFeatureIndex;
+    if (selectedIndex !== null && selectedIndex >= 0) {
+      _editorRef.current.deleteFeatures(selectedIndex);
+    }
+  };
+
+  const _onUpdate = ({ editType }) => {
+    if (editType === "addFeature") {
+      setMode(EditorModes.EDITING);
+    }
+  };
+
+  const _renderDrawTools = () => {
+    // copy from mapbox
+    return (
+      <div className="mapboxgl-ctrl-top-right">
+        <div className="mapboxgl-ctrl-group mapboxgl-ctrl">
+          <button
+            className="mapbox-gl-draw_ctrl-draw-btn mapbox-gl-draw_polygon"
+            title="Polygon tool"
+            onClick={() => setMode(EditorModes.DRAW_POLYGON)}
+          />
+          <button
+            className="mapbox-gl-draw_ctrl-draw-btn mapbox-gl-draw_trash"
+            title="Delete"
+            onClick={_onDelete}
+          />
+        </div>
+      </div>
+    );
+  };
+
+  const _renderControlPanel = () => {
+    const features = _editorRef.current && _editorRef.current.getFeatures();
+    let featureIndex = selectedFeatureIndex;
+    if (features && featureIndex === null) {
+      featureIndex = features.length - 1;
+    }
+    const polygon = features && features.length ? features[featureIndex] : null;
+    return (
+      <ControlPanel
+        // containerComponent={this.props.containerComponent}
+        polygon={polygon}
+      />
+    );
+  };
+
   return (
     <ReactMapGL
       {...viewport}
@@ -215,7 +284,19 @@ const Map = () => {
         </StyledMapSpinner>
       )}
 
-      <MapPolygonFilter />
+      <Editor
+        ref={(ref) => (_editorRef.current = ref)}
+        style={{ width: "100%", height: "100%" }}
+        clickRadius={12}
+        mode={mode}
+        onSelect={_onSelect}
+        onUpdate={_onUpdate}
+        editHandleShape={"circle"}
+        featureStyle={getFeatureStyle}
+        editHandleStyle={getEditHandleStyle}
+      />
+      {_renderDrawTools()}
+      {_renderControlPanel()}
     </ReactMapGL>
   );
 };
