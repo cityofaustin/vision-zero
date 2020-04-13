@@ -12,7 +12,6 @@ import {
   HeatmapCell,
   ChartTooltip,
   SequentialLegend,
-  TooltipArea,
 } from "reaviz";
 import {
   summaryCurrentYearStartDate,
@@ -134,12 +133,9 @@ const CrashesByTimeOfDay = () => {
       });
   }, [activeTab, crashType]);
 
-  const formatOutput = (d) => {
+  const formatValue = (d) => {
     const value = d.data.value ? d.data.value : 0;
-    const output = `${d.x} ${
-      value
-    }`;
-    return output;
+    return value;
   };
 
   // Set styles to override Bootstrap default styling
@@ -214,7 +210,10 @@ const CrashesByTimeOfDay = () => {
                   <HeatmapCell
                     tooltip={
                       <ChartTooltip
-                        content={(d) => formatOutput(d)}
+                        content={(d) =>
+                          `${d.x} ∙
+                          ${formatValue(d)}`
+                        }
                       />
                     }
                   />
