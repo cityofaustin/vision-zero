@@ -24,14 +24,6 @@ import { getFeatureStyle, getEditHandleStyle } from "./map-style";
 
 import "mapbox-gl/dist/mapbox-gl.css";
 
-// const MODES = [
-//   { id: EditorModes.EDITING, text: "Select and Edit Feature" },
-//   { id: EditorModes.DRAW_POINT, text: "Draw Point" },
-//   { id: EditorModes.DRAW_PATH, text: "Draw Polyline" },
-//   { id: EditorModes.DRAW_POLYGON, text: "Draw Polygon" },
-//   { id: EditorModes.DRAW_RECTANGLE, text: "Draw Rectangle" },
-// ];
-
 const MAPBOX_TOKEN = `pk.eyJ1Ijoiam9obmNsYXJ5IiwiYSI6ImNrM29wNnB3dDAwcXEzY29zMTU5bWkzOWgifQ.KKvoz6s4NKNHkFVSnGZonw`;
 
 const StyledCard = styled.div`
@@ -181,6 +173,10 @@ const Map = () => {
   };
 
   // Polygon editor
+  // TODO: Add other shapes to draw polygon (square, etc.)
+  // TODO: Fix control icons (they don't render)
+  // TODO: Move polygon editor code to another file
+  // TODO: Update styles in map-style.js
   const _editorRef = useRef();
 
   const [mode, setMode] = useState(EditorModes.READ_ONLY);
@@ -199,6 +195,8 @@ const Map = () => {
 
   const _onUpdate = ({ editType }) => {
     if (editType === "addFeature") {
+      const features = _editorRef.current.getFeatures();
+      // TODO: Add polygon in features array to Socrata request
       setMode(EditorModes.EDITING);
     }
   };
