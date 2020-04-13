@@ -35,7 +35,7 @@ def generate_template(name, function, fields, fieldnames=[], upsert=False, const
     :return str:
     """
     if crash:
-        update_cr3 = "cr3_stored_flag: \"Y\""
+        update_cr3 = "cr3_stored_flag: \"N\""
         fieldnames += ["cr3_stored_flag"]
     else:
         update_cr3 = ""
@@ -384,7 +384,6 @@ def get_crash_record(crash_id):
         return result["data"]["atd_txdot_crashes"][0]
 
     except Exception as e:
-        print("There was a problem getting crash_id: %s\n%s" % (crash_id, str(e)))
         return None
 
 
