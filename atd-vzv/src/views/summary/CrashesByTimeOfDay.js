@@ -33,9 +33,8 @@ const CrashesByTimeOfDay = () => {
   };
 
   useEffect(() => {
-    const dayOfWeekArray = moment.weekdays();
-    // const dayOfWeekArrayFormatted = dayOfWeekArray.format("dd");
-    // console.log(dayOfWeekArrayFormatted);
+    const dayOfWeekArray = moment.weekdaysShort();
+
     const hourBlockArray = [
       "12AM",
       "01AM",
@@ -155,7 +154,7 @@ const CrashesByTimeOfDay = () => {
   `;
 
   return (
-    <Container>
+    <Container className="m-0 p-0">
       <Row>
         <Col>
           <h2 className="text-left, font-weight-bold">By Time of Day</h2>
@@ -228,7 +227,7 @@ const CrashesByTimeOfDay = () => {
         </Col>
       </Row>
       <Row>
-        <Col className="pb-2">
+        <Col className="py-2">
           <SequentialLegend
             data={heatmapData}
             orientation="horizontal"
