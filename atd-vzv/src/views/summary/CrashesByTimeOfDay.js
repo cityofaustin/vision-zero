@@ -34,6 +34,8 @@ const CrashesByTimeOfDay = () => {
 
   useEffect(() => {
     const dayOfWeekArray = moment.weekdays();
+    // const dayOfWeekArrayFormatted = dayOfWeekArray.format("dd");
+    // console.log(dayOfWeekArrayFormatted);
     const hourBlockArray = [
       "12AM",
       "01AM",
