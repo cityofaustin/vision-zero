@@ -711,3 +711,7 @@ def is_crash_in_queue(crash_id):
     response = run_query(query)
     return len(response["data"]) > 0
 
+
+def csv_to_dict(line, fieldnames):
+    reader = csv.DictReader(f=io.StringIO(line), fieldnames=fieldnames, delimiter=',')  # parse line
+    return json.dumps([row for row in reader])  # Generate json
