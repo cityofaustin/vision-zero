@@ -99,6 +99,24 @@ def process_line(file_type, line, fieldnames, current_line, dryrun=False):
 
     # The record does not exist, insert.
     if file_type != "crash" or insert_crash:
+        crash_id = get_crash_id(line)
+        # If it is one of these tables
+        if file_type in ["unit", "person", "primaryperson"]:
+            # Then check if the parent record (crash) is in the queue
+            crash_in_queue = is_crash_in_queue(crash_id)
+        else:
+            # We can safely take the updates in
+            crash_in_queue = False
+
+        #  If the crash is in queue
+        if crash_in_queue:
+            insert_secondary_table_change(
+                line=line,
+                fieldnames=fieldnames,
+                file_type=file_type
+            )
+            return
+
         # Generate query and present to terminal
         gql = generate_gql(line=line, fieldnames=fieldnames, file_type=file_type)
         # If this is not a dry-run, then make an actual insertion
