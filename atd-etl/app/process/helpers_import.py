@@ -661,8 +661,8 @@ def record_crash_compare(line, fieldnames, crash_id, record_existing):
             # It's too soon, ignore change.
             return False
 
-        # There are differences, and it can update...
-        # If human_updated or important_update, create a request:
+        # There are differences, and it can update unless
+        # either human_updated or important_update is true
         if human_updated or important_update:
             mutation_template = insert_crash_change_template(
                 new_record_dict=record_new,
