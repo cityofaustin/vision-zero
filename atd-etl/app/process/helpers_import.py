@@ -679,3 +679,35 @@ def record_crash_compare(line, fieldnames, crash_id, record_existing):
         # Not human edited, update everything automatically.
         else:
             return True
+
+
+def is_crash_in_queue(crash_id):
+    """
+    Returns True if it can find a new crash in the changes list.
+    :param str crash_id: The crash_id to query for
+    :return bool:
+    """
+    query = """
+        query findChange {
+          atd_txdot_changes(
+                limit: 1, 
+                offset: 0,
+                where: {
+                    record_type : {_eq: "crash"},
+                    record_id: {_eq: "%CRASH_ID%"},
+                    status_id: {_eq:0}
+                }
+            ) {
+            record_id
+            change_id
+            created_timestamp
+            status_id
+            status {
+              description
+            }
+          }
+        }
+    """.replace("CRASH_ID", crash_id)
+    response = run_query(query)
+    return len(response["data"]) > 0
+
