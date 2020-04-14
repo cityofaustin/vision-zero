@@ -266,7 +266,7 @@ const PeopleByDemographics = () => {
     <Container>
       <Row>
         <Col>
-          <h1 className="text-left, font-weight-bold">Demographics</h1>
+          <h2 className="text-left, font-weight-bold">Demographics</h2>
         </Col>
       </Row>
       <Row>
@@ -324,8 +324,12 @@ const PeopleByDemographics = () => {
         <Col>
           <HorizontalBar
             data={data}
+            height={null}
+            width={null}
             options={{
-              maintainAspectRatio: true,
+              responsive: true,
+              aspectRatio: 1,
+              maintainAspectRatio: false,
               scales: {
                 xAxes: [
                   {

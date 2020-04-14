@@ -3,6 +3,7 @@ import axios from "axios";
 import moment from "moment";
 import { Line } from "react-chartjs-2";
 import { Container, Row, Col } from "reactstrap";
+import styled from "styled-components";
 
 import CrashTypeSelector from "../nav/CrashTypeSelector";
 import { crashEndpointUrl } from "./queries/socrataQueries";
@@ -111,20 +112,6 @@ const CrashesByMonth = () => {
     }
   }, [crashType]);
 
-  const renderHeader = () => {
-    const yearTotalData = chartData[dataEndDate.format("YYYY")];
-    // Last item in data array is total YTD
-    const yearTotal = yearTotalData[yearTotalData.length - 1];
-    return (
-      <h6 style={{ color: colors.blue, textAlign: "center" }}>
-        As of {dataEndDate.format("MMMM")}, there have been{" "}
-        <strong>{yearTotal}</strong> traffic-related{" "}
-        {crashType.textString && crashType.textString.toLowerCase()} in{" "}
-        {dataEndDate.format("YYYY")}.
-      </h6>
-    );
-  };
-
   // Create dataset for each year, data property is an array of cumulative totals by month
   const createDatasets = () => {
     const chartDatasets = chartYearsArray.map((year, i) => ({
@@ -158,11 +145,21 @@ const CrashesByMonth = () => {
     datasets: !!chartData && createDatasets(),
   };
 
+  const StyledDiv = styled.div`
+    .year-total-div {
+      color: ${colors.dark};
+      background: ${colors.buttonBackground} 0% 0% no-repeat padding-box;
+      border-radius: 4px;
+      border-style: none;
+      opacity: 1;
+    }
+  `;
+
   return (
-    <Container>
+    <Container className="m-0 p-0">
       <Row>
         <Col>
-          <h1 className="text-left, font-weight-bold">By Year</h1>
+          <h2 className="text-left font-weight-bold">By Month/Year</h2>
         </Col>
       </Row>
       <Row>
@@ -172,44 +169,66 @@ const CrashesByMonth = () => {
       </Row>
       <Row>
         <Col>
-          <hr />
+          <hr className="mb-2" />
         </Col>
       </Row>
       <Row>
-        <Col>{!!chartData && renderHeader()}</Col>
-      </Row>
-      <Row>
-        <Col>
-          <hr className="mt-1" />
-        </Col>
-      </Row>
-      <Row style={{ paddingBottom: 20 }}>
-        <Col>
-          <h6 style={{ textAlign: "center" }}>Prior Years:</h6>
+        <Col xs={4} s={2} m={2} l={2} xl={2}>
+          <div>
+            <hr
+              className="my-1"
+              style={{ border: `2px solid ${colors.buttonBackground}` }}
+            ></hr>
+            <h6 className="text-center py-1 mb-0">
+              <strong>Year</strong>
+            </h6>
+            <hr className="my-1"></hr>
+            <h6 className="text-center py-1">Total</h6>
+          </div>
         </Col>
         {!!chartData &&
-          chartYearsArray.map((year, i) => {
+          [...chartYearsArray].reverse().map((year, i) => {
             const yearTotalData = chartData[year];
             const yearTotal = yearTotalData[yearTotalData.length - 1];
-            // Return only data from previous years
+            // Reverse data and colors arrays and render so they appear chronologically
             return (
-              i > 0 && (
-                <Col key={i}>
-                  <h6 style={{ textAlign: "center" }}>
-                    <strong>{!!chartData && yearTotal}</strong> in {year}
-                  </h6>
-                </Col>
-              )
+              <Col xs={4} s={2} m={2} l={2} xl={2} key={i}>
+                <StyledDiv>
+                  <div className="year-total-div">
+                    <hr
+                      className="my-1"
+                      style={{
+                        border: `2px solid ${[...chartColors].reverse()[i]}`,
+                      }}
+                    ></hr>
+                    <h6 className="text-center py-1 mb-0">
+                      <strong>{!!chartData && year}</strong>
+                    </h6>
+                    <hr className="my-1"></hr>
+                    <h6 className="text-center py-1">
+                      {!!chartData && yearTotal}
+                    </h6>
+                  </div>
+                </StyledDiv>
+              </Col>
             );
           })}
       </Row>
-      <Row>
+      <Row className="mt-1">
         <Col>
           <Line
-            data={data}
+            data={data}          
+            height={null}
+            width={null}
             options={{
+              responsive: true,
+              aspectRatio: 1,
+              maintainAspectRatio: false,
               tooltips: {
                 mode: "x",
+              },
+              legend: {
+                display: false,
               },
             }}
           />
