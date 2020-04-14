@@ -92,7 +92,7 @@ const SideDrawer = () => {
       <StyledDrawerHeader>
         {/* Need to adjust location of public folder to account for /viewer/ basepath */}
         <img
-          src={process.env.PUBLIC_URL + "/vz_logo.png"}
+          src={process.env.PUBLIC_URL + "/vz_logo.svg"}
           alt="Vision Zero Austin Logo"
         ></img>
       </StyledDrawerHeader>
