@@ -715,3 +715,30 @@ def is_crash_in_queue(crash_id):
 def csv_to_dict(line, fieldnames):
     reader = csv.DictReader(f=io.StringIO(line), fieldnames=fieldnames, delimiter=',')  # parse line
     return json.dumps([row for row in reader])  # Generate json
+
+
+def insert_secondary_table_change(line, fieldnames, file_type):
+    """
+    Inserts a secondary crash record.
+    :param str line: The current line being processed
+    :param list fieldnames: The list of headers
+    :param str file_type: The type of file to be inserted
+    :return:
+    """
+    query = """
+        mutation insertNewSecondaryChange {
+          insert_atd_txdot_changes(
+                objects: {
+                    record_id: %CRASH_ID%
+                    record_type: "%TYPE%",
+                    record_json: "%CONTENT%",
+                    status_id: 0,
+                }
+            ) {
+            affected_rows
+          }
+        }
+    """.replace("%CRASH_ID%", get_crash_id(line))\
+    .replace("%TYPE%", file_type)\
+    .replace("%CONTENT%", csv_to_dict(line=line, fieldnames=fieldnames))
+    response = run_gql(query)
