@@ -8,7 +8,7 @@ import {
   buildAsmpLayers,
   asmpConfig,
   buildHighInjuryLayer,
-  cityCouncilDataLayer
+  cityCouncilDataLayer,
 } from "./map-style";
 import axios from "axios";
 
@@ -72,7 +72,7 @@ const StyledMapSpinner = styled.div`
 function useMapEventHandler(eventName, callback, mapRef) {
   useEffect(() => {
     const currentMapRef = mapRef.current;
-    const mapDataListener = currentMapRef.on(eventName, function() {
+    const mapDataListener = currentMapRef.on(eventName, function () {
       callback();
     });
     return () => {
@@ -86,7 +86,7 @@ const Map = () => {
   const [viewport, setViewport] = useState({
     latitude: 30.268039,
     longitude: -97.742828,
-    zoom: 11
+    zoom: 11,
   });
 
   // Create ref to map to call Mapbox GL functions on instance
@@ -99,9 +99,9 @@ const Map = () => {
 
   const {
     mapFilters: [filters],
-    mapDateRange: [dateRange],
+    mapDateRange: dateRange,
     mapOverlay: [overlay],
-    mapTimeWindow: [mapTimeWindow]
+    mapTimeWindow: [mapTimeWindow],
   } = React.useContext(StoreContext);
 
   // Add/remove listeners for spinner logic
@@ -118,7 +118,7 @@ const Map = () => {
     );
 
     !!apiUrl &&
-      axios.get(apiUrl).then(res => {
+      axios.get(apiUrl).then((res) => {
         setMapData(res.data);
       });
   }, [filters, dateRange, mapTimeWindow, setMapData]);
@@ -126,21 +126,21 @@ const Map = () => {
   // Fetch City Council Districts geojson
   useEffect(() => {
     const overlayUrl = `https://services.arcgis.com/0L95CJ0VTaxqcmED/ArcGIS/rest/services/BOUNDARIES_single_member_districts/FeatureServer/0/query?where=COUNCIL_DISTRICT%20%3E=%200&f=geojson`;
-    axios.get(overlayUrl).then(res => {
+    axios.get(overlayUrl).then((res) => {
       setCityCouncilOverlay(res.data);
     });
   }, []);
 
-  const _onViewportChange = viewport => setViewport(viewport);
+  const _onViewportChange = (viewport) => setViewport(viewport);
 
   // Capture hovered feature to populate tooltip data
-  const _onHover = event => {
+  const _onHover = (event) => {
     const {
       features,
-      srcEvent: { offsetX, offsetY }
+      srcEvent: { offsetX, offsetY },
     } = event;
     const hoveredFeature =
-      features && features.find(f => f.layer.id === "crashes");
+      features && features.find((f) => f.layer.id === "crashes");
     setHoveredFeature({ feature: hoveredFeature, x: offsetX, y: offsetY });
   };
 
@@ -177,7 +177,7 @@ const Map = () => {
       mapboxApiAccessToken={MAPBOX_TOKEN}
       getCursor={_getCursor}
       onHover={_onHover}
-      ref={ref => (mapRef.current = ref && ref.getMap())}
+      ref={(ref) => (mapRef.current = ref && ref.getMap())}
     >
       {!!mapData && (
         <Source id="crashes" type="geojson" data={mapData}>

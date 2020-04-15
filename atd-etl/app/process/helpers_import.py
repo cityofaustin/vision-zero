@@ -13,35 +13,69 @@ import io
 import json
 import re
 import datetime
-import web_pdb
+from dateutil import parser
 
 # Dependencies
 from .queries import search_crash_query, search_crash_query_full
 from .request import run_query
-from .helpers_import_fields import CRIS_TXDOT_FIELDS, CRIS_TXDOT_COMPARE_FIELDS_LIST
+from .helpers_import_fields import CRIS_TXDOT_FIELDS, \
+    CRIS_TXDOT_COMPARE_FIELDS_LIST, CRIS_TXDOT_COMPARE_FIELD_TYPE
+from .config import ATD_ETL_CONFIG
 
 
-def generate_template(name, function, fields):
+def generate_template(name, function, fields, fieldnames=[], upsert=False, constraint="", crash=False):
     """
     Returns a string with a graphql template
-    :param name:
-    :param function:
-    :param fields:
-    :return:
+    :param str name: The name of the graphql mutation
+    :param str function: The name of the graphql function
+    :param str fields: The value of the fields in graphql expression
+    :param str[] fieldnames: An array of strings containing the names of the columns
+    :param bool upsert: If true, adds upsert logic; false otherwise.
+    :param str constraint: The name of the constraint on_conflict
+    :return str:
     """
+    if crash:
+        update_cr3 = "cr3_stored_flag: \"N\""
+        fieldnames += ["cr3_stored_flag"]
+    else:
+        update_cr3 = ""
+
+    if upsert:
+        on_conflict = """
+            , on_conflict: {
+              constraint: %CONFLICT_CONSTRAINT%,
+              update_columns: [
+                %CONFLICT_FIELDS%
+              ]
+            }
+        """.replace(
+            "%CONFLICT_CONSTRAINT%",
+            constraint
+        ).replace(
+            "%CONFLICT_FIELDS%",
+            ",\n".join([f.lower() for f in fieldnames])
+        )
+
+    else:
+        on_conflict = ""
+
     return """
         mutation %NAME% {
           %FUNCTION%(
             objects: {
-            %FIELDS%
+                %FIELDS%
+                %UPDATE_CR3%
             }
+            %ON_CONFLICT%
           ){
             affected_rows
-          }
+          } 
         }
     """.replace("%NAME%", name)\
-        .replace("%FUNCTION%", function)\
-        .replace("%FIELDS%", fields)
+       .replace("%FUNCTION%", function)\
+       .replace("%FIELDS%", fields)\
+       .replace("%UPDATE_CR3%", update_cr3)\
+       .replace("%ON_CONFLICT%", on_conflict)
 
 
 def lowercase_group_match(match):
@@ -123,9 +157,27 @@ def generate_gql(line, fieldnames, file_type):
                                               fieldnames=fieldnames,
                                               filters=filters)
 
-        template = generate_template(name=query_name,
-                                     function=function_name,
-                                     fields=fields)
+        # The variable `filters[0][1]` contains all the columns we need to remove.
+        # We need `template_fields` to contain a lower-case array of all strings
+        # in `fieldnames` as long as they are not in the removed list `filters[0][1]`
+        template_fields = [field.lower() for field in fieldnames if field.lower() not in filters[0][1]]
+
+        # Generate Template
+        template = generate_template(
+            name=query_name,
+            function=function_name,
+            fields=fields,
+            fieldnames=template_fields,
+            upsert=True,
+            constraint={
+                "crash": "atd_txdot_crashes_pkey",
+                "charges": "atd_txdot_charges_pkey",
+                "unit": "atd_txdot_units_unique",
+                "person": "atd_txdot_person_unique",
+                "primaryperson": "atd_txdot_primaryperson_unique",
+            }.get(file_type, None),
+            crash=(file_type == "crash")
+        )
     except Exception as e:
         print("generate_gql() Error: " + str(e))
         template = ""
@@ -312,8 +364,19 @@ def get_crash_record(crash_id):
     :return: string
     """
     # First generate a query with a list of the columns we care about
-    query = search_crash_query_full(crash_id=crash_id,
-                                    field_list=CRIS_TXDOT_COMPARE_FIELDS_LIST)
+    query = search_crash_query_full(
+        crash_id=crash_id,
+        field_list=(
+           CRIS_TXDOT_COMPARE_FIELDS_LIST +
+           [
+               "apd_human_update",
+               "geocode_provider",
+               "qa_status",
+               "updated_by",
+               "changes_approved_date"
+           ]
+        )
+    )
 
     # Then try to run the query to get the actual record
     try:
@@ -321,7 +384,6 @@ def get_crash_record(crash_id):
         return result["data"]["atd_txdot_crashes"][0]
 
     except Exception as e:
-        print("There was a problem getting crash_id: %s\n%s" % (crash_id, str(e)))
         return None
 
 
@@ -349,8 +411,11 @@ def convert_date(string):
     :param string: string - The date being converted
     :return: string
     """
-    input_date = datetime.datetime.strptime(string, "%m/%d/%Y")
-    return input_date.strftime("%Y-%m-%d")
+    if is_cris_date(string):
+        input_date = datetime.datetime.strptime(string, "%m/%d/%Y")
+        return input_date.strftime("%Y-%m-%d")
+    else:
+        return string
 
 
 def convert_time(string):
@@ -359,8 +424,11 @@ def convert_time(string):
     :param string: string - The string being converted
     :return: string
     """
-    input_time = datetime.datetime.strptime(string, "%I:%M %p")
-    return input_time.strftime("%H:%M:00")
+    if is_cris_time(string):
+        input_time = datetime.datetime.strptime(string, "%I:%M %p")
+        return input_time.strftime("%H:%M:00")
+    else:
+        return string
 
 
 def clean_none_null(string):
@@ -372,36 +440,88 @@ def clean_none_null(string):
     return str(string).replace("None", "").replace("null", "")
 
 
+def convert_decimal(string):
+    """
+    Takes a string and converts is into a decimal
+    :param str string:
+    :return float:
+    """
+    try:
+        return float(string)
+    except:
+        return ""
+
+
+def convert_integer(string):
+    """
+    Takes a string and converts is into a decimal
+    :param str string:
+    :return int:
+    """
+    try:
+        return int(string)
+    except:
+        return ""
+
+
+def clean_up_record(record):
+    # Remove the crash_id record if present
+    if "crash_id" in record:
+        del record["crash_id"]
+
+    # Get the lower case list of fields in CRIS_TXDOT_COMPARE_FIELD_TYPE
+    field_names = [key.lower() for key in CRIS_TXDOT_COMPARE_FIELD_TYPE.keys()]
+
+    # For each field, make necessary conversions...
+    for field in field_names:
+        if field not in record:
+            continue
+        # Remove None and null
+        record[field] = clean_none_null(record[field])
+
+        # Get the field type
+        field_type = CRIS_TXDOT_COMPARE_FIELD_TYPE[field]
+
+        # If not a date, time, decimal or int, skip...
+        if field_type not in ["date", "time", "decimal", "int"]:
+            continue
+
+        # Convert CSV's date format to postgres format
+        if field_type == "date":
+            record[field] = convert_date(record[field])
+        # Convert CSV's time format to postgres format
+        if field_type == "time":
+            record[field] = convert_time(record[field])
+        # Parse Decimals
+        if field_type == "decimal":
+            record[field] = convert_decimal(record[field])
+        # Parse Decimals
+        if field_type == "int":
+            record[field] = convert_integer(record[field])
+
+    return record
+
+
 def record_compare(record_new, record_existing):
     """
     Compares two dictionaries. It uses the CRIS_TXDOT_COMPARE_FIELDS_LIST
     to determine what fields are important enough, and returns True if
     there is one important difference. Returns False if none of the fields
     present any differences.
-    :param record_new: dict - The new object being parsed from csv
-    :param record_existing: dict - The existing object, as parsed from an HTTP query
+    :param dict record_new: The new object being parsed from csv
+    :param dict record_existing: The existing object, as parsed from an HTTP query
     :return: bool
     """
+    differences = []
+    record_new = clean_up_record(record_new)
+    record_existing = clean_up_record(record_existing)
+
     for field in CRIS_TXDOT_COMPARE_FIELDS_LIST:
-        # Remove None and null
-        record_existing[field] = clean_none_null(record_existing[field])
-
-        # If the current field is a date, then try to parse it
-        if is_cris_date(record_new[field]):
-            record_new[field] = convert_date(record_new[field])
-
-        # If the current field is a time string, then try to parse it
-        if is_cris_time(record_new[field]):
-            record_new[field] = convert_time(record_new[field])
-
-        # Make the comparison, if not equal important_difference = true
-        important_difference = record_new[field] != record_existing[field]
-
-        if important_difference:
-            return True
+        if record_new.get(field, "") != record_existing.get(field, ""):
+            differences.append(field)
 
     # Found no differences in any of the fields
-    return False
+    return differences
 
 
 def generate_crash_record(line, fieldnames):
@@ -419,46 +539,130 @@ def generate_crash_record(line, fieldnames):
     return json.loads(fields)
 
 
-def insert_crash_change_template(new_record_dict):
+def insert_crash_change_template(new_record_dict, differences, crash_id):
     """
     Generates a crash insertion graphql query
     :param new_record_dict: dict - The new record as a dictionary
     :return: string
     """
     # Turn the dictionary into a character-escaped json string
-    new_record_escaped = json.dumps(new_record_dict).replace("\"", "\\\"")
+    new_record_escaped = json.dumps(json.dumps(new_record_dict))
+    new_record_crash_date = convert_date(new_record_dict["crash_date"])
     # Build the template and inject required values
-    return """
+    output = """
         mutation insertCrashChangeMutation {
-      insert_atd_txdot_changes(objects: {
-        record_id: NEW_RECORD_ID,
-        record_json: "NEW_RECORD_ESCAPED_JSON",
-        record_type: "crash",
-        updated_by: "System"
-      }) {
-        affected_rows
-      }
-    }
-    """.replace("NEW_RECORD_ESCAPED_JSON", new_record_escaped)\
-        .replace("NEW_RECORD_ID", new_record_dict["crash_id"])
+          insert_atd_txdot_changes(
+            objects: {
+              record_id: %NEW_RECORD_ID%,
+              record_json: %NEW_RECORD_ESCAPED_JSON%,
+              record_type: "crash",
+              affected_columns: %AFFECTED_COLUMNS%,
+              status_id: 0,
+              updated_by: "System",
+              crash_date: %NEW_RECORD_CRASH_DATE%
+            },
+            on_conflict: {
+              constraint: atd_txdot_changes_unique,
+              update_columns: [
+                record_id,
+                record_json,
+                record_type,
+                affected_columns,
+                status_id,
+                updated_by
+                crash_date
+              ]
+            }
+          ) {
+            affected_rows
+          }
+        }
+        """.replace("%NEW_RECORD_ESCAPED_JSON%", new_record_escaped) \
+        .replace("%NEW_RECORD_ID%", crash_id) \
+        .replace("%AFFECTED_COLUMNS%", json.dumps(json.dumps(differences))) \
+        .replace(
+            "%NEW_RECORD_CRASH_DATE%",
+            "null" if new_record_crash_date is None else f'"{new_record_crash_date}"'
+        )
+    return output
 
 
-def record_compare_hook(line, fieldnames, file_type):
+def can_record_update(record):
+    """
+    Return true if changes_approved_date is greater than 3 days
+    :param dict record: The current record being evaluated
+    :return bool:
+    """
+    # Try getting changes_approved_date from record
+    try:
+        approved_time = parser.parse(record["changes_approved_date"])
+        delta = datetime.datetime.now() - approved_time
+        return delta.days > 3
+    except:
+        return True
+
+
+def is_human_updated(record):
+    """
+    Returns true if the record has been edited by a human.
+    :param dict record:
+    :return bool:
+    """
+    return (
+        record["apd_human_update"] == "Y"
+    ) or (
+        record["geocode_provider"] == 5 and
+        record["qa_status"] == 3
+    ) or (
+        str(record["updated_by"]).endswith("@austintexas.gov")
+    )
+
+
+def record_crash_compare(line, fieldnames, crash_id, record_existing):
     """
     Hook that finds an existing record, and compares it with a new incoming record built from a raw csv line.
     :param line: string - The raw csv line
     :param fieldnames: array of strings - The strings to be used as headers
-    :param file_type: string - The file type (crash, units, charges, etc...)
-    :return:
+    :return bool: False if we want to ignore changes.
     """
-    if file_type == "crash":
-        fieldnames = [column.lower() for column in fieldnames]
-        crash_id = get_crash_id(line)
+    # Gather the field names
+    fieldnames = [column.lower() for column in fieldnames]
+
+    # If compare crash record is disabled, then exit.
+    if ATD_ETL_CONFIG["ATD_CRIS_IMPORT_COMPARE_FUNCTION"] != "ENABLED":
+        return False
+
+    # Double check if the record is valid, if not exit.
+    if record_existing is None:
+        return True
+
+    # The record is valid, it needs queueing or an upsert.
+    else:
+        # First generate a new crash record object from line
         record_new = generate_crash_record(line=line, fieldnames=fieldnames)
-        record_existing = get_crash_record(get_crash_id(line))
-        significant_difference = record_compare(record_new=record_new, record_existing=record_existing)
-        if significant_difference:
-            mutation_template = insert_crash_change_template(new_record_dict=record_new)
+        # Now calculate the differences
+        differences = record_compare(record_new=record_new, record_existing=record_existing)
+        # Determine if record is updated by human:
+        human_updated = is_human_updated(record=record_existing)
+        # Check if it can update based on changes_approved_date
+        can_update = can_record_update(record=record_existing)
+
+        # If there are no differences, just ignore...
+        if len(differences) == 0:
+            return False
+        # If no changes approved, or longer than 3 days
+        if can_update is False:
+            # It's too soon, ignore change.
+            return False
+
+        # There are differences, and it can update...
+        # If human_updated, create a request:
+        if human_updated:
+            mutation_template = insert_crash_change_template(
+                new_record_dict=record_new,
+                differences=differences,
+                crash_id=crash_id
+            )
             result = run_query(mutation_template)
             try:
                 affected_rows = result["data"]["insert_atd_txdot_changes"]["affected_rows"]
@@ -466,6 +670,12 @@ def record_compare_hook(line, fieldnames, file_type):
                 affected_rows = 0
 
             if affected_rows == 1:
-                print("Crash Review Request Inserted: %s" % (crash_id))
+                print("\tCreated (or updated existing) change request (%s)" % crash_id)
+                # We return false because we captured the changes into
+                # a request on the database via run_query (Hasura)
+                return False
             else:
-                print("Failed to insert crash review request: %s" % crash_id)
+                raise Exception("Failed to insert crash review request: %s" % crash_id)
+        # Not human edited, update everything automatically.
+        else:
+            return True

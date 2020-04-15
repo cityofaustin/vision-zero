@@ -11,7 +11,10 @@ import { colors } from "../../constants/colors";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 
-const StyledNavbar = styled.div`
+const Header = () => {
+  const currentPath = usePath();
+
+  const StyledNavbar = styled.div`
   .navbar-container {
     /* Make Navbar container same height as SideDrawer header */
     height: ${drawer.headerHeight}px;
@@ -20,7 +23,7 @@ const StyledNavbar = styled.div`
   .header-navbar {
     /* Keep Navbar same height as header in SideDrawer and move to right based on drawer width */
     min-height: ${drawer.headerHeight}px;
-    left: ${drawer.width}px;
+    ${currentPath !== "/" && `left: ${drawer.width}px;`}
     background-color: ${colors.white};
     @media only screen and (max-width: ${responsive.bootstrapMedium}px) {
       /* When SideDrawer collapses, move header to left of window */
@@ -53,14 +56,17 @@ const StyledNavbar = styled.div`
   }
 
   .vz-logo {
+    @media only screen and (max-width: ${responsive.bootstrapMediumMin}px) {
     /* Center VZ logo and only show when toggler is present */
     transform: translateX(-50%);
     left: 50%;
     position: absolute;
+    }
 
-    /* Hide logo in header when SideDrawer is closed and toggle is present (mobile) */
+    /* Hide logo in header when SideDrawer is closed and toggle is present (mobile)
+    but show in Summary view at all times */
     @media only screen and (min-width: ${responsive.bootstrapMediumMin}px) {
-      display: none;
+      ${currentPath !== "/" && "display: none;"}
     }
 
     /* Change position to prevent overlap of logo and toggle button on small devices */
@@ -68,14 +74,25 @@ const StyledNavbar = styled.div`
       position: relative;
     }
   }
-`;
 
-const Header = () => {
-  const currentPath = usePath();
+  .nav-button {
+    height: 56px;
+    font-size: 18px;
+  }
+
+  .inactive-nav-button {
+    color: ${colors.dark};
+    background: ${colors.buttonBackground};
+    border-style: none;
+    opacity: 1;
+    margin-left: 5px;
+    margin-right: 5px;
+  }
+`;
 
   // Use context to toggle state for SideDrawer toggle
   const {
-    sidebarToggle: [isOpen, setIsOpen]
+    sidebarToggle: [isOpen, setIsOpen],
   } = React.useContext(StoreContext);
 
   return (
@@ -97,20 +114,20 @@ const Header = () => {
             <img
               className="vz-logo"
               // Need to adjust location of public folder to account for /viewer/ basepath
-              src={process.env.PUBLIC_URL + "/vz_logo.png"}
+              src={process.env.PUBLIC_URL + "/vz_logo.svg"}
               alt="Vision Zero Austin Logo"
             ></img>
           </div>
-          <Nav className="navbar-links" navbar>
+          <Nav className="navbar-links ml-auto" navbar>
             {navConfig.map((config, i) => (
               <NavItem key={i}>
                 <NavLink tag={A} href={config.url}>
                   {currentPath === config.url ? (
-                    <Button className="nav-button btn-dark">
+                    <Button className="nav-button btn-dark" active>
                       {config.title}
                     </Button>
                   ) : (
-                    <Button outline className="nav-button btn-outline-dark">
+                    <Button className="nav-button inactive-nav-button">
                       {config.title}
                     </Button>
                   )}

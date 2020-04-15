@@ -3,13 +3,14 @@ import axios from "axios";
 import moment from "moment";
 import { Line } from "react-chartjs-2";
 import { Container, Row, Col } from "reactstrap";
+import styled from "styled-components";
 
 import CrashTypeSelector from "../nav/CrashTypeSelector";
 import { crashEndpointUrl } from "./queries/socrataQueries";
 import {
   dataEndDate,
   summaryCurrentYearEndDate,
-  yearsArray
+  yearsArray,
 } from "../../constants/time";
 import { colors } from "../../constants/colors";
 
@@ -18,18 +19,18 @@ const CrashesByMonth = () => {
   const chartYearsArray = yearsArray().sort((a, b) => b - a);
 
   const chartColors = [
-    colors.blue,
-    colors.redGradient5Of5,
-    colors.redGradient4Of5,
-    colors.redGradient3Of5,
-    colors.redGradient2Of5
+    colors.viridis1Of6Highest,
+    colors.viridis2Of6,
+    colors.viridis3Of6,
+    colors.viridis4Of6,
+    colors.viridis5Of6,
   ];
 
   const [chartData, setChartData] = useState(null); // {yearInt: [monthTotal, monthTotal, ...]}
   const [crashType, setCrashType] = useState([]);
 
   useEffect(() => {
-    const calculateYearMonthlyTotals = data => {
+    const calculateYearMonthlyTotals = (data) => {
       // Data query is ordered by crash_date ASC so truncate dataset by month of latest record
       const monthLimit =
         data.length > 0
@@ -48,7 +49,7 @@ const CrashesByMonth = () => {
         "09",
         "10",
         "11",
-        "12"
+        "12",
       ];
 
       const truncatedMonthIntegerArray = monthIntegerArray.slice(
@@ -56,9 +57,9 @@ const CrashesByMonth = () => {
         monthIntegerArray.indexOf(monthLimit) + 1
       );
       let cumulativeMonthTotal = 0;
-      const monthTotalArray = truncatedMonthIntegerArray.map(month => {
+      const monthTotalArray = truncatedMonthIntegerArray.map((month) => {
         let monthTotal = 0;
-        data.forEach(record => {
+        data.forEach((record) => {
           // If the crash date is in the current month, compile data
           if (moment(record.crash_date).format("MM") === month) {
             // Compile data based on the selected crash type
@@ -90,7 +91,7 @@ const CrashesByMonth = () => {
         let newData = {};
         // Use Promise.all to let all requests resolve before setting chart data by year
         await Promise.all(
-          yearsArray().map(async year => {
+          yearsArray().map(async (year) => {
             // If getting data for current year (only including years past January), set end of query to last day of previous month,
             // else if getting data for previous years, set end of query to last day of year
             let endDate =
@@ -98,7 +99,7 @@ const CrashesByMonth = () => {
                 ? `${summaryCurrentYearEndDate}T23:59:59`
                 : `${year}-12-31T23:59:59`;
             let url = `${crashEndpointUrl}?$where=${crashType.queryStringCrash} AND crash_date between '${year}-01-01T00:00:00' and '${endDate}'&$order=crash_date ASC`;
-            await axios.get(url).then(res => {
+            await axios.get(url).then((res) => {
               const yearData = calculateYearMonthlyTotals(res.data);
               newData = { ...newData, ...{ [year]: yearData } };
             });
@@ -110,20 +111,6 @@ const CrashesByMonth = () => {
       getChartData();
     }
   }, [crashType]);
-
-  const renderHeader = () => {
-    const yearTotalData = chartData[dataEndDate.format("YYYY")];
-    // Last item in data array is total YTD
-    const yearTotal = yearTotalData[yearTotalData.length - 1];
-    return (
-      <h6 style={{ color: colors.blue, textAlign: "center" }}>
-        As of {dataEndDate.format("MMMM")}, there have been{" "}
-        <strong>{yearTotal}</strong> traffic-related{" "}
-        {crashType.textString && crashType.textString.toLowerCase()} in{" "}
-        {dataEndDate.format("YYYY")}.
-      </h6>
-    );
-  };
 
   // Create dataset for each year, data property is an array of cumulative totals by month
   const createDatasets = () => {
@@ -146,7 +133,7 @@ const CrashesByMonth = () => {
       pointHoverBorderWidth: 2,
       pointRadius: 1,
       pointHitRadius: 10,
-      data: chartData[year]
+      data: chartData[year],
     }));
 
     return chartDatasets;
@@ -154,55 +141,97 @@ const CrashesByMonth = () => {
 
   // Build data objects
   const data = {
-    labels: moment.months(),
-    datasets: !!chartData && createDatasets()
+    labels: moment.monthsShort(),
+    datasets: !!chartData && createDatasets(),
   };
 
+  const StyledDiv = styled.div`
+    .year-total-div {
+      color: ${colors.dark};
+      background: ${colors.buttonBackground} 0% 0% no-repeat padding-box;
+      border-radius: 4px;
+      border-style: none;
+      opacity: 1;
+    }
+  `;
+
   return (
-    <Container>
-      <Row className="pb-3">
+    <Container className="m-0 p-0">
+      <Row>
         <Col>
-          <h3 className="text-center">{crashType.textString} by Year</h3>
+          <h2 className="text-left font-weight-bold">By Month/Year</h2>
         </Col>
-      </Row>
-      <Row style={{ paddingBottom: 20 }}>
-        <Col>{!!chartData && renderHeader()}</Col>
-      </Row>
-      <Row style={{ paddingBottom: 20 }}>
-        <Col>
-          <h6 style={{ textAlign: "center" }}>Prior Years:</h6>
-        </Col>
-        {!!chartData &&
-          chartYearsArray.map((year, i) => {
-            const yearTotalData = chartData[year];
-            const yearTotal = yearTotalData[yearTotalData.length - 1];
-            // Return only data from previous years
-            return (
-              i > 0 && (
-                <Col key={i}>
-                  <h6 style={{ textAlign: "center" }}>
-                    <strong>{!!chartData && yearTotal}</strong> in {year}
-                  </h6>
-                </Col>
-              )
-            );
-          })}
       </Row>
       <Row>
         <Col>
-          <Line
-            data={data}
-            options={{
-              tooltips: {
-                mode: "x"
-              }
-            }}
-          />
+          <CrashTypeSelector setCrashType={setCrashType} />
         </Col>
       </Row>
-      <Row className="pt-3">
+      <Row>
         <Col>
-          <CrashTypeSelector setCrashType={setCrashType} />
+          <hr className="mb-2" />
+        </Col>
+      </Row>
+      <Row>
+        <Col xs={4} s={2} m={2} l={2} xl={2}>
+          <div>
+            <hr
+              className="my-1"
+              style={{ border: `2px solid ${colors.buttonBackground}` }}
+            ></hr>
+            <h6 className="text-center py-1 mb-0">
+              <strong>Year</strong>
+            </h6>
+            <hr className="my-1"></hr>
+            <h6 className="text-center py-1">Total</h6>
+          </div>
+        </Col>
+        {!!chartData &&
+          [...chartYearsArray].reverse().map((year, i) => {
+            const yearTotalData = chartData[year];
+            const yearTotal = yearTotalData[yearTotalData.length - 1];
+            // Reverse data and colors arrays and render so they appear chronologically
+            return (
+              <Col xs={4} s={2} m={2} l={2} xl={2} key={i}>
+                <StyledDiv>
+                  <div className="year-total-div">
+                    <hr
+                      className="my-1"
+                      style={{
+                        border: `2px solid ${[...chartColors].reverse()[i]}`,
+                      }}
+                    ></hr>
+                    <h6 className="text-center py-1 mb-0">
+                      <strong>{!!chartData && year}</strong>
+                    </h6>
+                    <hr className="my-1"></hr>
+                    <h6 className="text-center py-1">
+                      {!!chartData && yearTotal}
+                    </h6>
+                  </div>
+                </StyledDiv>
+              </Col>
+            );
+          })}
+      </Row>
+      <Row className="mt-1">
+        <Col>
+          <Line
+            data={data}          
+            height={null}
+            width={null}
+            options={{
+              responsive: true,
+              aspectRatio: 1,
+              maintainAspectRatio: false,
+              tooltips: {
+                mode: "x",
+              },
+              legend: {
+                display: false,
+              },
+            }}
+          />
         </Col>
       </Row>
     </Container>

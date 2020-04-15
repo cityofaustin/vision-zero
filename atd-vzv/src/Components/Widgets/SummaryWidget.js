@@ -1,73 +1,114 @@
 import React from "react";
 import ColorSpinner from "../Spinner/ColorSpinner";
+import {
+  currentYearString as currentYear,
+  prevYearString as prevYear,
+} from "../../constants/time";
 
-import { Card, CardBody, Row, Col, CardTitle, CardSubtitle } from "reactstrap";
+import { Card, CardBody, Row, Col, CardFooter } from "reactstrap";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faCircle,
+  faCaretDown,
+  faCaretUp,
+  faMinus,
+} from "@fortawesome/free-solid-svg-icons";
 import { colors } from "../../constants/colors";
 
-const SummaryWidget = ({ total, text, icon, backgroundColor }) => {
+const SummaryWidget = ({ totalsObject, text, icon, backgroundColor }) => {
   const StyledWidget = styled.div`
-    .widget-total {
-      color: ${backgroundColor};
-      font-size: 3em;
-      font-weight: bold;
+    .total {
+      font-size: 4em;
     }
 
-    .widget-text {
-      color: ${colors.dark};
-      font-size: 1.2em;
+    /* Shift icon left to align with Bootstrap card text */
+    .widget-icon {
+      position: relative;
+      right: 5.25px;
+      padding-right: 20px;
     }
 
-    /* Square background for FA icon */
-    .block-icon-parent {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background-color: ${backgroundColor};
-      width: 4em;
-      height: 4em;
+    /* Center footer icon in footer with .widget-icon above */
+    .widget-footer-icon {
+      position: relative;
+      left: 12.25px;
     }
 
-    .block-icon {
-      font-size: 2.5em;
+    /* Center footer text with widget body text above */
+    .widget-footer-text {
+      padding-left: 22.75px;
     }
   `;
 
-  const blockIcon = () => (
-    <span className="block-icon-parent">
+  const renderIcon = () => (
+    <span className="fa-layers fa-3x fa-fw widget-icon">
+      <FontAwesomeIcon icon={faCircle} color={backgroundColor} />
       <FontAwesomeIcon
-        className="block-icon"
         icon={icon}
-        color={colors.light}
+        inverse
+        transform="shrink-6"
+        color={colors.white}
       />
     </span>
   );
 
+  const renderFooterBasedOnChange = (currentYearTotal, lastYearTotal) => {
+    const icon =
+      (currentYearTotal > lastYearTotal && faCaretUp) ||
+      (currentYearTotal < lastYearTotal && faCaretDown) ||
+      faMinus;
+    const text =
+      (currentYearTotal > lastYearTotal && "Up from") ||
+      (currentYearTotal < lastYearTotal && "Down from") ||
+      "Same as";
+
+    return (
+      <div className="text-left widget-footer-icon d-flex flex-row card-bottom">
+        <FontAwesomeIcon size="2x" icon={icon} color={colors.dark} />
+        {!!lastYearTotal && (
+          <div className="text-muted text-wrap pt-1 pr-1 widget-footer-text">
+            {`${text} ${lastYearTotal.toLocaleString()} this time last year`}
+          </div>
+        )}
+      </div>
+    );
+  };
+
   return (
-    <StyledWidget>
-      <Card>
-        <CardBody>
-          <Row>
-            {/* Set Bootstrap breakpoints to prevent overlap of icon and total */}
-            <Col xl="4" xs="3">
-              {blockIcon()}
-            </Col>
-            <Col className="widget-column">
-              <CardTitle className="widget-total">
-                {/* Show spinner while waiting for data, add thousands separator to total */}
-                {total !== null ? total.toLocaleString() : <ColorSpinner />}
-              </CardTitle>
-            </Col>
-          </Row>
+    <Card>
+      <StyledWidget>
+        <CardBody className="pb-2">
           <Row>
             <Col>
-              <CardSubtitle className="widget-text">{text}</CardSubtitle>
+              {/* Show spinner while waiting for data, add thousands separator to total */}
+              <h1 className="total">
+                {!!totalsObject ? (
+                  totalsObject[currentYear].toLocaleString()
+                ) : (
+                  <ColorSpinner color={backgroundColor} />
+                )}
+              </h1>
             </Col>
           </Row>
+          <div className="text-left d-flex flex-row">
+            {renderIcon()}
+            <div className="d-flex flex-column">
+              <h5 className="mb-0">{text}</h5>
+              <h5 className="text-muted">{`in ${currentYear}`}</h5>
+            </div>
+          </div>
         </CardBody>
-      </Card>
-    </StyledWidget>
+        {!!totalsObject && (
+          <CardFooter className="bg-white">
+            {renderFooterBasedOnChange(
+              totalsObject[currentYear],
+              totalsObject[prevYear]
+            )}
+          </CardFooter>
+        )}
+      </StyledWidget>
+    </Card>
   );
 };
 
