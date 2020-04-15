@@ -33,13 +33,13 @@ let exportFields = `
 
 let crashesQuery = new gqlAbstract(queryConf);
 
-const Crashes = () => (
+const ReportsInconsistentKSI = () => (
   <GridTable
     query={crashesQuery}
-    title={"Inconsistent Crash Numbers"}
+    title={"Crashes with Inconsistent KSI Numbers"}
     filters={null}
     columnsToExport={exportFields}
   />
 );
 
-export default withApollo(Crashes);
+export default withApollo(ReportsInconsistentKSI);

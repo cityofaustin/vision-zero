@@ -41,7 +41,7 @@ const Typography = React.lazy(() => import("./views/Theme/Typography"));
 const Widgets = React.lazy(() => import("./views/Widgets/Widgets"));
 const Dev = React.lazy(() => import("./views/Dev/Dev"));
 const Crashes = React.lazy(() => import("./views/Crashes/Crashes"));
-const CrashesInconsistent = React.lazy(() => import("./views/Reports/CrashesInconsistent"));
+const ReportsInconsistentKSI = React.lazy(() => import("./views/Reports/ReportsInconsistentKSI"));
 const Crash = React.lazy(() => import("./views/Crashes/Crash"));
 const Profile = React.lazy(() => import("./views/Profile/Profile"));
 const Locations = React.lazy(() => import("./views/Locations/Locations"));
@@ -151,10 +151,10 @@ const routes = roles => [
     component: Crash,
   },
   {
-    path: "/reports/inconsistent_crashes",
+    path: "/reports/inconsistent_ksi_counts",
     exact: true,
-    name: "Crashes with Inconsistent Numbers",
-    component: CrashesInconsistent,
+    name: "Crashes with Inconsistent KSI Counts",
+    component: ReportsInconsistentKSI,
   },
   {
     path: "/dev",

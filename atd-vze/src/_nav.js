@@ -39,8 +39,8 @@ export const navigation = roles => {
         icon: 'icon-chart',
         children: [
           {
-            name: "Inconsistent Crashes",
-            url: "/reports/inconsistent_crashes",
+            name: "Inconsistent KSI Counts",
+            url: "/reports/inconsistent_ksi_counts",
             icon: "icon-graph",
           },
         ],
