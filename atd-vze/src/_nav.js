@@ -33,6 +33,18 @@ export const navigation = roles => {
       {
         divider: true,
       },
+      {
+        name: 'Reports',
+        url: '#',
+        icon: 'icon-chart',
+        children: [
+          {
+            name: "Inconsistent Crashes",
+            url: "/reports/inconsistent_crashes",
+            icon: "icon-graph",
+          },
+        ],
+      },
     ],
   };
 
