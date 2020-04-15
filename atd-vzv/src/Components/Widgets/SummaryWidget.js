@@ -13,6 +13,7 @@ import {
   faCircle,
   faCaretDown,
   faCaretUp,
+  faMinus,
 } from "@fortawesome/free-solid-svg-icons";
 import { colors } from "../../constants/colors";
 
@@ -27,10 +28,6 @@ const SummaryWidget = ({ totalsObject, text, icon, backgroundColor }) => {
       position: relative;
       right: 5.25px;
       padding-right: 20px;
-    }
-
-    .widget-footer {
-      background: ${colors.white};
     }
 
     /* Center footer icon in footer with .widget-icon above */
@@ -61,7 +58,7 @@ const SummaryWidget = ({ totalsObject, text, icon, backgroundColor }) => {
     const icon =
       (currentYearTotal > lastYearTotal && faCaretUp) ||
       (currentYearTotal < lastYearTotal && faCaretDown) ||
-      null;
+      faMinus;
     const text =
       (currentYearTotal > lastYearTotal && "Up from") ||
       (currentYearTotal < lastYearTotal && "Down from") ||
@@ -69,11 +66,7 @@ const SummaryWidget = ({ totalsObject, text, icon, backgroundColor }) => {
 
     return (
       <div className="text-left widget-footer-icon d-flex flex-row card-bottom">
-        {!!icon ? (
-          <FontAwesomeIcon size="2x" icon={icon} color={colors.dark} />
-        ) : (
-          "--"
-        )}
+        <FontAwesomeIcon size="2x" icon={icon} color={colors.dark} />
         {!!lastYearTotal && (
           <div className="text-muted text-wrap pt-1 pr-1 widget-footer-text">
             {`${text} ${lastYearTotal.toLocaleString()} this time last year`}
@@ -108,7 +101,7 @@ const SummaryWidget = ({ totalsObject, text, icon, backgroundColor }) => {
           </div>
         </CardBody>
         {!!totalsObject && (
-          <CardFooter className="widget-footer">
+          <CardFooter className="bg-white">
             {renderFooterBasedOnChange(
               totalsObject[currentYear],
               totalsObject[prevYear]
