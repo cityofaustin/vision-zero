@@ -21,7 +21,7 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
   const {
     mapTimeWindow: [mapTimeWindow, setMapTimeWindow],
     mapFilters: [mapFilters],
-    mapDateRange: [dateRange],
+    mapDateRange: dateRange,
   } = React.useContext(StoreContext);
 
   // Get crash data without mapTimeWindow filter to populate chart
