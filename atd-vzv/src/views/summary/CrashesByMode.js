@@ -144,10 +144,10 @@ const CrashesByMode = () => {
   };
 
   return (
-    <Container>
+    <Container className="m-0 p-0">
       <Row>
         <Col>
-          <h1 className="text-left, font-weight-bold">By Mode</h1>
+          <h2 className="text-left, font-weight-bold">By Mode</h2>
         </Col>
       </Row>
       <Row>
@@ -160,12 +160,16 @@ const CrashesByMode = () => {
           <hr />
         </Col>
       </Row>
-      <Row>
+      <Row className="mt-1">
         <Col>
           <Bar
             data={data}
+            height={null}
+            width={null}
             options={{
-              maintainAspectRatio: true,
+              responsive: true,
+              aspectRatio: 1,
+              maintainAspectRatio: false,
               scales: {
                 xAxes: [
                   {

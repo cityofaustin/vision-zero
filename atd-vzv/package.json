@@ -29,7 +29,7 @@
     "react-scripts": "^3.3.0",
     "react-with-styles-interface-aphrodite": "^6.0.1",
     "reactstrap": "^8.1.1",
-    "reaviz": "^7.2.2",
+    "reaviz": "^7.2.3",
     "serialize-javascript": ">=2.1.1",
     "styled-components": "^4.4.0"
   },
