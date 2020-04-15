@@ -104,7 +104,7 @@ const CrashesBySystem = () => {
   };
 
   return (
-    <Container>
+    <Container className="m-0 p-0">
       <Row>
         <Col>
           <h2 className="text-left, font-weight-bold">By Jurisdiction</h2>
