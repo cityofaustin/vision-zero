@@ -26,16 +26,22 @@ const SummaryWidget = ({ totalsObject, text, icon, backgroundColor }) => {
     .widget-icon {
       position: relative;
       right: 5.25px;
+      padding-right: 20px;
     }
 
     .widget-footer {
       background: ${colors.white};
     }
 
-    /* Center change icon in footer with .widget-icon above */
-    .widget-change-icon {
+    /* Center footer icon in footer with .widget-icon above */
+    .widget-footer-icon {
       position: relative;
       left: 12.25px;
+    }
+
+    /* Center footer text with widget body text above */
+    .widget-footer-text {
+      padding-left: 22.75px;
     }
   `;
 
@@ -62,38 +68,24 @@ const SummaryWidget = ({ totalsObject, text, icon, backgroundColor }) => {
       "Same as";
 
     return (
-      <Row className="card-bottom">
-        <Col
-          xs="3"
-          md="3"
-          lg="4"
-          xl="3"
-          className="text-left widget-change-icon"
-        >
-          {!!icon ? (
-            <FontAwesomeIcon size="2x" icon={icon} color={colors.dark} />
-          ) : (
-            "--"
-          )}
-        </Col>
-        {!!lastYearTotal && (
-          <Col
-            xs="9"
-            md="9"
-            lg="8"
-            xl="9"
-            className="text-muted text-wrap pl-0 pt-1"
-          >
-            {`${text} ${lastYearTotal.toLocaleString()} this time last year`}
-          </Col>
+      <div className="text-left widget-footer-icon d-flex flex-row card-bottom">
+        {!!icon ? (
+          <FontAwesomeIcon size="2x" icon={icon} color={colors.dark} />
+        ) : (
+          "--"
         )}
-      </Row>
+        {!!lastYearTotal && (
+          <div className="text-muted text-wrap pt-1 pr-1 widget-footer-text">
+            {`${text} ${lastYearTotal.toLocaleString()} this time last year`}
+          </div>
+        )}
+      </div>
     );
   };
 
   return (
-    <StyledWidget>
-      <Card>
+    <Card>
+      <StyledWidget>
         <CardBody className="pb-2">
           <Row>
             <Col>
@@ -107,19 +99,13 @@ const SummaryWidget = ({ totalsObject, text, icon, backgroundColor }) => {
               </h1>
             </Col>
           </Row>
-          <Row>
-            <Col xs="3" md="3" lg="4" xl="3" className="text-left">
-              {renderIcon()}
-            </Col>
-            <Col xs="9" md="9" lg="8" xl="9">
-              <Row>
-                <h5 className="mb-0">{text}</h5>
-              </Row>
-              <Row>
-                <h5 className="text-muted">{`in ${currentYearString}`}</h5>
-              </Row>
-            </Col>
-          </Row>
+          <div className="text-left d-flex flex-row">
+            {renderIcon()}
+            <div className="d-flex flex-column">
+              <h5 className="mb-0">{text}</h5>
+              <h5 className="text-muted">{`in ${currentYearString}`}</h5>
+            </div>
+          </div>
         </CardBody>
         {!!totalsObject && (
           <CardFooter className="widget-footer">
@@ -129,8 +115,8 @@ const SummaryWidget = ({ totalsObject, text, icon, backgroundColor }) => {
             )}
           </CardFooter>
         )}
-      </Card>
-    </StyledWidget>
+      </StyledWidget>
+    </Card>
   );
 };
 

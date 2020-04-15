@@ -11,7 +11,10 @@ import { colors } from "../../constants/colors";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 
-const StyledNavbar = styled.div`
+const Header = () => {
+  const currentPath = usePath();
+
+  const StyledNavbar = styled.div`
   .navbar-container {
     /* Make Navbar container same height as SideDrawer header */
     height: ${drawer.headerHeight}px;
@@ -20,7 +23,7 @@ const StyledNavbar = styled.div`
   .header-navbar {
     /* Keep Navbar same height as header in SideDrawer and move to right based on drawer width */
     min-height: ${drawer.headerHeight}px;
-    left: ${drawer.width}px;
+    ${currentPath !== "/" && `left: ${drawer.width}px;`}
     background-color: ${colors.white};
     @media only screen and (max-width: ${responsive.bootstrapMedium}px) {
       /* When SideDrawer collapses, move header to left of window */
@@ -53,14 +56,17 @@ const StyledNavbar = styled.div`
   }
 
   .vz-logo {
+    @media only screen and (max-width: ${responsive.bootstrapMediumMin}px) {
     /* Center VZ logo and only show when toggler is present */
     transform: translateX(-50%);
     left: 50%;
     position: absolute;
+    }
 
-    /* Hide logo in header when SideDrawer is closed and toggle is present (mobile) */
+    /* Hide logo in header when SideDrawer is closed and toggle is present (mobile)
+    but show in Summary view at all times */
     @media only screen and (min-width: ${responsive.bootstrapMediumMin}px) {
-      display: none;
+      ${currentPath !== "/" && "display: none;"}
     }
 
     /* Change position to prevent overlap of logo and toggle button on small devices */
@@ -69,9 +75,6 @@ const StyledNavbar = styled.div`
     }
   }
 `;
-
-const Header = () => {
-  const currentPath = usePath();
 
   // Use context to toggle state for SideDrawer toggle
   const {
@@ -101,7 +104,7 @@ const Header = () => {
               alt="Vision Zero Austin Logo"
             ></img>
           </div>
-          <Nav className="navbar-links" navbar>
+          <Nav className="navbar-links ml-auto" navbar>
             {navConfig.map((config, i) => (
               <NavItem key={i}>
                 <NavLink tag={A} href={config.url}>

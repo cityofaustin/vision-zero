@@ -100,7 +100,7 @@ const SummaryView = () => {
     <Row>
       {summaryWidgetsConfig.map((config, i) => (
         // Set Bootstrap breakpoints to divide into two rows on large mobile devices and below
-        <Col className="summary-child" key={i} xs="12" md="6" xl="3">
+        <Col className="summary-child" key={i} xs="12" sm="6" xl="3">
           <SummaryWidget
             text={config.title}
             totalsObject={config.totalsObject}
