@@ -41,6 +41,7 @@ const Typography = React.lazy(() => import("./views/Theme/Typography"));
 const Widgets = React.lazy(() => import("./views/Widgets/Widgets"));
 const Dev = React.lazy(() => import("./views/Dev/Dev"));
 const Crashes = React.lazy(() => import("./views/Crashes/Crashes"));
+const CrashesInconsistent = React.lazy(() => import("./views/Reports/CrashesInconsistent"));
 const Crash = React.lazy(() => import("./views/Crashes/Crash"));
 const Profile = React.lazy(() => import("./views/Profile/Profile"));
 const Locations = React.lazy(() => import("./views/Locations/Locations"));
@@ -148,6 +149,12 @@ const routes = roles => [
     exact: true,
     name: "Crash Details",
     component: Crash,
+  },
+  {
+    path: "/reports/inconsistent_crashes",
+    exact: true,
+    name: "Crashes with Inconsistent Numbers",
+    component: CrashesInconsistent,
   },
   {
     path: "/dev",
