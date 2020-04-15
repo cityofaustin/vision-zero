@@ -136,11 +136,6 @@ const CrashesByTimeOfDay = () => {
       });
   }, [activeTab, crashType]);
 
-  const formatValue = (d) => {
-    const value = d.data.value ? d.data.value : 0;
-    return value;
-  };
-
   // Set styles to override Bootstrap default styling
   const StyledButton = styled.div`
     .year-selector {
@@ -209,18 +204,6 @@ const CrashesByTimeOfDay = () => {
                   colors.viridis1Of6Highest,
                 ]}
                 emptyColor={colors.intensity1Of5Lowest}
-                cell={
-                  <HeatmapCell
-                    tooltip={
-                      <ChartTooltip
-                        content={(d) =>
-                          `${d.x} ∙
-                          ${formatValue(d)}`
-                        }
-                      />
-                    }
-                  />
-                }
               />
             }
           />
