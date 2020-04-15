@@ -13,42 +13,43 @@ const Content = () => {
   const routeResult = useRoutes(routes);
   const currentPath = usePath();
 
-  // TODO: Adjust left of content when sidebar opens on mobile
+  // TODO: Slide content to the right when SideDrawer opens
   // Adding conditional styles based on sidebarToggle in the store causes children to re-render on toggle
   // which causes map or summary views to refetch all data on sidebar toggle
   // https://github.com/facebook/react/issues/14110
 
   // Map view needs to consider header height and have no overflow scroll to fill view
-  // Non-map views need to scroll to show all content
-  const mapStyleExceptions = `
-    height: ${
-      currentPath === "/map"
-        ? `calc(100vh - ${drawer.headerHeight}px)`
-        : `100vh`
-    };
-    ${currentPath !== "/map" && `overflow-y: scroll;`}
+  // Summary view needs to scroll to show all content
+  const mapStyles = `
+    height: calc(100vh - ${drawer.headerHeight}px);
+    width: calc(100vw - ${drawer.width}px);
+  `;
+
+  const summaryStyles = `
+    width: 100vw;
+    height: 100vh;
+    overflow-y: scroll;
   `;
 
   const StyledContent = styled.div`
     .content {
-      padding: 0px;
       top: ${drawer.headerHeight}px;
-      width: calc(100vw - ${drawer.width}px);
-      ${mapStyleExceptions}
+      ${currentPath === "/" && summaryStyles}
+      ${currentPath === "/map" && mapStyles}
     }
 
     /* Fill space left behind by SideDrawer on mobile */
     @media only screen and (max-width: ${responsive.bootstrapMedium}px) {
       .content {
         width: 100vw;
-        ${mapStyleExceptions}
       }
     }
   `;
 
   return (
     <StyledContent>
-      <Container fluid className="content">
+      {/* Remove padding from all content */}
+      <Container fluid className="content px-0">
         <Header />
         {routeResult || <NotFound />}
       </Container>

@@ -29,3 +29,16 @@ export const summaryCurrentYearStartDate = dataEndDate
   .startOf("year")
   .format("YYYY-MM-DD");
 export const summaryCurrentYearEndDate = dataEndDate.format("YYYY-MM-DD");
+
+export const summaryLastYearStartDate = dataEndDate
+  .clone()
+  .startOf("year")
+  .subtract(1, "year")
+  .format("YYYY-MM-DD");
+export const summaryLastYearEndDate = dataEndDate
+  .clone()
+  .subtract(1, "year")
+  .format("YYYY-MM-DD");
+
+export const currentYearString = summaryCurrentYearStartDate.slice(0, 4);
+export const prevYearString = summaryLastYearStartDate.slice(0, 4);
