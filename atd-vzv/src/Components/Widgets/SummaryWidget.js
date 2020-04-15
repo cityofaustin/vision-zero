@@ -3,7 +3,6 @@ import ColorSpinner from "../Spinner/ColorSpinner";
 import {
   currentYearString as currentYear,
   prevYearString as prevYear,
-  currentYearString,
 } from "../../constants/time";
 
 import { Card, CardBody, Row, Col, CardFooter } from "reactstrap";
@@ -96,7 +95,7 @@ const SummaryWidget = ({ totalsObject, text, icon, backgroundColor }) => {
             {renderIcon()}
             <div className="d-flex flex-column">
               <h5 className="mb-0">{text}</h5>
-              <h5 className="text-muted">{`in ${currentYearString}`}</h5>
+              <h5 className="text-muted">{`in ${currentYear}`}</h5>
             </div>
           </div>
         </CardBody>

@@ -99,7 +99,7 @@ const Map = () => {
 
   const {
     mapFilters: [filters],
-    mapDateRange: [dateRange],
+    mapDateRange: dateRange,
     mapOverlay: [overlay],
     mapTimeWindow: [mapTimeWindow],
   } = React.useContext(StoreContext);
