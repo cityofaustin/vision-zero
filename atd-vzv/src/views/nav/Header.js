@@ -68,6 +68,20 @@ const StyledNavbar = styled.div`
       position: relative;
     }
   }
+
+  .nav-button {
+    height: 56px;
+    font-size: 18px;
+  }
+
+  .inactive-nav-button {
+    color: ${colors.dark};
+    background: ${colors.buttonBackground};
+    border-style: none;
+    opacity: 1;
+    margin-left: 5px;
+    margin-right: 5px;
+  }
 `;
 
 const Header = () => {
@@ -101,16 +115,16 @@ const Header = () => {
               alt="Vision Zero Austin Logo"
             ></img>
           </div>
-          <Nav className="navbar-links" navbar>
+          <Nav className="navbar-links ml-auto" navbar>
             {navConfig.map((config, i) => (
               <NavItem key={i}>
                 <NavLink tag={A} href={config.url}>
                   {currentPath === config.url ? (
-                    <Button className="nav-button btn-dark">
+                    <Button className="nav-button btn-dark" active>
                       {config.title}
                     </Button>
                   ) : (
-                    <Button outline className="nav-button btn-outline-dark">
+                    <Button className="nav-button inactive-nav-button">
                       {config.title}
                     </Button>
                   )}
