@@ -56,7 +56,6 @@ const Header = () => {
   }
 
   .vz-logo {
-  
     @media only screen and (max-width: ${responsive.bootstrapMediumMin}px) {
     /* Center VZ logo and only show when toggler is present */
     transform: translateX(-50%);
