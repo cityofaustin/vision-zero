@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { StoreContext } from "../../utils/store";
-import "react-infinite-calendar/styles.css";
 
 import SideMapControlDateRange from "./SideMapControlDateRange";
 import SideMapTimeOfDayChart from "./SideMapTimeOfDayChart";

@@ -141,7 +141,7 @@ const CrashesByMonth = () => {
 
   // Build data objects
   const data = {
-    labels: moment.months(),
+    labels: moment.monthsShort(),
     datasets: !!chartData && createDatasets(),
   };
 
