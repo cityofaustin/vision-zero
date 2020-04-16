@@ -175,10 +175,8 @@ const Map = () => {
   };
 
   // Polygon editor
-  // TODO: Add other shapes to draw polygon (square, etc.)
   // TODO: Fix control icons (they don't render)
   // TODO: Move polygon editor code to another file
-  // TODO: Update styles in map-style.js
   const _editorRef = useRef();
 
   const [mode, setMode] = useState(EditorModes.READ_ONLY);
@@ -209,7 +207,6 @@ const Map = () => {
   };
 
   const _renderDrawTools = () => {
-    // copy from mapbox
     return (
       <div className="mapboxgl-ctrl-top-right">
         <div className="mapboxgl-ctrl-group mapboxgl-ctrl">

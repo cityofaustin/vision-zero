@@ -6,7 +6,13 @@ import CrashTypeSelector from "../nav/CrashTypeSelector";
 import { Row, Col, Container, Button } from "reactstrap";
 import styled from "styled-components";
 import classnames from "classnames";
-import { Heatmap, HeatmapSeries, SequentialLegend } from "reaviz";
+import {
+  Heatmap,
+  HeatmapSeries,
+  HeatmapCell,
+  ChartTooltip,
+  SequentialLegend,
+} from "reaviz";
 import {
   summaryCurrentYearStartDate,
   summaryCurrentYearEndDate,
@@ -130,6 +136,11 @@ const CrashesByTimeOfDay = () => {
       });
   }, [activeTab, crashType]);
 
+  const formatValue = (d) => {
+    const value = d.data.value ? d.data.value : 0;
+    return value;
+  };
+
   // Set styles to override Bootstrap default styling
   const StyledButton = styled.div`
     .year-selector {
@@ -184,10 +195,10 @@ const CrashesByTimeOfDay = () => {
           </StyledButton>
         </Col>
       </Row>
-      <Row>
+      <Row className="h-auto">
         <Col>
           <Heatmap
-            height={200}
+            height={267}
             data={heatmapData}
             series={
               <HeatmapSeries
@@ -198,6 +209,18 @@ const CrashesByTimeOfDay = () => {
                   colors.viridis1Of6Highest,
                 ]}
                 emptyColor={colors.intensity1Of5Lowest}
+                cell={
+                  <HeatmapCell
+                    tooltip={
+                      <ChartTooltip
+                        content={(d) =>
+                          `${d.x} ∙
+                          ${formatValue(d)}`
+                        }
+                      />
+                    }
+                  />
+                }
               />
             }
           />

@@ -136,22 +136,20 @@ export const cityCouncilDataLayer = {
 // Styles for MapPolygonFilter
 export function getEditHandleStyle({ feature, state }) {
   switch (state) {
-    case RenderStates.SELECTED:
-    case RenderStates.HOVERED:
     case RenderStates.UNCOMMITTED:
       return {
-        fill: "rgb(251, 176, 59)",
+        fill: colors.viridis6Of6Lowest,
         fillOpacity: 1,
-        stroke: "rgb(255, 255, 255)",
+        stroke: colors.white,
         strokeWidth: 2,
         r: 7,
       };
 
     default:
       return {
-        fill: "rgb(251, 176, 59)",
+        fill: colors.viridis6Of6Lowest,
         fillOpacity: 1,
-        stroke: "rgb(255, 255, 255)",
+        stroke: colors.white,
         strokeWidth: 2,
         r: 5,
       };
@@ -160,23 +158,28 @@ export function getEditHandleStyle({ feature, state }) {
 
 export function getFeatureStyle({ feature, index, state }) {
   switch (state) {
-    case RenderStates.SELECTED:
-    case RenderStates.HOVERED:
-    case RenderStates.UNCOMMITTED:
     case RenderStates.CLOSING:
       return {
-        stroke: "rgb(251, 176, 59)",
+        stroke: colors.viridis4Of6,
         strokeWidth: 2,
-        fill: "rgb(251, 176, 59)",
+        fill: colors.viridis4Of6,
+        fillOpacity: 0.3,
+        strokeDasharray: "4,2",
+      };
+    case RenderStates.UNCOMMITTED:
+      return {
+        stroke: colors.viridis6Of6Lowest,
+        strokeWidth: 2,
+        fill: colors.viridis6Of6Lowest,
         fillOpacity: 0.3,
         strokeDasharray: "4,2",
       };
 
     default:
       return {
-        stroke: "rgb(60, 178, 208)",
+        stroke: colors.info,
         strokeWidth: 2,
-        fill: "rgb(60, 178, 208)",
+        fill: colors.info,
         fillOpacity: 0.1,
       };
   }
