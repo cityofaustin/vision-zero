@@ -120,8 +120,8 @@ const Map = () => {
       crashGeoJSONEndpointUrl,
       filters,
       dateRange,
-      mapTimeWindow,
-      mapPolygon
+      mapPolygon,
+      mapTimeWindow
     );
 
     !!apiUrl &&
@@ -189,22 +189,29 @@ const Map = () => {
     setSelectedFeatureIndex(options && options.selectedFeatureIndex);
   };
 
-  const _onDelete = () => {
-    const selectedIndex = selectedFeatureIndex;
-    if (selectedIndex !== null && selectedIndex >= 0) {
-      _editorRef.current.deleteFeatures(selectedIndex);
-    }
-  };
-
   const _onUpdate = ({ editType }) => {
     if (editType === "addFeature") {
       const features = _editorRef.current.getFeatures();
-      // TODO: Limit to one polygon
-      // TODO: Add polygon to sidebar query
+
+      // Limit to one polygon
+      const indexesToDelete = [...features.keys()].filter((i) => i !== 0);
+      _editorRef.current.deleteFeatures(indexesToDelete);
+
+      // Convert polygon to Well-Known Text format
       const feature = stringifyGeoJSON(features[0]);
       setMapPolygon(feature);
-      setMode(EditorModes.EDITING);
+      setMode(EditorModes.READ_ONLY);
     }
+  };
+
+  const _onDelete = () => {
+    // If a polygon is exists in editor features, delete it
+    const features = _editorRef.current.getFeatures();
+    if (features.length > 0) {
+      _editorRef.current.deleteFeatures(0);
+    }
+    // Remove filter from Socrata query
+    setMapPolygon(null);
   };
 
   const _renderDrawTools = () => {
@@ -258,23 +265,18 @@ const Map = () => {
           <Layer {...crashDataLayer} />
         </Source>
       )}
-
       {/* ASMP Street Level Layers */}
       {buildAsmpLayers(asmpConfig, overlay)}
-
       {/* High Injury Network Layer */}
       {buildHighInjuryLayer(overlay)}
-
       {!!cityCouncilOverlay && overlay.name === "cityCouncil" && (
         <Source type="geojson" data={cityCouncilOverlay}>
           {/* Add beforeId to render beneath crash points */}
           <Layer beforeId="crashes" {...cityCouncilDataLayer} />
         </Source>
       )}
-
       {/* Render crash point tooltips */}
       {hoveredFeature && _renderTooltip()}
-
       {/* Show spinner when map is updating */}
       {isMapDataLoading && (
         <StyledMapSpinner className="fa-layers fa-fw">
@@ -287,7 +289,7 @@ const Map = () => {
           />
         </StyledMapSpinner>
       )}
-
+      {/* Move this to MapPolygonFilter.js */}
       <Editor
         ref={(ref) => (_editorRef.current = ref)}
         style={{ width: "100%", height: "100%" }}
@@ -299,6 +301,7 @@ const Map = () => {
         featureStyle={getFeatureStyle}
         editHandleStyle={getEditHandleStyle}
       />
+      // TODO: Pass these function down to MapPolygonFilter.js
       {_renderDrawTools()}
       {_renderControlPanel()}
     </ReactMapGL>

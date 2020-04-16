@@ -34,8 +34,8 @@ export const createMapDataUrl = (
   endpoint,
   filters,
   dateRange,
-  mapTimeWindow = "",
-  mapPolygon
+  mapPolygon,
+  mapTimeWindow = ""
 ) => {
   const whereFilterString = generateWhereFilters(filters);
   const filterCount = filters.length;
