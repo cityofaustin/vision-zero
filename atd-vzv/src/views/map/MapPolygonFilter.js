@@ -5,7 +5,6 @@ import { stringify as stringifyGeoJSON } from "wellknown";
 
 const MapPolygonFilter = ({ setMapPolygon }) => {
   const _editorRef = useRef();
-
   const [mode, setMode] = useState(EditorModes.READ_ONLY);
 
   const _onUpdate = ({ editType }) => {
@@ -24,7 +23,7 @@ const MapPolygonFilter = ({ setMapPolygon }) => {
   };
 
   const _onDelete = () => {
-    // If a polygon is exists in editor features, delete it
+    // If a polygon exists in Editor features, delete it
     const features = _editorRef.current.getFeatures();
     if (features.length > 0) {
       _editorRef.current.deleteFeatures(0);
@@ -64,7 +63,6 @@ const MapPolygonFilter = ({ setMapPolygon }) => {
         featureStyle={getFeatureStyle}
         editHandleStyle={getEditHandleStyle}
       />
-      {/* TODO: Pass this function down to MapPolygonFilter.js */}
       {_renderDrawTools()}
     </>
   );
