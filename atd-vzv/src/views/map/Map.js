@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { StoreContext } from "../../utils/store";
 import ReactMapGL, { Source, Layer } from "react-map-gl";
+import MapPolygonFilter from "./MapPolygonFilter";
 import { createMapDataUrl } from "./helpers";
 import { crashGeoJSONEndpointUrl } from "../../views/summary/queries/socrataQueries";
 import {
@@ -11,7 +12,6 @@ import {
   cityCouncilDataLayer,
 } from "./map-style";
 import axios from "axios";
-import { stringify as stringifyGeoJSON } from "wellknown";
 
 import { Card, CardBody, CardText } from "reactstrap";
 import styled from "styled-components";
@@ -19,10 +19,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCompass, faCircle } from "@fortawesome/free-solid-svg-icons";
 import { colors } from "../../constants/colors";
 
-import { Editor, EditorModes } from "react-map-gl-draw";
-import { getFeatureStyle, getEditHandleStyle } from "./map-style";
-
 import "mapbox-gl/dist/mapbox-gl.css";
+import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css"; // Get out-of-the-box icons
 
 const MAPBOX_TOKEN = `pk.eyJ1Ijoiam9obmNsYXJ5IiwiYSI6ImNrM29wNnB3dDAwcXEzY29zMTU5bWkzOWgifQ.KKvoz6s4NKNHkFVSnGZonw`;
 
@@ -174,57 +172,6 @@ const Map = () => {
     );
   };
 
-  // Polygon editor
-  // TODO: Fix control icons (they don't render)
-  // TODO: Move polygon editor code to another file
-  const _editorRef = useRef();
-
-  const [mode, setMode] = useState(EditorModes.READ_ONLY);
-
-  const _onUpdate = ({ editType }) => {
-    if (editType === "addFeature") {
-      const features = _editorRef.current.getFeatures();
-
-      // Limit to one polygon
-      const indexesToDelete = [...features.keys()].filter((i) => i !== 0);
-      _editorRef.current.deleteFeatures(indexesToDelete);
-
-      // Convert polygon to Well-Known Text format
-      const feature = stringifyGeoJSON(features[0]);
-      setMapPolygon(feature);
-      setMode(EditorModes.READ_ONLY);
-    }
-  };
-
-  const _onDelete = () => {
-    // If a polygon is exists in editor features, delete it
-    const features = _editorRef.current.getFeatures();
-    if (features.length > 0) {
-      _editorRef.current.deleteFeatures(0);
-    }
-    // Remove filter from Socrata query
-    setMapPolygon(null);
-  };
-
-  const _renderDrawTools = () => {
-    return (
-      <div className="mapboxgl-ctrl-top-right">
-        <div className="mapboxgl-ctrl-group mapboxgl-ctrl">
-          <button
-            className="mapbox-gl-draw_ctrl-draw-btn mapbox-gl-draw_polygon"
-            title="Polygon tool"
-            onClick={() => setMode(EditorModes.DRAW_POLYGON)}
-          />
-          <button
-            className="mapbox-gl-draw_ctrl-draw-btn mapbox-gl-draw_trash"
-            title="Delete"
-            onClick={_onDelete}
-          />
-        </div>
-      </div>
-    );
-  };
-
   return (
     <ReactMapGL
       {...viewport}
@@ -265,19 +212,8 @@ const Map = () => {
           />
         </StyledMapSpinner>
       )}
-      {/* Move this to MapPolygonFilter.js */}
-      <Editor
-        ref={(ref) => (_editorRef.current = ref)}
-        style={{ width: "100%", height: "100%" }}
-        clickRadius={12}
-        mode={mode}
-        onUpdate={_onUpdate}
-        editHandleShape={"circle"}
-        featureStyle={getFeatureStyle}
-        editHandleStyle={getEditHandleStyle}
-      />
-      {/* TODO: Pass this function down to MapPolygonFilter.js */}
-      {_renderDrawTools()}
+
+      <MapPolygonFilter setMapPolygon={setMapPolygon} />
     </ReactMapGL>
   );
 };
