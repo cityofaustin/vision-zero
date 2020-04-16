@@ -51,6 +51,9 @@ export const createMapDataUrl = (
     ? null
     : `${endpoint}?$limit=100000` +
         `&$where=crash_date between '${startDate}' and '${endDate}'` +
+        // if there is a polygon selected, add as filter
+        ((!!mapPolygon && ` AND within_polygon(point, '${mapPolygon}')`) ||
+          "") +
         // if there are filters applied, add AND operator to create valid query url
         `${filters.length > 0 ? " AND" : ""} ${whereFilterString || ""}` +
         `${mapTimeWindow}`;

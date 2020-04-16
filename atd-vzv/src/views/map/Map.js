@@ -11,6 +11,7 @@ import {
   cityCouncilDataLayer,
 } from "./map-style";
 import axios from "axios";
+import { stringify as stringifyGeoJSON } from "wellknown";
 
 import { Card, CardBody, CardText } from "reactstrap";
 import styled from "styled-components";
@@ -198,9 +199,10 @@ const Map = () => {
   const _onUpdate = ({ editType }) => {
     if (editType === "addFeature") {
       const features = _editorRef.current.getFeatures();
-      // TODO: Add polygon in features array to Socrata request
-      // TODO: Convert GeoJSON to Well Known Text for Socrata
-      debugger;
+      // TODO: Limit to one polygon
+      // TODO: Add polygon to sidebar query
+      const feature = stringifyGeoJSON(features[0]);
+      setMapPolygon(feature);
       setMode(EditorModes.EDITING);
     }
   };
