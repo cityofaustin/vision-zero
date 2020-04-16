@@ -699,46 +699,64 @@ def is_crash_in_queue(crash_id):
                 }
             ) {
             record_id
-            change_id
-            created_timestamp
-            status_id
-            status {
-              description
-            }
+            record_type
           }
         }
-    """.replace("CRASH_ID", crash_id)
+    """.replace("%CRASH_ID%", crash_id)
     response = run_query(query)
-    return len(response["data"]) > 0
+    return len(response["data"]["atd_txdot_changes"]) > 0
 
 
 def csv_to_dict(line, fieldnames):
+    """
+    Turns a csv line into a dictionary
+    :param str line: A comma-separated line
+    :param str[] fieldnames: An array of strings containing the headers for each column to be used as keys.
+    :return dict:
+    """
     reader = csv.DictReader(f=io.StringIO(line), fieldnames=fieldnames, delimiter=',')  # parse line
     return json.dumps([row for row in reader])  # Generate json
 
 
 def insert_secondary_table_change(line, fieldnames, file_type):
     """
-    Inserts a secondary crash record.
+    Inserts a secondary crash record, returns True if it succeeds.
     :param str line: The current line being processed
     :param list fieldnames: The list of headers
     :param str file_type: The type of file to be inserted
-    :return:
+    :return bool:
     """
+    crash_id = get_crash_id(line)
     query = """
         mutation insertNewSecondaryChange {
           insert_atd_txdot_changes(
                 objects: {
                     record_id: %CRASH_ID%
                     record_type: "%TYPE%",
-                    record_json: "%CONTENT%",
+                    record_json: %CONTENT%,
                     status_id: 0,
                 }
+             , on_conflict: {
+                constraint: atd_txdot_changes_unique,
+                update_columns: [
+                    record_id
+                    record_type
+                    record_json
+                    status_id
+                ]
+            }
             ) {
             affected_rows
           }
         }
-    """.replace("%CRASH_ID%", get_crash_id(line))\
+    """.replace("%CRASH_ID%", crash_id)\
     .replace("%TYPE%", file_type)\
-    .replace("%CONTENT%", csv_to_dict(line=line, fieldnames=fieldnames))
-    response = run_gql(query)
+    .replace("%CONTENT%", json.dumps(csv_to_dict(line=line, fieldnames=fieldnames)))
+    result = run_query(query)
+
+    try:
+        # Return False if there are 0 affected rows (which triggers an insertion later on)
+        # Return True if there was an insertion/update (which blocks an insertion later on)
+        return result["data"]["insert_atd_txdot_changes"]["affected_rows"] < 1
+    except:
+        raise Exception("Failed to insert %s to review request: %s" % (file_type, crash_id))
