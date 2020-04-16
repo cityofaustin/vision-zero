@@ -6,8 +6,9 @@ import PeopleByDemographics from "./PeopleByDemographics";
 import CrashesByMode from "./CrashesByMode";
 import SummaryView from "./SummaryView";
 import SummaryCard from "./SummaryCard";
+import { colors } from "../../constants/colors";
 
-import { Container, Row, Col } from "reactstrap";
+import { Container, Row, Col, Alert } from "reactstrap";
 import styled from "styled-components";
 
 const children = [
@@ -30,6 +31,13 @@ const Summary = () => {
   return (
     <Container fluid>
       {/* Create whitespace on sides of view until mobile */}
+      <Row className="px-xs-0 mx-xs-0 px-lg-3 mx-lg-4 mt-4 mb-0">
+        <Col>
+          <Alert style={{backgroundColor: colors.customAlert, color: colors.dark, borderStyle: "none" }}>
+            This site is a work in progress. The information displayed may be outdated or incorrect. Check back later for live Vision Zero data.
+            </Alert>
+        </Col>
+      </Row>
       <Row className="px-xs-0 mx-xs-0 px-lg-3 mx-lg-4">
         <Col className="px-xs-0">
           <StyledSummary>

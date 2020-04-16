@@ -17,6 +17,7 @@ export const colors = {
   visionZeroLogoOrange: "#fe671a",
   visionZeroLogoGreen: "459f94",
   buttonBackground: "#f6f6f6",
+  customAlert: "#eff6fb",
   info: "#18A2B8",
   infoDark: "#257A8B",
   dark: "#343A41",
