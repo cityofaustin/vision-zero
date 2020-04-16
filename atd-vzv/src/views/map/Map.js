@@ -20,7 +20,6 @@ import { faCompass, faCircle } from "@fortawesome/free-solid-svg-icons";
 import { colors } from "../../constants/colors";
 
 import { Editor, EditorModes } from "react-map-gl-draw";
-import ControlPanel from "./control-panel";
 import { getFeatureStyle, getEditHandleStyle } from "./map-style";
 
 import "mapbox-gl/dist/mapbox-gl.css";
@@ -183,11 +182,6 @@ const Map = () => {
   const _editorRef = useRef();
 
   const [mode, setMode] = useState(EditorModes.READ_ONLY);
-  const [selectedFeatureIndex, setSelectedFeatureIndex] = useState(null);
-
-  const _onSelect = (options) => {
-    setSelectedFeatureIndex(options && options.selectedFeatureIndex);
-  };
 
   const _onUpdate = ({ editType }) => {
     if (editType === "addFeature") {
@@ -231,21 +225,6 @@ const Map = () => {
           />
         </div>
       </div>
-    );
-  };
-
-  const _renderControlPanel = () => {
-    const features = _editorRef.current && _editorRef.current.getFeatures();
-    let featureIndex = selectedFeatureIndex;
-    if (features && featureIndex === null) {
-      featureIndex = features.length - 1;
-    }
-    const polygon = features && features.length ? features[featureIndex] : null;
-    return (
-      <ControlPanel
-        // containerComponent={this.props.containerComponent}
-        polygon={polygon}
-      />
     );
   };
 
@@ -295,15 +274,13 @@ const Map = () => {
         style={{ width: "100%", height: "100%" }}
         clickRadius={12}
         mode={mode}
-        onSelect={_onSelect}
         onUpdate={_onUpdate}
         editHandleShape={"circle"}
         featureStyle={getFeatureStyle}
         editHandleStyle={getEditHandleStyle}
       />
-      // TODO: Pass these function down to MapPolygonFilter.js
+      {/* TODO: Pass this function down to MapPolygonFilter.js */}
       {_renderDrawTools()}
-      {_renderControlPanel()}
     </ReactMapGL>
   );
 };

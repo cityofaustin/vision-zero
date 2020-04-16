@@ -6,13 +6,7 @@ import CrashTypeSelector from "../nav/CrashTypeSelector";
 import { Row, Col, Container, Button } from "reactstrap";
 import styled from "styled-components";
 import classnames from "classnames";
-import {
-  Heatmap,
-  HeatmapSeries,
-  HeatmapCell,
-  ChartTooltip,
-  SequentialLegend,
-} from "reaviz";
+import { Heatmap, HeatmapSeries, SequentialLegend } from "reaviz";
 import {
   summaryCurrentYearStartDate,
   summaryCurrentYearEndDate,
