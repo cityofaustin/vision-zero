@@ -35,6 +35,7 @@ STOP_EXEC = False
 records_skipped = 0
 records_inserted = 0
 existing_records = 0
+queued_records = 0
 insert_errors = 0
 
 # Start timer
@@ -68,13 +69,13 @@ def process_line(file_type, line, fieldnames, current_line, dryrun=False):
     # Do not run if there is stop signal
     if STOP_EXEC:
         return
-
-    global existing_records, records_inserted, insert_errors, records_skipped
+    global existing_records, records_inserted, insert_errors, records_skipped, queued_records
     # Read the crash_id from the current line
     # Applies to: crashes, unit, person, primary person, charges
     crash_id = line.strip().split(",")[0]
     mode = "[Dry-Run]" if dryrun else "[Live]"
-    insert_crash = False
+    # A flag that is set to True if we need to insert or update the crash record
+    insert_record = False
     # First we need to check if the current record exists, skip if so.
     if file_type == "crash":
         # Gather the crash_id from the current line
@@ -84,39 +85,63 @@ def process_line(file_type, line, fieldnames, current_line, dryrun=False):
 
         # If not found, then insert
         if record_existing is None:
-            insert_crash = True
+            insert_record = True
         # Else, record exists we need to compare
         else:
             print("[%s] Exists: %s (%s)" % (str(current_line), str(crash_id), file_type))
             existing_records += 1
-
-            insert_crash = record_crash_compare(
+            # Determine if we need to update...
+            insert_record = record_crash_compare(
                 line=line,
                 fieldnames=fieldnames,
                 crash_id=crash_id,
                 record_existing=record_existing
             )
 
-    # The record does not exist, insert.
-    if file_type != "crash" or insert_crash:
+    # Other file types
+    if file_type != "crash":
+        # First, we retrieve the current crash id from the plain-text CSV line
         crash_id = get_crash_id(line)
-        # If it is one of these tables
+        # Now check if the current file it is one of these tables
         if file_type in ["unit", "person", "primaryperson"]:
             # Then check if the parent record (crash) is in the queue
             crash_in_queue = is_crash_in_queue(crash_id)
         else:
             # We can safely take the updates in
             crash_in_queue = False
-
         #  If the crash is in queue
         if crash_in_queue:
-            insert_secondary_table_change(
-                line=line,
-                fieldnames=fieldnames,
-                file_type=file_type
-            )
+            existing_records += 1
+            queued_records += 1
+            # If not a dry-run, then make the insertion
+            if not dryrun:
+                insert_record = insert_secondary_table_change(
+                    line=line,
+                    fieldnames=fieldnames,
+                    file_type=file_type
+                )
+
+            # Print that we have queued the current record for review
+            if not insert_record:
+                print(
+                    "%s[%s] Q/A Queued (type: %s), crash_id: %s" % (
+                          mode,
+                          str(current_line),
+                          file_type,
+                          str(crash_id),
+                    )
+                )
+        else:
+            insert_record = True
+
+        # If we are not going to insert/update a record
+        # then we skip the rest of the execution
+        if not insert_record:
             return
 
+        #
+        # Follow Normal Process
+        #
         # Generate query and present to terminal
         gql = generate_gql(line=line, fieldnames=fieldnames, file_type=file_type)
         # If this is not a dry-run, then make an actual insertion
@@ -264,6 +289,7 @@ def process_file(file_path, file_type, skip_lines, dryrun=False):
     print("Total Skipped Records: %s" % (records_skipped))
     print("Total Existing Records: %s" % (existing_records))
     print("Total Records Inserted: %s" % (records_inserted))
+    print("Total Records Queued: %s" % (queued_records))
     print("Total Errors: %s" % (insert_errors))
     print("")
 
