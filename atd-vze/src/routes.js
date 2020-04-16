@@ -51,6 +51,7 @@ const Users = React.lazy(() => import("./views/Users/Users"));
 const User = React.lazy(() => import("./views/Users/User"));
 const AddUser = React.lazy(() => import("./views/Users/AddUser"));
 const EditUser = React.lazy(() => import("./views/Users/EditUser"));
+const ReportsInconsistentKSI = React.lazy(() => import("./views/Reports/ReportsInconsistentKSI"));
 
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 // Accept roles arg for role-based access to routes
@@ -152,6 +153,12 @@ const routes = roles => [
     exact: true,
     name: "Crash Details",
     component: Crash,
+  },
+  {
+    path: "/reports/inconsistent_ksi_counts",
+    exact: true,
+    name: "Crashes with Inconsistent KSI Counts",
+    component: ReportsInconsistentKSI,
   },
   {
     path: "/dev",

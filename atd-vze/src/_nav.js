@@ -38,6 +38,18 @@ export const navigation = roles => {
       {
         divider: true,
       },
+      {
+        name: 'Reports',
+        url: '#',
+        icon: 'icon-chart',
+        children: [
+          {
+            name: "Inconsistent KSI Counts",
+            url: "/reports/inconsistent_ksi_counts",
+            icon: "icon-graph",
+          },
+        ],
+      },
     ],
   };
 
