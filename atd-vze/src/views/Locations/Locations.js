@@ -54,7 +54,7 @@ let queryConf = {
       searchable: false,
       sortable: true,
       label_search: null,
-      label_table: "Comp. Cost (CR3s)",
+      label_table: "Total Est Comp. Cost", // Both CR3 + Blueform
       default: 0,
       type: "Currency",
     },
