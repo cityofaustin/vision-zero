@@ -1,3 +1,6 @@
+const convertDateToSocrataFormat = (date, suffix) =>
+  date.format("YYYY-MM-DD") + suffix;
+
 const generateWhereFilters = (filters) => {
   // Store filter group query strings
   let whereFiltersArray = [];
@@ -31,16 +34,23 @@ export const createMapDataUrl = (
   endpoint,
   filters,
   dateRange,
-  mapTimeWindow = ""
+  mapTimeWindow = "",
+  mapPolygon
 ) => {
   const whereFilterString = generateWhereFilters(filters);
   const filterCount = filters.length;
+
+  // SideMapControlDateRange uses null to check if user set dates so
+  // need to handle it and avoid unnecessary API calls
+  if (dateRange.start === null || dateRange.end === null) return null;
+  const startDate = convertDateToSocrataFormat(dateRange.start, "T00:00:00");
+  const endDate = convertDateToSocrataFormat(dateRange.end, "T23:59:59");
 
   // Return null to prevent populating map with unfiltered data
   return filterCount === 0
     ? null
     : `${endpoint}?$limit=100000` +
-        `&$where=crash_date between '${dateRange.start}' and '${dateRange.end}'` +
+        `&$where=crash_date between '${startDate}' and '${endDate}'` +
         // if there are filters applied, add AND operator to create valid query url
         `${filters.length > 0 ? " AND" : ""} ${whereFilterString || ""}` +
         `${mapTimeWindow}`;

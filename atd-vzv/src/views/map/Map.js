@@ -103,9 +103,10 @@ const Map = () => {
 
   const {
     mapFilters: [filters],
-    mapDateRange: [dateRange],
+    mapDateRange: dateRange,
     mapOverlay: [overlay],
     mapTimeWindow: [mapTimeWindow],
+    mapPolygon: [mapPolygon, setMapPolygon],
   } = React.useContext(StoreContext);
 
   // Add/remove listeners for spinner logic
@@ -118,14 +119,15 @@ const Map = () => {
       crashGeoJSONEndpointUrl,
       filters,
       dateRange,
-      mapTimeWindow
+      mapTimeWindow,
+      mapPolygon
     );
 
     !!apiUrl &&
       axios.get(apiUrl).then((res) => {
         setMapData(res.data);
       });
-  }, [filters, dateRange, mapTimeWindow, setMapData]);
+  }, [filters, dateRange, mapTimeWindow, mapPolygon, setMapData]);
 
   // Fetch City Council Districts geojson
   useEffect(() => {
@@ -197,6 +199,8 @@ const Map = () => {
     if (editType === "addFeature") {
       const features = _editorRef.current.getFeatures();
       // TODO: Add polygon in features array to Socrata request
+      // TODO: Convert GeoJSON to Well Known Text for Socrata
+      debugger;
       setMode(EditorModes.EDITING);
     }
   };

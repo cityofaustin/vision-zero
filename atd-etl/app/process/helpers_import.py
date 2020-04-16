@@ -35,7 +35,7 @@ def generate_template(name, function, fields, fieldnames=[], upsert=False, const
     :return str:
     """
     if crash:
-        update_cr3 = "cr3_stored_flag: \"Y\""
+        update_cr3 = "cr3_stored_flag: \"N\""
         fieldnames += ["cr3_stored_flag"]
     else:
         update_cr3 = ""
@@ -384,7 +384,6 @@ def get_crash_record(crash_id):
         return result["data"]["atd_txdot_crashes"][0]
 
     except Exception as e:
-        print("There was a problem getting crash_id: %s\n%s" % (crash_id, str(e)))
         return None
 
 
@@ -619,6 +618,10 @@ def is_human_updated(record):
     )
 
 
+def is_important_update(differences):
+    return "death_cnt" in differences or "sus_serious_injry_cnt" in differences
+
+
 def record_crash_compare(line, fieldnames, crash_id, record_existing):
     """
     Hook that finds an existing record, and compares it with a new incoming record built from a raw csv line.
@@ -645,6 +648,8 @@ def record_crash_compare(line, fieldnames, crash_id, record_existing):
         differences = record_compare(record_new=record_new, record_existing=record_existing)
         # Determine if record is updated by human:
         human_updated = is_human_updated(record=record_existing)
+        # Checks if death_cnt or sus_serious_injry_cnt has changed
+        important_update = is_important_update(differences)
         # Check if it can update based on changes_approved_date
         can_update = can_record_update(record=record_existing)
 
@@ -656,9 +661,9 @@ def record_crash_compare(line, fieldnames, crash_id, record_existing):
             # It's too soon, ignore change.
             return False
 
-        # There are differences, and it can update...
-        # If human_updated, create a request:
-        if human_updated:
+        # There are differences, and it can update unless
+        # either human_updated or important_update is true
+        if human_updated or important_update:
             mutation_template = insert_crash_change_template(
                 new_record_dict=record_new,
                 differences=differences,

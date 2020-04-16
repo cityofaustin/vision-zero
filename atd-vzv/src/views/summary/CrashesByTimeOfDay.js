@@ -6,7 +6,13 @@ import CrashTypeSelector from "../nav/CrashTypeSelector";
 import { Row, Col, Container, Button } from "reactstrap";
 import styled from "styled-components";
 import classnames from "classnames";
-import { Heatmap, HeatmapSeries } from "reaviz";
+import {
+  Heatmap,
+  HeatmapSeries,
+  HeatmapCell,
+  ChartTooltip,
+  SequentialLegend,
+} from "reaviz";
 import {
   summaryCurrentYearStartDate,
   summaryCurrentYearEndDate,
@@ -27,7 +33,8 @@ const CrashesByTimeOfDay = () => {
   };
 
   useEffect(() => {
-    const dayOfWeekArray = moment.weekdays();
+    const dayOfWeekArray = moment.weekdaysShort();
+
     const hourBlockArray = [
       "12AM",
       "01AM",
@@ -100,6 +107,15 @@ const CrashesByTimeOfDay = () => {
             break;
         }
       });
+      // Set any 0 values to null so that the reaviz library
+      // recognizes them as "blank cells" and fills them accordingly
+      dataArray.forEach((hour) => {
+        hour.data.forEach((day) => {
+          if (day.data === 0) {
+            day.data = null;
+          }
+        });
+      });
       return dataArray;
     };
 
@@ -133,10 +149,10 @@ const CrashesByTimeOfDay = () => {
   `;
 
   return (
-    <Container>
+    <Container className="m-0 p-0">
       <Row>
         <Col>
-          <h1 className="text-left, font-weight-bold">By Time of Day</h1>
+          <h2 className="text-left, font-weight-bold">By Time of Day</h2>
         </Col>
       </Row>
       <Row>
@@ -182,14 +198,28 @@ const CrashesByTimeOfDay = () => {
             series={
               <HeatmapSeries
                 colorScheme={[
-                  colors.intensity1Of5Lowest,
                   colors.intensity2Of5,
                   colors.intensity3Of5,
                   colors.intensity4Of5,
                   colors.viridis1Of6Highest,
                 ]}
+                emptyColor={colors.intensity1Of5Lowest}
               />
             }
+          />
+        </Col>
+      </Row>
+      <Row>
+        <Col className="py-2">
+          <SequentialLegend
+            data={heatmapData}
+            orientation="horizontal"
+            colorScheme={[
+              colors.intensity2Of5,
+              colors.intensity3Of5,
+              colors.intensity4Of5,
+              colors.viridis1Of6Highest,
+            ]}
           />
         </Col>
       </Row>

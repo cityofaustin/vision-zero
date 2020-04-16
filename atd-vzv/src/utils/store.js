@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { mapStartDate, mapEndDate } from "../constants/time";
+import { dataStartDate, dataEndDate } from "../constants/time";
 
 export const StoreContext = React.createContext(null);
 
@@ -7,21 +7,24 @@ export default ({ children }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [mapFilters, setMapFilters] = useState([]);
   const [mapDateRange, setMapDateRange] = useState({
-    start: mapStartDate,
-    end: mapEndDate,
+    start: dataStartDate,
+    end: dataEndDate,
   });
   const [mapTimeWindow, setMapTimeWindow] = useState("");
   const [mapOverlay, setMapOverlay] = useState({
     name: "",
     options: [],
   });
+  const [mapPolygon, setMapPolygon] = useState(null);
 
   const store = {
     mapFilters: [mapFilters, setMapFilters],
-    mapDateRange: [mapDateRange, setMapDateRange],
+    mapDateRange,
+    setMapDateRange,
     mapTimeWindow: [mapTimeWindow, setMapTimeWindow],
     sidebarToggle: [isOpen, setIsOpen],
     mapOverlay: [mapOverlay, setMapOverlay],
+    mapPolygon: [mapPolygon, setMapPolygon],
   };
 
   return (

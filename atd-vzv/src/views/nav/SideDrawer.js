@@ -55,12 +55,21 @@ const StyledDrawerHeader = styled.div`
 `;
 
 const StyledDrawer = styled.div`
+  /* Disable side drawer in desktop viewport */
+  #summary-side-drawer {
+    @media only screen and (min-width: ${responsive.bootstrapMedium}px) {
+      display: none;
+    }
+  }
+
+  /* Show mobile drawer medium breakpoint and down */
   #temporary-drawer {
     @media only screen and (min-width: ${responsive.bootstrapMediumMin}px) {
       display: none;
     }
   }
 
+  /* Show permanent drawer medium breakpoint and up */
   #permanent-drawer {
     @media only screen and (max-width: ${responsive.bootstrapMedium}px) {
       display: none;
@@ -72,6 +81,7 @@ const StyledDrawer = styled.div`
     overflow-y: unset;
   }
 
+  /* Allow user to scroll when drawer content height exceeds device viewport */
   .drawer-content {
     overflow-y: scroll;
     height: calc(100vh - ${drawer.headerHeight}px);
@@ -92,7 +102,7 @@ const SideDrawer = () => {
       <StyledDrawerHeader>
         {/* Need to adjust location of public folder to account for /viewer/ basepath */}
         <img
-          src={process.env.PUBLIC_URL + "/vz_logo.png"}
+          src={process.env.PUBLIC_URL + "/vz_logo.svg"}
           alt="Vision Zero Austin Logo"
         ></img>
       </StyledDrawerHeader>
@@ -113,10 +123,14 @@ const SideDrawer = () => {
   );
 
   return (
-    <div className={classes.root}>
-      <CssBaseline />
-      <nav className={classes.drawer} aria-label="mailbox folders">
-        <StyledDrawer>
+    <StyledDrawer>
+      <div
+        className={classes.root}
+        // Disable side drawer in non-mobile viewport
+        id={currentPath === "/" && "summary-side-drawer"}
+      >
+        <CssBaseline />
+        <nav className={classes.drawer} aria-label="mailbox folders">
           <Drawer
             id="temporary-drawer"
             variant="temporary"
@@ -142,9 +156,9 @@ const SideDrawer = () => {
           >
             {drawerContent}
           </Drawer>
-        </StyledDrawer>
-      </nav>
-    </div>
+        </nav>
+      </div>
+    </StyledDrawer>
   );
 };
 
