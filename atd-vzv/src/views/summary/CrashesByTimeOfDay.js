@@ -195,10 +195,10 @@ const CrashesByTimeOfDay = () => {
           </StyledButton>
         </Col>
       </Row>
-      <Row>
+      <Row className="h-auto">
         <Col>
           <Heatmap
-            height={200}
+            height={267}
             data={heatmapData}
             series={
               <HeatmapSeries
