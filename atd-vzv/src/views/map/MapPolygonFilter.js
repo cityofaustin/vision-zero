@@ -2,21 +2,27 @@ import React, { useState, useRef } from "react";
 import { Editor, EditorModes } from "react-map-gl-draw";
 import { getFeatureStyle, getEditHandleStyle } from "./map-style";
 import { stringify as stringifyGeoJSON } from "wellknown";
+import styled from "styled-components";
 
 const MapPolygonFilter = ({ setMapPolygon }) => {
   const _editorRef = useRef();
   const [mode, setMode] = useState(EditorModes.READ_ONLY);
+  const [features, setFeatures] = useState([]);
+
+  const StyledDrawTools = styled.div`
+    .disabled {
+      filter: opacity(0.3) drop-shadow(0 0 0 #fff);
+      cursor: default;
+    }
+  `;
 
   const _onUpdate = ({ editType }) => {
+    const newFeatures = _editorRef.current.getFeatures();
+    setFeatures(newFeatures);
+
     if (editType === "addFeature") {
-      const features = _editorRef.current.getFeatures();
-
-      // Limit to one polygon
-      const indexesToDelete = [...features.keys()].filter((i) => i !== 0);
-      _editorRef.current.deleteFeatures(indexesToDelete);
-
       // Convert polygon to Well-Known Text format
-      const feature = stringifyGeoJSON(features[0]);
+      const feature = stringifyGeoJSON(newFeatures[0]);
       setMapPolygon(feature);
       setMode(EditorModes.READ_ONLY);
     }
@@ -24,30 +30,36 @@ const MapPolygonFilter = ({ setMapPolygon }) => {
 
   const _onDelete = () => {
     // If a polygon exists in Editor features, delete it
-    const features = _editorRef.current.getFeatures();
     if (features.length > 0) {
       _editorRef.current.deleteFeatures(0);
     }
-    // Remove filter from Socrata query
+    // Remove filter from Socrata query and reset state
     setMapPolygon(null);
+    setFeatures([]);
   };
 
   const _renderDrawTools = () => {
+    // Disable draw button click handler and grey out button if a polygon is drawn
+    const isDisabled = features.length > 0;
     return (
-      <div className="mapboxgl-ctrl-top-right">
-        <div className="mapboxgl-ctrl-group mapboxgl-ctrl">
-          <button
-            className="mapbox-gl-draw_ctrl-draw-btn mapbox-gl-draw_polygon"
-            title="Polygon tool"
-            onClick={() => setMode(EditorModes.DRAW_POLYGON)}
-          />
-          <button
-            className="mapbox-gl-draw_ctrl-draw-btn mapbox-gl-draw_trash"
-            title="Delete"
-            onClick={_onDelete}
-          />
+      <StyledDrawTools>
+        <div className="mapboxgl-ctrl-top-right">
+          <div className="mapboxgl-ctrl-group mapboxgl-ctrl">
+            <button
+              className={`mapbox-gl-draw_ctrl-draw-btn mapbox-gl-draw_polygon ${
+                isDisabled && "disabled"
+              }`}
+              title="Polygon tool"
+              onClick={() => !isDisabled && setMode(EditorModes.DRAW_POLYGON)}
+            />
+            <button
+              className="mapbox-gl-draw_ctrl-draw-btn mapbox-gl-draw_trash"
+              title="Delete"
+              onClick={_onDelete}
+            />
+          </div>
         </div>
-      </div>
+      </StyledDrawTools>
     );
   };
 
