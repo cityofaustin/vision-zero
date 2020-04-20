@@ -1,6 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
 import { StoreContext } from "../../utils/store";
-import ReactMapGL, { Source, Layer } from "react-map-gl";
+import ReactMapGL, {
+  Source,
+  Layer,
+  ScaleControl,
+  GeolocateControl,
+  NavigationControl,
+} from "react-map-gl";
 import MapPolygonFilter from "./MapPolygonFilter";
 import { createMapDataUrl } from "./helpers";
 import { crashGeoJSONEndpointUrl } from "../../views/summary/queries/socrataQueries";
@@ -68,6 +74,22 @@ const StyledMapSpinner = styled.div`
     100% {
       transform: rotate(0deg);
     }
+  }
+`;
+
+const StyledMapNav = styled.div`
+  .nav-buttons {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    padding: 10px;
+  }
+
+  .geolocate-button {
+    position: absolute;
+    top: 68px;
+    left: 0px;
+    padding: 10px;
   }
 `;
 
@@ -213,6 +235,14 @@ const Map = () => {
         </StyledMapSpinner>
       )}
 
+      <StyledMapNav>
+        <div className="nav-buttons">
+          <NavigationControl showCompass={false} />
+        </div>
+        <div className="geolocate-button">
+          <GeolocateControl />
+        </div>
+      </StyledMapNav>
       <MapPolygonFilter setMapPolygon={setMapPolygon} />
     </ReactMapGL>
   );
