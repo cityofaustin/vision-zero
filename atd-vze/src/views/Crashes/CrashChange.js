@@ -50,7 +50,7 @@ function CrashChange(props) {
 
   /**
    * Returns true if fieldName exists within the selectedFields array.
-   * @param fieldName {string} - The name of the field
+   * @param {string} fieldName - The name of the field
    * @returns {boolean}
    */
   const isFieldEnabled = fieldName => {
@@ -59,7 +59,7 @@ function CrashChange(props) {
 
   /**
    * Adds or removes field name from the selectedFields array.
-   * @param fieldName {string} - The name of the field.
+   * @param {string} fieldName - The name of the field.
    */
   const toggleField = fieldName => {
     let newFieldList = selectedFields;
@@ -99,7 +99,7 @@ function CrashChange(props) {
 
   /**
    * Toggles a modal based on a number.
-   * @param mode {int} - The modal to toggle
+   * @param {int} mode - The modal to toggle
    */
   const toggleModal = mode => {
     switch (mode) {
@@ -117,7 +117,7 @@ function CrashChange(props) {
 
   /**
    * Batch-enables a list of fields
-   * @param mode {int} - The mode to operate: 1) Main, 2) All other fields, 3) All fields
+   * @param {int} mode - The mode to operate: 1) Main, 2) All other fields, 3) All fields
    */
   const fieldsBatchEnable = mode => {
     let list = [];
@@ -146,7 +146,7 @@ function CrashChange(props) {
 
   /**
    * Batch-enables a list of fields
-   * @param mode {int} - The mode to operate: 1) Main, 2) All other fields, 3) All fields
+   * @param {int} mode - The mode to operate: 1) Main, 2) All other fields, 3) All fields
    */
   const fieldsBatchClear = mode => {
     let list = [];
@@ -193,7 +193,7 @@ function CrashChange(props) {
 
   /**
    * Returns an array of strings with all the fields that have a different value.
-   * @param data {object}
+   * @param {object} data
    * @returns {string[]}
    */
   const generate_diff = data => {
@@ -332,7 +332,7 @@ function CrashChange(props) {
 
   /**
    * Returns a clean string (if null, then assume empty.
-   * @param input {string} - The string being cleaned
+   * @param {string} input - The string being cleaned
    * @returns {string}
    */
   const cleanString = input => {
@@ -343,10 +343,10 @@ function CrashChange(props) {
   /**
    * Generates a JSX Row object, it returns null if there is no difference between the original value
    * and the new value from the new record as provided by the ETL process.
-   * @param field {string} - The name of the field in the database (the column)
-   * @param label {string} - The name of the label to show (if not the name of the field)
-   * @param originalFieldValue {string} - The value of the record as it currently is in the database.
-   * @param newFieldValue {string} - The value of the new record as provided by the ETL process.
+   * @param {string} field - The name of the field in the database (the column)
+   * @param {string} label - The name of the label to show (if not the name of the field)
+   * @param {string} originalFieldValue - The value of the record as it currently is in the database.
+   * @param {string} newFieldValue - The value of the new record as provided by the ETL process.
    * @returns {Row}
    */
   const generateRow = (field, label, originalFieldValue, newFieldValue) => {
@@ -516,29 +516,41 @@ function CrashChange(props) {
                     title={
                       cr3available
                         ? "Click to open in new window"
-                        : "No CR3 Available"
+                        : "CR3 NOT Available"
                     }
                     color="secondary"
                     onClick={downloadCR3}
                   >
-                    <i className="fa fa-file-pdf-o"></i>&nbsp;Download Current
+                    <i className="fa fa-file-pdf-o"></i>&nbsp;Current
                     CR3
+                  </Button>
+                  &nbsp;
+                  <Button
+                    disabled={cr3available ? "" : "disabled"}
+                    title={
+                      cr3available
+                        ? "Click to open in new window"
+                        : "New CR3 NOT Available"
+                    }
+                    color="secondary"
+                    onClick={downloadCR3}
+                  >
+                    <i className="fa fa-file-pdf-o"></i>&nbsp;New CR3
                   </Button>
                 </Col>
                 <Col sm xs="12" className="text-center">
-                  <Button color="warning" onClick={() => toggleModal(1)}>
-                    <i className="fa fa-save"></i>&nbsp;Save Selected Changes
+                  <Button color="warning" onClick={() => toggleModal(2)}>
+                    <i className="fa fa-save"></i>&nbsp;Unselect all changes
                   </Button>
                 </Col>
                 <Col
                   sm
                   xs="12"
                   className="text-center"
-                  onClick={() => toggleModal(2)}
+                  onClick={() => toggleModal(1)}
                 >
                   <Button color="success">
-                    <i className="fa fa-window-close"></i>&nbsp;Unselect all
-                    changes
+                    <i className="fa fa-window-close"></i>&nbsp;Save Selected Changes
                   </Button>
                 </Col>
                 <Col
@@ -616,7 +628,7 @@ function CrashChange(props) {
       <Modal
         isOpen={approveAllChanges}
         toggle={() => toggleModal(1)}
-        className={"modal-warning"}
+        className={"modal-success"}
       >
         <ModalHeader toggle={() => toggleModal(1)}>
           {selectedFields.length > 0 && <>Save selected changes?</>}
@@ -652,7 +664,7 @@ function CrashChange(props) {
       <Modal
         isOpen={discardAllChanges}
         toggle={() => toggleModal(2)}
-        className={"modal-success"}
+        className={"modal-warning"}
       >
         <ModalHeader toggle={() => toggleModal(2)}>Unselect all?</ModalHeader>
         <ModalBody>
@@ -662,7 +674,7 @@ function CrashChange(props) {
         </ModalBody>
         <ModalFooter>
           <Button
-            color="success"
+            color="modal-warning"
             onClick={() => {
               fieldsBatchClear(3);
               toggleModal(2);
