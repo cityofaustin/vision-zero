@@ -164,6 +164,9 @@ const Map = () => {
 
   const _onViewportChange = (viewport) => setViewport(viewport);
 
+  const _onViewportGeolocate = (viewport) =>
+    setViewport({ ...viewport, zoom: 15 });
+
   // Capture hovered feature to populate tooltip data
   const _onHover = (event) => {
     const {
@@ -245,7 +248,7 @@ const Map = () => {
           <NavigationControl showCompass={false} />
         </div>
         <div className="geolocate-button">
-          <GeolocateControl />
+          <GeolocateControl onViewportChange={_onViewportGeolocate} />
         </div>
         <div className="polygon-button">
           <MapPolygonFilter setMapPolygon={setMapPolygon} />
