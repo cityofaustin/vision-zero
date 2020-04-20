@@ -382,15 +382,9 @@ function CrashChange(props) {
           <strong>{field}</strong>
         </Col>
         <Col xs="12" sm="12" md="4">
-          <Badge className="mr-1" color="light">
-            Original
-          </Badge>
           <span className="minidiff"> {originalValue}</span>
         </Col>
         <Col xs="12" sm="12" md="4">
-          <Badge className="mr-1" color="danger">
-            Change
-          </Badge>
           <MiniDiff oldText={originalValue} newText={newValue} />
         </Col>
       </Row>
