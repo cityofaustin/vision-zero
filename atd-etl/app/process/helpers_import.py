@@ -751,12 +751,19 @@ def insert_secondary_table_change(line, fieldnames, file_type):
         }
     """.replace("%CRASH_ID%", crash_id)\
     .replace("%TYPE%", file_type)\
-    .replace("%CONTENT%", json.dumps(csv_to_dict(line=line, fieldnames=fieldnames)))
+    .replace("%CONTENT%",
+             # Equivalent to running json.dumps(json.dumps(dict)) in order
+             # to escape special characters into a valid graphql string.
+             json.dumps(csv_to_dict(
+                 line=line,
+                 fieldnames=fieldnames)
+             )
+    )
+    # Run the graphql query
     result = run_query(query)
 
     try:
-        # Return False if there are 0 affected rows (which triggers an insertion later on)
-        # Return True if there was an insertion/update (which blocks an insertion later on)
-        return result["data"]["insert_atd_txdot_changes"]["affected_rows"] < 1
+        # Return True if we have succeeded, False otherwise.
+        return result["data"]["insert_atd_txdot_changes"]["affected_rows"] > 0
     except:
         raise Exception("Failed to insert %s to review request: %s" % (file_type, crash_id))
