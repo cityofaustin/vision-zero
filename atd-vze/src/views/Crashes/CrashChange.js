@@ -561,7 +561,7 @@ function CrashChange(props) {
                 </Col>
                 <Col sm xs="12" className="text-center">
                   <Button color="warning" onClick={() => toggleModal(2)}>
-                    <i className="fa fa-save"></i>&nbsp;Unselect all changes
+                    <i className="fa fa-window-close"></i>&nbsp;Unselect all changes
                   </Button>
                 </Col>
                 <Col
@@ -574,7 +574,7 @@ function CrashChange(props) {
                     color="success"
                     disabled={selectableList.length > 0 ? "" : "disabled"}
                   >
-                    <i className="fa fa-window-close"></i>&nbsp;Save Selected Changes
+                    <i className="fa fa-save"></i>&nbsp;Save Selected Changes
                   </Button>
                 </Col>
                 <Col
