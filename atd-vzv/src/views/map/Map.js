@@ -81,15 +81,20 @@ const StyledMapNav = styled.div`
   .nav-buttons {
     position: absolute;
     top: 0px;
-    left: 0px;
+    right: 0px;
     padding: 10px;
   }
 
   .geolocate-button {
     position: absolute;
     top: 68px;
-    left: 0px;
+    right: 0px;
     padding: 10px;
+  }
+
+  .polygon-button {
+    position: relative;
+    top: 107px;
   }
 `;
 
@@ -242,8 +247,10 @@ const Map = () => {
         <div className="geolocate-button">
           <GeolocateControl />
         </div>
+        <div className="polygon-button">
+          <MapPolygonFilter setMapPolygon={setMapPolygon} />
+        </div>
       </StyledMapNav>
-      <MapPolygonFilter setMapPolygon={setMapPolygon} />
     </ReactMapGL>
   );
 };
