@@ -3,7 +3,6 @@ import { StoreContext } from "../../utils/store";
 import ReactMapGL, {
   Source,
   Layer,
-  ScaleControl,
   GeolocateControl,
   NavigationControl,
 } from "react-map-gl";
@@ -11,7 +10,10 @@ import MapPolygonFilter from "./MapPolygonFilter";
 import { createMapDataUrl } from "./helpers";
 import { crashGeoJSONEndpointUrl } from "../../views/summary/queries/socrataQueries";
 import {
-  crashDataLayer,
+  fatalitiesDataLayer,
+  fatalitiesOutlineDataLayer,
+  seriousInjuriesDataLayer,
+  seriousInjuriesOutlineDataLayer,
   buildAsmpLayers,
   asmpConfig,
   buildHighInjuryLayer,
@@ -174,7 +176,14 @@ const Map = () => {
       srcEvent: { offsetX, offsetY },
     } = event;
     const hoveredFeature =
-      features && features.find((f) => f.layer.id === "crashes");
+      features &&
+      features.find(
+        (f) =>
+          f.layer.id === "fatalities" ||
+          "fatalitiesOutline" ||
+          "seriousInjuries" ||
+          "seriousInjuriesOutline"
+      );
     setHoveredFeature({ feature: hoveredFeature, x: offsetX, y: offsetY });
   };
 
@@ -215,7 +224,10 @@ const Map = () => {
     >
       {!!mapData && (
         <Source id="crashes" type="geojson" data={mapData}>
-          <Layer {...crashDataLayer} />
+          <Layer {...seriousInjuriesOutlineDataLayer} />
+          <Layer {...seriousInjuriesDataLayer} />
+          <Layer {...fatalitiesOutlineDataLayer} />
+          <Layer {...fatalitiesDataLayer} />
         </Source>
       )}
       {/* ASMP Street Level Layers */}

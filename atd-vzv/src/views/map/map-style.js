@@ -4,12 +4,69 @@ import { Layer } from "react-map-gl";
 import { colors } from "../../constants/colors";
 
 // For more information on data-driven styles, see https://www.mapbox.com/help/gl-dds-ref/
-export const crashDataLayer = {
-  id: "crashes",
+// If death_cnt is > 0, use fatality color and give all other points 0 opacity
+// If not, use seriousInjury color and give all other points 0 opacity
+export const fatalitiesDataLayer = {
+  id: "fatalities",
   type: "circle",
   paint: {
     "circle-radius": 5,
-    "circle-color": `${colors.info}`,
+    "circle-color": [
+      "case",
+      ["!=", ["get", "death_cnt"], "0"],
+      colors.fatalities,
+      colors.white, // Mapbox GL requires a fallback color or else nothing will render
+    ],
+    // Hide circles that don't match the case for proper overlay
+    "circle-opacity": ["case", ["!=", ["get", "death_cnt"], "0"], 1, 0],
+  },
+};
+
+export const fatalitiesOutlineDataLayer = {
+  id: "fatalitiesOutline",
+  type: "circle",
+  paint: {
+    "circle-radius": 6,
+    "circle-color": [
+      "case",
+      ["!=", ["get", "death_cnt"], "0"],
+      colors.white,
+      colors.dark, // Mapbox GL requires a fallback color or else nothing will render
+    ],
+    // Hide circles that don't match the case for proper overlay
+    "circle-opacity": ["case", ["!=", ["get", "death_cnt"], "0"], 1, 0],
+  },
+};
+
+export const seriousInjuriesDataLayer = {
+  id: "seriousInjuries",
+  type: "circle",
+  paint: {
+    "circle-radius": 5,
+    "circle-color": [
+      "case",
+      ["==", ["get", "death_cnt"], "0"],
+      colors.seriousInjuries,
+      colors.white, // Mapbox GL requires a fallback color or else nothing will render
+    ],
+    // Hide circles that don't match the case for proper overlay
+    "circle-opacity": ["case", ["==", ["get", "death_cnt"], "0"], 1, 0],
+  },
+};
+
+export const seriousInjuriesOutlineDataLayer = {
+  id: "seriousInjuriesOutline",
+  type: "circle",
+  paint: {
+    "circle-radius": 6,
+    "circle-color": [
+      "case",
+      ["==", ["get", "death_cnt"], "0"],
+      colors.white,
+      colors.dark, // Mapbox GL requires a fallback color or else nothing will render
+    ],
+    // Hide circles that don't match the case for proper overlay
+    "circle-opacity": ["case", ["==", ["get", "death_cnt"], "0"], 1, 0],
   },
 };
 
