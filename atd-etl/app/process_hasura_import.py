@@ -102,7 +102,7 @@ def process_line(file_type, line, fieldnames, current_line, dryrun=False):
     if file_type != "crash":
         # First, we retrieve the current crash id from the plain-text CSV line
         crash_id = get_crash_id(line)
-        # Now check if the current file it is one of these tables
+        # Now check if the current file type is one of these tables
         if file_type in ["unit", "person", "primaryperson"]:
             # Then check if the parent record (crash) is in the queue
             crash_in_queue = is_crash_in_queue(crash_id)
@@ -111,18 +111,24 @@ def process_line(file_type, line, fieldnames, current_line, dryrun=False):
             crash_in_queue = False
         #  If the crash is in queue
         if crash_in_queue:
+            # Let's make sure the record is not inserted/updated later on
+            insert_record = False
+            # Update our counts
             existing_records += 1
             queued_records += 1
+            # Let's track if the record was queued for inspection
+            secondary_record_updated = False
             # If not a dry-run, then make the insertion
             if not dryrun:
-                insert_record = insert_secondary_table_change(
+                # Capture the new value from the insertion in the changes table
+                secondary_record_updated = insert_secondary_table_change(
                     line=line,
                     fieldnames=fieldnames,
                     file_type=file_type
                 )
 
             # Print that we have queued the current record for review
-            if not insert_record:
+            if secondary_record_updated:
                 print(
                     "%s[%s] Q/A Queued (type: %s), crash_id: %s" % (
                           mode,
@@ -131,6 +137,7 @@ def process_line(file_type, line, fieldnames, current_line, dryrun=False):
                           str(crash_id),
                     )
                 )
+
         else:
             insert_record = True
 
