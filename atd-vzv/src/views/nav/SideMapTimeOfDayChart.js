@@ -22,16 +22,22 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
     mapTimeWindow: [mapTimeWindow, setMapTimeWindow],
     mapFilters: [mapFilters],
     mapDateRange: dateRange,
+    mapPolygon: [mapPolygon],
   } = React.useContext(StoreContext);
 
   // Get crash data without mapTimeWindow filter to populate chart
   useEffect(() => {
-    const apiUrl = createMapDataUrl(crashEndpointUrl, mapFilters, dateRange);
+    const apiUrl = createMapDataUrl(
+      crashEndpointUrl,
+      mapFilters,
+      dateRange,
+      mapPolygon
+    );
     !!apiUrl &&
       axios.get(apiUrl).then((res) => {
         setChartData(res.data);
       });
-  }, [dateRange, mapFilters]);
+  }, [dateRange, mapPolygon, mapFilters]);
 
   useMemo(() => {
     const crashes = chartData;

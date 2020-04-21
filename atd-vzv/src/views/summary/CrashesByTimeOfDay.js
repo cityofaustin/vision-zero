@@ -220,7 +220,7 @@ const CrashesByTimeOfDay = () => {
                       />
                     }
                   />
-                }                
+                }
               />
             }
           />
