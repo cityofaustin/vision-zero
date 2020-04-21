@@ -794,10 +794,8 @@ def mutation_update_cr3(crash_id):
           }
         }
     """.replace("%CRASH_ID%", crash_id)
-
     result = run_query(query)
-
     try:
-        return result["data"]["insert_atd_txdot_changes"]["affected_rows"] > 0
+        return result["data"]["update_atd_txdot_crashes"]["affected_rows"] > 0
     except:
         raise Exception("Failed to update crash CR3 download status to 'N' for crash_id: %s" % (crash_id))
