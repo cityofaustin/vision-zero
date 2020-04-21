@@ -86,13 +86,15 @@ def process_line(file_type, line, fieldnames, current_line, dryrun=False):
         # If not found, then insert
         if record_existing is None:
             insert_record = True
+            print("Record does not exist, let's insert it")
         # Else, record exists we need to compare
         else:
-            print("[%s] Exists: %s (%s)" % (str(current_line), str(crash_id), file_type))
+            print("%s[%s] Exists: %s (%s)" % (mode, str(current_line), str(crash_id), file_type))
             existing_records += 1
             # Determine if we need to update...
             if dryrun:
-                print("[%s] Record queued for Q/A: %s" % (mode, str(crash_id)))
+                print("%s[%s] Record queued for Q/A: %s" % (mode, str(current_line), str(crash_id)))
+                print("%s[%s] CR3 Download Status Updated for crash_id: %s" % (mode, str(current_line), str(crash_id)))
             else:
                 insert_record = record_crash_compare(
                     line=line,
@@ -100,14 +102,8 @@ def process_line(file_type, line, fieldnames, current_line, dryrun=False):
                     crash_id=crash_id,
                     record_existing=record_existing
                 )
-            # If we do not need to insert a new record
-            # Then update the record to download a new CR3
-            if dryrun:
-                print("[%s] CR3 Download Status Updated for crash_id: %s" % (mode, str(crash_id)))
-            else:
                 update_cr3 = mutation_update_cr3(crash_id)
-                print("[%s] CR3 Download Status Updated for crash_id: %s" % (mode, str(crash_id), str(update_cr3)))
-
+                print("%s[%s] CR3 Download Status Updated for crash_id: %s" % (mode, str(current_line), str(crash_id)))
 
     # Other file types
     if file_type != "crash":
