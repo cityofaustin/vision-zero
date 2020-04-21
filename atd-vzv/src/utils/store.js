@@ -15,6 +15,7 @@ export default ({ children }) => {
     name: "",
     options: [],
   });
+  const [mapPolygon, setMapPolygon] = useState(null);
 
   const store = {
     mapFilters: [mapFilters, setMapFilters],
@@ -23,6 +24,7 @@ export default ({ children }) => {
     mapTimeWindow: [mapTimeWindow, setMapTimeWindow],
     sidebarToggle: [isOpen, setIsOpen],
     mapOverlay: [mapOverlay, setMapOverlay],
+    mapPolygon: [mapPolygon, setMapPolygon],
   };
 
   return (

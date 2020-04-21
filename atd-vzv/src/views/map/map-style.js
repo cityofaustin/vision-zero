@@ -1,4 +1,5 @@
 import React from "react";
+import { RenderStates } from "react-map-gl-draw";
 import { Layer } from "react-map-gl";
 import { colors } from "../../constants/colors";
 
@@ -131,3 +132,55 @@ export const cityCouncilDataLayer = {
     "fill-opacity": 0.5,
   },
 };
+
+// Styles for MapPolygonFilter
+export function getEditHandleStyle({ feature, state }) {
+  switch (state) {
+    case RenderStates.UNCOMMITTED:
+      return {
+        fill: colors.viridis6Of6Lowest,
+        fillOpacity: 1,
+        stroke: colors.white,
+        strokeWidth: 2,
+        r: 7,
+      };
+
+    default:
+      return {
+        fill: colors.viridis6Of6Lowest,
+        fillOpacity: 1,
+        stroke: colors.white,
+        strokeWidth: 2,
+        r: 5,
+      };
+  }
+}
+
+export function getFeatureStyle({ feature, index, state }) {
+  switch (state) {
+    case RenderStates.CLOSING:
+      return {
+        stroke: colors.viridis4Of6,
+        strokeWidth: 2,
+        fill: colors.viridis4Of6,
+        fillOpacity: 0.3,
+        strokeDasharray: "4,2",
+      };
+    case RenderStates.UNCOMMITTED:
+      return {
+        stroke: colors.viridis6Of6Lowest,
+        strokeWidth: 2,
+        fill: colors.viridis6Of6Lowest,
+        fillOpacity: 0.3,
+        strokeDasharray: "4,2",
+      };
+
+    default:
+      return {
+        stroke: colors.info,
+        strokeWidth: 2,
+        fill: colors.info,
+        fillOpacity: 0.1,
+      };
+  }
+}
