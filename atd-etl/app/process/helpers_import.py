@@ -773,3 +773,31 @@ def insert_secondary_table_change(line, fieldnames, file_type):
         return result["data"]["insert_atd_txdot_changes"]["affected_rows"] > 0
     except:
         raise Exception("Failed to insert %s to review request: %s" % (file_type, crash_id))
+
+
+def mutation_update_cr3(crash_id):
+    """
+    Returns True when updated the CR3 download status to 'N', returns false if the record was not updated.
+    It will raise an exception if there are any errors in the query, ie: record not found.
+    :param int crash_id:
+    :return bool:
+    """
+    query = """
+        mutation updateCrashCR3 {
+          update_atd_txdot_crashes(
+            where: {
+                crash_id: {_eq: %CRASH_ID%}
+            },
+            _set: {cr3_stored_flag: "N"}
+          ) {
+            affected_rows
+          }
+        }
+    """.replace("%CRASH_ID%", crash_id)
+
+    result = run_query(query)
+
+    try:
+        return result["data"]["insert_atd_txdot_changes"]["affected_rows"] > 0
+    except:
+        raise Exception("Failed to update crash CR3 download status to 'N' for crash_id: %s" % (crash_id))
