@@ -18,7 +18,14 @@ export const fatalitiesDataLayer = {
       colors.white, // Mapbox GL requires a fallback color or else nothing will render
     ],
     // Hide circles that don't match the case for proper overlay
-    "circle-opacity": ["case", ["!=", ["get", "death_cnt"], "0"], 1, 0],
+    "circle-opacity": [
+      "case",
+      ["!=", ["get", "sus_serious_injry_cnt"], "0"],
+      0,
+      ["!=", ["get", "death_cnt"], "0"],
+      1,
+      0,
+    ],
   },
 };
 
@@ -34,7 +41,14 @@ export const fatalitiesOutlineDataLayer = {
       colors.dark, // Mapbox GL requires a fallback color or else nothing will render
     ],
     // Hide circles that don't match the case for proper overlay
-    "circle-opacity": ["case", ["!=", ["get", "death_cnt"], "0"], 1, 0],
+    "circle-opacity": [
+      "case",
+      ["!=", ["get", "sus_serious_injry_cnt"], "0"],
+      0,
+      ["!=", ["get", "death_cnt"], "0"],
+      1,
+      0,
+    ],
   },
 };
 
