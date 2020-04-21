@@ -49,6 +49,7 @@ const MapPolygonFilter = ({ setMapPolygon }) => {
               className={`mapbox-gl-draw_ctrl-draw-btn mapbox-gl-draw_polygon ${
                 isDisabled && "disabled"
               }`}
+              disabled={isDisabled}
               title="Polygon tool"
               onClick={() => !isDisabled && setMode(EditorModes.DRAW_POLYGON)}
             />
