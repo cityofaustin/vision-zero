@@ -11,6 +11,7 @@ const GridTableHeader = ({
   handleTableHeaderClick,
   sortColumn,
   sortOrder,
+  helperText,
 }) => {
   /**
    * Renders a label with sorting icons going up or down
@@ -32,34 +33,45 @@ const GridTableHeader = ({
     }
   };
 
+  const colspan = query.columns.length;
+
   return (
-    <thead>
-      <tr>
-        {query.columns.map(
-          (column, index) =>
-            // If column is hidden, don't render <th>
-            !query.isHidden(column) && (
-              <th
-                onClick={
-                  query.isSortable(column)
-                    ? e => handleTableHeaderClick(column)
-                    : null
-                }
-                key={`th-${index}`}
-              >
-                {renderLabel(
-                  // Get a human-readable label string
-                  query.getLabel(column, "table"),
-                  // If it is sortable, render as such
-                  query.isSortable(column),
-                  // If sort column is defined, use sort order, or false as default
-                  sortColumn === column ? sortOrder === "asc" : false
-                )}
-              </th>
-            )
+    <>
+      <thead>
+        {helperText && (
+          <tr>
+            <th colspan={colspan}>
+              <small class="pull-right">{helperText}</small>
+            </th>
+          </tr>
         )}
-      </tr>
-    </thead>
+        <tr>
+          {query.columns.map(
+            (column, index) =>
+              // If column is hidden, don't render <th>
+              !query.isHidden(column) && (
+                <th
+                  onClick={
+                    query.isSortable(column)
+                      ? e => handleTableHeaderClick(column)
+                      : null
+                  }
+                  key={`th-${index}`}
+                >
+                  {renderLabel(
+                    // Get a human-readable label string
+                    query.getLabel(column, "table"),
+                    // If it is sortable, render as such
+                    query.isSortable(column),
+                    // If sort column is defined, use sort order, or false as default
+                    sortColumn === column ? sortOrder === "asc" : false
+                  )}
+                </th>
+              )
+          )}
+        </tr>
+      </thead>
+    </>
   );
 };
 
