@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { Bar } from "react-chartjs-2";
 import { Container, Row, Col } from "reactstrap";
@@ -13,6 +13,7 @@ import {
 import { crashEndpointUrl } from "./queries/socrataQueries";
 
 const CrashesByMode = () => {
+
   const modes = [
     {
       label: "Motorist",
@@ -61,6 +62,8 @@ const CrashesByMode = () => {
 
   const [chartData, setChartData] = useState(null); // {yearInt: [{record}, {record}, ...]}
   const [crashType, setCrashType] = useState([]);
+  const chartRef = useRef();
+
 
   // Fetch data and set in state by years in yearsArray
   useEffect(() => {
@@ -163,13 +166,14 @@ const CrashesByMode = () => {
       <Row className="mt-1">
         <Col>
           <Bar
+            ref={(ref) => (chartRef.current = ref)}
             data={data}
             height={null}
             width={null}
             options={{
-              responsive: true,
-              aspectRatio: 1,
-              maintainAspectRatio: false,
+              // responsive: true,
+              // aspectRatio: 1,
+              // maintainAspectRatio: false,
               scales: {
                 xAxes: [
                   {
@@ -182,15 +186,42 @@ const CrashesByMode = () => {
                   },
                 ],
               },
+              legendCallback: function(chart) {
+                // console.log(chart.data);
+                // {!!chartData &&
+                //   [...chartYearsArray].reverse().map((year, i) => {
+                //     const yearTotalData = chartData[year];
+                //     const yearTotal = yearTotalData[yearTotalData.length - 1];
+                //     // Reverse data and colors arrays and render so they appear chronologically
+                //     return (
+                //       <Row>
+                //         <Col xs={4} s={2} m={2} l={2} xl={2} key={i}>
+                //           <StyledDiv>
+                //             <div className="year-total-div">
+                //               <hr
+                //                 className="my-1"
+                //                 style={{
+                //                   border: `2px solid ${[...chartColors].reverse()[i]}`,
+                //                 }}
+                //               ></hr>
+                //               <h6 className="text-center py-1 mb-0">
+                //                 <strong>{!!chartData && year}</strong>
+                //               </h6>
+                //               <hr className="my-1"></hr>
+                //               <h6 className="text-center py-1">
+                //                 {!!chartData && yearTotal}
+                //               </h6>
+                //             </div>
+                //           </StyledDiv>
+                //         </Col>
+                //       </Row>
+                //     );
+                //   })}
+              }
             }}
           />
-        </Col>
-      </Row>
-      <Row>
-        <Col>
-          <p className="text-center">
-            Data Through: {dataEndDate.format("MMMM YYYY")}
-          </p>
+          {/* {!!chartRef.current && console.log(chartRef.current)}; */}
+          {!!chartRef.current && chartRef.current.chartInstance.generateLegend()}
         </Col>
       </Row>
     </Container>

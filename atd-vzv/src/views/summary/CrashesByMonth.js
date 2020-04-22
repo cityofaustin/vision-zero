@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import moment from "moment";
 import { Line } from "react-chartjs-2";
@@ -15,6 +15,8 @@ import {
 import { colors } from "../../constants/colors";
 
 const CrashesByMonth = () => {
+  const chartRef = useRef();
+
   // Set years order ascending
   const chartYearsArray = yearsArray().sort((a, b) => b - a);
 
@@ -28,6 +30,8 @@ const CrashesByMonth = () => {
 
   const [chartData, setChartData] = useState(null); // {yearInt: [monthTotal, monthTotal, ...]}
   const [crashType, setCrashType] = useState([]);
+  const [chartLegend, setChartLegend] = useState(null);
+  const [legendColors, setLegendColors] = useState([...chartColors].reverse());
 
   useEffect(() => {
     const calculateYearMonthlyTotals = (data) => {
@@ -112,6 +116,12 @@ const CrashesByMonth = () => {
     }
   }, [crashType]);
 
+  useEffect(() => {
+    !!chartRef.current &&
+      !!chartData &&
+      setChartLegend(chartRef.current.chartInstance.generateLegend());
+  }, [chartData, legendColors]);
+
   // Create dataset for each year, data property is an array of cumulative totals by month
   const createDatasets = () => {
     const chartDatasets = chartYearsArray.map((year, i) => ({
@@ -172,66 +182,122 @@ const CrashesByMonth = () => {
           <hr className="mb-2" />
         </Col>
       </Row>
-      <Row>
-        <Col xs={4} s={2} m={2} l={2} xl={2}>
-          <div>
-            <hr
-              className="my-1"
-              style={{ border: `2px solid ${colors.buttonBackground}` }}
-            ></hr>
-            <h6 className="text-center py-1 mb-0">
-              <strong>Year</strong>
-            </h6>
-            <hr className="my-1"></hr>
-            <h6 className="text-center py-1">Total</h6>
-          </div>
-        </Col>
-        {!!chartData &&
-          [...chartYearsArray].reverse().map((year, i) => {
-            const yearTotalData = chartData[year];
-            const yearTotal = yearTotalData[yearTotalData.length - 1];
-            // Reverse data and colors arrays and render so they appear chronologically
-            return (
-              <Col xs={4} s={2} m={2} l={2} xl={2} key={i}>
-                <StyledDiv>
-                  <div className="year-total-div">
-                    <hr
-                      className="my-1"
-                      style={{
-                        border: `2px solid ${[...chartColors].reverse()[i]}`,
-                      }}
-                    ></hr>
-                    <h6 className="text-center py-1 mb-0">
-                      <strong>{!!chartData && year}</strong>
-                    </h6>
-                    <hr className="my-1"></hr>
-                    <h6 className="text-center py-1">
-                      {!!chartData && yearTotal}
-                    </h6>
-                  </div>
-                </StyledDiv>
-              </Col>
-            );
-          })}
-      </Row>
       <Row className="mt-1">
         <Col>
-          <Line
-            data={data}          
-            height={null}
-            width={null}
-            options={{
-              responsive: true,
-              aspectRatio: 1,
-              maintainAspectRatio: false,
-              tooltips: {
-                mode: "x",
-              },
-              legend: {
-                display: false,
-              },
-            }}
-          />
+          {chartLegend}
+          {
+            <Line
+              ref={(ref) => (chartRef.current = ref)}
+              data={data}
+              height={null}
+              width={null}
+              options={{
+                responsive: true,
+                aspectRatio: 1.5,
+                // maintainAspectRatio: false,
+                tooltips: {
+                  mode: "x",
+                },
+                legend: {
+                  display: false,
+                },
+                legendCallback: function (chart) {
+                  return (
+                    <Row>
+                      <Col xs={4} s={2} m={2} l={2} xl={2}>
+                        <div>
+                          <hr
+                            className="my-1"
+                            style={{
+                              border: `2px solid ${colors.buttonBackground}`,
+                            }}
+                          ></hr>
+                          <h6 className="text-center py-1 mb-0">
+                            <strong>Year</strong>
+                          </h6>
+                          <hr className="my-1"></hr>
+                          <h6 className="text-center py-1">Total</h6>
+                        </div>
+                      </Col>
+                      {
+                        // Reverse data and colors arrays and render so they appear chronologically
+                        [...chartYearsArray].reverse().map((year, i) => {
+                          const yearTotalData = chartData[year];
+                          const yearTotal =
+                            yearTotalData[yearTotalData.length - 1];
+                          const legendColor = legendColors[i];
+
+                          const updateLegendColors = () => {
+                            const legendColorsClone = [...legendColors];
+                            legendColor !== colors.buttonBackground
+                              ? legendColorsClone.splice(
+                                  i,
+                                  1,
+                                  colors.buttonBackground
+                                )
+                              : legendColorsClone.splice(
+                                  i,
+                                  1,
+                                  chartColors.reverse()[i]
+                                );
+                            setLegendColors(legendColorsClone);
+                          };
+
+                          const customLegendClickHandler = () => {
+                            const legendItems = [
+                              ...chart.legend.legendItems,
+                            ].reverse();
+                            const legendItem = legendItems[i];
+                            const index = legendItem.datasetIndex;
+                            const ci = chartRef.current.chartInstance.chart;
+                            const meta = ci.getDatasetMeta(index);
+
+                            // See controller.isDatasetVisible comment
+                            meta.hidden =
+                              meta.hidden === null
+                                ? !ci.data.datasets[index].hidden
+                                : null;
+
+                            // We hid a dataset ... rerender the chart
+                            ci.update();
+
+                            // Update legend colors to show data has been hidden
+                            updateLegendColors();
+                          };
+
+                          return (
+                            <Col xs={4} s={2} m={2} l={2} xl={2} key={i}>
+                              <StyledDiv>
+                                <div
+                                  className="year-total-div"
+                                  onClick={customLegendClickHandler}
+                                >
+                                  <hr
+                                    id={`bar-${year}`}
+                                    className="my-1"
+                                    style={{
+                                      border: `2px solid ${legendColor}`,
+                                    }}
+                                  ></hr>
+                                  <h6 className="text-center py-1 mb-0">
+                                    <strong>{!!chartData && year}</strong>
+                                  </h6>
+                                  <hr className="my-1"></hr>
+                                  <h6 className="text-center py-1">
+                                    {!!chartData && yearTotal}
+                                  </h6>
+                                </div>
+                              </StyledDiv>
+                            </Col>
+                          );
+                        })
+                      }
+                    </Row>
+                  );
+                },
+              }}
+            />
+          }
         </Col>
       </Row>
     </Container>
