@@ -1,7 +1,6 @@
 import React from "react";
 import styled from "styled-components";
 import { GeolocateControl, NavigationControl } from "react-map-gl";
-import MapPolygonFilter from "./MapPolygonFilter";
 
 const StyledMapNav = styled.div`
   .nav-buttons {
@@ -17,14 +16,9 @@ const StyledMapNav = styled.div`
     right: 0px;
     padding: 10px;
   }
-
-  .polygon-button {
-    position: relative;
-    top: 107px;
-  }
 `;
 
-const MapControls = ({ setViewport, setMapPolygon }) => {
+const MapControls = ({ setViewport }) => {
   const _onViewportGeolocate = (viewport) =>
     setViewport({ ...viewport, zoom: 15 });
 
@@ -35,9 +29,6 @@ const MapControls = ({ setViewport, setMapPolygon }) => {
       </div>
       <div className="geolocate-button">
         <GeolocateControl onViewportChange={_onViewportGeolocate} />
-      </div>
-      <div className="polygon-button">
-        <MapPolygonFilter setMapPolygon={setMapPolygon} />
       </div>
     </StyledMapNav>
   );
