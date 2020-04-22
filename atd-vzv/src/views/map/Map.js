@@ -130,6 +130,7 @@ const Map = () => {
 
   const {
     mapFilters: [filters],
+    mapFilterType: [isMapTypeSet],
     mapDateRange: dateRange,
     mapOverlay: [overlay],
     mapTimeWindow: [mapTimeWindow],
@@ -142,6 +143,25 @@ const Map = () => {
 
   // Fetch initial crash data and refetch upon filters change
   useEffect(() => {
+    // Sort crash data into fatality and injury subsets
+    const sortMapData = (data) => {
+      return data.features.reduce(
+        (acc, feature) => {
+          if (parseInt(feature.properties.sus_serious_injry_cnt) > 0) {
+            acc.injuries.features.push(feature);
+          }
+          if (parseInt(feature.properties.death_cnt) > 0) {
+            acc.fatalities.features.push(feature);
+          }
+          return acc;
+        },
+        {
+          fatalities: { ...data, features: [] },
+          injuries: { ...data, features: [] },
+        }
+      );
+    };
+
     const apiUrl = createMapDataUrl(
       crashGeoJSONEndpointUrl,
       filters,
@@ -152,7 +172,9 @@ const Map = () => {
 
     !!apiUrl &&
       axios.get(apiUrl).then((res) => {
-        setMapData(res.data);
+        const sortedMapData = sortMapData(res.data);
+
+        setMapData(sortedMapData);
       });
   }, [filters, dateRange, mapTimeWindow, mapPolygon, setMapData]);
 
@@ -211,6 +233,33 @@ const Map = () => {
     );
   };
 
+  const renderCrashDataLayers = () => {
+    // Layer order depends on order set, so render both layers together to keep fatalities on top
+    const fatalityLayer = (
+      <Source id="crashFatalities" type="geojson" data={mapData.fatalities}>
+        <Layer {...fatalitiesOutlineDataLayer} />
+        <Layer {...fatalitiesDataLayer} />
+      </Source>
+    );
+    const injuryLayer = (
+      <Source id="crashInjuries" type="geojson" data={mapData.injuries}>
+        <Layer {...seriousInjuriesOutlineDataLayer} />
+        <Layer {...seriousInjuriesDataLayer} />
+      </Source>
+    );
+    const bothLayers = (
+      <>
+        {injuryLayer}
+        {fatalityLayer}
+      </>
+    );
+    return (
+      (isMapTypeSet.fatal && isMapTypeSet.injury && bothLayers) ||
+      (isMapTypeSet.fatal && fatalityLayer) ||
+      (isMapTypeSet.injury && injuryLayer)
+    );
+  };
+
   return (
     <ReactMapGL
       {...viewport}
@@ -222,14 +271,8 @@ const Map = () => {
       onHover={_onHover}
       ref={(ref) => (mapRef.current = ref && ref.getMap())}
     >
-      {!!mapData && (
-        <Source id="crashes" type="geojson" data={mapData}>
-          <Layer {...seriousInjuriesOutlineDataLayer} />
-          <Layer {...seriousInjuriesDataLayer} />
-          <Layer {...fatalitiesOutlineDataLayer} />
-          <Layer {...fatalitiesDataLayer} />
-        </Source>
-      )}
+      {/* Crash Data Points */}
+      {!!mapData && renderCrashDataLayers()}
       {/* ASMP Street Level Layers */}
       {buildAsmpLayers(asmpConfig, overlay)}
       {/* High Injury Network Layer */}

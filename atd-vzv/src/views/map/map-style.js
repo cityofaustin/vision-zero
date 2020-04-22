@@ -4,51 +4,23 @@ import { Layer } from "react-map-gl";
 import { colors } from "../../constants/colors";
 
 // For more information on data-driven styles, see https://www.mapbox.com/help/gl-dds-ref/
-// If death_cnt is > 0, use fatality color and give all other points 0 opacity
-// If not, use seriousInjury color and give all other points 0 opacity
+// To create white border, add second layer with larger white radius behind primary circles
 export const fatalitiesDataLayer = {
   id: "fatalities",
   type: "circle",
   paint: {
     "circle-radius": 5,
-    "circle-color": [
-      "case",
-      ["!=", ["get", "death_cnt"], "0"],
-      colors.fatalities,
-      colors.white, // Mapbox GL requires a fallback color or else nothing will render
-    ],
-    // Hide circles that don't match the case for proper overlay
-    "circle-opacity": [
-      "case",
-      ["!=", ["get", "sus_serious_injry_cnt"], "0"],
-      0,
-      ["!=", ["get", "death_cnt"], "0"],
-      1,
-      0,
-    ],
+    "circle-color": colors.fatalities,
   },
 };
 
 export const fatalitiesOutlineDataLayer = {
+  ...fatalitiesDataLayer,
   id: "fatalitiesOutline",
-  type: "circle",
   paint: {
+    ...fatalitiesDataLayer.paint,
     "circle-radius": 6,
-    "circle-color": [
-      "case",
-      ["!=", ["get", "death_cnt"], "0"],
-      colors.white,
-      colors.dark, // Mapbox GL requires a fallback color or else nothing will render
-    ],
-    // Hide circles that don't match the case for proper overlay
-    "circle-opacity": [
-      "case",
-      ["!=", ["get", "sus_serious_injry_cnt"], "0"],
-      0,
-      ["!=", ["get", "death_cnt"], "0"],
-      1,
-      0,
-    ],
+    "circle-color": colors.white,
   },
 };
 
@@ -57,30 +29,17 @@ export const seriousInjuriesDataLayer = {
   type: "circle",
   paint: {
     "circle-radius": 5,
-    "circle-color": [
-      "case",
-      ["==", ["get", "death_cnt"], "0"],
-      colors.seriousInjuries,
-      colors.white, // Mapbox GL requires a fallback color or else nothing will render
-    ],
-    // Hide circles that don't match the case for proper overlay
-    "circle-opacity": ["case", ["==", ["get", "death_cnt"], "0"], 1, 0],
+    "circle-color": colors.seriousInjuries,
   },
 };
 
 export const seriousInjuriesOutlineDataLayer = {
+  ...seriousInjuriesDataLayer,
   id: "seriousInjuriesOutline",
-  type: "circle",
   paint: {
+    ...seriousInjuriesDataLayer.paint,
     "circle-radius": 6,
-    "circle-color": [
-      "case",
-      ["==", ["get", "death_cnt"], "0"],
-      colors.white,
-      colors.dark, // Mapbox GL requires a fallback color or else nothing will render
-    ],
-    // Hide circles that don't match the case for proper overlay
-    "circle-opacity": ["case", ["==", ["get", "death_cnt"], "0"], 1, 0],
+    "circle-color": colors.white,
   },
 };
 
