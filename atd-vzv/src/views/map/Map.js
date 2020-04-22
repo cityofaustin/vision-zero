@@ -17,6 +17,7 @@ import {
   cityCouncilDataLayer,
 } from "./map-style";
 import axios from "axios";
+import moment from "moment";
 
 import { Card, CardBody, CardText } from "reactstrap";
 import styled from "styled-components";
@@ -188,18 +189,22 @@ const Map = () => {
   // Show tooltip if hovering over a feature
   const _renderTooltip = () => {
     const { feature } = hoveredFeature;
+    const cardData = feature && feature.properties;
 
     return (
-      feature && (
+      cardData && (
         <StyledCard>
           <Card style={{ top: 10, left: 10 }}>
             <CardBody>
-              <CardText>Crash ID: {feature.properties.crash_id}</CardText>
               <CardText>
-                Fatality Count: {feature.properties.death_cnt}
+                Date: {moment(cardData.crash_date).format("MM/DD/YYYY HH:MM A")}
               </CardText>
-              <CardText>Modes: {feature.properties.unit_mode}</CardText>
-              <CardText>Description: {feature.properties.unit_desc}</CardText>
+              <CardText>Fatalities: {cardData.death_cnt}</CardText>
+              <CardText>
+                Serious Injuries: {cardData.sus_serious_injry_cnt}
+              </CardText>
+              <CardText>Modes: {cardData.units_involved}</CardText>
+              <CardText>Crash ID: {cardData.crash_id}</CardText>
             </CardBody>
           </Card>
         </StyledCard>
