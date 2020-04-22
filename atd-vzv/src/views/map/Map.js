@@ -5,6 +5,7 @@ import MapControls from "./MapControls";
 import { createMapDataUrl } from "./helpers";
 import { crashGeoJSONEndpointUrl } from "../../views/summary/queries/socrataQueries";
 import {
+  baseSourceAndLayer,
   fatalitiesDataLayer,
   fatalitiesOutlineDataLayer,
   seriousInjuriesDataLayer,
@@ -242,6 +243,8 @@ const Map = () => {
       onHover={_onHover}
       ref={(ref) => (mapRef.current = ref && ref.getMap())}
     >
+      {/* Provide empty source and layer as target for beforeId params to set order of layers */}
+      {baseSourceAndLayer}
       {/* Crash Data Points */}
       {!!mapData && renderCrashDataLayers()}
       {/* ASMP Street Level Layers */}
@@ -251,7 +254,7 @@ const Map = () => {
       {!!cityCouncilOverlay && overlay.name === "cityCouncil" && (
         <Source type="geojson" data={cityCouncilOverlay}>
           {/* Add beforeId to render beneath crash points */}
-          <Layer beforeId="crashes" {...cityCouncilDataLayer} />
+          <Layer beforeId="base-layer" {...cityCouncilDataLayer} />
         </Source>
       )}
       {/* Render crash point tooltips */}

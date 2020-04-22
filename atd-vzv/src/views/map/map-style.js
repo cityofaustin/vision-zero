@@ -1,7 +1,20 @@
 import React from "react";
 import { RenderStates } from "react-map-gl-draw";
-import { Layer } from "react-map-gl";
+import { Source, Layer } from "react-map-gl";
 import { colors } from "../../constants/colors";
+
+// Empty source and layer placeholder to place other layers before
+export const baseSourceAndLayer = (
+  <>
+    <Source
+      id="base-source"
+      type="geojson"
+      data={{ type: "FeatureCollection", features: [] }}
+    >
+      <Layer id="base-layer" {...{ type: "symbol", source: "base-source" }} />
+    </Source>
+  </>
+);
 
 // For more information on data-driven styles, see https://www.mapbox.com/help/gl-dds-ref/
 // To create white border, add second layer with larger white radius behind primary circles
