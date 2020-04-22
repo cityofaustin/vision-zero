@@ -28,7 +28,6 @@ import { crashImportantDiffFields } from "./crashImportantDiffFields";
 import { crashChangeQuotedFields } from "./crashChangeQuotedFields";
 
 function CrashChange(props) {
-
   const crashId = props.match.params.id;
   const [selectedFields, setSelectedFields] = useState([]);
   const [recordData, setRecordData] = useState({});
@@ -203,8 +202,8 @@ function CrashChange(props) {
 
     return Object.keys(newRecord)
       .map((currentKey, i) => {
-        return `${newRecord[currentKey]}`.trim() !==
-          `${originalRecord[currentKey]}`.trim()
+        return String(`${newRecord[currentKey]}`).trim() !==
+          String(`${originalRecord[currentKey]}`).trim()
           ? currentKey
           : "/-n/a-/";
       })
@@ -268,9 +267,10 @@ function CrashChange(props) {
 
     selectedFields.forEach(field => {
       // Generate the value
-      let value = (crashChangeQuotedFields.includes(field)
-        ? `"${newRecord[field]}"`
-        : newRecord[field]
+      let value = String(
+        crashChangeQuotedFields.includes(field)
+          ? `"${newRecord[field]}"`
+          : newRecord[field]
       ).trim();
 
       if (value && value !== '""' && value.length > 0) {
@@ -337,7 +337,7 @@ function CrashChange(props) {
    */
   const cleanString = input => {
     if (input === null) return "";
-    return `${input}`.trim();
+    return String(`${input}`).trim();
   };
 
   /**
@@ -404,7 +404,9 @@ function CrashChange(props) {
    */
   useEffect(() => {
     if (Object.keys(recordData).length > 0) {
-      if (recordData["setCR3Available"] || null === "Y") {
+      if (
+        (recordData["atd_txdot_crashes"][0]["cr3_stored_flag"] || null) === "Y"
+      ) {
         setCR3Available(true);
       }
 
@@ -469,7 +471,6 @@ function CrashChange(props) {
     );
   }, [differentFieldsList, showFieldsDiffOnly, recordData, selectedFields]);
 
-
   // List of Selectable Fields
   const mainFieldsSelectable = importantFieldList.filter(field => {
     return selectableList.includes(field);
@@ -480,16 +481,32 @@ function CrashChange(props) {
     return selectableList.includes(field);
   });
 
-  const noDifferencesMessage = <Alert color="primary">
-    There are no differences in the rest of the record.
-  </Alert>;
+  const noDifferencesMessage = (
+    <Alert color="primary">
+      There are no differences in the rest of the record.
+    </Alert>
+  );
 
-  const fieldsHeader = <Row className={"crash-row-header"} >
-    <Col xs="6" sm="6" md="3"><b>Crash Table Field</b></Col>
-    <Col xs="12" sm="12" md="4"><h5><Badge color={"secondary"}>Current</Badge></h5></Col>
-    <Col xs="12" sm="12" md="4"><h5><Badge color={"danger"}>New</Badge></h5></Col>
-    <Col xs="6" sm="6" md="1">&nbsp;</Col>
-  </Row>;
+  const fieldsHeader = (
+    <Row className={"crash-row-header"}>
+      <Col xs="6" sm="6" md="3">
+        <b>Crash Table Field</b>
+      </Col>
+      <Col xs="12" sm="12" md="4">
+        <h5>
+          <Badge color={"secondary"}>Current</Badge>
+        </h5>
+      </Col>
+      <Col xs="12" sm="12" md="4">
+        <h5>
+          <Badge color={"danger"}>New</Badge>
+        </h5>
+      </Col>
+      <Col xs="6" sm="6" md="1">
+        &nbsp;
+      </Col>
+    </Row>
+  );
 
   return error ? (
     <div>{error}</div>
@@ -511,12 +528,10 @@ function CrashChange(props) {
                 <AppSwitch
                   className={"mx-1"}
                   color={"primary"}
-                  checked={showFieldsDiffOnly ? "" : "checked"}
+                  checked={!showFieldsDiffOnly}
                   onClick={() => toggleDiffOnly()}
                 />
-                <span className="minidiff--switchlabel">
-                  Show All Fields
-                </span>
+                <span className="minidiff--switchlabel">Show All Fields</span>
               </div>
             </CardHeader>
             <CardBody>
@@ -533,7 +548,7 @@ function CrashChange(props) {
                 </Col>
                 <Col sm xs="12" className="text-center">
                   <Button
-                    disabled={cr3available ? "" : "disabled"}
+                    disabled={!cr3available}
                     title={
                       cr3available
                         ? "Click to open in new window"
@@ -542,26 +557,13 @@ function CrashChange(props) {
                     color="secondary"
                     onClick={downloadCR3}
                   >
-                    <i className="fa fa-file-pdf-o"></i>&nbsp;Download Existing CR3
-                  </Button>
-                </Col>
-                <Col sm xs="12" className="text-center">
-                  <Button
-                    disabled={cr3available ? "" : "disabled"}
-                    title={
-                      cr3available
-                        ? "Click to open in new window"
-                        : "New CR3 NOT Available"
-                    }
-                    color="secondary"
-                    onClick={downloadCR3}
-                  >
-                    <i className="fa fa-file-pdf-o"></i>&nbsp;Download New CR3
+                    <i className="fa fa-file-pdf-o"></i>&nbsp;Download CR3
                   </Button>
                 </Col>
                 <Col sm xs="12" className="text-center">
                   <Button color="warning" onClick={() => toggleModal(2)}>
-                    <i className="fa fa-window-close"></i>&nbsp;Unselect all changes
+                    <i className="fa fa-window-close"></i>&nbsp;Unselect all
+                    changes
                   </Button>
                 </Col>
                 <Col
@@ -572,7 +574,7 @@ function CrashChange(props) {
                 >
                   <Button
                     color="success"
-                    disabled={selectableList.length > 0 ? "" : "disabled"}
+                    disabled={selectableList.length === 0}
                   >
                     <i className="fa fa-save"></i>&nbsp;Save Selected Changes
                   </Button>
@@ -605,7 +607,7 @@ function CrashChange(props) {
                 color="ghost-dark"
                 className="float-right"
                 onClick={() => fieldsBatchEnable(1)}
-                disabled={mainFieldsSelectable.length > 0 ? "" : "disabled"}
+                disabled={mainFieldsSelectable.length === 0}
               >
                 <i className="fa fa-lightbulb-o"></i>&nbsp;Select All
               </Button>
@@ -613,24 +615,19 @@ function CrashChange(props) {
                 color="ghost-dark"
                 className="float-right"
                 onClick={() => fieldsBatchClear(1)}
-                disabled={mainFieldsSelectable.length > 0 ? "" : "disabled"}
+                disabled={mainFieldsSelectable.length === 0}
               >
                 <i className="fa fa-lightbulb-o"></i>&nbsp;Clear All
               </Button>
             </CardHeader>
             <CardBody>
-              {
-                (
-                  (
-                    mainFieldsSelectable.length > 0 || showFieldsDiffOnly === false
-                  ) &&
-                  <>
-                    {fieldsHeader}
-                    {importantFields}
-                  </>) || <>
-                  {noDifferencesMessage}
+              {((mainFieldsSelectable.length > 0 ||
+                showFieldsDiffOnly === false) && (
+                <>
+                  {fieldsHeader}
+                  {importantFields}
                 </>
-              }
+              )) || <>{noDifferencesMessage}</>}
             </CardBody>
           </Card>
         </Col>
@@ -648,7 +645,7 @@ function CrashChange(props) {
                 color="ghost-dark"
                 className="float-right"
                 onClick={() => fieldsBatchEnable(2)}
-                disabled={otherFieldsSelectable.length > 0 ? "" : "disabled"}
+                disabled={otherFieldsSelectable.length === 0}
               >
                 <i className="fa fa-lightbulb-o"></i>&nbsp;Select All
               </Button>
@@ -656,25 +653,20 @@ function CrashChange(props) {
                 color="ghost-dark"
                 className="float-right"
                 onClick={() => fieldsBatchClear(2)}
-                disabled={otherFieldsSelectable.length > 0 ? "" : "disabled"}
+                disabled={otherFieldsSelectable.length === 0}
               >
                 <i className="fa fa-lightbulb-o"></i>&nbsp;Clear All
               </Button>
             </CardHeader>
             <CardBody>
-              {
-                (
-                  (
-                    otherFieldsSelectable.length > 0 || showFieldsDiffOnly === false
-                  ) &&
+              {((otherFieldsSelectable.length > 0 ||
+                showFieldsDiffOnly === false) && (
                 <>
                   {fieldsHeader}
                   {differentFields}
-                </>) || <>
-                    {noDifferencesMessage}
                 </>
-              }
-              </CardBody>
+              )) || <>{noDifferencesMessage}</>}
+            </CardBody>
           </Card>
         </Col>
       </Row>
