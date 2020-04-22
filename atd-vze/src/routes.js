@@ -43,6 +43,9 @@ const Dev = React.lazy(() => import("./views/Dev/Dev"));
 const Crashes = React.lazy(() => import("./views/Crashes/Crashes"));
 const CrashesChanges = React.lazy(() => import("./views/Crashes/CrashesChanges"));
 const CrashChange = React.lazy(() => import("./views/Crashes/CrashChange"));
+const ReportsInconsistentKSI = React.lazy(() =>
+  import("./views/Reports/ReportsInconsistentKSI")
+);
 const Crash = React.lazy(() => import("./views/Crashes/Crash"));
 const Profile = React.lazy(() => import("./views/Profile/Profile"));
 const Locations = React.lazy(() => import("./views/Locations/Locations"));
@@ -154,7 +157,7 @@ const routes = roles => [
     name: "Crash Details",
     component: Crash,
   },
-  {
+  (isAdmin(roles) || isItSupervisor(roles)) && {
     path: "/reports/inconsistent_ksi_counts",
     exact: true,
     name: "Crashes with Inconsistent KSI Counts",
