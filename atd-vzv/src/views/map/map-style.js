@@ -1,4 +1,5 @@
 import React from "react";
+import { RenderStates } from "react-map-gl-draw";
 import { Layer } from "react-map-gl";
 import { colors } from "../../constants/colors";
 
@@ -8,32 +9,32 @@ export const crashDataLayer = {
   type: "circle",
   paint: {
     "circle-radius": 5,
-    "circle-color": `${colors.info}`
-  }
+    "circle-color": `${colors.info}`,
+  },
 };
 
 // Config ASMP Street Level layers
 export const asmpConfig = {
   asmp_1: {
     filter: 0,
-    color: colors.mapAsmp1
+    color: colors.mapAsmp1,
   },
   asmp_2: {
     filter: 1,
-    color: colors.mapAsmp2
+    color: colors.mapAsmp2,
   },
   asmp_3: {
     filter: 2,
-    color: colors.mapAsmp3
+    color: colors.mapAsmp3,
   },
   asmp_4: {
     filter: 3,
-    color: colors.mapAsmp4
+    color: colors.mapAsmp4,
   },
   asmp_5: {
     filter: 4,
-    color: colors.mapAsmp5
-  }
+    color: colors.mapAsmp5,
+  },
 };
 
 // Map Overlay configuration
@@ -53,8 +54,8 @@ export const buildAsmpLayers = (config, overlay) =>
       source: {
         type: "vector",
         tiles: [
-          "https://tiles.arcgis.com/tiles/0L95CJ0VTaxqcmED/arcgis/rest/services/ASMP_Streets_VectorTile/VectorTileServer/tile/{z}/{y}/{x}.pbf"
-        ]
+          "https://tiles.arcgis.com/tiles/0L95CJ0VTaxqcmED/arcgis/rest/services/ASMP_Streets_VectorTile/VectorTileServer/tile/{z}/{y}/{x}.pbf",
+        ],
       },
       "source-layer": "asmp_street_network",
       filter: ["==", "_symbol", parameters.filter],
@@ -65,12 +66,12 @@ export const buildAsmpLayers = (config, overlay) =>
           overlay.options && overlay.options.includes(asmpLevel)
             ? "visible"
             : "none"
-        }`
+        }`,
       },
       paint: {
         "line-color": parameters.color,
-        "line-width": 2
-      }
+        "line-width": 2,
+      },
     };
 
     // Return a Layer component with config prop passed for each level
@@ -78,7 +79,7 @@ export const buildAsmpLayers = (config, overlay) =>
   });
 
 // Build Mapbox GL layer High Injury Network
-export const buildHighInjuryLayer = overlay => {
+export const buildHighInjuryLayer = (overlay) => {
   // Set config for each ASMP level layer based on ArcGIS VectorTileServer styles
   const overlayId = "highInjury";
 
@@ -89,18 +90,18 @@ export const buildHighInjuryLayer = overlay => {
     source: {
       type: "vector",
       tiles: [
-        "https://tiles.arcgis.com/tiles/0L95CJ0VTaxqcmED/arcgis/rest/services/HIN_Vector_Tile/VectorTileServer/tile/{z}/{y}/{x}.pbf"
-      ]
+        "https://tiles.arcgis.com/tiles/0L95CJ0VTaxqcmED/arcgis/rest/services/HIN_Vector_Tile/VectorTileServer/tile/{z}/{y}/{x}.pbf",
+      ],
     },
     "source-layer": "High-Injury Network",
     layout: {
       "line-join": "round",
-      visibility: `${overlay.name === overlayId ? "visible" : "none"}`
+      visibility: `${overlay.name === overlayId ? "visible" : "none"}`,
     },
     paint: {
       "line-color": colors.mapHighInjuryNetwork,
-      "line-width": 2
-    }
+      "line-width": 2,
+    },
   };
 
   // Return a Layer component with config prop passed
@@ -125,9 +126,61 @@ export const cityCouncilDataLayer = {
         [7, colors.mapCityCouncil7],
         [8, colors.mapCityCouncil8],
         [9, colors.mapCityCouncil9],
-        [10, colors.mapCityCouncil10]
-      ]
+        [10, colors.mapCityCouncil10],
+      ],
     },
-    "fill-opacity": 0.5
-  }
+    "fill-opacity": 0.5,
+  },
 };
+
+// Styles for MapPolygonFilter
+export function getEditHandleStyle({ feature, state }) {
+  switch (state) {
+    case RenderStates.UNCOMMITTED:
+      return {
+        fill: colors.viridis6Of6Lowest,
+        fillOpacity: 1,
+        stroke: colors.white,
+        strokeWidth: 2,
+        r: 7,
+      };
+
+    default:
+      return {
+        fill: colors.viridis6Of6Lowest,
+        fillOpacity: 1,
+        stroke: colors.white,
+        strokeWidth: 2,
+        r: 5,
+      };
+  }
+}
+
+export function getFeatureStyle({ feature, index, state }) {
+  switch (state) {
+    case RenderStates.CLOSING:
+      return {
+        stroke: colors.viridis4Of6,
+        strokeWidth: 2,
+        fill: colors.viridis4Of6,
+        fillOpacity: 0.3,
+        strokeDasharray: "4,2",
+      };
+    case RenderStates.UNCOMMITTED:
+      return {
+        stroke: colors.viridis6Of6Lowest,
+        strokeWidth: 2,
+        fill: colors.viridis6Of6Lowest,
+        fillOpacity: 0.3,
+        strokeDasharray: "4,2",
+      };
+
+    default:
+      return {
+        stroke: colors.info,
+        strokeWidth: 2,
+        fill: colors.info,
+        fillOpacity: 0.1,
+      };
+  }
+}

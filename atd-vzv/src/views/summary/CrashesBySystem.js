@@ -8,7 +8,7 @@ import { colors } from "../../constants/colors";
 import {
   dataEndDate,
   yearsArray,
-  summaryCurrentYearEndDate
+  summaryCurrentYearEndDate,
 } from "../../constants/time";
 import { crashEndpointUrl } from "./queries/socrataQueries";
 
@@ -21,14 +21,14 @@ const CrashesBySystem = () => {
       label: "On TxDOT System",
       flags: ["onsys_fl"],
       value: "Y",
-      color: `${colors.chartRed}`
+      color: `${colors.viridis1Of6Highest}`,
     },
     {
       label: "Off TxDOT System",
       flags: ["onsys_fl"],
       value: "N",
-      color: `${colors.chartLightBlue}`
-    }
+      color: `${colors.viridis2Of6}`,
+    },
   ];
 
   const [chartData, setChartData] = useState(null); // {yearInt: [{record}, {record}, ...]}
@@ -42,7 +42,7 @@ const CrashesBySystem = () => {
         let newData = {};
         // Use Promise.all to let all requests resolve before setting chart data by year
         await Promise.all(
-          yearsArray().map(async year => {
+          yearsArray().map(async (year) => {
             // If getting data for current year (only including years past January), set end of query to last day of previous month,
             // else if getting data for previous years, set end of query to last day of year
             let endDate =
@@ -50,7 +50,7 @@ const CrashesBySystem = () => {
                 ? `${summaryCurrentYearEndDate}T23:59:59`
                 : `${year}-12-31T23:59:59`;
             let url = `${crashEndpointUrl}?$where=${crashType.queryStringCrash} AND crash_date between '${year}-01-01T00:00:00' and '${endDate}'`;
-            await axios.get(url).then(res => {
+            await axios.get(url).then((res) => {
               newData = { ...newData, ...{ [year]: res.data } };
             });
             return null;
@@ -62,21 +62,21 @@ const CrashesBySystem = () => {
     }
   }, [crashType]);
 
-  const createChartLabels = () => yearsArray().map(year => `${year}`);
+  const createChartLabels = () => yearsArray().map((year) => `${year}`);
 
   // Tabulate crashes by flags in data
   const getCategoryData = (flags, value) =>
-    yearsArray().map(year => {
+    yearsArray().map((year) => {
       return chartData[year].reduce((accumulator, record) => {
         // For each flag, count records where the record's flag value matches the category's flag value ("Y" or "N")
-        flags.forEach(flag => record[`${flag}`] === value && accumulator++);
+        flags.forEach((flag) => record[`${flag}`] === value && accumulator++);
         return accumulator;
       }, 0);
     });
 
   // Sort category order in stack by averaging total category crashes across all years in chart
-  const sortCategoryData = data => {
-    const averageCategoryCrashes = categoryDataArray =>
+  const sortCategoryData = (data) => {
+    const averageCategoryCrashes = (categoryDataArray) =>
       categoryDataArray.reduce((a, b) => a + b) / categoryDataArray.length;
     return data.sort(
       (a, b) => averageCategoryCrashes(b.data) - averageCategoryCrashes(a.data)
@@ -85,14 +85,14 @@ const CrashesBySystem = () => {
 
   // Create dataset for each category, data property is an array of crash sums sorted chronologically
   const createCategoryDatasets = () => {
-    const data = categories.map(category => ({
+    const data = categories.map((category) => ({
       backgroundColor: category.color,
       borderColor: category.color,
       borderWidth: 2,
       hoverBackgroundColor: category.color,
       hoverBorderColor: category.color,
       label: category.label,
-      data: getCategoryData(category.flags, category.value)
+      data: getCategoryData(category.flags, category.value),
     }));
     // Determine order of categoriess in each year stack
     return sortCategoryData(data);
@@ -100,43 +100,50 @@ const CrashesBySystem = () => {
 
   const data = {
     labels: createChartLabels(),
-    datasets: !!chartData && createCategoryDatasets()
+    datasets: !!chartData && createCategoryDatasets(),
   };
 
   return (
-    <Container>
-      <Row className="pb-3">
+    <Container className="m-0 p-0">
+      <Row>
         <Col>
-          <h3 className="text-center">
-            {crashType.textString} by Jurisdiction
-          </h3>
+          <h2 className="text-left, font-weight-bold">By Jurisdiction</h2>
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <CrashTypeSelector setCrashType={setCrashType} />
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <hr />
         </Col>
       </Row>
       <Row>
         <Col>
           <Bar
             data={data}
+            height={null}
+            width={null}
             options={{
-              maintainAspectRatio: true,
+              responsive: true,
+              aspectRatio: 1,
+              maintainAspectRatio: false,
               scales: {
                 xAxes: [
                   {
-                    stacked: true
-                  }
+                    stacked: true,
+                  },
                 ],
                 yAxes: [
                   {
-                    stacked: true
-                  }
-                ]
-              }
+                    stacked: true,
+                  },
+                ],
+              },
             }}
           />
-        </Col>
-      </Row>
-      <Row className="pt-3">
-        <Col>
-          <CrashTypeSelector setCrashType={setCrashType} />
         </Col>
       </Row>
     </Container>

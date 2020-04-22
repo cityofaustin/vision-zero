@@ -1,5 +1,6 @@
 import React from "react";
 import { withApollo } from "react-apollo";
+import moment from "moment";
 
 import GridTable from "../../Components/GridTable";
 import gqlAbstract from "../../queries/gqlAbstract";
@@ -54,7 +55,7 @@ let queryConf = {
       searchable: false,
       sortable: true,
       label_search: null,
-      label_table: "Comp. Cost (CR3s)",
+      label_table: "Total Est Comp. Cost", // Both CR3 + Blueform
       default: 0,
       type: "Currency",
     },
@@ -68,6 +69,12 @@ let queryConf = {
   offset: 0,
 };
 
+const dateRangeStart = moment()
+  .subtract(5, "years")
+  .format("MM/DD/YYYY");
+const dateRangeEnd = moment().format("MM/DD/YYYY");
+const helperText = `Totals calculated using the previous five years of crash data (${dateRangeStart} - ${dateRangeEnd})`;
+
 let locationsQuery = new gqlAbstract(queryConf);
 
 const Locations = () => (
@@ -75,6 +82,7 @@ const Locations = () => (
     query={locationsQuery}
     title={"Locations"}
     columnsToExport={locationQueryExportFields}
+    helperText={helperText}
   />
 );
 

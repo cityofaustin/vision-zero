@@ -3,14 +3,21 @@ import axios from "axios";
 import moment from "moment";
 
 import CrashTypeSelector from "../nav/CrashTypeSelector";
-import { Nav, NavItem, NavLink, Row, Col, Container } from "reactstrap";
+import { Row, Col, Container, Button } from "reactstrap";
+import styled from "styled-components";
 import classnames from "classnames";
-import { Heatmap, HeatmapSeries } from "reaviz";
+import {
+  Heatmap,
+  HeatmapSeries,
+  HeatmapCell,
+  ChartTooltip,
+  SequentialLegend,
+} from "reaviz";
 import {
   summaryCurrentYearStartDate,
   summaryCurrentYearEndDate,
   yearsArray,
-  dataEndDate
+  dataEndDate,
 } from "../../constants/time";
 import { crashEndpointUrl } from "./queries/socrataQueries";
 import { getYearsAgoLabel } from "./helpers/helpers";
@@ -21,12 +28,13 @@ const CrashesByTimeOfDay = () => {
   const [crashType, setCrashType] = useState([]);
   const [heatmapData, setHeatmapData] = useState([]);
 
-  const toggle = tab => {
+  const toggle = (tab) => {
     if (activeTab !== tab) setActiveTab(tab);
   };
 
   useEffect(() => {
-    const dayOfWeekArray = moment.weekdays();
+    const dayOfWeekArray = moment.weekdaysShort();
+
     const hourBlockArray = [
       "12AM",
       "01AM",
@@ -51,22 +59,22 @@ const CrashesByTimeOfDay = () => {
       "08PM",
       "09PM",
       "10PM",
-      "11PM"
+      "11PM",
     ];
 
     let dataArray = [];
 
     const buildDataArray = () => {
       dataArray = [];
-      hourBlockArray.forEach(hour => {
+      hourBlockArray.forEach((hour) => {
         let hourObject = {
           key: hour,
-          data: []
+          data: [],
         };
-        dayOfWeekArray.forEach(day => {
+        dayOfWeekArray.forEach((day) => {
           let dayObject = {
             key: day,
-            data: 0
+            data: 0,
           };
           hourObject.data.push(dayObject);
         });
@@ -75,9 +83,9 @@ const CrashesByTimeOfDay = () => {
       });
     };
 
-    const calculateHourBlockTotals = data => {
+    const calculateHourBlockTotals = (data) => {
       buildDataArray();
-      data.data.forEach(record => {
+      data.data.forEach((record) => {
         const date = new Date(record.crash_date);
         const dayOfWeek = date.getDay();
         const time = record.crash_time;
@@ -99,13 +107,20 @@ const CrashesByTimeOfDay = () => {
             break;
         }
       });
+      // Set any 0 values to null so that the reaviz library
+      // recognizes them as "blank cells" and fills them accordingly
+      dataArray.forEach((hour) => {
+        hour.data.forEach((day) => {
+          if (day.data === 0) {
+            day.data = null;
+          }
+        });
+      });
       return dataArray;
     };
 
     const getFatalitiesByYearsAgoUrl = () => {
-      const yearsAgoDate = moment()
-        .subtract(activeTab, "year")
-        .format("YYYY");
+      const yearsAgoDate = moment().subtract(activeTab, "year").format("YYYY");
       let queryUrl =
         activeTab === 0
           ? `${crashEndpointUrl}?$where=${crashType.queryStringCrash} AND crash_date between '${summaryCurrentYearStartDate}T00:00:00' and '${summaryCurrentYearEndDate}T23:59:59'`
@@ -116,64 +131,113 @@ const CrashesByTimeOfDay = () => {
     // Wait for crashType to be passed up from setCrashType component,
     // then fetch records for selected year
     if (crashType.queryStringCrash)
-      axios.get(getFatalitiesByYearsAgoUrl()).then(res => {
+      axios.get(getFatalitiesByYearsAgoUrl()).then((res) => {
         setHeatmapData(calculateHourBlockTotals(res));
       });
   }, [activeTab, crashType]);
 
+  const formatValue = (d) => {
+    const value = d.data.value ? d.data.value : 0;
+    return value;
+  };
+
+  // Set styles to override Bootstrap default styling
+  const StyledButton = styled.div`
+    .year-selector {
+      color: ${colors.dark};
+      background: ${colors.buttonBackground} 0% 0% no-repeat padding-box;
+      border-style: none;
+      opacity: 1;
+      margin-left: 5px;
+      margin-right: 5px;
+    }
+  `;
+
   return (
-    <Container>
-      <Row className="pb-3">
+    <Container className="m-0 p-0">
+      <Row>
         <Col>
-          <h3 className="text-center">{crashType.textString} by Time of Day</h3>
+          <h2 className="text-left, font-weight-bold">By Time of Day</h2>
         </Col>
       </Row>
       <Row>
         <Col>
-          <Nav tabs className="justify-content-center">
+          <CrashTypeSelector setCrashType={setCrashType} />
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <hr />
+        </Col>
+      </Row>
+      <Row className="text-center">
+        <Col className="pb-2">
+          <StyledButton>
             {yearsArray() // Calculate years ago for each year in data window
-              .map(year => {
+              .map((year) => {
                 const currentYear = parseInt(dataEndDate.format("YYYY"));
                 return currentYear - year;
               })
-              .map(yearsAgo => (
-                <NavItem key={yearsAgo}>
-                  <NavLink
-                    key={yearsAgo}
-                    className={classnames({ active: activeTab === yearsAgo })}
-                    onClick={() => {
-                      toggle(yearsAgo);
-                    }}
-                  >
-                    {getYearsAgoLabel(yearsAgo)}
-                  </NavLink>
-                </NavItem>
+              .map((yearsAgo) => (
+                <Button
+                  key={yearsAgo}
+                  className={classnames(
+                    { active: activeTab === yearsAgo },
+                    "year-selector"
+                  )}
+                  onClick={() => {
+                    toggle(yearsAgo);
+                  }}
+                >
+                  {getYearsAgoLabel(yearsAgo)}
+                </Button>
               ))}
-          </Nav>
+          </StyledButton>
         </Col>
       </Row>
-      <Row>
+      <Row className="h-auto">
         <Col>
           <Heatmap
-            height={200}
+            height={267}
             data={heatmapData}
             series={
               <HeatmapSeries
                 colorScheme={[
-                  colors.redGradient1Of5,
-                  colors.redGradient2Of5,
-                  colors.redGradient3Of5,
-                  colors.redGradient4Of5,
-                  colors.redGradient5Of5
+                  colors.intensity2Of5,
+                  colors.intensity3Of5,
+                  colors.intensity4Of5,
+                  colors.viridis1Of6Highest,
                 ]}
+                emptyColor={colors.intensity1Of5Lowest}
+                cell={
+                  <HeatmapCell
+                    tooltip={
+                      <ChartTooltip
+                        content={(d) =>
+                          `${d.x} ∙
+                          ${formatValue(d)}`
+                        }
+                      />
+                    }
+                  />
+                }
               />
             }
           />
         </Col>
       </Row>
-      <Row className="pt-3">
-        <Col>
-          <CrashTypeSelector setCrashType={setCrashType} />
+      <Row>
+        <Col className="py-2">
+          <SequentialLegend
+            data={heatmapData}
+            orientation="horizontal"
+            colorScheme={[
+              colors.intensity2Of5,
+              colors.intensity3Of5,
+              colors.intensity4Of5,
+              colors.viridis1Of6Highest,
+            ]}
+          />
         </Col>
       </Row>
     </Container>
