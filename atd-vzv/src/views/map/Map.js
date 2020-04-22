@@ -1,12 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { StoreContext } from "../../utils/store";
-import ReactMapGL, {
-  Source,
-  Layer,
-  GeolocateControl,
-  NavigationControl,
-} from "react-map-gl";
-import MapPolygonFilter from "./MapPolygonFilter";
+import ReactMapGL, { Source, Layer } from "react-map-gl";
+import MapControls from "./MapControls";
 import { createMapDataUrl } from "./helpers";
 import { crashGeoJSONEndpointUrl } from "../../views/summary/queries/socrataQueries";
 import {
@@ -76,27 +71,6 @@ const StyledMapSpinner = styled.div`
     100% {
       transform: rotate(0deg);
     }
-  }
-`;
-
-const StyledMapNav = styled.div`
-  .nav-buttons {
-    position: absolute;
-    top: 0px;
-    right: 0px;
-    padding: 10px;
-  }
-
-  .geolocate-button {
-    position: absolute;
-    top: 68px;
-    right: 0px;
-    padding: 10px;
-  }
-
-  .polygon-button {
-    position: relative;
-    top: 107px;
   }
 `;
 
@@ -187,9 +161,6 @@ const Map = () => {
   }, []);
 
   const _onViewportChange = (viewport) => setViewport(viewport);
-
-  const _onViewportGeolocate = (viewport) =>
-    setViewport({ ...viewport, zoom: 15 });
 
   // Capture hovered feature to populate tooltip data
   const _onHover = (event) => {
@@ -297,18 +268,7 @@ const Map = () => {
           />
         </StyledMapSpinner>
       )}
-
-      <StyledMapNav>
-        <div className="nav-buttons">
-          <NavigationControl showCompass={false} />
-        </div>
-        <div className="geolocate-button">
-          <GeolocateControl onViewportChange={_onViewportGeolocate} />
-        </div>
-        <div className="polygon-button">
-          <MapPolygonFilter setMapPolygon={setMapPolygon} />
-        </div>
-      </StyledMapNav>
+      <MapControls setViewport={setViewport} setMapPolygon={setMapPolygon} />
     </ReactMapGL>
   );
 };
