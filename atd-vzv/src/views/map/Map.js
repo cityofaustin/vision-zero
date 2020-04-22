@@ -174,10 +174,11 @@ const Map = () => {
       features.find(
         (f) =>
           f.layer.id === "fatalities" ||
-          "fatalitiesOutline" ||
-          "seriousInjuries" ||
-          "seriousInjuriesOutline"
+          f.layer.id === "fatalitiesOutline" ||
+          f.layer.id === "seriousInjuries" ||
+          f.layer.id === "seriousInjuriesOutline"
       );
+
     setHoveredFeature({ feature: hoveredFeature, x: offsetX, y: offsetY });
   };
 
