@@ -212,7 +212,17 @@ export const GET_CRASH_SECONDARY_RECORDS = gql`
     }
 `;
 
+export const CRASH_MUTATION_DISCARD = gql`
+    mutation discardChanges($crashId: Int) {
+      delete_atd_txdot_changes(where: {record_id: {_eq: $crashId}}) {
+        affected_rows
+      }
+    }
+`
 
+/**
+ * Update the Crash
+ */
 
 export const CRASH_MUTATION_TEMPLATE = `
   mutation processChange($crashId: Int) {
@@ -230,16 +240,9 @@ export const CRASH_MUTATION_TEMPLATE = `
   }
 `;
 
-export const CRASH_MUTATION_DISCARD = gql`
-    mutation discardChanges($crashId: Int) {
-      delete_atd_txdot_changes(where: {record_id: {_eq: $crashId}}) {
-        affected_rows
-      }
-    }
-`
-
 
 /**
+ * Update Crash
  * Update the Units
  * Update the Persons
  * Update the Primary Persons
