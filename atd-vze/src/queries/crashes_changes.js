@@ -224,26 +224,26 @@ export const CRASH_MUTATION_DISCARD = gql`
  * Update the Crash
  */
 
-export const CRASH_MUTATION_TEMPLATE = `
-  mutation processChange($crashId: Int) {
-    update_atd_txdot_crashes(
-        where: {
-          crash_id: { _eq: $crashId }
-        },
-        
-        _set: {
-          %UPDATE_FIELDS%
-        }
-    ) {
-      affected_rows
-    }
-  }
-`;
+export const RECORD_MUTATION_UPDATE = `
+        %FUNCTION_NAME%(
+            where: {
+              crash_id: { _eq: $crashId }
+              record_type: { _eq: "%RECORD_TYPE%" }
+            },
+            
+            _set: {
+                %UPDATE_FIELDS%
+            }
+        ) {
+          affected_rows
+        }`;
 
-
-/**
- * Update Crash
- * Update the Units
- * Update the Persons
- * Update the Primary Persons
- */
+export const RECORD_DELETE_CHANGE_RECORDS = `
+        %FUNCTION_NAME%(
+            where: {
+              crash_id: { _eq: $crashId }
+              record_type: { _eq: "%RECORD_TYPE%" }
+            }
+        ) {
+          affected_rows
+        }`;
