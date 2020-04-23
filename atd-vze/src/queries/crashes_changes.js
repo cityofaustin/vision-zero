@@ -225,25 +225,32 @@ export const CRASH_MUTATION_DISCARD = gql`
  */
 
 export const RECORD_MUTATION_UPDATE = `
-        %FUNCTION_NAME%(
-            where: {
-              crash_id: { _eq: $crashId }
-              record_type: { _eq: "%RECORD_TYPE%" }
-            },
-            
-            _set: {
+        %FUNCTION_NAME%(         
+            objects: {
                 %UPDATE_FIELDS%
+                updated_by: "%CURRENT_USER%"
+            },
+            on_conflict: {
+              constraint: %CONSTRAINT_NAME%,
+              update_columns: [
+                updated_by
+                %SELECTED_COLUMNS%
+              ]
             }
         ) {
           affected_rows
-        }`;
+        }
+`;
 
 export const RECORD_DELETE_CHANGE_RECORDS = `
-        %FUNCTION_NAME%(
-            where: {
-              crash_id: { _eq: $crashId }
-              record_type: { _eq: "%RECORD_TYPE%" }
-            }
-        ) {
-          affected_rows
-        }`;
+  mutation deleteChangeRecords($crashId: Int) {
+      delete_atd_txdot_changes (
+          where: {
+            crash_id: { _eq: $crashId }
+            record_type: { _in: ["crash", "unit", "primaryperson", "person"] }
+          }
+      ) {
+        affected_rows
+      }
+  }
+`;
