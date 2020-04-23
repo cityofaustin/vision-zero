@@ -191,3 +191,56 @@ export const GET_CRASH_CHANGE = gql`
         }
     }
 `;
+
+/**
+ * Allows us to search all secondary records that are not a crash,
+ * namely: all involved primary persons, persons, and units.
+ */
+export const GET_CRASH_SECONDARY_RECORDS = gql`
+    query findSecondaryRecords($crashId: Int) {
+        atd_txdot_changes(
+            where: {
+                record_type: {_neq: "crash"},
+                record_id: {_eq: $crashId}
+            }
+        ) {
+            change_id
+            record_id
+            record_type
+            record_json
+        }
+    }
+`;
+
+
+
+export const CRASH_MUTATION_TEMPLATE = `
+  mutation processChange($crashId: Int) {
+    update_atd_txdot_crashes(
+        where: {
+          crash_id: { _eq: $crashId }
+        },
+        
+        _set: {
+          %UPDATE_FIELDS%
+        }
+    ) {
+      affected_rows
+    }
+  }
+`;
+
+export const CRASH_MUTATION_DISCARD = gql`
+    mutation discardChanges($crashId: Int) {
+      delete_atd_txdot_changes(where: {record_id: {_eq: $crashId}}) {
+        affected_rows
+      }
+    }
+`
+
+
+/**
+ * Update the Units
+ * Update the Persons
+ * Update the Primary Persons
+ */
