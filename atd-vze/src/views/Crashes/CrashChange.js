@@ -26,8 +26,9 @@ import { AppSwitch } from "@coreui/react";
 import {
   GET_CRASH_CHANGE,
   GET_CRASH_SECONDARY_RECORDS,
-  CRASH_MUTATION_TEMPLATE,
   CRASH_MUTATION_DISCARD,
+  RECORD_MUTATION_UPDATE,
+  RECORD_DELETE_CHANGE_RECORDS,
 } from "../../queries/crashes_changes";
 import { crashImportantDiffFields } from "./crashImportantDiffFields";
 import { crashChangeQuotedFields } from "./crashChangeQuotedFields";
@@ -111,15 +112,27 @@ function CrashChange(props) {
   };
 
   /**
+   * Returns the existing record in database.
+   * @returns {object|null} - The object data from the database
+   */
+  const getOriginalRecord = () => {
+    return recordData["atd_txdot_crashes"][0] || null;
+  }
+
+  /**
+   * Returns the new record as an object
+   * @returns {object|null} - The parsed object
+   */
+  const getNewRecord = () => {
+    return JSON.parse(recordData["atd_txdot_changes"][0]["record_json"]) || null;
+  }
+
+  /**
    * Returns an deconstructable array with two objects containing the old record and the new record.
    * @returns {object[]}
    */
   const getOriginalNewRecords = () => {
-    const originalRecord = recordData["atd_txdot_crashes"][0] || null;
-    const newRecord =
-      JSON.parse(recordData["atd_txdot_changes"][0]["record_json"]) || null;
-
-    return [originalRecord, newRecord];
+    return [getOriginalRecord(), getNewRecord()];
   };
 
   /**
@@ -277,7 +290,9 @@ function CrashChange(props) {
       }
     });
 
-    return CRASH_MUTATION_TEMPLATE.replace("%UPDATE_FIELDS%", updateFields.join("\n"));
+    return RECORD_MUTATION_UPDATE
+      .replace("%FUNCTION_NAME%", "update_atd_txdot_crashes")
+      .replace("%UPDATE_FIELDS%", updateFields.join("\n"));
   };
 
   /**
@@ -435,22 +450,42 @@ function CrashChange(props) {
       return field.endsWith("_cnt");
     });
 
+    const selectedFieldsValues = generateFieldsWithValues();
+
     // 2. Gather the mutation templates for:
     //    - crash
     //    - unit
     //    - primary persson
     //    - person
-    const queryTemplates = {
-      crash: "",
-      unit: "",
-      primary_person: "",
-      person: ""
-    }
-
+    const deleteChangeTableRecords = `
+      mutation processChange($crashId: Int) {
+        ${generateUpdateQuery(RECORD_DELETE_CHANGE_RECORDS, {
+          "function_name": "update_atd_txdot_crashes",
+          "record_type": "crash",
+          "update_fields": null
+        })}
+        ${generateUpdateQuery(RECORD_DELETE_CHANGE_RECORDS, {
+          "function_name": "update_atd_txdot_units",
+          "record_type": "unit",
+          "update_fields": null
+        })}
+        ${generateUpdateQuery(RECORD_DELETE_CHANGE_RECORDS, {
+          "function_name": "update_atd_txdot_primaryperson",
+          "record_type": "primaryperson",
+          "update_fields": null
+        })}
+        ${generateUpdateQuery(RECORD_DELETE_CHANGE_RECORDS, {
+          "function_name": "update_atd_txdot_person",
+          "record_type": "person",
+          "update_fields": null
+        })}
+      }
+    `;
     // 3. We are going to remove all count columns unless present in countFields
 
-
     const mutation = generateMutationSave();
+    console.log("deleteChangeTableRecords: ");
+    console.log(deleteChangeTableRecords);
     console.log("saveSelectedFields() : Mutation Template");
     console.log(mutation);
     toggleModal(1);
@@ -466,6 +501,24 @@ function CrashChange(props) {
     alert("The user should now be taken to the index page.");
   };
 
+
+  /**
+   * Generates a list of key-value pairs containing the selected fields to be
+   * inserted into the database.
+   * @returns {object} - The key-value object containing selected fields and
+   * each individual value.
+   */
+  const generateFieldsWithValues = () => {
+      const newRecord = getNewRecord();
+      let output = {};
+      if (selectedFields.length && selectedFields.length > 0) {
+        selectedFields.forEach((fieldName) => {
+          output[fieldName] = newRecord[fieldName];
+        });
+      }
+      return output;
+  }
+
   /**
    * Removes all instances of a field in a GraphQL expression
    * @param {string} graphqlQueryString - The executable GraphQL query to clean up.
@@ -474,17 +527,39 @@ function CrashChange(props) {
    * @returns {string} - The filtered new graphql query string.
    */
   const cleanUpQuery = (graphqlQueryString, columnName) => {
+
     return null;
   }
 
   /**
+   * Wraps a value in quotation marks if not numeric or boolean.
+   * @param {*} value - Any given value, of any type.
+   * @returns {string} - The value wrapped in quotation marks or as a string.
+   */
+  const printQuotation = (value) => {
+    return isNaN(value) ? `"${value}"` : String(value);
+  }
+
+  /**
    * Generates an executable GraphQL query based on a template and update fields.
-   * @param {string} graphqlTemplate - The template
-   * @param {object} updateFields - A key value array with the values to be inserted.
+   * @param {string} graphqlTemplate - The template to be used to generate the update query.
+   * @param {object} configuration - A key-value object with the configuration settings.
    * @returns {string} - The executable query.
    */
-  const generateUpdateQuery = (graphqlTemplate, updateFields) => {
-    return null;
+  const generateUpdateQuery = (graphqlTemplate, configuration) => {
+    // We must generate the list of fields & values to be updated
+    const updateFields = Object.keys(configuration["update_fields"]).map((key) => {
+      return key + ": " + printQuotation(configuration["update_fields"][key])
+    }).join("\n\t\t\t\t") || null;
+
+    // Then, let's get the function name and record type patched
+    const output = graphqlTemplate
+      .replace("%FUNCTION_NAME%", configuration["function_name"])
+      .replace("%RECORD_TYPE%", configuration["record_type"])
+      .replace("%UPDATE_FIELDS%", updateFields);
+
+    // First we need the template
+    return output;
   }
 
   /**
