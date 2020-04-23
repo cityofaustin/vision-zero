@@ -217,7 +217,7 @@ const CrashesByMonth = () => {
                             <hr
                               className="my-1"
                               style={{
-                                border: `2px solid ${colors.buttonBackground}`,
+                                border: `4px solid ${colors.buttonBackground}`,
                               }}
                             ></hr>
                             <h6 className="text-center py-1 mb-0">
@@ -284,7 +284,7 @@ const CrashesByMonth = () => {
                                       id={`bar-${year}`}
                                       className="my-1"
                                       style={{
-                                        border: `2px solid ${legendColor}`,
+                                        border: `4px solid ${legendColor}`,
                                       }}
                                     ></hr>
                                     <h6 className="text-center py-1 mb-0">
