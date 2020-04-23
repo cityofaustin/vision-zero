@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { withApollo } from "react-apollo";
 import { useQuery } from "@apollo/react-hooks";
+import { useAuth0 } from "../../auth/authContext";
 import { MiniDiff } from "../../Components/MiniDiff";
 import axios from "axios";
 
@@ -52,11 +53,21 @@ function CrashChange(props) {
   const [clearAllSelections, setClearAllSelections] = useState(false);
   // CR3 Availbable
   const [cr3available, setCR3Available] = useState(false);
-  const {data: data, error: error, loading: loadingData } = useQuery(GET_CRASH_CHANGE, {
-    variables: { crashId },
-  });
 
-  const { data: secondaryData, error: secondaryError, loading: loadingSecondaryData} = useQuery(GET_CRASH_SECONDARY_RECORDS, {
+  const { loading, user } = useAuth0();
+
+  const { data: data, error: error, loading: loadingData } = useQuery(
+    GET_CRASH_CHANGE,
+    {
+      variables: { crashId },
+    }
+  );
+
+  const {
+    data: secondaryData,
+    error: secondaryError,
+    loading: loadingSecondaryData,
+  } = useQuery(GET_CRASH_SECONDARY_RECORDS, {
     variables: { crashId },
   });
 
@@ -80,9 +91,7 @@ function CrashChange(props) {
    * @param {object} values - A key-value object containing the value for variables in the template.
    * @returns {object} - A resulting gql object
    */
-  const generateQueryFromTemplate = (template, values) => {
-
-  }
+  const generateQueryFromTemplate = (template, values) => {};
 
   /**
    * Adds or removes field name from the selectedFields array.
@@ -117,15 +126,17 @@ function CrashChange(props) {
    */
   const getOriginalRecord = () => {
     return recordData["atd_txdot_crashes"][0] || null;
-  }
+  };
 
   /**
    * Returns the new record as an object
    * @returns {object|null} - The parsed object
    */
   const getNewRecord = () => {
-    return JSON.parse(recordData["atd_txdot_changes"][0]["record_json"]) || null;
-  }
+    return (
+      JSON.parse(recordData["atd_txdot_changes"][0]["record_json"]) || null
+    );
+  };
 
   /**
    * Returns an deconstructable array with two objects containing the old record and the new record.
@@ -290,9 +301,10 @@ function CrashChange(props) {
       }
     });
 
-    return RECORD_MUTATION_UPDATE
-      .replace("%FUNCTION_NAME%", "update_atd_txdot_crashes")
-      .replace("%UPDATE_FIELDS%", updateFields.join("\n"));
+    return RECORD_MUTATION_UPDATE.replace(
+      "%FUNCTION_NAME%",
+      "update_atd_txdot_crashes"
+    ).replace("%UPDATE_FIELDS%", updateFields.join("\n"));
   };
 
   /**
@@ -437,10 +449,6 @@ function CrashChange(props) {
     console.log(selectedFields);
   }, [selectedFields]);
 
-
-
-
-
   /**
    * Saves the selected fields and discards the change
    */
@@ -452,40 +460,13 @@ function CrashChange(props) {
 
     const selectedFieldsValues = generateFieldsWithValues();
 
-    // 2. Gather the mutation templates for:
-    //    - crash
-    //    - unit
-    //    - primary persson
-    //    - person
-    const deleteChangeTableRecords = `
-      mutation processChange($crashId: Int) {
-        ${generateUpdateQuery(RECORD_DELETE_CHANGE_RECORDS, {
-          "function_name": "update_atd_txdot_crashes",
-          "record_type": "crash",
-          "update_fields": null
-        })}
-        ${generateUpdateQuery(RECORD_DELETE_CHANGE_RECORDS, {
-          "function_name": "update_atd_txdot_units",
-          "record_type": "unit",
-          "update_fields": null
-        })}
-        ${generateUpdateQuery(RECORD_DELETE_CHANGE_RECORDS, {
-          "function_name": "update_atd_txdot_primaryperson",
-          "record_type": "primaryperson",
-          "update_fields": null
-        })}
-        ${generateUpdateQuery(RECORD_DELETE_CHANGE_RECORDS, {
-          "function_name": "update_atd_txdot_person",
-          "record_type": "person",
-          "update_fields": null
-        })}
-      }
-    `;
+    const updateSecondaryTablesQuery = generateUpdateQuery();
+
     // 3. We are going to remove all count columns unless present in countFields
 
     const mutation = generateMutationSave();
     console.log("deleteChangeTableRecords: ");
-    console.log(deleteChangeTableRecords);
+    console.log(updateSecondaryTablesQuery);
     console.log("saveSelectedFields() : Mutation Template");
     console.log(mutation);
     toggleModal(1);
@@ -501,7 +482,6 @@ function CrashChange(props) {
     alert("The user should now be taken to the index page.");
   };
 
-
   /**
    * Generates a list of key-value pairs containing the selected fields to be
    * inserted into the database.
@@ -509,15 +489,15 @@ function CrashChange(props) {
    * each individual value.
    */
   const generateFieldsWithValues = () => {
-      const newRecord = getNewRecord();
-      let output = {};
-      if (selectedFields.length && selectedFields.length > 0) {
-        selectedFields.forEach((fieldName) => {
-          output[fieldName] = newRecord[fieldName];
-        });
-      }
-      return output;
-  }
+    const newRecord = getNewRecord();
+    let output = {};
+    if (selectedFields.length && selectedFields.length > 0) {
+      selectedFields.forEach(fieldName => {
+        output[fieldName] = newRecord[fieldName];
+      });
+    }
+    return output;
+  };
 
   /**
    * Removes all instances of a field in a GraphQL expression
@@ -527,40 +507,75 @@ function CrashChange(props) {
    * @returns {string} - The filtered new graphql query string.
    */
   const cleanUpQuery = (graphqlQueryString, columnName) => {
-
     return null;
-  }
+  };
 
   /**
    * Wraps a value in quotation marks if not numeric or boolean.
    * @param {*} value - Any given value, of any type.
    * @returns {string} - The value wrapped in quotation marks or as a string.
    */
-  const printQuotation = (value) => {
-    return isNaN(value) ? `"${value}"` : String(value);
-  }
+  const printQuotation = value => {
+    const strValue = String(value);
+    return isNaN(value) ? `"${value}"` : strValue === "" ? "null" : strValue;
+  };
 
   /**
    * Generates an executable GraphQL query based on a template and update fields.
-   * @param {string} graphqlTemplate - The template to be used to generate the update query.
-   * @param {object} configuration - A key-value object with the configuration settings.
+   * @param {object} record - The record being updated
    * @returns {string} - The executable query.
    */
-  const generateUpdateQuery = (graphqlTemplate, configuration) => {
-    // We must generate the list of fields & values to be updated
-    const updateFields = Object.keys(configuration["update_fields"]).map((key) => {
-      return key + ": " + printQuotation(configuration["update_fields"][key])
-    }).join("\n\t\t\t\t") || null;
+  const generateUpdateRecordQuery = record => {
+    const record_type = record["record_type"] || null;
+    const record_object = JSON.parse(record["record_json"] || {})[0] || {};
 
+    // // We must generate the list of fields & values to be updated
+    const updateFields = Object.keys(record_object)
+      .map(key => {
+        return (
+          String(key).toLowerCase() + ": " + printQuotation(record_object[key])
+        );
+      })
+      .join("\n\t\t\t\t");
+    //
     // Then, let's get the function name and record type patched
-    const output = graphqlTemplate
-      .replace("%FUNCTION_NAME%", configuration["function_name"])
-      .replace("%RECORD_TYPE%", configuration["record_type"])
-      .replace("%UPDATE_FIELDS%", updateFields);
+    const output = RECORD_MUTATION_UPDATE
+      .replace("%FUNCTION_NAME%", `insert_atd_txdot_${record_type}s`)
+      .replace("%UPDATE_FIELDS%", updateFields)
+      .replace("%CURRENT_USER%", user.email || "DiffView: User not avialable")
+      .replace("%SELECTED_COLUMNS%", selectedFields.join("n\t\t\t\t"));
+
+    console.log("User from auth0: " + user.email);
+    console.log(output)
+    debugger;
+  };
+
+  const generateUpdateQuery = () => {
+    console.log("Secondary Data:");
+    console.log(secondaryData);
+
+    let listOfRecordQueries = [];
+    (secondaryData["atd_txdot_changes"] || []).forEach(record => {
+      listOfRecordQueries.push(generateUpdateRecordQuery(record));
+    });
+
+    const updateSecondaryRecords = `
+      mutation updateSecondaryRecords($crashId: Int) {
+        %LIST_OF_RECORD_QUERIES%
+      }
+    `.replace(
+      "%LIST_OF_RECORD_QUERIES%",
+      listOfRecordQueries.length == 0
+        ? ""
+        : listOfRecordQueries.join("\n\t\t\t")
+    );
+
+    console.log("Final Update Query:");
+    console.log(updateSecondaryRecords);
 
     // First we need the template
-    return output;
-  }
+    return "";
+  };
 
   /**
    * Render variables
@@ -601,7 +616,6 @@ function CrashChange(props) {
       </Col>
     </Row>
   );
-
 
   /**
    * Render the view
