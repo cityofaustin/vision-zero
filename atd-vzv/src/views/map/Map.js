@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { StoreContext } from "../../utils/store";
 import ReactMapGL, { Source, Layer } from "react-map-gl";
+import MapPolygonFilter from "./MapPolygonFilter";
 import { createMapDataUrl } from "./helpers";
 import { crashGeoJSONEndpointUrl } from "../../views/summary/queries/socrataQueries";
 import {
@@ -19,6 +20,7 @@ import { faCompass, faCircle } from "@fortawesome/free-solid-svg-icons";
 import { colors } from "../../constants/colors";
 
 import "mapbox-gl/dist/mapbox-gl.css";
+import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css"; // Get out-of-the-box icons
 
 const MAPBOX_TOKEN = `pk.eyJ1Ijoiam9obmNsYXJ5IiwiYSI6ImNrM29wNnB3dDAwcXEzY29zMTU5bWkzOWgifQ.KKvoz6s4NKNHkFVSnGZonw`;
 
@@ -102,6 +104,7 @@ const Map = () => {
     mapDateRange: dateRange,
     mapOverlay: [overlay],
     mapTimeWindow: [mapTimeWindow],
+    mapPolygon: [mapPolygon, setMapPolygon],
   } = React.useContext(StoreContext);
 
   // Add/remove listeners for spinner logic
@@ -114,6 +117,7 @@ const Map = () => {
       crashGeoJSONEndpointUrl,
       filters,
       dateRange,
+      mapPolygon,
       mapTimeWindow
     );
 
@@ -121,7 +125,7 @@ const Map = () => {
       axios.get(apiUrl).then((res) => {
         setMapData(res.data);
       });
-  }, [filters, dateRange, mapTimeWindow, setMapData]);
+  }, [filters, dateRange, mapTimeWindow, mapPolygon, setMapData]);
 
   // Fetch City Council Districts geojson
   useEffect(() => {
@@ -184,23 +188,18 @@ const Map = () => {
           <Layer {...crashDataLayer} />
         </Source>
       )}
-
       {/* ASMP Street Level Layers */}
       {buildAsmpLayers(asmpConfig, overlay)}
-
       {/* High Injury Network Layer */}
       {buildHighInjuryLayer(overlay)}
-
       {!!cityCouncilOverlay && overlay.name === "cityCouncil" && (
         <Source type="geojson" data={cityCouncilOverlay}>
           {/* Add beforeId to render beneath crash points */}
           <Layer beforeId="crashes" {...cityCouncilDataLayer} />
         </Source>
       )}
-
       {/* Render crash point tooltips */}
       {hoveredFeature && _renderTooltip()}
-
       {/* Show spinner when map is updating */}
       {isMapDataLoading && (
         <StyledMapSpinner className="fa-layers fa-fw">
@@ -213,6 +212,8 @@ const Map = () => {
           />
         </StyledMapSpinner>
       )}
+
+      <MapPolygonFilter setMapPolygon={setMapPolygon} />
     </ReactMapGL>
   );
 };

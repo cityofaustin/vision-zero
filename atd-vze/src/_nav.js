@@ -33,18 +33,6 @@ export const navigation = roles => {
       {
         divider: true,
       },
-      {
-        name: 'Reports',
-        url: '#',
-        icon: 'icon-chart',
-        children: [
-          {
-            name: "Inconsistent KSI Counts",
-            url: "/reports/inconsistent_ksi_counts",
-            icon: "icon-graph",
-          },
-        ],
-      },
     ],
   };
 
@@ -55,10 +43,22 @@ export const navigation = roles => {
       url: "/users",
       icon: "icon-people",
     },
+    {
+      name: "Reports",
+      url: "#",
+      icon: "icon-chart",
+      children: [
+        {
+          name: "Inconsistent KSI Counts",
+          url: "/reports/inconsistent_ksi_counts",
+          icon: "icon-graph",
+        },
+      ],
+    },
   ];
 
   if (isAdmin(roles) || isItSupervisor(roles)) {
-    adminNavItems.forEach(item => nav.items.splice(1, 0, item));
+    adminNavItems.forEach(item => nav.items.splice(-1, 0, item));
   }
 
   return nav;

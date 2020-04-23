@@ -39,6 +39,7 @@ const GridTable = ({
   aggregateQueryConfig,
   chartConfig,
   widgetsConfig,
+  helperText,
 }) => {
   // Load table filters from localStorage by title
   const savedFilterState = JSON.parse(
@@ -537,6 +538,7 @@ const GridTable = ({
                     handleTableHeaderClick={handleTableHeaderClick}
                     sortColumn={sortColumn}
                     sortOrder={sortOrder}
+                    helperText={helperText}
                   />
                   <tbody>{data && dataEntries}</tbody>
                 </Table>
