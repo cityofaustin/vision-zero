@@ -168,20 +168,18 @@ const Map = () => {
   const _getCursor = ({ isDragging }) => (isDragging ? "grab" : "default");
 
   const _onClickCrashPoint = (event) => {
-    const {
-      features,
-      srcEvent: { offsetX, offsetY },
-    } = event;
+    const { features } = event;
     const clickedFeature =
       features &&
       features.find(
         (f) => f.layer.id === "fatalities" || f.layer.id === "seriousInjuries"
       );
 
-    clickedFeature(clickedFeature);
+    setClickedFeature(clickedFeature);
   };
 
   // TODO: Add pointer hand on hover
+  // TODO: Add hover back in for desktop
   // TODO: Add Socrata link to crash ID
   // TODO: Improve styling of popup (padding so text doesn't overlap close button)
   const _renderPopup = () => {
@@ -190,12 +188,12 @@ const Map = () => {
     return (
       popupInfo && (
         <Popup
-          tipSize={5}
+          tipSize={10}
           anchor="top"
           longitude={parseFloat(popupInfo.properties.longitude)}
           latitude={parseFloat(popupInfo.properties.latitude)}
           closeOnClick={false}
-          onClose={() => setHoveredFeature(null)}
+          onClose={() => setClickedFeature(null)}
         >
           <CrashPointInfo info={popupInfo.properties} />
         </Popup>
