@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import { StoreContext } from "../../utils/store";
-import ReactMapGL, { Source, Layer } from "react-map-gl";
+import ReactMapGL, { Source, Layer, Popup } from "react-map-gl";
 import MapControls from "./MapControls";
 import MapPolygonFilter from "./MapPolygonFilter";
+import CrashPointInfo from "./CrashPointInfo";
 import { createMapDataUrl } from "./helpers";
 import { crashGeoJSONEndpointUrl } from "../../views/summary/queries/socrataQueries";
 import {
@@ -17,7 +18,6 @@ import {
   cityCouncilDataLayer,
 } from "./map-style";
 import axios from "axios";
-import moment from "moment";
 
 import { Card, CardBody, CardText } from "reactstrap";
 import styled from "styled-components";
@@ -166,7 +166,53 @@ const Map = () => {
   const _onViewportChange = (viewport) => setViewport(viewport);
 
   // Capture hovered feature to populate tooltip data
-  const _onHover = (event) => {
+  // const _onHover = (event) => {
+  //   const {
+  //     features,
+  //     srcEvent: { offsetX, offsetY },
+  //   } = event;
+  //   const hoveredFeature =
+  //     features &&
+  //     features.find(
+  //       (f) =>
+  //         f.layer.id === "fatalities" ||
+  //         f.layer.id === "fatalitiesOutline" ||
+  //         f.layer.id === "seriousInjuries" ||
+  //         f.layer.id === "seriousInjuriesOutline"
+  //     );
+
+  //   setHoveredFeature({ feature: hoveredFeature, x: offsetX, y: offsetY });
+  // };
+
+  const _getCursor = ({ isDragging }) => (isDragging ? "grab" : "default");
+
+  // Show tooltip if hovering over a feature
+  // const _renderTooltip = () => {
+  //   const { feature } = hoveredFeature;
+  //   const cardData = feature && feature.properties;
+
+  //   return (
+  //     cardData && (
+  //       <StyledCard>
+  //         <Card style={{ top: 10, left: 10 }}>
+  //           <CardBody>
+  //             <CardText>
+  //               Date: {moment(cardData.crash_date).format("MM/DD/YYYY HH:MM A")}
+  //             </CardText>
+  //             <CardText>Fatalities: {cardData.death_cnt}</CardText>
+  //             <CardText>
+  //               Serious Injuries: {cardData.sus_serious_injry_cnt}
+  //             </CardText>
+  //             <CardText>Modes: {cardData.units_involved}</CardText>
+  //             <CardText>Crash ID: {cardData.crash_id}</CardText>
+  //           </CardBody>
+  //         </Card>
+  //       </StyledCard>
+  //     )
+  //   );
+  // };
+
+  const _onClickMarker = (event) => {
     const {
       features,
       srcEvent: { offsetX, offsetY },
@@ -174,40 +220,30 @@ const Map = () => {
     const hoveredFeature =
       features &&
       features.find(
-        (f) =>
-          f.layer.id === "fatalities" ||
-          f.layer.id === "fatalitiesOutline" ||
-          f.layer.id === "seriousInjuries" ||
-          f.layer.id === "seriousInjuriesOutline"
+        (f) => f.layer.id === "fatalities" || f.layer.id === "seriousInjuries"
       );
 
-    setHoveredFeature({ feature: hoveredFeature, x: offsetX, y: offsetY });
+    setHoveredFeature(hoveredFeature);
   };
 
-  const _getCursor = ({ isDragging }) => (isDragging ? "grab" : "default");
-
-  // Show tooltip if hovering over a feature
-  const _renderTooltip = () => {
-    const { feature } = hoveredFeature;
-    const cardData = feature && feature.properties;
+  // TODO: Add pointer hand on hover
+  // TODO: Remove old code and align naming with crashes
+  // TODO: Add Socrata link to crash ID
+  const _renderPopup = () => {
+    const popupInfo = hoveredFeature;
 
     return (
-      cardData && (
-        <StyledCard>
-          <Card style={{ top: 10, left: 10 }}>
-            <CardBody>
-              <CardText>
-                Date: {moment(cardData.crash_date).format("MM/DD/YYYY HH:MM A")}
-              </CardText>
-              <CardText>Fatalities: {cardData.death_cnt}</CardText>
-              <CardText>
-                Serious Injuries: {cardData.sus_serious_injry_cnt}
-              </CardText>
-              <CardText>Modes: {cardData.units_involved}</CardText>
-              <CardText>Crash ID: {cardData.crash_id}</CardText>
-            </CardBody>
-          </Card>
-        </StyledCard>
+      popupInfo && (
+        <Popup
+          tipSize={5}
+          anchor="top"
+          longitude={parseFloat(popupInfo.properties.longitude)}
+          latitude={parseFloat(popupInfo.properties.latitude)}
+          closeOnClick={false}
+          onClose={() => setHoveredFeature(null)}
+        >
+          <CrashPointInfo info={popupInfo.properties} />
+        </Popup>
       )
     );
   };
@@ -247,7 +283,8 @@ const Map = () => {
       onViewportChange={_onViewportChange}
       mapboxApiAccessToken={MAPBOX_TOKEN}
       getCursor={_getCursor}
-      onHover={_onHover}
+      // onHover={_onHover}
+      onClick={_onClickMarker}
       ref={(ref) => (mapRef.current = ref && ref.getMap())}
     >
       {/* Provide empty source and layer as target for beforeId params to set order of layers */}
@@ -265,7 +302,8 @@ const Map = () => {
         </Source>
       )}
       {/* Render crash point tooltips */}
-      {hoveredFeature && _renderTooltip()}
+      {/* {hoveredFeature && _renderTooltip()} */}
+      {hoveredFeature && _renderPopup()}
       {/* Show spinner when map is updating */}
       {isMapDataLoading && (
         <StyledMapSpinner className="fa-layers fa-fw">
