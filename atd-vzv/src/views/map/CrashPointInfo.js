@@ -5,7 +5,6 @@ import moment from "moment";
 export default class CrashPointInfo extends PureComponent {
   render() {
     const { info } = this.props;
-    const displayName = `${info.city}, ${info.state}`;
 
     return (
       <div>
