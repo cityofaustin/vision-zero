@@ -468,13 +468,24 @@ function CrashChange(props) {
 
   /**
    * Removes all instances of a field in a GraphQL expression
-   * @param graphqlQueryString
-   * @param columnName
+   * @param {string} graphqlQueryString - The executable GraphQL query to clean up.
+   * @param {string[]} columnName - An array of strings containing the names
+   * of fields to remove from the graphql query.
+   * @returns {string} - The filtered new graphql query string.
    */
   const cleanUpQuery = (graphqlQueryString, columnName) => {
-
+    return null;
   }
 
+  /**
+   * Generates an executable GraphQL query based on a template and update fields.
+   * @param {string} graphqlTemplate - The template
+   * @param {object} updateFields - A key value array with the values to be inserted.
+   * @returns {string} - The executable query.
+   */
+  const generateUpdateQuery = (graphqlTemplate, updateFields) => {
+    return null;
+  }
 
   /**
    * Render variables
