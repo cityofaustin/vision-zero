@@ -23,7 +23,12 @@ import {
 } from "reactstrap";
 
 import { AppSwitch } from "@coreui/react";
-import { GET_CRASH_CHANGE } from "../../queries/crashes_changes";
+import {
+  GET_CRASH_CHANGE,
+  GET_CRASH_SECONDARY_RECORDS,
+  CRASH_MUTATION_TEMPLATE,
+  CRASH_MUTATION_DISCARD,
+} from "../../queries/crashes_changes";
 import { crashImportantDiffFields } from "./crashImportantDiffFields";
 import { crashChangeQuotedFields } from "./crashChangeQuotedFields";
 
@@ -31,6 +36,7 @@ function CrashChange(props) {
   const crashId = props.match.params.id;
   const [selectedFields, setSelectedFields] = useState([]);
   const [recordData, setRecordData] = useState({});
+  const [recordSecondaryData, setRecordSecondaryData] = useState({});
   // Arrays of column names
   const [importantFieldList, setImportantFieldList] = useState([]);
   const [differentFieldsList, setDifferentFieldsList] = useState([]);
@@ -45,9 +51,18 @@ function CrashChange(props) {
   const [clearAllSelections, setClearAllSelections] = useState(false);
   // CR3 Availbable
   const [cr3available, setCR3Available] = useState(false);
-  const { error, data } = useQuery(GET_CRASH_CHANGE, {
+  const {data: data, error: error, loading: loadingData } = useQuery(GET_CRASH_CHANGE, {
     variables: { crashId },
   });
+
+  const { data: secondaryData, error: secondaryError, loading: loadingSecondaryData} = useQuery(GET_CRASH_SECONDARY_RECORDS, {
+    variables: { crashId },
+  });
+
+  /**
+   * Wait for data to be retrieved, then change state.
+   */
+  useEffect(() => setRecordData(data), [data]);
 
   /**
    * Returns true if fieldName exists within the selectedFields array.
@@ -57,6 +72,16 @@ function CrashChange(props) {
   const isFieldEnabled = fieldName => {
     return selectedFields.includes(fieldName);
   };
+
+  /**
+   * Returns a gql object ready to be executed.
+   * @param  {string} template - The GraphQL template we are working with
+   * @param {object} values - A key-value object containing the value for variables in the template.
+   * @returns {object} - A resulting gql object
+   */
+  const generateQueryFromTemplate = (template, values) => {
+
+  }
 
   /**
    * Adds or removes field name from the selectedFields array.
@@ -75,7 +100,6 @@ function CrashChange(props) {
       newFieldList.push(fieldName);
     }
     const newList = [...newFieldList];
-    console.log(newList);
     setSelectedFields(newList);
   };
 
@@ -234,35 +258,6 @@ function CrashChange(props) {
     const newRecord =
       JSON.parse(recordData["atd_txdot_changes"][0]["record_json"]) || null;
 
-    const mutationTemplate = `
-      mutation processChange($crashId: Int) {
-        update_atd_txdot_crashes(
-            where: {
-              crash_id: { _eq: $crashId }
-            },
-            
-            _set: {
-              %UPDATE_FIELDS%
-            }
-        ) {
-          affected_rows
-        },
-        update_atd_txdot_changes(
-            where: {
-              record_id:    { _eq: $crashId }
-              record_type:  { _eq: "crash" }
-              status:       { _eq: 0 }
-            },
-            
-            _set: {
-              status: { _eq: 1 }
-            }
-        ) {
-          affected_rows
-        }
-      }
-    `;
-
     let updateFields = [];
 
     selectedFields.forEach(field => {
@@ -282,52 +277,7 @@ function CrashChange(props) {
       }
     });
 
-    return mutationTemplate.replace("%UPDATE_FIELDS%", updateFields.join("\n"));
-  };
-
-  /**
-   * Generates a mutation to discard the current change
-   * @returns {string}
-   */
-  const generateMutationDiscard = () => {
-    return `
-        mutation discardChange($crashId: Int) {
-           update_atd_txdot_changes(
-              where: {
-                record_id:    { _eq: $crashId }
-                record_type:  { _eq: "crash" }
-                status:       { _eq: 0 }
-              },
-              
-              _set: {
-                status: { _eq: 2 }
-              }
-          ) {
-            affected_rows
-          }
-        }
-    `;
-  };
-
-  /**
-   * Saves the selected fields and discards the change
-   */
-  const saveSelectedFields = () => {
-    const mutation = generateMutationSave();
-    console.log("saveSelectedFields() : Mutation Template");
-    console.log(mutation);
-    toggleModal(1);
-  };
-
-  /**
-   * Discards the change
-   */
-  const discardChange = () => {
-    const mutation = generateMutationDiscard();
-    console.log("discardChange() : Mutation Template");
-    console.log(mutation);
-    toggleModal(3);
-    alert("The user should now be taken to the index page.");
+    return CRASH_MUTATION_TEMPLATE.replace("%UPDATE_FIELDS%", updateFields.join("\n"));
   };
 
   /**
@@ -391,13 +341,6 @@ function CrashChange(props) {
     );
   };
 
-  // If the data object has no keys, then wait...
-  if (data && Object.keys(data).length > 0) {
-    if (Object.keys(recordData).length === 0) {
-      setRecordData(data);
-    }
-  }
-
   /**
    * In this useEffect, we listen for any changes to the data or to the
    * selected fields. If they change, so does our two groups of fields.
@@ -448,7 +391,7 @@ function CrashChange(props) {
         );
       })
     );
-  }, [importantFieldList, showFieldsDiffOnly, recordData, selectedFields]);
+  }, [importantFieldList, showFieldsDiffOnly, recordData]);
 
   /**
    * In this useEffect, we listen for changes to the differentFieldsList
@@ -469,8 +412,73 @@ function CrashChange(props) {
         );
       })
     );
-  }, [differentFieldsList, showFieldsDiffOnly, recordData, selectedFields]);
+  }, [differentFieldsList, showFieldsDiffOnly, recordData]);
 
+  /**
+   * We need to track whenever selectedFields is updated
+   */
+  useEffect(() => {
+    // Print the current state
+    console.log(selectedFields);
+  }, [selectedFields]);
+
+
+
+
+
+  /**
+   * Saves the selected fields and discards the change
+   */
+  const saveSelectedFields = () => {
+    // 1. Gather list of count fields that need updating
+    const countFields = selectedFields.filter(field => {
+      return field.endsWith("_cnt");
+    });
+
+    // 2. Gather the mutation templates for:
+    //    - crash
+    //    - unit
+    //    - primary persson
+    //    - person
+    const queryTemplates = {
+      crash: "",
+      unit: "",
+      primary_person: "",
+      person: ""
+    }
+
+    // 3. We are going to remove all count columns unless present in countFields
+
+
+    const mutation = generateMutationSave();
+    console.log("saveSelectedFields() : Mutation Template");
+    console.log(mutation);
+    toggleModal(1);
+  };
+
+  /**
+   * Discards the change
+   */
+  const discardChange = () => {
+    console.log("discardChange() : Mutation Template");
+    console.log(CRASH_MUTATION_DISCARD);
+    toggleModal(3);
+    alert("The user should now be taken to the index page.");
+  };
+
+  /**
+   * Removes all instances of a field in a GraphQL expression
+   * @param graphqlQueryString
+   * @param columnName
+   */
+  const cleanUpQuery = (graphqlQueryString, columnName) => {
+
+  }
+
+
+  /**
+   * Render variables
+   */
   // List of Selectable Fields
   const mainFieldsSelectable = importantFieldList.filter(field => {
     return selectableList.includes(field);
@@ -508,6 +516,10 @@ function CrashChange(props) {
     </Row>
   );
 
+
+  /**
+   * Render the view
+   */
   return error ? (
     <div>{error}</div>
   ) : (
