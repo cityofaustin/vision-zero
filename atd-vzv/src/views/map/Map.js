@@ -19,9 +19,7 @@ import {
   cityCouncilDataLayer,
 } from "./map-style";
 import axios from "axios";
-import moment from "moment";
 
-import { Card, CardBody, CardText } from "reactstrap";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCompass, faCircle } from "@fortawesome/free-solid-svg-icons";
@@ -180,6 +178,7 @@ const Map = () => {
 
   const _onViewportChange = (viewport) => setViewport(viewport);
 
+  // Change cursor to grab when dragging map
   const _getCursor = ({ isDragging }) => (isDragging ? "grab" : "default");
 
   const _onClickCrashPoint = (event) => {
@@ -207,6 +206,7 @@ const Map = () => {
           longitude={parseFloat(popupInfo.properties.longitude)}
           latitude={parseFloat(popupInfo.properties.latitude)}
           closeOnClick={false}
+          closeButton={true}
           onClose={() => setSelectedFeature(null)}
         >
           <StyledMobileInfo>{crashPointInfo}</StyledMobileInfo>
