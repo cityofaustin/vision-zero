@@ -184,7 +184,7 @@ const CrashesByMode = () => {
       </Row>
       <Row>
         <Col>
-          <hr />
+          <hr className="mb-2" />
         </Col>
       </Row>
       <Row className="mt-1">
@@ -219,10 +219,10 @@ const CrashesByMode = () => {
                   legendCallback: function (chart) {
                     return (
                       <Row className="pb-2">
-                        <Col className="px-2">
+                        <Col className="pr-1">
                           <StyledDiv>
                             <div>
-                              <h6 className="text-center my-1 pt-2">
+                              <h6 className="text-center pt-2">
                                 {"\u00A0"}
                               </h6>
                             </div>
@@ -244,7 +244,7 @@ const CrashesByMode = () => {
                                     );
                                 setLegendColors(legendColorsClone);
                               };
-  
+
                               const customLegendClickHandler = () => {
                                 const legendItems = [
                                   ...chart.legend.legendItems,
@@ -253,16 +253,16 @@ const CrashesByMode = () => {
                                 const index = legendItem.datasetIndex;
                                 const ci = chartRef.current.chartInstance.chart;
                                 const meta = ci.getDatasetMeta(index);
-  
+
                                 // See controller.isDatasetVisible comment
                                 meta.hidden =
                                   meta.hidden === null
                                     ? !ci.data.datasets[index].hidden
                                     : null;
-  
+
                                 // We hid a dataset ... rerender the chart
                                 ci.update();
-  
+
                                 // Update legend colors to show data has been hidden
                                 updateLegendColors();
                               };
@@ -277,7 +277,7 @@ const CrashesByMode = () => {
                                   onClick={customLegendClickHandler}
                                 >
                                   <hr className="my-0"></hr>
-                                  <h6 className="text-center mx-2 my-0 pt-1 pb-1">
+                                  <h6 className="text-center mx-1 my-0 pt-1 pb-1">
                                     {mode.label}
                                   </h6>
                                 </div>
@@ -286,8 +286,10 @@ const CrashesByMode = () => {
                           </StyledDiv>
                         </Col>
                         {chart.data.labels.map((year, yearIterator) => {
+                          let paddingRight =
+                          yearIterator === 4 ? null : "pr-1";                          
                           return (
-                            <Col className="px-2" key={yearIterator}>
+                            <Col key={yearIterator} className={`pl-0 ${paddingRight}`}>
                               <StyledDiv>
                                 <div className="year-total-div">
                                   <div>
