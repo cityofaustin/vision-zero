@@ -200,7 +200,6 @@ export const GET_CRASH_SECONDARY_RECORDS = gql`
     query findSecondaryRecords($crashId: Int) {
         atd_txdot_changes(
             where: {
-                record_type: {_neq: "crash"},
                 record_id: {_eq: $crashId}
             }
         ) {
@@ -212,7 +211,7 @@ export const GET_CRASH_SECONDARY_RECORDS = gql`
     }
 `;
 
-export const CRASH_MUTATION_DISCARD = gql`
+export const CRASH_MUTATION_DISCARD = `
     mutation discardChanges($crashId: Int) {
       delete_atd_txdot_changes(where: {record_id: {_eq: $crashId}}) {
         affected_rows
