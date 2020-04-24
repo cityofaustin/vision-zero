@@ -26,7 +26,7 @@ const SideMapControlDateRange = () => {
         ...DefaultTheme.reactDates.border,
         input: {
           ...DefaultTheme.reactDates.border.input,
-          borderBottomFocused: `2px solid ${colors.infoDark}`,
+          borderBottomFocused: `2px solid ${colors.dark}`,
         },
         pickerInput: {
           ...DefaultTheme.reactDates.border.pickerInput,
@@ -37,9 +37,9 @@ const SideMapControlDateRange = () => {
         ...DefaultTheme.reactDates.color,
         border: `transparent`, // Hide DateRangePicker border and show StyledButtonContainer instead
         selected: {
-          backgroundColor: `${colors.infoDark}`,
-          backgroundColor_active: `${colors.infoDark}`,
-          backgroundColor_hover: `${colors.infoDark}`,
+          backgroundColor: `${colors.dark}`,
+          backgroundColor_active: `${colors.dark}`,
+          backgroundColor_hover: `${colors.dark}`,
           borderColor: `${colors.light}`,
           borderColor_active: `${colors.light}`,
           borderColor_hover: `${colors.light}`,
@@ -48,20 +48,20 @@ const SideMapControlDateRange = () => {
           color_hover: `${colors.light}`,
         },
         selectedSpan: {
-          backgroundColor: `${colors.info}`,
-          backgroundColor_active: `${colors.info}`,
-          backgroundColor_hover: `${colors.infoDark}`,
+          backgroundColor: `${colors.secondary}`,
+          backgroundColor_active: `${colors.secondary}`,
+          backgroundColor_hover: `${colors.dark}`,
           borderColor: `${colors.light}`,
           borderColor_active: `${colors.light}`,
           borderColor_hover: `${colors.light}`,
-          color: `${colors.light}`,
+          color: `${colors.dark}`,
           color_active: `${colors.light}`,
           color_hover: `${colors.light}`,
         },
         hoveredSpan: {
           backgroundColor: `${colors.secondary}`,
-          backgroundColor_active: `${colors.infoDark}`,
-          backgroundColor_hover: `${colors.infoDark}`,
+          backgroundColor_active: `${colors.dark}`,
+          backgroundColor_hover: `${colors.dark}`,
           borderColor: `${colors.light}`,
           borderColor_active: `${colors.light}`,
           borderColor_hover: `${colors.light}`,
@@ -173,7 +173,7 @@ const SideMapControlDateRange = () => {
 
   const StyledButtonContainer = styled.div`
     /* Mock a Bootstrap outline button */
-    border: 1px solid ${colors.info};
+    border: 1px solid ${colors.dark};
     height: 34px;
     border-radius: 4px;
     padding-left: 2px;
@@ -214,7 +214,7 @@ const SideMapControlDateRange = () => {
       <FontAwesomeIcon
         className="reset-button"
         icon={faTimesCircle}
-        color={colors.info}
+        color={colors.dark}
         onClick={() => {
           setStart(dataStartDate);
           setEnd(dataEndDate);
