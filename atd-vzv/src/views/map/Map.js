@@ -96,6 +96,7 @@ const Map = () => {
   const isMobile = width <= bootstrapMedium;
 
   const [mapData, setMapData] = useState("");
+  const [interactiveLayerIds, setInteractiveLayerIds] = useState(null);
   const [selectedFeature, setSelectedFeature] = useState(null);
   const [cityCouncilOverlay, setCityCouncilOverlay] = useState(null);
   const [isMapDataLoading, setIsMapDataLoading] = useState(false);
@@ -161,7 +162,26 @@ const Map = () => {
   const _onViewportChange = (viewport) => setViewport(viewport);
 
   // Change cursor to grab when dragging map
-  const _getCursor = ({ isDragging }) => (isDragging ? "grab" : "default");
+  const _getCursor = ({ isHovering, isDragging }) => {
+    if (isDragging) {
+      return "grab";
+    } else if (isHovering) {
+      return "pointer";
+    } else {
+      return "default";
+    }
+  };
+
+  // Set interactive layer IDs to allow cursor to change if isHovering
+  useEffect(() => {
+    const interactiveLayerIds = [
+      isMapTypeSet.fatal && "fatalities",
+      isMapTypeSet.injury && "seriousInjuries",
+    ];
+
+    const filteredInteractiveIds = interactiveLayerIds.filter((id) => !!id);
+    setInteractiveLayerIds(filteredInteractiveIds);
+  }, [isMapTypeSet]);
 
   const _onSelectCrashPoint = (event) => {
     const { features } = event;
@@ -194,6 +214,7 @@ const Map = () => {
         {fatalityLayer}
       </>
     );
+
     return (
       (isMapTypeSet.fatal && isMapTypeSet.injury && bothLayers) ||
       (isMapTypeSet.fatal && fatalityLayer) ||
@@ -209,6 +230,7 @@ const Map = () => {
       onViewportChange={_onViewportChange}
       mapboxApiAccessToken={MAPBOX_TOKEN}
       getCursor={_getCursor}
+      interactiveLayerIds={interactiveLayerIds}
       onHover={!isMobile ? _onSelectCrashPoint : null}
       onClick={isMobile ? _onSelectCrashPoint : null}
       ref={(ref) => (mapRef.current = ref && ref.getMap())}
