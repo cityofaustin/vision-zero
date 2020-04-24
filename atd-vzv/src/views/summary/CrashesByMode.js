@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { Bar } from "react-chartjs-2";
 import { Container, Row, Col } from "reactstrap";
+import styled from "styled-components";
 
 import CrashTypeSelector from "../nav/CrashTypeSelector";
 import { colors } from "../../constants/colors";
@@ -13,7 +14,6 @@ import {
 import { crashEndpointUrl } from "./queries/socrataQueries";
 
 const CrashesByMode = () => {
-
   const modes = [
     {
       label: "Motorist",
@@ -62,6 +62,10 @@ const CrashesByMode = () => {
 
   const [chartData, setChartData] = useState(null); // {yearInt: [{record}, {record}, ...]}
   const [crashType, setCrashType] = useState([]);
+  const [chartLegend, setChartLegend] = useState(null);
+  const [legendColors, setLegendColors] = useState([...chartColors]);
+
+  const chartRef = useRef();
 
   // Fetch data and set in state by years in yearsArray
   useEffect(() => {
@@ -90,6 +94,12 @@ const CrashesByMode = () => {
       getChartData();
     }
   }, [crashType]);
+
+  useEffect(() => {
+    !!chartRef.current &&
+      !!chartData &&
+      setChartLegend(chartRef.current.chartInstance.generateLegend());
+  }, [chartData, legendColors]);
 
   const createChartLabels = () => yearsArray().map((year) => `${year}`);
 
@@ -144,6 +154,22 @@ const CrashesByMode = () => {
     datasets: !!chartData && createTypeDatasets(),
   };
 
+  const StyledDiv = styled.div`
+    .year-total-div {
+      color: ${colors.dark};
+      background: ${colors.buttonBackground} 0% 0% no-repeat padding-box;
+      border-radius: 4px;
+      border-style: none;
+      opacity: 1;
+    }
+
+    .mode-label-div:hover {
+      cursor: pointer;
+      color: ${colors.buttonBackground};
+      background: dimgray 0% 0% no-repeat padding-box;
+    }
+  `;
+
   return (
     <Container className="m-0 p-0">
       <Row>
@@ -163,28 +189,140 @@ const CrashesByMode = () => {
       </Row>
       <Row className="mt-1">
         <Col>
-          <Bar
-            data={data}
-            height={null}
-            width={null}
-            options={{
-              responsive: true,
-              aspectRatio: 1,
-              maintainAspectRatio: false,
-              scales: {
-                xAxes: [
-                  {
-                    stacked: true,
+          {chartLegend}
+          {
+            <div>
+              <Bar
+                ref={(ref) => (chartRef.current = ref)}
+                data={data}
+                height={null}
+                width={null}
+                options={{
+                  responsive: true,
+                  aspectRatio: 1,
+                  maintainAspectRatio: false,
+                  scales: {
+                    xAxes: [
+                      {
+                        stacked: true,
+                      },
+                    ],
+                    yAxes: [
+                      {
+                        stacked: true,
+                      },
+                    ],
                   },
-                ],
-                yAxes: [
-                  {
-                    stacked: true,
+                  legend: {
+                    display: false,
                   },
-                ],
-              }
-            }}
-          />
+                  legendCallback: function (chart) {
+                    return (
+                      <Row className="pb-2">
+                        <Col className="px-2">
+                          <StyledDiv>
+                            <div>
+                              <h6 className="text-center my-1 pt-2">
+                                {"\u00A0"}
+                              </h6>
+                            </div>
+                            {modes.map((mode, i) => {
+                              const legendColor = legendColors[i];
+
+                              const updateLegendColors = () => {
+                                const legendColorsClone = [...legendColors];
+                                legendColor !== colors.buttonBackground
+                                  ? legendColorsClone.splice(
+                                      i,
+                                      1,
+                                      colors.buttonBackground
+                                    )
+                                  : legendColorsClone.splice(
+                                      i,
+                                      1,
+                                      chartColors[i]
+                                    );
+                                setLegendColors(legendColorsClone);
+                              };
+  
+                              const customLegendClickHandler = () => {
+                                const legendItems = [
+                                  ...chart.legend.legendItems,
+                                ];
+                                const legendItem = legendItems[i];
+                                const index = legendItem.datasetIndex;
+                                const ci = chartRef.current.chartInstance.chart;
+                                const meta = ci.getDatasetMeta(index);
+  
+                                // See controller.isDatasetVisible comment
+                                meta.hidden =
+                                  meta.hidden === null
+                                    ? !ci.data.datasets[index].hidden
+                                    : null;
+  
+                                // We hid a dataset ... rerender the chart
+                                ci.update();
+  
+                                // Update legend colors to show data has been hidden
+                                updateLegendColors();
+                              };
+
+                              return (
+                                <div
+                                  key={i}
+                                  className="mode-label-div"
+                                  style={{
+                                    borderRight: `8px solid ${legendColor}`,
+                                  }}
+                                  onClick={customLegendClickHandler}
+                                >
+                                  <hr className="my-0"></hr>
+                                  <h6 className="text-center mx-2 my-0 pt-1 pb-1">
+                                    {mode.label}
+                                  </h6>
+                                </div>
+                              );
+                            })}
+                          </StyledDiv>
+                        </Col>
+                        {chart.data.labels.map((year, yearIterator) => {
+                          return (
+                            <Col className="px-2" key={yearIterator}>
+                              <StyledDiv>
+                                <div className="year-total-div">
+                                  <div>
+                                    <h6 className="text-center my-1 pt-2">
+                                      <strong>{year}</strong>
+                                    </h6>
+                                  </div>
+                                  {chart.data.datasets.map(
+                                    (mode, modeIterator) => {
+                                      let paddingBottom =
+                                        modeIterator === 4 ? "pb-1" : "pb-0";
+                                      return (
+                                        <div key={modeIterator}>
+                                          <hr className="my-0"></hr>
+                                          <h6
+                                            className={`text-center my-1 ${paddingBottom}`}
+                                          >
+                                            {mode.data[yearIterator]}
+                                          </h6>
+                                        </div>
+                                      );
+                                    }
+                                  )}
+                                </div>
+                              </StyledDiv>
+                            </Col>
+                          );
+                        })}
+                      </Row>
+                    );
+                  },
+                }}
+              />
+            </div>
+          }
         </Col>
       </Row>
     </Container>
