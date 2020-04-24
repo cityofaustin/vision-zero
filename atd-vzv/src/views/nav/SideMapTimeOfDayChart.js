@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import { StoreContext } from "../../utils/store";
 import axios from "axios";
 import moment from "moment";
@@ -10,8 +10,10 @@ import { HorizontalBar } from "react-chartjs-2";
 import { colors } from "../../constants/colors";
 
 export const SideMapTimeOfDayChart = ({ filters }) => {
-  const defaultBarColor = colors.info;
-  const inactiveBarColor = colors.dark;
+  const chartRef = useRef();
+
+  const defaultBarColor = colors.dark;
+  const inactiveBarColor = colors.secondary;
 
   const [chartData, setChartData] = useState(null);
   const [timeWindowData, setTimeWindowData] = useState([]);
@@ -120,15 +122,26 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
     setBarColors(defaultBarColor);
   };
 
+  const handleHover = (evt) => {
+    var item = chartRef.current.chartInstance.getElementAtEvent(evt);
+    if (item.length) {
+      // console.log("onHover", item, evt.type);
+      evt.target.style.cursor = item[0]._model.datasetLabel && "pointer";
+    } else {
+      evt.target.style.cursor = "default";
+    }
+  };
+
   const data = {
     labels: createChartTimeLabels(),
     datasets: [
       {
+        label: "time-of-day",
         backgroundColor: barColors,
         borderColor: barColors,
         borderWidth: 1,
-        hoverBackgroundColor: colors.infoDark,
-        hoverBorderColor: colors.infoDark,
+        hoverBackgroundColor: colors.secondary,
+        hoverBorderColor: colors.secondary,
         data: timeWindowPercentages,
       },
     ],
@@ -138,11 +151,15 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
     <Container className="px-0 mt-3">
       {!!timeWindowData && !!timeWindowPercentages && (
         <HorizontalBar
+          ref={(ref) => (chartRef.current = ref)}
           data={data}
           height={250}
           onElementsClick={handleBarClick}
           options={{
-            legend: { display: false },
+            onHover: handleHover,
+            legend: {
+              display: false,
+            },
             scales: {
               xAxes: [
                 {
