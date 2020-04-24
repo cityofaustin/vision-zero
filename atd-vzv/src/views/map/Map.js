@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { StoreContext } from "../../utils/store";
 import ReactMapGL, { Source, Layer, Popup } from "react-map-gl";
+import { useWindowSize } from "react-use";
 import MapControls from "./MapControls";
 import MapPolygonFilter from "./MapPolygonFilter";
 import CrashPointInfo from "./CrashPointInfo";
@@ -18,26 +19,36 @@ import {
   cityCouncilDataLayer,
 } from "./map-style";
 import axios from "axios";
+import moment from "moment";
 
 import { Card, CardBody, CardText } from "reactstrap";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCompass, faCircle } from "@fortawesome/free-solid-svg-icons";
 import { colors } from "../../constants/colors";
+import { responsive } from "../../constants/responsive";
+import { drawer } from "../../constants/drawer";
 
 import "mapbox-gl/dist/mapbox-gl.css";
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css"; // Get out-of-the-box icons
 
 const MAPBOX_TOKEN = `pk.eyJ1Ijoiam9obmNsYXJ5IiwiYSI6ImNrM29wNnB3dDAwcXEzY29zMTU5bWkzOWgifQ.KKvoz6s4NKNHkFVSnGZonw`;
 
-const StyledCard = styled.div`
+const StyledDesktopInfo = styled.div`
   position: absolute;
   margin: 8px;
   padding: 2px;
-  max-width: 300px;
-  font-size: 12px !important;
+  max-width: ${drawer.width - 20}px;
   z-index: 9 !important;
   pointer-events: none;
+`;
+
+const StyledMobileInfo = styled.div`
+  .card {
+    background: none;
+    border: none;
+    max-width: ${drawer.width - 20}px;
+  }
 `;
 
 const StyledMapSpinner = styled.div`
@@ -100,8 +111,12 @@ const Map = () => {
   // Create ref to map to call Mapbox GL functions on instance
   const mapRef = useRef();
 
+  const { width } = useWindowSize();
+  const { bootstrapMedium } = responsive;
+  const isMobile = width < bootstrapMedium;
+
   const [mapData, setMapData] = useState("");
-  const [clickedFeature, setClickedFeature] = useState(null);
+  const [selectedFeature, setSelectedFeature] = useState(null);
   const [cityCouncilOverlay, setCityCouncilOverlay] = useState(null);
   const [isMapDataLoading, setIsMapDataLoading] = useState(false);
 
@@ -169,35 +184,36 @@ const Map = () => {
 
   const _onClickCrashPoint = (event) => {
     const { features } = event;
-    const clickedFeature =
+    const selectedFeature =
       features &&
       features.find(
         (f) => f.layer.id === "fatalities" || f.layer.id === "seriousInjuries"
       );
 
-    setClickedFeature(clickedFeature);
+    setSelectedFeature(selectedFeature);
   };
 
   // TODO: Add pointer hand on hover
-  // TODO: Add hover back in for desktop
-  // TODO: Add Socrata link to crash ID
-  // TODO: Improve styling of popup (padding so text doesn't overlap close button)
   const _renderPopup = () => {
-    const popupInfo = clickedFeature;
+    const popupInfo = selectedFeature;
+    const crashPointInfo = <CrashPointInfo info={popupInfo.properties} />;
 
     return (
-      popupInfo && (
+      popupInfo &&
+      (isMobile ? (
         <Popup
           tipSize={10}
           anchor="top"
           longitude={parseFloat(popupInfo.properties.longitude)}
           latitude={parseFloat(popupInfo.properties.latitude)}
           closeOnClick={false}
-          onClose={() => setClickedFeature(null)}
+          onClose={() => setSelectedFeature(null)}
         >
-          <CrashPointInfo info={popupInfo.properties} />
+          <StyledMobileInfo>{crashPointInfo}</StyledMobileInfo>
         </Popup>
-      )
+      ) : (
+        <StyledDesktopInfo>{crashPointInfo}</StyledDesktopInfo>
+      ))
     );
   };
 
@@ -236,8 +252,8 @@ const Map = () => {
       onViewportChange={_onViewportChange}
       mapboxApiAccessToken={MAPBOX_TOKEN}
       getCursor={_getCursor}
-      // onHover={_onHover}
-      onClick={_onClickCrashPoint}
+      onHover={!isMobile ? _onClickCrashPoint : null}
+      onClick={isMobile ? _onClickCrashPoint : null}
       ref={(ref) => (mapRef.current = ref && ref.getMap())}
     >
       {/* Provide empty source and layer as target for beforeId params to set order of layers */}
@@ -254,8 +270,8 @@ const Map = () => {
           <Layer beforeId="base-layer" {...cityCouncilDataLayer} />
         </Source>
       )}
-      {/* Render crash point tooltips */}
-      {clickedFeature && _renderPopup()}
+      {/* Render crash point tooltip */}
+      {selectedFeature && _renderPopup()}
       {/* Show spinner when map is updating */}
       {isMapDataLoading && (
         <StyledMapSpinner className="fa-layers fa-fw">
