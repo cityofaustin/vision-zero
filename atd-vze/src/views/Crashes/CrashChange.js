@@ -4,6 +4,7 @@ import { withApollo } from "react-apollo";
 import { useQuery } from "@apollo/react-hooks";
 import { useAuth0 } from "../../auth/authContext";
 import { MiniDiff } from "../../Components/MiniDiff";
+import { gql } from "apollo-boost";
 import axios from "axios";
 
 import "./crash.scss";
@@ -458,15 +459,13 @@ function CrashChange(props) {
       return field.endsWith("_cnt");
     });
 
-    const selectedFieldsValues = generateFieldsWithValues();
-
-    const updateSecondaryTablesQuery = generateUpdateQuery();
+    const updateTablesQuery = generateUpdateQuery();
 
     // 3. We are going to remove all count columns unless present in countFields
 
     const mutation = generateMutationSave();
     console.log("deleteChangeTableRecords: ");
-    console.log(updateSecondaryTablesQuery);
+    console.log(updateTablesQuery);
     console.log("saveSelectedFields() : Mutation Template");
     console.log(mutation);
     toggleModal(1);
@@ -480,34 +479,6 @@ function CrashChange(props) {
     console.log(CRASH_MUTATION_DISCARD);
     toggleModal(3);
     alert("The user should now be taken to the index page.");
-  };
-
-  /**
-   * Generates a list of key-value pairs containing the selected fields to be
-   * inserted into the database.
-   * @returns {object} - The key-value object containing selected fields and
-   * each individual value.
-   */
-  const generateFieldsWithValues = () => {
-    const newRecord = getNewRecord();
-    let output = {};
-    if (selectedFields.length && selectedFields.length > 0) {
-      selectedFields.forEach(fieldName => {
-        output[fieldName] = newRecord[fieldName];
-      });
-    }
-    return output;
-  };
-
-  /**
-   * Removes all instances of a field in a GraphQL expression
-   * @param {string} graphqlQueryString - The executable GraphQL query to clean up.
-   * @param {string[]} columnName - An array of strings containing the names
-   * of fields to remove from the graphql query.
-   * @returns {string} - The filtered new graphql query string.
-   */
-  const cleanUpQuery = (graphqlQueryString, columnName) => {
-    return null;
   };
 
   /**
@@ -526,28 +497,57 @@ function CrashChange(props) {
    * @returns {string} - The executable query.
    */
   const generateUpdateRecordQuery = record => {
-    const record_type = record["record_type"] || null;
-    const record_object = JSON.parse(record["record_json"] || {})[0] || {};
+    const recordString = record["record_json"] || "{}";
+    const recordType = record["record_type"] || null;
+    const recordObject =
+      JSON.parse(recordString)[0] || JSON.parse(recordString) || {};
+    const recordObjectKeys = Object.keys(recordObject).map(key => {
+      return key.toLowerCase();
+    });
 
-    // // We must generate the list of fields & values to be updated
-    const updateFields = Object.keys(record_object)
+    if (recordType === "crash") {
+      recordObject["crash_id"] = record["record_id"]
+    }
+
+    const constraintsList = {
+      person: "atd_txdot_person_unique",
+      primaryperson: "atd_txdot_primaryperson_unique",
+      unit: "atd_txdot_units_unique",
+      crash: "atd_txdot_crashes_pkey",
+    };
+
+    const functionNameList = {
+      person: "insert_atd_txdot_persons",
+      primaryperson: "insert_atd_txdot_primarypersons",
+      unit: "insert_atd_txdot_units",
+      crash: "insert_atd_txdot_crashes",
+    };
+
+    // We must generate the list of fields & values to be updated
+    const updateFields = Object.keys(recordObject)
       .map(key => {
         return (
-          String(key).toLowerCase() + ": " + printQuotation(record_object[key])
+          String(key).toLowerCase() +
+          ": " +
+          printQuotation(recordObject[key]) +
+          ","
         );
       })
       .join("\n\t\t\t\t");
-    //
-    // Then, let's get the function name and record type patched
-    const output = RECORD_MUTATION_UPDATE
-      .replace("%FUNCTION_NAME%", `insert_atd_txdot_${record_type}s`)
-      .replace("%UPDATE_FIELDS%", updateFields)
-      .replace("%CURRENT_USER%", user.email || "DiffView: User not avialable")
-      .replace("%SELECTED_COLUMNS%", selectedFields.join("n\t\t\t\t"));
 
-    console.log("User from auth0: " + user.email);
-    console.log(output)
-    debugger;
+    const onConflictList = selectedFields.filter(key => {
+      return recordObjectKeys.includes(key.toLowerCase());
+    });
+
+    // Then, let's get the function name and record type patched
+    return RECORD_MUTATION_UPDATE.replace(
+      "%FUNCTION_NAME%",
+      functionNameList[recordType]
+    )
+      .replace("%CONSTRAINT_NAME%", constraintsList[recordType])
+      .replace("%UPDATE_FIELDS%", updateFields)
+      .replace("%CURRENT_USER%", user.email || "DiffView")
+      .replace("%SELECTED_COLUMNS%", onConflictList.join("\n\t\t\t\t"));
   };
 
   const generateUpdateQuery = () => {
@@ -569,12 +569,8 @@ function CrashChange(props) {
         ? ""
         : listOfRecordQueries.join("\n\t\t\t")
     );
-
-    console.log("Final Update Query:");
-    console.log(updateSecondaryRecords);
-
     // First we need the template
-    return "";
+    return updateSecondaryRecords;
   };
 
   /**
