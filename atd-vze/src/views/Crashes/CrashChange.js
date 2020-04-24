@@ -419,7 +419,7 @@ function CrashChange(props) {
         );
       })
     );
-  }, [importantFieldList, showFieldsDiffOnly, recordData]);
+  }, [importantFieldList, showFieldsDiffOnly, recordData, selectedFields]);
 
   /**
    * In this useEffect, we listen for changes to the differentFieldsList
@@ -440,7 +440,7 @@ function CrashChange(props) {
         );
       })
     );
-  }, [differentFieldsList, showFieldsDiffOnly, recordData]);
+  }, [differentFieldsList, showFieldsDiffOnly, recordData, selectedFields]);
 
   /**
    * We need to track whenever selectedFields is updated
