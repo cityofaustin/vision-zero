@@ -13,6 +13,7 @@ import {
   faBiking,
   faCar,
   faMotorcycle,
+  faInfoCircle,
 } from "@fortawesome/free-solid-svg-icons";
 
 const StyledCard = styled.div`
@@ -30,6 +31,10 @@ const StyledCard = styled.div`
 
   .card-body {
     background: ${colors.white};
+  }
+
+  .info-icon {
+    cursor: pointer;
   }
 `;
 
@@ -214,9 +219,18 @@ const SideMapControl = () => {
 
   return (
     <StyledCard>
-      <div className="card-title">Traffic Crashes</div>
+      <h4 className="card-title">
+        Traffic Crashes{" "}
+        <FontAwesomeIcon
+          className="info-icon"
+          icon={faInfoCircle}
+          onClick={() => console.log("Clicked info circle")}
+        />
+      </h4>
       <Card className="p-3 card-body">
-        <Label className="section-title">Filters</Label>
+        <Label className="section-title">
+          <h5>Filters</h5>
+        </Label>
         {/* Create a button group for each group of mapFilters */}
         {Object.entries(mapButtonFilters).map(([group, groupParameters], i) => (
           <ButtonGroup key={i} className="mb-3 d-flex" id={`${group}-buttons`}>
