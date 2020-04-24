@@ -156,7 +156,7 @@ def add_locations_to_cr3s_by_location(locations_list="", starting_index=0):
 
 # locations_subset_string = '["B2CC5AA3DE", "657F8BC8A7", "4752318AEF", "08C443808A", "4155F0A788", "1A931952A4", "814D410E64", "3E7D9ADD91", "9EACA23F07", "8B0ADEAE9B", "C6A93E989D", "7AA0698000", "3DA3B8E584", "1FCF88F77D"]'
 
-starting_index = 0
+starting_index = 28335
 
 # Pass `locations_subset_string` as first argument for subset location processing
 add_locations_to_cr3s_by_location("", starting_index)
