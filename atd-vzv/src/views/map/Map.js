@@ -161,16 +161,9 @@ const Map = () => {
 
   const _onViewportChange = (viewport) => setViewport(viewport);
 
-  // Change cursor to grab when dragging map
-  const _getCursor = ({ isHovering, isDragging }) => {
-    if (isDragging) {
-      return "grab";
-    } else if (isHovering) {
-      return "pointer";
-    } else {
-      return "default";
-    }
-  };
+  // Change cursor to grab when dragging map and pointer when hovering an interactive layer
+  const _getCursor = ({ isHovering, isDragging }) =>
+    isDragging ? "grab" : isHovering ? "pointer" : "default";
 
   // Set interactive layer IDs to allow cursor to change if isHovering
   useEffect(() => {

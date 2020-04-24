@@ -25,7 +25,6 @@ const MapCrashInfoBox = ({ selectedFeature, isMobile }) => {
   const popupInfo = selectedFeature;
   const crashPointCard = <CrashPointCard info={popupInfo.properties} />;
 
-  // TODO: Add pointer hand on hover
   return (
     popupInfo &&
     (isMobile ? (
