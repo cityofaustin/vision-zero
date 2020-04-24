@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import { StoreContext } from "../../utils/store";
-import ReactMapGL, { Source, Layer, Popup } from "react-map-gl";
 import { useWindowSize } from "react-use";
+import ReactMapGL, { Source, Layer } from "react-map-gl";
 import MapControls from "./MapControls";
 import MapPolygonFilter from "./MapPolygonFilter";
-import CrashPointInfo from "./CrashPointInfo";
 import { createMapDataUrl } from "./helpers";
 import { crashGeoJSONEndpointUrl } from "../../views/summary/queries/socrataQueries";
 import {
@@ -25,29 +24,12 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCompass, faCircle } from "@fortawesome/free-solid-svg-icons";
 import { colors } from "../../constants/colors";
 import { responsive } from "../../constants/responsive";
-import { drawer } from "../../constants/drawer";
 
 import "mapbox-gl/dist/mapbox-gl.css";
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css"; // Get out-of-the-box icons
+import MapCrashInfoBox from "./MapCrashInfoBox";
 
 const MAPBOX_TOKEN = `pk.eyJ1Ijoiam9obmNsYXJ5IiwiYSI6ImNrM29wNnB3dDAwcXEzY29zMTU5bWkzOWgifQ.KKvoz6s4NKNHkFVSnGZonw`;
-
-const StyledDesktopInfo = styled.div`
-  position: absolute;
-  margin: 8px;
-  padding: 2px;
-  max-width: ${drawer.width - 20}px;
-  z-index: 9 !important;
-  pointer-events: none;
-`;
-
-const StyledMobileInfo = styled.div`
-  .card {
-    background: none;
-    border: none;
-    max-width: ${drawer.width - 20}px;
-  }
-`;
 
 const StyledMapSpinner = styled.div`
   position: absolute;
@@ -111,7 +93,7 @@ const Map = () => {
 
   const { width } = useWindowSize();
   const { bootstrapMedium } = responsive;
-  const isMobile = width < bootstrapMedium;
+  const isMobile = width <= bootstrapMedium;
 
   const [mapData, setMapData] = useState("");
   const [selectedFeature, setSelectedFeature] = useState(null);
@@ -181,7 +163,7 @@ const Map = () => {
   // Change cursor to grab when dragging map
   const _getCursor = ({ isDragging }) => (isDragging ? "grab" : "default");
 
-  const _onClickCrashPoint = (event) => {
+  const _onSelectCrashPoint = (event) => {
     const { features } = event;
     const selectedFeature =
       features &&
@@ -190,31 +172,6 @@ const Map = () => {
       );
 
     setSelectedFeature(selectedFeature);
-  };
-
-  // TODO: Add pointer hand on hover
-  const _renderPopup = () => {
-    const popupInfo = selectedFeature;
-    const crashPointInfo = <CrashPointInfo info={popupInfo.properties} />;
-
-    return (
-      popupInfo &&
-      (isMobile ? (
-        <Popup
-          tipSize={10}
-          anchor="top"
-          longitude={parseFloat(popupInfo.properties.longitude)}
-          latitude={parseFloat(popupInfo.properties.latitude)}
-          closeOnClick={false}
-          closeButton={true}
-          onClose={() => setSelectedFeature(null)}
-        >
-          <StyledMobileInfo>{crashPointInfo}</StyledMobileInfo>
-        </Popup>
-      ) : (
-        <StyledDesktopInfo>{crashPointInfo}</StyledDesktopInfo>
-      ))
-    );
   };
 
   const renderCrashDataLayers = () => {
@@ -252,8 +209,8 @@ const Map = () => {
       onViewportChange={_onViewportChange}
       mapboxApiAccessToken={MAPBOX_TOKEN}
       getCursor={_getCursor}
-      onHover={!isMobile ? _onClickCrashPoint : null}
-      onClick={isMobile ? _onClickCrashPoint : null}
+      onHover={!isMobile ? _onSelectCrashPoint : null}
+      onClick={isMobile ? _onSelectCrashPoint : null}
       ref={(ref) => (mapRef.current = ref && ref.getMap())}
     >
       {/* Provide empty source and layer as target for beforeId params to set order of layers */}
@@ -271,7 +228,12 @@ const Map = () => {
         </Source>
       )}
       {/* Render crash point tooltip */}
-      {selectedFeature && _renderPopup()}
+      {selectedFeature && (
+        <MapCrashInfoBox
+          selectedFeature={selectedFeature}
+          isMobile={isMobile}
+        />
+      )}
       {/* Show spinner when map is updating */}
       {isMapDataLoading && (
         <StyledMapSpinner className="fa-layers fa-fw">

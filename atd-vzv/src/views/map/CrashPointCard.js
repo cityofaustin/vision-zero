@@ -3,7 +3,7 @@ import { PureComponent } from "react";
 import { Card, CardBody, CardText } from "reactstrap";
 import moment from "moment";
 
-export default class CrashPointInfo extends PureComponent {
+export default class CrashPointCard extends PureComponent {
   render() {
     const { info } = this.props;
 
