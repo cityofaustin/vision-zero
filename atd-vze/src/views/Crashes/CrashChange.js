@@ -460,14 +460,14 @@ function CrashChange(props) {
     });
 
     const updateTablesQuery = generateUpdateQuery();
-
+    const deleteChangeRecords = RECORD_DELETE_CHANGE_RECORDS;
     // 3. We are going to remove all count columns unless present in countFields
 
     const mutation = generateMutationSave();
-    console.log("deleteChangeTableRecords: ");
+    console.log("updateTablesQuery: ");
     console.log(updateTablesQuery);
-    console.log("saveSelectedFields() : Mutation Template");
-    console.log(mutation);
+    console.log("deleteChangeRecords: ");
+    console.log(deleteChangeRecords);
     toggleModal(1);
   };
 
