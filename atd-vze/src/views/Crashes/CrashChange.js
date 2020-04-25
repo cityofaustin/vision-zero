@@ -174,32 +174,6 @@ function CrashChange(props) {
   };
 
   /**
-   * Toggles a modal based on a number.
-   * @param {int} mode - The modal to toggle
-   */
-  const toggleModal = mode => {
-    switch (mode) {
-      case 1:
-        setApproveAllChanges(!approveAllChanges);
-        break;
-      case 2:
-        setDiscardAllChanges(!discardAllChanges);
-        break;
-      case 3:
-        setClearAllSelections(!clearAllSelections);
-        break;
-      case 4:
-        setSavingChanges(!savingChanges);
-        break;
-      case 5:
-        setErrorDialog(!errorDialog);
-        break;
-      default:
-        break;
-    }
-  };
-
-  /**
    * Batch-enables a list of fields
    * @param {int} mode - The mode to operate: 1) Main, 2) All other fields, 3) All fields
    */
@@ -484,6 +458,112 @@ function CrashChange(props) {
     console.log(selectedFields);
   }, [selectedFields]);
 
+
+  /**
+   * Hides the Save Selected Changes Modal
+   */
+  const hideSaveSelectedChanges = () => {
+    setApproveAllChanges(false);
+  }
+
+  /**
+   * Show the Save Selected Changes Modal
+   */
+  const showSaveSelectedChanges = () => {
+    setApproveAllChanges(true);
+  };
+
+  /**
+   * Hides the Discard New Record Modal
+   */
+  const hideDiscardNewRecord = () => {
+    setDiscardAllChanges(false);
+  }
+
+  /**
+   * Shows the Discard New Record Modal
+   */
+  const showDiscardNewRecord = () => {
+    setDiscardAllChanges(true);
+  }
+
+  /**
+   * Hides the Unselect All Changes Modal
+   */
+  const hideUnselectAllChanges = () => {
+    setClearAllSelections(false);
+  }
+
+  /**
+   * Shows the Unselect All Changes Modal
+   */
+  const showUnselectAllChanges = () => {
+    setClearAllSelections(true);
+  }
+
+  /**
+   * Shows the Error dialog
+   */
+  const showErrorDialog = () => {
+    setErrorDialog(true);
+  };
+
+  /**
+   * Hides the Error dialog
+   */
+  const hideErrorDialog = () => {
+    setErrorDialog(false);
+  };
+
+  /**
+   * Hides the process dialog (when saving or deleting)
+   */
+  const hideProcessDialog = () => {
+    setSavingChanges(false);
+  }
+
+  /**
+   * Shows the process dialog (when saving or deleting)
+   */
+  const showProcessDialog = () => {
+    setSavingChanges(true);
+  }
+
+
+
+
+   /**
+   * Operations: Update, Delete, etc.
+   */
+
+  const redirectToQueueIndex = () => {
+    console.log("Closing dialog saving dialog ...");
+    setSaveStatus(<Redirect to="/changes" />);
+  };
+
+  const startSaveProcess = async () => {
+    setSaveStatus("generating queries");
+    await sleep(1000);
+    const updateQueries = generateUpdateQuery();
+    console.log("Update Queries generated: ");
+    console.log(updateQueries);
+  };
+
+  const executeUpdateQueries = async () => {
+    const mutation = generateMutationSave();
+    setSaveStatus("executing update queries");
+    await sleep(1000);
+  };
+
+  const deleteChangesRecords = async () => {
+    setSaveStatus("removing crash from queue");
+    await sleep(1000);
+    console.log("Deleting Change records: ");
+    await deleteFromQueue({ variables: { crashId: crashId } });
+    await refetch();
+  };
+
+
   /**
    * Saves the selected fields and discards the change
    */
@@ -492,83 +572,45 @@ function CrashChange(props) {
     const countFields = selectedFields.filter(field => {
       return field.endsWith("_cnt");
     });
-    toggleModal(1);
-    showSavingModal();
-  };
 
-  const showErrorDialog = () => {
-    setErrorDialog(true);
-  };
-
-  const hideErrorDialog = () => {
-    setErrorDialog(false);
-  };
-
-  const hideSavingModal = () => {
-    setSavingChanges(false);
-  };
-
-  const showSavingModal = () => {
-    toggleModal(4);
     let updateQueries = null;
     let deleteQueries = null;
-
-    const startSaveProcess = async () => {
-      setSaveStatus("generating queries");
-      await sleep(1000);
-      const updateQueries = generateUpdateQuery();
-      console.log("Update Queries generated: ");
-      console.log(updateQueries);
-    };
-
-    const executeUpdateQueries = async () => {
-      const mutation = generateMutationSave();
-      setSaveStatus("executing update queries");
-      await sleep(1000);
-    };
-
-    const deleteChangesRecords = async () => {
-      setSaveStatus("removing crash from queue");
-      await sleep(1000);
-      console.log("Deleting Change records: ");
-      await deleteFromQueue({ variables: { crashId: crashId } });
-      await refetch();
-      redirectToQueueIndex();
-    };
 
     startSaveProcess()
       .catch(error => {
         setErrorMessage("Error on Save: " + error);
-        hideSavingModal();
+        hideProcessDialog();
         showErrorDialog();
       })
       .then(executeUpdateQueries)
       .catch(error => {
         setErrorMessage("Error on Update: " + error);
-        hideSavingModal();
+        hideProcessDialog();
         showErrorDialog();
       })
       .then(deleteChangesRecords)
       .catch(error => {
         setErrorMessage("Error on Delete: " + error);
-        hideSavingModal();
+        hideProcessDialog();
         showErrorDialog();
       });
   };
 
-  const redirectToQueueIndex = () => {
-    console.log("Closing dialog saving dialog ...");
-    setSaveStatus(<Redirect to="/changes" />);
-  };
-
   /**
-   * Discards the change
+   * Initializes the discard process...
    */
   const discardChange = () => {
-    console.log("discardChange() : Mutation Template");
-    console.log(CRASH_MUTATION_DISCARD);
-    toggleModal(3);
-    alert("The user should now be taken to the index page.");
+    hideDiscardNewRecord();
+
+    deleteChangesRecords()
+      .then(() => {
+        redirectToQueueIndex();
+      })
+      .catch(error => {
+        setErrorMessage("Error on Delete: " + error);
+        hideProcessDialog();
+        showErrorDialog();
+      });
   };
 
   /**
@@ -640,6 +682,10 @@ function CrashChange(props) {
       .replace("%SELECTED_COLUMNS%", onConflictList.join("\n\t\t\t\t"));
   };
 
+  /**
+   * Generates an update query to update the secondary records
+   * @returns {string} - The GraphQL query
+   */
   const generateUpdateQuery = () => {
     console.log("Secondary Data:");
     console.log(secondaryData);
@@ -759,7 +805,7 @@ function CrashChange(props) {
                   </Button>
                 </Col>
                 <Col sm xs="12" className="text-center">
-                  <Button color="warning" onClick={() => toggleModal(2)}>
+                  <Button color="warning" onClick={() => showUnselectAllChanges()}>
                     <i className="fa fa-window-close"></i>&nbsp;Unselect all
                     changes
                   </Button>
@@ -768,7 +814,7 @@ function CrashChange(props) {
                   sm
                   xs="12"
                   className="text-center"
-                  onClick={() => toggleModal(1)}
+                  onClick={() => showSaveSelectedChanges()}
                 >
                   <Button
                     color="success"
@@ -781,7 +827,7 @@ function CrashChange(props) {
                   sm
                   xs="12"
                   className="text-center"
-                  onClick={() => toggleModal(3)}
+                  onClick={() => showDiscardNewRecord()}
                 >
                   <Button color="danger">
                     <i className="fa fa-trash"></i>&nbsp;Discard New Record
@@ -871,10 +917,10 @@ function CrashChange(props) {
 
       <Modal
         isOpen={approveAllChanges}
-        toggle={() => toggleModal(1)}
+        toggle={() => hideSaveSelectedChanges()}
         className={"modal-success"}
       >
-        <ModalHeader toggle={() => toggleModal(1)}>
+        <ModalHeader toggle={() => hideSaveSelectedChanges()}>
           {selectedFields.length > 0 && <>Save selected changes?</>}
           {selectedFields.length === 0 && <>No selected changes</>}
         </ModalHeader>
@@ -899,18 +945,18 @@ function CrashChange(props) {
               Save
             </Button>
           )}
-          <Button color="secondary" onClick={() => toggleModal(1)}>
+          <Button color="secondary" onClick={() => hideSaveSelectedChanges()}>
             {selectedFields.length > 0 ? "Cancel" : "Close"}
           </Button>
         </ModalFooter>
       </Modal>
 
       <Modal
-        isOpen={discardAllChanges}
-        toggle={() => toggleModal(2)}
+        isOpen={clearAllSelections}
+        toggle={() => hideUnselectAllChanges()}
         className={"modal-warning"}
       >
-        <ModalHeader toggle={() => toggleModal(2)}>Unselect all?</ModalHeader>
+        <ModalHeader toggle={() => hideUnselectAllChanges()}>Unselect all?</ModalHeader>
         <ModalBody>
           Click <strong>Unselect All</strong> to turn off every selected item.
           Click <strong>Cancel</strong> to stop and close this dialog without
@@ -921,23 +967,23 @@ function CrashChange(props) {
             color="primary"
             onClick={() => {
               fieldsBatchClear(3);
-              toggleModal(2);
+              hideUnselectAllChanges();
             }}
           >
             Unselect All
           </Button>{" "}
-          <Button color="secondary" onClick={() => toggleModal(2)}>
+          <Button color="secondary" onClick={() => hideUnselectAllChanges()}>
             Cancel
           </Button>
         </ModalFooter>
       </Modal>
 
       <Modal
-        isOpen={clearAllSelections}
-        toggle={() => toggleModal(3)}
+        isOpen={discardAllChanges}
+        toggle={() => hideDiscardNewRecord()}
         className={"modal-danger"}
       >
-        <ModalHeader toggle={() => toggleModal(3)}>
+        <ModalHeader toggle={() => hideDiscardNewRecord()}>
           Discard incoming record?
         </ModalHeader>
         <ModalBody>
@@ -950,7 +996,7 @@ function CrashChange(props) {
           <Button color="danger" onClick={() => discardChange()}>
             <i className="fa fa-trash-o"></i>&nbsp;I am sure, Discard
           </Button>{" "}
-          <Button color="secondary" onClick={() => toggleModal(3)}>
+          <Button color="secondary" onClick={() => hideDiscardNewRecord(3)}>
             Cancel
           </Button>
         </ModalFooter>
@@ -958,8 +1004,8 @@ function CrashChange(props) {
 
       <Modal
         isOpen={savingChanges}
-        toggle={() => toggleModal(4)}
         className={"modal-secondary"}
+        keyboard={false}
       >
         <ModalHeader toggle={null}>
           <span className={"crash-process-modal__header"}>Commiting Changes to Database</span>
@@ -977,11 +1023,11 @@ function CrashChange(props) {
 
       <Modal
         isOpen={errorDialog}
-        toggle={() => toggleModal(5)}
+        toggle={() => hideErrorDialog()}
         className={"modal-secondary"}
         keyboard={false}
       >
-        <ModalHeader toggle={() => toggleModal(5)}>
+        <ModalHeader toggle={() => hideErrorDialog()}>
            <span className={"crash-process-modal__header"}>Error</span>
         </ModalHeader>
         <ModalBody>
