@@ -245,7 +245,7 @@ export const RECORD_DELETE_CHANGE_RECORDS = `
   mutation deleteChangeRecords($crashId: Int) {
       delete_atd_txdot_changes (
           where: {
-            crash_id: { _eq: $crashId }
+            record_id: { _eq: $crashId }
             record_type: { _in: ["crash", "unit", "primaryperson", "person"] }
           }
       ) {
