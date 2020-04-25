@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
+import { gql } from "apollo-boost";
 import { withApollo } from "react-apollo";
-import { useQuery } from "@apollo/react-hooks";
+import { useQuery, useMutation } from "@apollo/react-hooks";
 import { useAuth0 } from "../../auth/authContext";
 import { MiniDiff } from "../../Components/MiniDiff";
-import { gql } from "apollo-boost";
 import axios from "axios";
 
 import "./crash.scss";
@@ -22,6 +22,7 @@ import {
   ModalHeader,
   ModalBody,
   ModalFooter,
+  Spinner,
 } from "reactstrap";
 
 import { AppSwitch } from "@coreui/react";
@@ -34,6 +35,7 @@ import {
 } from "../../queries/crashes_changes";
 import { crashImportantDiffFields } from "./crashImportantDiffFields";
 import { crashChangeQuotedFields } from "./crashChangeQuotedFields";
+import { redirectUrl } from "../../index";
 
 function CrashChange(props) {
   const crashId = props.match.params.id;
@@ -52,17 +54,32 @@ function CrashChange(props) {
   const [approveAllChanges, setApproveAllChanges] = useState(false);
   const [discardAllChanges, setDiscardAllChanges] = useState(false);
   const [clearAllSelections, setClearAllSelections] = useState(false);
+  const [savingChanges, setSavingChanges] = useState(false);
+  const [errorDialog, setErrorDialog] = useState(false);
+  const [saveStatus, setSaveStatus] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   // CR3 Availbable
   const [cr3available, setCR3Available] = useState(false);
 
   const { loading, user } = useAuth0();
 
-  const { data: data, error: error, loading: loadingData } = useQuery(
-    GET_CRASH_CHANGE,
-    {
-      variables: { crashId },
-    }
+  /**
+   * Mutations
+   */
+  const [deleteFromQueue] = useMutation(
+    gql`
+      ${RECORD_DELETE_CHANGE_RECORDS}
+    `
   );
+
+  const {
+    data: data,
+    error: error,
+    loading: loadingData,
+    refetch: refetch,
+  } = useQuery(GET_CRASH_CHANGE, {
+    variables: { crashId },
+  });
 
   const {
     data: secondaryData,
@@ -84,6 +101,15 @@ function CrashChange(props) {
    */
   const isFieldEnabled = fieldName => {
     return selectedFields.includes(fieldName);
+  };
+
+  /**
+   * Sleeps a for a few milliseconds
+   * @param {int} milliseconds - The length of sleep in milliseconds
+   * @returns {Promise}
+   */
+  const sleep = milliseconds => {
+    return new Promise(resolve => setTimeout(resolve, milliseconds));
   };
 
   /**
@@ -159,8 +185,16 @@ function CrashChange(props) {
       case 2:
         setDiscardAllChanges(!discardAllChanges);
         break;
-      default:
+      case 3:
         setClearAllSelections(!clearAllSelections);
+        break;
+      case 4:
+        setSavingChanges(!savingChanges);
+        break;
+      case 5:
+        setErrorDialog(!errorDialog);
+        break;
+      default:
         break;
     }
   };
@@ -458,17 +492,73 @@ function CrashChange(props) {
     const countFields = selectedFields.filter(field => {
       return field.endsWith("_cnt");
     });
-
-    const updateTablesQuery = generateUpdateQuery();
-    const deleteChangeRecords = RECORD_DELETE_CHANGE_RECORDS;
-    // 3. We are going to remove all count columns unless present in countFields
-
-    const mutation = generateMutationSave();
-    console.log("updateTablesQuery: ");
-    console.log(updateTablesQuery);
-    console.log("deleteChangeRecords: ");
-    console.log(deleteChangeRecords);
     toggleModal(1);
+    showSavingModal();
+  };
+
+  const showErrorDialog = () => {
+    setErrorDialog(true);
+  };
+
+  const hideErrorDialog = () => {
+    setErrorDialog(false);
+  };
+
+  const hideSavingModal = () => {
+    setSavingChanges(false);
+  };
+
+  const showSavingModal = () => {
+    toggleModal(4);
+    let updateQueries = null;
+    let deleteQueries = null;
+
+    const startSaveProcess = async () => {
+      setSaveStatus("generating queries");
+      await sleep(1000);
+      const updateQueries = generateUpdateQuery();
+      console.log("Update Queries generated: ");
+      console.log(updateQueries);
+    };
+
+    const executeUpdateQueries = async () => {
+      const mutation = generateMutationSave();
+      setSaveStatus("executing update queries");
+      await sleep(1000);
+    };
+
+    const deleteChangesRecords = async () => {
+      setSaveStatus("removing crash from queue");
+      await sleep(1000);
+      console.log("Deleting Change records: ");
+      await deleteFromQueue({ variables: { crashId: crashId } });
+      await refetch();
+      redirectToQueueIndex();
+    };
+
+    startSaveProcess()
+      .catch(error => {
+        setErrorMessage("Error on Save: " + error);
+        hideSavingModal();
+        showErrorDialog();
+      })
+      .then(executeUpdateQueries)
+      .catch(error => {
+        setErrorMessage("Error on Update: " + error);
+        hideSavingModal();
+        showErrorDialog();
+      })
+      .then(deleteChangesRecords)
+      .catch(error => {
+        setErrorMessage("Error on Delete: " + error);
+        hideSavingModal();
+        showErrorDialog();
+      });
+  };
+
+  const redirectToQueueIndex = () => {
+    console.log("Closing dialog saving dialog ...");
+    setSaveStatus(<Redirect to="/changes" />);
   };
 
   /**
@@ -506,7 +596,7 @@ function CrashChange(props) {
     });
 
     if (recordType === "crash") {
-      recordObject["crash_id"] = record["record_id"]
+      recordObject["crash_id"] = record["record_id"];
     }
 
     const constraintsList = {
@@ -863,6 +953,38 @@ function CrashChange(props) {
           <Button color="secondary" onClick={() => toggleModal(3)}>
             Cancel
           </Button>
+        </ModalFooter>
+      </Modal>
+
+      <Modal
+        isOpen={savingChanges}
+        toggle={() => toggleModal(4)}
+        className={"modal-secondary"}
+      >
+        <ModalHeader toggle={null}>Commiting Changes to Database</ModalHeader>
+        <ModalBody>
+          <Spinner className="mt-2" color="primary" />
+          <span className={"crash-modal-span"}>
+            Saving changes, please wait... {saveStatus}
+          </span>
+        </ModalBody>
+        <ModalFooter>
+          <span>You will be redirected back to the queue.</span>
+        </ModalFooter>
+      </Modal>
+
+      <Modal
+        isOpen={errorDialog}
+        toggle={() => toggleModal(5)}
+        className={"modal-warning"}
+        keyboard={false}
+      >
+        <ModalHeader toggle={() => toggleModal(5)}>Error</ModalHeader>
+        <ModalBody>
+          <span className={"crash-modal-span"}>Error: {errorMessage}</span>
+        </ModalBody>
+        <ModalFooter>
+          <span>No actions have been taken.</span>
         </ModalFooter>
       </Modal>
     </div>
