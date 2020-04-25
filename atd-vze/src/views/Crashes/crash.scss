@@ -36,14 +36,22 @@ span > strong {
   margin-top: .25rem;
 }
 
-.crash-row-header {
+.difftable-row__header {
   border-bottom: 1px solid #f0f3f5;
   padding-bottom: 0.5rem;
   margin-bottom: 1.0rem;
 }
 
-.crash-modal-span {
+.crash-process-modal {
+  color: black;
+}
+
+.crash-process-modal__body {
   margin-left: 1rem;
   top: -.5rem;
   position: relative;
+}
+
+.crash-process-modal__header {
+  color: black;
 }
