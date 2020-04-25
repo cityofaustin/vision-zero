@@ -683,7 +683,7 @@ function CrashChange(props) {
   );
 
   const fieldsHeader = (
-    <Row className={"crash-row-header"}>
+    <Row className={"difftable-row__header"}>
       <Col xs="6" sm="6" md="3">
         <b>Crash Table Field</b>
       </Col>
@@ -961,10 +961,12 @@ function CrashChange(props) {
         toggle={() => toggleModal(4)}
         className={"modal-secondary"}
       >
-        <ModalHeader toggle={null}>Commiting Changes to Database</ModalHeader>
+        <ModalHeader toggle={null}>
+          <span className={"crash-process-modal__header"}>Commiting Changes to Database</span>
+        </ModalHeader>
         <ModalBody>
           <Spinner className="mt-2" color="primary" />
-          <span className={"crash-modal-span"}>
+          <span className={"crash-process-modal__body"}>
             Saving changes, please wait... {saveStatus}
           </span>
         </ModalBody>
@@ -976,12 +978,14 @@ function CrashChange(props) {
       <Modal
         isOpen={errorDialog}
         toggle={() => toggleModal(5)}
-        className={"modal-warning"}
+        className={"modal-secondary"}
         keyboard={false}
       >
-        <ModalHeader toggle={() => toggleModal(5)}>Error</ModalHeader>
+        <ModalHeader toggle={() => toggleModal(5)}>
+           <span className={"crash-process-modal__header"}>Error</span>
+        </ModalHeader>
         <ModalBody>
-          <span className={"crash-modal-span"}>Error: {errorMessage}</span>
+          <span className={"crash-process-modal__header"}>Error: {errorMessage}</span>
         </ModalBody>
         <ModalFooter>
           <span>No actions have been taken.</span>
