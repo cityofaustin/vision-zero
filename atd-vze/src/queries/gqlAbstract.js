@@ -558,11 +558,40 @@ gqlAbstractTableAggregateName (
     });
     // Join each aggregate query into one string
     const aggregatesQueryString = aggregatesQueryArray.join(" ");
-    
+
     // Return GraphQL query
     return gql`query GetLocationStats {
       ${aggregatesQueryString}
     }`;
+  }
+
+  /**
+   * Sets the options for Apollo query methods
+   * @param {string} optionType - The method in question: useQuery, useMutation, etc.
+   * @param {object} optionsObject - A key value pair with Apollo config stipulations.
+   */
+  setOption(optionType, optionsObject) {
+    this.config["options"][optionType] = optionsObject;
+  }
+
+  /**
+   * Returns an apollo query option by type
+   * @param {string} optionType - The option type name being retrieved: useQuery, useMutation, etc.
+   */
+  getOption(optionType) {
+    try {
+      return this.config["options"][optionType];
+    } catch {
+      return {};
+    }
+  }
+
+  /**
+   * Returns a key-value object with options for the Apollo useQuery method
+   * @returns {object} - The options object
+   */
+  get useQueryOptions() {
+    return this.getOption("useQuery") || {};
   }
 
   /**
