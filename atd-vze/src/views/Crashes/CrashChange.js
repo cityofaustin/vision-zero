@@ -160,9 +160,12 @@ function CrashChange(props) {
    * @returns {object|null} - The parsed object
    */
   const getNewRecord = () => {
-    return (
-      JSON.parse(recordData["atd_txdot_changes"][0]["record_json"]) || null
-    );
+    try {
+      return JSON.parse(recordData["atd_txdot_changes"][0]["record_json"]);
+    } catch {
+      redirectToQueueIndex();
+      return null;
+    }
   };
 
   /**
@@ -458,13 +461,22 @@ function CrashChange(props) {
     console.log(selectedFields);
   }, [selectedFields]);
 
+  /**
+   * Closes all dialogs
+   */
+  const hideAllDialogs = () => {
+    setApproveAllChanges(false);
+    setDiscardAllChanges(false);
+    setClearAllSelections(false);
+    setSavingChanges(false);
+  };
 
   /**
    * Hides the Save Selected Changes Modal
    */
   const hideSaveSelectedChanges = () => {
     setApproveAllChanges(false);
-  }
+  };
 
   /**
    * Show the Save Selected Changes Modal
@@ -478,33 +490,34 @@ function CrashChange(props) {
    */
   const hideDiscardNewRecord = () => {
     setDiscardAllChanges(false);
-  }
+  };
 
   /**
    * Shows the Discard New Record Modal
    */
   const showDiscardNewRecord = () => {
     setDiscardAllChanges(true);
-  }
+  };
 
   /**
    * Hides the Unselect All Changes Modal
    */
   const hideUnselectAllChanges = () => {
     setClearAllSelections(false);
-  }
+  };
 
   /**
    * Shows the Unselect All Changes Modal
    */
   const showUnselectAllChanges = () => {
     setClearAllSelections(true);
-  }
+  };
 
   /**
    * Shows the Error dialog
    */
   const showErrorDialog = () => {
+    hideAllDialogs();
     setErrorDialog(true);
   };
 
@@ -520,79 +533,95 @@ function CrashChange(props) {
    */
   const hideProcessDialog = () => {
     setSavingChanges(false);
-  }
+  };
 
   /**
    * Shows the process dialog (when saving or deleting)
    */
   const showProcessDialog = () => {
     setSavingChanges(true);
-  }
+  };
 
-
-
-
-   /**
+  /**
    * Operations: Update, Delete, etc.
    */
 
+  /**
+   * Redirects to the index page
+   */
   const redirectToQueueIndex = () => {
-    console.log("Closing dialog saving dialog ...");
-    setSaveStatus(<Redirect to="/changes" />);
+    window.location = "/#/changes";
   };
 
+  /**
+   * It is dummy start point for any changes to the database...
+   * @returns {Promise<void>}
+   */
   const startSaveProcess = async () => {
-    setSaveStatus("generating queries");
+    showProcessDialog();
+    setSaveStatus("beginning update process");
     await sleep(1000);
-    const updateQueries = generateUpdateQuery();
-    console.log("Update Queries generated: ");
-    console.log(updateQueries);
   };
 
+  /**
+   * Executes graphql queries to update the crash record
+   * @returns {Promise<void>}
+   */
+  const executeUpdateCrashRecord = async () => {
+    // 1. Gather list of count fields that need updating
+    const countFields = await selectedFields.filter(field => {
+      return field.endsWith("_cnt");
+    });
+
+    const updateQueries = await generateUpdateQuery();
+    setSaveStatus("updating crash record");
+    await sleep(1000);
+  };
+
+  /**
+   * Executes graphql queries to update secondary records
+   * @returns {Promise<void>}
+   */
   const executeUpdateQueries = async () => {
     const mutation = generateMutationSave();
-    setSaveStatus("executing update queries");
+    setSaveStatus("updating secondary records");
     await sleep(1000);
   };
 
-  const deleteChangesRecords = async () => {
-    setSaveStatus("removing crash from queue");
+  /**
+   * Executes the queries to delete the records from queue
+   * @returns {Promise<void>}
+   */
+  const executeDeleteChangesRecords = async () => {
+    setSaveStatus("removing records from queue");
     await sleep(1000);
-    console.log("Deleting Change records: ");
     await deleteFromQueue({ variables: { crashId: crashId } });
     await refetch();
   };
-
 
   /**
    * Saves the selected fields and discards the change
    */
   const saveSelectedFields = () => {
-    // 1. Gather list of count fields that need updating
-    const countFields = selectedFields.filter(field => {
-      return field.endsWith("_cnt");
-    });
-
-    let updateQueries = null;
-    let deleteQueries = null;
-
     startSaveProcess()
+      .then(executeUpdateCrashRecord)
       .catch(error => {
         setErrorMessage("Error on Save: " + error);
-        hideProcessDialog();
         showErrorDialog();
       })
       .then(executeUpdateQueries)
       .catch(error => {
         setErrorMessage("Error on Update: " + error);
-        hideProcessDialog();
         showErrorDialog();
       })
-      .then(deleteChangesRecords)
+      .then(executeDeleteChangesRecords)
       .catch(error => {
         setErrorMessage("Error on Delete: " + error);
-        hideProcessDialog();
         showErrorDialog();
+      })
+      .then(() => {
+        // If it all goes well then redirect to the index page...
+        redirectToQueueIndex();
       });
   };
 
@@ -602,13 +631,14 @@ function CrashChange(props) {
   const discardChange = () => {
     hideDiscardNewRecord();
 
-    deleteChangesRecords()
+    startSaveProcess()
+      .then(executeDeleteChangesRecords)
       .then(() => {
+        setSaveStatus("Redirecting to index page...");
         redirectToQueueIndex();
       })
       .catch(error => {
         setErrorMessage("Error on Delete: " + error);
-        hideProcessDialog();
         showErrorDialog();
       });
   };
@@ -805,7 +835,10 @@ function CrashChange(props) {
                   </Button>
                 </Col>
                 <Col sm xs="12" className="text-center">
-                  <Button color="warning" onClick={() => showUnselectAllChanges()}>
+                  <Button
+                    color="warning"
+                    onClick={() => showUnselectAllChanges()}
+                  >
                     <i className="fa fa-window-close"></i>&nbsp;Unselect all
                     changes
                   </Button>
@@ -956,7 +989,9 @@ function CrashChange(props) {
         toggle={() => hideUnselectAllChanges()}
         className={"modal-warning"}
       >
-        <ModalHeader toggle={() => hideUnselectAllChanges()}>Unselect all?</ModalHeader>
+        <ModalHeader toggle={() => hideUnselectAllChanges()}>
+          Unselect all?
+        </ModalHeader>
         <ModalBody>
           Click <strong>Unselect All</strong> to turn off every selected item.
           Click <strong>Cancel</strong> to stop and close this dialog without
@@ -1008,7 +1043,9 @@ function CrashChange(props) {
         keyboard={false}
       >
         <ModalHeader toggle={null}>
-          <span className={"crash-process-modal__header"}>Commiting Changes to Database</span>
+          <span className={"crash-process-modal__header"}>
+            Commiting Changes to Database
+          </span>
         </ModalHeader>
         <ModalBody>
           <Spinner className="mt-2" color="primary" />
@@ -1028,10 +1065,12 @@ function CrashChange(props) {
         keyboard={false}
       >
         <ModalHeader toggle={() => hideErrorDialog()}>
-           <span className={"crash-process-modal__header"}>Error</span>
+          <span className={"crash-process-modal__header"}>Error</span>
         </ModalHeader>
         <ModalBody>
-          <span className={"crash-process-modal__header"}>Error: {errorMessage}</span>
+          <span className={"crash-process-modal__header"}>
+            Error: {errorMessage}
+          </span>
         </ModalBody>
         <ModalFooter>
           <span>No actions have been taken.</span>
