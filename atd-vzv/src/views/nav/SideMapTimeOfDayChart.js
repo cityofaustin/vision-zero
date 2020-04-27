@@ -180,7 +180,7 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
       )}
       <Button
         size="sm"
-        color="info"
+        color="dark"
         outline={isMapTimeWindowSet}
         onClick={handleAllButtonClick}
       >

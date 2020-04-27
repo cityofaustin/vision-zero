@@ -47,17 +47,42 @@ const SideMapControl = () => {
   const [filterGroupCounts, setFilterGroupCounts] = useState({});
   const [isTypeSet, setIsTypeSet] = useState({ fatal: false, injury: true });
 
-  const setTypeFilters = (type) => {
-    if (Object.values(isTypeSet).includes(false) && isTypeSet[type] === true) {
-      return;
-    } else {
-      const updatedState = { ...isTypeSet, [type]: !isTypeSet[type] };
-      setIsTypeSet(updatedState);
-    }
+  const setTypeFilters = (typeArray) => {
+    // Set types in array as true and others as false
+    const updatedState = Object.keys(isTypeSet).reduce((acc, type) => {
+      if (typeArray.includes(type)) {
+        acc = { ...acc, [type]: true };
+      } else {
+        acc = { ...acc, [type]: false };
+      }
+      return acc;
+    }, {});
+
+    setIsTypeSet(updatedState);
   };
 
   // Define groups of map button filters
   const mapButtonFilters = {
+    type: {
+      all: {
+        text: `All`,
+        handler: () => setTypeFilters(["injury", "fatal"]),
+        isSelected: isTypeSet.injury && isTypeSet.fatal,
+        default: false,
+      },
+      seriousInjury: {
+        text: `Injury`,
+        handler: () => setTypeFilters(["injury"]),
+        isSelected: isTypeSet.injury && !isTypeSet.fatal,
+        default: false,
+      },
+      fatal: {
+        text: `Fatal`,
+        handler: () => setTypeFilters(["fatal"]),
+        isSelected: isTypeSet.fatal && !isTypeSet.injury,
+        default: false,
+      },
+    },
     mode: {
       pedestrian: {
         icon: faWalking, // Font Awesome icon object
@@ -98,20 +123,6 @@ const SideMapControl = () => {
         type: `where`,
         operator: `OR`,
         default: true,
-      },
-    },
-    type: {
-      seriousInjury: {
-        text: `Injury`,
-        handler: () => setTypeFilters("injury"),
-        isSelected: isTypeSet.injury,
-        default: false,
-      },
-      fatal: {
-        text: `Fatal`,
-        handler: () => setTypeFilters("fatal"),
-        isSelected: isTypeSet.fatal,
-        default: false,
       },
     },
   };
@@ -233,14 +244,14 @@ const SideMapControl = () => {
         </Label>
         {/* Create a button group for each group of mapFilters */}
         {Object.entries(mapButtonFilters).map(([group, groupParameters], i) => (
-          <ButtonGroup key={i} className="mb-3 d-flex" id={`${group}-buttons`}>
+          <div className="px-0 mb-3">
             {/* Create buttons for each filter within a group of mapFilters */}
             {Object.entries(groupParameters).map(([name, parameter], i) => (
               <Button
                 key={i}
                 id={name}
                 color="info"
-                className="w-100 pt-1 pb-1 pl-0 pr-0"
+                className="p-1"
                 onClick={
                   parameter.handler
                     ? parameter.handler
@@ -266,7 +277,7 @@ const SideMapControl = () => {
                 {parameter.text}
               </Button>
             ))}
-          </ButtonGroup>
+          </div>
         ))}
         <SideMapControlDateRange />
         <SideMapTimeOfDayChart filters={mapOtherFilters.timeOfDay} />

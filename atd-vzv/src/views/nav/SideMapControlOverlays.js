@@ -66,7 +66,7 @@ const SideMapControlOverlays = () => {
           <Button
             key={i}
             id={name}
-            color="info"
+            color="dark"
             className="w-100 pt-1 pb-1 pl-0 pr-0"
             onClick={(event) => handleOverlayClick(event, parameters)}
             active={name === overlay.name}
@@ -81,7 +81,7 @@ const SideMapControlOverlays = () => {
                 <Button
                   key={i}
                   id={option}
-                  color="info"
+                  color="dark"
                   className="w-100 pt-1 pb-1 pl-0 pr-0"
                   active={overlay.options.includes(option)}
                   outline={!overlay.options.includes(option)}
