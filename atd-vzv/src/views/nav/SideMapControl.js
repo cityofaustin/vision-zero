@@ -5,7 +5,7 @@ import SideMapControlDateRange from "./SideMapControlDateRange";
 import SideMapTimeOfDayChart from "./SideMapTimeOfDayChart";
 import SideMapControlOverlays from "./SideMapControlOverlays";
 import { colors } from "../../constants/colors";
-import { ButtonGroup, Button, Card, Label } from "reactstrap";
+import { Button, Card, Label, Row, Col } from "reactstrap";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -14,6 +14,8 @@ import {
   faCar,
   faMotorcycle,
   faInfoCircle,
+  faHeartbeat,
+  faMedkit,
 } from "@fortawesome/free-solid-svg-icons";
 
 const StyledCard = styled.div`
@@ -35,6 +37,22 @@ const StyledCard = styled.div`
 
   .info-icon {
     cursor: pointer;
+  }
+
+  .filter-button {
+    min-width: 38px;
+  }
+
+  .type-button {
+    font-size: 14px;
+    color: ${colors.dark};
+    background: ${colors.buttonBackground};
+    border-style: none;
+    border-radius: 18px;
+    opacity: 1;
+    margin-right: 2px;
+    padding-right: 6px !important;
+    height: 33px;
   }
 `;
 
@@ -69,18 +87,27 @@ const SideMapControl = () => {
         handler: () => setTypeFilters(["injury", "fatal"]),
         isSelected: isTypeSet.injury && isTypeSet.fatal,
         default: false,
-      },
-      seriousInjury: {
-        text: `Injury`,
-        handler: () => setTypeFilters(["injury"]),
-        isSelected: isTypeSet.injury && !isTypeSet.fatal,
-        default: false,
+        buttonClass: `type-button`,
       },
       fatal: {
         text: `Fatal`,
+        colSize: "auto",
+        icon: faHeartbeat,
+        iconColor: colors.fatalities,
         handler: () => setTypeFilters(["fatal"]),
         isSelected: isTypeSet.fatal && !isTypeSet.injury,
         default: false,
+        buttonClass: `type-button`,
+      },
+      seriousInjury: {
+        text: `Serious Injuries`,
+        colSize: "auto",
+        icon: faMedkit,
+        iconColor: colors.seriousInjuries,
+        handler: () => setTypeFilters(["injury"]),
+        isSelected: isTypeSet.injury && !isTypeSet.fatal,
+        default: false,
+        buttonClass: `type-button`,
       },
     },
     mode: {
@@ -244,40 +271,45 @@ const SideMapControl = () => {
         </Label>
         {/* Create a button group for each group of mapFilters */}
         {Object.entries(mapButtonFilters).map(([group, groupParameters], i) => (
-          <div className="px-0 mb-3">
+          <Row className="w-100 mx-0 mb-3">
             {/* Create buttons for each filter within a group of mapFilters */}
             {Object.entries(groupParameters).map(([name, parameter], i) => (
-              <Button
-                key={i}
-                id={name}
-                color="info"
-                className="p-1"
-                onClick={
-                  parameter.handler
-                    ? parameter.handler
-                    : (event) => handleFilterClick(event, group)
-                }
-                active={
-                  parameter.isSelected
-                    ? parameter.isSelected
-                    : isFilterSet(name)
-                }
-                outline={
-                  parameter.isSelected
-                    ? !parameter.isSelected
-                    : !isFilterSet(name)
-                }
-              >
-                {parameter.icon && (
-                  <FontAwesomeIcon
-                    icon={parameter.icon}
-                    className="mr-1 ml-1"
-                  />
-                )}
-                {parameter.text}
-              </Button>
+              <Col xs={parameter.colSize && parameter.colSize} className="px-0">
+                <Button
+                  key={i}
+                  id={name}
+                  // color={colors.dark}
+                  className={`p-1 filter-button ${
+                    parameter.buttonClass && parameter.buttonClass
+                  }`}
+                  onClick={
+                    parameter.handler
+                      ? parameter.handler
+                      : (event) => handleFilterClick(event, group)
+                  }
+                  active={
+                    parameter.isSelected
+                      ? parameter.isSelected
+                      : isFilterSet(name)
+                  }
+                  outline={
+                    parameter.isSelected
+                      ? !parameter.isSelected
+                      : !isFilterSet(name)
+                  }
+                >
+                  {parameter.icon && (
+                    <FontAwesomeIcon
+                      icon={parameter.icon}
+                      className="mr-1 ml-1"
+                      color={parameter.iconColor && parameter.iconColor}
+                    />
+                  )}
+                  {parameter.text}
+                </Button>
+              </Col>
             ))}
-          </div>
+          </Row>
         ))}
         <SideMapControlDateRange />
         <SideMapTimeOfDayChart filters={mapOtherFilters.timeOfDay} />
