@@ -125,7 +125,7 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
   const handleHover = (evt) => {
     var item = chartRef.current.chartInstance.getElementAtEvent(evt);
     if (item.length) {
-      // console.log("onHover", item, evt.type);
+      // Change cursor if hovering over a data bar
       evt.target.style.cursor = item[0]._model.datasetLabel && "pointer";
     } else {
       evt.target.style.cursor = "default";

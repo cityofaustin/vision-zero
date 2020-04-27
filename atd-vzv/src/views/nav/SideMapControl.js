@@ -271,12 +271,16 @@ const SideMapControl = () => {
         </Label>
         {/* Create a button group for each group of mapFilters */}
         {Object.entries(mapButtonFilters).map(([group, groupParameters], i) => (
-          <Row className="w-100 mx-0 mb-3">
+          <Row className="mx-0 mb-3" key={`${group}-buttons`}>
             {/* Create buttons for each filter within a group of mapFilters */}
             {Object.entries(groupParameters).map(([name, parameter], i) => (
-              <Col xs={parameter.colSize && parameter.colSize} className="px-0">
+              <Col
+                xs={parameter.colSize && parameter.colSize}
+                className="px-0"
+                key={name}
+              >
                 <Button
-                  key={i}
+                  key={name}
                   id={name}
                   color="dark"
                   className={`p-1 filter-button ${
