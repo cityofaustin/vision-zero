@@ -278,7 +278,7 @@ const SideMapControl = () => {
                 <Button
                   key={i}
                   id={name}
-                  // color={colors.dark}
+                  color="dark"
                   className={`p-1 filter-button ${
                     parameter.buttonClass && parameter.buttonClass
                   }`}

@@ -20,7 +20,7 @@ export const colors = {
   customAlert: "#eff6fb",
   info: "#18A2B8",
   infoDark: "#257A8B",
-  dark: "#343A41",
+  dark: "#1D2124",
   light: "#f0f3f5",
   white: "#ffffff",
   secondary: "#c8ced3",
