@@ -13,7 +13,7 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
   const chartRef = useRef();
 
   const defaultBarColor = colors.dark;
-  const inactiveBarColor = colors.secondary;
+  const inactiveBarColor = colors.white;
 
   const [chartData, setChartData] = useState(null);
   const [timeWindowData, setTimeWindowData] = useState([]);
@@ -138,7 +138,7 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
       {
         label: "time-of-day",
         backgroundColor: barColors,
-        borderColor: barColors,
+        borderColor: defaultBarColor,
         borderWidth: 1,
         hoverBackgroundColor: colors.secondary,
         hoverBorderColor: colors.secondary,

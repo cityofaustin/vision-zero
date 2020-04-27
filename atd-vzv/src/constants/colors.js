@@ -23,7 +23,7 @@ export const colors = {
   dark: "#1D2124",
   light: "#f0f3f5",
   white: "#ffffff",
-  secondary: "#c8ced3",
+  secondary: "#6C757D",
   primary: "#20a8d8",
   blue: "#08519c",
   danger: "#f86c6b",
