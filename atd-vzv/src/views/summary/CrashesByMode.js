@@ -6,6 +6,14 @@ import styled from "styled-components";
 
 import CrashTypeSelector from "../nav/CrashTypeSelector";
 import { colors } from "../../constants/colors";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faWalking,
+  faBiking,
+  faCar,
+  faMotorcycle,
+  faEllipsisH,
+} from "@fortawesome/free-solid-svg-icons";
 import {
   dataEndDate,
   yearsArray,
@@ -14,44 +22,6 @@ import {
 import { crashEndpointUrl } from "./queries/socrataQueries";
 
 const CrashesByMode = () => {
-  const modes = [
-    {
-      label: "Motorist",
-      fields: {
-        fatal: `motor_vehicle_death_count`,
-        injury: `motor_vehicle_serious_injury_count`,
-      },
-    },
-    {
-      label: "Pedestrian",
-      fields: {
-        fatal: `pedestrian_death_count`,
-        injury: `pedestrian_serious_injury_count`,
-      },
-    },
-    {
-      label: "Motorcyclist",
-      fields: {
-        fatal: `motorcycle_death_count`,
-        injury: `motorcycle_serious_injury_count`,
-      },
-    },
-    {
-      label: "Bicyclist",
-      fields: {
-        fatal: `bicycle_death_count`,
-        injury: `bicycle_serious_injury_count`,
-      },
-    },
-    {
-      label: "Other",
-      fields: {
-        fatal: `other_death_count`,
-        injury: `other_serious_injury_count`,
-      },
-    },
-  ];
-
   const chartColors = [
     colors.viridis1Of6Highest,
     colors.viridis2Of6,
@@ -66,6 +36,49 @@ const CrashesByMode = () => {
   const [legendColors, setLegendColors] = useState([...chartColors]);
 
   const chartRef = useRef();
+
+  const modes = [
+    {
+      label: "Motorist",
+      icon: faCar,
+      fields: {
+        fatal: `motor_vehicle_death_count`,
+        injury: `motor_vehicle_serious_injury_count`,
+      },
+    },
+    {
+      label: "Pedestrian",
+      icon: faWalking,
+      fields: {
+        fatal: `pedestrian_death_count`,
+        injury: `pedestrian_serious_injury_count`,
+      },
+    },
+    {
+      label: "Motorcyclist",
+      icon: faMotorcycle,
+      fields: {
+        fatal: `motorcycle_death_count`,
+        injury: `motorcycle_serious_injury_count`,
+      },
+    },
+    {
+      label: "Bicyclist",
+      icon: faBiking,
+      fields: {
+        fatal: `bicycle_death_count`,
+        injury: `bicycle_serious_injury_count`,
+      },
+    },
+    {
+      label: "Other",
+      icon: faEllipsisH,
+      fields: {
+        fatal: `other_death_count`,
+        injury: `other_serious_injury_count`,
+      },
+    },
+  ];
 
   // Fetch data and set in state by years in yearsArray
   useEffect(() => {
@@ -143,6 +156,7 @@ const CrashesByMode = () => {
     const modeData = modes.map((mode) => ({
       borderWidth: 2,
       label: mode.label,
+      icon: mode.icon,
       data: getModeData(mode.fields),
     }));
     // Determine order of modes in each year stack and color appropriately
@@ -167,6 +181,19 @@ const CrashesByMode = () => {
       cursor: pointer;
       color: ${colors.buttonBackground};
       background: dimgray 0% 0% no-repeat padding-box;
+      border-radius: 4px;
+      border-style: none;
+    }
+
+    .mode-label-text {
+      display: none;
+      @media (min-width: 576px) {
+        display: inline;
+      }
+    }
+
+    .sr-only {
+      display: hidden;
     }
   `;
 
@@ -219,24 +246,18 @@ const CrashesByMode = () => {
                   legendCallback: function (chart) {
                     return (
                       <Row className="pb-2">
-                        <Col className="pr-1">
+                        <Col className="pr-1 col-sm-4">
                           <StyledDiv>
                             <div>
-                              <h6 className="text-center pt-2">
-                                {"\u00A0"}
-                              </h6>
+                              <h6 className="text-center pt-2">{"\u00A0"}</h6>
                             </div>
-                            {modes.map((mode, i) => {
+                            {chart.data.datasets.map((dataset, i) => {
                               const legendColor = legendColors[i];
 
                               const updateLegendColors = () => {
                                 const legendColorsClone = [...legendColors];
-                                legendColor !== colors.buttonBackground
-                                  ? legendColorsClone.splice(
-                                      i,
-                                      1,
-                                      colors.buttonBackground
-                                    )
+                                legendColor !== "dimgray"
+                                  ? legendColorsClone.splice(i, 1, "dimgray")
                                   : legendColorsClone.splice(
                                       i,
                                       1,
@@ -271,14 +292,22 @@ const CrashesByMode = () => {
                                 <div
                                   key={i}
                                   className="mode-label-div"
-                                  style={{
-                                    borderRight: `8px solid ${legendColor}`,
-                                  }}
+                                  title={dataset.label}
                                   onClick={customLegendClickHandler}
                                 >
                                   <hr className="my-0"></hr>
-                                  <h6 className="text-center mx-1 my-0 pt-1 pb-1">
-                                    {mode.label}
+                                  <h6 className="text-center my-0 pt-1 pb-1">
+                                    <FontAwesomeIcon
+                                      aria-hidden="true"
+                                      className="block-icon"
+                                      icon={dataset.icon}
+                                      color={legendColor}
+                                    />
+                                    <span class="sr-only">{dataset.label}</span>
+                                    <p className="mode-label-text">
+                                      {" "}
+                                      {dataset.label}
+                                    </p>
                                   </h6>
                                 </div>
                               );
@@ -286,10 +315,12 @@ const CrashesByMode = () => {
                           </StyledDiv>
                         </Col>
                         {chart.data.labels.map((year, yearIterator) => {
-                          let paddingRight =
-                          yearIterator === 4 ? null : "pr-1";                          
+                          let paddingRight = yearIterator === 4 ? null : "pr-1";
                           return (
-                            <Col key={yearIterator} className={`pl-0 ${paddingRight}`}>
+                            <Col
+                              key={yearIterator}
+                              className={`pl-0 ${paddingRight}`}
+                            >
                               <StyledDiv>
                                 <div className="year-total-div">
                                   <div>

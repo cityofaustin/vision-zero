@@ -194,7 +194,7 @@ const CrashesByMonth = () => {
           {chartLegend}
           {
             // Wrapping the chart in a div prevents it from getting caught in a rerendering loop
-            <div>
+            <Container>
               <Line
                 ref={(ref) => (chartRef.current = ref)}
                 data={data}
@@ -202,7 +202,7 @@ const CrashesByMonth = () => {
                 width={null}
                 options={{
                   responsive: true,
-                  aspectRatio: 1,
+                  aspectRatio: .8,
                   maintainAspectRatio: false,
                   tooltips: {
                     mode: "x",
@@ -305,7 +305,7 @@ const CrashesByMonth = () => {
                   },
                 }}
               />
-            </div>
+            </Container>
           }
         </Col>
       </Row>
