@@ -184,7 +184,8 @@ const Map = () => {
         (f) => f.layer.id === "fatalities" || f.layer.id === "seriousInjuries"
       );
 
-    !!selectedFeature && setSelectedFeature(selectedFeature);
+    !isMobile && setSelectedFeature(selectedFeature);
+    !!selectedFeature && isMobile && setSelectedFeature(selectedFeature);
   };
 
   const renderCrashDataLayers = () => {
