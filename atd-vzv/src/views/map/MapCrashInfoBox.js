@@ -21,7 +21,7 @@ const StyledMobileInfo = styled.div`
   }
 `;
 
-const MapCrashInfoBox = ({ selectedFeature, isMobile }) => {
+const MapCrashInfoBox = ({ selectedFeature, setSelectedFeature, isMobile }) => {
   const popupInfo = selectedFeature;
   const crashPointCard = <CrashPointCard info={popupInfo.properties} />;
 
@@ -33,8 +33,7 @@ const MapCrashInfoBox = ({ selectedFeature, isMobile }) => {
         anchor="top"
         longitude={parseFloat(popupInfo.properties.longitude)}
         latitude={parseFloat(popupInfo.properties.latitude)}
-        closeOnClick={false}
-        closeButton={true}
+        onClose={() => setSelectedFeature(null)}
       >
         <StyledMobileInfo>{crashPointCard}</StyledMobileInfo>
       </Popup>

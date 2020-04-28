@@ -184,7 +184,7 @@ const Map = () => {
         (f) => f.layer.id === "fatalities" || f.layer.id === "seriousInjuries"
       );
 
-    setSelectedFeature(selectedFeature);
+    !!selectedFeature && setSelectedFeature(selectedFeature);
   };
 
   const renderCrashDataLayers = () => {
@@ -246,6 +246,7 @@ const Map = () => {
       {selectedFeature && (
         <MapCrashInfoBox
           selectedFeature={selectedFeature}
+          setSelectedFeature={setSelectedFeature}
           isMobile={isMobile}
         />
       )}
