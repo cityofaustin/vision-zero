@@ -40,6 +40,17 @@ const Header = () => {
   .nav-button {
     /* Set width to keep buttons equal width */
     width: 140px;
+    height: 56px;
+    font-size: 18px;
+  }
+
+  .inactive-nav-button {
+    color: ${colors.dark};
+    background: ${colors.buttonBackground};
+    border-style: none;
+    opacity: 1;
+    margin-left: 5px;
+    margin-right: 5px;
   }
 
   .sidedrawer-toggle {
@@ -73,20 +84,6 @@ const Header = () => {
     @media only screen and (max-width: ${responsive.bootstrapExtraSmall}px) {
       position: relative;
     }
-  }
-
-  .nav-button {
-    height: 56px;
-    font-size: 18px;
-  }
-
-  .inactive-nav-button {
-    color: ${colors.dark};
-    background: ${colors.buttonBackground};
-    border-style: none;
-    opacity: 1;
-    margin-left: 5px;
-    margin-right: 5px;
   }
 `;
 
