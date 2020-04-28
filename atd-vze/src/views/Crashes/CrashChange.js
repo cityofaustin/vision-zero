@@ -32,6 +32,7 @@ import {
   CRASH_MUTATION_DISCARD,
   RECORD_MUTATION_UPDATE,
   RECORD_DELETE_CHANGE_RECORDS,
+  UPSERT_MUTATION_DUMMY
 } from "../../queries/crashes_changes";
 import { crashImportantDiffFields } from "./crashImportantDiffFields";
 import { crashChangeQuotedFields } from "./crashChangeQuotedFields";
@@ -60,6 +61,7 @@ function CrashChange(props) {
   const [errorMessage, setErrorMessage] = useState("");
   // CR3 Availbable
   const [cr3available, setCR3Available] = useState(false);
+  const [upsertRecordQuery, setUpsertRecordQuery] = useState(UPSERT_MUTATION_DUMMY);
 
   const { loading, user } = useAuth0();
 
@@ -69,6 +71,12 @@ function CrashChange(props) {
   const [deleteFromQueue] = useMutation(
     gql`
       ${RECORD_DELETE_CHANGE_RECORDS}
+    `
+  );
+
+  const [upsertRecordUpdates] = useMutation(
+    gql`
+        ${upsertRecordQuery}
     `
   );
 
@@ -568,14 +576,13 @@ function CrashChange(props) {
    * @returns {Promise<void>}
    */
   const executeUpdateCrashRecord = async () => {
-    // 1. Gather list of count fields that need updating
-    const countFields = await selectedFields.filter(field => {
-      return field.endsWith("_cnt");
-    });
-
     const updateQueries = await generateUpdateQuery();
+    console.log("executeUpdateCrashRecord() ");
+    console.log(updateQueries);
     setSaveStatus("updating crash record");
+    setUpsertRecordQuery(gql`${updateQueries}`);
     await sleep(1000);
+    await upsertRecordUpdates();
   };
 
   /**
@@ -595,33 +602,30 @@ function CrashChange(props) {
   const executeDeleteChangesRecords = async () => {
     setSaveStatus("removing records from queue");
     await sleep(1000);
-    await deleteFromQueue({ variables: { crashId: crashId } });
-    await refetch();
+    // await deleteFromQueue({ variables: { crashId: crashId } });
+    // await refetch();
   };
+
+  const chainError = (errorMessage) => {
+    debugger;
+    setErrorMessage(String(error));
+    showErrorDialog();
+    return Promise.reject(errorMessage);
+  }
 
   /**
    * Saves the selected fields and discards the change
    */
   const saveSelectedFields = () => {
+
     startSaveProcess()
-      .then(executeUpdateCrashRecord)
-      .catch(error => {
-        setErrorMessage("Error on Save: " + error);
-        showErrorDialog();
-      })
-      .then(executeUpdateQueries)
-      .catch(error => {
-        setErrorMessage("Error on Update: " + error);
-        showErrorDialog();
-      })
-      .then(executeDeleteChangesRecords)
-      .catch(error => {
-        setErrorMessage("Error on Delete: " + error);
-        showErrorDialog();
-      })
+      .then(executeUpdateCrashRecord, chainError)
+      .then(executeUpdateQueries, chainError)
+      .then(executeDeleteChangesRecords, chainError)
       .then(() => {
         // If it all goes well then redirect to the index page...
-        redirectToQueueIndex();
+        //redirectToQueueIndex();
+        alert("Chain finished running");
       });
   };
 
@@ -663,9 +667,16 @@ function CrashChange(props) {
     const recordType = record["record_type"] || null;
     const recordObject =
       JSON.parse(recordString)[0] || JSON.parse(recordString) || {};
-    const recordObjectKeys = Object.keys(recordObject).map(key => {
-      return key.toLowerCase();
-    });
+    // We need the entire list of objects minus any count fields
+    const recordObjectKeys = Object.keys(recordObject)
+      .map(key => {
+        // Lower-case all keys for this object
+        return key.toLowerCase();
+      })
+      .filter(key => {
+        // Removes from list if it string ends with '_cnt'
+        return !key.endsWith("_cnt");
+      });
 
     if (recordType === "crash") {
       recordObject["crash_id"] = record["record_id"];
@@ -697,9 +708,20 @@ function CrashChange(props) {
       })
       .join("\n\t\t\t\t");
 
-    const onConflictList = selectedFields.filter(key => {
-      return recordObjectKeys.includes(key.toLowerCase());
-    });
+    // This variable holds the fields to be updated on_conflict (upsert)
+    const onConflictList =
+      recordType === "crash"
+        ? // If it is a crash, all we need are the selected fields.
+          [...selectedFields]
+        : // If not a crash, then we need a composite list:
+          [
+            // We need the list of all original fields of the record in question
+            ...recordObjectKeys,
+            // And we also need any selected count records
+            ...selectedFields.filter(key => {
+              return key.endsWith("_cnt");
+            }),
+          ];
 
     // Then, let's get the function name and record type patched
     return RECORD_MUTATION_UPDATE.replace(
@@ -726,7 +748,7 @@ function CrashChange(props) {
     });
 
     const updateSecondaryRecords = `
-      mutation updateSecondaryRecords($crashId: Int) {
+      mutation updateSecondaryRecords {
         %LIST_OF_RECORD_QUERIES%
       }
     `.replace(
@@ -1068,12 +1090,12 @@ function CrashChange(props) {
           <span className={"crash-process-modal__header"}>Error</span>
         </ModalHeader>
         <ModalBody>
-          <span className={"crash-process-modal__header"}>
-            Error: {errorMessage}
-          </span>
+          <span className={"crash-process-modal__header"}>{errorMessage}</span>
         </ModalBody>
         <ModalFooter>
-          <span>No actions have been taken.</span>
+          <Button color="secondary" onClick={() => hideErrorDialog()}>
+            Close
+          </Button>
         </ModalFooter>
       </Modal>
     </div>
