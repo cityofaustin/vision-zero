@@ -303,7 +303,7 @@ const CrashesByMode = () => {
                                       icon={dataset.icon}
                                       color={legendColor}
                                     />
-                                    <span class="sr-only">{dataset.label}</span>
+                                    <span className="sr-only">{dataset.label}</span>
                                     <p className="mode-label-text">
                                       {" "}
                                       {dataset.label}
