@@ -253,3 +253,9 @@ export const RECORD_DELETE_CHANGE_RECORDS = `
       }
   }
 `;
+
+export const UPSERT_MUTATION_DUMMY = `
+  mutation dummyQuery {
+    __typename
+  }
+`;
