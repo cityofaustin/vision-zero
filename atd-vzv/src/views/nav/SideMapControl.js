@@ -36,18 +36,21 @@ const StyledCard = styled.div`
 const SideMapControl = () => {
   const {
     mapFilters: [filters, setFilters],
+    mapFilterType: [isMapTypeSet, setIsMapTypeSet],
   } = React.useContext(StoreContext);
 
   const [buttonFilters, setButtonFilters] = useState({});
   const [filterGroupCounts, setFilterGroupCounts] = useState({});
-  const [isTypeSet, setIsTypeSet] = useState({ fatal: false, injury: true });
 
   const setTypeFilters = (type) => {
-    if (Object.values(isTypeSet).includes(false) && isTypeSet[type] === true) {
+    if (
+      Object.values(isMapTypeSet).includes(false) &&
+      isMapTypeSet[type] === true
+    ) {
       return;
     } else {
-      const updatedState = { ...isTypeSet, [type]: !isTypeSet[type] };
-      setIsTypeSet(updatedState);
+      const updatedState = { ...isMapTypeSet, [type]: !isMapTypeSet[type] };
+      setIsMapTypeSet(updatedState);
     }
   };
 
@@ -99,13 +102,13 @@ const SideMapControl = () => {
       seriousInjury: {
         text: `Injury`,
         handler: () => setTypeFilters("injury"),
-        isSelected: isTypeSet.injury,
+        isSelected: isMapTypeSet.injury,
         default: false,
       },
       fatal: {
         text: `Fatal`,
         handler: () => setTypeFilters("fatal"),
-        isSelected: isTypeSet.fatal,
+        isSelected: isMapTypeSet.fatal,
         default: false,
       },
     },
@@ -155,11 +158,11 @@ const SideMapControl = () => {
       const filterModeSyntaxByType = (filtersArray) =>
         filtersArray.map((filter) => {
           // Set syntax for generateWhereFilters() map helper
-          if (isTypeSet.fatal && isTypeSet.injury) {
+          if (isMapTypeSet.fatal && isMapTypeSet.injury) {
             filter.syntax = `${filter.fatalSyntax} ${filter.operator} ${filter.injurySyntax}`;
-          } else if (isTypeSet.fatal) {
+          } else if (isMapTypeSet.fatal) {
             filter.syntax = filter.fatalSyntax;
-          } else if (isTypeSet.injury) {
+          } else if (isMapTypeSet.injury) {
             filter.syntax = filter.injurySyntax;
           }
           return filter;
@@ -168,7 +171,7 @@ const SideMapControl = () => {
       const updatedFiltersArray = filterModeSyntaxByType(buttonFilters);
       setFilters(updatedFiltersArray);
     }
-  }, [buttonFilters, isTypeSet, setFilters]);
+  }, [buttonFilters, isMapTypeSet, setFilters]);
 
   // Set count of filters applied per type
   useEffect(() => {
