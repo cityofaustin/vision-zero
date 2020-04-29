@@ -202,7 +202,7 @@ const CrashesByMonth = () => {
                 width={null}
                 options={{
                   responsive: true,
-                  aspectRatio: .8,
+                  aspectRatio: 1,
                   maintainAspectRatio: false,
                   tooltips: {
                     mode: "x",

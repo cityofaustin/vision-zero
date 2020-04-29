@@ -218,7 +218,7 @@ const CrashesByMode = () => {
         <Col>
           {chartLegend}
           {
-            <div>
+            <Container>
               <Bar
                 ref={(ref) => (chartRef.current = ref)}
                 data={data}
@@ -252,11 +252,9 @@ const CrashesByMode = () => {
                               <h6 className="text-center pt-2">{"\u00A0"}</h6>
                             </div>
                             {chart.data.datasets.map((dataset, i) => {
-                              const legendColor = legendColors[i];
-
                               const updateLegendColors = () => {
                                 const legendColorsClone = [...legendColors];
-                                legendColor !== "dimgray"
+                                legendColors[i] !== "dimgray"
                                   ? legendColorsClone.splice(i, 1, "dimgray")
                                   : legendColorsClone.splice(
                                       i,
@@ -267,10 +265,7 @@ const CrashesByMode = () => {
                               };
 
                               const customLegendClickHandler = () => {
-                                const legendItems = [
-                                  ...chart.legend.legendItems,
-                                ];
-                                const legendItem = legendItems[i];
+                                const legendItem = chart.legend.legendItems[i];
                                 const index = legendItem.datasetIndex;
                                 const ci = chartRef.current.chartInstance.chart;
                                 const meta = ci.getDatasetMeta(index);
@@ -281,11 +276,9 @@ const CrashesByMode = () => {
                                     ? !ci.data.datasets[index].hidden
                                     : null;
 
-                                // We hid a dataset ... rerender the chart
-                                ci.update();
-
-                                // Update legend colors to show data has been hidden
-                                updateLegendColors();
+                                // We hid a dataset ... rerender the chart,
+                                // then update the legend colors
+                                updateLegendColors(ci.update());
                               };
 
                               return (
@@ -296,14 +289,16 @@ const CrashesByMode = () => {
                                   onClick={customLegendClickHandler}
                                 >
                                   <hr className="my-0"></hr>
-                                  <h6 className="text-center my-0 pt-1 pb-1">
+                                  <h6 className="text-center my-0 py-1">
                                     <FontAwesomeIcon
                                       aria-hidden="true"
                                       className="block-icon"
                                       icon={dataset.icon}
-                                      color={legendColor}
+                                      color={legendColors[i]}
                                     />
-                                    <span className="sr-only">{dataset.label}</span>
+                                    <span className="sr-only">
+                                      {dataset.label}
+                                    </span>
                                     <p className="mode-label-text">
                                       {" "}
                                       {dataset.label}
@@ -315,7 +310,8 @@ const CrashesByMode = () => {
                           </StyledDiv>
                         </Col>
                         {chart.data.labels.map((year, yearIterator) => {
-                          let paddingRight = yearIterator === 4 ? null : "pr-1";
+                          let paddingRight =
+                            yearIterator === 4 ? "null" : "pr-1";
                           return (
                             <Col
                               key={yearIterator}
@@ -354,7 +350,7 @@ const CrashesByMode = () => {
                   },
                 }}
               />
-            </div>
+            </Container>
           }
         </Col>
       </Row>
