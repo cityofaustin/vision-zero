@@ -94,6 +94,7 @@ BEGIN
     estCompEconList = ARRAY(SELECT est_econ_cost_amount FROM atd_txdot__est_econ_cost ORDER BY est_econ_cost_id ASC);
 
     NEW.est_comp_cost = (0
+       + (NEW.unkn_injry_cnt * (estCompCostList[1]))
        + (NEW.death_cnt * (estCompCostList[2]))
        + (NEW.sus_serious_injry_cnt * (estCompCostList[3]))
        + (NEW.nonincap_injry_cnt * (estCompCostList[4]))
