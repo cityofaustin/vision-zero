@@ -35,6 +35,7 @@ STOP_EXEC = False
 records_skipped = 0
 records_inserted = 0
 existing_records = 0
+queued_records = 0
 insert_errors = 0
 
 # Start timer
@@ -68,8 +69,7 @@ def process_line(file_type, line, fieldnames, current_line, dryrun=False):
     # Do not run if there is stop signal
     if STOP_EXEC:
         return
-
-    global existing_records, records_inserted, insert_errors, records_skipped
+    global existing_records, records_inserted, insert_errors, records_skipped, queued_records
     # Read the crash_id from the current line
     # Applies to: crashes, unit, person, primary person, charges
     crash_id = line.strip().split(",")[0]
@@ -264,6 +264,7 @@ def process_file(file_path, file_type, skip_lines, dryrun=False):
     print("Total Skipped Records: %s" % (records_skipped))
     print("Total Existing Records: %s" % (existing_records))
     print("Total Records Inserted: %s" % (records_inserted))
+    print("Total Records Queued: %s" % (queued_records))
     print("Total Errors: %s" % (insert_errors))
     print("")
 
