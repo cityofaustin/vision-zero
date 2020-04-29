@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { StoreContext } from "../../utils/store";
+import { useWindowSize } from "react-use";
 import ReactMapGL, { Source, Layer } from "react-map-gl";
 import MapControls from "./MapControls";
 import MapPolygonFilter from "./MapPolygonFilter";
@@ -18,26 +19,17 @@ import {
 } from "./map-style";
 import axios from "axios";
 
-import { Card, CardBody, CardText } from "reactstrap";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCompass, faCircle } from "@fortawesome/free-solid-svg-icons";
 import { colors } from "../../constants/colors";
+import { responsive } from "../../constants/responsive";
 
 import "mapbox-gl/dist/mapbox-gl.css";
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css"; // Get out-of-the-box icons
+import MapCrashInfoBox from "./MapCrashInfoBox";
 
 const MAPBOX_TOKEN = `pk.eyJ1Ijoiam9obmNsYXJ5IiwiYSI6ImNrM29wNnB3dDAwcXEzY29zMTU5bWkzOWgifQ.KKvoz6s4NKNHkFVSnGZonw`;
-
-const StyledCard = styled.div`
-  position: absolute;
-  margin: 8px;
-  padding: 2px;
-  max-width: 300px;
-  font-size: 12px !important;
-  z-index: 9 !important;
-  pointer-events: none;
-`;
 
 const StyledMapSpinner = styled.div`
   position: absolute;
@@ -99,8 +91,13 @@ const Map = () => {
   // Create ref to map to call Mapbox GL functions on instance
   const mapRef = useRef();
 
+  const { width } = useWindowSize();
+  const { bootstrapMedium } = responsive;
+  const isMobile = width <= bootstrapMedium;
+
   const [mapData, setMapData] = useState("");
-  const [hoveredFeature, setHoveredFeature] = useState(null);
+  const [interactiveLayerIds, setInteractiveLayerIds] = useState(null);
+  const [selectedFeature, setSelectedFeature] = useState(null);
   const [cityCouncilOverlay, setCityCouncilOverlay] = useState(null);
   const [isMapDataLoading, setIsMapDataLoading] = useState(false);
 
@@ -164,47 +161,31 @@ const Map = () => {
 
   const _onViewportChange = (viewport) => setViewport(viewport);
 
-  // Capture hovered feature to populate tooltip data
-  const _onHover = (event) => {
-    const {
-      features,
-      srcEvent: { offsetX, offsetY },
-    } = event;
-    const hoveredFeature =
+  // Change cursor to grab when dragging map and pointer when hovering an interactive layer
+  const _getCursor = ({ isHovering, isDragging }) =>
+    isDragging ? "grab" : isHovering ? "pointer" : "default";
+
+  // Set interactive layer IDs to allow cursor to change if isHovering
+  useEffect(() => {
+    const interactiveLayerIds = [
+      isMapTypeSet.fatal && "fatalities",
+      isMapTypeSet.injury && "seriousInjuries",
+    ];
+
+    const filteredInteractiveIds = interactiveLayerIds.filter((id) => !!id);
+    setInteractiveLayerIds(filteredInteractiveIds);
+  }, [isMapTypeSet]);
+
+  const _onSelectCrashPoint = (event) => {
+    const { features } = event;
+    const selectedFeature =
       features &&
       features.find(
-        (f) =>
-          f.layer.id === "fatalities" ||
-          f.layer.id === "fatalitiesOutline" ||
-          f.layer.id === "seriousInjuries" ||
-          f.layer.id === "seriousInjuriesOutline"
+        (f) => f.layer.id === "fatalities" || f.layer.id === "seriousInjuries"
       );
 
-    setHoveredFeature({ feature: hoveredFeature, x: offsetX, y: offsetY });
-  };
-
-  const _getCursor = ({ isDragging }) => (isDragging ? "grab" : "default");
-
-  // Show tooltip if hovering over a feature
-  const _renderTooltip = () => {
-    const { feature } = hoveredFeature;
-
-    return (
-      feature && (
-        <StyledCard>
-          <Card style={{ top: 10, left: 10 }}>
-            <CardBody>
-              <CardText>Crash ID: {feature.properties.crash_id}</CardText>
-              <CardText>
-                Fatality Count: {feature.properties.death_cnt}
-              </CardText>
-              <CardText>Modes: {feature.properties.unit_mode}</CardText>
-              <CardText>Description: {feature.properties.unit_desc}</CardText>
-            </CardBody>
-          </Card>
-        </StyledCard>
-      )
-    );
+    !isMobile && setSelectedFeature(selectedFeature);
+    !!selectedFeature && isMobile && setSelectedFeature(selectedFeature);
   };
 
   const renderCrashDataLayers = () => {
@@ -227,6 +208,7 @@ const Map = () => {
         {fatalityLayer}
       </>
     );
+
     return (
       (isMapTypeSet.fatal && isMapTypeSet.injury && bothLayers) ||
       (isMapTypeSet.fatal && fatalityLayer) ||
@@ -242,7 +224,9 @@ const Map = () => {
       onViewportChange={_onViewportChange}
       mapboxApiAccessToken={MAPBOX_TOKEN}
       getCursor={_getCursor}
-      onHover={_onHover}
+      interactiveLayerIds={interactiveLayerIds}
+      onHover={!isMobile ? _onSelectCrashPoint : null}
+      onClick={isMobile ? _onSelectCrashPoint : null}
       ref={(ref) => (mapRef.current = ref && ref.getMap())}
     >
       {/* Provide empty source and layer as target for beforeId params to set order of layers */}
@@ -259,8 +243,14 @@ const Map = () => {
           <Layer beforeId="base-layer" {...cityCouncilDataLayer} />
         </Source>
       )}
-      {/* Render crash point tooltips */}
-      {hoveredFeature && _renderTooltip()}
+      {/* Render crash point tooltip */}
+      {selectedFeature && (
+        <MapCrashInfoBox
+          selectedFeature={selectedFeature}
+          setSelectedFeature={setSelectedFeature}
+          isMobile={isMobile}
+        />
+      )}
       {/* Show spinner when map is updating */}
       {isMapDataLoading && (
         <StyledMapSpinner className="fa-layers fa-fw">
