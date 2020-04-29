@@ -18,11 +18,15 @@ const StyledMobileNav = styled.div`
     font-size: 18px;
   }
 
-  .inactive-nav-button {
-    color: ${colors.dark};
-    background: ${colors.buttonBackground};
-    border-style: none;
-    opacity: 1;
+  .active-button {
+    background: ${colors.white} !important;
+    color: ${colors.dark} !important;
+  }
+
+  .inactive-button {
+    color: ${colors.white} !important;
+    background: ${colors.dark} !important;
+    border: 1px solid ${colors.white};
   }
 `;
 
@@ -35,15 +39,13 @@ const SideDrawerMobileNav = () => {
         {navConfig.map((config, i) => (
           <NavItem key={i}>
             <NavLink tag={A} href={config.url}>
-              {currentPath === config.url ? (
-                <Button className="nav-button btn-dark w-100" active>
-                  {config.title}
-                </Button>
-              ) : (
-                <Button className="nav-button inactive-nav-button w-100">
-                  {config.title}
-                </Button>
-              )}
+              <Button
+                className={`nav-button ${
+                  currentPath === config.url ? "active" : "inactive"
+                }-button w-100`}
+              >
+                {config.title}
+              </Button>
             </NavLink>
           </NavItem>
         ))}

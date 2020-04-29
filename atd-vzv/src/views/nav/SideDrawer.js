@@ -109,7 +109,7 @@ const SideDrawer = () => {
       <Container className="pt-3 pb-3 drawer-content">
         <SideDrawerMobileNav />
         {/* TODO: Remove disclaimer when going live */}
-        <Alert color="danger">
+        <Alert color="danger" className="mt-2">
           <strong>This site is a work in progress.</strong>
           <br />
           <span>

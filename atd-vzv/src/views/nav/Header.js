@@ -102,7 +102,7 @@ const Header = () => {
         >
           <Button
             className="mr-2 sidedrawer-toggle"
-            color="info"
+            color="dark"
             onClick={() => setIsOpen(!isOpen)}
           >
             <FontAwesomeIcon icon={faBars} />
