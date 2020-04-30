@@ -35,7 +35,7 @@ const CrashesByMonth = () => {
 
   useEffect(() => {
     const calculateYearMonthlyTotals = (data) => {
-      // Data query is ordered by crash_date ASC so truncate dataset by month of latest record
+      // Determine if the data is a complete year or not and which records to process
       const isCurrentYear =
         data.length > 0 &&
         data[0].crash_date.includes(dataEndDate.format("YYYY"));
@@ -47,6 +47,7 @@ const CrashesByMonth = () => {
         monthTotalArray.push(0);
       }
 
+      // Calculate totals for each month in data
       const monthTotals = data.reduce((acc, record) => {
         const recordMonth = moment(record.crash_date).format("MM");
         const monthIndex = parseInt(recordMonth) - 1;
@@ -63,12 +64,19 @@ const CrashesByMonth = () => {
               acc[monthIndex] +=
                 parseInt(record.death_cnt) +
                 parseInt(record.sus_serious_injry_cnt);
-              // debugger;
               break;
           }
         }
         return acc;
       }, monthTotalArray);
+
+      // Accumulate the monthly totals over the year of data
+      const accumulatedTotals = monthTotals.reduce((acc, month, i) => {
+        acc.push((month += acc[i - 1] || 0));
+        return acc;
+      }, []);
+
+      return accumulatedTotals;
     };
 
     // Wait for crashType to be passed up from setCrashType component
