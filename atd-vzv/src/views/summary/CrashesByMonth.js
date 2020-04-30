@@ -36,11 +36,13 @@ const CrashesByMonth = () => {
   useEffect(() => {
     const calculateYearMonthlyTotals = (data) => {
       // Data query is ordered by crash_date ASC so truncate dataset by month of latest record
-      const monthLimit =
-        data.length > 0
-          ? moment(data[data.length - 1].crash_date).format("MM")
-          : "12";
+      const isCurrentYear =
+        data.length > 0 &&
+        data[0].crash_date.includes(dataEndDate.format("YYYY"));
 
+      const monthLimit = isCurrentYear ? dataEndDate.format("MM") : "12";
+
+      // TODO: Refactor without monthIntegerArray
       const monthIntegerArray = [
         "01",
         "02",
