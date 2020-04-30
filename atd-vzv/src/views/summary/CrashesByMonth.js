@@ -42,53 +42,33 @@ const CrashesByMonth = () => {
 
       const monthLimit = isCurrentYear ? dataEndDate.format("MM") : "12";
 
-      // TODO: Refactor without monthIntegerArray
-      const monthIntegerArray = [
-        "01",
-        "02",
-        "03",
-        "04",
-        "05",
-        "06",
-        "07",
-        "08",
-        "09",
-        "10",
-        "11",
-        "12",
-      ];
+      let monthTotalArray = [];
+      for (let i = 1; i <= parseInt(monthLimit); i++) {
+        monthTotalArray.push(0);
+      }
 
-      const truncatedMonthIntegerArray = monthIntegerArray.slice(
-        0,
-        monthIntegerArray.indexOf(monthLimit) + 1
-      );
-      let cumulativeMonthTotal = 0;
-      const monthTotalArray = truncatedMonthIntegerArray.map((month) => {
-        let monthTotal = 0;
-        data.forEach((record) => {
-          // If the crash date is in the current month, compile data
-          if (moment(record.crash_date).format("MM") === month) {
-            // Compile data based on the selected crash type
-            switch (crashType.name) {
-              case "fatalities":
-                monthTotal += parseInt(record.death_cnt);
-                break;
-              case "seriousInjuries":
-                monthTotal += parseInt(record.sus_serious_injry_cnt);
-                break;
-              default:
-                monthTotal +=
-                  parseInt(record.death_cnt) +
-                  parseInt(record.sus_serious_injry_cnt);
-                break;
-            }
+      const monthTotals = data.reduce((acc, record) => {
+        const recordMonth = moment(record.crash_date).format("MM");
+        const monthIndex = parseInt(recordMonth) - 1;
+
+        if (monthIndex < monthTotalArray.length) {
+          switch (crashType.name) {
+            case "fatalities":
+              acc[monthIndex] += parseInt(record.death_cnt);
+              break;
+            case "seriousInjuries":
+              acc[monthIndex] += parseInt(record.sus_serious_injry_cnt);
+              break;
+            default:
+              acc[monthIndex] +=
+                parseInt(record.death_cnt) +
+                parseInt(record.sus_serious_injry_cnt);
+              // debugger;
+              break;
           }
-        });
-        cumulativeMonthTotal += monthTotal;
-        return cumulativeMonthTotal;
-      });
-
-      return monthTotalArray;
+        }
+        return acc;
+      }, monthTotalArray);
     };
 
     // Wait for crashType to be passed up from setCrashType component
