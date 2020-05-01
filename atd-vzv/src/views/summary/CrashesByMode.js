@@ -13,6 +13,7 @@ import {
 import { crashEndpointUrl } from "./queries/socrataQueries";
 
 const CrashesByMode = () => {
+
   const modes = [
     {
       label: "Motorist",
@@ -181,16 +182,9 @@ const CrashesByMode = () => {
                     stacked: true,
                   },
                 ],
-              },
+              }
             }}
           />
-        </Col>
-      </Row>
-      <Row>
-        <Col>
-          <p className="text-center">
-            Data Through: {dataEndDate.format("MMMM YYYY")}
-          </p>
         </Col>
       </Row>
     </Container>

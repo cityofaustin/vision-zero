@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import moment from "moment";
 import { Line } from "react-chartjs-2";
@@ -15,6 +15,8 @@ import {
 import { colors } from "../../constants/colors";
 
 const CrashesByMonth = () => {
+  const chartRef = useRef();
+
   // Set years order ascending
   const chartYearsArray = yearsArray().sort((a, b) => b - a);
 
@@ -28,61 +30,53 @@ const CrashesByMonth = () => {
 
   const [chartData, setChartData] = useState(null); // {yearInt: [monthTotal, monthTotal, ...]}
   const [crashType, setCrashType] = useState([]);
+  const [chartLegend, setChartLegend] = useState(null);
+  const [legendColors, setLegendColors] = useState([...chartColors].reverse());
 
   useEffect(() => {
     const calculateYearMonthlyTotals = (data) => {
-      // Data query is ordered by crash_date ASC so truncate dataset by month of latest record
-      const monthLimit =
-        data.length > 0
-          ? moment(data[data.length - 1].crash_date).format("MM")
-          : "12";
+      // Determine if the data is a complete year or not and which records to process
+      const isCurrentYear =
+        data.length > 0 &&
+        data[0].crash_date.includes(dataEndDate.format("YYYY"));
 
-      const monthIntegerArray = [
-        "01",
-        "02",
-        "03",
-        "04",
-        "05",
-        "06",
-        "07",
-        "08",
-        "09",
-        "10",
-        "11",
-        "12",
-      ];
+      const monthLimit = isCurrentYear ? dataEndDate.format("MM") : "12";
 
-      const truncatedMonthIntegerArray = monthIntegerArray.slice(
-        0,
-        monthIntegerArray.indexOf(monthLimit) + 1
-      );
-      let cumulativeMonthTotal = 0;
-      const monthTotalArray = truncatedMonthIntegerArray.map((month) => {
-        let monthTotal = 0;
-        data.forEach((record) => {
-          // If the crash date is in the current month, compile data
-          if (moment(record.crash_date).format("MM") === month) {
-            // Compile data based on the selected crash type
-            switch (crashType.name) {
-              case "fatalities":
-                monthTotal += parseInt(record.death_cnt);
-                break;
-              case "seriousInjuries":
-                monthTotal += parseInt(record.sus_serious_injry_cnt);
-                break;
-              default:
-                monthTotal +=
-                  parseInt(record.death_cnt) +
-                  parseInt(record.sus_serious_injry_cnt);
-                break;
-            }
+      let monthTotalArray = [];
+      for (let i = 1; i <= parseInt(monthLimit); i++) {
+        monthTotalArray.push(0);
+      }
+
+      // Calculate totals for each month in data
+      const monthTotals = data.reduce((acc, record) => {
+        const recordMonth = moment(record.crash_date).format("MM");
+        const monthIndex = parseInt(recordMonth) - 1;
+
+        if (monthIndex < monthTotalArray.length) {
+          switch (crashType.name) {
+            case "fatalities":
+              acc[monthIndex] += parseInt(record.death_cnt);
+              break;
+            case "seriousInjuries":
+              acc[monthIndex] += parseInt(record.sus_serious_injry_cnt);
+              break;
+            default:
+              acc[monthIndex] +=
+                parseInt(record.death_cnt) +
+                parseInt(record.sus_serious_injry_cnt);
+              break;
           }
-        });
-        cumulativeMonthTotal += monthTotal;
-        return cumulativeMonthTotal;
-      });
+        }
+        return acc;
+      }, monthTotalArray);
 
-      return monthTotalArray;
+      // Accumulate the monthly totals over the year of data
+      const accumulatedTotals = monthTotals.reduce((acc, month, i) => {
+        acc.push((month += acc[i - 1] || 0));
+        return acc;
+      }, []);
+
+      return accumulatedTotals;
     };
 
     // Wait for crashType to be passed up from setCrashType component
@@ -111,6 +105,12 @@ const CrashesByMonth = () => {
       getChartData();
     }
   }, [crashType]);
+
+  useEffect(() => {
+    !!chartRef.current &&
+      !!chartData &&
+      setChartLegend(chartRef.current.chartInstance.generateLegend());
+  }, [chartData, legendColors]);
 
   // Create dataset for each year, data property is an array of cumulative totals by month
   const createDatasets = () => {
@@ -153,6 +153,12 @@ const CrashesByMonth = () => {
       border-style: none;
       opacity: 1;
     }
+
+    .year-total-div:hover {
+      cursor: pointer;
+      color: ${colors.buttonBackground};
+      background: dimgray 0% 0% no-repeat padding-box;
+    }
   `;
 
   return (
@@ -172,66 +178,125 @@ const CrashesByMonth = () => {
           <hr className="mb-2" />
         </Col>
       </Row>
-      <Row>
-        <Col xs={4} s={2} m={2} l={2} xl={2}>
-          <div>
-            <hr
-              className="my-1"
-              style={{ border: `2px solid ${colors.buttonBackground}` }}
-            ></hr>
-            <h6 className="text-center py-1 mb-0">
-              <strong>Year</strong>
-            </h6>
-            <hr className="my-1"></hr>
-            <h6 className="text-center py-1">Total</h6>
-          </div>
-        </Col>
-        {!!chartData &&
-          [...chartYearsArray].reverse().map((year, i) => {
-            const yearTotalData = chartData[year];
-            const yearTotal = yearTotalData[yearTotalData.length - 1];
-            // Reverse data and colors arrays and render so they appear chronologically
-            return (
-              <Col xs={4} s={2} m={2} l={2} xl={2} key={i}>
-                <StyledDiv>
-                  <div className="year-total-div">
-                    <hr
-                      className="my-1"
-                      style={{
-                        border: `2px solid ${[...chartColors].reverse()[i]}`,
-                      }}
-                    ></hr>
-                    <h6 className="text-center py-1 mb-0">
-                      <strong>{!!chartData && year}</strong>
-                    </h6>
-                    <hr className="my-1"></hr>
-                    <h6 className="text-center py-1">
-                      {!!chartData && yearTotal}
-                    </h6>
-                  </div>
-                </StyledDiv>
-              </Col>
-            );
-          })}
-      </Row>
       <Row className="mt-1">
         <Col>
-          <Line
-            data={data}          
-            height={null}
-            width={null}
-            options={{
-              responsive: true,
-              aspectRatio: 1,
-              maintainAspectRatio: false,
-              tooltips: {
-                mode: "x",
-              },
-              legend: {
-                display: false,
-              },
-            }}
-          />
+          {chartLegend}
+          {
+            // Wrapping the chart in a div prevents it from getting caught in a rerendering loop
+            <div>
+              <Line
+                ref={(ref) => (chartRef.current = ref)}
+                data={data}
+                height={null}
+                width={null}
+                options={{
+                  responsive: true,
+                  aspectRatio: 1,
+                  maintainAspectRatio: false,
+                  tooltips: {
+                    mode: "x",
+                  },
+                  legend: {
+                    display: false,
+                  },
+                  legendCallback: function (chart) {
+                    return (
+                      <Row className="pb-2">
+                        <Col xs={4} s={2} m={2} l={2} xl={2}>
+                          <div>
+                            <hr
+                              className="my-1"
+                              style={{
+                                border: `4px solid ${colors.buttonBackground}`,
+                              }}
+                            ></hr>
+                            <h6 className="text-center py-1 mb-0">
+                              <strong>Year</strong>
+                            </h6>
+                            <hr className="my-1"></hr>
+                            <h6 className="text-center py-1">Total</h6>
+                          </div>
+                        </Col>
+                        {
+                          // Reverse data and colors arrays and render so they appear chronologically
+                          [...chartYearsArray].reverse().map((year, i) => {
+                            const yearTotalData = chartData[year];
+                            const yearTotal =
+                              yearTotalData[yearTotalData.length - 1];
+                            const legendColor = legendColors[i];
+
+                            const updateLegendColors = () => {
+                              const legendColorsClone = [...legendColors];
+                              legendColor !== colors.buttonBackground
+                                ? legendColorsClone.splice(
+                                    i,
+                                    1,
+                                    colors.buttonBackground
+                                  )
+                                : legendColorsClone.splice(
+                                    i,
+                                    1,
+                                    chartColors.reverse()[i]
+                                  );
+                              setLegendColors(legendColorsClone);
+                            };
+
+                            const customLegendClickHandler = () => {
+                              const legendItems = [
+                                ...chart.legend.legendItems,
+                              ].reverse();
+                              const legendItem = legendItems[i];
+                              const index = legendItem.datasetIndex;
+                              const ci = chartRef.current.chartInstance.chart;
+                              const meta = ci.getDatasetMeta(index);
+
+                              // See controller.isDatasetVisible comment
+                              meta.hidden =
+                                meta.hidden === null
+                                  ? !ci.data.datasets[index].hidden
+                                  : null;
+
+                              // We hid a dataset ... rerender the chart
+                              ci.update();
+
+                              // Update legend colors to show data has been hidden
+                              updateLegendColors();
+                            };
+
+                            return (
+                              <Col xs={4} s={2} m={2} l={2} xl={2} key={i}>
+                                <StyledDiv>
+                                  <div
+                                    className="year-total-div"
+                                    onClick={customLegendClickHandler}
+                                  >
+                                    <hr
+                                      id={`bar-${year}`}
+                                      className="my-1"
+                                      style={{
+                                        border: `4px solid ${legendColor}`,
+                                      }}
+                                    ></hr>
+                                    <h6 className="text-center py-1 mb-0">
+                                      <strong>{!!chartData && year}</strong>
+                                    </h6>
+                                    <hr className="my-1"></hr>
+                                    <h6 className="text-center py-1">
+                                      {!!chartData && yearTotal}
+                                    </h6>
+                                  </div>
+                                </StyledDiv>
+                              </Col>
+                            );
+                          })
+                        }
+                      </Row>
+                    );
+                  },
+                }}
+              />
+            </div>
+          }
         </Col>
       </Row>
     </Container>

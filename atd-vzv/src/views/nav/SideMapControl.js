@@ -59,15 +59,15 @@ const StyledCard = styled.div`
 const SideMapControl = () => {
   const {
     mapFilters: [filters, setFilters],
+    mapFilterType: [isMapTypeSet, setIsMapTypeSet],
   } = React.useContext(StoreContext);
 
   const [buttonFilters, setButtonFilters] = useState({});
   const [filterGroupCounts, setFilterGroupCounts] = useState({});
-  const [isTypeSet, setIsTypeSet] = useState({ fatal: false, injury: true });
 
   const setTypeFilters = (typeArray) => {
     // Set types in array as true and others as false
-    const updatedState = Object.keys(isTypeSet).reduce((acc, type) => {
+    const updatedState = Object.keys(isMapTypeSet).reduce((acc, type) => {
       if (typeArray.includes(type)) {
         acc = { ...acc, [type]: true };
       } else {
@@ -76,7 +76,7 @@ const SideMapControl = () => {
       return acc;
     }, {});
 
-    setIsTypeSet(updatedState);
+    setIsMapTypeSet(updatedState);
   };
 
   // Define groups of map button filters
@@ -85,7 +85,7 @@ const SideMapControl = () => {
       all: {
         text: `All`,
         handler: () => setTypeFilters(["injury", "fatal"]),
-        isSelected: isTypeSet.injury && isTypeSet.fatal,
+        isSelected: isMapTypeSet.injury && isMapTypeSet.fatal,
         default: false,
         buttonClass: `type-button`,
       },
@@ -95,7 +95,7 @@ const SideMapControl = () => {
         icon: faHeartbeat,
         iconColor: colors.fatalities,
         handler: () => setTypeFilters(["fatal"]),
-        isSelected: isTypeSet.fatal && !isTypeSet.injury,
+        isSelected: isMapTypeSet.fatal && !isMapTypeSet.injury,
         default: false,
         buttonClass: `type-button`,
       },
@@ -105,7 +105,7 @@ const SideMapControl = () => {
         icon: faMedkit,
         iconColor: colors.seriousInjuries,
         handler: () => setTypeFilters(["injury"]),
-        isSelected: isTypeSet.injury && !isTypeSet.fatal,
+        isSelected: isMapTypeSet.injury && !isMapTypeSet.fatal,
         default: false,
         buttonClass: `type-button`,
       },
@@ -198,11 +198,11 @@ const SideMapControl = () => {
       const filterModeSyntaxByType = (filtersArray) =>
         filtersArray.map((filter) => {
           // Set syntax for generateWhereFilters() map helper
-          if (isTypeSet.fatal && isTypeSet.injury) {
+          if (isMapTypeSet.fatal && isMapTypeSet.injury) {
             filter.syntax = `${filter.fatalSyntax} ${filter.operator} ${filter.injurySyntax}`;
-          } else if (isTypeSet.fatal) {
+          } else if (isMapTypeSet.fatal) {
             filter.syntax = filter.fatalSyntax;
-          } else if (isTypeSet.injury) {
+          } else if (isMapTypeSet.injury) {
             filter.syntax = filter.injurySyntax;
           }
           return filter;
@@ -211,7 +211,7 @@ const SideMapControl = () => {
       const updatedFiltersArray = filterModeSyntaxByType(buttonFilters);
       setFilters(updatedFiltersArray);
     }
-  }, [buttonFilters, isTypeSet, setFilters]);
+  }, [buttonFilters, isMapTypeSet, setFilters]);
 
   // Set count of filters applied per type
   useEffect(() => {
