@@ -7,7 +7,7 @@ export default ({ children }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [mapFilters, setMapFilters] = useState([]);
   const [isMapTypeSet, setIsMapTypeSet] = useState({
-    fatal: false,
+    fatal: true,
     injury: true,
   });
   const [mapDateRange, setMapDateRange] = useState({

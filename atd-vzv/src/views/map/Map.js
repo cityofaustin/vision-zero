@@ -189,17 +189,17 @@ const Map = () => {
   };
 
   const renderCrashDataLayers = () => {
-    // Layer order depends on order set, so render both layers together to keep fatalities on top
-    const fatalityLayer = (
-      <Source id="crashFatalities" type="geojson" data={mapData.fatalities}>
-        <Layer {...fatalitiesOutlineDataLayer} />
-        <Layer {...fatalitiesDataLayer} />
-      </Source>
-    );
+    // Layer order depends on order set, so set fatalities last to keep on top
     const injuryLayer = (
       <Source id="crashInjuries" type="geojson" data={mapData.injuries}>
         <Layer {...seriousInjuriesOutlineDataLayer} />
         <Layer {...seriousInjuriesDataLayer} />
+      </Source>
+    );
+    const fatalityLayer = (
+      <Source id="crashFatalities" type="geojson" data={mapData.fatalities}>
+        <Layer {...fatalitiesOutlineDataLayer} />
+        <Layer {...fatalitiesDataLayer} />
       </Source>
     );
     const bothLayers = (
@@ -208,13 +208,34 @@ const Map = () => {
         {fatalityLayer}
       </>
     );
-
-    return (
-      (isMapTypeSet.fatal && isMapTypeSet.injury && bothLayers) ||
-      (isMapTypeSet.fatal && fatalityLayer) ||
-      (isMapTypeSet.injury && injuryLayer)
-    );
+    return bothLayers;
   };
+
+  // Show/hide type layers based on isMapTypeSet state in Context
+  useEffect(() => {
+    const map = mapRef.current;
+
+    const setLayersVisibility = (idArray, visibilityString) => {
+      idArray.forEach((id) =>
+        mapRef.current.setLayoutProperty(id, "visibility", visibilityString)
+      );
+    };
+
+    if (map.getLayer("fatalities") && map.getLayer("fatalitiesOutline")) {
+      const fatalityIds = ["fatalities", "fatalitiesOutline"];
+      const fatalVisibility = isMapTypeSet.fatal ? "visible" : "none";
+      setLayersVisibility(fatalityIds, fatalVisibility);
+    }
+
+    if (
+      map.getLayer("seriousInjuries") &&
+      map.getLayer("seriousInjuriesOutline")
+    ) {
+      const injuryIds = ["seriousInjuries", "seriousInjuriesOutline"];
+      const injuryVisibility = isMapTypeSet.injury ? "visible" : "none";
+      setLayersVisibility(injuryIds, injuryVisibility);
+    }
+  }, [isMapTypeSet]);
 
   return (
     <ReactMapGL
