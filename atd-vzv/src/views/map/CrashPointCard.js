@@ -1,6 +1,6 @@
 import * as React from "react";
 import { PureComponent } from "react";
-import { Card, CardBody, CardText, Table } from "reactstrap";
+import { Card, Table } from "reactstrap";
 import moment from "moment";
 
 export default class CrashPointCard extends PureComponent {
