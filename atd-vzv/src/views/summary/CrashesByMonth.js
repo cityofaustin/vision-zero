@@ -15,7 +15,6 @@ import {
 import { colors } from "../../constants/colors";
 
 const CrashesByMonth = () => {
-  const chartRef = useRef();
 
   // Set years order ascending
   const chartYearsArray = yearsArray().sort((a, b) => b - a);
@@ -32,6 +31,8 @@ const CrashesByMonth = () => {
   const [crashType, setCrashType] = useState([]);
   const [chartLegend, setChartLegend] = useState(null);
   const [legendColors, setLegendColors] = useState([...chartColors].reverse());
+
+  const chartRef = useRef();
 
   useEffect(() => {
     const calculateYearMonthlyTotals = (data) => {
@@ -183,7 +184,7 @@ const CrashesByMonth = () => {
           {chartLegend}
           {
             // Wrapping the chart in a div prevents it from getting caught in a rerendering loop
-            <div>
+            <Container>
               <Line
                 ref={(ref) => (chartRef.current = ref)}
                 data={data}
@@ -271,7 +272,6 @@ const CrashesByMonth = () => {
                                     onClick={customLegendClickHandler}
                                   >
                                     <hr
-                                      id={`bar-${year}`}
                                       className="my-1"
                                       style={{
                                         border: `4px solid ${legendColor}`,
@@ -295,7 +295,7 @@ const CrashesByMonth = () => {
                   },
                 }}
               />
-            </div>
+            </Container>
           }
         </Col>
       </Row>
