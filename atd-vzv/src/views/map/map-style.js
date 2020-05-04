@@ -1,15 +1,58 @@
 import React from "react";
 import { RenderStates } from "react-map-gl-draw";
-import { Layer } from "react-map-gl";
+import { Source, Layer } from "react-map-gl";
 import { colors } from "../../constants/colors";
 
+// Empty source and layer placeholder to place other layers before
+export const baseSourceAndLayer = (
+  <>
+    <Source
+      id="base-source"
+      type="geojson"
+      data={{ type: "FeatureCollection", features: [] }}
+    >
+      <Layer id="base-layer" {...{ type: "symbol", source: "base-source" }} />
+    </Source>
+  </>
+);
+
 // For more information on data-driven styles, see https://www.mapbox.com/help/gl-dds-ref/
-export const crashDataLayer = {
-  id: "crashes",
+// To create white border, add second layer with larger white radius behind primary circles
+export const fatalitiesDataLayer = {
+  id: "fatalities",
   type: "circle",
   paint: {
     "circle-radius": 5,
-    "circle-color": `${colors.info}`,
+    "circle-color": colors.fatalities,
+  },
+};
+
+export const fatalitiesOutlineDataLayer = {
+  ...fatalitiesDataLayer,
+  id: "fatalitiesOutline",
+  paint: {
+    ...fatalitiesDataLayer.paint,
+    "circle-radius": 6,
+    "circle-color": colors.white,
+  },
+};
+
+export const seriousInjuriesDataLayer = {
+  id: "seriousInjuries",
+  type: "circle",
+  paint: {
+    "circle-radius": 5,
+    "circle-color": colors.seriousInjuries,
+  },
+};
+
+export const seriousInjuriesOutlineDataLayer = {
+  ...seriousInjuriesDataLayer,
+  id: "seriousInjuriesOutline",
+  paint: {
+    ...seriousInjuriesDataLayer.paint,
+    "circle-radius": 6,
+    "circle-color": colors.white,
   },
 };
 

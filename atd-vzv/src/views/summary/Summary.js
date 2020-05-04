@@ -1,6 +1,5 @@
 import React from "react";
 import CrashesByMonth from "./CrashesByMonth";
-import CrashesBySystem from "./CrashesBySystem";
 import CrashesByTimeOfDay from "./CrashesByTimeOfDay";
 import PeopleByDemographics from "./PeopleByDemographics";
 import CrashesByMode from "./CrashesByMode";
@@ -16,7 +15,6 @@ const children = [
   { component: <CrashesByMode /> },
   { component: <CrashesByTimeOfDay /> },
   { component: <PeopleByDemographics /> },
-  { component: <CrashesBySystem /> },
 ];
 
 const Summary = () => {

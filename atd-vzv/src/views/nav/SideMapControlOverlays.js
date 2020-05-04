@@ -57,14 +57,16 @@ const SideMapControlOverlays = () => {
 
   return (
     <Card className="mt-3 p-3 card-body">
-      <Label className="section-title">Overlays</Label>
+      <Label className="section-title">
+        <h5>Overlays</h5>
+      </Label>
       {/* Create a button group for each overlay */}
       {Object.entries(overlays).map(([name, parameters], i) => (
         <ButtonGroup vertical className="mb-3" key={i}>
           <Button
             key={i}
             id={name}
-            color="info"
+            color="dark"
             className="w-100 pt-1 pb-1 pl-0 pr-0"
             onClick={(event) => handleOverlayClick(event, parameters)}
             active={name === overlay.name}
@@ -79,7 +81,7 @@ const SideMapControlOverlays = () => {
                 <Button
                   key={i}
                   id={option}
-                  color="info"
+                  color="dark"
                   className="w-100 pt-1 pb-1 pl-0 pr-0"
                   active={overlay.options.includes(option)}
                   outline={!overlay.options.includes(option)}

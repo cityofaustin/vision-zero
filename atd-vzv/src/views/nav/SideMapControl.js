@@ -5,7 +5,7 @@ import SideMapControlDateRange from "./SideMapControlDateRange";
 import SideMapTimeOfDayChart from "./SideMapTimeOfDayChart";
 import SideMapControlOverlays from "./SideMapControlOverlays";
 import { colors } from "../../constants/colors";
-import { ButtonGroup, Button, Card, Label } from "reactstrap";
+import { Button, Card, Label, Row, Col } from "reactstrap";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -13,6 +13,9 @@ import {
   faBiking,
   faCar,
   faMotorcycle,
+  faInfoCircle,
+  faHeartbeat,
+  faMedkit,
 } from "@fortawesome/free-solid-svg-icons";
 
 const StyledCard = styled.div`
@@ -31,28 +34,82 @@ const StyledCard = styled.div`
   .card-body {
     background: ${colors.white};
   }
+
+  .info-icon {
+    cursor: pointer;
+  }
+
+  .filter-button {
+    min-width: 38px;
+  }
+
+  .type-button {
+    font-size: 14px;
+    color: ${colors.dark};
+    background: ${colors.buttonBackground};
+    border-style: none;
+    border-radius: 18px;
+    opacity: 1;
+    margin-right: 2px;
+    padding-right: 6px !important;
+    height: 33px;
+  }
 `;
 
 const SideMapControl = () => {
   const {
     mapFilters: [filters, setFilters],
+    mapFilterType: [isMapTypeSet, setIsMapTypeSet],
   } = React.useContext(StoreContext);
 
   const [buttonFilters, setButtonFilters] = useState({});
   const [filterGroupCounts, setFilterGroupCounts] = useState({});
-  const [isTypeSet, setIsTypeSet] = useState({ fatal: false, injury: true });
 
-  const setTypeFilters = (type) => {
-    if (Object.values(isTypeSet).includes(false) && isTypeSet[type] === true) {
-      return;
-    } else {
-      const updatedState = { ...isTypeSet, [type]: !isTypeSet[type] };
-      setIsTypeSet(updatedState);
-    }
+  const setTypeFilters = (typeArray) => {
+    // Set types in array as true and others as false
+    const updatedState = Object.keys(isMapTypeSet).reduce((acc, type) => {
+      if (typeArray.includes(type)) {
+        acc = { ...acc, [type]: true };
+      } else {
+        acc = { ...acc, [type]: false };
+      }
+      return acc;
+    }, {});
+
+    setIsMapTypeSet(updatedState);
   };
 
   // Define groups of map button filters
   const mapButtonFilters = {
+    type: {
+      all: {
+        text: `All`,
+        handler: () => setTypeFilters(["injury", "fatal"]),
+        isSelected: isMapTypeSet.injury && isMapTypeSet.fatal,
+        default: false,
+        buttonClass: `type-button`,
+      },
+      fatal: {
+        text: `Fatal`,
+        colSize: "auto",
+        icon: faHeartbeat,
+        iconColor: colors.fatalities,
+        handler: () => setTypeFilters(["fatal"]),
+        isSelected: isMapTypeSet.fatal && !isMapTypeSet.injury,
+        default: false,
+        buttonClass: `type-button`,
+      },
+      seriousInjury: {
+        text: `Serious Injuries`,
+        colSize: "auto",
+        icon: faMedkit,
+        iconColor: colors.seriousInjuries,
+        handler: () => setTypeFilters(["injury"]),
+        isSelected: isMapTypeSet.injury && !isMapTypeSet.fatal,
+        default: false,
+        buttonClass: `type-button`,
+      },
+    },
     mode: {
       pedestrian: {
         icon: faWalking, // Font Awesome icon object
@@ -93,20 +150,6 @@ const SideMapControl = () => {
         type: `where`,
         operator: `OR`,
         default: true,
-      },
-    },
-    type: {
-      seriousInjury: {
-        text: `Injury`,
-        handler: () => setTypeFilters("injury"),
-        isSelected: isTypeSet.injury,
-        default: false,
-      },
-      fatal: {
-        text: `Fatal`,
-        handler: () => setTypeFilters("fatal"),
-        isSelected: isTypeSet.fatal,
-        default: false,
       },
     },
   };
@@ -155,11 +198,11 @@ const SideMapControl = () => {
       const filterModeSyntaxByType = (filtersArray) =>
         filtersArray.map((filter) => {
           // Set syntax for generateWhereFilters() map helper
-          if (isTypeSet.fatal && isTypeSet.injury) {
+          if (isMapTypeSet.fatal && isMapTypeSet.injury) {
             filter.syntax = `${filter.fatalSyntax} ${filter.operator} ${filter.injurySyntax}`;
-          } else if (isTypeSet.fatal) {
+          } else if (isMapTypeSet.fatal) {
             filter.syntax = filter.fatalSyntax;
-          } else if (isTypeSet.injury) {
+          } else if (isMapTypeSet.injury) {
             filter.syntax = filter.injurySyntax;
           }
           return filter;
@@ -168,7 +211,7 @@ const SideMapControl = () => {
       const updatedFiltersArray = filterModeSyntaxByType(buttonFilters);
       setFilters(updatedFiltersArray);
     }
-  }, [buttonFilters, isTypeSet, setFilters]);
+  }, [buttonFilters, isMapTypeSet, setFilters]);
 
   // Set count of filters applied per type
   useEffect(() => {
@@ -214,45 +257,63 @@ const SideMapControl = () => {
 
   return (
     <StyledCard>
-      <div className="card-title">Traffic Crashes</div>
+      <h4 className="card-title">
+        Traffic Crashes{" "}
+        <FontAwesomeIcon
+          className="info-icon"
+          icon={faInfoCircle}
+          onClick={() => console.log("Clicked info circle")}
+        />
+      </h4>
       <Card className="p-3 card-body">
-        <Label className="section-title">Filters</Label>
+        <Label className="section-title">
+          <h5>Filters</h5>
+        </Label>
         {/* Create a button group for each group of mapFilters */}
         {Object.entries(mapButtonFilters).map(([group, groupParameters], i) => (
-          <ButtonGroup key={i} className="mb-3 d-flex" id={`${group}-buttons`}>
+          <Row className="mx-0 mb-3" key={`${group}-buttons`}>
             {/* Create buttons for each filter within a group of mapFilters */}
             {Object.entries(groupParameters).map(([name, parameter], i) => (
-              <Button
-                key={i}
-                id={name}
-                color="info"
-                className="w-100 pt-1 pb-1 pl-0 pr-0"
-                onClick={
-                  parameter.handler
-                    ? parameter.handler
-                    : (event) => handleFilterClick(event, group)
-                }
-                active={
-                  parameter.isSelected
-                    ? parameter.isSelected
-                    : isFilterSet(name)
-                }
-                outline={
-                  parameter.isSelected
-                    ? !parameter.isSelected
-                    : !isFilterSet(name)
-                }
+              <Col
+                xs={parameter.colSize && parameter.colSize}
+                className="px-0"
+                key={name}
               >
-                {parameter.icon && (
-                  <FontAwesomeIcon
-                    icon={parameter.icon}
-                    className="mr-1 ml-1"
-                  />
-                )}
-                {parameter.text}
-              </Button>
+                <Button
+                  key={name}
+                  id={name}
+                  color="dark"
+                  className={`p-1 filter-button ${
+                    parameter.buttonClass && parameter.buttonClass
+                  }`}
+                  onClick={
+                    parameter.handler
+                      ? parameter.handler
+                      : (event) => handleFilterClick(event, group)
+                  }
+                  active={
+                    parameter.isSelected
+                      ? parameter.isSelected
+                      : isFilterSet(name)
+                  }
+                  outline={
+                    parameter.isSelected
+                      ? !parameter.isSelected
+                      : !isFilterSet(name)
+                  }
+                >
+                  {parameter.icon && (
+                    <FontAwesomeIcon
+                      icon={parameter.icon}
+                      className="mr-1 ml-1"
+                      color={parameter.iconColor && parameter.iconColor}
+                    />
+                  )}
+                  {parameter.text}
+                </Button>
+              </Col>
             ))}
-          </ButtonGroup>
+          </Row>
         ))}
         <SideMapControlDateRange />
         <SideMapTimeOfDayChart filters={mapOtherFilters.timeOfDay} />
