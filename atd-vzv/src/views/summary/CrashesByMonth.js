@@ -15,7 +15,6 @@ import {
 import { colors } from "../../constants/colors";
 
 const CrashesByMonth = () => {
-  const chartRef = useRef();
 
   // Set years order ascending
   const chartYearsArray = yearsArray().sort((a, b) => b - a);
@@ -33,60 +32,52 @@ const CrashesByMonth = () => {
   const [chartLegend, setChartLegend] = useState(null);
   const [legendColors, setLegendColors] = useState([...chartColors].reverse());
 
+  const chartRef = useRef();
+
   useEffect(() => {
     const calculateYearMonthlyTotals = (data) => {
-      // Data query is ordered by crash_date ASC so truncate dataset by month of latest record
-      const monthLimit =
-        data.length > 0
-          ? moment(data[data.length - 1].crash_date).format("MM")
-          : "12";
+      // Determine if the data is a complete year or not and which records to process
+      const isCurrentYear =
+        data.length > 0 &&
+        data[0].crash_date.includes(dataEndDate.format("YYYY"));
 
-      const monthIntegerArray = [
-        "01",
-        "02",
-        "03",
-        "04",
-        "05",
-        "06",
-        "07",
-        "08",
-        "09",
-        "10",
-        "11",
-        "12",
-      ];
+      const monthLimit = isCurrentYear ? dataEndDate.format("MM") : "12";
 
-      const truncatedMonthIntegerArray = monthIntegerArray.slice(
-        0,
-        monthIntegerArray.indexOf(monthLimit) + 1
-      );
-      let cumulativeMonthTotal = 0;
-      const monthTotalArray = truncatedMonthIntegerArray.map((month) => {
-        let monthTotal = 0;
-        data.forEach((record) => {
-          // If the crash date is in the current month, compile data
-          if (moment(record.crash_date).format("MM") === month) {
-            // Compile data based on the selected crash type
-            switch (crashType.name) {
-              case "fatalities":
-                monthTotal += parseInt(record.death_cnt);
-                break;
-              case "seriousInjuries":
-                monthTotal += parseInt(record.sus_serious_injry_cnt);
-                break;
-              default:
-                monthTotal +=
-                  parseInt(record.death_cnt) +
-                  parseInt(record.sus_serious_injry_cnt);
-                break;
-            }
+      let monthTotalArray = [];
+      for (let i = 1; i <= parseInt(monthLimit); i++) {
+        monthTotalArray.push(0);
+      }
+
+      // Calculate totals for each month in data
+      const monthTotals = data.reduce((acc, record) => {
+        const recordMonth = moment(record.crash_date).format("MM");
+        const monthIndex = parseInt(recordMonth) - 1;
+
+        if (monthIndex < monthTotalArray.length) {
+          switch (crashType.name) {
+            case "fatalities":
+              acc[monthIndex] += parseInt(record.death_cnt);
+              break;
+            case "seriousInjuries":
+              acc[monthIndex] += parseInt(record.sus_serious_injry_cnt);
+              break;
+            default:
+              acc[monthIndex] +=
+                parseInt(record.death_cnt) +
+                parseInt(record.sus_serious_injry_cnt);
+              break;
           }
-        });
-        cumulativeMonthTotal += monthTotal;
-        return cumulativeMonthTotal;
-      });
+        }
+        return acc;
+      }, monthTotalArray);
 
-      return monthTotalArray;
+      // Accumulate the monthly totals over the year of data
+      const accumulatedTotals = monthTotals.reduce((acc, month, i) => {
+        acc.push((month += acc[i - 1] || 0));
+        return acc;
+      }, []);
+
+      return accumulatedTotals;
     };
 
     // Wait for crashType to be passed up from setCrashType component
@@ -193,7 +184,7 @@ const CrashesByMonth = () => {
           {chartLegend}
           {
             // Wrapping the chart in a div prevents it from getting caught in a rerendering loop
-            <div>
+            <Container>
               <Line
                 ref={(ref) => (chartRef.current = ref)}
                 data={data}
@@ -281,7 +272,6 @@ const CrashesByMonth = () => {
                                     onClick={customLegendClickHandler}
                                   >
                                     <hr
-                                      id={`bar-${year}`}
                                       className="my-1"
                                       style={{
                                         border: `4px solid ${legendColor}`,
@@ -305,7 +295,7 @@ const CrashesByMonth = () => {
                   },
                 }}
               />
-            </div>
+            </Container>
           }
         </Col>
       </Row>

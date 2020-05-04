@@ -6,6 +6,10 @@ export const StoreContext = React.createContext(null);
 export default ({ children }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [mapFilters, setMapFilters] = useState([]);
+  const [isMapTypeSet, setIsMapTypeSet] = useState({
+    fatal: true,
+    injury: true,
+  });
   const [mapDateRange, setMapDateRange] = useState({
     start: dataStartDate,
     end: dataEndDate,
@@ -19,6 +23,7 @@ export default ({ children }) => {
 
   const store = {
     mapFilters: [mapFilters, setMapFilters],
+    mapFilterType: [isMapTypeSet, setIsMapTypeSet],
     mapDateRange,
     setMapDateRange,
     mapTimeWindow: [mapTimeWindow, setMapTimeWindow],

@@ -27,11 +27,11 @@ CREATE VIEW public.view_location_injry_count_cost_summary AS
 
 SELECT
 	(atcloc.location_id)::character varying (32) AS location_id,
-	COALESCE(ccs.total_crashes + blueform_ccs.total_crashes, (0)::bigint) AS total_crashes,
+	COALESCE(ccs.total_crashes, 0) + COALESCE(blueform_ccs.total_crashes, 0) AS total_crashes,
 	COALESCE(ccs.total_deaths, (0)::bigint) AS total_deaths,
 	COALESCE(ccs.total_serious_injuries, (0)::bigint) AS total_serious_injuries,
-	COALESCE(ccs.est_comp_cost + blueform_ccs.est_comp_cost, (0)::numeric) AS est_comp_cost
-FROM (atd_txdot_locations atcloc
+	COALESCE(ccs.est_comp_cost, 0) + COALESCE(blueform_ccs.est_comp_cost, 0) AS est_comp_cost,
+FROM ((atd_txdot_locations atcloc
 	LEFT JOIN (
 		SELECT
 			atc.location_id,
