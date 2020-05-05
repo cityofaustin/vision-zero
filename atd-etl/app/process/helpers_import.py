@@ -139,12 +139,13 @@ def get_crash_id(line):
         return ""
 
 
-def generate_gql(line, fieldnames, file_type):
+def generate_gql(line, fieldnames, file_type, upsert=True):
     """
     Returns a string with the final graphql query
-    :param line: string - The raw csv line
-    :param fieldnames: array of strings - The name of fields
-    :param file_type: string - the type of insertion (crash, units, etc...)
+    :param string line: The raw csv line
+    :param string[] fieldnames: An array containing the names of fields
+    :param string file_type: the type of insertion (crash, units, etc...)
+    :param bool upsert: When True, it generates an on_conflict statement for upsertion.
     :return:
     """
 
@@ -168,7 +169,7 @@ def generate_gql(line, fieldnames, file_type):
             function=function_name,
             fields=fields,
             fieldnames=template_fields,
-            upsert=True,
+            upsert=upsert,
             constraint={
                 "crash": "atd_txdot_crashes_pkey",
                 "charges": "atd_txdot_charges_pkey",
@@ -232,24 +233,14 @@ def handle_record_error_hook(line, gql, file_type, response={}, line_number="n\a
     :return: bool - True to signal error and stop execution, False otherwise.
     """
 
-    # If this is a crash, we want to know why it didn't insert, so we need to stop.
-    if file_type == "crash":
-        print(gql)
-        return True
-
-    # If not a crash, we are not interested to know what happened. Move on to next one.
-    # This is because the other records do not have a primary key, so to avoid duplicates
-    # we rely on unique indexes. So if a duplicate record tries to insert, it just fails.
-    # So there is no need to stop the rest of the execution.
+    # We must ignore constraint-violation errors,
+    # it means we are trying to overwrite a record.
+    if "constraint-violation" in str(response):
+        return False
+    # Otherwise, this could be a legitimate problem,
+    # for which we must stop the execution
     else:
-        # We must ignore constraint-violation errors,
-        # it means we are trying to overwrite a record.
-        if "constraint-violation" in str(response):
-            return False
-        # Otherwise, this could be a legitimate problem,
-        # for which we must stop the execution
-        else:
-            print("""\n\n------------------------------------------
+        print("""\n\n------------------------------------------
 Fatal Error
 -----------------------------------------
 Line:   \t%s 
@@ -259,13 +250,13 @@ Type:   \t%s \n
 Query:  \t%s \n
 Response: %s \n
 ------------------------------------------\n\n
-            """ % (
-                line_number,
-                get_crash_id(line),
-                str(line).strip(), file_type, gql,
-                str(response)
-            ))
-            return True
+        """ % (
+            line_number,
+            get_crash_id(line),
+            str(line).strip(), file_type, gql,
+            str(response)
+        ))
+        return True
 
 
 def get_file_list(file_type):
@@ -632,10 +623,6 @@ def record_crash_compare(line, fieldnames, crash_id, record_existing):
     # Gather the field names
     fieldnames = [column.lower() for column in fieldnames]
 
-    # If compare crash record is disabled, then exit.
-    if ATD_ETL_CONFIG["ATD_CRIS_IMPORT_COMPARE_FUNCTION"] != "ENABLED":
-        return False
-
     # Double check if the record is valid, if not exit.
     if record_existing is None:
         return True
@@ -663,17 +650,20 @@ def record_crash_compare(line, fieldnames, crash_id, record_existing):
 
         # There are differences, and it can update unless
         # either human_updated or important_update is true
+        compare_enabled = ATD_ETL_CONFIG["ATD_CRIS_IMPORT_COMPARE_FUNCTION"] == "ENABLED"
         if human_updated or important_update:
-            mutation_template = insert_crash_change_template(
-                new_record_dict=record_new,
-                differences=differences,
-                crash_id=crash_id
-            )
-            result = run_query(mutation_template)
-            try:
-                affected_rows = result["data"]["insert_atd_txdot_changes"]["affected_rows"]
-            except:
-                affected_rows = 0
+            affected_rows = 0
+            if compare_enabled:
+                mutation_template = insert_crash_change_template(
+                    new_record_dict=record_new,
+                    differences=differences,
+                    crash_id=crash_id
+                )
+                result = run_query(mutation_template)
+                try:
+                    affected_rows = result["data"]["insert_atd_txdot_changes"]["affected_rows"]
+                except:
+                    affected_rows = 0
 
             if affected_rows == 1:
                 print("\tCreated (or updated existing) change request (%s)" % crash_id)
