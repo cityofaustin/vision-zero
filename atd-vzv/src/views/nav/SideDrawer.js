@@ -127,7 +127,7 @@ const SideDrawer = () => {
       <div
         className={classes.root}
         // Disable side drawer in non-mobile viewport
-        id={currentPath === "/" && "summary-side-drawer"}
+        id={currentPath === "/" ? "summary-side-drawer" : ""}
       >
         <CssBaseline />
         <nav className={classes.drawer} aria-label="mailbox folders">

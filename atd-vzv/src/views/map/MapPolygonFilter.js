@@ -14,6 +14,12 @@ const MapPolygonFilter = ({ setMapPolygon }) => {
       filter: opacity(0.3) drop-shadow(0 0 0 #fff);
       cursor: default;
     }
+
+    /* Set below other map controls */
+    .mapboxgl-ctrl-top-right {
+      position: absolute;
+      top: 107px;
+    }
   `;
 
   const _onUpdate = ({ editType }) => {
