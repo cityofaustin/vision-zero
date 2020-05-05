@@ -616,17 +616,15 @@ def is_important_update(differences):
 def record_crash_compare(line, fieldnames, crash_id, record_existing):
     """
     Hook that finds an existing record, and compares it with a new incoming record built from a raw csv line.
-    :param line: string - The raw csv line
-    :param fieldnames: array of strings - The strings to be used as headers
-    :return bool: False if we want to ignore changes.
+    :param str  line: The raw csv line
+    :param str[] fieldnames: The strings to be used as headers
+    :return bool, string: A tuple: False if we want to ignore changes. True if it needs to be updated. Returns a feed back message
     """
     # Gather the field names
     fieldnames = [column.lower() for column in fieldnames]
-
     # Double check if the record is valid, if not exit.
     if record_existing is None:
-        return True
-
+        return True, "The record is invalid or non-existing"
     # The record is valid, it needs queueing or an upsert.
     else:
         # First generate a new crash record object from line
@@ -639,14 +637,17 @@ def record_crash_compare(line, fieldnames, crash_id, record_existing):
         important_update = is_important_update(differences)
         # Check if it can update based on changes_approved_date
         can_update = can_record_update(record=record_existing)
-
         # If there are no differences, just ignore...
         if len(differences) == 0:
-            return False
+            return False, "There are no differences, ignored."
+        else:
+            print("Differences: %s" % (str(len(differences))))
+            print(differences)
+
         # If no changes approved, or longer than 3 days
         if can_update is False:
             # It's too soon, ignore change.
-            return False
+            return False, "Cannot update this record (Record is not older than 3 days)"
 
         # There are differences, and it can update unless
         # either human_updated or important_update is true
@@ -669,12 +670,12 @@ def record_crash_compare(line, fieldnames, crash_id, record_existing):
                 print("\tCreated (or updated existing) change request (%s)" % crash_id)
                 # We return false because we captured the changes into
                 # a request on the database via run_query (Hasura)
-                return False
+                return False, "Record Queued"
             else:
                 raise Exception("Failed to insert crash review request: %s" % crash_id)
         # Not human edited, update everything automatically.
         else:
-            return True
+            return True, "Record update in order"
 
 
 def is_crash_in_queue(crash_id):
