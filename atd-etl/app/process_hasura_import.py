@@ -19,6 +19,7 @@ import time
 import signal
 import logging
 import concurrent.futures
+import web_pdb
 
 # We need to import our configuration, helpers and request methods
 from process.config import ATD_ETL_CONFIG
@@ -34,6 +35,7 @@ STOP_EXEC = False
 # We need global counts:
 records_skipped = 0
 records_inserted = 0
+records_updated = 0
 existing_records = 0
 queued_records = 0
 insert_errors = 0
@@ -73,7 +75,7 @@ def process_line(file_type, line, fieldnames, current_line, dryrun=False):
     # Do not run if there is stop signal
     if STOP_EXEC:
         return
-    global existing_records, records_inserted, insert_errors, records_skipped, queued_records
+    global existing_records, records_inserted, insert_errors, records_skipped, queued_records, records_updated
     # Read the crash_id from the current line
     # Applies to: crashes, unit, person, primary person, charges
     crash_id = get_crash_id(line)
@@ -84,26 +86,31 @@ def process_line(file_type, line, fieldnames, current_line, dryrun=False):
 
     # If compare is disabled, then protect existing records.
     if compare_enabled and not dryrun:
+        print("Compare enabled")
         # Compare enabled, and this is a crash
         if file_type == "crash":
+            print("Type is crash")
             # Does the record exist already?
             record_exists = get_crash_record(crash_id)
             if record_exists:
+                print("Record exists")
+                existing_records += 1
                 # insert_record = False if it was Queued
                 # insert_record = True if crash needs updating
-                insert_record = record_crash_compare(
+                insert_record, feedback_message = record_crash_compare(
                     line=line,
                     fieldnames=fieldnames,
                     crash_id=crash_id,
                     record_existing=record_exists,
                 )
+                print("insert_record: %s" % (str(insert_record)))
                 # Print the action to be taken
                 print(
                     "%s[%s] %s (type: %s), crash_id: %s"
                     % (
                         mode,
                         str(current_line),
-                        ("\tQ/A Queued", "\tAutomatic update in order.")[insert_record],
+                        feedback_message,
                         file_type,
                         str(crash_id),
                     )
@@ -111,28 +118,36 @@ def process_line(file_type, line, fieldnames, current_line, dryrun=False):
                 # If Queued
                 if not insert_record:
                     # Update counts and exit
-                    existing_records += 1
-                    queued_records += 1
-                    return
+                    if "Queued" in feedback_message:
+                        queued_records += 1
+                        return
+                    else:
+                        print("Not queued man")
+                else:
+                    records_updated += 1
 
         # Compare enabled, this is a secondary record
         else:
+            print("This is a secondary")
             # Is its parent record on queue?
             if is_crash_in_queue(crash_id):
+                print("The crash is in the queue")
                 # Queue this record and exit
                 secondary_record_queued = insert_secondary_table_change(
                     line=line, fieldnames=fieldnames, file_type=file_type
                 )
                 # If Queued
                 if secondary_record_queued:
-                    print(
+                   print(
                         "%s[%s] Q/A Queued (type: %s), crash_id: %s"
-                        % (mode, str(current_line), file_type, str(crash_id),)
-                    )
-                    existing_records += 1
-                    queued_records += 1
-                    return
-
+                        % (mode, str(current_line), file_type, str(crash_id))
+                   )
+                   existing_records += 1
+                   queued_records += 1
+                   return
+            else:
+                print("Crash not in the queue")
+        print("---- Done")
         # Compare is enabled, but we reached no exit meaning that
         # that this record needs to be updated (upsert).
         upsert_enabled = True
@@ -311,7 +326,9 @@ def process_file(file_path, file_type, skip_lines, dryrun=False):
     print("Total Skipped Records: %s" % (records_skipped))
     print("Total Existing Records: %s" % (existing_records))
     print("Total Records Inserted: %s" % (records_inserted))
+    print("Total Records Updated: %s" % (records_updated))
     print("Total Records Queued: %s" % (queued_records))
+
     print("Total Errors: %s" % (insert_errors))
     print("")
 
