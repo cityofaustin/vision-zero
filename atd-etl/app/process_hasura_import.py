@@ -76,93 +76,72 @@ def process_line(file_type, line, fieldnames, current_line, dryrun=False):
     global existing_records, records_inserted, insert_errors, records_skipped, queued_records
     # Read the crash_id from the current line
     # Applies to: crashes, unit, person, primary person, charges
-    crash_id = line.strip().split(",")[0]
+    crash_id = get_crash_id(line)
     mode = "[Dry-Run]" if dryrun else "[Live]"
-    # A flag that is set to True if we need to insert or update the crash record
-    insert_record = False
-    # First we need to check if the current record exists, skip if so.
-    if file_type == "crash":
-        # Gather the crash_id from the current line
-        crash_id = get_crash_id(line)
-        # Using the crash_id, try to find an existing record
-        record_existing = get_crash_record(crash_id)
+    compare_enabled = ATD_ETL_CONFIG["ATD_CRIS_IMPORT_COMPARE_FUNCTION"]
+    # By default enable upserts
+    upsert_enabled = True
 
-        # If not found, then insert
-        if record_existing is None:
-            insert_record = True
-        # Else, record exists we need to compare
-        else:
-            print(
-                "%s[%s] Exists: %s (%s)"
-                % (mode, str(current_line), str(crash_id), file_type)
-            )
-            existing_records += 1
-            # Determine if we need to update...
-            insert_record = record_crash_compare(
-                line=line,
-                fieldnames=fieldnames,
-                crash_id=crash_id,
-                record_existing=record_existing,
-            )
-
-            print(
-                "%s[%s] %s (type: %s), crash_id: %s"
-                % (
-                    mode,
-                    str(current_line),
-                    ("\tQ/A Queued", "\tAutomatic update in order.")[insert_record],
-                    file_type,
-                    str(crash_id),
+    # If compare is disabled, then protect existing records.
+    if compare_enabled and not dryrun:
+        # Compare enabled, and this is a crash
+        if file_type == "crash":
+            # Does the record exist already?
+            record_exists = get_crash_record(crash_id)
+            if record_exists:
+                # insert_record = False if it was Queued
+                # insert_record = True if crash needs updating
+                insert_record = record_crash_compare(
+                    line=line,
+                    fieldnames=fieldnames,
+                    crash_id=crash_id,
+                    record_existing=record_exists,
                 )
-            )
+                # Print the action to be taken
+                print(
+                    "%s[%s] %s (type: %s), crash_id: %s"
+                    % (
+                        mode,
+                        str(current_line),
+                        ("\tQ/A Queued", "\tAutomatic update in order.")[insert_record],
+                        file_type,
+                        str(crash_id),
+                    )
+                )
+                # If Queued
+                if not insert_record:
+                    # Update counts and exit
+                    existing_records += 1
+                    queued_records += 1
+                    return
 
-            # At this point we know we don't need to continue
-            if not insert_record:
-                queued_records += 1
-                return
-
-    # Other file types
-    if file_type != "crash":
-        # First, we retrieve the current crash id from the plain-text CSV line
-        crash_id = get_crash_id(line)
-        # Now check if the current file type is one of these tables
-        if file_type in ["unit", "person", "primaryperson"]:
-            # Then check if the parent record (crash) is in the queue
-            crash_in_queue = is_crash_in_queue(crash_id)
+        # Compare enabled, this is a secondary record
         else:
-            # We can safely take the updates in
-            crash_in_queue = False
-        #  If the crash is in queue
-        if crash_in_queue:
-            # Let's make sure the record is not inserted/updated later on
-            insert_record = False
-            # Update our counts
-            existing_records += 1
-            queued_records += 1
-            # Let's track if the record was queued for inspection
-            secondary_record_updated = False
-            # If not a dry-run, then make the insertion
-            if not dryrun:
-                # Capture the new value from the insertion in the changes table
-                secondary_record_updated = insert_secondary_table_change(
+            # Is its parent record on queue?
+            if is_crash_in_queue(crash_id):
+                # Queue this record and exit
+                secondary_record_queued = insert_secondary_table_change(
                     line=line, fieldnames=fieldnames, file_type=file_type
                 )
+                # If Queued
+                if secondary_record_queued:
+                    print(
+                        "%s[%s] Q/A Queued (type: %s), crash_id: %s"
+                        % (mode, str(current_line), file_type, str(crash_id),)
+                    )
+                    existing_records += 1
+                    queued_records += 1
+                    return
 
-            # Print that we have queued the current record for review
-            if secondary_record_updated:
-                print(
-                    "%s[%s] Q/A Queued (type: %s), crash_id: %s"
-                    % (mode, str(current_line), file_type, str(crash_id),)
-                )
-
-            # At this point we know we don't need to proceed
-            return
+        # Compare is enabled, but we reached no exit meaning that
+        # that this record needs to be updated (upsert).
+        upsert_enabled = True
 
     #
     # Follow Normal Process
     #
     # Generate query and present to terminal
-    gql = generate_gql(line=line, fieldnames=fieldnames, file_type=file_type)
+    gql = generate_gql(line=line, fieldnames=fieldnames, file_type=file_type, upsert=upsert_enabled)
     # If this is not a dry-run, then make an actual insertion
     if dryrun:
         # Dry-run, we need a fake response
