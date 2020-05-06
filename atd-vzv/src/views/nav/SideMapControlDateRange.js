@@ -6,7 +6,12 @@ import DefaultTheme from "react-dates/lib/theme/DefaultTheme";
 import styled from "styled-components";
 import { DateRangePicker } from "react-dates";
 import { Input, FormGroup, Form, Col } from "reactstrap";
-import { dataStartDate, dataEndDate } from "../../constants/time";
+import {
+  dataStartDate,
+  dataEndDate,
+  mapStartDate,
+  mapEndDate,
+} from "../../constants/time";
 import { colors } from "../../constants/colors";
 import { responsive } from "../../constants/responsive";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -14,8 +19,8 @@ import { faTimesCircle } from "@fortawesome/free-solid-svg-icons";
 
 const SideMapControlDateRange = () => {
   const [focused, setFocused] = useState(null);
-  const [start, setStart] = useState(dataStartDate);
-  const [end, setEnd] = useState(dataEndDate);
+  const [start, setStart] = useState(mapStartDate);
+  const [end, setEnd] = useState(mapEndDate);
 
   // Override defaultTheme https://github.com/airbnb/react-dates/blob/master/src/theme/DefaultTheme.js
   const vzTheme = {
