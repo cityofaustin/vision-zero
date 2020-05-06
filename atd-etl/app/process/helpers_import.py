@@ -715,6 +715,19 @@ def csv_to_dict(line, fieldnames):
     return json.dumps([row for row in reader])  # Generate json
 
 
+def aggregate_values(values_list, values_keys):
+    """
+    Returns a string with concatenated values based on a dictionary values and a list of keys
+    :param dict values_list: The dictionary to get values from
+    :param str[] values_keys: A list of strings to be used as keys
+    :return str:
+    """
+    output = ""
+    for key in values_keys:
+        output += values_list.get(key, "")
+    return output
+
+
 def secondary_unique_identifier(line, fieldnames, file_type):
     """
     Generates a unique identifier string based on the file type.
@@ -723,18 +736,16 @@ def secondary_unique_identifier(line, fieldnames, file_type):
     :param str file_type: The type of file to be inserted
     :return str:
     """
-    record = csv_to_dict(
-         line=line,
-         fieldnames=fieldnames
-    )
     try:
-        return {
-            "crash": record["crash_id"],
-            "person": record["crash_id"] + record["unit_nbr"] + record["persn_nbr"],
-            "primaryperson": record["crash_id"] + record["unit_nbr"] + record["persn_nbr"],
-            "unit": record["crash_id"] + record["unit_nbr"],
-            "charge": record["crash_id"] + record["unit_nbr"] + record["persn_nbr"] + record["charge_cat_id"],
+        record = json.loads(csv_to_dict(line=line, fieldnames=fieldnames))[0]
+        output = {
+            "crash": aggregate_values(record, ["crash_id"]),
+            "person": aggregate_values(record, ["crash_id", "unit_nbr", "prsn_nbr"]),
+            "primaryperson": aggregate_values(record, ["crash_id", "unit_nbr", "prsn_nbr"]),
+            "unit": aggregate_values(record, ["crash_id", "unit_nbr"]),
+            "charges": aggregate_values(record, ["crash_id", "unit_nbr", "prsn_nbr", "charge_cat_id"]),
         }.get(file_type, "")
+        return output
     except:
         return ""
 

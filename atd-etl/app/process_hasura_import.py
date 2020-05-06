@@ -19,7 +19,6 @@ import time
 import signal
 import logging
 import concurrent.futures
-import web_pdb
 
 # We need to import our configuration, helpers and request methods
 from process.config import ATD_ETL_CONFIG
