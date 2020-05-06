@@ -4,6 +4,7 @@ import { StoreContext } from "../../utils/store";
 import SideMapControlDateRange from "./SideMapControlDateRange";
 import SideMapTimeOfDayChart from "./SideMapTimeOfDayChart";
 import SideMapControlOverlays from "./SideMapControlOverlays";
+import InfoPopover from "../../Components/Popover/InfoPopover";
 import { colors } from "../../constants/colors";
 import { Button, Card, Label, Row, Col } from "reactstrap";
 import styled from "styled-components";
@@ -262,8 +263,9 @@ const SideMapControl = () => {
         <FontAwesomeIcon
           className="info-icon"
           icon={faInfoCircle}
-          onClick={() => console.log("Clicked info circle")}
+          id="traffic-crashes-popover-target"
         />
+        <InfoPopover popoverTarget={"traffic-crashes-popover-target"} />
       </h4>
       <Card className="p-3 card-body">
         <Label className="section-title">
