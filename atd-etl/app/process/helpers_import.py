@@ -715,6 +715,30 @@ def csv_to_dict(line, fieldnames):
     return json.dumps([row for row in reader])  # Generate json
 
 
+def secondary_unique_identifier(line, fieldnames, file_type):
+    """
+    Generates a unique identifier string based on the file type.
+    :param str line: The current line being processed
+    :param list fieldnames: The list of headers
+    :param str file_type: The type of file to be inserted
+    :return str:
+    """
+    record = csv_to_dict(
+         line=line,
+         fieldnames=fieldnames
+    )
+    try:
+        return {
+            "crash": record["crash_id"],
+            "person": record["crash_id"] + record["unit_nbr"] + record["persn_nbr"],
+            "primaryperson": record["crash_id"] + record["unit_nbr"] + record["persn_nbr"],
+            "unit": record["crash_id"] + record["unit_nbr"],
+            "charge": record["crash_id"] + record["unit_nbr"] + record["persn_nbr"] + record["charge_cat_id"],
+        }.get(file_type, "")
+    except:
+        return ""
+
+
 def insert_secondary_table_change(line, fieldnames, file_type):
     """
     Inserts a secondary crash record, returns True if it succeeds.
