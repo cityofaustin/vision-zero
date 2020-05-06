@@ -226,7 +226,7 @@ const CrashesByMode = () => {
                 width={null}
                 options={{
                   responsive: true,
-                  aspectRatio: 1,
+                  aspectRatio: 1.8,
                   maintainAspectRatio: false,
                   scales: {
                     xAxes: [
