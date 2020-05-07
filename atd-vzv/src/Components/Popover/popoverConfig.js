@@ -71,7 +71,7 @@ export const popoverConfig = {
             of the City of Austin and is used to identify right of way
             dedication requirements needed to accommodate future roadway
             conditions. These future roadway conditions are reflective of the
-            recommended improvements in the ASMP. For more information, visit
+            recommended improvements in the ASMP. For more information, visit{" "}
             <a
               href="https://www.austintexas.gov/department/austin-strategic-mobility-plan"
               target="_blank"

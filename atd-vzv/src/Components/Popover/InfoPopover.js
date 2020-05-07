@@ -1,14 +1,14 @@
-import React from "react";
+import React, { forwardRef } from "react";
 import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
 import styled from "styled-components";
 
 /**
- * Custom Hook to add a tooltip to a target component
+ * Add a tooltip to a target component
  * @param {JSX} targetComponent // Target component for tooltip
  * @param {object} config // Config that includes tooltip html and trigger action
  */
-export const usePopover = (targetComponent, config) => (
+export const addPopover = (targetComponent, config) => (
   <InfoPopover target={targetComponent} config={config} />
 );
 

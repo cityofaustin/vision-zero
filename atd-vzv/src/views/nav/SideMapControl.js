@@ -4,7 +4,7 @@ import { StoreContext } from "../../utils/store";
 import SideMapControlDateRange from "./SideMapControlDateRange";
 import SideMapTimeOfDayChart from "./SideMapTimeOfDayChart";
 import SideMapControlOverlays from "./SideMapControlOverlays";
-import { usePopover } from "../../Components/Popover/InfoPopover";
+import { addPopover } from "../../Components/Popover/InfoPopover";
 import { popoverConfig } from "../../Components/Popover/popoverConfig";
 import { colors } from "../../constants/colors";
 import { Button, Card, Label, Row, Col } from "reactstrap";
@@ -261,7 +261,7 @@ const SideMapControl = () => {
     <StyledCard>
       <h4 className="card-title">
         Traffic Crashes{" "}
-        {usePopover(
+        {addPopover(
           <FontAwesomeIcon className="info-icon" icon={faInfoCircle} />,
           popoverConfig.map.trafficCrashes
         )}
