@@ -1,28 +1,10 @@
 import React from "react";
-import { UncontrolledPopover, PopoverHeader, PopoverBody } from "reactstrap";
-import { StoreContext } from "../../utils/store";
-import styled from "styled-components";
+import Tippy from "@tippyjs/react";
+import "tippy.js/dist/tippy.css";
 
 const InfoPopover = ({ popoverTarget }) => {
   // TODO: Create custom hook to inject popover into DOM
   // TODO: Args - id of target, obj with text/icons/etc, action (hover, click, etc.)
-  const {
-    sidebarToggle: [isOpen],
-  } = React.useContext(StoreContext);
-
-  const StyledPopover = styled.div`
-    /* Set z-index higher than MUI Drawer default */
-    z-index: 1400;
-  `;
-
-  const drawerId = isOpen ? "temporary-drawer" : "permanent-drawer";
-
-  const modifiers = {
-    preventOverflow: {
-      enabled: false,
-    },
-  };
-
   const content = (
     <>
       <div className="mb-2">
@@ -55,21 +37,9 @@ const InfoPopover = ({ popoverTarget }) => {
   );
 
   return (
-    <StyledPopover id={`${popoverTarget}-parent`}>
-      <UncontrolledPopover
-        placement="bottom"
-        target={() => document.querySelector(`#${drawerId} #${popoverTarget}`)}
-        trigger="click" // Action here
-        // Set popover to render within styled component so we can select/style it
-        container={() =>
-          document.querySelector(`#${drawerId} #${popoverTarget}-parent`)
-        }
-        modifiers={modifiers}
-      >
-        <PopoverHeader>Traffic Crashes</PopoverHeader>
-        <PopoverBody>{content}</PopoverBody>
-      </UncontrolledPopover>
-    </StyledPopover>
+    <Tippy content={content}>
+      <span>{popoverTarget}</span>
+    </Tippy>
   );
 };
 

@@ -260,12 +260,15 @@ const SideMapControl = () => {
     <StyledCard>
       <h4 className="card-title">
         Traffic Crashes{" "}
-        <FontAwesomeIcon
-          className="info-icon"
-          icon={faInfoCircle}
-          id="traffic-crashes-popover-target"
+        <InfoPopover
+          popoverTarget={
+            <FontAwesomeIcon
+              className="info-icon"
+              icon={faInfoCircle}
+              // id="traffic-crashes-popover-target"
+            />
+          }
         />
-        <InfoPopover popoverTarget={"traffic-crashes-popover-target"} />
       </h4>
       <Card className="p-3 card-body">
         <Label className="section-title">
