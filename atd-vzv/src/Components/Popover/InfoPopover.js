@@ -3,13 +3,17 @@ import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
 import styled from "styled-components";
 
+/**
+ * Custom Hook to add a tooltip to a target component
+ * @param {JSX} targetComponent // Target component for tooltip
+ * @param {object} config // Config that includes tooltip html and trigger action
+ */
 export const usePopover = (targetComponent, config) => (
   <InfoPopover target={targetComponent} config={config} />
 );
 
 const InfoPopover = ({ target, config }) => {
-  // TODO: Create custom hook to inject popover into DOM
-  // TODO: Args - component to wrap, obj ref with text/icons/etc, action (hover, click, etc.)
+  // TODO: Add action arg (hover, click, etc.)
   const StyledPopover = styled.div`
     font-size: 12px;
   `;
