@@ -546,6 +546,7 @@ def insert_crash_change_template(new_record_dict, differences, crash_id):
             objects: {
               record_id: %NEW_RECORD_ID%,
               record_json: %NEW_RECORD_ESCAPED_JSON%,
+              record_uqid: %NEW_UNIQUE_ID%
               record_type: "crash",
               affected_columns: %AFFECTED_COLUMNS%,
               status_id: 0,
@@ -570,6 +571,7 @@ def insert_crash_change_template(new_record_dict, differences, crash_id):
         }
         """.replace("%NEW_RECORD_ESCAPED_JSON%", new_record_escaped) \
         .replace("%NEW_RECORD_ID%", crash_id) \
+        .replace("%NEW_UNIQUE_ID%", crash_id) \
         .replace("%AFFECTED_COLUMNS%", json.dumps(json.dumps(differences))) \
         .replace(
             "%NEW_RECORD_CRASH_DATE%",
@@ -627,6 +629,7 @@ def record_crash_compare(line, fieldnames, crash_id, record_existing):
         return True, "The record is invalid or non-existing"
     # The record is valid, it needs queueing or an upsert.
     else:
+        print("Record does not exist")
         # First generate a new crash record object from line
         record_new = generate_crash_record(line=line, fieldnames=fieldnames)
         # Now calculate the differences
@@ -646,6 +649,7 @@ def record_crash_compare(line, fieldnames, crash_id, record_existing):
 
         # If no changes approved, or longer than 3 days
         if can_update is False:
+            print("Record cannot be updated")
             # It's too soon, ignore change.
             return False, "Cannot update this record (Record is not older than 3 days)"
 
@@ -653,20 +657,28 @@ def record_crash_compare(line, fieldnames, crash_id, record_existing):
         # either human_updated or important_update is true
         compare_enabled = ATD_ETL_CONFIG["ATD_CRIS_IMPORT_COMPARE_FUNCTION"] == "ENABLED"
         if human_updated or important_update:
+            print("This record should be queued")
             affected_rows = 0
             if compare_enabled:
+                print("Compare is enabled")
                 mutation_template = insert_crash_change_template(
                     new_record_dict=record_new,
                     differences=differences,
                     crash_id=crash_id
                 )
                 result = run_query(mutation_template)
+
+                if "errors" in result:
+                    print("GraphQL Error:")
+                    print(mutation_template)
+                    print(result)
                 try:
                     affected_rows = result["data"]["insert_atd_txdot_changes"]["affected_rows"]
                 except:
                     affected_rows = 0
 
             if affected_rows == 1:
+                print("No affected rows")
                 print("\tCreated (or updated existing) change request (%s)" % crash_id)
                 # We return false because we captured the changes into
                 # a request on the database via run_query (Hasura)
@@ -675,6 +687,7 @@ def record_crash_compare(line, fieldnames, crash_id, record_existing):
                 raise Exception("Failed to insert crash review request: %s" % crash_id)
         # Not human edited, update everything automatically.
         else:
+            print("Not human edited...")
             return True, "Record update in order"
 
 
@@ -728,7 +741,7 @@ def aggregate_values(values_list, values_keys):
     return output
 
 
-def secondary_unique_identifier(line, fieldnames, file_type):
+def record_unique_identifier(line, fieldnames, file_type):
     """
     Generates a unique identifier string based on the file type.
     :param str line: The current line being processed
@@ -758,7 +771,13 @@ def insert_secondary_table_change(line, fieldnames, file_type):
     :param str file_type: The type of file to be inserted
     :return bool:
     """
+    print("Inserting secondary table")
     crash_id = get_crash_id(line)
+    unique_id = record_unique_identifier(line=line, fieldnames=fieldnames, file_type=file_type)
+    print("Inserting secondary table: %s: %s" % (crash_id, unique_id))
+    if len(unique_id) == 0:
+        raise Exception("Could not generate a unique id")
+
     query = """
         mutation insertNewSecondaryChange {
           insert_atd_txdot_changes(
@@ -766,6 +785,7 @@ def insert_secondary_table_change(line, fieldnames, file_type):
                     record_id: %CRASH_ID%
                     record_type: "%TYPE%",
                     record_json: %CONTENT%,
+                    record_uqid: %UNIQUE_ID%
                     status_id: 0,
                 }
              , on_conflict: {
@@ -774,6 +794,7 @@ def insert_secondary_table_change(line, fieldnames, file_type):
                     record_id
                     record_type
                     record_json
+                    record_uqid
                     status_id
                 ]
             }
@@ -783,6 +804,7 @@ def insert_secondary_table_change(line, fieldnames, file_type):
         }
     """.replace("%CRASH_ID%", crash_id)\
     .replace("%TYPE%", file_type)\
+    .replace("%UNIQUE_ID%", unique_id)\
     .replace("%CONTENT%",
              # Equivalent to running json.dumps(json.dumps(dict)) in order
              # to escape special characters into a valid graphql string.
@@ -793,6 +815,10 @@ def insert_secondary_table_change(line, fieldnames, file_type):
     )
     # Run the graphql query
     result = run_query(query)
+    if "errors" in result:
+        print("GraphQL Error:")
+        print(query)
+        print(result)
 
     try:
         # Return True if we have succeeded, False otherwise.
