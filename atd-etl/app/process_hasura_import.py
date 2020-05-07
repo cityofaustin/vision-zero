@@ -132,13 +132,13 @@ def process_line(file_type, line, fieldnames, current_line, dryrun=False):
                 )
                 # If Queued
                 if secondary_record_queued:
-                   print(
+                    print(
                         "%s[%s] Q/A Queued (type: %s), crash_id: %s"
                         % (mode, str(current_line), file_type, str(crash_id))
-                   )
-                   existing_records += 1
-                   queued_records += 1
-                   return
+                    )
+                    existing_records += 1
+                    queued_records += 1
+                    return
 
         # Compare is enabled, but we reached no exit meaning that
         # that this record needs to be updated (upsert).
@@ -148,7 +148,9 @@ def process_line(file_type, line, fieldnames, current_line, dryrun=False):
     # Follow Normal Process
     #
     # Generate query and present to terminal
-    gql = generate_gql(line=line, fieldnames=fieldnames, file_type=file_type, upsert=upsert_enabled)
+    gql = generate_gql(
+        line=line, fieldnames=fieldnames, file_type=file_type, upsert=upsert_enabled
+    )
     # If this is not a dry-run, then make an actual insertion
     if dryrun:
         # Dry-run, we need a fake response
@@ -194,7 +196,9 @@ def process_line(file_type, line, fieldnames, current_line, dryrun=False):
     # If no errors, then we did insert the record successfully
     else:
         # An actual insertion was made
-        print("%s[%s] Inserted or Updated: %s" % (mode, str(current_line), str(crash_id)))
+        print(
+            "%s[%s] Inserted or Updated: %s" % (mode, str(current_line), str(crash_id))
+        )
         records_inserted += 1
 
 
