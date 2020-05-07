@@ -644,12 +644,10 @@ def record_crash_compare(line, fieldnames, crash_id, record_existing):
         if len(differences) == 0:
             return False, "There are no differences, ignored."
         else:
-            print("Differences: %s" % (str(len(differences))))
             print(differences)
 
         # If no changes approved, or longer than 3 days
         if can_update is False:
-            print("Record cannot be updated")
             # It's too soon, ignore change.
             return False, "Cannot update this record (Record is not older than 3 days)"
 
@@ -657,10 +655,8 @@ def record_crash_compare(line, fieldnames, crash_id, record_existing):
         # either human_updated or important_update is true
         compare_enabled = ATD_ETL_CONFIG["ATD_CRIS_IMPORT_COMPARE_FUNCTION"] == "ENABLED"
         if human_updated or important_update:
-            print("This record should be queued")
             affected_rows = 0
             if compare_enabled:
-                print("Compare is enabled")
                 mutation_template = insert_crash_change_template(
                     new_record_dict=record_new,
                     differences=differences,
@@ -678,7 +674,6 @@ def record_crash_compare(line, fieldnames, crash_id, record_existing):
                     affected_rows = 0
 
             if affected_rows == 1:
-                print("No affected rows")
                 print("\tCreated (or updated existing) change request (%s)" % crash_id)
                 # We return false because we captured the changes into
                 # a request on the database via run_query (Hasura)
@@ -687,7 +682,6 @@ def record_crash_compare(line, fieldnames, crash_id, record_existing):
                 raise Exception("Failed to insert crash review request: %s" % crash_id)
         # Not human edited, update everything automatically.
         else:
-            print("Not human edited...")
             return True, "Record update in order"
 
 
@@ -775,10 +769,9 @@ def insert_secondary_table_change(line, fieldnames, file_type):
     :param str file_type: The type of file to be inserted
     :return bool:
     """
-    print("Inserting secondary table")
     crash_id = get_crash_id(line)
     unique_id = record_unique_identifier(line=line, fieldnames=fieldnames, file_type=file_type)
-    print("Inserting secondary table: %s: %s" % (crash_id, unique_id))
+
     if len(unique_id) == 0:
         raise Exception("Could not generate a unique id")
 

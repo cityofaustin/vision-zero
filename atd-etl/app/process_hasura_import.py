@@ -85,14 +85,11 @@ def process_line(file_type, line, fieldnames, current_line, dryrun=False):
 
     # If compare is disabled, then protect existing records.
     if compare_enabled and not dryrun:
-        print("Compare enabled")
         # Compare enabled, and this is a crash
         if file_type == "crash":
-            print("Type is crash")
             # Does the record exist already?
             record_exists = get_crash_record(crash_id)
             if record_exists:
-                print("Record exists")
                 existing_records += 1
                 # insert_record = False if it was Queued
                 # insert_record = True if crash needs updating
@@ -127,10 +124,8 @@ def process_line(file_type, line, fieldnames, current_line, dryrun=False):
 
         # Compare enabled, this is a secondary record
         else:
-            print("This is a secondary")
             # Is its parent record on queue?
             if is_crash_in_queue(crash_id):
-                print("The crash is in the queue")
                 # Queue this record and exit
                 secondary_record_queued = insert_secondary_table_change(
                     line=line, fieldnames=fieldnames, file_type=file_type
@@ -144,9 +139,7 @@ def process_line(file_type, line, fieldnames, current_line, dryrun=False):
                    existing_records += 1
                    queued_records += 1
                    return
-            else:
-                print("Crash not in the queue")
-        print("---- Done")
+
         # Compare is enabled, but we reached no exit meaning that
         # that this record needs to be updated (upsert).
         upsert_enabled = True
