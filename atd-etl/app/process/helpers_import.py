@@ -724,7 +724,11 @@ def csv_to_dict(line, fieldnames):
     :param str[] fieldnames: An array of strings containing the headers for each column to be used as keys.
     :return dict:
     """
-    reader = csv.DictReader(f=io.StringIO(line), fieldnames=fieldnames, delimiter=',')  # parse line
+    reader = csv.DictReader(
+        f=io.StringIO(line),
+        fieldnames=list(map(lambda x: x.lower(), fieldnames)),
+        delimiter=','
+    )  # parse line
     return json.dumps([row for row in reader])  # Generate json
 
 
