@@ -60,10 +60,11 @@ export const popoverConfig = {
         </>
       ),
     },
-    asmpOverlay: {
-      title: "ASMP Street Level",
+    overlays: {
+      title: "Overlays",
       html: (
         <>
+          <div className="font-weight-bold">ASMP Street Levels</div>
           <div className="mb-2">
             The Austin Strategic Mobility Plan (ASMP) is Austin’s new city-wide
             transportation plan that was adopted in 2019. The street levels map
@@ -80,13 +81,7 @@ export const popoverConfig = {
             </a>
             .
           </div>
-        </>
-      ),
-    },
-    highInjuryNetworkOverlay: {
-      title: "High Injury Network",
-      html: (
-        <>
+          <div className="font-weight-bold">High Injury Network</div>
           <div className="mb-2">
             This is an online version of the Combined High-Injury Network Map
             included in the adopted Austin Strategic Mobility Plan policy
@@ -105,6 +100,10 @@ export const popoverConfig = {
           </div>
         </>
       ),
+    },
+    highInjuryNetworkOverlay: {
+      title: "High Injury Network",
+      html: <></>,
     },
   },
 };
