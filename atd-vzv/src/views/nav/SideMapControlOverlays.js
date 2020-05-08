@@ -1,7 +1,6 @@
 import React from "react";
 import { StoreContext } from "../../utils/store";
-import { addPopover } from "../../Components/Popover/InfoPopover";
-import { popoverConfig } from "../../Components/Popover/popoverConfig";
+import { useInfoPopover } from "../../Components/Popover/InfoPopover";
 
 import { ButtonGroup, Button, Card, Label } from "reactstrap";
 
@@ -15,11 +14,9 @@ const SideMapControlOverlays = () => {
     asmp: {
       title: "ASMP Street Levels",
       options: ["1", "2", "3", "4", "5"],
-      popover: popoverConfig.map.asmpOverlay,
     },
     highInjury: {
       title: "High Injury Network",
-      popover: popoverConfig.map.highInjuryNetworkOverlay,
     },
     cityCouncil: {
       title: "Austin City Council Districts",
@@ -67,34 +64,17 @@ const SideMapControlOverlays = () => {
       {/* Create a button group for each overlay */}
       {Object.entries(overlays).map(([name, parameters], i) => (
         <ButtonGroup vertical className="mb-3" key={i}>
-          {parameters.popover ? (
-            addPopover(
-              <Button
-                key={i}
-                id={name}
-                color="dark"
-                className="w-100 pt-1 pb-1 pl-0 pr-0"
-                onClick={(event) => handleOverlayClick(event, parameters)}
-                active={name === overlay.name}
-                outline={name !== overlay.name}
-              >
-                {parameters.title}
-              </Button>,
-              parameters.popover
-            )
-          ) : (
-            <Button
-              key={i}
-              id={name}
-              color="dark"
-              className="w-100 pt-1 pb-1 pl-0 pr-0"
-              onClick={(event) => handleOverlayClick(event, parameters)}
-              active={name === overlay.name}
-              outline={name !== overlay.name}
-            >
-              {parameters.title}
-            </Button>
-          )}
+          <Button
+            key={i}
+            id={name}
+            color="dark"
+            className="w-100 pt-1 pb-1 pl-0 pr-0"
+            onClick={(event) => handleOverlayClick(event, parameters)}
+            active={name === overlay.name}
+            outline={name !== overlay.name}
+          >
+            {parameters.title}
+          </Button>
 
           {/* If options set in config, render button group for each option */}
           {overlay.name === name && parameters.options && (

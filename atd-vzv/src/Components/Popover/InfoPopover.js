@@ -2,17 +2,16 @@ import React, { forwardRef } from "react";
 import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
 import styled from "styled-components";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 
 /**
- * Add a tooltip to a target component
- * @param {JSX} targetComponent // Target component for tooltip
+ * Custom Hook to create a tooltip info icon and tooltip populated with content
  * @param {object} config // Config that includes tooltip html and trigger action
  */
-export const addPopover = (targetComponent, config) => (
-  <InfoPopover target={targetComponent} config={config} />
-);
+export const useInfoPopover = (config) => <InfoPopover config={config} />;
 
-const InfoPopover = ({ target, config }) => {
+const InfoPopover = ({ config }) => {
   // TODO: Add action arg (hover, click, etc.)
   const StyledPopover = styled.div`
     font-size: 12px;
@@ -40,7 +39,9 @@ const InfoPopover = ({ target, config }) => {
         ],
       }}
     >
-      <span>{target}</span>
+      <span>
+        <FontAwesomeIcon className="info-icon" icon={faInfoCircle} />
+      </span>
     </Tippy>
   );
 };

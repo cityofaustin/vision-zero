@@ -4,7 +4,7 @@ import { StoreContext } from "../../utils/store";
 import SideMapControlDateRange from "./SideMapControlDateRange";
 import SideMapTimeOfDayChart from "./SideMapTimeOfDayChart";
 import SideMapControlOverlays from "./SideMapControlOverlays";
-import { addPopover } from "../../Components/Popover/InfoPopover";
+import { useInfoPopover } from "../../Components/Popover/InfoPopover";
 import { popoverConfig } from "../../Components/Popover/popoverConfig";
 import { colors } from "../../constants/colors";
 import { Button, Card, Label, Row, Col } from "reactstrap";
@@ -15,7 +15,6 @@ import {
   faBiking,
   faCar,
   faMotorcycle,
-  faInfoCircle,
   faHeartbeat,
   faMedkit,
 } from "@fortawesome/free-solid-svg-icons";
@@ -168,6 +167,10 @@ const SideMapControl = () => {
     },
   };
 
+  const trafficCrashesInfoPopover = useInfoPopover(
+    popoverConfig.map.trafficCrashes
+  );
+
   // On inital render, reduce all default filters and apply to map data
   useEffect(() => {
     if (Object.keys(buttonFilters).length === 0) {
@@ -260,11 +263,7 @@ const SideMapControl = () => {
   return (
     <StyledCard>
       <h4 className="card-title">
-        Traffic Crashes{" "}
-        {addPopover(
-          <FontAwesomeIcon className="info-icon" icon={faInfoCircle} />,
-          popoverConfig.map.trafficCrashes
-        )}
+        Traffic Crashes {trafficCrashesInfoPopover}
       </h4>
       <Card className="p-3 card-body">
         <Label className="section-title">
