@@ -1,6 +1,6 @@
 import React from "react";
 import { StoreContext } from "../../utils/store";
-import { useInfoPopover } from "../../Components/Popover/InfoPopover";
+import InfoPopover from "../../Components/Popover/InfoPopover";
 import { popoverConfig } from "../../Components/Popover/popoverConfig";
 
 import { ButtonGroup, Button, Card, Label } from "reactstrap";
@@ -23,8 +23,6 @@ const SideMapControlOverlays = () => {
       title: "Austin City Council Districts",
     },
   };
-
-  const overlaysInfoPopover = useInfoPopover(popoverConfig.map.overlays);
 
   const handleOverlayClick = (event, parameters) => {
     // Set overlay in Context store or remove it
@@ -62,7 +60,9 @@ const SideMapControlOverlays = () => {
   return (
     <Card className="mt-3 p-3 card-body">
       <Label className="section-title">
-        <h5>Overlays {overlaysInfoPopover}</h5>
+        <h5>
+          Overlays <InfoPopover config={popoverConfig.map.overlays} />
+        </h5>
       </Label>
       {/* Create a button group for each overlay */}
       {Object.entries(overlays).map(([name, parameters], i) => (

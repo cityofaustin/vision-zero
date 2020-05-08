@@ -16,7 +16,13 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { colors } from "../../constants/colors";
 
-const SummaryWidget = ({ totalsObject, text, icon, backgroundColor }) => {
+const SummaryWidget = ({
+  totalsObject,
+  text,
+  icon,
+  backgroundColor,
+  infoPopover,
+}) => {
   const StyledWidget = styled.div`
     .total {
       font-size: 4em;
@@ -94,7 +100,9 @@ const SummaryWidget = ({ totalsObject, text, icon, backgroundColor }) => {
           <div className="text-left d-flex flex-row">
             {renderIcon()}
             <div className="d-flex flex-column">
-              <h5 className="mb-0">{text}</h5>
+              <h5 className="mb-0">
+                {text} {infoPopover}
+              </h5>
               <h5 className="text-muted">{`in ${currentYear}`}</h5>
             </div>
           </div>
