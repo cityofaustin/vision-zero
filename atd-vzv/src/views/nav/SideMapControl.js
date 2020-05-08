@@ -36,10 +36,6 @@ const StyledCard = styled.div`
     background: ${colors.white};
   }
 
-  .info-icon {
-    cursor: pointer;
-  }
-
   .filter-button {
     min-width: 38px;
   }

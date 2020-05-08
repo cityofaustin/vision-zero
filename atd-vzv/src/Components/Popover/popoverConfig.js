@@ -76,6 +76,7 @@ export const popoverConfig = {
             <a
               href="https://www.austintexas.gov/department/austin-strategic-mobility-plan"
               target="_blank"
+              rel="noopener noreferrer"
             >
               Austin Strategic Mobility Plan
             </a>
@@ -93,6 +94,7 @@ export const popoverConfig = {
             <a
               href="https://www.austintexas.gov/department/austin-strategic-mobility-plan"
               target="_blank"
+              rel="noopener noreferrer"
             >
               Austin Strategic Mobility Plan
             </a>
