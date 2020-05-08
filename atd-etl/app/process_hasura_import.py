@@ -79,7 +79,7 @@ def process_line(file_type, line, fieldnames, current_line, dryrun=False):
     # Applies to: crashes, unit, person, primary person, charges
     crash_id = get_crash_id(line)
     mode = "[Dry-Run]" if dryrun else "[Live]"
-    compare_enabled = ATD_ETL_CONFIG["ATD_CRIS_IMPORT_COMPARE_FUNCTION"]
+    compare_enabled = ATD_ETL_CONFIG["ATD_CRIS_IMPORT_COMPARE_FUNCTION"] == "ENABLED"
     # By default enable upserts
     upsert_enabled = True
 
@@ -143,6 +143,8 @@ def process_line(file_type, line, fieldnames, current_line, dryrun=False):
         # Compare is enabled, but we reached no exit meaning that
         # that this record needs to be updated (upsert).
         upsert_enabled = True
+    else:
+        upsert_enabled = False
 
     #
     # Follow Normal Process
