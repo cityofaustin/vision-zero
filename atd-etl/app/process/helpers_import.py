@@ -172,7 +172,7 @@ def generate_gql(line, fieldnames, file_type, upsert=True):
             upsert=upsert,
             constraint={
                 "crash": "atd_txdot_crashes_pkey",
-                "charges": "atd_txdot_charges_pkey",
+                "charges": "uniq_atd_txdot_charges",
                 "unit": "atd_txdot_units_unique",
                 "person": "atd_txdot_person_unique",
                 "primaryperson": "atd_txdot_primaryperson_unique",
