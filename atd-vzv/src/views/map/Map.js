@@ -150,8 +150,9 @@ const Map = () => {
 
   // Fetch City Council Districts geojson
   useEffect(() => {
-    const overlayUrl = `https://services.arcgis.com/0L95CJ0VTaxqcmED/ArcGIS/rest/services/BOUNDARIES_single_member_districts/FeatureServer/0/query?where=COUNCIL_DISTRICT%20%3E=%200&f=geojson`;
+    const overlayUrl = `https://data.austintexas.gov/resource/7yq5-3tm4.geojson?$select=the_geom,council_district,council_district_path`;
     axios.get(overlayUrl).then((res) => {
+      console.log(res.data);
       setCityCouncilOverlay(res.data);
     });
   }, []);
