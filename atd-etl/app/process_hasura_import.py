@@ -99,7 +99,6 @@ def process_line(file_type, line, fieldnames, current_line, dryrun=False):
                     crash_id=crash_id,
                     record_existing=record_exists,
                 )
-                print("insert_record: %s" % (str(insert_record)))
                 # Print the action to be taken
                 print(
                     "%s[%s] %s (type: %s), crash_id: %s"
@@ -117,8 +116,6 @@ def process_line(file_type, line, fieldnames, current_line, dryrun=False):
                     if "Queued" in feedback_message:
                         queued_records += 1
                         return
-                    else:
-                        print("Not queued man")
                 else:
                     records_updated += 1
 
