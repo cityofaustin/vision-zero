@@ -78,7 +78,6 @@ const SideMapControlOverlays = () => {
           >
             {parameters.title}
           </Button>
-
           {/* If options set in config, render button group for each option */}
           {overlay.name === name && parameters.options && (
             <ButtonGroup>

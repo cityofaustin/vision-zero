@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
 import { StoreContext } from "../../utils/store";
-import { useWindowSize } from "react-use";
 import ReactMapGL, { Source, Layer } from "react-map-gl";
 import MapControls from "./MapControls";
 import MapPolygonFilter from "./MapPolygonFilter";
@@ -23,7 +22,7 @@ import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCompass, faCircle } from "@fortawesome/free-solid-svg-icons";
 import { colors } from "../../constants/colors";
-import { responsive } from "../../constants/responsive";
+import { useIsMobile } from "../../constants/responsive";
 
 import "mapbox-gl/dist/mapbox-gl.css";
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css"; // Get out-of-the-box icons
@@ -91,9 +90,7 @@ const Map = () => {
   // Create ref to map to call Mapbox GL functions on instance
   const mapRef = useRef();
 
-  const { width } = useWindowSize();
-  const { bootstrapMedium } = responsive;
-  const isMobile = width <= bootstrapMedium;
+  const isMobile = useIsMobile();
 
   const [mapData, setMapData] = useState("");
   const [interactiveLayerIds, setInteractiveLayerIds] = useState(null);

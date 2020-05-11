@@ -8,7 +8,7 @@ import { DateRangePicker } from "react-dates";
 import { Input, FormGroup, Form, Col } from "reactstrap";
 import { dataStartDate, dataEndDate } from "../../constants/time";
 import { colors } from "../../constants/colors";
-import { responsive } from "../../constants/responsive";
+import { useIsMobile } from "../../constants/responsive";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimesCircle } from "@fortawesome/free-solid-svg-icons";
 
@@ -117,7 +117,7 @@ const SideMapControlDateRange = () => {
   const isOutsideDateLimits = (date) =>
     date.isBefore(dataStartDate, "day") || date.isAfter(dataEndDate, "day");
 
-  const isMobile = () => window.innerWidth < responsive.bootstrapMedium;
+  const isMobile = useIsMobile();
 
   // Create year dropdown picker in calendar
   const renderMonthElement = ({ month, onYearSelect }) => {
@@ -164,7 +164,7 @@ const SideMapControlDateRange = () => {
     <StyledCalendarInfo>
       <FontAwesomeIcon
         icon={faTimesCircle}
-        color={colors.info}
+        color={colors.dark}
         size="2x"
         onClick={() => setFocused(null)}
       />
@@ -200,13 +200,13 @@ const SideMapControlDateRange = () => {
         onFocusChange={(focusedInput) => setFocused(focusedInput)} // PropTypes.func.isRequired,
         minDate={dataStartDate}
         maxDate={dataEndDate}
-        renderCalendarInfo={() => isMobile() && renderCalendarInfo()} // Render custom close button on mobile
+        renderCalendarInfo={() => (isMobile && renderCalendarInfo()) || true} // Render custom close button on mobile
         calendarInfoPosition="top" // Position custom close button
         appendToBody // Allow calendar to pop out over SideDrawer and Map components
-        withFullScreenPortal={isMobile()} // Show full screen picker on mobile
+        withFullScreenPortal={isMobile} // Show full screen picker on mobile
         small
         renderMonthElement={renderMonthElement} // Render year picker
-        orientation={isMobile() ? "vertical" : "horizontal"} // More mobile friendly than horizontal
+        orientation={isMobile ? "vertical" : "horizontal"} // More mobile friendly than horizontal
         isOutsideRange={() => false} // Enable past dates
         isDayBlocked={isOutsideDateLimits} // Grey out dates
       />
