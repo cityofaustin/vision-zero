@@ -645,7 +645,6 @@ def record_crash_compare(line, fieldnames, crash_id, record_existing):
         return True, "The record is invalid or non-existing"
     # The record is valid, it needs queueing or an upsert.
     else:
-        print("Record does not exist")
         # First generate a new crash record object from line
         record_new = generate_crash_record(line=line, fieldnames=fieldnames)
         # Now calculate the differences
