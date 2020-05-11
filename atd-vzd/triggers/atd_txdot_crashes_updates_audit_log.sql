@@ -44,7 +44,7 @@ BEGIN
     END IF;
     -- Finally we update the position field
     IF (NEW.longitude_primary is not null AND NEW.latitude_primary is not null) THEN
-        NEW.position = ST_MakePoint(NEW.longitude_primary, NEW.latitude_primary);
+        NEW.position = ST_SetSRID(ST_MakePoint(NEW.longitude_primary, NEW.latitude_primary), 4326);
     END IF;
     --- END OF LAT/LONG OPERATIONS ---
 
@@ -94,6 +94,7 @@ BEGIN
     estCompEconList = ARRAY(SELECT est_econ_cost_amount FROM atd_txdot__est_econ_cost ORDER BY est_econ_cost_id ASC);
 
     NEW.est_comp_cost = (0
+       + (NEW.unkn_injry_cnt * (estCompCostList[1])) -- Needed only for comp. cost.
        + (NEW.death_cnt * (estCompCostList[2]))
        + (NEW.sus_serious_injry_cnt * (estCompCostList[3]))
        + (NEW.nonincap_injry_cnt * (estCompCostList[4]))
