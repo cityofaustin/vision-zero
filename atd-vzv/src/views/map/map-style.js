@@ -154,10 +154,10 @@ export const buildHighInjuryLayer = (overlay) => {
 // Style geojson returned from ArcGIS that populates the Source and Layer in Map component
 // https://services.arcgis.com/0L95CJ0VTaxqcmED/arcgis/rest/services/BOUNDARIES_single_member_districts/FeatureServer/0?f=pjson
 export const cityCouncilDataLayer = {
-  id: "data",
+  id: "cityCouncil",
   type: "fill",
   paint: {
-    "fill-opacity": 0.5,
+    "fill-opacity": 0.3,
     "fill-color": [
       "match",
       ["get", "council_district"],
@@ -208,6 +208,16 @@ export const cityCouncilDataLayer = {
     //   "stripe-pattern",
     //   /* other */ "#ccc",
     // ],
+  },
+};
+
+export const cityCouncilDataLayerOutline = {
+  id: "cityCouncilOutline",
+  type: "line",
+  paint: {
+    "line-opacity": 1,
+    "line-width": 1,
+    "line-color": `${colors.dark}`,
   },
 };
 

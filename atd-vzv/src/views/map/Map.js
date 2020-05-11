@@ -15,6 +15,7 @@ import {
   asmpConfig,
   buildHighInjuryLayer,
   cityCouncilDataLayer,
+  cityCouncilDataLayerOutline,
 } from "./map-style";
 import stripe from "./stripe.png";
 import axios from "axios";
@@ -266,6 +267,7 @@ const Map = () => {
       {!!cityCouncilOverlay && overlay.name === "cityCouncil" && (
         <Source type="geojson" data={cityCouncilOverlay}>
           {/* Add beforeId to render beneath crash points */}
+          <Layer beforeId="base-layer" {...cityCouncilDataLayerOutline} />
           <Layer beforeId="base-layer" {...cityCouncilDataLayer} />
         </Source>
       )}
