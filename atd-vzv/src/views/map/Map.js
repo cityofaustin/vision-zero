@@ -16,6 +16,7 @@ import {
   buildHighInjuryLayer,
   cityCouncilDataLayer,
 } from "./map-style";
+import stripe from "./stripe.png";
 import axios from "axios";
 
 import styled from "styled-components";
@@ -152,8 +153,14 @@ const Map = () => {
   useEffect(() => {
     const overlayUrl = `https://data.austintexas.gov/resource/7yq5-3tm4.geojson?$select=the_geom,council_district,council_district_path`;
     axios.get(overlayUrl).then((res) => {
-      console.log(res.data);
       setCityCouncilOverlay(res.data);
+    });
+
+    // Add stripe pattern for overlay fill pattern
+    mapRef.current.loadImage(stripe, function (err, image) {
+      if (err) throw err;
+      // Declare the image
+      mapRef.current.addImage("stripe-pattern", image);
     });
   }, []);
 
