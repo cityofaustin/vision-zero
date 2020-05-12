@@ -721,7 +721,8 @@ function CrashChange(props) {
             ...recordObjectKeys,
             // And we also need any selected count records
             ...selectedFields.filter(key => {
-              return key.endsWith("_cnt");
+              if (recordType !== "charges")
+                return key.endsWith("_cnt");
             }),
           ];
 
