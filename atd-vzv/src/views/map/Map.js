@@ -16,7 +16,6 @@ import {
   buildHighInjuryLayer,
   cityCouncilDataLayer,
   cityCouncilDataLayerOutline,
-  selectedCityCouncilDataLayer,
 } from "./map-style";
 import stripe from "./stripe.png";
 import axios from "axios";
@@ -193,10 +192,22 @@ const Map = () => {
         (f) => f.layer.id === "fatalities" || f.layer.id === "seriousInjuries"
       );
 
-    const selectedCouncilDistrict =
-      features && features.find((f) => f.layer.id === "cityCouncil");
-    console.log(selectedCouncilDistrict);
-    !!selectedCouncilDistrict && setCouncilDistrict(selectedCouncilDistrict);
+    let selectedCouncilDistrict =
+      (features && features.find((f) => f.layer.id === "cityCouncil")) || null;
+
+    // Supplement the polygon properties with lat/long to set popup coords
+    if (selectedCouncilDistrict !== null) {
+      selectedCouncilDistrict = {
+        ...selectedCouncilDistrict,
+        properties: {
+          ...selectedCouncilDistrict.properties,
+          latitude: event.lngLat.latitude,
+          longitude: event.lngLat.longitude,
+        },
+      };
+    }
+
+    setCouncilDistrict(selectedCouncilDistrict);
 
     !isMobile && setSelectedFeature(selectedFeature);
     !!selectedFeature && isMobile && setSelectedFeature(selectedFeature);
@@ -277,9 +288,13 @@ const Map = () => {
           {/* Add beforeId to render beneath crash points */}
           {/* <Layer beforeId="base-layer" {...cityCouncilDataLayerOutline} /> */}
           <Layer
-            beforeId="base-layer"
+            beforeId="road-street"
             {...cityCouncilDataLayer(councilDistrict)}
           />
+          {/* <Layer
+            beforeId="base-layer"
+            {...cityCouncilDataLayerOutline(councilDistrict)}
+          /> */}
         </Source>
       )}
       {/* Render crash point tooltip */}
@@ -288,6 +303,15 @@ const Map = () => {
           selectedFeature={selectedFeature}
           setSelectedFeature={setSelectedFeature}
           isMobile={isMobile}
+          type={"crash"}
+        />
+      )}
+      {councilDistrict && (
+        <MapCrashInfoBox
+          selectedFeature={councilDistrict}
+          setSelectedFeature={setCouncilDistrict}
+          isMobile={isMobile}
+          type={"councilDistrict"}
         />
       )}
       {/* Show spinner when map is updating */}

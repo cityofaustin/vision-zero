@@ -12,8 +12,8 @@ export const baseSourceAndLayer = (
       data={{ type: "FeatureCollection", features: [] }}
     >
       <Layer
-        beforeId="road-street"
-        // beforeId="road-label-sm"
+        // beforeId="road-street"
+        beforeId="road-label-sm"
         id="base-layer"
         {...{ type: "symbol", source: "base-source" }}
       />
@@ -98,6 +98,7 @@ export const buildAsmpLayers = (config, overlay) =>
     // https://tiles.arcgis.com/tiles/0L95CJ0VTaxqcmED/arcgis/rest/services/ASMP_Streets_VectorTile/VectorTileServer/resources/styles/root.json?f=pjson
     const asmpLayerConfig = {
       id: level,
+      beforeId: "base-layer",
       type: "line",
       source: {
         type: "vector",
@@ -134,6 +135,7 @@ export const buildHighInjuryLayer = (overlay) => {
   // https://tiles.arcgis.com/tiles/0L95CJ0VTaxqcmED/arcgis/rest/services/HIN_Vector_Tile/VectorTileServer/resources/styles/root.json?f=pjson
   const highInjuryLayerConfig = {
     id: overlayId,
+    beforeId: "base-layer",
     type: "line",
     source: {
       type: "vector",
@@ -157,7 +159,7 @@ export const buildHighInjuryLayer = (overlay) => {
 };
 
 // Style geojson returned from ArcGIS that populates the Source and Layer in Map component
-// https://services.arcgis.com/0L95CJ0VTaxqcmED/arcgis/rest/services/BOUNDARIES_single_member_districts/FeatureServer/0?f=pjson
+// https://data.austintexas.gov/Locations-and-Maps/Council-Districts-Fill/hdpc-ysmz
 export const cityCouncilDataLayer = (councilDistrict) => {
   const selectedDistrict = !!councilDistrict
     ? councilDistrict.properties.council_district
@@ -171,7 +173,7 @@ export const cityCouncilDataLayer = (councilDistrict) => {
         "match",
         ["get", "council_district"],
         selectedDistrict,
-        0.7,
+        0.75,
         /* other */ 0.25,
       ],
       "fill-color": [
@@ -203,14 +205,26 @@ export const cityCouncilDataLayer = (councilDistrict) => {
   };
 };
 
-export const cityCouncilDataLayerOutline = {
-  id: "cityCouncilOutline",
-  type: "line",
-  paint: {
-    "line-opacity": 1,
-    "line-width": 1,
-    "line-color": `${colors.dark}`,
-  },
+export const cityCouncilDataLayerOutline = (councilDistrict) => {
+  const selectedDistrict = !!councilDistrict
+    ? councilDistrict.properties.council_district
+    : "null";
+
+  return {
+    id: "cityCouncilOutline",
+    type: "line",
+    paint: {
+      "line-opacity": [
+        "match",
+        ["get", "council_district"],
+        selectedDistrict,
+        1,
+        /* other */ 0,
+      ],
+      "line-width": 2,
+      "line-color": `${colors.dark}`,
+    },
+  };
 };
 
 // Styles for MapPolygonFilter
