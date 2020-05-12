@@ -402,7 +402,7 @@ function CrashChange(props) {
 
       // We need a list of all important fields as defined in crashFieldDescription
       setImportantFieldList(
-        Object.keys(crashFieldDescription).filter(field => {
+        Object.keys(crashFieldDescription["crash"]).filter(field => {
           return field;
         })
       );
@@ -429,7 +429,7 @@ function CrashChange(props) {
 
     // Now we get to build our component based on our list of important fields
     setImportantFields(
-      Object.keys(crashFieldDescription).map(field => {
+      Object.keys(crashFieldDescription["crash"]).map(field => {
         return generateRow(
           field,
           field.label,
