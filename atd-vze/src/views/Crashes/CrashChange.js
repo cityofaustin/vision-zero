@@ -647,6 +647,26 @@ function CrashChange(props) {
       });
   };
 
+  /**
+   * Returns true if the current field (key) is PII
+   * @param {string} recordType - The record type
+   * @param {string} key - The name of the field
+   * @returns {boolean}
+   */
+  const isFieldPII = (recordType, key) => {
+    try {
+      return piiFields[recordType].includes(key);
+    } catch {
+      return false;
+    }
+  }
+
+  /**
+   * Returns true if the field in question (key) needs quoting
+   * @param {string} recordType - The record type name
+   * @param {string} key - The field name
+   * @returns {boolean}
+   */
   const isFieldQuoted = (recordType, key) => {
     try {
       return crashFieldDescription[recordType][key]["type"] === "string";
@@ -684,6 +704,9 @@ function CrashChange(props) {
       .filter(key => {
         // Removes from list if it string ends with '_cnt'
         return !key.endsWith("_cnt");
+      }).filter(key => {
+        // Removes PII Fields
+        return !isFieldPII(recordType, key);
       });
 
     if (recordType === "crash") {
@@ -708,6 +731,10 @@ function CrashChange(props) {
 
     // We must generate the list of fields & values to be updated
     const updateFields = Object.keys(recordObject)
+      .filter(key => {
+        // Removes PII Fields
+        return !isFieldPII(recordType, key);
+      })
       .map(key => {
         return isFieldQuoted(recordType, key)
           // We have a case_id, we must quote
