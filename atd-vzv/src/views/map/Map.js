@@ -195,14 +195,15 @@ const Map = () => {
     let selectedCouncilDistrict =
       (features && features.find((f) => f.layer.id === "cityCouncil")) || null;
 
+    // TODO: Prevent crash point and council district popups from co-existing
     // Supplement the polygon properties with lat/long to set popup coords
     if (selectedCouncilDistrict !== null) {
       selectedCouncilDistrict = {
         ...selectedCouncilDistrict,
         properties: {
           ...selectedCouncilDistrict.properties,
-          latitude: event.lngLat.latitude,
-          longitude: event.lngLat.longitude,
+          latitude: event.lngLat[1],
+          longitude: event.lngLat[0],
         },
       };
     }
