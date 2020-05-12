@@ -34,7 +34,7 @@ import {
   RECORD_DELETE_CHANGE_RECORDS,
   UPSERT_MUTATION_DUMMY
 } from "../../queries/crashes_changes";
-import { crashImportantDiffFields } from "./crashImportantDiffFields";
+import { crashFieldDescription } from "./crashFieldDescriptions";
 import { crashChangeQuotedFields } from "./crashChangeQuotedFields";
 import { redirectUrl } from "../../index";
 
@@ -400,9 +400,9 @@ function CrashChange(props) {
         setCR3Available(true);
       }
 
-      // We need a list of all important fields as defined in crashImportantDiffFields
+      // We need a list of all important fields as defined in crashFieldDescription
       setImportantFieldList(
-        Object.keys(crashImportantDiffFields).filter(field => {
+        Object.keys(crashFieldDescription).filter(field => {
           return field;
         })
       );
@@ -429,7 +429,7 @@ function CrashChange(props) {
 
     // Now we get to build our component based on our list of important fields
     setImportantFields(
-      Object.keys(crashImportantDiffFields).map(field => {
+      Object.keys(crashFieldDescription).map(field => {
         return generateRow(
           field,
           field.label,
@@ -647,6 +647,14 @@ function CrashChange(props) {
       });
   };
 
+  const isFieldQuoted = key => {
+    try {
+      return crashFieldDescription[key]["type"] === "string";
+    } catch {
+      return false;
+    }
+  }
+
   /**
    * Wraps a value in quotation marks if not numeric or boolean.
    * @param {*} value - Any given value, of any type.
@@ -701,12 +709,14 @@ function CrashChange(props) {
     // We must generate the list of fields & values to be updated
     const updateFields = Object.keys(recordObject)
       .map(key => {
-        return (
-          String(key).toLowerCase() +
+        return isFieldQuoted(key)
+          // We have a case_id, we must quote
+          ? `${key}: "${recordObject[key]}",`
+          // Not a case_id, then quote if not a number
+          : String(key).toLowerCase() +
           ": " +
           printQuotation(recordObject[key]) +
-          ","
-        );
+          ",";
       })
       .join("\n\t\t\t\t");
 
