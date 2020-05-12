@@ -7,7 +7,7 @@
 export const crashImportantDiffFields = {
     "case_id": {
         label: "Case ID",
-        type: "integer"
+        type: "string"
     },
     "crash_date": {
         label: "Crash Date",
