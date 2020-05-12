@@ -11,7 +11,12 @@ export const baseSourceAndLayer = (
       type="geojson"
       data={{ type: "FeatureCollection", features: [] }}
     >
-      <Layer id="base-layer" {...{ type: "symbol", source: "base-source" }} />
+      <Layer
+        beforeId="road-street"
+        // beforeId="road-label-sm"
+        id="base-layer"
+        {...{ type: "symbol", source: "base-source" }}
+      />
     </Source>
   </>
 );
@@ -157,7 +162,7 @@ export const cityCouncilDataLayer = {
   id: "cityCouncil",
   type: "fill",
   paint: {
-    "fill-opacity": 0.3,
+    "fill-opacity": 0.25,
     "fill-color": [
       "match",
       ["get", "council_district"],

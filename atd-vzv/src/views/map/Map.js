@@ -198,14 +198,14 @@ const Map = () => {
     // Layer order depends on order set, so set fatalities last to keep on top
     const injuryLayer = (
       <Source id="crashInjuries" type="geojson" data={mapData.injuries}>
-        <Layer {...seriousInjuriesOutlineDataLayer} />
-        <Layer {...seriousInjuriesDataLayer} />
+        <Layer beforeId="road-label-sm" {...seriousInjuriesOutlineDataLayer} />
+        <Layer beforeId="road-label-sm" {...seriousInjuriesDataLayer} />
       </Source>
     );
     const fatalityLayer = (
       <Source id="crashFatalities" type="geojson" data={mapData.fatalities}>
-        <Layer {...fatalitiesOutlineDataLayer} />
-        <Layer {...fatalitiesDataLayer} />
+        <Layer beforeId="road-label-sm" {...fatalitiesOutlineDataLayer} />
+        <Layer beforeId="road-label-sm" {...fatalitiesDataLayer} />
       </Source>
     );
     const bothLayers = (
@@ -267,7 +267,7 @@ const Map = () => {
       {!!cityCouncilOverlay && overlay.name === "cityCouncil" && (
         <Source type="geojson" data={cityCouncilOverlay}>
           {/* Add beforeId to render beneath crash points */}
-          <Layer beforeId="base-layer" {...cityCouncilDataLayerOutline} />
+          {/* <Layer beforeId="base-layer" {...cityCouncilDataLayerOutline} /> */}
           <Layer beforeId="base-layer" {...cityCouncilDataLayer} />
         </Source>
       )}
