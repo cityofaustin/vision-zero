@@ -34,7 +34,7 @@ import {
   RECORD_DELETE_CHANGE_RECORDS,
   UPSERT_MUTATION_DUMMY
 } from "../../queries/crashes_changes";
-import { crashFieldDescription } from "./crashFieldDescriptions";
+import { crashFieldDescription, piiFields } from "./crashFieldDescriptions";
 import { crashChangeQuotedFields } from "./crashChangeQuotedFields";
 import { redirectUrl } from "../../index";
 
@@ -647,9 +647,9 @@ function CrashChange(props) {
       });
   };
 
-  const isFieldQuoted = key => {
+  const isFieldQuoted = (recordType, key) => {
     try {
-      return crashFieldDescription[key]["type"] === "string";
+      return crashFieldDescription[recordType][key]["type"] === "string";
     } catch {
       return false;
     }
@@ -709,7 +709,7 @@ function CrashChange(props) {
     // We must generate the list of fields & values to be updated
     const updateFields = Object.keys(recordObject)
       .map(key => {
-        return isFieldQuoted(key)
+        return isFieldQuoted(recordType, key)
           // We have a case_id, we must quote
           ? `${key}: "${recordObject[key]}",`
           // Not a case_id, then quote if not a number
