@@ -5,7 +5,8 @@
  */
 export const piiFields = {
   crash: [],
-  person: [],
+  charges: [],
+  unit: [],
 
   primaryperson: [
     "prsn_last_name",
@@ -22,9 +23,20 @@ export const piiFields = {
     "drvr_apt_nbr",
   ],
 
-  unit: [],
-
-  charges: [],
+  person: [
+    "prsn_last_name",
+    "prsn_first_name",
+    "prsn_mid_name",
+    "prsn_name_sfx",
+    "drvr_lic_state_id",
+    "drvr_lic_number",
+    "drvr_dob",
+    "drvr_street_nbr",
+    "drvr_street_pfx",
+    "drvr_street_name",
+    "drvr_street_sfx",
+    "drvr_apt_nbr",
+  ],
 };
 
 export const crashFieldDescription = {
@@ -32,7 +44,7 @@ export const crashFieldDescription = {
     case_id: {
       type: "string",
     },
-    crash_string: {
+    crash_date: {
       type: "string",
     },
     crash_time: {
