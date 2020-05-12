@@ -16,6 +16,7 @@ import {
   buildHighInjuryLayer,
   cityCouncilDataLayer,
   cityCouncilDataLayerOutline,
+  selectedCityCouncilDataLayer,
 } from "./map-style";
 import stripe from "./stripe.png";
 import axios from "axios";
@@ -97,6 +98,7 @@ const Map = () => {
   const [mapData, setMapData] = useState("");
   const [interactiveLayerIds, setInteractiveLayerIds] = useState(null);
   const [selectedFeature, setSelectedFeature] = useState(null);
+  const [councilDistrict, setCouncilDistrict] = useState(null);
   const [cityCouncilOverlay, setCityCouncilOverlay] = useState(null);
   const [isMapDataLoading, setIsMapDataLoading] = useState(false);
 
@@ -176,11 +178,12 @@ const Map = () => {
     const interactiveLayerIds = [
       isMapTypeSet.fatal && "fatalities",
       isMapTypeSet.injury && "seriousInjuries",
+      cityCouncilOverlay && overlay.name === "cityCouncil" && "cityCouncil",
     ];
 
     const filteredInteractiveIds = interactiveLayerIds.filter((id) => !!id);
     setInteractiveLayerIds(filteredInteractiveIds);
-  }, [isMapTypeSet]);
+  }, [isMapTypeSet, cityCouncilOverlay, overlay.name]);
 
   const _onSelectCrashPoint = (event) => {
     const { features } = event;
@@ -189,6 +192,11 @@ const Map = () => {
       features.find(
         (f) => f.layer.id === "fatalities" || f.layer.id === "seriousInjuries"
       );
+
+    const selectedCouncilDistrict =
+      features && features.find((f) => f.layer.id === "cityCouncil");
+    console.log(selectedCouncilDistrict);
+    !!selectedCouncilDistrict && setCouncilDistrict(selectedCouncilDistrict);
 
     !isMobile && setSelectedFeature(selectedFeature);
     !!selectedFeature && isMobile && setSelectedFeature(selectedFeature);
@@ -268,7 +276,10 @@ const Map = () => {
         <Source type="geojson" data={cityCouncilOverlay}>
           {/* Add beforeId to render beneath crash points */}
           {/* <Layer beforeId="base-layer" {...cityCouncilDataLayerOutline} /> */}
-          <Layer beforeId="base-layer" {...cityCouncilDataLayer} />
+          <Layer
+            beforeId="base-layer"
+            {...cityCouncilDataLayer(councilDistrict)}
+          />
         </Source>
       )}
       {/* Render crash point tooltip */}

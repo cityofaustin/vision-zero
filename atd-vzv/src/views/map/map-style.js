@@ -158,62 +158,49 @@ export const buildHighInjuryLayer = (overlay) => {
 
 // Style geojson returned from ArcGIS that populates the Source and Layer in Map component
 // https://services.arcgis.com/0L95CJ0VTaxqcmED/arcgis/rest/services/BOUNDARIES_single_member_districts/FeatureServer/0?f=pjson
-export const cityCouncilDataLayer = {
-  id: "cityCouncil",
-  type: "fill",
-  paint: {
-    "fill-opacity": 0.25,
-    "fill-color": [
-      "match",
-      ["get", "council_district"],
-      "1",
-      colors.mapCityCouncil1,
-      "2",
-      colors.mapCityCouncil2,
-      "3",
-      colors.mapCityCouncil3,
-      "4",
-      colors.mapCityCouncil4,
-      "5",
-      colors.mapCityCouncil5,
-      "6",
-      colors.mapCityCouncil6,
-      "7",
-      colors.mapCityCouncil7,
-      "8",
-      colors.mapCityCouncil8,
-      "9",
-      colors.mapCityCouncil9,
-      "10",
-      colors.mapCityCouncil10,
-      /* other */ "#ccc",
-    ],
-    // "fill-pattern": [
-    //   "match",
-    //   ["get", "council_district"],
-    //   "1",
-    //   "stripe-pattern",
-    //   "2",
-    //   "stripe-pattern",
-    //   "3",
-    //   "stripe-pattern",
-    //   "4",
-    //   "stripe-pattern",
-    //   "5",
-    //   "stripe-pattern",
-    //   "6",
-    //   "stripe-pattern",
-    //   "7",
-    //   "stripe-pattern",
-    //   "8",
-    //   "stripe-pattern",
-    //   "9",
-    //   "stripe-pattern",
-    //   "10",
-    //   "stripe-pattern",
-    //   /* other */ "#ccc",
-    // ],
-  },
+export const cityCouncilDataLayer = (councilDistrict) => {
+  const selectedDistrict = !!councilDistrict
+    ? councilDistrict.properties.council_district
+    : "null";
+
+  return {
+    id: "cityCouncil",
+    type: "fill",
+    paint: {
+      "fill-opacity": [
+        "match",
+        ["get", "council_district"],
+        selectedDistrict,
+        0.7,
+        /* other */ 0.25,
+      ],
+      "fill-color": [
+        "match",
+        ["get", "council_district"],
+        "1",
+        colors.mapCityCouncil1,
+        "2",
+        colors.mapCityCouncil2,
+        "3",
+        colors.mapCityCouncil3,
+        "4",
+        colors.mapCityCouncil4,
+        "5",
+        colors.mapCityCouncil5,
+        "6",
+        colors.mapCityCouncil6,
+        "7",
+        colors.mapCityCouncil7,
+        "8",
+        colors.mapCityCouncil8,
+        "9",
+        colors.mapCityCouncil9,
+        "10",
+        colors.mapCityCouncil10,
+        /* other */ "#ccc",
+      ],
+    },
+  };
 };
 
 export const cityCouncilDataLayerOutline = {
