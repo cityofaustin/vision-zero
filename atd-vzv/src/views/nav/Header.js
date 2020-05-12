@@ -40,6 +40,17 @@ const Header = () => {
   .nav-button {
     /* Set width to keep buttons equal width */
     width: 140px;
+    height: 56px;
+    font-size: 18px;
+  }
+
+  .inactive-nav-button {
+    color: ${colors.dark};
+    background: ${colors.buttonBackground};
+    border-style: none;
+    opacity: 1;
+    margin-left: 5px;
+    margin-right: 5px;
   }
 
   .sidedrawer-toggle {
@@ -74,20 +85,6 @@ const Header = () => {
       position: relative;
     }
   }
-
-  .nav-button {
-    height: 56px;
-    font-size: 18px;
-  }
-
-  .inactive-nav-button {
-    color: ${colors.dark};
-    background: ${colors.buttonBackground};
-    border-style: none;
-    opacity: 1;
-    margin-left: 5px;
-    margin-right: 5px;
-  }
 `;
 
   // Use context to toggle state for SideDrawer toggle
@@ -105,7 +102,7 @@ const Header = () => {
         >
           <Button
             className="mr-2 sidedrawer-toggle"
-            color="info"
+            color="dark"
             onClick={() => setIsOpen(!isOpen)}
           >
             <FontAwesomeIcon icon={faBars} />
