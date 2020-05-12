@@ -683,6 +683,7 @@ function CrashChange(props) {
     }
 
     const constraintsList = {
+      charges: "uniq_atd_txdot_charges",
       person: "atd_txdot_person_unique",
       primaryperson: "atd_txdot_primaryperson_unique",
       unit: "atd_txdot_units_unique",
@@ -690,6 +691,7 @@ function CrashChange(props) {
     };
 
     const functionNameList = {
+      charges: "insert_atd_txdot_charges",
       person: "insert_atd_txdot_persons",
       primaryperson: "insert_atd_txdot_primarypersons",
       unit: "insert_atd_txdot_units",
