@@ -3,6 +3,29 @@
  * and its attributes (as a value).
  * @type {object}
  */
+export const piiFields = {
+    crash: [],
+    person: [],
+
+    primaryperson: [
+        "prsn_last_name",
+        "prsn_first_name",
+        "prsn_mid_name",
+        "prsn_name_sfx",
+        "drvr_lic_state_id",
+        "drvr_lic_number",
+        "drvr_dob",
+        "drvr_street_nbr",
+        "drvr_street_pfx",
+        "drvr_street_name",
+        "drvr_street_sfx",
+        "drvr_apt_nbr",
+    ],
+
+    unit: [],
+
+    charges: [],
+};
 
 export const crashFieldDescription = {
   crash: {
