@@ -25,9 +25,22 @@ export const popoverConfig = {
           <div className="mb-2">
             Crash data is obtained from the Texas Department of Transportation
             (TXDOT) Crash Record Information System (CRIS) database, which is
-            populated by reports submitted by public safety officers throughout
+            populated by reports submitted by Texas Peace Officers throughout
             the state, including Austin Police Department (APD), and maintained
             by TXDOT.
+          </div>
+          <div className="mb-2">
+            These reports are typically written when there is at least $1000
+            worth of property damage or any level of injury. For additional
+            reference, see{" "}
+            <a
+              href="https://ftp.dot.state.tx.us/pub/txdot-info/trf/crash_notifications/2018/crash-report-100.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Form CR-3 Instruction Manual
+            </a>
+            .
           </div>
           <div className="mb-2">
             Crash data included in Vision Zero Viewer includes crashes within
@@ -36,12 +49,12 @@ export const popoverConfig = {
             includes crashes for which APD officers did not respond.
           </div>
           <div className="mb-2">
-            Crash data in Vision Zero Viewer is updated at the beginning of each
-            month. Vision Zero Viewer intentionally delays updates by a month to
-            allow for updates from the CRIS database and for quality assurance.
-            Potential reasons for a crash record to be updated may include
-            completion of crash investigations, someone passing within 30 days
-            of sustaining injuries from a crash, and more.
+            Crash data in Vision Zero Viewer is updated monthly. Vision Zero
+            Viewer intentionally delays updates by a month to allow for updates
+            from the CRIS database for quality assurance and may update without
+            notice. Potential reasons for a crash record to be updated may
+            include completion of crash investigations, someone passing within
+            30 days of sustaining injuries from a crash, and more.
           </div>
           <div className="mb-2">
             Most crashes are mapped in Vision Zero Viewer based on the
@@ -102,10 +115,6 @@ export const popoverConfig = {
           </div>
         </>
       ),
-    },
-    highInjuryNetworkOverlay: {
-      title: "High Injury Network",
-      html: <></>,
     },
   },
 };
