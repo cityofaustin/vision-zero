@@ -2,7 +2,7 @@ import * as React from "react";
 import { PureComponent } from "react";
 import { Card, Table } from "reactstrap";
 
-export default class CrashPointCard extends PureComponent {
+export default class InfoCard extends PureComponent {
   render() {
     const { content } = this.props;
 

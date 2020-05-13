@@ -15,7 +15,6 @@ import {
   asmpConfig,
   buildHighInjuryLayer,
   cityCouncilDataLayer,
-  cityCouncilDataLayerOutline,
 } from "./map-style";
 import stripe from "./stripe.png";
 import axios from "axios";
@@ -28,7 +27,7 @@ import { useIsMobile } from "../../constants/responsive";
 
 import "mapbox-gl/dist/mapbox-gl.css";
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css"; // Get out-of-the-box icons
-import MapCrashInfoBox from "./MapCrashInfoBox";
+import MapInfoBox from "./MapInfoBox";
 
 const MAPBOX_TOKEN = `pk.eyJ1Ijoiam9obmNsYXJ5IiwiYSI6ImNrM29wNnB3dDAwcXEzY29zMTU5bWkzOWgifQ.KKvoz6s4NKNHkFVSnGZonw`;
 
@@ -97,7 +96,6 @@ const Map = () => {
   const [mapData, setMapData] = useState("");
   const [interactiveLayerIds, setInteractiveLayerIds] = useState(null);
   const [selectedFeature, setSelectedFeature] = useState(null);
-  const [councilDistrict, setCouncilDistrict] = useState(null);
   const [cityCouncilOverlay, setCityCouncilOverlay] = useState(null);
   const [isMapDataLoading, setIsMapDataLoading] = useState(false);
 
@@ -186,35 +184,30 @@ const Map = () => {
 
   const _onSelectCrashPoint = (event) => {
     const { features } = event;
-    const selectedFeature =
+    // Filter feature to set in state and set hierarchy
+    let selectedFeature =
       features &&
       features.find(
-        (f) => f.layer.id === "fatalities" || f.layer.id === "seriousInjuries"
+        (f) =>
+          f.layer.id === "fatalities" ||
+          f.layer.id === "seriousInjuries" ||
+          "cityCouncil" ||
+          null
       );
 
-    // Set if no crash point feature is found to keep both popups from appearing
-    let selectedCouncilDistrict =
-      (!selectedFeature &&
-        features &&
-        features.find((f) => f.layer.id === "cityCouncil")) ||
-      null;
-
-    // Supplement the polygon properties with lat/long to set popup coords
-    if (selectedCouncilDistrict !== null) {
-      selectedCouncilDistrict = {
-        ...selectedCouncilDistrict,
+    // Supplement feature properties with lat/long to set popup coords if not in feature metadata
+    if (!!selectedFeature && selectedFeature.layer.id === "cityCouncil") {
+      selectedFeature = {
+        ...selectedFeature,
         properties: {
-          ...selectedCouncilDistrict.properties,
+          ...selectedFeature.properties,
           latitude: event.lngLat[1],
           longitude: event.lngLat[0],
         },
       };
     }
 
-    setCouncilDistrict(selectedCouncilDistrict);
-
-    !isMobile && setSelectedFeature(selectedFeature);
-    !!selectedFeature && isMobile && setSelectedFeature(selectedFeature);
+    setSelectedFeature(selectedFeature);
   };
 
   const renderCrashDataLayers = () => {
@@ -290,32 +283,16 @@ const Map = () => {
       {!!cityCouncilOverlay && overlay.name === "cityCouncil" && (
         <Source type="geojson" data={cityCouncilOverlay}>
           {/* Add beforeId to render beneath crash points */}
-          {/* <Layer beforeId="base-layer" {...cityCouncilDataLayerOutline} /> */}
-          <Layer
-            beforeId="road-street"
-            {...cityCouncilDataLayer(councilDistrict)}
-          />
-          {/* <Layer
-            beforeId="base-layer"
-            {...cityCouncilDataLayerOutline(councilDistrict)}
-          /> */}
+          <Layer beforeId="road-street" {...cityCouncilDataLayer} />
         </Source>
       )}
       {/* Render crash point tooltip */}
       {selectedFeature && (
-        <MapCrashInfoBox
+        <MapInfoBox
           selectedFeature={selectedFeature}
           setSelectedFeature={setSelectedFeature}
           isMobile={isMobile}
-          type={"crash"}
-        />
-      )}
-      {councilDistrict && (
-        <MapCrashInfoBox
-          selectedFeature={councilDistrict}
-          setSelectedFeature={setCouncilDistrict}
-          isMobile={isMobile}
-          type={"councilDistrict"}
+          type={selectedFeature.layer.id}
         />
       )}
       {/* Show spinner when map is updating */}

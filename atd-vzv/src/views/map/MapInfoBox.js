@@ -1,7 +1,7 @@
 import React from "react";
 import { Popup } from "react-map-gl";
 import styled from "styled-components";
-import CrashPointCard from "./CrashPointCard";
+import InfoCard from "./InfoCard";
 import { drawer } from "../../constants/drawer";
 import moment from "moment";
 
@@ -22,29 +22,32 @@ const StyledMobileInfo = styled.div`
   }
 `;
 
-const MapCrashInfoBox = ({
+const MapInfoBox = ({
   selectedFeature,
   setSelectedFeature,
   isMobile,
-  type,
+  type, // id of feature layer
 }) => {
   const popupInfo = selectedFeature && selectedFeature.properties;
 
+  const buildSeriousInjuriesOrFatalitiesConfig = (info) => [
+    {
+      title: "Date/Time",
+      content: moment(info.crash_date).format("MM/DD/YYYY HH:MM A"),
+    },
+    { title: "Fatalities", content: info.death_cnt },
+    { title: "Serious Injuries", content: info.sus_serious_injry_cnt },
+    {
+      title: "Modes Involved",
+      content: info.units_involved.split(" &").join(", "),
+    },
+    { title: "Crash ID", content: info.crash_id },
+  ];
+
   const cardConfig = {
-    crash: (info) => [
-      {
-        title: "Date/Time",
-        content: moment(info.crash_date).format("MM/DD/YYYY HH:MM A"),
-      },
-      { title: "Fatalities", content: info.death_cnt },
-      { title: "Serious Injuries", content: info.sus_serious_injry_cnt },
-      {
-        title: "Modes Involved",
-        content: info.units_involved.split(" &").join(", "),
-      },
-      { title: "Crash ID", content: info.crash_id },
-    ],
-    councilDistrict: (info) => [
+    fatalities: buildSeriousInjuriesOrFatalitiesConfig,
+    seriousInjuries: buildSeriousInjuriesOrFatalitiesConfig,
+    cityCouncil: (info) => [
       {
         title: `City Council District ${info.council_district}`,
         content: "",
@@ -52,9 +55,7 @@ const MapCrashInfoBox = ({
     ],
   };
 
-  const crashPointCard = (
-    <CrashPointCard content={cardConfig[type](popupInfo)} />
-  );
+  const infoCard = <InfoCard content={cardConfig[type](popupInfo)} />;
 
   return (
     popupInfo &&
@@ -66,12 +67,12 @@ const MapCrashInfoBox = ({
         latitude={parseFloat(popupInfo.latitude)}
         onClose={() => setSelectedFeature(null)}
       >
-        <StyledMobileInfo>{crashPointCard}</StyledMobileInfo>
+        <StyledMobileInfo>{infoCard}</StyledMobileInfo>
       </Popup>
     ) : (
-      <StyledDesktopInfo>{crashPointCard}</StyledDesktopInfo>
+      <StyledDesktopInfo>{infoCard}</StyledDesktopInfo>
     ))
   );
 };
 
-export default MapCrashInfoBox;
+export default MapInfoBox;
