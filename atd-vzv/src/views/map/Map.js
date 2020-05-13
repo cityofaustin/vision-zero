@@ -192,10 +192,13 @@ const Map = () => {
         (f) => f.layer.id === "fatalities" || f.layer.id === "seriousInjuries"
       );
 
+    // Set if no crash point feature is found to keep both popups from appearing
     let selectedCouncilDistrict =
-      (features && features.find((f) => f.layer.id === "cityCouncil")) || null;
+      (!selectedFeature &&
+        features &&
+        features.find((f) => f.layer.id === "cityCouncil")) ||
+      null;
 
-    // TODO: Prevent crash point and council district popups from co-existing
     // Supplement the polygon properties with lat/long to set popup coords
     if (selectedCouncilDistrict !== null) {
       selectedCouncilDistrict = {
