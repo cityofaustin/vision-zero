@@ -3,7 +3,7 @@ import { RenderStates } from "react-map-gl-draw";
 import { Source, Layer } from "react-map-gl";
 import { colors } from "../../constants/colors";
 
-// Empty source and layer placeholder to place other layers before
+// Empty source and layer placeholder to place other layers beneath road labels
 export const baseSourceAndLayer = (
   <>
     <Source

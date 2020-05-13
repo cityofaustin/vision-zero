@@ -3,6 +3,7 @@ import { StoreContext } from "../../utils/store";
 import ReactMapGL, { Source, Layer } from "react-map-gl";
 import MapControls from "./MapControls";
 import MapPolygonFilter from "./MapPolygonFilter";
+import MapCompassSpinner from "./MapCompassSpinner";
 import { createMapDataUrl } from "./helpers";
 import { crashGeoJSONEndpointUrl } from "../../views/summary/queries/socrataQueries";
 import {
@@ -16,13 +17,7 @@ import {
   buildHighInjuryLayer,
   cityCouncilDataLayer,
 } from "./map-style";
-import stripe from "./stripe.png";
 import axios from "axios";
-
-import styled from "styled-components";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCompass, faCircle } from "@fortawesome/free-solid-svg-icons";
-import { colors } from "../../constants/colors";
 import { useIsMobile } from "../../constants/responsive";
 
 import "mapbox-gl/dist/mapbox-gl.css";
@@ -30,43 +25,6 @@ import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css"; // Get out-of-the-box i
 import MapInfoBox from "./MapInfoBox";
 
 const MAPBOX_TOKEN = `pk.eyJ1Ijoiam9obmNsYXJ5IiwiYSI6ImNrM29wNnB3dDAwcXEzY29zMTU5bWkzOWgifQ.KKvoz6s4NKNHkFVSnGZonw`;
-
-const StyledMapSpinner = styled.div`
-  position: absolute;
-  width: 0px;
-  top: 50%;
-  /* Adjust centering with half FA spinner width */
-  left: calc(50% - 28px);
-  transform: translate(-50%, -50%);
-
-  .needle {
-    animation-name: wiggle;
-    animation-duration: 2500ms;
-    animation-iteration-count: infinite;
-    animation-timing-function: ease-in-out;
-  }
-
-  @keyframes wiggle {
-    0% {
-      transform: rotate(0deg);
-    }
-    10% {
-      transform: rotate(12deg);
-    }
-    40% {
-      transform: rotate(-25deg);
-    }
-    60% {
-      transform: rotate(20deg);
-    }
-    80% {
-      transform: rotate(-15deg);
-    }
-    100% {
-      transform: rotate(0deg);
-    }
-  }
-`;
 
 function useMapEventHandler(eventName, callback, mapRef) {
   useEffect(() => {
@@ -151,16 +109,9 @@ const Map = () => {
 
   // Fetch City Council Districts geojson
   useEffect(() => {
-    const overlayUrl = `https://data.austintexas.gov/resource/7yq5-3tm4.geojson?$select=the_geom,council_district,council_district_path`;
+    const overlayUrl = `https://data.austintexas.gov/resource/7yq5-3tm4.geojson?$select=the_geom,council_district`;
     axios.get(overlayUrl).then((res) => {
       setCityCouncilOverlay(res.data);
-    });
-
-    // Add stripe pattern for overlay fill pattern
-    mapRef.current.loadImage(stripe, function (err, image) {
-      if (err) throw err;
-      // Declare the image
-      mapRef.current.addImage("stripe-pattern", image);
     });
   }, []);
 
@@ -282,11 +233,11 @@ const Map = () => {
       {buildHighInjuryLayer(overlay)}
       {!!cityCouncilOverlay && overlay.name === "cityCouncil" && (
         <Source type="geojson" data={cityCouncilOverlay}>
-          {/* Add beforeId to render beneath crash points */}
+          {/* Add beforeId to render beneath crash points, road layer, and map labels */}
           <Layer beforeId="road-street" {...cityCouncilDataLayer} />
         </Source>
       )}
-      {/* Render crash point tooltip */}
+      {/* Render feature info or popup */}
       {selectedFeature && (
         <MapInfoBox
           selectedFeature={selectedFeature}
@@ -295,18 +246,7 @@ const Map = () => {
           type={selectedFeature.layer.id}
         />
       )}
-      {/* Show spinner when map is updating */}
-      {isMapDataLoading && (
-        <StyledMapSpinner className="fa-layers fa-fw">
-          <FontAwesomeIcon icon={faCircle} color={colors.infoDark} size="4x" />
-          <FontAwesomeIcon
-            className="needle"
-            icon={faCompass}
-            color={colors.dark}
-            size="4x"
-          />
-        </StyledMapSpinner>
-      )}
+      <MapCompassSpinner isSpinning={isMapDataLoading} />
       <MapControls setViewport={setViewport} />
       <MapPolygonFilter setMapPolygon={setMapPolygon} />
     </ReactMapGL>
