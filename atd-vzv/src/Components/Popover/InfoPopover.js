@@ -35,7 +35,7 @@ const InfoPopover = ({ config }) => {
       appendTo={document.body} // Avoid side scroll in SideMapControl popovers
       interactive={true}
       maxWidth={isMobile ? drawer.width - 20 : 350} // Prevent mobile popover from taking up full drawer
-      offset={isMobile ? [30, 0] : [0, 0]} // Prevent mobile popover covering mobile drawer and preventing scroll nav
+      offset={isMobile ? [30, 5] : [0, 5]} // Prevent mobile popover covering mobile drawer and preventing scroll nav
       popperOptions={{
         modifiers: [
           {

@@ -34,7 +34,9 @@ STOP_EXEC = False
 # We need global counts:
 records_skipped = 0
 records_inserted = 0
+records_updated = 0
 existing_records = 0
+queued_records = 0
 insert_errors = 0
 
 # Start timer
@@ -48,7 +50,11 @@ def keyboard_interrupt_handler(signal, frame):
     :param frame:
     :return:
     """
-    print("KeyboardInterrupt (ID: {}, Frame: {} ) has been caught. Cleaning up...".format(signal, frame))
+    print(
+        "KeyboardInterrupt (ID: {}, Frame: {} ) has been caught. Cleaning up...".format(
+            signal, frame
+        )
+    )
     global STOP_EXEC
     STOP_EXEC = True
 
@@ -68,101 +74,131 @@ def process_line(file_type, line, fieldnames, current_line, dryrun=False):
     # Do not run if there is stop signal
     if STOP_EXEC:
         return
-
-    global existing_records, records_inserted, insert_errors, records_skipped
+    global existing_records, records_inserted, insert_errors, records_skipped, queued_records, records_updated
     # Read the crash_id from the current line
     # Applies to: crashes, unit, person, primary person, charges
-    crash_id = line.strip().split(",")[0]
+    crash_id = get_crash_id(line)
     mode = "[Dry-Run]" if dryrun else "[Live]"
-    insert_crash = False
-    # First we need to check if the current record exists, skip if so.
-    if file_type == "crash":
-        # Gather the crash_id from the current line
-        crash_id = get_crash_id(line)
-        # Using the crash_id, try to find an existing record
-        record_existing = get_crash_record(crash_id)
+    compare_enabled = ATD_ETL_CONFIG["ATD_CRIS_IMPORT_COMPARE_FUNCTION"] == "ENABLED"
+    # By default enable upserts
+    upsert_enabled = True
 
-        # If not found, then insert
-        if record_existing is None:
-            insert_crash = True
-        # Else, record exists we need to compare
-        else:
-            print("[%s] Exists: %s (%s)" % (str(current_line), str(crash_id), file_type))
-            existing_records += 1
-
-            insert_crash = record_crash_compare(
-                line=line,
-                fieldnames=fieldnames,
-                crash_id=crash_id,
-                record_existing=record_existing
-            )
-
-    # The record does not exist, insert.
-    if file_type != "crash" or insert_crash:
-        crash_id = get_crash_id(line)
-        # If it is one of these tables
-        if file_type in ["unit", "person", "primaryperson"]:
-            # Then check if the parent record (crash) is in the queue
-            crash_in_queue = is_crash_in_queue(crash_id)
-        else:
-            # We can safely take the updates in
-            crash_in_queue = False
-
-        #  If the crash is in queue
-        if crash_in_queue:
-            insert_secondary_table_change(
-                line=line,
-                fieldnames=fieldnames,
-                file_type=file_type
-            )
-            return
-
-        # Generate query and present to terminal
-        gql = generate_gql(line=line, fieldnames=fieldnames, file_type=file_type)
-        # If this is not a dry-run, then make an actual insertion
-        if dryrun:
-            # Dry-run, we need a fake response
-            response = {
-                "message": "dry run, no record actually inserted"
-            }
-        else:
-            # Live Execution
-            response = run_query(gql)
-        # For any other errors, run the error handler hook:
-        if "errors" in str(response):
-            stop_execution = False
-            if "constraint-violation" in str(response):
-                records_skipped += 1
-                print("%s[%s] Skipped (existing record): %s" %
-                      (mode, str(current_line), str(crash_id)))
-
-            else:
-                # Gather from this function if we need to stop the execution.
-                stop_execution = handle_record_error_hook(line=line, gql=gql, file_type=file_type,
-                                                          response=response, line_number=str(current_line))
-
-            # If we are stopping we must make signal of it
-            if stop_execution:
-                print("----- Crash Insertion Error ------")
-                print("Original Line: %s" % line)
-
-                print("%s[%s] Error: %s" %
-                      (mode, str(current_line), str(response)))
-                print("----------------------------------")
-
-                insert_errors += 1
-                STOP_EXEC = True
-                exit(1)
-                time.sleep(1)
-            # If we are not stopping execution, we are skipping the record
-            else:
+    # If compare is disabled, then protect existing records.
+    if compare_enabled and not dryrun:
+        # Compare enabled, and this is a crash
+        if file_type == "crash":
+            # Does the record exist already?
+            record_exists = get_crash_record(crash_id)
+            if record_exists:
                 existing_records += 1
-        # If no errors, then we did insert the record successfully
+                # insert_record = False if it was Queued
+                # insert_record = True if crash needs updating
+                insert_record, feedback_message = record_crash_compare(
+                    line=line,
+                    fieldnames=fieldnames,
+                    crash_id=crash_id,
+                    record_existing=record_exists,
+                )
+                # Print the action to be taken
+                print(
+                    "%s[%s] %s (type: %s), crash_id: %s"
+                    % (
+                        mode,
+                        str(current_line),
+                        feedback_message,
+                        file_type,
+                        str(crash_id),
+                    )
+                )
+                # If Queued
+                if not insert_record:
+                    # Update counts and exit
+                    if "Queued" in feedback_message:
+                        queued_records += 1
+                        return
+                else:
+                    records_updated += 1
+
+        # Compare enabled, this is a secondary record
         else:
-            # An actual insertion was made
-            print("%s[%s] Inserted: %s" %
-                  (mode, str(current_line), str(crash_id)))
-            records_inserted += 1
+            # Is its parent record on queue?
+            if is_crash_in_queue(crash_id):
+                # Queue this record and exit
+                secondary_record_queued = insert_secondary_table_change(
+                    line=line, fieldnames=fieldnames, file_type=file_type
+                )
+                # If Queued
+                if secondary_record_queued:
+                    print(
+                        "%s[%s] Q/A Queued (type: %s), crash_id: %s"
+                        % (mode, str(current_line), file_type, str(crash_id))
+                    )
+                    existing_records += 1
+                    queued_records += 1
+                    return
+
+        # Compare is enabled, but we reached no exit meaning that
+        # that this record needs to be updated (upsert).
+        upsert_enabled = True
+    else:
+        upsert_enabled = False
+
+    #
+    # Follow Normal Process
+    #
+    # Generate query and present to terminal
+    gql = generate_gql(
+        line=line, fieldnames=fieldnames, file_type=file_type, upsert=upsert_enabled
+    )
+    # If this is not a dry-run, then make an actual insertion
+    if dryrun:
+        # Dry-run, we need a fake response
+        response = {"message": "dry run, no record actually inserted"}
+    else:
+        # Live Execution
+        response = run_query(gql)
+    # For any other errors, run the error handler hook:
+    if "errors" in str(response):
+        stop_execution = False
+        if "constraint-violation" in str(response):
+            records_skipped += 1
+            print(
+                "%s[%s] Skipped (existing record): %s"
+                % (mode, str(current_line), str(crash_id))
+            )
+
+        else:
+            # Gather from this function if we need to stop the execution.
+            stop_execution = handle_record_error_hook(
+                line=line,
+                gql=gql,
+                file_type=file_type,
+                response=response,
+                line_number=str(current_line),
+            )
+
+        # If we are stopping we must make signal of it
+        if stop_execution:
+            print("----- Crash Insertion Error ------")
+            print("Original Line: %s" % line)
+
+            print("%s[%s] Error: %s" % (mode, str(current_line), str(response)))
+            print("----------------------------------")
+
+            insert_errors += 1
+            STOP_EXEC = True
+            exit(1)
+            time.sleep(1)
+        # If we are not stopping execution, we are skipping the record
+        else:
+            existing_records += 1
+    # If no errors, then we did insert the record successfully
+    else:
+        # An actual insertion was made
+        print(
+            "%s[%s] Inserted or Updated: %s" % (mode, str(current_line), str(crash_id))
+        )
+        records_inserted += 1
 
 
 def process_file(file_path, file_type, skip_lines, dryrun=False):
@@ -194,7 +230,10 @@ def process_file(file_path, file_type, skip_lines, dryrun=False):
 
     # Print what we are currently doing, and where we are going to insert data.
     print("\n\n------------------------------------------")
-    print("Processing file '%s' of type '%s', skipping: '%s'" % (FILE_PATH, FILE_TYPE, FILE_SKIP_ROWS))
+    print(
+        "Processing file '%s' of type '%s', skipping: '%s'"
+        % (FILE_PATH, FILE_TYPE, FILE_SKIP_ROWS)
+    )
     print("Endpoint: %s" % ATD_ETL_CONFIG["HASURA_ENDPOINT"])
     print("Max Threads: %s" % max_threads)
     print("Dry-run mode enabled: %s" % str(dryrun))
@@ -212,7 +251,10 @@ def process_file(file_path, file_type, skip_lines, dryrun=False):
     skip_rows_parsed = int(FILE_SKIP_ROWS) if FILE_SKIP_ROWS != "" else 0
 
     # We proceed as normal
-    print("We are skipping: %s" % (str(skip_rows_parsed) if skip_rows_parsed >= 0 else "all records"))
+    print(
+        "We are skipping: %s"
+        % (str(skip_rows_parsed) if skip_rows_parsed >= 0 else "all records")
+    )
 
     # Open FILE_PATH as a file pointer:
     with open(FILE_PATH) as fp:
@@ -229,7 +271,9 @@ def process_file(file_path, file_type, skip_lines, dryrun=False):
                     fieldnames = line.strip().split(",")
                 else:
                     # Skipping `skip_rows_parsed` number of lines
-                    if (skip_rows_parsed != 0 and skip_rows_parsed >= current_line) or (skip_rows_parsed == -1):
+                    if (skip_rows_parsed != 0 and skip_rows_parsed >= current_line) or (
+                        skip_rows_parsed == -1
+                    ):
                         current_line += 1
                         records_skipped += 1
                         current_file_skipped_lines += 1
@@ -239,10 +283,17 @@ def process_file(file_path, file_type, skip_lines, dryrun=False):
                     # Process The Line, if no interrupt in place
                     if not STOP_EXEC:
                         # Allow time for an interrupt to take place
-                        time.sleep(.01)
+                        time.sleep(0.01)
 
                         # Submit thread to executor
-                        executor.submit(process_line, FILE_TYPE, line, fieldnames, current_line, dryrun)
+                        executor.submit(
+                            process_line,
+                            FILE_TYPE,
+                            line,
+                            fieldnames,
+                            current_line,
+                            dryrun,
+                        )
 
                 # Keep adding to current line
                 current_line += 1
@@ -255,15 +306,24 @@ def process_file(file_path, file_type, skip_lines, dryrun=False):
 
     # Calculate and display the time it took for this specific file
     local_timer_end = time.time()
-    local_timer_hours, local_timer_rem = divmod(local_timer_end - local_timer_start, 3600)
+    local_timer_hours, local_timer_rem = divmod(
+        local_timer_end - local_timer_start, 3600
+    )
     local_timer_minutes, local_timer_seconds = divmod(local_timer_rem, 60)
-    print("Current file finished in: {:0>2}:{:0>2}:{:05.2f}".format(int(local_timer_hours), int(local_timer_minutes), local_timer_seconds))
+    print(
+        "Current file finished in: {:0>2}:{:0>2}:{:05.2f}".format(
+            int(local_timer_hours), int(local_timer_minutes), local_timer_seconds
+        )
+    )
 
     print("------------------------------------------")
     print("Overall:")
     print("Total Skipped Records: %s" % (records_skipped))
     print("Total Existing Records: %s" % (existing_records))
     print("Total Records Inserted: %s" % (records_inserted))
+    print("Total Records Updated: %s" % (records_updated))
+    print("Total Records Queued: %s" % (queued_records))
+
     print("Total Errors: %s" % (insert_errors))
     print("")
 
@@ -276,14 +336,20 @@ IMPORT_CONFIG = generate_run_config()
 
 print("Processing Files: ")
 for FILE in IMPORT_CONFIG["file_list"]:
-    process_file(file_type=IMPORT_CONFIG["file_type"],
-                 file_path=FILE["file"],
-                 skip_lines=FILE["skip"],
-                 dryrun=IMPORT_CONFIG["file_dryrun"])
+    process_file(
+        file_type=IMPORT_CONFIG["file_type"],
+        file_path=FILE["file"],
+        skip_lines=FILE["skip"],
+        dryrun=IMPORT_CONFIG["file_dryrun"],
+    )
 
 
 # Calculate & print overall time
 end = time.time()
-hours, rem = divmod(end-start, 3600)
+hours, rem = divmod(end - start, 3600)
 minutes, seconds = divmod(rem, 60)
-print("Overall process finished in: {:0>2}:{:0>2}:{:05.2f}".format(int(hours),int(minutes),seconds))
+print(
+    "Overall process finished in: {:0>2}:{:0>2}:{:05.2f}".format(
+        int(hours), int(minutes), seconds
+    )
+)
