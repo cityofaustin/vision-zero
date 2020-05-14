@@ -12,7 +12,7 @@ const InfoPopover = ({ config }) => {
   const StyledPopover = styled.div`
     font-size: 12px;
 
-    /* Add universal style for all devices */
+    /* Style links for devices that show them as plain text */
     a {
       color: ${colors.info};
       text-decoration: underline;
@@ -30,31 +30,22 @@ const InfoPopover = ({ config }) => {
   return (
     <Tippy
       content={content}
-      placement={"bottom"}
+      placement={"auto"} // allowAutoPlacements set below
       trigger={"click"}
       appendTo={document.body} // Avoid side scroll in SideMapControl popovers
       interactive={true}
       maxWidth={isMobile ? drawer.width - 20 : 350} // Prevent mobile popover from taking up full drawer
-      offset={isMobile ? [30, 10] : [0, 0]} // Prevent mobile popover covering mobile drawer and preventing scroll nav
-      popperOptions={
-        {
-          // modifiers: [
-          //   {
-          //     name: "flip",
-          //     options: {
-          //       fallbackPlacements: ["top"],
-          //     },
-          //   },
-          //   {
-          //     name: "preventOverflow",
-          //     options: {
-          //       // altAxis: true,
-          //       tether: true,
-          //     },
-          //   },
-          // ],
-        }
-      }
+      offset={isMobile ? [30, 0] : [0, 0]} // Prevent mobile popover covering mobile drawer and preventing scroll nav
+      popperOptions={{
+        modifiers: [
+          {
+            name: "flip",
+            options: {
+              allowedAutoPlacements: ["top", "bottom"], // Prevent popover from rendering off-screen
+            },
+          },
+        ],
+      }}
     >
       <StyledInfoIcon>
         <FontAwesomeIcon className="info-icon" icon={faInfoCircle} />
