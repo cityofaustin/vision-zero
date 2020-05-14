@@ -27,6 +27,7 @@
     "react-chartjs-2": "^2.9.0",
     "react-dates": "^21.8.0",
     "react-dom": "^16.10.2",
+    "react-ga": "^2.7.0",
     "react-map-gl": "^5.1.3",
     "react-map-gl-draw": "^0.16.0",
     "react-scripts": "^3.3.0",
