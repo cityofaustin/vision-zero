@@ -109,7 +109,7 @@ const Map = () => {
 
   // Fetch City Council Districts geojson
   useEffect(() => {
-    const overlayUrl = `https://data.austintexas.gov/resource/7yq5-3tm4.geojson?$select=the_geom,council_district`;
+    const overlayUrl = `https://data.austintexas.gov/resource/7yq5-3tm4.geojson?$select=simplify_preserve_topology(the_geom,0.00001),council_district`;
     axios.get(overlayUrl).then((res) => {
       setCityCouncilOverlay(res.data);
     });
@@ -142,7 +142,7 @@ const Map = () => {
         (f) =>
           f.layer.id === "fatalities" ||
           f.layer.id === "seriousInjuries" ||
-          "cityCouncil" ||
+          f.layer.id === "cityCouncil" ||
           null
       );
 
@@ -165,14 +165,14 @@ const Map = () => {
     // Layer order depends on order set, so set fatalities last to keep on top
     const injuryLayer = (
       <Source id="crashInjuries" type="geojson" data={mapData.injuries}>
-        <Layer beforeId="road-label-sm" {...seriousInjuriesOutlineDataLayer} />
-        <Layer beforeId="road-label-sm" {...seriousInjuriesDataLayer} />
+        <Layer beforeId="base-layer" {...seriousInjuriesOutlineDataLayer} />
+        <Layer beforeId="base-layer" {...seriousInjuriesDataLayer} />
       </Source>
     );
     const fatalityLayer = (
       <Source id="crashFatalities" type="geojson" data={mapData.fatalities}>
-        <Layer beforeId="road-label-sm" {...fatalitiesOutlineDataLayer} />
-        <Layer beforeId="road-label-sm" {...fatalitiesDataLayer} />
+        <Layer beforeId="base-layer" {...fatalitiesOutlineDataLayer} />
+        <Layer beforeId="base-layer" {...fatalitiesDataLayer} />
       </Source>
     );
     const bothLayers = (
