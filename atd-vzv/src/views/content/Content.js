@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
-import { useRoutes, usePath } from "hookrouter";
+import { usePath } from "hookrouter";
+import { useTrackRoutes } from "../../Components/Tracking/Tracking";
 import { routes } from "../../routes/routes";
 import Header from "../nav/Header";
 import NotFound from "../NotFound/NotFound";
@@ -8,9 +9,9 @@ import { Container } from "reactstrap";
 import styled from "styled-components";
 import { drawer } from "../../constants/drawer";
 import { responsive } from "../../constants/responsive";
-import { trackPageView } from "../../Components/Tracking/Tracking";
 
 const Content = () => {
+  const routeResult = useTrackRoutes(routes);
   const currentPath = usePath();
 
   // TODO: Slide content to the right when SideDrawer opens
@@ -45,12 +46,6 @@ const Content = () => {
       }
     }
   `;
-
-  const routeResult = useRoutes(routes);
-
-  useEffect(() => {
-    trackPageView(currentPath);
-  }, [routeResult, currentPath]);
 
   return (
     <StyledContent>
