@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import SummaryWidget from "../../Components/Widgets/SummaryWidget";
+import InfoPopover from "../../Components/Popover/InfoPopover";
+import { popoverConfig } from "../../Components/Popover/popoverConfig";
 import { Row, Col } from "reactstrap";
 
 import {
@@ -78,6 +80,9 @@ const SummaryView = () => {
     },
     {
       title: `Years of Life Lost`,
+      infoPopover: (
+        <InfoPopover config={popoverConfig.summary.yearsOfLifeLost} />
+      ),
       totalsObject: yearsOfLifeLost,
       icon: faHourglassHalf,
       color: colors.yearsOfLifeLost,
@@ -106,6 +111,7 @@ const SummaryView = () => {
             totalsObject={config.totalsObject}
             icon={config.icon}
             backgroundColor={config.color}
+            infoPopover={config.infoPopover}
           />
         </Col>
       ))}
