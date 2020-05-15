@@ -618,6 +618,11 @@ function CrashChange(props) {
     await refetch();
   };
 
+  /**
+   * Displays the error in a Dialog
+   * @param {string} errorMessage - The error message to be displayed
+   * @return {Promise<never>}
+   */
   const chainError = errorMessage => {
     setErrorMessage(String(error));
     showErrorDialog();
