@@ -32,9 +32,13 @@ import {
   CRASH_MUTATION_DISCARD,
   RECORD_MUTATION_UPDATE,
   RECORD_DELETE_CHANGE_RECORDS,
-  UPSERT_MUTATION_DUMMY
+  UPSERT_MUTATION_DUMMY,
 } from "../../queries/crashes_changes";
-import { crashFieldDescription, piiFields, notNullValues } from "./crashFieldDescriptions";
+import {
+  crashFieldDescription,
+  piiFields,
+  notNullValues,
+} from "./crashFieldDescriptions";
 import { crashChangeQuotedFields } from "./crashChangeQuotedFields";
 import { redirectUrl } from "../../index";
 
@@ -61,7 +65,9 @@ function CrashChange(props) {
   const [errorMessage, setErrorMessage] = useState("");
   // CR3 Availbable
   const [cr3available, setCR3Available] = useState(false);
-  const [upsertRecordQuery, setUpsertRecordQuery] = useState(UPSERT_MUTATION_DUMMY);
+  const [upsertRecordQuery, setUpsertRecordQuery] = useState(
+    UPSERT_MUTATION_DUMMY
+  );
 
   const { loading, user } = useAuth0();
 
@@ -76,7 +82,7 @@ function CrashChange(props) {
 
   const [upsertRecordUpdates] = useMutation(
     gql`
-        ${upsertRecordQuery}
+      ${upsertRecordQuery}
     `
   );
 
@@ -285,6 +291,8 @@ function CrashChange(props) {
    */
   const generate_diff_selectable = () => {
     const [originalRecord, newRecord] = getOriginalNewRecords();
+
+    if (!newRecord) return [];
 
     const selectable = Object.keys(newRecord).filter(field => {
       return (
@@ -580,7 +588,11 @@ function CrashChange(props) {
     console.log("executeUpdateCrashRecord() ");
     console.log(updateQueries);
     setSaveStatus("updating crash record");
-    setUpsertRecordQuery(gql`${updateQueries}`);
+    setUpsertRecordQuery(
+      gql`
+        ${updateQueries}
+      `
+    );
     await sleep(1000);
     await upsertRecordUpdates();
   };
@@ -602,30 +614,27 @@ function CrashChange(props) {
   const executeDeleteChangesRecords = async () => {
     setSaveStatus("removing records from queue");
     await sleep(1000);
-    // await deleteFromQueue({ variables: { crashId: crashId } });
-    // await refetch();
+    await deleteFromQueue({ variables: { crashId: crashId } });
+    await refetch();
   };
 
-  const chainError = (errorMessage) => {
-    debugger;
+  const chainError = errorMessage => {
     setErrorMessage(String(error));
     showErrorDialog();
     return Promise.reject(errorMessage);
-  }
+  };
 
   /**
    * Saves the selected fields and discards the change
    */
   const saveSelectedFields = () => {
-
     startSaveProcess()
       .then(executeUpdateCrashRecord, chainError)
       .then(executeUpdateQueries, chainError)
       .then(executeDeleteChangesRecords, chainError)
       .then(() => {
         // If it all goes well then redirect to the index page...
-        //redirectToQueueIndex();
-        alert("Chain finished running");
+        redirectToQueueIndex();
       });
   };
 
@@ -659,7 +668,7 @@ function CrashChange(props) {
     } catch {
       return false;
     }
-  }
+  };
 
   /**
    * Returns true if the field in question (key) needs quoting
@@ -673,7 +682,7 @@ function CrashChange(props) {
     } catch {
       return false;
     }
-  }
+  };
 
   /**
    * Attempts to retrieve the default value for a field (key), if found and
@@ -687,12 +696,16 @@ function CrashChange(props) {
   const getDefaultValue = (notNullValues, recordType, key, value) => {
     try {
       // Try get the default value if it's currently null.
-      return ["null", ""].includes(value) ? notNullValues[recordType][key] || value : value;
+      return ["null", ""].includes(value)
+        ? notNullValues[recordType].hasOwnProperty(key)
+          ? notNullValues[recordType][key]
+          : value
+        : value;
     } catch {
       // Or return null if the key is not found.
       return value;
     }
-  }
+  };
 
   /**
    * Wraps a value in quotation marks if not numeric or boolean.
@@ -705,11 +718,52 @@ function CrashChange(props) {
   };
 
   /**
-   * Generates an executable GraphQL query based on a template and update fields.
-   * @param {object} record - The record being updated
-   * @returns {string} - The executable query.
+   * Generates part of a GraphQL query mutation
+   * @param {object} queryGroup - The query group to transform
+   * @returns {string} - The executable string
    */
-  const generateUpdateRecordQuery = record => {
+  const generateQueryFromGroup = queryGroup => {
+    let mutationsList = [];
+    const tabulationMargin = "\n\t\t\t\t";
+    Object.keys(queryGroup).forEach(currentFunctionName => {
+      const currentRecordGroup = queryGroup[currentFunctionName];
+      let formattedObjects = currentRecordGroup["objects"].map(o => {
+        return (
+          tabulationMargin +
+          "{" +
+          tabulationMargin +
+          o +
+          tabulationMargin +
+          'updated_by: "' +
+          currentRecordGroup["current_user"] +
+          '"\n' +
+          tabulationMargin +
+          "}\n"
+        );
+      });
+
+      const currentFunctionGQL = RECORD_MUTATION_UPDATE.replace(
+        "%FUNCTION_NAME%",
+        currentFunctionName
+      )
+        .replace("%CONSTRAINT_NAME%", currentRecordGroup["constraint_name"])
+        .replace(
+          "%UPDATE_FIELDS%",
+          formattedObjects.join(tabulationMargin + ",")
+        )
+        .replace("%SELECTED_COLUMNS%", currentRecordGroup["on_conflict"]);
+      mutationsList.push(currentFunctionGQL);
+    });
+
+    return mutationsList;
+  };
+
+  /**
+   * Generates an executable GraphQL query based on a template and update fields.
+   * @param {object} queryGroup - The group of queries to be updated
+   * @param {object} record - The record being updated
+   */
+  const updateRecordQueryGroup = (queryGroup, record) => {
     const recordString = record["record_json"] || "{}";
     const recordType = record["record_type"] || null;
     const recordObject =
@@ -723,7 +777,8 @@ function CrashChange(props) {
       .filter(key => {
         // Removes from list if it string ends with '_cnt'
         return !key.endsWith("_cnt");
-      }).filter(key => {
+      })
+      .filter(key => {
         // Removes PII Fields
         return !isFieldPII(recordType, key);
       });
@@ -756,16 +811,18 @@ function CrashChange(props) {
       })
       .map(key => {
         // Attempt to retrieve the default value
-        const value = getDefaultValue(notNullValues, recordType, key, recordObject[key]);
+        const value = getDefaultValue(
+          notNullValues,
+          recordType,
+          key,
+          recordObject[key]
+        );
         // Then return the final line
         return isFieldQuoted(recordType, key)
-          // We have a case_id, we must quote
-          ? `${key}: "${value}",`
-          // Not a case_id, then quote if not a number
-          : String(key).toLowerCase() +
-          ": " +
-          printQuotation(value) +
-          ",";
+          ? // We have a case_id, we must quote
+            `${key}: "${value}",`
+          : // Not a case_id, then quote if not a number
+            String(key).toLowerCase() + ": " + printQuotation(value) + ",";
       })
       .join("\n\t\t\t\t");
 
@@ -780,20 +837,32 @@ function CrashChange(props) {
             ...recordObjectKeys,
             // And we also need any selected count records
             ...selectedFields.filter(key => {
-              if (recordType !== "charges")
-                return key.endsWith("_cnt");
+              if (recordType !== "charges") return key.endsWith("_cnt");
             }),
           ];
 
-    // Then, let's get the function name and record type patched
-    return RECORD_MUTATION_UPDATE.replace(
-      "%FUNCTION_NAME%",
-      functionNameList[recordType]
-    )
-      .replace("%CONSTRAINT_NAME%", constraintsList[recordType])
-      .replace("%UPDATE_FIELDS%", updateFields)
-      .replace("%CURRENT_USER%", user.email || "DiffView")
-      .replace("%SELECTED_COLUMNS%", onConflictList.join("\n\t\t\t\t"));
+    // If the object does not contain the function name as the key, create it!
+    if (!queryGroup.hasOwnProperty(functionNameList[recordType])) {
+      queryGroup[functionNameList[recordType]] = {
+        objects: [],
+        on_conflict: null,
+      };
+    }
+
+    // Check if we have an array for our object(s), otherwise initialize it
+    if (!Array.isArray(queryGroup[functionNameList[recordType]]["objects"])) {
+      queryGroup[functionNameList[recordType]]["objects"] = [];
+    }
+
+    // Now go ahead and push the record
+    queryGroup[functionNameList[recordType]]["objects"].push(updateFields);
+    queryGroup[functionNameList[recordType]]["current_user"] =
+      user.email || "DiffView";
+    queryGroup[functionNameList[recordType]][
+      "on_conflict"
+    ] = onConflictList.join("\n\t\t\t\t");
+    queryGroup[functionNameList[recordType]]["constraint_name"] =
+      constraintsList[recordType];
   };
 
   /**
@@ -801,13 +870,14 @@ function CrashChange(props) {
    * @returns {string} - The GraphQL query
    */
   const generateUpdateQuery = () => {
-    console.log("Secondary Data:");
-    console.log(secondaryData);
+    let queryGroups = {};
 
-    let listOfRecordQueries = [];
     (secondaryData["atd_txdot_changes"] || []).forEach(record => {
-      listOfRecordQueries.push(generateUpdateRecordQuery(record));
+      updateRecordQueryGroup(queryGroups, record);
     });
+
+    const mutationsList = generateQueryFromGroup(queryGroups);
+    console.log(mutationsList);
 
     const updateSecondaryRecords = `
       mutation updateSecondaryRecords {
@@ -815,9 +885,7 @@ function CrashChange(props) {
       }
     `.replace(
       "%LIST_OF_RECORD_QUERIES%",
-      listOfRecordQueries.length == 0
-        ? ""
-        : listOfRecordQueries.join("\n\t\t\t")
+      mutationsList.length == 0 ? "" : mutationsList.join("\n\t\t\t")
     );
     // First we need the template
     return updateSecondaryRecords;
