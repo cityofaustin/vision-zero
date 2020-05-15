@@ -225,10 +225,9 @@ export const CRASH_MUTATION_DISCARD = `
 
 export const RECORD_MUTATION_UPDATE = `
         %FUNCTION_NAME%(         
-            objects: {
+            objects: [
                 %UPDATE_FIELDS%
-                updated_by: "%CURRENT_USER%"
-            },
+            ],
             on_conflict: {
               constraint: %CONSTRAINT_NAME%,
               update_columns: [
