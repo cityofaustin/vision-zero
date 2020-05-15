@@ -1,5 +1,11 @@
 import { gql } from "apollo-boost";
 
+
+/**
+ * A template that is used to gather the original crash record
+ * and all records of pending changes.
+ * @type {gql}
+ */
 export const GET_CRASH_CHANGE = gql`
     query FindCrash($crashId: Int) {
         atd_txdot_crashes(where: { crash_id: { _eq: $crashId } }) {
@@ -195,6 +201,7 @@ export const GET_CRASH_CHANGE = gql`
 /**
  * Allows us to search all secondary records that are not a crash,
  * namely: all involved primary persons, persons, and units.
+ * @type {gql}
  */
 export const GET_CRASH_SECONDARY_RECORDS = gql`
     query findSecondaryRecords($crashId: Int) {
@@ -211,6 +218,11 @@ export const GET_CRASH_SECONDARY_RECORDS = gql`
     }
 `;
 
+/**
+ * This is a GraphQL template that removes all change records in the
+ * changes table by CrashID upon being discarded.
+ * @type {string}
+ */
 export const CRASH_MUTATION_DISCARD = `
     mutation discardChanges($crashId: Int) {
       delete_atd_txdot_changes(where: {record_id: {_eq: $crashId}}) {
@@ -220,7 +232,10 @@ export const CRASH_MUTATION_DISCARD = `
 `
 
 /**
- * Update the Crash
+ * This is a GraphQL query template that updates existing records
+ * of a specific type. E.g., it expects one or many Units, or Persons
+ * or Crashes. The function name matches a Hasura insertion method.
+ * @type {string}
  */
 
 export const RECORD_MUTATION_UPDATE = `
@@ -240,6 +255,10 @@ export const RECORD_MUTATION_UPDATE = `
         }
 `;
 
+/**
+ * Removes all change records after having updated the database.
+ * @type {string}
+ */
 export const RECORD_DELETE_CHANGE_RECORDS = `
   mutation deleteChangeRecords($crashId: Int) {
       delete_atd_txdot_changes (
@@ -253,6 +272,10 @@ export const RECORD_DELETE_CHANGE_RECORDS = `
   }
 `;
 
+/**
+ * Dummy GraphQL query
+ * @type {string}
+ */
 export const UPSERT_MUTATION_DUMMY = `
   mutation dummyQuery {
     __typename
