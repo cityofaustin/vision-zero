@@ -273,12 +273,26 @@ gqlAbstractTableAggregateName (
   getFormattedValue(columnName, value) {
     const type = this.getType(columnName);
 
-    if (value === null) return "-";
+    if (value === null) {
+      return "-";
+    }
+    else {
+      value = String(value).toLowerCase();
+    }
 
     switch (type) {
       case "string": {
         if (typeof value === "object") return JSON.stringify(value);
         else return `${value}`;
+      }
+      case "date_iso": {
+        let dateValue = "";
+        try {
+          dateValue = new Date(Date.parse(value)).toLocaleString();
+        } catch {
+          dateValue = "n/a";
+        }
+        return `${dateValue}`;
       }
       case "currency": {
         return `$${value.toLocaleString()}`;
