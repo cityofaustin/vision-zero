@@ -1,5 +1,5 @@
-import React from "react";
-import { useRoutes, usePath, useInterceptor } from "hookrouter";
+import React, { useEffect } from "react";
+import { useRoutes, usePath } from "hookrouter";
 import { routes } from "../../routes/routes";
 import Header from "../nav/Header";
 import NotFound from "../NotFound/NotFound";
@@ -8,14 +8,9 @@ import { Container } from "reactstrap";
 import styled from "styled-components";
 import { drawer } from "../../constants/drawer";
 import { responsive } from "../../constants/responsive";
-
-const pageChangeTracker = (currentPath, nextPath) => {
-  console.log(currentPath, nextPath);
-  debugger;
-};
+import { trackPageView } from "../../Components/Tracking/Tracking";
 
 const Content = () => {
-  const routeResult = useRoutes(routes);
   const currentPath = usePath();
 
   // TODO: Slide content to the right when SideDrawer opens
@@ -51,19 +46,18 @@ const Content = () => {
     }
   `;
 
-  const trackingInterceptor = useInterceptor(pageChangeTracker);
+  const routeResult = useRoutes(routes);
 
-  const renderAndTrackRouteResult = () => {
-    trackingInterceptor();
-    return routeResult;
-  };
+  useEffect(() => {
+    trackPageView(currentPath);
+  }, [routeResult, currentPath]);
 
   return (
     <StyledContent>
       {/* Remove padding from all content */}
       <Container fluid className="content px-0">
         <Header />
-        {renderAndTrackRouteResult() || <NotFound />}
+        {routeResult || <NotFound />}
       </Container>
     </StyledContent>
   );
