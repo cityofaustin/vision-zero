@@ -34,7 +34,7 @@ import {
   RECORD_DELETE_CHANGE_RECORDS,
   UPSERT_MUTATION_DUMMY
 } from "../../queries/crashes_changes";
-import { crashFieldDescription, piiFields } from "./crashFieldDescriptions";
+import { crashFieldDescription, piiFields, notNullValues } from "./crashFieldDescriptions";
 import { crashChangeQuotedFields } from "./crashChangeQuotedFields";
 import { redirectUrl } from "../../index";
 
@@ -676,6 +676,25 @@ function CrashChange(props) {
   }
 
   /**
+   * Attempts to retrieve the default value for a field (key), if found and
+   * the current value is null, then returns the default value.
+   * @param {object} notNullValues - The notNullValues as imported globally
+   * @param {string} recordType - The record type name
+   * @param {string} key - The name of the field
+   * @param {*} value - The current value of the field
+   * @returns {string}
+   */
+  const getDefaultValue = (notNullValues, recordType, key, value) => {
+    try {
+      // Try get the default value if it's currently null.
+      return ["null", ""].includes(value) ? notNullValues[recordType][key] || value : value;
+    } catch {
+      // Or return null if the key is not found.
+      return value;
+    }
+  }
+
+  /**
    * Wraps a value in quotation marks if not numeric or boolean.
    * @param {*} value - Any given value, of any type.
    * @returns {string} - The value wrapped in quotation marks or as a string.
@@ -736,13 +755,16 @@ function CrashChange(props) {
         return !isFieldPII(recordType, key);
       })
       .map(key => {
+        // Attempt to retrieve the default value
+        const value = getDefaultValue(notNullValues, recordType, key, recordObject[key]);
+        // Then return the final line
         return isFieldQuoted(recordType, key)
           // We have a case_id, we must quote
-          ? `${key}: "${recordObject[key]}",`
+          ? `${key}: "${value}",`
           // Not a case_id, then quote if not a number
           : String(key).toLowerCase() +
           ": " +
-          printQuotation(recordObject[key]) +
+          printQuotation(value) +
           ",";
       })
       .join("\n\t\t\t\t");
