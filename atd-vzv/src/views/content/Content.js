@@ -1,5 +1,5 @@
 import React from "react";
-import { useRoutes, usePath } from "hookrouter";
+import { useRoutes, usePath, useInterceptor } from "hookrouter";
 import { routes } from "../../routes/routes";
 import Header from "../nav/Header";
 import NotFound from "../NotFound/NotFound";
@@ -8,6 +8,11 @@ import { Container } from "reactstrap";
 import styled from "styled-components";
 import { drawer } from "../../constants/drawer";
 import { responsive } from "../../constants/responsive";
+
+const pageChangeTracker = (currentPath, nextPath) => {
+  console.log(currentPath, nextPath);
+  debugger;
+};
 
 const Content = () => {
   const routeResult = useRoutes(routes);
@@ -46,12 +51,19 @@ const Content = () => {
     }
   `;
 
+  const trackingInterceptor = useInterceptor(pageChangeTracker);
+
+  const renderAndTrackRouteResult = () => {
+    trackingInterceptor();
+    return routeResult;
+  };
+
   return (
     <StyledContent>
       {/* Remove padding from all content */}
       <Container fluid className="content px-0">
         <Header />
-        {routeResult || <NotFound />}
+        {renderAndTrackRouteResult() || <NotFound />}
       </Container>
     </StyledContent>
   );

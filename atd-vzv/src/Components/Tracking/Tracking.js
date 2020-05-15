@@ -1,6 +1,8 @@
 import React from "react";
 import ReactGA from "react-ga";
 
-const Tracking = () => <>Test</>;
+export const ReactGA = ReactGA.initialize("UA-85076727-3");
 
-export default Tracking;
+export const PageView = () => {
+  ReactGA.pageview(window.location.pathname + window.location.search);
+};
