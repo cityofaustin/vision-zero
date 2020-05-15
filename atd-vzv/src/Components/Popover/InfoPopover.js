@@ -11,6 +11,7 @@ import { useIsMobile } from "../../constants/responsive";
 const InfoPopover = ({ config }) => {
   const StyledPopover = styled.div`
     font-size: 12px;
+    padding: 3px;
 
     /* Style links for devices that show them as plain text */
     a {
