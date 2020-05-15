@@ -94,7 +94,7 @@ const Header = () => {
 
   return (
     <StyledNavbar>
-      <Container className="navbar-container" fluid>
+      <Container className="navbar-container p-0" fluid>
         <Navbar
           light
           className="navbar shadow-sm p-3 fixed-top header-navbar"

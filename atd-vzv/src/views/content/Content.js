@@ -33,6 +33,7 @@ const Content = () => {
 
   const StyledContent = styled.div`
     .content {
+      position: relative;
       top: ${drawer.headerHeight}px;
       ${currentPath === "/" && summaryStyles}
       ${currentPath === "/map" && mapStyles}
@@ -47,13 +48,16 @@ const Content = () => {
   `;
 
   return (
-    <StyledContent>
-      {/* Remove padding from all content */}
-      <Container fluid className="content px-0">
-        <Header />
-        {routeResult || <NotFound />}
-      </Container>
-    </StyledContent>
+    <>
+      <Header />
+      <StyledContent>
+        {/* Remove padding from all content */}
+
+        <Container fluid className="content px-0">
+          {routeResult || <NotFound />}
+        </Container>
+      </StyledContent>
+    </>
   );
 };
 
