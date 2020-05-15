@@ -1,12 +1,26 @@
 /**
- * The Crash important difference fields is an object that contains the fields (as a key)
- * and its attributes (as a value).
+ * This is an object containing fields that can be categorized as
+ * Personal Identifiable Information and need removal before insertion.
  * @type {object}
  */
 export const piiFields = {
   crash: [],
   charges: [],
-  unit: [],
+  unit: [
+    "ownr_last_name",
+    "ownr_first_name",
+    "ownr_street_nbr",
+    "ownr_street_pfx",
+    "ownr_street_name",
+    "ownr_street_sfx",
+    "ownr_apt_nbr",
+    "trlr_gvwr",
+    "trlr_rgvw",
+    "trlr_type_id",
+    "trlr_disabling_dmag_id",
+    "cmv_intermodal_container_permit_fl",
+    "cmv_actual_gross_weight",
+  ],
 
   primaryperson: [
     "prsn_last_name",
@@ -39,104 +53,55 @@ export const piiFields = {
   ],
 };
 
+/**
+ * This is an object containing fields that do not accept null values.
+ * @type {object}
+ */
+export const notNullValues = {
+  charges: {
+    charge_cat_id: "0",
+  },
+};
+
+/**
+ * The Crash important difference fields is an object that contains the fields (as a key)
+ * and its attributes (as a value).
+ * @type {object}
+ */
 export const crashFieldDescription = {
   crash: {
-    case_id: {
-      type: "string",
-    },
-    crash_date: {
-      type: "string",
-    },
-    crash_time: {
-      type: "string",
-    },
-    crash_fatal_fl: {
-      type: "string",
-    },
-    private_dr_fl: {
-      type: "string",
-    },
-    rpt_outside_city_limit_fl: {
-      type: "string",
-    },
-    rpt_latitude: {
-      type: "double",
-    },
-    rpt_longitude: {
-      type: "double",
-    },
-    rpt_hwy_num: {
-      type: "string",
-    },
-    rpt_block_num: {
-      type: "string",
-    },
-    rpt_street_name: {
-      type: "string",
-    },
-    rpt_sec_hwy_num: {
-      type: "string",
-    },
-    rpt_sec_block_num: {
-      type: "string",
-    },
-    rpt_sec_street_name: {
-      type: "string",
-    },
-    hwy_nbr: {
-      type: "string",
-    },
-    hwy_sys: {
-      type: "string",
-    },
-    hwy_sys_2: {
-      type: "string",
-    },
-    hwy_nbr_2: {
-      type: "string",
-    },
-    city_id: {
-      type: "integer",
-    },
-    latitude: {
-      type: "double",
-    },
-    longitude: {
-      type: "double",
-    },
-    street_name: {
-      type: "string",
-    },
-    street_nbr: {
-      type: "string",
-    },
-    street_name_2: {
-      type: "string",
-    },
-    street_nbr_2: {
-      type: "string",
-    },
-    sus_serious_injry_cnt: {
-      type: "integer",
-    },
-    nonincap_injry_cnt: {
-      type: "integer",
-    },
-    poss_injry_cnt: {
-      type: "integer",
-    },
-    non_injry_cnt: {
-      type: "integer",
-    },
-    unkn_injry_cnt: {
-      type: "integer",
-    },
-    tot_injry_cnt: {
-      type: "integer",
-    },
-    death_cnt: {
-      type: "integer",
-    },
+    case_id: { type: "string" },
+    crash_date: { type: "string" },
+    crash_time: { type: "string" },
+    crash_fatal_fl: { type: "string" },
+    private_dr_fl: { type: "string" },
+    rpt_outside_city_limit_fl: { type: "string" },
+    rpt_latitude: { type: "double" },
+    rpt_longitude: { type: "double" },
+    rpt_hwy_num: { type: "string" },
+    rpt_block_num: { type: "string" },
+    rpt_street_name: { type: "string" },
+    rpt_sec_hwy_num: { type: "string" },
+    rpt_sec_block_num: { type: "string" },
+    rpt_sec_street_name: { type: "string" },
+    hwy_nbr: { type: "string" },
+    hwy_sys: { type: "string" },
+    hwy_sys_2: { type: "string" },
+    hwy_nbr_2: { type: "string" },
+    city_id: { type: "integer" },
+    latitude: { type: "double" },
+    longitude: { type: "double" },
+    street_name: { type: "string" },
+    street_nbr: { type: "string" },
+    street_name_2: { type: "string" },
+    street_nbr_2: { type: "string" },
+    sus_serious_injry_cnt: { type: "integer" },
+    nonincap_injry_cnt: { type: "integer" },
+    poss_injry_cnt: { type: "integer" },
+    non_injry_cnt: { type: "integer" },
+    unkn_injry_cnt: { type: "integer" },
+    tot_injry_cnt: { type: "integer" },
+    death_cnt: { type: "integer" },
   },
 
   primaryperson: {
