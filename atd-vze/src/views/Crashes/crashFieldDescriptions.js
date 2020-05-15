@@ -61,6 +61,12 @@ export const notNullValues = {
   charges: {
     charge_cat_id: "0",
   },
+  primaryperson: {
+    prsn_death_time: null,
+  },
+  person: {},
+  units: {},
+  crash: {}
 };
 
 /**
@@ -128,8 +134,8 @@ export const crashFieldDescription = {
     drvr_drg_cat_1_id: { type: "integer" },
     prsn_taken_to: { type: "string" },
     prsn_taken_by: { type: "string" },
-    prsn_death_string: { type: "string" },
-    prsn_death_time: { type: "string" },
+    prsn_death_date: { type: "date" },
+    prsn_death_time: { type: "date" },
     sus_serious_injry_cnt: { type: "integer" },
     nonincap_injry_cnt: { type: "integer" },
     poss_injry_cnt: { type: "integer" },
@@ -177,7 +183,7 @@ export const crashFieldDescription = {
     prsn_taken_to: { type: "string" },
     prsn_taken_by: { type: "string" },
     prsn_death_date: { type: "date" },
-    prsn_death_time: { type: "string" },
+    prsn_death_time: { type: "date" },
     sus_serious_injry_cnt: { type: "integer" },
     nonincap_injry_cnt: { type: "integer" },
     poss_injry_cnt: { type: "integer" },
