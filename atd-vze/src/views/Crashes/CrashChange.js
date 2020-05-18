@@ -35,6 +35,7 @@ import {
   UPSERT_MUTATION_DUMMY,
 } from "../../queries/crashes_changes";
 import {
+  importantCrashFields,
   crashFieldDescription,
   piiFields,
   notNullValues,
@@ -412,9 +413,9 @@ function CrashChange(props) {
       }
 
       try {
-        // We need a list of all important fields as defined in crashFieldDescription
+        // We need a list of all important fields as defined in importantCrashFields
         setImportantFieldList(
-          Object.keys(crashFieldDescription["crash"]).filter(field => {
+          Object.keys(importantCrashFields).filter(field => {
             return field;
           })
         );
@@ -446,7 +447,7 @@ function CrashChange(props) {
 
       // Now we get to build our component based on our list of important fields
       setImportantFields(
-        Object.keys(crashFieldDescription["crash"]).map(field => {
+        Object.keys(importantCrashFields).map(field => {
           return generateRow(
             field,
             field.label,
@@ -922,7 +923,7 @@ function CrashChange(props) {
     return selectableList.includes(field);
   });
 
-  // // If selectable & not already there
+  // If selectable & not already there
   const otherFieldsSelectable = differentFieldsList.filter(field => {
     return selectableList.includes(field);
   });
