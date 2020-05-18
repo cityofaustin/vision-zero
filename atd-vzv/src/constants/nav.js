@@ -6,8 +6,7 @@ export const navConfig = [
   {
     title: "Summary",
     url: "/",
-    category: "User",
-    action: "Select Summary button",
+    eventKey: "summaryNavButton",
   },
-  { title: "Map", url: "/map", category: "User", action: "Select Map button" },
+  { title: "Map", url: "/map", category: "User", eventKey: "mapNavButton" },
 ];

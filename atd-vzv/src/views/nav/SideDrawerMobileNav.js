@@ -44,7 +44,7 @@ const SideDrawerMobileNav = () => {
                 className={`nav-button ${
                   currentPath === config.url ? "active" : "inactive"
                 }-button w-100`}
-                onClick={() => trackPageEvent(config.category, config.action)}
+                onClick={() => trackPageEvent(config.eventKey)}
               >
                 {config.title}
               </Button>

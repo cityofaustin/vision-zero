@@ -123,9 +123,7 @@ const Header = () => {
                   {currentPath === config.url ? (
                     <Button
                       className="nav-button btn-dark"
-                      onClick={() =>
-                        trackPageEvent(config.category, config.action)
-                      }
+                      onClick={() => trackPageEvent(config.eventKey)}
                       active
                     >
                       {config.title}
@@ -133,9 +131,7 @@ const Header = () => {
                   ) : (
                     <Button
                       className="nav-button inactive-nav-button"
-                      onClick={() =>
-                        trackPageEvent(config.category, config.action)
-                      }
+                      onClick={() => trackPageEvent(config.eventKey)}
                     >
                       {config.title}
                     </Button>

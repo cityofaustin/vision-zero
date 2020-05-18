@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "reactstrap";
+import { trackPageEvent } from "../../Components/Tracking/Tracking";
 import styled from "styled-components";
 import classnames from "classnames";
 import { colors } from "../../constants/colors";
@@ -93,6 +94,7 @@ const CrashTypeSelector = ({ setCrashType }) => {
         )}
         onClick={() => {
           toggle(fatalities);
+          trackPageEvent("fatal");
         }}
       >
         {fatalitiesIcon} Fatalities
@@ -106,6 +108,7 @@ const CrashTypeSelector = ({ setCrashType }) => {
         )}
         onClick={() => {
           toggle(seriousInjuries);
+          trackPageEvent("injury");
         }}
       >
         {seriousInjuriesIcon} Serious Injuries

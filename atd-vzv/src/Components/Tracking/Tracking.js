@@ -20,10 +20,18 @@ export const trackPageView = (path) => {
   ReactGA.pageview(path);
 };
 
-export const trackPageEvent = (category, action) => {
-  console.log(`${category}: ${action}`);
+const events = {
+  fatal: "Select Fatal Filter Button",
+  injury: "Select Serious Injury Filter Button",
+  summaryNavButton: "Select Summary Nav Button",
+  mapNavButton: "Select Map Nav Button",
+};
+
+export const trackPageEvent = (eventKey) => {
+  const eventValue = events[eventKey];
+  console.log(`User: ${eventValue}`);
   ReactGA.event({
-    category,
-    action,
+    category: "User",
+    action: eventValue,
   });
 };
