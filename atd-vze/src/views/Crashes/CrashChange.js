@@ -44,6 +44,7 @@ import { redirectUrl } from "../../index";
 
 function CrashChange(props) {
   const crashId = props.match.params.id;
+  const [redirect, setRedirect] = useState(false);
   const [selectedFields, setSelectedFields] = useState([]);
   const [recordData, setRecordData] = useState({});
   const [recordSecondaryData, setRecordSecondaryData] = useState({});
@@ -274,6 +275,8 @@ function CrashChange(props) {
   const generate_diff = data => {
     const [originalRecord, newRecord] = getOriginalNewRecords();
 
+    if (!newRecord) return [];
+
     return Object.keys(newRecord)
       .map((currentKey, i) => {
         return String(`${newRecord[currentKey]}`).trim() !==
@@ -408,14 +411,19 @@ function CrashChange(props) {
         setCR3Available(true);
       }
 
-      // We need a list of all important fields as defined in crashFieldDescription
-      setImportantFieldList(
-        Object.keys(crashFieldDescription["crash"]).filter(field => {
-          return field;
-        })
-      );
+      try {
+        // We need a list of all important fields as defined in crashFieldDescription
+        setImportantFieldList(
+          Object.keys(crashFieldDescription["crash"]).filter(field => {
+            return field;
+          })
+        );
 
-      setSelectableList(generate_diff_selectable());
+        setSelectableList(generate_diff_selectable());
+      } catch {
+        redirectToQueueIndex();
+      }
+
     }
   }, [recordData]);
 
@@ -428,24 +436,29 @@ function CrashChange(props) {
 
     const [originalRecord, newRecord] = getOriginalNewRecords();
 
-    // Now we need the rest of all other fields
-    setDifferentFieldsList(
-      generate_diff(recordData).filter(field => {
-        return !importantFieldList.includes(field);
-      })
-    );
+    try {
+      // Now we need the rest of all other fields
+      setDifferentFieldsList(
+        generate_diff(recordData).filter(field => {
+          return !importantFieldList.includes(field);
+        })
+      );
 
-    // Now we get to build our component based on our list of important fields
-    setImportantFields(
-      Object.keys(crashFieldDescription["crash"]).map(field => {
-        return generateRow(
-          field,
-          field.label,
-          originalRecord[field],
-          newRecord[field]
-        );
-      })
-    );
+      // Now we get to build our component based on our list of important fields
+      setImportantFields(
+        Object.keys(crashFieldDescription["crash"]).map(field => {
+          return generateRow(
+            field,
+            field.label,
+            originalRecord[field],
+            newRecord[field]
+          );
+        })
+      );
+    } catch {
+      redirectToQueueIndex();
+    }
+
   }, [importantFieldList, showFieldsDiffOnly, recordData, selectedFields]);
 
   /**
@@ -457,16 +470,21 @@ function CrashChange(props) {
 
     const [originalRecord, newRecord] = getOriginalNewRecords();
 
-    setDifferentFields(
-      differentFieldsList.map(field => {
-        return generateRow(
-          field,
-          field,
-          originalRecord[field],
-          newRecord[field]
-        );
-      })
-    );
+    try {
+      setDifferentFields(
+        differentFieldsList.map(field => {
+          return generateRow(
+            field,
+            field,
+            originalRecord[field],
+            newRecord[field]
+          );
+        })
+      );
+    } catch {
+      redirectToQueueIndex();
+    }
+
   }, [differentFieldsList, showFieldsDiffOnly, recordData, selectedFields]);
 
   /**
@@ -566,7 +584,7 @@ function CrashChange(props) {
    * Redirects to the index page
    */
   const redirectToQueueIndex = () => {
-    window.location = "/#/changes";
+    setRedirect(true);
   };
 
   /**
@@ -939,7 +957,9 @@ function CrashChange(props) {
   /**
    * Render the view
    */
-  return error ? (
+  return redirect ? (
+    <Redirect to="/changes" />
+  ) : error ? (
     <div>{error}</div>
   ) : (
     <div className="animated fadeIn">
