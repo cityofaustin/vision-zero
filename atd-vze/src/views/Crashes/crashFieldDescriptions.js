@@ -108,6 +108,7 @@ export const crashFieldDescription = {
     unkn_injry_cnt: { type: "integer" },
     tot_injry_cnt: { type: "integer" },
     death_cnt: { type: "integer" },
+    id_number: { type: "string" },
   },
 
   primaryperson: {
