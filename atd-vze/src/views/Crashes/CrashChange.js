@@ -642,7 +642,7 @@ function CrashChange(props) {
    * @return {Promise<never>}
    */
   const chainError = errorMessage => {
-    setErrorMessage(String(error));
+    setErrorMessage(String(errorMessage));
     showErrorDialog();
     return Promise.reject(errorMessage);
   };
