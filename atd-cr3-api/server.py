@@ -8,6 +8,7 @@ import datetime
 import boto3
 import os
 import requests
+import hashlib
 
 from dotenv import load_dotenv, find_dotenv
 from os import environ as env
@@ -59,7 +60,7 @@ def get_api_token():
             "client_secret": API_CLIENT_SECRET,
             "audience": f"https://{AUTH0_DOMAIN}/api/v2/",
         },
-        {"content-type": "application/json",},
+        {"content-type": "application/json", },
     )
     return response.json().get("access_token", None)
 
@@ -230,9 +231,12 @@ def requires_auth(f):
     return decorated
 
 
-current_user = LocalProxy(lambda: getattr(_request_ctx_stack.top, "current_user", None))
+current_user = LocalProxy(lambda: getattr(
+    _request_ctx_stack.top, "current_user", None))
 
 # Controllers API
+
+
 @APP.route("/")
 @cross_origin(headers=["Content-Type", "Authorization"])
 def healthcheck():
@@ -365,7 +369,8 @@ def user_create_user():
         json_data = request.json
         endpoint = f"https://{AUTH0_DOMAIN}/api/v2/users"
         headers = {"Authorization": f"Bearer {get_api_token()}"}
-        response = requests.post(endpoint, headers=headers, json=json_data).json()
+        response = requests.post(
+            endpoint, headers=headers, json=json_data).json()
         return jsonify(response)
     else:
         abort(403)
@@ -381,7 +386,8 @@ def user_update_user(id):
         json_data = request.json
         endpoint = f"https://{AUTH0_DOMAIN}/api/v2/users/" + id
         headers = {"Authorization": f"Bearer {get_api_token()}"}
-        response = requests.patch(endpoint, headers=headers, json=json_data).json()
+        response = requests.patch(
+            endpoint, headers=headers, json=json_data).json()
         return jsonify(response)
     else:
         abort(403)
@@ -419,6 +425,24 @@ def user_delete_user(id):
 
 @APP.route("/crashes/associate_location/", methods=["PUT", "POST"])
 def associate_location():
+    HASURA_EVENTS_API = os.getenv("HASURA_EVENTS_API", "")
+    incoming_token = request.headers.get('HASURA_EVENTS_API')
+
+    hashed_events_api = hashlib.md5()
+    hashed_events_api.update(str(HASURA_EVENTS_API).encode('utf-8'))
+    hashed_incoming_token = hashlib.md5()
+    hashed_incoming_token.update(str(incoming_token).encode('utf-8'))
+
+    print(hashed_events_api)
+    print(hashed_incoming_token)
+
+    # Require token
+    if hashed_events_api != hashed_incoming_token:
+        return {
+            "statusCode": 403,
+            "body": json.dumps({'message': 'Forbidden Request'})
+        }
+
     # Get data/crash_id from Hasura Event request
     data = request.get_json(force=True)
     crash_id = data['event']['data']['old']['crash_id']
@@ -466,6 +490,8 @@ def associate_location():
         query_variables = {'crashId': crash_id, 'locationId': new_location_id}
         mutation_json_body = {
             'query': update_location_mutation, 'variables': query_variables}
+
+        print(update_location_mutation)
 
         # Execute the update
         mutation_response = requests.post(
