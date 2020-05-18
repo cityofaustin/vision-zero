@@ -119,22 +119,17 @@ const Header = () => {
             {navConfig.map((config, i) => (
               <NavItem key={i}>
                 <NavLink tag={A} href={config.url}>
-                  {currentPath === config.url ? (
-                    <Button
-                      className="nav-button btn-dark"
-                      onClick={() => trackPageEvent(config.eventKey)}
-                      active
-                    >
-                      {config.title}
-                    </Button>
-                  ) : (
-                    <Button
-                      className="nav-button inactive-nav-button"
-                      onClick={() => trackPageEvent(config.eventKey)}
-                    >
-                      {config.title}
-                    </Button>
-                  )}
+                  <Button
+                    className={`nav-button ${
+                      currentPath === config.url
+                        ? "btn-dark"
+                        : "inactive-nav-button"
+                    }`}
+                    onClick={() => trackPageEvent(config.eventKey)}
+                    active={currentPath === config.url}
+                  >
+                    {config.title}
+                  </Button>
                 </NavLink>
               </NavItem>
             ))}

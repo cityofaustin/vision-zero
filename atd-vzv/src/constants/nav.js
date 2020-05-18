@@ -12,13 +12,13 @@ export const navConfig = [
     url: "/",
     eventKey: "summaryNavButton",
   },
-  { title: "Map", url: "/map", category: "User", eventKey: "mapNavButton" },
+  { title: "Map", url: "/map", eventKey: "mapNavButton" },
 ];
 
 // Initialze analytics
 export const Tracker = ReactGA.initialize("UA-85076727-3");
 
-// Custom hook that returns hookrouter route and tracks with GA
+// Custom hook that returns hookrouter route and tracks route change with GA
 export function useTrackedRoutes(routes) {
   const routeResult = useRoutes(routes);
   const currentPath = usePath();
