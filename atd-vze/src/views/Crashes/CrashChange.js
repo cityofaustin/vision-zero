@@ -802,7 +802,7 @@ function CrashChange(props) {
 
     const functionNameList = {
       charges: "insert_atd_txdot_charges",
-      person: "insert_atd_txdot_persons",
+      person: "insert_atd_txdot_person",
       primaryperson: "insert_atd_txdot_primaryperson",
       unit: "insert_atd_txdot_units",
       crash: "insert_atd_txdot_crashes",
