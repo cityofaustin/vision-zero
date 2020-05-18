@@ -269,27 +269,6 @@ function CrashChange(props) {
   };
 
   /**
-   * Returns an array of strings with all the fields that have a different value.
-   * @param {object} data
-   * @returns {string[]}
-   */
-  const generate_diff = data => {
-    const [originalRecord, newRecord] = getOriginalNewRecords();
-
-    if (!newRecord) return [];
-
-    return Object.keys(newRecord)
-      .map((currentKey, i) => {
-        return String(`${newRecord[currentKey]}`).trim() !==
-          String(`${originalRecord[currentKey]}`).trim()
-          ? currentKey
-          : "/-n/a-/";
-      })
-      .filter(e => e !== "/-n/a-/")
-      .sort();
-  };
-
-  /**
    * Returns an array of strings containing the fields that are selectable
    * @returns {string[]}
    */
@@ -436,12 +415,21 @@ function CrashChange(props) {
     if (Object.keys(recordData).length === 0) return;
 
     const [originalRecord, newRecord] = getOriginalNewRecords();
+    const importantFields = Object.keys(importantCrashFields);
+
+    try {
+      delete originalRecord["cr3_stored_flag"];
+      delete originalRecord["crash_id"];
+      delete originalRecord["__typename"];
+    } finally {
+      console.log("Removed unnecessary fields from original crash");
+    }
 
     try {
       // Now we need the rest of all other fields
       setDifferentFieldsList(
-        generate_diff(recordData).filter(field => {
-          return !importantFieldList.includes(field);
+        Object.keys(originalRecord).filter(field => {
+          return !importantFields.includes(field);
         })
       );
 
