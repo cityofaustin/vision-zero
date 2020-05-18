@@ -4,8 +4,7 @@ import { A, usePath } from "hookrouter";
 
 import { Container, Navbar, Button, Nav, NavItem, NavLink } from "reactstrap";
 import styled from "styled-components";
-import { navConfig } from "../../constants/nav";
-import { trackPageEvent } from "../../Components/Tracking/Tracking";
+import { navConfig, trackPageEvent } from "../../constants/nav";
 import { drawer } from "../../constants/drawer";
 import { responsive } from "../../constants/responsive";
 import { colors } from "../../constants/colors";

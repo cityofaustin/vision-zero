@@ -4,7 +4,7 @@ import { StoreContext } from "../../utils/store";
 import SideMapControlDateRange from "./SideMapControlDateRange";
 import SideMapTimeOfDayChart from "./SideMapTimeOfDayChart";
 import SideMapControlOverlays from "./SideMapControlOverlays";
-import { trackPageEvent } from "../../Components/Tracking/Tracking";
+import { trackPageEvent } from "../../constants/nav";
 import { colors } from "../../constants/colors";
 import { Button, Card, Label, Row, Col } from "reactstrap";
 import styled from "styled-components";

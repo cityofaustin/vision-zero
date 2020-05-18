@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "reactstrap";
-import { trackPageEvent } from "../../Components/Tracking/Tracking";
+import { trackPageEvent } from "../../constants/nav";
 import styled from "styled-components";
 import classnames from "classnames";
 import { colors } from "../../constants/colors";

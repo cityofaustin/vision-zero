@@ -1,6 +1,6 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { usePath } from "hookrouter";
-import { useTrackedRoutes } from "../../Components/Tracking/Tracking";
+import { useTrackedRoutes } from "../../constants/nav";
 import { routes } from "../../routes/routes";
 import Header from "../nav/Header";
 import NotFound from "../NotFound/NotFound";
