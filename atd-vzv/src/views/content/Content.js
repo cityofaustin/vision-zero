@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { usePath } from "hookrouter";
-import { useTrackRoutes } from "../../Components/Tracking/Tracking";
+import { useTrackedRoutes } from "../../Components/Tracking/Tracking";
 import { routes } from "../../routes/routes";
 import Header from "../nav/Header";
 import NotFound from "../NotFound/NotFound";
@@ -11,7 +11,7 @@ import { drawer } from "../../constants/drawer";
 import { responsive } from "../../constants/responsive";
 
 const Content = () => {
-  const routeResult = useTrackRoutes(routes);
+  const routeResult = useTrackedRoutes(routes);
   const currentPath = usePath();
 
   // TODO: Slide content to the right when SideDrawer opens

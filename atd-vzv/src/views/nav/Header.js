@@ -5,6 +5,7 @@ import { A, usePath } from "hookrouter";
 import { Container, Navbar, Button, Nav, NavItem, NavLink } from "reactstrap";
 import styled from "styled-components";
 import { navConfig } from "../../constants/nav";
+import { trackPageEvent } from "../../Components/Tracking/Tracking";
 import { drawer } from "../../constants/drawer";
 import { responsive } from "../../constants/responsive";
 import { colors } from "../../constants/colors";
@@ -120,11 +121,22 @@ const Header = () => {
               <NavItem key={i}>
                 <NavLink tag={A} href={config.url}>
                   {currentPath === config.url ? (
-                    <Button className="nav-button btn-dark" active>
+                    <Button
+                      className="nav-button btn-dark"
+                      onClick={() =>
+                        trackPageEvent(config.category, config.action)
+                      }
+                      active
+                    >
                       {config.title}
                     </Button>
                   ) : (
-                    <Button className="nav-button inactive-nav-button">
+                    <Button
+                      className="nav-button inactive-nav-button"
+                      onClick={() =>
+                        trackPageEvent(config.category, config.action)
+                      }
+                    >
                       {config.title}
                     </Button>
                   )}

@@ -6,6 +6,8 @@ export const navConfig = [
   {
     title: "Summary",
     url: "/",
+    category: "User",
+    action: "Select Summary button",
   },
-  { title: "Map", url: "/map" },
+  { title: "Map", url: "/map", category: "User", action: "Select Map button" },
 ];

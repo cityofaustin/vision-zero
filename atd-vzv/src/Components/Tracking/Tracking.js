@@ -4,7 +4,7 @@ import { useRoutes, usePath } from "hookrouter";
 
 export const Tracker = ReactGA.initialize("UA-85076727-3");
 
-export function useTrackRoutes(routes) {
+export function useTrackedRoutes(routes) {
   const routeResult = useRoutes(routes);
   const currentPath = usePath();
 
@@ -17,5 +17,13 @@ export function useTrackRoutes(routes) {
 
 export const trackPageView = (path) => {
   console.log(path);
-  //   ReactGA.pageview(window.location.pathname + window.location.search);
+  ReactGA.pageview(path);
+};
+
+export const trackPageEvent = (category, action) => {
+  console.log(`${category}: ${action}`);
+  ReactGA.event({
+    category,
+    action,
+  });
 };

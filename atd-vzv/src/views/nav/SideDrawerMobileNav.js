@@ -2,6 +2,7 @@ import React from "react";
 import { A, usePath } from "hookrouter";
 import { Button, Nav, NavItem, NavLink } from "reactstrap";
 import { navConfig } from "../../constants/nav";
+import { trackPageEvent } from "../../Components/Tracking/Tracking";
 import { responsive } from "../../constants/responsive";
 import { colors } from "../../constants/colors";
 import styled from "styled-components";
@@ -43,6 +44,7 @@ const SideDrawerMobileNav = () => {
                 className={`nav-button ${
                   currentPath === config.url ? "active" : "inactive"
                 }-button w-100`}
+                onClick={() => trackPageEvent(config.category, config.action)}
               >
                 {config.title}
               </Button>
