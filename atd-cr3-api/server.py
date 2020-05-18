@@ -412,5 +412,10 @@ def user_delete_user(id):
         abort(403)
 
 
+@APP.route("/crashes/associate_location/", methods=["PUT", "POST"])
+def associate_location():
+    return jsonify({"hello": "world"})
+
+
 if __name__ == "__main__":
     APP.run(host="0.0.0.0", port=env.get("PORT", 3010))

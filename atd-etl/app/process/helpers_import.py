@@ -18,12 +18,17 @@ from dateutil import parser
 # Dependencies
 from .queries import search_crash_query, search_crash_query_full
 from .request import run_query
-from .helpers_import_fields import CRIS_TXDOT_FIELDS, \
-    CRIS_TXDOT_COMPARE_FIELDS_LIST, CRIS_TXDOT_COMPARE_FIELD_TYPE
+from .helpers_import_fields import (
+    CRIS_TXDOT_FIELDS,
+    CRIS_TXDOT_COMPARE_FIELDS_LIST,
+    CRIS_TXDOT_COMPARE_FIELD_TYPE,
+)
 from .config import ATD_ETL_CONFIG
 
 
-def generate_template(name, function, fields, fieldnames=[], upsert=False, constraint="", crash=False):
+def generate_template(
+    name, function, fields, fieldnames=[], upsert=False, constraint="", crash=False
+):
     """
     Returns a string with a graphql template
     :param str name: The name of the graphql mutation
@@ -35,7 +40,7 @@ def generate_template(name, function, fields, fieldnames=[], upsert=False, const
     :return str:
     """
     if crash:
-        update_cr3 = "cr3_stored_flag: \"N\""
+        update_cr3 = 'cr3_stored_flag: "N"'
         fieldnames += ["cr3_stored_flag"]
     else:
         update_cr3 = ""
@@ -49,17 +54,16 @@ def generate_template(name, function, fields, fieldnames=[], upsert=False, const
               ]
             }
         """.replace(
-            "%CONFLICT_CONSTRAINT%",
-            constraint
+            "%CONFLICT_CONSTRAINT%", constraint
         ).replace(
-            "%CONFLICT_FIELDS%",
-            ",\n".join([f.lower() for f in fieldnames])
+            "%CONFLICT_FIELDS%", ",\n".join([f.lower() for f in fieldnames])
         )
 
     else:
         on_conflict = ""
 
-    return """
+    return (
+        """
         mutation %NAME% {
           %FUNCTION%(
             objects: {
@@ -71,11 +75,14 @@ def generate_template(name, function, fields, fieldnames=[], upsert=False, const
             affected_rows
           } 
         }
-    """.replace("%NAME%", name)\
-       .replace("%FUNCTION%", function)\
-       .replace("%FIELDS%", fields)\
-       .replace("%UPDATE_CR3%", update_cr3)\
-       .replace("%ON_CONFLICT%", on_conflict)
+    """.replace(
+            "%NAME%", name
+        )
+        .replace("%FUNCTION%", function)
+        .replace("%FIELDS%", fields)
+        .replace("%UPDATE_CR3%", update_cr3)
+        .replace("%ON_CONFLICT%", on_conflict)
+    )
 
 
 def lowercase_group_match(match):
@@ -95,8 +102,10 @@ def generate_fields_with_filters(line, fieldnames, filters=[]):
     :param filters: dict - The filters to be applied
     :return:
     """
-    reader = csv.DictReader(f=io.StringIO(line), fieldnames=fieldnames, delimiter=',') # parse line
-    fields = json.dumps([row for row in reader]) # Generate json
+    reader = csv.DictReader(
+        f=io.StringIO(line), fieldnames=fieldnames, delimiter=","
+    )  # parse line
+    fields = json.dumps([row for row in reader])  # Generate json
 
     # Remove object characters
     fields = fields.replace("[{", "").replace("}]", "")
@@ -104,12 +113,12 @@ def generate_fields_with_filters(line, fieldnames, filters=[]):
     fields = re.sub(r'"([a-zA-Z0-9_]+)":', lowercase_group_match, fields)
 
     # Make empty strings null
-    fields = re.sub(r'([a-zA-Z0-9_]+): "",', r'\1: null,', fields)
+    fields = re.sub(r'([a-zA-Z0-9_]+): "",', r"\1: null,", fields)
 
     # Break lines & remove ending commas
-    fields = re.sub(r'(\, )(([^"]+)(: ?)(\")([^"]+)(\"))', r'\n\2', fields)
-    fields = re.sub(r'(null, )([a-zA-Z0-9\_]+)', r'null\n\2', fields)
-    fields = re.sub(r'(, )([a-zA-Z0-9\_]+)(: null)', r'\n\2: null', fields)
+    fields = re.sub(r'(\, )(([^"]+)(: ?)(\")([^"]+)(\"))', r"\n\2", fields)
+    fields = re.sub(r"(null, )([a-zA-Z0-9\_]+)", r"null\n\2", fields)
+    fields = re.sub(r"(, )([a-zA-Z0-9\_]+)(: null)", r"\n\2: null", fields)
 
     # Apply filters
     for filter_group in filters:
@@ -139,12 +148,13 @@ def get_crash_id(line):
         return ""
 
 
-def generate_gql(line, fieldnames, file_type):
+def generate_gql(line, fieldnames, file_type, upsert=True):
     """
     Returns a string with the final graphql query
-    :param line: string - The raw csv line
-    :param fieldnames: array of strings - The name of fields
-    :param file_type: string - the type of insertion (crash, units, etc...)
+    :param string line: The raw csv line
+    :param string[] fieldnames: An array containing the names of fields
+    :param string file_type: the type of insertion (crash, units, etc...)
+    :param bool upsert: When True, it generates an on_conflict statement for upsertion.
     :return:
     """
 
@@ -153,14 +163,16 @@ def generate_gql(line, fieldnames, file_type):
     function_name = CRIS_TXDOT_FIELDS[file_type]["function_name"]
 
     try:
-        fields = generate_fields_with_filters(line=line,
-                                              fieldnames=fieldnames,
-                                              filters=filters)
+        fields = generate_fields_with_filters(
+            line=line, fieldnames=fieldnames, filters=filters
+        )
 
         # The variable `filters[0][1]` contains all the columns we need to remove.
         # We need `template_fields` to contain a lower-case array of all strings
         # in `fieldnames` as long as they are not in the removed list `filters[0][1]`
-        template_fields = [field.lower() for field in fieldnames if field.lower() not in filters[0][1]]
+        template_fields = [
+            field.lower() for field in fieldnames if field.lower() not in filters[0][1]
+        ]
 
         # Generate Template
         template = generate_template(
@@ -168,15 +180,15 @@ def generate_gql(line, fieldnames, file_type):
             function=function_name,
             fields=fields,
             fieldnames=template_fields,
-            upsert=True,
+            upsert=upsert,
             constraint={
                 "crash": "atd_txdot_crashes_pkey",
-                "charges": "atd_txdot_charges_pkey",
+                "charges": "uniq_atd_txdot_charges",
                 "unit": "atd_txdot_units_unique",
                 "person": "atd_txdot_person_unique",
                 "primaryperson": "atd_txdot_primaryperson_unique",
             }.get(file_type, None),
-            crash=(file_type == "crash")
+            crash=(file_type == "crash"),
         )
     except Exception as e:
         print("generate_gql() Error: " + str(e))
@@ -232,24 +244,15 @@ def handle_record_error_hook(line, gql, file_type, response={}, line_number="n\a
     :return: bool - True to signal error and stop execution, False otherwise.
     """
 
-    # If this is a crash, we want to know why it didn't insert, so we need to stop.
-    if file_type == "crash":
-        print(gql)
-        return True
-
-    # If not a crash, we are not interested to know what happened. Move on to next one.
-    # This is because the other records do not have a primary key, so to avoid duplicates
-    # we rely on unique indexes. So if a duplicate record tries to insert, it just fails.
-    # So there is no need to stop the rest of the execution.
+    # We must ignore constraint-violation errors,
+    # it means we are trying to overwrite a record.
+    if "constraint-violation" in str(response):
+        return False
+    # Otherwise, this could be a legitimate problem,
+    # for which we must stop the execution
     else:
-        # We must ignore constraint-violation errors,
-        # it means we are trying to overwrite a record.
-        if "constraint-violation" in str(response):
-            return False
-        # Otherwise, this could be a legitimate problem,
-        # for which we must stop the execution
-        else:
-            print("""\n\n------------------------------------------
+        print(
+            """\n\n------------------------------------------
 Fatal Error
 -----------------------------------------
 Line:   \t%s 
@@ -259,13 +262,17 @@ Type:   \t%s \n
 Query:  \t%s \n
 Response: %s \n
 ------------------------------------------\n\n
-            """ % (
+        """
+            % (
                 line_number,
                 get_crash_id(line),
-                str(line).strip(), file_type, gql,
-                str(response)
-            ))
-            return True
+                str(line).strip(),
+                file_type,
+                gql,
+                str(response),
+            )
+        )
+        return True
 
 
 def get_file_list(file_type):
@@ -290,7 +297,7 @@ def generate_run_config():
         "file_dryrun": False,
         "file_type": "",
         "file_list_raw": [],
-        "skip_rows_raw": []
+        "skip_rows_raw": [],
     }
 
     # First we try to get the file type from the 1st argument
@@ -345,10 +352,7 @@ def generate_run_config():
             skip_lines_value = 0
 
         # Append a mini-dictionary into the finalFileList
-        finalFileList.append({
-            "file": file,
-            "skip": skip_lines_value
-        })
+        finalFileList.append({"file": file, "skip": skip_lines_value})
 
     # Assign to the final template the finalFileList array of dictionaries
     config["file_list"] = finalFileList
@@ -367,15 +371,15 @@ def get_crash_record(crash_id):
     query = search_crash_query_full(
         crash_id=crash_id,
         field_list=(
-           CRIS_TXDOT_COMPARE_FIELDS_LIST +
-           [
-               "apd_human_update",
-               "geocode_provider",
-               "qa_status",
-               "updated_by",
-               "changes_approved_date"
-           ]
-        )
+            CRIS_TXDOT_COMPARE_FIELDS_LIST
+            + [
+                "apd_human_update",
+                "geocode_provider",
+                "qa_status",
+                "updated_by",
+                "changes_approved_date",
+            ]
+        ),
     )
 
     # Then try to run the query to get the actual record
@@ -393,7 +397,7 @@ def is_cris_date(string):
     :param string: string - The string being evaluated
     :return: boolean
     """
-    return bool(re.match(r'(\d{2})\/(\d{2})\/(\d{4})', string))
+    return bool(re.match(r"(\d{2})\/(\d{2})\/(\d{4})", string))
 
 
 def is_cris_time(string):
@@ -402,7 +406,7 @@ def is_cris_time(string):
     :param string:
     :return:
     """
-    return bool(re.match(r'(\d{2}):(\d{2}) (AM|PM)', string))
+    return bool(re.match(r"(\d{2}):(\d{2}) (AM|PM)", string))
 
 
 def convert_date(string):
@@ -531,7 +535,9 @@ def generate_crash_record(line, fieldnames):
     :param fieldnames: array of strings - The strings to be used as headers
     :return: dict
     """
-    reader = csv.DictReader(f=io.StringIO(line), fieldnames=fieldnames, delimiter=',')  # parse line
+    reader = csv.DictReader(
+        f=io.StringIO(line), fieldnames=fieldnames, delimiter=","
+    )  # parse line
     fields = json.dumps([row for row in reader])  # Generate json
     # Remove object characters
     fields = fields.replace("[", "").replace("]", "")
@@ -549,12 +555,14 @@ def insert_crash_change_template(new_record_dict, differences, crash_id):
     new_record_escaped = json.dumps(json.dumps(new_record_dict))
     new_record_crash_date = convert_date(new_record_dict["crash_date"])
     # Build the template and inject required values
-    output = """
+    output = (
+        """
         mutation insertCrashChangeMutation {
           insert_atd_txdot_changes(
             objects: {
               record_id: %NEW_RECORD_ID%,
               record_json: %NEW_RECORD_ESCAPED_JSON%,
+              record_uqid: %NEW_UNIQUE_ID%
               record_type: "crash",
               affected_columns: %AFFECTED_COLUMNS%,
               status_id: 0,
@@ -577,13 +585,17 @@ def insert_crash_change_template(new_record_dict, differences, crash_id):
             affected_rows
           }
         }
-        """.replace("%NEW_RECORD_ESCAPED_JSON%", new_record_escaped) \
-        .replace("%NEW_RECORD_ID%", crash_id) \
-        .replace("%AFFECTED_COLUMNS%", json.dumps(json.dumps(differences))) \
+        """.replace(
+            "%NEW_RECORD_ESCAPED_JSON%", new_record_escaped
+        )
+        .replace("%NEW_RECORD_ID%", crash_id)
+        .replace("%NEW_UNIQUE_ID%", crash_id)
+        .replace("%AFFECTED_COLUMNS%", json.dumps(json.dumps(differences)))
         .replace(
             "%NEW_RECORD_CRASH_DATE%",
-            "null" if new_record_crash_date is None else f'"{new_record_crash_date}"'
+            "null" if new_record_crash_date is None else f'"{new_record_crash_date}"',
         )
+    )
     return output
 
 
@@ -609,76 +621,89 @@ def is_human_updated(record):
     :return bool:
     """
     return (
-        record["apd_human_update"] == "Y"
-    ) or (
-        record["geocode_provider"] == 5 and
-        record["qa_status"] == 3
-    ) or (
-        str(record["updated_by"]).endswith("@austintexas.gov")
+        (record["apd_human_update"] == "Y")
+        or (record["geocode_provider"] == 5 and record["qa_status"] == 3)
+        or (str(record["updated_by"]).endswith("@austintexas.gov"))
     )
+
+
+def is_important_update(differences):
+    return "death_cnt" in differences or "sus_serious_injry_cnt" in differences
 
 
 def record_crash_compare(line, fieldnames, crash_id, record_existing):
     """
     Hook that finds an existing record, and compares it with a new incoming record built from a raw csv line.
-    :param line: string - The raw csv line
-    :param fieldnames: array of strings - The strings to be used as headers
-    :return bool: False if we want to ignore changes.
+    :param str  line: The raw csv line
+    :param str[] fieldnames: The strings to be used as headers
+    :return bool, string: A tuple: False if we want to ignore changes. True if it needs to be updated. Returns a feed back message
     """
     # Gather the field names
     fieldnames = [column.lower() for column in fieldnames]
-
-    # If compare crash record is disabled, then exit.
-    if ATD_ETL_CONFIG["ATD_CRIS_IMPORT_COMPARE_FUNCTION"] != "ENABLED":
-        return False
-
     # Double check if the record is valid, if not exit.
     if record_existing is None:
-        return True
-
+        return True, "The record is invalid or non-existing"
     # The record is valid, it needs queueing or an upsert.
     else:
         # First generate a new crash record object from line
         record_new = generate_crash_record(line=line, fieldnames=fieldnames)
         # Now calculate the differences
-        differences = record_compare(record_new=record_new, record_existing=record_existing)
+        differences = record_compare(
+            record_new=record_new, record_existing=record_existing
+        )
         # Determine if record is updated by human:
         human_updated = is_human_updated(record=record_existing)
+        # Checks if death_cnt or sus_serious_injry_cnt has changed
+        important_update = is_important_update(differences)
         # Check if it can update based on changes_approved_date
         can_update = can_record_update(record=record_existing)
-
         # If there are no differences, just ignore...
         if len(differences) == 0:
-            return False
+            return False, "There are no differences, ignored."
+        else:
+            print(differences)
+
         # If no changes approved, or longer than 3 days
         if can_update is False:
             # It's too soon, ignore change.
-            return False
+            return False, "Cannot update this record (Record is not older than 3 days)"
 
-        # There are differences, and it can update...
-        # If human_updated, create a request:
-        if human_updated:
-            mutation_template = insert_crash_change_template(
-                new_record_dict=record_new,
-                differences=differences,
-                crash_id=crash_id
-            )
-            result = run_query(mutation_template)
-            try:
-                affected_rows = result["data"]["insert_atd_txdot_changes"]["affected_rows"]
-            except:
-                affected_rows = 0
+        # There are differences, and it can update unless
+        # either human_updated or important_update is true
+        compare_enabled = (
+            ATD_ETL_CONFIG["ATD_CRIS_IMPORT_COMPARE_FUNCTION"] == "ENABLED"
+        )
+        if human_updated or important_update:
+            affected_rows = 0
+            if compare_enabled:
+                mutation_template = insert_crash_change_template(
+                    new_record_dict=record_new,
+                    differences=differences,
+                    crash_id=crash_id,
+                )
+                result = run_query(mutation_template)
+
+                if "errors" in result:
+                    print("GraphQL Error:")
+                    print(mutation_template)
+                    print(result)
+                try:
+                    affected_rows = result["data"]["insert_atd_txdot_changes"][
+                        "affected_rows"
+                    ]
+                except:
+                    affected_rows = 0
 
             if affected_rows == 1:
                 print("\tCreated (or updated existing) change request (%s)" % crash_id)
                 # We return false because we captured the changes into
                 # a request on the database via run_query (Hasura)
-                return False
+                return False, "Record Queued"
             else:
                 raise Exception("Failed to insert crash review request: %s" % crash_id)
         # Not human edited, update everything automatically.
         else:
-            return True
+            return True, "Record update in order"
 
 
 def is_crash_in_queue(crash_id):
@@ -699,46 +724,134 @@ def is_crash_in_queue(crash_id):
                 }
             ) {
             record_id
-            change_id
-            created_timestamp
-            status_id
-            status {
-              description
-            }
+            record_type
           }
         }
-    """.replace("CRASH_ID", crash_id)
+    """.replace(
+        "%CRASH_ID%", crash_id
+    )
     response = run_query(query)
-    return len(response["data"]) > 0
+    return len(response["data"]["atd_txdot_changes"]) > 0
 
 
 def csv_to_dict(line, fieldnames):
-    reader = csv.DictReader(f=io.StringIO(line), fieldnames=fieldnames, delimiter=',')  # parse line
+    """
+    Turns a csv line into a dictionary
+    :param str line: A comma-separated line
+    :param str[] fieldnames: An array of strings containing the headers for each column to be used as keys.
+    :return dict:
+    """
+    reader = csv.DictReader(
+        f=io.StringIO(line),
+        fieldnames=list(map(lambda x: x.lower(), fieldnames)),
+        delimiter=",",
+    )  # parse line
     return json.dumps([row for row in reader])  # Generate json
+
+
+def aggregate_values(values_list, values_keys):
+    """
+    Returns a string with concatenated values based on a dictionary values and a list of keys
+    :param dict values_list: The dictionary to get values from
+    :param str[] values_keys: A list of strings to be used as keys
+    :return str:
+    """
+    output = ""
+    for key in values_keys:
+        output += values_list.get(key, "")
+    return output
+
+
+def record_unique_identifier(line, fieldnames, file_type):
+    """
+    Generates a unique identifier string based on the file type.
+    :param str line: The current line being processed
+    :param list fieldnames: The list of headers
+    :param str file_type: The type of file to be inserted
+    :return str:
+    """
+    try:
+        record = json.loads(csv_to_dict(line=line, fieldnames=fieldnames))[0]
+        output = {
+            "crash": aggregate_values(record, ["crash_id"]),
+            "person": aggregate_values(record, ["crash_id", "unit_nbr", "prsn_nbr"]),
+            "primaryperson": aggregate_values(
+                record, ["crash_id", "unit_nbr", "prsn_nbr"]
+            ),
+            "unit": aggregate_values(record, ["crash_id", "unit_nbr"]),
+            "charges": aggregate_values(
+                record, ["crash_id", "unit_nbr", "prsn_nbr", "charge_cat_id"]
+            ),
+        }.get(file_type, "")
+        return output
+    except:
+        return ""
 
 
 def insert_secondary_table_change(line, fieldnames, file_type):
     """
-    Inserts a secondary crash record.
+    Inserts a secondary crash record, returns True if it succeeds.
     :param str line: The current line being processed
     :param list fieldnames: The list of headers
     :param str file_type: The type of file to be inserted
-    :return:
+    :return bool:
     """
-    query = """
+    crash_id = get_crash_id(line)
+    unique_id = record_unique_identifier(
+        line=line, fieldnames=fieldnames, file_type=file_type
+    )
+
+    if len(unique_id) == 0:
+        raise Exception("Could not generate a unique id")
+
+    query = (
+        """
         mutation insertNewSecondaryChange {
           insert_atd_txdot_changes(
                 objects: {
                     record_id: %CRASH_ID%
                     record_type: "%TYPE%",
-                    record_json: "%CONTENT%",
+                    record_json: %CONTENT%,
+                    record_uqid: %UNIQUE_ID%
                     status_id: 0,
                 }
+             , on_conflict: {
+                constraint: atd_txdot_changes_unique,
+                update_columns: [
+                    record_id
+                    record_type
+                    record_json
+                    record_uqid
+                    status_id
+                ]
+            }
             ) {
             affected_rows
           }
         }
-    """.replace("%CRASH_ID%", get_crash_id(line))\
-    .replace("%TYPE%", file_type)\
-    .replace("%CONTENT%", csv_to_dict(line=line, fieldnames=fieldnames))
-    response = run_gql(query)
+    """.replace(
+            "%CRASH_ID%", crash_id
+        )
+        .replace("%TYPE%", file_type)
+        .replace("%UNIQUE_ID%", unique_id)
+        .replace(
+            "%CONTENT%",
+            # Equivalent to running json.dumps(json.dumps(dict)) in order
+            # to escape special characters into a valid graphql string.
+            json.dumps(csv_to_dict(line=line, fieldnames=fieldnames)),
+        )
+    )
+    # Run the graphql query
+    result = run_query(query)
+    if "errors" in result:
+        print("GraphQL Error:")
+        print(query)
+        print(result)
+
+    try:
+        # Return True if we have succeeded, False otherwise.
+        return result["data"]["insert_atd_txdot_changes"]["affected_rows"] > 0
+    except:
+        raise Exception(
+            "Failed to insert %s to review request: %s" % (file_type, crash_id)
+        )

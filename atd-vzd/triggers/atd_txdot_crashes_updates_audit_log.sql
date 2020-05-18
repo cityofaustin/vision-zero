@@ -44,7 +44,7 @@ BEGIN
     END IF;
     -- Finally we update the position field
     IF (NEW.longitude_primary is not null AND NEW.latitude_primary is not null) THEN
-        NEW.position = ST_MakePoint(NEW.longitude_primary, NEW.latitude_primary);
+        NEW.position = ST_SetSRID(ST_MakePoint(NEW.longitude_primary, NEW.latitude_primary), 4326);
     END IF;
     --- END OF LAT/LONG OPERATIONS ---
 
