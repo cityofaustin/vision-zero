@@ -422,7 +422,7 @@ function CrashChange(props) {
       delete originalRecord["crash_id"];
       delete originalRecord["__typename"];
     } finally {
-      console.log("Removed unnecessary fields from original crash");
+      // do nothing
     }
 
     try {
@@ -475,14 +475,6 @@ function CrashChange(props) {
     }
 
   }, [differentFieldsList, showFieldsDiffOnly, recordData, selectedFields]);
-
-  /**
-   * We need to track whenever selectedFields is updated
-   */
-  useEffect(() => {
-    // Print the current state
-    console.log(selectedFields);
-  }, [selectedFields]);
 
   /**
    * Closes all dialogs
@@ -592,8 +584,6 @@ function CrashChange(props) {
    */
   const executeUpdateCrashRecord = async () => {
     const updateQueries = await generateUpdateQuery();
-    console.log("executeUpdateCrashRecord() ");
-    console.log(updateQueries);
     setSaveStatus("updating crash record");
     setUpsertRecordQuery(
       gql`
@@ -889,7 +879,6 @@ function CrashChange(props) {
     });
 
     const mutationsList = generateQueryFromGroup(queryGroups);
-    console.log(mutationsList);
 
     const updateSecondaryRecords = `
       mutation updateSecondaryRecords {
