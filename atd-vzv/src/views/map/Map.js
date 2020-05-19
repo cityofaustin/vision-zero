@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import { StoreContext } from "../../utils/store";
-import { useWindowSize } from "react-use";
 import ReactMapGL, { Source, Layer } from "react-map-gl";
 import MapControls from "./MapControls";
 import MapPolygonFilter from "./MapPolygonFilter";
+import MapCompassSpinner from "./MapCompassSpinner";
 import { createMapDataUrl } from "./helpers";
 import { crashGeoJSONEndpointUrl } from "../../views/summary/queries/socrataQueries";
 import {
@@ -18,55 +18,13 @@ import {
   cityCouncilDataLayer,
 } from "./map-style";
 import axios from "axios";
-
-import styled from "styled-components";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCompass, faCircle } from "@fortawesome/free-solid-svg-icons";
-import { colors } from "../../constants/colors";
-import { responsive } from "../../constants/responsive";
+import { useIsMobile } from "../../constants/responsive";
 
 import "mapbox-gl/dist/mapbox-gl.css";
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css"; // Get out-of-the-box icons
-import MapCrashInfoBox from "./MapCrashInfoBox";
+import MapInfoBox from "./MapInfoBox";
 
 const MAPBOX_TOKEN = `pk.eyJ1Ijoiam9obmNsYXJ5IiwiYSI6ImNrM29wNnB3dDAwcXEzY29zMTU5bWkzOWgifQ.KKvoz6s4NKNHkFVSnGZonw`;
-
-const StyledMapSpinner = styled.div`
-  position: absolute;
-  width: 0px;
-  top: 50%;
-  /* Adjust centering with half FA spinner width */
-  left: calc(50% - 28px);
-  transform: translate(-50%, -50%);
-
-  .needle {
-    animation-name: wiggle;
-    animation-duration: 2500ms;
-    animation-iteration-count: infinite;
-    animation-timing-function: ease-in-out;
-  }
-
-  @keyframes wiggle {
-    0% {
-      transform: rotate(0deg);
-    }
-    10% {
-      transform: rotate(12deg);
-    }
-    40% {
-      transform: rotate(-25deg);
-    }
-    60% {
-      transform: rotate(20deg);
-    }
-    80% {
-      transform: rotate(-15deg);
-    }
-    100% {
-      transform: rotate(0deg);
-    }
-  }
-`;
 
 function useMapEventHandler(eventName, callback, mapRef) {
   useEffect(() => {
@@ -91,9 +49,7 @@ const Map = () => {
   // Create ref to map to call Mapbox GL functions on instance
   const mapRef = useRef();
 
-  const { width } = useWindowSize();
-  const { bootstrapMedium } = responsive;
-  const isMobile = width <= bootstrapMedium;
+  const isMobile = useIsMobile();
 
   const [mapData, setMapData] = useState("");
   const [interactiveLayerIds, setInteractiveLayerIds] = useState(null);
@@ -153,7 +109,7 @@ const Map = () => {
 
   // Fetch City Council Districts geojson
   useEffect(() => {
-    const overlayUrl = `https://services.arcgis.com/0L95CJ0VTaxqcmED/ArcGIS/rest/services/BOUNDARIES_single_member_districts/FeatureServer/0/query?where=COUNCIL_DISTRICT%20%3E=%200&f=geojson`;
+    const overlayUrl = `https://data.austintexas.gov/resource/7yq5-3tm4.geojson?$select=simplify_preserve_topology(the_geom,0.00001),council_district`;
     axios.get(overlayUrl).then((res) => {
       setCityCouncilOverlay(res.data);
     });
@@ -170,36 +126,53 @@ const Map = () => {
     const interactiveLayerIds = [
       isMapTypeSet.fatal && "fatalities",
       isMapTypeSet.injury && "seriousInjuries",
+      cityCouncilOverlay && overlay.name === "cityCouncil" && "cityCouncil",
     ];
 
     const filteredInteractiveIds = interactiveLayerIds.filter((id) => !!id);
     setInteractiveLayerIds(filteredInteractiveIds);
-  }, [isMapTypeSet]);
+  }, [isMapTypeSet, cityCouncilOverlay, overlay.name]);
 
   const _onSelectCrashPoint = (event) => {
     const { features } = event;
-    const selectedFeature =
+    // Filter feature to set in state and set hierarchy
+    let selectedFeature =
       features &&
       features.find(
-        (f) => f.layer.id === "fatalities" || f.layer.id === "seriousInjuries"
+        (f) =>
+          f.layer.id === "fatalities" ||
+          f.layer.id === "seriousInjuries" ||
+          f.layer.id === "cityCouncil" ||
+          null
       );
 
-    !isMobile && setSelectedFeature(selectedFeature);
-    !!selectedFeature && isMobile && setSelectedFeature(selectedFeature);
+    // Supplement feature properties with lat/long to set popup coords if not in feature metadata
+    if (!!selectedFeature && selectedFeature.layer.id === "cityCouncil") {
+      selectedFeature = {
+        ...selectedFeature,
+        properties: {
+          ...selectedFeature.properties,
+          latitude: event.lngLat[1],
+          longitude: event.lngLat[0],
+        },
+      };
+    }
+
+    setSelectedFeature(selectedFeature);
   };
 
   const renderCrashDataLayers = () => {
     // Layer order depends on order set, so set fatalities last to keep on top
     const injuryLayer = (
       <Source id="crashInjuries" type="geojson" data={mapData.injuries}>
-        <Layer {...seriousInjuriesOutlineDataLayer} />
-        <Layer {...seriousInjuriesDataLayer} />
+        <Layer beforeId="base-layer" {...seriousInjuriesOutlineDataLayer} />
+        <Layer beforeId="base-layer" {...seriousInjuriesDataLayer} />
       </Source>
     );
     const fatalityLayer = (
       <Source id="crashFatalities" type="geojson" data={mapData.fatalities}>
-        <Layer {...fatalitiesOutlineDataLayer} />
-        <Layer {...fatalitiesDataLayer} />
+        <Layer beforeId="base-layer" {...fatalitiesOutlineDataLayer} />
+        <Layer beforeId="base-layer" {...fatalitiesDataLayer} />
       </Source>
     );
     const bothLayers = (
@@ -260,30 +233,20 @@ const Map = () => {
       {buildHighInjuryLayer(overlay)}
       {!!cityCouncilOverlay && overlay.name === "cityCouncil" && (
         <Source type="geojson" data={cityCouncilOverlay}>
-          {/* Add beforeId to render beneath crash points */}
-          <Layer beforeId="base-layer" {...cityCouncilDataLayer} />
+          {/* Add beforeId to render beneath crash points, road layer, and map labels */}
+          <Layer beforeId="road-street" {...cityCouncilDataLayer} />
         </Source>
       )}
-      {/* Render crash point tooltip */}
+      {/* Render feature info or popup */}
       {selectedFeature && (
-        <MapCrashInfoBox
+        <MapInfoBox
           selectedFeature={selectedFeature}
           setSelectedFeature={setSelectedFeature}
           isMobile={isMobile}
+          type={selectedFeature.layer.id}
         />
       )}
-      {/* Show spinner when map is updating */}
-      {isMapDataLoading && (
-        <StyledMapSpinner className="fa-layers fa-fw">
-          <FontAwesomeIcon icon={faCircle} color={colors.infoDark} size="4x" />
-          <FontAwesomeIcon
-            className="needle"
-            icon={faCompass}
-            color={colors.dark}
-            size="4x"
-          />
-        </StyledMapSpinner>
-      )}
+      <MapCompassSpinner isSpinning={isMapDataLoading} />
       <MapControls setViewport={setViewport} />
       <MapPolygonFilter setMapPolygon={setMapPolygon} />
     </ReactMapGL>
