@@ -15,7 +15,7 @@ export const navConfig = [
   { title: "Map", url: "/map", eventKey: "mapNavButton" },
 ];
 
-// Initialze analytics
+// Initialize analytics
 export const Tracker = ReactGA.initialize("UA-85076727-3");
 
 // Custom hook that returns hookrouter route and tracks route change with GA
@@ -24,15 +24,11 @@ export function useTrackedRoutes(routes) {
   const currentPath = usePath();
 
   useEffect(() => {
-    trackPageView(currentPath);
+    ReactGA.pageview(currentPath);
   }, [routeResult, currentPath]);
 
   return routeResult;
 }
-
-export const trackPageView = (path) => {
-  ReactGA.pageview(path);
-};
 
 // Events to track with GA
 const events = {
