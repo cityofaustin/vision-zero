@@ -1,3 +1,5 @@
+import { useWindowSize } from "react-use";
+
 // Use to unify Bootstrap breakpoints with media queries
 export const responsive = {
   bootstrapMedium: 768,
@@ -6,4 +8,5 @@ export const responsive = {
   bootstrapExtraSmall: 576,
 };
 
-export const isMobile = () => window.innerWidth < responsive.bootstrapMedium;
+export const useIsMobile = () =>
+  useWindowSize().width <= responsive.bootstrapMedium;
