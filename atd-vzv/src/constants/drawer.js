@@ -3,6 +3,7 @@
 export const drawer = {
   headerHeight: 110,
   headerHeightMobile: 80,
-  headerElementHeight: 50,
+  headerButtonHeight: 50,
+  headerLogoOffset: 34,
   width: 300,
 };

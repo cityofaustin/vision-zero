@@ -51,7 +51,6 @@ const Content = () => {
       <Header />
       <StyledContent>
         {/* Remove padding from all content */}
-
         <Container fluid className="content px-0">
           {routeResult || <NotFound />}
         </Container>

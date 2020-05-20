@@ -52,6 +52,10 @@ const StyledDrawerHeader = styled.div`
   @media only screen and (max-width: ${responsive.bootstrapMedium}px) {
     display: none;
   }
+
+  .vz-logo {
+    height: ${drawer.headerButtonHeight + drawer.headerLogoOffset}px;
+  }
 `;
 
 const StyledDrawer = styled.div`
@@ -102,6 +106,7 @@ const SideDrawer = () => {
       <StyledDrawerHeader>
         {/* Need to adjust location of public folder to account for /viewer/ basepath */}
         <img
+          className="vz-logo"
           src={process.env.PUBLIC_URL + "/vz_logo.svg"}
           alt="Vision Zero Austin Logo"
         ></img>

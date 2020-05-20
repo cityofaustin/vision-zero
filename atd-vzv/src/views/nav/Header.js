@@ -2,7 +2,7 @@ import React from "react";
 import { StoreContext } from "../../utils/store";
 import { A, usePath } from "hookrouter";
 
-import { Navbar, Button, Nav, NavItem, NavLink } from "reactstrap";
+import { Container, Navbar, Button, Nav, NavItem, NavLink } from "reactstrap";
 import styled from "styled-components";
 import { navConfig } from "../../constants/nav";
 import { drawer } from "../../constants/drawer";
@@ -35,7 +35,7 @@ const Header = () => {
   .nav-button {
     /* Set width to keep buttons equal width */
     width: 140px;
-    height: ${drawer.headerElementHeight}px;
+    height: ${drawer.headerButtonHeight}px;
     font-size: 18px;
   }
 
@@ -62,7 +62,7 @@ const Header = () => {
 
   .vz-logo {
     /* Need to offset height to account for white space above and below logo in svg */
-    height: ${drawer.headerElementHeight + 34}px;
+    height: ${drawer.headerButtonHeight + drawer.headerLogoOffset}px;
     @media only screen and (max-width: ${responsive.bootstrapMediumMin}px) {
     /* Center VZ logo and only show when toggler is present */
     transform: translateX(-50%);
@@ -92,41 +92,58 @@ const Header = () => {
     <StyledNavbar>
       <Navbar
         light
-        className="navbar shadow-sm p-3 fixed-top header-navbar"
+        className="navbar shadow-sm fixed-top header-navbar px-0"
         expand="md"
       >
-        <Button
-          className="mr-2 sidedrawer-toggle"
-          color="dark"
-          onClick={() => setIsOpen(!isOpen)}
+        <Container
+          fluid
+          // In Summary view, match padding and margins of Summary content below
+          className={`${
+            currentPath === "/"
+              ? "px-xs-0 mx-xs-0 pl-md-2 pr-md-1 px-lg-3 mx-lg-4"
+              : "px-0"
+          }`}
         >
-          <FontAwesomeIcon icon={faBars} />
-        </Button>
-        <div className="vz-logo-wrapper">
-          <img
-            className="vz-logo"
-            // Need to adjust location of public folder to account for /viewer/ basepath
-            src={process.env.PUBLIC_URL + "/vz_logo.svg"}
-            alt="Vision Zero Austin Logo"
-          ></img>
-        </div>
-        <Nav className="navbar-links ml-auto" navbar>
-          {navConfig.map((config, i) => (
-            <NavItem key={i}>
-              <NavLink tag={A} href={config.url}>
-                {currentPath === config.url ? (
-                  <Button className="nav-button btn-dark" active>
-                    {config.icon} {config.title}
-                  </Button>
-                ) : (
-                  <Button className="nav-button inactive-nav-button">
-                    {config.icon} {config.title}
-                  </Button>
-                )}
-              </NavLink>
-            </NavItem>
-          ))}
-        </Nav>
+          <Button
+            className="ml-4 sidedrawer-toggle"
+            color="dark"
+            onClick={() => setIsOpen(!isOpen)}
+          >
+            <FontAwesomeIcon icon={faBars} />
+          </Button>
+          <div className="vz-logo-wrapper">
+            <img
+              className="vz-logo pl-lg-3"
+              // Need to adjust location of public folder to account for /viewer/ basepath
+              src={process.env.PUBLIC_URL + "/vz_logo.svg"}
+              alt="Vision Zero Austin Logo"
+            ></img>
+          </div>
+          <Nav className="navbar-links ml-auto px-lg-3" navbar>
+            {navConfig.map((config, i) => (
+              <NavItem key={i}>
+                <NavLink
+                  tag={A}
+                  href={config.url}
+                  className="pr-0 pl-2 mr-0 ml-2"
+                >
+                  {currentPath === config.url ? (
+                    <Button
+                      className="nav-button btn-dark mx-xs-0 mx-lg-2"
+                      active
+                    >
+                      {config.icon} {config.title}
+                    </Button>
+                  ) : (
+                    <Button className="nav-button inactive-nav-button mx-xs-0 mx-lg-2">
+                      {config.icon} {config.title}
+                    </Button>
+                  )}
+                </NavLink>
+              </NavItem>
+            ))}
+          </Nav>
+        </Container>
       </Navbar>
     </StyledNavbar>
   );
