@@ -28,7 +28,6 @@ const Content = () => {
   const summaryStyles = `
     width: 100vw;
     height: 100vh;
-    overflow-y: scroll;
   `;
 
   const StyledContent = styled.div`

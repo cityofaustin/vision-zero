@@ -15,18 +15,13 @@ const Header = () => {
   const currentPath = usePath();
 
   const StyledNavbar = styled.div`
-  .navbar-container {
-    /* Make Navbar container same height as SideDrawer header */
-    height: ${drawer.headerHeight}px;
-  }
-
   .header-navbar {
     /* Keep Navbar same height as header in SideDrawer and move to right based on drawer width */
     min-height: ${drawer.headerHeight}px;
     ${currentPath !== "/" && `left: ${drawer.width}px;`}
     background-color: ${colors.white};
     @media only screen and (max-width: ${responsive.bootstrapMedium}px) {
-      /* When SideDrawer collapses, move header to left of window */
+      /* Fill full width of screen with header on mobile */
       left: 0;
     }
   }
@@ -94,46 +89,44 @@ const Header = () => {
 
   return (
     <StyledNavbar>
-      <Container className="navbar-container p-0" fluid>
-        <Navbar
-          light
-          className="navbar shadow-sm p-3 fixed-top header-navbar"
-          expand="md"
+      <Navbar
+        light
+        className="navbar shadow-sm p-3 fixed-top header-navbar"
+        expand="md"
+      >
+        <Button
+          className="mr-2 sidedrawer-toggle"
+          color="dark"
+          onClick={() => setIsOpen(!isOpen)}
         >
-          <Button
-            className="mr-2 sidedrawer-toggle"
-            color="dark"
-            onClick={() => setIsOpen(!isOpen)}
-          >
-            <FontAwesomeIcon icon={faBars} />
-          </Button>
-          <div className="vz-logo-wrapper">
-            <img
-              className="vz-logo"
-              // Need to adjust location of public folder to account for /viewer/ basepath
-              src={process.env.PUBLIC_URL + "/vz_logo.svg"}
-              alt="Vision Zero Austin Logo"
-            ></img>
-          </div>
-          <Nav className="navbar-links ml-auto" navbar>
-            {navConfig.map((config, i) => (
-              <NavItem key={i}>
-                <NavLink tag={A} href={config.url}>
-                  {currentPath === config.url ? (
-                    <Button className="nav-button btn-dark" active>
-                      {config.title}
-                    </Button>
-                  ) : (
-                    <Button className="nav-button inactive-nav-button">
-                      {config.title}
-                    </Button>
-                  )}
-                </NavLink>
-              </NavItem>
-            ))}
-          </Nav>
-        </Navbar>
-      </Container>
+          <FontAwesomeIcon icon={faBars} />
+        </Button>
+        <div className="vz-logo-wrapper">
+          <img
+            className="vz-logo"
+            // Need to adjust location of public folder to account for /viewer/ basepath
+            src={process.env.PUBLIC_URL + "/vz_logo.svg"}
+            alt="Vision Zero Austin Logo"
+          ></img>
+        </div>
+        <Nav className="navbar-links ml-auto" navbar>
+          {navConfig.map((config, i) => (
+            <NavItem key={i}>
+              <NavLink tag={A} href={config.url}>
+                {currentPath === config.url ? (
+                  <Button className="nav-button btn-dark" active>
+                    {config.title}
+                  </Button>
+                ) : (
+                  <Button className="nav-button inactive-nav-button">
+                    {config.title}
+                  </Button>
+                )}
+              </NavLink>
+            </NavItem>
+          ))}
+        </Nav>
+      </Navbar>
     </StyledNavbar>
   );
 };
