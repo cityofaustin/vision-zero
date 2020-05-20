@@ -44,7 +44,7 @@ const SideDrawerMobileNav = () => {
                   currentPath === config.url ? "active" : "inactive"
                 }-button w-100`}
               >
-                {config.title}
+                {config.icon} {config.title}
               </Button>
             </NavLink>
           </NavItem>

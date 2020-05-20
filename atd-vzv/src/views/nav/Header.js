@@ -2,7 +2,7 @@ import React from "react";
 import { StoreContext } from "../../utils/store";
 import { A, usePath } from "hookrouter";
 
-import { Container, Navbar, Button, Nav, NavItem, NavLink } from "reactstrap";
+import { Navbar, Button, Nav, NavItem, NavLink } from "reactstrap";
 import styled from "styled-components";
 import { navConfig } from "../../constants/nav";
 import { drawer } from "../../constants/drawer";
@@ -35,14 +35,13 @@ const Header = () => {
   .nav-button {
     /* Set width to keep buttons equal width */
     width: 140px;
-    height: 56px;
+    height: ${drawer.headerElementHeight}px;
     font-size: 18px;
   }
 
   .inactive-nav-button {
     color: ${colors.dark};
     background: ${colors.buttonBackground};
-    border-style: none;
     opacity: 1;
     margin-left: 5px;
     margin-right: 5px;
@@ -62,6 +61,8 @@ const Header = () => {
   }
 
   .vz-logo {
+    /* Need to offset height to account for white space above and below logo in svg */
+    height: ${drawer.headerElementHeight + 34}px;
     @media only screen and (max-width: ${responsive.bootstrapMediumMin}px) {
     /* Center VZ logo and only show when toggler is present */
     transform: translateX(-50%);
@@ -115,11 +116,11 @@ const Header = () => {
               <NavLink tag={A} href={config.url}>
                 {currentPath === config.url ? (
                   <Button className="nav-button btn-dark" active>
-                    {config.title}
+                    {config.icon} {config.title}
                   </Button>
                 ) : (
                   <Button className="nav-button inactive-nav-button">
-                    {config.title}
+                    {config.icon} {config.title}
                   </Button>
                 )}
               </NavLink>
