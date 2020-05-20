@@ -45,6 +45,7 @@ AWS_S3_BUCKET = os.getenv("AWS_S3_BUCKET", "")
 # Hasura Config
 HASURA_ADMIN_SECRET = os.getenv("HASURA_ADMIN_SECRET", "")
 HASURA_ENDPOINT = os.getenv("HASURA_ENDPOINT", "")
+HASURA_EVENTS_API = os.getenv("HASURA_EVENTS_API", "")
 
 
 def get_api_token():
@@ -425,19 +426,15 @@ def user_delete_user(id):
 
 @APP.route("/crashes/associate_location/", methods=["PUT", "POST"])
 def associate_location():
-    HASURA_EVENTS_API = os.getenv("HASURA_EVENTS_API", "")
-    incoming_token = request.headers.get('HASURA_EVENTS_API')
-
+    # Require matching token
+    incoming_token = request.headers.get('Hasura-Event-Api')
     hashed_events_api = hashlib.md5()
-    hashed_events_api.update(str(HASURA_EVENTS_API).encode('utf-8'))
+    hashed_events_api.update(str(HASURA_EVENTS_API).encode("utf-8"))
     hashed_incoming_token = hashlib.md5()
-    hashed_incoming_token.update(str(incoming_token).encode('utf-8'))
+    hashed_incoming_token.update(str(incoming_token).encode("utf-8"))
 
-    print(hashed_events_api)
-    print(hashed_incoming_token)
-
-    # Require token
-    if hashed_events_api != hashed_incoming_token:
+    # Return error if token doesn't match
+    if hashed_events_api.hexdigest() != hashed_incoming_token.hexdigest():
         return {
             "statusCode": 403,
             "body": json.dumps({'message': 'Forbidden Request'})
@@ -465,10 +462,15 @@ def associate_location():
     json_body = {'query': find_location_query}
 
     # Make request to Hasura expecting a Location Record in the response
-    response = requests.post(
-        HASURA_ENDPOINT, data=json.dumps(json_body), headers=HEADERS)
+    try:
+        response = requests.post(
+            HASURA_ENDPOINT, data=json.dumps(json_body), headers=HEADERS)
+    except:
+        return {
+            "statusCode": 400,
+            "body": json.dumps({'message': 'Unable to parse request body to identify a Location Record'})
+        }
 
-    print(response.json())
     new_location_id = response.json(
     )['data']['find_location_for_cr3_collision'][0]['location_id']
 
@@ -491,11 +493,15 @@ def associate_location():
         mutation_json_body = {
             'query': update_location_mutation, 'variables': query_variables}
 
-        print(update_location_mutation)
-
-        # Execute the update
-        mutation_response = requests.post(
-            HASURA_ENDPOINT, data=json.dumps(mutation_json_body), headers=HEADERS)
+        # Execute the mutation
+        try:
+            mutation_response = requests.post(
+                HASURA_ENDPOINT, data=json.dumps(mutation_json_body), headers=HEADERS)
+        except:
+            return {
+                "statusCode": 400,
+                "body": json.dumps({'message': 'Unable to parse request body for location_id update'})
+            }
 
         print(mutation_response.json())
 
