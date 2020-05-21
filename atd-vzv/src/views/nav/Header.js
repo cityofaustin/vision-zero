@@ -6,13 +6,14 @@ import { Container, Navbar, Button, Nav, NavItem, NavLink } from "reactstrap";
 import styled from "styled-components";
 import { navConfig } from "../../constants/nav";
 import { drawer } from "../../constants/drawer";
-import { responsive, isMobile } from "../../constants/responsive";
+import { responsive, useIsMobile } from "../../constants/responsive";
 import { colors } from "../../constants/colors";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 
 const Header = () => {
   const currentPath = usePath();
+  const isMobile = useIsMobile();
   const isSummaryView = currentPath === "/";
 
   const StyledNavbar = styled.div`
