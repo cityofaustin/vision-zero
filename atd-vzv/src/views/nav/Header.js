@@ -6,7 +6,7 @@ import { Container, Navbar, Button, Nav, NavItem, NavLink } from "reactstrap";
 import styled from "styled-components";
 import { navConfig } from "../../constants/nav";
 import { drawer } from "../../constants/drawer";
-import { responsive } from "../../constants/responsive";
+import { responsive, isMobile } from "../../constants/responsive";
 import { colors } from "../../constants/colors";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
@@ -18,7 +18,7 @@ const Header = () => {
   const StyledNavbar = styled.div`
   .header-navbar {
     /* Keep Navbar same height as header in SideDrawer and move to right based on drawer width */
-    min-height: ${drawer.headerHeight}px;
+    min-height: ${isMobile ? drawer.headerHeightMobile : drawer.headerHeight}px;
     ${currentPath !== "/" && `left: ${drawer.width}px;`}
     background-color: ${colors.white};
     @media only screen and (max-width: ${responsive.bootstrapMedium}px) {
@@ -65,21 +65,17 @@ const Header = () => {
     /* Need to offset height to account for white space above and below logo in svg */
     height: ${drawer.headerButtonHeight + drawer.headerLogoOffset}px;
     @media only screen and (max-width: ${responsive.bootstrapMediumMin}px) {
-    /* Center VZ logo and only show when toggler is present */
-    transform: translateX(-50%);
-    left: 50%;
-    position: absolute;
+      /* Center VZ logo and only show when toggler is present */
+      transform: translateX(-50%);
+      left: 50%;
+      position: absolute;
+      height: ${drawer.headerButtonHeight}px;
     }
 
     /* Hide logo in header when SideDrawer is closed and toggle is present (mobile)
     but show in Summary view at all times */
     @media only screen and (min-width: ${responsive.bootstrapMediumMin}px) {
       ${currentPath !== "/" && "display: none;"}
-    }
-
-    /* Change position to prevent overlap of logo and toggle button on small devices */
-    @media only screen and (max-width: ${responsive.bootstrapExtraSmall}px) {
-      position: relative;
     }
   }
 `;
@@ -106,7 +102,7 @@ const Header = () => {
           }`}
         >
           <Button
-            className="ml-4 sidedrawer-toggle"
+            className="ml-3 sidedrawer-toggle"
             color="dark"
             onClick={() => setIsOpen(!isOpen)}
           >
@@ -121,7 +117,9 @@ const Header = () => {
             ></img>
           </div>
           <Nav
-            className={`navbar-links ml-auto ${isSummaryView ? "px-lg-3" : "px-3"}`}
+            className={`navbar-links ml-auto ${
+              isSummaryView ? "px-lg-3" : "px-3"
+            }`}
             navbar
           >
             {navConfig.map((config, i) => (

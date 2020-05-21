@@ -7,7 +7,7 @@ import NotFound from "../NotFound/NotFound";
 import { Container } from "reactstrap";
 import styled from "styled-components";
 import { drawer } from "../../constants/drawer";
-import { responsive } from "../../constants/responsive";
+import { responsive, isMobile } from "../../constants/responsive";
 
 const Content = () => {
   const routeResult = useRoutes(routes);
@@ -21,7 +21,9 @@ const Content = () => {
   // Map view needs to consider header height and have no overflow scroll to fill view
   // Summary view needs to scroll to show all content
   const mapStyles = `
-    height: calc(100vh - ${drawer.headerHeight}px);
+    height: calc(100vh - ${
+      isMobile ? drawer.headerHeightMobile : drawer.headerHeight
+    }px);
     width: calc(100vw - ${drawer.width}px);
   `;
 
