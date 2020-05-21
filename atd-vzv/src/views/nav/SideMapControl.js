@@ -52,7 +52,7 @@ const StyledCard = styled.div`
     height: 33px;
   }
   
-  // Patch the CSS for Mozilla FireFox only
+  /* CSS Patch for Mozilla FireFox in MS Windows */
   @-moz-document url-prefix() {
     /* First, we need to remove flex-grow that is incorporated in the 'col' class. */
     div.p-3.card-body.card > div.mx-0.mb-3.row:nth-child(2) > div {
@@ -63,6 +63,7 @@ const StyledCard = styled.div`
       font-size: 13px;
       margin-right: 0px;
     }
+    /* Thirdly, we need to fix the length of input boxes in the search field */
     div.DateInput_h3jhzu-o_O-DateInput__small_o343y7 {
       width: 94px !important;
     }
