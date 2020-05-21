@@ -51,6 +51,16 @@ const StyledCard = styled.div`
     padding-right: 6px !important;
     height: 33px;
   } 
+  
+  /* We need to remove flex-grow, it's causing the buttons to slide right. */
+  div.p-3.card-body.card > div.mx-0.mb-3.row:nth-child(2) > div {
+    flex-grow: 0 !important;
+  }
+  /* Secondly, remove the margin-right, change font size to 13px in buttons */
+  div.p-3.card-body.card > div.mx-0.mb-3.row:nth-child(2) > div > button {
+    font-size: 13px;
+    margin-right: 0px;
+  }
 `;
 
 const SideMapControl = () => {
@@ -225,31 +235,6 @@ const SideMapControl = () => {
     }, {});
     setFilterGroupCounts(filtersCount);
   }, [filters]);
-
-  /**
-   *  Fixes the style for Chrome and FireFox in Windows
-   **/
-  useEffect(() => {
-    if (navigator.appVersion.indexOf("Win") != -1) {
-      const style = document.createElement('style');
-      style.textContent = `
-      /* First, we need to remove flex-grow that is incorporated in the 'col' class. */
-        div.p-3.card-body.card > div.mx-0.mb-3.row:nth-child(2) > div {
-          flex-grow: 0 !important;
-        }
-        /* Secondly, remove the margin-right, change font size to 13px in buttons */
-        div.p-3.card-body.card > div.mx-0.mb-3.row:nth-child(2) > div > button {
-          font-size: 13px;
-          margin-right: 0px;
-        }
-        /* Thirdly, we need to fix the length of input boxes in the search field */
-        div[class^="DateInput_"] {
-          width: 94px !important;
-        }
-      `;
-        document.head.append(style);
-    } // end if
-  });
 
   const isFilterSet = (filterName) => {
     return !!filters.find((setFilter) => setFilter.name === filterName);
