@@ -135,7 +135,7 @@ const SideDrawer = () => {
         id={currentPath === "/" ? "summary-side-drawer" : ""}
       >
         <CssBaseline />
-        <nav className={classes.drawer} aria-label="mailbox folders">
+        <nav className={classes.drawer} aria-label="mobile side drawer">
           <Drawer
             id="temporary-drawer"
             variant="temporary"

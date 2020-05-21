@@ -3,7 +3,7 @@ import { RenderStates } from "react-map-gl-draw";
 import { Source, Layer } from "react-map-gl";
 import { colors } from "../../constants/colors";
 
-// Empty source and layer placeholder to place other layers before
+// Empty source and layer placeholder to place other layers beneath road labels
 export const baseSourceAndLayer = (
   <>
     <Source
@@ -11,7 +11,11 @@ export const baseSourceAndLayer = (
       type="geojson"
       data={{ type: "FeatureCollection", features: [] }}
     >
-      <Layer id="base-layer" {...{ type: "symbol", source: "base-source" }} />
+      <Layer
+        beforeId="road-label-sm"
+        id="base-layer"
+        {...{ type: "symbol", source: "base-source" }}
+      />
     </Source>
   </>
 );
@@ -93,6 +97,7 @@ export const buildAsmpLayers = (config, overlay) =>
     // https://tiles.arcgis.com/tiles/0L95CJ0VTaxqcmED/arcgis/rest/services/ASMP_Streets_VectorTile/VectorTileServer/resources/styles/root.json?f=pjson
     const asmpLayerConfig = {
       id: level,
+      beforeId: "base-layer",
       type: "line",
       source: {
         type: "vector",
@@ -129,6 +134,7 @@ export const buildHighInjuryLayer = (overlay) => {
   // https://tiles.arcgis.com/tiles/0L95CJ0VTaxqcmED/arcgis/rest/services/HIN_Vector_Tile/VectorTileServer/resources/styles/root.json?f=pjson
   const highInjuryLayerConfig = {
     id: overlayId,
+    beforeId: "base-layer",
     type: "line",
     source: {
       type: "vector",
@@ -152,27 +158,37 @@ export const buildHighInjuryLayer = (overlay) => {
 };
 
 // Style geojson returned from ArcGIS that populates the Source and Layer in Map component
-// https://services.arcgis.com/0L95CJ0VTaxqcmED/arcgis/rest/services/BOUNDARIES_single_member_districts/FeatureServer/0?f=pjson
+// https://data.austintexas.gov/Locations-and-Maps/Council-Districts-Fill/hdpc-ysmz
 export const cityCouncilDataLayer = {
-  id: "data",
+  id: "cityCouncil",
   type: "fill",
   paint: {
-    "fill-color": {
-      property: "COUNCIL_DISTRICT",
-      stops: [
-        [1, colors.mapCityCouncil1],
-        [2, colors.mapCityCouncil2],
-        [3, colors.mapCityCouncil3],
-        [4, colors.mapCityCouncil4],
-        [5, colors.mapCityCouncil5],
-        [6, colors.mapCityCouncil6],
-        [7, colors.mapCityCouncil7],
-        [8, colors.mapCityCouncil8],
-        [9, colors.mapCityCouncil9],
-        [10, colors.mapCityCouncil10],
-      ],
-    },
-    "fill-opacity": 0.5,
+    "fill-opacity": 0.25,
+    "fill-color": [
+      "match",
+      ["get", "council_district"],
+      "1",
+      colors.mapCityCouncil1,
+      "2",
+      colors.mapCityCouncil2,
+      "3",
+      colors.mapCityCouncil3,
+      "4",
+      colors.mapCityCouncil4,
+      "5",
+      colors.mapCityCouncil5,
+      "6",
+      colors.mapCityCouncil6,
+      "7",
+      colors.mapCityCouncil7,
+      "8",
+      colors.mapCityCouncil8,
+      "9",
+      colors.mapCityCouncil9,
+      "10",
+      colors.mapCityCouncil10,
+      /* other */ "#ccc",
+    ],
   },
 };
 
