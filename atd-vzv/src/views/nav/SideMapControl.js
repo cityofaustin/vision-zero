@@ -50,16 +50,6 @@ const StyledCard = styled.div`
     margin-right: 2px;
     padding-right: 6px !important;
     height: 33px;
-  } 
-  
-  /* We need to remove flex-grow, it's causing the buttons to slide right. */
-  div.p-3.card-body.card > div.mx-0.mb-3.row:nth-child(2) > div {
-    flex-grow: 0 !important;
-  }
-  /* Secondly, remove the margin-right, change font size to 13px in buttons */
-  div.p-3.card-body.card > div.mx-0.mb-3.row:nth-child(2) > div > button {
-    font-size: 13px;
-    margin-right: 0px;
   }
 `;
 
