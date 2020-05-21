@@ -64,7 +64,7 @@ const StyledCard = styled.div`
       margin-right: 0px;
     }
     /* Thirdly, we need to fix the length of input boxes in the search field */
-    div.DateInput_h3jhzu-o_O-DateInput__small_o343y7 {
+    [class^="DateInput_"] {
       width: 94px !important;
     }
   }  
