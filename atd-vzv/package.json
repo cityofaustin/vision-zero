@@ -25,6 +25,7 @@
     "hookrouter": "^1.2.3",
     "moment": "^2.24.0",
     "react": "^16.10.2",
+    "react-app-polyfill": "^1.0.6",
     "react-chartjs-2": "^2.9.0",
     "react-dates": "^21.8.0",
     "react-dom": "^16.10.2",
