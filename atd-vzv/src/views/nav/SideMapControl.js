@@ -51,6 +51,22 @@ const StyledCard = styled.div`
     padding-right: 6px !important;
     height: 33px;
   }
+  
+  // Patch the CSS for Mozilla FireFox only
+  @-moz-document url-prefix() {
+    /* First, we need to remove flex-grow that is incorporated in the 'col' class. */
+    div.p-3.card-body.card > div.mx-0.mb-3.row:nth-child(2) > div {
+      flex-grow: 0 !important;
+    }
+    /* Secondly, remove the margin-right, change font size to 13px in buttons */
+    div.p-3.card-body.card > div.mx-0.mb-3.row:nth-child(2) > div > button {
+      font-size: 13px;
+      margin-right: 0px;
+    }
+    div.DateInput_h3jhzu-o_O-DateInput__small_o343y7 {
+      width: 94px !important;
+    }
+  }  
 `;
 
 const SideMapControl = () => {
