@@ -1,3 +1,5 @@
+import 'react-app-polyfill/ie11';
+import 'react-app-polyfill/stable';
 import React from "react";
 import ReactDOM from "react-dom";
 import { setBasepath } from "hookrouter";
@@ -7,8 +9,6 @@ import App from "./App";
 import StoreProvider from "./utils/store";
 import * as serviceWorker from "./serviceWorker";
 import "bootstrap/dist/css/bootstrap.css";
-import 'react-app-polyfill/ie11';
-import 'react-app-polyfill/stable';
 
 // Account for /viewer/ basepath in all routing
 setBasepath(basepath);
