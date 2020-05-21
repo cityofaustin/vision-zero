@@ -13,6 +13,7 @@ import { faBars } from "@fortawesome/free-solid-svg-icons";
 
 const Header = () => {
   const currentPath = usePath();
+  const isSummaryView = currentPath === "/";
 
   const StyledNavbar = styled.div`
   .header-navbar {
@@ -99,7 +100,7 @@ const Header = () => {
           fluid
           // In Summary view, match padding and margins of Summary content below
           className={`${
-            currentPath === "/"
+            isSummaryView
               ? "px-xs-0 mx-xs-0 pl-md-2 pr-md-1 px-lg-3 mx-lg-4"
               : "px-0"
           }`}
@@ -119,7 +120,10 @@ const Header = () => {
               alt="Vision Zero Austin Logo"
             ></img>
           </div>
-          <Nav className="navbar-links ml-auto px-lg-3" navbar>
+          <Nav
+            className={`navbar-links ml-auto ${isSummaryView ? "px-lg-3" : "px-3"}`}
+            navbar
+          >
             {navConfig.map((config, i) => (
               <NavItem key={i}>
                 <NavLink
@@ -127,18 +131,16 @@ const Header = () => {
                   href={config.url}
                   className="pr-0 pl-2 mr-0 ml-2"
                 >
-                  {currentPath === config.url ? (
-                    <Button
-                      className="nav-button btn-dark mx-xs-0 mx-lg-2"
-                      active
-                    >
-                      {config.icon} {config.title}
-                    </Button>
-                  ) : (
-                    <Button className="nav-button inactive-nav-button mx-xs-0 mx-lg-2">
-                      {config.icon} {config.title}
-                    </Button>
-                  )}
+                  <Button
+                    className={`nav-button ${
+                      currentPath === config.url
+                        ? "btn-dark"
+                        : "inactive-nav-button"
+                    } mx-xs-0 mx-lg-2`}
+                    active={currentPath === config.url}
+                  >
+                    {config.icon} {config.title}
+                  </Button>
                 </NavLink>
               </NavItem>
             ))}
