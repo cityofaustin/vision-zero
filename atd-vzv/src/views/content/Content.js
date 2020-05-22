@@ -23,10 +23,6 @@ const Content = () => {
   const mapStyles = `
     height: calc(100vh - ${drawer.headerHeight}px);
     width: calc(100vw - ${drawer.width}px);
-
-    @media only screen and (max-width: ${responsive.bootstrapMedium}px) {
-      height: calc(100vh - ${drawer.headerHeightMobile}px);
-    }
   `;
 
   const summaryStyles = `
@@ -46,6 +42,7 @@ const Content = () => {
     @media only screen and (max-width: ${responsive.bootstrapMedium}px) {
       .content {
         width: 100vw;
+        height: calc(100vh - ${drawer.headerHeightMobile}px);
         top: ${drawer.headerHeightMobile}px;
       }
     }
