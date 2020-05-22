@@ -6,25 +6,25 @@ import { Container, Navbar, Button, Nav, NavItem, NavLink } from "reactstrap";
 import styled from "styled-components";
 import { navConfig } from "../../constants/nav";
 import { drawer } from "../../constants/drawer";
-import { responsive, useIsMobile } from "../../constants/responsive";
+import { responsive } from "../../constants/responsive";
 import { colors } from "../../constants/colors";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 
 const Header = () => {
   const currentPath = usePath();
-  const isMobile = useIsMobile();
   const isSummaryView = currentPath === "/";
 
   const StyledNavbar = styled.div`
   .header-navbar {
     /* Keep Navbar same height as header in SideDrawer and move to right based on drawer width */
-    min-height: ${isMobile ? drawer.headerHeightMobile : drawer.headerHeight}px;
+    min-height: ${drawer.headerHeight}px;
     ${currentPath !== "/" && `left: ${drawer.width}px;`}
     background-color: ${colors.white};
     @media only screen and (max-width: ${responsive.bootstrapMedium}px) {
       /* Fill full width of screen with header on mobile */
       left: 0;
+      min-height: ${drawer.headerHeightMobile}px;
     }
   }
 

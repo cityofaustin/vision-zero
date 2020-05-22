@@ -7,15 +7,11 @@ import NotFound from "../NotFound/NotFound";
 import { Container } from "reactstrap";
 import styled from "styled-components";
 import { drawer } from "../../constants/drawer";
-import { responsive, useIsMobile } from "../../constants/responsive";
+import { responsive } from "../../constants/responsive";
 
 const Content = () => {
   const routeResult = useRoutes(routes);
   const currentPath = usePath();
-  const isMobile = useIsMobile();
-  const headerHeight = isMobile
-    ? drawer.headerHeightMobile
-    : drawer.headerHeight;
 
   // TODO: Slide content to the right when SideDrawer opens
   // Adding conditional styles based on sidebarToggle in the store causes children to re-render on toggle
@@ -25,8 +21,12 @@ const Content = () => {
   // Map view needs to consider header height and have no overflow scroll to fill view
   // Summary view needs to scroll to show all content
   const mapStyles = `
-    height: calc(100vh - ${headerHeight}px);
+    height: calc(100vh - ${drawer.headerHeight}px);
     width: calc(100vw - ${drawer.width}px);
+
+    @media only screen and (max-width: ${responsive.bootstrapMedium}px) {
+      height: calc(100vh - ${drawer.headerHeightMobile}px);
+    }
   `;
 
   const summaryStyles = `
@@ -37,7 +37,7 @@ const Content = () => {
   const StyledContent = styled.div`
     .content {
       position: relative;
-      top: ${headerHeight}px;
+      top: ${drawer.headerHeight}px;
       ${currentPath === "/" && summaryStyles}
       ${currentPath === "/map" && mapStyles}
     }
@@ -46,6 +46,7 @@ const Content = () => {
     @media only screen and (max-width: ${responsive.bootstrapMedium}px) {
       .content {
         width: 100vw;
+        top: ${drawer.headerHeightMobile}px;
       }
     }
   `;
