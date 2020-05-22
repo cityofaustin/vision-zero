@@ -8,12 +8,11 @@ import CssBaseline from "@material-ui/core/CssBaseline";
 import Drawer from "@material-ui/core/Drawer";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import styled from "styled-components";
-import { drawer } from "../../constants/drawer";
 import { colors } from "../../constants/colors";
 import { responsive } from "../../constants/responsive";
 import SideDrawerMobileNav from "./SideDrawerMobileNav";
 
-const drawerWidth = drawer.width;
+const drawerWidth = responsive.drawerWidth;
 
 // Styles for MUI drawer
 const useStyles = makeStyles((theme) => {
@@ -45,7 +44,7 @@ const StyledDrawerHeader = styled.div`
   background-color: ${colors.white};
   color: ${colors.dark};
   padding: 20px;
-  height: ${drawer.headerHeight}px;
+  height: ${responsive.headerHeight}px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -54,7 +53,7 @@ const StyledDrawerHeader = styled.div`
   }
 
   .vz-logo {
-    height: ${drawer.headerButtonHeight + drawer.headerLogoOffset}px;
+    height: ${responsive.headerButtonHeight + responsive.headerLogoOffset}px;
   }
 `;
 
@@ -88,7 +87,7 @@ const StyledDrawer = styled.div`
   /* Allow user to scroll when drawer content height exceeds device viewport */
   .drawer-content {
     overflow-y: scroll;
-    height: calc(100vh - ${drawer.headerHeight}px);
+    height: calc(100vh - ${responsive.headerHeight}px);
   }
 `;
 

@@ -12,9 +12,7 @@ const StyledMobileNav = styled.div`
   }
 
   .nav-button {
-    /* Set width to keep buttons equal width */
-    width: 140px;
-    height: 56px;
+    height: ${responsive.headerButtonHeight}px;
     font-size: 18px;
   }
 

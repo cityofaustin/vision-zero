@@ -5,7 +5,6 @@ import { A, usePath } from "hookrouter";
 import { Container, Navbar, Button, Nav, NavItem, NavLink } from "reactstrap";
 import styled from "styled-components";
 import { navConfig } from "../../constants/nav";
-import { drawer } from "../../constants/drawer";
 import { responsive } from "../../constants/responsive";
 import { colors } from "../../constants/colors";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -18,13 +17,13 @@ const Header = () => {
   const StyledNavbar = styled.div`
   .header-navbar {
     /* Keep Navbar same height as header in SideDrawer and move to right based on drawer width */
-    min-height: ${drawer.headerHeight}px;
-    ${currentPath !== "/" && `left: ${drawer.width}px;`}
+    min-height: ${responsive.headerHeight}px;
+    ${currentPath !== "/" && `left: ${responsive.drawerWidth}px;`}
     background-color: ${colors.white};
     @media only screen and (max-width: ${responsive.bootstrapMedium}px) {
       /* Fill full width of screen with header on mobile */
       left: 0;
-      min-height: ${drawer.headerHeightMobile}px;
+      min-height: ${responsive.headerHeightMobile}px;
     }
   }
 
@@ -36,8 +35,8 @@ const Header = () => {
 
   .nav-button {
     /* Set width to keep buttons equal width */
-    width: 140px;
-    height: ${drawer.headerButtonHeight}px;
+  width: ${responsive.headerButtonWidth}px;
+    height: ${responsive.headerButtonHeight}px;
     font-size: 18px;
   }
 
@@ -64,13 +63,14 @@ const Header = () => {
 
   .vz-logo {
     /* Need to offset height to account for white space above and below logo in svg */
-    height: ${drawer.headerButtonHeight + drawer.headerLogoOffset}px;
+    height: ${responsive.headerButtonHeight + responsive.headerLogoOffset}px;
+    
     @media only screen and (max-width: ${responsive.bootstrapMediumMin}px) {
       /* Center VZ logo and only show when toggler is present */
       transform: translateX(-50%);
       left: 50%;
       position: absolute;
-      height: ${drawer.headerButtonHeight}px;
+      height: ${responsive.headerButtonHeight}px;
     }
 
     /* Hide logo in header when SideDrawer is closed and toggle is present (mobile)
