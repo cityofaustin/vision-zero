@@ -39,6 +39,12 @@ function useMapEventHandler(eventName, callback, mapRef) {
 }
 
 const Map = () => {
+  // Travis County
+  const navBBox = [
+    [-98.1708, 30.0226],
+    [-97.3711, 30.6251],
+  ];
+
   // Set initial map config
   const [viewport, setViewport] = useState({
     latitude: 30.268039,
@@ -115,7 +121,33 @@ const Map = () => {
     });
   }, []);
 
-  const _onViewportChange = (viewport) => setViewport(viewport);
+  // Restrict map navigation to Travis County
+  const restrictNavigation = (viewport) => {
+    const bbox = {
+      longitude: { min: -98.1708, max: -97.3111 },
+      latitude: { min: 30.0226, max: 30.6251 },
+    };
+
+    if (viewport.longitude < bbox.longitude.min) {
+      viewport.longitude = bbox.longitude.min;
+    }
+    if (viewport.longitude > bbox.longitude.max) {
+      viewport.longitude = bbox.longitude.max;
+    }
+    if (viewport.latitude < bbox.latitude.min) {
+      viewport.latitude = bbox.latitude.min;
+    }
+    if (viewport.latitude > bbox.latitude.max) {
+      viewport.latitude = bbox.latitude.max;
+    }
+
+    return viewport;
+  };
+
+  const _onViewportChange = (viewport) => {
+    viewport = restrictNavigation(viewport);
+    setViewport(viewport);
+  };
 
   // Change cursor to grab when dragging map and pointer when hovering an interactive layer
   const _getCursor = ({ isHovering, isDragging }) =>
