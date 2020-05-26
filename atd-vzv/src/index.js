@@ -1,7 +1,10 @@
-import "core-js/stable";
-import "regenerator-runtime/runtime";
+// import "react-app-polyfill/ie9"; // For IE 9-11 support
 import 'react-app-polyfill/ie11';
 import 'react-app-polyfill/stable';
+import "core-js/stable";
+import "regenerator-runtime/runtime";
+import "es6-symbol/implement";
+import "./polyfill";
 import React from "react";
 import ReactDOM from "react-dom";
 import { setBasepath } from "hookrouter";
