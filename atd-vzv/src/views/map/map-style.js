@@ -243,3 +243,12 @@ export function getFeatureStyle({ feature, index, state }) {
       };
   }
 }
+
+export const travisCountyDataLayer = {
+  id: "travisCounty",
+  type: "fill",
+  paint: {
+    "fill-opacity": 0.75,
+    "fill-color": colors.dark,
+  },
+};

@@ -16,6 +16,7 @@ import {
   asmpConfig,
   buildHighInjuryLayer,
   cityCouncilDataLayer,
+  travisCountyDataLayer,
 } from "./map-style";
 import axios from "axios";
 import { useIsMobile } from "../../constants/responsive";
@@ -39,11 +40,47 @@ function useMapEventHandler(eventName, callback, mapRef) {
 }
 
 const Map = () => {
-  // Travis County
-  const navBBox = [
-    [-98.1708, 30.0226],
-    [-97.3711, 30.6251],
-  ];
+  const travisCountyBboxGeoJSON = {
+    type: "FeatureCollection",
+    properties: {
+      kind: "state",
+      state: "TX",
+    },
+    features: [
+      {
+        type: "Feature",
+        properties: {
+          kind: "county",
+          name: "Travis",
+          state: "TX",
+        },
+        geometry: {
+          type: "MultiPolygon",
+          coordinates: [
+            [
+              [
+                [0, 90],
+                [180, 90],
+                [180, -90],
+                [0, -90],
+                [-180, -90],
+                [-180, 0],
+                [-180, 90],
+                [0, 90],
+              ],
+              [
+                [-98.1708, 30.0226],
+                [-97.3711, 30.0226],
+                [-97.3711, 30.6251],
+                [-98.1708, 30.6251],
+                [-98.1708, 30.0226],
+              ],
+            ],
+          ],
+        },
+      },
+    ],
+  };
 
   // Set initial map config
   const [viewport, setViewport] = useState({
@@ -269,6 +306,10 @@ const Map = () => {
           <Layer beforeId="road-street" {...cityCouncilDataLayer} />
         </Source>
       )}
+      <Source type="geojson" data={travisCountyBboxGeoJSON}>
+        {/* Add beforeId to render beneath crash points, road layer, and map labels */}
+        <Layer {...travisCountyDataLayer} />
+      </Source>
       {/* Render feature info or popup */}
       {selectedFeature && (
         <MapInfoBox
