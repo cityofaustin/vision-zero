@@ -16,6 +16,19 @@ export const popoverConfig = {
         </>
       ),
     },
+    raceEthnicity: {
+      title: "Race/Ethnicity",
+      html: (
+        <>
+          <div className="mb-2">
+            This visualization relies on information entered by officers into
+            the "Ethnicity" field within official crash reports. To more
+            accurately reflect modern race and ethnicity data standards, the
+            label for this visualization has been modified to "Race/Ethnicity."
+          </div>
+        </>
+      ),
+    },
   },
   map: {
     trafficCrashes: {
