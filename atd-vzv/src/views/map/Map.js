@@ -178,6 +178,11 @@ const Map = () => {
       viewport.latitude = bbox.latitude.max;
     }
 
+    // Limit zoom
+    if (viewport.zoom < 10) {
+      viewport.zoom = 10;
+    }
+
     return viewport;
   };
 

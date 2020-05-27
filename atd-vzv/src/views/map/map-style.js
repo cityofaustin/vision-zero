@@ -248,7 +248,7 @@ export const travisCountyDataLayer = {
   id: "travisCounty",
   type: "fill",
   paint: {
-    "fill-opacity": 0.75,
+    "fill-opacity": 0.15,
     "fill-color": colors.dark,
   },
 };
