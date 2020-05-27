@@ -76,5 +76,6 @@ build-iPhoneSimulator/
 
 # Ignore any json files within these directories
 atd-events/**/*.json
+atd-events/**/*.zip
 atd-events/**/package
 atd-etl/app/**/*.json
