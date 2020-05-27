@@ -13,12 +13,22 @@ HASURA_ENDPOINT = os.getenv("HASURA_ENDPOINT", "")
 HASURA_EVENT_API = os.getenv("HASURA_EVENT_API", "")
 
 
-def hasura_request(data):
+def hasura_request(record):
     """
     Processes a location update event.
     :param dict data: The json payload from Hasura
     """
     # Get data/crash_id from Hasura Event request
+
+    print("Handling request: ")
+    print(json.dumps(record))
+
+    try:
+        data = json.loads(record)
+    except:
+        data = ""
+        exit(0)
+
     try:
         crash_id = data["event"]["data"]["old"]["crash_id"]
         old_location_id = data["event"]["data"]["old"]["location_id"]
@@ -30,7 +40,6 @@ def hasura_request(data):
                 }
             )
         )
-        exit(1)
 
     # Prep Hasura query
     HEADERS = {
@@ -100,6 +109,7 @@ def hasura_request(data):
                 )
             )
 
+        print("Mutation Successful")
         print(mutation_response.json())
 
 
@@ -113,7 +123,7 @@ def handler(event, context):
         timeStr = time.ctime()
         print("Current Timestamp : ", timeStr)
         print(json.dumps(record))
-        # Whenever we are ready to test:
-        # hasura_request(record)
+        if "body" in record:
+            hasura_request(record["body"])
         timeStr = time.ctime()
         print("Done executing: ", timeStr)
