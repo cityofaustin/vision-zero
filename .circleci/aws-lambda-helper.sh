@@ -28,10 +28,10 @@ function install_requirements {
 #
 function bundle_function {
   echo "Bundling function...";
-  cd package
-  zip -r9 ${OLDPWD}/function.zip .
-  cd $OLDPWD
-  zip -g function.zip app.py
+  cd package;
+  zip -r9 ../function.zip .;
+  cd ${OLDPWD};
+  zip -g function.zip app.py;
 }
 
 #
@@ -49,7 +49,8 @@ function generate_env_vars {
 function deploy_event_function {
   echo "Deploying function...";
   # Obtain the function name
-  FUNCTION_NAME="atd-vz-data-events-${1}_${WORKING_STAGE}"
+  FUNCTION_DIR=$(echo "${1}" | cut -d "/" -f 2);
+  FUNCTION_NAME="atd-vz-data-events-${FUNCTION_DIR}_${WORKING_STAGE}"
   # Create or update function
   { # try
     echo "Creating lambda function ${FUNCTION_NAME}";
@@ -84,17 +85,17 @@ function deploy_event_function {
 #
 function deploy_event_functions {
   MAIN_DIR=$PWD
-  for FUNCTION in $(ls atd-events);
+  for FUNCTION in $(find atd-events -type d -mindepth 1 -maxdepth 1);
   do
       echo "Current directory: ${PWD}";
       echo "Building function ${FUNCTION}";
-      cd "atd-events/${FUNCTION}";
+      cd $FUNCTION;
       echo "Entered directory: ${PWD}";
       install_requirements;
-      bundle_function;
+      bundle_function $FUNCTION;
       generate_env_vars;
       deploy_event_function $FUNCTION;
       cd $MAIN_DIR;
-      echo "Exit, new directory: ${PWD}";
+      echo "Exit, current path: ${PWD}";
   done;
 }
