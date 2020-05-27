@@ -73,3 +73,8 @@ build-iPhoneSimulator/
 *.env
 *.log
 *.xml
+
+# Ignore any json files within these directories
+atd-events/**/*.json
+atd-events/**/package
+atd-etl/app/**/*.json
