@@ -139,36 +139,6 @@ const CrashesByTimeOfDay = () => {
       });
   }, [activeTab, crashType]);
 
-  // useLayoutEffect(() => {
-  //   !!heatmapData[0] &&
-  //     // !!document.querySelector(
-  //     //   "div.m-0.p-0.container > div.h-auto.row > div > div > svg > g > g:nth-child(1)"
-  //     // ) &&
-  //     navigator.userAgent.includes("Firefox") &&
-  //     fixFirefoxStyling();
-  // }, [heatmapData]);
-
-  // const fixFirefoxStyling = () => {
-  //   console.log(
-  //     document.querySelector(
-  //       "div.m-0.p-0.container > div.h-auto.row > div > div > svg > g > g:nth-child(1)"
-  //     )
-  //   );
-  //   console.log(chartRef.current);
-  //   try {
-  //     // debugger;
-  //     document
-  //       .querySelector(
-  //         "div.m-0.p-0.container > div.h-auto.row > div > div > svg > g > g:nth-child(1)"
-  //       )
-  //       .setAttribute("transform", "translate(0, 250)");
-  //     // debugger;
-  //     console.log("test");
-  //   } catch (err) {
-  //     console.log("Could not change attribute: ", err);
-  //   }
-  // };
-
   const formatValue = (d) => {
     const value = d.data.value ? d.data.value : 0;
     return value;
@@ -231,7 +201,6 @@ const CrashesByTimeOfDay = () => {
       <Row className="h-auto">
         <Col>
           <Heatmap
-            // ref={(ref) => (chartRef.current = ref)}
             height={267}
             data={heatmapData}
             series={
