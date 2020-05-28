@@ -3,6 +3,7 @@ import { usePath } from "hookrouter";
 import { useTrackedRoutes } from "../../constants/nav";
 import { routes } from "../../routes/routes";
 import Header from "../nav/Header";
+import Footer from "../nav/Footer";
 import NotFound from "../NotFound/NotFound";
 
 import { Container } from "reactstrap";
@@ -12,6 +13,7 @@ import { responsive } from "../../constants/responsive";
 const Content = () => {
   const routeResult = useTrackedRoutes(routes);
   const currentPath = usePath();
+  const isMapPath = currentPath === "/map";
 
   // TODO: Slide content to the right when SideDrawer opens
   // Adding conditional styles based on sidebarToggle in the store causes children to re-render on toggle
@@ -35,7 +37,7 @@ const Content = () => {
       position: relative;
       top: ${responsive.headerHeight}px;
       ${currentPath === "/" && summaryStyles}
-      ${currentPath === "/map" && mapStyles}
+      ${isMapPath && mapStyles}
     }
 
     /* Fill space left behind by SideDrawer on mobile */
@@ -55,6 +57,7 @@ const Content = () => {
         {/* Remove padding from all content */}
         <Container fluid className="content px-0">
           {routeResult || <NotFound />}
+          {!isMapPath && <Footer />}
         </Container>
       </StyledContent>
     </>
