@@ -1,6 +1,9 @@
 import { useEffect } from "react";
 import ReactGA from "react-ga";
 import { useRoutes, usePath } from "hookrouter";
+import React from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChartBar, faMap } from "@fortawesome/free-solid-svg-icons";
 
 // Detect the environment
 export const isDevelopment =
@@ -11,8 +14,14 @@ export const navConfig = [
     title: "Summary",
     url: "/",
     eventKey: "summaryNavButton",
+    icon: <FontAwesomeIcon icon={faChartBar} />,
   },
-  { title: "Map", url: "/map", eventKey: "mapNavButton" },
+  {
+    title: "Map",
+    url: "/map",
+    eventKey: "mapNavButton",
+    icon: <FontAwesomeIcon icon={faMap} />,
+  },
 ];
 
 // Initialize analytics

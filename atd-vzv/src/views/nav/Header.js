@@ -5,7 +5,6 @@ import { A, usePath } from "hookrouter";
 import { Container, Navbar, Button, Nav, NavItem, NavLink } from "reactstrap";
 import styled from "styled-components";
 import { navConfig, trackPageEvent } from "../../constants/nav";
-import { drawer } from "../../constants/drawer";
 import { responsive } from "../../constants/responsive";
 import { colors } from "../../constants/colors";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -13,21 +12,18 @@ import { faBars } from "@fortawesome/free-solid-svg-icons";
 
 const Header = () => {
   const currentPath = usePath();
+  const isSummaryView = currentPath === "/";
 
   const StyledNavbar = styled.div`
-  .navbar-container {
-    /* Make Navbar container same height as SideDrawer header */
-    height: ${drawer.headerHeight}px;
-  }
-
   .header-navbar {
     /* Keep Navbar same height as header in SideDrawer and move to right based on drawer width */
-    min-height: ${drawer.headerHeight}px;
-    ${currentPath !== "/" && `left: ${drawer.width}px;`}
+    min-height: ${responsive.headerHeight}px;
+    ${currentPath !== "/" && `left: ${responsive.drawerWidth}px;`}
     background-color: ${colors.white};
     @media only screen and (max-width: ${responsive.bootstrapMedium}px) {
-      /* When SideDrawer collapses, move header to left of window */
+      /* Fill full width of screen with header on mobile */
       left: 0;
+      min-height: ${responsive.headerHeightMobile}px;
     }
   }
 
@@ -39,15 +35,14 @@ const Header = () => {
 
   .nav-button {
     /* Set width to keep buttons equal width */
-    width: 140px;
-    height: 56px;
+  width: ${responsive.headerButtonWidth}px;
+    height: ${responsive.headerButtonHeight}px;
     font-size: 18px;
   }
 
   .inactive-nav-button {
     color: ${colors.dark};
     background: ${colors.buttonBackground};
-    border-style: none;
     opacity: 1;
     margin-left: 5px;
     margin-right: 5px;
@@ -67,22 +62,21 @@ const Header = () => {
   }
 
   .vz-logo {
+    /* Need to offset height to account for white space above and below logo in svg */
+    height: ${responsive.headerButtonHeight + responsive.headerLogoOffset}px;
+    
     @media only screen and (max-width: ${responsive.bootstrapMediumMin}px) {
-    /* Center VZ logo and only show when toggler is present */
-    transform: translateX(-50%);
-    left: 50%;
-    position: absolute;
+      /* Center VZ logo and only show when toggler is present */
+      transform: translateX(-50%);
+      left: 50%;
+      position: absolute;
+      height: ${responsive.headerButtonHeight}px;
     }
 
     /* Hide logo in header when SideDrawer is closed and toggle is present (mobile)
     but show in Summary view at all times */
     @media only screen and (min-width: ${responsive.bootstrapMediumMin}px) {
       ${currentPath !== "/" && "display: none;"}
-    }
-
-    /* Change position to prevent overlap of logo and toggle button on small devices */
-    @media only screen and (max-width: ${responsive.bootstrapExtraSmall}px) {
-      position: relative;
     }
   }
 `;
@@ -94,14 +88,22 @@ const Header = () => {
 
   return (
     <StyledNavbar>
-      <Container className="navbar-container" fluid>
-        <Navbar
-          light
-          className="navbar shadow-sm p-3 fixed-top header-navbar"
-          expand="md"
+      <Navbar
+        light
+        className="navbar shadow-sm fixed-top header-navbar px-0"
+        expand="md"
+      >
+        <Container
+          fluid
+          // In Summary view, match padding and margins of Summary content below
+          className={`${
+            isSummaryView
+              ? "px-xs-0 mx-xs-0 pl-md-2 pr-md-1 px-lg-3 mx-lg-4"
+              : "px-0"
+          }`}
         >
           <Button
-            className="mr-2 sidedrawer-toggle"
+            className="ml-3 sidedrawer-toggle"
             color="dark"
             onClick={() => setIsOpen(!isOpen)}
           >
@@ -109,33 +111,42 @@ const Header = () => {
           </Button>
           <div className="vz-logo-wrapper">
             <img
-              className="vz-logo"
+              className="vz-logo pl-lg-3"
               // Need to adjust location of public folder to account for /viewer/ basepath
               src={process.env.PUBLIC_URL + "/vz_logo.svg"}
               alt="Vision Zero Austin Logo"
             ></img>
           </div>
-          <Nav className="navbar-links ml-auto" navbar>
+          <Nav
+            className={`navbar-links ml-auto ${
+              isSummaryView ? "px-lg-3" : "px-3"
+            }`}
+            navbar
+          >
             {navConfig.map((config, i) => (
               <NavItem key={i}>
-                <NavLink tag={A} href={config.url}>
+                <NavLink
+                  tag={A}
+                  href={config.url}
+                  className="pr-0 pl-2 mr-0 ml-2"
+                >
                   <Button
                     className={`nav-button ${
                       currentPath === config.url
                         ? "btn-dark"
                         : "inactive-nav-button"
-                    }`}
+                    } mx-xs-0 mx-lg-2`}
                     onClick={() => trackPageEvent(config.eventKey)}
                     active={currentPath === config.url}
                   >
-                    {config.title}
+                    {config.icon} {config.title}
                   </Button>
                 </NavLink>
               </NavItem>
             ))}
           </Nav>
-        </Navbar>
-      </Container>
+        </Container>
+      </Navbar>
     </StyledNavbar>
   );
 };

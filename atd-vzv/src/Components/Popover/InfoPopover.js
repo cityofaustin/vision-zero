@@ -5,7 +5,7 @@ import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { colors } from "../../constants/colors";
-import { drawer } from "../../constants/drawer";
+import { responsive } from "../../constants/responsive";
 import { useIsMobile } from "../../constants/responsive";
 
 const InfoPopover = ({ config }) => {
@@ -35,7 +35,7 @@ const InfoPopover = ({ config }) => {
       trigger={"click"}
       appendTo={document.body} // Avoid side scroll in SideMapControl popovers
       interactive={true}
-      maxWidth={isMobile ? drawer.width - 20 : 350} // Prevent mobile popover from taking up full drawer
+      maxWidth={isMobile ? responsive.drawerWidth - 20 : 350} // Prevent mobile popover from taking up full drawer
       offset={isMobile ? [30, 5] : [0, 5]} // Prevent mobile popover covering mobile drawer and preventing scroll nav
       popperOptions={{
         modifiers: [
