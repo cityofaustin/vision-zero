@@ -12,6 +12,9 @@ import {
   HeatmapCell,
   ChartTooltip,
   SequentialLegend,
+  LinearXAxis,
+  LinearXAxisTickSeries,
+  LinearXAxisTickLabel,
 } from "reaviz";
 import {
   summaryCurrentYearStartDate,
