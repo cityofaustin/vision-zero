@@ -12,9 +12,7 @@ const StyledMobileNav = styled.div`
   }
 
   .nav-button {
-    /* Set width to keep buttons equal width */
-    width: 140px;
-    height: 56px;
+    height: ${responsive.headerButtonHeight}px;
     font-size: 18px;
   }
 
@@ -44,7 +42,7 @@ const SideDrawerMobileNav = () => {
                   currentPath === config.url ? "active" : "inactive"
                 }-button w-100`}
               >
-                {config.title}
+                {config.icon} {config.title}
               </Button>
             </NavLink>
           </NavItem>

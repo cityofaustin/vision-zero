@@ -6,7 +6,6 @@ import NotFound from "../NotFound/NotFound";
 
 import { Container } from "reactstrap";
 import styled from "styled-components";
-import { drawer } from "../../constants/drawer";
 import { responsive } from "../../constants/responsive";
 
 const Content = () => {
@@ -21,19 +20,19 @@ const Content = () => {
   // Map view needs to consider header height and have no overflow scroll to fill view
   // Summary view needs to scroll to show all content
   const mapStyles = `
-    height: calc(100vh - ${drawer.headerHeight}px);
-    width: calc(100vw - ${drawer.width}px);
+    height: calc(100vh - ${responsive.headerHeight}px);
+    width: calc(100vw - ${responsive.drawerWidth}px);
   `;
 
   const summaryStyles = `
     width: 100vw;
     height: 100vh;
-    overflow-y: scroll;
   `;
 
   const StyledContent = styled.div`
     .content {
-      top: ${drawer.headerHeight}px;
+      position: relative;
+      top: ${responsive.headerHeight}px;
       ${currentPath === "/" && summaryStyles}
       ${currentPath === "/map" && mapStyles}
     }
@@ -42,18 +41,22 @@ const Content = () => {
     @media only screen and (max-width: ${responsive.bootstrapMedium}px) {
       .content {
         width: 100vw;
+        height: calc(100vh - ${responsive.headerHeightMobile}px);
+        top: ${responsive.headerHeightMobile}px;
       }
     }
   `;
 
   return (
-    <StyledContent>
-      {/* Remove padding from all content */}
-      <Container fluid className="content px-0">
-        <Header />
-        {routeResult || <NotFound />}
-      </Container>
-    </StyledContent>
+    <>
+      <Header />
+      <StyledContent>
+        {/* Remove padding from all content */}
+        <Container fluid className="content px-0">
+          {routeResult || <NotFound />}
+        </Container>
+      </StyledContent>
+    </>
   );
 };
 
