@@ -4,6 +4,7 @@ import { StoreContext } from "../../utils/store";
 import SideMapControlDateRange from "./SideMapControlDateRange";
 import SideMapTimeOfDayChart from "./SideMapTimeOfDayChart";
 import SideMapControlOverlays from "./SideMapControlOverlays";
+import { trackPageEvent } from "../../constants/nav";
 import InfoPopover from "../../Components/Popover/InfoPopover";
 import { popoverConfig } from "../../Components/Popover/popoverConfig";
 import { colors } from "../../constants/colors";
@@ -76,12 +77,18 @@ const SideMapControl = () => {
     setIsMapTypeSet(updatedState);
   };
 
+  const handleTypeFilterClick = (filterArr) => {
+    setTypeFilters(filterArr);
+    // Track single filter clicks with GA
+    filterArr.length === 1 && trackPageEvent(filterArr[0]);
+  };
+
   // Define groups of map button filters
   const mapButtonFilters = {
     type: {
       all: {
         text: `All`,
-        handler: () => setTypeFilters(["injury", "fatal"]),
+        handler: () => handleTypeFilterClick(["injury", "fatal"]),
         isSelected: isMapTypeSet.injury && isMapTypeSet.fatal,
         default: false,
         buttonClass: `type-button`,
@@ -91,7 +98,7 @@ const SideMapControl = () => {
         colSize: "auto",
         icon: faHeartbeat,
         iconColor: colors.fatalities,
-        handler: () => setTypeFilters(["fatal"]),
+        handler: () => handleTypeFilterClick(["fatal"]),
         isSelected: isMapTypeSet.fatal && !isMapTypeSet.injury,
         default: false,
         buttonClass: `type-button`,
@@ -101,7 +108,7 @@ const SideMapControl = () => {
         colSize: "auto",
         icon: faMedkit,
         iconColor: colors.seriousInjuries,
-        handler: () => setTypeFilters(["injury"]),
+        handler: () => handleTypeFilterClick(["injury"]),
         isSelected: isMapTypeSet.injury && !isMapTypeSet.fatal,
         default: false,
         buttonClass: `type-button`,

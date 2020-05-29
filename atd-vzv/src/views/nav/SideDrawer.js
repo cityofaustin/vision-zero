@@ -12,11 +12,10 @@ import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 
 import SideMapControl from "./SideMapControl";
 import SideDrawerMobileNav from "./SideDrawerMobileNav";
-import { drawer } from "../../constants/drawer";
 import { colors } from "../../constants/colors";
 import { responsive } from "../../constants/responsive";
 
-const drawerWidth = drawer.width;
+const drawerWidth = responsive.drawerWidth;
 
 // Styles for MUI drawer
 const useStyles = makeStyles((theme) => {
@@ -48,12 +47,16 @@ const StyledDrawerHeader = styled.div`
   background-color: ${colors.white};
   color: ${colors.dark};
   padding: 20px;
-  height: ${drawer.headerHeight}px;
+  height: ${responsive.headerHeight}px;
   display: flex;
   align-items: center;
   justify-content: center;
   @media only screen and (max-width: ${responsive.bootstrapMedium}px) {
     display: none;
+  }
+
+  .vz-logo {
+    height: ${responsive.headerButtonHeight + responsive.headerLogoOffset}px;
   }
 `;
 
@@ -87,7 +90,7 @@ const StyledDrawer = styled.div`
   /* Allow user to scroll when drawer content height exceeds device viewport */
   .drawer-content {
     overflow-y: scroll;
-    height: calc(100vh - ${drawer.headerHeight}px);
+    height: calc(100vh - ${responsive.headerHeight}px);
   }
 `;
 
@@ -105,6 +108,7 @@ const SideDrawer = () => {
       <StyledDrawerHeader>
         {/* Need to adjust location of public folder to account for /viewer/ basepath */}
         <img
+          className="vz-logo"
           src={process.env.PUBLIC_URL + "/vz_logo.svg"}
           alt="Vision Zero Austin Logo"
         ></img>

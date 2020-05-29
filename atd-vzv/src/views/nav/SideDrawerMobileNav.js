@@ -1,7 +1,7 @@
 import React from "react";
 import { A, usePath } from "hookrouter";
 import { Button, Nav, NavItem, NavLink } from "reactstrap";
-import { navConfig } from "../../constants/nav";
+import { navConfig, trackPageEvent } from "../../constants/nav";
 import { responsive } from "../../constants/responsive";
 import { colors } from "../../constants/colors";
 import styled from "styled-components";
@@ -12,9 +12,7 @@ const StyledMobileNav = styled.div`
   }
 
   .nav-button {
-    /* Set width to keep buttons equal width */
-    width: 140px;
-    height: 56px;
+    height: ${responsive.headerButtonHeight}px;
     font-size: 18px;
   }
 
@@ -43,8 +41,9 @@ const SideDrawerMobileNav = () => {
                 className={`nav-button ${
                   currentPath === config.url ? "active" : "inactive"
                 }-button w-100`}
+                onClick={() => trackPageEvent(config.eventKey)}
               >
-                {config.title}
+                {config.icon} {config.title}
               </Button>
             </NavLink>
           </NavItem>
