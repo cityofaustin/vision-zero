@@ -9,6 +9,8 @@ import CrashTypeSelector from "../nav/CrashTypeSelector";
 import { colors } from "../../constants/colors";
 import { dataEndDate, yearsArray } from "../../constants/time";
 import { personEndpointUrl } from "./queries/socrataQueries";
+import InfoPopover from "../../Components/Popover/InfoPopover";
+import { popoverConfig } from "../../Components/Popover/popoverConfig";
 
 const PeopleByDemographics = () => {
   const ageCategories = [
@@ -317,6 +319,11 @@ const PeopleByDemographics = () => {
             >
               Race/Ethnicity
             </Button>
+            {activeTab === "prsn_ethnicity_id" ? (
+              <InfoPopover config={popoverConfig.summary.raceEthnicity} />
+            ) : (
+              <div></div>
+            )}
           </StyledButton>
         </Col>
       </Row>
