@@ -52,6 +52,9 @@ const StyledCard = styled.div`
     padding-right: 6px !important;
     height: 33px;
   }
+  [class^="DateInput_"] {
+    text-align: center;
+  }
 `;
 
 const SideMapControl = () => {
