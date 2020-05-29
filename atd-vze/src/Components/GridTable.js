@@ -382,9 +382,8 @@ const GridTable = ({
    * Render
    *
    **/
-
   // Make Query && Error handling
-  let { loading, error, data } = useQuery(query.gql);
+  let { loading, error, data } = useQuery(query.gql, query.useQueryOptions);
 
   if (error) return `Error! ${error.message}`;
 

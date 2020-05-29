@@ -4,6 +4,7 @@ import { StoreContext } from "../../utils/store";
 import SideMapControlDateRange from "./SideMapControlDateRange";
 import SideMapTimeOfDayChart from "./SideMapTimeOfDayChart";
 import SideMapControlOverlays from "./SideMapControlOverlays";
+import { trackPageEvent } from "../../constants/nav";
 import InfoPopover from "../../Components/Popover/InfoPopover";
 import { popoverConfig } from "../../Components/Popover/popoverConfig";
 import { colors } from "../../constants/colors";
@@ -50,16 +51,6 @@ const StyledCard = styled.div`
     margin-right: 2px;
     padding-right: 6px !important;
     height: 33px;
-  } 
-  
-  /* We need to remove flex-grow, it's causing the buttons to slide right. */
-  div.p-3.card-body.card > div.mx-0.mb-3.row:nth-child(2) > div {
-    flex-grow: 0 !important;
-  }
-  /* Secondly, remove the margin-right, change font size to 13px in buttons */
-  div.p-3.card-body.card > div.mx-0.mb-3.row:nth-child(2) > div > button {
-    font-size: 13px;
-    margin-right: 0px;
   }
   [class^="DateInput_"] {
     text-align: center;
@@ -89,12 +80,18 @@ const SideMapControl = () => {
     setIsMapTypeSet(updatedState);
   };
 
+  const handleTypeFilterClick = (filterArr) => {
+    setTypeFilters(filterArr);
+    // Track single filter clicks with GA
+    filterArr.length === 1 && trackPageEvent(filterArr[0]);
+  };
+
   // Define groups of map button filters
   const mapButtonFilters = {
     type: {
       all: {
         text: `All`,
-        handler: () => setTypeFilters(["injury", "fatal"]),
+        handler: () => handleTypeFilterClick(["injury", "fatal"]),
         isSelected: isMapTypeSet.injury && isMapTypeSet.fatal,
         default: false,
         buttonClass: `type-button`,
@@ -104,7 +101,7 @@ const SideMapControl = () => {
         colSize: "auto",
         icon: faHeartbeat,
         iconColor: colors.fatalities,
-        handler: () => setTypeFilters(["fatal"]),
+        handler: () => handleTypeFilterClick(["fatal"]),
         isSelected: isMapTypeSet.fatal && !isMapTypeSet.injury,
         default: false,
         buttonClass: `type-button`,
@@ -114,7 +111,7 @@ const SideMapControl = () => {
         colSize: "auto",
         icon: faMedkit,
         iconColor: colors.seriousInjuries,
-        handler: () => setTypeFilters(["injury"]),
+        handler: () => handleTypeFilterClick(["injury"]),
         isSelected: isMapTypeSet.injury && !isMapTypeSet.fatal,
         default: false,
         buttonClass: `type-button`,

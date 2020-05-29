@@ -26,6 +26,11 @@ export const navigation = roles => {
         icon: "icon-shield",
       },
       {
+        name: "Changes",
+        url: "/changes",
+        icon: "icon-layers",
+      },
+      {
         name: "Locations",
         url: "/locations",
         icon: "icon-map",

@@ -83,7 +83,7 @@ const SideMapControlDateRange = () => {
       },
       sizing: {
         inputWidth: 90,
-        inputWidth_small: inputWidth,
+        inputWidth_small: 99,
         arrowWidth: 10,
       },
       spacing: {
