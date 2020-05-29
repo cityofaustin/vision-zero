@@ -11,7 +11,9 @@ export const popoverConfig = {
             a person would have lived if they had not died prematurely. For this
             calculation we assume an average life expectancy of 75 years. For
             example, a 25 year old person killed in a crash would represent 50
-            years of life lost.
+            years of life lost. The total number represented here reflects all
+            of the years that loved ones in our community have lost due to car
+            crashes this year.
           </div>
         </>
       ),
@@ -46,7 +48,7 @@ export const popoverConfig = {
             Crash data included in Vision Zero Viewer includes crashes within
             City of Austin geographic boundaries, inclusive of all public safety
             jurisdictions. This data may differ from APD data in that it
-            includes crashes for which APD officers did not respond.
+            includes crashes to which APD officers did not respond.
           </div>
           <div className="mb-2">
             Crash data in Vision Zero Viewer is updated monthly. Vision Zero
@@ -68,7 +70,15 @@ export const popoverConfig = {
             informational purposes only. While we seek to provide accurate
             information, please note that errors may be present and information
             presented may not be complete. For official inquiries on City of
-            Austin crash data, contact **email address**.
+            Austin crash data, contact{" "}
+            <a
+              href="mailto:visionzero@austintexas.gov"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              VisionZero@AustinTexas.gov
+            </a>
+            .
           </div>
         </>
       ),
@@ -79,13 +89,16 @@ export const popoverConfig = {
         <>
           <div className="font-weight-bold">ASMP Street Levels</div>
           <div className="mb-2">
-            The Austin Strategic Mobility Plan (ASMP) is Austin’s new city-wide
-            transportation plan that was adopted in 2019. The street levels map
-            overlay includes roads that are within the jurisdictional boundaries
-            of the City of Austin and is used to identify right of way
-            dedication requirements needed to accommodate future roadway
-            conditions. These future roadway conditions are reflective of the
-            recommended improvements in the ASMP. For more information, visit{" "}
+            The Austin Strategic Mobility Plan (ASMP) is Austin’s current
+            long-term, citywide transportation plan that was adopted in 2019.
+            The ASMP includes a map defining all streets into categories
+            (“levels”) based on their current and future use as development and
+            growth occurs. The street levels map overlay includes roads that are
+            within the jurisdictional boundaries of the City of Austin and is
+            also used to identify right of way dedication requirements needed to
+            accommodate future roadway conditions. These future roadway
+            conditions are reflective of the recommended improvements in the
+            ASMP. For more information, visit{" "}
             <a
               href="https://www.austintexas.gov/department/austin-strategic-mobility-plan"
               target="_blank"
@@ -95,7 +108,7 @@ export const popoverConfig = {
             </a>
             .
           </div>
-          <div className="font-weight-bold">High Injury Network</div>
+          <div className="font-weight-bold">High-Injury Network</div>
           <div className="mb-2">
             This is an online version of the Combined High-Injury Network Map
             included in the adopted Austin Strategic Mobility Plan policy
