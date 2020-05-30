@@ -26,7 +26,66 @@ function ToolsUploadNonCR3(props) {
   const tableConfig = {
     colHeaders: ["Date", "Call#", "Address", "Xcoord", "Ycoord", "Hour"],
   };
-  
+
+  /**
+   * Returns true if the record is valid, false otherwise.
+   * @param {object} record
+   * @return {boolean}
+   */
+  const isRecordValid = record => {
+    return false;
+  }
+
+  /**
+   * Returns true if the date format is valid
+   * @param {string} date - The date string to be evaluated
+   * @return {boolean}
+   */
+  const isValidDate = date => {
+    return false;
+  }
+
+  /**
+   * Converts a string from locale date to iso date (yyyy-mm-dd)
+   * @param {string} date - The locale date (mm/dd/yyyy)
+   * @return {string} - The ISO date (yyyy-mm-dd)
+   */
+  const toIsoDate = date => {
+    return "";
+  }
+
+  const isValidCallNumber = callno => {
+    return false;
+  }
+
+  /**
+   * Returns a clean address that is safe for insertion
+   * @param {string} addr - The address string
+   * @return {string} - The safe insertable text
+   */
+  const cleanUpAddress = addr => {
+    return "";
+  }
+
+  /**
+   * Returns true if both x and y are valid float values
+   * @param {string} x - The Xcoord value (as string, later converted to float)
+   * @param {string} y - The Ycoord value (as string, later converted to float)
+   * @return {boolean}
+   */
+  const isValidCoord = (x, y) => {
+    return false;
+  }
+
+  /**
+   * Returns true if the hour is valid
+   * @param {string} hour - A string containing "0" through "23"
+   * @return {boolean}
+   */
+  const isValidHour = hour => {
+    return false;
+  }
+
   const csvParserOptions = {
     header: true,
     dynamicTyping: true,
