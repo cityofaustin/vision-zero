@@ -1,24 +1,32 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
 import {
   Card,
   CardBody,
   CardHeader,
   Col,
   Row,
-  Table,
-  Alert,
   Button,
+  ListGroupItem,
+  ListGroupItemHeading,
+  ListGroupItemText,
+  ListGroup,
 } from "reactstrap";
 
 import { withApollo } from "react-apollo";
 import { useQuery, useMutation } from "@apollo/react-hooks";
 
+import "./ToolsUploadNonCR3.css";
+import "handsontable/dist/handsontable.full.css";
+import { HotTable } from "@handsontable/react";
 import CSVReader from "react-csv-reader";
 
 function ToolsUploadNonCR3(props) {
   const [records, setRecords] = useState([]);
 
+  const tableConfig = {
+    colHeaders: ["Date", "Call#", "Address", "Xcoord", "Ycoord", "Hour"],
+  };
+  
   const csvParserOptions = {
     header: true,
     dynamicTyping: true,
@@ -36,32 +44,112 @@ function ToolsUploadNonCR3(props) {
     console.log("File loading error: ", err);
   };
 
+  /**
+   * Handle Reset
+   */
+  const handleReset = () => {
+    document.querySelector("input[id='fileSelector']").value = "";
+    setRecords([]);
+  }
+
   return (
-    <div>
-      <span>
-        {records.length === 0 ? (
-          <>Select a CSV file with Non-CR3 records</>
-        ) : (
-          <>
-            There are <b>{records.length}</b> records to be inserted
-          </>
+    <>
+      <Card>
+        <CardHeader>
+          {records.length === 0 ? (
+            <>Select a CSV file with Non-CR3 records</>
+          ) : (
+            <>
+              There are <b>{records.length}</b> records to be inserted
+            </>
+          )}
+        </CardHeader>
+        <CardBody>
+          <CSVReader
+            cssClass="csv-reader-input"
+            label=""
+            onFileLoaded={handleOnFileLoaded}
+            onError={handleOnError}
+            parserOptions={csvParserOptions}
+            inputId="fileSelector"
+            inputStyle={{ color: "red" }}
+          />
+        </CardBody>
+      </Card>
+
+      <Card>
+        <CardHeader>Parsed Output</CardHeader>
+        <CardBody>
+          {records.length === 0 ? (
+            <>Select a valid CSV file above.</>
+          ) : (
+            <Row>
+              <Col lg={6} sm={12}>
+                <HotTable
+                  data={records}
+                  settings={tableConfig}
+                  width="100%"
+                  height="367"
+                  licenseKey="non-commercial-and-evaluation"
+                />
+              </Col>
+              <Col lg={6} sm={12}>
+                <ListGroup>
+                  <ListGroupItem active action>
+                    <span className={"text-value text-value--shadow"}>
+                      {records.length}
+                    </span>
+                    <ListGroupItemHeading>
+                      Total complete records
+                    </ListGroupItemHeading>
+                    <ListGroupItemText>
+                      These are records that do not have any missing fields.
+                    </ListGroupItemText>
+                  </ListGroupItem>
+                  <ListGroupItem action>
+                    <span className={"text-value"}>
+                      {records.length}
+                    </span>
+                    <ListGroupItemHeading>Total Errors</ListGroupItemHeading>
+                    <ListGroupItemText>
+                      Records that show problems in format.
+                    </ListGroupItemText>
+                  </ListGroupItem>
+                </ListGroup>
+              </Col>
+            </Row>
+          )}
+        </CardBody>
+        {!!records.length && (
+          <CardBody style={{"background": "#f9f9f9", "border-top": "1px solid #c8ced3"}}>
+            <Button
+              size="lg"
+              className="btn-twitter btn-brand mr-1 mb-1 float-right"
+            >
+              <i className="fa fa-save"></i>
+              <span>Save</span>
+            </Button>
+            <Button
+              size="lg"
+              className="btn-danger btn-brand mr-1 mb-1"
+              onClick={handleReset}
+            >
+              <i className="fa fa-trash-o"></i>
+              <span>Reset &amp; Start Over</span>
+            </Button>
+          </CardBody>
         )}
-      </span>
-      <CSVReader
-        cssClass="csv-reader-input"
-        label=""
-        onFileLoaded={handleOnFileLoaded}
-        onError={handleOnError}
-        parserOptions={csvParserOptions}
-        inputId="ObiWan"
-        inputStyle={{ color: "red" }}
-      />
+      </Card>
 
-      <div>
-        {records.length > 0 ? <span>{JSON.stringify(records)}</span> : <></>}
-      </div>
-
-    </div>
+      <Card>
+        <CardHeader>
+          Error Log
+        </CardHeader>
+        <CardBody>
+          Nothing to be shown
+        </CardBody>
+      </Card>
+    </>
   );
 }
 
