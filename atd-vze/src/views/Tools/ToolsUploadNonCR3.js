@@ -112,7 +112,7 @@ function ToolsUploadNonCR3(props) {
       errors.push("Invalid date");
     }
 
-    if (!isValidCallNumber(record["call_num"])) {
+    if (!isValidNumber(record["call_num"])) {
       errors.push("Invalid call number");
     }
 
@@ -142,7 +142,8 @@ function ToolsUploadNonCR3(props) {
    */
   const parseDate = date => {
     try {
-      return new Date(date).toISOString().slice(0, 10);
+      const parsedDate = new Date(date).toISOString().slice(0, 10);
+      return parsedDate !== "1970-01-01" ? parsedDate : "";
     } catch {
       return "";
     }
@@ -164,23 +165,12 @@ function ToolsUploadNonCR3(props) {
   };
 
   /**
-   * Returns true if the call number is valid
-   * @param {string} callno - The string to be parsed into a string.
-   * @return {boolean}
-   */
-  const isValidCallNumber = callno => {
-    if (String(callno).length === 0) return false;
-    else return !isNaN(callno);
-  };
-
-  /**
    * Returns a clean address that is safe for insertion
    * @param {string} addr - The address string
    * @return {string} - The safe insertable text
    */
-  const cleanUpAddress = addr => {
-    return (addr ? addr : "").replace(/[^A-Za-z0-9\\\\/\-\s\.\,\&]/gi, "");
-  };
+  const cleanUpAddress = addr =>
+    (addr ? addr : "").replace(/[^A-Za-z0-9\\\\/\-\s\.\,\&]/gi, "");
 
   /**
    * Returns true if the address is valid
@@ -197,37 +187,36 @@ function ToolsUploadNonCR3(props) {
    * @param {string} y - The Ycoord value (as string, later converted to float)
    * @return {boolean}
    */
-  const isValidCoord = (x, y) => {
-    return isFloat(Number(x)) && isFloat(Number(y));
-  };
+  const isValidCoord = (x, y) => isFloat(Number(x)) && isFloat(Number(y));
 
   /**
    * Returns true if the string is a float
    * @param {Number} n - The string being evaluated
    * @return {boolean}
    */
-  const isFloat = n => {
-    return Number(n) === n && n % 1 !== 0;
-  };
+  const isFloat = n => Number(n) === n && n % 1 !== 0;
 
   /**
    * Returns true if the hour is valid
    * @param {string} hour - A string containing "0" through "23"
    * @return {boolean}
    */
-  const isValidHour = hour => {
-    if (String(hour).length === 0) return false;
-    return Number(hour) >= 0 && Number(hour) <= 23;
-  };
+  const isValidNumber = num => new RegExp("^[0-9]+$").test(num);
+
+  /**
+   * Returns true if the hour is an integer between 0 and 23
+   * @param {string} hour - The hour being evaluated
+   * @return {boolean}
+   */
+  const isValidHour = hour =>
+    isValidNumber(hour) && Number(hour) >= 0 && Number(hour) <= 23;
 
   /**
    * Handler for CSVReader to pipe incoming data into the validator function.
    * @param {JSON} data - The data loaded from the CSVReder component
    * @param {Object} fileInfo - CSVReader additional information of file.
    */
-  const handleOnFileLoaded = (data, fileInfo) => {
-    handleValidate(data, null);
-  };
+  const handleOnFileLoaded = (data, fileInfo) => handleValidate(data, null);
 
   /**
    * Handler for CSVReader error feedback
@@ -287,15 +276,14 @@ function ToolsUploadNonCR3(props) {
      * Validate each record in our data copy
      */
     finalData.forEach((record, index) => {
-      const [valid, message] = isRecordValid(record);
-
       // Clean up the address for insertion
-      finalData[index]["address"] = cleanUpAddress(
-        finalData[index]["address"]
-      );
+      finalData[index]["address"] = cleanUpAddress(finalData[index]["address"]);
 
       // Try parsing the date, regardless...
       finalData[index]["date"] = parseDate(finalData[index]["date"]);
+
+      // Perform Validation
+      const [valid, message] = isRecordValid(record);
 
       // Mark the record with an icon
       finalData[index]["valid"] = valid ? "✅" : "❌";
@@ -303,7 +291,7 @@ function ToolsUploadNonCR3(props) {
       // If not valid, then add to a list for human review
       if (!valid) {
         invalidRecords.push({
-          row: (index + 1),
+          row: index + 1,
           message: message,
         });
       }
@@ -314,6 +302,10 @@ function ToolsUploadNonCR3(props) {
     setRecords(finalData);
   };
 
+  /**
+   * Saves the files into the database. Not yet implemented.
+   * @return {boolean}
+   */
   const handleSave = () => {
     return false;
   };
@@ -358,8 +350,7 @@ function ToolsUploadNonCR3(props) {
             <Col lg={4} sm={4}>
               <NavLink
                 className={"float-right"}
-                href={"#"}
-                onClick={handleDownloadTemplate}
+                href={"/downloads/non_cr3_template.csv"}
               >
                 <i className={"fa fa-file-excel-o"}></i> Download CSV Template
               </NavLink>
