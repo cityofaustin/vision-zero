@@ -27,8 +27,6 @@ import { AppSwitch } from "@coreui/react";
 function ToolsUploadNonCR3(props) {
   const [records, setRecords] = useState([]);
   const [invalidRecords, setInvalidRecords] = useState([]);
-  const [validRecords, setValidRecords] = useState([]);
-  const [showErrorsOnly, setShowErrorsOnly] = useState(false);
 
   /**
    * Reference object for data export (Save to File)
@@ -37,7 +35,18 @@ function ToolsUploadNonCR3(props) {
   const hotTableComponent = React.createRef();
 
   /**
-   * Table Configuration
+   * The CSVReader component configuration settings.
+   * @type {{skipEmptyLines: boolean, transformHeader: (function(*): string), header: boolean, dynamicTyping: boolean}}
+   */
+  const csvParserOptions = {
+    header: true,
+    dynamicTyping: true,
+    skipEmptyLines: true,
+    transformHeader: header => header.toLowerCase().replace(/\W/g, "_"),
+  };
+
+  /**
+   * HandsonTable component configuration settings
    * @type {{rowHeaders: boolean, colHeaders: string[], manualColumnResize: boolean, colWidths: number[]}}
    */
   const tableConfig = {
@@ -59,7 +68,7 @@ function ToolsUploadNonCR3(props) {
         defaultDate: "",
       },
       {
-        data: "call_num", // 2nd column is simple text, no special options here
+        data: "call_num",
         type: "numeric",
       },
       {
@@ -92,9 +101,9 @@ function ToolsUploadNonCR3(props) {
   };
 
   /**
-   * Returns true if the record is valid, false otherwise.
-   * @param {object} record
-   * @return {array}
+   * Returns a tuple with true or false if the record is valid and a message.
+   * @param {JSON} record - A single JSON object containing the record
+   * @return {[bool, string]}
    */
   const isRecordValid = record => {
     let errors = [];
@@ -129,13 +138,13 @@ function ToolsUploadNonCR3(props) {
   /**
    * Returns an ISO string if the date is valid.
    * @param {string} date - The date string to be evaluated
-   * @return {string|null}
+   * @return {string}
    */
   const parseDate = date => {
     try {
       return new Date(date).toISOString().slice(0, 10);
     } catch {
-      return null;
+      return "";
     }
   };
 
@@ -175,7 +184,7 @@ function ToolsUploadNonCR3(props) {
 
   /**
    * Returns true if the address is valid
-   * @param addr - The address string being evaluated
+   * @param {string} addr - The address string being evaluated
    * @return {boolean}
    */
   const isValidAddress = addr => {
@@ -211,20 +220,19 @@ function ToolsUploadNonCR3(props) {
     return Number(hour) >= 0 && Number(hour) <= 23;
   };
 
-  const csvParserOptions = {
-    header: true,
-    dynamicTyping: true,
-    skipEmptyLines: true,
-    transformHeader: header => header.toLowerCase().replace(/\W/g, "_"),
-  };
-
+  /**
+   * Handler for CSVReader to pipe incoming data into the validator function.
+   * @param {JSON} data - The data loaded from the CSVReder component
+   * @param {Object} fileInfo - CSVReader additional information of file.
+   */
   const handleOnFileLoaded = (data, fileInfo) => {
-    console.log("File loaded");
-    console.dir(data, fileInfo);
-
     handleValidate(data, null);
   };
 
+  /**
+   * Handler for CSVReader error feedback
+   * @param err
+   */
   const handleOnError = err => {
     console.log("File loading error: ", err);
   };
@@ -237,9 +245,21 @@ function ToolsUploadNonCR3(props) {
     setRecords([]);
   };
 
+  /**
+   * Handles the data validation process on data load, or on validate button click.
+   * @param {JSON} data - The data to be validated as a JSON object.
+   * @param {Object} hotTable - The react reference object.
+   */
   const handleValidate = (data, hotTable) => {
-    if (data.length == 0) {
+    if ([...data].length === 0) {
+      // If we are validating a hot table, then hotTable is not null..
       if (hotTable) {
+        /**
+         * If we are validating a hot table, then we must assume data is null
+         * and we have to populate with the hot table's data which is a simple
+         * array that needs to be transformed into a json array.
+         * @type {{date: *, address: *, hour: *, latitude: *, call_num: *, longitude: *}[]}
+         */
         data = hotTable.current.hotInstance.getData().map(record => {
           return {
             date: record[0],
@@ -255,26 +275,41 @@ function ToolsUploadNonCR3(props) {
       }
     }
 
+    /**
+     * Once we have our data, from main load sequence or from the hot table
+     * we must create a copy we can modify...
+     * @type {*[]}
+     */
     let finalData = [...data];
     let invalidRecords = [];
 
+    /**
+     * Validate each record in our data copy
+     */
     finalData.forEach((record, index) => {
       const [valid, message] = isRecordValid(record);
-      if (valid) {
-        finalData[index]["address"] = cleanUpAddress(
-          finalData[index]["address"]
-        );
-        finalData[index]["date"] = parseDate(finalData[index]["date"]);
-        finalData[index]["valid"] = "✅";
-      } else {
-        finalData[index]["valid"] = "❌";
+
+      // Clean up the address for insertion
+      finalData[index]["address"] = cleanUpAddress(
+        finalData[index]["address"]
+      );
+
+      // Try parsing the date, regardless...
+      finalData[index]["date"] = parseDate(finalData[index]["date"]);
+
+      // Mark the record with an icon
+      finalData[index]["valid"] = valid ? "✅" : "❌";
+
+      // If not valid, then add to a list for human review
+      if (!valid) {
         invalidRecords.push({
-          row: index + 1,
+          row: (index + 1),
           message: message,
         });
       }
     });
 
+    // Change the state
     setInvalidRecords(invalidRecords);
     setRecords(finalData);
   };
@@ -283,16 +318,16 @@ function ToolsUploadNonCR3(props) {
     return false;
   };
 
+  /**
+   * Handles the clicking on the download spreadsheet button.
+   * @param {Object} hotTable - The react reference object
+   */
   const handleDownloadData = hotTable => {
     const exportPlugin = hotTable.current.hotInstance.getPlugin("exportFile");
     exportPlugin.downloadFile("csv", {
       columnHeaders: true,
       filename: "spreadsheet",
     });
-  };
-
-  const handleDownloadTemplate = () => {
-    alert("YO!");
   };
 
   return (
