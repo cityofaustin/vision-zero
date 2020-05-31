@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   NavLink,
   Card,
@@ -12,6 +12,11 @@ import {
   ListGroupItemText,
   ListGroup,
   Table,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Progress,
 } from "reactstrap";
 
 import { withApollo } from "react-apollo";
@@ -21,12 +26,28 @@ import "./ToolsUploadNonCR3.css";
 import "handsontable/dist/handsontable.full.css";
 import { HotTable } from "@handsontable/react";
 import CSVReader from "react-csv-reader";
-import { invalid } from "moment";
-import { AppSwitch } from "@coreui/react";
 
-function ToolsUploadNonCR3(props) {
+const ToolsUploadNonCR3 = () => {
   const [records, setRecords] = useState([]);
   const [invalidRecords, setInvalidRecords] = useState([]);
+  const [bundleSize, setBundleSize] = useState(10);
+  // Modals
+  const [modalFeedback, setModalFeedback] = useState(false);
+  const [modalSaveProcess, setModalSaveProcess] = useState(false);
+  const [modalSaveConfirm, setModalSaveConfirm] = useState(false);
+  const [processedRecords, setProcessedRecords] = useState(0);
+  const [recordsToProcess, setRecordsToProcess] = useState([]);
+  const [feedback, setFeedback] = useState({});
+  /**
+   * Sleeps a for a few milliseconds
+   * @param {int} milliseconds - The length of sleep in milliseconds
+   * @returns {Promise}
+   */
+  const sleep = milliseconds => {
+    return new Promise(resolve => setTimeout(resolve, milliseconds));
+  };
+
+  const toggleModalSaveConfirm = () => setModalSaveConfirm(!modalSaveConfirm);
 
   /**
    * Reference object for data export (Save to File)
@@ -232,6 +253,8 @@ function ToolsUploadNonCR3(props) {
   const handleReset = () => {
     document.querySelector("input[id='fileSelector']").value = "";
     setRecords([]);
+    setRecordsToProcess([]);
+    setProcessedRecords(0);
   };
 
   /**
@@ -304,11 +327,69 @@ function ToolsUploadNonCR3(props) {
 
   /**
    * Saves the files into the database. Not yet implemented.
+   * @param {Object} hotTable - The React reference to the hot table component
    * @return {boolean}
    */
-  const handleSave = () => {
-    return false;
+  const handleSave = hotTable => {
+    // Generate the records to process...
+    const data = hotTable.current.hotInstance
+      .getData()
+      .map(record => {
+        return {
+          date: record[0],
+          call_num: record[1],
+          address: record[2],
+          longitude: record[3],
+          latitude: record[4],
+          hour: record[5],
+        };
+      })
+      .filter(record => {
+        const [valid, _] = isRecordValid(record);
+        return valid;
+      });
+
+    setModalSaveProcess(true);
+    setRecordsToProcess(data);
   };
+
+  const executeSave = async () => {
+    console.log("Executing save...");
+    let data = [...recordsToProcess];
+    let processCount = 0;
+    console.log(recordsToProcess, data);
+    while (data.length !== 0) {
+      const currentBundle = data.splice(0, bundleSize);
+      const query = currentBundle;
+      console.log(query);
+      await sleep(2000);
+      processCount += currentBundle.length;
+      setProcessedRecords(processCount);
+    }
+  };
+
+  useEffect(() => {
+    if (recordsToProcess.length > 0)
+      executeSave()
+        .then(() => {
+          setModalSaveProcess(false);
+          setModalSaveConfirm(false);
+          setModalFeedback(true);
+          setFeedback({
+            title: "Success",
+            message: "The save process was successful.",
+          });
+          setRecordsToProcess([]);
+          setProcessedRecords(0);
+        })
+        .catch(error => {
+          setModalFeedback(true);
+          setFeedback({
+            title: "Error",
+            message: error,
+          });
+        });
+  }, [recordsToProcess]);
 
   /**
    * Handles the clicking on the download spreadsheet button.
@@ -429,7 +510,7 @@ function ToolsUploadNonCR3(props) {
               <Button
                 size="lg"
                 className="btn-twitter btn-brand mr-1 mb-1 float-right"
-                onClick={handleSave}
+                onClick={() => toggleModalSaveConfirm()}
               >
                 <i className="fa fa-save"></i>
                 <span>Save to Database</span>
@@ -484,8 +565,73 @@ function ToolsUploadNonCR3(props) {
           </CardBody>
         </Card>
       )}
+
+      <Modal isOpen={modalSaveProcess} className={"modal-lg"} keyboard={false}>
+        <ModalHeader>Committing Records to Database</ModalHeader>
+        <ModalBody>
+          <span>Please wait while saving changes to the database.</span>
+          <br />
+          <span>
+            Processed: {processedRecords}/{recordsToProcess.length}
+          </span>
+          <br />
+
+          <Progress
+            animated
+            color="info"
+            value={(processedRecords / recordsToProcess.length) * 100}
+            className="mb-3"
+          />
+        </ModalBody>
+        <ModalFooter>This dialog will close when done.</ModalFooter>
+      </Modal>
+
+      <Modal
+        isOpen={modalSaveConfirm}
+        toggle={toggleModalSaveConfirm}
+        className={"modal-primary"}
+      >
+        <ModalHeader toggle={toggleModalSaveConfirm}>Confirm Save</ModalHeader>
+        <ModalBody>
+          <p>
+            Only valid records will be processed, if you have any invalid
+            records and you would like to fix them, click 'Cancel'; otherwise,
+            click 'Continue'.
+          </p>
+          <p>
+            Records to be processed: {records.length - invalidRecords.length}
+          </p>
+          <p>
+            Any records already in the database will be overwritten (updated).
+          </p>
+        </ModalBody>
+        <ModalFooter>
+          <Button color="primary" onClick={() => handleSave(hotTableComponent)}>
+            Continue
+          </Button>{" "}
+          <Button color="secondary" onClick={toggleModalSaveConfirm}>
+            Cancel
+          </Button>
+        </ModalFooter>
+      </Modal>
+
+      <Modal
+        isOpen={modalFeedback}
+        toggle={toggleModalSaveConfirm}
+        className={"modal-primary"}
+      >
+        <ModalHeader toggle={toggleModalSaveConfirm}>
+          {feedback["title"]}
+        </ModalHeader>
+        <ModalBody>{feedback["message"]}</ModalBody>
+        <ModalFooter>
+          <Button color="secondary" onClick={() => setModalFeedback(false)}>
+            Ok
+          </Button>
+        </ModalFooter>
+      </Modal>
     </>
   );
-}
+};
 
 export default withApollo(ToolsUploadNonCR3);
