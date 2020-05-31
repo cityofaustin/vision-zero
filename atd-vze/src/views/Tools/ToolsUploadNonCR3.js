@@ -27,6 +27,12 @@ import "handsontable/dist/handsontable.full.css";
 import { HotTable } from "@handsontable/react";
 import CSVReader from "react-csv-reader";
 
+import {
+  mutationDummy,
+  mutationInsertNonCR3,
+  mutationNonCR3Data,
+} from "../../queries/toolsUploadNonCR3";
+
 const ToolsUploadNonCR3 = () => {
   const [records, setRecords] = useState([]);
   const [invalidRecords, setInvalidRecords] = useState([]);
@@ -35,6 +41,7 @@ const ToolsUploadNonCR3 = () => {
   const [modalFeedback, setModalFeedback] = useState(false);
   const [modalSaveProcess, setModalSaveProcess] = useState(false);
   const [modalSaveConfirm, setModalSaveConfirm] = useState(false);
+  const [insertedRecords, setInsertedRecords] = useState(0);
   const [processedRecords, setProcessedRecords] = useState(0);
   const [recordsToProcess, setRecordsToProcess] = useState([]);
   const [feedback, setFeedback] = useState({});
@@ -360,7 +367,7 @@ const ToolsUploadNonCR3 = () => {
     console.log(recordsToProcess, data);
     while (data.length !== 0) {
       const currentBundle = data.splice(0, bundleSize);
-      const query = currentBundle;
+      const query = generateGraphQL(currentBundle);
       console.log(query);
       await sleep(2000);
       processCount += currentBundle.length;
@@ -381,6 +388,7 @@ const ToolsUploadNonCR3 = () => {
           });
           setRecordsToProcess([]);
           setProcessedRecords(0);
+          setInsertedRecords(0);
         })
         .catch(error => {
           setModalFeedback(true);
@@ -401,6 +409,18 @@ const ToolsUploadNonCR3 = () => {
       columnHeaders: true,
       filename: "spreadsheet",
     });
+  };
+
+  const generateGraphQL = recordBundle => {
+    return mutationInsertNonCR3.replace(
+      "%NON_CR3_DATA%",
+      recordBundle
+        .map(record => {
+          const re = /\"([a-z\_]+)\"\:/gi;
+          return JSON.stringify(record).replace(re, '$1: ');
+        })
+        .join(", ")
+    );
   };
 
   return (
