@@ -53,12 +53,15 @@ const ToolsUploadNonCR3 = () => {
   /**
    * Apollo mutation handler
    */
-  const [upsertRecordUpdates ] = useMutation(
+  const [upsertRecordUpdates] = useMutation(
     gql`
       ${upsertRecordsQuery}
     `
   );
 
+  /**
+   * Toggles save confirm modal
+   */
   const toggleModalSaveConfirm = () => setModalSaveConfirm(!modalSaveConfirm);
 
   /**
@@ -361,10 +364,11 @@ const ToolsUploadNonCR3 = () => {
         return valid;
       });
 
-    if(data.length === 0) {
+    if (data.length === 0) {
       setFeedback({
-        "title": "No Valid Records Found",
-        "message": "None of the records currently in the spreadsheet editor is valid. Please make sure you have records loaded and validated."
+        title: "No Valid Records Found",
+        message:
+          "None of the records currently in the spreadsheet editor is valid. Please make sure you have records loaded and validated.",
       });
       setModalFeedback(true);
       setModalSaveConfirm(false);
@@ -375,6 +379,10 @@ const ToolsUploadNonCR3 = () => {
     }
   };
 
+  /**
+   * Execution main loop
+   * @return {Promise<void>}
+   */
   const executeSave = async () => {
     let data = [...recordsToProcess];
     let processCount = 0;
@@ -394,6 +402,9 @@ const ToolsUploadNonCR3 = () => {
     }
   };
 
+  /**
+   * Waits until recordsToProcess to begin insertions
+   */
   useEffect(() => {
     if (recordsToProcess.length > 0)
       executeSave()
@@ -430,6 +441,11 @@ const ToolsUploadNonCR3 = () => {
     });
   };
 
+  /**
+   * Generates a GraphQL query based on a bundle of JSON records.
+   * @param {JSON[]} recordBundle - An array of JSON objects
+   * @return {string} - The GraphQL query to be executed
+   */
   const generateGraphQL = recordBundle => {
     return mutationInsertNonCR3.replace(
       "%NON_CR3_DATA%",
