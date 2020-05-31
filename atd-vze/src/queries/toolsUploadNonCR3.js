@@ -12,6 +12,18 @@ mutation mutationInsertNonCR3 {
     [
       %NON_CR3_DATA%
     ]
+    ,
+    on_conflict: {
+      constraint: atd_apd_blueform_pk,
+      update_columns: [
+        date
+        call_num
+        address
+        longitude
+        latitude
+        hour
+      ]
+    }
   ) {
     affected_rows
   }
