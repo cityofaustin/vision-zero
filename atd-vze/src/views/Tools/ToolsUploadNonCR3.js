@@ -20,7 +20,7 @@ import {
 } from "reactstrap";
 
 import { withApollo } from "react-apollo";
-import { useQuery, useMutation } from "@apollo/react-hooks";
+import { useMutation } from "@apollo/react-hooks";
 
 import "./ToolsUploadNonCR3.css";
 import "handsontable/dist/handsontable.full.css";
@@ -32,6 +32,7 @@ import {
   mutationInsertNonCR3,
   mutationNonCR3Data,
 } from "../../queries/toolsUploadNonCR3";
+import { gql } from "apollo-boost";
 
 const ToolsUploadNonCR3 = () => {
   const [records, setRecords] = useState([]);
@@ -45,14 +46,18 @@ const ToolsUploadNonCR3 = () => {
   const [processedRecords, setProcessedRecords] = useState(0);
   const [recordsToProcess, setRecordsToProcess] = useState([]);
   const [feedback, setFeedback] = useState({});
+
+  // Mutation
+  const [upsertRecordsQuery, setUpsertRecordsQuery] = useState(mutationDummy);
+
   /**
-   * Sleeps a for a few milliseconds
-   * @param {int} milliseconds - The length of sleep in milliseconds
-   * @returns {Promise}
+   * Apollo mutation handler
    */
-  const sleep = milliseconds => {
-    return new Promise(resolve => setTimeout(resolve, milliseconds));
-  };
+  const [upsertRecordUpdates ] = useMutation(
+    gql`
+      ${upsertRecordsQuery}
+    `
+  );
 
   const toggleModalSaveConfirm = () => setModalSaveConfirm(!modalSaveConfirm);
 
@@ -356,22 +361,36 @@ const ToolsUploadNonCR3 = () => {
         return valid;
       });
 
-    setModalSaveProcess(true);
-    setRecordsToProcess(data);
+    if(data.length === 0) {
+      setFeedback({
+        "title": "No Valid Records Found",
+        "message": "None of the records currently in the spreadsheet editor is valid. Please make sure you have records loaded and validated."
+      });
+      setModalFeedback(true);
+      setModalSaveConfirm(false);
+      return;
+    } else {
+      setModalSaveProcess(true);
+      setRecordsToProcess(data);
+    }
   };
 
   const executeSave = async () => {
-    console.log("Executing save...");
     let data = [...recordsToProcess];
     let processCount = 0;
-    console.log(recordsToProcess, data);
+
     while (data.length !== 0) {
       const currentBundle = data.splice(0, bundleSize);
       const query = generateGraphQL(currentBundle);
-      console.log(query);
-      await sleep(2000);
+      console.log("Executing query: ", query);
+      await setUpsertRecordsQuery(
+        gql`
+          ${query}
+        `
+      );
+      await upsertRecordUpdates();
       processCount += currentBundle.length;
-      setProcessedRecords(processCount);
+      await setProcessedRecords(processCount);
     }
   };
 
@@ -417,7 +436,7 @@ const ToolsUploadNonCR3 = () => {
       recordBundle
         .map(record => {
           const re = /\"([a-z\_]+)\"\:/gi;
-          return JSON.stringify(record).replace(re, '$1: ');
+          return JSON.stringify(record).replace(re, "$1: ");
         })
         .join(", ")
     );
@@ -530,7 +549,7 @@ const ToolsUploadNonCR3 = () => {
               <Button
                 size="lg"
                 className="btn-twitter btn-brand mr-1 mb-1 float-right"
-                onClick={() => toggleModalSaveConfirm()}
+                onClick={() => toggleModalSaveConfirm(hotTableComponent)}
               >
                 <i className="fa fa-save"></i>
                 <span>Save to Database</span>
@@ -617,9 +636,6 @@ const ToolsUploadNonCR3 = () => {
             Only valid records will be processed, if you have any invalid
             records and you would like to fix them, click 'Cancel'; otherwise,
             click 'Continue'.
-          </p>
-          <p>
-            Records to be processed: {records.length - invalidRecords.length}
           </p>
           <p>
             Any records already in the database will be overwritten (updated).
