@@ -37,7 +37,7 @@ import { gql } from "apollo-boost";
 const ToolsUploadNonCR3 = () => {
   const [records, setRecords] = useState([]);
   const [invalidRecords, setInvalidRecords] = useState(0);
-  const [bundleSize, setBundleSize] = useState(10);
+  const [bundleSize, setBundleSize] = useState(500);
   // Modals
   const [modalFeedback, setModalFeedback] = useState(false);
   const [modalSaveProcess, setModalSaveProcess] = useState(false);
