@@ -19,7 +19,7 @@ import moment from "moment";
 const children = [
   { component: <CrashesByMonth /> },
   { component: <CrashesByMode /> },
-  { component: <CrashesByTimeOfDay /> },
+  // { component: <CrashesByTimeOfDay /> },
   { component: <PeopleByDemographics /> },
 ];
 
