@@ -20,11 +20,13 @@ const Footer = () => {
       padding: 45px 40px 45px 25%;
       color: ${colors.light};
       font-size: 16px;
+      /* Prevent horizontal scroll */
+      margin-right: auto;
+      margin-left: auto;
     }
 
     .link-title {
       font-size: 20px;
-      padding: 10px 15px 10px 15px;
     }
 
     .link {
@@ -106,7 +108,7 @@ const Footer = () => {
       <Container fluid className="mt-5">
         <img className="coa-seal float-left" height="100px" src={logo} />
         <Row className="link-table">
-          <Col xs="12" className="link-title">
+          <Col xs="12" className="link link-title">
             City of Austin Transportation Department
           </Col>
           {footerLinks.map((link) => (

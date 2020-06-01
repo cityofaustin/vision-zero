@@ -38,7 +38,7 @@ const Summary = () => {
 
   return (
     <Container fluid>
-      {/* <DataModal /> */}
+      <DataModal />
       {/* Create whitespace on sides of view until mobile */}
       <Row className="px-xs-0 mx-xs-0 px-lg-3 mx-lg-4 mt-4 mb-0">
         <Col>
