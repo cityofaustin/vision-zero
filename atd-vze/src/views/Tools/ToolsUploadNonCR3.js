@@ -134,6 +134,9 @@ const ToolsUploadNonCR3 = () => {
     colWidths: [125, 100, 375, 100, 100, 75, 75],
     manualColumnResize: true,
     rowHeaders: true,
+    afterColumnSort: (currentConfig, destinationConfig) => {
+      handleValidate([], hotTableComponent);
+    },
   };
 
   /**
