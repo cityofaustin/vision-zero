@@ -36,7 +36,7 @@ import { gql } from "apollo-boost";
 
 const ToolsUploadNonCR3 = () => {
   const [records, setRecords] = useState([]);
-  const [invalidRecords, setInvalidRecords] = useState([]);
+  const [invalidRecords, setInvalidRecords] = useState(0);
   const [bundleSize, setBundleSize] = useState(10);
   // Modals
   const [modalFeedback, setModalFeedback] = useState(false);
@@ -76,6 +76,9 @@ const ToolsUploadNonCR3 = () => {
    */
   const csvParserOptions = {
     header: true,
+    quotes: false,
+    quoteChar: '"',
+    delimiter: ",",
     dynamicTyping: true,
     skipEmptyLines: true,
     transformHeader: header => header.toLowerCase().replace(/\W/g, "_"),
@@ -94,6 +97,7 @@ const ToolsUploadNonCR3 = () => {
       "Ycoord",
       "Hour",
       "Valid",
+      "Message",
     ],
     columns: [
       {
@@ -127,16 +131,17 @@ const ToolsUploadNonCR3 = () => {
         data: "valid",
         type: "text",
       },
+      {
+        data: "message",
+        type: "text"
+      }
     ],
     dropdownMenu: true,
     filters: true,
     columnSorting: true,
-    colWidths: [125, 100, 375, 100, 100, 75, 75],
+    colWidths: [125, 100, 375, 100, 100, 75, 75, 100],
     manualColumnResize: true,
     rowHeaders: true,
-    afterColumnSort: (currentConfig, destinationConfig) => {
-      handleValidate([], hotTableComponent);
-    },
   };
 
   /**
@@ -168,7 +173,7 @@ const ToolsUploadNonCR3 = () => {
     }
 
     if (errors.length === 0) {
-      return [true, "valid"];
+      return [true, "Valid"];
     }
 
     return [false, "Errors: " + errors.join(", ")];
@@ -311,7 +316,7 @@ const ToolsUploadNonCR3 = () => {
      * @type {*[]}
      */
     let finalData = [...data];
-    let invalidRecords = [];
+    let invalidRecords = 0;
 
     /**
      * Validate each record in our data copy
@@ -328,18 +333,12 @@ const ToolsUploadNonCR3 = () => {
 
       // Mark the record with an icon
       finalData[index]["valid"] = valid ? "✅" : "❌";
-
-      // If not valid, then add to a list for human review
-      if (!valid) {
-        invalidRecords.push({
-          row: index + 1,
-          message: message,
-        });
-      }
+      finalData[index]["message"] = message;
+      invalidRecords += valid ? 0 : 1;
     });
 
     // Change the state
-    setInvalidRecords(invalidRecords);
+    setInvalidRecords(invalidRecords)
     setRecords(finalData);
   };
 
@@ -536,11 +535,11 @@ const ToolsUploadNonCR3 = () => {
                     </ListGroupItem>
                     <ListGroupItem action>
                       <span className={"text-value"}>
-                        {invalidRecords.length}
+                        {invalidRecords}
                       </span>
                       <ListGroupItemHeading>Total Errors</ListGroupItemHeading>
                       <ListGroupItemText>
-                        Records that exhibit a problem. See logs below.
+                        Records that exhibit a problem. See error log below.
                       </ListGroupItemText>
                     </ListGroupItem>
                   </ListGroup>
@@ -594,36 +593,6 @@ const ToolsUploadNonCR3 = () => {
         </Card>
       )}
 
-      {!!records.length && (
-        <Card>
-          <CardHeader>Error Log</CardHeader>
-          <CardBody>
-            {!!invalidRecords.length ? (
-              <Table responsive striped>
-                <thead>
-                  <tr>
-                    <th>Row Number</th>
-                    <th>Feedback</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {invalidRecords.map(item => {
-                    return (
-                      <tr>
-                        <td>{item["row"]}</td>
-                        <td>{item["message"]}</td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </Table>
-            ) : (
-              "No errors detected"
-            )}
-          </CardBody>
-        </Card>
-      )}
-
       <Modal isOpen={modalSaveProcess} className={"modal-lg"} keyboard={false}>
         <ModalHeader>Committing Records to Database</ModalHeader>
         <ModalBody>
@@ -658,6 +627,11 @@ const ToolsUploadNonCR3 = () => {
           </p>
           <p>
             Any records already in the database will be overwritten (updated).
+          </p>
+          <p>
+            <strong>
+              Invalid records will be ignored.
+            </strong>
           </p>
         </ModalBody>
         <ModalFooter>
