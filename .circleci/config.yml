@@ -37,4 +37,3 @@ workflows:
               only:
                 - master
                 - production
-                - "sg-circleci-lambda-buildtesting"
