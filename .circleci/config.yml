@@ -4,6 +4,8 @@
 
 version: 2.1
 
+orbs:
+  aws-cli: circleci/aws-cli@x.y
 jobs:
   deploy:
     docker:
