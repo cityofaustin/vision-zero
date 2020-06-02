@@ -160,7 +160,7 @@ const routes = roles => [
     name: "Crashes with Inconsistent KSI Counts",
     component: ReportsInconsistentKSI,
   },
-  {
+  (isAdmin(roles) || isItSupervisor(roles)) && {
     path: "/tools/upload_non_cr3",
     exact: true,
     name: "Upload Non-CR3 Crashes",
