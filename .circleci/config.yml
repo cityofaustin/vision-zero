@@ -27,9 +27,6 @@ jobs:
           command: |
             source .circleci/aws-lambda-helper.sh
             deploy_event_functions
-
-orbs:
-  aws-cli: circleci/aws-cli@x.y
 workflows:
   version: 2.1
   build-and-deploy:
