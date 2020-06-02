@@ -5,13 +5,8 @@ case "${CIRCLE_BRANCH}" in
     export WORKING_STAGE="production";
     ;;
 
-  "master")
-    export WORKING_STAGE="staging";
-    ;;
   *)
-    unset WORKING_STAGE;
-    echo "We can only deploy master or production.";
-    exit 1;
+    export WORKING_STAGE="staging";
     ;;
 esac
 
@@ -19,6 +14,8 @@ esac
 # First, we need to create the python package by installing requirements
 #
 function install_requirements {
+  echo "Installing AWS's CLI";
+  pip install awscli;
   echo "Installing requirements...";
   pip install -r ./requirements.txt --target ./package;
 }
@@ -38,7 +35,7 @@ function bundle_function {
 # Generates environment variables for deployment
 #
 function generate_env_vars {
-      # echo $ZAPPA_SETTINGS > zappa_settings.json;
+      echo $ZAPPA_SETTINGS > zappa_settings.json;
       STAGE_ENV_VARS=$(cat zappa_settings.json | jq -r ".${WORKING_STAGE}.aws_environment_variables");
       echo -e "{\"Description\": \"ATD VisionZero Events Handler\", \"Environment\": { \"Variables\": ${STAGE_ENV_VARS}}}" | jq -rc > handler_config.json;
 }
