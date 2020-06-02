@@ -5,13 +5,8 @@ case "${CIRCLE_BRANCH}" in
     export WORKING_STAGE="production";
     ;;
 
-  "master")
-    export WORKING_STAGE="staging";
-    ;;
   *)
-    unset WORKING_STAGE;
-    echo "We can only deploy master or production.";
-    exit 1;
+    export WORKING_STAGE="staging";
     ;;
 esac
 
