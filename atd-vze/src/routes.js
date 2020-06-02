@@ -52,7 +52,7 @@ const User = React.lazy(() => import("./views/Users/User"));
 const AddUser = React.lazy(() => import("./views/Users/AddUser"));
 const EditUser = React.lazy(() => import("./views/Users/EditUser"));
 const ReportsInconsistentKSI = React.lazy(() => import("./views/Reports/ReportsInconsistentKSI"));
-
+const ToolsUploadNonCR3 = React.lazy(() => import("./views/Tools/ToolsUploadNonCR3"));
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 // Accept roles arg for role-based access to routes
 const routes = roles => [
@@ -159,6 +159,12 @@ const routes = roles => [
     exact: true,
     name: "Crashes with Inconsistent KSI Counts",
     component: ReportsInconsistentKSI,
+  },
+  (isAdmin(roles) || isItSupervisor(roles)) && {
+    path: "/tools/upload_non_cr3",
+    exact: true,
+    name: "Upload Non-CR3 Crashes",
+    component: ToolsUploadNonCR3,
   },
   {
     path: "/dev",
