@@ -141,7 +141,8 @@ def process_line(file_type, line, fieldnames, current_line, dryrun=False):
         # that this record needs to be updated (upsert).
         upsert_enabled = True
     else:
-        upsert_enabled = False
+        # To force upserts, set 'HASURA_FORCE_UPSERT' to 'ENABLED'
+        upsert_enabled = ATD_ETL_CONFIG["HASURA_FORCE_UPSERT"]
 
     #
     # Follow Normal Process

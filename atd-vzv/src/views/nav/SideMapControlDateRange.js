@@ -22,6 +22,12 @@ const SideMapControlDateRange = () => {
   const [start, setStart] = useState(mapStartDate);
   const [end, setEnd] = useState(mapEndDate);
 
+  /**
+   * We need to calculate the width differently in windows, by a few pixels.
+   * Windows = 94px, everyone else: 99px
+   */
+  const inputWidth = navigator.appVersion.indexOf("Win") != -1 ? 92 : 99;
+
   // Override defaultTheme https://github.com/airbnb/react-dates/blob/master/src/theme/DefaultTheme.js
   const vzTheme = {
     reactDates: {
@@ -77,12 +83,12 @@ const SideMapControlDateRange = () => {
       },
       sizing: {
         inputWidth: 90,
-        inputWidth_small: 99,
+        inputWidth_small: inputWidth,
         arrowWidth: 10,
       },
       spacing: {
         ...DefaultTheme.reactDates.spacing,
-        displayTextPaddingLeft_small: 10,
+        displayTextPaddingLeft_small: 4,
         displayTextPaddingRight_small: 4,
         displayTextPaddingBottom_small: 4,
       },

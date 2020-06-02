@@ -23,6 +23,7 @@ ATD_ETL_CONFIG = {
     "MAX_THREADS": int(os.getenv("MAX_THREADS", "20")),
     "MAX_ATTEMPTS": int(os.getenv("MAX_ATTEMPTS", "5")),
     "RETRY_WAIT_TIME": int(os.getenv("RETRY_WAIT_TIME", "5")),
+    "HASURA_FORCE_UPSERT": os.getenv("HASURA_FORCE_UPSERT", "DISABLED") == "ENABLED",
 
     # CRIS
     "ATD_CRIS_WEBSITE": "https://cris.dot.state.tx.us/",
