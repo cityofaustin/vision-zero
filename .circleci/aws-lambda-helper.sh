@@ -14,6 +14,8 @@ esac
 # First, we need to create the python package by installing requirements
 #
 function install_requirements {
+  echo "Installing AWS's CLI";
+  pip install awscli;
   echo "Installing requirements...";
   pip install -r ./requirements.txt --target ./package;
 }
