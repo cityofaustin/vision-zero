@@ -11,7 +11,6 @@ import {
   ListGroupItemHeading,
   ListGroupItemText,
   ListGroup,
-  Table,
   Modal,
   ModalHeader,
   ModalBody,
@@ -30,19 +29,18 @@ import CSVReader from "react-csv-reader";
 import {
   mutationDummy,
   mutationInsertNonCR3,
-  mutationNonCR3Data,
 } from "../../queries/toolsUploadNonCR3";
 import { gql } from "apollo-boost";
 
 const ToolsUploadNonCR3 = () => {
   const [records, setRecords] = useState([]);
   const [invalidRecords, setInvalidRecords] = useState(0);
-  const [bundleSize, setBundleSize] = useState(500);
+  const bundleSize = 500;
+
   // Modals
   const [modalFeedback, setModalFeedback] = useState(false);
   const [modalSaveProcess, setModalSaveProcess] = useState(false);
   const [modalSaveConfirm, setModalSaveConfirm] = useState(false);
-  const [insertedRecords, setInsertedRecords] = useState(0);
   const [processedRecords, setProcessedRecords] = useState(0);
   const [recordsToProcess, setRecordsToProcess] = useState([]);
   const [feedback, setFeedback] = useState({});
@@ -137,7 +135,7 @@ const ToolsUploadNonCR3 = () => {
       }
     ],
     dropdownMenu: true,
-    filters: true,
+    filters: false,
     columnSorting: true,
     colWidths: [125, 100, 375, 100, 100, 75, 75, 100],
     manualColumnResize: true,
@@ -214,7 +212,7 @@ const ToolsUploadNonCR3 = () => {
    * @return {string} - The safe insertable text
    */
   const cleanUpAddress = addr =>
-    (addr ? addr : "").replace(/[^A-Za-z0-9\\\\/\-\s\.\,\&]/gi, "");
+    (addr ? addr : "").replace(/[^A-Za-z0-9\\/\-\s.,&]/gi, "");
 
   /**
    * Returns true if the address is valid
@@ -362,8 +360,7 @@ const ToolsUploadNonCR3 = () => {
         };
       })
       .filter(record => {
-        const [valid, _] = isRecordValid(record);
-        return valid;
+        return isRecordValid(record)[0];
       });
 
     if (data.length === 0) {
@@ -420,7 +417,6 @@ const ToolsUploadNonCR3 = () => {
           });
           setRecordsToProcess([]);
           setProcessedRecords(0);
-          setInsertedRecords(0);
         })
         .catch(error => {
           setModalFeedback(true);
@@ -453,7 +449,7 @@ const ToolsUploadNonCR3 = () => {
       "%NON_CR3_DATA%",
       recordBundle
         .map(record => {
-          const re = /\"([a-z\_]+)\"\:/gi;
+          const re = /"([a-z_]+)":/gi;
           return JSON.stringify(record).replace(re, "$1: ");
         })
         .join(", ")
