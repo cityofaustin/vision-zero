@@ -33,7 +33,7 @@ function bundle_function {
 # Generates environment variables for deployment
 #
 function generate_env_vars {
-      # echo $ZAPPA_SETTINGS > zappa_settings.json;
+      echo $ZAPPA_SETTINGS > zappa_settings.json;
       STAGE_ENV_VARS=$(cat zappa_settings.json | jq -r ".${WORKING_STAGE}.aws_environment_variables");
       echo -e "{\"Description\": \"ATD VisionZero Events Handler\", \"Environment\": { \"Variables\": ${STAGE_ENV_VARS}}}" | jq -rc > handler_config.json;
 }
