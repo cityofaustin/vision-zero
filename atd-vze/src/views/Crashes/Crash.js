@@ -20,7 +20,6 @@ import Widget02 from "../Widgets/Widget02";
 import CrashChangeLog from "./CrashChangeLog";
 import CR3Record from "./CR3Record";
 import DataTable from "../../Components/DataTable";
-import UnitDetailsCard from "./UnitDetailsCard";
 import { crashDataMap } from "./crashDataMap";
 
 import "./crash.scss";
@@ -258,7 +257,6 @@ function Crash(props) {
         </Col>
         <Col xs="12" md="6">
           <CR3Record crashId={crashId} isCr3Stored={cr3StoredFlag === "Y"} />
-          <UnitDetailsCard unitData={data.atd_txdot_units} />
         </Col>
         <Col xs="12">
           <CrashCollapses data={data} />

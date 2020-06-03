@@ -121,10 +121,18 @@ export const GET_CRASH = gql`
     atd_txdot_units(where: { crash_id: { _eq: $crashId } }) {
       unit_desc_id
       unit_nbr
-      contrib_factr_1_id
+      contributing_factor_1 {
+        contrib_factr_desc
+      }
       veh_make_id
       veh_mod_id
       veh_mod_year
+      travel_direction_desc {
+        trvl_dir_desc
+      }
+      movement {
+        movement_desc
+      }
       unit_description {
         veh_unit_desc_desc
       }
