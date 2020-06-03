@@ -20,6 +20,11 @@ export const isAdmin = rolesArray => rolesArray.includes("admin");
 
 export const isItSupervisor = rolesArray => rolesArray.includes("itSupervisor");
 
+// Fires after Auth0 handles auth so we can redirect to where user started
+export const onRedirectCallback = appState => {
+  window.location.href = appState.targetUrl;
+};
+
 export const Auth0Provider = ({
   children,
   onRedirectCallback,
@@ -34,9 +39,7 @@ export const Auth0Provider = ({
   // Instantiate Auth0, handle auth callback, and set loading and user params
   useEffect(() => {
     const initAuth0 = async () => {
-      const auth0FromHook = await createAuth0Client({
-        ...initOptions,
-      });
+      const auth0FromHook = await createAuth0Client(initOptions);
       setAuth0(auth0FromHook);
 
       // If callback URL, handle it
@@ -110,6 +113,7 @@ export const Auth0Provider = ({
         getIdTokenClaims: (...p) => auth0Client.getIdTokenClaims(...p),
         loginWithRedirect: (...p) =>
           auth0Client.loginWithRedirect({
+            // Auth0 will cache our starting url so we can redirect user after login
             appState: { targetUrl: window.location.href },
           }),
         logout,

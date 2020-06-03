@@ -7,13 +7,9 @@ import ReactDOM from "react-dom";
 import "./index.css";
 import App from "./App";
 import { history } from "./auth/history";
-import { Auth0Provider, urlPath } from "./auth/authContext";
+import { Auth0Provider, urlPath, onRedirectCallback } from "./auth/authContext";
 import { HashRouter } from "react-router-dom";
 import * as serviceWorker from "./serviceWorker";
-
-const onRedirectCallback = appState => {
-  window.location.href = appState.targetUrl;
-};
 
 // Setup Auth0 config for Auth0Provider component
 ReactDOM.render(
