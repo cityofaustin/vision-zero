@@ -109,13 +109,18 @@ const Footer = () => {
   return (
     <StyledFooter>
       <Container fluid className="mt-5">
-        <img className="coa-seal float-left" height="100px" src={logo} />
+        <img
+          alt="City of Austin seal"
+          className="coa-seal float-left"
+          height="100px"
+          src={logo}
+        />
         <Row className="link-table">
           <Col xs="12" className="link link-title">
             City of Austin Transportation Department
           </Col>
-          {footerLinks.map((link) => (
-            <Col xs="12" md="6" className="link">
+          {footerLinks.map((link, i) => (
+            <Col key={i} xs="12" md="6" className="link">
               {link.url ? <a href={link.url}>{link.text}</a> : link.text}
             </Col>
           ))}
