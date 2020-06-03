@@ -5,6 +5,7 @@ import MapControls from "./MapControls";
 import MapPolygonFilter from "./MapPolygonFilter";
 import MapCompassSpinner from "./MapCompassSpinner";
 import { createMapDataUrl } from "./helpers";
+import { mapInit, travisCountyBboxGeoJSON, mapNavBbox } from "./mapData";
 import { crashGeoJSONEndpointUrl } from "../../views/summary/queries/socrataQueries";
 import {
   baseSourceAndLayer,
@@ -40,53 +41,9 @@ function useMapEventHandler(eventName, callback, mapRef) {
 }
 
 const Map = () => {
-  const travisCountyBboxGeoJSON = {
-    type: "FeatureCollection",
-    properties: {
-      kind: "state",
-      state: "TX",
-    },
-    features: [
-      {
-        type: "Feature",
-        properties: {
-          kind: "county",
-          name: "Travis",
-          state: "TX",
-        },
-        geometry: {
-          type: "MultiPolygon",
-          coordinates: [
-            [
-              [
-                [0, 90],
-                [180, 90],
-                [180, -90],
-                [0, -90],
-                [-180, -90],
-                [-180, 0],
-                [-180, 90],
-                [0, 90],
-              ],
-              [
-                [-98.1708, 30.0226],
-                [-97.3711, 30.0226],
-                [-97.3711, 30.6251],
-                [-98.1708, 30.6251],
-                [-98.1708, 30.0226],
-              ],
-            ],
-          ],
-        },
-      },
-    ],
-  };
-
   // Set initial map config
   const [viewport, setViewport] = useState({
-    latitude: 30.268039,
-    longitude: -97.742828,
-    zoom: 11,
+    ...mapInit,
   });
 
   // Create ref to map to call Mapbox GL functions on instance
@@ -159,23 +116,18 @@ const Map = () => {
   }, []);
 
   // Restrict map navigation to Travis County
-  const restrictNavigation = (viewport) => {
-    const bbox = {
-      longitude: { min: -98.1708, max: -97.3111 },
-      latitude: { min: 30.0226, max: 30.6251 },
-    };
-
-    if (viewport.longitude < bbox.longitude.min) {
-      viewport.longitude = bbox.longitude.min;
+  const restrictNavAndZoom = (viewport) => {
+    if (viewport.longitude < mapNavBbox.longitude.min) {
+      viewport.longitude = mapNavBbox.longitude.min;
     }
-    if (viewport.longitude > bbox.longitude.max) {
-      viewport.longitude = bbox.longitude.max;
+    if (viewport.longitude > mapNavBbox.longitude.max) {
+      viewport.longitude = mapNavBbox.longitude.max;
     }
-    if (viewport.latitude < bbox.latitude.min) {
-      viewport.latitude = bbox.latitude.min;
+    if (viewport.latitude < mapNavBbox.latitude.min) {
+      viewport.latitude = mapNavBbox.latitude.min;
     }
-    if (viewport.latitude > bbox.latitude.max) {
-      viewport.latitude = bbox.latitude.max;
+    if (viewport.latitude > mapNavBbox.latitude.max) {
+      viewport.latitude = mapNavBbox.latitude.max;
     }
 
     // Limit zoom
@@ -187,7 +139,7 @@ const Map = () => {
   };
 
   const _onViewportChange = (viewport) => {
-    viewport = restrictNavigation(viewport);
+    viewport = restrictNavAndZoom(viewport);
     setViewport(viewport);
   };
 
