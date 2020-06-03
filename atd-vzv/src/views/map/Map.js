@@ -263,8 +263,8 @@ const Map = () => {
           <Layer beforeId="road-street" {...cityCouncilDataLayer} />
         </Source>
       )}
+      {/* Grey out disabled navigation area */}
       <Source type="geojson" data={travisCountyBboxGeoJSON}>
-        {/* Add beforeId to render beneath crash points, road layer, and map labels */}
         <Layer {...travisCountyDataLayer} />
       </Source>
       {/* Render feature info or popup */}
