@@ -99,7 +99,10 @@ const Footer = () => {
       text: "Give feedback on Vision Zero Viewer",
       url: "mailto:transportation.data@austintexas.gov",
     },
-    { text: "Powered by Data & Technology Services" },
+    {
+      text: "Powered by Data & Technology Services",
+      url: "https://data.mobility.austin.gov/about/",
+    },
     { text: <div className="version">v{pckg.version}</div> },
   ];
 
