@@ -36,7 +36,6 @@ export const Auth0Provider = ({
     const initAuth0 = async () => {
       const auth0FromHook = await createAuth0Client({
         ...initOptions,
-        cacheLocation: "localstorage",
       });
       setAuth0(auth0FromHook);
 
@@ -109,7 +108,10 @@ export const Auth0Provider = ({
         getRoles,
         getHasuraRole,
         getIdTokenClaims: (...p) => auth0Client.getIdTokenClaims(...p),
-        loginWithRedirect: (...p) => auth0Client.loginWithRedirect(...p),
+        loginWithRedirect: (...p) =>
+          auth0Client.loginWithRedirect({
+            appState: { targetUrl: window.location.href },
+          }),
         logout,
       }}
     >
