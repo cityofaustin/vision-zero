@@ -368,11 +368,20 @@ crash_id
 location_id
 case_id
 crash_date
+crash_time
+day_of_week
+crash_sev_id
+longitude_primary
+latitude_primary
 address_confirmed_primary
 address_confirmed_secondary
+non_injry_cnt
+nonincap_injry_cnt
+poss_injry_cnt
 sus_serious_injry_cnt
+tot_injry_cnt
 death_cnt
+unkn_injry_cnt
 est_comp_cost
 collision { collsn_desc }
-units { body_style { veh_body_styl_desc } }
-units { unit_description { veh_unit_desc_desc } }`;
+`;
