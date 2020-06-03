@@ -2,6 +2,7 @@ import { useWindowSize } from "react-use";
 
 // Use to unify Bootstrap breakpoints with media queries
 export const responsive = {
+  bootstrapLarge: 990,
   bootstrapMedium: 768,
   // Use for media queries with min-width defined to avoid style conflicts
   bootstrapMediumMin: 769,
