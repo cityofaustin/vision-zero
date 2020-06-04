@@ -44,12 +44,17 @@ const Content = () => {
     @media only screen and (max-width: ${responsive.bootstrapMedium}px) {
       .content {
         width: 100vw;
-        position: fixed;
+        height: calc(100vh - ${responsive.headerHeightMobile}px);
+
+        /* Fix position to fill all space below the header without scrolling */
+        /* while avoiding iOS bug with how vh is handled */
+        ${isMapPath &&
+        `position: fixed;
         top: ${responsive.headerHeightMobile}px;
         left: 0;
         right: 0;
         bottom: 0;
-        height: unset;
+        height: unset;`}
       }
     }
   `;
