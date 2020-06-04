@@ -44,8 +44,12 @@ const Content = () => {
     @media only screen and (max-width: ${responsive.bootstrapMedium}px) {
       .content {
         width: 100vw;
-        height: calc(100vh - ${responsive.headerHeightMobile}px);
+        position: fixed;
         top: ${responsive.headerHeightMobile}px;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: unset;
       }
     }
   `;
