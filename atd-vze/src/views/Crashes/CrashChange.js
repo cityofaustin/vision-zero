@@ -356,7 +356,7 @@ function CrashChange(props) {
       }
 
     }
-  }, [recordData]);
+  }, [recordData]); // eslint-disable-line react-hooks/exhaustive-deps
 
   /**
    * In this useEffect, we listen for changes to the importantFieldList
@@ -399,7 +399,7 @@ function CrashChange(props) {
       redirectToQueueIndex();
     }
 
-  }, [importantFieldList, showFieldsDiffOnly, recordData, selectedFields]);
+  }, [importantFieldList, showFieldsDiffOnly, recordData, selectedFields]); // eslint-disable-line react-hooks/exhaustive-deps
 
   /**
    * In this useEffect, we listen for changes to the differentFieldsList
@@ -425,7 +425,7 @@ function CrashChange(props) {
       redirectToQueueIndex();
     }
 
-  }, [differentFieldsList, showFieldsDiffOnly, recordData, selectedFields]);
+  }, [differentFieldsList, showFieldsDiffOnly, recordData, selectedFields]); // eslint-disable-line react-hooks/exhaustive-deps
 
   /**
    * Closes all dialogs
