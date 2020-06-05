@@ -22,8 +22,21 @@ const StyledMobileInfo = styled.div`
 `;
 
 const MapPolygonInfoBox = ({ crashCounts }) => {
-  // TODO: Create obj with title and content keys for crash counts
-  const content = null;
+  const createCrashContent = (crashCounts) => {
+    const content = [];
+    crashCounts.fatalities > 0 &&
+      content.push({
+        title: "Fatalities",
+        content: `${crashCounts.fatalities}`,
+      });
+    crashCounts.injuries > 0 &&
+      content.push({
+        title: "Serious Injuries",
+        content: `${crashCounts.injuries}`,
+      });
+  };
+
+  const content = createCrashContent(crashCounts);
 
   const infoCard = <InfoCard content={content} />;
 
