@@ -12,14 +12,6 @@ const StyledDesktopInfo = styled.div`
   pointer-events: none;
 `;
 
-const StyledMobileInfo = styled.div`
-  .card {
-    background: none;
-    border: none;
-    max-width: ${responsive.drawerWidth - 20}px;
-  }
-`;
-
 const MapPolygonInfoBox = ({ crashCounts }) => {
   const createCrashContent = (crashCounts) => {
     const content = [];
