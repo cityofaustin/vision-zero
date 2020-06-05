@@ -382,5 +382,7 @@ sus_serious_injry_cnt
 death_cnt
 est_comp_cost
 collision { collsn_desc }
+units { travel_direction_desc { trvl_dir_desc } }
+units { movement { movement_desc } }
 units { body_style { veh_body_styl_desc } }
 units { unit_description { veh_unit_desc_desc } }`;
