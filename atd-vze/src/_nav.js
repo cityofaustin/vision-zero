@@ -60,6 +60,18 @@ export const navigation = roles => {
         },
       ],
     },
+    {
+      name: "Tools",
+      url: "#",
+      icon: "icon-wrench",
+      children: [
+        {
+          name: "Upload Non-CR3",
+          url: "/tools/upload_non_cr3",
+          icon: "icon-cloud-upload",
+        },
+      ],
+    },
   ];
 
   if (isAdmin(roles) || isItSupervisor(roles)) {
