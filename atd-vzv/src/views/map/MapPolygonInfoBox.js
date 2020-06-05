@@ -1,5 +1,4 @@
 import React from "react";
-import { Popup } from "react-map-gl";
 import styled from "styled-components";
 import InfoCard from "./InfoCard";
 import { responsive } from "../../constants/responsive";
@@ -34,28 +33,14 @@ const MapPolygonInfoBox = ({ crashCounts }) => {
         title: "Serious Injuries",
         content: `${crashCounts.injuries}`,
       });
+    return content;
   };
 
   const content = createCrashContent(crashCounts);
 
   const infoCard = <InfoCard content={content} />;
 
-  return (
-    popupInfo &&
-    (isMobile ? (
-      <Popup
-        tipSize={10}
-        anchor="top"
-        longitude={parseFloat(popupInfo.longitude)}
-        latitude={parseFloat(popupInfo.latitude)}
-        onClose={() => setSelectedFeature(null)}
-      >
-        <StyledMobileInfo>{infoCard}</StyledMobileInfo>
-      </Popup>
-    ) : (
-      <StyledDesktopInfo>{infoCard}</StyledDesktopInfo>
-    ))
-  );
+  return <StyledDesktopInfo>{infoCard}</StyledDesktopInfo>;
 };
 
 export default MapPolygonInfoBox;
