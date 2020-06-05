@@ -261,7 +261,10 @@ const Map = () => {
         />
       )}
       {!!mapPolygon && !selectedFeature && (
-        <MapPolygonInfoBox crashCounts={crashCounts} />
+        <MapPolygonInfoBox
+          crashCounts={crashCounts}
+          isMapTypeSet={isMapTypeSet}
+        />
       )}
       <MapCompassSpinner isSpinning={isMapDataLoading} />
       <MapControls setViewport={setViewport} />

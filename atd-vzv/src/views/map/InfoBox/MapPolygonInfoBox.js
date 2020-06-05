@@ -2,15 +2,15 @@ import React from "react";
 import InfoCard from "./InfoCard";
 import { StyledDesktopInfo } from "./infoBoxStyles";
 
-const MapPolygonInfoBox = ({ crashCounts }) => {
+const MapPolygonInfoBox = ({ crashCounts, isMapTypeSet }) => {
   const createCrashContent = (crashCounts) => {
     const content = [];
-    crashCounts.fatalities > 0 &&
+    isMapTypeSet.fatal &&
       content.push({
         title: "Fatalities",
         content: `${crashCounts.fatalities}`,
       });
-    crashCounts.injuries > 0 &&
+    isMapTypeSet.injury &&
       content.push({
         title: "Serious Injuries",
         content: `${crashCounts.injuries}`,
