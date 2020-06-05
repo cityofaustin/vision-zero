@@ -1,16 +1,6 @@
 import React from "react";
-import styled from "styled-components";
 import InfoCard from "./InfoCard";
-import { responsive } from "../../constants/responsive";
-
-const StyledDesktopInfo = styled.div`
-  position: absolute;
-  margin: 8px;
-  padding: 2px;
-  max-width: ${responsive.drawerWidth - 20}px;
-  z-index: 9 !important;
-  pointer-events: none;
-`;
+import { StyledDesktopInfo } from "./infoBoxStyles";
 
 const MapPolygonInfoBox = ({ crashCounts }) => {
   const createCrashContent = (crashCounts) => {

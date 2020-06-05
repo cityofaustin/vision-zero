@@ -22,8 +22,8 @@ import { useIsMobile } from "../../constants/responsive";
 
 import "mapbox-gl/dist/mapbox-gl.css";
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css"; // Get out-of-the-box icons
-import MapInfoBox from "./MapInfoBox";
-import MapPolygonInfoBox from "./MapPolygonInfoBox";
+import MapInfoBox from "./InfoBox/MapInfoBox";
+import MapPolygonInfoBox from "./InfoBox/MapPolygonInfoBox";
 
 const MAPBOX_TOKEN = `pk.eyJ1Ijoiam9obmNsYXJ5IiwiYSI6ImNrM29wNnB3dDAwcXEzY29zMTU5bWkzOWgifQ.KKvoz6s4NKNHkFVSnGZonw`;
 
