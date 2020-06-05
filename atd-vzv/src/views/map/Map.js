@@ -74,17 +74,17 @@ const Map = () => {
 
   // Fetch initial crash data and refetch upon filters change
   useEffect(() => {
-    // Sort crash data into fatality and injury subsets
+    // Sort and count crash data into fatality and injury subsets
     const sortAndCountMapData = (data) => {
       const crashCounts = {};
       const features = data.features.reduce(
         (acc, feature) => {
-          crashCounts["injuries"] =
-            (crashCounts["injuries"] || 0) +
+          crashCounts["injury"] =
+            (crashCounts["injury"] || 0) +
             parseInt(feature.properties.sus_serious_injry_cnt);
 
-          crashCounts["fatalities"] =
-            (crashCounts["fatalities"] || 0) +
+          crashCounts["fatality"] =
+            (crashCounts["fatality"] || 0) +
             parseInt(feature.properties.death_cnt);
 
           if (parseInt(feature.properties.sus_serious_injry_cnt) > 0) {

@@ -8,12 +8,12 @@ const MapPolygonInfoBox = ({ crashCounts, isMapTypeSet }) => {
     isMapTypeSet.fatal &&
       content.push({
         title: "Fatalities",
-        content: `${crashCounts.fatalities}`,
+        content: `${crashCounts.fatality}`,
       });
     isMapTypeSet.injury &&
       content.push({
         title: "Serious Injuries",
-        content: `${crashCounts.injuries}`,
+        content: `${crashCounts.injury}`,
       });
     return content;
   };
