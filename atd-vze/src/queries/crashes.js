@@ -384,4 +384,6 @@ death_cnt
 unkn_injry_cnt
 est_comp_cost
 collision { collsn_desc }
+units { body_style { veh_body_styl_desc } }
+units { unit_description { veh_unit_desc_desc } }
 `;
