@@ -56,6 +56,7 @@ const Map = () => {
   const [selectedFeature, setSelectedFeature] = useState(null);
   const [cityCouncilOverlay, setCityCouncilOverlay] = useState(null);
   const [isMapDataLoading, setIsMapDataLoading] = useState(false);
+  const [crashCounts, setCrashCounts] = useState({});
 
   const {
     mapFilters: [filters],
@@ -73,9 +74,18 @@ const Map = () => {
   // Fetch initial crash data and refetch upon filters change
   useEffect(() => {
     // Sort crash data into fatality and injury subsets
-    const sortMapData = (data) => {
-      return data.features.reduce(
+    const sortAndCountMapData = (data) => {
+      const crashCounts = {};
+      const features = data.features.reduce(
         (acc, feature) => {
+          crashCounts["injuries"] =
+            (crashCounts["injuries"] || 0) +
+            parseInt(feature.properties.sus_serious_injry_cnt);
+
+          crashCounts["fatalities"] =
+            (crashCounts["fatalities"] || 0) +
+            parseInt(feature.properties.death_cnt);
+
           if (parseInt(feature.properties.sus_serious_injry_cnt) > 0) {
             acc.injuries.features.push(feature);
           }
@@ -89,6 +99,9 @@ const Map = () => {
           injuries: { ...data, features: [] },
         }
       );
+
+      setCrashCounts(crashCounts);
+      return features;
     };
 
     const apiUrl = createMapDataUrl(
@@ -101,7 +114,7 @@ const Map = () => {
 
     !!apiUrl &&
       axios.get(apiUrl).then((res) => {
-        const sortedMapData = sortMapData(res.data);
+        const sortedMapData = sortAndCountMapData(res.data);
 
         setMapData(sortedMapData);
       });
