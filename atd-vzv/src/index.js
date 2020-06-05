@@ -1,3 +1,6 @@
+import "react-app-polyfill/ie11";
+import "react-app-polyfill/stable";
+
 import React from "react";
 import ReactDOM from "react-dom";
 import { setBasepath } from "hookrouter";
@@ -8,11 +11,23 @@ import StoreProvider from "./utils/store";
 import * as serviceWorker from "./serviceWorker";
 import "bootstrap/dist/css/bootstrap.css";
 
-import "react-app-polyfill/ie11";
-import "react-app-polyfill/stable";
-
 // Account for /viewer/ basepath in all routing
 setBasepath(basepath);
+
+// IE11 SVG Polyfill
+SVGElement.prototype.contains = function contains(node) {
+  if (!(0 in arguments)) {
+    throw new TypeError("1 argument is required");
+  }
+
+  do {
+    if (this === node) {
+      return true;
+    }
+  } while ((node = node && node.parentNode));
+
+  return false;
+};
 
 ReactDOM.render(
   <StoreProvider>

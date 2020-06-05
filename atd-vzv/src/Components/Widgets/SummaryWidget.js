@@ -16,6 +16,10 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { colors } from "../../constants/colors";
 
+const numberWithCommas = (x) => {
+  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+};
+
 const SummaryWidget = ({
   totalsObject,
   text,
@@ -74,7 +78,7 @@ const SummaryWidget = ({
         <FontAwesomeIcon size="2x" icon={icon} color={colors.dark} />
         {!!lastYearTotal && (
           <div className="text-muted text-wrap pt-1 pr-1 widget-footer-text">
-            {`${text} ${lastYearTotal.toLocaleString()} this time last year`}
+            {`${text} ${numberWithCommas(lastYearTotal)} this time last year`}
           </div>
         )}
       </div>
@@ -90,7 +94,7 @@ const SummaryWidget = ({
               {/* Show spinner while waiting for data, add thousands separator to total */}
               <h1 className="total">
                 {!!totalsObject ? (
-                  totalsObject[currentYear].toLocaleString()
+                  numberWithCommas(totalsObject[currentYear])
                 ) : (
                   <ColorSpinner color={backgroundColor} />
                 )}
