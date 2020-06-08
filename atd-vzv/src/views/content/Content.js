@@ -27,16 +27,10 @@ const Content = () => {
     width: calc(100vw - ${responsive.drawerWidth}px);
   `;
 
-  const summaryStyles = `
-    width: 100vw;
-    height: 100vh;
-  `;
-
   const StyledContent = styled.div`
     .content {
       position: relative;
       top: ${responsive.headerHeight}px;
-      ${currentPath === "/" && summaryStyles}
       ${isMapPath && mapStyles}
     }
 
@@ -44,17 +38,11 @@ const Content = () => {
     @media only screen and (max-width: ${responsive.bootstrapMedium}px) {
       .content {
         width: 100vw;
-        height: calc(100vh - ${responsive.headerHeightMobile}px);
-
-        /* Fix position to fill all space below the header without scrolling */
-        /* while avoiding iOS bug with how vh is handled */
-        ${isMapPath &&
-        `position: fixed;
+        height: 100%;
+        height: -webkit-calc(100% - ${responsive.headerHeightMobile}px);
+        height: -moz-calc(100% - ${responsive.headerHeightMobile}px);
+        height: calc(100% - ${responsive.headerHeightMobile}px);
         top: ${responsive.headerHeightMobile}px;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        height: unset;`}
       }
     }
   `;
