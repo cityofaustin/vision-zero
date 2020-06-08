@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { usePath } from "hookrouter";
 import { useTrackedRoutes } from "../../constants/nav";
 import { routes } from "../../routes/routes";
@@ -23,7 +23,8 @@ const Content = () => {
   // Map view needs to consider header height and have no overflow scroll to fill view
   // Summary view needs to scroll to show all content
   const mapStyles = `
-    height: calc(100vh - ${responsive.headerHeight}px);
+    position: fixed;
+    height: calc(100% - ${responsive.headerHeight}px);
     width: calc(100vw - ${responsive.drawerWidth}px);
   `;
 
@@ -38,9 +39,6 @@ const Content = () => {
     @media only screen and (max-width: ${responsive.bootstrapMedium}px) {
       .content {
         width: 100vw;
-        height: 100%;
-        height: -webkit-calc(100% - ${responsive.headerHeightMobile}px);
-        height: -moz-calc(100% - ${responsive.headerHeightMobile}px);
         height: calc(100% - ${responsive.headerHeightMobile}px);
         top: ${responsive.headerHeightMobile}px;
       }
