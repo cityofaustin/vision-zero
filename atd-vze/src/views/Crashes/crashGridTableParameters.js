@@ -37,7 +37,7 @@ export const crashGridTableColumns = {
   sus_serious_injry_cnt: {
     searchable: false,
     sortable: true,
-    label_table: "Serious Injury Count",
+    label_table: "Suspected Serious Injury Count",
     type: "Int",
   },
   death_cnt: {
@@ -148,14 +148,14 @@ export const crashGridTableAdvancedFilters = {
       },
       {
         id: "dni_serious_injuries",
-        label: "Serious Injury Crashes",
+        label: "Suspected Serious Injury Crashes",
         filter: {
           where: [{ or: { sus_serious_injry_cnt: "_gt: 0" } }],
         },
       },
       {
         id: "dni_non_fatal",
-        label: "Non-serious Injury Crashes",
+        label: "Non-Suspected Serious Injury Crashes",
         filter: {
           where: [{ or: { nonincap_injry_cnt: "_gt: 0" } }],
         },
