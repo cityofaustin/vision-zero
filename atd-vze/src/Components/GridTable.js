@@ -142,7 +142,7 @@ const GridTable = ({
         setChartQuery(updatedChartsQuery);
       }
     }
-  });
+  }, [] ); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Execute aggregate query each time query filters change
   useEffect(() => {
