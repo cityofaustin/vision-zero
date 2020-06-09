@@ -57,7 +57,7 @@ const Map = () => {
   const [selectedFeature, setSelectedFeature] = useState(null);
   const [cityCouncilOverlay, setCityCouncilOverlay] = useState(null);
   const [isMapDataLoading, setIsMapDataLoading] = useState(false);
-  const [crashCounts, setCrashCounts] = useState({});
+  const [crashCounts, setCrashCounts] = useState(null);
 
   const {
     mapFilters: [filters],
@@ -113,6 +113,7 @@ const Map = () => {
       mapTimeWindow
     );
 
+    setCrashCounts(null); // Clear stale totals before fetch
     !!apiUrl &&
       axios.get(apiUrl).then((res) => {
         const sortedMapData = sortAndCountMapData(res.data);
@@ -260,7 +261,7 @@ const Map = () => {
           type={selectedFeature.layer.id}
         />
       )}
-      {!!mapPolygon && !selectedFeature && (
+      {!!crashCounts && !!mapPolygon && !selectedFeature && (
         <MapPolygonInfoBox
           crashCounts={crashCounts}
           isMapTypeSet={isMapTypeSet}
