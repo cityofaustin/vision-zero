@@ -149,6 +149,20 @@ const Map = () => {
   }, [isMapTypeSet, cityCouncilOverlay, overlay.name]);
 
   const _onSelectCrashPoint = (event) => {
+    // Prevent events from map controls from selecting features below
+    // or from creating City Council district pop-up on mobile polygon draw
+    if (
+      event.srcEvent &&
+      event.srcEvent.srcElement &&
+      event.srcEvent.srcElement.classList
+    ) {
+      if (
+        event.srcEvent.srcElement.classList.value.includes("mapbox") ||
+        event.srcEvent.target.localName === "circle"
+      )
+        return;
+    }
+
     const { features } = event;
     // Filter feature to set in state and set hierarchy
     let selectedFeature =
