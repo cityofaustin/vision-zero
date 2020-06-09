@@ -39,14 +39,13 @@ export const navigation = roles => {
   // Admin nav items
   const adminNavItems = [
     {
+      title: true,
+      name: "Admin",
+    },
+    {
       name: "Changes",
       url: "/changes",
       icon: "icon-layers",
-    },
-    {
-      name: "Users",
-      url: "/users",
-      icon: "icon-people",
     },
     {
       name: "Reports",
@@ -71,6 +70,11 @@ export const navigation = roles => {
           icon: "icon-cloud-upload",
         },
       ],
+    },
+    {
+      name: "Users",
+      url: "/users",
+      icon: "icon-people",
     },
   ];
 
