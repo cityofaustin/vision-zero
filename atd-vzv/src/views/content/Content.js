@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { usePath } from "hookrouter";
 import { useTrackedRoutes } from "../../constants/nav";
 import { routes } from "../../routes/routes";
