@@ -26,11 +26,6 @@ export const navigation = roles => {
         icon: "icon-shield",
       },
       {
-        name: "Changes",
-        url: "/changes",
-        icon: "icon-layers",
-      },
-      {
         name: "Locations",
         url: "/locations",
         icon: "icon-map",
@@ -44,9 +39,13 @@ export const navigation = roles => {
   // Admin nav items
   const adminNavItems = [
     {
-      name: "Users",
-      url: "/users",
-      icon: "icon-people",
+      title: true,
+      name: "Admin",
+    },
+    {
+      name: "Changes",
+      url: "/changes",
+      icon: "icon-layers",
     },
     {
       name: "Reports",
@@ -71,6 +70,11 @@ export const navigation = roles => {
           icon: "icon-cloud-upload",
         },
       ],
+    },
+    {
+      name: "Users",
+      url: "/users",
+      icon: "icon-people",
     },
   ];
 

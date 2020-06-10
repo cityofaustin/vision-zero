@@ -29,7 +29,6 @@ import { AppSwitch } from "@coreui/react";
 import {
   GET_CRASH_CHANGE,
   GET_CRASH_SECONDARY_RECORDS,
-  CRASH_MUTATION_DISCARD,
   RECORD_MUTATION_UPDATE,
   RECORD_DELETE_CHANGE_RECORDS,
   UPSERT_MUTATION_DUMMY,
@@ -40,15 +39,12 @@ import {
   piiFields,
   notNullValues,
 } from "./crashFieldDescriptions";
-import { crashChangeQuotedFields } from "./crashChangeQuotedFields";
-import { redirectUrl } from "../../index";
 
 function CrashChange(props) {
   const crashId = props.match.params.id;
   const [redirect, setRedirect] = useState(false);
   const [selectedFields, setSelectedFields] = useState([]);
   const [recordData, setRecordData] = useState({});
-  const [recordSecondaryData, setRecordSecondaryData] = useState({});
   // Arrays of column names
   const [importantFieldList, setImportantFieldList] = useState([]);
   const [differentFieldsList, setDifferentFieldsList] = useState([]);
@@ -71,7 +67,7 @@ function CrashChange(props) {
     UPSERT_MUTATION_DUMMY
   );
 
-  const { loading, user } = useAuth0();
+  const { user } = useAuth0();
 
   /**
    * Mutations
@@ -89,18 +85,15 @@ function CrashChange(props) {
   );
 
   const {
-    data: data,
-    error: error,
-    loading: loadingData,
-    refetch: refetch,
+    data,
+    error,
+    refetch,
   } = useQuery(GET_CRASH_CHANGE, {
     variables: { crashId },
   });
 
   const {
-    data: secondaryData,
-    error: secondaryError,
-    loading: loadingSecondaryData,
+    data: secondaryData
   } = useQuery(GET_CRASH_SECONDARY_RECORDS, {
     variables: { crashId },
   });
@@ -127,14 +120,6 @@ function CrashChange(props) {
   const sleep = milliseconds => {
     return new Promise(resolve => setTimeout(resolve, milliseconds));
   };
-
-  /**
-   * Returns a gql object ready to be executed.
-   * @param  {string} template - The GraphQL template we are working with
-   * @param {object} values - A key-value object containing the value for variables in the template.
-   * @returns {object} - A resulting gql object
-   */
-  const generateQueryFromTemplate = (template, values) => {};
 
   /**
    * Adds or removes field name from the selectedFields array.
@@ -277,45 +262,11 @@ function CrashChange(props) {
 
     if (!newRecord) return [];
 
-    const selectable = Object.keys(newRecord).filter(field => {
+    return Object.keys(newRecord).filter(field => {
       return (
         cleanString(originalRecord[field]) !== cleanString(newRecord[field])
       );
     });
-    return selectable;
-  };
-
-  /**
-   * Generates a mutation to update the original record.
-   * @returns {string}
-   */
-  const generateMutationSave = () => {
-    const newRecord =
-      JSON.parse(recordData["atd_txdot_changes"][0]["record_json"]) || null;
-
-    let updateFields = [];
-
-    selectedFields.forEach(field => {
-      // Generate the value
-      let value = String(
-        crashChangeQuotedFields.includes(field)
-          ? `"${newRecord[field]}"`
-          : newRecord[field]
-      ).trim();
-
-      if (value && value !== '""' && value.length > 0) {
-        // Generate the line
-        const currentField = `${field}: ${value}`;
-
-        // Append the field
-        updateFields.push(currentField);
-      }
-    });
-
-    return RECORD_MUTATION_UPDATE.replace(
-      "%FUNCTION_NAME%",
-      "update_atd_txdot_crashes"
-    ).replace("%UPDATE_FIELDS%", updateFields.join("\n"));
   };
 
   /**
@@ -405,7 +356,7 @@ function CrashChange(props) {
       }
 
     }
-  }, [recordData]);
+  }, [recordData]); // eslint-disable-line react-hooks/exhaustive-deps
 
   /**
    * In this useEffect, we listen for changes to the importantFieldList
@@ -448,7 +399,7 @@ function CrashChange(props) {
       redirectToQueueIndex();
     }
 
-  }, [importantFieldList, showFieldsDiffOnly, recordData, selectedFields]);
+  }, [importantFieldList, showFieldsDiffOnly, recordData, selectedFields]); // eslint-disable-line react-hooks/exhaustive-deps
 
   /**
    * In this useEffect, we listen for changes to the differentFieldsList
@@ -474,7 +425,7 @@ function CrashChange(props) {
       redirectToQueueIndex();
     }
 
-  }, [differentFieldsList, showFieldsDiffOnly, recordData, selectedFields]);
+  }, [differentFieldsList, showFieldsDiffOnly, recordData, selectedFields]); // eslint-disable-line react-hooks/exhaustive-deps
 
   /**
    * Closes all dialogs
@@ -544,13 +495,6 @@ function CrashChange(props) {
   };
 
   /**
-   * Hides the process dialog (when saving or deleting)
-   */
-  const hideProcessDialog = () => {
-    setSavingChanges(false);
-  };
-
-  /**
    * Shows the process dialog (when saving or deleting)
    */
   const showProcessDialog = () => {
@@ -599,7 +543,6 @@ function CrashChange(props) {
    * @returns {Promise<void>}
    */
   const executeUpdateQueries = async () => {
-    const mutation = generateMutationSave();
     setSaveStatus("updating secondary records");
     await sleep(1000);
   };
@@ -840,6 +783,7 @@ function CrashChange(props) {
             // And we also need any selected count records
             ...selectedFields.filter(key => {
               if (recordType !== "charges") return key.endsWith("_cnt");
+              return false;
             }),
           ];
 
@@ -886,7 +830,7 @@ function CrashChange(props) {
       }
     `.replace(
       "%LIST_OF_RECORD_QUERIES%",
-      mutationsList.length == 0 ? "" : mutationsList.join("\n\t\t\t")
+      mutationsList.length === 0 ? "" : mutationsList.join("\n\t\t\t")
     );
     // First we need the template
     return updateSecondaryRecords;

@@ -146,13 +146,29 @@ const routes = roles => [
     component: Location,
   },
   { path: "/crashes", exact: true, name: "Crashes", component: Crashes },
-  { path: "/changes", exact: true, name: "Crash Changes", component: CrashesChanges },
-  { path: "/changes/:id", exact: true, name: "Crash Change", component: CrashChange },
   {
     path: "/crashes/:id",
     exact: true,
     name: "Crash Details",
     component: Crash,
+  },
+  {
+    path: "/dev",
+    exact: true,
+    name: "Demo UI Components",
+    component: Dev,
+  },
+  (isAdmin(roles) || isItSupervisor(roles)) && {
+    path: "/changes",
+    exact: true,
+    name: "Crash Changes",
+    component: CrashesChanges,
+  },
+  (isAdmin(roles) || isItSupervisor(roles)) && {
+    path: "/changes/:id",
+    exact: true,
+    name: "Crash Change",
+    component: CrashChange
   },
   (isAdmin(roles) || isItSupervisor(roles)) && {
     path: "/reports/inconsistent_ksi_counts",
@@ -165,12 +181,6 @@ const routes = roles => [
     exact: true,
     name: "Upload Non-CR3 Crashes",
     component: ToolsUploadNonCR3,
-  },
-  {
-    path: "/dev",
-    exact: true,
-    name: "Demo UI Components",
-    component: Dev,
   },
   (isAdmin(roles) || isItSupervisor(roles)) && {
     path: "/users",
