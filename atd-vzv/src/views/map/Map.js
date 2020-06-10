@@ -191,14 +191,23 @@ const Map = () => {
     // Layer order depends on order set, so set fatalities last to keep on top
     const injuryLayer = (
       <Source id="crashInjuries" type="geojson" data={mapData.injuries}>
-        <Layer beforeId="base-layer" {...seriousInjuriesOutlineDataLayer} />
-        <Layer beforeId="base-layer" {...seriousInjuriesDataLayer} />
+        <Layer
+          beforeId="place_label_city_small_s"
+          {...seriousInjuriesOutlineDataLayer}
+        />
+        <Layer
+          beforeId="place_label_city_small_s"
+          {...seriousInjuriesDataLayer}
+        />
       </Source>
     );
     const fatalityLayer = (
       <Source id="crashFatalities" type="geojson" data={mapData.fatalities}>
-        <Layer beforeId="base-layer" {...fatalitiesOutlineDataLayer} />
-        <Layer beforeId="base-layer" {...fatalitiesDataLayer} />
+        <Layer
+          beforeId="place_label_city_small_s"
+          {...fatalitiesOutlineDataLayer}
+        />
+        <Layer beforeId="place_label_city_small_s" {...fatalitiesDataLayer} />
       </Source>
     );
     const bothLayers = (
