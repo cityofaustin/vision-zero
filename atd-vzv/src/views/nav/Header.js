@@ -65,7 +65,7 @@ const Header = () => {
     /* Need to offset height to account for white space above and below logo in svg */
     height: ${responsive.headerButtonHeight + responsive.headerLogoOffset}px;
     
-    @media only screen and (max-width: ${responsive.bootstrapMediumMin}px) {
+    @media only screen and (max-width: ${responsive.bootstrapMedium}px) {
       /* Center VZ logo and only show when toggler is present */
       transform: translateX(-50%);
       left: 50%;

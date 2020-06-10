@@ -5,6 +5,7 @@ import MapControls from "./MapControls";
 import MapPolygonFilter from "./MapPolygonFilter";
 import MapCompassSpinner from "./MapCompassSpinner";
 import { createMapDataUrl } from "./helpers";
+import { mapInit, travisCountyBboxGeoJSON, mapNavBbox } from "./mapData";
 import { crashGeoJSONEndpointUrl } from "../../views/summary/queries/socrataQueries";
 import {
   baseSourceAndLayer,
@@ -16,6 +17,7 @@ import {
   asmpConfig,
   buildHighInjuryLayer,
   cityCouncilDataLayer,
+  travisCountyDataLayer,
 } from "./map-style";
 import axios from "axios";
 import { useIsMobile } from "../../constants/responsive";
@@ -41,9 +43,7 @@ function useMapEventHandler(eventName, callback, mapRef) {
 const Map = () => {
   // Set initial map config
   const [viewport, setViewport] = useState({
-    latitude: 30.268039,
-    longitude: -97.742828,
-    zoom: 11,
+    ...mapInit,
   });
 
   // Create ref to map to call Mapbox GL functions on instance
@@ -115,7 +115,33 @@ const Map = () => {
     });
   }, []);
 
-  const _onViewportChange = (viewport) => setViewport(viewport);
+  // Restrict map navigation to Travis County
+  const restrictNavAndZoom = (viewport) => {
+    if (viewport.longitude < mapNavBbox.longitude.min) {
+      viewport.longitude = mapNavBbox.longitude.min;
+    }
+    if (viewport.longitude > mapNavBbox.longitude.max) {
+      viewport.longitude = mapNavBbox.longitude.max;
+    }
+    if (viewport.latitude < mapNavBbox.latitude.min) {
+      viewport.latitude = mapNavBbox.latitude.min;
+    }
+    if (viewport.latitude > mapNavBbox.latitude.max) {
+      viewport.latitude = mapNavBbox.latitude.max;
+    }
+
+    // Limit zoom
+    if (viewport.zoom < 10) {
+      viewport.zoom = 10;
+    }
+
+    return viewport;
+  };
+
+  const _onViewportChange = (viewport) => {
+    viewport = restrictNavAndZoom(viewport);
+    setViewport(viewport);
+  };
 
   // Change cursor to grab when dragging map and pointer when hovering an interactive layer
   const _getCursor = ({ isHovering, isDragging }) =>
@@ -165,14 +191,23 @@ const Map = () => {
     // Layer order depends on order set, so set fatalities last to keep on top
     const injuryLayer = (
       <Source id="crashInjuries" type="geojson" data={mapData.injuries}>
-        <Layer beforeId="base-layer" {...seriousInjuriesOutlineDataLayer} />
-        <Layer beforeId="base-layer" {...seriousInjuriesDataLayer} />
+        <Layer
+          beforeId="place_label_city_small_s"
+          {...seriousInjuriesOutlineDataLayer}
+        />
+        <Layer
+          beforeId="place_label_city_small_s"
+          {...seriousInjuriesDataLayer}
+        />
       </Source>
     );
     const fatalityLayer = (
       <Source id="crashFatalities" type="geojson" data={mapData.fatalities}>
-        <Layer beforeId="base-layer" {...fatalitiesOutlineDataLayer} />
-        <Layer beforeId="base-layer" {...fatalitiesDataLayer} />
+        <Layer
+          beforeId="place_label_city_small_s"
+          {...fatalitiesOutlineDataLayer}
+        />
+        <Layer beforeId="place_label_city_small_s" {...fatalitiesDataLayer} />
       </Source>
     );
     const bothLayers = (
@@ -237,6 +272,10 @@ const Map = () => {
           <Layer beforeId="road-street" {...cityCouncilDataLayer} />
         </Source>
       )}
+      {/* Grey out disabled navigation area */}
+      <Source type="geojson" data={travisCountyBboxGeoJSON}>
+        <Layer {...travisCountyDataLayer} />
+      </Source>
       {/* Render feature info or popup */}
       {selectedFeature && (
         <MapInfoBox
