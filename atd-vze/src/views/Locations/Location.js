@@ -2,16 +2,7 @@ import React, { useState, useEffect } from "react";
 import moment from "moment";
 import DataTable from "../../Components/DataTable";
 import LocationMap from "./LocationMap";
-import LocationEditMap from "./LocationEditMap";
-import {
-  Card,
-  CardBody,
-  CardHeader,
-  Col,
-  Row,
-  Button,
-  ButtonGroup,
-} from "reactstrap";
+import { Card, CardBody, CardHeader, Col, Row } from "reactstrap";
 
 import { withApollo } from "react-apollo";
 import { useQuery } from "@apollo/react-hooks";
@@ -23,8 +14,6 @@ import LocationNonCR3Crashes from "./LocationNonCR3Crashes";
 import { GET_LOCATION, UPDATE_LOCATION } from "../../queries/Locations";
 
 function Location(props) {
-  const [mapSelected, setMapSelected] = useState("aerial");
-
   // Set initial variables for GET_LOCATION query
   const locationId = props.match.params.id;
 
@@ -87,11 +76,6 @@ function Location(props) {
     setEditField("");
   };
 
-  const handleMapChange = e => {
-    e.preventDefault();
-    setMapSelected(e.target.id);
-  };
-
   return (
     <div className="animated fadeIn">
       <Row>
@@ -103,33 +87,10 @@ function Location(props) {
         <Col md="6">
           <Card>
             <CardHeader>
-              <i className="fa fa-map fa-lg mt-3"></i> View or Edit Location
-              <ButtonGroup className="float-right">
-                <Button
-                  active={mapSelected === "aerial"}
-                  id="aerial"
-                  onClick={handleMapChange}
-                  color="dark"
-                  outline
-                >
-                  Aerial Map
-                </Button>
-                <Button
-                  active={mapSelected === "edit"}
-                  id="edit"
-                  onClick={handleMapChange}
-                  color="dark"
-                  outline
-                >
-                  Edit Polygon
-                </Button>
-              </ButtonGroup>
+              <i className="fa fa-map fa-lg"></i> Aerial Map
             </CardHeader>
             <CardBody>
-              {data && mapSelected === "aerial" && <LocationMap data={data} />}
-              {data && mapSelected === "edit" && (
-                <LocationEditMap data={data} refetch={refetch} />
-              )}
+              <LocationMap data={data} />
             </CardBody>
           </Card>
         </Col>

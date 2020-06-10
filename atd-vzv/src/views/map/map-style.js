@@ -22,11 +22,24 @@ export const baseSourceAndLayer = (
 
 // For more information on data-driven styles, see https://www.mapbox.com/help/gl-dds-ref/
 // To create white border, add second layer with larger white radius behind primary circles
+const crashPointRadius = {
+  stops: [
+    [8, 2],
+    [12, 4],
+    [14, 8],
+    [16, 10],
+  ],
+};
+
+const crashPointOutlineRadius = {
+  stops: crashPointRadius.stops.map((stop) => [stop[0], stop[1] + 1]),
+};
+
 export const fatalitiesDataLayer = {
   id: "fatalities",
   type: "circle",
   paint: {
-    "circle-radius": 5,
+    "circle-radius": crashPointRadius,
     "circle-color": colors.fatalities,
   },
 };
@@ -36,7 +49,7 @@ export const fatalitiesOutlineDataLayer = {
   id: "fatalitiesOutline",
   paint: {
     ...fatalitiesDataLayer.paint,
-    "circle-radius": 6,
+    "circle-radius": crashPointOutlineRadius,
     "circle-color": colors.white,
   },
 };
@@ -45,7 +58,7 @@ export const seriousInjuriesDataLayer = {
   id: "seriousInjuries",
   type: "circle",
   paint: {
-    "circle-radius": 5,
+    "circle-radius": crashPointRadius,
     "circle-color": colors.seriousInjuries,
   },
 };
@@ -55,7 +68,7 @@ export const seriousInjuriesOutlineDataLayer = {
   id: "seriousInjuriesOutline",
   paint: {
     ...seriousInjuriesDataLayer.paint,
-    "circle-radius": 6,
+    "circle-radius": crashPointOutlineRadius,
     "circle-color": colors.white,
   },
 };
@@ -243,3 +256,12 @@ export function getFeatureStyle({ feature, index, state }) {
       };
   }
 }
+
+export const travisCountyDataLayer = {
+  id: "travisCounty",
+  type: "fill",
+  paint: {
+    "fill-opacity": 0.15,
+    "fill-color": colors.dark,
+  },
+};
