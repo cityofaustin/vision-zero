@@ -20,6 +20,11 @@ export const isAdmin = rolesArray => rolesArray.includes("admin");
 
 export const isItSupervisor = rolesArray => rolesArray.includes("itSupervisor");
 
+// Fires after Auth0 handles auth so we can redirect to where user started
+export const onRedirectCallback = appState => {
+  window.location.href = appState.targetUrl;
+};
+
 export const Auth0Provider = ({
   children,
   onRedirectCallback,
@@ -106,7 +111,11 @@ export const Auth0Provider = ({
         getRoles,
         getHasuraRole,
         getIdTokenClaims: (...p) => auth0Client.getIdTokenClaims(...p),
-        loginWithRedirect: (...p) => auth0Client.loginWithRedirect(...p),
+        loginWithRedirect: (...p) =>
+          auth0Client.loginWithRedirect({
+            // Auth0 will cache our starting url so we can redirect user after login
+            appState: { targetUrl: window.location.href },
+          }),
         logout,
       }}
     >
