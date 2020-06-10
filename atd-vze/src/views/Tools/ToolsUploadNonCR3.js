@@ -425,7 +425,7 @@ const ToolsUploadNonCR3 = () => {
             message: error,
           });
         });
-  }, [recordsToProcess]);
+  }, [recordsToProcess]); // eslint-disable-line react-hooks/exhaustive-deps
 
   /**
    * Handles the clicking on the download spreadsheet button.

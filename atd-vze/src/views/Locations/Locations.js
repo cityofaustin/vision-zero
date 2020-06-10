@@ -47,7 +47,7 @@ let queryConf = {
       searchable: false,
       sortable: true,
       label_search: null,
-      label_table: "Total Serious Injry.",
+      label_table: "Total Suspected Serious Injuries",
       default: 0,
       type: "Integer",
     },

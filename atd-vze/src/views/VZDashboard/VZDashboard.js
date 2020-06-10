@@ -64,7 +64,7 @@ function VZDashboard() {
         <Col xs="12" sm="6" md="4">
           <Widget02
             header={commaSeparator(seriousInjuriesYTD)}
-            mainText={`Serious injuries in ${year}`}
+            mainText={`Suspected Serious Injuries in ${year}`}
             icon="fa fa-medkit"
             color="info"
           />

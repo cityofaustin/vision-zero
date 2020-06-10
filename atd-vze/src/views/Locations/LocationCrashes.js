@@ -83,7 +83,7 @@ function LocationCrashes(props) {
       sum: false, // Is the data a sum of multiple aggregates
     },
     {
-      mainText: "Serious Injuries",
+      mainText: "Suspected Serious Injuries",
       icon: "fa fa-medkit",
       color: "warning",
       dataPath: [
