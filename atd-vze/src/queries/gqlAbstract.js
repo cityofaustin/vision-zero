@@ -277,7 +277,7 @@ gqlAbstractTableAggregateName (
       return "-";
     }
     else {
-      value = String(value).toLowerCase();
+      value = String(value);
     }
 
     switch (type) {
