@@ -56,12 +56,12 @@ const MapPolygonFilter = ({ setMapPolygon }) => {
                 isDisabled && "disabled"
               }`}
               disabled={isDisabled}
-              title="Polygon tool"
+              title="Draw a polygon to filter data"
               onClick={() => !isDisabled && setMode(EditorModes.DRAW_POLYGON)}
             />
             <button
               className="mapbox-gl-draw_ctrl-draw-btn mapbox-gl-draw_trash"
-              title="Delete"
+              title="Remove polygon filter"
               onClick={_onDelete}
             />
           </div>
