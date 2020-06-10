@@ -425,10 +425,11 @@ def user_delete_user(id):
         abort(403)
 
 
-@APP.route("/crashes/associate_location/", methods=["PUT", "POST"])
+@APP.route("/events/", methods=["PUT", "POST"])
 def associate_location():
     # Require matching token
-    incoming_token = request.headers.get('Hasura-Event-Api')
+    incoming_token = request.headers.get("HASURA_EVENT_API")
+    incoming_event_name = request.headers.get("HASURA_EVENT_NAME", "")
     hashed_events_api = hashlib.md5()
     hashed_events_api.update(str(HASURA_EVENT_API).encode("utf-8"))
     hashed_incoming_token = hashlib.md5()
@@ -436,31 +437,42 @@ def associate_location():
 
     # Return error if token doesn't match
     if hashed_events_api.hexdigest() != hashed_incoming_token.hexdigest():
-        return {
-            "statusCode": 403,
-            "body": json.dumps({'message': 'Forbidden Request'})
-        }
+        return {"statusCode": 403, "body": json.dumps({"message": "Forbidden Request"})}
+
+    # Check if there is an event name provided, if not provide feedback.
+    if incoming_event_name == "":
+        return {"statusCode": 403, "body": json.dumps({"message": "Forbidden Request"})}
 
     # We continue the execution
     try:
-        sqs = boto3.client('sqs')
-        queue_url = HASURA_EVENTS_SQS_URL
+        sqs = boto3.client("sqs")
+        queue_url = (
+            HASURA_EVENTS_SQS_URL[0:48]
+            + "/atd-vz-data-events-"
+            + incoming_event_name
+            + "_"
+            + API_ENVIRONMENT.lower()
+        )
 
         # Send message to SQS queue
         response = sqs.send_message(
             QueueUrl=queue_url,
             DelaySeconds=10,
-            MessageBody=json.dumps(request.get_json(force=True))
+            MessageBody=json.dumps(request.get_json(force=True)),
         )
 
         return {
             "statusCode": 200,
-            "body": json.dumps({'message': 'Update queued: ' + str(response['MessageId'])})
+            "body": json.dumps(
+                {"message": "Update queued: " + str(response["MessageId"])}
+            ),
         }
     except Exception as e:
         return {
             "statusCode": 503,
-            "body": json.dumps({'message': 'Unable to queue update request: ' + str(e)})
+            "body": json.dumps(
+                {"message": "Unable to queue update request: " + str(e)}
+            ),
         }
 
 
