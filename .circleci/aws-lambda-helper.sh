@@ -75,6 +75,23 @@ function deploy_event_function {
         --cli-input-json file://handler_config.json > /dev/null;
 }
 
+function deploy_event_source_mapping {
+    FUNCTION_NAME=$1
+    EVENT_SOURCE_ARN=$2
+    MAPPINGS_COUNT=$(aws lambda list-event-source-mappings --function-name "${FUNCTION_NAME}" | jq -r ".EventSourceMappings | length");
+
+    # If no mappings are found, then create it...
+    if [[ "${MAPPINGS_COUNT}" = "0" ]]; then
+        echo "Deploying event source mapping '${FUNCTION_NAME}' @ '${EVENT_SOURCE_ARN}'";
+        aws lambda create-event-source-mapping --function-name "${FUNCTION_NAME}"  \
+            --batch-size 10 --event-source-arn "${EVENT_SOURCE_ARN}";
+
+    # If there is one or more, then ignore, chances are it already exists.
+    else
+        echo "Skipping, the mapping already exists";
+    fi;
+}
+
 #
 # Deploys an SQS Queue
 #
@@ -96,6 +113,10 @@ function deploy_sqs {
     QUEUE_ARN=$(aws sqs get-queue-attributes --queue-url "${QUEUE_URL}" --attribute-names "QueueArn" 2>/dev/null | jq -r ".Attributes.QueueArn");
     echo "QUEUE_URL: ${QUEUE_URL}";
     echo "QUEUE_ARN: ${QUEUE_ARN}";
+
+    # Create event-source mapping
+    echo "Creating event-source mapping between function ${QUEUE_NAME} and queue ARN: ${QUEUE_ARN}";
+    deploy_event_source_mapping $QUEUE_NAME $QUEUE_ARN;
 }
 
 #
