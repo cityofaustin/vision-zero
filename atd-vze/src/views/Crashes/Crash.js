@@ -169,8 +169,8 @@ function Crash(props) {
           <Widget02
             header={`${
               seriousInjuryCount === null ? "--" : seriousInjuryCount
-              }`}
-            mainText="Serious Injuries"
+            }`}
+            mainText="Suspected Serious Injuries"
             icon="fa fa-medkit"
             color="warning"
           />
