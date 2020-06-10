@@ -87,7 +87,7 @@ function Location(props) {
         <Col md="6">
           <Card>
             <CardHeader>
-              <i className="fa fa-map fa-lg mt-3"></i> Aerial Map
+              <i className="fa fa-map fa-lg"></i> Aerial Map
             </CardHeader>
             <CardBody>
               <LocationMap data={data} />
