@@ -160,6 +160,7 @@ const Map = () => {
   }, [isMapTypeSet, cityCouncilOverlay, overlay.name]);
 
   const _onSelectCrashPoint = (event) => {
+    console.log(mapRef.current.getCanvas());
     const { features } = event;
     // Filter feature to set in state and set hierarchy
     let selectedFeature =

@@ -22,6 +22,12 @@ const StyledMobileInfo = styled.div`
   }
 `;
 
+const StyledPopup = styled.div`
+  .mapboxgl-popup-content {
+    left: 10px;
+  }
+`;
+
 const MapInfoBox = ({
   selectedFeature,
   setSelectedFeature,
@@ -60,15 +66,18 @@ const MapInfoBox = ({
   return (
     popupInfo &&
     (isMobile ? (
-      <Popup
-        tipSize={10}
-        anchor="top"
-        longitude={parseFloat(popupInfo.longitude)}
-        latitude={parseFloat(popupInfo.latitude)}
-        onClose={() => setSelectedFeature(null)}
-      >
-        <StyledMobileInfo>{infoCard}</StyledMobileInfo>
-      </Popup>
+      <StyledPopup>
+        <Popup
+          tipSize={10}
+          anchor="top"
+          longitude={parseFloat(popupInfo.longitude)}
+          latitude={parseFloat(popupInfo.latitude)}
+          onClose={() => setSelectedFeature(null)}
+          dynamicPosition={false}
+        >
+          <StyledMobileInfo>{infoCard}</StyledMobileInfo>
+        </Popup>
+      </StyledPopup>
     ) : (
       <StyledDesktopInfo>{infoCard}</StyledDesktopInfo>
     ))
