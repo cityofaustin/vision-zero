@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { StoreContext } from "../../utils/store";
 import ThemedStyleSheet from "react-with-styles/lib/ThemedStyleSheet";
 import aphroditeInterface from "react-with-styles-interface-aphrodite";
@@ -17,7 +17,8 @@ import { useIsMobile } from "../../constants/responsive";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimesCircle } from "@fortawesome/free-solid-svg-icons";
 
-const SideMapControlDateRange = () => {
+const SideMapControlDateRange = ({ type }) => {
+  const datePicker = useRef(null);
   const [focused, setFocused] = useState(null);
   const [start, setStart] = useState(mapStartDate);
   const [end, setEnd] = useState(mapEndDate);
@@ -202,8 +203,9 @@ const SideMapControlDateRange = () => {
   return (
     <StyledButtonContainer className="pr-0 picker-outline w-100">
       <DateRangePicker
-        startDateId="start_date" // PropTypes.string.isRequired,
-        endDateId="end_date" // PropTypes.string.isRequired,
+        ref={datePicker}
+        startDateId={`start_date_${type}`} // PropTypes.string.isRequired,
+        endDateId={`end_date_${type}`} // PropTypes.string.isRequired,
         startDate={start} // momentPropTypes.momentObj or null,
         endDate={end} // momentPropTypes.momentObj or null,
         onDatesChange={handleDateChange} // PropTypes.func.isRequired,
