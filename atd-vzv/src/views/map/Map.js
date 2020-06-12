@@ -160,7 +160,6 @@ const Map = () => {
   }, [isMapTypeSet, cityCouncilOverlay, overlay.name]);
 
   const _onSelectCrashPoint = (event) => {
-    console.log(mapRef.current.getCanvas());
     const { features } = event;
     // Filter feature to set in state and set hierarchy
     let selectedFeature =
@@ -181,6 +180,23 @@ const Map = () => {
           ...selectedFeature.properties,
           latitude: event.lngLat[1],
           longitude: event.lngLat[0],
+        },
+      };
+    }
+
+    // Supplement feature properties with lat/long to set popup coords if not in feature metadata
+    if (
+      (!!selectedFeature && selectedFeature.layer.id === "fatalities") ||
+      selectedFeature.layer.id === "seriousInjuries"
+    ) {
+      selectedFeature = {
+        ...selectedFeature,
+        properties: {
+          ...selectedFeature.properties,
+          pixelCoordinate: mapRef.current.project([
+            parseFloat(selectedFeature.properties.longitude),
+            parseFloat(selectedFeature.properties.latitude),
+          ]),
         },
       };
     }

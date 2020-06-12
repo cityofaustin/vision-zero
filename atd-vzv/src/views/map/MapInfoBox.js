@@ -5,35 +5,43 @@ import InfoCard from "./InfoCard";
 import { responsive } from "../../constants/responsive";
 import moment from "moment";
 
-const StyledDesktopInfo = styled.div`
-  position: absolute;
-  margin: 8px;
-  padding: 2px;
-  max-width: ${responsive.drawerWidth - 20}px;
-  z-index: 9 !important;
-  pointer-events: none;
-`;
-
-const StyledMobileInfo = styled.div`
-  .card {
-    background: none;
-    border: none;
-    max-width: ${responsive.drawerWidth - 20}px;
-  }
-`;
-
-const StyledPopup = styled.div`
-  .mapboxgl-popup-content {
-    left: 10px;
-  }
-`;
-
 const MapInfoBox = ({
   selectedFeature,
   setSelectedFeature,
   isMobile,
   type, // id of feature layer
 }) => {
+  console.log(selectedFeature);
+  const maxInfoBoxWidth = responsive.drawerWidth - 20;
+
+  const StyledDesktopInfo = styled.div`
+    position: absolute;
+    margin: 8px;
+    padding: 2px;
+    max-width: ${maxInfoBoxWidth}px;
+    z-index: 9 !important;
+    pointer-events: none;
+  `;
+
+  const StyledMobileInfo = styled.div`
+    .card {
+      background: none;
+      border: none;
+      max-width: ${maxInfoBoxWidth}px;
+    }
+  `;
+
+  const StyledPopup = styled.div`
+    .mapboxgl-popup-content {
+      /* Calc left offset based on coords */
+      left: ${selectedFeature.properties.pixelCoordinate
+        ? -selectedFeature.properties.pixelCoordinate.x +
+          +maxInfoBoxWidth / 2 +
+          20
+        : 0}px;
+    }
+  `;
+
   const popupInfo = selectedFeature && selectedFeature.properties;
 
   const buildSeriousInjuriesOrFatalitiesConfig = (info) => [
