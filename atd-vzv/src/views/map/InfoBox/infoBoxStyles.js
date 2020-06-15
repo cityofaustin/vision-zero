@@ -1,8 +1,8 @@
 import styled from "styled-components";
 import { responsive } from "../../../constants/responsive";
 
-export const popupMargin = 20;
-export const maxInfoBoxWidth = responsive.drawerWidth - popupMargin;
+export const popupMargins = 20;
+export const maxInfoBoxWidth = responsive.drawerWidth - popupMargins;
 
 export const StyledDesktopInfo = styled.div`
   position: absolute;
