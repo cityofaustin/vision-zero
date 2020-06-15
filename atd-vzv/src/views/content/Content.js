@@ -23,20 +23,15 @@ const Content = () => {
   // Map view needs to consider header height and have no overflow scroll to fill view
   // Summary view needs to scroll to show all content
   const mapStyles = `
-    height: calc(100vh - ${responsive.headerHeight}px);
+    position: fixed;
+    height: calc(100% - ${responsive.headerHeight}px);
     width: calc(100vw - ${responsive.drawerWidth}px);
-  `;
-
-  const summaryStyles = `
-    width: 100vw;
-    height: 100vh;
   `;
 
   const StyledContent = styled.div`
     .content {
       position: relative;
       top: ${responsive.headerHeight}px;
-      ${currentPath === "/" && summaryStyles}
       ${isMapPath && mapStyles}
     }
 
@@ -44,7 +39,7 @@ const Content = () => {
     @media only screen and (max-width: ${responsive.bootstrapMedium}px) {
       .content {
         width: 100vw;
-        height: calc(100vh - ${responsive.headerHeightMobile}px);
+        height: calc(100% - ${responsive.headerHeightMobile}px);
         top: ${responsive.headerHeightMobile}px;
       }
     }

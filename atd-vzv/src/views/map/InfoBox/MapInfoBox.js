@@ -1,9 +1,14 @@
 import React from "react";
 import { Popup } from "react-map-gl";
-import styled from "styled-components";
 import InfoCard from "./InfoCard";
-import { responsive } from "../../constants/responsive";
 import moment from "moment";
+import styled from "styled-components";
+import {
+  StyledDesktopInfo,
+  StyledMobileInfo,
+  maxInfoBoxWidth,
+  popupMargin,
+} from "./infoBoxStyles";
 
 const MapInfoBox = ({
   selectedFeature,
@@ -12,38 +17,16 @@ const MapInfoBox = ({
   type, // id of feature layer
 }) => {
   console.log(selectedFeature);
-  const popupMargin = 20;
-  const maxInfoBoxWidth = responsive.drawerWidth - popupMargin;
-
-  const StyledDesktopInfo = styled.div`
-    position: absolute;
-    margin: 8px;
-    padding: 2px;
-    max-width: ${maxInfoBoxWidth}px;
-    z-index: 9 !important;
-    pointer-events: none;
-  `;
-
-  const StyledMobileInfo = styled.div`
-    .card {
-      background: none;
-      border: none;
-      max-width: ${maxInfoBoxWidth}px;
-    }
-  `;
+  const popupInfo = selectedFeature && selectedFeature.properties;
 
   const StyledPopup = styled.div`
     .mapboxgl-popup-content {
       /* Calc left offset based on coords */
-      left: ${selectedFeature.properties.pixelCoordinates
-        ? -selectedFeature.properties.pixelCoordinates.x +
-          maxInfoBoxWidth / 2 +
-          popupMargin
+      left: ${popupInfo.pixelCoordinates
+        ? -popupInfo.pixelCoordinates.x + maxInfoBoxWidth / 2 + popupMargin
         : 0}px;
     }
   `;
-
-  const popupInfo = selectedFeature && selectedFeature.properties;
 
   const buildSeriousInjuriesOrFatalitiesConfig = (info) => [
     {

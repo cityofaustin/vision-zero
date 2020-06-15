@@ -24,7 +24,8 @@ import { useIsMobile } from "../../constants/responsive";
 
 import "mapbox-gl/dist/mapbox-gl.css";
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css"; // Get out-of-the-box icons
-import MapInfoBox from "./MapInfoBox";
+import MapInfoBox from "./InfoBox/MapInfoBox";
+import MapPolygonInfoBox from "./InfoBox/MapPolygonInfoBox";
 
 const MAPBOX_TOKEN = `pk.eyJ1Ijoiam9obmNsYXJ5IiwiYSI6ImNrM29wNnB3dDAwcXEzY29zMTU5bWkzOWgifQ.KKvoz6s4NKNHkFVSnGZonw`;
 
@@ -56,6 +57,7 @@ const Map = () => {
   const [selectedFeature, setSelectedFeature] = useState(null);
   const [cityCouncilOverlay, setCityCouncilOverlay] = useState(null);
   const [isMapDataLoading, setIsMapDataLoading] = useState(false);
+  const [crashCounts, setCrashCounts] = useState(null);
 
   const {
     mapFilters: [filters],
@@ -72,10 +74,19 @@ const Map = () => {
 
   // Fetch initial crash data and refetch upon filters change
   useEffect(() => {
-    // Sort crash data into fatality and injury subsets
-    const sortMapData = (data) => {
-      return data.features.reduce(
+    // Sort and count crash data into fatality and injury subsets
+    const sortAndCountMapData = (data) => {
+      const crashCounts = {};
+      const features = data.features.reduce(
         (acc, feature) => {
+          crashCounts["injury"] =
+            (crashCounts["injury"] || 0) +
+            parseInt(feature.properties.sus_serious_injry_cnt);
+
+          crashCounts["fatality"] =
+            (crashCounts["fatality"] || 0) +
+            parseInt(feature.properties.death_cnt);
+
           if (parseInt(feature.properties.sus_serious_injry_cnt) > 0) {
             acc.injuries.features.push(feature);
           }
@@ -89,6 +100,9 @@ const Map = () => {
           injuries: { ...data, features: [] },
         }
       );
+
+      setCrashCounts(crashCounts);
+      return features;
     };
 
     const apiUrl = createMapDataUrl(
@@ -99,9 +113,10 @@ const Map = () => {
       mapTimeWindow
     );
 
+    setCrashCounts(null); // Clear stale totals before fetch
     !!apiUrl &&
       axios.get(apiUrl).then((res) => {
-        const sortedMapData = sortMapData(res.data);
+        const sortedMapData = sortAndCountMapData(res.data);
 
         setMapData(sortedMapData);
       });
@@ -160,6 +175,20 @@ const Map = () => {
   }, [isMapTypeSet, cityCouncilOverlay, overlay.name]);
 
   const _onSelectCrashPoint = (event) => {
+    // Prevent events from map controls from selecting features below
+    // or from creating City Council district pop-up on mobile polygon draw
+    if (
+      event.srcEvent &&
+      event.srcEvent.srcElement &&
+      event.srcEvent.srcElement.classList
+    ) {
+      if (
+        event.srcEvent.srcElement.classList.value.includes("mapbox") ||
+        event.srcEvent.target.localName === "circle"
+      )
+        return;
+    }
+
     const { features } = event;
     // Filter feature to set in state and set hierarchy
     let selectedFeature =
@@ -306,6 +335,12 @@ const Map = () => {
           setSelectedFeature={setSelectedFeature}
           isMobile={isMobile}
           type={selectedFeature.layer.id}
+        />
+      )}
+      {!!crashCounts && !!mapPolygon && !selectedFeature && (
+        <MapPolygonInfoBox
+          crashCounts={crashCounts}
+          isMapTypeSet={isMapTypeSet}
         />
       )}
       <MapCompassSpinner isSpinning={isMapDataLoading} />
