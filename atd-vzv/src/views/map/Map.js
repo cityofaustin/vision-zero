@@ -172,8 +172,14 @@ const Map = () => {
           null
       );
 
+    let selectedFeatureLayer =
+      (!!selectedFeature &&
+        selectedFeature.layer &&
+        selectedFeature.layer.id) ||
+      null;
+
     // Supplement feature properties with lat/long to set popup coords if not in feature metadata
-    if (!!selectedFeature && selectedFeature.layer.id === "cityCouncil") {
+    if (!!selectedFeature && selectedFeatureLayer === "cityCouncil") {
       selectedFeature = {
         ...selectedFeature,
         properties: {
@@ -184,16 +190,16 @@ const Map = () => {
       };
     }
 
-    // Supplement feature properties with lat/long to set popup coords if not in feature metadata
+    // Supplement crash feature properties with pixel coords to keep popup in viewport
     if (
-      (!!selectedFeature && selectedFeature.layer.id === "fatalities") ||
-      selectedFeature.layer.id === "seriousInjuries"
+      (!!selectedFeature && selectedFeatureLayer === "fatalities") ||
+      selectedFeatureLayer === "seriousInjuries"
     ) {
       selectedFeature = {
         ...selectedFeature,
         properties: {
           ...selectedFeature.properties,
-          pixelCoordinate: mapRef.current.project([
+          pixelCoordinates: mapRef.current.project([
             parseFloat(selectedFeature.properties.longitude),
             parseFloat(selectedFeature.properties.latitude),
           ]),

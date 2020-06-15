@@ -12,7 +12,8 @@ const MapInfoBox = ({
   type, // id of feature layer
 }) => {
   console.log(selectedFeature);
-  const maxInfoBoxWidth = responsive.drawerWidth - 20;
+  const popupMargin = 20;
+  const maxInfoBoxWidth = responsive.drawerWidth - popupMargin;
 
   const StyledDesktopInfo = styled.div`
     position: absolute;
@@ -34,10 +35,10 @@ const MapInfoBox = ({
   const StyledPopup = styled.div`
     .mapboxgl-popup-content {
       /* Calc left offset based on coords */
-      left: ${selectedFeature.properties.pixelCoordinate
-        ? -selectedFeature.properties.pixelCoordinate.x +
-          +maxInfoBoxWidth / 2 +
-          20
+      left: ${selectedFeature.properties.pixelCoordinates
+        ? -selectedFeature.properties.pixelCoordinates.x +
+          maxInfoBoxWidth / 2 +
+          popupMargin
         : 0}px;
     }
   `;
@@ -81,7 +82,7 @@ const MapInfoBox = ({
           longitude={parseFloat(popupInfo.longitude)}
           latitude={parseFloat(popupInfo.latitude)}
           onClose={() => setSelectedFeature(null)}
-          dynamicPosition={false}
+          dynamicPosition={false} // Set popup position with StyledPopup
         >
           <StyledMobileInfo>{infoCard}</StyledMobileInfo>
         </Popup>
