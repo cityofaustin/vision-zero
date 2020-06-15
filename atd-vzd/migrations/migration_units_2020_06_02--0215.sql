@@ -34,6 +34,15 @@ INSERT INTO "public"."atd_txdot__movt_lkp"
   ("movement_id", "movement_desc")
 VALUES
   ('3', 'THROUGH');
+INSERT INTO "public"."atd_txdot__movt_lkp"
+  ("movement_id", "movement_desc")
+VALUES('0', 'UNKNOWN');
+
+-- Give all Unit records movement_id = 0
+UPDATE
+	atd_txdot_units
+SET
+	movement_id = 0
 
 -- 1. Run migration above
 -- 2. Reload Hasura metadata
