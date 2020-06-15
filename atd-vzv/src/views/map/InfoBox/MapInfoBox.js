@@ -6,7 +6,7 @@ import styled from "styled-components";
 import {
   StyledDesktopInfo,
   StyledMobileInfo,
-  maxInfoBoxWidth,
+  setPopupPosition,
 } from "./infoBoxStyles";
 
 const MapInfoBox = ({
@@ -18,30 +18,10 @@ const MapInfoBox = ({
   const popupInfo = selectedFeature && selectedFeature.properties;
   const popupX = popupInfo.pixelCoordinates && popupInfo.pixelCoordinates.x;
 
-  // 1. If the max width of the popups fit within view on both sides, do that
-  // 2. If it would extend beyond left side of view, set left position
-  // 3. If it would extend beyond right side of view, set right position
   const StyledPopup = styled.div`
     .mapboxgl-popup-content {
       /* Calc left offset based on coords */
-      ${
-        popupX &&
-        popupX + maxInfoBoxWidth / 2 < window.innerWidth &&
-        popupX - maxInfoBoxWidth / 2 > 0 &&
-        `left: ${popupX - maxInfoBoxWidth / 2};`
-      }
-
-      ${
-        popupX &&
-        popupX - maxInfoBoxWidth / 2 <= 0 &&
-        `left: ${maxInfoBoxWidth / 2 - popupX}px;`
-      }
-
-      ${
-        popupX &&
-        popupX + maxInfoBoxWidth / 2 >= window.innerWidth &&
-        `right: ${popupX + maxInfoBoxWidth / 2 - window.innerWidth}px;`
-      }
+      ${setPopupPosition(popupX)}
     }
   `;
 
