@@ -142,7 +142,7 @@ const GridTable = ({
         setChartQuery(updatedChartsQuery);
       }
     }
-  });
+  }, [] ); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Execute aggregate query each time query filters change
   useEffect(() => {
@@ -382,9 +382,8 @@ const GridTable = ({
    * Render
    *
    **/
-
   // Make Query && Error handling
-  let { loading, error, data } = useQuery(query.gql);
+  let { loading, error, data } = useQuery(query.gql, query.useQueryOptions);
 
   if (error) return `Error! ${error.message}`;
 

@@ -5,6 +5,7 @@ import MapControls from "./MapControls";
 import MapPolygonFilter from "./MapPolygonFilter";
 import MapCompassSpinner from "./MapCompassSpinner";
 import { createMapDataUrl } from "./helpers";
+import { mapInit, travisCountyBboxGeoJSON, mapNavBbox } from "./mapData";
 import { crashGeoJSONEndpointUrl } from "../../views/summary/queries/socrataQueries";
 import {
   baseSourceAndLayer,
@@ -16,13 +17,15 @@ import {
   asmpConfig,
   buildHighInjuryLayer,
   cityCouncilDataLayer,
+  travisCountyDataLayer,
 } from "./map-style";
 import axios from "axios";
 import { useIsMobile } from "../../constants/responsive";
 
 import "mapbox-gl/dist/mapbox-gl.css";
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css"; // Get out-of-the-box icons
-import MapInfoBox from "./MapInfoBox";
+import MapInfoBox from "./InfoBox/MapInfoBox";
+import MapPolygonInfoBox from "./InfoBox/MapPolygonInfoBox";
 
 const MAPBOX_TOKEN = `pk.eyJ1Ijoiam9obmNsYXJ5IiwiYSI6ImNrM29wNnB3dDAwcXEzY29zMTU5bWkzOWgifQ.KKvoz6s4NKNHkFVSnGZonw`;
 
@@ -41,9 +44,7 @@ function useMapEventHandler(eventName, callback, mapRef) {
 const Map = () => {
   // Set initial map config
   const [viewport, setViewport] = useState({
-    latitude: 30.268039,
-    longitude: -97.742828,
-    zoom: 11,
+    ...mapInit,
   });
 
   // Create ref to map to call Mapbox GL functions on instance
@@ -56,6 +57,7 @@ const Map = () => {
   const [selectedFeature, setSelectedFeature] = useState(null);
   const [cityCouncilOverlay, setCityCouncilOverlay] = useState(null);
   const [isMapDataLoading, setIsMapDataLoading] = useState(false);
+  const [crashCounts, setCrashCounts] = useState(null);
 
   const {
     mapFilters: [filters],
@@ -72,10 +74,19 @@ const Map = () => {
 
   // Fetch initial crash data and refetch upon filters change
   useEffect(() => {
-    // Sort crash data into fatality and injury subsets
-    const sortMapData = (data) => {
-      return data.features.reduce(
+    // Sort and count crash data into fatality and injury subsets
+    const sortAndCountMapData = (data) => {
+      const crashCounts = {};
+      const features = data.features.reduce(
         (acc, feature) => {
+          crashCounts["injury"] =
+            (crashCounts["injury"] || 0) +
+            parseInt(feature.properties.sus_serious_injry_cnt);
+
+          crashCounts["fatality"] =
+            (crashCounts["fatality"] || 0) +
+            parseInt(feature.properties.death_cnt);
+
           if (parseInt(feature.properties.sus_serious_injry_cnt) > 0) {
             acc.injuries.features.push(feature);
           }
@@ -89,6 +100,9 @@ const Map = () => {
           injuries: { ...data, features: [] },
         }
       );
+
+      setCrashCounts(crashCounts);
+      return features;
     };
 
     const apiUrl = createMapDataUrl(
@@ -99,9 +113,10 @@ const Map = () => {
       mapTimeWindow
     );
 
+    setCrashCounts(null); // Clear stale totals before fetch
     !!apiUrl &&
       axios.get(apiUrl).then((res) => {
-        const sortedMapData = sortMapData(res.data);
+        const sortedMapData = sortAndCountMapData(res.data);
 
         setMapData(sortedMapData);
       });
@@ -115,7 +130,33 @@ const Map = () => {
     });
   }, []);
 
-  const _onViewportChange = (viewport) => setViewport(viewport);
+  // Restrict map navigation to Travis County
+  const restrictNavAndZoom = (viewport) => {
+    if (viewport.longitude < mapNavBbox.longitude.min) {
+      viewport.longitude = mapNavBbox.longitude.min;
+    }
+    if (viewport.longitude > mapNavBbox.longitude.max) {
+      viewport.longitude = mapNavBbox.longitude.max;
+    }
+    if (viewport.latitude < mapNavBbox.latitude.min) {
+      viewport.latitude = mapNavBbox.latitude.min;
+    }
+    if (viewport.latitude > mapNavBbox.latitude.max) {
+      viewport.latitude = mapNavBbox.latitude.max;
+    }
+
+    // Limit zoom
+    if (viewport.zoom < 10) {
+      viewport.zoom = 10;
+    }
+
+    return viewport;
+  };
+
+  const _onViewportChange = (viewport) => {
+    viewport = restrictNavAndZoom(viewport);
+    setViewport(viewport);
+  };
 
   // Change cursor to grab when dragging map and pointer when hovering an interactive layer
   const _getCursor = ({ isHovering, isDragging }) =>
@@ -134,6 +175,20 @@ const Map = () => {
   }, [isMapTypeSet, cityCouncilOverlay, overlay.name]);
 
   const _onSelectCrashPoint = (event) => {
+    // Prevent events from map controls from selecting features below
+    // or from creating City Council district pop-up on mobile polygon draw
+    if (
+      event.srcEvent &&
+      event.srcEvent.srcElement &&
+      event.srcEvent.srcElement.classList
+    ) {
+      if (
+        event.srcEvent.srcElement.classList.value.includes("mapbox") ||
+        event.srcEvent.target.localName === "circle"
+      )
+        return;
+    }
+
     const { features } = event;
     // Filter feature to set in state and set hierarchy
     let selectedFeature =
@@ -165,14 +220,23 @@ const Map = () => {
     // Layer order depends on order set, so set fatalities last to keep on top
     const injuryLayer = (
       <Source id="crashInjuries" type="geojson" data={mapData.injuries}>
-        <Layer beforeId="base-layer" {...seriousInjuriesOutlineDataLayer} />
-        <Layer beforeId="base-layer" {...seriousInjuriesDataLayer} />
+        <Layer
+          beforeId="place_label_city_small_s"
+          {...seriousInjuriesOutlineDataLayer}
+        />
+        <Layer
+          beforeId="place_label_city_small_s"
+          {...seriousInjuriesDataLayer}
+        />
       </Source>
     );
     const fatalityLayer = (
       <Source id="crashFatalities" type="geojson" data={mapData.fatalities}>
-        <Layer beforeId="base-layer" {...fatalitiesOutlineDataLayer} />
-        <Layer beforeId="base-layer" {...fatalitiesDataLayer} />
+        <Layer
+          beforeId="place_label_city_small_s"
+          {...fatalitiesOutlineDataLayer}
+        />
+        <Layer beforeId="place_label_city_small_s" {...fatalitiesDataLayer} />
       </Source>
     );
     const bothLayers = (
@@ -237,6 +301,10 @@ const Map = () => {
           <Layer beforeId="road-street" {...cityCouncilDataLayer} />
         </Source>
       )}
+      {/* Grey out disabled navigation area */}
+      <Source type="geojson" data={travisCountyBboxGeoJSON}>
+        <Layer {...travisCountyDataLayer} />
+      </Source>
       {/* Render feature info or popup */}
       {selectedFeature && (
         <MapInfoBox
@@ -244,6 +312,12 @@ const Map = () => {
           setSelectedFeature={setSelectedFeature}
           isMobile={isMobile}
           type={selectedFeature.layer.id}
+        />
+      )}
+      {!!crashCounts && !!mapPolygon && !selectedFeature && (
+        <MapPolygonInfoBox
+          crashCounts={crashCounts}
+          isMapTypeSet={isMapTypeSet}
         />
       )}
       <MapCompassSpinner isSpinning={isMapDataLoading} />

@@ -43,25 +43,25 @@ export const crashGridTableColumns = {
   sus_serious_injry_cnt: {
     searchable: false,
     sortable: true,
-    label_table: "Crash Serious Injury",
+    label_table: "Crash Suspected Serious Injury",
     type: "Int",
   },
   atu_sus_serious_injry_cnt: {
     searchable: false,
     sortable: true,
-    label_table: "Unit Serious Injury",
+    label_table: "Unit Suspected Serious Injury",
     type: "Int",
   },
   atp_sus_serious_injry_cnt: {
     searchable: false,
     sortable: true,
-    label_table: "Person Serious Injury",
+    label_table: "Person Suspected Serious Injury",
     type: "Int",
   },
   atpp_sus_serious_injry_cnt: {
     searchable: false,
     sortable: true,
-    label_table: "Primary Person Serious Injury",
+    label_table: "Primary Person Suspected Serious Injury",
     type: "Int",
   },
 };

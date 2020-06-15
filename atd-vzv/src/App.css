@@ -2,6 +2,10 @@
   display: flex;
   width: 100%;
   align-items: stretch;
+  min-height: 100vh;
+  /* Mobile viewport iOS Safari bug fix for Content component (Map) */
+  /* https://allthingssmitty.com/2020/05/11/css-fix-for-100vh-in-mobile-webkit/ */
+  min-height: -webkit-fill-available;
 }
 
 body {

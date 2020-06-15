@@ -1,0 +1,26 @@
+diff --git a/node_modules/reaviz/dist/index.js b/node_modules/reaviz/dist/index.js
+index 7495711..308e3f1 100644
+--- a/node_modules/reaviz/dist/index.js
++++ b/node_modules/reaviz/dist/index.js
+@@ -196,10 +196,10 @@
+   function formatValue(value) {
+       if (value !== undefined) {
+           if (value instanceof Date) {
+-              return value.toLocaleDateString(locale, options);
++              return value.toLocaleDateString('en-us', options);
+           }
+           else if (typeof value === 'number') {
+-              return value.toLocaleString();
++              return value.toLocaleString('en-us', { timeZone: 'UTC' });
+           }
+           return value;
+       }
+@@ -7463,7 +7463,7 @@
+   const weekDays = (() => {
+       const base = new Date(Date.UTC(2017, 0, 2));
+       return d3Array.range(7).map(() => {
+-          const name = base.toLocaleDateString('default', { weekday: 'short' });
++          const name = base.toLocaleDateString('en-us', { weekday: 'short' });
+           base.setDate(base.getDate() + 1);
+           return name;
+       });
