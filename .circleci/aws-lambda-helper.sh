@@ -45,10 +45,11 @@ function generate_env_vars {
 #
 function deploy_event_function {
   FUNCTION_NAME=$1
-  echo "Deploying function: ${FUNCTION_NAME}";
+  FUNCTION_PATH=$2
+  echo "Deploying function: ${FUNCTION_NAME} @ ${PWD}";
   # Create or update function
   { # try
-    echo "Creating lambda function ${FUNCTION_NAME}";
+    echo "Creating lambda function ${FUNCTION_NAME} @ ${PWD}";
     aws lambda create-function \
         --role $ATD_VZ_DATA_EVENTS_ROLE \
         --handler "app.handler" \
@@ -57,21 +58,21 @@ function deploy_event_function {
         --function-name "${FUNCTION_NAME}" \
         --zip-file fileb://function.zip > /dev/null;
   } || { # catch: update
-    echo -e "\n\nUpdating lambda function ${FUNCTION_NAME}";
+    echo -e "\n\nUpdating lambda function ${FUNCTION_NAME} @ ${PWD}";
     aws lambda update-function-code \
         --function-name "${FUNCTION_NAME}" \
         --zip-file fileb://function.zip > /dev/null;
   }
-
+  echo "Current directory: ";
   # Set concurrency to maximum allowed: 5
-  echo "Setting concurrency...";
+  echo "Setting concurrency for ${FUNCTION_NAME} @ ${PWD}";
   aws lambda put-function-concurrency \
         --function-name "${FUNCTION_NAME}" \
         --reserved-concurrent-executions 5;
   # Set environment variables for the function
-  echo "Resetting environment variables"
+  echo "Resetting environment variables: ${FUNCTION_NAME} @ ${PWD}";
   aws lambda update-function-configuration \
-        --function-name "${FUNCTION_NAME}" \
+        --function-name "atd-vz-data-events-crash_update_jurisdiction_staging" \
         --cli-input-json file://handler_config.json > /dev/null;
 }
 
@@ -135,7 +136,7 @@ function deploy_event_functions {
       install_requirements;
       bundle_function;
       generate_env_vars;
-      deploy_event_function $FUNCTION_NAME;
+      deploy_event_function "$FUNCTION_NAME" "${FUNCTION_DIR}";
       deploy_sqs $FUNCTION_NAME;
       cd $MAIN_DIR;
       echo "Exit, current path: ${PWD}";
