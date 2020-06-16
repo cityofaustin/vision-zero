@@ -447,11 +447,13 @@ def associate_location():
     try:
         sqs = boto3.client("sqs")
         queue_url = (
-            HASURA_EVENTS_SQS_URL[0:48]
-            + "/atd-vz-data-events-"
-            + incoming_event_name
-            + "_"
-            + API_ENVIRONMENT.lower()
+            # The SQS url is a constant that follows this pattern:
+            # https://sqs.us-east-1.amazonaws.com/{AWS_ACCOUNT_NUMBER}/{THE_QUEUE_NAME}
+            HASURA_EVENTS_SQS_URL[0:48]  # This is the length of the url with the account number
+            + "/atd-vz-data-events-"     # We're going to add a prefix pattern for our ATD VisionZero queues
+            + incoming_event_name        # And append the name of the incoming event
+            + "_"                        # And append the name of the environment (staging or production)
+            + API_ENVIRONMENT.lower()    # which should be part of the name of the queue.
         )
 
         # Send message to SQS queue
