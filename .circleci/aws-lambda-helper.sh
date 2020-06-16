@@ -73,6 +73,7 @@ function deploy_event_function {
   aws lambda update-function-configuration \
         --function-name "atd-vz-data-events-crash_update_jurisdiction_staging" \
         --cli-input-json file://$PWD/handler_config.json | jq -r ".LastUpdateStatus";
+  echo "Finished Lambda Update/Deployment";
 }
 
 function deploy_event_source_mapping {
@@ -92,13 +93,14 @@ function deploy_event_source_mapping {
     fi;
 }
 
-#
+# verbosity 
 # Deploys an SQS Queue
 #
 function deploy_sqs {
     QUEUE_NAME=$1
+    echo "Deploying queue '${QUEUE_NAME}'";
     QUEUE_URL=$(aws sqs get-queue-url --queue-name "${QUEUE_NAME}" 2>/dev/null | jq -r ".QueueUrl")
-    echo "Deploying queue ${QUEUE_NAME}";
+    echo "Queue URL: '${QUEUE_URL}'";
     # If the queue url is empty, it means it does not exist. We must create it.
     if [[ "${QUEUE_URL}" = "" ]]; then
         # Create with default values, no re-drive policy.
@@ -136,7 +138,8 @@ function deploy_event_functions {
       bundle_function;
       generate_env_vars;
       deploy_event_function "$FUNCTION_NAME";
-      deploy_sqs $FUNCTION_NAME;
+      echo "Initializing SQS Deployment/Update";
+      deploy_sqs "$FUNCTION_NAME";
       cd $MAIN_DIR;
       echo "Exit, current path: ${PWD}";
   done;
