@@ -44,10 +44,8 @@ function generate_env_vars {
 # Deploys a single function
 #
 function deploy_event_function {
-  echo "Deploying function...";
-  # Obtain the function name
-  FUNCTION_DIR=$(echo "${1}" | cut -d "/" -f 2);
-  FUNCTION_NAME="atd-vz-data-events-${FUNCTION_DIR}_${WORKING_STAGE}"
+  FUNCTION_NAME=$1
+  echo "Deploying function: ${FUNCTION_NAME}";
   # Create or update function
   { # try
     echo "Creating lambda function ${FUNCTION_NAME}";
@@ -77,6 +75,50 @@ function deploy_event_function {
         --cli-input-json file://handler_config.json > /dev/null;
 }
 
+function deploy_event_source_mapping {
+    FUNCTION_NAME=$1
+    EVENT_SOURCE_ARN=$2
+    MAPPINGS_COUNT=$(aws lambda list-event-source-mappings --function-name "${FUNCTION_NAME}" | jq -r ".EventSourceMappings | length");
+
+    # If no mappings are found, then create it...
+    if [[ "${MAPPINGS_COUNT}" = "0" ]]; then
+        echo "Deploying event source mapping '${FUNCTION_NAME}' @ '${EVENT_SOURCE_ARN}'";
+        aws lambda create-event-source-mapping --function-name "${FUNCTION_NAME}"  \
+            --batch-size 10 --event-source-arn "${EVENT_SOURCE_ARN}";
+
+    # If there is one or more, then ignore, chances are it already exists.
+    else
+        echo "Skipping, the mapping already exists";
+    fi;
+}
+
+#
+# Deploys an SQS Queue
+#
+function deploy_sqs {
+    QUEUE_NAME=$1
+    QUEUE_URL=$(aws sqs get-queue-url --queue-name "${QUEUE_NAME}" 2>/dev/null | jq -r ".QueueUrl")
+    echo "Deploying queue ${QUEUE_NAME}";
+    # If the queue url is empty, it means it does not exist. We must create it.
+    if [[ "${QUEUE_URL}" = "" ]]; then
+        # Create with default values, no re-drive policy.
+        echo "Creating Queue";
+        CREATE_SQS=$(aws sqs create-queue --queue-name "${QUEUE_NAME}" --attributes "DelaySeconds=0,MaximumMessageSize=262144,MessageRetentionPeriod=345600,VisibilityTimeout=30" 2> /dev/null);
+        QUEUE_URL=$(aws sqs get-queue-url --queue-name "${QUEUE_NAME}" 2>/dev/null | jq -r ".QueueUrl");
+    else
+        echo "Skipping SQS creation, the queue already exists: ${QUEUE_NAME}";
+    fi;
+
+    # Gather SQS attributes from URL, extract amazon resource name
+    QUEUE_ARN=$(aws sqs get-queue-attributes --queue-url "${QUEUE_URL}" --attribute-names "QueueArn" 2>/dev/null | jq -r ".Attributes.QueueArn");
+    echo "QUEUE_URL: ${QUEUE_URL}";
+    echo "QUEUE_ARN: ${QUEUE_ARN}";
+
+    # Create event-source mapping
+    echo "Creating event-source mapping between function ${QUEUE_NAME} and queue ARN: ${QUEUE_ARN}";
+    deploy_event_source_mapping $QUEUE_NAME $QUEUE_ARN;
+}
+
 #
 # Deploys all functions in the events directory
 #
@@ -84,14 +126,17 @@ function deploy_event_functions {
   MAIN_DIR=$PWD
   for FUNCTION in $(find atd-events -type d -mindepth 1 -maxdepth 1);
   do
+      FUNCTION_DIR=$(echo "${FUNCTION}" | cut -d "/" -f 2);
+      FUNCTION_NAME="atd-vz-data-events-${FUNCTION_DIR}_${WORKING_STAGE}";
       echo "Current directory: ${PWD}";
-      echo "Building function ${FUNCTION}";
+      echo "Building function '${FUNCTION_NAME}' @ path: '${FUNCTION}'";
       cd $FUNCTION;
       echo "Entered directory: ${PWD}";
       install_requirements;
-      bundle_function $FUNCTION;
+      bundle_function;
       generate_env_vars;
-      deploy_event_function $FUNCTION;
+      deploy_event_function $FUNCTION_NAME;
+      deploy_sqs $FUNCTION_NAME;
       cd $MAIN_DIR;
       echo "Exit, current path: ${PWD}";
   done;
