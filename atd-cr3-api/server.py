@@ -441,7 +441,7 @@ def associate_location():
 
     # Check if there is an event name provided, if not provide feedback.
     if incoming_event_name == "":
-        return {"statusCode": 403, "body": json.dumps({"message": "Forbidden Request"})}
+        return {"statusCode": 403, "body": json.dumps({"message": "Forbidden Request: Missing Event Name"})}
 
     # We continue the execution
     try:
