@@ -1,15 +1,5 @@
 import React, { Component } from "react";
-import {
-  Badge,
-  Button,
-  Card,
-  CardBody,
-  CardHeader,
-  Col,
-  Collapse,
-  Table,
-  Row,
-} from "reactstrap";
+import { Card, CardBody, CardHeader, Col, Row } from "reactstrap";
 
 import UnitDetailsCard from "./UnitDetailsCard";
 import PeopleDetailsCard from "./PeopleDetailsCard";
@@ -93,6 +83,7 @@ class CrashCollapses extends Component {
                     unitsData={this.props.data.atd_txdot_units}
                     isExpanded={this.state.accordion[0]}
                     toggleAccordion={this.toggleAccordion}
+                    {...this.props.props}
                   />
                   <PeopleDetailsCard
                     primaryPersonData={this.props.data.atd_txdot_primaryperson}

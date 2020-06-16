@@ -31,6 +31,7 @@ export const unitDataMap = [
         lookup_desc: "veh_mod_desc",
       },
       travel_direction_desc: {
+        edit_field_name: "travel_direction",
         label: "Direction",
         editable: true,
         format: "select",
@@ -39,6 +40,7 @@ export const unitDataMap = [
         lookupPrefix: "trvl_dir",
       },
       movement: {
+        edit_field_name: "movement_id",
         label: "Movement",
         editable: true,
         format: "select",
