@@ -45,7 +45,6 @@ function generate_env_vars {
 #
 function deploy_event_function {
   FUNCTION_NAME=$1
-  FUNCTION_PATH=$2
   echo "Deploying function: ${FUNCTION_NAME} @ ${PWD}";
   # Create or update function
   { # try
@@ -56,12 +55,12 @@ function deploy_event_function {
         --tags "project=atd-vz-data,environment=${WORKING_STAGE}" \
         --runtime python3.7 \
         --function-name "${FUNCTION_NAME}" \
-        --zip-file fileb://function.zip > /dev/null;
+        --zip-file fileb://$PWD/function.zip > /dev/null;
   } || { # catch: update
     echo -e "\n\nUpdating lambda function ${FUNCTION_NAME} @ ${PWD}";
     aws lambda update-function-code \
         --function-name "${FUNCTION_NAME}" \
-        --zip-file fileb://function.zip > /dev/null;
+        --zip-file fileb://$PWD/function.zip > /dev/null;
   }
   echo "Current directory: ";
   # Set concurrency to maximum allowed: 5
@@ -73,7 +72,7 @@ function deploy_event_function {
   echo "Resetting environment variables: ${FUNCTION_NAME} @ ${PWD}";
   aws lambda update-function-configuration \
         --function-name "atd-vz-data-events-crash_update_jurisdiction_staging" \
-        --cli-input-json file://handler_config.json > /dev/null;
+        --cli-input-json file://$PWD/handler_config.json > /dev/null;
 }
 
 function deploy_event_source_mapping {
@@ -136,7 +135,7 @@ function deploy_event_functions {
       install_requirements;
       bundle_function;
       generate_env_vars;
-      deploy_event_function "$FUNCTION_NAME" "${FUNCTION_DIR}";
+      deploy_event_function "$FUNCTION_NAME";
       deploy_sqs $FUNCTION_NAME;
       cd $MAIN_DIR;
       echo "Exit, current path: ${PWD}";
