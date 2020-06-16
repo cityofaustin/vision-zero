@@ -45,7 +45,6 @@ function generate_env_vars {
 #
 function deploy_event_function {
   FUNCTION_NAME=$1
-  FUNCTION_PATH=$2
   echo "Deploying function: ${FUNCTION_NAME} @ ${PWD}";
   # Create or update function
   { # try
@@ -56,12 +55,12 @@ function deploy_event_function {
         --tags "project=atd-vz-data,environment=${WORKING_STAGE}" \
         --runtime python3.7 \
         --function-name "${FUNCTION_NAME}" \
-        --zip-file fileb://function.zip > /dev/null;
+        --zip-file fileb://$PWD/function.zip > /dev/null;
   } || { # catch: update
     echo -e "\n\nUpdating lambda function ${FUNCTION_NAME} @ ${PWD}";
     aws lambda update-function-code \
         --function-name "${FUNCTION_NAME}" \
-        --zip-file fileb://function.zip > /dev/null;
+        --zip-file fileb://$PWD/function.zip > /dev/null;
   }
   echo "Current directory: ";
   # Set concurrency to maximum allowed: 5
@@ -73,7 +72,8 @@ function deploy_event_function {
   echo "Resetting environment variables: ${FUNCTION_NAME} @ ${PWD}";
   aws lambda update-function-configuration \
         --function-name "atd-vz-data-events-crash_update_jurisdiction_staging" \
-        --cli-input-json file://handler_config.json > /dev/null;
+        --cli-input-json file://$PWD/handler_config.json | jq -r ".LastUpdateStatus";
+  echo "Finished Lambda Update/Deployment";
 }
 
 function deploy_event_source_mapping {
@@ -98,8 +98,15 @@ function deploy_event_source_mapping {
 #
 function deploy_sqs {
     QUEUE_NAME=$1
-    QUEUE_URL=$(aws sqs get-queue-url --queue-name "${QUEUE_NAME}" 2>/dev/null | jq -r ".QueueUrl")
-    echo "Deploying queue ${QUEUE_NAME}";
+    echo "Deploying queue '${QUEUE_NAME}'";
+    {
+        QUEUE_URL=$(aws sqs get-queue-url --queue-name "${QUEUE_NAME}" 2>/dev/null | jq -r ".QueueUrl");
+        echo "The queue already exists: '${QUEUE_URL}'";
+    } || {
+        QUEUE_URL="";
+        echo "The queue does not exist, creating: '${QUEUE_NAME}'";
+    }
+
     # If the queue url is empty, it means it does not exist. We must create it.
     if [[ "${QUEUE_URL}" = "" ]]; then
         # Create with default values, no re-drive policy.
@@ -112,7 +119,6 @@ function deploy_sqs {
 
     # Gather SQS attributes from URL, extract amazon resource name
     QUEUE_ARN=$(aws sqs get-queue-attributes --queue-url "${QUEUE_URL}" --attribute-names "QueueArn" 2>/dev/null | jq -r ".Attributes.QueueArn");
-    echo "QUEUE_URL: ${QUEUE_URL}";
     echo "QUEUE_ARN: ${QUEUE_ARN}";
 
     # Create event-source mapping
@@ -136,8 +142,8 @@ function deploy_event_functions {
       install_requirements;
       bundle_function;
       generate_env_vars;
-      deploy_event_function "$FUNCTION_NAME" "${FUNCTION_DIR}";
-      deploy_sqs $FUNCTION_NAME;
+      deploy_event_function "$FUNCTION_NAME";
+      deploy_sqs "$FUNCTION_NAME";
       cd $MAIN_DIR;
       echo "Exit, current path: ${PWD}";
   done;
