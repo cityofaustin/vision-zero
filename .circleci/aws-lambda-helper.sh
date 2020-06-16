@@ -72,7 +72,7 @@ function deploy_event_function {
   echo "Resetting environment variables: ${FUNCTION_NAME} @ ${PWD}";
   aws lambda update-function-configuration \
         --function-name "atd-vz-data-events-crash_update_jurisdiction_staging" \
-        --cli-input-json file://$PWD/handler_config.json > /dev/null;
+        --cli-input-json file://$PWD/handler_config.json | jq -r ".LastUpdateStatus";
 }
 
 function deploy_event_source_mapping {
