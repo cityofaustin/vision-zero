@@ -11,6 +11,7 @@ from string import Template
 HASURA_ADMIN_SECRET = os.getenv("HASURA_ADMIN_SECRET", "")
 HASURA_ENDPOINT = os.getenv("HASURA_ENDPOINT", "")
 
+
 def hasura_request(record):
     """
     Processes a location update event.
@@ -19,8 +20,8 @@ def hasura_request(record):
     # Get data/crash_id from Hasura Event request
 
     print("Handling request: ")
-    #print(json.dumps(record))
-    print(record)
+    print(json.dumps(record))
+
     try:
         data = json.loads(record)
     except:
@@ -29,7 +30,6 @@ def hasura_request(record):
 
     try:
         crash_id = data["event"]["data"]["old"]["crash_id"]
-        old_location_id = data["event"]["data"]["old"]["location_id"]
         old_jurisdiction_flag = data["event"]["data"]["old"]["austin_full_purpose"]
     except:
         print(
@@ -40,7 +40,7 @@ def hasura_request(record):
             )
         )
 
-    #print("Crash ID: " + str(crash_id))
+    print("Crash ID: " + str(crash_id))
 
     # Prep Hasura query
     HEADERS = {
@@ -78,11 +78,10 @@ def hasura_request(record):
 
     is_within_jurisdiction = len(response.json()["data"]["find_crash_in_jurisdiction"])
 
-    #print(old_jurisdiction_flag)
-    #print(is_within_jurisdiction)
-
     # We're casting a varchar here into a boolean, so I'm declaring Y to be True and everything else to be False.
-    if ((not (old_jurisdiction_flag == "Y") and not is_within_jurisdiction) or (old_jurisdiction_flag == "Y" and is_within_jurisdiction)):
+    if (not (old_jurisdiction_flag == "Y") and not is_within_jurisdiction) or (
+        old_jurisdiction_flag == "Y" and is_within_jurisdiction
+    ):
         print(json.dumps({"message": "Success. austin_full_purpose is up to date"}))
     else:
         # Prep the mutation
@@ -94,7 +93,10 @@ def hasura_request(record):
                 }
             """
 
-        query_variables = {"crashId": crash_id, "jurisdictionFlag": 'Y' if is_within_jurisdiction else "N"}
+        query_variables = {
+            "crashId": crash_id,
+            "jurisdictionFlag": "Y" if is_within_jurisdiction else "N",
+        }
         mutation_json_body = {
             "query": update_jurisdiction_flag_mutation,
             "variables": query_variables,
@@ -108,12 +110,9 @@ def hasura_request(record):
         except:
             print(
                 json.dumps(
-                    {
-                        "message": "Unable to parse request body for jurisdiction update"
-                    }
+                    {"message": "Unable to parse request body for jurisdiction update"}
                 )
             )
-
 
 
 def lambda_handler(event, context):
