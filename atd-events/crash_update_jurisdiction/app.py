@@ -19,8 +19,8 @@ def hasura_request(record):
     # Get data/crash_id from Hasura Event request
 
     print("Handling request: ")
-    print(json.dumps(record))
-
+    #print(json.dumps(record))
+    print(record)
     try:
         data = json.loads(record)
     except:
@@ -29,17 +29,18 @@ def hasura_request(record):
 
     try:
         crash_id = data["event"]["data"]["old"]["crash_id"]
+        old_location_id = data["event"]["data"]["old"]["location_id"]
         old_jurisdiction_flag = data["event"]["data"]["old"]["austin_full_purpose"]
     except:
         print(
             json.dumps(
                 {
-                    "message": "Unable to parse request body to identify a jurisdiction record"
+                    "message": "Unable to parse request body to identify a Location Record"
                 }
             )
         )
 
-    print("Crash ID: " + str(crash_id))
+    #print("Crash ID: " + str(crash_id))
 
     # Prep Hasura query
     HEADERS = {
@@ -50,12 +51,12 @@ def hasura_request(record):
     find_location_query = Template(
         """
         query {
-          find_if_crash_within_austin_full_purpose
-           (args: {this_crash_id: $crash_id})
-           {
-           is_within_austin_full_purpose
-           }
-        }
+          find_crash_in_jurisdiction(args: {jurisdiction_id: 11, given_crash_id: 17678998}) {
+            crash_id
+            austin_full_purpose
+            }
+          }
+
         """
     ).substitute(crash_id=crash_id)
 
@@ -75,28 +76,29 @@ def hasura_request(record):
             )
         )
 
-    new_jurisdiction_flag = response.json()["data"]["find_if_crash_within_austin_full_purpose"][0]["is_within_austin_full_purpose"]
-    #print(json.dumps(is_within_atx_full_purpose))
+    is_within_jurisdiction = len(response.json()["data"]["find_crash_in_jurisdiction"])
 
-    if new_jurisdiction_flag == old_jurisdiction_flag:
+    #print(old_jurisdiction_flag)
+    #print(is_within_jurisdiction)
+
+    # We're casting a varchar here into a boolean, so I'm declaring Y to be True and everything else to be False.
+    if ((not (old_jurisdiction_flag == "Y") and not is_within_jurisdiction) or (old_jurisdiction_flag == "Y" and is_within_jurisdiction)):
         print(json.dumps({"message": "Success. austin_full_purpose is up to date"}))
     else:
         # Prep the mutation
         update_jurisdiction_flag_mutation = """
-                mutation updateCrashJurisdiction($crashId: Int!, $jurisdictionFlag: Boolean!) {
+                mutation updateCrashJurisdiction($crashId: Int!, $jurisdictionFlag: String!) {
                     update_atd_txdot_crashes(where: {crash_id: {_eq: $crashId}}, _set: {austin_full_purpose: $jurisdictionFlag}) {
                         affected_rows
                     }
                 }
             """
 
-        query_variables = {"crashId": crash_id, "jurisdictionFlag": new_jurisdiction_flag}
+        query_variables = {"crashId": crash_id, "jurisdictionFlag": 'Y' if is_within_jurisdiction else "N"}
         mutation_json_body = {
             "query": update_jurisdiction_flag_mutation,
             "variables": query_variables,
         }
-
-        print(mutation_json_body)
 
         # Execute the mutation
         try:
@@ -112,12 +114,9 @@ def hasura_request(record):
                 )
             )
 
-        print("Mutation Successful")
-        print(mutation_response.json())
 
 
-
-def handler(event, context):
+def lambda_handler(event, context):
     """
     Event handler main loop. It handles a single or multiple SQS messages.
     :param dict event: One or many SQS messages
