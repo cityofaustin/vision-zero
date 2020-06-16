@@ -37,18 +37,22 @@ export const UPDATE_UNIT = gql`
   mutation UpdateUnits(
     $crashId: Int
     $unitId: Int
-    $changes: update_atd_txdot_units_set_input
+    $changes: atd_txdot_units_set_input
   ) {
     update_atd_txdot_units(
-      where: { crash_id: { _eq: $crashId } }
+      where: {
+        crash_id: { _eq: $crashId }
+        _and: { unit_nbr: { _eq: $unitId } }
+      }
       _set: $changes
     ) {
       affected_rows
       returning {
         crash_id
         unit_id
+        unit_nbr
         movement_id
-        veh_trvl_dir_id
+        travel_direction
       }
     }
   }
