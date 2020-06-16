@@ -20,7 +20,6 @@ const MapInfoBox = ({
 
   const StyledPopup = styled.div`
     .mapboxgl-popup-content {
-      /* Calc left offset based on coords */
       ${setPopupPosition(popupX)}
     }
   `;
