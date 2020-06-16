@@ -12,16 +12,16 @@ jobs:
       - checkout
       - setup_remote_docker:
           version: 18.09.3
-#      - run:
-#          name: "Building Docker"
-#          command: |
-#            source .circleci/docker-helper.sh
-#            build_containers
-#      - run:
-#          name: "Build VZE API"
-#          command: |
-#            source .circleci/aws-helper.sh
-#            deploy_aws_lambda
+      - run:
+          name: "Building Docker"
+          command: |
+            source .circleci/docker-helper.sh
+            build_containers
+      - run:
+          name: "Build VZE API"
+          command: |
+            source .circleci/aws-helper.sh
+            deploy_aws_lambda
       - run:
           name: "Build VZ SQS Functions"
           command: |
@@ -37,4 +37,3 @@ workflows:
               only:
                 - master
                 - production
-                - sg-circleci-debug
