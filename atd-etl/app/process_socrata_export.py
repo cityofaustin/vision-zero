@@ -58,8 +58,8 @@ query_configs = [
             "columns_to_rename": {"primaryperson_id": "person_id"},
             "prefixes": {"person_id": "P", "primaryperson_id": "PP",},
         },
-        # "dataset_uid": "v3x4-fjgm"  # TEST
-        "dataset_uid": "xecs-rpy9",  # PROD
+        "dataset_uid": "v3x4-fjgm"  # TEST
+        # "dataset_uid": "xecs-rpy9",  # PROD
     },
 ]
 
@@ -67,16 +67,18 @@ query_configs = [
 start = time.time()
 
 # For each config, get records from Hasura and upsert to Socrata until res is []
-data_file = open("demo_data.csv", "w")
-csv_writer = csv.writer(data_file)
-headers = None
 
 for config in query_configs:
     print(f'Starting {config["table"]} table...')
+    client.replace(config["dataset_uid"], [])
     records = None
     offset = 0
     limit = 6000
     total_records = 0
+
+    data_file = open("demo_etl_export_06162020.csv", "w")
+    csv_writer = csv.writer(data_file)
+    headers = None
 
     # Query records from Hasura and upsert to Socrata
     while records != []:
@@ -101,7 +103,8 @@ for config in query_configs:
 
             csv_writer.writerow(row)
         # Upsert records to Socrata
-        # client.upsert(config["dataset_uid"], records)
+
+        client.upsert(config["dataset_uid"], records)
         # print(f"{offset} records upserted")
         total_records += len(records)
 
@@ -111,7 +114,7 @@ for config in query_configs:
 
 # Terminate Socrata connection
 client.close()
-data_file.close()
+# data_file.close()
 
 # Stop timer and print duration
 end = time.time()
