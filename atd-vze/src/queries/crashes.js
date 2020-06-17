@@ -118,26 +118,6 @@ export const GET_CRASH = gql`
       }
       unit_nbr
     }
-    atd_txdot_units(where: { crash_id: { _eq: $crashId } }) {
-      unit_desc_id
-      unit_nbr
-      contrib_factr_1_id
-      veh_make_id
-      veh_mod_id
-      veh_mod_year
-      unit_description {
-        veh_unit_desc_desc
-      }
-      make {
-        veh_make_desc
-      }
-      model {
-        veh_mod_desc
-      }
-      body_style {
-        veh_body_styl_desc
-      }
-    }
     atd_txdot_charges(where: { crash_id: { _eq: $crashId } }) {
       citation_nbr
       charge_cat_id
@@ -384,6 +364,8 @@ death_cnt
 unkn_injry_cnt
 est_comp_cost
 collision { collsn_desc }
+units { travel_direction_desc { trvl_dir_desc } }
+units { movement { movement_desc } }
 units { body_style { veh_body_styl_desc } }
 units { unit_description { veh_unit_desc_desc } }
 `;
