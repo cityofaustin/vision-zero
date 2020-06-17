@@ -44,6 +44,27 @@ UPDATE
 SET
 	movement_id = 0
 
+
+-- Automate new travel_direction field records
+CREATE OR REPLACE FUNCTION public.atd_txdot_units_create()
+ RETURNS trigger
+ LANGUAGE plpgsql
+AS $function$
+BEGIN
+
+  NEW.travel_direction = NEW.veh_trvl_dir_id;
+ 	NEW.movement_id = 0;
+
+    RETURN NEW;
+END;
+$function$
+
+
+-- associate trigger to units table
+CREATE TRIGGER atd_txdot_units_create
+	BEFORE INSERT ON atd_txdot_units FOR EACH ROW
+	EXECUTE PROCEDURE atd_txdot_units_create ();
+
 -- 1. Run migration above
 -- 2. Reload Hasura metadata
 -- 3. Give access and update permissions for the new fields in Hasura
