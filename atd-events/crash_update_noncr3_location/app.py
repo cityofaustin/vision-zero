@@ -6,7 +6,6 @@ import json
 import requests
 import time
 import os
-from string import Template
 
 HASURA_ADMIN_SECRET = os.getenv("HASURA_ADMIN_SECRET", "")
 HASURA_ENDPOINT = os.getenv("HASURA_ENDPOINT", "")
