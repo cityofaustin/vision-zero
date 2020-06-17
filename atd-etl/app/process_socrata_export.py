@@ -33,22 +33,22 @@ client = Socrata(
 
 # Define tables to query from Hasura and publish to Socrata
 query_configs = [
-    # {
-    #     "table": "crash",
-    #     "template": crashes_query_template,
-    #     "formatter": format_crash_data,
-    #     "formatter_config": {
-    #         "tables": ["atd_txdot_crashes"],
-    #         "columns_to_rename": {
-    #             "veh_body_styl_desc": "unit_desc",
-    #             "veh_unit_desc_desc": "unit_mode",
-    #             "latitude_primary": "latitude",
-    #             "longitude_primary": "longitude",
-    #         },
-    #     },
-    #     # "dataset_uid": "3aut-fhzp"  # TEST
-    #     "dataset_uid": "y2wy-tgr5",  # PROD
-    # },
+    {
+        "table": "crash",
+        "template": crashes_query_template,
+        "formatter": format_crash_data,
+        "formatter_config": {
+            "tables": ["atd_txdot_crashes"],
+            "columns_to_rename": {
+                "veh_body_styl_desc": "unit_desc",
+                "veh_unit_desc_desc": "unit_mode",
+                "latitude_primary": "latitude",
+                "longitude_primary": "longitude",
+            },
+        },
+        # "dataset_uid": "3aut-fhzp"  # TEST
+        "dataset_uid": "y2wy-tgr5",  # PROD
+    },
     {
         "table": "person",
         "template": people_query_template,
@@ -58,8 +58,8 @@ query_configs = [
             "columns_to_rename": {"primaryperson_id": "person_id"},
             "prefixes": {"person_id": "P", "primaryperson_id": "PP",},
         },
-        "dataset_uid": "v3x4-fjgm"  # TEST
-        # "dataset_uid": "xecs-rpy9",  # PROD
+        # "dataset_uid": "v3x4-fjgm"  # TEST
+        "dataset_uid": "xecs-rpy9",  # PROD
     },
 ]
 
@@ -67,18 +67,14 @@ query_configs = [
 start = time.time()
 
 # For each config, get records from Hasura and upsert to Socrata until res is []
-
 for config in query_configs:
     print(f'Starting {config["table"]} table...')
+    print(f'Truncating {config["table"]} table...')
     client.replace(config["dataset_uid"], [])
     records = None
     offset = 0
     limit = 6000
     total_records = 0
-
-    data_file = open("demo_etl_export_06162020.csv", "w")
-    csv_writer = csv.writer(data_file)
-    headers = None
 
     # Query records from Hasura and upsert to Socrata
     while records != []:
@@ -90,31 +86,18 @@ for config in query_configs:
         # Format records
         records = config["formatter"](data, config["formatter_config"])
 
-        # Create header
-        for record in records:
-            if headers == None:
-                headers = list(record.keys())
-                print(headers)
-                csv_writer.writerow(headers)
-
-            row = []
-            for header in headers:
-                row.append(record.get(header, ""))
-
-            csv_writer.writerow(row)
         # Upsert records to Socrata
-
         client.upsert(config["dataset_uid"], records)
-        # print(f"{offset} records upserted")
         total_records += len(records)
 
         if len(records) == 0:
             print(f'{total_records} {config["table"]} records upserted.')
             print(f'Completed {config["table"]} table.')
+        elif total_records != 0:
+            print(f"{total_records} records upserted")
 
 # Terminate Socrata connection
 client.close()
-# data_file.close()
 
 # Stop timer and print duration
 end = time.time()
