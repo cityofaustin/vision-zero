@@ -4,6 +4,7 @@ import { withApollo } from "react-apollo";
 import GridTable from "../../Components/GridTable";
 import gqlAbstract from "../../queries/gqlAbstract";
 import { crashQueryExportFields } from "../../queries/crashes";
+import { crashesFullPurpose} from "../../queries/crashesFullPurpose";
 import {
   crashGridTableColumns,
   crashGridTableAdvancedFilters,
@@ -17,10 +18,7 @@ let queryConf = {
   columns: crashGridTableColumns,
   order_by: {},
   where: {
-    _and: `_or: [
-              { austin_full_purpose: { _eq: "Y"} }
-              { city_id: { _eq: 22 }, position: { _is_null: true} }
-    ]`,
+    ...crashesFullPurpose
   },
   limit: 25,
   offset: 0,
