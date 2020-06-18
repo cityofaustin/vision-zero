@@ -70,6 +70,7 @@ people_query_template = Template(
             unit_nbr
             crash {
                 crash_date
+                crash_time
                 crash_id
                 atd_mode_category_metadata
                 units {
@@ -87,6 +88,7 @@ people_query_template = Template(
             unit_nbr
             crash {
                 crash_date
+                crash_time
                 crash_id
                 atd_mode_category_metadata
                 units {
