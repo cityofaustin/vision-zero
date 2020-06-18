@@ -45,6 +45,10 @@ const ToolsUploadNonCR3 = () => {
   const [recordsToProcess, setRecordsToProcess] = useState([]);
   const [feedback, setFeedback] = useState({});
 
+  const isLocalEnvironment = () => {
+    return window.location.href.indexOf("localhost") > -1;
+  }
+
   // Mutation
   const [upsertRecordsQuery, setUpsertRecordsQuery] = useState(mutationDummy);
 
@@ -484,7 +488,7 @@ const ToolsUploadNonCR3 = () => {
             <Col lg={4} sm={4}>
               <NavLink
                 className={"float-right"}
-                href={"/editor/downloads/non_cr3_template.csv"}
+                href={(!isLocalEnvironment()? "/editor" : "") + "/downloads/non_cr3_template.csv"}
               >
                 <i className={"fa fa-file-excel-o"}></i> Download CSV Template
               </NavLink>
