@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useQuery } from "@apollo/react-hooks";
 
 import {
@@ -78,7 +78,6 @@ const UnitDetailsCard = ({ isExpanded, toggleAccordion, ...props }) => {
   const [editField, setEditField] = useState("");
   const [editUnit, setEditUnit] = useState("");
   const [formData, setFormData] = useState({});
-  const [unitData, setUnitData] = useState(null);
 
   const { loading, error, data, refetch } = useQuery(GET_UNITS, {
     variables: { crashId },
