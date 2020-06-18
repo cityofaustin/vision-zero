@@ -59,19 +59,18 @@ export const navigation = roles => {
         },
       ],
     },
-    // TEMP Hide Tools from 1.9 deploy to fix a bug.
-    // {
-    //   name: "Tools",
-    //   url: "#",
-    //   icon: "icon-wrench",
-    //   children: [
-    //     {
-    //       name: "Upload Non-CR3",
-    //       url: "/tools/upload_non_cr3",
-    //       icon: "icon-cloud-upload",
-    //     },
-    //   ],
-    // },
+    {
+      name: "Tools",
+      url: "#",
+      icon: "icon-wrench",
+      children: [
+        {
+          name: "Upload Non-CR3",
+          url: "/tools/upload_non_cr3",
+          icon: "icon-cloud-upload",
+        },
+      ],
+    },
     {
       name: "Users",
       url: "/users",
