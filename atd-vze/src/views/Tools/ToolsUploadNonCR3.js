@@ -484,7 +484,7 @@ const ToolsUploadNonCR3 = () => {
             <Col lg={4} sm={4}>
               <NavLink
                 className={"float-right"}
-                href={"/downloads/non_cr3_template.csv"}
+                href={"/editor/downloads/non_cr3_template.csv"}
               >
                 <i className={"fa fa-file-excel-o"}></i> Download CSV Template
               </NavLink>
