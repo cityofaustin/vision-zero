@@ -1,8 +1,8 @@
 import styled from "styled-components";
 import { responsive } from "../../../constants/responsive";
 
-export const popupMargins = 20;
-export const maxInfoBoxWidth = responsive.drawerWidth - popupMargins;
+export const popupMarginsWidth = 20;
+export const maxInfoBoxWidth = responsive.drawerWidth - popupMarginsWidth;
 
 export const StyledDesktopInfo = styled.div`
   position: absolute;
@@ -26,8 +26,8 @@ export const setPopupPosition = (popupX) => {
   // or if it needs to offset from right or left of viewport
   const halfInfoBoxWidth = maxInfoBoxWidth / 2;
   const canInfoBoxFitCentered =
-    popupX + halfInfoBoxWidth < window.innerWidth &&
-    popupX - halfInfoBoxWidth > 0;
+    popupX - halfInfoBoxWidth > 0 &&
+    popupX + halfInfoBoxWidth < window.innerWidth;
   const isInfoBoxTooFarLeft = popupX - halfInfoBoxWidth <= 0;
   const isInfoBoxTooFarRight = popupX + halfInfoBoxWidth >= window.innerWidth;
 
