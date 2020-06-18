@@ -10,7 +10,7 @@ import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 
-import SideMapControl from "./SideMapControl";  
+import SideMapControl from "./SideMapControl";
 import SideDrawerMobileNav from "./SideDrawerMobileNav";
 import { colors } from "../../constants/colors";
 import { responsive } from "../../constants/responsive";
@@ -18,7 +18,7 @@ import { responsive } from "../../constants/responsive";
 const drawerWidth = responsive.drawerWidth;
 
 // Styles for MUI drawer
-const useStyles = makeStyles((theme) => {
+const useStyles = makeStyles(theme => {
   return {
     root: {
       display: "flex",
