@@ -12,7 +12,7 @@ import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 
 import SideMapControl from "./SideMapControl";
 import SideDrawerMobileNav from "./SideDrawerMobileNav";
-// import { drawer } from "../../constants/drawer";
+import { drawer } from "../../constants/drawer";
 import { colors } from "../../constants/colors";
 import { responsive } from "../../constants/responsive";
 
