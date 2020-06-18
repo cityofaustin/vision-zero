@@ -17,7 +17,10 @@ let queryConf = {
   columns: crashGridTableColumns,
   order_by: {},
   where: {
-    city_id: "_eq: 22",
+    _and: `_or: [
+              { austin_full_purpose: { _eq: "Y"} }
+              { city_id: { _eq: 22 }, position: { _is_null: true} }
+    ]`,
   },
   limit: 25,
   offset: 0,
