@@ -37,7 +37,7 @@ FROM atd_txdot_crashes atc
          LEFT JOIN primarypersons atpp ON atc.crash_id = atpp.crash_id
          LEFT JOIN units atu ON atc.crash_id = atu.crash_id
 WHERE 1 = 1
-  AND atc.city_id = 22
+  AND (austin_full_purpose = 'Y' OR (atc.city_id = 22 and atc.position IS NULL))
   AND (atc.death_cnt <> (atp.death_cnt + atpp.death_cnt) OR atc.death_cnt <> atu.death_cnt OR
        atc.sus_serious_injry_cnt <> (atp.sus_serious_injry_cnt + atpp.sus_serious_injry_cnt) OR
        atc.sus_serious_injry_cnt <> atu.sus_serious_injry_cnt);
