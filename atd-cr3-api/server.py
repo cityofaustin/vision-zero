@@ -8,11 +8,13 @@ import datetime
 import boto3
 import os
 import requests
+import hashlib
 
 from dotenv import load_dotenv, find_dotenv
 from os import environ as env
 from functools import wraps
 from six.moves.urllib.request import urlopen
+from string import Template
 
 from flask import Flask, request, redirect, jsonify, _request_ctx_stack, abort
 from flask_cors import cross_origin
@@ -40,6 +42,12 @@ AWS_S3_SECRET = os.getenv("AWS_S3_SECRET", "")
 AWS_S3_CR3_LOCATION = os.getenv("AWS_S3_CR3_LOCATION", "")
 AWS_S3_BUCKET = os.getenv("AWS_S3_BUCKET", "")
 
+# Hasura Config
+HASURA_ADMIN_SECRET = os.getenv("HASURA_ADMIN_SECRET", "")
+HASURA_ENDPOINT = os.getenv("HASURA_ENDPOINT", "")
+HASURA_EVENT_API = os.getenv("HASURA_EVENT_API", "")
+HASURA_EVENTS_SQS_URL = os.getenv("HASURA_EVENTS_SQS_URL", "")
+
 
 def get_api_token():
     """
@@ -54,7 +62,7 @@ def get_api_token():
             "client_secret": API_CLIENT_SECRET,
             "audience": f"https://{AUTH0_DOMAIN}/api/v2/",
         },
-        {"content-type": "application/json",},
+        {"content-type": "application/json", },
     )
     return response.json().get("access_token", None)
 
@@ -225,9 +233,12 @@ def requires_auth(f):
     return decorated
 
 
-current_user = LocalProxy(lambda: getattr(_request_ctx_stack.top, "current_user", None))
+current_user = LocalProxy(lambda: getattr(
+    _request_ctx_stack.top, "current_user", None))
 
 # Controllers API
+
+
 @APP.route("/")
 @cross_origin(headers=["Content-Type", "Authorization"])
 def healthcheck():
@@ -360,7 +371,8 @@ def user_create_user():
         json_data = request.json
         endpoint = f"https://{AUTH0_DOMAIN}/api/v2/users"
         headers = {"Authorization": f"Bearer {get_api_token()}"}
-        response = requests.post(endpoint, headers=headers, json=json_data).json()
+        response = requests.post(
+            endpoint, headers=headers, json=json_data).json()
         return jsonify(response)
     else:
         abort(403)
@@ -376,7 +388,8 @@ def user_update_user(id):
         json_data = request.json
         endpoint = f"https://{AUTH0_DOMAIN}/api/v2/users/" + id
         headers = {"Authorization": f"Bearer {get_api_token()}"}
-        response = requests.patch(endpoint, headers=headers, json=json_data).json()
+        response = requests.patch(
+            endpoint, headers=headers, json=json_data).json()
         return jsonify(response)
     else:
         abort(403)
@@ -412,9 +425,57 @@ def user_delete_user(id):
         abort(403)
 
 
-@APP.route("/crashes/associate_location/", methods=["PUT", "POST"])
+@APP.route("/events/", methods=["PUT", "POST"])
 def associate_location():
-    return jsonify({"hello": "world"})
+    # Require matching token
+    incoming_token = request.headers.get("HASURA_EVENT_API")
+    incoming_event_name = request.headers.get("HASURA_EVENT_NAME", "")
+    hashed_events_api = hashlib.md5()
+    hashed_events_api.update(str(HASURA_EVENT_API).encode("utf-8"))
+    hashed_incoming_token = hashlib.md5()
+    hashed_incoming_token.update(str(incoming_token).encode("utf-8"))
+
+    # Return error if token doesn't match
+    if hashed_events_api.hexdigest() != hashed_incoming_token.hexdigest():
+        return {"statusCode": 403, "body": json.dumps({"message": "Forbidden Request"})}
+
+    # Check if there is an event name provided, if not provide feedback.
+    if incoming_event_name == "":
+        return {"statusCode": 403, "body": json.dumps({"message": "Forbidden Request: Missing Event Name"})}
+
+    # We continue the execution
+    try:
+        sqs = boto3.client("sqs")
+        queue_url = (
+            # The SQS url is a constant that follows this pattern:
+            # https://sqs.us-east-1.amazonaws.com/{AWS_ACCOUNT_NUMBER}/{THE_QUEUE_NAME}
+            HASURA_EVENTS_SQS_URL[0:48]  # This is the length of the url with the account number
+            + "/atd-vz-data-events-"     # We're going to add a prefix pattern for our ATD VisionZero queues
+            + incoming_event_name        # And append the name of the incoming event
+            + "_"                        # And append the name of the environment (staging or production)
+            + API_ENVIRONMENT.lower()    # which should be part of the name of the queue.
+        )
+
+        # Send message to SQS queue
+        response = sqs.send_message(
+            QueueUrl=queue_url,
+            DelaySeconds=10,
+            MessageBody=json.dumps(request.get_json(force=True)),
+        )
+
+        return {
+            "statusCode": 200,
+            "body": json.dumps(
+                {"message": "Update queued: " + str(response["MessageId"])}
+            ),
+        }
+    except Exception as e:
+        return {
+            "statusCode": 503,
+            "body": json.dumps(
+                {"message": "Unable to queue update request: " + str(e)}
+            ),
+        }
 
 
 if __name__ == "__main__":

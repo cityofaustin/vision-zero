@@ -7,6 +7,10 @@ CRIS_TXDOT_FIELDS = {
         "function_name": "insert_atd_txdot_crashes",
         "filters": [
             [
+              filter_remove_field,
+              []
+            ],
+            [
                 filter_numeric_field,
                 [
                     "crash_id",

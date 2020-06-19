@@ -12,6 +12,9 @@ import {
   HeatmapCell,
   ChartTooltip,
   SequentialLegend,
+  LinearXAxis,
+  LinearXAxisTickSeries,
+  LinearXAxisTickLabel,
 } from "reaviz";
 import {
   summaryCurrentYearStartDate,
@@ -216,6 +219,24 @@ const CrashesByTimeOfDay = () => {
                         content={(d) =>
                           `${d.x} ∙
                           ${formatValue(d)}`
+                        }
+                      />
+                    }
+                  />
+                }
+              />
+            }
+            xAxis={
+              <LinearXAxis
+                type="category"
+                axisLine={null}
+                tickSeries={
+                  <LinearXAxisTickSeries
+                    line={null}
+                    label={
+                      <LinearXAxisTickLabel
+                        padding={
+                          navigator.userAgent.includes("Firefox") ? 15 : 5
                         }
                       />
                     }

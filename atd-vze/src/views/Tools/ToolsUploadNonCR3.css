@@ -1,0 +1,30 @@
+.text-value--shadow {
+    text-shadow: 3px 3px 4px rgba(0,0,0,0.2);
+}
+
+.hottable {
+    border: solid 1px red;
+}
+
+.hottable__footer {
+    background-color: #f0f0f0;
+    font-size: .8rem;
+    padding: .25rem;
+}
+
+.btn-secondary--spaced {
+    margin: 1rem 0;
+}
+
+.csv-reader-input {
+    padding: .4rem 0;
+}
+
+.show-errors-btn {
+    padding: .8rem 0px;
+}
+
+.show-errors-btn > span {
+    position: relative;
+    top: -0.4rem;
+}

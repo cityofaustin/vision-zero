@@ -41,9 +41,8 @@ const Typography = React.lazy(() => import("./views/Theme/Typography"));
 const Widgets = React.lazy(() => import("./views/Widgets/Widgets"));
 const Dev = React.lazy(() => import("./views/Dev/Dev"));
 const Crashes = React.lazy(() => import("./views/Crashes/Crashes"));
-const ReportsInconsistentKSI = React.lazy(() =>
-  import("./views/Reports/ReportsInconsistentKSI")
-);
+const CrashesChanges = React.lazy(() => import("./views/Crashes/CrashesChanges"));
+const CrashChange = React.lazy(() => import("./views/Crashes/CrashChange"));
 const Crash = React.lazy(() => import("./views/Crashes/Crash"));
 const Profile = React.lazy(() => import("./views/Profile/Profile"));
 const Locations = React.lazy(() => import("./views/Locations/Locations"));
@@ -52,7 +51,8 @@ const Users = React.lazy(() => import("./views/Users/Users"));
 const User = React.lazy(() => import("./views/Users/User"));
 const AddUser = React.lazy(() => import("./views/Users/AddUser"));
 const EditUser = React.lazy(() => import("./views/Users/EditUser"));
-
+const ReportsInconsistentKSI = React.lazy(() => import("./views/Reports/ReportsInconsistentKSI"));
+const ToolsUploadNonCR3 = React.lazy(() => import("./views/Tools/ToolsUploadNonCR3"));
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 // Accept roles arg for role-based access to routes
 const routes = roles => [
@@ -152,17 +152,35 @@ const routes = roles => [
     name: "Crash Details",
     component: Crash,
   },
+  {
+    path: "/dev",
+    exact: true,
+    name: "Demo UI Components",
+    component: Dev,
+  },
+  (isAdmin(roles) || isItSupervisor(roles)) && {
+    path: "/changes",
+    exact: true,
+    name: "Crash Changes",
+    component: CrashesChanges,
+  },
+  (isAdmin(roles) || isItSupervisor(roles)) && {
+    path: "/changes/:id",
+    exact: true,
+    name: "Crash Change",
+    component: CrashChange
+  },
   (isAdmin(roles) || isItSupervisor(roles)) && {
     path: "/reports/inconsistent_ksi_counts",
     exact: true,
     name: "Crashes with Inconsistent KSI Counts",
     component: ReportsInconsistentKSI,
   },
-  {
-    path: "/dev",
+  (isAdmin(roles) || isItSupervisor(roles)) && {
+    path: "/tools/upload_non_cr3",
     exact: true,
-    name: "Demo UI Components",
-    component: Dev,
+    name: "Upload Non-CR3 Crashes",
+    component: ToolsUploadNonCR3,
   },
   (isAdmin(roles) || isItSupervisor(roles)) && {
     path: "/users",

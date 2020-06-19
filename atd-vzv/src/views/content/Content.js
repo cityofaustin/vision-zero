@@ -1,17 +1,19 @@
 import React from "react";
-import { useRoutes, usePath } from "hookrouter";
+import { usePath } from "hookrouter";
+import { useTrackedRoutes } from "../../constants/nav";
 import { routes } from "../../routes/routes";
 import Header from "../nav/Header";
+import Footer from "../nav/Footer";
 import NotFound from "../NotFound/NotFound";
 
 import { Container } from "reactstrap";
 import styled from "styled-components";
-import { drawer } from "../../constants/drawer";
 import { responsive } from "../../constants/responsive";
 
 const Content = () => {
-  const routeResult = useRoutes(routes);
+  const routeResult = useTrackedRoutes(routes);
   const currentPath = usePath();
+  const isMapPath = currentPath === "/map";
 
   // TODO: Slide content to the right when SideDrawer opens
   // Adding conditional styles based on sidebarToggle in the store causes children to re-render on toggle
@@ -21,39 +23,39 @@ const Content = () => {
   // Map view needs to consider header height and have no overflow scroll to fill view
   // Summary view needs to scroll to show all content
   const mapStyles = `
-    height: calc(100vh - ${drawer.headerHeight}px);
-    width: calc(100vw - ${drawer.width}px);
-  `;
-
-  const summaryStyles = `
-    width: 100vw;
-    height: 100vh;
-    overflow-y: scroll;
+    position: fixed;
+    height: calc(100% - ${responsive.headerHeight}px);
+    width: calc(100vw - ${responsive.drawerWidth}px);
   `;
 
   const StyledContent = styled.div`
     .content {
-      top: ${drawer.headerHeight}px;
-      ${currentPath === "/" && summaryStyles}
-      ${currentPath === "/map" && mapStyles}
+      position: relative;
+      top: ${responsive.headerHeight}px;
+      ${isMapPath && mapStyles}
     }
 
     /* Fill space left behind by SideDrawer on mobile */
     @media only screen and (max-width: ${responsive.bootstrapMedium}px) {
       .content {
         width: 100vw;
+        height: calc(100% - ${responsive.headerHeightMobile}px);
+        top: ${responsive.headerHeightMobile}px;
       }
     }
   `;
 
   return (
-    <StyledContent>
-      {/* Remove padding from all content */}
-      <Container fluid className="content px-0">
-        <Header />
-        {routeResult || <NotFound />}
-      </Container>
-    </StyledContent>
+    <>
+      <Header />
+      <StyledContent>
+        {/* Remove padding from all content */}
+        <Container fluid className="content px-0">
+          {routeResult || <NotFound />}
+          {!isMapPath && <Footer />}
+        </Container>
+      </StyledContent>
+    </>
   );
 };
 

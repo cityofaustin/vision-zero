@@ -56,3 +56,16 @@ export const GET_LOOKUPS = gql`
     }
   }
 `;
+
+export const GET_UNIT_LOOKUPS = gql`
+  {
+    atd_txdot__trvl_dir_lkp {
+      trvl_dir_id
+      trvl_dir_desc
+    }
+    atd_txdot__movt_lkp {
+      movement_id
+      movement_desc
+    }
+  }
+`;
