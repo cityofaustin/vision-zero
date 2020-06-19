@@ -45,6 +45,10 @@ const ToolsUploadNonCR3 = () => {
   const [recordsToProcess, setRecordsToProcess] = useState([]);
   const [feedback, setFeedback] = useState({});
 
+  const isLocalEnvironment = () => {
+    return window.location.href.indexOf("localhost") > -1;
+  };
+
   // Mutation
   const [upsertRecordsQuery, setUpsertRecordsQuery] = useState(mutationDummy);
 
@@ -131,8 +135,8 @@ const ToolsUploadNonCR3 = () => {
       },
       {
         data: "message",
-        type: "text"
-      }
+        type: "text",
+      },
     ],
     dropdownMenu: true,
     filters: false,
@@ -336,7 +340,7 @@ const ToolsUploadNonCR3 = () => {
     });
 
     // Change the state
-    setInvalidRecords(invalidRecords)
+    setInvalidRecords(invalidRecords);
     setRecords(finalData);
   };
 
@@ -484,7 +488,10 @@ const ToolsUploadNonCR3 = () => {
             <Col lg={4} sm={4}>
               <NavLink
                 className={"float-right"}
-                href={"/downloads/non_cr3_template.csv"}
+                href={
+                  (!isLocalEnvironment() ? "/editor" : "") +
+                  "/downloads/non_cr3_template.csv"
+                }
               >
                 <i className={"fa fa-file-excel-o"}></i> Download CSV Template
               </NavLink>
@@ -530,9 +537,7 @@ const ToolsUploadNonCR3 = () => {
                       </ListGroupItemText>
                     </ListGroupItem>
                     <ListGroupItem action>
-                      <span className={"text-value"}>
-                        {invalidRecords}
-                      </span>
+                      <span className={"text-value"}>{invalidRecords}</span>
                       <ListGroupItemHeading>Total Errors</ListGroupItemHeading>
                       <ListGroupItemText>
                         Records that exhibit a problem. See error log below.
@@ -625,9 +630,7 @@ const ToolsUploadNonCR3 = () => {
             Any records already in the database will be overwritten (updated).
           </p>
           <p>
-            <strong>
-              Invalid records will be ignored.
-            </strong>
+            <strong>Invalid records will be ignored.</strong>
           </p>
         </ModalBody>
         <ModalFooter>
