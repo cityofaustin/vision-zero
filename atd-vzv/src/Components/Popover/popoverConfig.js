@@ -139,6 +139,15 @@ export const popoverConfig = {
             </a>
             .
           </div>
+          <div>
+            More recent analysis applies a comprehensive cost value to all
+            people involved in crashes, which has highlighted 13 segments on the
+            HIN that have a particularly high concentration of high crash
+            locations where Vision Zero is focusing short-term engineering,
+            education and enforcement initiatives. These 13 “High-Injury
+            Roadways” *link to HIR page when it’s developed* are represented in
+            *color*.
+          </div>
         </>
       ),
     },
