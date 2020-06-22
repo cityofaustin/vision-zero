@@ -51,12 +51,11 @@ def hasura_request(record):
     find_location_query = Template(
         """
         query {
-          find_crash_in_jurisdiction(args: {jurisdiction_id: 11, given_crash_id: 17678998}) {
+          find_crash_in_jurisdiction(args: {jurisdiction_id: 11, given_crash_id: $crash_id}) {
             crash_id
             austin_full_purpose
             }
           }
-
         """
     ).substitute(crash_id=crash_id)
 
@@ -108,11 +107,15 @@ def hasura_request(record):
                 HASURA_ENDPOINT, data=json.dumps(mutation_json_body), headers=HEADERS
             )
         except:
+            mutation_response = {}
             print(
                 json.dumps(
                     {"message": "Unable to parse request body for jurisdiction update"}
                 )
             )
+
+        print("Mutation Successful")
+        print(mutation_response.json())
 
 
 def lambda_handler(event, context):
