@@ -9,7 +9,6 @@ import os
 
 HASURA_ADMIN_SECRET = os.getenv("HASURA_ADMIN_SECRET", "")
 HASURA_ENDPOINT = os.getenv("HASURA_ENDPOINT", "")
-HASURA_EVENT_API = os.getenv("HASURA_EVENT_API", "")
 
 
 def hasura_request(record):
@@ -22,20 +21,23 @@ def hasura_request(record):
     print("Handling request: ")
     print(json.dumps(record))
 
+    data = {}
+    response = {}
+
     try:
         data = json.loads(record)
     except:
-        data = ""
+        data = {}
         exit(0)
 
     try:
         call_num = data["event"]["data"]["old"]["call_num"]
         old_location_id = data["event"]["data"]["old"]["location_id"]
-    except:
+    except Exception as e:
         print(
             json.dumps(
                 {
-                    "message": "Unable to parse request body to identify a Location Record"
+                    "message": "Unable to parse REQUEST body to identify a Location Record" + str(e)
                 }
             )
         )
@@ -68,11 +70,12 @@ def hasura_request(record):
         response = requests.post(
             HASURA_ENDPOINT, data=json.dumps(json_body), headers=HEADERS
         )
-    except:
+        print(response.json())
+    except Exception as e:
         print(
             json.dumps(
                 {
-                    "message": "Unable to parse request body to identify a Location Record"
+                    "message": "Unable to parse RESPONSE body to identify a Location Record: " + str(e)
                 }
             )
         )
