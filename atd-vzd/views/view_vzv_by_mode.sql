@@ -26,7 +26,7 @@ CREATE OR REPLACE VIEW view_vzv_by_mode AS
         LEFT JOIN atd_txdot__veh_unit_desc_lkp AS vdesc ON vdesc.veh_unit_desc_id = atu.unit_desc_id
         LEFT JOIN atd_txdot__veh_body_styl_lkp AS vbody ON vbody.veh_body_styl_id = atu.veh_body_styl_id
     WHERE 1=1
-      AND city_id = 22
+      AND (austin_full_purpose = 'Y' OR (atc.city_id = 22 and atc.position IS NULL))
       AND (atc.death_cnt > 0 OR atc.sus_serious_injry_cnt > 0)
       AND (
         (

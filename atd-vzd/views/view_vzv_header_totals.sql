@@ -22,7 +22,7 @@ SELECT
             FROM atd_txdot_crashes AS atc
                  LEFT JOIN atd_txdot_primaryperson AS atpp ON atpp.crash_id = atc.crash_id
             WHERE 1 = 1
-              AND city_id = 22
+              AND (austin_full_purpose = 'Y' OR (atc.city_id = 22 and atc.position IS NULL))
               AND (atpp.death_cnt > 0 or atpp.sus_serious_injry_cnt > 0)
               AND (
                   -- Last Year
@@ -62,7 +62,7 @@ SELECT
             FROM atd_txdot_crashes AS atc
                  LEFT JOIN atd_txdot_person AS atpp ON atpp.crash_id = atc.crash_id
             WHERE 1 = 1
-              AND city_id = 22
+              AND (austin_full_purpose = 'Y' OR (atc.city_id = 22 and atc.position IS NULL))
               AND (atpp.death_cnt > 0 or atpp.sus_serious_injry_cnt > 0)
               AND (
                   -- Last Year
@@ -96,7 +96,7 @@ SELECT
             COUNT(1) AS total_crashes
         FROM atd_txdot_crashes AS atc
         WHERE 1 = 1
-            AND city_id = 22
+            AND (austin_full_purpose = 'Y' OR (atc.city_id = 22 and atc.position IS NULL))
             AND (
                   -- Last Year
                     (
