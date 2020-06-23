@@ -16,6 +16,11 @@ BEGIN
         VALUES (old.crash_id, old.crash_id, 'crashes', row_to_json(old), NEW.updated_by);
     END IF;
 
+    -- COPIES THE CITY_ID INTO ORIGINAL_CITY_ID FOR BACKUP
+    IF (TG_OP = 'INSERT') THEN
+            NEW.original_city_id = NEW.city_id;
+    END IF;
+
     ------------------------------------------------------------------------------------------
     -- LATITUDE / LONGITUDE OPERATIONS
     ------------------------------------------------------------------------------------------
