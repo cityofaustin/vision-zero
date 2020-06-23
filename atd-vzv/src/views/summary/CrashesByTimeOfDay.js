@@ -14,7 +14,7 @@ import {
   SequentialLegend,
   LinearXAxis,
   LinearXAxisTickSeries,
-  LinearXAxisTickLabel
+  LinearXAxisTickLabel,
 } from "reaviz";
 import {
   summaryCurrentYearStartDate,
@@ -233,7 +233,13 @@ const CrashesByTimeOfDay = () => {
                 tickSeries={
                   <LinearXAxisTickSeries
                     line={null}
-                    label={<LinearXAxisTickLabel padding={navigator.userAgent.includes("Firefox") ? 15 : 5} />}
+                    label={
+                      <LinearXAxisTickLabel
+                        padding={
+                          navigator.userAgent.includes("Firefox") ? 15 : 5
+                        }
+                      />
+                    }
                   />
                 }
               />

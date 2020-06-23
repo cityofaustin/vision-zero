@@ -154,12 +154,13 @@ def add_locations_to_cr3s_by_location(locations_list="", starting_index=0):
             print(mutation_result)
 
 
-# locations_subset_string = '["B2CC5AA3DE", "657F8BC8A7", "4752318AEF", "08C443808A", "4155F0A788", "1A931952A4", "814D410E64", "3E7D9ADD91", "9EACA23F07", "8B0ADEAE9B", "C6A93E989D", "7AA0698000", "3DA3B8E584", "1FCF88F77D"]'
+locations_subset_string = '["11B50D803D","578B8C4DC1","0582C8E4E5","36DB763FF4","A00F3C3651","992AD76767","963EAF2062","988417B187","A7624DC531","C52D0C9A20","AA73DD1C73","3737D9BD3C","1DD7F33454","10C010652B","C68D24B3AC","9C5F858027","9403E4B5DE","D7B34694BD","47FD9C3157","18DB893A66","111A4271F1","018FE9BAA5","1CFB1C8ADB","684BE617BD","284D44F97D","096B85FE28","3D74E9A731","11B50D803D","578B8C4DC1","0582C8E4E5","36DB763FF4","A00F3C3651","992AD76767","963EAF2062","988417B187","A7624DC531","C52D0C9A20","AA73DD1C73","3737D9BD3C","1DD7F33454","10C010652B","C68D24B3AC","9C5F858027","9403E4B5DE","D7B34694BD","47FD9C3157","18DB893A66","111A4271F1","018FE9BAA5","1CFB1C8ADB","684BE617BD","284D44F97D","096B85FE28","3D74E9A731"]'
 
-starting_index = 28335
+
+starting_index = 0
 
 # Pass `locations_subset_string` as first argument for subset location processing
-add_locations_to_cr3s_by_location("", starting_index)
+add_locations_to_cr3s_by_location(locations_subset_string, starting_index)
 
 end_time = datetime.now()
 print('Duration: {}'.format(end_time - start_time))

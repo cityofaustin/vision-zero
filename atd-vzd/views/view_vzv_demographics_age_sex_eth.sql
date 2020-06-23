@@ -54,7 +54,7 @@ CREATE OR REPLACE VIEW view_vzv_demographics_age_sex_eth AS
         FROM atd_txdot_crashes AS atc
             LEFT JOIN atd_txdot_person AS atp ON atc.crash_id = atp.crash_id
         WHERE 1=1
-            AND city_id = 22
+            AND (austin_full_purpose = 'Y' OR (atc.city_id = 22 and atc.position IS NULL))
             AND (atp.death_cnt > 0)
             AND (
                 atc.crash_date >= CONCAT(
@@ -99,7 +99,7 @@ CREATE OR REPLACE VIEW view_vzv_demographics_age_sex_eth AS
         FROM atd_txdot_crashes AS atc
             LEFT JOIN atd_txdot_primaryperson AS atp ON atc.crash_id = atp.crash_id
         WHERE 1=1
-            AND city_id = 22
+            AND (austin_full_purpose = 'Y' OR (atc.city_id = 22 and atc.position IS NULL))
             AND (atp.death_cnt > 0)
             AND (
                 atc.crash_date >= CONCAT(
@@ -144,7 +144,7 @@ CREATE OR REPLACE VIEW view_vzv_demographics_age_sex_eth AS
         FROM atd_txdot_crashes AS atc
             LEFT JOIN atd_txdot_person AS atp ON atc.crash_id = atp.crash_id
         WHERE 1=1
-            AND city_id = 22
+            AND (austin_full_purpose = 'Y' OR (atc.city_id = 22 and atc.position IS NULL))
             AND (atp.sus_serious_injry_cnt > 0)
             AND (
                 atc.crash_date >= CONCAT(
@@ -189,7 +189,7 @@ CREATE OR REPLACE VIEW view_vzv_demographics_age_sex_eth AS
         FROM atd_txdot_crashes AS atc
             LEFT JOIN atd_txdot_primaryperson AS atp ON atc.crash_id = atp.crash_id
         WHERE 1=1
-            AND city_id = 22
+            AND (austin_full_purpose = 'Y' OR (atc.city_id = 22 and atc.position IS NULL))
             AND (atp.sus_serious_injry_cnt > 0)
             AND (
                 atc.crash_date >= CONCAT(
@@ -222,7 +222,7 @@ CREATE OR REPLACE VIEW view_vzv_by_time_of_day AS
         SUM(atc.sus_serious_injry_cnt) AS sus_serious_injry_cnt
     FROM atd_txdot_crashes AS atc
     WHERE 1=1
-      AND city_id = 22
+      AND (austin_full_purpose = 'Y' OR (atc.city_id = 22 and atc.position IS NULL))
       AND (atc.death_cnt > 0 OR atc.sus_serious_injry_cnt > 0)
       AND ((
                 atc.crash_date >= CONCAT(

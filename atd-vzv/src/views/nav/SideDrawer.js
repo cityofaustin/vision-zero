@@ -18,7 +18,7 @@ import { responsive } from "../../constants/responsive";
 const drawerWidth = responsive.drawerWidth;
 
 // Styles for MUI drawer
-const useStyles = makeStyles((theme) => {
+const useStyles = makeStyles(theme => {
   return {
     root: {
       display: "flex",

@@ -1,26 +1,8 @@
 import React from "react";
 import { Popup } from "react-map-gl";
-import styled from "styled-components";
 import InfoCard from "./InfoCard";
-import { responsive } from "../../constants/responsive";
 import moment from "moment";
-
-const StyledDesktopInfo = styled.div`
-  position: absolute;
-  margin: 8px;
-  padding: 2px;
-  max-width: ${responsive.drawerWidth - 20}px;
-  z-index: 9 !important;
-  pointer-events: none;
-`;
-
-const StyledMobileInfo = styled.div`
-  .card {
-    background: none;
-    border: none;
-    max-width: ${responsive.drawerWidth - 20}px;
-  }
-`;
+import { StyledDesktopInfo, StyledMobileInfo } from "./infoBoxStyles";
 
 const MapInfoBox = ({
   selectedFeature,
