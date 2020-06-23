@@ -17,11 +17,17 @@ from sodapy import Socrata
 from process.config import ATD_ETL_CONFIG
 from process.helpers_socrata import *
 from process.socrata_queries import *
+
 print("Socrata - Exporter:  Started.")
 
 # Setup connection to Socrata
-client = Socrata("data.austintexas.gov", ATD_ETL_CONFIG["SOCRATA_APP_TOKEN"],
-                 username=ATD_ETL_CONFIG["SOCRATA_KEY_ID"], password=ATD_ETL_CONFIG["SOCRATA_KEY_SECRET"], timeout=20)
+client = Socrata(
+    "data.austintexas.gov",
+    ATD_ETL_CONFIG["SOCRATA_APP_TOKEN"],
+    username=ATD_ETL_CONFIG["SOCRATA_KEY_ID"],
+    password=ATD_ETL_CONFIG["SOCRATA_KEY_SECRET"],
+    timeout=20,
+)
 
 # Define tables to query from Hasura and publish to Socrata
 query_configs = [
@@ -35,11 +41,11 @@ query_configs = [
                 "veh_body_styl_desc": "unit_desc",
                 "veh_unit_desc_desc": "unit_mode",
                 "latitude_primary": "latitude",
-                "longitude_primary": "longitude"
-            }
+                "longitude_primary": "longitude",
+            },
         },
         # "dataset_uid": "3aut-fhzp"  # TEST
-        "dataset_uid": "y2wy-tgr5"  # PROD
+        "dataset_uid": "y2wy-tgr5",  # PROD
     },
     {
         "table": "person",
@@ -47,17 +53,12 @@ query_configs = [
         "formatter": format_person_data,
         "formatter_config": {
             "tables": ["atd_txdot_person", "atd_txdot_primaryperson"],
-            "columns_to_rename": {
-                "primaryperson_id": "person_id"
-            },
-            "prefixes": {
-                "person_id": "P",
-                "primaryperson_id": "PP",
-            }
+            "columns_to_rename": {"primaryperson_id": "person_id"},
+            "prefixes": {"person_id": "P", "primaryperson_id": "PP",},
         },
         # "dataset_uid": "v3x4-fjgm"  # TEST
-        "dataset_uid": "xecs-rpy9"  # PROD
-    }
+        "dataset_uid": "xecs-rpy9",  # PROD
+    },
 ]
 
 # Start timer
@@ -74,8 +75,7 @@ for config in query_configs:
     # Query records from Hasura and upsert to Socrata
     while records != []:
         # Create query, increment offset, and query DB
-        query = config["template"].substitute(
-            limit=limit, offset=offset)
+        query = config["template"].substitute(limit=limit, offset=offset)
         offset += limit
         data = run_hasura_query(query)
 
@@ -84,12 +84,11 @@ for config in query_configs:
 
         # Upsert records to Socrata
         client.upsert(config["dataset_uid"], records)
-        print(f'{offset} records upserted')
+        print(f"{offset} records upserted")
         total_records += len(records)
 
         if len(records) == 0:
-            print(
-                f'{total_records} {config["table"]} records upserted.')
+            print(f'{total_records} {config["table"]} records upserted.')
             print(f'Completed {config["table"]} table.')
 
 # Terminate Socrata connection
@@ -97,7 +96,6 @@ client.close()
 
 # Stop timer and print duration
 end = time.time()
-hours, rem = divmod(end-start, 3600)
+hours, rem = divmod(end - start, 3600)
 minutes, seconds = divmod(rem, 60)
-print("Finished in: {:0>2}:{:0>2}:{:05.2f}".format(
-    int(hours), int(minutes), seconds))
+print("Finished in: {:0>2}:{:0>2}:{:05.2f}".format(int(hours), int(minutes), seconds))
