@@ -71,8 +71,8 @@ function deploy_event_function {
   # Set environment variables for the function
   echo "Resetting environment variables: ${FUNCTION_NAME} @ ${PWD}";
   aws lambda update-function-configuration \
-        --function-name "atd-vz-data-events-crash_update_jurisdiction_staging" \
-        --cli-input-json file://$PWD/handler_config.json | jq -r ".LastUpdateStatus";
+        --function-name "${FUNCTION_NAME}" \
+        --cli-input-json file://$PWD/handler_config.json | jq -r ".LastModified";
   echo "Finished Lambda Update/Deployment";
 }
 
