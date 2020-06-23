@@ -14,6 +14,8 @@ import os
 import time
 from string import Template
 from sodapy import Socrata
+import csv
+import json
 from process.config import ATD_ETL_CONFIG
 from process.helpers_socrata import *
 from process.socrata_queries import *
@@ -44,8 +46,8 @@ query_configs = [
                 "longitude_primary": "longitude",
             },
         },
-        # "dataset_uid": "3aut-fhzp"  # TEST
-        "dataset_uid": "y2wy-tgr5",  # PROD
+        "dataset_uid": "3aut-fhzp"  # TEST
+        # "dataset_uid": "y2wy-tgr5",  # PROD
     },
     {
         "table": "person",
@@ -56,8 +58,8 @@ query_configs = [
             "columns_to_rename": {"primaryperson_id": "person_id"},
             "prefixes": {"person_id": "P", "primaryperson_id": "PP",},
         },
-        # "dataset_uid": "v3x4-fjgm"  # TEST
-        "dataset_uid": "xecs-rpy9",  # PROD
+        "dataset_uid": "v3x4-fjgm"  # TEST
+        # "dataset_uid": "xecs-rpy9",  # PROD
     },
 ]
 
@@ -67,6 +69,8 @@ start = time.time()
 # For each config, get records from Hasura and upsert to Socrata until res is []
 for config in query_configs:
     print(f'Starting {config["table"]} table...')
+    print(f'Truncating {config["table"]} table...')
+    client.replace(config["dataset_uid"], [])
     records = None
     offset = 0
     limit = 6000
@@ -84,12 +88,13 @@ for config in query_configs:
 
         # Upsert records to Socrata
         client.upsert(config["dataset_uid"], records)
-        print(f"{offset} records upserted")
         total_records += len(records)
 
         if len(records) == 0:
             print(f'{total_records} {config["table"]} records upserted.')
             print(f'Completed {config["table"]} table.')
+        elif total_records != 0:
+            print(f"{total_records} records upserted")
 
 # Terminate Socrata connection
 client.close()

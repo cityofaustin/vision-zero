@@ -21,7 +21,7 @@ mode_categories = {
     "motorcycle": [3],
     "bicycle": [5],
     "pedestrian": [7],
-    "other": [6, 8, 9]
+    "other": [6, 8, 9],
 }
 
 
@@ -43,15 +43,13 @@ def run_hasura_query(query):
     :param query: string - The GraphQL query to post
     """
     # Build Header with Admin Secret
-    headers = {
-        "x-hasura-admin-secret": ATD_ETL_CONFIG["HASURA_ADMIN_KEY"]
-    }
+    headers = {"x-hasura-admin-secret": ATD_ETL_CONFIG["HASURA_ADMIN_KEY"]}
 
-   # Try making insertion
+    # Try making insertion
     try:
-        return requests.post(ATD_ETL_CONFIG["HASURA_ENDPOINT"],
-                             json={'query': query},
-                             headers=headers).json()
+        return requests.post(
+            ATD_ETL_CONFIG["HASURA_ENDPOINT"], json={"query": query}, headers=headers
+        ).json()
     except Exception as e:
         print("Exception, could not insert: " + str(e))
         print("Query: '%s'" % query)
@@ -76,14 +74,21 @@ def flatten_hasura_response(records):
                         # Handle nested values
                         if type(second_level_value) == dict:
                             # Handles concat of values here
-                            for third_level_key, third_level_value in second_level_value.items():
+                            for (
+                                third_level_key,
+                                third_level_value,
+                            ) in second_level_value.items():
                                 if third_level_key in formatted_record.keys():
                                     # If key already exists at top-level, concat with existing values
                                     next_record = f" & {third_level_value}"
-                                    formatted_record[third_level_key] = formatted_record[third_level_key] + next_record
+                                    formatted_record[third_level_key] = (
+                                        formatted_record[third_level_key] + next_record
+                                    )
                                 else:
                                     # Create key at top-level
-                                    formatted_record[third_level_key] = third_level_value
+                                    formatted_record[
+                                        third_level_key
+                                    ] = third_level_value
                         # Copy non-nested key-values to top-level (if value is not null)
                         # Null records can create unwanted columns at top level of record
                         elif second_level_value is not None:
@@ -117,8 +122,7 @@ def set_mode_columns(records):
             formatted_record["units_involved"] = " & ".join(units_involved)
 
             # Stringify metadata
-            formatted_record[metadata_column] = json.dumps(
-                record[metadata_column])
+            formatted_record[metadata_column] = json.dumps(record[metadata_column])
         formatted_records.append(formatted_record)
     return formatted_records
 
@@ -150,8 +154,7 @@ def concatTimeAndDate(records):
     :param records: list - List of record dicts
     """
     for record in records:
-        concatDateAndTime = record.get(
-            "crash_date") + "T" + record.get("crash_time")
+        concatDateAndTime = record.get("crash_date") + "T" + record.get("crash_time")
         record["crash_date"] = concatDateAndTime
     return records
 
@@ -178,10 +181,10 @@ def calc_mode_injury_totals(records):
                 unit_mode_id = unit.get("mode_id")
                 for [mode, id_list] in mode_categories.items():
                     if unit_mode_id in id_list:
-                        total_dict[mode +
-                                   "_death_count"] += unit[fatality_field]
-                        total_dict[mode +
-                                   "_serious_injury_count"] += unit[serious_injury_field]
+                        total_dict[mode + "_death_count"] += unit[fatality_field]
+                        total_dict[mode + "_serious_injury_count"] += unit[
+                            serious_injury_field
+                        ]
         record = record.update(total_dict)
     return records
 
@@ -192,8 +195,8 @@ def create_point_datatype(records):
     :param records: list - List of record dicts
     """
     for record in records:
-        latitude = record['latitude']
-        longitude = record['longitude']
+        latitude = record["latitude"]
+        longitude = record["longitude"]
         # Socrata rejects point upserts with no lat/lon
         if latitude != None and longitude != None:
             record["point"] = f"POINT ({longitude} {latitude})"
@@ -266,17 +269,17 @@ def format_crash_data(data, formatter_config):
     :param data: dict - Dict containing list of Hasura records
     :param formatter_config: dict - Dict containing config for data formatting
     """
-    records = data['data'][formatter_config["tables"][0]]
+    records = data["data"][formatter_config["tables"][0]]
 
     # Format records
     formatted_records = create_mode_flags(records)
     formatted_records = calc_mode_injury_totals(formatted_records)
     formatted_records = concatTimeAndDate(formatted_records)
-    formatted_records = set_mode_columns(
-        formatted_records)
+    formatted_records = set_mode_columns(formatted_records)
     formatted_records = flatten_hasura_response(formatted_records)
     formatted_records = rename_record_columns(
-        formatted_records, formatter_config["columns_to_rename"])
+        formatted_records, formatter_config["columns_to_rename"]
+    )
     formatted_records = create_point_datatype(formatted_records)
 
     return formatted_records
@@ -288,24 +291,23 @@ def format_person_data(data, formatter_config):
     :param data: dict - Dict containing list of Hasura records
     :param formatter_config: dict - Dict containing config for data formatting
     """
-    person_records = data['data'][formatter_config["tables"][0]]
-    primary_person_records = data['data'][formatter_config["tables"][1]]
+    person_records = data["data"][formatter_config["tables"][0]]
+    primary_person_records = data["data"][formatter_config["tables"][1]]
 
     # Make record IDs unique by adding prefixes and set mode of person
-    person_records = add_value_prefix(
-        person_records, formatter_config["prefixes"])
-    person_records = set_person_mode(
-        person_records)
+    person_records = add_value_prefix(person_records, formatter_config["prefixes"])
+    person_records = set_person_mode(person_records)
     primary_person_records = add_value_prefix(
-        primary_person_records, formatter_config["prefixes"])
-    primary_person_records = set_person_mode(
-        primary_person_records)
+        primary_person_records, formatter_config["prefixes"]
+    )
+    primary_person_records = set_person_mode(primary_person_records)
 
     # Join records and format
     people_records = person_records + primary_person_records
     formatted_records = rename_record_columns(
-        people_records, formatter_config["columns_to_rename"])
-    formatted_records = flatten_hasura_response(
-        formatted_records)
+        people_records, formatter_config["columns_to_rename"]
+    )
+    formatted_records = flatten_hasura_response(formatted_records)
+    formatted_records = concatTimeAndDate(formatted_records)
 
     return formatted_records
