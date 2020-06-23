@@ -48,19 +48,23 @@ def hasura_request(record):
         "X-Hasura-Admin-Secret": HASURA_ADMIN_SECRET,
     }
 
-    find_location_query = Template(
-        """
-        query {
-          find_crash_in_jurisdiction(args: {jurisdiction_id: 11, given_crash_id: 17678998}) {
-            crash_id
-            austin_full_purpose
+    find_location_query = """
+        query($crash_id:Int) {
+            find_crash_in_jurisdiction(args: {jurisdiction_id: 11, given_crash_id: $crash_id}) {
+                crash_id
+                austin_full_purpose
             }
-          }
+        }
+    """
 
-        """
-    ).substitute(crash_id=crash_id)
+    query_variables = {
+        "crash_id": crash_id
+    }
 
-    json_body = {"query": find_location_query}
+    json_body = {
+        "query": find_location_query,
+        "variables": query_variables,
+    }
 
     # Make request to Hasura expecting a Location Record in the response
     try:
@@ -108,14 +112,18 @@ def hasura_request(record):
                 HASURA_ENDPOINT, data=json.dumps(mutation_json_body), headers=HEADERS
             )
         except:
+            mutation_response = {}
             print(
                 json.dumps(
                     {"message": "Unable to parse request body for jurisdiction update"}
                 )
             )
 
+        print("Mutation Successful")
+        print(mutation_response.json())
 
-def lambda_handler(event, context):
+
+def handler(event, context):
     """
     Event handler main loop. It handles a single or multiple SQS messages.
     :param dict event: One or many SQS messages
