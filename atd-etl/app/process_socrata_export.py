@@ -14,8 +14,6 @@ import os
 import time
 from string import Template
 from sodapy import Socrata
-import csv
-import json
 from process.config import ATD_ETL_CONFIG
 from process.helpers_socrata import *
 from process.socrata_queries import *
