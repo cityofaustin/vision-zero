@@ -6,7 +6,6 @@ import json
 import requests
 import time
 import os
-from string import Template
 
 HASURA_ADMIN_SECRET = os.getenv("HASURA_ADMIN_SECRET", "")
 HASURA_ENDPOINT = os.getenv("HASURA_ENDPOINT", "")
@@ -22,25 +21,26 @@ def hasura_request(record):
     print("Handling request: ")
     print(json.dumps(record))
 
+    data = {}
+    response = {}
+
     try:
         data = json.loads(record)
     except:
-        data = ""
+        data = {}
         exit(0)
 
     try:
-        crash_id = data["event"]["data"]["old"]["crash_id"]
-        old_jurisdiction_flag = data["event"]["data"]["old"]["austin_full_purpose"]
-    except:
+        call_num = data["event"]["data"]["old"]["call_num"]
+        old_location_id = data["event"]["data"]["old"]["location_id"]
+    except Exception as e:
         print(
             json.dumps(
                 {
-                    "message": "Unable to parse request body to identify a Location Record"
+                    "message": "Unable to parse REQUEST body to identify a Location Record" + str(e)
                 }
             )
         )
-
-    print("Crash ID: " + str(crash_id))
 
     # Prep Hasura query
     HEADERS = {
@@ -49,16 +49,15 @@ def hasura_request(record):
     }
 
     find_location_query = """
-        query($crash_id:Int) {
-            find_crash_in_jurisdiction(args: {jurisdiction_id: 11, given_crash_id: $crash_id}) {
-                crash_id
-                austin_full_purpose
+       query getLocationForNonCR3($call_num:Int) {
+            find_location_for_noncr3_collision(args: {id: $call_num}){
+                location_id
             }
-        }
+       }
     """
 
     query_variables = {
-        "crash_id": crash_id
+        "call_num": call_num
     }
 
     json_body = {
@@ -71,38 +70,38 @@ def hasura_request(record):
         response = requests.post(
             HASURA_ENDPOINT, data=json.dumps(json_body), headers=HEADERS
         )
-    except:
+        print(response.json())
+    except Exception as e:
         print(
             json.dumps(
                 {
-                    "message": "Unable to parse request body to check for crash containment in jurisdiction"
+                    "message": "Unable to parse RESPONSE body to identify a Location Record: " + str(e)
                 }
             )
         )
 
-    is_within_jurisdiction = len(response.json()["data"]["find_crash_in_jurisdiction"])
+    new_location_id = response.json()["data"]["find_location_for_noncr3_collision"][0][
+        "location_id"
+    ]
 
-    # We're casting a varchar here into a boolean, so I'm declaring Y to be True and everything else to be False.
-    if (not (old_jurisdiction_flag == "Y") and not is_within_jurisdiction) or (
-        old_jurisdiction_flag == "Y" and is_within_jurisdiction
-    ):
-        print(json.dumps({"message": "Success. austin_full_purpose is up to date"}))
+    if new_location_id == old_location_id:
+        print(json.dumps({"message": "Success. No Location ID update required"}))
     else:
         # Prep the mutation
-        update_jurisdiction_flag_mutation = """
-                mutation updateCrashJurisdiction($crashId: Int!, $jurisdictionFlag: String!) {
-                    update_atd_txdot_crashes(where: {crash_id: {_eq: $crashId}}, _set: {austin_full_purpose: $jurisdictionFlag}) {
-                        affected_rows
-                    }
+        update_location_mutation = """
+            mutation updateNonCR3CrashLocationID($call_num: Int!, $locationId: String!) {
+                update_atd_apd_blueform(where: {call_num: {_eq: $call_num}}, _set: {location_id: $locationId}) {
+                    affected_rows
                 }
-            """
+            }
+        """
 
         query_variables = {
-            "crashId": crash_id,
-            "jurisdictionFlag": "Y" if is_within_jurisdiction else "N",
+            "call_num": call_num,
+            "locationId": new_location_id
         }
         mutation_json_body = {
-            "query": update_jurisdiction_flag_mutation,
+            "query": update_location_mutation,
             "variables": query_variables,
         }
 
@@ -112,10 +111,11 @@ def hasura_request(record):
                 HASURA_ENDPOINT, data=json.dumps(mutation_json_body), headers=HEADERS
             )
         except:
-            mutation_response = {}
             print(
                 json.dumps(
-                    {"message": "Unable to parse request body for jurisdiction update"}
+                    {
+                        "message": "Unable to parse request body for location_id update"
+                    }
                 )
             )
 
