@@ -30,8 +30,8 @@ def hasura_request(record):
         exit(0)
 
     try:
-        crash_id = data["event"]["data"]["old"]["crash_id"]
-        old_location_id = data["event"]["data"]["old"]["location_id"]
+        crash_id = data["event"]["data"]["new"]["crash_id"]
+        old_location_id = data["event"]["data"]["new"]["location_id"]
     except:
         print(
             json.dumps(
