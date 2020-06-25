@@ -37,8 +37,9 @@ function bundle_function {
 # Generates environment variables for deployment
 #
 function generate_env_vars {
-      echo $ZAPPA_SETTINGS > zappa_settings.json
-      if [[ "${WORKING_STAGE}" == "pr_*" ]]; then
+      echo $ZAPPA_SETTINGS > zappa_settings.json;
+      echo "Generating environment variables for environment '${WORKKING_STAGE}'...";
+      if [[ "${WORKING_STAGE}" != "pr_" ]] && [[ "${WORKING_STAGE}" == pr_* ]]; then
         echo "Detected PR, adjusting environment to Staging...";
         LOCAL_STAGE="staging"
       else
