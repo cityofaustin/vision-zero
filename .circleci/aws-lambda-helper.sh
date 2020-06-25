@@ -3,11 +3,13 @@
 case "${CIRCLE_BRANCH}" in
   "production")
     export WORKING_STAGE="production";
-    ;;
-
-  *)
+  ;;
+  "master")
     export WORKING_STAGE="staging";
-    ;;
+  ;;
+  *)
+    export WORKING_STAGE="pr_${CIRCLE_PR_NUMBER}";
+  ;;
 esac
 
 #
@@ -126,6 +128,9 @@ function deploy_sqs {
     deploy_event_source_mapping $QUEUE_NAME $QUEUE_ARN;
 }
 
+function clean_up {
+    python aws-lambda-sqs-clean.py;
+}
 #
 # Deploys all functions in the events directory
 #
