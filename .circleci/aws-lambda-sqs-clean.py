@@ -1,10 +1,14 @@
 #!/usr/bin/env python3
 
-import pdb
+import os
 import boto3
 
 # First initialize the client
 client = boto3.client('sqs')
+
+# These are two constants taken from CircleCI:
+BRANCH_NAME = os.getenv("CIRCLE_BRANCH", "None")
+PR_NUMBER = os.getenv("CIRCLE_PR_NUMBER", "None")
 
 
 def is_removable(queue_url) -> bool:
@@ -17,6 +21,16 @@ def is_removable(queue_url) -> bool:
         or str(queue_url).endswith("production") == True:
         return False
     return True
+
+
+def is_target_pr(queue_url, pr_number) -> bool:
+    """
+    Returns True if the queue was deployed for this PR number.
+    :param str queue_url: The queue URL
+    :param str pr_number: The PR number
+    :return bool:
+    """
+    return str(queue_url).endswith(pr_number)
 
 
 def get_queue_list() -> [str]:
@@ -65,17 +79,24 @@ def delete_queue(queue_url) -> dict:
 # Main Function
 #
 def main():
+    print(f"Current Branch: {BRANCH_NAME}")
+    print(f"Current PR Num: {PR_NUMBER}")
+    print("-----------------------------------------------------------------------------------------------------------")
+    print("{:<10} {:<64} {:<64}".format("Remove?", "Queue Name", "Function Name"))
+    print("-----------------------------------------------------------------------------------------------------------")
     queues = get_queue_list()
 
     for queue_url in queues:
-        removable = is_removable(queue_url)
+        remove = is_removable(queue_url) and is_target_pr(queue_url, PR_NUMBER)
         queue_name = get_queue_name_from_url(queue_url)
         function_name = get_function_name_from_url(queue_url)
-        if removable:
-            print(f"Removing: {removable} : {queue_name} : {function_name}")
-            print(delete_queue(queue_url))
-        else:
-            print(f"Skipping: {removable} : {queue_name} : {function_name}")
+        print("{:<10} {:<64} {:<64}".format(str(remove), queue_name, function_name))
+
+        if remove:
+            print(f">> Removing: {queue_name}")
+            #print(delete_queue(queue_url))
+
+    print("-----------------------------------------------------------------------------------------------------------")
 
 
 if __name__ == "__main__":
