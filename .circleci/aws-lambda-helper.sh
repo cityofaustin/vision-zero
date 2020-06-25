@@ -8,7 +8,9 @@ case "${CIRCLE_BRANCH}" in
     export WORKING_STAGE="staging";
   ;;
   *)
+    echo "PR Detected, resetting working stage";
     export WORKING_STAGE="pr_${CIRCLE_PR_NUMBER}";
+    echo "New working stage: ${WORKING_STAGE}...";
   ;;
 esac
 
@@ -38,7 +40,7 @@ function bundle_function {
 #
 function generate_env_vars {
       echo $ZAPPA_SETTINGS > zappa_settings.json;
-      echo "Generating environment variables for environment '${WORKKING_STAGE}'...";
+      echo "Generating environment variables for environment '${WORKING_STAGE}'...";
       if [[ "${WORKING_STAGE}" != "pr_" ]] && [[ "${WORKING_STAGE}" == pr_* ]]; then
         echo "Detected PR, adjusting environment to Staging...";
         LOCAL_STAGE="staging"
