@@ -152,10 +152,10 @@ export const buildHighInjuryLayer = (overlay) => {
     source: {
       type: "vector",
       tiles: [
-        "https://tiles.arcgis.com/tiles/0L95CJ0VTaxqcmED/arcgis/rest/services/HIN_Vector_Tile/VectorTileServer/tile/{z}/{y}/{x}.pbf",
+        "https://tiles.arcgis.com/tiles/0L95CJ0VTaxqcmED/arcgis/rest/services/HIN_for_VZV/VectorTileServer/tile/{z}/{y}/{x}.pbf",
       ],
     },
-    "source-layer": "High-Injury Network",
+    "source-layer": "HIN_for_VZV",
     layout: {
       "line-join": "round",
       visibility: `${overlay.name === overlayId ? "visible" : "none"}`,
