@@ -37,7 +37,16 @@ function bundle_function {
 # Generates environment variables for deployment
 #
 function generate_env_vars {
-      echo $ZAPPA_SETTINGS > zappa_settings.json;
+      echo $ZAPPA_SETTINGS > zappa_settings.json
+      if [[ "${WORKING_STAGE}" == "other" ]]; then
+        echo "Detected PR, adjusting environment to Staging...";
+        LOCAL_STAGE="staging"
+      else
+        # Copy whatever working stage is, master or production.
+        echo "No PR detected, using '${WORKING_STAGE}' as environment..."
+        LOCAL_STAGE="${WORKING_STAGE}";
+      fi;
+      echo "Using stage: ${LOCAL_STAGE} (Current working stage: '${WORKING_STAGE}')...";
       STAGE_ENV_VARS=$(cat zappa_settings.json | jq -r ".${WORKING_STAGE}.aws_environment_variables");
       echo -e "{\"Description\": \"ATD VisionZero Events Handler\", \"Environment\": { \"Variables\": ${STAGE_ENV_VARS}}}" | jq -rc > handler_config.json;
 }
@@ -129,8 +138,10 @@ function deploy_sqs {
 }
 
 function clean_up {
+    echo "Cleaning up";
     python aws-lambda-sqs-clean.py;
 }
+
 #
 # Deploys all functions in the events directory
 #
