@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# CIRCLE_PR_NUMBER only works on forked PRs
+export ATD_PR_NUMBER="${CIRCLE_PULL_REQUEST##*/}";
+
 case "${CIRCLE_BRANCH}" in
   "production")
     export WORKING_STAGE="production";
@@ -9,7 +12,7 @@ case "${CIRCLE_BRANCH}" in
   ;;
   *)
     echo "PR Detected, resetting working stage";
-    export WORKING_STAGE="pr_${CIRCLE_PR_NUMBER}";
+    export WORKING_STAGE="pr_${ATD_PR_NUMBER}";
     echo "New working stage: ${WORKING_STAGE}...";
   ;;
 esac
