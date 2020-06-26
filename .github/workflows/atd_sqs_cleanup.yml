@@ -1,12 +1,14 @@
 name: "Remove Unused SQS PRs"
 
-on:
-  pull_request:
-    types: [closed]
+#on:
+#  pull_request:
+#    types: [closed]
+
+on: [push]
 
 jobs:
   run-shell-command:
-    runs-on: python:3.7-alpine
+    runs-on: ubuntu-latest
     steps:
       - name: "Install AWS Cli"
         run: "pip install awscli"
