@@ -13,9 +13,8 @@ jobs:
       - name: "Install AWS Cli"
         run: "pip install awscli"
       - name: "Run Cleanup Script"
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
-          export PR_NUMBER=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
           echo $PR_NUMBER
           echo $GITHUB_REF
-          echo $GITHUB_EVENT_PATH
-          cat $GITHUB_EVENT_PATH
