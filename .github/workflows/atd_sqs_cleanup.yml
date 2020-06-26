@@ -21,5 +21,4 @@ jobs:
           echo "GR: ${GITHUB_REF}"
           echo "PWD: $(pwd)"
           cat $GITHUB_EVENT_PATH
-          find .github -name "*.py"
           python3 $(pwd)/.github/workflows/aws-lambda-helper-clean.py
