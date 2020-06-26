@@ -9,6 +9,7 @@ on: [push]
 jobs:
   run-shell-command:
     runs-on: ubuntu-latest
+
     steps:
       - name: "Checkout"
         uses: actions/checkout@v2
@@ -17,6 +18,10 @@ jobs:
           sudo apt-get install python3-setuptools
           pip3 install awscli boto3
       - name: "Run Cleanup Script"
+        env:
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: |
           export PR_NUMBER=$(curl -s -H "Accept: application/vnd.github.groot-preview+json" "https://api.github.com/repos/cityofaustin/atd-vz-data/commits/${GITHUB_SHA}/pulls" | jq -r '.[].number')
           echo "SHA: ${GITHUB_SHA}"
