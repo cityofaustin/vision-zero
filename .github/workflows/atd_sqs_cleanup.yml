@@ -21,5 +21,9 @@ jobs:
           echo "GR: ${GITHUB_REF}"
           echo "PWD: $(pwd)"
           cat $GITHUB_EVENT_PATH
+          echo "Finding lambda function:"
           find . -name "aws-lambda-helper-clean.py"
+          ls -lha
+          ls -lha ..
+          echo "Running lambda function:"
           python3 $(pwd)/.circleci/aws-lambda-helper-clean.py
