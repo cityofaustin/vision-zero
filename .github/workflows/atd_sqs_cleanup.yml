@@ -10,7 +10,8 @@ jobs:
   run-shell-command:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1.0.0
+      - name: "Checkout"
+        uses: actions/checkout@v2
       - name: "Install AWS Cli"
         run: |
           pip install awscli boto3
