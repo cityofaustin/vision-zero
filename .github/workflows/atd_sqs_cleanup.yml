@@ -16,5 +16,6 @@ jobs:
         env:
           PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
-          echo $PR_NUMBER
-          echo $GITHUB_REF
+          echo "PR: $PR_NUMBER"
+          echo "GR: $GITHUB_REF"
+          cat $GITHUB_EVENT_PATH
