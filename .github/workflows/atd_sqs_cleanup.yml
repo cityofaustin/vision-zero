@@ -1,0 +1,12 @@
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  run-shell-command:
+    runs-on: python:3.7-alpine
+    steps:
+      - name: "Install AWS Cli"
+        run: "pip install awscli"
+      - name: "Run Cleanup Script"
+        run: "echo 'Hello world!'"
