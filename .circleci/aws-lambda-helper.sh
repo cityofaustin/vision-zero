@@ -52,8 +52,8 @@ function generate_env_vars {
         echo "No PR detected, using '${WORKING_STAGE}' as environment..."
         LOCAL_STAGE="${WORKING_STAGE}";
       fi;
-      echo "Using stage: ${LOCAL_STAGE} (Current working stage: '${WORKING_STAGE}')...";
-      STAGE_ENV_VARS=$(cat zappa_settings.json | jq -r ".${WORKING_STAGE}.aws_environment_variables");
+      echo "Using stage: '${LOCAL_STAGE}' (Current working stage: '${WORKING_STAGE}')...";
+      STAGE_ENV_VARS=$(cat zappa_settings.json | jq -r ".${LOCAL_STAGE}.aws_environment_variables");
       echo -e "{\"Description\": \"ATD VisionZero Events Handler\", \"Environment\": { \"Variables\": ${STAGE_ENV_VARS}}}" | jq -rc > handler_config.json;
 }
 
