@@ -28,3 +28,4 @@ jobs:
           ls -lha
           ls -lha ..
           echo "Running lambda function:"
+          python3 $(pwd)/.circleci/aws-lambda-helper-clean.py
