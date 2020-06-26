@@ -11,12 +11,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "Install AWS Cli"
-        run: "pip install awscli"
+        run: |
+          pip install awscli boto3
       - name: "Run Cleanup Script"
         run: |
-
           export PR_NUMBER=$(curl -s -H "Accept: application/vnd.github.groot-preview+json" "https://api.github.com/repos/cityofaustin/atd-vz-data/commits/${GITHUB_SHA}/pulls" | jq -r '.[].number')
           echo "SHA: ${GITHUB_SHA}"
           echo "PR: ${PR_NUMBER}"
           echo "GR: ${GITHUB_REF}"
+          echo "PWD: $(pwd)"
           cat $GITHUB_EVENT_PATH
+          python3 .github/workflows/aws-lambda-helper-clean.py

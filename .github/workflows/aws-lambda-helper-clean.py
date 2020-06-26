@@ -7,8 +7,8 @@ import boto3
 client = boto3.client('sqs')
 
 # These are two constants taken from CircleCI:
-BRANCH_NAME = os.getenv("CIRCLE_BRANCH", "None")
-PR_NUMBER = os.getenv("CIRCLE_PR_NUMBER", "None")
+BRANCH_NAME = os.getenv("BRANCH_NAME", "None")
+PR_NUMBER = os.getenv("PR_NUMBER", "None")
 
 
 def is_removable(queue_url) -> bool:
