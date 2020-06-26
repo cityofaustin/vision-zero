@@ -13,4 +13,6 @@ jobs:
       - name: "Install AWS Cli"
         run: "pip install awscli"
       - name: "Run Cleanup Script"
-        run: "echo 'Hello world!'"
+        run: |
+          export PR_NUMBER=$(echo $GITHUB_REF | awk 'BEGIN { FS = "/" } ; { print $3 }')
+          echo $PR_NUMBER
