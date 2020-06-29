@@ -73,9 +73,13 @@ def hasura_request(record):
             )
         )
 
-    new_location_id = response.json()["data"]["find_location_for_cr3_collision"][0][
-        "location_id"
-    ]
+    try:
+        new_location_id = response.json()["data"]["find_location_for_cr3_collision"][0][
+            "location_id"
+        ]
+    except:
+        print(f"Could not find location for crash id: {crash_id}")
+        new_location_id = None
 
     if new_location_id == old_location_id:
         print(json.dumps({"message": "Success. No Location ID update required"}))
