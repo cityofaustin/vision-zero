@@ -2,7 +2,12 @@ import React from "react";
 import { Popup } from "react-map-gl";
 import InfoCard from "./InfoCard";
 import moment from "moment";
-import { StyledDesktopInfo, StyledMobileInfo } from "./infoBoxStyles";
+import styled from "styled-components";
+import {
+  StyledDesktopInfo,
+  StyledMobileInfo,
+  setPopupPosition,
+} from "./infoBoxStyles";
 
 const MapInfoBox = ({
   selectedFeature,
@@ -11,6 +16,13 @@ const MapInfoBox = ({
   type, // id of feature layer
 }) => {
   const popupInfo = selectedFeature && selectedFeature.properties;
+  const popupX = popupInfo.pixelCoordinates && popupInfo.pixelCoordinates.x;
+
+  const StyledPopup = styled.div`
+    .mapboxgl-popup-content {
+      ${setPopupPosition(popupX)}
+    }
+  `;
 
   const buildSeriousInjuriesOrFatalitiesConfig = (info) => [
     {
@@ -42,15 +54,18 @@ const MapInfoBox = ({
   return (
     popupInfo &&
     (isMobile ? (
-      <Popup
-        tipSize={10}
-        anchor="top"
-        longitude={parseFloat(popupInfo.longitude)}
-        latitude={parseFloat(popupInfo.latitude)}
-        onClose={() => setSelectedFeature(null)}
-      >
-        <StyledMobileInfo>{infoCard}</StyledMobileInfo>
-      </Popup>
+      <StyledPopup>
+        <Popup
+          tipSize={10}
+          anchor="top"
+          longitude={parseFloat(popupInfo.longitude)}
+          latitude={parseFloat(popupInfo.latitude)}
+          onClose={() => setSelectedFeature(null)}
+          dynamicPosition={false} // Set popup position with StyledPopup
+        >
+          <StyledMobileInfo>{infoCard}</StyledMobileInfo>
+        </Popup>
+      </StyledPopup>
     ) : (
       <StyledDesktopInfo>{infoCard}</StyledDesktopInfo>
     ))

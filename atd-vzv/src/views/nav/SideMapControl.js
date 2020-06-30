@@ -57,7 +57,7 @@ const StyledCard = styled.div`
   }
 `;
 
-const SideMapControl = () => {
+const SideMapControl = ({ type }) => {
   const {
     mapFilters: [filters, setFilters],
     mapFilterType: [isMapTypeSet, setIsMapTypeSet],
@@ -318,7 +318,7 @@ const SideMapControl = () => {
             ))}
           </Row>
         ))}
-        <SideMapControlDateRange />
+        <SideMapControlDateRange type={type} />
         <SideMapTimeOfDayChart filters={mapOtherFilters.timeOfDay} />
       </Card>
       <SideMapControlOverlays />
