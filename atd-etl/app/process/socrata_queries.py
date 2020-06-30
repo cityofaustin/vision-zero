@@ -45,7 +45,7 @@ crashes_query_template = Template(
             non_injry_cnt
             unkn_injry_cnt
             tot_injry_cnt
-            death_cnt
+            atd_fatality_count
             atd_mode_category_metadata
             units {
                 contrib_factr_p1_id

@@ -72,6 +72,10 @@ BEGIN
     -- APD's Death Count
     ------------------------------------------------------------------------------------------
     -- If our apd death count is null, then assume death_cnt's value
+    IF (NEW.atd_fatality_count IS NULL) THEN
+        NEW.atd_fatality_count = NEW.death_cnt;
+	END IF;
+
     IF (NEW.apd_confirmed_death_count IS NULL) THEN
         NEW.apd_confirmed_death_count = NEW.death_cnt;
     -- Otherwise, the value has been entered manually, signal change with confirmed as 'Y'

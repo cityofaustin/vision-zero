@@ -161,7 +161,7 @@ def calc_mode_injury_totals(records):
     Totals number of fatalities and serious injuries per mode type
     :param records: list - List of record dicts
     """
-    fatality_field = "death_cnt"
+    fatality_field = "atd_fatality_count"
     serious_injury_field = "sus_serious_injry_cnt"
 
     for record in records:
