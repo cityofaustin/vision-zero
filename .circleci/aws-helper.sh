@@ -22,26 +22,24 @@ function deploy_aws_lambda {
         exit 0;
     fi;
 
-    echo "It should not reach this point";
+    if [[ "${WORKING_STAGE}" == "" ]]; then
+        echo "No working stage could be determined."
+        exit 1;
+    fi;
 
-#    if [[ "${WORKING_STAGE}" == "" ]]; then
-#        echo "No working stage could be determined."
-#        exit 1;
-#    fi;
-#
-#    if [[ "${AWS_ACCESS_KEY_ID}" == "" ]] || [[ "${AWS_SECRET_ACCESS_KEY}" = "" ]]; then
-#        echo "The AWS keys are not set"
-#        exit 1;
-#    fi;
-#
-#    # Check ATD CR3 API
-#    cd "atd-cr3-api";
-#
-#    python3 -m venv venv;
-#    source venv/bin/activate;
-#    pip install -r requirements.txt
-#
-#    # Run zappa
-#    echo $ZAPPA_SETTINGS > zappa_settings.json;
-#    zappa update $WORKING_STAGE;
+    if [[ "${AWS_ACCESS_KEY_ID}" == "" ]] || [[ "${AWS_SECRET_ACCESS_KEY}" = "" ]]; then
+        echo "The AWS keys are not set"
+        exit 1;
+    fi;
+
+    # Check ATD CR3 API
+    cd "atd-cr3-api";
+
+    python3 -m venv venv;
+    source venv/bin/activate;
+    pip install -r requirements.txt
+
+    # Run zappa
+    echo $ZAPPA_SETTINGS > zappa_settings.json;
+    zappa update $WORKING_STAGE;
 }
