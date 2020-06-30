@@ -48,6 +48,12 @@ function generate_env_vars {
         echo "Detected PR, adjusting environment to Staging...";
         LOCAL_STAGE="staging"
       else
+        # Check if the working stage is incomplete
+        if [[ "${WORKING_STAGE}" == "pr_" ]]; then
+            echo "Cannot deploy if there is no PR number, stopping."
+            exit 0;
+        fi;
+        
         # Copy whatever working stage is, master or production.
         echo "No PR detected, using '${WORKING_STAGE}' as environment..."
         LOCAL_STAGE="${WORKING_STAGE}";
