@@ -22,10 +22,10 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: |
           export BRANCH_NAME=${GITHUB_REF##*/}
-          export PR_NUMBER=$(curl -s -H "Accept: application/vnd.github.groot-preview+json" "https://api.github.com/repos/cityofaustin/atd-vz-data/commits/${GITHUB_SHA}/pulls" | jq -r '.[].number')
+          export PR_NUMBER=$(echo $GITHUB_REF | cut -d "/" -f 3)
           echo "SHA: ${GITHUB_SHA}"
           echo "PR: ${PR_NUMBER}"
-          echo "BRANCH: ${BRANCH_NAME}"
+          echo "ACTION: ${BRANCH_NAME}"
           echo "GR: ${GITHUB_REF}"
           echo "PWD: $(pwd)"
           ./.github/workflows/aws-lambda-helper-clean.py
