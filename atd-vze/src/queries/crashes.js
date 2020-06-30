@@ -12,6 +12,7 @@ export const GET_CRASH = gql`
       approval_date
       approved_by
       at_intrsct_fl
+      atd_fatality_count
       case_id
       city_id
       cr3_stored_flag
@@ -183,6 +184,7 @@ export const UPDATE_CRASH = gql`
         apd_confirmed_fatality
         apd_confirmed_death_count
         at_intrsct_fl
+        atd_fatality_count
         case_id
         city_id
         crash_date
@@ -267,6 +269,7 @@ apd_confirmed_death_count
 approval_date
 approved_by
 at_intrsct_fl
+atd_fatality_count
 city_id
 crash_date
 crash_fatal_fl
