@@ -188,7 +188,7 @@ class CrashChangeLog extends Component {
             </thead>
             <tbody>
               {this.props.data.atd_txdot_change_log.map(record => (
-                <tr key={record.id}>
+                <tr key={`changelog-${record.id}`}>
                   <td>
                     <Badge color="warning">
                       {this.timeConverter(record.update_timestamp)}

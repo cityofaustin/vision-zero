@@ -44,6 +44,7 @@ query_configs = [
                 "veh_unit_desc_desc": "unit_mode",
                 "latitude_primary": "latitude",
                 "longitude_primary": "longitude",
+                "atd_fatality_count": "death_cnt",
             },
         },
         # "dataset_uid": "3aut-fhzp"  # TEST
