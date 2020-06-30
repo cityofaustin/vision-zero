@@ -145,17 +145,40 @@ export const buildHighInjuryLayer = (overlay) => {
   const overlayId = "highInjury";
 
   // https://tiles.arcgis.com/tiles/0L95CJ0VTaxqcmED/arcgis/rest/services/HIN_Vector_Tile/VectorTileServer/resources/styles/root.json?f=pjson
-  const highInjuryLayerConfig = {
+  // const highInjuryLayerConfig = {
+  //   id: overlayId,
+  //   beforeId: "base-layer",
+  //   type: "line",
+  //   source: {
+  //     type: "vector",
+  //     tiles: [
+  //       "https://tiles.arcgis.com/tiles/0L95CJ0VTaxqcmED/arcgis/rest/services/HIN_Vector_Tile/VectorTileServer/tile/{z}/{y}/{x}.pbf",
+  //     ],
+  //   },
+  //   "source-layer": "High-Injury Network",
+  //   layout: {
+  //     "line-join": "round",
+  //     visibility: `${overlay.name === overlayId ? "visible" : "none"}`,
+  //   },
+  //   paint: {
+  //     "line-color": colors.mapHighInjuryNetwork,
+  //     "line-width": 2,
+  //   },
+  // };
+
+  // https://tiles.arcgis.com/tiles/0L95CJ0VTaxqcmED/arcgis/rest/services/High_Injury_Network_Vision_Zero_Viewer/VectorTileServer/resources/styles/root.json?f=pjson
+  const newHighInjuryVZLayerConfig = {
     id: overlayId,
     beforeId: "base-layer",
     type: "line",
     source: {
       type: "vector",
       tiles: [
-        "https://tiles.arcgis.com/tiles/0L95CJ0VTaxqcmED/arcgis/rest/services/HIN_Vector_Tile/VectorTileServer/tile/{z}/{y}/{x}.pbf",
+        "https://tiles.arcgis.com/tiles/0L95CJ0VTaxqcmED/arcgis/rest/services/High_Injury_Network_Vision_Zero_Viewer/VectorTileServer/tile/{z}/{y}/{x}.pbf",
       ],
     },
-    "source-layer": "High-Injury Network",
+    "source-layer": "HIN_for_VZV",
+    filter: ["==", "_symbol", 0],
     layout: {
       "line-join": "round",
       visibility: `${overlay.name === overlayId ? "visible" : "none"}`,
@@ -166,7 +189,7 @@ export const buildHighInjuryLayer = (overlay) => {
     },
   };
 
-  // https://tiles.arcgis.com/tiles/0L95CJ0VTaxqcmED/arcgis/rest/services/HIN_for_VZV/VectorTileServer/resources/styles/root.json?f=pjson
+  // https://tiles.arcgis.com/tiles/0L95CJ0VTaxqcmED/arcgis/rest/services/High_Injury_Network_Vision_Zero_Viewer/VectorTileServer/resources/styles/root.json?f=pjson
   const highInjuryVZLayerConfig = {
     id: overlayId + "VZ",
     beforeId: "base-layer",
@@ -174,10 +197,11 @@ export const buildHighInjuryLayer = (overlay) => {
     source: {
       type: "vector",
       tiles: [
-        "https://tiles.arcgis.com/tiles/0L95CJ0VTaxqcmED/arcgis/rest/services/HIN_for_VZV/VectorTileServer/tile/{z}/{y}/{x}.pbf",
+        "https://tiles.arcgis.com/tiles/0L95CJ0VTaxqcmED/arcgis/rest/services/High_Injury_Network_Vision_Zero_Viewer/VectorTileServer/tile/{z}/{y}/{x}.pbf",
       ],
     },
     "source-layer": "HIN_for_VZV",
+    filter: ["==", "_symbol", 1],
     layout: {
       "line-join": "round",
       visibility: `${overlay.name === overlayId ? "visible" : "none"}`,
@@ -191,7 +215,10 @@ export const buildHighInjuryLayer = (overlay) => {
   // Return a Layer component with config prop passed
   return (
     <>
-      <Layer key={highInjuryLayerConfig.id} {...highInjuryLayerConfig} />
+      <Layer
+        key={newHighInjuryVZLayerConfig.id}
+        {...newHighInjuryVZLayerConfig}
+      />
       <Layer key={highInjuryVZLayerConfig.id} {...highInjuryVZLayerConfig} />
     </>
   );
