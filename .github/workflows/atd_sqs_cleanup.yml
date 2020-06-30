@@ -8,17 +8,25 @@ on:
   pull_request:
     types: [closed]
 
+#
+# The there is only one job called "run-shell-command" which
+# will run a series of commands to export variables and verbosity
+# and it finally runs a python script called "aws-lambda-helper-clean".
+#
 jobs:
   run-shell-command:
     runs-on: ubuntu-latest
 
     steps:
+      # Get the code first
       - name: "Checkout"
         uses: actions/checkout@v2
+      # Then install the AWC CLI tools & boto3
       - name: "Install AWS Cli"
         run: |
           sudo apt-get install python3-setuptools
           pip3 install awscli boto3
+      # Run the shell commands using the AWS environment variables
       - name: "Run Cleanup Script"
         env:
           AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
