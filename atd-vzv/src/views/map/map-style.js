@@ -139,13 +139,12 @@ export const buildAsmpLayers = (config, overlay) =>
     return <Layer key={i} {...asmpLayerConfig} />;
   });
 
-// Build Mapbox GL layer High Injury Network & Roadways
+// Build Mapbox GL layer of High Injury Network & Roadways (focused segments)
+// https://tiles.arcgis.com/tiles/0L95CJ0VTaxqcmED/arcgis/rest/services/High_Injury_Network_Vision_Zero_Viewer/VectorTileServer/resources/styles/root.json?f=pjson
 export const buildHighInjuryLayer = (overlay) => {
   // Set config for each ASMP level layer based on ArcGIS VectorTileServer styles
   const overlayId = "highInjury";
 
-  // High Injury Network
-  // https://tiles.arcgis.com/tiles/0L95CJ0VTaxqcmED/arcgis/rest/services/High_Injury_Network_Vision_Zero_Viewer/VectorTileServer/resources/styles/root.json?f=pjson
   const highInjuryNetworkLayerConfig = {
     id: overlayId + "Network",
     beforeId: "base-layer",
@@ -157,7 +156,7 @@ export const buildHighInjuryLayer = (overlay) => {
       ],
     },
     "source-layer": "HIN_for_VZV",
-    filter: ["==", "_symbol", 0],
+    filter: ["==", "_symbol", 0], // Select line within layer by ID
     layout: {
       "line-join": "round",
       visibility: `${overlay.name === overlayId ? "visible" : "none"}`,
@@ -168,8 +167,6 @@ export const buildHighInjuryLayer = (overlay) => {
     },
   };
 
-  // High Inury Roadways (focused subset of High Injury Network)
-  // https://tiles.arcgis.com/tiles/0L95CJ0VTaxqcmED/arcgis/rest/services/High_Injury_Network_Vision_Zero_Viewer/VectorTileServer/resources/styles/root.json?f=pjson
   const highInjuryRoadwaysLayerConfig = {
     id: overlayId + "Roadways",
     beforeId: "base-layer",
@@ -192,7 +189,6 @@ export const buildHighInjuryLayer = (overlay) => {
     },
   };
 
-  // Return a Layer component with config prop passed
   return (
     <>
       <Layer
