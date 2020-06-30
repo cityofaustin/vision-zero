@@ -5,6 +5,7 @@ import boto3
 
 # First initialize the client
 client = boto3.client('sqs')
+client_lambda = boto3.client('lambda')
 
 # These are two constants taken from CircleCI:
 BRANCH_NAME = os.getenv("BRANCH_NAME", "None")
@@ -66,12 +67,23 @@ def get_function_name_from_url(queue_url) -> str:
 
 def delete_queue(queue_url) -> dict:
     """
-    Returns a dictionary with the deletion response
-    :param str queue_url:
+    Deletes an SQS queue by its URL
+    :param str queue_url: The URL address of the SQS Queue
     :return dict:
     """
     return client.delete_queue(
         QueueUrl=queue_url
+    )
+
+
+def delete_function(function_name) -> dict:
+    """
+    Deletes an AWS Lambda function
+    :param str function_name: The name of the function
+    :return dict:
+    """
+    return client_lambda.delete_function(
+        FunctionName=function_name
     )
 
 
@@ -93,8 +105,10 @@ def main():
         print("{:<10} {:<64} {:<64}".format(str(remove), queue_name, function_name))
 
         if remove:
-            print(f">> Removing: {queue_name}")
-            #print(delete_queue(queue_url))
+            print(f">> Removing SQS: '{queue_name}'")
+            print(delete_queue(queue_url=queue_url))
+            print(f">> Removing Function: '{function_name}'")
+            print(delete_function(function_name=function_name))
 
     print("-----------------------------------------------------------------------------------------------------------")
 
