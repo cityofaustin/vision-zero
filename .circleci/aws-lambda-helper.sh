@@ -53,7 +53,7 @@ function generate_env_vars {
             echo "Cannot deploy if there is no PR number, stopping."
             exit 0;
         fi;
-        
+
         # Copy whatever working stage is, master or production.
         echo "No PR detected, using '${WORKING_STAGE}' as environment..."
         LOCAL_STAGE="${WORKING_STAGE}";
