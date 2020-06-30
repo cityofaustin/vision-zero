@@ -139,36 +139,15 @@ export const buildAsmpLayers = (config, overlay) =>
     return <Layer key={i} {...asmpLayerConfig} />;
   });
 
-// Build Mapbox GL layer High Injury Network
+// Build Mapbox GL layer High Injury Network & Roadways
 export const buildHighInjuryLayer = (overlay) => {
   // Set config for each ASMP level layer based on ArcGIS VectorTileServer styles
   const overlayId = "highInjury";
 
-  // https://tiles.arcgis.com/tiles/0L95CJ0VTaxqcmED/arcgis/rest/services/HIN_Vector_Tile/VectorTileServer/resources/styles/root.json?f=pjson
-  // const highInjuryLayerConfig = {
-  //   id: overlayId,
-  //   beforeId: "base-layer",
-  //   type: "line",
-  //   source: {
-  //     type: "vector",
-  //     tiles: [
-  //       "https://tiles.arcgis.com/tiles/0L95CJ0VTaxqcmED/arcgis/rest/services/HIN_Vector_Tile/VectorTileServer/tile/{z}/{y}/{x}.pbf",
-  //     ],
-  //   },
-  //   "source-layer": "High-Injury Network",
-  //   layout: {
-  //     "line-join": "round",
-  //     visibility: `${overlay.name === overlayId ? "visible" : "none"}`,
-  //   },
-  //   paint: {
-  //     "line-color": colors.mapHighInjuryNetwork,
-  //     "line-width": 2,
-  //   },
-  // };
-
+  // High Injury Network
   // https://tiles.arcgis.com/tiles/0L95CJ0VTaxqcmED/arcgis/rest/services/High_Injury_Network_Vision_Zero_Viewer/VectorTileServer/resources/styles/root.json?f=pjson
-  const newHighInjuryVZLayerConfig = {
-    id: overlayId,
+  const highInjuryNetworkLayerConfig = {
+    id: overlayId + "Network",
     beforeId: "base-layer",
     type: "line",
     source: {
@@ -189,9 +168,10 @@ export const buildHighInjuryLayer = (overlay) => {
     },
   };
 
+  // High Inury Roadways (focused subset of High Injury Network)
   // https://tiles.arcgis.com/tiles/0L95CJ0VTaxqcmED/arcgis/rest/services/High_Injury_Network_Vision_Zero_Viewer/VectorTileServer/resources/styles/root.json?f=pjson
-  const highInjuryVZLayerConfig = {
-    id: overlayId + "VZ",
+  const highInjuryRoadwaysLayerConfig = {
+    id: overlayId + "Roadways",
     beforeId: "base-layer",
     type: "line",
     source: {
@@ -207,8 +187,8 @@ export const buildHighInjuryLayer = (overlay) => {
       visibility: `${overlay.name === overlayId ? "visible" : "none"}`,
     },
     paint: {
-      "line-color": colors.info,
-      "line-width": 2,
+      "line-color": colors.mapHighInjuryRoadways,
+      "line-width": 4,
     },
   };
 
@@ -216,10 +196,13 @@ export const buildHighInjuryLayer = (overlay) => {
   return (
     <>
       <Layer
-        key={newHighInjuryVZLayerConfig.id}
-        {...newHighInjuryVZLayerConfig}
+        key={highInjuryNetworkLayerConfig.id}
+        {...highInjuryNetworkLayerConfig}
       />
-      <Layer key={highInjuryVZLayerConfig.id} {...highInjuryVZLayerConfig} />
+      <Layer
+        key={highInjuryRoadwaysLayerConfig.id}
+        {...highInjuryRoadwaysLayerConfig}
+      />
     </>
   );
 };
