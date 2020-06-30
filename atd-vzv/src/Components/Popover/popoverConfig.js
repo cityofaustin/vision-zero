@@ -121,7 +121,9 @@ export const popoverConfig = {
             </a>
             .
           </div>
-          <div className="font-weight-bold">High-Injury Network</div>
+          <div className="font-weight-bold">
+            High-Injury Network/High-Injury Roadways
+          </div>
           <div className="mb-2">
             This is an online version of the Combined High-Injury Network Map
             included in the adopted Austin Strategic Mobility Plan policy
@@ -144,9 +146,15 @@ export const popoverConfig = {
             people involved in crashes, which has highlighted 13 segments on the
             HIN that have a particularly high concentration of high crash
             locations where Vision Zero is focusing short-term engineering,
-            education and enforcement initiatives. These 13 “High-Injury
-            Roadways” *link to HIR page when it’s developed* are represented in
-            *color*.
+            education, and enforcement initiatives. These 13{" "}
+            <a
+              href="http://austintexas.gov/page/high-injury-roadway-segments"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              “High-Injury Roadways”
+            </a>{" "}
+            are represented by darker, wider lines on the map.
           </div>
         </>
       ),
