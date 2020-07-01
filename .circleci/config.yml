@@ -13,16 +13,19 @@ jobs:
       - setup_remote_docker:
           version: 18.09.3
       - run:
+          # Builds master and production branches only
           name: "Building Docker"
           command: |
             source .circleci/docker-helper.sh
             build_containers
       - run:
+          # Builds master and production branches only
           name: "Build VZE API"
           command: |
             source .circleci/aws-helper.sh
             deploy_aws_lambda
       - run:
+          # Builds master, production and PR branches
           name: "Build VZ SQS Functions"
           command: |
             source .circleci/aws-lambda-helper.sh
@@ -37,3 +40,4 @@ workflows:
               only:
                 - master
                 - production
+                - /^(?!pull\/).*$/

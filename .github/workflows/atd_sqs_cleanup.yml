@@ -1,0 +1,43 @@
+#
+# This GitHub action removes PR resources created by CircleCI
+# and it is only triggered whenever a PR is closed or merged.
+#
+name: "Remove Unused SQS PRs"
+
+on:
+  pull_request:
+    types: [closed]
+
+#
+# The there is only one job called "run-shell-command" which
+# will run a series of commands to export variables and verbosity
+# and it finally runs a python script called "aws-lambda-helper-clean".
+#
+jobs:
+  run-shell-command:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Get the code first
+      - name: "Checkout"
+        uses: actions/checkout@v2
+      # Then install the AWC CLI tools & boto3
+      - name: "Install AWS Cli"
+        run: |
+          sudo apt-get install python3-setuptools
+          pip3 install awscli boto3
+      # Run the shell commands using the AWS environment variables
+      - name: "Run Cleanup Script"
+        env:
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          export BRANCH_NAME=${GITHUB_REF##*/}
+          export PR_NUMBER=$(echo $GITHUB_REF | cut -d "/" -f 3)
+          echo "SHA: ${GITHUB_SHA}"
+          echo "PR: ${PR_NUMBER}"
+          echo "ACTION: ${BRANCH_NAME}"
+          echo "GR: ${GITHUB_REF}"
+          echo "PWD: $(pwd)"
+          ./.github/workflows/aws-lambda-helper-clean.py
