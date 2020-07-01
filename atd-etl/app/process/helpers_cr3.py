@@ -79,12 +79,11 @@ def get_crash_id_list(downloads_per_run="25"):
           atd_txdot_crashes(
             limit: %s,
             where: {
-            cr3_stored_flag: {_eq: "N"}
-            _and: {
+                cr3_stored_flag: {_eq: "N"}
                 _or: [
                     { austin_full_purpose: { _eq: "Y"} }
                     { city_id: { _eq: 22 }, position: { _is_null: true} }
-                ] 
+                ]
             }
           ) {
             crash_id
