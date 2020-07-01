@@ -452,8 +452,6 @@ def associate_location():
             HASURA_EVENTS_SQS_URL[0:48]  # This is the length of the url with the account number
             + "/atd-vz-data-events-"     # We're going to add a prefix pattern for our ATD VisionZero queues
             + incoming_event_name        # And append the name of the incoming event
-            + "_"                        # And append the name of the environment (staging or production)
-            + API_ENVIRONMENT.lower()    # which should be part of the name of the queue.
         )
 
         # Send message to SQS queue
