@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # CIRCLE_PR_NUMBER only works on forked PRs
-export ATD_PR_NUMBER="${CIRCLE_PULL_REQUEST##*/}";
+export ATD_PR_NUMBER=$(curl -s -H "Accept: application/vnd.github.groot-preview+json" "https://api.github.com/repos/cityofaustin/atd-vz-data/commits/${CIRCLE_SHA1}/pulls" | jq -r '.[].number')
 
 case "${CIRCLE_BRANCH}" in
   "production")
