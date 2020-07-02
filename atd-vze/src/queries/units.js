@@ -29,6 +29,8 @@ export const GET_UNITS = gql`
       body_style {
         veh_body_styl_desc
       }
+      death_cnt
+      sus_serious_injry_cnt
     }
   }
 `;
@@ -52,6 +54,8 @@ export const UPDATE_UNIT = gql`
         unit_id
         unit_nbr
         movement_id
+        death_cnt
+        sus_serious_injry_cnt
         travel_direction
       }
     }

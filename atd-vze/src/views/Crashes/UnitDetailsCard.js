@@ -149,7 +149,8 @@ const UnitDetailsCard = ({ isExpanded, toggleAccordion, ...props }) => {
         data[field] && data[field][unitDataMap[0].fields[field].lookup_desc];
     }
 
-    return fieldValue ? fieldValue : "";
+    // Display null values as blanks, but allow 0
+    return fieldValue === null || fieldValue === "" ? "" : fieldValue;
   };
 
   return loading ? (

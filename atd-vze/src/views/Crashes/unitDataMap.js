@@ -48,6 +48,16 @@ export const unitDataMap = [
         lookupOptions: "atd_txdot__movt_lkp",
         lookupPrefix: "movement",
       },
+      death_cnt: {
+        label: "Fatalities",
+        editable: true,
+        format: "text",
+      },
+      sus_serious_injry_cnt: {
+        label: "Suspected Serious Injuries",
+        editable: true,
+        format: "text",
+      },
       contributing_factor_1: {
         label: "Primary Contributing Factor",
         editable: false,
