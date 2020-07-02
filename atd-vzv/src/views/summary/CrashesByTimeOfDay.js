@@ -84,6 +84,12 @@ const CrashesByTimeOfDay = () => {
 
     let dataArray = [];
 
+    // This array holds weekday totals for each hour window within a day
+    // Heatmap expects array of weekday total objs to be reversed in sequence
+    const hourWindowTotalsByDay = dayOfWeekArray
+      .map((day) => ({ key: day, data: 0 }))
+      .reverse();
+
     const buildDataArray = () => {
       dataArray = [];
       hourBlockArray.forEach((hour) => {
