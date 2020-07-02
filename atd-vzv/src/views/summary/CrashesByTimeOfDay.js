@@ -91,28 +91,42 @@ const CrashesByTimeOfDay = () => {
 
     const calculateHourBlockTotals = (data) => {
       const dataArray = buildDataArray();
-      debugger;
+
       data.data.forEach((record) => {
-        const date = new Date(record.crash_date);
-        const dayOfWeek = date.getDay();
-        const time = record.crash_time;
-        const timeArray = time.split(":");
-        const hour = parseInt(timeArray[0]);
-        switch (crashType.name) {
-          case "fatalities":
-            dataArray[hour].data[dayOfWeek].data += parseInt(record.death_cnt);
-            break;
-          case "seriousInjuries":
-            dataArray[hour].data[dayOfWeek].data += parseInt(
-              record.sus_serious_injry_cnt
-            );
-            break;
-          default:
-            dataArray[hour].data[dayOfWeek].data +=
-              parseInt(record.death_cnt) +
-              parseInt(record.sus_serious_injry_cnt);
-            break;
-        }
+        // const date = new Date(record.crash_date);
+        // const dayOfWeek = date.getDay();
+        // const time = record.crash_time;
+        // const timeArray = time.split(":");
+        // const hour = parseInt(timeArray[0]);
+        // For each record, get hour hhA and day of week
+        // Then place in dataArray
+        const recordDateTime = moment(record.crash_date);
+        const hourString = recordDateTime.format("hhA");
+        const dayOfWeek = recordDateTime.format("ddd");
+
+        const hourToIncrease = dataArray.find((hour) => hour.key === hourString)
+          .data;
+        const dayToIncrease = hourToIncrease.find(
+          (day) => day.key === dayOfWeek
+        ).data;
+        debugger;
+        // switch (crashType.name) {
+        //   case "fatalities":
+
+        //     debugger;
+        //     // dataArray[hour].data[dayOfWeek].data += parseInt(record.death_cnt);
+        //     break;
+        //   case "seriousInjuries":
+        //     // dataArray[hour].data[dayOfWeek].data += parseInt(
+        //     //   record.sus_serious_injry_cnt
+        //     // );
+        //     break;
+        //   default:
+        //     // dataArray[hour].data[dayOfWeek].data +=
+        //     //   parseInt(record.death_cnt) +
+        //     //   parseInt(record.sus_serious_injry_cnt);
+        //     break;
+        // }
       });
       // Set any 0 values to null so that the reaviz library
       // recognizes them as "blank cells" and fills them accordingly
