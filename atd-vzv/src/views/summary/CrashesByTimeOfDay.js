@@ -89,33 +89,34 @@ const CrashesByTimeOfDay = () => {
       }));
     };
 
-    const calculateHourBlockTotals = (data) => {
+    const calculateHourBlockTotals = (records) => {
       const dataArray = buildDataArray();
 
-      data.data.forEach((record) => {
+      let fatalityCount = 0;
+      records.forEach((record) => {
         const recordDateTime = moment(record.crash_date);
-        const hourString = recordDateTime.format("hhA");
-        const dayOfWeek = recordDateTime.format("ddd");
+        const recordHour = recordDateTime.format("hhA");
+        const recordDay = recordDateTime.format("ddd");
 
-        const hourToIncrease = dataArray.find((hour) => hour.key === hourString)
-          .data;
-        let dayToIncrease = hourToIncrease.find((day) => day.key === dayOfWeek);
+        const hourData = dataArray.find((hour) => hour.key === recordHour).data;
+        let dayToIncrement = hourData.find((day) => day.key === recordDay);
 
         switch (crashType.name) {
           case "fatalities":
-            dayToIncrease.data += parseInt(record.death_cnt);
+            dayToIncrement.data += parseInt(record.death_cnt);
+            fatalityCount += parseInt(record.death_cnt);
             break;
           case "seriousInjuries":
-            dayToIncrease.data += parseInt(record.sus_serious_injry_cnt);
+            dayToIncrement.data += parseInt(record.sus_serious_injry_cnt);
             break;
           default:
-            dayToIncrease.data +=
+            dayToIncrement.data +=
               parseInt(record.death_cnt) +
               parseInt(record.sus_serious_injry_cnt);
             break;
         }
       });
-
+      console.log(fatalityCount);
       return dataArray;
     };
 
@@ -132,7 +133,7 @@ const CrashesByTimeOfDay = () => {
     // then fetch records for selected year
     if (crashType.queryStringCrash)
       axios.get(getFatalitiesByYearsAgoUrl()).then((res) => {
-        setHeatmapData(calculateHourBlockTotals(res));
+        setHeatmapData(calculateHourBlockTotals(res.data));
       });
   }, [activeTab, crashType]);
 
