@@ -36,6 +36,23 @@ const CrashesByTimeOfDay = () => {
   };
 
   useEffect(() => {
+    // [
+    //   {
+    //     key: "12AM",
+    //     data: [
+    //       { key: "Mon", data: 3 },
+    //       { key: "Sun", data: 1 },
+    //     ],
+    //   },
+    //   {
+    //     key: "01AM",
+    //     data: [
+    //       { key: "Mon", data: 3 },
+    //       { key: "Sun", data: 1 },
+    //     ],
+    //   },
+    // ]
+
     const dayOfWeekArray = moment.weekdaysShort();
 
     const hourBlockArray = [
@@ -81,7 +98,9 @@ const CrashesByTimeOfDay = () => {
           };
           hourObject.data.push(dayObject);
         });
+
         hourObject.data.reverse();
+
         dataArray.push(hourObject);
       });
     };
@@ -119,6 +138,7 @@ const CrashesByTimeOfDay = () => {
           }
         });
       });
+      console.log(dataArray);
       return dataArray;
     };
 
@@ -202,7 +222,23 @@ const CrashesByTimeOfDay = () => {
         <Col>
           <Heatmap
             height={267}
-            data={heatmapData}
+            // data={heatmapData}
+            data={[
+              {
+                key: "12AM",
+                data: [
+                  { key: "Mon", data: 3 },
+                  { key: "Sun", data: 1 },
+                ],
+              },
+              {
+                key: "01AM",
+                data: [
+                  { key: "Mon", data: 3 },
+                  { key: "Sun", data: 1 },
+                ],
+              },
+            ]}
             series={
               <HeatmapSeries
                 colorScheme={[
