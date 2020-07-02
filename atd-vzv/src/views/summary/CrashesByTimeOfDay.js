@@ -36,23 +36,6 @@ const CrashesByTimeOfDay = () => {
   };
 
   useEffect(() => {
-    // [
-    //   {
-    //     key: "12AM",
-    //     data: [
-    //       { key: "Mon", data: 3 },
-    //       { key: "Sun", data: 1 },
-    //     ],
-    //   },
-    //   {
-    //     key: "01AM",
-    //     data: [
-    //       { key: "Mon", data: 3 },
-    //       { key: "Sun", data: 1 },
-    //     ],
-    //   },
-    // ]
-
     const dayOfWeekArray = moment.weekdaysShort();
 
     const hourBlockArray = [
@@ -82,37 +65,33 @@ const CrashesByTimeOfDay = () => {
       "11PM",
     ];
 
-    let dataArray = [];
-
-    // This array holds weekday totals for each hour window within a day
-    // Heatmap expects array of weekday total objs to be reversed in sequence
-    const hourWindowTotalsByDay = dayOfWeekArray
-      .map((day) => ({ key: day, data: 0 }))
-      .reverse();
-
     const buildDataArray = () => {
-      dataArray = [];
-      hourBlockArray.forEach((hour) => {
-        let hourObject = {
-          key: hour,
-          data: [],
-        };
-        dayOfWeekArray.forEach((day) => {
-          let dayObject = {
-            key: day,
-            data: 0,
-          };
-          hourObject.data.push(dayObject);
-        });
+      // This array holds weekday totals for each hour window within a day
+      // Heatmap expects array of weekday total objs to be reversed in order
+      const hourWindowTotalsByDay = dayOfWeekArray
+        .map((day) => ({ key: day, data: 0 }))
+        .reverse();
 
-        hourObject.data.reverse();
-
-        dataArray.push(hourObject);
-      });
+      // Return array of objs for each hour window that holds totals of each day of the week
+      // [
+      //   {
+      //     key: "12AM",
+      //     data: [
+      //       { key: "Mon", data: 3 },
+      //       { key: "Sun", data: 1 },
+      //     ],
+      //   },
+      //   ...
+      // ]
+      return hourBlockArray.map((hour) => ({
+        key: hour,
+        data: hourWindowTotalsByDay,
+      }));
     };
 
     const calculateHourBlockTotals = (data) => {
-      buildDataArray();
+      const dataArray = buildDataArray();
+      debugger;
       data.data.forEach((record) => {
         const date = new Date(record.crash_date);
         const dayOfWeek = date.getDay();
@@ -228,23 +207,7 @@ const CrashesByTimeOfDay = () => {
         <Col>
           <Heatmap
             height={267}
-            // data={heatmapData}
-            data={[
-              {
-                key: "12AM",
-                data: [
-                  { key: "Mon", data: 3 },
-                  { key: "Sun", data: 1 },
-                ],
-              },
-              {
-                key: "01AM",
-                data: [
-                  { key: "Mon", data: 3 },
-                  { key: "Sun", data: 1 },
-                ],
-              },
-            ]}
+            data={heatmapData}
             series={
               <HeatmapSeries
                 colorScheme={[
