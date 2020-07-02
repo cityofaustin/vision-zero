@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import moment from "moment";
+import clonedeep from "lodash.clonedeep";
 
 import CrashTypeSelector from "../nav/CrashTypeSelector";
 import { Row, Col, Container, Button } from "reactstrap";
@@ -69,7 +70,7 @@ const CrashesByTimeOfDay = () => {
       // This array holds weekday totals for each hour window within a day
       // Heatmap expects array of weekday total objs to be reversed in order
       const hourWindowTotalsByDay = dayOfWeekArray
-        .map((day) => ({ key: day, data: 0 }))
+        .map((day) => ({ key: day, data: null }))
         .reverse();
 
       // Return array of objs for each hour window that holds totals of each day of the week
@@ -81,11 +82,10 @@ const CrashesByTimeOfDay = () => {
       //       { key: "Sun", data: 1 },
       //     ],
       //   },
-      //   ...
       // ]
       return hourBlockArray.map((hour) => ({
         key: hour,
-        data: hourWindowTotalsByDay,
+        data: clonedeep(hourWindowTotalsByDay),
       }));
     };
 
@@ -93,51 +93,29 @@ const CrashesByTimeOfDay = () => {
       const dataArray = buildDataArray();
 
       data.data.forEach((record) => {
-        // const date = new Date(record.crash_date);
-        // const dayOfWeek = date.getDay();
-        // const time = record.crash_time;
-        // const timeArray = time.split(":");
-        // const hour = parseInt(timeArray[0]);
-        // For each record, get hour hhA and day of week
-        // Then place in dataArray
         const recordDateTime = moment(record.crash_date);
         const hourString = recordDateTime.format("hhA");
         const dayOfWeek = recordDateTime.format("ddd");
 
         const hourToIncrease = dataArray.find((hour) => hour.key === hourString)
           .data;
-        const dayToIncrease = hourToIncrease.find(
-          (day) => day.key === dayOfWeek
-        ).data;
-        debugger;
-        // switch (crashType.name) {
-        //   case "fatalities":
+        let dayToIncrease = hourToIncrease.find((day) => day.key === dayOfWeek);
 
-        //     debugger;
-        //     // dataArray[hour].data[dayOfWeek].data += parseInt(record.death_cnt);
-        //     break;
-        //   case "seriousInjuries":
-        //     // dataArray[hour].data[dayOfWeek].data += parseInt(
-        //     //   record.sus_serious_injry_cnt
-        //     // );
-        //     break;
-        //   default:
-        //     // dataArray[hour].data[dayOfWeek].data +=
-        //     //   parseInt(record.death_cnt) +
-        //     //   parseInt(record.sus_serious_injry_cnt);
-        //     break;
-        // }
+        switch (crashType.name) {
+          case "fatalities":
+            dayToIncrease.data += parseInt(record.death_cnt);
+            break;
+          case "seriousInjuries":
+            dayToIncrease.data += parseInt(record.sus_serious_injry_cnt);
+            break;
+          default:
+            dayToIncrease.data +=
+              parseInt(record.death_cnt) +
+              parseInt(record.sus_serious_injry_cnt);
+            break;
+        }
       });
-      // Set any 0 values to null so that the reaviz library
-      // recognizes them as "blank cells" and fills them accordingly
-      dataArray.forEach((hour) => {
-        hour.data.forEach((day) => {
-          if (day.data === 0) {
-            day.data = null;
-          }
-        });
-      });
-      console.log(dataArray);
+
       return dataArray;
     };
 
