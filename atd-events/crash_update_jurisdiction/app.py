@@ -6,7 +6,6 @@ import json
 import requests
 import time
 import os
-from string import Template
 
 HASURA_ADMIN_SECRET = os.getenv("HASURA_ADMIN_SECRET", "")
 HASURA_ENDPOINT = os.getenv("HASURA_ENDPOINT", "")
@@ -29,8 +28,8 @@ def hasura_request(record):
         exit(0)
 
     try:
-        crash_id = data["event"]["data"]["old"]["crash_id"]
-        old_jurisdiction_flag = data["event"]["data"]["old"]["austin_full_purpose"]
+        crash_id = data["event"]["data"]["new"]["crash_id"]
+        old_jurisdiction_flag = data["event"]["data"]["new"]["austin_full_purpose"]
     except:
         print(
             json.dumps(

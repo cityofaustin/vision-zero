@@ -201,14 +201,37 @@ const Map = () => {
           null
       );
 
+    let selectedFeatureLayer =
+      (!!selectedFeature &&
+        selectedFeature.layer &&
+        selectedFeature.layer.id) ||
+      null;
+
     // Supplement feature properties with lat/long to set popup coords if not in feature metadata
-    if (!!selectedFeature && selectedFeature.layer.id === "cityCouncil") {
+    if (!!selectedFeature && selectedFeatureLayer === "cityCouncil") {
       selectedFeature = {
         ...selectedFeature,
         properties: {
           ...selectedFeature.properties,
           latitude: event.lngLat[1],
           longitude: event.lngLat[0],
+        },
+      };
+    }
+
+    // Supplement crash feature properties with pixel coords to keep popup in viewport
+    if (
+      (!!selectedFeature && selectedFeatureLayer === "fatalities") ||
+      selectedFeatureLayer === "seriousInjuries"
+    ) {
+      selectedFeature = {
+        ...selectedFeature,
+        properties: {
+          ...selectedFeature.properties,
+          pixelCoordinates: mapRef.current.project([
+            parseFloat(selectedFeature.properties.longitude),
+            parseFloat(selectedFeature.properties.latitude),
+          ]),
         },
       };
     }

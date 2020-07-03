@@ -4,15 +4,24 @@
 case "${CIRCLE_BRANCH}" in
   "production")
     export WORKING_STAGE="production";
-    ;;
+  ;;
+
+  "master")
+    export WORKING_STAGE="staging";
+  ;;
 
   *)
-    export WORKING_STAGE="staging";
-    ;;
+    export WORKING_STAGE="pr";
+  ;;
 esac
 
 # Deploys API to AWS
 function deploy_aws_lambda {
+    if [[ "${WORKING_STAGE}" == "pr" ]]; then
+        echo "PRs are not currently being deployed to the API";
+        exit 0;
+    fi;
+
     if [[ "${WORKING_STAGE}" == "" ]]; then
         echo "No working stage could be determined."
         exit 1;

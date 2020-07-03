@@ -86,16 +86,34 @@ $ pip install requests pandas
 $ pip freeze > requirements.txt
 ```
 
-### CircleCI / Deployment Pipeline
+### Development Pipeline
 
-The CircleCI script will check the branch name and
-determine if it is a master or production deployment.
-It will not deploy otherwise.
+#### New PRs
+First, it is recommended that you create a PR. Whenever a PR is created
+CircleCI will begin creating the python bundles for Lambda and SQS and it
+will deploy them automatically.
 
-It requires certain environment variables to succeed,
-including the existing zappa configuration file and AWS
-IAM role name. These are currently present in CircleCI
-but they are not accessible. 
+Secondly, it is recommended that you log in to AWS with your credentials
+and visit the SQS page. In there you will see the list of active queues
+for example `atd-vz-data-events-crash_update_location_pr_845`. If you
+do not see a queue with your PR number, that means it has not been
+deployed by CircleCI yet, if so give it a few minutes or check in
+CircleCI for errors.
+
+Third, once you find your PR in the SQS list, copy its name and use it
+within the staging environment in Hasura. To recall, Hasura events submit
+the data to a lambda endpoint along with an API key and the name of the
+SQS queue, that is where you need to make the change to your new PR queue.
+In this example, you would type in here: `crash_update_location_pr_845`
+(ignore the prefix `atd-vz-data-events-` as it is not needed)
+
+#### Closing PRs
+Once the PR is merged to master, we rely on GitHub Actions to destroy all
+the resources created by CircleCI for your PR. It will only target your PR
+any other PRs that are not closed will not be removed until that happens.
+
+**It is very important to change the name of the queue in Hasura back to
+master, otherwise it will fail to execute the event**
 
 #### Manual Deployment
 While it is possible to deploy manually, there is no

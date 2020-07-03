@@ -139,23 +139,24 @@ export const buildAsmpLayers = (config, overlay) =>
     return <Layer key={i} {...asmpLayerConfig} />;
   });
 
-// Build Mapbox GL layer High Injury Network
+// Build Mapbox GL layer of High Injury Network & Roadways (focused segments)
+// https://tiles.arcgis.com/tiles/0L95CJ0VTaxqcmED/arcgis/rest/services/High_Injury_Network_Vision_Zero_Viewer/VectorTileServer/resources/styles/root.json?f=pjson
 export const buildHighInjuryLayer = (overlay) => {
   // Set config for each ASMP level layer based on ArcGIS VectorTileServer styles
   const overlayId = "highInjury";
 
-  // https://tiles.arcgis.com/tiles/0L95CJ0VTaxqcmED/arcgis/rest/services/HIN_Vector_Tile/VectorTileServer/resources/styles/root.json?f=pjson
-  const highInjuryLayerConfig = {
-    id: overlayId,
+  const highInjuryNetworkLayerConfig = {
+    id: overlayId + "Network",
     beforeId: "base-layer",
     type: "line",
     source: {
       type: "vector",
       tiles: [
-        "https://tiles.arcgis.com/tiles/0L95CJ0VTaxqcmED/arcgis/rest/services/HIN_Vector_Tile/VectorTileServer/tile/{z}/{y}/{x}.pbf",
+        "https://tiles.arcgis.com/tiles/0L95CJ0VTaxqcmED/arcgis/rest/services/High_Injury_Network_Vision_Zero_Viewer/VectorTileServer/tile/{z}/{y}/{x}.pbf",
       ],
     },
-    "source-layer": "High-Injury Network",
+    "source-layer": "HIN_for_VZV",
+    filter: ["==", "_symbol", 0], // Select line within layer by ID
     layout: {
       "line-join": "round",
       visibility: `${overlay.name === overlayId ? "visible" : "none"}`,
@@ -166,8 +167,40 @@ export const buildHighInjuryLayer = (overlay) => {
     },
   };
 
-  // Return a Layer component with config prop passed
-  return <Layer key={"highInjury"} {...highInjuryLayerConfig} />;
+  const highInjuryRoadwaysLayerConfig = {
+    id: overlayId + "Roadways",
+    beforeId: "base-layer",
+    type: "line",
+    source: {
+      type: "vector",
+      tiles: [
+        "https://tiles.arcgis.com/tiles/0L95CJ0VTaxqcmED/arcgis/rest/services/High_Injury_Network_Vision_Zero_Viewer/VectorTileServer/tile/{z}/{y}/{x}.pbf",
+      ],
+    },
+    "source-layer": "HIN_for_VZV",
+    filter: ["==", "_symbol", 1],
+    layout: {
+      "line-join": "round",
+      visibility: `${overlay.name === overlayId ? "visible" : "none"}`,
+    },
+    paint: {
+      "line-color": colors.mapHighInjuryRoadways,
+      "line-width": 4,
+    },
+  };
+
+  return (
+    <>
+      <Layer
+        key={highInjuryNetworkLayerConfig.id}
+        {...highInjuryNetworkLayerConfig}
+      />
+      <Layer
+        key={highInjuryRoadwaysLayerConfig.id}
+        {...highInjuryRoadwaysLayerConfig}
+      />
+    </>
+  );
 };
 
 // Style geojson returned from ArcGIS that populates the Source and Layer in Map component

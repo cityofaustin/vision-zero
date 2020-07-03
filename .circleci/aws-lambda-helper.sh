@@ -1,13 +1,20 @@
 #!/usr/bin/env bash
 
+# CIRCLE_PR_NUMBER only works on forked PRs
+export ATD_PR_NUMBER=$(curl -s -H "Accept: application/vnd.github.groot-preview+json" "https://api.github.com/repos/cityofaustin/atd-vz-data/commits/${CIRCLE_SHA1}/pulls" | jq -r '.[].number')
+
 case "${CIRCLE_BRANCH}" in
   "production")
     export WORKING_STAGE="production";
-    ;;
-
-  *)
+  ;;
+  "master")
     export WORKING_STAGE="staging";
-    ;;
+  ;;
+  *)
+    echo "PR Detected, resetting working stage";
+    export WORKING_STAGE="pr_${ATD_PR_NUMBER}";
+    echo "New working stage: ${WORKING_STAGE}...";
+  ;;
 esac
 
 #
@@ -36,7 +43,23 @@ function bundle_function {
 #
 function generate_env_vars {
       echo $ZAPPA_SETTINGS > zappa_settings.json;
-      STAGE_ENV_VARS=$(cat zappa_settings.json | jq -r ".${WORKING_STAGE}.aws_environment_variables");
+      echo "Generating environment variables for environment '${WORKING_STAGE}'...";
+      if [[ "${WORKING_STAGE}" != "pr_" ]] && [[ "${WORKING_STAGE}" == pr_* ]]; then
+        echo "Detected PR, adjusting environment to Staging...";
+        LOCAL_STAGE="staging"
+      else
+        # Check if the working stage is incomplete
+        if [[ "${WORKING_STAGE}" == "pr_" ]]; then
+            echo "Cannot deploy if there is no PR number, stopping."
+            exit 0;
+        fi;
+
+        # Copy whatever working stage is, master or production.
+        echo "No PR detected, using '${WORKING_STAGE}' as environment..."
+        LOCAL_STAGE="${WORKING_STAGE}";
+      fi;
+      echo "Using stage: '${LOCAL_STAGE}' (Current working stage: '${WORKING_STAGE}')...";
+      STAGE_ENV_VARS=$(cat zappa_settings.json | jq -r ".${LOCAL_STAGE}.aws_environment_variables");
       echo -e "{\"Description\": \"ATD VisionZero Events Handler\", \"Environment\": { \"Variables\": ${STAGE_ENV_VARS}}}" | jq -rc > handler_config.json;
 }
 
@@ -124,6 +147,11 @@ function deploy_sqs {
     # Create event-source mapping
     echo "Creating event-source mapping between function ${QUEUE_NAME} and queue ARN: ${QUEUE_ARN}";
     deploy_event_source_mapping $QUEUE_NAME $QUEUE_ARN;
+}
+
+function clean_up {
+    echo "Cleaning up";
+    python aws-lambda-sqs-clean.py;
 }
 
 #

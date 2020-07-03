@@ -16,6 +16,11 @@ BEGIN
         VALUES (old.crash_id, old.crash_id, 'crashes', row_to_json(old), NEW.updated_by);
     END IF;
 
+    -- COPIES THE CITY_ID INTO ORIGINAL_CITY_ID FOR BACKUP
+    IF (TG_OP = 'INSERT') THEN
+            NEW.original_city_id = NEW.city_id;
+    END IF;
+
     ------------------------------------------------------------------------------------------
     -- LATITUDE / LONGITUDE OPERATIONS
     ------------------------------------------------------------------------------------------
@@ -67,6 +72,10 @@ BEGIN
     -- APD's Death Count
     ------------------------------------------------------------------------------------------
     -- If our apd death count is null, then assume death_cnt's value
+    IF (NEW.atd_fatality_count IS NULL) THEN
+        NEW.atd_fatality_count = NEW.death_cnt;
+	END IF;
+
     IF (NEW.apd_confirmed_death_count IS NULL) THEN
         NEW.apd_confirmed_death_count = NEW.death_cnt;
     -- Otherwise, the value has been entered manually, signal change with confirmed as 'Y'

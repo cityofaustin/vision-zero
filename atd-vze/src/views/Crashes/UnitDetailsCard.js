@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useQuery } from "@apollo/react-hooks";
+import { useAuth0, isReadOnly } from "../../auth/authContext";
 
 import {
   Card,
@@ -73,6 +74,10 @@ const EditFieldForm = ({
 };
 
 const UnitDetailsCard = ({ isExpanded, toggleAccordion, ...props }) => {
+  // Disable edit features if only role is "readonly"
+  const { getRoles } = useAuth0();
+  const roles = getRoles();
+
   const crashId = props.match.params.id;
 
   const [editField, setEditField] = useState("");
@@ -214,6 +219,7 @@ const UnitDetailsCard = ({ isExpanded, toggleAccordion, ...props }) => {
                                   </span>
 
                                   {unitDataMap[0].fields[field].editable &&
+                                    !isReadOnly(roles) &&
                                     !isEditing && (
                                       <Button
                                         block

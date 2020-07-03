@@ -14,7 +14,7 @@ from string import Template
 crashes_query_template = Template(
     """
     query getCrashesSocrata {
-        atd_txdot_crashes (limit: $limit, offset: $offset, order_by: {crash_id: asc}, where: {city_id: {_eq: 22}}) {
+        atd_txdot_crashes (limit: $limit, offset: $offset, order_by: {crash_id: asc}, where: {_or: [{austin_full_purpose: {_eq: "Y"}}, {_and: [{city_id: {_eq: 22}}, {position: {_is_null: true}}]}]}) {
             apd_confirmed_fatality
             apd_confirmed_death_count
             crash_id
@@ -45,7 +45,7 @@ crashes_query_template = Template(
             non_injry_cnt
             unkn_injry_cnt
             tot_injry_cnt
-            death_cnt
+            atd_fatality_count
             atd_mode_category_metadata
             units {
                 contrib_factr_p1_id
@@ -61,7 +61,7 @@ crashes_query_template = Template(
 people_query_template = Template(
     """
     query getPeopleSocrata {
-        atd_txdot_person(limit: $limit, offset: $offset, order_by: {person_id: asc}, where: {_or: [{prsn_injry_sev_id: {_eq: 1}}, {prsn_injry_sev_id: {_eq: 4}}], _and: {crash: {city_id: {_eq: 22}}}}) {
+        atd_txdot_person(limit: $limit, offset: $offset, order_by: {person_id: asc}, where: {_or: [{prsn_injry_sev_id: {_eq: 1}}, {prsn_injry_sev_id: {_eq: 4}}], _and: {_or: [{crash: {austin_full_purpose: {_eq: "Y"}}}, {_and: [{crash: {city_id: {_eq: 22}}}, {crash: {position: {_is_null: true}}} ]}]}}) {
             person_id
             prsn_injry_sev_id
             prsn_age
@@ -70,6 +70,8 @@ people_query_template = Template(
             unit_nbr
             crash {
                 crash_date
+                crash_time
+                crash_id
                 atd_mode_category_metadata
                 units {
                     unit_nbr
@@ -77,7 +79,7 @@ people_query_template = Template(
                 }
             }
         }
-        atd_txdot_primaryperson(limit: $limit, offset: $offset, order_by: {primaryperson_id: asc}, where: {_or: [{prsn_injry_sev_id: {_eq: 1}}, {prsn_injry_sev_id: {_eq: 4}}], _and: {crash: {city_id: {_eq: 22}}}}) {
+        atd_txdot_primaryperson(limit: $limit, offset: $offset, order_by: {primaryperson_id: asc}, where: {_or: [{prsn_injry_sev_id: {_eq: 1}}, {prsn_injry_sev_id: {_eq: 4}}], _and: {_or: [{crash: {austin_full_purpose: {_eq: "Y"}}}, {_and: [{crash: {city_id: {_eq: 22}}}, {crash: {position: {_is_null: true}}} ]}]}}) {
             primaryperson_id
             prsn_injry_sev_id
             prsn_age
@@ -86,6 +88,8 @@ people_query_template = Template(
             unit_nbr
             crash {
                 crash_date
+                crash_time
+                crash_id
                 atd_mode_category_metadata
                 units {
                     unit_nbr

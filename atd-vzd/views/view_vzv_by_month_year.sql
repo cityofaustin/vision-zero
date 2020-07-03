@@ -7,7 +7,7 @@ CREATE OR REPLACE VIEW view_vzv_by_month_year AS
         SUM(atc.sus_serious_injry_cnt) AS sus_serious_injry_cnt
     FROM atd_txdot_crashes AS atc
     WHERE 1=1
-      AND city_id = 22
+      AND (austin_full_purpose = 'Y' OR (atc.city_id = 22 and atc.position IS NULL))
       AND (atc.death_cnt > 0 OR atc.sus_serious_injry_cnt > 0)
       AND ((
                 atc.crash_date >= CONCAT(
