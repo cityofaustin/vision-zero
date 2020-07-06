@@ -192,44 +192,42 @@ const SideMapControlDateRange = ({ type }) => {
     height: 34px;
     border-radius: 4px;
     padding-left: 2px;
-    width: 210px;
+    /* width: 210px; */
   `;
 
   const StyledRedoButton = styled(FontAwesomeIcon)`
     /* Center and enlarge picker reset button */
     position: relative;
-    top: 5px;
-    right: 2px;
+    top: 2px;
+    /* right: 2px; */
     width: 16px;
     height: 16px;
     cursor: pointer;
   `;
 
   return (
-    <>
-      <StyledButtonContainer className="pr-0 picker-outline">
-        <DateRangePicker
-          startDateId={`start_date_${type}`} // PropTypes.string.isRequired,
-          endDateId={`end_date_${type}`} // PropTypes.string.isRequired,
-          startDate={start} // momentPropTypes.momentObj or null,
-          endDate={end} // momentPropTypes.momentObj or null,
-          onDatesChange={handleDateChange} // PropTypes.func.isRequired,
-          focusedInput={focused} // PropTypes.oneOf([START_DATE, END_DATE]) or null,
-          onFocusChange={(focusedInput) => setFocused(focusedInput)} // PropTypes.func.isRequired,
-          minDate={dataStartDate}
-          maxDate={dataEndDate}
-          renderCalendarInfo={() => (isMobile && renderCalendarInfo()) || true} // Render custom close button on mobile
-          calendarInfoPosition="top" // Position custom close button
-          appendToBody // Allow calendar to pop out over SideDrawer and Map components
-          withFullScreenPortal={isMobile} // Show full screen picker on mobile
-          small
-          renderMonthElement={renderMonthElement} // Render year picker
-          orientation={isMobile ? "vertical" : "horizontal"} // More mobile friendly than horizontal
-          isOutsideRange={() => false} // Enable past dates
-          isDayBlocked={isOutsideDateLimits} // Grey out dates
-        />
-        {/* Reset button to restore default date range */}
-      </StyledButtonContainer>
+    <StyledButtonContainer className="pr-0 picker-outline">
+      <DateRangePicker
+        startDateId={`start_date_${type}`} // PropTypes.string.isRequired,
+        endDateId={`end_date_${type}`} // PropTypes.string.isRequired,
+        startDate={start} // momentPropTypes.momentObj or null,
+        endDate={end} // momentPropTypes.momentObj or null,
+        onDatesChange={handleDateChange} // PropTypes.func.isRequired,
+        focusedInput={focused} // PropTypes.oneOf([START_DATE, END_DATE]) or null,
+        onFocusChange={(focusedInput) => setFocused(focusedInput)} // PropTypes.func.isRequired,
+        minDate={dataStartDate}
+        maxDate={dataEndDate}
+        renderCalendarInfo={() => (isMobile && renderCalendarInfo()) || true} // Render custom close button on mobile
+        calendarInfoPosition="top" // Position custom close button
+        appendToBody // Allow calendar to pop out over SideDrawer and Map components
+        withFullScreenPortal={isMobile} // Show full screen picker on mobile
+        small
+        renderMonthElement={renderMonthElement} // Render year picker
+        orientation={isMobile ? "vertical" : "horizontal"} // More mobile friendly than horizontal
+        isOutsideRange={() => false} // Enable past dates
+        isDayBlocked={isOutsideDateLimits} // Grey out dates
+      />
+      {/* Reset button to restore default date range */}
       {/* {(start !== mapStartDate || end !== mapEndDate) && ( */}
       <StyledRedoButton
         title="Reset to current year"
@@ -240,7 +238,7 @@ const SideMapControlDateRange = ({ type }) => {
           setEnd(mapEndDate);
         }}
       />
-    </>
+    </StyledButtonContainer>
   );
 };
 
