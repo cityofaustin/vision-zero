@@ -67,7 +67,7 @@ const CrashesByTimeOfDay = () => {
         const recordDay = recordDateTime.format("ddd");
 
         const hourData = dataArray.find((hour) => hour.key === recordHour).data;
-        let dayToIncrement = hourData.find((day) => day.key === recordDay);
+        const dayToIncrement = hourData.find((day) => day.key === recordDay);
 
         switch (crashType.name) {
           case "fatalities":
