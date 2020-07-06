@@ -39,50 +39,19 @@ const CrashesByTimeOfDay = () => {
   useEffect(() => {
     const dayOfWeekArray = moment.weekdaysShort();
 
-    const hourBlockArray = [
-      "12AM",
-      "01AM",
-      "02AM",
-      "03AM",
-      "04AM",
-      "05AM",
-      "06AM",
-      "07AM",
-      "08AM",
-      "09AM",
-      "10AM",
-      "11AM",
-      "12PM",
-      "01PM",
-      "02PM",
-      "03PM",
-      "04PM",
-      "05PM",
-      "06PM",
-      "07PM",
-      "08PM",
-      "09PM",
-      "10PM",
-      "11PM",
-    ];
+    const hourBlockArray = [];
+    for (let hour = 0; hour < 24; hour++) {
+      hourBlockArray.push(moment({ hour }).format("hhA"));
+    }
 
     const buildDataArray = () => {
       // This array holds weekday totals for each hour window within a day
       // Heatmap expects array of weekday total objs to be reversed in order
       const hourWindowTotalsByDay = dayOfWeekArray
-        .map((day) => ({ key: day, data: null }))
+        .map((day) => ({ key: day, data: null })) // Initialize totals as null unweight 0 in viz
         .reverse();
 
       // Return array of objs for each hour window that holds totals of each day of the week
-      // [
-      //   {
-      //     key: "12AM",
-      //     data: [
-      //       { key: "Mon", data: 3 },
-      //       { key: "Sun", data: 1 },
-      //     ],
-      //   },
-      // ]
       return hourBlockArray.map((hour) => ({
         key: hour,
         data: clonedeep(hourWindowTotalsByDay),
@@ -92,7 +61,6 @@ const CrashesByTimeOfDay = () => {
     const calculateHourBlockTotals = (records) => {
       const dataArray = buildDataArray();
 
-      let fatalityCount = 0;
       records.forEach((record) => {
         const recordDateTime = moment(record.crash_date);
         const recordHour = recordDateTime.format("hhA");
@@ -104,7 +72,6 @@ const CrashesByTimeOfDay = () => {
         switch (crashType.name) {
           case "fatalities":
             dayToIncrement.data += parseInt(record.death_cnt);
-            fatalityCount += parseInt(record.death_cnt);
             break;
           case "seriousInjuries":
             dayToIncrement.data += parseInt(record.sus_serious_injry_cnt);
@@ -116,7 +83,7 @@ const CrashesByTimeOfDay = () => {
             break;
         }
       });
-      console.log(fatalityCount);
+
       return dataArray;
     };
 
