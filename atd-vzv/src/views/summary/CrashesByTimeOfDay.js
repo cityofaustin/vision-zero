@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import axios from "axios";
 import moment from "moment";
 import clonedeep from "lodash.clonedeep";
@@ -36,13 +36,13 @@ const CrashesByTimeOfDay = () => {
     if (activeTab !== tab) setActiveTab(tab);
   };
 
+  const hourBlockArray = useMemo(
+    () => [...Array(24).keys()].map((hour) => moment({ hour }).format("hhA")),
+    []
+  );
+
   useEffect(() => {
     const dayOfWeekArray = moment.weekdaysShort();
-
-    const hourBlockArray = [];
-    for (let hour = 0; hour < 24; hour++) {
-      hourBlockArray.push(moment({ hour }).format("hhA"));
-    }
 
     const buildDataArray = () => {
       // This array holds weekday totals for each hour window within a day
@@ -102,7 +102,7 @@ const CrashesByTimeOfDay = () => {
       axios.get(getFatalitiesByYearsAgoUrl()).then((res) => {
         setHeatmapData(calculateHourBlockTotals(res.data));
       });
-  }, [activeTab, crashType]);
+  }, [activeTab, crashType, hourBlockArray]);
 
   const formatValue = (d) => {
     const value = d.data.value ? d.data.value : 0;
