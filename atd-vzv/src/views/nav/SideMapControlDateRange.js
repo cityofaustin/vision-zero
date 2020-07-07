@@ -6,10 +6,6 @@ import DefaultTheme from "react-dates/lib/theme/DefaultTheme";
 import styled from "styled-components";
 import { DateRangePicker } from "react-dates";
 import {
-  Input,
-  FormGroup,
-  Form,
-  Col,
   UncontrolledDropdown,
   DropdownItem,
   DropdownMenu,
@@ -28,7 +24,6 @@ import { faRedoAlt, faTimesCircle } from "@fortawesome/free-solid-svg-icons";
 
 const SideMapControlDateRange = ({ type }) => {
   const [focused, setFocused] = useState(null);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
   const [start, setStart] = useState(mapStartDate);
   const [end, setEnd] = useState(mapEndDate);
 
@@ -141,6 +136,11 @@ const SideMapControlDateRange = ({ type }) => {
   const isMobile = useIsMobile();
 
   // Create year dropdown picker in calendar
+  const StyledMonthYearDropdown = styled(UncontrolledDropdown)`
+    /* TODO: Figure out headers rendering above */
+    /* z-index: 1305; */
+  `;
+
   const renderMonthElement = ({ month, onYearSelect }) => {
     let yearArray = [];
     for (let i = dataStartDate.year(); i <= dataEndDate.year(); i++) {
@@ -148,12 +148,15 @@ const SideMapControlDateRange = ({ type }) => {
     }
 
     return (
-      <UncontrolledDropdown>
-        <DropdownToggle caret>{month.format("MMMM YYYY")}</DropdownToggle>
+      <StyledMonthYearDropdown>
+        <DropdownToggle caret color="dark">
+          {month.format("MMMM YYYY")}
+        </DropdownToggle>
         <DropdownMenu>
           {yearArray.map((year) => (
             <DropdownItem
-              onClick={(e) => {
+              key={`${month.format("MMMM")}-${year}`}
+              onClick={() => {
                 onYearSelect(month, year);
               }}
             >
@@ -161,7 +164,7 @@ const SideMapControlDateRange = ({ type }) => {
             </DropdownItem>
           ))}
         </DropdownMenu>
-      </UncontrolledDropdown>
+      </StyledMonthYearDropdown>
     );
   };
 
