@@ -138,7 +138,7 @@ const SideMapControlDateRange = ({ type }) => {
   // Create year dropdown picker in calendar
   const StyledMonthYearDropdown = styled(UncontrolledDropdown)`
     /* TODO: Figure out headers rendering above */
-    /* z-index: 1305; */
+    z-index: 1305;
   `;
 
   const renderMonthElement = ({ month, onYearSelect }) => {
