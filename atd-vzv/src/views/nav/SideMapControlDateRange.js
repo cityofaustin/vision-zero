@@ -5,7 +5,16 @@ import aphroditeInterface from "react-with-styles-interface-aphrodite";
 import DefaultTheme from "react-dates/lib/theme/DefaultTheme";
 import styled from "styled-components";
 import { DateRangePicker } from "react-dates";
-import { Input, FormGroup, Form, Col } from "reactstrap";
+import {
+  Input,
+  FormGroup,
+  Form,
+  Col,
+  UncontrolledDropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownToggle,
+} from "reactstrap";
 import {
   dataStartDate,
   dataEndDate,
@@ -15,14 +24,11 @@ import {
 import { colors } from "../../constants/colors";
 import { useIsMobile } from "../../constants/responsive";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faRedoAlt,
-  faTimesCircle,
-  faTimes,
-} from "@fortawesome/free-solid-svg-icons";
+import { faRedoAlt, faTimesCircle } from "@fortawesome/free-solid-svg-icons";
 
 const SideMapControlDateRange = ({ type }) => {
   const [focused, setFocused] = useState(null);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   const [start, setStart] = useState(mapStartDate);
   const [end, setEnd] = useState(mapEndDate);
 
@@ -142,27 +148,20 @@ const SideMapControlDateRange = ({ type }) => {
     }
 
     return (
-      <Form className="form-inline justify-content-center">
-        <FormGroup row className="w-75">
-          <Col>
-            <Input
-              type="select"
-              name="select"
-              id="yearSelect"
-              value={month.year()}
-              onChange={(e) => {
-                onYearSelect(month, e.target.value);
+      <UncontrolledDropdown>
+        <DropdownToggle caret>{month.format("MMMM YYYY")}</DropdownToggle>
+        <DropdownMenu>
+          {yearArray.map((year) => (
+            <DropdownItem
+              onClick={(e) => {
+                onYearSelect(month, year);
               }}
             >
-              {yearArray.map((year) => (
-                <option value={year}>
-                  {month.format("MMMM")} {year}
-                </option>
-              ))}
-            </Input>
-          </Col>
-        </FormGroup>
-      </Form>
+              {month.format("MMMM")} {year}
+            </DropdownItem>
+          ))}
+        </DropdownMenu>
+      </UncontrolledDropdown>
     );
   };
 
