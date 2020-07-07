@@ -20,7 +20,11 @@ import {
 import { colors } from "../../constants/colors";
 import { useIsMobile } from "../../constants/responsive";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faRedoAlt, faTimesCircle } from "@fortawesome/free-solid-svg-icons";
+import {
+  faRedoAlt,
+  faTimesCircle,
+  faCalendar,
+} from "@fortawesome/free-solid-svg-icons";
 
 const SideMapControlDateRange = ({ type }) => {
   const [focused, setFocused] = useState(null);
@@ -138,7 +142,7 @@ const SideMapControlDateRange = ({ type }) => {
   // Create year dropdown picker in calendar
   const StyledMonthYearDropdown = styled(UncontrolledDropdown)`
     /* TODO: Figure out headers rendering above */
-    z-index: 1305;
+    /* z-index: 1310 !important; */
   `;
 
   const renderMonthElement = ({ month, onYearSelect }) => {
@@ -194,16 +198,24 @@ const SideMapControlDateRange = ({ type }) => {
     height: 34px;
     border-radius: 4px;
     padding-left: 2px;
-    /* width: 210px; */
+    /* TODO: try wildcard selector with DayPicker_weekHeader_ambd88 for z-index day header issue */
+  `;
+
+  const calendarInputIconStyles = `position: relative;
+    top: 2px;
+    width: 16px;
+    height: 16px;`;
+
+  const StyledCalendarIcon = styled(FontAwesomeIcon)`
+    /* Center and enlarge calendar icon or button */
+    ${calendarInputIconStyles}
+    left: 1px;
   `;
 
   const StyledRedoButton = styled(FontAwesomeIcon)`
     /* Center and enlarge picker reset button */
-    position: relative;
-    top: 2px;
-    /* right: 2px; */
-    width: 16px;
-    height: 16px;
+    ${calendarInputIconStyles}
+    right: 1px;
     cursor: pointer;
   `;
 
@@ -216,7 +228,11 @@ const SideMapControlDateRange = ({ type }) => {
         endDate={end} // momentPropTypes.momentObj or null,
         onDatesChange={handleDateChange} // PropTypes.func.isRequired,
         focusedInput={focused} // PropTypes.oneOf([START_DATE, END_DATE]) or null,
-        onFocusChange={(focusedInput) => setFocused(focusedInput)} // PropTypes.func.isRequired,
+        onFocusChange={(focusedInput) => {
+          setFocused(focusedInput);
+          document.activeElement.blur(); // Do not prompt the keyboard on mobile
+        }} // PropTypes.func.isRequired,
+        keepFocusOnInput
         minDate={dataStartDate}
         maxDate={dataEndDate}
         renderCalendarInfo={() => (isMobile && renderCalendarInfo()) || true} // Render custom close button on mobile
@@ -230,16 +246,24 @@ const SideMapControlDateRange = ({ type }) => {
         isDayBlocked={isOutsideDateLimits} // Grey out dates
       />
       {/* Reset button to restore default date range */}
-      {/* {(start !== mapStartDate || end !== mapEndDate) && ( */}
-      <StyledRedoButton
-        title="Reset to current year"
-        icon={faRedoAlt}
-        color={colors.dark}
-        onClick={() => {
-          setStart(mapStartDate);
-          setEnd(mapEndDate);
-        }}
-      />
+      {start !== mapStartDate || end !== mapEndDate ? (
+        <StyledRedoButton
+          title="Reset to default date range"
+          icon={faRedoAlt}
+          color={colors.dark}
+          onClick={() => {
+            setStart(mapStartDate);
+            setEnd(mapEndDate);
+          }}
+        />
+      ) : (
+        <StyledCalendarIcon
+          title="Default date range"
+          icon={faCalendar}
+          color={colors.dark}
+          onClick={() => null}
+        />
+      )}
     </StyledButtonContainer>
   );
 };
