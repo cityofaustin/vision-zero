@@ -19,6 +19,7 @@ import { GET_UNITS, UPDATE_UNIT } from "../../queries/units";
 
 const EditFieldForm = ({
   field,
+  fieldConfig,
   value,
   unit,
   handleCancelClick,
@@ -26,30 +27,42 @@ const EditFieldForm = ({
   handleSubmit,
   handleInputChange,
 }) => {
-  let prefix = unitDataMap[0].fields[field].lookupPrefix;
-
-  let defaultValue = selectOptions.find(opt => opt[`${prefix}_desc`] === value)[
-    `${prefix}_id`
-  ];
+  let prefix = fieldConfig.lookupPrefix;
+  let defaultValue = "";
 
   // Quickfix to prioritize the main cardinal directions.
-  selectOptions.sort((a, b) => (a[`${prefix}_desc`].length > 5 ? 1 : -1));
+  if (fieldConfig.format === "select") {
+    selectOptions.sort((a, b) => (a[`${prefix}_desc`].length > 5 ? 1 : -1));
+
+    defaultValue = selectOptions.find(opt => opt[`${prefix}_desc`] === value)[
+      `${prefix}_id`
+    ];
+  }
 
   return (
     <form onSubmit={e => handleSubmit(e)}>
-      <Input
-        name={field}
-        id={field}
-        onChange={e => handleInputChange(e, unit)}
-        defaultValue={defaultValue}
-        type="select"
-      >
-        {selectOptions.map(option => (
-          <option value={option[`${prefix}_id`]} key={option[`${prefix}_id`]}>
-            {option[`${prefix}_desc`]}
-          </option>
-        ))}
-      </Input>
+      {fieldConfig.format === "text" && (
+        <input
+          type="text"
+          defaultValue={value}
+          onChange={e => handleInputChange(e)}
+        />
+      )}
+      {fieldConfig.format === "select" && (
+        <Input
+          name={field}
+          id={field}
+          onChange={e => handleInputChange(e, unit)}
+          defaultValue={defaultValue}
+          type="select"
+        >
+          {selectOptions.map(option => (
+            <option value={option[`${prefix}_id`]} key={option[`${prefix}_id`]}>
+              {option[`${prefix}_desc`]}
+            </option>
+          ))}
+        </Input>
+      )}
       <Button
         type="submit"
         block
@@ -133,11 +146,15 @@ const UnitDetailsCard = ({ isExpanded, toggleAccordion, ...props }) => {
   };
 
   const handleInputChange = e => {
-    const fieldKey = unitDataMap[0].fields[editField].edit_field_name;
+    const manualFieldKey = unitDataMap[0].fields[editField].edit_field_name;
+    const fieldKey = manualFieldKey ? manualFieldKey : editField;
+    console.log(unitDataMap[0].fields[editField]);
+
     const newFormState = Object.assign(formData, {
       [fieldKey]: e.target.value,
       updated_by: localStorage.getItem("hasura_user_email"),
     });
+    console.log(newFormState);
     setFormData(newFormState);
   };
 
@@ -168,7 +185,9 @@ const UnitDetailsCard = ({ isExpanded, toggleAccordion, ...props }) => {
         >
           <h5 className="m-0 p-0">
             <i className="fa fa-car" /> Units
-            <Badge color="secondary float-right">{data.length}</Badge>
+            <Badge color="secondary float-right">
+              {data.atd_txdot_units.length}
+            </Badge>
           </h5>
         </Button>
       </CardHeader>
@@ -196,12 +215,14 @@ const UnitDetailsCard = ({ isExpanded, toggleAccordion, ...props }) => {
                         {Object.keys(unitDataMap[0].fields).map((field, i) => {
                           const isEditing =
                             field === editField && unit.unit_nbr === editUnit;
+                          const fieldConfig = unitDataMap[0].fields[field];
 
                           return (
                             <td key={`unit_td_${i}`}>
                               {isEditing ? (
                                 <EditFieldForm
                                   field={field}
+                                  fieldConfig={fieldConfig}
                                   unit={unit.unit_nbr}
                                   value={formatValue(unit, field)}
                                   handleCancelClick={handleCancelClick}
@@ -209,7 +230,7 @@ const UnitDetailsCard = ({ isExpanded, toggleAccordion, ...props }) => {
                                   handleSubmit={handleSubmit}
                                   selectOptions={
                                     lookupSelectOptions[
-                                      unitDataMap[0].fields[field].lookupOptions
+                                      fieldConfig.lookupOptions
                                     ]
                                   }
                                 />
@@ -219,7 +240,7 @@ const UnitDetailsCard = ({ isExpanded, toggleAccordion, ...props }) => {
                                     {formatValue(unit, field)}
                                   </span>
 
-                                  {unitDataMap[0].fields[field].editable &&
+                                  {fieldConfig.editable &&
                                     !isReadOnly(roles) &&
                                     !isEditing && (
                                       <Button
