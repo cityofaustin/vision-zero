@@ -69,3 +69,12 @@ export const GET_UNIT_LOOKUPS = gql`
     }
   }
 `;
+
+export const GET_PERSON_LOOKUPS = gql`
+  {
+    atd_txdot__injry_sev_lkp {
+      injry_sev_id
+      injry_sev_desc
+    }
+  }
+`;
