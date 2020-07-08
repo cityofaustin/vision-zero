@@ -55,7 +55,7 @@ const SideMapControlDateRange = ({ type }) => {
       },
       color: {
         ...DefaultTheme.reactDates.color,
-        placeholderText: `${colors.dark}`,
+        placeholderText: `${colors.dark}`, // Set to same color as .dropdown-header to overcome z-index issue (hide it)
         border: `transparent`, // Hide DateRangePicker border and show StyledButtonContainer instead
         selected: {
           backgroundColor: `${colors.dark}`,
@@ -208,7 +208,8 @@ const SideMapControlDateRange = ({ type }) => {
     padding-left: 2px;
 
     /* Center start and end date inputs */
-    [class^="DateInput_"] {
+    [id^="start_date_"],
+    [id^="end_date_"] {
       text-align: center;
     }
   `;
@@ -257,7 +258,7 @@ const SideMapControlDateRange = ({ type }) => {
         isOutsideRange={() => false} // Enable past dates
         isDayBlocked={isOutsideDateLimits} // Grey out dates
       />
-      {/* Reset button to restore default date range */}
+      {/* Show reset button to restore default date range or show calendar icon if default*/}
       {start !== mapStartDate || end !== mapEndDate ? (
         <StyledRedoButton
           title="Reset to default date range"
