@@ -55,7 +55,7 @@ const SideMapControlDateRange = ({ type }) => {
       },
       color: {
         ...DefaultTheme.reactDates.color,
-        placeholderText: `${colors.dark}`, // Set to same color as .dropdown-header to overcome z-index issue (hide it)
+        placeholderText: `${colors.dark}`, // Set to same color as .dropdown-header to overcome z-index issue (hide text)
         border: `transparent`, // Hide DateRangePicker border and show StyledButtonContainer instead
         selected: {
           backgroundColor: `${colors.dark}`,
@@ -143,6 +143,7 @@ const SideMapControlDateRange = ({ type }) => {
   // Create year dropdown picker in calendar
   const StyledMonthYearDropdown = styled(UncontrolledDropdown)`
     .dropdown-header {
+      /* Set color and position to hide weekday calendar headers with unchangeable z-index */
       background: ${colors.dark};
       color: ${colors.white};
       position: relative;
@@ -161,7 +162,7 @@ const SideMapControlDateRange = ({ type }) => {
         <DropdownToggle caret color="dark">
           {month.format("MMMM YYYY")}
         </DropdownToggle>
-        <DropdownMenu>
+        <DropdownMenu flip={false}>
           <DropdownItem header className="dropdown-header">
             Choose a year
           </DropdownItem>
@@ -214,19 +215,18 @@ const SideMapControlDateRange = ({ type }) => {
     }
   `;
 
+  // Center and size calendar icon or button
   const calendarInputIconStyles = `position: relative;
     top: 2px;
     width: 16px;
     height: 16px;`;
 
   const StyledCalendarIcon = styled(FontAwesomeIcon)`
-    /* Center and enlarge calendar icon or button */
     ${calendarInputIconStyles}
     left: 1px;
   `;
 
   const StyledRedoButton = styled(FontAwesomeIcon)`
-    /* Center and enlarge picker reset button */
     ${calendarInputIconStyles}
     right: 1px;
     cursor: pointer;
@@ -243,7 +243,7 @@ const SideMapControlDateRange = ({ type }) => {
         focusedInput={focused} // PropTypes.oneOf([START_DATE, END_DATE]) or null,
         onFocusChange={(focusedInput) => {
           setFocused(focusedInput);
-          document.activeElement.blur(); // Do not prompt the keyboard on mobile
+          isMobile && document.activeElement.blur(); // Do not prompt the keyboard on mobile
         }} // PropTypes.func.isRequired,
         keepFocusOnInput
         minDate={dataStartDate}
