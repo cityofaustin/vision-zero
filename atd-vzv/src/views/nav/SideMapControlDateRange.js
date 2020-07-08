@@ -55,6 +55,7 @@ const SideMapControlDateRange = ({ type }) => {
       },
       color: {
         ...DefaultTheme.reactDates.color,
+        placeholderText: `${colors.dark}`,
         border: `transparent`, // Hide DateRangePicker border and show StyledButtonContainer instead
         selected: {
           backgroundColor: `${colors.dark}`,
@@ -141,8 +142,12 @@ const SideMapControlDateRange = ({ type }) => {
 
   // Create year dropdown picker in calendar
   const StyledMonthYearDropdown = styled(UncontrolledDropdown)`
-    /* TODO: Figure out headers rendering above */
-    /* z-index: 1310 !important; */
+    .dropdown-header {
+      background: ${colors.dark};
+      color: ${colors.white};
+      position: relative;
+      top: -2px;
+    }
   `;
 
   const renderMonthElement = ({ month, onYearSelect }) => {
@@ -157,6 +162,9 @@ const SideMapControlDateRange = ({ type }) => {
           {month.format("MMMM YYYY")}
         </DropdownToggle>
         <DropdownMenu>
+          <DropdownItem header className="dropdown-header">
+            Choose a year
+          </DropdownItem>
           {yearArray.map((year) => (
             <DropdownItem
               key={`${month.format("MMMM")}-${year}`}
@@ -198,7 +206,11 @@ const SideMapControlDateRange = ({ type }) => {
     height: 34px;
     border-radius: 4px;
     padding-left: 2px;
-    /* TODO: try wildcard selector with DayPicker_weekHeader_ambd88 for z-index day header issue */
+
+    /* Center start and end date inputs */
+    [class^="DateInput_"] {
+      text-align: center;
+    }
   `;
 
   const calendarInputIconStyles = `position: relative;
