@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import { useQuery } from "@apollo/react-hooks";
 import { useAuth0, isReadOnly } from "../../auth/authContext";
 
+// TODO: program triggers for injury_sev -> cnts
+// TODO: Hide edit controls for People & Units for Read Only Users
+
 import {
   Card,
   CardHeader,
@@ -13,8 +16,15 @@ import {
   Input,
 } from "reactstrap";
 
+import RelatedRecordsTable from "./RelatedRecordsTable";
+
+import { primaryPersonDataMap, personDataMap } from "./personDataMap";
 import { GET_PERSON_LOOKUPS } from "../../queries/lookups";
-import { GET_PEOPLE, UPDATE_PRIMARYPERSON } from "../../queries/people";
+import {
+  GET_PEOPLE,
+  UPDATE_PRIMARYPERSON,
+  UPDATE_PERSON,
+} from "../../queries/people";
 
 const getInjurySeverityColor = desc => {
   switch (desc) {
@@ -83,7 +93,6 @@ const PeopleDetailsCard = ({ isExpanded, toggleAccordion, ...props }) => {
       [manualFieldKey]: e.target.value,
       updated_by: localStorage.getItem("hasura_user_email"),
     });
-    console.log(newFormState);
     setFormData(newFormState);
   };
 
@@ -99,6 +108,15 @@ const PeopleDetailsCard = ({ isExpanded, toggleAccordion, ...props }) => {
     setEditField("");
     setEditPerson("");
     setFormData({});
+  };
+
+  const personMutation = {
+    mutation: UPDATE_PERSON,
+    variables: {
+      crashId: crashId,
+      personId: "",
+      changes: {},
+    },
   };
 
   return (
@@ -147,17 +165,12 @@ const PeopleDetailsCard = ({ isExpanded, toggleAccordion, ...props }) => {
               {data.atd_txdot_primaryperson
                 .sort((a, b) => (a.unit_nbr > b.unit_nbr ? 1 : -1))
                 .map((person, i) => {
-                  debugger;
                   const isEditing =
                     editField === "injry_sev_desc" &&
                     person.primaryperson_id === editPerson;
 
                   const injurySeverityLookup =
                     lookupSelectOptions.atd_txdot__injry_sev_lkp;
-
-                  // const defaultValue = injurySeverityLookup.find(
-                  //   opt => opt[`$injry_sev_desc`] === value
-                  // )[`injry_sev_id`];
 
                   return (
                     <tr key={`person-${i}`}>
@@ -245,37 +258,17 @@ const PeopleDetailsCard = ({ isExpanded, toggleAccordion, ...props }) => {
 
           {data.atd_txdot_person.length > 0 && (
             <>
-              <h5>Other People</h5>
-              <Table responsive>
-                <thead>
-                  <tr>
-                    <th>Unit</th>
-                    <th>Injury Severity</th>
-                    <th>Type</th>
-                    <th>Age</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {data.atd_txdot_person
-                    .sort((a, b) => (a.unit_nbr > b.unit_nbr ? 1 : -1))
-                    .map(person => (
-                      <tr>
-                        <td>{person.unit_nbr}</td>
-                        <td>
-                          <Badge
-                            color={getInjurySeverityColor(
-                              person.injury_severity.injry_sev_desc
-                            )}
-                          >
-                            {person.injury_severity.injry_sev_desc}
-                          </Badge>
-                        </td>
-                        <td>{person.person_type.prsn_type_desc}</td>
-                        <td>{person.prsn_age}</td>
-                      </tr>
-                    ))}
-                </tbody>
-              </Table>
+              <RelatedRecordsTable
+                fieldConfig={personDataMap[0]}
+                data={data.atd_txdot_person}
+                sortField={"unit_nbr"}
+                tableName={"atd_txdot_person"}
+                keyField={"person_id"}
+                lookupOptions={lookupSelectOptions.atd_txdot__injry_sev_lkp}
+                mutation={personMutation}
+                refetch={refetch}
+                {...props}
+              />
             </>
           )}
         </CardBody>
