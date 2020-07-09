@@ -53,7 +53,7 @@ const RelatedRecordsTable = ({
     mutation.variables.changes = { ...formData };
     // TODO: instead of personId, use a generic key variable
     // and convert it to camelcase for the mutation object
-    mutation.variables.personId = editRow.person_id;
+    mutation.variables.personId = editRow[keyField];
 
     props.client.mutate(mutation).then(res => {
       if (!res.errors) {
@@ -102,6 +102,9 @@ const RelatedRecordsTable = ({
                 <tr key={`table-${tableName}-${row[keyField]}`}>
                   {Object.keys(fieldConfig.fields).map((field, i) => {
                     const isEditing = editField === field && row === editRow;
+
+                    const fieldLookupPrefix =
+                      fieldConfig.fields[field].lookupPrefix;
                     return (
                       <td key={i}>
                         {isEditing && (
@@ -110,12 +113,12 @@ const RelatedRecordsTable = ({
                               name={field}
                               id={field}
                               onChange={e => handleInputChange(e)}
-                              defaultValue={formatValue(row, field)}
+                              defaultValue={
+                                row[field][`${fieldLookupPrefix}_id`]
+                              }
                               type="select"
                             >
                               {lookupOptions.map(option => {
-                                const fieldLookupPrefix =
-                                  fieldConfig.fields[field].lookupPrefix;
                                 return (
                                   <option
                                     value={option[`${fieldLookupPrefix}_id`]}

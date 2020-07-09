@@ -25,15 +25,15 @@ export const primaryPersonDataMap = [
         label: "Unit",
         editable: false,
       },
-      injry_sev_desc: {
+      injury_severity: {
         label: "Injury Severity",
         editable: true,
         format: "select",
-        lookup_desc: "injury_severity",
+        lookup_desc: "injry_sev_desc",
         lookupOptions: "atd_txdot__injry_sev_lkp",
         lookupPrefix: "injry_sev",
         badge: true,
-        // badgeColorFunction: getInjurySeverityColor,
+        badgeColor: getInjurySeverityColor,
       },
       person_type: {
         label: "Type",
