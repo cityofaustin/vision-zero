@@ -113,10 +113,9 @@ def process_line(file_type, line, fieldnames, current_line, dryrun=False, total_
                 )
                 # Print the action to be taken
                 print(
-                    "%s[%s] %s (type: %s), crash_id: %s"
+                    "%s %s (type: %s), crash_id: %s"
                     % (
                         mode,
-                        f"{current_line}/{total_lines}",
                         feedback_message,
                         file_type,
                         str(crash_id),
@@ -285,6 +284,8 @@ def process_file(file_path, file_type, skip_lines, dryrun=False):
                 if current_line >= total_lines_current_file:
                     print("--- Reached end of file, breaking loop. ---")
                     break
+                else:
+                    print(f"[{current_line}/{total_lines_current_file}]", end="")
 
                 if current_line == 0:
                     # Then split each word and use as field names for our GraphQL query
