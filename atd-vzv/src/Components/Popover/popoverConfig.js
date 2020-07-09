@@ -1,4 +1,6 @@
 import React from "react";
+import { responsive } from "../../constants/responsive";
+import raceEthnicityTable2018 from "./raceEthnicityTable2018.png";
 
 export const popoverConfig = {
   summary: {
@@ -18,15 +20,60 @@ export const popoverConfig = {
         </>
       ),
     },
-    raceEthnicity: {
-      title: "Race/Ethnicity",
+    demographics: {
+      title: "Demographics Data",
       html: (
         <>
+          <div className="font-weight-bold">Demographics Data</div>
+          <div className="mb-2">
+            To compare crash demographics data with historical and estimated
+            demographics data for the City of Austin geographic boundaries,
+            visit the US Census Bureau's latest{" "}
+            <a
+              href="https://data.census.gov/cedsci/table?g=1600000US4805000&tid=ACSDP5Y2018.DP05&t=Hispanic%20or%20Latino&layer=VT_2018_160_00_PY_D1&hidePreview=true&moe=false"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              demographics estimates
+            </a>
+            .
+          </div>
+          <div className="font-weight-bold">Gender</div>
+          <div className="mb-2">
+            This visualization relies on the information entered by officers
+            into the official crash reports. Officers are encouraged to use the
+            gender that appears on the Driver License/ID Card.
+          </div>
+          <div className="font-weight-bold">Gender</div>
+          <div className="mb-2">
+            This visualization relies on the information entered by officers
+            into the official crash reports. Officers are encouraged to use the
+            gender that appears on the Driver License/ID Card.
+          </div>
+          <div className="font-weight-bold">Race/Ethnicity</div>
           <div className="mb-2">
             This visualization relies on information entered by officers into
             the "Ethnicity" field within official crash reports. To more
             accurately reflect modern race and ethnicity data standards, the
             label for this visualization has been modified to "Race/Ethnicity."
+            Below is a table showing the estimated population by race/ethnicity
+            for Austin in 2018:
+            <br />
+            <img
+              src={raceEthnicityTable2018}
+              width={200}
+              alt="Table showing the estimated population by race/ethnicity for Austin in 2018"
+            />
+            <div>
+              Source:{" "}
+              <a
+                href="https://data.census.gov/cedsci/table?g=1600000US4805000&tid=ACSDP5Y2018.DP05&t=Hispanic%20or%20Latino&layer=VT_2018_160_00_PY_D1&hidePreview=true&moe=false"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                US Census Bureau 2018 ACS 5-Year Estimate
+              </a>
+            </div>
           </div>
         </>
       ),

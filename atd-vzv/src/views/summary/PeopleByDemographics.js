@@ -268,7 +268,10 @@ const PeopleByDemographics = () => {
     <Container className="m-0 p-0">
       <Row>
         <Col>
-          <h2 className="text-left, font-weight-bold">Demographics</h2>
+          <h2 className="text-left, font-weight-bold">
+            Demographics{" "}
+            <InfoPopover config={popoverConfig.summary.demographics} />
+          </h2>
         </Col>
       </Row>
       <Row>
@@ -304,7 +307,7 @@ const PeopleByDemographics = () => {
                 toggle("prsn_gndr_id");
               }}
             >
-              Sex
+              Gender
             </Button>
             <Button
               className={classnames(
@@ -319,11 +322,6 @@ const PeopleByDemographics = () => {
             >
               Race/Ethnicity
             </Button>
-            {activeTab === "prsn_ethnicity_id" ? (
-              <InfoPopover config={popoverConfig.summary.raceEthnicity} />
-            ) : (
-              <div></div>
-            )}
           </StyledButton>
         </Col>
       </Row>
