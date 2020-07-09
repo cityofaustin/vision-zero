@@ -20,7 +20,7 @@ export const popoverConfig = {
         </>
       ),
     },
-    demographics: {
+    demographics: (isMobile) => ({
       title: "Demographics Data",
       html: (
         <>
@@ -57,14 +57,14 @@ export const popoverConfig = {
             accurately reflect modern race and ethnicity data standards, the
             label for this visualization has been modified to "Race/Ethnicity."
             Below is a table showing the estimated population by race/ethnicity
-            for Austin in 2018:
-            <br />
+            for Austin in 2018.
             <img
+              className="mt-2"
               src={raceEthnicityTable2018}
-              width={200}
+              width={isMobile ? 0 : 500}
               alt="Table showing the estimated population by race/ethnicity for Austin in 2018"
             />
-            <div>
+            <div className="mt-2">
               Source:{" "}
               <a
                 href="https://data.census.gov/cedsci/table?g=1600000US4805000&tid=ACSDP5Y2018.DP05&t=Hispanic%20or%20Latino&layer=VT_2018_160_00_PY_D1&hidePreview=true&moe=false"
@@ -77,7 +77,7 @@ export const popoverConfig = {
           </div>
         </>
       ),
-    },
+    }),
   },
   map: {
     trafficCrashes: {

@@ -12,7 +12,7 @@ import {
 const MapInfoBox = ({
   selectedFeature,
   setSelectedFeature,
-  isMobile,
+  isTablet,
   type, // id of feature layer
 }) => {
   const popupInfo = selectedFeature && selectedFeature.properties;
@@ -53,7 +53,7 @@ const MapInfoBox = ({
 
   return (
     popupInfo &&
-    (isMobile ? (
+    (isTablet ? (
       <StyledPopup>
         <Popup
           tipSize={10}

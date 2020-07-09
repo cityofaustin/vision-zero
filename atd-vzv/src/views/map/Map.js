@@ -20,7 +20,7 @@ import {
   travisCountyDataLayer,
 } from "./map-style";
 import axios from "axios";
-import { useIsMobile } from "../../constants/responsive";
+import { useIsTablet } from "../../constants/responsive";
 
 import "mapbox-gl/dist/mapbox-gl.css";
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css"; // Get out-of-the-box icons
@@ -50,7 +50,7 @@ const Map = () => {
   // Create ref to map to call Mapbox GL functions on instance
   const mapRef = useRef();
 
-  const isMobile = useIsMobile();
+  const isTablet = useIsTablet();
 
   const [mapData, setMapData] = useState("");
   const [interactiveLayerIds, setInteractiveLayerIds] = useState(null);
@@ -306,8 +306,8 @@ const Map = () => {
       mapboxApiAccessToken={MAPBOX_TOKEN}
       getCursor={_getCursor}
       interactiveLayerIds={interactiveLayerIds}
-      onHover={!isMobile ? _onSelectCrashPoint : null}
-      onClick={isMobile ? _onSelectCrashPoint : null}
+      onHover={!isTablet ? _onSelectCrashPoint : null}
+      onClick={isTablet ? _onSelectCrashPoint : null}
       ref={(ref) => (mapRef.current = ref && ref.getMap())}
     >
       {/* Provide empty source and layer as target for beforeId params to set order of layers */}
@@ -333,7 +333,7 @@ const Map = () => {
         <MapInfoBox
           selectedFeature={selectedFeature}
           setSelectedFeature={setSelectedFeature}
-          isMobile={isMobile}
+          isTablet={isTablet}
           type={selectedFeature.layer.id}
         />
       )}

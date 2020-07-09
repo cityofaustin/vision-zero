@@ -15,5 +15,8 @@ export const responsive = {
   drawerWidth: 300,
 };
 
-export const useIsMobile = () =>
+export const useIsTablet = () =>
   useWindowSize().width <= responsive.bootstrapMedium;
+
+export const useIsMobile = () =>
+  useWindowSize().width <= responsive.bootstrapExtraSmall;
