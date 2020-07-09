@@ -2,6 +2,8 @@ import React from "react";
 import { responsive } from "../../constants/responsive";
 import raceEthnicityTable2018 from "./raceEthnicityTable2018.png";
 
+const imgMargin = 24;
+
 export const popoverConfig = {
   summary: {
     yearsOfLifeLost: {
@@ -61,7 +63,11 @@ export const popoverConfig = {
             <img
               className="mt-2"
               src={raceEthnicityTable2018}
-              width={isMobile ? 0 : 500}
+              width={
+                isMobile
+                  ? responsive.infoPopoverMobileWidth - imgMargin
+                  : responsive.infoPopoverFullWidth - imgMargin
+              }
               alt="Table showing the estimated population by race/ethnicity for Austin in 2018"
             />
             <div className="mt-2">
