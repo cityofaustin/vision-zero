@@ -57,3 +57,26 @@ export const UPDATE_PRIMARYPERSON = gql`
     }
   }
 `;
+
+export const UPDATE_PERSON = gql`
+  mutation UpdatePerson(
+    $crashId: Int
+    $personId: Int
+    $changes: atd_txdot_person_set_input
+  ) {
+    update_atd_txdot_person(
+      where: {
+        crash_id: { _eq: $crashId }
+        _and: { person_id: { _eq: $personId } }
+      }
+      _set: $changes
+    ) {
+      affected_rows
+      returning {
+        person_id
+        crash_id
+        unit_nbr
+      }
+    }
+  }
+`;
