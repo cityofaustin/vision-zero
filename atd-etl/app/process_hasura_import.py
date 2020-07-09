@@ -19,6 +19,7 @@ import time
 import signal
 import logging
 import concurrent.futures
+import subprocess
 
 # We need to import our configuration, helpers and request methods
 from process.config import ATD_ETL_CONFIG
@@ -43,6 +44,15 @@ insert_errors = 0
 start = time.time()
 
 
+def count_file_lines(file_path):
+    """
+    Retrieves the number of lines using the word-count tool
+    :param str file_path: path to file
+    :return int: Number of lines
+    """
+    return int(subprocess.check_output(['wc', '-l', file_path]).decode("utf-8").split(" ")[0])
+
+
 def keyboard_interrupt_handler(signal, frame):
     """
     Handles keyboard interrupts (ie. Control+C) and signals the script to stop.
@@ -59,14 +69,16 @@ def keyboard_interrupt_handler(signal, frame):
     STOP_EXEC = True
 
 
-def process_line(file_type, line, fieldnames, current_line, dryrun=False):
+def process_line(file_type, line, fieldnames, current_line, dryrun=False, total_lines=0):
     """
     Will process a single CSV line and will try to check if
     the record already exists and attempt insertion.
-    :param file_type: string - the file type
-    :param line: string - the csv line to process
-    :param fieldnames: array of strings - an array of strings container the table headers
-    :param current_line: int - the current line in the csv being read
+    :param str file_type: the file type
+    :param str line: the csv line to process
+    :param str[] fieldnames: an array of strings container the table headers
+    :param int current_line: the current line in the csv being read
+    :param bool dryrun: Whether the current line is a dry run
+    :param int total_lines: The total number of lines in the file
     :return:
     """
     # Gather stop signal value
@@ -104,7 +116,7 @@ def process_line(file_type, line, fieldnames, current_line, dryrun=False):
                     "%s[%s] %s (type: %s), crash_id: %s"
                     % (
                         mode,
-                        str(current_line),
+                        f"{current_line}/{total_lines}",
                         feedback_message,
                         file_type,
                         str(crash_id),
@@ -257,6 +269,8 @@ def process_file(file_path, file_type, skip_lines, dryrun=False):
         % (str(skip_rows_parsed) if skip_rows_parsed >= 0 else "all records")
     )
 
+    total_lines_current_file = count_file_lines(FILE_PATH) - 1
+
     # Open FILE_PATH as a file pointer:
     with open(FILE_PATH) as fp:
         # Read first line
@@ -267,6 +281,10 @@ def process_file(file_path, file_type, skip_lines, dryrun=False):
 
             # While we haven't reached the EOF
             while line:
+                # If we have reached the end of the file, exit.
+                if current_line >= total_lines_current_file:
+                    break
+
                 if current_line == 0:
                     # Then split each word and use as field names for our GraphQL query
                     fieldnames = line.strip().split(",")
@@ -294,6 +312,7 @@ def process_file(file_path, file_type, skip_lines, dryrun=False):
                             fieldnames,
                             current_line,
                             dryrun,
+                            total_lines_current_file
                         )
 
                 # Keep adding to current line
