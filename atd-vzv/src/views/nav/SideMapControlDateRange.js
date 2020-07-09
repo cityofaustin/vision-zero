@@ -13,7 +13,11 @@ import {
   mapEndDate,
 } from "../../constants/time";
 import { colors } from "../../constants/colors";
-import { useIsMobile } from "../../constants/responsive";
+import {
+  useIsTablet,
+  useIsMobile,
+  useCanTwoMonthsFit,
+} from "../../constants/responsive";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimesCircle } from "@fortawesome/free-solid-svg-icons";
 
@@ -129,6 +133,8 @@ const SideMapControlDateRange = ({ type }) => {
     date.isBefore(dataStartDate, "day") || date.isAfter(dataEndDate, "day");
 
   const isMobile = useIsMobile();
+  const isTablet = useIsTablet();
+  const canTwoMonthsFit = useCanTwoMonthsFit();
 
   // Create year dropdown picker in calendar
   const renderMonthElement = ({ month, onYearSelect }) => {
@@ -221,6 +227,7 @@ const SideMapControlDateRange = ({ type }) => {
         orientation={isMobile ? "vertical" : "horizontal"} // More mobile friendly than horizontal
         isOutsideRange={() => false} // Enable past dates
         isDayBlocked={isOutsideDateLimits} // Grey out dates
+        numberOfMonths={!canTwoMonthsFit || (isTablet && !isMobile) ? 1 : 2}
       />
       {/* Reset button to restore default date range */}
       <FontAwesomeIcon
