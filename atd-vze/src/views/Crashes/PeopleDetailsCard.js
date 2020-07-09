@@ -1,6 +1,5 @@
 import React from "react";
 import { useQuery } from "@apollo/react-hooks";
-import { useAuth0, isReadOnly } from "../../auth/authContext";
 
 import {
   Card,
@@ -22,10 +21,6 @@ import {
 } from "../../queries/people";
 
 const PeopleDetailsCard = ({ isExpanded, toggleAccordion, ...props }) => {
-  const { getRoles } = useAuth0();
-  // TODO: Hide edit controls for People & Units for Read Only Users
-  const roles = getRoles();
-
   const crashId = props.match.params.id;
 
   const { data: lookupSelectOptions } = useQuery(GET_PERSON_LOOKUPS);

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-
 import { Table, Badge, Button, Input } from "reactstrap";
+
+import { useAuth0, isReadOnly } from "../../auth/authContext";
 
 const RelatedRecordsTable = ({
   fieldConfig,
@@ -16,6 +17,10 @@ const RelatedRecordsTable = ({
   const [editField, setEditField] = useState("");
   const [editRow, setEditRow] = useState("");
   const [formData, setFormData] = useState("");
+
+  // Disable edit features if only role is "readonly"
+  const { getRoles } = useAuth0();
+  const roles = getRoles();
 
   const handleEditClick = (field, row) => {
     setEditField(field);
@@ -164,20 +169,20 @@ const RelatedRecordsTable = ({
                             formatValue(row, field)
                           ))}
 
-                        {fieldConfig.fields[field].editable && !isEditing && (
-                          // TODO:
-                          //   // && !isReadOnly(roles)
-                          <Button
-                            block
-                            color="secondary"
-                            size="sm"
-                            className="btn-pill mt-2"
-                            style={{ width: "50px" }}
-                            onClick={e => handleEditClick(field, row)}
-                          >
-                            <i className="fa fa-pencil edit-toggle" />
-                          </Button>
-                        )}
+                        {fieldConfig.fields[field].editable &&
+                          !isReadOnly(roles) &&
+                          !isEditing && (
+                            <Button
+                              block
+                              color="secondary"
+                              size="sm"
+                              className="btn-pill mt-2"
+                              style={{ width: "50px" }}
+                              onClick={e => handleEditClick(field, row)}
+                            >
+                              <i className="fa fa-pencil edit-toggle" />
+                            </Button>
+                          )}
                       </td>
                     );
                   })}
