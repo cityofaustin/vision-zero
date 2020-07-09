@@ -283,6 +283,7 @@ def process_file(file_path, file_type, skip_lines, dryrun=False):
             while line:
                 # If we have reached the end of the file, exit.
                 if current_line >= total_lines_current_file:
+                    print("--- Reached end of file, breaking loop. ---")
                     break
 
                 if current_line == 0:
