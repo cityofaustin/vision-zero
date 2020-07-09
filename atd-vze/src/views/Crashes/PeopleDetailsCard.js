@@ -91,7 +91,7 @@ const PeopleDetailsCard = ({ isExpanded, toggleAccordion, ...props }) => {
             <RelatedRecordsTable
               fieldConfig={personDataMap[0]}
               data={data.atd_txdot_person}
-              sortField={"unit_nbr"}
+              sortField={"person_id"}
               tableName={"atd_txdot_person"}
               keyField={"person_id"}
               lookupOptions={lookupSelectOptions.atd_txdot__injry_sev_lkp}

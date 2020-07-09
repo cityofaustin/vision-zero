@@ -38,8 +38,6 @@ const RelatedRecordsTable = ({
 
   const handleInputChange = e => {
     // TODO: Make this less specific to person table
-    // TODO: Bug if persons have same unit id
-
     const manualFieldKey = "prsn_injry_sev_id";
 
     const newFormState = Object.assign(formData, {
