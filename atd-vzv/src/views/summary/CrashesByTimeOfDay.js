@@ -46,9 +46,9 @@ const CrashesByTimeOfDay = () => {
 
     const buildDataArray = () => {
       // This array holds weekday totals for each hour window within a day
-      // Heatmap expects array of weekday total objs to be reversed in order
+      // Reaviz Heatmap expects array of weekday total objs to be reversed in order
       const hourWindowTotalsByDay = dayOfWeekArray
-        .map((day) => ({ key: day, data: null })) // Initialize totals as null unweight 0 in viz
+        .map((day) => ({ key: day, data: null })) // Initialize totals as null to unweight 0 in viz
         .reverse();
 
       // Return array of objs for each hour window that holds totals of each day of the week
