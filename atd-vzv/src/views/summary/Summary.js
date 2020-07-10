@@ -34,8 +34,9 @@ const Summary = () => {
     }
 
     .banner {
-      background: ${colors.white};
+      background: ${colors.light};
       color: ${colors.dark};
+      border-style: none;
     }
 
     /* Style links for devices that show them as plain text */
@@ -50,7 +51,6 @@ const Summary = () => {
   return (
     <Container fluid>
       <DataModal />
-      {/* Create whitespace on sides of view until mobile */}
       <Row className="px-xs-0 mx-xs-0 px-lg-3 mx-lg-4 mt-4 mb-0">
         <Col>
           <Alert color="danger">
@@ -64,7 +64,8 @@ const Summary = () => {
           </Alert>
         </Col>
       </Row>
-      <Row className="px-xs-0 mx-xs-0 px-lg-3 mx-lg-4">
+      {/* Create whitespace on sides of view until mobile */}
+      <Row className="px-xs-0 mx-xs-0 px-lg-3 mx-lg-4 mt-xs-3 mt-lg-4">
         <Col className="px-xs-0">
           <StyledSummary>
             <Row className="summary-child">
@@ -73,9 +74,8 @@ const Summary = () => {
                   Austin is consistently ranked as one of America's best places
                   to live, but too many of our fellow Austinites are killed or
                   seriously injured in traffic crashes each year. To learn more
-                  about what the City of Austin is doing to reduce traffic
-                  deaths and serious injuries in Austin, visit Austin
-                  Transportation's Vision Zero Program{" "}
+                  about the City's transportation safety initiatives, visit
+                  Austin Transportation's Vision Zero Program{" "}
                   <a
                     href="https://austintexas.gov/page/programs-and-initiatives"
                     target="_blank"
@@ -83,8 +83,7 @@ const Summary = () => {
                   >
                     website
                   </a>{" "}
-                  and find updates on all recent bond-funded mobility projects
-                  on the City's{" "}
+                  and the City's{" "}
                   <a
                     href="https://capitalprojects.austintexas.gov/projects?categoryId=Mobility%2520Infrastructure:&tab=projects"
                     target="_blank"
