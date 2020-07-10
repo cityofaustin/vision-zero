@@ -81,7 +81,7 @@ const PeopleDetailsCard = ({ isExpanded, toggleAccordion, ...props }) => {
             sortField={"unit_nbr"}
             tableName={"atd_txdot_primaryperson"}
             keyField={"primaryperson_id"}
-            lookupOptions={lookupSelectOptions.atd_txdot__injry_sev_lkp}
+            lookupOptions={lookupSelectOptions}
             mutation={primaryPersonMutation}
             refetch={refetch}
             {...props}
@@ -94,7 +94,7 @@ const PeopleDetailsCard = ({ isExpanded, toggleAccordion, ...props }) => {
               sortField={"person_id"}
               tableName={"atd_txdot_person"}
               keyField={"person_id"}
-              lookupOptions={lookupSelectOptions.atd_txdot__injry_sev_lkp}
+              lookupOptions={lookupSelectOptions}
               mutation={personMutation}
               refetch={refetch}
               {...props}

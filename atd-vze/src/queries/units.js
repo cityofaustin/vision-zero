@@ -13,9 +13,11 @@ export const GET_UNITS = gql`
       veh_mod_year
       travel_direction_desc {
         trvl_dir_desc
+        trvl_dir_id
       }
       movement {
         movement_desc
+        movement_id
       }
       unit_description {
         veh_unit_desc_desc

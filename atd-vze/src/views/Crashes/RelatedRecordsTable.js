@@ -36,27 +36,22 @@ const RelatedRecordsTable = ({
     setFormData({});
   };
 
-  const handleInputChange = e => {
-    // TODO: Make this less specific to person table
-    const manualFieldKey = "prsn_injry_sev_id";
-
+  const handleInputChange = (e, updateFieldKey) => {
     const newFormState = Object.assign(formData, {
-      [manualFieldKey]: e.target.value,
+      [updateFieldKey]: e.target.value,
       updated_by: localStorage.getItem("hasura_user_email"),
     });
     setFormData(newFormState);
   };
 
-  const handleSubmit = e => {
+  const handleSubmit = (e, mutationVariableKey) => {
     e.preventDefault();
-
-    console.log("Submitting RelatedRecordsTable form data:", formData);
 
     // Append form data state to mutation template
     mutation.variables.changes = { ...formData };
     // TODO: instead of personId, use a generic key variable
     // and convert it to camelcase for the mutation object
-    mutation.variables.personId = editRow[keyField];
+    mutation.variables[mutationVariableKey] = editRow[keyField];
 
     props.client.mutate(mutation).then(res => {
       if (!res.errors) {
@@ -108,30 +103,58 @@ const RelatedRecordsTable = ({
 
                     const fieldLookupPrefix =
                       fieldConfig.fields[field].lookupPrefix;
+
+                    const updateFieldKey = fieldConfig.fields[field]
+                      .updateFieldKey
+                      ? fieldConfig.fields[field].updateFieldKey
+                      : field;
+
+                    const mutationVariable =
+                      fieldConfig.fields[field].mutationVariableKey;
+
+                    const uiType = fieldConfig.fields[field].format;
+
                     return (
                       <td key={i}>
                         {isEditing && (
-                          <form onSubmit={e => handleSubmit(e)}>
-                            <Input
-                              name={field}
-                              id={field}
-                              onChange={e => handleInputChange(e)}
-                              defaultValue={
-                                row[field][`${fieldLookupPrefix}_id`]
-                              }
-                              type="select"
-                            >
-                              {lookupOptions.map(option => {
-                                return (
-                                  <option
-                                    value={option[`${fieldLookupPrefix}_id`]}
-                                    key={option[`${fieldLookupPrefix}_id`]}
-                                  >
-                                    {option[`${fieldLookupPrefix}_desc`]}
-                                  </option>
-                                );
-                              })}
-                            </Input>
+                          <form
+                            onSubmit={e => handleSubmit(e, mutationVariable)}
+                          >
+                            {uiType === "text" && (
+                              <Input
+                                type="text"
+                                defaultValue={formatValue(row, field)}
+                                onChange={e =>
+                                  handleInputChange(e, updateFieldKey)
+                                }
+                              />
+                            )}
+                            {uiType === "select" && (
+                              <Input
+                                name={field}
+                                id={field}
+                                onChange={e =>
+                                  handleInputChange(e, updateFieldKey)
+                                }
+                                defaultValue={
+                                  row[field][`${fieldLookupPrefix}_id`]
+                                }
+                                type="select"
+                              >
+                                {lookupOptions[
+                                  fieldConfig.fields[field].lookupOptions
+                                ].map(option => {
+                                  return (
+                                    <option
+                                      value={option[`${fieldLookupPrefix}_id`]}
+                                      key={option[`${fieldLookupPrefix}_id`]}
+                                    >
+                                      {option[`${fieldLookupPrefix}_desc`]}
+                                    </option>
+                                  );
+                                })}
+                              </Input>
+                            )}
                             <Button
                               type="submit"
                               block

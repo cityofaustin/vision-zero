@@ -20,6 +20,8 @@ const getInjurySeverityColor = desc => {
 export const primaryPersonDataMap = [
   {
     title: "Drivers/Primary People",
+    mutationVariableKey: "personId",
+
     fields: {
       unit_nbr: {
         label: "Unit",
@@ -32,6 +34,8 @@ export const primaryPersonDataMap = [
         lookup_desc: "injry_sev_desc",
         lookupOptions: "atd_txdot__injry_sev_lkp",
         lookupPrefix: "injry_sev",
+        updateFieldKey: "prsn_injry_sev_id",
+        mutationVariableKey: "personId",
         badge: true,
         badgeColor: getInjurySeverityColor,
       },
@@ -59,6 +63,8 @@ export const primaryPersonDataMap = [
 export const personDataMap = [
   {
     title: "Other People",
+    mutationVariableKey: "personId",
+
     fields: {
       unit_nbr: {
         label: "Unit",
@@ -71,6 +77,8 @@ export const personDataMap = [
         lookup_desc: "injry_sev_desc",
         lookupOptions: "atd_txdot__injry_sev_lkp",
         lookupPrefix: "injry_sev",
+        updateFieldKey: "prsn_injry_sev_id",
+        mutationVariableKey: "personId",
         badge: true,
         badgeColor: getInjurySeverityColor,
       },
