@@ -51,23 +51,38 @@ const Summary = () => {
               version.
             </span>
           </Alert>
-          <Alert
-            style={{
-              backgroundColor: colors.buttonBackground,
-              color: colors.dark,
-              borderStyle: "none",
-            }}
-          >
-            Data through {lastUpdated}. <strong>Crash data</strong>{" "}
-            <InfoPopover config={popoverConfig.map.trafficCrashes} /> includes
-            crashes within City of Austin geographic boundaries, inclusive of
-            all public safety jurisdictions.
-          </Alert>
         </Col>
       </Row>
       <Row className="px-xs-0 mx-xs-0 px-lg-3 mx-lg-4">
         <Col className="px-xs-0">
           <StyledSummary>
+            <Row className="summary-child">
+              <Alert
+                color="secondary"
+                style={{
+                  backgroundColor: colors.white,
+                  color: colors.dark,
+                }}
+                className="mb-0"
+              >
+                <div className="mb-2">
+                  Austin is consistently ranked as one of America's best places
+                  to live, but too many of our fellow Austinites are killed or
+                  seriously injured in traffic crashes each year. To learn more
+                  about what the City of Austin is doing to reduce traffic
+                  deaths and serious injuries in Austin, visit Austin
+                  Transportation's Vision Zero Program website and find updates
+                  on all recent bond-funded mobility projects on the City's
+                  Capital Projects Explorer tool.
+                </div>
+                <div>
+                  Data through {lastUpdated}. <strong>Crash data</strong>{" "}
+                  <InfoPopover config={popoverConfig.map.trafficCrashes} />{" "}
+                  includes crashes within City of Austin geographic boundaries,
+                  inclusive of all public safety jurisdictions.
+                </div>
+              </Alert>
+            </Row>
             <SummaryView />
             <Row>
               {children.map((child, i) => (
