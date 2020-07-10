@@ -1,16 +1,13 @@
 import React, { useState } from "react";
 import { useQuery } from "@apollo/react-hooks";
-import { useAuth0, isReadOnly } from "../../auth/authContext";
 
 import {
   Card,
   CardHeader,
   CardBody,
-  Table,
   Badge,
   Button,
   Collapse,
-  Input,
 } from "reactstrap";
 
 import RelatedRecordsTable from "./RelatedRecordsTable";

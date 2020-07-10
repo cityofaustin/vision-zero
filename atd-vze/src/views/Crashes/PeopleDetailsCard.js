@@ -24,7 +24,7 @@ const PeopleDetailsCard = ({ isExpanded, toggleAccordion, ...props }) => {
   const crashId = props.match.params.id;
 
   const { data: lookupSelectOptions } = useQuery(GET_PERSON_LOOKUPS);
-  const { loading, error, data, refetch } = useQuery(GET_PEOPLE, {
+  const { data, refetch } = useQuery(GET_PEOPLE, {
     variables: { crashId },
   });
 
