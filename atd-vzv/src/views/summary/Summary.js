@@ -32,6 +32,17 @@ const Summary = () => {
     [class*=".col-"] {
       padding: 0.75em;
     }
+
+    .banner {
+      background: ${colors.white};
+      color: ${colors.dark};
+    }
+
+    /* Style links for devices that show them as plain text */
+    a {
+      color: ${colors.infoDark};
+      text-decoration: underline;
+    }
   `;
 
   const lastUpdated = moment(dataEndDate).format("MMMM DD, YYYY");
@@ -57,23 +68,31 @@ const Summary = () => {
         <Col className="px-xs-0">
           <StyledSummary>
             <Row className="summary-child">
-              <Alert
-                color="secondary"
-                style={{
-                  backgroundColor: colors.white,
-                  color: colors.dark,
-                }}
-                className="mb-0"
-              >
+              <Alert color="secondary" className="mb-0 banner">
                 <div className="mb-2">
                   Austin is consistently ranked as one of America's best places
                   to live, but too many of our fellow Austinites are killed or
                   seriously injured in traffic crashes each year. To learn more
                   about what the City of Austin is doing to reduce traffic
                   deaths and serious injuries in Austin, visit Austin
-                  Transportation's Vision Zero Program website and find updates
-                  on all recent bond-funded mobility projects on the City's
-                  Capital Projects Explorer tool.
+                  Transportation's Vision Zero Program{" "}
+                  <a
+                    href="https://austintexas.gov/page/programs-and-initiatives"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    website
+                  </a>{" "}
+                  and find updates on all recent bond-funded mobility projects
+                  on the City's{" "}
+                  <a
+                    href="https://capitalprojects.austintexas.gov/projects?categoryId=Mobility%2520Infrastructure:&tab=projects"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Capital Projects Explorer
+                  </a>{" "}
+                  tool.
                 </div>
                 <div>
                   Data through {lastUpdated}. <strong>Crash data</strong>{" "}
