@@ -5,7 +5,12 @@ import aphroditeInterface from "react-with-styles-interface-aphrodite";
 import DefaultTheme from "react-dates/lib/theme/DefaultTheme";
 import styled from "styled-components";
 import { DateRangePicker } from "react-dates";
-import { Input, FormGroup, Form, Col } from "reactstrap";
+import {
+  UncontrolledDropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownToggle,
+} from "reactstrap";
 import {
   dataStartDate,
   dataEndDate,
@@ -15,7 +20,11 @@ import {
 import { colors } from "../../constants/colors";
 import { useIsMobile } from "../../constants/responsive";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTimesCircle } from "@fortawesome/free-solid-svg-icons";
+import {
+  faRedoAlt,
+  faTimesCircle,
+  faCalendar,
+} from "@fortawesome/free-solid-svg-icons";
 
 const SideMapControlDateRange = ({ type }) => {
   const [focused, setFocused] = useState(null);
@@ -46,6 +55,7 @@ const SideMapControlDateRange = ({ type }) => {
       },
       color: {
         ...DefaultTheme.reactDates.color,
+        placeholderText: `${colors.dark}`, // Set to same color as .dropdown-header to overcome z-index issue (hide text)
         border: `transparent`, // Hide DateRangePicker border and show StyledButtonContainer instead
         selected: {
           backgroundColor: `${colors.dark}`,
@@ -131,6 +141,16 @@ const SideMapControlDateRange = ({ type }) => {
   const isMobile = useIsMobile();
 
   // Create year dropdown picker in calendar
+  const StyledMonthYearDropdown = styled(UncontrolledDropdown)`
+    .dropdown-header {
+      /* Set color and position to hide weekday calendar headers with unchangeable z-index */
+      background: ${colors.dark};
+      color: ${colors.white};
+      position: relative;
+      top: -2px;
+    }
+  `;
+
   const renderMonthElement = ({ month, onYearSelect }) => {
     let yearArray = [];
     for (let i = dataStartDate.year(); i <= dataEndDate.year(); i++) {
@@ -138,27 +158,26 @@ const SideMapControlDateRange = ({ type }) => {
     }
 
     return (
-      <Form className="form-inline justify-content-center">
-        <FormGroup row className="w-75">
-          <Col>
-            <Input
-              type="select"
-              name="select"
-              id="yearSelect"
-              value={month.year()}
-              onChange={(e) => {
-                onYearSelect(month, e.target.value);
+      <StyledMonthYearDropdown>
+        <DropdownToggle caret color="dark">
+          {month.format("MMMM YYYY")}
+        </DropdownToggle>
+        <DropdownMenu flip={false}>
+          <DropdownItem header className="dropdown-header">
+            Choose a year
+          </DropdownItem>
+          {yearArray.map((year) => (
+            <DropdownItem
+              key={`${month.format("MMMM")}-${year}`}
+              onClick={() => {
+                onYearSelect(month, year);
               }}
             >
-              {yearArray.map((year) => (
-                <option value={year}>
-                  {month.format("MMMM")} {year}
-                </option>
-              ))}
-            </Input>
-          </Col>
-        </FormGroup>
-      </Form>
+              {month.format("MMMM")} {year}
+            </DropdownItem>
+          ))}
+        </DropdownMenu>
+      </StyledMonthYearDropdown>
     );
   };
 
@@ -189,19 +208,32 @@ const SideMapControlDateRange = ({ type }) => {
     border-radius: 4px;
     padding-left: 2px;
 
-    /* Center and enlarge picker reset button */
-    .reset-button {
-      position: relative;
-      top: 5px;
-      right: 2px;
-      width: 22px;
-      height: 22px;
-      cursor: pointer;
+    /* Center start and end date inputs */
+    [id^="start_date_"],
+    [id^="end_date_"] {
+      text-align: center;
     }
   `;
 
+  // Center and size calendar icon or button
+  const calendarInputIconStyles = `position: relative;
+    top: 2px;
+    width: 16px;
+    height: 16px;`;
+
+  const StyledCalendarIcon = styled(FontAwesomeIcon)`
+    ${calendarInputIconStyles}
+    left: 1px;
+  `;
+
+  const StyledRedoButton = styled(FontAwesomeIcon)`
+    ${calendarInputIconStyles}
+    right: 1px;
+    cursor: pointer;
+  `;
+
   return (
-    <StyledButtonContainer className="pr-0 picker-outline w-100">
+    <StyledButtonContainer className="pr-0 picker-outline">
       <DateRangePicker
         startDateId={`start_date_${type}`} // PropTypes.string.isRequired,
         endDateId={`end_date_${type}`} // PropTypes.string.isRequired,
@@ -209,7 +241,11 @@ const SideMapControlDateRange = ({ type }) => {
         endDate={end} // momentPropTypes.momentObj or null,
         onDatesChange={handleDateChange} // PropTypes.func.isRequired,
         focusedInput={focused} // PropTypes.oneOf([START_DATE, END_DATE]) or null,
-        onFocusChange={(focusedInput) => setFocused(focusedInput)} // PropTypes.func.isRequired,
+        onFocusChange={(focusedInput) => {
+          setFocused(focusedInput);
+          isMobile && document.activeElement.blur(); // Do not prompt the keyboard on mobile
+        }} // PropTypes.func.isRequired,
+        keepFocusOnInput
         minDate={dataStartDate}
         maxDate={dataEndDate}
         renderCalendarInfo={() => (isMobile && renderCalendarInfo()) || true} // Render custom close button on mobile
@@ -222,17 +258,25 @@ const SideMapControlDateRange = ({ type }) => {
         isOutsideRange={() => false} // Enable past dates
         isDayBlocked={isOutsideDateLimits} // Grey out dates
       />
-      {/* Reset button to restore default date range */}
-      <FontAwesomeIcon
-        className="reset-button"
-        title="Reset to current year"
-        icon={faTimesCircle}
-        color={colors.dark}
-        onClick={() => {
-          setStart(mapStartDate);
-          setEnd(mapEndDate);
-        }}
-      />
+      {/* Show reset button to restore default date range or show calendar icon if default*/}
+      {start !== mapStartDate || end !== mapEndDate ? (
+        <StyledRedoButton
+          title="Reset to default date range"
+          icon={faRedoAlt}
+          color={colors.dark}
+          onClick={() => {
+            setStart(mapStartDate);
+            setEnd(mapEndDate);
+          }}
+        />
+      ) : (
+        <StyledCalendarIcon
+          title="Default date range"
+          icon={faCalendar}
+          color={colors.dark}
+          onClick={() => null}
+        />
+      )}
     </StyledButtonContainer>
   );
 };
