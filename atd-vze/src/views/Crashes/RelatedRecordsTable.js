@@ -155,25 +155,29 @@ const RelatedRecordsTable = ({
                                 })}
                               </Input>
                             )}
-                            <Button
-                              type="submit"
-                              block
-                              color="primary"
-                              size="sm"
-                              className="btn-pill mt-2"
-                            >
-                              <i className="fa fa-check edit-toggle" />
-                            </Button>
-                            <Button
-                              type="cancel"
-                              block
-                              color="danger"
-                              size="sm"
-                              className="btn-pill mt-2"
-                              onClick={e => handleCancelClick(e)}
-                            >
-                              <i className="fa fa-times edit-toggle"></i>
-                            </Button>
+                            <div className="d-flex">
+                              <Button
+                                type="submit"
+                                block
+                                color="primary"
+                                size="sm"
+                                style={{ minWidth: "50px" }}
+                                className="btn-pill mt-2 mr-1"
+                              >
+                                <i className="fa fa-check edit-toggle" />
+                              </Button>
+                              <Button
+                                type="cancel"
+                                block
+                                color="danger"
+                                size="sm"
+                                className="btn-pill mt-2"
+                                style={{ minWidth: "50px" }}
+                                onClick={e => handleCancelClick(e)}
+                              >
+                                <i className="fa fa-times edit-toggle"></i>
+                              </Button>
+                            </div>
                           </form>
                         )}
 
