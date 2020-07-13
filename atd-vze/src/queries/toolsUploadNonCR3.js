@@ -17,7 +17,7 @@ mutation mutationInsertNonCR3 {
       constraint: atd_apd_blueform_pk,
       update_columns: [
         date
-        call_num
+        crash_id
         address
         longitude
         latitude
@@ -32,7 +32,7 @@ mutation mutationInsertNonCR3 {
 
 export const mutationNonCR3Data = {
   date: "",
-  call_num: -1,
+  crash_id: -1,
   address: "",
   longitude: "",
   latitude: "",
