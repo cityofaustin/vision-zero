@@ -1,5 +1,5 @@
 import React from "react";
-import CrashesByMonth from "./CrashesByMonth";
+import CrashesByYear from "./CrashesByYear";
 import CrashesByTimeOfDay from "./CrashesByTimeOfDay";
 import PeopleByDemographics from "./PeopleByDemographics";
 import CrashesByMode from "./CrashesByMode";
@@ -18,7 +18,7 @@ import styled from "styled-components";
 import moment from "moment";
 
 const children = [
-  { component: <CrashesByMonth /> },
+  { component: <CrashesByYear /> },
   { component: <CrashesByMode /> },
   { component: <CrashesByTimeOfDay /> },
   { component: <PeopleByDemographics /> },

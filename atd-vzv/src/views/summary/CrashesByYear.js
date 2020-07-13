@@ -14,7 +14,7 @@ import {
 } from "../../constants/time";
 import { colors } from "../../constants/colors";
 
-const CrashesByMonth = () => {
+const CrashesByYear = () => {
   // Set years order ascending
   const chartYearsArray = yearsArray().sort((a, b) => b - a);
 
@@ -165,7 +165,7 @@ const CrashesByMonth = () => {
     <Container className="m-0 p-0">
       <Row>
         <Col>
-          <h2 className="text-left font-weight-bold">By Month/Year</h2>
+          <h2 className="text-left font-weight-bold">By Year</h2>
         </Col>
       </Row>
       <Row>
@@ -302,4 +302,4 @@ const CrashesByMonth = () => {
   );
 };
 
-export default CrashesByMonth;
+export default CrashesByYear;

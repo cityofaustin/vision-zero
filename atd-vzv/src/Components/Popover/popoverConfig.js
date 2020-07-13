@@ -1,6 +1,7 @@
 import React from "react";
 import { responsive } from "../../constants/responsive";
 import raceEthnicityTable2018 from "./raceEthnicityTable2018.png";
+import byYearTable from "./byYearTable.png";
 
 const imgMargin = 24;
 
@@ -74,6 +75,32 @@ export const popoverConfig = {
                 US Census Bureau 2018 ACS 5-Year Estimate
               </a>
             </div>
+          </div>
+        </>
+      ),
+    }),
+    byYear: (isMobile) => ({
+      title: "Austin Area Population Histories & Forecasts",
+      html: (
+        <>
+          <div className="font-weight-bold">
+            Austin Area Population Histories & Forecasts
+          </div>
+          <div className="mb-2">
+            Below is a table showing how Austin's population continues to
+            increase each year. In future versions of the Vision Zero Viewer,
+            there will be a visualization showing crash numbers per 100,000
+            residents.{" "}
+            <img
+              className="mt-2"
+              src={byYearTable}
+              width={
+                isMobile
+                  ? responsive.infoPopoverMobileWidth - imgMargin
+                  : responsive.infoPopoverFullWidth - imgMargin
+              }
+              alt="Table showing how Austin's population continues to increase each year"
+            />
           </div>
         </>
       ),
