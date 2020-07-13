@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useMemo } from "react";
-import axios from "axios";
 import moment from "moment";
 import clonedeep from "lodash.clonedeep";
 
@@ -18,12 +17,10 @@ import {
   LinearXAxisTickLabel,
 } from "reaviz";
 import {
-  summaryCurrentYearStartDate,
-  summaryCurrentYearEndDate,
   yearsArray,
   dataEndDate,
 } from "../../constants/time";
-import { crashEndpointUrl } from "./queries/socrataQueries";
+
 import { getYearsAgoLabel } from "./helpers/helpers";
 import { colors } from "../../constants/colors";
 
@@ -41,68 +38,21 @@ const CrashesByTimeOfDay = (props) => {
     []
   );
 
-  useEffect(() => {
-    const dayOfWeekArray = moment.weekdaysShort();
+  const dayOfWeekArray = moment.weekdaysShort();
 
-    const buildDataArray = () => {
-      // This array holds weekday totals for each hour window within a day
-      // Reaviz Heatmap expects array of weekday total objs to be reversed in order
-      const hourWindowTotalsByDay = dayOfWeekArray
-        .map((day) => ({ key: day, data: null })) // Initialize totals as null to unweight 0 in viz
-        .reverse();
+  const buildDataArray = () => {
+    // This array holds weekday totals for each hour window within a day
+    // Reaviz Heatmap expects array of weekday total objs to be reversed in order
+    const hourWindowTotalsByDay = dayOfWeekArray
+      .map((day) => ({ key: day, data: null })) // Initialize totals as null to unweight 0 in viz
+      .reverse();
 
-      // Return array of objs for each hour window that holds totals of each day of the week
-      return hourBlockArray.map((hour) => ({
-        key: hour,
-        data: clonedeep(hourWindowTotalsByDay),
-      }));
-    };
-
-    const calculateHourBlockTotals = (records) => {
-      const dataArray = buildDataArray();
-
-      records.forEach((record) => {
-        const recordDateTime = moment(record.crash_date);
-        const recordHour = recordDateTime.format("hhA");
-        const recordDay = recordDateTime.format("ddd");
-
-        const hourData = dataArray.find((hour) => hour.key === recordHour).data;
-        const dayToIncrement = hourData.find((day) => day.key === recordDay);
-
-        switch (crashType.name) {
-          case "fatalities":
-            dayToIncrement.data += parseInt(record.death_cnt);
-            break;
-          case "seriousInjuries":
-            dayToIncrement.data += parseInt(record.sus_serious_injry_cnt);
-            break;
-          default:
-            dayToIncrement.data +=
-              parseInt(record.death_cnt) +
-              parseInt(record.sus_serious_injry_cnt);
-            break;
-        }
-      });
-
-      return dataArray;
-    };
-
-    const getFatalitiesByYearsAgoUrl = () => {
-      const yearsAgoDate = moment().subtract(activeTab, "year").format("YYYY");
-      let queryUrl =
-        activeTab === 0
-          ? `${crashEndpointUrl}?$where=${crashType.queryStringCrash} AND crash_date between '${summaryCurrentYearStartDate}T00:00:00' and '${summaryCurrentYearEndDate}T23:59:59'`
-          : `${crashEndpointUrl}?$where=${crashType.queryStringCrash} AND crash_date between '${yearsAgoDate}-01-01T00:00:00' and '${yearsAgoDate}-12-31T23:59:59'`;
-      return queryUrl;
-    };
-
-    // Wait for crashType to be passed up from setCrashType component,
-    // then fetch records for selected year
-    if (crashType.queryStringCrash)
-      axios.get(getFatalitiesByYearsAgoUrl()).then((res) => {
-        setHeatmapData(calculateHourBlockTotals(res.data));
-      });
-  }, [activeTab, crashType, hourBlockArray]);
+    // Return array of objs for each hour window that holds totals of each day of the week
+    return hourBlockArray.map((hour) => ({
+      key: hour,
+      data: clonedeep(hourWindowTotalsByDay),
+    }));
+  };
 
   const formatValue = (d) => {
     const value = d.data.value ? d.data.value : 0;
@@ -142,42 +92,56 @@ const CrashesByTimeOfDay = (props) => {
   useEffect(() => {
     const currentYear = activeTabToYear(activeTab);
 
+    const currentValueByMode = (mode, node) => {
+
+      switch (mode) {
+        case "fatalities":
+        {
+          return node.death_cnt;
+        }
+          break;
+        case "seriousInjuries":
+        {
+          return node.sus_serious_injry_cnt;
+        }
+          break;
+        default: {
+          return (
+            node.death_cnt + node.sus_serious_injry_cnt
+          );
+        }
+      }
+    };
+
     console.log("crashType", crashType);
     console.log("activeTab", activeTab);
     console.log("heatmapData", heatmapData);
     console.log("currentYear", currentYear);
 
-    const dd = props.data.filter(dayHourNode => {
+    const newData = props.data.filter(dayHourNode => {
       return String(dayHourNode.year) === String(currentYear);
-    }).reduce((a, n) => {
-      a[n.hour]["key"] = "12AM";
-      a[n.hour]["data"][dowToNum(n.dow)] = {
-        key: n.dow,
-        data:
+    }).reduce((acc, currentNode, i) => {
+      const nodeHour = parseInt(currentNode.hour);
+      if(i === 1) {
+        const originalAcc = {...acc};
+        acc = buildDataArray();
+
+        acc[nodeHour]["data"][dowToNum(currentNode.dow)]["data"] = 0;
+        acc[nodeHour]["data"][dowToNum(currentNode.dow)]["data"] +=
+          currentValueByMode(crashType.name, originalAcc);
       }
+
+      acc[nodeHour]["data"][dowToNum(currentNode.dow)]["data"] +=
+        currentValueByMode(crashType.name, currentNode);
+
+      if (acc[nodeHour]["data"][dowToNum(currentNode.dow)]["data"] === 0){
+        acc[nodeHour]["data"][dowToNum(currentNode.dow)]["data"] = null;
+      }
+      return acc;
     });
 
-    /*
-
-    0:
-    key: "12AM"
-    data: Array(7)
-      0: {key: "Sat", data: 3}
-      1: {key: "Fri", data: 2}
-      2: {key: "Thu", data: 1}
-      3: {key: "Wed", data: 1}
-      4: {key: "Tue", data: 2}
-      5: {key: "Mon", data: 4}
-      6:
-        data: 11
-        key: "Sun"
-
-
-
-    */
-  }, [activeTab]);
-
-
+    setHeatmapData(newData);
+  }, [activeTab, crashType]);
 
   return (
     <Container className="m-0 p-0">
