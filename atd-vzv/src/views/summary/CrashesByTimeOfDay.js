@@ -27,7 +27,7 @@ import { crashEndpointUrl } from "./queries/socrataQueries";
 import { getYearsAgoLabel } from "./helpers/helpers";
 import { colors } from "../../constants/colors";
 
-const CrashesByTimeOfDay = () => {
+const CrashesByTimeOfDay = (props) => {
   const [activeTab, setActiveTab] = useState(0);
   const [crashType, setCrashType] = useState([]);
   const [heatmapData, setHeatmapData] = useState([]);
@@ -120,6 +120,64 @@ const CrashesByTimeOfDay = () => {
       margin-right: 5px;
     }
   `;
+
+  const activeTabToYear = (tab) => {
+    return moment().subtract(tab, "year").format("YYYY");
+  }
+
+  const dowMap = {
+    "Sat": 0,
+    "Fri": 1,
+    "Thu": 2,
+    "Wed": 3,
+    "Tue": 4,
+    "Mon": 5,
+    "Sun": 6,
+  };
+
+  const dowToNum = (dow) => {
+    return dowMap[dow];
+  }
+
+  useEffect(() => {
+    const currentYear = activeTabToYear(activeTab);
+
+    console.log("crashType", crashType);
+    console.log("activeTab", activeTab);
+    console.log("heatmapData", heatmapData);
+    console.log("currentYear", currentYear);
+
+    const dd = props.data.filter(dayHourNode => {
+      return String(dayHourNode.year) === String(currentYear);
+    }).reduce((a, n) => {
+      a[n.hour]["key"] = "12AM";
+      a[n.hour]["data"][dowToNum(n.dow)] = {
+        key: n.dow,
+        data:
+      }
+    });
+
+    /*
+
+    0:
+    key: "12AM"
+    data: Array(7)
+      0: {key: "Sat", data: 3}
+      1: {key: "Fri", data: 2}
+      2: {key: "Thu", data: 1}
+      3: {key: "Wed", data: 1}
+      4: {key: "Tue", data: 2}
+      5: {key: "Mon", data: 4}
+      6:
+        data: 11
+        key: "Sun"
+
+
+
+    */
+  }, [activeTab]);
+
+
 
   return (
     <Container className="m-0 p-0">
