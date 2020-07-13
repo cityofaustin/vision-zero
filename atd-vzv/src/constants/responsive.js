@@ -13,7 +13,16 @@ export const responsive = {
   headerButtonWidth: 140,
   headerLogoOffset: 34,
   drawerWidth: 300,
+  datePickerTwoMonthsHeight: 700, // Height for two months to fit in mobile datepicker view
+  infoPopoverFullWidth: 500,
+  infoPopoverMobileWidth: 280,
 };
 
-export const useIsMobile = () =>
+export const useIsTablet = () =>
   useWindowSize().width <= responsive.bootstrapMedium;
+
+export const useIsMobile = () =>
+  useWindowSize().width <= responsive.bootstrapExtraSmall;
+
+export const useCanTwoMonthsFit = () =>
+  useWindowSize().height >= responsive.datePickerTwoMonthsHeight;

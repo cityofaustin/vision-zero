@@ -1,6 +1,8 @@
 export const unitDataMap = [
   {
     title: "Unit",
+    mutationVariableKey: "unitId",
+
     fields: {
       unit_nbr: {
         label: "Unit",
@@ -38,6 +40,8 @@ export const unitDataMap = [
         lookup_desc: "trvl_dir_desc",
         lookupOptions: "atd_txdot__trvl_dir_lkp",
         lookupPrefix: "trvl_dir",
+        updateFieldKey: "travel_direction",
+        mutationVariableKey: "unitId",
       },
       movement: {
         edit_field_name: "movement_id",
@@ -47,6 +51,20 @@ export const unitDataMap = [
         lookup_desc: "movement_desc",
         lookupOptions: "atd_txdot__movt_lkp",
         lookupPrefix: "movement",
+        updateFieldKey: "movement_id",
+        mutationVariableKey: "unitId",
+      },
+      death_cnt: {
+        label: "Fatalities",
+        editable: true,
+        format: "text",
+        mutationVariableKey: "unitId",
+      },
+      sus_serious_injry_cnt: {
+        label: "Suspected Serious Injuries",
+        editable: true,
+        format: "text",
+        mutationVariableKey: "unitId",
       },
       contributing_factor_1: {
         label: "Primary Contributing Factor",

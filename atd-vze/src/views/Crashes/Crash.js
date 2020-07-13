@@ -25,6 +25,7 @@ import { crashDataMap } from "./crashDataMap";
 import "./crash.scss";
 
 import { GET_CRASH, UPDATE_CRASH } from "../../queries/crashes";
+import { GET_PEOPLE } from "../../queries/people";
 
 const calculateYearsLifeLost = people => {
   // Assume 75 year life expectancy,
@@ -48,13 +49,21 @@ function Crash(props) {
   const { loading, error, data, refetch } = useQuery(GET_CRASH, {
     variables: { crashId },
   });
+  const {
+    loading: peopleLoading,
+    error: peopleError,
+    data: peopleData,
+  } = useQuery(GET_PEOPLE, {
+    variables: { crashId },
+  });
 
   const [editField, setEditField] = useState("");
   const [formData, setFormData] = useState({});
   const [isEditingCoords, setIsEditingCoords] = useState(false);
 
-  if (loading) return "Loading...";
+  if (loading || peopleLoading) return "Loading...";
   if (error) return `Error! ${error.message}`;
+  if (peopleError) return `Error! ${peopleError.message}`;
 
   const createGeocoderAddressString = data => {
     const geocoderAddressFields = [
@@ -138,7 +147,7 @@ function Crash(props) {
 
   const mapGeocoderAddress = createGeocoderAddressString(data);
   const yearsLifeLostCount = calculateYearsLifeLost(
-    data.atd_txdot_primaryperson.concat(data.atd_txdot_person)
+    peopleData.atd_txdot_primaryperson.concat(peopleData.atd_txdot_person)
   );
 
   return (

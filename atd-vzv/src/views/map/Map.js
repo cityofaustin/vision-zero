@@ -20,7 +20,7 @@ import {
   travisCountyDataLayer,
 } from "./map-style";
 import axios from "axios";
-import { useIsMobile } from "../../constants/responsive";
+import { useIsTablet } from "../../constants/responsive";
 
 import "mapbox-gl/dist/mapbox-gl.css";
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css"; // Get out-of-the-box icons
@@ -50,7 +50,7 @@ const Map = () => {
   // Create ref to map to call Mapbox GL functions on instance
   const mapRef = useRef();
 
-  const isMobile = useIsMobile();
+  const isTablet = useIsTablet();
 
   const [mapData, setMapData] = useState("");
   const [interactiveLayerIds, setInteractiveLayerIds] = useState(null);
@@ -76,30 +76,29 @@ const Map = () => {
   useEffect(() => {
     // Sort and count crash data into fatality and injury subsets
     const sortAndCountMapData = (data) => {
-      const crashCounts = {};
-      const features = data.features.reduce(
-        (acc, feature) => {
-          crashCounts["injury"] =
-            (crashCounts["injury"] || 0) +
-            parseInt(feature.properties.sus_serious_injry_cnt);
+      const crashCounts = { injury: 0, fatality: 0 };
+      const features =
+        data.features &&
+        data.features.reduce(
+          (acc, feature) => {
+            crashCounts["injury"] += parseInt(
+              feature.properties.sus_serious_injry_cnt
+            );
+            crashCounts["fatality"] += parseInt(feature.properties.death_cnt);
 
-          crashCounts["fatality"] =
-            (crashCounts["fatality"] || 0) +
-            parseInt(feature.properties.death_cnt);
-
-          if (parseInt(feature.properties.sus_serious_injry_cnt) > 0) {
-            acc.injuries.features.push(feature);
+            if (parseInt(feature.properties.sus_serious_injry_cnt) > 0) {
+              acc.injuries.features.push(feature);
+            }
+            if (parseInt(feature.properties.death_cnt) > 0) {
+              acc.fatalities.features.push(feature);
+            }
+            return acc;
+          },
+          {
+            fatalities: { ...data, features: [] },
+            injuries: { ...data, features: [] },
           }
-          if (parseInt(feature.properties.death_cnt) > 0) {
-            acc.fatalities.features.push(feature);
-          }
-          return acc;
-        },
-        {
-          fatalities: { ...data, features: [] },
-          injuries: { ...data, features: [] },
-        }
-      );
+        );
 
       setCrashCounts(crashCounts);
       return features;
@@ -306,8 +305,8 @@ const Map = () => {
       mapboxApiAccessToken={MAPBOX_TOKEN}
       getCursor={_getCursor}
       interactiveLayerIds={interactiveLayerIds}
-      onHover={!isMobile ? _onSelectCrashPoint : null}
-      onClick={isMobile ? _onSelectCrashPoint : null}
+      onHover={!isTablet ? _onSelectCrashPoint : null}
+      onClick={isTablet ? _onSelectCrashPoint : null}
       ref={(ref) => (mapRef.current = ref && ref.getMap())}
     >
       {/* Provide empty source and layer as target for beforeId params to set order of layers */}
@@ -333,7 +332,7 @@ const Map = () => {
         <MapInfoBox
           selectedFeature={selectedFeature}
           setSelectedFeature={setSelectedFeature}
-          isMobile={isMobile}
+          isTablet={isTablet}
           type={selectedFeature.layer.id}
         />
       )}

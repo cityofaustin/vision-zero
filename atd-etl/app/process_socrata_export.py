@@ -72,7 +72,7 @@ for config in query_configs:
     client.replace(config["dataset_uid"], [])
     records = None
     offset = 0
-    limit = 6000
+    limit = 1000
     total_records = 0
 
     # Query records from Hasura and upsert to Socrata
