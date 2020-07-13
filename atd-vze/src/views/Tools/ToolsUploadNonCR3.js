@@ -412,9 +412,6 @@ const ToolsUploadNonCR3 = () => {
     if (recordsToProcess.length > 0)
       executeSave()
         .then(() => {
-          setModalSaveProcess(false);
-          setModalSaveConfirm(false);
-          setModalFeedback(true);
           setFeedback({
             title: "Success",
             message: "The save process was successful.",
@@ -423,13 +420,24 @@ const ToolsUploadNonCR3 = () => {
           setProcessedRecords(0);
         })
         .catch(error => {
-          setModalFeedback(true);
           setFeedback({
             title: "Error",
-            message: error,
+            message: String(error),
           });
         });
   }, [recordsToProcess]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  /**
+   * On transaction feedback hide save process dialogs
+   */
+  useEffect(() => {
+    const type = feedback.title || "undefined";
+    if(type === "Error" || type === "Success") {
+      setModalSaveProcess(false);
+      setModalSaveConfirm(false);
+      setModalFeedback(true);
+    }
+  }, [feedback]);
 
   /**
    * Handles the clicking on the download spreadsheet button.
