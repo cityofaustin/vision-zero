@@ -140,6 +140,40 @@ export const popoverConfig = {
             </a>
             .
           </div>
+          <div>
+            <div className="font-weight-bold mb-2">Definitions</div>
+            <div className="mb-2">
+              <strong>Fatality</strong>: A fatality is defined as a death that
+              resulted due to injuries sustained from the crash, at the scene or
+              within 30 days of the crash.
+            </div>
+            <div className="mb-2">
+              <div className="mb-2">
+                <strong>Suspected Serious Injury</strong>: A suspected serious
+                is defined as a severe injury that prevents continuation of
+                normal activities, including:
+              </div>
+              <ul>
+                <li>
+                  Severe laceration resulting in exposure of underlying
+                  tissues/muscle/organs or resulting in significant loss of
+                  blood
+                </li>
+                <li>Broken or distorted extremity (arm or leg)</li>
+                <li>Crush injuries</li>
+                <li>
+                  Suspected skull, chest, or abdominal injury other than bruises
+                  or minor lacerations
+                </li>
+                <li>
+                  Significant burns (second and third degree burns over 10% or
+                  more of the body)
+                </li>
+                <li>Unconsciousness when taken from the crash scene</li>
+                <li>Paralysis</li>
+              </ul>
+            </div>
+          </div>
         </>
       ),
     },
