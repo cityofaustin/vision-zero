@@ -312,6 +312,30 @@ const ToolsUploadNonCR3 = () => {
       }
     }
 
+    // We have data, let's check if there are any duplicates
+    const counts = getDuplicateCount(data);
+
+    const duplicates = Object.keys(counts).filter((node) => {
+      return counts[node] > 1;
+    }).map(node => {
+      return `${node}: ${counts[node]} occurrences`;
+    })
+
+    if(duplicates.length > 0) {
+      setFeedback(
+        {
+          title: "Error",
+          message: <div>
+            <p>Validation Error: Within the <strong>{data.length}</strong> existing records, there are <strong>{duplicates.length}</strong> with the same Crash IDs:</p>
+            <textarea style={{"width": "100%", "height": "15rem"}}>
+                {String(duplicates.join(",\n"))}
+              </textarea>
+          </div>
+        }
+      )
+      return;
+    }
+
     /**
      * Once we have our data, from main load sequence or from the hot table
      * we must create a copy we can modify...
