@@ -101,6 +101,18 @@ export const popoverConfig = {
               }
               alt="Table showing how Austin's population continues to increase each year"
             />
+            <div className="mt-2">
+              Source:
+              <a
+                href="https://www.austintexas.gov/sites/default/files/files/Planning/Demographics/austin_forecast_2019_pub.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Ryan Robinson, City Demographer, Department of Planning, City of
+                Austin. November 2018
+              </a>
+              .
+            </div>
           </div>
         </>
       ),
