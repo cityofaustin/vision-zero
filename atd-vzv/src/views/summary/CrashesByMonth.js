@@ -14,7 +14,7 @@ import {
 } from "../../constants/time";
 import { colors } from "../../constants/colors";
 
-const CrashesByMonth = () => {
+const CrashesByMonth = props => {
   // Set years order ascending
   const chartYearsArray = yearsArray().sort((a, b) => b - a);
 
@@ -34,83 +34,58 @@ const CrashesByMonth = () => {
   const chartRef = useRef();
 
   useEffect(() => {
-    const calculateYearMonthlyTotals = (data) => {
-      // Determine if the data is a complete year or not and which records to process
-      const isCurrentYear =
-        data.length > 0 &&
-        data[0].crash_date.includes(dataEndDate.format("YYYY"));
-
-      const monthLimit = isCurrentYear ? dataEndDate.format("MM") : "12";
-
-      let monthTotalArray = [];
-      for (let i = 1; i <= parseInt(monthLimit); i++) {
-        monthTotalArray.push(0);
-      }
-
-      // Calculate totals for each month in data
-      const monthTotals = data.reduce((acc, record) => {
-        const recordMonth = moment(record.crash_date).format("MM");
-        const monthIndex = parseInt(recordMonth) - 1;
-
-        if (monthIndex < monthTotalArray.length) {
-          switch (crashType.name) {
-            case "fatalities":
-              acc[monthIndex] += parseInt(record.death_cnt);
-              break;
-            case "seriousInjuries":
-              acc[monthIndex] += parseInt(record.sus_serious_injry_cnt);
-              break;
-            default:
-              acc[monthIndex] +=
-                parseInt(record.death_cnt) +
-                parseInt(record.sus_serious_injry_cnt);
-              break;
-          }
-        }
-        return acc;
-      }, monthTotalArray);
-
-      // Accumulate the monthly totals over the year of data
-      const accumulatedTotals = monthTotals.reduce((acc, month, i) => {
-        acc.push((month += acc[i - 1] || 0));
-        return acc;
-      }, []);
-
-      return accumulatedTotals;
-    };
-
-    // Wait for crashType to be passed up from setCrashType component
-    if (crashType.queryStringCrash) {
-      const getChartData = async () => {
-        let newData = {};
-        // Use Promise.all to let all requests resolve before setting chart data by year
-        await Promise.all(
-          yearsArray().map(async (year) => {
-            // If getting data for current year (only including years past January), set end of query to last day of previous month,
-            // else if getting data for previous years, set end of query to last day of year
-            let endDate =
-              year.toString() === dataEndDate.format("YYYY")
-                ? `${summaryCurrentYearEndDate}T23:59:59`
-                : `${year}-12-31T23:59:59`;
-            let url = `${crashEndpointUrl}?$where=${crashType.queryStringCrash} AND crash_date between '${year}-01-01T00:00:00' and '${endDate}'&$order=crash_date ASC`;
-            await axios.get(url).then((res) => {
-              const yearData = calculateYearMonthlyTotals(res.data);
-              newData = { ...newData, ...{ [year]: yearData } };
-            });
-            return null;
-          })
-        );
-        setChartData(newData);
-      };
-      getChartData();
-    }
-  }, [crashType]);
-
-  useEffect(() => {
     !!chartRef.current &&
       !!chartData &&
       setChartLegend(chartRef.current.chartInstance.generateLegend());
   }, [chartData, legendColors]);
+
+
+  useEffect(() => {
+    const currentValueByMode = (mode, accumulator, node) => {
+      const acc = accumulator.slice(-1).pop() || 0;
+      switch (mode) {
+        case "fatalities":
+        {
+          return acc + node.death_cnt;
+        }
+          break;
+        case "seriousInjuries":
+        {
+          return acc + node.sus_serious_injry_cnt;
+        }
+          break;
+        default: {
+          return (
+            acc + node.death_cnt + node.sus_serious_injry_cnt
+          );
+        }
+      }
+    };
+
+    const newData = props.data.reduce((accumulator, currentNode, index) => {
+      if (index === 1) {
+        const originalAcc = currentValueByMode(crashType.name,[], accumulator);
+        accumulator = {};
+        accumulator[currentNode.year] = [];
+        accumulator[currentNode.year].push(originalAcc);
+        accumulator[currentNode.year].push(
+          currentValueByMode(crashType.name, accumulator[currentNode.year], currentNode)
+        );
+        return accumulator;
+      }
+
+      // Otherwise, we proceed as normal...
+      if (!Array.isArray(accumulator[currentNode.year]))
+        accumulator[currentNode.year] = [];
+
+      accumulator[currentNode.year].push(
+        currentValueByMode(crashType.name, accumulator[currentNode.year], currentNode)
+      );
+      return accumulator;
+    });
+
+    setChartData(newData);
+  }, [crashType]);
 
   // Create dataset for each year, data property is an array of cumulative totals by month
   const createDatasets = () => {
@@ -185,7 +160,7 @@ const CrashesByMonth = () => {
             // Wrapping the chart in a div prevents it from getting caught in a rerendering loop
             <Container>
               <Line
-                ref={(ref) => (chartRef.current = ref)}
+                ref={ref => (chartRef.current = ref)}
                 data={data}
                 height={null}
                 width={null}
@@ -199,7 +174,7 @@ const CrashesByMonth = () => {
                   legend: {
                     display: false,
                   },
-                  legendCallback: function (chart) {
+                  legendCallback: function(chart) {
                     return (
                       <Row className="pb-2">
                         <Col xs={4} s={2} m={2} l={2} xl={2}>
@@ -217,78 +192,76 @@ const CrashesByMonth = () => {
                             <h3 className="h6 text-center py-1">Total</h3>
                           </div>
                         </Col>
-                        {
-                          // Reverse data and colors arrays and render so they appear chronologically
-                          [...chartYearsArray].reverse().map((year, i) => {
-                            const yearTotalData = chartData[year];
-                            const yearTotal =
-                              yearTotalData[yearTotalData.length - 1];
-                            const legendColor = legendColors[i];
+                        {// Reverse data and colors arrays and render so they appear chronologically
+                        [...chartYearsArray].reverse().map((year, i) => {
+                          const yearTotalData = chartData[year];
+                          const yearTotal =
+                            yearTotalData[yearTotalData.length - 1];
+                          const legendColor = legendColors[i];
 
-                            const updateLegendColors = () => {
-                              const legendColorsClone = [...legendColors];
-                              legendColor !== colors.buttonBackground
-                                ? legendColorsClone.splice(
-                                    i,
-                                    1,
-                                    colors.buttonBackground
-                                  )
-                                : legendColorsClone.splice(
-                                    i,
-                                    1,
-                                    chartColors.reverse()[i]
-                                  );
-                              setLegendColors(legendColorsClone);
-                            };
+                          const updateLegendColors = () => {
+                            const legendColorsClone = [...legendColors];
+                            legendColor !== colors.buttonBackground
+                              ? legendColorsClone.splice(
+                                  i,
+                                  1,
+                                  colors.buttonBackground
+                                )
+                              : legendColorsClone.splice(
+                                  i,
+                                  1,
+                                  chartColors.reverse()[i]
+                                );
+                            setLegendColors(legendColorsClone);
+                          };
 
-                            const customLegendClickHandler = () => {
-                              const legendItems = [
-                                ...chart.legend.legendItems,
-                              ].reverse();
-                              const legendItem = legendItems[i];
-                              const index = legendItem.datasetIndex;
-                              const ci = chartRef.current.chartInstance.chart;
-                              const meta = ci.getDatasetMeta(index);
+                          const customLegendClickHandler = () => {
+                            const legendItems = [
+                              ...chart.legend.legendItems,
+                            ].reverse();
+                            const legendItem = legendItems[i];
+                            const index = legendItem.datasetIndex;
+                            const ci = chartRef.current.chartInstance.chart;
+                            const meta = ci.getDatasetMeta(index);
 
-                              // See controller.isDatasetVisible comment
-                              meta.hidden =
-                                meta.hidden === null
-                                  ? !ci.data.datasets[index].hidden
-                                  : null;
+                            // See controller.isDatasetVisible comment
+                            meta.hidden =
+                              meta.hidden === null
+                                ? !ci.data.datasets[index].hidden
+                                : null;
 
-                              // We hid a dataset ... rerender the chart
-                              ci.update();
+                            // We hid a dataset ... rerender the chart
+                            ci.update();
 
-                              // Update legend colors to show data has been hidden
-                              updateLegendColors();
-                            };
+                            // Update legend colors to show data has been hidden
+                            updateLegendColors();
+                          };
 
-                            return (
-                              <Col xs={4} s={2} m={2} l={2} xl={2} key={i}>
-                                <StyledDiv>
-                                  <div
-                                    className="year-total-div"
-                                    onClick={customLegendClickHandler}
-                                  >
-                                    <hr
-                                      className="my-1"
-                                      style={{
-                                        border: `4px solid ${legendColor}`,
-                                      }}
-                                    ></hr>
-                                    <h4 className="h6 text-center py-1 mb-0">
-                                      <strong>{!!chartData && year}</strong>
-                                    </h4>
-                                    <hr className="my-1"></hr>
-                                    <h4 className="h6 text-center py-1">
-                                      {!!chartData && yearTotal}
-                                    </h4>
-                                  </div>
-                                </StyledDiv>
-                              </Col>
-                            );
-                          })
-                        }
+                          return (
+                            <Col xs={4} s={2} m={2} l={2} xl={2} key={i}>
+                              <StyledDiv>
+                                <div
+                                  className="year-total-div"
+                                  onClick={customLegendClickHandler}
+                                >
+                                  <hr
+                                    className="my-1"
+                                    style={{
+                                      border: `4px solid ${legendColor}`,
+                                    }}
+                                  ></hr>
+                                  <h4 className="h6 text-center py-1 mb-0">
+                                    <strong>{!!chartData && year}</strong>
+                                  </h4>
+                                  <hr className="my-1"></hr>
+                                  <h4 className="h6 text-center py-1">
+                                    {!!chartData && yearTotal}
+                                  </h4>
+                                </div>
+                              </StyledDiv>
+                            </Col>
+                          );
+                        })}
                       </Row>
                     );
                   },
