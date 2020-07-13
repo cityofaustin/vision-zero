@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import CrashesByMonth from "./CrashesByMonth";
 import CrashesByTimeOfDay from "./CrashesByTimeOfDay";
 import PeopleByDemographics from "./PeopleByDemographics";
@@ -16,15 +16,28 @@ import { Container, Row, Col, Alert } from "reactstrap";
 
 import styled from "styled-components";
 import moment from "moment";
+import axios from "axios";
 
-const children = [
-  { component: <CrashesByMonth /> },
-  { component: <CrashesByMode /> },
-  { component: <CrashesByTimeOfDay /> },
-  { component: <PeopleByDemographics /> },
-];
 
 const Summary = () => {
+  const [data, setData] = useState(null);
+  const children = data ? [
+    { component: <CrashesByMonth />, data: data.view_vzv_by_month_year },
+    { component: <CrashesByMode />, data: data.view_vzv_by_mode },
+    { component: <CrashesByTimeOfDay />, data: data.view_vzv_by_time_of_day },
+    { component: <PeopleByDemographics />, data: data.view_vzv_demographics_age_sex_eth },
+  ] : [];
+
+  useEffect(() => {
+    if (data === null) {
+      axios
+        .get("https://visionzero-staging.austinmobility.io/vzv_data/production/vzv_data.json")
+        .then(res => {
+          setData(res.data.data);
+        });
+    }
+  }, [data]);
+
   const StyledSummary = styled.div`
     /* Set padding for all Summary children in grid that are Bootstrap columns and have .summary-child class */
     .summary-child,
@@ -99,10 +112,10 @@ const Summary = () => {
                 </div>
               </Alert>
             </Row>
-            <SummaryView />
+            <SummaryView data={data && data.view_vzv_header_totals} />
             <Row>
               {children.map((child, i) => (
-                <SummaryCard key={i} child={child} />
+                <SummaryCard key={i} child={child}/>
               ))}
             </Row>
           </StyledSummary>
