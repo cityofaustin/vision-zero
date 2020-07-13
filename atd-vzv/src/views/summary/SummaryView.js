@@ -1,25 +1,10 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React from "react";
+
 import SummaryWidget from "../../Components/Widgets/SummaryWidget";
 import InfoPopover from "../../Components/Popover/InfoPopover";
 import { popoverConfig } from "../../Components/Popover/popoverConfig";
 import { Row, Col } from "reactstrap";
 
-import {
-  summaryCurrentYearStartDate,
-  summaryCurrentYearEndDate,
-  summaryLastYearStartDate,
-  summaryLastYearEndDate,
-  currentYearString as currentYear,
-  prevYearString as prevYear,
-} from "../../constants/time";
-import { personEndpointUrl, crashEndpointUrl } from "./queries/socrataQueries";
-import {
-  calcSummaryTotalFatalities,
-  getSummaryYearsOfLifeLost,
-  calcSummaryTotalSeriousInjuries,
-  calcSummaryTotalCrashes,
-} from "./helpers/helpers";
 import { colors } from "../../constants/colors";
 import {
   faCar,
@@ -28,53 +13,37 @@ import {
   faMedkit,
 } from "@fortawesome/free-solid-svg-icons";
 
-const SummaryView = () => {
-  const [fatalities, setFatalities] = useState(null);
-  const [yearsOfLifeLost, setYearsOfLifeLost] = useState(null);
-  const [seriousInjuries, setSeriousInjuries] = useState(null);
-  const [totalCrashes, setTotalCrashes] = useState(null);
+const SummaryView = (props) => {
+  let data = {
+    "fatalities": null,
+    "years_of_life_lost": null,
+    "sus_serious_injry_cnt": null,
+    "total_crashes": null,
+  };
 
-  useEffect(() => {
-    const fatalitiesUrl = `${crashEndpointUrl}?$where=(death_cnt > 0 AND crash_date between '${summaryCurrentYearStartDate}T00:00:00' and '${summaryCurrentYearEndDate}T23:59:59') OR (death_cnt > 0 AND crash_date between '${summaryLastYearStartDate}T00:00:00' and '${summaryLastYearEndDate}T23:59:59')`;
-    const yearsOfLifeLostUrl = `${personEndpointUrl}?$where=(prsn_injry_sev_id = '4' AND crash_date between '${summaryCurrentYearStartDate}T00:00:00' and '${summaryCurrentYearEndDate}T23:59:59') OR (prsn_injry_sev_id = '4' AND crash_date between '${summaryLastYearStartDate}T00:00:00' and '${summaryLastYearEndDate}T23:59:59')`;
-    const seriousInjuriesUrl = `${crashEndpointUrl}?$where=(sus_serious_injry_cnt > 0 AND crash_date between '${summaryCurrentYearStartDate}T00:00:00' and '${summaryCurrentYearEndDate}T23:59:59') OR (sus_serious_injry_cnt > 0 AND crash_date between '${summaryLastYearStartDate}T00:00:00' and '${summaryLastYearEndDate}T23:59:59')`;
-    const totalCrashesUrl = `${crashEndpointUrl}?$limit=100000&$where=(crash_date between '${summaryCurrentYearStartDate}T00:00:00' and '${summaryCurrentYearEndDate}T23:59:59') OR (crash_date between '${summaryLastYearStartDate}T00:00:00' and '${summaryLastYearEndDate}T23:59:59')`;
+  if(props.data) {
+    console.log("Summary View Data:", props.data);
+    data.fatalities = {};
+    data.fatalities[props.data[0].year] = props.data[0].death_cnt;
+    data.fatalities[props.data[1].year] = props.data[1].death_cnt;
 
-    const requestConfigs = [
-      {
-        url: fatalitiesUrl,
-        handler: calcSummaryTotalFatalities,
-        setter: setFatalities,
-      },
-      {
-        url: yearsOfLifeLostUrl,
-        handler: getSummaryYearsOfLifeLost,
-        setter: setYearsOfLifeLost,
-      },
-      {
-        url: seriousInjuriesUrl,
-        handler: calcSummaryTotalSeriousInjuries,
-        setter: setSeriousInjuries,
-      },
-      {
-        url: totalCrashesUrl,
-        handler: calcSummaryTotalCrashes,
-        setter: setTotalCrashes,
-      },
-    ];
+    data.years_of_life_lost = {};
+    data.years_of_life_lost[props.data[0].year] = props.data[0].years_of_life_lost;
+    data.years_of_life_lost[props.data[1].year] = props.data[1].years_of_life_lost;
 
-    requestConfigs.forEach((config) => {
-      const { url, setter, handler } = config;
-      axios
-        .get(url)
-        .then((res) => setter(handler(res.data, prevYear, currentYear)));
-    });
-  }, []);
+    data.sus_serious_injry_cnt = {};
+    data.sus_serious_injry_cnt[props.data[0].year] = props.data[0].sus_serious_injry_cnt;
+    data.sus_serious_injry_cnt[props.data[1].year] = props.data[1].sus_serious_injry_cnt;
+
+    data.total_crashes = {};
+    data.total_crashes[props.data[0].year] = props.data[0].total_crashes;
+    data.total_crashes[props.data[1].year] = props.data[1].total_crashes;
+  }
 
   const summaryWidgetsConfig = [
     {
       title: `Fatalities`,
-      totalsObject: fatalities,
+      totalsObject: data.fatalities,
       icon: faHeartbeat,
       color: colors.fatalities,
     },
@@ -83,19 +52,19 @@ const SummaryView = () => {
       infoPopover: (
         <InfoPopover config={popoverConfig.summary.yearsOfLifeLost} />
       ),
-      totalsObject: yearsOfLifeLost,
+      totalsObject: data.years_of_life_lost,
       icon: faHourglassHalf,
       color: colors.yearsOfLifeLost,
     },
     {
       title: `Serious Injuries`,
-      totalsObject: seriousInjuries,
+      totalsObject: data.sus_serious_injry_cnt,
       icon: faMedkit,
       color: colors.seriousInjuries,
     },
     {
       title: `Total Crashes`,
-      totalsObject: totalCrashes,
+      totalsObject: data.total_crashes,
       icon: faCar,
       color: colors.totalCrashes,
     },
