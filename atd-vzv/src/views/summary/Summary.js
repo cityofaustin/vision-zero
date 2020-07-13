@@ -9,7 +9,6 @@ import { colors } from "../../constants/colors";
 import { dataEndDate } from "../../constants/time";
 import InfoPopover from "../../Components/Popover/InfoPopover";
 import { popoverConfig } from "../../Components/Popover/popoverConfig";
-import DataModal from "./DataModal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 
@@ -38,7 +37,6 @@ const Summary = () => {
 
   return (
     <Container fluid>
-      <DataModal />
       {/* Create whitespace on sides of view until mobile */}
       <Row className="px-xs-0 mx-xs-0 px-lg-3 mx-lg-4 mt-4 mb-0">
         <Col>
