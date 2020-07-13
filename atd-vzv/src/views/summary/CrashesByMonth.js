@@ -75,7 +75,7 @@ const CrashesByMonth = props => {
     });
 
     setChartData(newData);
-  }, [crashType]);
+  }, [crashType, props.data]);
 
   // Create dataset for each year, data property is an array of cumulative totals by month
   const createDatasets = () => {
