@@ -93,7 +93,7 @@ const ToolsUploadNonCR3 = () => {
   const tableConfig = {
     colHeaders: [
       "Date",
-      "Call No.",
+      "Crash ID",
       "Address",
       "Xcoord",
       "Ycoord",
@@ -110,7 +110,7 @@ const ToolsUploadNonCR3 = () => {
         defaultDate: "",
       },
       {
-        data: "call_num",
+        data: "crash_id",
         type: "numeric",
       },
       {
@@ -158,8 +158,8 @@ const ToolsUploadNonCR3 = () => {
       errors.push("Invalid date");
     }
 
-    if (!isValidNumber(record["call_num"])) {
-      errors.push("Invalid call number");
+    if (!isValidNumber(record["crash_id"])) {
+      errors.push("Invalid crash id");
     }
 
     if (!isValidAddress(record["address"])) {
@@ -295,12 +295,12 @@ const ToolsUploadNonCR3 = () => {
          * If we are validating a hot table, then we must assume data is null
          * and we have to populate with the hot table's data which is a simple
          * array that needs to be transformed into a json array.
-         * @type {{date: *, address: *, hour: *, latitude: *, call_num: *, longitude: *}[]}
+         * @type {{date: *, address: *, hour: *, latitude: *, crash_id: *, longitude: *}[]}
          */
         data = hotTable.current.hotInstance.getData().map(record => {
           return {
             date: record[0],
-            call_num: record[1],
+            crash_id: record[1],
             address: record[2],
             longitude: record[3],
             latitude: record[4],
@@ -345,9 +345,24 @@ const ToolsUploadNonCR3 = () => {
   };
 
   /**
+   * Returns the number of duplicate call numbers.
+   * @param {Object} data
+   * @return {Array}
+   */
+  const getDuplicateCount = (data) => {
+    return data.reduce((acc, currNode) => {
+      // Convert the call num to string so we can use as a key
+      const crash_id = String(currNode["crash_id"]);
+      // Check if there is already value and add +1, or assign 1 to it.
+      acc[crash_id] = (acc[crash_id] || 0) + 1;
+      // Return new state of out count dictionary
+      return acc;
+    }, {});
+  }
+
+  /**
    * Saves the files into the database. Not yet implemented.
    * @param {Object} hotTable - The React reference to the hot table component
-   * @return {boolean}
    */
   const handleSave = hotTable => {
     // Generate the records to process...
@@ -356,7 +371,7 @@ const ToolsUploadNonCR3 = () => {
       .map(record => {
         return {
           date: record[0],
-          call_num: record[1],
+          crash_id: record[1],
           address: record[2],
           longitude: record[3],
           latitude: record[4],
@@ -367,6 +382,7 @@ const ToolsUploadNonCR3 = () => {
         return isRecordValid(record)[0];
       });
 
+    // If we have no duplicates, and valid data
     if (data.length === 0) {
       setFeedback({
         title: "No Valid Records Found",
@@ -375,10 +391,34 @@ const ToolsUploadNonCR3 = () => {
       });
       setModalFeedback(true);
       setModalSaveConfirm(false);
-      return;
     } else {
-      setModalSaveProcess(true);
-      setRecordsToProcess(data);
+      // We have data, let's check if there are any duplicates
+      const counts = getDuplicateCount(data);
+
+      const duplicates = Object.keys(counts).filter((node) => {
+        return counts[node] > 1;
+      }).map(node => {
+        return `${node}: ${counts[node]} occurrences`;
+      })
+
+      if(duplicates.length > 0) {
+        setModalSaveConfirm(false);
+        setFeedback(
+          {
+            title: "Error",
+            message: <div>
+              <p>Action canceled. Please resolve the duplicates before inserting. Within the <strong>{data.length}</strong> valid records, there are <strong>{duplicates.length}</strong> with the same Crash IDs:</p>
+              <textarea style={{"width": "100%", "height": "15rem"}}>
+                {String(duplicates.join(",\n"))}
+              </textarea>
+            </div>
+          }
+        )
+      } else {
+        // We have no duplicates, proceed...
+        setModalSaveProcess(true);
+        setRecordsToProcess(data);
+      }
     }
   };
 
