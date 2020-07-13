@@ -76,30 +76,29 @@ const Map = () => {
   useEffect(() => {
     // Sort and count crash data into fatality and injury subsets
     const sortAndCountMapData = (data) => {
-      const crashCounts = {};
-      const features = data.features.reduce(
-        (acc, feature) => {
-          crashCounts["injury"] =
-            (crashCounts["injury"] || 0) +
-            parseInt(feature.properties.sus_serious_injry_cnt);
+      const crashCounts = { injury: 0, fatality: 0 };
+      const features =
+        data.features &&
+        data.features.reduce(
+          (acc, feature) => {
+            crashCounts["injury"] += parseInt(
+              feature.properties.sus_serious_injry_cnt
+            );
+            crashCounts["fatality"] += parseInt(feature.properties.death_cnt);
 
-          crashCounts["fatality"] =
-            (crashCounts["fatality"] || 0) +
-            parseInt(feature.properties.death_cnt);
-
-          if (parseInt(feature.properties.sus_serious_injry_cnt) > 0) {
-            acc.injuries.features.push(feature);
+            if (parseInt(feature.properties.sus_serious_injry_cnt) > 0) {
+              acc.injuries.features.push(feature);
+            }
+            if (parseInt(feature.properties.death_cnt) > 0) {
+              acc.fatalities.features.push(feature);
+            }
+            return acc;
+          },
+          {
+            fatalities: { ...data, features: [] },
+            injuries: { ...data, features: [] },
           }
-          if (parseInt(feature.properties.death_cnt) > 0) {
-            acc.fatalities.features.push(feature);
-          }
-          return acc;
-        },
-        {
-          fatalities: { ...data, features: [] },
-          injuries: { ...data, features: [] },
-        }
-      );
+        );
 
       setCrashCounts(crashCounts);
       return features;

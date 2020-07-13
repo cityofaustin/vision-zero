@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import axios from "axios";
 import moment from "moment";
+import clonedeep from "lodash.clonedeep";
 
 import CrashTypeSelector from "../nav/CrashTypeSelector";
 import { Row, Col, Container, Button } from "reactstrap";
@@ -35,90 +36,54 @@ const CrashesByTimeOfDay = () => {
     if (activeTab !== tab) setActiveTab(tab);
   };
 
+  const hourBlockArray = useMemo(
+    () => [...Array(24).keys()].map((hour) => moment({ hour }).format("hhA")),
+    []
+  );
+
   useEffect(() => {
     const dayOfWeekArray = moment.weekdaysShort();
 
-    const hourBlockArray = [
-      "12AM",
-      "01AM",
-      "02AM",
-      "03AM",
-      "04AM",
-      "05AM",
-      "06AM",
-      "07AM",
-      "08AM",
-      "09AM",
-      "10AM",
-      "11AM",
-      "12PM",
-      "01PM",
-      "02PM",
-      "03PM",
-      "04PM",
-      "05PM",
-      "06PM",
-      "07PM",
-      "08PM",
-      "09PM",
-      "10PM",
-      "11PM",
-    ];
-
-    let dataArray = [];
-
     const buildDataArray = () => {
-      dataArray = [];
-      hourBlockArray.forEach((hour) => {
-        let hourObject = {
-          key: hour,
-          data: [],
-        };
-        dayOfWeekArray.forEach((day) => {
-          let dayObject = {
-            key: day,
-            data: 0,
-          };
-          hourObject.data.push(dayObject);
-        });
-        hourObject.data.reverse();
-        dataArray.push(hourObject);
-      });
+      // This array holds weekday totals for each hour window within a day
+      // Reaviz Heatmap expects array of weekday total objs to be reversed in order
+      const hourWindowTotalsByDay = dayOfWeekArray
+        .map((day) => ({ key: day, data: null })) // Initialize totals as null to unweight 0 in viz
+        .reverse();
+
+      // Return array of objs for each hour window that holds totals of each day of the week
+      return hourBlockArray.map((hour) => ({
+        key: hour,
+        data: clonedeep(hourWindowTotalsByDay),
+      }));
     };
 
-    const calculateHourBlockTotals = (data) => {
-      buildDataArray();
-      data.data.forEach((record) => {
-        const date = new Date(record.crash_date);
-        const dayOfWeek = date.getDay();
-        const time = record.crash_time;
-        const timeArray = time.split(":");
-        const hour = parseInt(timeArray[0]);
+    const calculateHourBlockTotals = (records) => {
+      const dataArray = buildDataArray();
+
+      records.forEach((record) => {
+        const recordDateTime = moment(record.crash_date);
+        const recordHour = recordDateTime.format("hhA");
+        const recordDay = recordDateTime.format("ddd");
+
+        const hourData = dataArray.find((hour) => hour.key === recordHour).data;
+        const dayToIncrement = hourData.find((day) => day.key === recordDay);
+
         switch (crashType.name) {
           case "fatalities":
-            dataArray[hour].data[dayOfWeek].data += parseInt(record.death_cnt);
+            dayToIncrement.data += parseInt(record.death_cnt);
             break;
           case "seriousInjuries":
-            dataArray[hour].data[dayOfWeek].data += parseInt(
-              record.sus_serious_injry_cnt
-            );
+            dayToIncrement.data += parseInt(record.sus_serious_injry_cnt);
             break;
           default:
-            dataArray[hour].data[dayOfWeek].data +=
+            dayToIncrement.data +=
               parseInt(record.death_cnt) +
               parseInt(record.sus_serious_injry_cnt);
             break;
         }
       });
-      // Set any 0 values to null so that the reaviz library
-      // recognizes them as "blank cells" and fills them accordingly
-      dataArray.forEach((hour) => {
-        hour.data.forEach((day) => {
-          if (day.data === 0) {
-            day.data = null;
-          }
-        });
-      });
+
       return dataArray;
     };
 
@@ -135,9 +100,9 @@ const CrashesByTimeOfDay = () => {
     // then fetch records for selected year
     if (crashType.queryStringCrash)
       axios.get(getFatalitiesByYearsAgoUrl()).then((res) => {
-        setHeatmapData(calculateHourBlockTotals(res));
+        setHeatmapData(calculateHourBlockTotals(res.data));
       });
-  }, [activeTab, crashType]);
+  }, [activeTab, crashType, hourBlockArray]);
 
   const formatValue = (d) => {
     const value = d.data.value ? d.data.value : 0;
