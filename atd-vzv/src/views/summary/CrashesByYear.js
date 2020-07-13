@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useIsMobile } from "../../constants/responsive";
 import axios from "axios";
 import moment from "moment";
 import { Line } from "react-chartjs-2";
@@ -6,6 +7,7 @@ import { Container, Row, Col } from "reactstrap";
 import styled from "styled-components";
 
 import CrashTypeSelector from "../nav/CrashTypeSelector";
+import InfoPopover from "../../Components/Popover/InfoPopover";
 import { crashEndpointUrl } from "./queries/socrataQueries";
 import {
   dataEndDate,
@@ -13,6 +15,7 @@ import {
   yearsArray,
 } from "../../constants/time";
 import { colors } from "../../constants/colors";
+import { popoverConfig } from "../../Components/Popover/popoverConfig";
 
 const CrashesByYear = () => {
   // Set years order ascending
@@ -31,6 +34,7 @@ const CrashesByYear = () => {
   const [chartLegend, setChartLegend] = useState(null);
   const [legendColors, setLegendColors] = useState([...chartColors].reverse());
 
+  const isMobile = useIsMobile();
   const chartRef = useRef();
 
   useEffect(() => {
@@ -165,7 +169,10 @@ const CrashesByYear = () => {
     <Container className="m-0 p-0">
       <Row>
         <Col>
-          <h2 className="text-left font-weight-bold">By Year</h2>
+          <h2 className="text-left font-weight-bold">
+            By Year{" "}
+            <InfoPopover config={popoverConfig.summary.byYear(isMobile)} />
+          </h2>
         </Col>
       </Row>
       <Row>
