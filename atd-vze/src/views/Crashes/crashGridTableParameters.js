@@ -74,12 +74,12 @@ export const crashGridTableColumns = {
 };
 
 export const nonCR3CrashGridTableColumns = {
-  form_id: {
+  crash_id: {
     primary_key: false, // We say no here bc there is no page to link to
     searchable: true,
     sortable: true,
     label_search: "Search by Crash Form ID",
-    label_table: "Crash Form ID",
+    label_table: "Crash ID",
     type: "Int",
   },
   date: {
