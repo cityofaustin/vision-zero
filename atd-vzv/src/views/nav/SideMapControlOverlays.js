@@ -60,9 +60,9 @@ const SideMapControlOverlays = () => {
   return (
     <Card className="mt-3 p-3 card-body">
       <Label className="section-title">
-        <h5>
+        <h3 className="h5">
           Overlays <InfoPopover config={popoverConfig.map.overlays} />
-        </h5>
+        </h3>
       </Label>
       {/* Create a button group for each overlay */}
       {Object.entries(overlays).map(([name, parameters], i) => (

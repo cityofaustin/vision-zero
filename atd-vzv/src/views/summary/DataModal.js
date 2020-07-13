@@ -9,7 +9,7 @@ const DataModal = () => {
     <Modal isOpen={modal} toggle={toggle}>
       <ModalHeader toggle={toggle}>Vision Zero Viewer</ModalHeader>
       <ModalBody>
-        <h4>Data Quality Disclaimer</h4>
+        <h3 className="h4">Data Quality Disclaimer</h3>
         Please note that the information currently being displayed may be
         outdated or inaccurate. Crash data obtained from the Texas Department of
         Transportation (TxDOT) Crash Record Information System (CRIS) database
