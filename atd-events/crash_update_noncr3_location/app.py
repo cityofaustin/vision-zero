@@ -31,7 +31,7 @@ def hasura_request(record):
         exit(0)
 
     try:
-        call_num = data["event"]["data"]["new"]["call_num"]
+        crash_id = data["event"]["data"]["new"]["crash_id"]
         old_location_id = data["event"]["data"]["new"]["location_id"]
     except Exception as e:
         print(
@@ -49,15 +49,15 @@ def hasura_request(record):
     }
 
     find_location_query = """
-       query getLocationForNonCR3($call_num:Int) {
-            find_location_for_noncr3_collision(args: {id: $call_num}){
+       query getLocationForNonCR3($crash_id:Int) {
+            find_location_for_noncr3_collision(args: {id: $crash_id}){
                 location_id
             }
        }
     """
 
     query_variables = {
-        "call_num": call_num
+        "crash_id": crash_id
     }
 
     json_body = {
@@ -80,24 +80,27 @@ def hasura_request(record):
             )
         )
 
-    new_location_id = response.json()["data"]["find_location_for_noncr3_collision"][0][
-        "location_id"
-    ]
+    try:
+        new_location_id = response.json()["data"]["find_location_for_noncr3_collision"][0][
+            "location_id"
+        ]
+    except:
+        new_location_id = None
 
     if new_location_id == old_location_id:
         print(json.dumps({"message": "Success. No Location ID update required"}))
     else:
         # Prep the mutation
         update_location_mutation = """
-            mutation updateNonCR3CrashLocationID($call_num: Int!, $locationId: String!) {
-                update_atd_apd_blueform(where: {call_num: {_eq: $call_num}}, _set: {location_id: $locationId}) {
+            mutation updateNonCR3CrashLocationID($crash_id: Int!, $locationId: String!) {
+                update_atd_apd_blueform(where: {crash_id: {_eq: $crash_id}}, _set: {location_id: $locationId}) {
                     affected_rows
                 }
             }
         """
 
         query_variables = {
-            "call_num": call_num,
+            "crash_id": crash_id,
             "locationId": new_location_id
         }
         mutation_json_body = {
