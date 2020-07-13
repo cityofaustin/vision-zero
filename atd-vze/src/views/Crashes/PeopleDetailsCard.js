@@ -1,40 +1,51 @@
 import React from "react";
+import { useQuery } from "@apollo/react-hooks";
 
 import {
   Card,
   CardHeader,
   CardBody,
-  Table,
   Badge,
   Button,
   Collapse,
 } from "reactstrap";
 
-const getInjurySeverityColor = desc => {
-  switch (desc) {
-    case "UNKNOWN":
-      return "muted";
-    case "NOT INJURED":
-      return "primary";
-    case "INCAPACITATING INJURY":
-      return "warning";
-    case "NON-INCAPACITATING INJURY":
-      return "warning";
-    case "POSSIBLE INJURY":
-      return "warning";
-    case "KILLED":
-      return "danger";
-    default:
-      break;
-  }
-};
+import RelatedRecordsTable from "./RelatedRecordsTable";
 
-const PeopleDetailsCard = ({
-  primaryPersonData,
-  personData,
-  isExpanded,
-  toggleAccordion,
-}) => {
+import { primaryPersonDataMap, personDataMap } from "./personDataMap";
+import { GET_PERSON_LOOKUPS } from "../../queries/lookups";
+import {
+  GET_PEOPLE,
+  UPDATE_PRIMARYPERSON,
+  UPDATE_PERSON,
+} from "../../queries/people";
+
+const PeopleDetailsCard = ({ isExpanded, toggleAccordion, ...props }) => {
+  const crashId = props.match.params.id;
+
+  const { data: lookupSelectOptions } = useQuery(GET_PERSON_LOOKUPS);
+  const { data, refetch } = useQuery(GET_PEOPLE, {
+    variables: { crashId },
+  });
+
+  const personMutation = {
+    mutation: UPDATE_PERSON,
+    variables: {
+      crashId: crashId,
+      personId: "",
+      changes: {},
+    },
+  };
+
+  const primaryPersonMutation = {
+    mutation: UPDATE_PRIMARYPERSON,
+    variables: {
+      crashId: crashId,
+      personId: "",
+      changes: {},
+    },
+  };
+
   return (
     <Card className="mb-0">
       <CardHeader id="headingOne">
@@ -49,7 +60,10 @@ const PeopleDetailsCard = ({
           <h5 className="m-0 p-0">
             <i className="fa fa-group" /> People{" "}
             <Badge color="secondary float-right">
-              {primaryPersonData.concat(personData).length}
+              {
+                data.atd_txdot_primaryperson.concat(data.atd_txdot_person)
+                  .length
+              }
             </Badge>
           </h5>
         </Button>
@@ -61,73 +75,30 @@ const PeopleDetailsCard = ({
         aria-labelledby="headingOne"
       >
         <CardBody>
-          <h5>Drivers/Primary People</h5>
+          <RelatedRecordsTable
+            fieldConfig={primaryPersonDataMap[0]}
+            data={data.atd_txdot_primaryperson}
+            sortField={"unit_nbr"}
+            tableName={"atd_txdot_primaryperson"}
+            keyField={"primaryperson_id"}
+            lookupOptions={lookupSelectOptions}
+            mutation={primaryPersonMutation}
+            refetch={refetch}
+            {...props}
+          />
 
-          <Table responsive>
-            <thead>
-              <tr>
-                <th>Unit</th>
-                <th>City</th>
-                <th>ZIP</th>
-                <th>Age</th>
-                <th>Injury Severity</th>
-                <th>Type</th>
-              </tr>
-            </thead>
-            <tbody>
-              {primaryPersonData.map((person, i) => (
-                <tr key={`person-${i}`}>
-                  <td>{person.unit_nbr}</td>
-                  <td>{person.drvr_city_name}</td>
-                  <td>{person.drvr_zip}</td>
-                  <td>{person.prsn_age}</td>
-                  <td>
-                    <Badge
-                      color={getInjurySeverityColor(
-                        person.injury_severity.injry_sev_desc
-                      )}
-                    >
-                      {person.injury_severity.injry_sev_desc}
-                    </Badge>
-                  </td>
-                  <td>{person.person_type.prsn_type_desc}</td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
-
-          {personData.length > 0 && (
-            <>
-              <h5>Other People</h5>
-              <Table responsive>
-                <thead>
-                  <tr>
-                    <th>Unit</th>
-                    <th>Age</th>
-                    <th>Injury Severity</th>
-                    <th>Type</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {personData.map(person => (
-                    <tr>
-                      <td>{person.unit_nbr}</td>
-                      <td>{person.prsn_age}</td>
-                      <td>
-                        <Badge
-                          color={getInjurySeverityColor(
-                            person.injury_severity.injry_sev_desc
-                          )}
-                        >
-                          {person.injury_severity.injry_sev_desc}
-                        </Badge>
-                      </td>
-                      <td>{person.person_type.prsn_type_desc}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </Table>
-            </>
+          {data.atd_txdot_person.length > 0 && (
+            <RelatedRecordsTable
+              fieldConfig={personDataMap[0]}
+              data={data.atd_txdot_person}
+              sortField={"person_id"}
+              tableName={"atd_txdot_person"}
+              keyField={"person_id"}
+              lookupOptions={lookupSelectOptions}
+              mutation={personMutation}
+              refetch={refetch}
+              {...props}
+            />
           )}
         </CardBody>
       </Collapse>

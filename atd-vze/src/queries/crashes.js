@@ -95,30 +95,6 @@ export const GET_CRASH = gql`
       updated_by
       wthr_cond_id
     }
-    atd_txdot_primaryperson(where: { crash_id: { _eq: $crashId } }) {
-      prsn_age
-      prsn_injry_sev_id
-      drvr_zip
-      drvr_city_name
-      injury_severity {
-        injry_sev_desc
-      }
-      person_type {
-        prsn_type_desc
-      }
-      unit_nbr
-    }
-    atd_txdot_person(where: { crash_id: { _eq: $crashId } }) {
-      prsn_age
-      prsn_injry_sev_id
-      injury_severity {
-        injry_sev_desc
-      }
-      person_type {
-        prsn_type_desc
-      }
-      unit_nbr
-    }
     atd_txdot_charges(where: { crash_id: { _eq: $crashId } }) {
       citation_nbr
       charge_cat_id
