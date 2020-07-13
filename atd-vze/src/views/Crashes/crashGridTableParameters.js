@@ -86,7 +86,7 @@ export const nonCR3CrashGridTableColumns = {
     primary_key: false,
     searchable: false,
     sortable: true,
-    label_table: "Date",
+    label_table: "Crash Date",
     type: "Date",
   },
   hour: {
