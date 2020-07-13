@@ -38,21 +38,9 @@ const CrashesByTimeOfDay = (props) => {
     []
   );
 
-  const dayOfWeekArray = moment.weekdaysShort();
 
-  const buildDataArray = () => {
-    // This array holds weekday totals for each hour window within a day
-    // Reaviz Heatmap expects array of weekday total objs to be reversed in order
-    const hourWindowTotalsByDay = dayOfWeekArray
-      .map((day) => ({ key: day, data: null })) // Initialize totals as null to unweight 0 in viz
-      .reverse();
 
-    // Return array of objs for each hour window that holds totals of each day of the week
-    return hourBlockArray.map((hour) => ({
-      key: hour,
-      data: clonedeep(hourWindowTotalsByDay),
-    }));
-  };
+
 
   const formatValue = (d) => {
     const value = d.data.value ? d.data.value : 0;
@@ -71,40 +59,52 @@ const CrashesByTimeOfDay = (props) => {
     }
   `;
 
-  const activeTabToYear = (tab) => {
-    return moment().subtract(tab, "year").format("YYYY");
-  }
 
-  const dowMap = {
-    "Sat": 0,
-    "Fri": 1,
-    "Thu": 2,
-    "Wed": 3,
-    "Tue": 4,
-    "Mon": 5,
-    "Sun": 6,
-  };
-
-  const dowToNum = (dow) => {
-    return dowMap[dow];
-  }
 
   useEffect(() => {
+    const dayOfWeekArray = moment.weekdaysShort();
+
+    const activeTabToYear = (tab) => {
+      return moment().subtract(tab, "year").format("YYYY");
+    }
+
+    const dowMap = {
+      "Sat": 0,
+      "Fri": 1,
+      "Thu": 2,
+      "Wed": 3,
+      "Tue": 4,
+      "Mon": 5,
+      "Sun": 6,
+    };
+
+    const dowToNum = (dow) => {
+      return dowMap[dow];
+    }
+
     const currentYear = activeTabToYear(activeTab);
+
+    const buildDataArray = () => {
+      // This array holds weekday totals for each hour window within a day
+      // Reaviz Heatmap expects array of weekday total objs to be reversed in order
+      const hourWindowTotalsByDay = dayOfWeekArray
+        .map((day) => ({ key: day, data: null })) // Initialize totals as null to unweight 0 in viz
+        .reverse();
+
+      // Return array of objs for each hour window that holds totals of each day of the week
+      return hourBlockArray.map((hour) => ({
+        key: hour,
+        data: clonedeep(hourWindowTotalsByDay),
+      }));
+    };
 
     const currentValueByMode = (mode, node) => {
 
       switch (mode) {
         case "fatalities":
-        {
           return node.death_cnt;
-        }
-          break;
         case "seriousInjuries":
-        {
           return node.sus_serious_injry_cnt;
-        }
-          break;
         default: {
           return (
             node.death_cnt + node.sus_serious_injry_cnt
@@ -112,11 +112,6 @@ const CrashesByTimeOfDay = (props) => {
         }
       }
     };
-
-    console.log("crashType", crashType);
-    console.log("activeTab", activeTab);
-    console.log("heatmapData", heatmapData);
-    console.log("currentYear", currentYear);
 
     const newData = props.data.filter(dayHourNode => {
       return String(dayHourNode.year) === String(currentYear);
@@ -141,7 +136,7 @@ const CrashesByTimeOfDay = (props) => {
     });
 
     setHeatmapData(newData);
-  }, [activeTab, crashType]);
+  }, [activeTab, crashType, props.data, hourBlockArray]);
 
   return (
     <Container className="m-0 p-0">
