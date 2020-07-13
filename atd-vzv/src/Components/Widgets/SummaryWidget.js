@@ -92,22 +92,22 @@ const SummaryWidget = ({
           <Row>
             <Col>
               {/* Show spinner while waiting for data, add thousands separator to total */}
-              <h1 className="total">
+              <h2 className="h1 total">
                 {!!totalsObject ? (
                   numberWithCommas(totalsObject[currentYear])
                 ) : (
                   <ColorSpinner color={backgroundColor} />
                 )}
-              </h1>
+              </h2>
             </Col>
           </Row>
           <div className="text-left d-flex flex-row">
             {renderIcon()}
             <div className="d-flex flex-column">
-              <h5 className="mb-0">
+              <h3 className="h5 mb-0">
                 {text} {infoPopover}
-              </h5>
-              <h5 className="text-muted">{`in ${currentYear}`}</h5>
+              </h3>
+              <h3 className="h5 text-muted">{`in ${currentYear}`}</h3>
             </div>
           </div>
         </CardBody>

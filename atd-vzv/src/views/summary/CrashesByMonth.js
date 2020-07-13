@@ -15,7 +15,6 @@ import {
 import { colors } from "../../constants/colors";
 
 const CrashesByMonth = () => {
-
   // Set years order ascending
   const chartYearsArray = yearsArray().sort((a, b) => b - a);
 
@@ -211,11 +210,11 @@ const CrashesByMonth = () => {
                                 border: `4px solid ${colors.buttonBackground}`,
                               }}
                             ></hr>
-                            <h6 className="text-center py-1 mb-0">
+                            <h3 className="h6 text-center py-1 mb-0">
                               <strong>Year</strong>
-                            </h6>
+                            </h3>
                             <hr className="my-1"></hr>
-                            <h6 className="text-center py-1">Total</h6>
+                            <h3 className="h6 text-center py-1">Total</h3>
                           </div>
                         </Col>
                         {
@@ -277,13 +276,13 @@ const CrashesByMonth = () => {
                                         border: `4px solid ${legendColor}`,
                                       }}
                                     ></hr>
-                                    <h6 className="text-center py-1 mb-0">
+                                    <h4 className="h6 text-center py-1 mb-0">
                                       <strong>{!!chartData && year}</strong>
-                                    </h6>
+                                    </h4>
                                     <hr className="my-1"></hr>
-                                    <h6 className="text-center py-1">
+                                    <h4 className="h6 text-center py-1">
                                       {!!chartData && yearTotal}
-                                    </h6>
+                                    </h4>
                                   </div>
                                 </StyledDiv>
                               </Col>
