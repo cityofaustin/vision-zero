@@ -1,15 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
-import axios from "axios";
 import moment from "moment";
 import { Line } from "react-chartjs-2";
 import { Container, Row, Col } from "reactstrap";
 import styled from "styled-components";
 
 import CrashTypeSelector from "../nav/CrashTypeSelector";
-import { crashEndpointUrl } from "./queries/socrataQueries";
 import {
-  dataEndDate,
-  summaryCurrentYearEndDate,
   yearsArray,
 } from "../../constants/time";
 import { colors } from "../../constants/colors";
@@ -45,15 +41,9 @@ const CrashesByMonth = props => {
       const acc = accumulator.slice(-1).pop() || 0;
       switch (mode) {
         case "fatalities":
-        {
           return acc + node.death_cnt;
-        }
-          break;
         case "seriousInjuries":
-        {
           return acc + node.sus_serious_injry_cnt;
-        }
-          break;
         default: {
           return (
             acc + node.death_cnt + node.sus_serious_injry_cnt
