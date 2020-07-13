@@ -1,14 +1,16 @@
-import React from "react";
+import React, {cloneElement} from "react";
 
 import styled from "styled-components";
 import { Card, CardBody, Col } from "reactstrap";
 
-const SummaryCard = ({ child }) => {
+const SummaryCard = ({ child, data }) => {
   const StyledCardTitle = styled.div`
     font-size: 2em;
     text-align: center;
     padding-bottom: 0.75em;
   `;
+
+  const childClone = cloneElement(child.component, { data: child.data })
 
   return (
     <Col className="summary-child" xl="6" md="12">
@@ -16,7 +18,7 @@ const SummaryCard = ({ child }) => {
       <Card>
         <CardBody className="h-100 py-0">
           <StyledCardTitle>{child.title}</StyledCardTitle>
-          {child.component}
+          {childClone}
         </CardBody>
       </Card>
     </Col>
