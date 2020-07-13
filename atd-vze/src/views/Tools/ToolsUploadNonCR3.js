@@ -162,10 +162,6 @@ const ToolsUploadNonCR3 = () => {
       errors.push("Invalid crash id");
     }
 
-    if (!isValidAddress(record["address"])) {
-      errors.push("Invalid address");
-    }
-
     if (!isValidCoord(record["longitude"], record["latitude"])) {
       errors.push("Invalid coordinate pair");
     }
@@ -217,15 +213,6 @@ const ToolsUploadNonCR3 = () => {
    */
   const cleanUpAddress = addr =>
     (addr ? addr : "").replace(/[^A-Za-z0-9\\/\-\s.,&]/gi, "");
-
-  /**
-   * Returns true if the address is valid
-   * @param {string} addr - The address string being evaluated
-   * @return {boolean}
-   */
-  const isValidAddress = addr => {
-    return cleanUpAddress(addr).length > 0;
-  };
 
   /**
    * Returns true if both x and y are valid float values
