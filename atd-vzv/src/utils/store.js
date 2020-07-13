@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { mapStartDate, mapEndDate } from "../constants/time";
-import { useIsMobile } from "../constants/responsive";
+import { useIsTablet } from "../constants/responsive";
 
 export const StoreContext = React.createContext(null);
 
@@ -23,10 +23,10 @@ export default ({ children }) => {
   const [mapPolygon, setMapPolygon] = useState(null);
 
   // SideDrawer should never be open when not mobile
-  const isMobile = useIsMobile();
+  const isTablet = useIsTablet();
   useEffect(() => {
-    !isMobile && setIsOpen(false);
-  }, [isMobile, setIsOpen]);
+    !isTablet && setIsOpen(false);
+  }, [isTablet, setIsOpen]);
 
   const store = {
     mapFilters: [mapFilters, setMapFilters],

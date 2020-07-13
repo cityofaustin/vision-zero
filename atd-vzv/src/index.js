@@ -1,6 +1,6 @@
 import "react-app-polyfill/ie11";
 import "react-app-polyfill/stable";
-import 'events-polyfill';
+import "events-polyfill";
 
 import React from "react";
 import ReactDOM from "react-dom";
@@ -30,12 +30,24 @@ SVGElement.prototype.contains = function contains(node) {
   return false;
 };
 
-ReactDOM.render(
-  <StoreProvider>
-    <App />
-  </StoreProvider>,
-  document.getElementById("root")
-);
+if (process.env.NODE_ENV !== "production") {
+  import("react-axe").then((axe) => {
+    axe.default(React, ReactDOM, 1000);
+    ReactDOM.render(
+      <StoreProvider>
+        <App />
+      </StoreProvider>,
+      document.getElementById("root")
+    );
+  });
+} else {
+  ReactDOM.render(
+    <StoreProvider>
+      <App />
+    </StoreProvider>,
+    document.getElementById("root")
+  );
+}
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.

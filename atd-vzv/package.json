@@ -1,6 +1,6 @@
 {
   "name": "atd-vzv",
-  "version": "1.10.0",
+  "version": "1.11.0",
   "homepage": "./",
   "description": "ATD Vision Zero Viewer",
   "author": "ATD Data & Technology Services",
@@ -77,5 +77,8 @@
   "engines": {
     "node": ">=8.10",
     "npm": ">=6"
+  },
+  "devDependencies": {
+    "react-axe": "^3.5.3"
   }
 }

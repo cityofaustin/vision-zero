@@ -107,9 +107,13 @@ const Header = () => {
             color="dark"
             onClick={() => setIsOpen(!isOpen)}
           >
+            <span className="sr-only">Menu Button</span>
             <FontAwesomeIcon icon={faBars} />
           </Button>
           <div className="vz-logo-wrapper">
+            <h1 className="sr-only">
+              Vision Zero -- Help Austin reach zero traffic deaths
+            </h1>
             <img
               className="vz-logo pl-lg-3"
               // Need to adjust location of public folder to account for /viewer/ basepath

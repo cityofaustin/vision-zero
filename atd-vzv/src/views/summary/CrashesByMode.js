@@ -249,7 +249,10 @@ const CrashesByMode = () => {
                         <Col className="pr-1 col-sm-4">
                           <StyledDiv>
                             <div>
-                              <h6 className="text-center pt-2">{"\u00A0"}</h6>
+                              <p
+                                className="h6 text-center my-1 pt-2"
+                                style={{ height: "27px" }}
+                              ></p>
                             </div>
                             {chart.data.datasets.map((dataset, i) => {
                               const updateLegendColors = () => {
@@ -289,7 +292,7 @@ const CrashesByMode = () => {
                                   onClick={customLegendClickHandler}
                                 >
                                   <hr className="my-0"></hr>
-                                  <h6 className="text-center my-0 py-1">
+                                  <h3 className="h6 text-center my-0 py-1">
                                     <FontAwesomeIcon
                                       aria-hidden="true"
                                       className="block-icon"
@@ -303,7 +306,7 @@ const CrashesByMode = () => {
                                       {" "}
                                       {dataset.label}
                                     </p>
-                                  </h6>
+                                  </h3>
                                 </div>
                               );
                             })}
@@ -320,9 +323,9 @@ const CrashesByMode = () => {
                               <StyledDiv>
                                 <div className="year-total-div">
                                   <div>
-                                    <h6 className="text-center my-1 pt-2">
+                                    <h4 className="h6 text-center my-1 pt-2">
                                       <strong>{year}</strong>
-                                    </h6>
+                                    </h4>
                                   </div>
                                   {chart.data.datasets.map(
                                     (mode, modeIterator) => {
@@ -331,11 +334,11 @@ const CrashesByMode = () => {
                                       return (
                                         <div key={modeIterator}>
                                           <hr className="my-0"></hr>
-                                          <h6
-                                            className={`text-center my-1 ${paddingBottom}`}
+                                          <h4
+                                            className={`h6 text-center my-1 ${paddingBottom}`}
                                           >
                                             {mode.data[yearIterator]}
-                                          </h6>
+                                          </h4>
                                         </div>
                                       );
                                     }
