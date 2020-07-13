@@ -9,8 +9,6 @@ import { colors } from "../../constants/colors";
 import { dataEndDate } from "../../constants/time";
 import InfoPopover from "../../Components/Popover/InfoPopover";
 import { popoverConfig } from "../../Components/Popover/popoverConfig";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 
 import { Container, Row, Col, Alert } from "reactstrap";
 
