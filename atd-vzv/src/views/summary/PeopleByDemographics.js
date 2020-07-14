@@ -82,7 +82,7 @@ const PeopleByDemographics = () => {
     colors.viridis6Of6Lowest,
   ];
 
-  const [activeTab, setActiveTab] = useState("prsn_age");
+  const [activeTab, setActiveTab] = useState("prsn_ethnicity_id");
   const [chartData, setChartData] = useState(null); // {yearInt: [{record}, {record}, ...]}
   const [crashType, setCrashType] = useState([]);
 
