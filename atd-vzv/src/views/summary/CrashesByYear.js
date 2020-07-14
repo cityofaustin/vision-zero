@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useIsMobile } from "../../constants/responsive";
 import axios from "axios";
 import moment from "moment";
 import { Line } from "react-chartjs-2";
@@ -34,7 +33,6 @@ const CrashesByYear = () => {
   const [chartLegend, setChartLegend] = useState(null);
   const [legendColors, setLegendColors] = useState([...chartColors].reverse());
 
-  const isMobile = useIsMobile();
   const chartRef = useRef();
 
   useEffect(() => {
@@ -170,8 +168,7 @@ const CrashesByYear = () => {
       <Row>
         <Col>
           <h2 className="text-left font-weight-bold">
-            By Year{" "}
-            <InfoPopover config={popoverConfig.summary.byYear(isMobile)} />
+            By Year <InfoPopover config={popoverConfig.summary.byYear} />
           </h2>
         </Col>
       </Row>

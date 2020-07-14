@@ -1,9 +1,6 @@
 import React from "react";
-import { responsive } from "../../constants/responsive";
 import raceEthnicityTable2018 from "./raceEthnicityTable2018.png";
 import byYearTable from "./byYearTable.png";
-
-const imgMargin = 24;
 
 export const popoverConfig = {
   summary: {
@@ -23,7 +20,7 @@ export const popoverConfig = {
         </>
       ),
     },
-    demographics: (isMobile) => ({
+    demographics: {
       title: "Demographics Data",
       html: (
         <>
@@ -57,13 +54,8 @@ export const popoverConfig = {
             for Austin in 2018.
             <div>
               <img
-                className="mt-2"
+                className="mt-2 img-fluid"
                 src={raceEthnicityTable2018}
-                width={
-                  isMobile
-                    ? responsive.infoPopoverMobileWidth - imgMargin
-                    : responsive.infoPopoverFullWidth - imgMargin
-                }
                 alt="Table showing the estimated population by race/ethnicity for Austin in 2018"
               />
               <div className="mt-2">
@@ -80,8 +72,8 @@ export const popoverConfig = {
           </div>
         </>
       ),
-    }),
-    byYear: (isMobile) => ({
+    },
+    byYear: {
       title: "Austin Area Population Histories & Forecasts",
       html: (
         <>
@@ -97,11 +89,6 @@ export const popoverConfig = {
               <img
                 className="mt-2 img-fluid"
                 src={byYearTable}
-                // width={
-                //   isMobile
-                //     ? responsive.infoPopoverMobileWidth - imgMargin
-                //     : responsive.infoPopoverFullWidth - imgMargin
-                // }
                 alt="Table showing how Austin's population continues to increase each year"
               />
               <div className="mt-2">
@@ -120,7 +107,7 @@ export const popoverConfig = {
           </div>
         </>
       ),
-    }),
+    },
   },
   map: {
     trafficCrashes: {

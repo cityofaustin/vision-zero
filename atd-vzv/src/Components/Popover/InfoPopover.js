@@ -10,6 +10,10 @@ import { responsive } from "../../constants/responsive";
 import { useIsMobile } from "../../constants/responsive";
 
 const InfoPopover = ({ config }) => {
+  const [modal, setModal] = useState(false);
+  const toggle = () => setModal(!modal);
+  const isMobile = useIsMobile();
+
   const StyledPopover = styled.div`
     font-size: 12px;
     padding: 3px;
@@ -25,13 +29,7 @@ const InfoPopover = ({ config }) => {
     cursor: pointer;
   `;
 
-  const isMobile = useIsMobile();
-
   const content = <StyledPopover>{config.html}</StyledPopover>;
-
-  const [modal, setModal] = useState(false);
-
-  const toggle = () => setModal(!modal);
 
   return !isMobile ? (
     <Tippy
@@ -40,12 +38,8 @@ const InfoPopover = ({ config }) => {
       trigger={"click"}
       appendTo={document.body} // Avoid side scroll in SideMapControl popovers
       interactive={true}
-      maxWidth={
-        isMobile
-          ? responsive.infoPopoverMobileWidth
-          : responsive.infoPopoverFullWidth
-      } // Prevent mobile popover from taking up full drawer
-      offset={isMobile ? [30, 5] : [0, 5]} // Prevent mobile popover covering mobile drawer and preventing scroll nav
+      maxWidth={responsive.infoPopoverFullWidth}
+      offset={[0, 5]}
       popperOptions={{
         modifiers: [
           {
