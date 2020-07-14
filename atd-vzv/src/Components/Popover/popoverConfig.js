@@ -183,7 +183,7 @@ export const popoverConfig = {
                 is defined as a severe injury that prevents continuation of
                 normal activities, including:
               </div>
-              <ul>
+              <ul className="pl-3">
                 <li>
                   Severe laceration resulting in exposure of underlying
                   tissues/muscle/organs or resulting in significant loss of
