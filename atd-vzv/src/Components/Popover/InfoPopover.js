@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
+import { Modal, ModalBody } from "reactstrap";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
+import { faInfoCircle, faTimesCircle } from "@fortawesome/free-solid-svg-icons";
 import { colors } from "../../constants/colors";
 import { responsive } from "../../constants/responsive";
 import { useIsMobile } from "../../constants/responsive";
@@ -28,7 +29,11 @@ const InfoPopover = ({ config }) => {
 
   const content = <StyledPopover>{config.html}</StyledPopover>;
 
-  return (
+  const [modal, setModal] = useState(false);
+
+  const toggle = () => setModal(!modal);
+
+  return !isMobile ? (
     <Tippy
       content={content}
       placement={"auto"} // allowAutoPlacements set below
@@ -56,6 +61,16 @@ const InfoPopover = ({ config }) => {
         <FontAwesomeIcon className="info-icon" icon={faInfoCircle} />
       </StyledInfoIcon>
     </Tippy>
+  ) : (
+    <span>
+      <FontAwesomeIcon icon={faInfoCircle} onClick={toggle} />
+      <Modal isOpen={modal} toggle={toggle} zIndex={1305} scrollable autoFocus>
+        <span className="text-right mt-2 mr-2">
+          <FontAwesomeIcon icon={faTimesCircle} size="2x" onClick={toggle} />
+        </span>
+        <ModalBody className="pt-0">{content}</ModalBody>
+      </Modal>
+    </span>
   );
 };
 
