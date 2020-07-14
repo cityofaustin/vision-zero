@@ -58,7 +58,13 @@ const InfoPopover = ({ config }) => {
   ) : (
     <span>
       <FontAwesomeIcon icon={faInfoCircle} onClick={toggle} />
-      <Modal isOpen={modal} toggle={toggle} zIndex={1305} scrollable autoFocus>
+      <Modal
+        isOpen={modal}
+        toggle={toggle}
+        zIndex={1305} // Set z-index to supercede SideDrawer and SideMapControlDateRange components
+        scrollable
+        autoFocus
+      >
         <span className="text-right mt-2 mr-2">
           <FontAwesomeIcon icon={faTimesCircle} size="2x" onClick={toggle} />
         </span>
