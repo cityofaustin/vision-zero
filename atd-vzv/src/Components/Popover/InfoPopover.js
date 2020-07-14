@@ -1,14 +1,19 @@
-import React from "react";
+import React, { useState } from "react";
 import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
+import { Modal, ModalBody } from "reactstrap";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
+import { faInfoCircle, faTimesCircle } from "@fortawesome/free-solid-svg-icons";
 import { colors } from "../../constants/colors";
 import { responsive } from "../../constants/responsive";
 import { useIsMobile } from "../../constants/responsive";
 
 const InfoPopover = ({ config }) => {
+  const [modal, setModal] = useState(false);
+  const toggle = () => setModal(!modal);
+  const isMobile = useIsMobile();
+
   const StyledPopover = styled.div`
     font-size: 12px;
     padding: 3px;
@@ -24,23 +29,17 @@ const InfoPopover = ({ config }) => {
     cursor: pointer;
   `;
 
-  const isMobile = useIsMobile();
-
   const content = <StyledPopover>{config.html}</StyledPopover>;
 
-  return (
+  return !isMobile ? (
     <Tippy
       content={content}
       placement={"auto"} // allowAutoPlacements set below
       trigger={"click"}
       appendTo={document.body} // Avoid side scroll in SideMapControl popovers
       interactive={true}
-      maxWidth={
-        isMobile
-          ? responsive.infoPopoverMobileWidth
-          : responsive.infoPopoverFullWidth
-      } // Prevent mobile popover from taking up full drawer
-      offset={isMobile ? [30, 5] : [0, 5]} // Prevent mobile popover covering mobile drawer and preventing scroll nav
+      maxWidth={responsive.infoPopoverFullWidth}
+      offset={[0, 5]}
       popperOptions={{
         modifiers: [
           {
@@ -56,6 +55,22 @@ const InfoPopover = ({ config }) => {
         <FontAwesomeIcon className="info-icon" icon={faInfoCircle} />
       </StyledInfoIcon>
     </Tippy>
+  ) : (
+    <span>
+      <FontAwesomeIcon icon={faInfoCircle} onClick={toggle} />
+      <Modal
+        isOpen={modal}
+        toggle={toggle}
+        zIndex={1305} // Set z-index to supercede SideDrawer and SideMapControlDateRange components
+        scrollable
+        autoFocus
+      >
+        <span className="text-right mt-2 mr-2">
+          <FontAwesomeIcon icon={faTimesCircle} size="2x" onClick={toggle} />
+        </span>
+        <ModalBody className="pt-0">{content}</ModalBody>
+      </Modal>
+    </span>
   );
 };
 

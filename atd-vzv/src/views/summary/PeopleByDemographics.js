@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { useIsMobile } from "../../constants/responsive";
 import axios from "axios";
 import { HorizontalBar } from "react-chartjs-2";
 import { Container, Row, Col, Button } from "reactstrap";
@@ -85,8 +84,6 @@ const PeopleByDemographics = () => {
   const [activeTab, setActiveTab] = useState("prsn_age");
   const [chartData, setChartData] = useState(null); // {yearInt: [{record}, {record}, ...]}
   const [crashType, setCrashType] = useState([]);
-
-  const isMobile = useIsMobile();
 
   const toggle = (tab) => {
     if (activeTab !== tab) {
@@ -273,9 +270,7 @@ const PeopleByDemographics = () => {
         <Col>
           <h2 className="text-left, font-weight-bold">
             Demographics{" "}
-            <InfoPopover
-              config={popoverConfig.summary.demographics(isMobile)}
-            />
+            <InfoPopover config={popoverConfig.summary.demographics} />
           </h2>
         </Col>
       </Row>

@@ -15,7 +15,6 @@ export const responsive = {
   drawerWidth: 300,
   datePickerTwoMonthsHeight: 700, // Height for two months to fit in mobile datepicker view
   infoPopoverFullWidth: 500,
-  infoPopoverMobileWidth: 280,
 };
 
 export const useIsTablet = () =>

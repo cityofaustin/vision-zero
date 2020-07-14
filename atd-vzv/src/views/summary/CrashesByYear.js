@@ -6,6 +6,7 @@ import { Container, Row, Col } from "reactstrap";
 import styled from "styled-components";
 
 import CrashTypeSelector from "../nav/CrashTypeSelector";
+import InfoPopover from "../../Components/Popover/InfoPopover";
 import { crashEndpointUrl } from "./queries/socrataQueries";
 import {
   dataEndDate,
@@ -13,8 +14,9 @@ import {
   yearsArray,
 } from "../../constants/time";
 import { colors } from "../../constants/colors";
+import { popoverConfig } from "../../Components/Popover/popoverConfig";
 
-const CrashesByMonth = () => {
+const CrashesByYear = () => {
   // Set years order ascending
   const chartYearsArray = yearsArray().sort((a, b) => b - a);
 
@@ -165,7 +167,9 @@ const CrashesByMonth = () => {
     <Container className="m-0 p-0">
       <Row>
         <Col>
-          <h2 className="text-left font-weight-bold">By Month/Year</h2>
+          <h2 className="text-left font-weight-bold">
+            By Year <InfoPopover config={popoverConfig.summary.byYear} />
+          </h2>
         </Col>
       </Row>
       <Row>
@@ -302,4 +306,4 @@ const CrashesByMonth = () => {
   );
 };
 
-export default CrashesByMonth;
+export default CrashesByYear;
