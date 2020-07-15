@@ -1,20 +1,15 @@
 import React, { useState } from "react";
-import Tippy from "@tippyjs/react";
-import "tippy.js/dist/tippy.css";
 import { Modal, ModalBody } from "reactstrap";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle, faTimesCircle } from "@fortawesome/free-solid-svg-icons";
 import { colors } from "../../constants/colors";
-import { responsive } from "../../constants/responsive";
-import { useIsMobile } from "../../constants/responsive";
 
 const InfoPopover = ({ config }) => {
   const [modal, setModal] = useState(false);
   const toggle = () => setModal(!modal);
-  const isMobile = useIsMobile();
 
-  const StyledPopover = styled.div`
+  const StyledModalContent = styled.div`
     font-size: 12px;
     padding: 3px;
 
@@ -31,7 +26,7 @@ const InfoPopover = ({ config }) => {
     }
   `;
 
-  const content = <StyledPopover>{config.html}</StyledPopover>;
+  const content = <StyledModalContent>{config.html}</StyledModalContent>;
 
   return (
     <StyledInfoIcon>
