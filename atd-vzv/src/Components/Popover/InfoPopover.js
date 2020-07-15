@@ -26,14 +26,20 @@ const InfoPopover = ({ config }) => {
   `;
 
   const StyledInfoIcon = styled.span`
-    cursor: pointer;
+    .modal-button {
+      cursor: pointer;
+    }
   `;
 
   const content = <StyledPopover>{config.html}</StyledPopover>;
 
   return (
-    <span>
-      <FontAwesomeIcon icon={faInfoCircle} onClick={toggle} />
+    <StyledInfoIcon>
+      <FontAwesomeIcon
+        className="modal-button"
+        icon={faInfoCircle}
+        onClick={toggle}
+      />
       <Modal
         isOpen={modal}
         toggle={toggle}
@@ -42,11 +48,16 @@ const InfoPopover = ({ config }) => {
         autoFocus
       >
         <StyledInfoIcon className="text-right mt-2 mr-2">
-          <FontAwesomeIcon icon={faTimesCircle} size="2x" onClick={toggle} />
+          <FontAwesomeIcon
+            className="modal-button"
+            icon={faTimesCircle}
+            size="2x"
+            onClick={toggle}
+          />
         </StyledInfoIcon>
         <ModalBody className="pt-0">{content}</ModalBody>
       </Modal>
-    </span>
+    </StyledInfoIcon>
   );
 };
 
