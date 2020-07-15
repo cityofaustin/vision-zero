@@ -82,7 +82,7 @@ const PeopleByDemographics = () => {
     colors.viridis6Of6Lowest,
   ];
 
-  const [activeTab, setActiveTab] = useState("prsn_age");
+  const [activeTab, setActiveTab] = useState("prsn_ethnicity_id");
   const [chartData, setChartData] = useState(null); // {yearInt: [{record}, {record}, ...]}
   const [crashType, setCrashType] = useState([]);
 
@@ -271,7 +271,7 @@ const PeopleByDemographics = () => {
     <Container className="m-0 p-0">
       <Row>
         <Col>
-          <h2 className="text-left, font-weight-bold">
+          <h2 className="text-left font-weight-bold">
             Demographics{" "}
             <InfoPopover
               config={popoverConfig.summary.demographics(isMobile)}
@@ -294,6 +294,19 @@ const PeopleByDemographics = () => {
           <StyledButton>
             <Button
               className={classnames(
+                {
+                  active: activeTab === "prsn_ethnicity_id",
+                },
+                "demographic-type"
+              )}
+              onClick={() => {
+                toggle("prsn_ethnicity_id");
+              }}
+            >
+              Race/Ethnicity
+            </Button>
+            <Button
+              className={classnames(
                 { active: activeTab === "prsn_age" },
                 "demographic-type"
               )}
@@ -313,19 +326,6 @@ const PeopleByDemographics = () => {
               }}
             >
               Gender
-            </Button>
-            <Button
-              className={classnames(
-                {
-                  active: activeTab === "prsn_ethnicity_id",
-                },
-                "demographic-type"
-              )}
-              onClick={() => {
-                toggle("prsn_ethnicity_id");
-              }}
-            >
-              Race/Ethnicity
             </Button>
           </StyledButton>
         </Col>
