@@ -1,4 +1,4 @@
-date,crash_id,address,longitude,latitude,hour
+date,case_id,address,longitude,latitude,hour
 2014-01-02,140000001,946 Macpherson Trail,-97.792697,30.31267,15
 2014-01-01,140000002,3898 Fairfield Crossing,-97.832711,30.176319,12
 2014-01-01,140000003,230 Burning Wood Avenue,-97.739637,30.230431,23

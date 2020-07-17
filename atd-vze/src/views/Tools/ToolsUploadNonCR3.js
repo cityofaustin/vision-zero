@@ -93,7 +93,7 @@ const ToolsUploadNonCR3 = () => {
   const tableConfig = {
     colHeaders: [
       "Date",
-      "Crash ID",
+      "Case ID",
       "Address",
       "Xcoord",
       "Ycoord",
@@ -110,7 +110,7 @@ const ToolsUploadNonCR3 = () => {
         defaultDate: "",
       },
       {
-        data: "crash_id",
+        data: "case_id",
         type: "numeric",
       },
       {
@@ -158,8 +158,8 @@ const ToolsUploadNonCR3 = () => {
       errors.push("Invalid date");
     }
 
-    if (!isValidNumber(record["crash_id"])) {
-      errors.push("Invalid crash id");
+    if (!isValidNumber(record["case_id"])) {
+      errors.push("Invalid case id");
     }
 
     if (!isValidCoord(record["longitude"], record["latitude"])) {
@@ -282,12 +282,12 @@ const ToolsUploadNonCR3 = () => {
          * If we are validating a hot table, then we must assume data is null
          * and we have to populate with the hot table's data which is a simple
          * array that needs to be transformed into a json array.
-         * @type {{date: *, address: *, hour: *, latitude: *, crash_id: *, longitude: *}[]}
+         * @type {{date: *, address: *, hour: *, latitude: *, case_id: *, longitude: *}[]}
          */
         data = hotTable.current.hotInstance.getData().map(record => {
           return {
             date: record[0],
-            crash_id: record[1],
+            case_id: record[1],
             address: record[2],
             longitude: record[3],
             latitude: record[4],
@@ -313,7 +313,7 @@ const ToolsUploadNonCR3 = () => {
         {
           title: "Error",
           message: <div>
-            <p>Validation Error: Within the <strong>{data.length}</strong> existing records, there are <strong>{duplicates.length}</strong> with the same Crash IDs:</p>
+            <p>Validation Error: Within the <strong>{data.length}</strong> existing records, there are <strong>{duplicates.length}</strong> with the same Case IDs:</p>
             <textarea style={{"width": "100%", "height": "15rem"}}>
                 {String(duplicates.join(",\n"))}
               </textarea>
@@ -363,9 +363,9 @@ const ToolsUploadNonCR3 = () => {
   const getDuplicateCount = (data) => {
     return data.reduce((acc, currNode) => {
       // Convert the call num to string so we can use as a key
-      const crash_id = String(currNode["crash_id"]);
+      const case_id = String(currNode["case_id"]);
       // Check if there is already value and add +1, or assign 1 to it.
-      acc[crash_id] = (acc[crash_id] || 0) + 1;
+      acc[case_id] = (acc[case_id] || 0) + 1;
       // Return new state of out count dictionary
       return acc;
     }, {});
@@ -382,7 +382,7 @@ const ToolsUploadNonCR3 = () => {
       .map(record => {
         return {
           date: record[0],
-          crash_id: record[1],
+          case_id: record[1],
           address: record[2],
           longitude: record[3],
           latitude: record[4],
@@ -418,7 +418,7 @@ const ToolsUploadNonCR3 = () => {
           {
             title: "Error",
             message: <div>
-              <p>Action canceled. Please resolve the duplicates before inserting. Within the <strong>{data.length}</strong> valid records, there are <strong>{duplicates.length}</strong> with the same Crash IDs:</p>
+              <p>Action canceled. Please resolve the duplicates before inserting. Within the <strong>{data.length}</strong> valid records, there are <strong>{duplicates.length}</strong> with the same Case IDs:</p>
               <textarea style={{"width": "100%", "height": "15rem"}}>
                 {String(duplicates.join(",\n"))}
               </textarea>
