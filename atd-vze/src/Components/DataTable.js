@@ -27,6 +27,7 @@ const DataTable = ({
   handleInputChange,
   handleFieldUpdate,
   handleButtonClick,
+  children,
 }) => {
   // Disable edit features if only role is "readonly"
   const { getRoles } = useAuth0();
@@ -248,11 +249,13 @@ const DataTable = ({
                       )}
                     </>
                   )}
+                {children}
               </CardBody>
             </Card>
           </Col>
         );
       })}
+
     </>
   );
 };
