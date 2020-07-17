@@ -362,3 +362,15 @@ const CrashesByYear = () => {
 };
 
 export default CrashesByYear;
+
+// -- Query avg fatalities by month over five years
+// SELECT date_extract_m(crash_date) as month, sum(death_cnt) / 5 as avg
+// WHERE death_cnt > 0 AND crash_date BETWEEN '2015-05-01' and '2020-05-31'
+// GROUP BY month
+// ORDER BY month
+
+// -- Query sum of fatalities for current year
+// SELECT date_extract_m(crash_date) as month, sum(death_cnt) as deathCnt
+// WHERE death_cnt > 0 AND crash_date BETWEEN '2020-01-01' and '2020-05-31'
+// GROUP BY month
+// ORDER BY month
