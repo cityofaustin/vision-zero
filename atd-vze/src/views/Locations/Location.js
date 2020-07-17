@@ -10,6 +10,7 @@ import { useQuery } from "@apollo/react-hooks";
 import locationDataMap from "./locationDataMap";
 import LocationCrashes from "./LocationCrashes";
 import LocationNonCR3Crashes from "./LocationNonCR3Crashes";
+import LocationDownloadGlobal from "./LocationDownloadGlobal";
 
 import { GET_LOCATION, UPDATE_LOCATION } from "../../queries/Locations";
 
@@ -76,7 +77,13 @@ function Location(props) {
     setEditField("");
   };
 
-  const downloadAllData = <i className="fa fa-save fa-2x ml-2 mt-1"></i>;
+
+  const downloadAllData = <>
+    <div class={"float-right"}>
+      <span style={{"top": "-0.25rem", "position": "relative"}}><strong>Download Global</strong></span>
+      <LocationDownloadGlobal locationId={locationId} />
+    </div>
+  </>;
 
   return (
     <div className="animated fadeIn">
@@ -105,7 +112,7 @@ function Location(props) {
           handleInputChange={handleInputChange}
           handleFieldUpdate={handleFieldUpdate}
           data={data}
-          children={downloadAllData}
+          downloadGlobal={downloadAllData}
         />
       </Row>
       <Row>
