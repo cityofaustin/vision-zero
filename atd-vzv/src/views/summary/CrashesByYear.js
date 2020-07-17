@@ -2,8 +2,9 @@ import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import moment from "moment";
 import { Line } from "react-chartjs-2";
-import { Container, Row, Col } from "reactstrap";
+import { Container, Row, Col, Button } from "reactstrap";
 import styled from "styled-components";
+import classnames from "classnames";
 
 import CrashTypeSelector from "../nav/CrashTypeSelector";
 import InfoPopover from "../../Components/Popover/InfoPopover";
@@ -32,8 +33,15 @@ const CrashesByYear = () => {
   const [crashType, setCrashType] = useState([]);
   const [chartLegend, setChartLegend] = useState(null);
   const [legendColors, setLegendColors] = useState([...chartColors].reverse());
+  const [activeTab, setActiveTab] = useState("average");
 
   const chartRef = useRef();
+
+  const toggle = (tab) => {
+    if (activeTab !== tab) {
+      setActiveTab(tab);
+    }
+  };
 
   useEffect(() => {
     const calculateYearMonthlyTotals = (data) => {
@@ -163,12 +171,146 @@ const CrashesByYear = () => {
     }
   `;
 
+  // Set styles to override Bootstrap default styling
+  const StyledButton = styled.div`
+    .chart-toggle-button {
+      color: ${colors.dark};
+      background: ${colors.buttonBackground} 0% 0% no-repeat padding-box;
+      border-style: none;
+      opacity: 1;
+      margin-left: 5px;
+      margin-right: 5px;
+    }
+  `;
+
+  const cumulativeCrashChart = (
+    <>
+      {chartLegend}
+      {
+        // Wrapping the chart in a div prevents it from getting caught in a rerendering loop
+        <Container>
+          <Line
+            ref={(ref) => (chartRef.current = ref)}
+            data={data}
+            height={null}
+            width={null}
+            options={{
+              responsive: true,
+              aspectRatio: 1.16,
+              maintainAspectRatio: false,
+              tooltips: {
+                mode: "x",
+              },
+              legend: {
+                display: false,
+              },
+              legendCallback: function (chart) {
+                return (
+                  <Row className="pb-2">
+                    <Col xs={4} s={2} m={2} l={2} xl={2}>
+                      <div>
+                        <hr
+                          className="my-1"
+                          style={{
+                            border: `4px solid ${colors.buttonBackground}`,
+                          }}
+                        ></hr>
+                        <h3 className="h6 text-center py-1 mb-0">
+                          <strong>Year</strong>
+                        </h3>
+                        <hr className="my-1"></hr>
+                        <h3 className="h6 text-center py-1">Total</h3>
+                      </div>
+                    </Col>
+                    {
+                      // Reverse data and colors arrays and render so they appear chronologically
+                      [...chartYearsArray].reverse().map((year, i) => {
+                        const yearTotalData = chartData[year];
+                        const yearTotal =
+                          yearTotalData[yearTotalData.length - 1];
+                        const legendColor = legendColors[i];
+
+                        const updateLegendColors = () => {
+                          const legendColorsClone = [...legendColors];
+                          legendColor !== colors.buttonBackground
+                            ? legendColorsClone.splice(
+                                i,
+                                1,
+                                colors.buttonBackground
+                              )
+                            : legendColorsClone.splice(
+                                i,
+                                1,
+                                chartColors.reverse()[i]
+                              );
+                          setLegendColors(legendColorsClone);
+                        };
+
+                        const customLegendClickHandler = () => {
+                          const legendItems = [
+                            ...chart.legend.legendItems,
+                          ].reverse();
+                          const legendItem = legendItems[i];
+                          const index = legendItem.datasetIndex;
+                          const ci = chartRef.current.chartInstance.chart;
+                          const meta = ci.getDatasetMeta(index);
+
+                          // See controller.isDatasetVisible comment
+                          meta.hidden =
+                            meta.hidden === null
+                              ? !ci.data.datasets[index].hidden
+                              : null;
+
+                          // We hid a dataset ... rerender the chart
+                          ci.update();
+
+                          // Update legend colors to show data has been hidden
+                          updateLegendColors();
+                        };
+
+                        return (
+                          <Col xs={4} s={2} m={2} l={2} xl={2} key={i}>
+                            <StyledDiv>
+                              <div
+                                className="year-total-div"
+                                onClick={customLegendClickHandler}
+                              >
+                                <hr
+                                  className="my-1"
+                                  style={{
+                                    border: `4px solid ${legendColor}`,
+                                  }}
+                                ></hr>
+                                <h4 className="h6 text-center py-1 mb-0">
+                                  <strong>{!!chartData && year}</strong>
+                                </h4>
+                                <hr className="my-1"></hr>
+                                <h4 className="h6 text-center py-1">
+                                  {!!chartData && yearTotal}
+                                </h4>
+                              </div>
+                            </StyledDiv>
+                          </Col>
+                        );
+                      })
+                    }
+                  </Row>
+                );
+              },
+            }}
+          />
+        </Container>
+      }
+    </>
+  );
+
   return (
     <Container className="m-0 p-0">
       <Row>
         <Col>
           <h2 className="text-left font-weight-bold">
-            By Year <InfoPopover config={popoverConfig.summary.byYear} />
+            By Year & Month{" "}
+            <InfoPopover config={popoverConfig.summary.byYear} />
           </h2>
         </Col>
       </Row>
@@ -182,125 +324,38 @@ const CrashesByYear = () => {
           <hr className="mb-2" />
         </Col>
       </Row>
-      <Row className="mt-1">
-        <Col>
-          {chartLegend}
-          {
-            // Wrapping the chart in a div prevents it from getting caught in a rerendering loop
-            <Container>
-              <Line
-                ref={(ref) => (chartRef.current = ref)}
-                data={data}
-                height={null}
-                width={null}
-                options={{
-                  responsive: true,
-                  aspectRatio: 1.16,
-                  maintainAspectRatio: false,
-                  tooltips: {
-                    mode: "x",
-                  },
-                  legend: {
-                    display: false,
-                  },
-                  legendCallback: function (chart) {
-                    return (
-                      <Row className="pb-2">
-                        <Col xs={4} s={2} m={2} l={2} xl={2}>
-                          <div>
-                            <hr
-                              className="my-1"
-                              style={{
-                                border: `4px solid ${colors.buttonBackground}`,
-                              }}
-                            ></hr>
-                            <h3 className="h6 text-center py-1 mb-0">
-                              <strong>Year</strong>
-                            </h3>
-                            <hr className="my-1"></hr>
-                            <h3 className="h6 text-center py-1">Total</h3>
-                          </div>
-                        </Col>
-                        {
-                          // Reverse data and colors arrays and render so they appear chronologically
-                          [...chartYearsArray].reverse().map((year, i) => {
-                            const yearTotalData = chartData[year];
-                            const yearTotal =
-                              yearTotalData[yearTotalData.length - 1];
-                            const legendColor = legendColors[i];
-
-                            const updateLegendColors = () => {
-                              const legendColorsClone = [...legendColors];
-                              legendColor !== colors.buttonBackground
-                                ? legendColorsClone.splice(
-                                    i,
-                                    1,
-                                    colors.buttonBackground
-                                  )
-                                : legendColorsClone.splice(
-                                    i,
-                                    1,
-                                    chartColors.reverse()[i]
-                                  );
-                              setLegendColors(legendColorsClone);
-                            };
-
-                            const customLegendClickHandler = () => {
-                              const legendItems = [
-                                ...chart.legend.legendItems,
-                              ].reverse();
-                              const legendItem = legendItems[i];
-                              const index = legendItem.datasetIndex;
-                              const ci = chartRef.current.chartInstance.chart;
-                              const meta = ci.getDatasetMeta(index);
-
-                              // See controller.isDatasetVisible comment
-                              meta.hidden =
-                                meta.hidden === null
-                                  ? !ci.data.datasets[index].hidden
-                                  : null;
-
-                              // We hid a dataset ... rerender the chart
-                              ci.update();
-
-                              // Update legend colors to show data has been hidden
-                              updateLegendColors();
-                            };
-
-                            return (
-                              <Col xs={4} s={2} m={2} l={2} xl={2} key={i}>
-                                <StyledDiv>
-                                  <div
-                                    className="year-total-div"
-                                    onClick={customLegendClickHandler}
-                                  >
-                                    <hr
-                                      className="my-1"
-                                      style={{
-                                        border: `4px solid ${legendColor}`,
-                                      }}
-                                    ></hr>
-                                    <h4 className="h6 text-center py-1 mb-0">
-                                      <strong>{!!chartData && year}</strong>
-                                    </h4>
-                                    <hr className="my-1"></hr>
-                                    <h4 className="h6 text-center py-1">
-                                      {!!chartData && yearTotal}
-                                    </h4>
-                                  </div>
-                                </StyledDiv>
-                              </Col>
-                            );
-                          })
-                        }
-                      </Row>
-                    );
-                  },
-                }}
-              />
-            </Container>
-          }
+      <Row className="text-center">
+        <Col className="pb-2">
+          <StyledButton>
+            <Button
+              className={classnames(
+                {
+                  active: activeTab === "average",
+                },
+                "chart-toggle-button"
+              )}
+              onClick={() => {
+                toggle("average");
+              }}
+            >
+              Average
+            </Button>
+            <Button
+              className={classnames(
+                { active: activeTab === "cumulative" },
+                "chart-toggle-button"
+              )}
+              onClick={() => {
+                toggle("cumulative");
+              }}
+            >
+              Cumulative
+            </Button>
+          </StyledButton>
         </Col>
+      </Row>
+      <Row className="mt-1">
+        <Col>{cumulativeCrashChart}</Col>
       </Row>
     </Container>
   );
