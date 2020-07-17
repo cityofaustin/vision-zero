@@ -356,23 +356,8 @@ location_id
 case_id
 longitude
 latitude
-crash_date: date
-crash_time: hour
-address
-speed_mgmt_points
-est_comp_cost
-est_econ_cost
-`;
-
-
-export const locationCrashesQueryExportGlobal = `
-form_id
-location_id
-case_id
-longitude
-latitude
-crash_date: date
-crash_time: hour
+date
+hour
 address
 speed_mgmt_points
 est_comp_cost
