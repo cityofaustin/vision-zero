@@ -76,6 +76,8 @@ function Location(props) {
     setEditField("");
   };
 
+  const downloadAllData = <i className="fa fa-save fa-2x ml-2 mt-1"></i>;
+
   return (
     <div className="animated fadeIn">
       <Row>
@@ -103,6 +105,7 @@ function Location(props) {
           handleInputChange={handleInputChange}
           handleFieldUpdate={handleFieldUpdate}
           data={data}
+          children={downloadAllData}
         />
       </Row>
       <Row>
