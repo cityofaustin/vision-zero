@@ -66,7 +66,7 @@ const LocationDownloadGlobal = (props) => {
 
 
   return <>
-    {Object.keys(data).includes("view_location_crashes_global_aggregate") && <GridExportData
+    {data && Object.keys(data).includes("view_location_crashes_global_aggregate") && <GridExportData
       query={crashesQuery}
       columnsToExport={columnsToExport}
       totalRecords={data.view_location_crashes_global_aggregate.aggregate.count}
