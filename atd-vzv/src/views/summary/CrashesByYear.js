@@ -8,8 +8,10 @@ import InfoPopover from "../../Components/Popover/InfoPopover";
 import { popoverConfig } from "../../Components/Popover/popoverConfig";
 
 const CrashesByYear = () => {
+  const chartTypes = ["Average", "Cumulative"];
+
   const [crashType, setCrashType] = useState([]);
-  const [chartType, setChartType] = useState("average");
+  const [chartType, setChartType] = useState("Average");
 
   return (
     <Container className="m-0 p-0">
@@ -31,7 +33,11 @@ const CrashesByYear = () => {
           <hr className="mb-2" />
         </Col>
       </Row>
-      <ChartTypeSelector chartType={chartType} setChartType={setChartType} />
+      <ChartTypeSelector
+        chartTypes={chartTypes}
+        chartType={chartType}
+        setChartType={setChartType}
+      />
       <Row className="mt-1">
         <Col>
           <CrashesByYearCumulative crashType={crashType} />
