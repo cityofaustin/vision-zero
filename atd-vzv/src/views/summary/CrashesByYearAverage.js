@@ -18,16 +18,12 @@ const CrashesByYearAverage = ({ crashType }) => {
 
   useEffect(() => {
     const queries = {
-      fatalities: `SELECT date_extract_m(crash_date) as month, sum(death_cnt) / 5 as avg
-WHERE death_cnt > 0 AND crash_date BETWEEN '2015-05-01' and '2020-05-31'
-GROUP BY month
-ORDER BY month`,
+      fatalities: `SELECT date_extract_m(crash_date) as month, sum(death_cnt) / 5 as avg WHERE death_cnt > 0 AND crash_date BETWEEN '2015-05-01' and '2020-05-31' GROUP BY month ORDER BY month`,
       fatalitiesAndSeriousInjuries: ``,
-
       seriousInjuries: ``,
     };
 
-    const url = `${crashEndpointUrl}$query=`;
+    const url = `${crashEndpointUrl}?$query=`;
 
     axios.get(url + queries["fatalities"]).then((res) => {
       setChartData(res.data);

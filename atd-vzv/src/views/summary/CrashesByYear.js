@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import CrashesByYearCumulative from "./CrashesByYearCumulative";
+import CrashesByYearAverage from "./CrashesByYearAverage";
 import ChartTypeSelector from "./Components/ChartTypeSelector";
 import { Container, Row, Col } from "reactstrap";
 
@@ -12,6 +13,17 @@ const CrashesByYear = () => {
 
   const [crashType, setCrashType] = useState([]);
   const [chartType, setChartType] = useState("Average");
+
+  const renderChartByType = (chartType) => {
+    switch (chartType) {
+      case "Average":
+        return <CrashesByYearAverage crashType={crashType} />;
+      case "Cumulative":
+        return <CrashesByYearCumulative crashType={crashType} />;
+      default:
+        return "No chart selected";
+    }
+  };
 
   return (
     <Container className="m-0 p-0">
@@ -39,9 +51,7 @@ const CrashesByYear = () => {
         setChartType={setChartType}
       />
       <Row className="mt-1">
-        <Col>
-          <CrashesByYearCumulative crashType={crashType} />
-        </Col>
+        <Col>{renderChartByType(chartType)}</Col>
       </Row>
     </Container>
   );
