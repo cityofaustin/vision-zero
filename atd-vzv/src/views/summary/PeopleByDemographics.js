@@ -5,7 +5,7 @@ import { Container, Row, Col, Button } from "reactstrap";
 import styled from "styled-components";
 import classnames from "classnames";
 
-import CrashTypeSelector from "../nav/CrashTypeSelector";
+import CrashTypeSelector from "./Components/CrashTypeSelector";
 import { colors } from "../../constants/colors";
 import { dataEndDate, yearsArray } from "../../constants/time";
 import { personEndpointUrl } from "./queries/socrataQueries";

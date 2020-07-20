@@ -1,35 +1,15 @@
 import React, { useState } from "react";
-import CrashesByYearAverage from "./CrashesByYearAverage";
-import { Container, Row, Col, Button } from "reactstrap";
-import styled from "styled-components";
-import classnames from "classnames";
+import CrashesByYearCumulative from "./CrashesByYearCumulative";
+import ChartTypeSelector from "./Components/ChartTypeSelector";
+import { Container, Row, Col } from "reactstrap";
 
-import CrashTypeSelector from "../nav/CrashTypeSelector";
+import CrashTypeSelector from "./Components/CrashTypeSelector";
 import InfoPopover from "../../Components/Popover/InfoPopover";
-import { colors } from "../../constants/colors";
 import { popoverConfig } from "../../Components/Popover/popoverConfig";
 
 const CrashesByYear = () => {
   const [crashType, setCrashType] = useState([]);
-  const [activeTab, setActiveTab] = useState("average");
-
-  const toggle = (tab) => {
-    if (activeTab !== tab) {
-      setActiveTab(tab);
-    }
-  };
-
-  // Set styles to override Bootstrap default styling
-  const StyledButton = styled.div`
-    .chart-toggle-button {
-      color: ${colors.dark};
-      background: ${colors.buttonBackground} 0% 0% no-repeat padding-box;
-      border-style: none;
-      opacity: 1;
-      margin-left: 5px;
-      margin-right: 5px;
-    }
-  `;
+  const [chartType, setChartType] = useState("average");
 
   return (
     <Container className="m-0 p-0">
@@ -51,39 +31,10 @@ const CrashesByYear = () => {
           <hr className="mb-2" />
         </Col>
       </Row>
-      <Row className="text-center">
-        <Col className="pb-2">
-          <StyledButton>
-            <Button
-              className={classnames(
-                {
-                  active: activeTab === "average",
-                },
-                "chart-toggle-button"
-              )}
-              onClick={() => {
-                toggle("average");
-              }}
-            >
-              Average
-            </Button>
-            <Button
-              className={classnames(
-                { active: activeTab === "cumulative" },
-                "chart-toggle-button"
-              )}
-              onClick={() => {
-                toggle("cumulative");
-              }}
-            >
-              Cumulative
-            </Button>
-          </StyledButton>
-        </Col>
-      </Row>
+      <ChartTypeSelector chartType={chartType} setChartType={setChartType} />
       <Row className="mt-1">
         <Col>
-          <CrashesByYearAverage crashType={crashType} />
+          <CrashesByYearCumulative crashType={crashType} />
         </Col>
       </Row>
     </Container>
