@@ -3,7 +3,7 @@ import { withApollo } from "react-apollo";
 
 import GridTable from "../../Components/GridTable";
 import gqlAbstract from "../../queries/gqlAbstract";
-import { locationCrashesQueryExportFields } from "../../queries/crashes";
+import { locationCrashesQueryExportFieldsNonCR3 } from "../../queries/crashes";
 import { nonCR3CrashGridTableColumns } from "../Crashes/crashGridTableParameters";
 
 function LocationNonCR3Crashes(props) {
@@ -27,7 +27,7 @@ function LocationNonCR3Crashes(props) {
     <GridTable
       query={crashesQuery}
       title={"Non-CR3 Crashes"}
-      columnsToExport={locationCrashesQueryExportFields}
+      columnsToExport={locationCrashesQueryExportFieldsNonCR3}
     />
   );
 }

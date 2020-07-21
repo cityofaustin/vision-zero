@@ -348,3 +348,18 @@ units { movement { movement_desc } }
 units { body_style { veh_body_styl_desc } }
 units { unit_description { veh_unit_desc_desc } }
 `;
+
+
+export const locationCrashesQueryExportFieldsNonCR3 = `
+form_id
+location_id
+case_id
+longitude
+latitude
+date
+hour
+address
+speed_mgmt_points
+est_comp_cost
+est_econ_cost
+`;
