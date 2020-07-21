@@ -78,12 +78,9 @@ function Location(props) {
   };
 
 
-  const downloadAllData = <>
-    <div class={"float-right"}>
-      <span style={{"top": "-0.25rem", "position": "relative"}}><strong>Download Global</strong></span>
-      <LocationDownloadGlobal locationId={locationId} />
-    </div>
-  </>;
+  const downloadAllData = <div class={"float-right"}>
+    <LocationDownloadGlobal locationId={locationId} />
+  </div>;
 
   return (
     <div className="animated fadeIn">
