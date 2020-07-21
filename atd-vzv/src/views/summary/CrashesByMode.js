@@ -201,7 +201,7 @@ const CrashesByMode = () => {
     <Container className="m-0 p-0">
       <Row>
         <Col>
-          <h2 className="text-left, font-weight-bold">By Mode</h2>
+          <h2 className="text-left, font-weight-bold">By Travel Mode</h2>
         </Col>
       </Row>
       <Row>
