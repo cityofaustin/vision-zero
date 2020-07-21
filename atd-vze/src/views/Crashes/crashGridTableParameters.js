@@ -78,7 +78,7 @@ export const nonCR3CrashGridTableColumns = {
     primary_key: false, // We say no here bc there is no page to link to
     searchable: true,
     sortable: true,
-    label_search: "Search by Crash Form ID",
+    label_search: "Search by Case ID",
     label_table: "Case ID",
     type: "Int",
   },
@@ -86,7 +86,7 @@ export const nonCR3CrashGridTableColumns = {
     primary_key: false,
     searchable: false,
     sortable: true,
-    label_table: "Date",
+    label_table: "Crash Date",
     type: "Date",
   },
   hour: {
