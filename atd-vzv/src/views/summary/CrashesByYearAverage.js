@@ -21,32 +21,36 @@ const CrashesByYearAverage = ({ crashType }) => {
   useEffect(() => {
     const avgQueries = {
       fatalities: `SELECT date_extract_m(crash_date) as month, sum(death_cnt) / 5 as avg WHERE death_cnt > 0 AND crash_date BETWEEN '2015-05-01' and '2020-05-31' GROUP BY month ORDER BY month`,
-      fatalitiesAndSeriousInjuries: ``,
-      seriousInjuries: ``,
+      fatalitiesAndSeriousInjuries: `SELECT date_extract_m(crash_date) as month, sum(death_cnt) / 5 + sum(sus_serious_injry_cnt) / 5 as avg WHERE (death_cnt > 0 OR sus_serious_injry_cnt > 0) AND crash_date BETWEEN '2015-05-01' and '2020-05-31' GROUP BY month ORDER BY month`,
+      seriousInjuries: `SELECT date_extract_m(crash_date) as month, sum(sus_serious_injry_cnt) / 5 as avg WHERE sus_serious_injry_cnt > 0 AND crash_date BETWEEN '2015-05-01' and '2020-05-31' GROUP BY month ORDER BY month`,
     };
 
     const currentYearQueries = {
-      fatalities: `SELECT date_extract_m(crash_date) as month, sum(death_cnt) as deathCnt WHERE death_cnt > 0 AND crash_date BETWEEN '2020-01-01' and '2020-05-31' GROUP BY month ORDER BY month`,
-      fatalitiesAndSeriousInjuries: ``,
-      seriousInjuries: ``,
+      fatalities: `SELECT date_extract_m(crash_date) as month, sum(death_cnt) as total WHERE death_cnt > 0 AND crash_date BETWEEN '2020-01-01' and '2020-05-31' GROUP BY month ORDER BY month`,
+      fatalitiesAndSeriousInjuries: `SELECT date_extract_m(crash_date) as month, sum(death_cnt) + sum(sus_serious_injry_cnt) as total WHERE (death_cnt > 0 OR sus_serious_injry_cnt > 0) AND crash_date BETWEEN '2020-01-01' and '2020-05-31' GROUP BY month ORDER BY month`,
+      seriousInjuries: `SELECT date_extract_m(crash_date) as month, sum(sus_serious_injry_cnt) as total WHERE sus_serious_injry_cnt > 0 AND crash_date BETWEEN '2020-01-01' and '2020-05-31' GROUP BY month ORDER BY month`,
     };
 
     const url = `${crashEndpointUrl}?$query=`;
 
-    axios.get(url + avgQueries["fatalities"]).then((res) => {
-      setAvgData(res.data);
-    });
+    axios
+      .get(url + encodeURIComponent(avgQueries[crashType.name]))
+      .then((res) => {
+        setAvgData(res.data);
+      });
 
-    axios.get(url + currentYearQueries["fatalities"]).then((res) => {
-      setCurrentYearData(res.data);
-    });
+    axios
+      .get(url + encodeURIComponent(currentYearQueries[crashType.name]))
+      .then((res) => {
+        setCurrentYearData(res.data);
+      });
   }, [crashType]);
 
   useEffect(() => {
     const formatChartData = (avgData, currentYearData) => {
       const labels = avgData.map((data) => moment(data.month).format("MMM"));
       const avgValues = avgData.map((data) => data.avg);
-      const currentYearValues = currentYearData.map((data) => data.deathCnt);
+      const currentYearValues = currentYearData.map((data) => data.total);
 
       return {
         labels,
@@ -58,7 +62,7 @@ const CrashesByYearAverage = ({ crashType }) => {
             barPercentage: 1.0,
           },
           {
-            label: "Monthly Totals Year to Date",
+            label: "Total Year to Date",
             backgroundColor: colors.viridis1Of6Highest,
             data: currentYearValues,
             barPercentage: 1.0,
@@ -78,10 +82,12 @@ const CrashesByYearAverage = ({ crashType }) => {
     <>
       <Bar
         data={chartData}
-        width={100}
-        height={50}
+        width={null}
+        height={null}
         options={{
-          maintainAspectRatio: true,
+          responsive: true,
+          aspectRatio: 1.16,
+          maintainAspectRatio: false,
           legend: {
             display: false,
           },
