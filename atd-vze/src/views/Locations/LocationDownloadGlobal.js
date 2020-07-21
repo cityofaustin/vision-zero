@@ -9,6 +9,7 @@ const LocationDownloadGlobal = (props) => {
 
   const columnsToExport = `
       crash_id
+      type
       location_id
       case_id
       crash_date
