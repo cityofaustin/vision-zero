@@ -3,8 +3,6 @@ import { withApollo } from "react-apollo";
 import { useLazyQuery } from "@apollo/react-hooks";
 import moment from "moment";
 import { CSVLink } from "react-csv";
-import styled from "styled-components";
-import { colors } from "../styles/colors";
 import {
   Button,
   Modal,
