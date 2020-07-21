@@ -1,6 +1,6 @@
 import React from "react";
 
-import GridExportData from "../../Components/GridExportData";
+import GridExportDataButton from "../../Components/GridExportDataButton";
 import gqlAbstract from "../../queries/gqlAbstract";
 import { useQuery } from "@apollo/react-hooks";
 import { gql } from "apollo-boost";
@@ -66,10 +66,11 @@ const LocationDownloadGlobal = (props) => {
 
 
   return <>
-    {data && Object.keys(data).includes("view_location_crashes_global_aggregate") && <GridExportData
+    {data && Object.keys(data).includes("view_location_crashes_global_aggregate") && <GridExportDataButton
       query={crashesQuery}
       columnsToExport={columnsToExport}
       totalRecords={data.view_location_crashes_global_aggregate.aggregate.count}
+      label={"Export Global Data"}
     />}
 
   </>;
