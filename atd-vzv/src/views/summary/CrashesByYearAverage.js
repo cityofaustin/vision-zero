@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import moment from "moment";
 import { Bar } from "react-chartjs-2";
+import { Container, Col, Row } from "reactstrap";
 
 import { crashEndpointUrl } from "./queries/socrataQueries";
 import {
@@ -91,28 +92,47 @@ const CrashesByYearAverage = ({ crashType }) => {
 
   return (
     <>
-      <Bar
-        data={chartData}
-        width={null}
-        height={null}
-        options={{
-          responsive: true,
-          aspectRatio: 0.97,
-          maintainAspectRatio: false,
-          legend: {
-            display: false,
-          },
-          scales: {
-            yAxes: [
-              {
-                ticks: {
-                  beginAtZero: true,
+      <Row className="pb-2">
+        <Col xs={4} s={2} m={2} l={2} xl={2}>
+          <div>
+            <hr
+              className="my-1"
+              style={{
+                border: `4px solid ${colors.buttonBackground}`,
+              }}
+            ></hr>
+            <h3 className="h6 text-center py-1 mb-0">
+              <strong>Year</strong>
+            </h3>
+            <hr className="my-1"></hr>
+            <h3 className="h6 text-center py-1">Total</h3>
+          </div>
+        </Col>
+      </Row>
+      <Container>
+        <Bar
+          data={chartData}
+          width={null}
+          height={null}
+          options={{
+            responsive: true,
+            aspectRatio: 1.16,
+            maintainAspectRatio: false,
+            legend: {
+              display: false,
+            },
+            scales: {
+              yAxes: [
+                {
+                  ticks: {
+                    beginAtZero: true,
+                  },
                 },
-              },
-            ],
-          },
-        }}
-      />
+              ],
+            },
+          }}
+        />
+      </Container>
     </>
   );
 };
