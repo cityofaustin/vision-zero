@@ -29,7 +29,7 @@ const Summary = () => {
   useEffect(() => {
     if (data === null) {
       axios
-        .get("https://visionzero-staging.austinmobility.io/vzv_data/production/vzv_data.json")
+        .get("https://visionzero-staging.austinmobility.io/vzv_data/staging/vzv_data.json")
         .then(res => {
           setData(res.data.data);
         });
