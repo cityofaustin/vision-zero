@@ -487,7 +487,7 @@ const PeopleByDemographics = (props) => {
   console.log("Data", data);
   console.log("newChartData", newChartData);
 
-  debugger;
+
 
   return (
     <Container className="m-0 p-0">
