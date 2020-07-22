@@ -9,3 +9,11 @@ create index atd_apd_blueform_longitude_index
 -- Index for location_id
 create index atd_apd_blueform_location_id_index
 	on atd_apd_blueform (location_id);
+
+-- Indexes for date and hour
+create index atd_apd_blueform_date_index
+	on atd_apd_blueform (date);
+
+create index atd_apd_blueform_hour_index
+	on atd_apd_blueform (hour);
+

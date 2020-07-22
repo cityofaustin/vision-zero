@@ -1,8 +1,6 @@
 import React from "react";
-import { responsive } from "../../constants/responsive";
 import raceEthnicityTable2018 from "./raceEthnicityTable2018.png";
-
-const imgMargin = 24;
+import byYearTable from "./byYearTable.png";
 
 export const popoverConfig = {
   summary: {
@@ -22,7 +20,7 @@ export const popoverConfig = {
         </>
       ),
     },
-    demographics: (isMobile) => ({
+    demographics: {
       title: "Demographics Data",
       html: (
         <>
@@ -54,30 +52,62 @@ export const popoverConfig = {
             label for this visualization has been modified to "Race/Ethnicity."
             Below is a table showing the estimated population by race/ethnicity
             for Austin in 2018.
-            <img
-              className="mt-2"
-              src={raceEthnicityTable2018}
-              width={
-                isMobile
-                  ? responsive.infoPopoverMobileWidth - imgMargin
-                  : responsive.infoPopoverFullWidth - imgMargin
-              }
-              alt="Table showing the estimated population by race/ethnicity for Austin in 2018"
-            />
-            <div className="mt-2">
-              Source:{" "}
-              <a
-                href="https://data.census.gov/cedsci/table?g=1600000US4805000&tid=ACSDP5Y2018.DP05&t=Hispanic%20or%20Latino&layer=VT_2018_160_00_PY_D1&hidePreview=true&moe=false"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                US Census Bureau 2018 ACS 5-Year Estimate
-              </a>
+            <div>
+              <img
+                className="mt-2 img-fluid"
+                src={raceEthnicityTable2018}
+                alt="Table showing the estimated population by race/ethnicity for Austin in 2018"
+              />
+              <div className="mt-2">
+                Source:{" "}
+                <a
+                  href="https://data.census.gov/cedsci/table?g=1600000US4805000&tid=ACSDP5Y2018.DP05&t=Hispanic%20or%20Latino&layer=VT_2018_160_00_PY_D1&hidePreview=true&moe=false"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  US Census Bureau 2018 ACS 5-Year Estimate
+                </a>
+              </div>
             </div>
           </div>
         </>
       ),
-    }),
+    },
+    byYear: {
+      title: "Austin Area Population Histories & Forecasts",
+      html: (
+        <>
+          <div className="font-weight-bold">
+            Austin Area Population Histories & Forecasts
+          </div>
+          <div className="mb-2">
+            Below is a table showing how Austin's population continues to
+            increase each year. In future versions of the Vision Zero Viewer,
+            there will be a visualization showing crash numbers per 100,000
+            residents.
+            <div>
+              <img
+                className="mt-2 img-fluid"
+                src={byYearTable}
+                alt="Table showing how Austin's population continues to increase each year"
+              />
+              <div className="mt-2">
+                Source:{" "}
+                <a
+                  href="https://www.austintexas.gov/sites/default/files/files/Planning/Demographics/austin_forecast_2019_pub.pdf"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Ryan Robinson, City Demographer, Department of Planning, City
+                  of Austin. November 2018
+                </a>
+                .
+              </div>
+            </div>
+          </div>
+        </>
+      ),
+    },
   },
   map: {
     trafficCrashes: {
@@ -139,6 +169,40 @@ export const popoverConfig = {
               VisionZero@AustinTexas.gov
             </a>
             .
+          </div>
+          <div>
+            <div className="font-weight-bold mb-2">Definitions</div>
+            <div className="mb-2">
+              <strong>Fatality</strong>: A fatality is defined as a death that
+              resulted due to injuries sustained from the crash, at the scene or
+              within 30 days of the crash.
+            </div>
+            <div className="mb-2">
+              <div className="mb-2">
+                <strong>Suspected Serious Injury</strong>: A suspected serious
+                is defined as a severe injury that prevents continuation of
+                normal activities, including:
+              </div>
+              <ul className="pl-3">
+                <li>
+                  Severe laceration resulting in exposure of underlying
+                  tissues/muscle/organs or resulting in significant loss of
+                  blood
+                </li>
+                <li>Broken or distorted extremity (arm or leg)</li>
+                <li>Crush injuries</li>
+                <li>
+                  Suspected skull, chest, or abdominal injury other than bruises
+                  or minor lacerations
+                </li>
+                <li>
+                  Significant burns (second and third degree burns over 10% or
+                  more of the body)
+                </li>
+                <li>Unconsciousness when taken from the crash scene</li>
+                <li>Paralysis</li>
+              </ul>
+            </div>
           </div>
         </>
       ),

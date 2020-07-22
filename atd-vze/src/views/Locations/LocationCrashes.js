@@ -19,7 +19,6 @@ function LocationCrashes(props) {
     columns: crashGridTableColumns,
     order_by: {},
     where: {
-      city_id: "_eq: 22",
       location_id: `_eq: "${props.locationId}"`,
     },
     limit: 25,

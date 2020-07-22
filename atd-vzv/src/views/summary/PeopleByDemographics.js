@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { useIsMobile } from "../../constants/responsive";
 import axios from "axios";
 import { HorizontalBar } from "react-chartjs-2";
 import { Container, Row, Col, Button } from "reactstrap";
@@ -88,12 +87,10 @@ const PeopleByDemographics = (props) => {
     colors.viridis6Of6Lowest,
   ];
 
-  const [activeTab, setActiveTab] = useState("prsn_age");
+  const [activeTab, setActiveTab] = useState("prsn_ethnicity_id");
   const [chartData, setChartData] = useState(null); // {yearInt: [{record}, {record}, ...]}
   const [crashType, setCrashType] = useState([]);
   const [newChartData, setNewChartData] = useState(null);
-
-  const isMobile = useIsMobile();
 
   const toggle = (tab) => {
     if (activeTab !== tab) {
@@ -493,11 +490,9 @@ const PeopleByDemographics = (props) => {
     <Container className="m-0 p-0">
       <Row>
         <Col>
-          <h2 className="text-left, font-weight-bold">
+          <h2 className="text-left font-weight-bold">
             Demographics{" "}
-            <InfoPopover
-              config={popoverConfig.summary.demographics(isMobile)}
-            />
+            <InfoPopover config={popoverConfig.summary.demographics} />
           </h2>
         </Col>
       </Row>
@@ -514,6 +509,19 @@ const PeopleByDemographics = (props) => {
       <Row className="text-center">
         <Col className="pb-2">
           <StyledButton>
+            <Button
+              className={classnames(
+                {
+                  active: activeTab === "prsn_ethnicity_id",
+                },
+                "demographic-type"
+              )}
+              onClick={() => {
+                toggle("prsn_ethnicity_id");
+              }}
+            >
+              Race/Ethnicity
+            </Button>
             <Button
               className={classnames(
                 { active: activeTab === "prsn_age" },
@@ -535,19 +543,6 @@ const PeopleByDemographics = (props) => {
               }}
             >
               Gender
-            </Button>
-            <Button
-              className={classnames(
-                {
-                  active: activeTab === "prsn_ethnicity_id",
-                },
-                "demographic-type"
-              )}
-              onClick={() => {
-                toggle("prsn_ethnicity_id");
-              }}
-            >
-              Race/Ethnicity
             </Button>
           </StyledButton>
         </Col>
