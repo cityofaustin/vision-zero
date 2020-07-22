@@ -15,7 +15,6 @@ CREATE OR REPLACE VIEW view_vzv_demographics_age_sex_eth AS
            SUM(data.gender_female) AS gender_female,
            SUM(data.gender_unknown) AS gender_unknown,
            -- Ethnicity
-           SUM(data.ethn_unknown) AS eth_unknown,
            SUM(data.ethn_white) AS ethn_white,
            SUM(data.ethn_hispanic) AS ethn_hispanic,
            SUM(data.ethn_black) AS ethn_black,
@@ -42,7 +41,7 @@ CREATE OR REPLACE VIEW view_vzv_demographics_age_sex_eth AS
             SUM(CASE WHEN atp.prsn_gndr_id = 2 THEN 1 ELSE 0 END) AS gender_female,
             SUM(CASE WHEN atp.prsn_gndr_id = 0 OR atp.prsn_gndr_id IS NULL THEN 1 ELSE 0 END) AS gender_unknown,
             -- Ethnicity
-            SUM(CASE WHEN atp.prsn_ethnicity_id = 0 THEN 1 ELSE 0 END) AS ethn_unknown,
+            SUM(CASE WHEN atp.prsn_ethnicity_id NOT IN (1,2,3,4,6) OR atp.prsn_ethnicity_id IS NULL THEN 1 ELSE 0 END) AS ethn_other,
             SUM(CASE WHEN atp.prsn_ethnicity_id = 1 THEN 1 ELSE 0 END) AS ethn_white,
             SUM(CASE WHEN atp.prsn_ethnicity_id = 2 THEN 1 ELSE 0 END) AS ethn_black,
             SUM(CASE WHEN atp.prsn_ethnicity_id = 3 THEN 1 ELSE 0 END) AS ethn_hispanic,
@@ -87,12 +86,11 @@ CREATE OR REPLACE VIEW view_vzv_demographics_age_sex_eth AS
             SUM(CASE WHEN atp.prsn_gndr_id = 2 THEN 1 ELSE 0 END) AS gender_female,
             SUM(CASE WHEN atp.prsn_gndr_id = 0 OR atp.prsn_gndr_id IS NULL THEN 1 ELSE 0 END) AS gender_unknown,
             -- Ethnicity
-            SUM(CASE WHEN atp.prsn_ethnicity_id = 0 THEN 1 ELSE 0 END) AS ethn_unknown,
             SUM(CASE WHEN atp.prsn_ethnicity_id = 1 THEN 1 ELSE 0 END) AS ethn_white,
             SUM(CASE WHEN atp.prsn_ethnicity_id = 2 THEN 1 ELSE 0 END) AS ethn_black,
             SUM(CASE WHEN atp.prsn_ethnicity_id = 3 THEN 1 ELSE 0 END) AS ethn_hispanic,
             SUM(CASE WHEN atp.prsn_ethnicity_id = 4 THEN 1 ELSE 0 END) AS ethn_asian,
-            SUM(CASE WHEN atp.prsn_ethnicity_id = 5 THEN 1 ELSE 0 END) AS ethn_other,
+            SUM(CASE WHEN atp.prsn_ethnicity_id NOT IN (1,2,3,4,6) OR atp.prsn_ethnicity_id IS NULL THEN 1 ELSE 0 END) AS ethn_other,
             SUM(CASE WHEN atp.prsn_ethnicity_id = 6 THEN 1 ELSE 0 END) AS ethn_amer_ind_nat,
             -- Total
             SUM(1) AS total
@@ -132,12 +130,11 @@ CREATE OR REPLACE VIEW view_vzv_demographics_age_sex_eth AS
             SUM(CASE WHEN atp.prsn_gndr_id = 2 THEN 1 ELSE 0 END) AS gender_female,
             SUM(CASE WHEN atp.prsn_gndr_id = 0 OR atp.prsn_gndr_id IS NULL THEN 1 ELSE 0 END) AS gender_unknown,
             -- Ethnicity
-            SUM(CASE WHEN atp.prsn_ethnicity_id = 0 THEN 1 ELSE 0 END) AS ethn_unknown,
             SUM(CASE WHEN atp.prsn_ethnicity_id = 1 THEN 1 ELSE 0 END) AS ethn_white,
             SUM(CASE WHEN atp.prsn_ethnicity_id = 2 THEN 1 ELSE 0 END) AS ethn_black,
             SUM(CASE WHEN atp.prsn_ethnicity_id = 3 THEN 1 ELSE 0 END) AS ethn_hispanic,
             SUM(CASE WHEN atp.prsn_ethnicity_id = 4 THEN 1 ELSE 0 END) AS ethn_asian,
-            SUM(CASE WHEN atp.prsn_ethnicity_id = 5 THEN 1 ELSE 0 END) AS ethn_other,
+            SUM(CASE WHEN atp.prsn_ethnicity_id NOT IN (1,2,3,4,6) OR atp.prsn_ethnicity_id IS NULL THEN 1 ELSE 0 END) AS ethn_other,
             SUM(CASE WHEN atp.prsn_ethnicity_id = 6 THEN 1 ELSE 0 END) AS ethn_amer_ind_nat,
             -- Total
             SUM(1) AS total
@@ -177,12 +174,11 @@ CREATE OR REPLACE VIEW view_vzv_demographics_age_sex_eth AS
             SUM(CASE WHEN atp.prsn_gndr_id = 2 THEN 1 ELSE 0 END) AS gender_female,
             SUM(CASE WHEN atp.prsn_gndr_id = 0 OR atp.prsn_gndr_id IS NULL THEN 1 ELSE 0 END) AS gender_unknown,
             -- Ethnicity
-            SUM(CASE WHEN atp.prsn_ethnicity_id = 0 THEN 1 ELSE 0 END) AS ethn_unknown,
             SUM(CASE WHEN atp.prsn_ethnicity_id = 1 THEN 1 ELSE 0 END) AS ethn_white,
             SUM(CASE WHEN atp.prsn_ethnicity_id = 2 THEN 1 ELSE 0 END) AS ethn_black,
             SUM(CASE WHEN atp.prsn_ethnicity_id = 3 THEN 1 ELSE 0 END) AS ethn_hispanic,
             SUM(CASE WHEN atp.prsn_ethnicity_id = 4 THEN 1 ELSE 0 END) AS ethn_asian,
-            SUM(CASE WHEN atp.prsn_ethnicity_id = 5 THEN 1 ELSE 0 END) AS ethn_other,
+            SUM(CASE WHEN atp.prsn_ethnicity_id NOT IN (1,2,3,4,6) OR atp.prsn_ethnicity_id IS NULL THEN 1 ELSE 0 END) AS ethn_other,
             SUM(CASE WHEN atp.prsn_ethnicity_id = 6 THEN 1 ELSE 0 END) AS ethn_amer_ind_nat,
             -- Total
             SUM(1) AS total
