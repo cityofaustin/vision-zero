@@ -314,7 +314,7 @@ def format_person_data(data, formatter_config):
     return formatted_records
 
 
-def get_day_start():
+def get_date_limit():
     """
     Returns a string containing today's date 5 years ago in iso format: yyyy-mm-dd
     :return str:
