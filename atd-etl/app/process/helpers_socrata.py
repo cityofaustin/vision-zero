@@ -316,7 +316,7 @@ def format_person_data(data, formatter_config):
 
 def get_date_limit():
     """
-    Returns a string containing today's date 5 years ago in iso format: yyyy-mm-dd
+    Returns a string with the date of first day of the previous month in iso format: yyyy-mm-dd
     :return str:
     """
     d = date.today()
