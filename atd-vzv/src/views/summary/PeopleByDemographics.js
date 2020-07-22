@@ -409,11 +409,10 @@ const PeopleByDemographics = (props) => {
     }
 
     const removeUnusedTabs = (node) => {
-      // Delete all unnecessary keys
-      Object.keys(node).map(key => {
+      for (const key in Object.keys(node)) {
         if (!tabsList[activeTab].includes(key || key === "removeUnusedTabs"))
           delete node[key];
-      });
+      }
       return node;
     }
 
