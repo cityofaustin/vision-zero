@@ -14,6 +14,7 @@ import requests
 import json
 from copy import deepcopy
 from process.config import ATD_ETL_CONFIG
+from datetime import date
 
 # Dict to translate canonical modes to broader categories for VZV
 mode_categories = {
@@ -311,3 +312,16 @@ def format_person_data(data, formatter_config):
     formatted_records = concatTimeAndDate(formatted_records)
 
     return formatted_records
+
+
+def get_day_start():
+    """
+    Returns a string containing today's date 5 years ago in iso format: yyyy-mm-dd
+    :return str:
+    """
+    d = date.today()
+    return d.replace(
+        year=d.year if d.month > 1 else d.year - 1,
+        month=d.month - 1 if d.month > 1 else 12,
+        day=1
+    ).strftime("%Y-%m-%d")
