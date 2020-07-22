@@ -1,15 +1,14 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import moment from "moment";
 import { Bar } from "react-chartjs-2";
-import { Container, Row, Col } from "reactstrap";
-import styled from "styled-components";
 
 import { crashEndpointUrl } from "./queries/socrataQueries";
 import {
   dataEndDate,
   summaryCurrentYearEndDate,
-  yearsArray,
+  dataStartDate,
+  summaryCurrentYearStartDate,
 } from "../../constants/time";
 import { colors } from "../../constants/colors";
 
@@ -19,19 +18,31 @@ const CrashesByYearAverage = ({ crashType }) => {
   const [currentYearData, setCurrentYearData] = useState([]);
 
   useEffect(() => {
+    const url = `${crashEndpointUrl}?$query=`;
+
+    const avgDateCondition = `crash_date BETWEEN '${dataStartDate.format(
+      "YYYY-MM-DD"
+    )}' and '${dataEndDate.format("YYYY-MM-DD")}'`;
+    const currentYearDateCondition = `crash_date BETWEEN '${summaryCurrentYearStartDate}' and '${summaryCurrentYearEndDate}'`;
+    const queryGroupAndOrder = `GROUP BY month ORDER BY month`;
+
     const avgQueries = {
-      fatalities: `SELECT date_extract_m(crash_date) as month, sum(death_cnt) / 5 as avg WHERE death_cnt > 0 AND crash_date BETWEEN '2015-05-01' and '2020-05-31' GROUP BY month ORDER BY month`,
-      fatalitiesAndSeriousInjuries: `SELECT date_extract_m(crash_date) as month, sum(death_cnt) / 5 + sum(sus_serious_injry_cnt) / 5 as avg WHERE (death_cnt > 0 OR sus_serious_injry_cnt > 0) AND crash_date BETWEEN '2015-05-01' and '2020-05-31' GROUP BY month ORDER BY month`,
-      seriousInjuries: `SELECT date_extract_m(crash_date) as month, sum(sus_serious_injry_cnt) / 5 as avg WHERE sus_serious_injry_cnt > 0 AND crash_date BETWEEN '2015-05-01' and '2020-05-31' GROUP BY month ORDER BY month`,
+      fatalities: `SELECT date_extract_m(crash_date) as month, sum(death_cnt) / 5 as avg 
+                   WHERE death_cnt > 0 AND ${avgDateCondition} ${queryGroupAndOrder}`,
+      fatalitiesAndSeriousInjuries: `SELECT date_extract_m(crash_date) as month, sum(death_cnt) / 5 + sum(sus_serious_injry_cnt) / 5 as avg 
+                                     WHERE (death_cnt > 0 OR sus_serious_injry_cnt > 0) AND ${avgDateCondition} ${queryGroupAndOrder}`,
+      seriousInjuries: `SELECT date_extract_m(crash_date) as month, sum(sus_serious_injry_cnt) / 5 as avg 
+                        WHERE sus_serious_injry_cnt > 0 AND ${avgDateCondition} ${queryGroupAndOrder}`,
     };
 
     const currentYearQueries = {
-      fatalities: `SELECT date_extract_m(crash_date) as month, sum(death_cnt) as total WHERE death_cnt > 0 AND crash_date BETWEEN '2020-01-01' and '2020-05-31' GROUP BY month ORDER BY month`,
-      fatalitiesAndSeriousInjuries: `SELECT date_extract_m(crash_date) as month, sum(death_cnt) + sum(sus_serious_injry_cnt) as total WHERE (death_cnt > 0 OR sus_serious_injry_cnt > 0) AND crash_date BETWEEN '2020-01-01' and '2020-05-31' GROUP BY month ORDER BY month`,
-      seriousInjuries: `SELECT date_extract_m(crash_date) as month, sum(sus_serious_injry_cnt) as total WHERE sus_serious_injry_cnt > 0 AND crash_date BETWEEN '2020-01-01' and '2020-05-31' GROUP BY month ORDER BY month`,
+      fatalities: `SELECT date_extract_m(crash_date) as month, sum(death_cnt) as total 
+                   WHERE death_cnt > 0 AND ${currentYearDateCondition} ${queryGroupAndOrder}`,
+      fatalitiesAndSeriousInjuries: `SELECT date_extract_m(crash_date) as month, sum(death_cnt) + sum(sus_serious_injry_cnt) as total 
+                                     WHERE (death_cnt > 0 OR sus_serious_injry_cnt > 0) AND ${currentYearDateCondition} ${queryGroupAndOrder}`,
+      seriousInjuries: `SELECT date_extract_m(crash_date) as month, sum(sus_serious_injry_cnt) as total 
+                        WHERE sus_serious_injry_cnt > 0 AND ${currentYearDateCondition} ${queryGroupAndOrder}`,
     };
-
-    const url = `${crashEndpointUrl}?$query=`;
 
     axios
       .get(url + encodeURIComponent(avgQueries[crashType.name]))
@@ -86,10 +97,19 @@ const CrashesByYearAverage = ({ crashType }) => {
         height={null}
         options={{
           responsive: true,
-          aspectRatio: 1.16,
+          aspectRatio: 0.97,
           maintainAspectRatio: false,
           legend: {
             display: false,
+          },
+          scales: {
+            yAxes: [
+              {
+                ticks: {
+                  beginAtZero: true,
+                },
+              },
+            ],
           },
         }}
       />

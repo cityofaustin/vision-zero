@@ -4,7 +4,7 @@ import styled from "styled-components";
 import classnames from "classnames";
 import { colors } from "../../../constants/colors";
 
-const CrashChartSelector = ({ chartTypes, chartType, setChartType }) => {
+const ChartTypeSelector = ({ chartTypes, chartType, setChartType }) => {
   const toggle = (tab) => {
     if (chartType !== tab) {
       setChartType(tab);
@@ -29,6 +29,7 @@ const CrashChartSelector = ({ chartTypes, chartType, setChartType }) => {
         <StyledButton>
           {chartTypes.map((type) => (
             <Button
+              key={type}
               className={classnames(
                 {
                   active: chartType === type,
@@ -48,4 +49,4 @@ const CrashChartSelector = ({ chartTypes, chartType, setChartType }) => {
   );
 };
 
-export default CrashChartSelector;
+export default ChartTypeSelector;
