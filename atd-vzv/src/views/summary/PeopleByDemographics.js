@@ -366,8 +366,6 @@ const PeopleByDemographics = (props) => {
       output.ethn_other += output.eth_unknown + b.ethn_other + b.eth_unknown;
       output.ethn_amer_ind_nat += b.ethn_amer_ind_nat;
 
-
-
       output.total += b.total;
       console.log("Finished merging nodes...");
       return output;
@@ -409,16 +407,19 @@ const PeopleByDemographics = (props) => {
     }
 
     const removeUnusedTabs = (node) => {
+      // Delete all unnecessary keys
+
       for (const key in Object.keys(node)) {
         if (!tabsList[activeTab].includes(key || key === "removeUnusedTabs"))
           delete node[key];
       }
+
       return node;
     }
 
     const buildOptions = (key) => {
       if (key === "total") return {};
-      const color = chartColors[chartConfig[activeTab][key]["categoryValue"]];
+      const color = chartColors[chartConfig[activeTab][key]["categoryValue"]-1];
       const label = chartConfig[activeTab][key]["label"];
       return {
         backgroundColor: color,
@@ -484,6 +485,9 @@ const PeopleByDemographics = (props) => {
   }, [crashType, activeTab, props.data]);
 
   console.log("Data", data);
+  console.log("newChartData", newChartData);
+
+  debugger;
 
   return (
     <Container className="m-0 p-0">
