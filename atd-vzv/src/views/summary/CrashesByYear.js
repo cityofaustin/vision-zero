@@ -21,7 +21,7 @@ import {
 const CrashesByYear = () => {
   const chartTypes = ["Average", "Cumulative"];
 
-  const [crashType, setCrashType] = useState([]);
+  const [crashType, setCrashType] = useState(null);
   const [chartType, setChartType] = useState("Average");
   const [byYearData, setByYearData] = useState([]);
 
@@ -49,11 +49,12 @@ const CrashesByYear = () => {
                         WHERE sus_serious_injry_cnt > 0 AND ${byYearDateCondition} ${queryGroupAndOrder}`,
     };
 
-    axios
-      .get(url + encodeURIComponent(avgQueries[crashType.name]))
-      .then((res) => {
-        setByYearData(res.data);
-      });
+    !!crashType &&
+      axios
+        .get(url + encodeURIComponent(avgQueries[crashType.name]))
+        .then((res) => {
+          setByYearData(res.data);
+        });
   }, [crashType]);
 
   // Fetch data for By Month Average and Cumulative visualizations
@@ -92,19 +93,21 @@ const CrashesByYear = () => {
       setter(total);
     };
 
-    axios
-      .get(url + encodeURIComponent(avgQueries[crashType.name]))
-      .then((res) => {
-        setAvgData(res.data);
-        sumAndSetMonthlyTotals(res.data, "avg", setAvgDataTotal);
-      });
+    !!crashType &&
+      axios
+        .get(url + encodeURIComponent(avgQueries[crashType.name]))
+        .then((res) => {
+          setAvgData(res.data);
+          sumAndSetMonthlyTotals(res.data, "avg", setAvgDataTotal);
+        });
 
-    axios
-      .get(url + encodeURIComponent(currentYearQueries[crashType.name]))
-      .then((res) => {
-        setCurrentYearData(res.data);
-        sumAndSetMonthlyTotals(res.data, "total", setCurrentYearDataTotal);
-      });
+    !!crashType &&
+      axios
+        .get(url + encodeURIComponent(currentYearQueries[crashType.name]))
+        .then((res) => {
+          setCurrentYearData(res.data);
+          sumAndSetMonthlyTotals(res.data, "total", setCurrentYearDataTotal);
+        });
   }, [crashType]);
 
   const StyledDiv = styled.div`
@@ -162,40 +165,27 @@ const CrashesByYear = () => {
           <hr />
         </Col>
       </Row>
-      <ChartTypeSelector
-        chartTypes={chartTypes}
-        chartType={chartType}
-        setChartType={setChartType}
-      />
       <Row className="pb-2">
         <Col xs={4} s={2} m={2} l={2} xl={2}>
           <div>
-            <hr
-              className="my-1"
-              style={{
-                border: `4px solid ${colors.buttonBackground}`,
-              }}
-            ></hr>
-            <h3 className="h6 text-center py-1 mb-0">
-              <strong>Year</strong>
-            </h3>
+            <div>
+              <h4 className="h6 text-center my-1 pt-2">
+                <strong>Year</strong>
+              </h4>
+            </div>
             <hr className="my-1"></hr>
             <h3 className="h6 text-center py-1">Total</h3>
           </div>
         </Col>
         {byYearData.map((year) => (
-          <Col xs={4} s={2} m={2} l={2} xl={2}>
+          <Col xs={4} s={2} m={2} l={2} xl={2} key={year.year}>
             <StyledDiv>
               <div className="year-total-div">
-                <hr
-                  className="my-1"
-                  style={{
-                    border: `4px solid ${colors.light}`,
-                  }}
-                ></hr>
-                <h4 className="h6 text-center py-1 mb-0">
-                  <strong>{year.year}</strong>
-                </h4>
+                <div>
+                  <h4 className="h6 text-center my-1 pt-2">
+                    <strong>{year.year}</strong>
+                  </h4>
+                </div>
                 <hr className="my-1"></hr>
                 <h4 className="h6 text-center py-1">{year.total}</h4>
               </div>
@@ -203,7 +193,11 @@ const CrashesByYear = () => {
           </Col>
         ))}
       </Row>
-
+      <ChartTypeSelector
+        chartTypes={chartTypes}
+        chartType={chartType}
+        setChartType={setChartType}
+      />
       <Row className="mt-1">
         <Col>{renderChartByType(chartType)}</Col>
       </Row>

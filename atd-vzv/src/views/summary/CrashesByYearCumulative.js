@@ -16,13 +16,11 @@ const CrashesByYearCumulative = ({ avgData, currentYearData }) => {
         i !== 0 && acc.push(acc[i - 1] + parseFloat(data.avg));
         return acc;
       }, []);
-      const currentYearValues =
-        // currentYearData.map((data) => data.total);
-        currentYearData.reduce((acc, data, i) => {
-          i === 0 && acc.push(parseInt(data.total));
-          i !== 0 && acc.push(acc[i - 1] + parseInt(data.total));
-          return acc;
-        }, []);
+      const currentYearValues = currentYearData.reduce((acc, data, i) => {
+        i === 0 && acc.push(parseFloat(data.total));
+        i !== 0 && acc.push(acc[i - 1] + parseFloat(data.total));
+        return acc;
+      }, []);
 
       return {
         labels,
@@ -77,7 +75,6 @@ const CrashesByYearCumulative = ({ avgData, currentYearData }) => {
 
     if (isDataFetched) {
       const formattedData = formatChartData(avgData, currentYearData);
-      console.log(formattedData);
       setChartData(formattedData);
     }
   }, [avgData, currentYearData]);
@@ -102,6 +99,9 @@ const CrashesByYearCumulative = ({ avgData, currentYearData }) => {
               },
             },
           ],
+        },
+        legend: {
+          onClick: (e) => e.stopPropagation(),
         },
       }}
     />
