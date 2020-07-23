@@ -20,13 +20,15 @@ const CrashesByYearAverage = ({ avgData, currentYearData }) => {
         datasets: [
           {
             label: "Five Year Average",
-            backgroundColor: colors.viridis3Of6,
+            backgroundColor: colors.viridis4Of6,
+            hoverBackgroundColor: colors.viridis4Of6,
             data: avgValues,
             barPercentage: 1.0,
           },
           {
             label: "Total Year to Date",
             backgroundColor: colors.viridis1Of6Highest,
+            hoverBackgroundColor: colors.viridis1Of6Highest,
             data: currentYearValues,
             barPercentage: 1.0,
           },
@@ -51,6 +53,9 @@ const CrashesByYearAverage = ({ avgData, currentYearData }) => {
         responsive: true,
         aspectRatio: 1.11,
         maintainAspectRatio: false,
+        tooltips: {
+          mode: "index",
+        },
         scales: {
           yAxes: [
             {

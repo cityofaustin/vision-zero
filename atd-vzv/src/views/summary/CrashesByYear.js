@@ -30,17 +30,17 @@ const CrashesByYear = () => {
   const [currentYearData, setCurrentYearData] = useState([]);
   const [currentYearTotal, setCurrentYearDataTotal] = useState(0);
 
+  const url = `${crashEndpointUrl}?$query=`;
+
   // Fetch data for By Year totals
   useEffect(() => {
-    const url = `${crashEndpointUrl}?$query=`;
-
     const byYearDateCondition = `crash_date BETWEEN '${dataStartDate
       .clone()
       .startOf("year")
       .format("YYYY-MM-DD")}' and '${dataEndDate.format("YYYY-MM-DD")}'`;
     const queryGroupAndOrder = `GROUP BY year ORDER BY year`;
 
-    const avgQueries = {
+    const byYearQueries = {
       fatalities: `SELECT date_extract_y(crash_date) as year, sum(death_cnt) as total
                    WHERE death_cnt > 0 AND ${byYearDateCondition} ${queryGroupAndOrder}`,
       fatalitiesAndSeriousInjuries: `SELECT date_extract_y(crash_date) as year, sum(death_cnt) + sum(sus_serious_injry_cnt) as total 
@@ -51,16 +51,14 @@ const CrashesByYear = () => {
 
     !!crashType &&
       axios
-        .get(url + encodeURIComponent(avgQueries[crashType.name]))
+        .get(url + encodeURIComponent(byYearQueries[crashType.name]))
         .then((res) => {
           setByYearData(res.data);
         });
-  }, [crashType]);
+  }, [crashType, url]);
 
   // Fetch data for By Month Average and Cumulative visualizations
   useEffect(() => {
-    const url = `${crashEndpointUrl}?$query=`;
-
     const avgDateCondition = `crash_date BETWEEN '${dataStartDate.format(
       "YYYY-MM-DD"
     )}' and '${dataEndDate.format("YYYY-MM-DD")}'`;
@@ -108,7 +106,7 @@ const CrashesByYear = () => {
           setCurrentYearData(res.data);
           sumAndSetMonthlyTotals(res.data, "total", setCurrentYearDataTotal);
         });
-  }, [crashType]);
+  }, [crashType, url]);
 
   const StyledDiv = styled.div`
     .year-total-div {

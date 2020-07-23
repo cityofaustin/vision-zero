@@ -11,62 +11,47 @@ const CrashesByYearCumulative = ({ avgData, currentYearData }) => {
       const labels = avgData.map((data) =>
         moment({ month: parseInt(data.month) - 1 }).format("MMM")
       );
-      const avgValues = avgData.reduce((acc, data, i) => {
-        i === 0 && acc.push(parseFloat(data.avg));
-        i !== 0 && acc.push(acc[i - 1] + parseFloat(data.avg));
-        return acc;
-      }, []);
-      const currentYearValues = currentYearData.reduce((acc, data, i) => {
-        i === 0 && acc.push(parseFloat(data.total));
-        i !== 0 && acc.push(acc[i - 1] + parseFloat(data.total));
-        return acc;
-      }, []);
+
+      const reduceCumulativeTotals = (data, valueKey) =>
+        data.reduce((acc, data, i) => {
+          i === 0 && acc.push(parseFloat(data[valueKey]));
+          i !== 0 && acc.push(acc[i - 1] + parseFloat(data[valueKey]));
+          return acc;
+        }, []);
+
+      const avgValues = reduceCumulativeTotals(avgData, "avg");
+      const currentValues = reduceCumulativeTotals(currentYearData, "total");
+
+      const formatDataset = (dataArr, label, color) => ({
+        label: label,
+        fill: false,
+        lineTension: 0.1,
+        backgroundColor: color,
+        borderColor: color,
+        borderCapStyle: "butt",
+        borderJoinStyle: "miter",
+        borderWidth: 3.5,
+        pointBorderColor: color,
+        pointBackgroundColor: color,
+        pointBorderWidth: 1,
+        pointHoverRadius: 5,
+        pointHoverBackgroundColor: color,
+        pointHoverBorderColor: color,
+        pointHoverBorderWidth: 2,
+        pointRadius: 1,
+        pointHitRadius: 10,
+        data: dataArr,
+      });
 
       return {
         labels,
         datasets: [
-          {
-            label: "Five Year Average",
-            fill: false,
-            lineTension: 0.1,
-            backgroundColor: colors.viridis3Of6,
-            borderColor: colors.viridis3Of6,
-            borderCapStyle: "butt",
-            borderDash: [],
-            borderDashOffset: 0.0,
-            borderJoinStyle: "miter",
-            pointBorderColor: colors.viridis3Of6,
-            pointBackgroundColor: colors.viridis3Of6,
-            pointBorderWidth: 1,
-            pointHoverRadius: 5,
-            pointHoverBackgroundColor: colors.viridis3Of6,
-            pointHoverBorderColor: colors.viridis3Of6,
-            pointHoverBorderWidth: 2,
-            pointRadius: 1,
-            pointHitRadius: 10,
-            data: avgValues,
-          },
-          {
-            label: "Total Year to Date",
-            fill: false,
-            lineTension: 0.1,
-            backgroundColor: colors.viridis1Of6Highest,
-            borderColor: colors.viridis1Of6Highest,
-            borderCapStyle: "butt",
-            borderDash: [],
-            borderDashOffset: 0.0,
-            borderJoinStyle: "miter",
-            pointBorderColor: colors.viridis1Of6Highest,
-            pointBackgroundColor: colors.viridis1Of6Highest,
-            pointBorderWidth: 1,
-            pointHoverRadius: 5,
-            pointHoverBackgroundColor: colors.viridis1Of6Highest,
-            pointHoverBorderColor: colors.viridis1Of6Highest,
-            pointHoverBorderWidth: 2,
-            pointRadius: 1,
-            pointHitRadius: 10,
-            data: currentYearValues,
-          },
+          formatDataset(avgValues, "Five Year Average", colors.viridis4Of6),
+          formatDataset(
+            currentValues,
+            "Total Year to Date",
+            colors.viridis1Of6Highest
+          ),
         ],
       };
     };
