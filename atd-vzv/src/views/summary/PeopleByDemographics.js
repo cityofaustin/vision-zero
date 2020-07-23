@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { HorizontalBar } from "react-chartjs-2";
 import { Container, Row, Col, Button } from "reactstrap";
 import styled from "styled-components";
@@ -7,19 +6,17 @@ import classnames from "classnames";
 
 import CrashTypeSelector from "../nav/CrashTypeSelector";
 import { colors } from "../../constants/colors";
-import { dataEndDate, yearsArray } from "../../constants/time";
-import { personEndpointUrl } from "./queries/socrataQueries";
 import InfoPopover from "../../Components/Popover/InfoPopover";
 import { popoverConfig } from "../../Components/Popover/popoverConfig";
 
 import clonedeep from "lodash.clonedeep";
 
-const PeopleByDemographics = (props) => {
+const PeopleByDemographics = props => {
   const [activeTab, setActiveTab] = useState("prsn_ethnicity_id");
   const [crashType, setCrashType] = useState([]);
   const [chartData, setChartData] = useState(null);
 
-  const toggle = (tab) => {
+  const toggle = tab => {
     if (activeTab !== tab) {
       setActiveTab(tab);
     }
@@ -42,7 +39,7 @@ const PeopleByDemographics = (props) => {
       prsn_age: {
         under_18: {
           label: "Under 18",
-          categoryValue: 1
+          categoryValue: 1,
         },
         from_18_to_44: {
           label: "18 to 44",
@@ -86,7 +83,7 @@ const PeopleByDemographics = (props) => {
         },
         ethn_black: {
           label: "Black",
-          categoryValue: 3
+          categoryValue: 3,
         },
         ethn_asian: {
           label: "Asian",
@@ -100,7 +97,7 @@ const PeopleByDemographics = (props) => {
           label: "American Indian or Alaska Native",
           categoryValue: 6,
         },
-      }
+      },
     };
 
     const chartColors = [
@@ -113,7 +110,7 @@ const PeopleByDemographics = (props) => {
     ];
 
     const mergeNodes = (a, b) => {
-      const output = {...a};
+      const output = { ...a };
       output.type = "all";
       output.under_18 += b.under_18;
       output.from_18_to_44 += b.from_18_to_44;
@@ -134,9 +131,9 @@ const PeopleByDemographics = (props) => {
 
       output.total += b.total;
       return output;
-    }
+    };
 
-    const includeNodeCategory = (nodeType) => {
+    const includeNodeCategory = nodeType => {
       switch (crashType.name) {
         case "fatalities":
           return nodeType === "fatalities";
@@ -145,10 +142,10 @@ const PeopleByDemographics = (props) => {
         default:
           return true;
       }
-    }
+    };
 
     const tabsList = {
-      "prsn_ethnicity_id": [
+      prsn_ethnicity_id: [
         "ethn_white",
         "ethn_hispanic",
         "ethn_black",
@@ -156,21 +153,17 @@ const PeopleByDemographics = (props) => {
         "ethn_other",
         "ethn_amer_ind_nat",
       ],
-      "prsn_gndr_id": [
-        "gender_male",
-        "gender_female",
-        "gender_unknown",
-      ],
-      "prsn_age": [
+      prsn_gndr_id: ["gender_male", "gender_female", "gender_unknown"],
+      prsn_age: [
         "under_18",
         "from_18_to_44",
         "from_45_to_64",
         "from_65",
         "unknown",
       ],
-    }
+    };
 
-    const removeUnusedTabs = (node) => {
+    const removeUnusedTabs = node => {
       // Delete all unnecessary keys
 
       for (const key in Object.keys(node)) {
@@ -179,11 +172,12 @@ const PeopleByDemographics = (props) => {
       }
 
       return node;
-    }
+    };
 
-    const buildOptions = (key) => {
+    const buildOptions = key => {
       if (key === "total") return {};
-      const color = chartColors[chartConfig[activeTab][key]["categoryValue"]-1];
+      const color =
+        chartColors[chartConfig[activeTab][key]["categoryValue"] - 1];
       const label = chartConfig[activeTab][key]["label"];
       return {
         backgroundColor: color,
@@ -195,33 +189,31 @@ const PeopleByDemographics = (props) => {
       };
     };
 
-
-
     // Filter based on the categories we need: all, fatalities, ssi
     let rawData = props.data.filter(item => {
       return includeNodeCategory(item.type);
     });
 
     // If we have all, then add up by year
-    if(rawData.length > 5) {
+    if (rawData.length > 5) {
       let finalData = [];
       for (let n = 0; n < rawData.length; n += 2)
-        finalData[(n / 2) || 0] = mergeNodes(rawData[n], rawData[n+1]);
+        finalData[n / 2 || 0] = mergeNodes(rawData[n], rawData[n + 1]);
       rawData = finalData;
     }
 
     const rawDataOriginal = clonedeep(rawData);
 
-    const getTotalsForKey = (key) => {
-      return rawDataOriginal.map(item => item[key])
+    const getTotalsForKey = key => {
+      return rawDataOriginal.map(item => item[key]);
     };
 
-    const getWholeNums = (key) => {
+    const getWholeNums = key => {
       return rawDataOriginal.map(item => {
         return {
           categoryTotal: item[key],
-          overallTotal: item["total"]
-        }
+          overallTotal: item["total"],
+        };
       });
     };
 
@@ -230,16 +222,18 @@ const PeopleByDemographics = (props) => {
     });
 
     rawData = {
-      datasets: tabsList[activeTab].filter(k => k !== "eth_unknown").map((key, i) => {
-        const total = getTotalsForKey("total");
-        return {
-          ...buildOptions(key),
-          data: rawData.map((item, i) => {
-            return (item[key]/total[i]) * 100;
-          }),
-          wholeNumbers: getWholeNums(key),
-        }
-      }),
+      datasets: tabsList[activeTab]
+        .filter(k => k !== "eth_unknown")
+        .map((key, i) => {
+          const total = getTotalsForKey("total");
+          return {
+            ...buildOptions(key),
+            data: rawData.map((item, i) => {
+              return (item[key] / total[i]) * 100;
+            }),
+            wholeNumbers: getWholeNums(key),
+          };
+        }),
       labels: rawDataOriginal.map(item => String(item.year)),
     };
 
@@ -334,7 +328,7 @@ const PeopleByDemographics = (props) => {
               },
               tooltips: {
                 callbacks: {
-                  label: function (tooltipItem, data) {
+                  label: function(tooltipItem, data) {
                     let label = data.datasets[tooltipItem.datasetIndex].label;
                     let categoryTotal =
                       data.datasets[tooltipItem.datasetIndex].wholeNumbers[
