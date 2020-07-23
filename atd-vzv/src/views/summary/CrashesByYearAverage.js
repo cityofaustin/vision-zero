@@ -17,7 +17,9 @@ import { colors } from "../../constants/colors";
 const CrashesByYearAverage = ({ crashType }) => {
   const [chartData, setChartData] = useState({});
   const [avgData, setAvgData] = useState([]);
+  const [avgDataTotal, setAvgDataTotal] = useState(0);
   const [currentYearData, setCurrentYearData] = useState([]);
+  const [currentYearTotal, setCurrentYearDataTotal] = useState(0);
 
   useEffect(() => {
     const url = `${crashEndpointUrl}?$query=`;
@@ -46,16 +48,26 @@ const CrashesByYearAverage = ({ crashType }) => {
                         WHERE sus_serious_injry_cnt > 0 AND ${currentYearDateCondition} ${queryGroupAndOrder}`,
     };
 
+    const sumAndSetMonthlyTotals = (data, key, setter) => {
+      const total = data.reduce(
+        (acc, month) => (acc += parseFloat(month[key])),
+        0
+      );
+      setter(total);
+    };
+
     axios
       .get(url + encodeURIComponent(avgQueries[crashType.name]))
       .then((res) => {
         setAvgData(res.data);
+        sumAndSetMonthlyTotals(res.data, "avg", setAvgDataTotal);
       });
 
     axios
       .get(url + encodeURIComponent(currentYearQueries[crashType.name]))
       .then((res) => {
         setCurrentYearData(res.data);
+        sumAndSetMonthlyTotals(res.data, "total", setCurrentYearDataTotal);
       });
   }, [crashType]);
 
@@ -101,12 +113,6 @@ const CrashesByYearAverage = ({ crashType }) => {
       border-style: none;
       opacity: 1;
     }
-
-    .year-total-div:hover {
-      cursor: pointer;
-      color: ${colors.buttonBackground};
-      background: dimgray 0% 0% no-repeat padding-box;
-    }
   `;
 
   return (
@@ -137,10 +143,10 @@ const CrashesByYearAverage = ({ crashType }) => {
                 }}
               ></hr>
               <h4 className="h6 text-center py-1 mb-0">
-                <strong>Title</strong>
+                <strong>Five Year Average</strong>
               </h4>
               <hr className="my-1"></hr>
-              <h4 className="h6 text-center py-1">Total</h4>
+              <h4 className="h6 text-center py-1">{avgDataTotal}</h4>
             </div>
           </StyledDiv>
         </Col>
@@ -154,10 +160,10 @@ const CrashesByYearAverage = ({ crashType }) => {
                 }}
               ></hr>
               <h4 className="h6 text-center py-1 mb-0">
-                <strong>Title 1</strong>
+                <strong>{moment().format("YYYY")}</strong>
               </h4>
               <hr className="my-1"></hr>
-              <h4 className="h6 text-center py-1">Total 1</h4>
+              <h4 className="h6 text-center py-1">{currentYearTotal}</h4>
             </div>
           </StyledDiv>
         </Col>
