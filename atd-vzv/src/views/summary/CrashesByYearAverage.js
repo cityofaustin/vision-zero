@@ -1,75 +1,18 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import moment from "moment";
 import styled from "styled-components";
 import { Bar } from "react-chartjs-2";
 import { Container, Col, Row } from "reactstrap";
 
-import { crashEndpointUrl } from "./queries/socrataQueries";
-import {
-  dataEndDate,
-  summaryCurrentYearEndDate,
-  dataStartDate,
-  summaryCurrentYearStartDate,
-} from "../../constants/time";
 import { colors } from "../../constants/colors";
 
-const CrashesByYearAverage = ({ crashType }) => {
+const CrashesByYearAverage = ({
+  avgData,
+  avgDataTotal,
+  currentYearTotal,
+  currentYearData,
+}) => {
   const [chartData, setChartData] = useState({});
-  const [avgData, setAvgData] = useState([]);
-  const [avgDataTotal, setAvgDataTotal] = useState(0);
-  const [currentYearData, setCurrentYearData] = useState([]);
-  const [currentYearTotal, setCurrentYearDataTotal] = useState(0);
-
-  useEffect(() => {
-    const url = `${crashEndpointUrl}?$query=`;
-
-    const avgDateCondition = `crash_date BETWEEN '${dataStartDate.format(
-      "YYYY-MM-DD"
-    )}' and '${dataEndDate.format("YYYY-MM-DD")}'`;
-    const currentYearDateCondition = `crash_date BETWEEN '${summaryCurrentYearStartDate}' and '${summaryCurrentYearEndDate}'`;
-    const queryGroupAndOrder = `GROUP BY month ORDER BY month`;
-
-    const avgQueries = {
-      fatalities: `SELECT date_extract_m(crash_date) as month, sum(death_cnt) / 5 as avg 
-                   WHERE death_cnt > 0 AND ${avgDateCondition} ${queryGroupAndOrder}`,
-      fatalitiesAndSeriousInjuries: `SELECT date_extract_m(crash_date) as month, sum(death_cnt) / 5 + sum(sus_serious_injry_cnt) / 5 as avg 
-                                     WHERE (death_cnt > 0 OR sus_serious_injry_cnt > 0) AND ${avgDateCondition} ${queryGroupAndOrder}`,
-      seriousInjuries: `SELECT date_extract_m(crash_date) as month, sum(sus_serious_injry_cnt) / 5 as avg 
-                        WHERE sus_serious_injry_cnt > 0 AND ${avgDateCondition} ${queryGroupAndOrder}`,
-    };
-
-    const currentYearQueries = {
-      fatalities: `SELECT date_extract_m(crash_date) as month, sum(death_cnt) as total 
-                   WHERE death_cnt > 0 AND ${currentYearDateCondition} ${queryGroupAndOrder}`,
-      fatalitiesAndSeriousInjuries: `SELECT date_extract_m(crash_date) as month, sum(death_cnt) + sum(sus_serious_injry_cnt) as total 
-                                     WHERE (death_cnt > 0 OR sus_serious_injry_cnt > 0) AND ${currentYearDateCondition} ${queryGroupAndOrder}`,
-      seriousInjuries: `SELECT date_extract_m(crash_date) as month, sum(sus_serious_injry_cnt) as total 
-                        WHERE sus_serious_injry_cnt > 0 AND ${currentYearDateCondition} ${queryGroupAndOrder}`,
-    };
-
-    const sumAndSetMonthlyTotals = (data, key, setter) => {
-      const total = data.reduce(
-        (acc, month) => (acc += parseFloat(month[key])),
-        0
-      );
-      setter(total);
-    };
-
-    axios
-      .get(url + encodeURIComponent(avgQueries[crashType.name]))
-      .then((res) => {
-        setAvgData(res.data);
-        sumAndSetMonthlyTotals(res.data, "avg", setAvgDataTotal);
-      });
-
-    axios
-      .get(url + encodeURIComponent(currentYearQueries[crashType.name]))
-      .then((res) => {
-        setCurrentYearData(res.data);
-        sumAndSetMonthlyTotals(res.data, "total", setCurrentYearDataTotal);
-      });
-  }, [crashType]);
 
   useEffect(() => {
     const formatChartData = (avgData, currentYearData) => {
@@ -99,6 +42,7 @@ const CrashesByYearAverage = ({ crashType }) => {
     };
 
     const isDataFetched = !!avgData.length && !!currentYearData.length;
+
     if (isDataFetched) {
       const formattedData = formatChartData(avgData, currentYearData);
       setChartData(formattedData);

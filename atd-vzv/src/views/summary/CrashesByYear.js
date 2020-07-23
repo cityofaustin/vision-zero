@@ -11,7 +11,12 @@ import CrashTypeSelector from "./Components/CrashTypeSelector";
 import InfoPopover from "../../Components/Popover/InfoPopover";
 import { popoverConfig } from "../../Components/Popover/popoverConfig";
 import { crashEndpointUrl } from "./queries/socrataQueries";
-import { dataEndDate, dataStartDate } from "../../constants/time";
+import {
+  dataEndDate,
+  dataStartDate,
+  summaryCurrentYearEndDate,
+  summaryCurrentYearStartDate,
+} from "../../constants/time";
 
 const CrashesByYear = () => {
   const chartTypes = ["Average", "Cumulative"];
@@ -20,12 +25,31 @@ const CrashesByYear = () => {
   const [chartType, setChartType] = useState("Average");
   const [byYearData, setByYearData] = useState([]);
 
+  const [avgData, setAvgData] = useState([]);
+  const [avgDataTotal, setAvgDataTotal] = useState(0);
+  const [currentYearData, setCurrentYearData] = useState([]);
+  const [currentYearTotal, setCurrentYearDataTotal] = useState(0);
+
   const renderChartByType = (chartType) => {
     switch (chartType) {
       case "Average":
-        return <CrashesByYearAverage crashType={crashType} />;
+        return (
+          <CrashesByYearAverage
+            crashType={crashType}
+            avgData={avgData}
+            avgDataTotal={avgDataTotal}
+            currentYearTotal={currentYearTotal}
+            currentYearData={currentYearData}
+          />
+        );
       case "Cumulative":
-        return <CrashesByYearCumulative crashType={crashType} />;
+        return (
+          <CrashesByYearCumulative
+            crashType={crashType}
+            avgData={avgData}
+            currentYearData={currentYearData}
+          />
+        );
       default:
         return "No chart selected";
     }
@@ -53,6 +77,56 @@ const CrashesByYear = () => {
       .get(url + encodeURIComponent(avgQueries[crashType.name]))
       .then((res) => {
         setByYearData(res.data);
+      });
+  }, [crashType]);
+
+  useEffect(() => {
+    const url = `${crashEndpointUrl}?$query=`;
+
+    const avgDateCondition = `crash_date BETWEEN '${dataStartDate.format(
+      "YYYY-MM-DD"
+    )}' and '${dataEndDate.format("YYYY-MM-DD")}'`;
+    const currentYearDateCondition = `crash_date BETWEEN '${summaryCurrentYearStartDate}' and '${summaryCurrentYearEndDate}'`;
+    const queryGroupAndOrder = `GROUP BY month ORDER BY month`;
+
+    const avgQueries = {
+      fatalities: `SELECT date_extract_m(crash_date) as month, sum(death_cnt) / 5 as avg 
+                   WHERE death_cnt > 0 AND ${avgDateCondition} ${queryGroupAndOrder}`,
+      fatalitiesAndSeriousInjuries: `SELECT date_extract_m(crash_date) as month, sum(death_cnt) / 5 + sum(sus_serious_injry_cnt) / 5 as avg 
+                                     WHERE (death_cnt > 0 OR sus_serious_injry_cnt > 0) AND ${avgDateCondition} ${queryGroupAndOrder}`,
+      seriousInjuries: `SELECT date_extract_m(crash_date) as month, sum(sus_serious_injry_cnt) / 5 as avg 
+                        WHERE sus_serious_injry_cnt > 0 AND ${avgDateCondition} ${queryGroupAndOrder}`,
+    };
+
+    const currentYearQueries = {
+      fatalities: `SELECT date_extract_m(crash_date) as month, sum(death_cnt) as total 
+                   WHERE death_cnt > 0 AND ${currentYearDateCondition} ${queryGroupAndOrder}`,
+      fatalitiesAndSeriousInjuries: `SELECT date_extract_m(crash_date) as month, sum(death_cnt) + sum(sus_serious_injry_cnt) as total 
+                                     WHERE (death_cnt > 0 OR sus_serious_injry_cnt > 0) AND ${currentYearDateCondition} ${queryGroupAndOrder}`,
+      seriousInjuries: `SELECT date_extract_m(crash_date) as month, sum(sus_serious_injry_cnt) as total 
+                        WHERE sus_serious_injry_cnt > 0 AND ${currentYearDateCondition} ${queryGroupAndOrder}`,
+    };
+
+    const sumAndSetMonthlyTotals = (data, key, setter) => {
+      const total = data.reduce(
+        (acc, month) => (acc += parseFloat(month[key])),
+        0
+      );
+      setter(total);
+    };
+
+    axios
+      .get(url + encodeURIComponent(avgQueries[crashType.name]))
+      .then((res) => {
+        setAvgData(res.data);
+        sumAndSetMonthlyTotals(res.data, "avg", setAvgDataTotal);
+      });
+
+    axios
+      .get(url + encodeURIComponent(currentYearQueries[crashType.name]))
+      .then((res) => {
+        setCurrentYearData(res.data);
+        sumAndSetMonthlyTotals(res.data, "total", setCurrentYearDataTotal);
       });
   }, [crashType]);
 
