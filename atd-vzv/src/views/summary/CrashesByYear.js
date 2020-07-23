@@ -30,31 +30,7 @@ const CrashesByYear = () => {
   const [currentYearData, setCurrentYearData] = useState([]);
   const [currentYearTotal, setCurrentYearDataTotal] = useState(0);
 
-  const renderChartByType = (chartType) => {
-    switch (chartType) {
-      case "Average":
-        return (
-          <CrashesByYearAverage
-            crashType={crashType}
-            avgData={avgData}
-            avgDataTotal={avgDataTotal}
-            currentYearTotal={currentYearTotal}
-            currentYearData={currentYearData}
-          />
-        );
-      case "Cumulative":
-        return (
-          <CrashesByYearCumulative
-            crashType={crashType}
-            avgData={avgData}
-            currentYearData={currentYearData}
-          />
-        );
-      default:
-        return "No chart selected";
-    }
-  };
-
+  // Fetch data for By Year totals
   useEffect(() => {
     const url = `${crashEndpointUrl}?$query=`;
 
@@ -80,6 +56,7 @@ const CrashesByYear = () => {
       });
   }, [crashType]);
 
+  // Fetch data for By Month Average and Cumulative visualizations
   useEffect(() => {
     const url = `${crashEndpointUrl}?$query=`;
 
@@ -139,6 +116,31 @@ const CrashesByYear = () => {
       opacity: 1;
     }
   `;
+
+  const renderChartByType = (chartType) => {
+    switch (chartType) {
+      case "Average":
+        return (
+          <CrashesByYearAverage
+            crashType={crashType}
+            avgData={avgData}
+            avgDataTotal={avgDataTotal}
+            currentYearTotal={currentYearTotal}
+            currentYearData={currentYearData}
+          />
+        );
+      case "Cumulative":
+        return (
+          <CrashesByYearCumulative
+            crashType={crashType}
+            avgData={avgData}
+            currentYearData={currentYearData}
+          />
+        );
+      default:
+        return "No chart selected";
+    }
+  };
 
   return (
     <Container className="m-0 p-0">

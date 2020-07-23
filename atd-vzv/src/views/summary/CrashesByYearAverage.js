@@ -61,7 +61,7 @@ const CrashesByYearAverage = ({
 
   return (
     <>
-      <Row className="pb-2">
+      {/* <Row className="pb-2">
         <Col xs={4} s={2} m={2} l={2} xl={2}>
           <div>
             <hr
@@ -111,7 +111,7 @@ const CrashesByYearAverage = ({
             </div>
           </StyledDiv>
         </Col>
-      </Row>
+      </Row> */}
       <Container>
         <Bar
           data={chartData}
@@ -121,9 +121,6 @@ const CrashesByYearAverage = ({
             responsive: true,
             aspectRatio: 1.16,
             maintainAspectRatio: false,
-            legend: {
-              display: false,
-            },
             scales: {
               yAxes: [
                 {
