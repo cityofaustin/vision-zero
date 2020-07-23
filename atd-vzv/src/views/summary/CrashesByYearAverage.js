@@ -60,7 +60,9 @@ const CrashesByYearAverage = ({ crashType }) => {
 
   useEffect(() => {
     const formatChartData = (avgData, currentYearData) => {
-      const labels = avgData.map((data) => moment(data.month).format("MMM"));
+      const labels = avgData.map((data) =>
+        moment({ month: parseInt(data.month) - 1 }).format("MMM")
+      );
       const avgValues = avgData.map((data) => data.avg);
       const currentYearValues = currentYearData.map((data) => data.total);
 
