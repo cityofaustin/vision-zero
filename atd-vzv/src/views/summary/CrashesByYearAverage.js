@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import moment from "moment";
+import styled from "styled-components";
 import { Bar } from "react-chartjs-2";
 import { Container, Col, Row } from "reactstrap";
 
@@ -92,6 +93,22 @@ const CrashesByYearAverage = ({ crashType }) => {
     }
   }, [avgData, currentYearData]);
 
+  const StyledDiv = styled.div`
+    .year-total-div {
+      color: ${colors.dark};
+      background: ${colors.buttonBackground} 0% 0% no-repeat padding-box;
+      border-radius: 4px;
+      border-style: none;
+      opacity: 1;
+    }
+
+    .year-total-div:hover {
+      cursor: pointer;
+      color: ${colors.buttonBackground};
+      background: dimgray 0% 0% no-repeat padding-box;
+    }
+  `;
+
   return (
     <>
       <Row className="pb-2">
@@ -109,6 +126,40 @@ const CrashesByYearAverage = ({ crashType }) => {
             <hr className="my-1"></hr>
             <h3 className="h6 text-center py-1">Total</h3>
           </div>
+        </Col>
+        <Col xs={4} s={2} m={2} l={2} xl={2}>
+          <StyledDiv>
+            <div className="year-total-div">
+              <hr
+                className="my-1"
+                style={{
+                  border: `4px solid ${colors.viridis3Of6}`,
+                }}
+              ></hr>
+              <h4 className="h6 text-center py-1 mb-0">
+                <strong>Title</strong>
+              </h4>
+              <hr className="my-1"></hr>
+              <h4 className="h6 text-center py-1">Total</h4>
+            </div>
+          </StyledDiv>
+        </Col>
+        <Col xs={4} s={2} m={2} l={2} xl={2}>
+          <StyledDiv>
+            <div className="year-total-div">
+              <hr
+                className="my-1"
+                style={{
+                  border: `4px solid ${colors.viridis1Of6Highest}`,
+                }}
+              ></hr>
+              <h4 className="h6 text-center py-1 mb-0">
+                <strong>Title 1</strong>
+              </h4>
+              <hr className="my-1"></hr>
+              <h4 className="h6 text-center py-1">Total 1</h4>
+            </div>
+          </StyledDiv>
         </Col>
       </Row>
       <Container>
