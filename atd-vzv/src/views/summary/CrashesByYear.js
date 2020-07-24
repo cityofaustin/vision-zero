@@ -26,9 +26,7 @@ const CrashesByYear = () => {
   const [byYearData, setByYearData] = useState([]);
 
   const [avgData, setAvgData] = useState([]);
-  const [avgDataTotal, setAvgDataTotal] = useState(0);
   const [currentYearData, setCurrentYearData] = useState([]);
-  const [currentYearTotal, setCurrentYearDataTotal] = useState(0);
 
   const url = `${crashEndpointUrl}?$query=`;
 
@@ -83,20 +81,11 @@ const CrashesByYear = () => {
                         WHERE sus_serious_injry_cnt > 0 AND ${currentYearDateCondition} ${queryGroupAndOrder}`,
     };
 
-    const sumAndSetMonthlyTotals = (data, key, setter) => {
-      const total = data.reduce(
-        (acc, month) => (acc += parseFloat(month[key])),
-        0
-      );
-      setter(total);
-    };
-
     !!crashType &&
       axios
         .get(url + encodeURIComponent(avgQueries[crashType.name]))
         .then((res) => {
           setAvgData(res.data);
-          sumAndSetMonthlyTotals(res.data, "avg", setAvgDataTotal);
         });
 
     !!crashType &&
@@ -104,7 +93,6 @@ const CrashesByYear = () => {
         .get(url + encodeURIComponent(currentYearQueries[crashType.name]))
         .then((res) => {
           setCurrentYearData(res.data);
-          sumAndSetMonthlyTotals(res.data, "total", setCurrentYearDataTotal);
         });
   }, [crashType, url]);
 
@@ -125,8 +113,6 @@ const CrashesByYear = () => {
           <CrashesByYearAverage
             crashType={crashType}
             avgData={avgData}
-            avgDataTotal={avgDataTotal}
-            currentYearTotal={currentYearTotal}
             currentYearData={currentYearData}
           />
         );
