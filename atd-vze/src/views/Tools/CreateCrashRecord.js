@@ -15,72 +15,133 @@ import {
 
 import { withApollo } from "react-apollo";
 import { gql } from "apollo-boost";
-import { useMutation } from "@apollo/react-hooks";
-
-import moment from "moment";
-
 import "./CreateCrashRecord.css";
 
 // TODOS:
-// - [ ] validate if I'm generating crash IDs in an acceptable way
-// - [ ] pass other variables from form into insert mutation
-// - [ ] Add field to prod/stag for temp flag, and add to mutation
-// - [ ] Create related records
+// - [x] validate if I'm generating crash IDs in an acceptable way
+// - [x] pass other variables from form into insert mutation
+// - [x] Add field to prod/stag for temp flag, and add to mutation
+// - [x] Create related records
 // - [ ] Show success/error states, offer redirect on success
 // - [ ] Show exisiting placeholder records in table
 // - [ ] Offer delete action for crash record and related records
 
 const CreateCrashRecord = ({ client }) => {
-  // console.log(...props);
+  const [tempId, setTempId] = useState(1000);
+  const [caseId, setCaseId] = useState();
+  const [fatalityCount, setFatalityCount] = useState();
+  const [susSeriousInjuryCount, setSusSeriousInjuryCount] = useState();
 
-  /**
-   * Handle Create crash record form submit.
-   * @param {SyntheticEvent} e - The event object.
-   */
-  const handleFormSubmit = e => {
-    e.preventDefault();
+  console.log("temp_id", tempId);
+  console.log("caseId", caseId);
 
-    const INSERT_ONE_CRASH = gql`
-      mutation insertOneCrash(
-        $crash_id: Int
-        $case_id: String
-        $crash_fatal_fl: String
-        $atd_fatality_count: Int
-        $sus_serious_injry_cnt: Int
-      ) {
-        insert_atd_txdot_crashes_one(
-          object: {
-            crash_id: $crash_id
-            case_id: $case_id
-            crash_fatal_fl: $crash_fatal_fl
-            atd_fatality_count: $atd_fatality_count
-            sus_serious_injry_cnt: $sus_serious_injry_cnt
-          }
+  useEffect(() => {
+    const GET_HIGHEST_TEMP_RECORD_ID = gql`
+      {
+        atd_txdot_crashes(
+          where: { temp_record: { _eq: true } }
+          limit: 1
+          order_by: { crash_id: desc }
         ) {
           crash_id
         }
       }
     `;
 
-    // Generate a unique ID to give to the crash record that won't
-    // conflict with future Crash IDs from CRIS and that isn't out
-    // of bounds for the GraphQL Int type.
-    // https://github.com/graphql/graphql-js/issues/292
-    const now = Number(moment(new Date()).format("YYMDHmmss"));
+    client
+      .mutate({
+        mutation: GET_HIGHEST_TEMP_RECORD_ID,
+      })
+      .then(res => {
+        // Find the highest existing temp crash record ID value.
+        // If there aren't and temp crash records,
+        // default to 1000.
+        const highestCurrentTempId = res.data.atd_txdot_crashes[0]
+          ? res.data.atd_txdot_crashes[0].crash_id
+          : 1000;
+        setTempId(highestCurrentTempId + 1);
+      });
+  });
 
-    debugger;
+  const handleFormSubmit = e => {
+    e.preventDefault();
 
-    const variables = {
-      crash_id: now,
+    // Build an array of persons objects formated as a string
+    // so the String can be interpolated into the gql tag syntax.
+    let personObjects = "[";
+
+    for (let index = 0; index < susSeriousInjuryCount; index++) {
+      personObjects = personObjects.concat(`{
+        crash_id: ${tempId},
+        unit_nbr: 1,
+        prsn_injry_sev_id: 1,
+      }`);
+    }
+    for (let index = 0; index < fatalityCount; index++) {
+      personObjects = personObjects.concat(`{
+        crash_id: ${tempId},
+        unit_nbr: 1,
+        prsn_injry_sev_id: 4,
+      }`);
+    }
+
+    personObjects = personObjects.concat("]");
+
+    const INSERT_BULK = gql`
+      mutation bulkInsert(
+        $crash_id: Int
+        $case_id: String
+        $crash_fatal_fl: String
+        $atd_fatality_count: Int
+        $sus_serious_injry_cnt: Int
+      ) {
+        insert_atd_txdot_crashes(
+          objects: [
+            {
+              crash_id: $crash_id
+              case_id: $case_id
+              crash_fatal_fl: $crash_fatal_fl
+              atd_fatality_count: $atd_fatality_count
+              sus_serious_injry_cnt: $sus_serious_injry_cnt
+              temp_record: true
+            }
+          ]
+        ) {
+          affected_rows
+        }
+
+        insert_atd_txdot_units(
+          objects: [{ crash_id: $crash_id, unit_nbr: 1 }]
+        ) {
+          affected_rows
+        }
+
+        insert_atd_txdot_primaryperson(objects: ${personObjects}) {
+          affected_rows
+        }
+      }
+    `;
+
+    console.log(INSERT_BULK);
+
+    const crashVariables = {
+      crash_id: tempId,
+      case_id: caseId,
+      crash_fatal_fl: fatalityCount > 0 ? "Y" : "N",
+      atd_fatality_count: fatalityCount,
+      sus_serious_injry_cnt: susSeriousInjuryCount,
     };
 
     client
       .mutate({
-        mutation: INSERT_ONE_CRASH,
-        variables: variables,
+        mutation: INSERT_BULK,
+        variables: crashVariables,
       })
       .then(res => {
         console.log(res);
+
+        // Increment the temp ID so the user can resuse the form.
+        setTempId(tempId + 1);
       });
   };
 
@@ -99,7 +160,7 @@ const CreateCrashRecord = ({ client }) => {
                 id="hf-case-id"
                 name="hf-case-id"
                 placeholder="Enter Case ID..."
-                // autoComplete="email"
+                onChange={e => setCaseId(e.target.value)}
               />
               <FormText className="help-block">
                 Please enter the Case ID
@@ -116,7 +177,7 @@ const CreateCrashRecord = ({ client }) => {
                 id="hf-fatality-count"
                 name="hf-fatality-count"
                 placeholder="Enter Fatality Count..."
-                // autoComplete="current-fatality-count"
+                onChange={e => setFatalityCount(e.target.value)}
               />
               <FormText className="help-block">
                 Please enter the Fatality Count
@@ -135,7 +196,7 @@ const CreateCrashRecord = ({ client }) => {
                 id="hf-fatality-count"
                 name="hf-fatality-count"
                 placeholder="Enter Suspected Serious Injury Count..."
-                // autoComplete="current-fatality-count"
+                onChange={e => setSusSeriousInjuryCount(e.target.value)}
               />
               <FormText className="help-block">
                 Please enter the Suspected Serious Injury Count
