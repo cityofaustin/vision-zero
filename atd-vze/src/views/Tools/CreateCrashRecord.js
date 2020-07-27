@@ -15,7 +15,7 @@ import {
   FormGroup,
   FormText,
 } from "reactstrap";
-
+import moment from "moment";
 import { withApollo } from "react-apollo";
 import { gql } from "apollo-boost";
 import "./CreateCrashRecord.css";
@@ -26,6 +26,9 @@ const CreateCrashRecord = ({ client }) => {
   const [fatalityCount, setFatalityCount] = useState(0);
   const [susSeriousInjuryCount, setSusSeriousInjuryCount] = useState(0);
   const [successfulNewRecordId, setSuccessfulNewRecordId] = useState(null);
+  const [crashDate, setCrashDate] = useState(
+    moment(new Date()).format("YYYY-MM-DD")
+  );
   const [feedback, setFeedback] = useState(false);
 
   useEffect(() => {
@@ -96,6 +99,7 @@ const CreateCrashRecord = ({ client }) => {
         $crash_fatal_fl: String
         $atd_fatality_count: Int
         $sus_serious_injry_cnt: Int
+        $crash_date: date
       ) {
         insert_atd_txdot_crashes(
           objects: [
@@ -106,6 +110,7 @@ const CreateCrashRecord = ({ client }) => {
               atd_fatality_count: $atd_fatality_count
               sus_serious_injry_cnt: $sus_serious_injry_cnt
               temp_record: true
+              crash_date: $crash_date
             }
           ]
         ) {
@@ -133,6 +138,7 @@ const CreateCrashRecord = ({ client }) => {
       crash_fatal_fl: fatalityCount > 0 ? "Y" : "N",
       atd_fatality_count: fatalityCount,
       sus_serious_injry_cnt: susSeriousInjuryCount,
+      crash_date: crashDate,
     };
 
     client
@@ -202,6 +208,24 @@ const CreateCrashRecord = ({ client }) => {
               />
               <FormText className="help-block">
                 Please enter the Case ID
+              </FormText>
+            </Col>
+          </FormGroup>
+          <FormGroup row>
+            <Col md="3">
+              <Label htmlFor="date-input">Crash Date</Label>
+            </Col>
+            <Col xs="12" md="9">
+              <Input
+                type="date"
+                id="date-input"
+                name="date-input"
+                placeholder="date"
+                value={crashDate}
+                onChange={e => setCrashDate(e.target.value)}
+              />
+              <FormText className="help-block">
+                Please enter the Crash Date
               </FormText>
             </Col>
           </FormGroup>
