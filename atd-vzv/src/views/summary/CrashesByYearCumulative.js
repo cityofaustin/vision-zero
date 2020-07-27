@@ -16,6 +16,7 @@ const CrashesByYearCumulative = ({ avgData, currentYearData }) => {
         data.reduce((acc, data, i) => {
           const num = parseFloat(data[valueKey]);
           const roundNum = (num) => Math.floor(num * 100) / 100;
+
           i === 0 && acc.push(roundNum(num));
           i !== 0 && acc.push(roundNum(acc[i - 1] + num));
           return acc;
@@ -48,10 +49,10 @@ const CrashesByYearCumulative = ({ avgData, currentYearData }) => {
       return {
         labels,
         datasets: [
-          formatDataset(avgValues, "Five Year Average", colors.viridis4Of6),
+          formatDataset(avgValues, "Five Year Average", colors.viridis3Of6),
           formatDataset(
             currentValues,
-            "Total Year to Date",
+            "Current Year",
             colors.viridis1Of6Highest
           ),
         ],
@@ -73,7 +74,7 @@ const CrashesByYearCumulative = ({ avgData, currentYearData }) => {
       width={null}
       options={{
         responsive: true,
-        aspectRatio: 1.16,
+        aspectRatio: 0.849,
         maintainAspectRatio: false,
         tooltips: {
           mode: "x",

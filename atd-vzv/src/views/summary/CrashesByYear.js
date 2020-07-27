@@ -23,37 +23,11 @@ const CrashesByYear = () => {
 
   const [crashType, setCrashType] = useState(null);
   const [chartType, setChartType] = useState("Average");
-  const [byYearData, setByYearData] = useState([]);
 
   const [avgData, setAvgData] = useState([]);
   const [currentYearData, setCurrentYearData] = useState([]);
 
   const url = `${crashEndpointUrl}?$query=`;
-
-  // Fetch data for By Year totals
-  useEffect(() => {
-    const byYearDateCondition = `crash_date BETWEEN '${dataStartDate
-      .clone()
-      .startOf("year")
-      .format("YYYY-MM-DD")}' and '${dataEndDate.format("YYYY-MM-DD")}'`;
-    const queryGroupAndOrder = `GROUP BY year ORDER BY year`;
-
-    const byYearQueries = {
-      fatalities: `SELECT date_extract_y(crash_date) as year, sum(death_cnt) as total
-                   WHERE death_cnt > 0 AND ${byYearDateCondition} ${queryGroupAndOrder}`,
-      fatalitiesAndSeriousInjuries: `SELECT date_extract_y(crash_date) as year, sum(death_cnt) + sum(sus_serious_injry_cnt) as total 
-                                     WHERE (death_cnt > 0 OR sus_serious_injry_cnt > 0) AND ${byYearDateCondition} ${queryGroupAndOrder}`,
-      seriousInjuries: `SELECT date_extract_y(crash_date) as year, sum(sus_serious_injry_cnt) as total
-                        WHERE sus_serious_injry_cnt > 0 AND ${byYearDateCondition} ${queryGroupAndOrder}`,
-    };
-
-    !!crashType &&
-      axios
-        .get(url + encodeURIComponent(byYearQueries[crashType.name]))
-        .then((res) => {
-          setByYearData(res.data);
-        });
-  }, [crashType, url]);
 
   // Fetch data for By Month Average and Cumulative visualizations
   useEffect(() => {
@@ -95,16 +69,6 @@ const CrashesByYear = () => {
           setCurrentYearData(res.data);
         });
   }, [crashType, url]);
-
-  const StyledDiv = styled.div`
-    .year-total-div {
-      color: ${colors.dark};
-      background: ${colors.buttonBackground} 0% 0% no-repeat padding-box;
-      border-radius: 4px;
-      border-style: none;
-      opacity: 1;
-    }
-  `;
 
   const renderChartByType = (chartType) => {
     switch (chartType) {
@@ -148,34 +112,6 @@ const CrashesByYear = () => {
         <Col>
           <hr />
         </Col>
-      </Row>
-      <Row className="pb-2">
-        <Col xs={4} s={2} m={2} l={2} xl={2}>
-          <div>
-            <div>
-              <h4 className="h6 text-center my-1 pt-2">
-                <strong>Year</strong>
-              </h4>
-            </div>
-            <hr className="my-1"></hr>
-            <h3 className="h6 text-center py-1">Total</h3>
-          </div>
-        </Col>
-        {byYearData.map((year) => (
-          <Col xs={4} s={2} m={2} l={2} xl={2} key={year.year}>
-            <StyledDiv>
-              <div className="year-total-div">
-                <div>
-                  <h4 className="h6 text-center my-1 pt-2">
-                    <strong>{year.year}</strong>
-                  </h4>
-                </div>
-                <hr className="my-1"></hr>
-                <h4 className="h6 text-center py-1">{year.total}</h4>
-              </div>
-            </StyledDiv>
-          </Col>
-        ))}
       </Row>
       <ChartTypeSelector
         chartTypes={chartTypes}
