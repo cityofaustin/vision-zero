@@ -14,8 +14,10 @@ const CrashesByYearCumulative = ({ avgData, currentYearData }) => {
 
       const reduceCumulativeTotals = (data, valueKey) =>
         data.reduce((acc, data, i) => {
-          i === 0 && acc.push(parseFloat(data[valueKey]));
-          i !== 0 && acc.push(acc[i - 1] + parseFloat(data[valueKey]));
+          const num = parseFloat(data[valueKey]);
+          const roundNum = (num) => Math.floor(num * 100) / 100;
+          i === 0 && acc.push(roundNum(num));
+          i !== 0 && acc.push(roundNum(acc[i - 1] + num));
           return acc;
         }, []);
 
