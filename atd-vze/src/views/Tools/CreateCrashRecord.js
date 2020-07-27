@@ -20,15 +20,6 @@ import { withApollo } from "react-apollo";
 import { gql } from "apollo-boost";
 import "./CreateCrashRecord.css";
 
-// TODOS:
-// - [x] validate if I'm generating crash IDs in an acceptable way
-// - [x] pass other variables from form into insert mutation
-// - [x] Add field to prod/stag for temp flag, and add to mutation
-// - [x] Create related records
-// - [x] Show success/error states, offer redirect on success
-// - [ ] Show exisiting placeholder records in table
-// - [ ] Offer delete action for crash record and related records
-
 const CreateCrashRecord = ({ client }) => {
   const [tempId, setTempId] = useState(1000);
   const [caseId, setCaseId] = useState("");
