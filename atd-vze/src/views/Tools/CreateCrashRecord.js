@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+
 import {
+  Alert,
   Button,
   Card,
   CardBody,
@@ -22,18 +25,17 @@ import "./CreateCrashRecord.css";
 // - [x] pass other variables from form into insert mutation
 // - [x] Add field to prod/stag for temp flag, and add to mutation
 // - [x] Create related records
-// - [ ] Show success/error states, offer redirect on success
+// - [x] Show success/error states, offer redirect on success
 // - [ ] Show exisiting placeholder records in table
 // - [ ] Offer delete action for crash record and related records
 
 const CreateCrashRecord = ({ client }) => {
   const [tempId, setTempId] = useState(1000);
-  const [caseId, setCaseId] = useState();
-  const [fatalityCount, setFatalityCount] = useState();
-  const [susSeriousInjuryCount, setSusSeriousInjuryCount] = useState();
-
-  console.log("temp_id", tempId);
-  console.log("caseId", caseId);
+  const [caseId, setCaseId] = useState("");
+  const [fatalityCount, setFatalityCount] = useState(0);
+  const [susSeriousInjuryCount, setSusSeriousInjuryCount] = useState(0);
+  const [successfulNewRecordId, setSuccessfulNewRecordId] = useState(null);
+  const [feedback, setFeedback] = useState(false);
 
   useEffect(() => {
     const GET_HIGHEST_TEMP_RECORD_ID = gql`
@@ -60,8 +62,17 @@ const CreateCrashRecord = ({ client }) => {
           ? res.data.atd_txdot_crashes[0].crash_id
           : 1000;
         setTempId(highestCurrentTempId + 1);
+      })
+      .catch(error => {
+        setFeedback({ title: "Error", message: String(error) });
       });
   });
+
+  const resetForm = () => {
+    setCaseId("");
+    setFatalityCount("");
+    setSusSeriousInjuryCount("");
+  };
 
   const handleFormSubmit = e => {
     e.preventDefault();
@@ -108,6 +119,9 @@ const CreateCrashRecord = ({ client }) => {
           ]
         ) {
           affected_rows
+          returning {
+            crash_id
+          }
         }
 
         insert_atd_txdot_units(
@@ -121,8 +135,6 @@ const CreateCrashRecord = ({ client }) => {
         }
       }
     `;
-
-    console.log(INSERT_BULK);
 
     const crashVariables = {
       crash_id: tempId,
@@ -142,14 +154,48 @@ const CreateCrashRecord = ({ client }) => {
 
         // Increment the temp ID so the user can resuse the form.
         setTempId(tempId + 1);
+        setSuccessfulNewRecordId(
+          res.data.insert_atd_txdot_crashes.returning[0].crash_id
+        );
+        resetForm();
+      })
+      .catch(error => {
+        setFeedback({ title: "Error", message: String(error) });
       });
   };
 
   return (
     <Card>
-      <Form onSubmit={e => handleFormSubmit(e)} className="form-horizontal">
+      <Form
+        onSubmit={e => handleFormSubmit(e)}
+        onReset={e => resetForm(e)}
+        className="form-horizontal"
+      >
         <CardHeader>Create New Crash Record Set</CardHeader>
         <CardBody>
+          <Alert
+            color="success"
+            isOpen={!!successfulNewRecordId}
+            toggle={e => setSuccessfulNewRecordId(false)}
+          >
+            {/*eslint-disable-next-line*/}
+            Crash record creation successful.{" "}
+            <Link
+              to={`/crashes/${successfulNewRecordId}`}
+              className="alert-link"
+            >
+              Open new Crash ID #{successfulNewRecordId} details page
+            </Link>
+            .
+          </Alert>
+          <Alert
+            color="danger"
+            isOpen={!!feedback}
+            toggle={e => setFeedback(false)}
+          >
+            {feedback.title}: {feedback.message}
+          </Alert>
+
           <FormGroup row>
             <Col md="3">
               <Label htmlFor="hf-email">Case ID</Label>
@@ -160,6 +206,7 @@ const CreateCrashRecord = ({ client }) => {
                 id="hf-case-id"
                 name="hf-case-id"
                 placeholder="Enter Case ID..."
+                value={caseId}
                 onChange={e => setCaseId(e.target.value)}
               />
               <FormText className="help-block">
@@ -177,6 +224,7 @@ const CreateCrashRecord = ({ client }) => {
                 id="hf-fatality-count"
                 name="hf-fatality-count"
                 placeholder="Enter Fatality Count..."
+                value={fatalityCount}
                 onChange={e => setFatalityCount(e.target.value)}
               />
               <FormText className="help-block">
@@ -196,6 +244,7 @@ const CreateCrashRecord = ({ client }) => {
                 id="hf-fatality-count"
                 name="hf-fatality-count"
                 placeholder="Enter Suspected Serious Injury Count..."
+                value={susSeriousInjuryCount}
                 onChange={e => setSusSeriousInjuryCount(e.target.value)}
               />
               <FormText className="help-block">
