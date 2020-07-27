@@ -134,8 +134,9 @@ function deploy_sqs {
     if [[ "${QUEUE_URL}" = "" ]]; then
         # Create with default values, no re-drive policy.
         echo "Creating Queue";
-        CREATE_SQS=$(aws sqs create-queue --queue-name "${QUEUE_NAME}" --attributes "DelaySeconds=0,MaximumMessageSize=262144,MessageRetentionPeriod=345600,VisibilityTimeout=30,RedrivePolicy='{\"deadLetterTargetArn\":\"arn:aws:sqs:us-east-1:295525487728:atd_vz_deadletter_queue\",\"maxReceiveCount\":3}" 2> /dev/null);
+        CREATE_SQS=$(aws sqs create-queue --queue-name "${QUEUE_NAME}" --attributes "DelaySeconds=0,MaximumMessageSize=262144,MessageRetentionPeriod=345600,VisibilityTimeout=30,RedrivePolicy='{\"deadLetterTargetArn\":\"arn:aws:sqs:us-east-1:295525487728:atd_vz_deadletter_queue\",\"maxReceiveCount\":3}'" 2> /dev/null);
         QUEUE_URL=$(aws sqs get-queue-url --queue-name "${QUEUE_NAME}" 2>/dev/null | jq -r ".QueueUrl");
+        echo "Done creating queue: QUEUE_URL: ${QUEUE_URL}";
     else
         echo "Skipping SQS creation, the queue already exists: ${QUEUE_NAME}";
     fi;
@@ -143,11 +144,13 @@ function deploy_sqs {
     # Gather SQS attributes from URL, extract amazon resource name
     QUEUE_ARN=$(aws sqs get-queue-attributes --queue-url "${QUEUE_URL}" --attribute-names "QueueArn" 2>/dev/null | jq -r ".Attributes.QueueArn");
     echo "QUEUE_ARN: ${QUEUE_ARN}";
+    echo "QUEUE_URL: ${QUEUE_URL}";
 
     # Create event-source mapping
     echo "Creating event-source mapping between function ${QUEUE_NAME} and queue ARN: ${QUEUE_ARN}";
     deploy_event_source_mapping $QUEUE_NAME $QUEUE_ARN;
 }
+
 
 function clean_up {
     echo "Cleaning up";
