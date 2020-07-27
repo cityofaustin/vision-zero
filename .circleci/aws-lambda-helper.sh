@@ -134,7 +134,7 @@ function deploy_sqs {
     if [[ "${QUEUE_URL}" = "" ]]; then
         # Create with default values, no re-drive policy.
         echo "Creating Queue";
-        CREATE_SQS=$(aws sqs create-queue --queue-name "${QUEUE_NAME}" --attributes "DelaySeconds=0,MaximumMessageSize=262144,MessageRetentionPeriod=345600,VisibilityTimeout=30,RedrivePolicy='{\"deadLetterTargetArn\":\"arn:aws:sqs:us-east-1:295525487728:vzv_deadletter_queue\",\"maxReceiveCount\":3}" 2> /dev/null);
+        CREATE_SQS=$(aws sqs create-queue --queue-name "${QUEUE_NAME}" --attributes "DelaySeconds=0,MaximumMessageSize=262144,MessageRetentionPeriod=345600,VisibilityTimeout=30,RedrivePolicy='{\"deadLetterTargetArn\":\"arn:aws:sqs:us-east-1:295525487728:atd_vz_deadletter_queue\",\"maxReceiveCount\":3}" 2> /dev/null);
         QUEUE_URL=$(aws sqs get-queue-url --queue-name "${QUEUE_NAME}" 2>/dev/null | jq -r ".QueueUrl");
     else
         echo "Skipping SQS creation, the queue already exists: ${QUEUE_NAME}";
