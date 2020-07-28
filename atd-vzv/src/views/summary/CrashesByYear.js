@@ -17,10 +17,10 @@ import {
 } from "../../constants/time";
 
 const CrashesByYear = () => {
-  const chartTypes = ["Average", "Cumulative"];
+  const chartTypes = ["Monthly", "Cumulative"];
 
   const [crashType, setCrashType] = useState(null);
-  const [chartType, setChartType] = useState("Average");
+  const [chartType, setChartType] = useState("Monthly");
 
   const [avgData, setAvgData] = useState([]);
   const [currentYearData, setCurrentYearData] = useState([]);
@@ -68,7 +68,7 @@ const CrashesByYear = () => {
 
   const renderChartByType = (chartType) => {
     switch (chartType) {
-      case "Average":
+      case "Monthly":
         return (
           <CrashesByYearAverage
             crashType={crashType}
