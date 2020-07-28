@@ -1,19 +1,17 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import styled from "styled-components";
 import CrashesByYearCumulative from "./CrashesByYearCumulative";
 import CrashesByYearAverage from "./CrashesByYearAverage";
 import ChartTypeSelector from "./Components/ChartTypeSelector";
 import { Container, Row, Col } from "reactstrap";
-import { colors } from "../../constants/colors";
 
 import CrashTypeSelector from "./Components/CrashTypeSelector";
 import InfoPopover from "../../Components/Popover/InfoPopover";
 import { popoverConfig } from "../../Components/Popover/popoverConfig";
 import { crashEndpointUrl } from "./queries/socrataQueries";
 import {
-  dataEndDate,
-  dataStartDate,
+  fiveYearAvgStartDate,
+  fiveYearAvgEndDate,
   summaryCurrentYearEndDate,
   summaryCurrentYearStartDate,
 } from "../../constants/time";
@@ -31,9 +29,7 @@ const CrashesByYear = () => {
 
   // Fetch data for By Month Average and Cumulative visualizations
   useEffect(() => {
-    const avgDateCondition = `crash_date BETWEEN '${dataStartDate.format(
-      "YYYY-MM-DD"
-    )}' and '${dataEndDate.format("YYYY-MM-DD")}'`;
+    const avgDateCondition = `crash_date BETWEEN '${fiveYearAvgStartDate}' and '${fiveYearAvgEndDate}'`;
     const currentYearDateCondition = `crash_date BETWEEN '${summaryCurrentYearStartDate}' and '${summaryCurrentYearEndDate}'`;
     const queryGroupAndOrder = `GROUP BY month ORDER BY month`;
 
