@@ -89,7 +89,7 @@ def lowercase_group_match(match):
     """
     Return the lowercase of a group match.
     :param match: raw string of the group match
-    :return: string in lower case
+    :return str: string in lower case
     """
     return "%s:" % match.group(1).lower()
 
@@ -138,8 +138,8 @@ def generate_fields_with_filters(line, fieldnames, filters=[]):
 def get_crash_id(line):
     """
     Takes a raw CSV line and returns a crash_id
-    :param line: string - The raw CSV line
-    :return: string - The Crash ID
+    :param str line: The raw CSV line
+    :return str: The Crash ID
     """
     try:
         return line.strip().split(",")[0]
@@ -857,10 +857,23 @@ def insert_secondary_table_change(line, fieldnames, file_type):
         )
 
 
+def get_case_id(line):
+    """
+    Returns the case id for a given csv line
+    :param str line: The csv line in question
+    :return str: The case_id string
+    """
+    try:
+        return line.strip().split(",")[10]
+    except Exception as e:
+        print("Error: " + str(e))
+        return ""
+
+
 def get_list_temp_records():
     """
     Returns an array of strings containing the case_id of all temp records in the database
-    :return str[]:
+    :return str[]: The list of strings containing the crash_id's
     """
     query = """
         query findTempCrashes {
