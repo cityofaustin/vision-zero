@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import CrashesByYearCumulative from "./CrashesByYearCumulative";
 import CrashesByYearAverage from "./CrashesByYearAverage";
 import ChartTypeSelector from "./Components/ChartTypeSelector";
@@ -7,19 +8,82 @@ import { Container, Row, Col } from "reactstrap";
 import CrashTypeSelector from "./Components/CrashTypeSelector";
 import InfoPopover from "../../Components/Popover/InfoPopover";
 import { popoverConfig } from "../../Components/Popover/popoverConfig";
+import { crashEndpointUrl } from "./queries/socrataQueries";
+import {
+  fiveYearAvgStartDate,
+  fiveYearAvgEndDate,
+  summaryCurrentYearEndDate,
+  summaryCurrentYearStartDate,
+} from "../../constants/time";
 
 const CrashesByYear = () => {
-  const chartTypes = ["Average", "Cumulative"];
+  const chartTypes = ["Monthly", "Cumulative"];
 
-  const [crashType, setCrashType] = useState([]);
-  const [chartType, setChartType] = useState("Average");
+  const [crashType, setCrashType] = useState(null);
+  const [chartType, setChartType] = useState("Monthly");
+
+  const [avgData, setAvgData] = useState([]);
+  const [currentYearData, setCurrentYearData] = useState([]);
+
+  const url = `${crashEndpointUrl}?$query=`;
+
+  // Fetch data for By Month Average and Cumulative visualizations
+  useEffect(() => {
+    const avgDateCondition = `crash_date BETWEEN '${fiveYearAvgStartDate}' and '${fiveYearAvgEndDate}'`;
+    const currentYearDateCondition = `crash_date BETWEEN '${summaryCurrentYearStartDate}' and '${summaryCurrentYearEndDate}'`;
+    const queryGroupAndOrder = `GROUP BY month ORDER BY month`;
+
+    const avgQueries = {
+      fatalities: `SELECT date_extract_m(crash_date) as month, sum(death_cnt) / 5 as avg 
+                   WHERE death_cnt > 0 AND ${avgDateCondition} ${queryGroupAndOrder}`,
+      fatalitiesAndSeriousInjuries: `SELECT date_extract_m(crash_date) as month, sum(death_cnt) / 5 + sum(sus_serious_injry_cnt) / 5 as avg 
+                                     WHERE (death_cnt > 0 OR sus_serious_injry_cnt > 0) AND ${avgDateCondition} ${queryGroupAndOrder}`,
+      seriousInjuries: `SELECT date_extract_m(crash_date) as month, sum(sus_serious_injry_cnt) / 5 as avg 
+                        WHERE sus_serious_injry_cnt > 0 AND ${avgDateCondition} ${queryGroupAndOrder}`,
+    };
+
+    const currentYearQueries = {
+      fatalities: `SELECT date_extract_m(crash_date) as month, sum(death_cnt) as total 
+                   WHERE death_cnt > 0 AND ${currentYearDateCondition} ${queryGroupAndOrder}`,
+      fatalitiesAndSeriousInjuries: `SELECT date_extract_m(crash_date) as month, sum(death_cnt) + sum(sus_serious_injry_cnt) as total 
+                                     WHERE (death_cnt > 0 OR sus_serious_injry_cnt > 0) AND ${currentYearDateCondition} ${queryGroupAndOrder}`,
+      seriousInjuries: `SELECT date_extract_m(crash_date) as month, sum(sus_serious_injry_cnt) as total 
+                        WHERE sus_serious_injry_cnt > 0 AND ${currentYearDateCondition} ${queryGroupAndOrder}`,
+    };
+
+    !!crashType &&
+      axios
+        .get(url + encodeURIComponent(avgQueries[crashType.name]))
+        .then((res) => {
+          setAvgData(res.data);
+        });
+
+    !!crashType &&
+      axios
+        .get(url + encodeURIComponent(currentYearQueries[crashType.name]))
+        .then((res) => {
+          setCurrentYearData(res.data);
+        });
+  }, [crashType, url]);
 
   const renderChartByType = (chartType) => {
     switch (chartType) {
-      case "Average":
-        return <CrashesByYearAverage crashType={crashType} />;
+      case "Monthly":
+        return (
+          <CrashesByYearAverage
+            crashType={crashType}
+            avgData={avgData}
+            currentYearData={currentYearData}
+          />
+        );
       case "Cumulative":
-        return <CrashesByYearCumulative crashType={crashType} />;
+        return (
+          <CrashesByYearCumulative
+            crashType={crashType}
+            avgData={avgData}
+            currentYearData={currentYearData}
+          />
+        );
       default:
         return "No chart selected";
     }
@@ -42,7 +106,7 @@ const CrashesByYear = () => {
       </Row>
       <Row>
         <Col>
-          <hr className="mb-2" />
+          <hr />
         </Col>
       </Row>
       <ChartTypeSelector

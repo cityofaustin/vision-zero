@@ -1,61 +1,11 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import moment from "moment";
 import { Bar } from "react-chartjs-2";
 
-import { crashEndpointUrl } from "./queries/socrataQueries";
-import {
-  dataEndDate,
-  summaryCurrentYearEndDate,
-  dataStartDate,
-  summaryCurrentYearStartDate,
-} from "../../constants/time";
 import { colors } from "../../constants/colors";
 
-const CrashesByYearAverage = ({ crashType }) => {
+const CrashesByYearAverage = ({ avgData, currentYearData }) => {
   const [chartData, setChartData] = useState({});
-  const [avgData, setAvgData] = useState([]);
-  const [currentYearData, setCurrentYearData] = useState([]);
-
-  useEffect(() => {
-    const url = `${crashEndpointUrl}?$query=`;
-
-    const avgDateCondition = `crash_date BETWEEN '${dataStartDate.format(
-      "YYYY-MM-DD"
-    )}' and '${dataEndDate.format("YYYY-MM-DD")}'`;
-    const currentYearDateCondition = `crash_date BETWEEN '${summaryCurrentYearStartDate}' and '${summaryCurrentYearEndDate}'`;
-    const queryGroupAndOrder = `GROUP BY month ORDER BY month`;
-
-    const avgQueries = {
-      fatalities: `SELECT date_extract_m(crash_date) as month, sum(death_cnt) / 5 as avg 
-                   WHERE death_cnt > 0 AND ${avgDateCondition} ${queryGroupAndOrder}`,
-      fatalitiesAndSeriousInjuries: `SELECT date_extract_m(crash_date) as month, sum(death_cnt) / 5 + sum(sus_serious_injry_cnt) / 5 as avg 
-                                     WHERE (death_cnt > 0 OR sus_serious_injry_cnt > 0) AND ${avgDateCondition} ${queryGroupAndOrder}`,
-      seriousInjuries: `SELECT date_extract_m(crash_date) as month, sum(sus_serious_injry_cnt) / 5 as avg 
-                        WHERE sus_serious_injry_cnt > 0 AND ${avgDateCondition} ${queryGroupAndOrder}`,
-    };
-
-    const currentYearQueries = {
-      fatalities: `SELECT date_extract_m(crash_date) as month, sum(death_cnt) as total 
-                   WHERE death_cnt > 0 AND ${currentYearDateCondition} ${queryGroupAndOrder}`,
-      fatalitiesAndSeriousInjuries: `SELECT date_extract_m(crash_date) as month, sum(death_cnt) + sum(sus_serious_injry_cnt) as total 
-                                     WHERE (death_cnt > 0 OR sus_serious_injry_cnt > 0) AND ${currentYearDateCondition} ${queryGroupAndOrder}`,
-      seriousInjuries: `SELECT date_extract_m(crash_date) as month, sum(sus_serious_injry_cnt) as total 
-                        WHERE sus_serious_injry_cnt > 0 AND ${currentYearDateCondition} ${queryGroupAndOrder}`,
-    };
-
-    axios
-      .get(url + encodeURIComponent(avgQueries[crashType.name]))
-      .then((res) => {
-        setAvgData(res.data);
-      });
-
-    axios
-      .get(url + encodeURIComponent(currentYearQueries[crashType.name]))
-      .then((res) => {
-        setCurrentYearData(res.data);
-      });
-  }, [crashType]);
 
   useEffect(() => {
     const formatChartData = (avgData, currentYearData) => {
@@ -71,12 +21,14 @@ const CrashesByYearAverage = ({ crashType }) => {
           {
             label: "Five Year Average",
             backgroundColor: colors.viridis3Of6,
+            hoverBackgroundColor: colors.viridis3Of6,
             data: avgValues,
             barPercentage: 1.0,
           },
           {
-            label: "Total Year to Date",
+            label: "Current Year",
             backgroundColor: colors.viridis1Of6Highest,
+            hoverBackgroundColor: colors.viridis1Of6Highest,
             data: currentYearValues,
             barPercentage: 1.0,
           },
@@ -85,6 +37,7 @@ const CrashesByYearAverage = ({ crashType }) => {
     };
 
     const isDataFetched = !!avgData.length && !!currentYearData.length;
+
     if (isDataFetched) {
       const formattedData = formatChartData(avgData, currentYearData);
       setChartData(formattedData);
@@ -92,30 +45,31 @@ const CrashesByYearAverage = ({ crashType }) => {
   }, [avgData, currentYearData]);
 
   return (
-    <>
-      <Bar
-        data={chartData}
-        width={null}
-        height={null}
-        options={{
-          responsive: true,
-          aspectRatio: 0.97,
-          maintainAspectRatio: false,
-          legend: {
-            display: false,
-          },
-          scales: {
-            yAxes: [
-              {
-                ticks: {
-                  beginAtZero: true,
-                },
+    <Bar
+      data={chartData}
+      width={null}
+      height={null}
+      options={{
+        responsive: true,
+        aspectRatio: 0.849,
+        maintainAspectRatio: false,
+        tooltips: {
+          mode: "index",
+        },
+        scales: {
+          yAxes: [
+            {
+              ticks: {
+                beginAtZero: true,
               },
-            ],
-          },
-        }}
-      />
-    </>
+            },
+          ],
+        },
+        legend: {
+          onClick: (e) => e.stopPropagation(),
+        },
+      }}
+    />
   );
 };
 
