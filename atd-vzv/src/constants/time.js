@@ -54,3 +54,15 @@ export const mapStartDate = moment()
   .startOf("year");
 
 export const mapEndDate = dataEndDate.clone();
+
+// Five year average
+export const fiveYearAvgStartDate = dataEndDate
+  .clone()
+  .startOf("year")
+  .subtract(5, "year")
+  .format("YYYY-MM-DD");
+export const fiveYearAvgEndDate = dataEndDate
+  .clone()
+  .subtract(1, "year")
+  .endOf("year")
+  .format("YYYY-MM-DD");

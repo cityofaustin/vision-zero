@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { HorizontalBar } from "react-chartjs-2";
-import { Container, Row, Col, Button } from "reactstrap";
-import styled from "styled-components";
-import classnames from "classnames";
+import ChartTypeSelector from "./Components/ChartTypeSelector";
+import { Container, Row, Col } from "reactstrap";
 
-import CrashTypeSelector from "../nav/CrashTypeSelector";
+import CrashTypeSelector from "./Components/CrashTypeSelector";
 import { colors } from "../../constants/colors";
 import { dataEndDate, yearsArray } from "../../constants/time";
 import { personEndpointUrl } from "./queries/socrataQueries";
@@ -13,6 +12,8 @@ import InfoPopover from "../../Components/Popover/InfoPopover";
 import { popoverConfig } from "../../Components/Popover/popoverConfig";
 
 const PeopleByDemographics = () => {
+  const chartTypes = ["Race/Ethnicity", "Age", "Gender"];
+
   const ageCategories = [
     { label: "Under 18", categoryValue: 1 },
     {
@@ -81,15 +82,9 @@ const PeopleByDemographics = () => {
     colors.viridis6Of6Lowest,
   ];
 
-  const [activeTab, setActiveTab] = useState("prsn_ethnicity_id");
+  const [chartType, setChartType] = useState("Race/Ethnicity");
   const [chartData, setChartData] = useState(null); // {yearInt: [{record}, {record}, ...]}
   const [crashType, setCrashType] = useState([]);
-
-  const toggle = (tab) => {
-    if (activeTab !== tab) {
-      setActiveTab(tab);
-    }
-  };
 
   // Fetch data and set in state by years in yearsArray
   useEffect(() => {
@@ -126,8 +121,8 @@ const PeopleByDemographics = () => {
   const getData = (categoryValue, isWholeNumber) =>
     yearsArray().map((year) => {
       let categoryTotal = chartData[year].reduce((accumulator, record) => {
-        switch (activeTab) {
-          case "prsn_age":
+        switch (chartType) {
+          case "Age":
             switch (categoryValue) {
               // If the person age value is missing, increment the count for
               // category value 0 ("Unknown") in the chart
@@ -152,7 +147,7 @@ const PeopleByDemographics = () => {
                 break;
             }
             break;
-          case "prsn_gndr_id":
+          case "Gender":
             switch (categoryValue) {
               // If the gender id is missing or 0 ("Unknown"), increment the count for
               // category value 0 ("Unknown") in the chart
@@ -167,7 +162,7 @@ const PeopleByDemographics = () => {
                 break;
             }
             break;
-          case "prsn_ethnicity_id":
+          case "Race/Ethnicity":
             switch (categoryValue) {
               // If the ethnicity id is either missing, 5 ("Other") or 0 ("Unknown"),
               // increment the count for category value 5 ("Other or unknown") in the chart
@@ -211,7 +206,7 @@ const PeopleByDemographics = () => {
     );
     // If age is selected, keep original sorting to make chart more readable
     // For other categories, determine order of category (highest to lowest proportion)
-    data = activeTab === "prsn_age" ? data : dataSorted;
+    data = chartType === "Age" ? data : dataSorted;
     data.forEach((category, i) => {
       const color = chartColors[i];
       category.backgroundColor = color;
@@ -225,14 +220,14 @@ const PeopleByDemographics = () => {
   // Create dataset for each demographic type
   const createTypeDatasets = () => {
     let categories;
-    switch (activeTab) {
-      case "prsn_age":
+    switch (chartType) {
+      case "Age":
         categories = ageCategories;
         break;
-      case "prsn_gndr_id":
+      case "Gender":
         categories = sexCategories;
         break;
-      case "prsn_ethnicity_id":
+      case "Race/Ethnicity":
         categories = raceCategories;
         break;
       default:
@@ -251,18 +246,6 @@ const PeopleByDemographics = () => {
     labels: createChartLabels(),
     datasets: !!chartData && createTypeDatasets(),
   };
-
-  // Set styles to override Bootstrap default styling
-  const StyledButton = styled.div`
-    .demographic-type {
-      color: ${colors.dark};
-      background: ${colors.buttonBackground} 0% 0% no-repeat padding-box;
-      border-style: none;
-      opacity: 1;
-      margin-left: 5px;
-      margin-right: 5px;
-    }
-  `;
 
   return (
     <Container className="m-0 p-0">
@@ -284,47 +267,11 @@ const PeopleByDemographics = () => {
           <hr />
         </Col>
       </Row>
-      <Row className="text-center">
-        <Col className="pb-2">
-          <StyledButton>
-            <Button
-              className={classnames(
-                {
-                  active: activeTab === "prsn_ethnicity_id",
-                },
-                "demographic-type"
-              )}
-              onClick={() => {
-                toggle("prsn_ethnicity_id");
-              }}
-            >
-              Race/Ethnicity
-            </Button>
-            <Button
-              className={classnames(
-                { active: activeTab === "prsn_age" },
-                "demographic-type"
-              )}
-              onClick={() => {
-                toggle("prsn_age");
-              }}
-            >
-              Age
-            </Button>
-            <Button
-              className={classnames(
-                { active: activeTab === "prsn_gndr_id" },
-                "demographic-type"
-              )}
-              onClick={() => {
-                toggle("prsn_gndr_id");
-              }}
-            >
-              Gender
-            </Button>
-          </StyledButton>
-        </Col>
-      </Row>
+      <ChartTypeSelector
+        chartTypes={chartTypes}
+        chartType={chartType}
+        setChartType={setChartType}
+      />
       <Row>
         <Col>
           <HorizontalBar

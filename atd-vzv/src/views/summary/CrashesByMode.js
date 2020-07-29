@@ -4,7 +4,7 @@ import { Bar } from "react-chartjs-2";
 import { Container, Row, Col } from "reactstrap";
 import styled from "styled-components";
 
-import CrashTypeSelector from "../nav/CrashTypeSelector";
+import CrashTypeSelector from "./Components/CrashTypeSelector";
 import { colors } from "../../constants/colors";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -226,7 +226,7 @@ const CrashesByMode = () => {
                 width={null}
                 options={{
                   responsive: true,
-                  aspectRatio: 1.8,
+                  aspectRatio: 1.37,
                   maintainAspectRatio: false,
                   scales: {
                     xAxes: [
