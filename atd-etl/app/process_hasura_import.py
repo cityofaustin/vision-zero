@@ -59,7 +59,9 @@ def keyboard_interrupt_handler(signal, frame):
     STOP_EXEC = True
 
 
-def process_line(file_type, line, fieldnames, current_line, temporary_records, dryrun=False):
+def process_line(
+    file_type, line, fieldnames, current_line, temporary_records, dryrun=False
+):
     """
     Will process a single CSV line and will try to check if
     the record already exists and attempt insertion.
@@ -94,8 +96,12 @@ def process_line(file_type, line, fieldnames, current_line, temporary_records, d
             # We have to check if there is a temp record already in the database:
             if case_id in temporary_records:
                 # There is, we need to delete it
-                print("Detected temporary record for case_id '%s'... deleting!" % case_id)
-                delete_temp_record(case_id)
+                print(
+                    "Detected temporary record for crash_id/case_id '%s/%s'... deleting!"
+                    % (crash_id, case_id)
+                )
+                delete_temp_record(crash_id)
+
             else:
                 print("No temporary record detected. Ignoring check.")
 
