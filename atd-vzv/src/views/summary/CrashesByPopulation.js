@@ -9,15 +9,8 @@ import { dataStartDate, fiveYearAvgEndDate } from "../../constants/time";
 import { colors } from "../../constants/colors";
 
 const CrashesByPopulation = () => {
-  const chartConfig = {
-    barOne: { color: colors.viridis5Of6, population: 913917 },
-    barTwo: { color: colors.viridis4Of6, population: 937065 },
-    barThree: { color: colors.viridis3Of6, population: 955094 },
-    barFour: { color: colors.viridis1Of6Highest, population: 972499 },
-  };
-
   const [crashType, setCrashType] = useState(null);
-  const [chartData, setChartData] = useState([]);
+  const [chartData, setChartData] = useState({});
 
   const url = `${crashEndpointUrl}?$query=`;
 
@@ -40,7 +33,7 @@ const CrashesByPopulation = () => {
     const calculateRatePer100000 = (data) => {
       const round = (num) => Math.floor(num * 10) / 10;
 
-      data.map((year, i) => {
+      return data.map((year, i) => {
         const population = Object.values(chartConfig)[i].population;
         const rate = (year.total / population) * 100000;
         year.total = round(rate);
@@ -48,13 +41,41 @@ const CrashesByPopulation = () => {
       });
     };
 
+    const chartConfig = {
+      barOne: { color: colors.viridis5Of6, population: 913917 },
+      barTwo: { color: colors.viridis4Of6, population: 937065 },
+      barThree: { color: colors.viridis3Of6, population: 955094 },
+      barFour: { color: colors.viridis1Of6Highest, population: 972499 },
+    };
+
+    const formatChartData = (data) => {
+      const labels = data.map((year) => year.year);
+      const rateValues = data.map((year) => year.total);
+      const colors = Object.values(chartConfig).map((bar) => bar.color);
+
+      return {
+        labels,
+        datasets: [
+          {
+            label: "Years",
+            backgroundColor: colors,
+            hoverBackgroundColor: colors,
+            data: rateValues,
+            barPercentage: 1.0,
+          },
+        ],
+      };
+    };
+
     !!crashType &&
       axios
         .get(url + encodeURIComponent(queries[crashType.name]))
         .then((res) => {
-          setChartData(calculateRatePer100000(res.data));
+          const calculatedData = calculateRatePer100000(res.data);
+          const formattedData = formatChartData(calculatedData);
+          setChartData(formattedData);
         });
-  }, [crashType, url, chartConfig]);
+  }, [crashType, url]);
 
   return (
     <Container className="m-0 p-0">
@@ -77,8 +98,7 @@ const CrashesByPopulation = () => {
       </Row>
       <Row className="mt-1">
         <Col>
-          {JSON.stringify(chartData)}
-          {/* <Bar
+          <Bar
             data={chartData}
             width={null}
             height={null}
@@ -99,10 +119,10 @@ const CrashesByPopulation = () => {
                 ],
               },
               legend: {
-                onClick: (e) => e.stopPropagation(),
+                display: false,
               },
             }}
-          /> */}
+          />
         </Col>
       </Row>
     </Container>
