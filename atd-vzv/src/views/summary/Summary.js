@@ -3,6 +3,7 @@ import CrashesByYear from "./CrashesByYear";
 import CrashesByTimeOfDay from "./CrashesByTimeOfDay";
 import PeopleByDemographics from "./PeopleByDemographics";
 import CrashesByMode from "./CrashesByMode";
+import CrashesByPopulation from "./CrashesByPopulation";
 import SummaryView from "./SummaryView";
 import SummaryCard from "./SummaryCard";
 import { colors } from "../../constants/colors";
@@ -20,6 +21,7 @@ const children = [
   { component: <CrashesByMode /> },
   { component: <CrashesByTimeOfDay /> },
   { component: <PeopleByDemographics /> },
+  { component: <CrashesByPopulation /> },
 ];
 
 const Summary = () => {

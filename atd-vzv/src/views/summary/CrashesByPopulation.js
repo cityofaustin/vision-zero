@@ -3,43 +3,36 @@ import axios from "axios";
 import { Container, Row, Col } from "reactstrap";
 
 import CrashTypeSelector from "./Components/CrashTypeSelector";
-import InfoPopover from "../../Components/Popover/InfoPopover";
-import { popoverConfig } from "../../Components/Popover/popoverConfig";
 import { crashEndpointUrl } from "./queries/socrataQueries";
-import {
-  fiveYearAvgStartDate,
-  fiveYearAvgEndDate,
-  summaryCurrentYearEndDate,
-  summaryCurrentYearStartDate,
-} from "../../constants/time";
+import { dataStartDate, summaryCurrentYearEndDate } from "../../constants/time";
 
 const CrashesByPopulation = () => {
   const [crashType, setCrashType] = useState(null);
-
-  const [avgData, setAvgData] = useState([]);
+  const [data, setData] = useState([]);
 
   const url = `${crashEndpointUrl}?$query=`;
 
   // Fetch data for By Month Average and Cumulative visualizations
   useEffect(() => {
-    const avgDateCondition = `crash_date BETWEEN '${fiveYearAvgStartDate}' and '${fiveYearAvgEndDate}'`;
-    const currentYearDateCondition = `crash_date BETWEEN '${summaryCurrentYearStartDate}' and '${summaryCurrentYearEndDate}'`;
-    const queryGroupAndOrder = `GROUP BY month ORDER BY month`;
+    const dateCondition = `crash_date BETWEEN '${dataStartDate.format(
+      "YYYY-MM-DD"
+    )}' and '${summaryCurrentYearEndDate}'`;
+    const queryGroupAndOrder = `GROUP BY year ORDER BY year`;
 
-    const avgQueries = {
-      fatalities: `SELECT date_extract_y(crash_date) as month, sum(death_cnt) / 5 as avg 
-                   WHERE death_cnt > 0 AND ${avgDateCondition} ${queryGroupAndOrder}`,
-      fatalitiesAndSeriousInjuries: `SELECT date_extract_y(crash_date) as month, sum(death_cnt) / 5 + sum(sus_serious_injry_cnt) / 5 as avg 
-                                     WHERE (death_cnt > 0 OR sus_serious_injry_cnt > 0) AND ${avgDateCondition} ${queryGroupAndOrder}`,
-      seriousInjuries: `SELECT date_extract_y(crash_date) as month, sum(sus_serious_injry_cnt) / 5 as avg 
-                        WHERE sus_serious_injry_cnt > 0 AND ${avgDateCondition} ${queryGroupAndOrder}`,
+    const queries = {
+      fatalities: `SELECT date_extract_y(crash_date) as year, sum(death_cnt) as total 
+                   WHERE death_cnt > 0 AND ${dateCondition} ${queryGroupAndOrder}`,
+      fatalitiesAndSeriousInjuries: `SELECT date_extract_y(crash_date) as year, sum(death_cnt) + sum(sus_serious_injry_cnt) as total 
+                                     WHERE (death_cnt > 0 OR sus_serious_injry_cnt > 0) AND ${dateCondition} ${queryGroupAndOrder}`,
+      seriousInjuries: `SELECT date_extract_y(crash_date) as year, sum(sus_serious_injry_cnt) as total 
+                        WHERE sus_serious_injry_cnt > 0 AND ${dateCondition} ${queryGroupAndOrder}`,
     };
 
     !!crashType &&
       axios
-        .get(url + encodeURIComponent(avgQueries[crashType.name]))
+        .get(url + encodeURIComponent(queries[crashType.name]))
         .then((res) => {
-          setAvgData(res.data);
+          setData(res.data);
         });
   }, [crashType, url]);
 
@@ -48,8 +41,7 @@ const CrashesByPopulation = () => {
       <Row>
         <Col>
           <h2 className="text-left font-weight-bold">
-            By Year & Month{" "}
-            <InfoPopover config={popoverConfig.summary.byYear} />
+            By Population (Rate Per 100,000)
           </h2>
         </Col>
       </Row>
@@ -64,7 +56,7 @@ const CrashesByPopulation = () => {
         </Col>
       </Row>
       <Row className="mt-1">
-        <Col>Chart</Col>
+        <Col>{JSON.stringify(data)}</Col>
       </Row>
     </Container>
   );
