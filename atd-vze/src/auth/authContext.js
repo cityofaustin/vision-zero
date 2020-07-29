@@ -16,6 +16,8 @@ export const urlPath =
 export const isReadOnly = rolesArray =>
   rolesArray.includes("readonly") && rolesArray.length === 1;
 
+export const isEditor = rolesArray => rolesArray.includes("editor");
+
 export const isAdmin = rolesArray => rolesArray.includes("admin");
 
 export const isItSupervisor = rolesArray => rolesArray.includes("itSupervisor");
