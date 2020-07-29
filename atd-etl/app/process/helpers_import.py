@@ -902,3 +902,18 @@ def get_list_temp_records():
     # Return True if we have succeeded, False otherwise.
     # Let it cause an exception if there isn't proper data
     return list(map(lambda node: node["case_id"], result["data"]["atd_txdot_crashes"]))
+
+
+def delete_temp_record(crash_id):
+    """
+    It deletes the crash id across multiple tables.
+    :param str crash_id: The crash id to be deleted.
+    :return dict: A dictionary with a list of all records deleted per table
+    """
+
+    # Delete Crashes, keep total
+    # Delete Units, keep total
+    # Delete PrimaryPersons, keep total
+    # Delete Persons, keep total
+
+    return {}
