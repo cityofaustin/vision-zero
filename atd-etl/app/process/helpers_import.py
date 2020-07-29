@@ -911,9 +911,21 @@ def delete_temp_record(crash_id):
     :return dict: A dictionary with a list of all records deleted per table
     """
 
-    # Delete Crashes, keep total
-    # Delete Units, keep total
-    # Delete PrimaryPersons, keep total
-    # Delete Persons, keep total
+    query = """
+        mutation deleteCrash {
+          delete_atd_txdot_crashes(where: {crash_id: { _eq: $crashId }}){
+            affected_rows
+          }
+          delete_atd_txdot_units(where: {crash_id: { _eq: $crashId }}){
+            affected_rows
+          }
+          delete_atd_txdot_primaryperson(where: {crash_id: { _eq: $crashId }}){
+            affected_rows
+          }
+          delete_atd_txdot_person(where: {crash_id: { _eq: $crashId }}){
+            affected_rows
+          }
+        }
+    """.replace("$crashId", crash_id)
 
-    return {}
+    return {query: query}
