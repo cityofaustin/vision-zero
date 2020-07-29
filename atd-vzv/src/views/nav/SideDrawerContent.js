@@ -3,11 +3,9 @@ import { usePath } from "hookrouter";
 import styled from "styled-components";
 import SideMapControl from "./SideMapControl";
 import SideDrawerMobileNav from "./SideDrawerMobileNav";
-import { Container, Alert } from "reactstrap";
+import { Container } from "reactstrap";
 import { colors } from "../../constants/colors";
 import { responsive } from "../../constants/responsive";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 
 const SideDrawerContent = ({ type }) => {
   const currentPath = usePath();
@@ -41,16 +39,6 @@ const SideDrawerContent = ({ type }) => {
       </StyledDrawerHeader>
       <Container className="pt-3 pb-3 drawer-content">
         <SideDrawerMobileNav />
-        {/* TODO: Remove disclaimer when going live */}
-        <Alert color="danger" className="mt-2">
-          <FontAwesomeIcon icon={faExclamationTriangle} />
-          <span className="ml-2">
-            This is a beta version of the Vision Zero Viewer, published to
-            gather user feedback. Crash data displayed may be outdated or
-            inaccurate, and will be updated for the first public release
-            version.
-          </span>
-        </Alert>
         {currentPath === "/map" && <SideMapControl type={type} />}
       </Container>
     </div>
