@@ -53,6 +53,7 @@ const AddUser = React.lazy(() => import("./views/Users/AddUser"));
 const EditUser = React.lazy(() => import("./views/Users/EditUser"));
 const ReportsInconsistentKSI = React.lazy(() => import("./views/Reports/ReportsInconsistentKSI"));
 const ToolsUploadNonCR3 = React.lazy(() => import("./views/Tools/ToolsUploadNonCR3"));
+const CreateCrashRecord = React.lazy(() => import("./views/Tools/CreateCrashRecord"));
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 // Accept roles arg for role-based access to routes
 const routes = roles => [
@@ -181,6 +182,12 @@ const routes = roles => [
     exact: true,
     name: "Upload Non-CR3 Crashes",
     component: ToolsUploadNonCR3,
+  },
+  (isAdmin(roles) || isItSupervisor(roles)) && {
+    path: "/tools/create_crash_record",
+    exact: true,
+    name: "Create Crash Record",
+    component: CreateCrashRecord,
   },
   (isAdmin(roles) || isItSupervisor(roles)) && {
     path: "/users",

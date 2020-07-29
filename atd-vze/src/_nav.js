@@ -69,6 +69,11 @@ export const navigation = roles => {
           url: "/tools/upload_non_cr3",
           icon: "icon-cloud-upload",
         },
+              {
+                name: "Create Crash Record",
+                url: "/tools/create_crash_record",
+                icon: "icon-shield",
+              },
       ],
     },
     {
