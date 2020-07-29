@@ -855,3 +855,37 @@ def insert_secondary_table_change(line, fieldnames, file_type):
         raise Exception(
             "Failed to insert %s to review request: %s" % (file_type, crash_id)
         )
+
+
+def get_list_temp_records():
+    """
+    Returns an array of strings containing the case_id of all temp records in the database
+    :return str[]:
+    """
+    query = """
+        query findTempCrashes {
+          atd_txdot_crashes(
+            where: {
+              temp_record: {_eq: true},
+              _and:[
+                {case_id: {_is_null: false}},
+                {case_id: {_neq:""}},  
+              ]
+            }
+          ){
+            case_id
+          }
+        }
+    """
+    # Let's run the above query
+    result = run_query(query)
+
+    # If we have any errors, let's print it for troubleshooting
+    if "errors" in result:
+        print("GraphQL Error:")
+        print(query)
+        print(result)
+
+    # Return True if we have succeeded, False otherwise.
+    # Let it cause an exception if there isn't proper data
+    return list(map(lambda node: node["case_id"], result["data"]["atd_txdot_crashes"]))
