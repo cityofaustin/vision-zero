@@ -111,6 +111,7 @@ const CreateCrashRecord = ({ client }) => {
               sus_serious_injry_cnt: $sus_serious_injry_cnt
               temp_record: true
               crash_date: $crash_date
+              city_id: 22  
             }
           ]
         ) {
