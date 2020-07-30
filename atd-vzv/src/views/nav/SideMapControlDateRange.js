@@ -249,7 +249,7 @@ const SideMapControlDateRange = ({ type }) => {
         focusedInput={focused} // PropTypes.oneOf([START_DATE, END_DATE]) or null,
         onFocusChange={(focusedInput) => {
           setFocused(focusedInput);
-          isMobile && document.activeElement.blur(); // Do not prompt the keyboard on mobile
+          isTablet && document.activeElement.blur(); // Do not prompt the keyboard on mobile/tablet
         }} // PropTypes.func.isRequired,
         keepFocusOnInput
         minDate={dataStartDate}

@@ -93,7 +93,7 @@ const ToolsUploadNonCR3 = () => {
   const tableConfig = {
     colHeaders: [
       "Date",
-      "Call No.",
+      "Case ID",
       "Address",
       "Xcoord",
       "Ycoord",
@@ -110,7 +110,7 @@ const ToolsUploadNonCR3 = () => {
         defaultDate: "",
       },
       {
-        data: "call_num",
+        data: "case_id",
         type: "numeric",
       },
       {
@@ -158,12 +158,8 @@ const ToolsUploadNonCR3 = () => {
       errors.push("Invalid date");
     }
 
-    if (!isValidNumber(record["call_num"])) {
-      errors.push("Invalid call number");
-    }
-
-    if (!isValidAddress(record["address"])) {
-      errors.push("Invalid address");
+    if (!isValidNumber(record["case_id"])) {
+      errors.push("Invalid case id");
     }
 
     if (!isValidCoord(record["longitude"], record["latitude"])) {
@@ -217,15 +213,6 @@ const ToolsUploadNonCR3 = () => {
    */
   const cleanUpAddress = addr =>
     (addr ? addr : "").replace(/[^A-Za-z0-9\\/\-\s.,&]/gi, "");
-
-  /**
-   * Returns true if the address is valid
-   * @param {string} addr - The address string being evaluated
-   * @return {boolean}
-   */
-  const isValidAddress = addr => {
-    return cleanUpAddress(addr).length > 0;
-  };
 
   /**
    * Returns true if both x and y are valid float values
@@ -295,12 +282,12 @@ const ToolsUploadNonCR3 = () => {
          * If we are validating a hot table, then we must assume data is null
          * and we have to populate with the hot table's data which is a simple
          * array that needs to be transformed into a json array.
-         * @type {{date: *, address: *, hour: *, latitude: *, call_num: *, longitude: *}[]}
+         * @type {{date: *, address: *, hour: *, latitude: *, case_id: *, longitude: *}[]}
          */
         data = hotTable.current.hotInstance.getData().map(record => {
           return {
             date: record[0],
-            call_num: record[1],
+            case_id: record[1],
             address: record[2],
             longitude: record[3],
             latitude: record[4],
@@ -310,6 +297,30 @@ const ToolsUploadNonCR3 = () => {
       } else {
         return;
       }
+    }
+
+    // We have data, let's check if there are any duplicates
+    const counts = getDuplicateCount(data);
+
+    const duplicates = Object.keys(counts).filter((node) => {
+      return counts[node] > 1;
+    }).map(node => {
+      return `${node}: ${counts[node]} occurrences`;
+    })
+
+    if(duplicates.length > 0) {
+      setFeedback(
+        {
+          title: "Error",
+          message: <div>
+            <p>Validation Error: Within the <strong>{data.length}</strong> existing records, there are <strong>{duplicates.length}</strong> with the same Case IDs:</p>
+            <textarea style={{"width": "100%", "height": "15rem"}}>
+                {String(duplicates.join(",\n"))}
+              </textarea>
+          </div>
+        }
+      )
+      return;
     }
 
     /**
@@ -345,9 +356,24 @@ const ToolsUploadNonCR3 = () => {
   };
 
   /**
+   * Returns the number of duplicate call numbers.
+   * @param {Object} data
+   * @return {Array}
+   */
+  const getDuplicateCount = (data) => {
+    return data.reduce((acc, currNode) => {
+      // Convert the call num to string so we can use as a key
+      const case_id = String(currNode["case_id"]);
+      // Check if there is already value and add +1, or assign 1 to it.
+      acc[case_id] = (acc[case_id] || 0) + 1;
+      // Return new state of out count dictionary
+      return acc;
+    }, {});
+  }
+
+  /**
    * Saves the files into the database. Not yet implemented.
    * @param {Object} hotTable - The React reference to the hot table component
-   * @return {boolean}
    */
   const handleSave = hotTable => {
     // Generate the records to process...
@@ -356,7 +382,7 @@ const ToolsUploadNonCR3 = () => {
       .map(record => {
         return {
           date: record[0],
-          call_num: record[1],
+          case_id: record[1],
           address: record[2],
           longitude: record[3],
           latitude: record[4],
@@ -367,6 +393,7 @@ const ToolsUploadNonCR3 = () => {
         return isRecordValid(record)[0];
       });
 
+    // If we have no duplicates, and valid data
     if (data.length === 0) {
       setFeedback({
         title: "No Valid Records Found",
@@ -375,10 +402,34 @@ const ToolsUploadNonCR3 = () => {
       });
       setModalFeedback(true);
       setModalSaveConfirm(false);
-      return;
     } else {
-      setModalSaveProcess(true);
-      setRecordsToProcess(data);
+      // We have data, let's check if there are any duplicates
+      const counts = getDuplicateCount(data);
+
+      const duplicates = Object.keys(counts).filter((node) => {
+        return counts[node] > 1;
+      }).map(node => {
+        return `${node}: ${counts[node]} occurrences`;
+      })
+
+      if(duplicates.length > 0) {
+        setModalSaveConfirm(false);
+        setFeedback(
+          {
+            title: "Error",
+            message: <div>
+              <p>Action canceled. Please resolve the duplicates before inserting. Within the <strong>{data.length}</strong> valid records, there are <strong>{duplicates.length}</strong> with the same Case IDs:</p>
+              <textarea style={{"width": "100%", "height": "15rem"}}>
+                {String(duplicates.join(",\n"))}
+              </textarea>
+            </div>
+          }
+        )
+      } else {
+        // We have no duplicates, proceed...
+        setModalSaveProcess(true);
+        setRecordsToProcess(data);
+      }
     }
   };
 
@@ -412,9 +463,6 @@ const ToolsUploadNonCR3 = () => {
     if (recordsToProcess.length > 0)
       executeSave()
         .then(() => {
-          setModalSaveProcess(false);
-          setModalSaveConfirm(false);
-          setModalFeedback(true);
           setFeedback({
             title: "Success",
             message: "The save process was successful.",
@@ -423,13 +471,24 @@ const ToolsUploadNonCR3 = () => {
           setProcessedRecords(0);
         })
         .catch(error => {
-          setModalFeedback(true);
           setFeedback({
             title: "Error",
-            message: error,
+            message: String(error),
           });
         });
   }, [recordsToProcess]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  /**
+   * On transaction feedback hide save process dialogs
+   */
+  useEffect(() => {
+    const type = feedback.title || "undefined";
+    if(type === "Error" || type === "Success") {
+      setModalSaveProcess(false);
+      setModalSaveConfirm(false);
+      setModalFeedback(true);
+    }
+  }, [feedback]);
 
   /**
    * Handles the clicking on the download spreadsheet button.

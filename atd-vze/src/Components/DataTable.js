@@ -9,6 +9,7 @@ import {
   Card,
   CardHeader,
   CardBody,
+  CardFooter,
   Col,
   Input,
   Table,
@@ -27,6 +28,7 @@ const DataTable = ({
   handleInputChange,
   handleFieldUpdate,
   handleButtonClick,
+  downloadGlobal,
 }) => {
   // Disable edit features if only role is "readonly"
   const { getRoles } = useAuth0();
@@ -249,10 +251,14 @@ const DataTable = ({
                     </>
                   )}
               </CardBody>
+              <CardFooter>
+                {downloadGlobal}
+              </CardFooter>
             </Card>
           </Col>
         );
       })}
+
     </>
   );
 };

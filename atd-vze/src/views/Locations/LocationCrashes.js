@@ -3,7 +3,8 @@ import { withApollo } from "react-apollo";
 
 import GridTable from "../../Components/GridTable";
 import gqlAbstract from "../../queries/gqlAbstract";
-import { locationCrashesQueryExportFields } from "../../queries/crashes";
+import { crashQueryExportFields } from "../../queries/crashes";
+
 import {
   crashGridTableColumns,
   crashGridTableAdvancedFilters,
@@ -19,7 +20,6 @@ function LocationCrashes(props) {
     columns: crashGridTableColumns,
     order_by: {},
     where: {
-      city_id: "_eq: 22",
       location_id: `_eq: "${props.locationId}"`,
     },
     limit: 25,
@@ -250,7 +250,7 @@ function LocationCrashes(props) {
       query={crashesQuery}
       title={"CR3 Crashes"}
       filters={customFilters}
-      columnsToExport={locationCrashesQueryExportFields}
+      columnsToExport={crashQueryExportFields}
       aggregateQueryConfig={aggregateQueryConfig}
       widgetsConfig={widgetsConfig}
       chartConfig={chartConfig}

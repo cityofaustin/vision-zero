@@ -78,7 +78,11 @@ for config in query_configs:
     # Query records from Hasura and upsert to Socrata
     while records != []:
         # Create query, increment offset, and query DB
-        query = config["template"].substitute(limit=limit, offset=offset)
+        query = config["template"].substitute(
+            limit=limit,
+            offset=offset,
+            date_limit=get_date_limit()
+        )
         offset += limit
         data = run_hasura_query(query)
 
