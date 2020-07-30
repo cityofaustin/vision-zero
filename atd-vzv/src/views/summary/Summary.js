@@ -50,7 +50,7 @@ const Summary = () => {
   return (
     <Container fluid>
       {/* Create whitespace on sides of view until mobile */}
-      <Row className="px-xs-0 mx-xs-0 px-lg-3 mx-lg-4 mt-xs-3 mt-lg-4">
+      <Row className="px-xs-0 mx-xs-0 px-lg-3 mx-lg-4 mt-md-3 mt-lg-4">
         <Col className="px-xs-0">
           <StyledSummary>
             <Row className="summary-child">
