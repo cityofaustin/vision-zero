@@ -86,7 +86,7 @@ def hasura_request(record):
     else:
         # Prep the mutation
         update_location_mutation = """
-                mutation updateCrashLocationID($crashId: Int!, $locationId: String!) {
+                mutation updateCrashLocationID($crashId: Int!, $locationId: String) {
                     update_atd_txdot_crashes(where: {crash_id: {_eq: $crashId}}, _set: {location_id: $locationId}) {
                         affected_rows
                     }

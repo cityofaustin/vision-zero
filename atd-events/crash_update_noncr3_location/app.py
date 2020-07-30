@@ -92,7 +92,7 @@ def hasura_request(record):
     else:
         # Prep the mutation
         update_location_mutation = """
-            mutation updateNonCR3CrashLocationID($case_id: Int!, $locationId: String!) {
+            mutation updateNonCR3CrashLocationID($case_id: Int!, $locationId: String) {
                 update_atd_apd_blueform(where: {case_id: {_eq: $case_id}}, _set: {location_id: $locationId}) {
                     affected_rows
                 }
