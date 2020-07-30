@@ -32,6 +32,13 @@ const CrashesByPopulation = () => {
                         WHERE sus_serious_injry_cnt > 0 AND ${dateCondition} ${queryGroupAndOrder}`,
     };
 
+    const chartConfig = {
+      barOne: { color: colors.viridis5Of6, population: 913917 },
+      barTwo: { color: colors.viridis4Of6, population: 937065 },
+      barThree: { color: colors.viridis3Of6, population: 955094 },
+      barFour: { color: colors.viridis2Of6, population: 972499 },
+    };
+
     const calculateRatePer100000 = (data) => {
       const round = (num) => Math.floor(num * 10) / 10;
 
@@ -43,13 +50,6 @@ const CrashesByPopulation = () => {
       });
     };
 
-    const chartConfig = {
-      barOne: { color: colors.viridis5Of6, population: 913917 },
-      barTwo: { color: colors.viridis4Of6, population: 937065 },
-      barThree: { color: colors.viridis3Of6, population: 955094 },
-      barFour: { color: colors.viridis2Of6, population: 972499 },
-    };
-
     const formatChartData = (data) => {
       const labels = data.map((year) => year.year);
       const rateValues = data.map((year) => year.total);
@@ -59,7 +59,7 @@ const CrashesByPopulation = () => {
         labels,
         datasets: [
           {
-            label: "Years",
+            label: "Ratio",
             backgroundColor: colors,
             hoverBackgroundColor: colors,
             data: rateValues,
