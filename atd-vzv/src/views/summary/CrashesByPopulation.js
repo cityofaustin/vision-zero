@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import styled from "styled-components";
 import { Bar } from "react-chartjs-2";
 import { Container, Row, Col } from "reactstrap";
 
@@ -14,7 +15,6 @@ const CrashesByPopulation = () => {
 
   const url = `${crashEndpointUrl}?$query=`;
 
-  // Fetch data for By Month Average and Cumulative visualizations
   useEffect(() => {
     const dateCondition = `crash_date BETWEEN '${dataStartDate.format(
       "YYYY-MM-DD"
@@ -77,6 +77,16 @@ const CrashesByPopulation = () => {
         });
   }, [crashType, url]);
 
+  const StyledDiv = styled.div`
+    .year-total-div {
+      color: ${colors.dark};
+      background: ${colors.buttonBackground};
+      border-radius: 4px;
+      border-style: none;
+      opacity: 1;
+    }
+  `;
+
   return (
     <Container className="m-0 p-0">
       <Row>
@@ -95,6 +105,46 @@ const CrashesByPopulation = () => {
         <Col>
           <hr />
         </Col>
+      </Row>
+      <Row className="pb-2">
+        <Col xs={4} s={2} m={2} l={2} xl={2}>
+          <div>
+            <hr
+              className="my-1"
+              style={{
+                border: `4px solid ${colors.buttonBackground}`,
+              }}
+            ></hr>
+            <h6 className="text-center py-1 mb-0">
+              <strong>Year</strong>
+            </h6>
+            <hr className="my-1"></hr>
+            <h6 className="text-center py-1">Ratio</h6>
+          </div>
+        </Col>
+        {!!chartData &&
+          chartData.labels &&
+          chartData.labels.map((year, i) => (
+            <Col xs={4} s={2} m={2} l={2} xl={2} key={i}>
+              <StyledDiv>
+                <div className="year-total-div">
+                  <hr
+                    className="my-1"
+                    style={{
+                      border: `4px solid ${chartData.datasets[0].backgroundColor[i]}`,
+                    }}
+                  ></hr>
+                  <h6 className="text-center py-1 mb-0">
+                    <strong>{year}</strong>
+                  </h6>
+                  <hr className="my-1"></hr>
+                  <h6 className="text-center py-1">
+                    {chartData.datasets[0].data[i]}
+                  </h6>
+                </div>
+              </StyledDiv>
+            </Col>
+          ))}
       </Row>
       <Row className="mt-1">
         <Col>
