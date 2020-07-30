@@ -14,6 +14,7 @@ import json
 import re
 import datetime
 from dateutil import parser
+import web_pdb
 
 # Dependencies
 from .queries import search_crash_query, search_crash_query_full
@@ -873,7 +874,7 @@ def get_case_id(line):
 def get_list_temp_records():
     """
     Returns an array of strings containing the case_id of all temp records in the database
-    :return str[]: The list of strings containing the crash_id's
+    :return dict: The crash_ids mapped to a case_id
     """
     query = """
         query findTempCrashes {
@@ -887,6 +888,7 @@ def get_list_temp_records():
             }
           ){
             case_id
+            crash_id
           }
         }
     """
@@ -899,33 +901,41 @@ def get_list_temp_records():
         print(query)
         print(result)
 
-    # Return True if we have succeeded, False otherwise.
-    # Let it cause an exception if there isn't proper data
-    return list(map(lambda node: node["case_id"], result["data"]["atd_txdot_crashes"]))
+    # Map the case_ids to a crash id and return
+    return dict(
+        list(
+            map(
+                lambda node: (node["case_id"], str(node["crash_id"])),
+                result["data"]["atd_txdot_crashes"],
+            )
+        )
+    )
 
 
 def delete_temp_record(crash_id):
     """
     It deletes the crash id across multiple tables.
     :param str crash_id: The crash id to be deleted.
-    :return dict: A dictionary with a list of all records deleted per table
     """
-
     query = """
         mutation deleteCrash {
-          delete_atd_txdot_crashes(where: {crash_id: { _eq: $crashId }}){
-            affected_rows
-          }
-          delete_atd_txdot_units(where: {crash_id: { _eq: $crashId }}){
-            affected_rows
-          }
-          delete_atd_txdot_primaryperson(where: {crash_id: { _eq: $crashId }}){
-            affected_rows
-          }
-          delete_atd_txdot_person(where: {crash_id: { _eq: $crashId }}){
-            affected_rows
-          }
+            delete_atd_txdot_crashes(where: {crash_id: { _eq: $crashId }}){
+                affected_rows
+            }
+            delete_atd_txdot_units(where: {crash_id: { _eq: $crashId }}){
+                affected_rows
+            }
+            delete_atd_txdot_primaryperson(where: {crash_id: { _eq: $crashId }}){
+                affected_rows
+            }
+            delete_atd_txdot_person(where: {crash_id: { _eq: $crashId }}){
+                affected_rows
+            }
         }
-    """.replace("$crashId", crash_id)
+    """.replace(
+        "$crashId", crash_id
+    )
 
-    return {query: query}
+    response = run_query(query)
+    print("Deletion Response")
+    print(response)
