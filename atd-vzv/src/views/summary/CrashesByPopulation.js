@@ -5,6 +5,8 @@ import { Bar } from "react-chartjs-2";
 import { Container, Row, Col } from "reactstrap";
 
 import CrashTypeSelector from "./Components/CrashTypeSelector";
+import InfoPopover from "../../Components/Popover/InfoPopover";
+import { popoverConfig } from "../../Components/Popover/popoverConfig";
 import { crashEndpointUrl } from "./queries/socrataQueries";
 import { dataStartDate, fiveYearAvgEndDate } from "../../constants/time";
 import { colors } from "../../constants/colors";
@@ -45,7 +47,7 @@ const CrashesByPopulation = () => {
       barOne: { color: colors.viridis5Of6, population: 913917 },
       barTwo: { color: colors.viridis4Of6, population: 937065 },
       barThree: { color: colors.viridis3Of6, population: 955094 },
-      barFour: { color: colors.viridis1Of6Highest, population: 972499 },
+      barFour: { color: colors.viridis2Of6, population: 972499 },
     };
 
     const formatChartData = (data) => {
@@ -92,7 +94,8 @@ const CrashesByPopulation = () => {
       <Row>
         <Col>
           <h2 className="text-left font-weight-bold">
-            By Population (Rate Per 100,000)
+            By Population (Rate Per 100,000){" "}
+            <InfoPopover config={popoverConfig.summary.byYear} />
           </h2>
         </Col>
       </Row>

@@ -82,9 +82,7 @@ export const popoverConfig = {
           </div>
           <div className="mb-2">
             Below is a table showing how Austin's population continues to
-            increase each year. In future versions of the Vision Zero Viewer,
-            there will be a visualization showing crash numbers per 100,000
-            residents.
+            increase each year.
             <div>
               <img
                 className="mt-2 img-fluid"
