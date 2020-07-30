@@ -15,7 +15,7 @@ const InfoPopover = ({ config }) => {
 
     /* Style links for devices that show them as plain text */
     a {
-      color: ${colors.info};
+      color: ${colors.viridis2Of6};
       text-decoration: underline;
     }
   `;

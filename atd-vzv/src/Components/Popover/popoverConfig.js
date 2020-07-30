@@ -74,6 +74,21 @@ export const popoverConfig = {
       ),
     },
     byYear: {
+      title: "By Year & Month",
+      html: (
+        <>
+          <div>
+            This chart compares the current year's traffic fatalities and
+            serious injuries to the average traffic fatalities and serious
+            injuries of the previous five years. Users can compare traffic
+            fatalities and serious injuries per month, as well as compare how
+            the total traffic fatality and serious injury count changes
+            throughout the year.
+          </div>
+        </>
+      ),
+    },
+    byPopulation: {
       title: "Austin Area Population Histories & Forecasts",
       html: (
         <>
@@ -81,8 +96,22 @@ export const popoverConfig = {
             Austin Area Population Histories & Forecasts
           </div>
           <div className="mb-2">
-            Below is a table showing how Austin's population continues to
-            increase each year.
+            It is an industry standard to measure traffic-related deaths and
+            serious injuries in cities per 100,000 residents (see National
+            Highway Traffic Safety Administration{" "}
+            <a
+              href="https://www-fars.nhtsa.dot.gov/Main/index.aspx"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              website
+            </a>
+            ). This measure is important because it normalizes the number of
+            fatalities and serious injuries compared to a city's population.
+            This provides further insight when comparing traffic-related deaths
+            and serious injuries across peer cities, as well as changes to an
+            individual city's population over time. Below is a table showing how
+            Austin's population continues to increase each year.
             <div>
               <img
                 className="mt-2 img-fluid"

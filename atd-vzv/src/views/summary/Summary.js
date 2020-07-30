@@ -40,7 +40,7 @@ const Summary = () => {
 
     /* Style links for devices that show them as plain text */
     a {
-      color: ${colors.infoDark};
+      color: ${colors.viridis2Of6};
       text-decoration: underline;
     }
   `;

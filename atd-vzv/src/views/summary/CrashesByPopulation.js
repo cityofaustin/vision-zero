@@ -33,10 +33,10 @@ const CrashesByPopulation = () => {
     };
 
     const chartConfig = {
-      barOne: { color: colors.viridis5Of6, population: 913917 },
-      barTwo: { color: colors.viridis4Of6, population: 937065 },
-      barThree: { color: colors.viridis3Of6, population: 955094 },
-      barFour: { color: colors.viridis2Of6, population: 972499 },
+      barOne: { color: colors.viridis1Of6Highest, population: 913917 },
+      barTwo: { color: colors.viridis1Of6Highest, population: 937065 },
+      barThree: { color: colors.viridis1Of6Highest, population: 955094 },
+      barFour: { color: colors.viridis1Of6Highest, population: 972499 },
     };
 
     const calculateRatePer100000 = (data) => {
@@ -95,7 +95,7 @@ const CrashesByPopulation = () => {
         <Col>
           <h2 className="text-left font-weight-bold">
             By Population (Rate Per 100,000){" "}
-            <InfoPopover config={popoverConfig.summary.byYear} />
+            <InfoPopover config={popoverConfig.summary.byPopulation} />
           </h2>
         </Col>
       </Row>
@@ -112,17 +112,11 @@ const CrashesByPopulation = () => {
       <Row className="pb-2">
         <Col xs={4} s={2} m={2} l={2} xl={2}>
           <div>
-            <hr
-              className="my-1"
-              style={{
-                border: `4px solid ${colors.buttonBackground}`,
-              }}
-            ></hr>
-            <h6 className="text-center py-1 mb-0">
+            <h3 className="h6 text-center pt-2 my-1">
               <strong>Year</strong>
-            </h6>
+            </h3>
             <hr className="my-1"></hr>
-            <h6 className="text-center py-1">Ratio</h6>
+            <h3 className="h6 text-center py-1">Ratio</h3>
           </div>
         </Col>
         {!!chartData &&
@@ -131,13 +125,7 @@ const CrashesByPopulation = () => {
             <Col xs={4} s={2} m={2} l={2} xl={2} key={i}>
               <StyledDiv>
                 <div className="year-total-div">
-                  <hr
-                    className="my-1"
-                    style={{
-                      border: `4px solid ${chartData.datasets[0].backgroundColor[i]}`,
-                    }}
-                  ></hr>
-                  <h6 className="text-center py-1 mb-0">
+                  <h6 className="text-center pt-2 my-1">
                     <strong>{year}</strong>
                   </h6>
                   <hr className="my-1"></hr>
