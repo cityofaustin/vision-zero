@@ -15,10 +15,10 @@ const PeopleByDemographics = props => {
   const [chartType, setChartType] = useState("Race/Ethnicity");
   const [chartData, setChartData] = useState(null);
   const chartTypes = ["Race/Ethnicity", "Age", "Gender"];
-  
+
   useEffect(() => {
     const chartConfig = {
-      "Age": {
+      Age: {
         under_18: {
           label: "Under 18",
           categoryValue: 1,
@@ -40,7 +40,7 @@ const PeopleByDemographics = props => {
           categoryValue: 5,
         },
       },
-      "Gender": {
+      Gender: {
         gender_male: {
           label: "Male",
           categoryValue: 1,
@@ -135,14 +135,8 @@ const PeopleByDemographics = props => {
         "ethn_other",
         "ethn_amer_ind_nat",
       ],
-      "Gender": ["gender_male", "gender_female", "gender_unknown"],
-      "Age": [
-        "under_18",
-        "from_18_to_44",
-        "from_45_to_64",
-        "from_65",
-        "unknown",
-      ],
+      Gender: ["gender_male", "gender_female", "gender_unknown"],
+      Age: ["under_18", "from_18_to_44", "from_45_to_64", "from_65", "unknown"],
     };
 
     const removeUnusedTabs = node => {
@@ -223,8 +217,7 @@ const PeopleByDemographics = props => {
     console.log("chartType", chartType);
 
     setChartData(rawData);
-  }, [crashType, chartType, chartType, props.data]);
-
+  }, [crashType, chartType, props.data]);
 
   return (
     <Container className="m-0 p-0">
