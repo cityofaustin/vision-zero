@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import moment from "moment";
 import clonedeep from "lodash.clonedeep";
 
-import CrashTypeSelector from "../nav/CrashTypeSelector";
+import CrashTypeSelector from "./Components/CrashTypeSelector";
 import { Row, Col, Container, Button } from "reactstrap";
 import styled from "styled-components";
 import classnames from "classnames";

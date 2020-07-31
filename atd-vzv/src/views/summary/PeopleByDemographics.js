@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { HorizontalBar } from "react-chartjs-2";
-import { Container, Row, Col, Button } from "reactstrap";
-import styled from "styled-components";
-import classnames from "classnames";
+import ChartTypeSelector from "./Components/ChartTypeSelector";
+import { Container, Row, Col } from "reactstrap";
 
-import CrashTypeSelector from "../nav/CrashTypeSelector";
+import CrashTypeSelector from "./Components/CrashTypeSelector";
 import { colors } from "../../constants/colors";
 import InfoPopover from "../../Components/Popover/InfoPopover";
 import { popoverConfig } from "../../Components/Popover/popoverConfig";
@@ -260,47 +259,11 @@ const PeopleByDemographics = props => {
           <hr />
         </Col>
       </Row>
-      <Row className="text-center">
-        <Col className="pb-2">
-          <StyledButton>
-            <Button
-              className={classnames(
-                {
-                  active: activeTab === "prsn_ethnicity_id",
-                },
-                "demographic-type"
-              )}
-              onClick={() => {
-                toggle("prsn_ethnicity_id");
-              }}
-            >
-              Race/Ethnicity
-            </Button>
-            <Button
-              className={classnames(
-                { active: activeTab === "prsn_age" },
-                "demographic-type"
-              )}
-              onClick={() => {
-                toggle("prsn_age");
-              }}
-            >
-              Age
-            </Button>
-            <Button
-              className={classnames(
-                { active: activeTab === "prsn_gndr_id" },
-                "demographic-type"
-              )}
-              onClick={() => {
-                toggle("prsn_gndr_id");
-              }}
-            >
-              Gender
-            </Button>
-          </StyledButton>
-        </Col>
-      </Row>
+      <ChartTypeSelector
+        chartTypes={chartTypes}
+        chartType={chartType}
+        setChartType={setChartType}
+      />
       <Row>
         <Col>
           <HorizontalBar

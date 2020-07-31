@@ -135,7 +135,7 @@ function Crash(props) {
   };
 
   const {
-    death_cnt: deathCount,
+    atd_fatality_count: deathCount,
     sus_serious_injry_cnt: seriousInjuryCount,
     latitude_primary: latitude,
     longitude_primary: longitude,
