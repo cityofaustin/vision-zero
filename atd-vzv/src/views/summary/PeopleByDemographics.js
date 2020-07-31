@@ -11,31 +11,14 @@ import { popoverConfig } from "../../Components/Popover/popoverConfig";
 import clonedeep from "lodash.clonedeep";
 
 const PeopleByDemographics = props => {
-  const [activeTab, setActiveTab] = useState("prsn_ethnicity_id");
   const [crashType, setCrashType] = useState([]);
+  const [chartType, setChartType] = useState("Race/Ethnicity");
   const [chartData, setChartData] = useState(null);
-
-  const toggle = tab => {
-    if (activeTab !== tab) {
-      setActiveTab(tab);
-    }
-  };
-
-  // Set styles to override Bootstrap default styling
-  const StyledButton = styled.div`
-    .demographic-type {
-      color: ${colors.dark};
-      background: ${colors.buttonBackground} 0% 0% no-repeat padding-box;
-      border-style: none;
-      opacity: 1;
-      margin-left: 5px;
-      margin-right: 5px;
-    }
-  `;
-
+  const chartTypes = ["Race/Ethnicity", "Age", "Gender"];
+  
   useEffect(() => {
     const chartConfig = {
-      prsn_age: {
+      "Age": {
         under_18: {
           label: "Under 18",
           categoryValue: 1,
@@ -57,7 +40,7 @@ const PeopleByDemographics = props => {
           categoryValue: 5,
         },
       },
-      prsn_gndr_id: {
+      "Gender": {
         gender_male: {
           label: "Male",
           categoryValue: 1,
@@ -71,7 +54,7 @@ const PeopleByDemographics = props => {
           categoryValue: 5,
         },
       },
-      prsn_ethnicity_id: {
+      "Race/Ethnicity": {
         ethn_white: {
           label: "White",
           categoryValue: 1,
@@ -144,7 +127,7 @@ const PeopleByDemographics = props => {
     };
 
     const tabsList = {
-      prsn_ethnicity_id: [
+      "Race/Ethnicity": [
         "ethn_white",
         "ethn_hispanic",
         "ethn_black",
@@ -152,8 +135,8 @@ const PeopleByDemographics = props => {
         "ethn_other",
         "ethn_amer_ind_nat",
       ],
-      prsn_gndr_id: ["gender_male", "gender_female", "gender_unknown"],
-      prsn_age: [
+      "Gender": ["gender_male", "gender_female", "gender_unknown"],
+      "Age": [
         "under_18",
         "from_18_to_44",
         "from_45_to_64",
@@ -166,7 +149,7 @@ const PeopleByDemographics = props => {
       // Delete all unnecessary keys
 
       for (const key in Object.keys(node)) {
-        if (!tabsList[activeTab].includes(key || key === "removeUnusedTabs"))
+        if (!tabsList[chartType].includes(key || key === "removeUnusedTabs"))
           delete node[key];
       }
 
@@ -176,8 +159,8 @@ const PeopleByDemographics = props => {
     const buildOptions = key => {
       if (key === "total") return {};
       const color =
-        chartColors[chartConfig[activeTab][key]["categoryValue"] - 1];
-      const label = chartConfig[activeTab][key]["label"];
+        chartColors[chartConfig[chartType][key]["categoryValue"] - 1];
+      const label = chartConfig[chartType][key]["label"];
       return {
         backgroundColor: color,
         borderColor: color,
@@ -221,7 +204,7 @@ const PeopleByDemographics = props => {
     });
 
     rawData = {
-      datasets: tabsList[activeTab]
+      datasets: tabsList[chartType]
         .filter(k => k !== "eth_unknown")
         .map((key, i) => {
           const total = getTotalsForKey("total");
@@ -236,8 +219,12 @@ const PeopleByDemographics = props => {
       labels: rawDataOriginal.map(item => String(item.year)),
     };
 
+    console.log("Data", rawData);
+    console.log("chartType", chartType);
+
     setChartData(rawData);
-  }, [crashType, activeTab, props.data]);
+  }, [crashType, chartType, chartType, props.data]);
+
 
   return (
     <Container className="m-0 p-0">
