@@ -19,7 +19,6 @@ import time
 import signal
 import logging
 import concurrent.futures
-import web_pdb
 
 # We need to import our configuration, helpers and request methods
 from process.config import ATD_ETL_CONFIG
@@ -99,13 +98,10 @@ def process_line(
                 # There is, we need to delete it
                 print(
                     "Detected temporary record for crash_id/case_id '%s/%s'... deleting!"
-                    % (crash_id, temporary_records[case_id])
+                    % (temporary_records[case_id], case_id)
                 )
                 delete_temp_record(temporary_records[case_id])
-            else:
-                print("No temporary record detected. Ignoring check.")
 
-            web_pdb.set_trace()
             # Does the record exist already?
             record_exists = get_crash_record(crash_id)
             if record_exists:
