@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import CrashesByMonth from "./CrashesByMonth";
+import CrashesByYear from "./CrashesByYear";
 import CrashesByTimeOfDay from "./CrashesByTimeOfDay";
 import PeopleByDemographics from "./PeopleByDemographics";
 import CrashesByMode from "./CrashesByMode";
@@ -20,7 +20,7 @@ import axios from "axios";
 const Summary = () => {
   const [data, setData] = useState(null);
   const children = data ? [
-    { component: <CrashesByMonth />, data: data.view_vzv_by_month_year },
+    { component: <CrashesByYear />, data: data.view_vzv_by_month_year },
     { component: <CrashesByMode />, data: data.view_vzv_by_mode },
     { component: <CrashesByTimeOfDay />, data: data.view_vzv_by_time_of_day },
     { component: <PeopleByDemographics />, data: data.view_vzv_demographics_age_sex_eth },
