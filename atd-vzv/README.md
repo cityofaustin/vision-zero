@@ -2,7 +2,7 @@
 
 This project is a public-facing interactive web app showing crash data related to Vision Zero. View crash data by different categories, including transportation mode, demographic groups impacted, time of day, and location.
 
-Data is sourced from TxDOT's Crash Records Information System (CRIS) database. An editing interface provides tools for enriching data with more attributes and correct erronous or missing data.
+Data is sourced from TxDOT's Crash Records Information System (CRIS) database. [Vision Zero Editor](https://github.com/cityofaustin/atd-vz-data/tree/production/atd-vze) provides tools for enriching data with more attributes and correct erroneous or missing data.
 
 For resources and updates, see the [Vision Zero Crash Data System](https://github.com/cityofaustin/atd-data-tech/issues/255) project index.
 
