@@ -42,7 +42,7 @@ const StyledCard = styled.div`
   }
 
   .type-button {
-    font-size: 14px;
+    font-size: 12px;
     color: ${colors.dark};
     background: ${colors.buttonBackground};
     border-style: none;
@@ -91,6 +91,7 @@ const SideMapControl = ({ type }) => {
     type: {
       all: {
         text: `All`,
+        colSize: "auto",
         handler: () => handleTypeFilterClick(["injury", "fatal"]),
         isSelected: isMapTypeSet.injury && isMapTypeSet.fatal,
         default: false,
