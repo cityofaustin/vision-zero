@@ -6,6 +6,8 @@ Data is sourced from TxDOT's Crash Records Information System (CRIS) database. [
 
 For resources and updates, see the [Vision Zero Crash Data System](https://github.com/cityofaustin/atd-data-tech/issues/255) project index.
 
+See our Socrata open datasets for [crash](https://data.austintexas.gov/Transportation-and-Mobility/Vision-Zero-Crash-Report-Data/y2wy-tgr5/data) and [demographics](https://data.austintexas.gov/Transportation-and-Mobility/Vision-Zero-Demographic-Statistics/xecs-rpy9) data.
+
 ## Getting started
 
 Install dependencies
