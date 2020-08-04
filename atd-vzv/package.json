@@ -1,6 +1,6 @@
 {
   "name": "atd-vzv",
-  "version": "1.12.1",
+  "version": "1.12.2",
   "homepage": "./",
   "description": "ATD Vision Zero Viewer",
   "author": "ATD Data & Technology Services",
@@ -33,6 +33,7 @@
     "react-dates": "^21.8.0",
     "react-dom": "^16.10.2",
     "react-ga": "^2.7.0",
+    "react-helmet": "^6.1.0",
     "react-map-gl": "^5.1.3",
     "react-map-gl-draw": "^0.16.0",
     "react-scripts": "^3.3.0",
