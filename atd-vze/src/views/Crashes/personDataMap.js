@@ -4,7 +4,9 @@ const getInjurySeverityColor = desc => {
       return "muted";
     case "NOT INJURED":
       return "primary";
-    case "INCAPACITATING INJURY":
+    case "SUSPECTED SERIOUS INJURY" || "INCAPACITATING INJURY":
+      // INCAPACITATING INJURY is deprecated terminology but including
+      // a fallback here just in case.
       return "warning";
     case "NON-INCAPACITATING INJURY":
       return "warning";

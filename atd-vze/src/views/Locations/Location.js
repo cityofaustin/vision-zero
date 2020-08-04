@@ -77,10 +77,11 @@ function Location(props) {
     setEditField("");
   };
 
-
-  const downloadAllData = <div class={"float-right"}>
-    <LocationDownloadGlobal locationId={locationId} />
-  </div>;
+  const downloadAllData = (
+    <div class={"float-right"}>
+      <LocationDownloadGlobal locationId={locationId} />
+    </div>
+  );
 
   return (
     <div className="animated fadeIn">
