@@ -84,7 +84,7 @@ const Footer = () => {
     {
       text: "Data",
       url:
-        "https://data.austintexas.gov/Transportation-and-Mobility/-UNDER-CONSTRUCTION-Crash-Report-Data/y2wy-tgr5/data",
+        "https://data.austintexas.gov/Transportation-and-Mobility/Vision-Zero-Crash-Report-Data/y2wy-tgr5/data",
     },
     {
       text: "Code",
