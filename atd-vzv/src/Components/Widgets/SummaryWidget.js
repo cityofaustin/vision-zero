@@ -46,6 +46,11 @@ const SummaryWidget = ({
     }
 
     /* Center footer text with widget body text above */
+    .widget-header-text {
+      font-size: 18px;
+    }
+
+    /* Center footer text with widget body text above */
     .widget-footer-text {
       padding-left: 22.75px;
     }
@@ -104,10 +109,10 @@ const SummaryWidget = ({
           <div className="text-left d-flex flex-row">
             {renderIcon()}
             <div className="d-flex flex-column">
-              <h3 className="h5 mb-0">
+              <h3 className="h5 mb-0 widget-header-text">
                 {text} {infoPopover}
               </h3>
-              <h3 className="h5 text-muted">{`in ${currentYear}`}</h3>
+              <h3 className="h5 text-muted widget-header-text">{`in ${currentYear}`}</h3>
             </div>
           </div>
         </CardBody>
