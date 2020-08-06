@@ -28,8 +28,18 @@ const SummaryWidget = ({
   infoPopover,
 }) => {
   const StyledWidget = styled.div`
+    flex-grow: 1;
+
     .total {
       font-size: 4em;
+    }
+
+    .footer {
+      /* position: absolute;
+      bottom: 0; */
+      flex-shrink: 0;
+      width: 100%;
+      padding: 15px;
     }
 
     /* Shift icon left to align with Bootstrap card text */
@@ -40,14 +50,10 @@ const SummaryWidget = ({
     }
 
     /* Center footer icon in footer with .widget-icon above */
-    .widget-footer-icon {
+    .widget-footer-icon > svg {
       position: relative;
       left: 12.25px;
-    }
-
-    /* Center footer text with widget body text above */
-    .widget-header-text {
-      font-size: 18px;
+      bottom: 5px;
     }
 
     /* Center footer text with widget body text above */
@@ -82,7 +88,7 @@ const SummaryWidget = ({
       <div className="text-left widget-footer-icon d-flex flex-row card-bottom">
         <FontAwesomeIcon size="2x" icon={icon} color={colors.dark} />
         {!!lastYearTotal && (
-          <div className="text-muted text-wrap pt-1 pr-1 widget-footer-text">
+          <div className="text-muted text-wrap pb-1 pr-1 widget-footer-text">
             {`${text} ${numberWithCommas(lastYearTotal)} this time last year`}
           </div>
         )}
@@ -91,9 +97,9 @@ const SummaryWidget = ({
   };
 
   return (
-    <Card>
+    <Card className="h-100">
       <StyledWidget>
-        <CardBody className="pb-2">
+        <CardBody className="pb-1 h-75">
           <Row>
             <Col>
               {/* Show spinner while waiting for data, add thousands separator to total */}
@@ -109,15 +115,15 @@ const SummaryWidget = ({
           <div className="text-left d-flex flex-row">
             {renderIcon()}
             <div className="d-flex flex-column">
-              <h3 className="h5 mb-0 widget-header-text">
+              <h3 className="h5 mb-0">
                 {text} {infoPopover}
               </h3>
-              <h3 className="h5 text-muted widget-header-text">{`in ${currentYear}`}</h3>
+              <h3 className="h5 text-muted">{`in ${currentYear}`}</h3>
             </div>
           </div>
         </CardBody>
         {!!totalsObject && (
-          <CardFooter className="bg-white">
+          <CardFooter className="bg-white h-25">
             {renderFooterBasedOnChange(
               totalsObject[currentYear],
               totalsObject[prevYear]
