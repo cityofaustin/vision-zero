@@ -34,14 +34,6 @@ const SummaryWidget = ({
       font-size: 4em;
     }
 
-    .footer {
-      /* position: absolute;
-      bottom: 0; */
-      flex-shrink: 0;
-      width: 100%;
-      padding: 15px;
-    }
-
     /* Shift icon left to align with Bootstrap card text */
     .widget-icon {
       position: relative;
