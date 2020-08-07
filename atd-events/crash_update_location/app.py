@@ -112,6 +112,18 @@ def get_crash_id(data: dict) -> int:
         )
 
 
+def get_location_id(data: dict) -> Optional[str]:
+    """
+    Returns location_id from a data dictionary, or defaults to None
+    :param dict data: The event data
+    :return str|None: A string containing the location id, or None
+    """
+    try:
+        return data["event"]["data"]["new"]["location_id"]
+    except (TypeError, KeyError):
+        return None
+
+
 def hasura_request(record: str):
     """
     Processes a location update event.
