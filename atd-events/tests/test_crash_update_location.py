@@ -162,3 +162,16 @@ class TestCrashUpdateLocation:
             assert False
         except TypeError:
             assert True
+
+    def test_find_crash_location_true(self):
+        """
+        Tests whether it can find a location for a crash accurately.
+        """
+        assert find_crash_location(16517389) == '16D91EA018'
+
+    def test_find_crash_location_false(self):
+        """
+        Tests whether it can find a location for a crash accurately.
+        """
+        # Crash: 16517390 -> Location: 25A721EBE7
+        assert find_crash_location(16517390) != "16D91EA018"
