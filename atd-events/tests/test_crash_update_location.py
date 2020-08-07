@@ -175,3 +175,21 @@ class TestCrashUpdateLocation:
         """
         # Crash: 16517390 -> Location: 25A721EBE7
         assert find_crash_location(16517390) != "16D91EA018"
+
+    def test_find_crash_location_none(self):
+        """
+        Tests if it returns None if the value for crash_id is None
+        """
+        assert find_crash_location(None) is None
+
+    def test_find_crash_location_nonnumeric(self):
+        """
+        Tests if the crash_id is not numeric, if not returns None
+        """
+        assert find_crash_location("ABC123") is None
+
+    def test_find_crash_location_decimal(self):
+        """
+        Tests if the crash_id is not numeric, if not returns None
+        """
+        assert find_crash_location("1234.154") is None
