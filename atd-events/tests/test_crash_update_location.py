@@ -72,4 +72,22 @@ class TestCrashUpdateLocation:
         except KeyError:
             assert True
 
+    def test_is_crash_mainlane_int_true(self):
+        """
+        Tests if a crash is mainlane, it should assert True
+        """
+        assert is_crash_mainlane(11425861)
+
+    def test_is_crash_mainlane_str_true(self):
+        """
+        Tests if a crash is mainlane, it should assert True
+        """
+        assert is_crash_mainlane("11425861")
+
+    def test_is_crash_mainlane_false(self):
+        """
+        Tests if a crash is mainlane, it should assert False
+        """
+        assert is_crash_mainlane("11425868") is False
+
     
