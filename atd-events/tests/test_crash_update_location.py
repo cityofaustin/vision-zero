@@ -54,4 +54,22 @@ class TestCrashUpdateLocation:
         """
         assert is_insert(data_cr3_insertion_invalid) is False
 
+    def test_is_insert_exception_1(self):
+        """
+        Test is_insert with an empty dictionary
+        """
+        try:
+            assert is_insert({})
+        except KeyError:
+            assert True
+
+    def test_is_insert_exception_2(self):
+        """
+        This is_insert with None value
+        """
+        try:
+            assert is_insert(None)
+        except KeyError:
+            assert True
+
     
