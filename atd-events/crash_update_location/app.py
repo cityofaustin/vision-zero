@@ -41,6 +41,22 @@ def raise_critical_error(
     raise exception_type(critical_error_message)
 
 
+def is_insert(data: dict) -> bool:
+    """
+    Returns True if the current operation is an insertion, False otherwise.
+    :param dict data: The event payload object
+    :return bool:
+    """
+    try:
+        return data["event"]["op"] == "INSERT"
+    except (TypeError, KeyError):
+        raise_critical_error(
+            message="No operation description available, data['op'] key not available.",
+            data=data,
+            exception_type=KeyError
+        )
+
+
 def hasura_request(record: str):
     """
     Processes a location update event.
