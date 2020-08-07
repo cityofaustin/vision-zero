@@ -59,14 +59,18 @@ def keyboard_interrupt_handler(signal, frame):
     STOP_EXEC = True
 
 
-def process_line(file_type, line, fieldnames, current_line, dryrun=False):
+def process_line(
+    file_type, line, fieldnames, current_line, temporary_records, dryrun=False
+):
     """
     Will process a single CSV line and will try to check if
     the record already exists and attempt insertion.
-    :param file_type: string - the file type
-    :param line: string - the csv line to process
-    :param fieldnames: array of strings - an array of strings container the table headers
-    :param current_line: int - the current line in the csv being read
+    :param str file_type: The file type
+    :param str line: The csv line to process
+    :param str[] fieldnames: An array of strings container the table headers
+    :param int current_line: The current line in the csv being read
+    :param str[] temporary_records: Array of strings containing temporary case_ids
+    :param bool dryrun: True indicates the line needs to be processed as dry.
     :return:
     """
     # Gather stop signal value
@@ -78,6 +82,8 @@ def process_line(file_type, line, fieldnames, current_line, dryrun=False):
     # Read the crash_id from the current line
     # Applies to: crashes, unit, person, primary person, charges
     crash_id = get_crash_id(line)
+    case_id = get_case_id(line)
+
     mode = "[Dry-Run]" if dryrun else "[Live]"
     compare_enabled = ATD_ETL_CONFIG["ATD_CRIS_IMPORT_COMPARE_FUNCTION"] == "ENABLED"
     # By default enable upserts
@@ -87,6 +93,15 @@ def process_line(file_type, line, fieldnames, current_line, dryrun=False):
     if compare_enabled and not dryrun:
         # Compare enabled, and this is a crash
         if file_type == "crash":
+            # We have to check if there is a temp record already in the database:
+            if case_id in temporary_records:
+                # There is, we need to delete it
+                print(
+                    "Detected temporary record for crash_id/case_id '%s/%s'... deleting!"
+                    % (temporary_records[case_id], case_id)
+                )
+                delete_temp_record(temporary_records[case_id])
+
             # Does the record exist already?
             record_exists = get_crash_record(crash_id)
             if record_exists:
@@ -246,6 +261,7 @@ def process_file(file_path, file_type, skip_lines, dryrun=False):
     # This array stores the header names taken from the CSV file,
     # this will later be used to generate our graphql queries.
     fieldnames = []
+    temporary_records = []
 
     # This will hold the official number of rows being skipped, just to be safe.
     # If FILE_SKIP_ROWS contains no value, assumes 0 rows to be skipped.
@@ -256,6 +272,9 @@ def process_file(file_path, file_type, skip_lines, dryrun=False):
         "We are skipping: %s"
         % (str(skip_rows_parsed) if skip_rows_parsed >= 0 else "all records")
     )
+
+    if file_type == "crash":
+        temporary_records = get_list_temp_records()
 
     # Open FILE_PATH as a file pointer:
     with open(FILE_PATH) as fp:
@@ -293,6 +312,7 @@ def process_file(file_path, file_type, skip_lines, dryrun=False):
                             line,
                             fieldnames,
                             current_line,
+                            temporary_records,
                             dryrun,
                         )
 
