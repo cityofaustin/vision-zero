@@ -41,4 +41,17 @@ class TestCrashUpdateLocation:
         except TypeError:
             assert True
 
+    def test_is_insert_valid(self):
+        """
+        This test should check whether the payload is an insertion
+        """
+        assert is_insert(data_cr3_insertion_valid)
+
+    def test_is_insert_invalid(self):
+        """
+        This test should check whether the function can tell if this is NOT
+        an insertion, and should assert False.
+        """
+        assert is_insert(data_cr3_insertion_invalid) is False
+
     
