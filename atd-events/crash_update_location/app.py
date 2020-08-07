@@ -1,7 +1,7 @@
 #
 # Resolves the location for a crash.
 #
-
+from typing import Optional
 import json
 import requests
 import time
@@ -12,75 +12,64 @@ HASURA_ADMIN_SECRET = os.getenv("HASURA_ADMIN_SECRET", "")
 HASURA_ENDPOINT = os.getenv("HASURA_ENDPOINT", "")
 HASURA_EVENT_API = os.getenv("HASURA_EVENT_API", "")
 
+# Prep Hasura query
+HEADERS = {
+    "Content-Type": "application/json",
+    "X-Hasura-Admin-Secret": HASURA_ADMIN_SECRET,
+}
 
-def hasura_request(record):
+
+def raise_critical_error(
+        message: str,
+        data: dict,
+        exception_type: object = Exception
+):
+    """
+    Logs an error in Lambda
+    :param dict data: The event data
+    :param str message: The message to be logged
+    :param object exception_type: An optional exception type object
+    :return:
+    """
+    critical_error_message = json.dumps(
+        {
+            "event_object": data,
+            "message": message,
+        }
+    )
+    print(critical_error_message)
+    raise exception_type(critical_error_message)
+
+
+def hasura_request(record: str):
     """
     Processes a location update event.
-    :param dict data: The json payload from Hasura
+    :param str record: The json payload from Hasura
     """
     # Get data/crash_id from Hasura Event request
+    data = load_data(record=record)
 
-    print("Handling request: ")
-    print(json.dumps(record))
+    # Try getting the crash data
+    crash_id = get_crash_id(data)
+    old_location_id = get_location_id(data)
 
-    try:
-        data = json.loads(record)
-    except:
-        data = ""
-        exit(0)
-
-    try:
-        crash_id = data["event"]["data"]["new"]["crash_id"]
-        old_location_id = data["event"]["data"]["new"]["location_id"]
-    except:
-        print(
-            json.dumps(
-                {
-                    "message": "Unable to parse request body to identify a Location Record"
-                }
-            )
-        )
-
-    # Prep Hasura query
-    HEADERS = {
-        "Content-Type": "application/json",
-        "X-Hasura-Admin-Secret": HASURA_ADMIN_SECRET,
-    }
-
-    find_location_query = Template(
-        """
-            query getLocationAssociation {
-                find_location_for_cr3_collision(args: {id: $crash_id}){
-                    location_id
-                }
-            }
-        """
-    ).substitute(crash_id=crash_id)
-
-    json_body = {"query": find_location_query}
-
-    # Make request to Hasura expecting a Location Record in the response
-    try:
-        response = requests.post(
-            HASURA_ENDPOINT, data=json.dumps(json_body), headers=HEADERS
-        )
-    except:
-        print(
-            json.dumps(
-                {
-                    "message": "Unable to parse request body to identify a Location Record"
-                }
-            )
-        )
-
-    try:
-        new_location_id = response.json()["data"]["find_location_for_cr3_collision"][0][
-            "location_id"
-        ]
-    except:
-        print(f"Could not find location for crash id: {crash_id}")
+    """
+        Order of execution:
+          1. Check if crash is a main-lane
+          2. If main-lane:
+              - The make location_id = None
+              - Ignore trying to find a location
+             Else:
+              - Check if it falls in a location
+          3. Update record    
+    """
+    # Resolve new location
+    if is_crash_mainlane(crash_id):
         new_location_id = None
+    else:
+        new_location_id = find_crash_location(crash_id)
 
+    # Now compare the location values:
     if new_location_id == old_location_id:
         print(json.dumps({"message": "Success. No Location ID update required"}))
     else:
