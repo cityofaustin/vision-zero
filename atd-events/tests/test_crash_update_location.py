@@ -137,3 +137,28 @@ class TestCrashUpdateLocation:
         Tests if the crash id returns None if the record is invalid
         """
         assert get_location_id(None) is None
+
+    def test_load_data_success(self):
+        """
+        Tests whether load_data can parse a string into a dictionary
+        """
+        assert isinstance(load_data("{}"), dict)
+
+    def test_load_data_failure_none(self):
+        """
+        Tests whether load_data can parse a string into a dictionary
+        """
+        try:
+            assert isinstance(load_data(None), dict)
+        except TypeError:
+            assert True
+
+    def test_load_data_failure_invalid(self):
+        """
+        Tests whether load_data can parse a string into a dictionary
+        """
+        try:
+            isinstance(load_data("{'invalid': 'json'}"), dict)
+            assert False
+        except TypeError:
+            assert True
