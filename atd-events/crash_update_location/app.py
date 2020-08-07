@@ -63,7 +63,7 @@ def is_crash_mainlane(crash_id: int) -> bool:
     :param int crash_id: The crash_id to be evaluated
     :return bool:
     """
-    if not str(crash_id).isnumeric():
+    if not str(crash_id).isdigit():
         return False
 
     check_mainlane_query = Template(
@@ -130,6 +130,9 @@ def find_crash_location(crash_id: int) -> Optional[str]:
     :param int crash_id: The crash_id to be evaluated
     :return str: The location_id string
     """
+    if not str(crash_id).isdigit():
+        return None
+
     find_location_query = Template(
         """
             query getLocationAssociation {
