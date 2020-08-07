@@ -96,6 +96,22 @@ def is_crash_mainlane(crash_id: int) -> bool:
         return False
 
 
+def get_crash_id(data: dict) -> int:
+    """
+    Attempts to retrieve the crash_id from a data dictionary
+    :param dict data: The event data
+    :return int: An int containing the crash_id
+    """
+    try:
+        return data["event"]["data"]["new"]["crash_id"]
+    except (TypeError, KeyError):
+        raise_critical_error(
+            message="Unable to parse request body to identify a crash_id",
+            data=data,
+            exception_type=KeyError
+        )
+
+
 def hasura_request(record: str):
     """
     Processes a location update event.
