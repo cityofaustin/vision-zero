@@ -190,26 +190,31 @@ def hasura_request(record: str):
               - Check if it falls in a location
           3. Update record    
     """
-    # Resolve new location
+    # Check if this crash is a main-lane
     if is_crash_mainlane(crash_id):
+        # If so, make sure to nullify the new location_id
         new_location_id = None
     else:
+        # If not, then try to find the location...
         new_location_id = find_crash_location(crash_id)
 
     # Now compare the location values:
     if new_location_id == old_location_id:
         print(json.dumps({"message": "Success. No Location ID update required"}))
+        exit(0)
+    # There is an update to the location
     else:
         # Prep the mutation
         update_location_mutation = """
-                mutation updateCrashLocationID($crashId: Int!, $locationId: String) {
-                    update_atd_txdot_crashes(where: {crash_id: {_eq: $crashId}}, _set: {location_id: $locationId}) {
-                        affected_rows
-                    }
+            mutation updateCrashLocationID($crashId: Int!, $locationId: String) {
+                update_atd_txdot_crashes(where: {crash_id: {_eq: $crashId}}, _set: {location_id: $locationId}) {
+                    affected_rows
                 }
-            """
-
+            }
+        """
+        # Instantiate the variables
         query_variables = {"crashId": crash_id, "locationId": new_location_id}
+        # Prepare the query body
         mutation_json_body = {
             "query": update_location_mutation,
             "variables": query_variables,
@@ -220,17 +225,14 @@ def hasura_request(record: str):
             mutation_response = requests.post(
                 HASURA_ENDPOINT, data=json.dumps(mutation_json_body), headers=HEADERS
             )
-        except:
-            print(
-                json.dumps(
-                    {
-                        "message": "Unable to parse request body for location_id update"
-                    }
-                )
+        except (TypeError, json.decoder.JSONDecodeError) as e:
+            raise_critical_error(
+                message=f"Unable to parse request body for location_id update: {str(e}",
+                data=data,
+                exception_type=KeyError
             )
 
-        print("Mutation Successful")
-        print(mutation_response.json())
+        print(json.dumps({"status": "Mutation Successful", "response": mutation_response.json()})
 
 
 def handler(event, context):
