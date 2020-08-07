@@ -18,3 +18,27 @@ class TestCrashUpdateLocation:
     @classmethod
     def teardown_class(cls):
         print("\n\nAll tests finished for: TestCrashUpdateLocation")
+
+    def test_critical_error_success(self):
+        try:
+            raise_critical_error(
+                message="This is a test",
+                data={"Test": "One"},
+                exception_type=TypeError
+            )
+            assert False
+        except TypeError:
+            assert True
+
+    def test_critical_error_fail(self):
+        try:
+            raise_critical_error(
+                message="",
+                data={},
+                exception_type=None
+            )
+            assert False
+        except TypeError:
+            assert True
+
+    
