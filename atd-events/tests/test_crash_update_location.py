@@ -90,4 +90,14 @@ class TestCrashUpdateLocation:
         """
         assert is_crash_mainlane("11425868") is False
 
-    
+    def test_is_crash_mainlane_none(self):
+        """
+        Tests if a crash is mainlane, it should assert False
+        """
+        assert is_crash_mainlane(None) is False
+
+    def test_is_crash_mainlane_letters(self):
+        """
+        Tests if a crash is mainlane, it should assert False
+        """
+        assert is_crash_mainlane("A123") is False
