@@ -113,3 +113,17 @@ class TestCrashUpdateLocation:
         Tests whether it can get the crash id from a record successfully.
         """
         assert get_crash_id({"event": {"data": {"new": {"crash_id": None}}}}) != 1
+
+    def test_get_location_id_true(self):
+        """
+        Tests if the location id is returned
+        """
+        assert get_location_id(data_cr3_insertion_valid) == "SCRAMBLED1234"
+
+    def test_get_location_id_false(self):
+        """
+        Tests if the location id is returned, tests false
+        """
+        assert get_location_id({"event": {"data": {"new": {"location_id": None}}}}) != "SCRAMBLED1234"
+
+    
