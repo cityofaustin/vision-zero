@@ -149,6 +149,22 @@ def find_crash_location(crash_id: int) -> Optional[str]:
         return None
 
 
+def load_data(record: str) -> dict:
+    """
+    Attempts to parse the event data
+    :param str record: The event data as string
+    :return dict: The event data as an object
+    """
+    try:
+        return json.loads(record)
+    except (TypeError, json.decoder.JSONDecodeError) as e:
+        raise_critical_error(
+            message=f"Unable to parse event data payload: {str(e)}",
+            data={"record": str},
+            exception_type=TypeError
+        )
+
+
 def hasura_request(record: str):
     """
     Processes a location update event.
