@@ -36,12 +36,15 @@ const CreateCrashRecord = ({ client }) => {
   const [feedback, setFeedback] = useState(false);
   const [primaryAddress, setPrimaryAddress] = useState("");
   const [secondayAddress, setSecondaryAddress] = useState("");
-  const [numberOfUnits, setNumberOfUnits] = useState(1);
   const [unitFormData, setUnitFormData] = useState([
     { unit_desc_id: 1, atd_fatality_count: 0, sus_serious_injry_cnt: 0 },
   ]);
 
   console.log("formData", unitFormData);
+
+  function handleUnitFormChange(newValues) {
+    setUnitFormData(newValues);
+  }
 
   useEffect(() => {
     const GET_HIGHEST_TEMP_RECORD_ID = gql`
@@ -306,14 +309,24 @@ const CreateCrashRecord = ({ client }) => {
             </Col>
           </FormGroup>
 
-          <UnitsForm units={unitFormData} handleUpdate={setUnitFormData} />
+          <UnitsForm
+            units={unitFormData}
+            handleUnitFormChange={handleUnitFormChange}
+            client={client}
+          />
 
           <div className="d-flex flex-row-reverse">
             <Button
               color="primary"
               size="lg"
               onClick={e => {
-                setUnitFormData(unitFormData.concat({ hi: "foo" }));
+                setUnitFormData(
+                  unitFormData.concat({
+                    unit_desc_id: 0,
+                    atd_fatality_count: 0,
+                    sus_serious_injry_cnt: 0,
+                  })
+                );
               }}
             >
               <i className="fa fa-plus"></i>&nbsp;Add Unit

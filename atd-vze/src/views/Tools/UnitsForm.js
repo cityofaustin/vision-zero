@@ -1,27 +1,38 @@
 import React, { useState, useEffect } from "react";
 
 import {
-  Alert,
-  Button,
   Card,
   CardBody,
   CardHeader,
-  CardFooter,
   Col,
   Input,
   Label,
-  Form,
   FormGroup,
   FormText,
 } from "reactstrap";
+import { useQuery } from "@apollo/react-hooks";
+import { withApollo } from "react-apollo";
+import { gql } from "apollo-boost";
 
-const UnitsForm = ({ units, handleUpdate }) => {
-  console.log(units);
-  console.log(units.length);
+const GET_VEHICLE_DESC_LKP = gql`
+  {
+    atd_txdot__veh_unit_desc_lkp {
+      veh_unit_desc_id
+      veh_unit_desc_desc
+    }
+  }
+`;
 
-  useEffect(() => {
-    console.log(units);
-  });
+const UnitsForm = ({ units, handleUnitFormChange, client }) => {
+  const { data: lookupValues, error, loading } = useQuery(GET_VEHICLE_DESC_LKP);
+
+  const handleInputUpdate = (e, field, unitIndex) => {
+    handleUnitFormChange(prevState => {
+      let newState = [...prevState];
+      newState[unitIndex][field] = e.target.value;
+      return [...newState];
+    });
+  };
 
   return (
     <>
@@ -40,11 +51,18 @@ const UnitsForm = ({ units, handleUpdate }) => {
                     id="unit-type"
                     name="unit-type"
                     placeholder="Enter Fatality Count..."
-                    // value={fatalityCount}
-                    // onChange={e => setFatalityCount(e.target.value)}
+                    value={unit.unit_desc_id}
+                    onChange={e => handleInputUpdate(e, "unit_desc_id", i)}
                   >
-                    <option value={0}>Please select something</option>
-                    <option value={1}>MOTOR VEHICLE</option>
+                    <option value={0}>Select the unit type...</option>
+                    {!loading &&
+                      lookupValues.atd_txdot__veh_unit_desc_lkp.map(item => {
+                        return (
+                          <option value={item.veh_unit_desc_id}>
+                            {item.veh_unit_desc_desc}
+                          </option>
+                        );
+                      })}
                   </Input>
                   <FormText className="help-block">
                     Please enter the Fatality Count
@@ -61,8 +79,10 @@ const UnitsForm = ({ units, handleUpdate }) => {
                     id="hf-fatality-count"
                     name="hf-fatality-count"
                     placeholder="Enter Fatality Count..."
-                    // value={fatalityCount}
-                    // onChange={e => setFatalityCount(e.target.value)}
+                    value={unit.atd_fatality_count}
+                    onChange={e =>
+                      handleInputUpdate(e, "atd_fatality_count", i)
+                    }
                   />
                   <FormText className="help-block">
                     Please enter the Fatality Count
@@ -81,8 +101,10 @@ const UnitsForm = ({ units, handleUpdate }) => {
                     id="hf-fatality-count"
                     name="hf-fatality-count"
                     placeholder="Enter Suspected Serious Injury Count..."
-                    // value={susSeriousInjuryCount}
-                    // onChange={e => setSusSeriousInjuryCount(e.target.value)}
+                    value={unit.sus_serious_injry_cnt}
+                    onChange={e =>
+                      handleInputUpdate(e, "sus_serious_injry_cnt", i)
+                    }
                   />
                   <FormText className="help-block">
                     Please enter the Suspected Serious Injury Count
@@ -96,4 +118,4 @@ const UnitsForm = ({ units, handleUpdate }) => {
     </>
   );
 };
-export default UnitsForm;
+export default withApollo(UnitsForm);
