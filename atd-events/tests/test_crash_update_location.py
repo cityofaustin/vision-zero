@@ -126,4 +126,14 @@ class TestCrashUpdateLocation:
         """
         assert get_location_id({"event": {"data": {"new": {"location_id": None}}}}) != "SCRAMBLED1234"
 
-    
+    def test_get_location_id_empty(self):
+        """
+        Tests if the crash id returns None if the record is invalid
+        """
+        assert get_location_id({}) is None
+
+    def test_get_location_id_none(self):
+        """
+        Tests if the crash id returns None if the record is invalid
+        """
+        assert get_location_id(None) is None
