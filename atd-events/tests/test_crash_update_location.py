@@ -101,3 +101,15 @@ class TestCrashUpdateLocation:
         Tests if a crash is mainlane, it should assert False
         """
         assert is_crash_mainlane("A123") is False
+
+    def test_get_crash_id_true(self):
+        """
+        Tests whether it can get the crash id from a record successfully.
+        """
+        assert get_crash_id(data_cr3_insertion_valid) == 17697596
+
+    def test_get_crash_id_false(self):
+        """
+        Tests whether it can get the crash id from a record successfully.
+        """
+        assert get_crash_id({"event": {"data": {"new": {"crash_id": None}}}}) != 1
