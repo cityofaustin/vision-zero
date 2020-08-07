@@ -124,6 +124,31 @@ def get_location_id(data: dict) -> Optional[str]:
         return None
 
 
+def find_crash_location(crash_id: int) -> Optional[str]:
+    """
+    Attempts to find the crash_id of the record to be evaluated.
+    :param int crash_id: The crash_id to be evaluated
+    :return str: The location_id string
+    """
+    find_location_query = Template(
+        """
+            query getLocationAssociation {
+                find_location_for_cr3_collision(args: {id: $crash_id}){
+                    location_id
+                }
+            }
+        """
+    ).substitute(crash_id=crash_id)
+
+    try:
+        response = requests.post(
+            HASURA_ENDPOINT, data=json.dumps({"query": find_location_query}), headers=HEADERS
+        )
+        return response.json()["data"]["find_location_for_cr3_collision"][0]["location_id"]
+    except:
+        return None
+
+
 def hasura_request(record: str):
     """
     Processes a location update event.
