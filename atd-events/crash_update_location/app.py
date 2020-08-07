@@ -57,6 +57,45 @@ def is_insert(data: dict) -> bool:
         )
 
 
+def is_crash_mainlane(crash_id: int) -> bool:
+    """
+    Returns True if the crash is a main-lane, False otherwise.
+    :param int crash_id: The crash_id to be evaluated
+    :return bool:
+    """
+    if not str(crash_id).isnumeric():
+        return False
+
+    check_mainlane_query = Template(
+        """
+            query findMainLaneCrashCR3 {
+              find_cr3_mainlane_crash(args: {
+                cr3_crash_id: $crash_id
+              }){
+                crash_id
+              }
+            }
+        """
+    ).substitute(crash_id=str(crash_id))
+
+    try:
+        """
+            We will attempt to find the record through the find_cr3_mainlane_crash function,
+            if no matches are returned, then it means the crash is not a main-lane.
+        """
+        response = requests.post(
+            HASURA_ENDPOINT, data=json.dumps({"query": check_mainlane_query}), headers=HEADERS
+        )
+        return len(response.json()["data"]["find_cr3_mainlane_crash"]) > 0
+    except:
+        """
+            In case the response is broken or invalid, we need to:
+            - Output the problem for debugging
+            - Default to False, let it be part of a location for now.
+        """
+        return False
+
+
 def hasura_request(record: str):
     """
     Processes a location update event.
