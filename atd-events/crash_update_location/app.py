@@ -21,7 +21,7 @@ HEADERS = {
 
 def raise_critical_error(
         message: str,
-        data: dict,
+        data: dict = None,
         exception_type: object = Exception
 ):
     """
@@ -107,8 +107,7 @@ def get_crash_id(data: dict) -> int:
     except (TypeError, KeyError):
         raise_critical_error(
             message="Unable to parse request body to identify a crash_id",
-            data=data,
-            exception_type=KeyError
+            data=data
         )
 
 
@@ -163,15 +162,48 @@ def load_data(record: str) -> dict:
     except (TypeError, json.decoder.JSONDecodeError) as e:
         raise_critical_error(
             message=f"Unable to parse event data payload: {str(e)}",
-            data={"record": str},
+            data={"record": record},
             exception_type=TypeError
         )
 
 
-def hasura_request(record: str):
+def get_cr3_location_id(crash_id: int) -> Optional[str]:
     """
-    Processes a location update event.
+    Runs a graphql query and returns the current location_id for a CR3 crash record.
+    :param int crash_id: The crash_id in question
+    :return str|None: The current location_id
+    """
+    if not str(crash_id).isdigit():
+        return None
+
+    query_get_location_id = {
+        "query": """
+            query getCrashLocationId($crashId:Int!) {
+              atd_txdot_crashes(where: {crash_id: {_eq: $crashId}}){
+                location_id
+              }
+            }
+        """,
+        "variables": {
+            "crashId": crash_id
+        }
+    }
+    try:
+        response = requests.post(
+            HASURA_ENDPOINT,
+            data=json.dumps(query_get_location_id),
+            headers=HEADERS
+        )
+        return response.json()["data"]["atd_txdot_crashes"][0]["location_id"]
+    except (KeyError, TypeError):
+        return None
+
+
+def hasura_request(record: str) -> bool:
+    """
+    Returns True if the record was processed, False if no need for update.
     :param str record: The json payload from Hasura
+    :returns bool:
     """
     # Get data/crash_id from Hasura Event request
     data = load_data(record=record)
@@ -180,16 +212,6 @@ def hasura_request(record: str):
     crash_id = get_crash_id(data)
     old_location_id = get_location_id(data)
 
-    """
-        Order of execution:
-          1. Check if crash is a main-lane
-          2. If main-lane:
-              - The make location_id = None
-              - Ignore trying to find a location
-             Else:
-              - Check if it falls in a location
-          3. Update record    
-    """
     # Check if this crash is a main-lane
     if is_crash_mainlane(crash_id):
         # If so, make sure to nullify the new location_id
@@ -200,39 +222,16 @@ def hasura_request(record: str):
 
     # Now compare the location values:
     if new_location_id == old_location_id:
-        print(json.dumps({"message": "Success. No Location ID update required"}))
-        exit(0)
+        # No need to update
+        return False
+
     # There is an update to the location
     else:
-        # Prep the mutation
-        update_location_mutation = """
-            mutation updateCrashLocationID($crashId: Int!, $locationId: String) {
-                update_atd_txdot_crashes(where: {crash_id: {_eq: $crashId}}, _set: {location_id: $locationId}) {
-                    affected_rows
-                }
-            }
-        """
-        # Instantiate the variables
-        query_variables = {"crashId": crash_id, "locationId": new_location_id}
-        # Prepare the query body
-        mutation_json_body = {
-            "query": update_location_mutation,
-            "variables": query_variables,
-        }
-
-        # Execute the mutation
-        try:
-            mutation_response = requests.post(
-                HASURA_ENDPOINT, data=json.dumps(mutation_json_body), headers=HEADERS
-            )
-        except (TypeError, json.decoder.JSONDecodeError) as e:
-            raise_critical_error(
-                message=f"Unable to parse request body for location_id update: {str(e}",
-                data=data,
-                exception_type=KeyError
-            )
-
-        print(json.dumps({"status": "Mutation Successful", "response": mutation_response.json()})
+        update_location(
+            crash_id=crash_id,
+            new_location_id=new_location_id
+        )
+        return True
 
 
 def handler(event, context):
@@ -242,10 +241,13 @@ def handler(event, context):
     :param dict context: Event context
     """
     for record in event["Records"]:
-        timeStr = time.ctime()
-        print("Current Timestamp : ", timeStr)
-        print(json.dumps(record))
+        time_str = time.ctime()
+
         if "body" in record:
-            hasura_request(record["body"])
-        timeStr = time.ctime()
-        print("Done executing: ", timeStr)
+            try:
+                hasura_request(record["body"])
+            except Exception as e:
+                print(f"Critical Failure: {time_str}", str(e))
+                time_str = time.ctime()
+                print("Done executing: ", time_str)
+                exit(0)  # Graceful exit
