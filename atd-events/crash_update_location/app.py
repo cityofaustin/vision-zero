@@ -199,6 +199,51 @@ def get_cr3_location_id(crash_id: int) -> Optional[str]:
         return None
 
 
+def update_location(crash_id: int, new_location_id: str) -> dict:
+    """
+    Returns a dictionary and HTTP response from the GraphQL query
+    :param int crash_id: The crash_id of the record to be updated
+    :param new_location_id: The new location id for the record
+    :return dict:
+    """
+    if crash_id is None:
+        raise_critical_error(
+            message=f"No crash_id provided to update the location",
+        )
+    # Output
+    mutation_response = {}
+    # Prepare the query body
+    mutation_json_body = {
+        "query": """
+            mutation updateCrashLocationID($crashId: Int!, $locationId: String) {
+                update_atd_txdot_crashes(where: {crash_id: {_eq: $crashId}}, _set: {location_id: $locationId}) {
+                    affected_rows
+                }
+            }
+        """,
+        "variables": {
+            "crashId": crash_id,
+            "locationId": new_location_id
+        },
+    }
+    # Execute the mutation
+    try:
+        mutation_response = requests.post(
+            HASURA_ENDPOINT,
+            data=json.dumps(mutation_json_body),
+            headers=HEADERS
+        )
+    except Exception as e:
+        raise_critical_error(
+            message=f"Unable to update crash_id location: {str(e)}"
+        )
+
+    return {
+        "status": "Mutation Successful",
+        "response": mutation_response.json()
+    }
+
+
 def hasura_request(record: str) -> bool:
     """
     Returns True if the record was processed, False if no need for update.
