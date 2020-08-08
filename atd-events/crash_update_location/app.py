@@ -295,4 +295,4 @@ def handler(event, context):
                 print(f"Critical Failure: {time_str}", str(e))
                 time_str = time.ctime()
                 print("Done executing: ", time_str)
-                exit(0)  # Graceful exit
+                exit(1)
