@@ -217,3 +217,24 @@ class TestCrashUpdateLocation:
         Tests if the get_cr3_location_id returns a null id
         """
         assert get_cr3_location_id(1234.56) == None
+
+    def test_update_location_valid(self):
+        """
+        Tests if a record can be updated to a new location
+        """
+        response = update_location(1000, "ABC123456")
+
+        assert isinstance(response, dict)
+        assert "status" in response and "response" in response
+        assert response["status"] == "Mutation Successful"
+        assert get_cr3_location_id(1000) == "ABC123456"
+
+    def test_update_location_none(self):
+        """
+        Tests if a record can be updated to a new location
+        """
+        response = update_location(1000, None)
+        assert isinstance(response, dict)
+        assert "status" in response and "response" in response
+        assert response["status"] == "Mutation Successful"
+        assert get_cr3_location_id(1000) == None
