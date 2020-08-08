@@ -162,7 +162,7 @@ function clean_up {
 #
 function deploy_event_functions {
   MAIN_DIR=$PWD
-  for FUNCTION in $(find atd-events -type d -mindepth 1 -maxdepth 1);
+  for FUNCTION in $(find atd-events -type d -mindepth 1 -maxdepth 1 ! -iname "tests");
   do
       FUNCTION_DIR=$(echo "${FUNCTION}" | cut -d "/" -f 2);
       FUNCTION_NAME="atd-vz-data-events-${FUNCTION_DIR}_${WORKING_STAGE}";
