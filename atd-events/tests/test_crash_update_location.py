@@ -193,3 +193,27 @@ class TestCrashUpdateLocation:
         Tests if the crash_id is not numeric, if not returns None
         """
         assert find_crash_location("1234.154") is None
+
+    def test_get_cr3_location_id_not_null(self):
+        """
+        Tests if the get_cr3_location_id returns a not null id
+        """
+        assert get_cr3_location_id(16517389) == '16D91EA018'
+
+    def test_get_cr3_location_id_null(self):
+        """
+        Tests if the get_cr3_location_id returns a null id
+        """
+        assert get_cr3_location_id(17198925) == None
+
+    def test_get_cr3_location_id_nonnumeric(self):
+        """
+        Tests if the get_cr3_location_id returns a null id
+        """
+        assert get_cr3_location_id("ABC1234") == None
+
+    def test_get_cr3_location_id_decimal(self):
+        """
+        Tests if the get_cr3_location_id returns a null id
+        """
+        assert get_cr3_location_id(1234.56) == None
