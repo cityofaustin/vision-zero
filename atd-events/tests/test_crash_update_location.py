@@ -105,7 +105,7 @@ class TestCrashUpdateLocation:
         """
         Tests whether it can get the crash id from a record successfully.
         """
-        assert get_crash_id(data_cr3_insertion_valid) == 17697596
+        assert get_crash_id(data_cr3_insertion_valid) == 1000
 
     def test_get_crash_id_false(self):
         """
