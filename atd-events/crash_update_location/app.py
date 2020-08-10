@@ -6,7 +6,6 @@ import requests
 import time
 import os
 
-from string import Template
 from typing import Optional
 
 HASURA_ADMIN_SECRET = os.getenv("HASURA_ADMIN_SECRET", "")
