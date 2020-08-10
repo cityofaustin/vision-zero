@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 import json
 from unittest.mock import patch
 from .json_helper import load_file
@@ -371,3 +370,146 @@ class TestCrashUpdateLocation:
         )
 
         model_mock.assert_called_once()
+
+    def test_hasura_request_invalid_json(self):
+        """
+        Tests whether hasura_request fails to parse an invalid json
+        """
+        try:
+            hasura_request(
+                record="{'invalid': 'json'}"
+            )
+            assert False
+        except TypeError:
+            assert True
+
+    def test_hasura_request_no_record(self):
+        """
+        Tests whether hasura_request fails to parse an invalid json
+        """
+        try:
+            hasura_request(
+                record=None
+            )
+            assert False
+        except TypeError:
+            assert True
+
+    def test_hasura_request_valid_record_invalid_body(self):
+        """
+        Tests whether hasura_request fails to parse an invalid json
+        """
+        try:
+            hasura_request(
+                record=json.dumps(data_cr3_insertion_invalid)
+            )
+            assert False
+        except Exception:
+            assert True
+
+    def test_hasura_request_valid_body_invalid_crash_id(self):
+        """
+        Tests whether hasura_request fails to parse an invalid json
+        """
+        data = load_file("tests/data/data_cr3_insertion_invalid.json")
+        data["event"]["data"] = {
+            "old": None,
+            "new": None,
+        }
+        try:
+            hasura_request(
+                record=json.dumps(data)
+            )
+            assert False
+        except Exception:
+            assert True
+
+    @patch("crash_update_location.app.get_location_id")
+    def test_hasura_request_get_location_id_called(self, get_location_id):
+        """
+        Tests whether hasura_request calls get_location_id
+        """
+        data = load_file("tests/data/data_cr3_insertion_invalid.json")
+        data["event"]["data"] = {
+            "old": None,
+            "new": {
+                "crash_id": -10234,
+                "location_id": None,
+            },
+        }
+        hasura_request(
+            record=json.dumps(data)
+        )
+        get_location_id.assert_called_once()
+
+    @patch("crash_update_location.app.find_crash_location")
+    def test_hasura_request_find_crash_location_not_called(self, find_crash_location):
+        """
+        Makes sure hasura_request does not call find_crash_location
+        """
+        data = load_file("tests/data/data_cr3_insertion_invalid.json")
+        data["event"]["data"] = {
+            "old": None,
+            "new": {
+                "crash_id": 11425861,
+                "location_id": None,
+            },
+        }
+        hasura_request(
+            record=json.dumps(data)
+        )
+        find_crash_location.assert_not_called()
+
+    @patch("crash_update_location.app.update_location")
+    def test_hasura_request_update_location_not_called(self, update_location):
+        """
+        Makes sure hasura_request does not call update_location
+        """
+        data = load_file("tests/data/data_cr3_insertion_invalid.json")
+        data["event"]["data"] = {
+            "old": None,
+            "new": {
+                "crash_id": 16517389,
+                "location_id": "16D91EA018",
+            },
+        }
+        hasura_request(
+            record=json.dumps(data)
+        )
+        update_location.assert_not_called()
+
+    @patch("crash_update_location.app.update_location")
+    def test_hasura_request_update_location_double_null(self, update_location):
+        """
+        Makes sure hasura_request does not call update_location
+        """
+        data = load_file("tests/data/data_cr3_insertion_invalid.json")
+        data["event"]["data"] = {
+            "old": None,
+            "new": {
+                "crash_id": 16517399,
+                "location_id": None,
+            },
+        }
+        hasura_request(
+            record=json.dumps(data)
+        )
+        update_location.assert_not_called()
+
+    @patch("crash_update_location.app.update_location")
+    def test_hasura_request_update_location_called(self, update_location):
+        """
+        Makes sure hasura_request calls update_location
+        """
+        data = load_file("tests/data/data_cr3_insertion_invalid.json")
+        data["event"]["data"] = {
+            "old": None,
+            "new": {
+                "crash_id": 16517389,
+                "location_id": None,
+            },
+        }
+        hasura_request(
+            record=json.dumps(data)
+        )
+        update_location.assert_called()
