@@ -48,6 +48,10 @@ const SummaryWidget = ({
       bottom: 5px;
     }
 
+    .widget-header-text > h3 {
+      font-size: 1.2em;
+    }
+
     /* Center footer text with widget body text above */
     .widget-footer-text {
       padding-left: 22.75px;
@@ -106,7 +110,7 @@ const SummaryWidget = ({
           </Row>
           <div className="text-left d-flex flex-row">
             {renderIcon()}
-            <div className="d-flex flex-column">
+            <div className="d-flex flex-column widget-header-text">
               <h3 className="h5 mb-0">
                 {text} {infoPopover}
               </h3>
