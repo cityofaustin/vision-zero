@@ -1,3 +1,5 @@
+import { mapRequestFields } from "../summary/queries/socrataQueries";
+
 const convertDateToSocrataFormat = (date, suffix) =>
   date.format("YYYY-MM-DD") + suffix;
 
@@ -49,7 +51,8 @@ export const createMapDataUrl = (
   // Return null to prevent populating map with unfiltered data
   return filterCount === 0
     ? null
-    : `${endpoint}?$limit=100000` +
+    : `${endpoint}?$select=${mapRequestFields.join(",")}` +
+        `&$limit=100000` +
         `&$where=crash_date between '${startDate}' and '${endDate}'` +
         // if there is a polygon selected, add as filter
         ((!!mapPolygon && ` AND within_polygon(point, '${mapPolygon}')`) ||
