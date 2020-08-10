@@ -1,10 +1,10 @@
 #!/usr/bin/env python
-import pytest
-import json
-import pdb
 
+import json
+from unittest.mock import patch
 from .json_helper import load_file
 from crash_update_location.app import *
+
 
 data_cr3_insertion_valid = load_file("tests/data/data_cr3_insertion_valid.json")
 data_cr3_insertion_invalid = load_file("tests/data/data_cr3_insertion_invalid.json")
@@ -238,3 +238,136 @@ class TestCrashUpdateLocation:
         assert "status" in response and "response" in response
         assert response["status"] == "Mutation Successful"
         assert get_cr3_location_id(1000) == None
+
+    @patch("crash_update_location.app.hasura_request")
+    def test_handler_noevents(self, model_mock):
+        """
+        Tests if the handler fails if events is an empty object
+        """
+        handler(
+            event=None,
+            context=None
+        )
+
+        model_mock.assert_not_called()
+
+    @patch("crash_update_location.app.hasura_request")
+    def test_handler_norecords(self, model_mock):
+        """
+        Tests whether the handler executes hasura_request
+        if there are no records in the array.
+        """
+        handler(
+            event={"Records": []},
+            context=None
+        )
+
+        model_mock.assert_not_called()
+
+    @patch("crash_update_location.app.hasura_request")
+    def test_handler_empty_body(self, model_mock):
+        """
+        Tests if the handler runs hasura_request even if
+        there is an empty body.
+        """
+        handler(
+            event={"Records": [{"body": ""}]},
+            context=None
+        )
+
+        model_mock.assert_called_once()
+
+    @patch("crash_update_location.app.raise_critical_error")
+    def test_handler_critical_body_empty(self, model_mock):
+        """
+        Tests if hasura_request will raise a critical error.
+        """
+        handler(
+            event={"Records": [{"body": ""}]},
+            context=None
+        )
+
+        model_mock.assert_called()
+
+    @patch("crash_update_location.app.raise_critical_error")
+    def test_handler_critical_body_none(self, model_mock):
+        """
+        Tests whether the handler fails when provided an
+        empty record, hasura_request would raise it.
+        """
+        handler(
+            event={"Records": [{"body": None}]},
+            context=None
+        )
+
+        model_mock.assert_called()
+
+    @patch("crash_update_location.app.raise_critical_error")
+    def test_handler_critical_nonparsable(self, model_mock):
+        """
+        Tests if the handler fails when passing an non-parsable json string.
+        """
+        handler(
+            event={"Records": [{"body": "{'not':'json'}"}]},
+            context=None
+        )
+
+        model_mock.assert_called()
+
+    @patch("crash_update_location.app.raise_critical_error")
+    def test_handler_critical_missing_crash_id(self, model_mock):
+        """
+        Tests if the handler fails if no crash_id is provided.
+        """
+        handler(
+            event={"Records": [{"body": json.dumps(
+                {
+
+                    "event": {
+                        "session_variables": {
+                            "x-hasura-role": "admin"
+                        },
+                        "op": "INSERT",
+                        "data": {
+                            "old": None,
+                            "new": {
+                                "no_crash_id": 1234
+                            }
+                        }
+                    }
+
+                }
+            )}]},
+            context=None
+        )
+
+        model_mock.assert_called()
+
+    @patch("crash_update_location.app.hasura_request")
+    def test_handler_valid_crash_id(self, model_mock):
+        """
+        Tests if the handler works if a valid crash_id is provided.
+        """
+        handler(
+            event={"Records": [{"body": json.dumps(
+                {
+
+                    "event": {
+                        "session_variables": {
+                            "x-hasura-role": "admin"
+                        },
+                        "op": "INSERT",
+                        "data": {
+                            "old": None,
+                            "new": {
+                                "crash_id": 1234
+                            }
+                        }
+                    }
+
+                }
+            )}]},
+            context=None
+        )
+
+        model_mock.assert_called_once()
