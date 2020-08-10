@@ -67,17 +67,16 @@ def is_crash_mainlane(crash_id: int) -> bool:
     if not str(crash_id).isdigit():
         return False
 
-    check_mainlane_query = Template(
-        """
-            query findMainLaneCrashCR3 {
-              find_cr3_mainlane_crash(args: {
-                cr3_crash_id: $crash_id
-              }){
-                crash_id
-              }
-            }
-        """
-    ).substitute(crash_id=str(crash_id))
+    check_mainlane_query = """
+        query findMainLaneCrashCR3($crash_id: Int!) {
+          find_cr3_mainlane_crash(args: {
+            cr3_crash_id: $crash_id
+          }){
+            crash_id
+          }
+        }
+    """
+
 
     try:
         """
@@ -85,7 +84,16 @@ def is_crash_mainlane(crash_id: int) -> bool:
             if no matches are returned, then it means the crash is not a main-lane.
         """
         response = requests.post(
-            HASURA_ENDPOINT, data=json.dumps({"query": check_mainlane_query}), headers=HEADERS
+            HASURA_ENDPOINT,
+            data=json.dumps(
+                {
+                    "query": check_mainlane_query,
+                    "variables": {
+                        "crash_id": crash_id
+                    }
+                }
+            ),
+            headers=HEADERS
         )
         return len(response.json()["data"]["find_cr3_mainlane_crash"]) > 0
     except:
@@ -133,19 +141,27 @@ def find_crash_location(crash_id: int) -> Optional[str]:
     if not str(crash_id).isdigit():
         return None
 
-    find_location_query = Template(
-        """
-            query getLocationAssociation {
-                find_location_for_cr3_collision(args: {id: $crash_id}){
-                    location_id
-                }
+    find_location_query = """
+        query getLocationAssociation($crash_id: Int!) {
+            find_location_for_cr3_collision(args: {id: $crash_id}){
+                location_id
             }
-        """
-    ).substitute(crash_id=crash_id)
+        }
+    """
+
 
     try:
         response = requests.post(
-            HASURA_ENDPOINT, data=json.dumps({"query": find_location_query}), headers=HEADERS
+            HASURA_ENDPOINT,
+            data=json.dumps(
+                {
+                    "query": find_location_query,
+                    "variables": {
+                        "crash_id": crash_id
+                    }
+                }
+            ),
+            headers=HEADERS
         )
         return response.json()["data"]["find_location_for_cr3_collision"][0]["location_id"]
     except:
