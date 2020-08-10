@@ -94,6 +94,7 @@ export const GET_CRASH = gql`
       unkn_injry_cnt
       updated_by
       wthr_cond_id
+      location_id
     }
     atd_txdot_charges(where: { crash_id: { _eq: $crashId } }) {
       citation_nbr
@@ -110,9 +111,6 @@ export const GET_CRASH = gql`
       record_json
       update_timestamp
       updated_by
-    }
-    atd_txdot_crash_locations(where: { crash_id: { _eq: $crashId } }) {
-      location_id
     }
   }
 `;
