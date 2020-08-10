@@ -1,125 +1,232 @@
 #
 # Resolves the location for a crash.
 #
-
 import json
 import requests
 import time
 import os
 
+from typing import Optional
+
 HASURA_ADMIN_SECRET = os.getenv("HASURA_ADMIN_SECRET", "")
 HASURA_ENDPOINT = os.getenv("HASURA_ENDPOINT", "")
+HASURA_EVENT_API = os.getenv("HASURA_EVENT_API", "")
+
+# Prep Hasura query
+HEADERS = {
+    "Content-Type": "application/json",
+    "X-Hasura-Admin-Secret": HASURA_ADMIN_SECRET,
+}
 
 
-def hasura_request(record):
+def raise_critical_error(
+        message: str,
+        data: dict = None,
+        exception_type: object = Exception
+):
     """
-    Processes a location update event.
-    :param dict data: The json payload from Hasura
+    Logs an error in Lambda
+    :param dict data: The event data
+    :param str message: The message to be logged
+    :param object exception_type: An optional exception type object
+    :return:
     """
-    # Get data/crash_id from Hasura Event request
+    critical_error_message = json.dumps(
+        {
+            "event_object": data,
+            "message": message,
+        }
+    )
+    print(critical_error_message)
+    raise exception_type(critical_error_message)
 
-    print("Handling request: ")
-    print(json.dumps(record))
 
+def get_crash_id(data: dict) -> int:
+    """
+    Attempts to retrieve the crash_id from a data dictionary
+    :param dict data: The event data
+    :return int: An int containing the crash_id
+    """
     try:
-        data = json.loads(record)
-    except:
-        data = ""
-        exit(0)
-
-    try:
-        crash_id = data["event"]["data"]["new"]["crash_id"]
-        old_jurisdiction_flag = data["event"]["data"]["new"]["austin_full_purpose"]
-    except:
-        print(
-            json.dumps(
-                {
-                    "message": "Unable to parse request body to identify a Location Record"
-                }
-            )
+        return data["event"]["data"]["new"]["crash_id"]
+    except (TypeError, KeyError):
+        raise_critical_error(
+            message="Unable to parse request body to identify a crash_id",
+            data=data
         )
 
-    print("Crash ID: " + str(crash_id))
 
-    # Prep Hasura query
-    HEADERS = {
-        "Content-Type": "application/json",
-        "X-Hasura-Admin-Secret": HASURA_ADMIN_SECRET,
-    }
+def get_jurisdiction_flag(data: dict) -> str:
+    """
+    Returns location_id from a data dictionary, or defaults to None
+    :param dict data: The event data
+    :return str|None: A string containing the location id, or None
+    """
+    try:
+        within_juris = data["event"]["data"]["new"]["austin_full_purpose"] == "Y"
+        return "Y" if within_juris else "N"
+    except (TypeError, KeyError):
+        return "N"
 
-    find_location_query = """
+
+def load_data(record: str) -> dict:
+    """
+    Attempts to parse the event data
+    :param str record: The event data as string
+    :return dict: The event data as an object
+    """
+    try:
+        return json.loads(record)
+    except (TypeError, json.decoder.JSONDecodeError) as e:
+        raise_critical_error(
+            message=f"Unable to parse event data payload: {str(e)}",
+            data={"record": record},
+            exception_type=TypeError
+        )
+
+
+def is_crash_in_jurisdiction(crash_id: int) -> str:
+    """
+    Attempts to find the jurisdiction of a crash by it's ID
+    :param int crash_id: The crash_id to be evaluated
+    :return str: The location_id string
+    """
+    if not str(crash_id).isdigit():
+        return "N"
+
+    find_jurisdiction_query = """
         query($crash_id:Int) {
-            find_crash_in_jurisdiction(args: {jurisdiction_id: 11, given_crash_id: $crash_id}) {
+            find_crash_in_jurisdiction(args: {jurisdiction_id: 5, given_crash_id: $crash_id}) {
                 crash_id
                 austin_full_purpose
             }
         }
     """
 
-    query_variables = {
-        "crash_id": crash_id
-    }
-
-    json_body = {
-        "query": find_location_query,
-        "variables": query_variables,
-    }
-
-    # Make request to Hasura expecting a Location Record in the response
     try:
         response = requests.post(
-            HASURA_ENDPOINT, data=json.dumps(json_body), headers=HEADERS
-        )
-    except:
-        print(
-            json.dumps(
+            HASURA_ENDPOINT,
+            data=json.dumps(
                 {
-                    "message": "Unable to parse request body to check for crash containment in jurisdiction"
-                }
-            )
-        )
-
-    is_within_jurisdiction = len(response.json()["data"]["find_crash_in_jurisdiction"])
-
-    # We're casting a varchar here into a boolean, so I'm declaring Y to be True and everything else to be False.
-    if (not (old_jurisdiction_flag == "Y") and not is_within_jurisdiction) or (
-        old_jurisdiction_flag == "Y" and is_within_jurisdiction
-    ):
-        print(json.dumps({"message": "Success. austin_full_purpose is up to date"}))
-    else:
-        # Prep the mutation
-        update_jurisdiction_flag_mutation = """
-                mutation updateCrashJurisdiction($crashId: Int!, $jurisdictionFlag: String!) {
-                    update_atd_txdot_crashes(where: {crash_id: {_eq: $crashId}}, _set: {austin_full_purpose: $jurisdictionFlag}) {
-                        affected_rows
+                    "query": find_jurisdiction_query,
+                    "variables": {
+                        "crash_id": crash_id
                     }
                 }
-            """
+            ),
+            headers=HEADERS
+        )
+        within_jurisdiction = len(response.json()["data"]["find_crash_in_jurisdiction"]) > 0
+        return "Y" if within_jurisdiction else "N"
+    except:
+        return "N"
 
-        query_variables = {
+
+def get_full_purpose_flag(crash_id: int) -> str:
+    """
+    Attempts to find the jurisdiction flag of a crash by it's ID
+    :param int crash_id: The crash_id to be evaluated
+    :return str: Y or N
+    """
+    if not str(crash_id).isdigit():
+        return "N"
+
+    get_full_purpose_flag_query = """
+        query getCR3($crash_id:Int!){
+            atd_txdot_crashes(where: {
+                crash_id: {_eq:$crash_id}
+            }){
+                austin_full_purpose
+            }
+        }
+    """
+
+    try:
+        response = requests.post(
+            HASURA_ENDPOINT,
+            data=json.dumps(
+                {
+                    "query": get_full_purpose_flag_query,
+                    "variables": {
+                        "crash_id": crash_id
+                    }
+                }
+            ),
+            headers=HEADERS
+        )
+        return response.json()["data"]["atd_txdot_crashes"][0]["austin_full_purpose"]
+    except:
+        return "N"
+
+
+def update_jurisdiction_flag(crash_id: int, new_flag: str) -> dict:
+    """
+    Returns a dictionary and HTTP response from the GraphQL query
+    :param int crash_id: The crash_id of the record to be updated
+    :param str new_flag: The new jurisdiction flag
+    :return dict:
+    """
+    if crash_id is None:
+        raise_critical_error(
+            message=f"No crash_id provided to update the jurisdiction",
+        )
+    # Output
+    mutation_response = {}
+    # Prepare the query body
+    mutation_json_body = {
+        "query": """
+            mutation updateCrashJurisdiction($crashId: Int!, $jurisdictionFlag: String!) {
+                update_atd_txdot_crashes(where: {crash_id: {_eq: $crashId}}, _set: {austin_full_purpose: $jurisdictionFlag}) {
+                    affected_rows
+                }
+            }
+        """,
+        "variables": {
             "crashId": crash_id,
-            "jurisdictionFlag": "Y" if is_within_jurisdiction else "N",
-        }
-        mutation_json_body = {
-            "query": update_jurisdiction_flag_mutation,
-            "variables": query_variables,
-        }
+            "jurisdictionFlag": new_flag
+        },
+    }
+    # Execute the mutation
+    try:
+        mutation_response = requests.post(
+            HASURA_ENDPOINT,
+            data=json.dumps(mutation_json_body),
+            headers=HEADERS
+        )
+    except Exception as e:
+        raise_critical_error(
+            message=f"Unable to update crash_id '{crash_id}' jurisdiction: {str(e)}"
+        )
 
-        # Execute the mutation
-        try:
-            mutation_response = requests.post(
-                HASURA_ENDPOINT, data=json.dumps(mutation_json_body), headers=HEADERS
-            )
-        except:
-            mutation_response = {}
-            print(
-                json.dumps(
-                    {"message": "Unable to parse request body for jurisdiction update"}
-                )
-            )
+    return {
+        "status": "Mutation Successful",
+        "response": mutation_response.json()
+    }
 
-        print("Mutation Successful")
-        print(mutation_response.json())
+
+def hasura_request(record: dict) -> bool:
+    """
+    Processes a location update event.
+    :param dict data: The json payload from Hasura
+    """
+    # Get data/crash_id from Hasura Event request
+    data = load_data(record=record)
+
+    # Try getting the crash data
+    crash_id = get_crash_id(data)
+    old_jurisdiction_flag = get_jurisdiction_flag(data)
+
+    new_jurisdiction_flag = is_crash_in_jurisdiction(crash_id)
+
+    # If the old and new flags are the same, then ignore...
+    if old_jurisdiction_flag == new_jurisdiction_flag:
+        return False
+    else:
+        update_jurisdiction_flag(
+           crash_id=crash_id,
+           new_flag=new_jurisdiction_flag,
+        )
+        return True
 
 
 def handler(event, context):
@@ -128,11 +235,18 @@ def handler(event, context):
     :param dict event: One or many SQS messages
     :param dict context: Event context
     """
-    for record in event["Records"]:
-        timeStr = time.ctime()
-        print("Current Timestamp : ", timeStr)
-        print(json.dumps(record))
-        if "body" in record:
-            hasura_request(record["body"])
-        timeStr = time.ctime()
-        print("Done executing: ", timeStr)
+    if event and "Records" in event:
+        for record in event["Records"]:
+            time_str = time.ctime()
+            if "body" in record:
+                try:
+                    hasura_request(record["body"])
+                except Exception as e:
+                    print(f"Start Time: {time_str}", str(e))
+                    time_str = time.ctime()
+                    print("Done executing: ", time_str)
+                    raise_critical_error(
+                        message=f"Could not process record: {str(e)}",
+                        data=record,
+                        exception_type=Exception
+                    )
