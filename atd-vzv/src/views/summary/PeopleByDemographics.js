@@ -275,6 +275,7 @@ const PeopleByDemographics = () => {
       <Row>
         <Col>
           <HorizontalBar
+            redraw
             data={data}
             height={null}
             width={null}
