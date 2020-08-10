@@ -1,12 +1,13 @@
 #
 # Resolves the location for a crash.
 #
-from typing import Optional
 import json
 import requests
 import time
 import os
+
 from string import Template
+from typing import Optional
 
 HASURA_ADMIN_SECRET = os.getenv("HASURA_ADMIN_SECRET", "")
 HASURA_ENDPOINT = os.getenv("HASURA_ENDPOINT", "")
@@ -285,14 +286,19 @@ def handler(event, context):
     :param dict event: One or many SQS messages
     :param dict context: Event context
     """
-    for record in event["Records"]:
-        time_str = time.ctime()
 
-        if "body" in record:
-            try:
-                hasura_request(record["body"])
-            except Exception as e:
-                print(f"Critical Failure: {time_str}", str(e))
-                time_str = time.ctime()
-                print("Done executing: ", time_str)
-                exit(1)
+    if event and "Records" in event:
+        for record in event["Records"]:
+            time_str = time.ctime()
+            if "body" in record:
+                try:
+                    hasura_request(record["body"])
+                except Exception as e:
+                    print(f"Start Time: {time_str}", str(e))
+                    time_str = time.ctime()
+                    print("Done executing: ", time_str)
+                    raise_critical_error(
+                        message=f"Could not process record: {str(e)}",
+                        data=record,
+                        exception_type=Exception
+                    )
