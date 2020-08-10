@@ -203,14 +203,14 @@ function Crash(props) {
                 <Row>
                   <Col>
                     Crash Location (ID:{" "}
-                    {(data && data.atd_txdot_crash_locations.length > 0 && (
+                    {(data && data.atd_txdot_crashes.length > 0 && (
                       <>
                         <Link
                           to={`/locations/${
-                            data.atd_txdot_crash_locations[0]["location_id"]
+                            data.atd_txdot_crashes[0]["location_id"]
                           }`}
                         >
-                          {data.atd_txdot_crash_locations[0]["location_id"]}
+                          {data.atd_txdot_crashes[0]["location_id"]}
                         </Link>
                       </>
                     )) ||
