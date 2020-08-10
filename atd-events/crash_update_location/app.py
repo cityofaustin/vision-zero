@@ -212,7 +212,7 @@ def get_cr3_location_id(crash_id: int) -> Optional[str]:
             headers=HEADERS
         )
         return response.json()["data"]["atd_txdot_crashes"][0]["location_id"]
-    except (KeyError, TypeError):
+    except (IndexError, KeyError, TypeError):
         return None
 
 
