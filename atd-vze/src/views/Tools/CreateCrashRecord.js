@@ -23,22 +23,34 @@ import "./CreateCrashRecord.css";
 import UnitsForm from "./UnitsForm";
 
 const CreateCrashRecord = ({ client }) => {
-  const [tempId, setTempId] = useState(1000);
-  const [caseId, setCaseId] = useState("");
-  const [successfulNewRecordId, setSuccessfulNewRecordId] = useState(null);
-  const [crashTime, setCrashTime] = useState(
-    moment(new Date()).format("HH:mm:ss")
-  );
-  const [crashDate, setCrashDate] = useState(
-    moment(new Date()).format("YYYY-MM-DD")
-  );
-  const [feedback, setFeedback] = useState(false);
-  const [primaryAddress, setPrimaryAddress] = useState("");
-  const [secondayAddress, setSecondaryAddress] = useState("");
-
   const unitsInitialState = [
     { unit_desc_id: 1, atd_fatality_count: 0, sus_serious_injry_cnt: 0 },
   ];
+
+  const formInitialState = {
+    tempId: 1000,
+    caseId: "",
+    crashTime: moment(new Date()).format("HH:mm:ss"),
+    crashDate: moment(new Date()).format("YYYY-MM-DD"),
+    primaryAddress: "",
+    secondayAddress: "",
+    units: [
+      { unit_desc_id: 1, atd_fatality_count: 0, sus_serious_injry_cnt: 0 },
+    ],
+  };
+
+  const [tempId, setTempId] = useState(formInitialState.tempId);
+  const [caseId, setCaseId] = useState(formInitialState.caseId);
+  const [successfulNewRecordId, setSuccessfulNewRecordId] = useState(null);
+  const [crashTime, setCrashTime] = useState(formInitialState.crashTime);
+  const [crashDate, setCrashDate] = useState(formInitialState.crashDate);
+  const [feedback, setFeedback] = useState(false);
+  const [primaryAddress, setPrimaryAddress] = useState(
+    formInitialState.primaryAddress
+  );
+  const [secondayAddress, setSecondaryAddress] = useState(
+    formInitialState.secondayAddress
+  );
 
   function unitsReducer(state, action) {
     const { type, payload, unitIndex } = action;
@@ -99,56 +111,87 @@ const CreateCrashRecord = ({ client }) => {
   });
 
   const resetForm = () => {
-    setCaseId("");
-    setCrashTime("");
-    setCrashDate("");
-    setPrimaryAddress("");
-    setSecondaryAddress("");
+    setCaseId(formInitialState.caseId);
+    setCrashTime(formInitialState.crashTime);
+    setCrashDate(formInitialState.crashDate);
+    setPrimaryAddress(formInitialState.primaryAddress);
+    setSecondaryAddress(formInitialState.secondayAddress);
     unitFormDispatch({ type: "reset" });
   };
 
   const handleFormSubmit = e => {
     e.preventDefault();
+    setFeedback(false);
 
-    // Build an array of persons objects formated as a string
-    // so the String can be interpolated into the gql tag syntax.
-    let personObjects = "[";
-    let unitObjects = "[";
+    client
+      .query({
+        query: gql`
+          {
+            atd_txdot_crashes(where: {case_id: {_eq: "${caseId}"}}) {
+              case_id
+            }
+          }
+        `,
+      })
+      .then(res => {
+        if (res.data.atd_txdot_crashes.length > 0) {
+          setFeedback({ title: "Error", message: "Case ID must be unique." });
+        } else {
+          if (isFieldInvalid(caseId)) {
+            setFeedback({
+              title: "Error",
+              message: "Must have a valid Case ID.",
+            });
+            return false;
+          }
 
-    unitFormState.forEach((unit, i) => {
-      let unitNumber = i + 1;
+          // Build an array of persons objects formated as a string
+          // so the String can be interpolated into the gql tag syntax.
+          let personObjects = "[";
+          let unitObjects = "[";
 
-      unitObjects = unitObjects.concat(
-        `{ 
-          crash_id: $crash_id, 
-          unit_nbr: ${unitNumber},  
+          unitFormState.forEach((unit, i) => {
+            let unitNumber = i + 1;
+
+            unitObjects = unitObjects.concat(
+              `{
+          crash_id: $crash_id,
+          unit_nbr: ${unitNumber},
           death_cnt: ${Number(unit.atd_fatality_count)},
           sus_serious_injry_cnt: ${Number(unit.sus_serious_injry_cnt)},
           unit_desc_id: ${Number(unit.unit_desc_id)}
         }`
-      );
+            );
 
-      for (let index = 0; index < Number(unit.atd_fatality_count); index++) {
-        personObjects = personObjects.concat(`{
+            for (
+              let index = 0;
+              index < Number(unit.atd_fatality_count);
+              index++
+            ) {
+              personObjects = personObjects.concat(`{
         crash_id: ${tempId},
         unit_nbr: ${unitNumber},
         prsn_injry_sev_id: 4,
       }`);
-      }
+            }
 
-      for (let index = 0; index < Number(unit.sus_serious_injry_cnt); index++) {
-        personObjects = personObjects.concat(`{
+            for (
+              let index = 0;
+              index < Number(unit.sus_serious_injry_cnt);
+              index++
+            ) {
+              personObjects = personObjects.concat(`{
         crash_id: ${tempId},
         unit_nbr: ${unitNumber},
         prsn_injry_sev_id: 1,
       }`);
-      }
-    });
+            }
+          });
 
-    personObjects = personObjects.concat("]");
-    unitObjects = unitObjects.concat("]");
+          personObjects = personObjects.concat("]");
+          unitObjects = unitObjects.concat("]");
 
-    const INSERT_BULK = gql`
+          const INSERT_BULK = gql`
       mutation bulkInsert(
         $address_confirmed_primary: String
         $address_confirmed_secondary: String
@@ -167,7 +210,7 @@ const CreateCrashRecord = ({ client }) => {
               address_confirmed_secondary: $address_confirmed_secondary
               atd_fatality_count: $atd_fatality_count
               case_id: $case_id
-              city_id: 22  
+              city_id: 22
               crash_date: $crash_date
               crash_fatal_fl: $crash_fatal_fl
               crash_id: $crash_id
@@ -194,44 +237,45 @@ const CreateCrashRecord = ({ client }) => {
         }
       }
     `;
-    const fatalityCountSum = unitFormState.reduce(
-      (a, b) => a + Number(b.atd_fatality_count),
-      0
-    );
-    const susSeriousInjuryCountSum = unitFormState.reduce(
-      (a, b) => a + Number(b.sus_serious_injry_cnt),
-      0
-    );
+          const fatalityCountSum = unitFormState.reduce(
+            (a, b) => a + Number(b.atd_fatality_count),
+            0
+          );
+          const susSeriousInjuryCountSum = unitFormState.reduce(
+            (a, b) => a + Number(b.sus_serious_injry_cnt),
+            0
+          );
 
-    const crashVariables = {
-      atd_fatality_count: fatalityCountSum,
-      address_confirmed_primary: primaryAddress,
-      address_confirmed_secondary: secondayAddress,
-      case_id: caseId,
-      crash_date: crashDate,
-      crash_fatal_fl: fatalityCountSum > 0 ? "Y" : "N",
-      crash_id: tempId,
-      crash_time: crashTime,
-      sus_serious_injry_cnt: susSeriousInjuryCountSum,
-    };
+          const crashVariables = {
+            atd_fatality_count: fatalityCountSum,
+            address_confirmed_primary: primaryAddress,
+            address_confirmed_secondary: secondayAddress,
+            case_id: caseId,
+            crash_date: crashDate,
+            crash_fatal_fl: fatalityCountSum > 0 ? "Y" : "N",
+            crash_id: tempId,
+            crash_time: crashTime,
+            sus_serious_injry_cnt: susSeriousInjuryCountSum,
+          };
 
-    client
-      .mutate({
-        mutation: INSERT_BULK,
-        variables: crashVariables,
-      })
-      .then(res => {
-        console.log(res);
-
-        // Increment the temp ID so the user can resuse the form.
-        setTempId(tempId + 1);
-        setSuccessfulNewRecordId(
-          res.data.insert_atd_txdot_crashes.returning[0].crash_id
-        );
-        resetForm();
-      })
-      .catch(error => {
-        setFeedback({ title: "Error", message: String(error) });
+          client
+            .mutate({
+              mutation: INSERT_BULK,
+              variables: crashVariables,
+            })
+            .then(res => {
+              // Increment the temp ID so the user can resuse the form.
+              setTempId(tempId + 1);
+              setSuccessfulNewRecordId(
+                res.data.insert_atd_txdot_crashes.returning[0].crash_id
+              );
+              resetForm();
+              // unitFormDispatch({ type: "reset" });
+            })
+            .catch(error => {
+              setFeedback({ title: "Error", message: String(error) });
+            });
+        }
       });
   };
 
@@ -278,7 +322,6 @@ const CreateCrashRecord = ({ client }) => {
                 name="hf-case-id"
                 placeholder="Enter Case ID..."
                 value={caseId}
-                invalid={isFieldInvalid(caseId)}
                 onChange={e => setCaseId(e.target.value)}
               />
               {isFieldInvalid(caseId) ? (
@@ -384,7 +427,7 @@ const CreateCrashRecord = ({ client }) => {
           <div className="d-flex flex-row-reverse">
             <Button
               color="primary"
-              size="lg"
+              size="sm"
               onClick={e => {
                 unitFormDispatch({
                   type: "addNewUnit",
@@ -397,12 +440,14 @@ const CreateCrashRecord = ({ client }) => {
           </div>
         </CardBody>
         <CardFooter>
-          <Button type="submit" size="sm" color="primary" className="mr-2">
-            <i className="fa fa-dot-circle-o"></i> Submit
-          </Button>
-          <Button type="reset" size="sm" color="danger">
-            <i className="fa fa-ban"></i> Reset
-          </Button>
+          <div className="d-flex flex-row-reverse">
+            <Button type="submit" size="lg" color="primary">
+              <i className="fa fa-dot-circle-o"></i> Submit
+            </Button>
+            <Button type="reset" size="lg" color="danger" className="mr-3">
+              <i className="fa fa-ban"></i> Reset
+            </Button>
+          </div>
         </CardFooter>
       </Card>
     </Form>
