@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 
 import {
   Card,
@@ -24,21 +24,13 @@ const GET_VEHICLE_DESC_LKP = gql`
 `;
 
 const UnitsForm = ({ units, handleUnitFormChange, client }) => {
-  const { data: lookupValues, error, loading } = useQuery(GET_VEHICLE_DESC_LKP);
-
-  const handleInputUpdate = (e, field, unitIndex) => {
-    handleUnitFormChange(prevState => {
-      let newState = [...prevState];
-      newState[unitIndex][field] = e.target.value;
-      return [...newState];
-    });
-  };
+  const { data: lookupValues, loading } = useQuery(GET_VEHICLE_DESC_LKP);
 
   return (
     <>
       {units.map((unit, i) => {
         return (
-          <Card>
+          <Card key={`unitCard-${i + 1}`}>
             <CardHeader>Unit #{i + 1}</CardHeader>
             <CardBody>
               <FormGroup row>
@@ -52,13 +44,22 @@ const UnitsForm = ({ units, handleUnitFormChange, client }) => {
                     name="unit-type"
                     placeholder="Enter Fatality Count..."
                     value={unit.unit_desc_id}
-                    onChange={e => handleInputUpdate(e, "unit_desc_id", i)}
+                    onChange={e =>
+                      handleUnitFormChange({
+                        type: "unit_desc_id",
+                        payload: e.target.value,
+                        unitIndex: i,
+                      })
+                    }
                   >
                     <option value={0}>Select the unit type...</option>
                     {!loading &&
                       lookupValues.atd_txdot__veh_unit_desc_lkp.map(item => {
                         return (
-                          <option value={item.veh_unit_desc_id}>
+                          <option
+                            value={item.veh_unit_desc_id}
+                            key={`option-${item.veh_unit_desc_id}`}
+                          >
                             {item.veh_unit_desc_desc}
                           </option>
                         );
@@ -71,17 +72,23 @@ const UnitsForm = ({ units, handleUnitFormChange, client }) => {
               </FormGroup>
               <FormGroup row>
                 <Col md="3">
-                  <Label htmlFor="hf-fatality-count">Fatality Count</Label>
+                  <Label htmlFor={`fatality-count-${i + 1}`}>
+                    Fatality Count
+                  </Label>
                 </Col>
                 <Col xs="12" md="9">
                   <Input
                     type="number"
-                    id="hf-fatality-count"
-                    name="hf-fatality-count"
+                    id={`fatality-count-${i + 1}`}
+                    name={`fatality-count-${i + 1}`}
                     placeholder="Enter Fatality Count..."
                     value={unit.atd_fatality_count}
                     onChange={e =>
-                      handleInputUpdate(e, "atd_fatality_count", i)
+                      handleUnitFormChange({
+                        type: "atd_fatality_count",
+                        payload: e.target.value,
+                        unitIndex: i,
+                      })
                     }
                   />
                   <FormText className="help-block">
@@ -91,19 +98,23 @@ const UnitsForm = ({ units, handleUnitFormChange, client }) => {
               </FormGroup>
               <FormGroup row>
                 <Col md="3">
-                  <Label htmlFor="hf-fatality-count">
+                  <Label htmlFor={`sus-injury-cnt-${i + 1}`}>
                     Suspected Serious Injury Count
                   </Label>
                 </Col>
                 <Col xs="12" md="9">
                   <Input
                     type="number"
-                    id="hf-fatality-count"
-                    name="hf-fatality-count"
+                    id={`sus-injury-cnt-${i + 1}`}
+                    name={`sus-injury-cnt-${i + 1}`}
                     placeholder="Enter Suspected Serious Injury Count..."
                     value={unit.sus_serious_injry_cnt}
                     onChange={e =>
-                      handleInputUpdate(e, "sus_serious_injry_cnt", i)
+                      handleUnitFormChange({
+                        type: "sus_serious_injry_cnt",
+                        payload: e.target.value,
+                        unitIndex: i,
+                      })
                     }
                   />
                   <FormText className="help-block">
