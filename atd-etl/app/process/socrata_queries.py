@@ -20,6 +20,10 @@ crashes_query_template = Template(
                 order_by: {crash_id: asc},
                 where: {
                     crash_date: { _lt: "$date_limit" }
+                    _and: [
+                      { crash_date: { _is_null: false }},
+                      { crash_time: { _is_null: false }}
+                    ]
                     _or: [
                         {austin_full_purpose: {_eq: "Y"}},
                         {

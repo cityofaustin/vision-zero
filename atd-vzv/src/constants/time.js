@@ -48,10 +48,7 @@ export const currentYearString = summaryCurrentYearStartDate.slice(0, 4);
 export const prevYearString = summaryLastYearStartDate.slice(0, 4);
 
 // Map time data
-// To decrease initial load time and focus map data to recent crashes, limit to current year of sliding window
-export const mapStartDate = moment()
-  .subtract(MONTHS_AGO, "month")
-  .startOf("year");
+export const mapStartDate = dataStartDate.clone();
 
 export const mapEndDate = dataEndDate.clone();
 

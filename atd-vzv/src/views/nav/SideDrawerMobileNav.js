@@ -33,7 +33,7 @@ const SideDrawerMobileNav = () => {
 
   return (
     <StyledMobileNav>
-      <Nav className="mr-auto" navbar>
+      <Nav className="mr-auto mb-2" navbar>
         {navConfig.map((config, i) => (
           <NavItem key={i}>
             <NavLink tag={A} href={config.url}>

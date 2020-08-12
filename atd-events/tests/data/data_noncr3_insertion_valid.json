@@ -1,0 +1,28 @@
+{
+    "event": {
+        "session_variables": {
+            "x-hasura-role": "admin"
+        },
+        "op": "INSERT",
+        "data": {
+            "old": null,
+            "new": {
+                "case_id": 1000,
+                "location_id": "SCRAMBLED1234"
+            }
+        }
+    },
+    "created_at": "2020-07-06T09:32:56.057539Z",
+    "id": "cf5cbd97-47d5-4680-9f0b-48920cdadd52",
+    "delivery_info": {
+        "max_retries": 0,
+        "current_retry": 0
+    },
+    "trigger": {
+        "name": "update_crash_location_on_lat_lon_change"
+    },
+    "table": {
+        "schema": "public",
+        "name": "atd_txdot_crashes"
+    }
+}

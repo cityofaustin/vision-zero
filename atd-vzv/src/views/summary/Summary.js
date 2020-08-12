@@ -3,6 +3,7 @@ import CrashesByYear from "./CrashesByYear";
 import CrashesByTimeOfDay from "./CrashesByTimeOfDay";
 import PeopleByDemographics from "./PeopleByDemographics";
 import CrashesByMode from "./CrashesByMode";
+import CrashesByPopulation from "./CrashesByPopulation";
 import SummaryView from "./SummaryView";
 import SummaryCard from "./SummaryCard";
 import { colors } from "../../constants/colors";
@@ -20,6 +21,7 @@ const children = [
   { component: <CrashesByMode /> },
   { component: <CrashesByTimeOfDay /> },
   { component: <PeopleByDemographics /> },
+  { component: <CrashesByPopulation /> },
 ];
 
 const Summary = () => {
@@ -38,7 +40,7 @@ const Summary = () => {
 
     /* Style links for devices that show them as plain text */
     a {
-      color: ${colors.infoDark};
+      color: ${colors.viridis2Of6};
       text-decoration: underline;
     }
   `;
@@ -48,7 +50,7 @@ const Summary = () => {
   return (
     <Container fluid>
       {/* Create whitespace on sides of view until mobile */}
-      <Row className="px-xs-0 mx-xs-0 px-lg-3 mx-lg-4 mt-xs-3 mt-lg-4">
+      <Row className="px-xs-0 mx-xs-0 px-lg-3 mx-lg-4 mt-md-3 mt-lg-4">
         <Col className="px-xs-0">
           <StyledSummary>
             <Row className="summary-child">
