@@ -59,11 +59,6 @@ const SummaryWidget = ({
     .widget-header-text > h3 {
       font-size: 1.2em;
     }
-
-    /* Center footer text with widget body text above */
-    .widget-footer-text {
-      /* padding-left: 24px; */
-    }
   `;
 
   const renderIcon = () => (
@@ -92,7 +87,7 @@ const SummaryWidget = ({
       <div className="text-left widget-footer-icon d-flex flex-row align-items-center">
         <FontAwesomeIcon size="2x" icon={icon} color={colors.dark} />
         {!!lastYearTotal && (
-          <span className="text-muted text-wrap widget-footer-text pl-4">
+          <span className="text-muted text-wrap pl-4">
             {`${text} ${numberWithCommas(lastYearTotal)} this time last year`}
           </span>
         )}
