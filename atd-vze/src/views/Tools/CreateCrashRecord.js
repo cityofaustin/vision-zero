@@ -108,7 +108,7 @@ const CreateCrashRecord = ({ client }) => {
       .catch(error => {
         setFeedback({ title: "Error", message: String(error) });
       });
-  });
+  }, [client]);
 
   const resetForm = () => {
     setCaseId(formInitialState.caseId);
