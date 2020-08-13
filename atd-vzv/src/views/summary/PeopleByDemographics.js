@@ -17,6 +17,7 @@ const PeopleByDemographics = () => {
   const [genderData, setGenderData] = useState(null);
   const [ageData, setAgeData] = useState(null);
   const [crashType, setCrashType] = useState([]);
+  const [isDataSet, setIsDataSet] = useState(false);
 
   const url = `${personEndpointUrl}?$query=`;
 
@@ -92,8 +93,6 @@ const PeopleByDemographics = () => {
   };
 
   useEffect(() => {
-    const isDataSet = !!genderData && !!ageData && !!raceData;
-
     !!crashType &&
       !isDataSet &&
       Object.keys(chartConfigs).forEach((config) => {
@@ -103,7 +102,18 @@ const PeopleByDemographics = () => {
           chartConfig.setter(res.data);
         });
       });
-  }, [url, crashType, chartConfigs, genderData, ageData, raceData]);
+
+    setIsDataSet(true);
+  }, [url, crashType, chartConfigs, isDataSet]);
+
+  useEffect(() => {
+    if (isDataSet) {
+      console.log("Data is set!");
+      // Process data
+      // useReducer to update one piece of state that holds data for all graphs
+      // reducerState[chartType][crashType] to set data in chart?
+    }
+  }, [isDataSet]);
 
   // // Fetch data and set in state by years in yearsArray
   // useEffect(() => {
