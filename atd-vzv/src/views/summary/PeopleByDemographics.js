@@ -12,67 +12,17 @@ import InfoPopover from "../../Components/Popover/InfoPopover";
 import { popoverConfig } from "../../Components/Popover/popoverConfig";
 
 const PeopleByDemographics = () => {
+  const [chartType, setChartType] = useState("Race/Ethnicity");
+  const [raceData, setRaceData] = useState(null);
+  const [genderData, setGenderData] = useState(null);
+  const [ageData, setAgeData] = useState(null);
+  const [crashType, setCrashType] = useState([]);
+
   const url = `${personEndpointUrl}?$query=`;
-  const chartTypes = ["Race/Ethnicity", "Age", "Gender"];
 
-  const ageCategories = [
-    { label: "Under 18", categoryValue: 1 },
-    {
-      label: "18 to 44",
-      categoryValue: 2,
-    },
-    {
-      label: "45 to 64",
-      categoryValue: 3,
-    },
-    {
-      label: "65 and older",
-      categoryValue: 4,
-    },
-    {
-      label: "Unknown",
-      categoryValue: 0,
-    },
-  ];
-
-  const sexCategories = [
-    {
-      label: "Male",
-      categoryValue: 1,
-    },
-    {
-      label: "Female",
-      categoryValue: 2,
-    },
-    {
-      label: "Unknown",
-      categoryValue: 0,
-    },
-  ];
-
-  const raceCategories = [
-    {
-      label: "White",
-      categoryValue: 1,
-    },
-    {
-      label: "Hispanic",
-      categoryValue: 2,
-    },
-    { label: "Black", categoryValue: 3 },
-    {
-      label: "Asian",
-      categoryValue: 4,
-    },
-    {
-      label: "Other or unknown",
-      categoryValue: 5,
-    },
-    {
-      label: "American Indian or Alaska Native",
-      categoryValue: 6,
-    },
-  ];
+  const dateCondition = `crash_date BETWEEN '${dataStartDate.format(
+    "YYYY-MM-DD"
+  )}' and '${dataEndDate.format("YYYY-MM-DD")}'`;
 
   const chartColors = [
     colors.viridis1Of6Highest,
@@ -83,43 +33,77 @@ const PeopleByDemographics = () => {
     colors.viridis6Of6Lowest,
   ];
 
-  const ageChartColors = [
-    colors.demoAge1of8,
-    colors.demoAge2of8,
-    colors.demoAge3of8,
-    colors.demoAge4of8,
-    colors.demoAge5of8,
-    colors.demoAge6of8,
-    colors.demoAge7of8,
-    colors.demoAge8of8,
-  ];
-
-  const [chartType, setChartType] = useState("Race/Ethnicity");
-  // const [chartData, setChartData] = useState(null); // {yearInt: [{record}, {record}, ...]}
-  const [crashType, setCrashType] = useState([]);
+  const chartConfigs = {
+    "Race/Ethnicity": {
+      categories: {
+        White: 1,
+        Hispanic: 2,
+        Black: 3,
+        Asian: 4,
+        "Other or unknown": 5,
+        "American Indian or Alaska Native": 6,
+      },
+      query: `SELECT date_extract_y(crash_date) as year, COUNT(*) as total, prsn_ethnicity_id, prsn_injry_sev_id
+              WHERE ${dateCondition}
+              GROUP BY year, prsn_ethnicity_id, prsn_injry_sev_id
+              ORDER BY year`,
+      colors: chartColors,
+      setter: setRaceData,
+    },
+    Age: {
+      categories: {
+        "0 to 15": [0, 15],
+        "16 to 25": [16, 25],
+        "26 to 35": [26, 35],
+        "36 to 45": [36, 45],
+        "46 to 55": [46, 55],
+        "55 to 64": [55, 64],
+        "65 or greater": [65, 200],
+      },
+      query: `SELECT date_extract_y(crash_date) as year, COUNT(*) as total, prsn_age, prsn_injry_sev_id
+              WHERE ${dateCondition}
+              GROUP BY year, prsn_age, prsn_injry_sev_id
+              ORDER BY year`,
+      colors: [
+        colors.demoAge1of8,
+        colors.demoAge2of8,
+        colors.demoAge3of8,
+        colors.demoAge4of8,
+        colors.demoAge5of8,
+        colors.demoAge6of8,
+        colors.demoAge7of8,
+        colors.demoAge8of8,
+      ],
+      setter: setAgeData,
+    },
+    Gender: {
+      categories: {
+        Male: 1,
+        Female: 2,
+        Unknown: 0,
+      },
+      query: `SELECT date_extract_y(crash_date) as year, COUNT(*) as total, prsn_gndr_id, prsn_injry_sev_id
+              WHERE ${dateCondition}
+              GROUP BY year, prsn_gndr_id, prsn_injry_sev_id
+              ORDER BY year`,
+      colors: chartColors,
+      setter: setGenderData,
+    },
+  };
 
   useEffect(() => {
-    const dateCondition = `crash_date BETWEEN '${dataStartDate.format(
-      "YYYY-MM-DD"
-    )}' and '${dataEndDate.format("YYYY-MM-DD")}'`;
-    const queryGroupAndOrder = `GROUP BY year, prsn_ethnicity_id, prsn_injry_sev_id ORDER BY year`;
-
-    const queries = {
-      fatalities: `SELECT date_extract_y(crash_date) as year, sum(death_cnt) as total 
-                   WHERE death_cnt > 0 AND ${dateCondition} ${queryGroupAndOrder}`,
-      fatalitiesAndSeriousInjuries: `SELECT date_extract_y(crash_date) as year, COUNT(*) as total, prsn_ethnicity_id, prsn_injry_sev_id
-                                     WHERE (prsn_injry_sev_id = '4' OR prsn_injry_sev_id = '1') AND ${dateCondition} ${queryGroupAndOrder}`,
-      seriousInjuries: `SELECT date_extract_y(crash_date) as year, sum(sus_serious_injry_cnt) as total 
-                        WHERE sus_serious_injry_cnt > 0 AND ${dateCondition} ${queryGroupAndOrder}`,
-    };
+    const isDataSet = !!genderData && !!ageData && !!raceData;
 
     !!crashType &&
-      axios
-        .get(url + encodeURIComponent(queries[crashType.name]))
-        .then((res) => {
-          // setChartData(res.data);
+      !isDataSet &&
+      Object.keys(chartConfigs).forEach((config) => {
+        const chartConfig = chartConfigs[config];
+
+        axios.get(url + encodeURIComponent(chartConfig.query)).then((res) => {
+          chartConfig.setter(res.data);
         });
-  }, [url, crashType]);
+      });
+  }, [url, crashType, chartConfigs, genderData, ageData, raceData]);
 
   // // Fetch data and set in state by years in yearsArray
   // useEffect(() => {
@@ -303,7 +287,7 @@ const PeopleByDemographics = () => {
         </Col>
       </Row>
       <ChartTypeSelector
-        chartTypes={chartTypes}
+        chartTypes={Object.keys(chartConfigs)}
         chartType={chartType}
         setChartType={setChartType}
       />
