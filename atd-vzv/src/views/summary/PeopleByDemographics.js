@@ -6,12 +6,13 @@ import { Container, Row, Col } from "reactstrap";
 
 import CrashTypeSelector from "./Components/CrashTypeSelector";
 import { colors } from "../../constants/colors";
-import { dataEndDate, yearsArray } from "../../constants/time";
+import { dataEndDate, yearsArray, dataStartDate } from "../../constants/time";
 import { personEndpointUrl } from "./queries/socrataQueries";
 import InfoPopover from "../../Components/Popover/InfoPopover";
 import { popoverConfig } from "../../Components/Popover/popoverConfig";
 
 const PeopleByDemographics = () => {
+  const url = `${personEndpointUrl}?$query=`;
   const chartTypes = ["Race/Ethnicity", "Age", "Gender"];
 
   const ageCategories = [
@@ -82,170 +83,204 @@ const PeopleByDemographics = () => {
     colors.viridis6Of6Lowest,
   ];
 
+  const ageChartColors = [
+    colors.demoAge1of8,
+    colors.demoAge2of8,
+    colors.demoAge3of8,
+    colors.demoAge4of8,
+    colors.demoAge5of8,
+    colors.demoAge6of8,
+    colors.demoAge7of8,
+    colors.demoAge8of8,
+  ];
+
   const [chartType, setChartType] = useState("Race/Ethnicity");
-  const [chartData, setChartData] = useState(null); // {yearInt: [{record}, {record}, ...]}
+  // const [chartData, setChartData] = useState(null); // {yearInt: [{record}, {record}, ...]}
   const [crashType, setCrashType] = useState([]);
 
-  // Fetch data and set in state by years in yearsArray
   useEffect(() => {
-    // Wait for crashType to be passed up from setCrashType component
-    if (crashType.queryStringPerson) {
-      const getChartData = async () => {
-        let newData = {};
-        // Use Promise.all to let all requests resolve before setting chart data by year
-        await Promise.all(
-          yearsArray().map(async (year) => {
-            // If getting data for current year (only including years past January),
-            // set end of query to last day of previous month,
-            // else if getting data for previous years, set end of query to last day of year
-            let endDate =
-              year.toString() === dataEndDate.format("YYYY")
-                ? `${dataEndDate.format("YYYY-MM-DD")}T23:59:59`
-                : `${year}-12-31T23:59:59`;
-            let url = `${personEndpointUrl}?$where=${crashType.queryStringPerson} AND crash_date between '${year}-01-01T00:00:00' and '${endDate}'`;
-            await axios.get(url).then((res) => {
-              newData = { ...newData, ...{ [year]: res.data } };
-            });
-            return null;
-          })
-        );
-        setChartData(newData);
-      };
-      getChartData();
-    }
-  }, [crashType]);
+    const dateCondition = `crash_date BETWEEN '${dataStartDate.format(
+      "YYYY-MM-DD"
+    )}' and '${dataEndDate.format("YYYY-MM-DD")}'`;
+    const queryGroupAndOrder = `GROUP BY year, prsn_ethnicity_id, prsn_injry_sev_id ORDER BY year`;
 
-  const createChartLabels = () => yearsArray().map((year) => `${year}`);
+    const queries = {
+      fatalities: `SELECT date_extract_y(crash_date) as year, sum(death_cnt) as total 
+                   WHERE death_cnt > 0 AND ${dateCondition} ${queryGroupAndOrder}`,
+      fatalitiesAndSeriousInjuries: `SELECT date_extract_y(crash_date) as year, COUNT(*) as total, prsn_ethnicity_id, prsn_injry_sev_id
+                                     WHERE (prsn_injry_sev_id = '4' OR prsn_injry_sev_id = '1') AND ${dateCondition} ${queryGroupAndOrder}`,
+      seriousInjuries: `SELECT date_extract_y(crash_date) as year, sum(sus_serious_injry_cnt) as total 
+                        WHERE sus_serious_injry_cnt > 0 AND ${dateCondition} ${queryGroupAndOrder}`,
+    };
 
-  // Tabulate crashes by demographics in data
-  const getData = (categoryValue, isWholeNumber) =>
-    yearsArray().map((year) => {
-      let categoryTotal = chartData[year].reduce((accumulator, record) => {
-        switch (chartType) {
-          case "Age":
-            switch (categoryValue) {
-              // If the person age value is missing, increment the count for
-              // category value 0 ("Unknown") in the chart
-              case 0:
-                !record.prsn_age && accumulator++;
-                break;
-              // For all other cases, if the person age value falls within the category value range,
-              // increment the count for the associated category
-              case 1:
-                record.prsn_age < 18 && accumulator++;
-                break;
-              case 2:
-                record.prsn_age >= 18 && record.prsn_age <= 44 && accumulator++;
-                break;
-              case 3:
-                record.prsn_age > 44 && record.prsn_age <= 64 && accumulator++;
-                break;
-              case 4:
-                record.prsn_age > 64 && accumulator++;
-                break;
-              default:
-                break;
-            }
-            break;
-          case "Gender":
-            switch (categoryValue) {
-              // If the gender id is missing or 0 ("Unknown"), increment the count for
-              // category value 0 ("Unknown") in the chart
-              case 0:
-                (!record.prsn_gndr_id || parseInt(record.prsn_gndr_id) === 0) &&
-                  accumulator++;
-                break;
-              // For all other cases, if the gender id value matches the category value,
-              // increment the count for the associated category
-              default:
-                record.prsn_gndr_id === `${categoryValue}` && accumulator++;
-                break;
-            }
-            break;
-          case "Race/Ethnicity":
-            switch (categoryValue) {
-              // If the ethnicity id is either missing, 5 ("Other") or 0 ("Unknown"),
-              // increment the count for category value 5 ("Other or unknown") in the chart
-              case 5:
-                (!record.prsn_ethnicity_id ||
-                  parseInt(record.prsn_ethnicity_id) === 5 ||
-                  parseInt(record.prsn_ethnicity_id) === 0) &&
-                  accumulator++;
-                break;
-              // For all other cases, if the ethnicity id value matches the category value,
-              // increment the count for the associated category
-              default:
-                record.prsn_ethnicity_id === `${categoryValue}` &&
-                  accumulator++;
-                break;
-            }
-            break;
-          default:
-            break;
-        }
-        return accumulator;
-      }, 0);
-      const overallTotal = chartData[year].length;
-      const percentage = (categoryTotal / overallTotal) * 100;
-      const wholeNumbers = {
-        categoryTotal: categoryTotal,
-        overallTotal: overallTotal,
-      };
-      // If isWholeNumber is true, return the wholeNumbers Object for display in tooltips,
-      // else return percentage for chartJS to render the chart
-      const data = isWholeNumber ? wholeNumbers : percentage;
-      return data;
-    });
+    !!crashType &&
+      axios
+        .get(url + encodeURIComponent(queries[crashType.name]))
+        .then((res) => {
+          // setChartData(res.data);
+        });
+  }, [url, crashType]);
 
-  // Sort category order in stack and apply colors by averaging total demographic stats across all years in chart
-  const sortAndColorData = (data) => {
-    const averageCrashes = (dataArray) =>
-      dataArray.reduce((a, b) => a + b) / dataArray.length;
-    const dataSorted = [...data].sort(
-      (a, b) => averageCrashes(b.data) - averageCrashes(a.data)
-    );
-    // If age is selected, keep original sorting to make chart more readable
-    // For other categories, determine order of category (highest to lowest proportion)
-    data = chartType === "Age" ? data : dataSorted;
-    data.forEach((category, i) => {
-      const color = chartColors[i];
-      category.backgroundColor = color;
-      category.borderColor = color;
-      category.hoverBackgroundColor = color;
-      category.hoverBorderColor = color;
-    });
-    return data;
-  };
+  // // Fetch data and set in state by years in yearsArray
+  // useEffect(() => {
+  //   // Wait for crashType to be passed up from setCrashType component
+  //   if (crashType.queryStringPerson) {
+  //     const getChartData = async () => {
+  //       let newData = {};
+  //       // Use Promise.all to let all requests resolve before setting chart data by year
+  //       await Promise.all(
+  //         yearsArray().map(async (year) => {
+  //           // If getting data for current year (only including years past January),
+  //           // set end of query to last day of previous month,
+  //           // else if getting data for previous years, set end of query to last day of year
+  //           let endDate =
+  //             year.toString() === dataEndDate.format("YYYY")
+  //               ? `${dataEndDate.format("YYYY-MM-DD")}T23:59:59`
+  //               : `${year}-12-31T23:59:59`;
+  //           let url = `${personEndpointUrl}?$where=${crashType.queryStringPerson} AND crash_date between '${year}-01-01T00:00:00' and '${endDate}'`;
+  //           await axios.get(url).then((res) => {
+  //             newData = { ...newData, ...{ [year]: res.data } };
+  //           });
+  //           return null;
+  //         })
+  //       );
+  //       setChartData(newData);
+  //     };
+  //     getChartData();
+  //   }
+  // }, [crashType]);
 
-  // Create dataset for each demographic type
-  const createTypeDatasets = () => {
-    let categories;
-    switch (chartType) {
-      case "Age":
-        categories = ageCategories;
-        break;
-      case "Gender":
-        categories = sexCategories;
-        break;
-      case "Race/Ethnicity":
-        categories = raceCategories;
-        break;
-      default:
-        break;
-    }
-    const data = categories.map((category) => ({
-      borderWidth: 2,
-      label: category.label,
-      data: getData(category.categoryValue, false),
-      wholeNumbers: getData(category.categoryValue, true),
-    }));
-    return sortAndColorData(data);
-  };
+  // const createChartLabels = () => yearsArray().map((year) => `${year}`);
 
-  const data = {
-    labels: createChartLabels(),
-    datasets: !!chartData && createTypeDatasets(),
-  };
+  // // Tabulate crashes by demographics in data
+  // const getData = (categoryValue, isWholeNumber) =>
+  //   yearsArray().map((year) => {
+  //     let categoryTotal = chartData[year].reduce((accumulator, record) => {
+  //       switch (chartType) {
+  //         case "Age":
+  //           switch (categoryValue) {
+  //             // If the person age value is missing, increment the count for
+  //             // category value 0 ("Unknown") in the chart
+  //             case 0:
+  //               !record.prsn_age && accumulator++;
+  //               break;
+  //             // For all other cases, if the person age value falls within the category value range,
+  //             // increment the count for the associated category
+  //             case 1:
+  //               record.prsn_age < 18 && accumulator++;
+  //               break;
+  //             case 2:
+  //               record.prsn_age >= 18 && record.prsn_age <= 44 && accumulator++;
+  //               break;
+  //             case 3:
+  //               record.prsn_age > 44 && record.prsn_age <= 64 && accumulator++;
+  //               break;
+  //             case 4:
+  //               record.prsn_age > 64 && accumulator++;
+  //               break;
+  //             default:
+  //               break;
+  //           }
+  //           break;
+  //         case "Gender":
+  //           switch (categoryValue) {
+  //             // If the gender id is missing or 0 ("Unknown"), increment the count for
+  //             // category value 0 ("Unknown") in the chart
+  //             case 0:
+  //               (!record.prsn_gndr_id || parseInt(record.prsn_gndr_id) === 0) &&
+  //                 accumulator++;
+  //               break;
+  //             // For all other cases, if the gender id value matches the category value,
+  //             // increment the count for the associated category
+  //             default:
+  //               record.prsn_gndr_id === `${categoryValue}` && accumulator++;
+  //               break;
+  //           }
+  //           break;
+  //         case "Race/Ethnicity":
+  //           switch (categoryValue) {
+  //             // If the ethnicity id is either missing, 5 ("Other") or 0 ("Unknown"),
+  //             // increment the count for category value 5 ("Other or unknown") in the chart
+  //             case 5:
+  //               (!record.prsn_ethnicity_id ||
+  //                 parseInt(record.prsn_ethnicity_id) === 5 ||
+  //                 parseInt(record.prsn_ethnicity_id) === 0) &&
+  //                 accumulator++;
+  //               break;
+  //             // For all other cases, if the ethnicity id value matches the category value,
+  //             // increment the count for the associated category
+  //             default:
+  //               record.prsn_ethnicity_id === `${categoryValue}` &&
+  //                 accumulator++;
+  //               break;
+  //           }
+  //           break;
+  //         default:
+  //           break;
+  //       }
+  //       return accumulator;
+  //     }, 0);
+  //     const overallTotal = chartData[year].length;
+  //     const percentage = (categoryTotal / overallTotal) * 100;
+  //     const wholeNumbers = {
+  //       categoryTotal: categoryTotal,
+  //       overallTotal: overallTotal,
+  //     };
+  //     // If isWholeNumber is true, return the wholeNumbers Object for display in tooltips,
+  //     // else return percentage for chartJS to render the chart
+  //     const data = isWholeNumber ? wholeNumbers : percentage;
+  //     return data;
+  //   });
+
+  // // Sort category order in stack and apply colors by averaging total demographic stats across all years in chart
+  // const sortAndColorData = (data) => {
+  //   const averageCrashes = (dataArray) =>
+  //     dataArray.reduce((a, b) => a + b) / dataArray.length;
+  //   const dataSorted = [...data].sort(
+  //     (a, b) => averageCrashes(b.data) - averageCrashes(a.data)
+  //   );
+  //   // If age is selected, keep original sorting to make chart more readable
+  //   // For other categories, determine order of category (highest to lowest proportion)
+  //   data = chartType === "Age" ? data : dataSorted;
+  //   data.forEach((category, i) => {
+  //     const color = chartColors[i];
+  //     category.backgroundColor = color;
+  //     category.borderColor = color;
+  //     category.hoverBackgroundColor = color;
+  //     category.hoverBorderColor = color;
+  //   });
+  //   return data;
+  // };
+
+  // // Create dataset for each demographic type
+  // const createTypeDatasets = () => {
+  //   let categories;
+  //   switch (chartType) {
+  //     case "Age":
+  //       categories = ageCategories;
+  //       break;
+  //     case "Gender":
+  //       categories = sexCategories;
+  //       break;
+  //     case "Race/Ethnicity":
+  //       categories = raceCategories;
+  //       break;
+  //     default:
+  //       break;
+  //   }
+  //   const data = categories.map((category) => ({
+  //     borderWidth: 2,
+  //     label: category.label,
+  //     data: getData(category.categoryValue, false),
+  //     wholeNumbers: getData(category.categoryValue, true),
+  //   }));
+  //   return sortAndColorData(data);
+  // };
+
+  // const data = {
+  //   labels: createChartLabels(),
+  //   datasets: !!chartData && createTypeDatasets(),
+  // };
 
   return (
     <Container className="m-0 p-0">
@@ -276,7 +311,7 @@ const PeopleByDemographics = () => {
         <Col>
           <HorizontalBar
             redraw
-            data={data}
+            data={null}
             height={null}
             width={null}
             options={{
