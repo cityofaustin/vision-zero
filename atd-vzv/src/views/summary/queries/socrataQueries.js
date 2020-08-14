@@ -1,6 +1,6 @@
 import { isDevelopment } from "../../../constants/nav";
 
-const crashDatasetID = isDevelopment ? "3aut-fhzp" : "y2wy-tgr5";
+const crashDatasetID = isDevelopment ? "y2wy-tgr5" : "y2wy-tgr5";
 const personDatasetID = isDevelopment ? "xecs-rpy9" : "xecs-rpy9";
 
 export const crashEndpointUrl = `https://data.austintexas.gov/resource/${crashDatasetID}.json`;

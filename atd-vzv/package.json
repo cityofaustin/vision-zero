@@ -25,7 +25,6 @@
     "events-polyfill": "^2.1.2",
     "hookrouter": "^1.2.3",
     "lodash.clonedeep": "^4.5.0",
-    "lodash.invert": "^4.3.0",
     "moment": "^2.24.0",
     "patch-package": "^6.2.2",
     "react": "^16.10.2",

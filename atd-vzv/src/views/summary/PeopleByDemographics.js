@@ -10,7 +10,6 @@ import { dataEndDate, yearsArray, dataStartDate } from "../../constants/time";
 import { personEndpointUrl } from "./queries/socrataQueries";
 import InfoPopover from "../../Components/Popover/InfoPopover";
 import { popoverConfig } from "../../Components/Popover/popoverConfig";
-import invert from "lodash.invert";
 
 const PeopleByDemographics = () => {
   const [chartType, setChartType] = useState("Race/Ethnicity");
@@ -56,9 +55,8 @@ const PeopleByDemographics = () => {
         Asian: "4",
         "Other or unknown": "5",
         "American Indian or Alaska Native": "6",
-        Unknown: "0",
-        Missing: undefined,
       },
+      categoryForExceptions: "5",
       query: `SELECT date_extract_y(crash_date) as year, COUNT(*) as total, prsn_ethnicity_id, prsn_injry_sev_id
               WHERE ${dateCondition}
               GROUP BY year, prsn_ethnicity_id, prsn_injry_sev_id
@@ -102,6 +100,7 @@ const PeopleByDemographics = () => {
         Female: "2",
         Unknown: "0",
       },
+      categoryForExceptions: "0",
       query: `SELECT date_extract_y(crash_date) as year, COUNT(*) as total, prsn_gndr_id, prsn_injry_sev_id
               WHERE ${dateCondition}
               GROUP BY year, prsn_gndr_id, prsn_injry_sev_id
@@ -110,6 +109,7 @@ const PeopleByDemographics = () => {
     },
   };
 
+  // Request data for each visualization
   useEffect(() => {
     !!crashType &&
       !areRequestsSent &&
@@ -157,18 +157,17 @@ const PeopleByDemographics = () => {
 
       const formattedTypes = {};
       const categoriesMap = chartConfigs[dataKey].categories;
-      const categoryLabels = Object.keys(categoriesMap);
       const categoryValues = Object.values(categoriesMap);
       const categoryKey = chartConfigs[dataKey].categoryKey;
 
       if (isTarget) {
-        const invertedMap = invert(categoriesMap);
-
         Object.entries(data).forEach(([typeLabel, typeData]) => {
           let formatted = {};
           yearsArray().forEach((year) => {
-            const yearData = {};
-            categoryLabels.forEach((label) => (yearData[label] = 0));
+            const yearData = [];
+            for (let i = 0; i < categoryValues.length; i++) {
+              yearData.push(0);
+            }
 
             formatted[year] = yearData;
           });
@@ -176,13 +175,18 @@ const PeopleByDemographics = () => {
           for (let i = 0; i < typeData.length; i++) {
             const record = typeData[i];
             const categoryValue = record[categoryKey];
-            const category = invertedMap[categoryValue];
+
+            const categoryIndex = categoryValues.indexOf(record[categoryKey]);
+            const catchCategoryIndex = categoryValues.indexOf(
+              chartConfigs[dataKey].categoryForExceptions
+            );
             const year = record.year;
 
-            if (categoryValue === undefined) {
-              console.log(record);
+            // Divert undefined categories or missing values to catchCategory
+            if (categoryValue === undefined || categoryIndex === -1) {
+              formatted[year][catchCategoryIndex] += parseInt(record.total);
             } else {
-              formatted[year][category] += parseInt(record.total);
+              formatted[year][categoryIndex] += parseInt(record.total);
             }
           }
 
@@ -190,6 +194,18 @@ const PeopleByDemographics = () => {
         });
       }
 
+      // if (isRange) {
+      //   const categoriesMap = chartConfigs[dataKey].categories;
+      //   const ranges = Object.values(categoriesMap);
+
+      //   ranges.forEach((range, i) => {
+      //     const data = [];
+      //     let count = 0;
+
+      //   });
+      // }
+      // TODO: turn each year into arrays ordered in VZV order
+      // TODO: handle sorting ranges for age
       console.log(formattedTypes);
     };
 
