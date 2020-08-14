@@ -45,8 +45,7 @@ query_configs = [
                 "atd_fatality_count": "death_cnt",
             },
         },
-        # "dataset_uid": "3aut-fhzp"  # TEST
-        "dataset_uid": "y2wy-tgr5",  # PROD
+        "dataset_uid": ATD_ETL_CONFIG["SOCRATA_DATASET_CRASHES"]
     },
     {
         "table": "person",
@@ -57,8 +56,7 @@ query_configs = [
             "columns_to_rename": {"primaryperson_id": "person_id"},
             "prefixes": {"person_id": "P", "primaryperson_id": "PP",},
         },
-        # "dataset_uid": "v3x4-fjgm"  # TEST
-        "dataset_uid": "xecs-rpy9",  # PROD
+        "dataset_uid": ATD_ETL_CONFIG["SOCRATA_DATASET_PERSONS"]
     },
 ]
 
