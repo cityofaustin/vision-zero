@@ -121,22 +121,44 @@ const PeopleByDemographics = () => {
   }, [url, crashType, chartConfigs, areRequestsSent]);
 
   useEffect(() => {
+    const sortByType = (data) => {
+      const typeDict = { injury: "1", fatal: "4" };
+
+      const sorted = { injury: [], fatal: [], all: [] };
+
+      for (let i = 0; i < data.length; i++) {
+        const record = data[i];
+
+        if (record.prsn_injry_sev_id === typeDict.fatal) {
+          sorted.fatal.push(record);
+        }
+
+        if (record.prsn_injry_sev_id === typeDict.injury) {
+          sorted.injury.push(record);
+        }
+
+        sorted.all.push(record);
+      }
+
+      return sorted;
+    };
+
     const isAllDataSet =
+      demoData !== null &&
       Object.keys(chartConfigs).length === Object.keys(demoData).length;
 
     if (isAllDataSet) {
       // Process data
+      Object.entries(demoData).forEach(([dataKey, data]) => {
+        const sorted = sortByType(data);
+        console.log(sorted);
+      });
       // useReducer to update one piece of state that holds data for all graphs
       // reducerState[chartType][crashType] to set data in chart?
     }
   }, [chartType, demoData, chartConfigs]);
 
-  const sortByType = (data) => {
-    // sort records by injury/fatal/all
-    // set sub objects: fatal, serious, all
-  };
-
-  const formatChartData = (data) => {};
+  // const formatChartData = (data) => { dispatch({ type: "setData", payload: { [dataKey]: formattedObject } });};
 
   // // Fetch data and set in state by years in yearsArray
   // useEffect(() => {
