@@ -10,6 +10,7 @@ import { dataEndDate, yearsArray, dataStartDate } from "../../constants/time";
 import { personEndpointUrl } from "./queries/socrataQueries";
 import InfoPopover from "../../Components/Popover/InfoPopover";
 import { popoverConfig } from "../../Components/Popover/popoverConfig";
+import invert from "lodash.invert";
 
 const PeopleByDemographics = () => {
   const [chartType, setChartType] = useState("Race/Ethnicity");
@@ -44,23 +45,30 @@ const PeopleByDemographics = () => {
   ];
 
   const chartConfigs = {
-    "Race/Ethnicity": {
+    raceData: {
+      label: "Race/Ethnicity",
+      categoryKey: "prsn_ethnicity_id",
+      categoryType: "target",
       categories: {
-        White: 1,
-        Hispanic: 2,
-        Black: 3,
-        Asian: 4,
-        "Other or unknown": 5,
-        "American Indian or Alaska Native": 6,
+        White: "1",
+        Hispanic: "2",
+        Black: "3",
+        Asian: "4",
+        "Other or unknown": "5",
+        "American Indian or Alaska Native": "6",
+        Unknown: "0",
+        Missing: undefined,
       },
       query: `SELECT date_extract_y(crash_date) as year, COUNT(*) as total, prsn_ethnicity_id, prsn_injry_sev_id
               WHERE ${dateCondition}
               GROUP BY year, prsn_ethnicity_id, prsn_injry_sev_id
               ORDER BY year`,
       colors: chartColors,
-      dataKey: "raceData",
     },
-    Age: {
+    ageData: {
+      label: "Age",
+      categoryKey: "prsn_age",
+      categoryType: "range",
       categories: {
         "0 to 15": [0, 15],
         "16 to 25": [16, 25],
@@ -84,35 +92,34 @@ const PeopleByDemographics = () => {
         colors.demoAge7of8,
         colors.demoAge8of8,
       ],
-      dataKey: "ageData",
     },
-    Gender: {
+    genderData: {
+      label: "Gender",
+      categoryKey: "prsn_gndr_id",
+      categoryType: "target",
       categories: {
-        Male: 1,
-        Female: 2,
-        Unknown: 0,
+        Male: "1",
+        Female: "2",
+        Unknown: "0",
       },
       query: `SELECT date_extract_y(crash_date) as year, COUNT(*) as total, prsn_gndr_id, prsn_injry_sev_id
               WHERE ${dateCondition}
               GROUP BY year, prsn_gndr_id, prsn_injry_sev_id
               ORDER BY year`,
       colors: chartColors,
-      dataKey: "genderData",
     },
   };
 
   useEffect(() => {
     !!crashType &&
       !areRequestsSent &&
-      Object.keys(chartConfigs).forEach((config) => {
-        const chartConfig = chartConfigs[config];
-
-        axios.get(url + encodeURIComponent(chartConfig.query)).then((res) => {
+      Object.entries(chartConfigs).forEach(([dataKey, config]) => {
+        axios.get(url + encodeURIComponent(config.query)).then((res) => {
           const records = res.data;
 
           dispatch({
             type: "setData",
-            payload: { [chartConfig.dataKey]: records },
+            payload: { [dataKey]: records },
           });
         });
       });
@@ -122,18 +129,18 @@ const PeopleByDemographics = () => {
 
   useEffect(() => {
     const sortByType = (data) => {
-      const typeDict = { injury: "1", fatal: "4" };
+      const typeMap = { injury: "1", fatal: "4" };
 
-      const sorted = { injury: [], fatal: [], all: [] };
+      let sorted = { injury: [], fatal: [], all: [] };
 
       for (let i = 0; i < data.length; i++) {
         const record = data[i];
 
-        if (record.prsn_injry_sev_id === typeDict.fatal) {
+        if (record.prsn_injry_sev_id === typeMap.fatal) {
           sorted.fatal.push(record);
         }
 
-        if (record.prsn_injry_sev_id === typeDict.injury) {
+        if (record.prsn_injry_sev_id === typeMap.injury) {
           sorted.injury.push(record);
         }
 
@@ -141,6 +148,49 @@ const PeopleByDemographics = () => {
       }
 
       return sorted;
+    };
+
+    const formatChartData = (dataKey, data) => {
+      // dispatch({ type: "setData", payload: { [dataKey]: formattedObject } })
+      const isTarget = chartConfigs[dataKey].categoryType === "target";
+      const isRange = chartConfigs[dataKey].categoryType === "range";
+
+      const formattedTypes = {};
+      const categoriesMap = chartConfigs[dataKey].categories;
+      const categoryLabels = Object.keys(categoriesMap);
+      const categoryValues = Object.values(categoriesMap);
+      const categoryKey = chartConfigs[dataKey].categoryKey;
+
+      if (isTarget) {
+        const invertedMap = invert(categoriesMap);
+
+        Object.entries(data).forEach(([typeLabel, typeData]) => {
+          let formatted = {};
+          yearsArray().forEach((year) => {
+            const yearData = {};
+            categoryLabels.forEach((label) => (yearData[label] = 0));
+
+            formatted[year] = yearData;
+          });
+
+          for (let i = 0; i < typeData.length; i++) {
+            const record = typeData[i];
+            const categoryValue = record[categoryKey];
+            const category = invertedMap[categoryValue];
+            const year = record.year;
+
+            if (categoryValue === undefined) {
+              console.log(record);
+            } else {
+              formatted[year][category] += parseInt(record.total);
+            }
+          }
+
+          formattedTypes[typeLabel] = formatted;
+        });
+      }
+
+      console.log(formattedTypes);
     };
 
     const isAllDataSet =
@@ -151,7 +201,8 @@ const PeopleByDemographics = () => {
       // Process data
       Object.entries(demoData).forEach(([dataKey, data]) => {
         const sorted = sortByType(data);
-        console.log(sorted);
+        // console.log(sorted, dataKey);
+        formatChartData(dataKey, sorted);
       });
       // useReducer to update one piece of state that holds data for all graphs
       // reducerState[chartType][crashType] to set data in chart?
@@ -342,7 +393,7 @@ const PeopleByDemographics = () => {
         </Col>
       </Row>
       <ChartTypeSelector
-        chartTypes={Object.keys(chartConfigs)}
+        chartTypes={Object.values(chartConfigs).map((value) => value.label)}
         chartType={chartType}
         setChartType={setChartType}
       />
