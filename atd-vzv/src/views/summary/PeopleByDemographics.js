@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useReducer } from "react";
 import axios from "axios";
 import { HorizontalBar } from "react-chartjs-2";
 import ChartTypeSelector from "./Components/ChartTypeSelector";
@@ -13,11 +13,20 @@ import { popoverConfig } from "../../Components/Popover/popoverConfig";
 
 const PeopleByDemographics = () => {
   const [chartType, setChartType] = useState("Race/Ethnicity");
-  const [raceData, setRaceData] = useState(null);
-  const [genderData, setGenderData] = useState(null);
-  const [ageData, setAgeData] = useState(null);
   const [crashType, setCrashType] = useState([]);
-  const [isDataSet, setIsDataSet] = useState(false);
+  const [areRequestsSent, setAreRequestsSent] = useState(false);
+  const [demoData, dispatch] = useReducer(demoDataReducer, {});
+
+  function demoDataReducer(demoData, action) {
+    const { type, payload } = action;
+
+    switch (type) {
+      case "setData":
+        return { ...demoData, ...payload };
+      default:
+        return null;
+    }
+  }
 
   const url = `${personEndpointUrl}?$query=`;
 
@@ -49,7 +58,7 @@ const PeopleByDemographics = () => {
               GROUP BY year, prsn_ethnicity_id, prsn_injry_sev_id
               ORDER BY year`,
       colors: chartColors,
-      setter: setRaceData,
+      dataKey: "raceData",
     },
     Age: {
       categories: {
@@ -75,7 +84,7 @@ const PeopleByDemographics = () => {
         colors.demoAge7of8,
         colors.demoAge8of8,
       ],
-      setter: setAgeData,
+      dataKey: "ageData",
     },
     Gender: {
       categories: {
@@ -88,32 +97,46 @@ const PeopleByDemographics = () => {
               GROUP BY year, prsn_gndr_id, prsn_injry_sev_id
               ORDER BY year`,
       colors: chartColors,
-      setter: setGenderData,
+      dataKey: "genderData",
     },
   };
 
   useEffect(() => {
     !!crashType &&
-      !isDataSet &&
+      !areRequestsSent &&
       Object.keys(chartConfigs).forEach((config) => {
         const chartConfig = chartConfigs[config];
 
         axios.get(url + encodeURIComponent(chartConfig.query)).then((res) => {
-          chartConfig.setter(res.data);
+          const records = res.data;
+
+          dispatch({
+            type: "setData",
+            payload: { [chartConfig.dataKey]: records },
+          });
         });
       });
 
-    setIsDataSet(true);
-  }, [url, crashType, chartConfigs, isDataSet]);
+    setAreRequestsSent(true);
+  }, [url, crashType, chartConfigs, areRequestsSent]);
 
   useEffect(() => {
-    if (isDataSet) {
-      console.log("Data is set!");
+    const isAllDataSet =
+      Object.keys(chartConfigs).length === Object.keys(demoData).length;
+
+    if (isAllDataSet) {
       // Process data
       // useReducer to update one piece of state that holds data for all graphs
       // reducerState[chartType][crashType] to set data in chart?
     }
-  }, [isDataSet]);
+  }, [chartType, demoData, chartConfigs]);
+
+  const sortByType = (data) => {
+    // sort records by injury/fatal/all
+    // set sub objects: fatal, serious, all
+  };
+
+  const formatChartData = (data) => {};
 
   // // Fetch data and set in state by years in yearsArray
   // useEffect(() => {
