@@ -73,8 +73,9 @@ const PeopleByDemographics = () => {
         "26 to 35": [26, 35],
         "36 to 45": [36, 45],
         "46 to 55": [46, 55],
-        "55 to 64": [55, 64],
+        "55 to 64": [56, 64],
         "65 or greater": [65, 200],
+        Unknown: [null, null],
       },
       query: `SELECT date_extract_y(crash_date) as year, COUNT(*) as total, prsn_age, prsn_injry_sev_id
               WHERE ${dateCondition}
@@ -151,7 +152,6 @@ const PeopleByDemographics = () => {
     };
 
     const formatChartData = (dataKey, data) => {
-      // dispatch({ type: "setData", payload: { [dataKey]: formattedObject } })
       const isTarget = chartConfigs[dataKey].categoryType === "target";
       const isRange = chartConfigs[dataKey].categoryType === "range";
 
@@ -160,53 +160,64 @@ const PeopleByDemographics = () => {
       const categoryValues = Object.values(categoriesMap);
       const categoryKey = chartConfigs[dataKey].categoryKey;
 
-      if (isTarget) {
-        Object.entries(data).forEach(([typeLabel, typeData]) => {
-          let formatted = {};
-          yearsArray().forEach((year) => {
-            const yearData = [];
-            for (let i = 0; i < categoryValues.length; i++) {
-              yearData.push(0);
-            }
+      Object.entries(data).forEach(([typeLabel, typeData]) => {
+        let formatted = {};
+        yearsArray().forEach((year) => {
+          const yearData = [];
+          for (let i = 0; i < categoryValues.length; i++) {
+            yearData.push(0);
+          }
 
-            formatted[year] = yearData;
-          });
+          formatted[year] = yearData;
+        });
 
+        if (isTarget) {
           for (let i = 0; i < typeData.length; i++) {
             const record = typeData[i];
             const categoryValue = record[categoryKey];
 
             const categoryIndex = categoryValues.indexOf(record[categoryKey]);
-            const catchCategoryIndex = categoryValues.indexOf(
+            const exceptionCategoryIndex = categoryValues.indexOf(
               chartConfigs[dataKey].categoryForExceptions
             );
             const year = record.year;
 
-            // Divert undefined categories or missing values to catchCategory
+            // Divert undefined categories or missing values to specified category
             if (categoryValue === undefined || categoryIndex === -1) {
-              formatted[year][catchCategoryIndex] += parseInt(record.total);
+              formatted[year][exceptionCategoryIndex] += parseInt(record.total);
             } else {
               formatted[year][categoryIndex] += parseInt(record.total);
             }
           }
 
           formattedTypes[typeLabel] = formatted;
-        });
-      }
+        }
 
-      // if (isRange) {
-      //   const categoriesMap = chartConfigs[dataKey].categories;
-      //   const ranges = Object.values(categoriesMap);
+        if (isRange) {
+          const categoriesMap = chartConfigs[dataKey].categories;
+          const ranges = Object.values(categoriesMap);
+          const indexForExceptions = ranges.length - 1;
 
-      //   ranges.forEach((range, i) => {
-      //     const data = [];
-      //     let count = 0;
+          typeData.forEach((typeRecord) => {
+            ranges.forEach((range, i) => {
+              const floor = range[0];
+              const ceiling = range[1];
+              const age = parseInt(typeRecord.prsn_age);
+              const recordYear = typeRecord.year;
+              const total = parseInt(typeRecord.total);
 
-      //   });
-      // }
-      // TODO: turn each year into arrays ordered in VZV order
-      // TODO: handle sorting ranges for age
+              if (!age && !floor && !ceiling) {
+                formatted[recordYear][indexForExceptions] += total;
+              } else if (age >= floor && age <= ceiling) {
+                formatted[recordYear][i] += total;
+              }
+            });
+          });
+        }
+      });
+
       console.log(formattedTypes);
+      // dispatch({ type: "setData", payload: { [dataKey]: formattedObject } })
     };
 
     const isAllDataSet =
