@@ -27,34 +27,37 @@ const SummaryWidget = ({
   backgroundColor,
   infoPopover,
 }) => {
-  const StyledWidget = styled.div`
+  const StyledWidgetCard = styled(Card)`
+    height: 100%;
     flex-grow: 1;
 
     .total {
       font-size: 4em;
     }
 
+    .widget-body {
+      height: 70%;
+    }
+
+    .widget-footer {
+      height: 30%;
+    }
+
     /* Shift icon left to align with Bootstrap card text */
     .widget-icon {
       position: relative;
       right: 5.25px;
-      padding-right: 20px;
     }
 
     /* Center footer icon in footer with .widget-icon above */
     .widget-footer-icon > svg {
       position: relative;
       left: 12.25px;
-      bottom: 5px;
+      bottom: 1px;
     }
 
     .widget-header-text > h3 {
       font-size: 1.2em;
-    }
-
-    /* Center footer text with widget body text above */
-    .widget-footer-text {
-      padding-left: 22.75px;
     }
   `;
 
@@ -81,53 +84,51 @@ const SummaryWidget = ({
       "Same as";
 
     return (
-      <div className="text-left widget-footer-icon d-flex flex-row card-bottom">
+      <div className="text-left widget-footer-icon d-flex flex-row align-items-center">
         <FontAwesomeIcon size="2x" icon={icon} color={colors.dark} />
         {!!lastYearTotal && (
-          <div className="text-muted text-wrap pb-1 pr-1 widget-footer-text">
+          <span className="text-muted text-wrap pl-4">
             {`${text} ${numberWithCommas(lastYearTotal)} this time last year`}
-          </div>
+          </span>
         )}
       </div>
     );
   };
 
   return (
-    <Card className="h-100">
-      <StyledWidget>
-        <CardBody className="pb-1 h-75">
-          <Row>
-            <Col>
-              {/* Show spinner while waiting for data, add thousands separator to total */}
-              <h2 className="h1 total">
-                {!!totalsObject ? (
-                  numberWithCommas(totalsObject[currentYear])
-                ) : (
-                  <ColorSpinner color={backgroundColor} />
-                )}
-              </h2>
-            </Col>
-          </Row>
-          <div className="text-left d-flex flex-row">
-            {renderIcon()}
-            <div className="d-flex flex-column widget-header-text">
-              <h3 className="h5 mb-0">
-                {text} {infoPopover}
-              </h3>
-              <h3 className="h5 text-muted">{`in ${currentYear}`}</h3>
-            </div>
+    <StyledWidgetCard>
+      <CardBody className="widget-body">
+        <Row>
+          <Col>
+            {/* Show spinner while waiting for data, add thousands separator to total */}
+            <h2 className="h1 total">
+              {!!totalsObject ? (
+                numberWithCommas(totalsObject[currentYear])
+              ) : (
+                <ColorSpinner color={backgroundColor} />
+              )}
+            </h2>
+          </Col>
+        </Row>
+        <div className="text-left d-flex flex-row">
+          {renderIcon()}
+          <div className="d-flex flex-column widget-header-text">
+            <h3 className="h5 mb-0">
+              {text} {infoPopover}
+            </h3>
+            <h3 className="h5 text-muted">{`in ${currentYear}`}</h3>
           </div>
-        </CardBody>
-        {!!totalsObject && (
-          <CardFooter className="bg-white h-25">
-            {renderFooterBasedOnChange(
-              totalsObject[currentYear],
-              totalsObject[prevYear]
-            )}
-          </CardFooter>
-        )}
-      </StyledWidget>
-    </Card>
+        </div>
+      </CardBody>
+      {!!totalsObject && (
+        <CardFooter className="bg-white d-flex widget-footer">
+          {renderFooterBasedOnChange(
+            totalsObject[currentYear],
+            totalsObject[prevYear]
+          )}
+        </CardFooter>
+      )}
+    </StyledWidgetCard>
   );
 };
 
