@@ -49,12 +49,12 @@ const PeopleByDemographics = () => {
       categoryKey: "prsn_ethnicity_id",
       categoryType: "target",
       categories: {
-        White: "1",
-        Hispanic: "2",
-        Black: "3",
-        Asian: "4",
-        "Other or unknown": "5",
-        "American Indian or Alaska Native": "6",
+        "1": "White",
+        "2": "Hispanic",
+        "3": "Black",
+        "4": "Asian",
+        "5": "Other or unknown",
+        "6": "American Indian or Alaska Native",
       },
       categoryForExceptions: "5", // Category for missing or unknown rdata
       query: `SELECT date_extract_y(crash_date) as year, COUNT(*) as total, prsn_ethnicity_id, prsn_injry_sev_id
@@ -77,6 +77,7 @@ const PeopleByDemographics = () => {
         "65 or greater": [65, 200],
         Unknown: [null, null],
       },
+      categoryForExceptions: "Unknown",
       query: `SELECT date_extract_y(crash_date) as year, COUNT(*) as total, prsn_age, prsn_injry_sev_id
               WHERE ${dateCondition}
               GROUP BY year, prsn_age, prsn_injry_sev_id
@@ -97,9 +98,9 @@ const PeopleByDemographics = () => {
       categoryKey: "prsn_gndr_id",
       categoryType: "target",
       categories: {
-        Male: "1",
-        Female: "2",
-        Unknown: "0",
+        "1": "Male",
+        "2": "Female",
+        "0": "Unknown",
       },
       categoryForExceptions: "0",
       query: `SELECT date_extract_y(crash_date) as year, COUNT(*) as total, prsn_gndr_id, prsn_injry_sev_id
@@ -157,62 +158,73 @@ const PeopleByDemographics = () => {
 
       const formattedTypes = {};
       const categoriesMap = chartConfigs[dataKey].categories;
-      const categoryValues = Object.values(categoriesMap);
       const categoryKey = chartConfigs[dataKey].categoryKey;
+      const years = yearsArray();
 
       Object.entries(data).forEach(([typeLabel, typeData]) => {
         let formatted = {};
 
-        yearsArray().forEach((year) => {
-          const yearData = [];
-          for (let i = 0; i < categoryValues.length; i++) {
-            yearData.push(0);
-          }
+        Object.entries(categoriesMap).forEach(
+          ([categoryKey, categoryValue]) => {
+            const categoryData = [];
+            for (let i = 0; i < years.length; i++) {
+              categoryData.push(0);
+            }
 
-          formatted[year] = yearData;
-        });
+            if (isTarget) {
+              formatted[categoryValue] = categoryData;
+            } else if (isRange) {
+              formatted[categoryKey] = categoryData;
+            }
+          }
+        );
 
         if (isTarget) {
           for (let i = 0; i < typeData.length; i++) {
             const record = typeData[i];
             const categoryValue = record[categoryKey];
+            const category = categoriesMap[categoryValue];
 
-            const categoryIndex = categoryValues.indexOf(record[categoryKey]);
-            const exceptionCategoryIndex = categoryValues.indexOf(
-              chartConfigs[dataKey].categoryForExceptions
-            );
-            const year = record.year;
+            const exceptionCategory =
+              categoriesMap[chartConfigs[dataKey].categoryForExceptions];
+            const currentYear = years[years.length - 1];
+            const yearIndex =
+              years.length - 1 - (currentYear - parseInt(record.year));
 
             // Divert undefined categories or missing values to specified category
-            if (categoryValue === undefined || categoryIndex === -1) {
-              formatted[year][exceptionCategoryIndex] += parseInt(record.total);
+            if (category === undefined || categoryValue === undefined) {
+              formatted[exceptionCategory][yearIndex] += parseInt(record.total);
             } else {
-              formatted[year][categoryIndex] += parseInt(record.total);
+              formatted[category][yearIndex] += parseInt(record.total);
             }
           }
         }
 
         if (isRange) {
-          const categoriesMap = chartConfigs[dataKey].categories;
-          const ranges = Object.values(categoriesMap);
-          const indexForExceptions = ranges.length - 1;
+          const ranges = Object.entries(categoriesMap);
+          const rangeForExceptions =
+            chartConfigs[dataKey].categoryForExceptions;
 
           typeData.forEach((typeRecord) => {
-            ranges.forEach((range, i) => {
-              const floor = range[0];
-              const ceiling = range[1];
+            ranges.forEach(([rangeString, rangeArray], i) => {
+              const floor = rangeArray[0];
+              const ceiling = rangeArray[1];
               const age = parseInt(typeRecord.prsn_age);
-              const recordYear = typeRecord.year;
               const total = parseInt(typeRecord.total);
+              const currentYear = years[years.length - 1];
+              const yearIndex =
+                years.length - 1 - (currentYear - parseInt(typeRecord.year));
 
               if (!age && !floor && !ceiling) {
-                formatted[recordYear][indexForExceptions] += total;
+                formatted[rangeForExceptions][yearIndex] += total;
               } else if (age >= floor && age <= ceiling) {
-                formatted[recordYear][i] += total;
+                formatted[rangeString][yearIndex] += total;
               }
             });
           });
         }
+
+        console.log(formatted);
 
         formattedTypes[typeLabel] = formatted;
       });
@@ -238,7 +250,6 @@ const PeopleByDemographics = () => {
         });
       });
 
-      // console.log(formattedData);
       // useReducer to update one piece of state that holds data for all graphs
       // reducerState[chartType][crashType] to set data in chart?
     }
@@ -439,10 +450,12 @@ const PeopleByDemographics = () => {
             data={
               demoData.status === "formatted"
                 ? {
-                    labels: [yearsArray()],
-                    datasets: yearsArray().map((year, i) => ({
-                      label: Object.keys(chartConfigs.raceData.categories)[i],
-                      data: [demoData.raceData.all[parseInt(year)][i]],
+                    labels: yearsArray(),
+                    datasets: Object.values(
+                      chartConfigs.raceData.categories
+                    ).map((category, i) => ({
+                      label: Object.values(chartConfigs.raceData.categories)[i],
+                      data: demoData.raceData.all[category],
                       backgroundColor: chartConfigs.raceData.colors[i],
                       borderColor: chartConfigs.raceData.colors[i],
                       hoverBackgroundColor: chartConfigs.raceData.colors[i],
