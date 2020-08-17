@@ -56,7 +56,7 @@ const PeopleByDemographics = () => {
         "Other or unknown": "5",
         "American Indian or Alaska Native": "6",
       },
-      categoryForExceptions: "5",
+      categoryForExceptions: "5", // Category for missing or unknown rdata
       query: `SELECT date_extract_y(crash_date) as year, COUNT(*) as total, prsn_ethnicity_id, prsn_injry_sev_id
               WHERE ${dateCondition}
               GROUP BY year, prsn_ethnicity_id, prsn_injry_sev_id
@@ -162,6 +162,7 @@ const PeopleByDemographics = () => {
 
       Object.entries(data).forEach(([typeLabel, typeData]) => {
         let formatted = {};
+
         yearsArray().forEach((year) => {
           const yearData = [];
           for (let i = 0; i < categoryValues.length; i++) {
@@ -189,8 +190,6 @@ const PeopleByDemographics = () => {
               formatted[year][categoryIndex] += parseInt(record.total);
             }
           }
-
-          formattedTypes[typeLabel] = formatted;
         }
 
         if (isRange) {
@@ -214,23 +213,32 @@ const PeopleByDemographics = () => {
             });
           });
         }
+
+        formattedTypes[typeLabel] = formatted;
       });
 
-      console.log(formattedTypes);
-      // dispatch({ type: "setData", payload: { [dataKey]: formattedObject } })
+      return formattedTypes;
     };
 
     const isAllDataSet =
       demoData !== null &&
       Object.keys(chartConfigs).length === Object.keys(demoData).length;
 
-    if (isAllDataSet) {
+    if (isAllDataSet && demoData.status !== "formatted") {
       // Process data
+      // let formattedData = {};
       Object.entries(demoData).forEach(([dataKey, data]) => {
         const sorted = sortByType(data);
-        // console.log(sorted, dataKey);
-        formatChartData(dataKey, sorted);
+
+        const formatted = formatChartData(dataKey, sorted);
+
+        dispatch({
+          type: "setData",
+          payload: { [dataKey]: formatted, status: "formatted" },
+        });
       });
+
+      // console.log(formattedData);
       // useReducer to update one piece of state that holds data for all graphs
       // reducerState[chartType][crashType] to set data in chart?
     }
@@ -428,7 +436,21 @@ const PeopleByDemographics = () => {
         <Col>
           <HorizontalBar
             redraw
-            data={null}
+            data={
+              demoData.status === "formatted"
+                ? {
+                    labels: [yearsArray()],
+                    datasets: yearsArray().map((year, i) => ({
+                      label: Object.keys(chartConfigs.raceData.categories)[i],
+                      data: [demoData.raceData.all[parseInt(year)][i]],
+                      backgroundColor: chartConfigs.raceData.colors[i],
+                      borderColor: chartConfigs.raceData.colors[i],
+                      hoverBackgroundColor: chartConfigs.raceData.colors[i],
+                      hoverBorderColor: chartConfigs.raceData.colors[i],
+                    })),
+                  }
+                : {}
+            }
             height={null}
             width={null}
             options={{
@@ -450,20 +472,20 @@ const PeopleByDemographics = () => {
                   },
                 ],
               },
-              tooltips: {
-                callbacks: {
-                  label: function (tooltipItem, data) {
-                    let label = data.datasets[tooltipItem.datasetIndex].label;
-                    let categoryTotal =
-                      data.datasets[tooltipItem.datasetIndex].wholeNumbers[
-                        tooltipItem.index
-                      ].categoryTotal;
-                    let roundedPercentage =
-                      Math.round(tooltipItem.value * 100) / 100;
-                    return `${label}: ${categoryTotal} (${roundedPercentage}%)`;
-                  },
-                },
-              },
+              // tooltips: {
+              //   callbacks: {
+              //     label: function (tooltipItem, data) {
+              //       let label = data.datasets[tooltipItem.datasetIndex].label;
+              //       let categoryTotal =
+              //         data.datasets[tooltipItem.datasetIndex].wholeNumbers[
+              //           tooltipItem.index
+              //         ].categoryTotal;
+              //       let roundedPercentage =
+              //         Math.round(tooltipItem.value * 100) / 100;
+              //       return `${label}: ${categoryTotal} (${roundedPercentage}%)`;
+              //     },
+              //   },
+              // },
             }}
           />
         </Col>
