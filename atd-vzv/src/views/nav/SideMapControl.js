@@ -8,7 +8,7 @@ import { trackPageEvent } from "../../constants/nav";
 import InfoPopover from "../../Components/Popover/InfoPopover";
 import { popoverConfig } from "../../Components/Popover/popoverConfig";
 import { colors } from "../../constants/colors";
-import { Button, Card, Label, Row, Col, Input, FormGroup } from "reactstrap";
+import { Button, Card, Label, Row, Col, Input } from "reactstrap";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -54,6 +54,10 @@ const StyledCard = styled.div`
   }
   [class^="DateInput_"] {
     text-align: center;
+  }
+
+  .icon-container {
+    min-width: 24px;
   }
 `;
 
@@ -129,7 +133,6 @@ const SideMapControl = ({ type }) => {
         type: `where`, // Socrata SoQL query type
         operator: `OR`, // Logical operator for joining multiple query strings
         default: true, // Apply filter as default on render
-        buttonClass: `type-button`,
         uiType: "checkbox",
       },
       pedalcyclist: {
@@ -139,7 +142,6 @@ const SideMapControl = ({ type }) => {
         type: `where`,
         operator: `OR`,
         default: true,
-        buttonClass: `type-button`,
         uiType: "checkbox",
       },
       motor: {
@@ -328,23 +330,26 @@ const SideMapControl = ({ type }) => {
                   </Button>
                 </Col>
               ) : (
-                <Col xs={12} className="px-0" key={name}>
-                  <FormGroup check>
-                    <Label check>
-                      <Input
-                        type="checkbox"
-                        className={"py-1 filter-button dark"}
-                        onClick={
-                          parameter.handler
-                            ? parameter.handler
-                            : (event) => handleFilterClick(event, group)
-                        }
-                        active={
-                          parameter.isSelected
-                            ? parameter.isSelected
-                            : isFilterSet(name)
-                        }
-                      />{" "}
+                <Col xs={12} key={name}>
+                  <Label className="text-dark" check>
+                    <Input
+                      key={name}
+                      id={name}
+                      type="checkbox"
+                      className={"py-1 filter-button "}
+                      color="dark"
+                      onClick={
+                        parameter.handler
+                          ? parameter.handler
+                          : (event) => handleFilterClick(event, group)
+                      }
+                      active={
+                        parameter.isSelected
+                          ? parameter.isSelected
+                          : isFilterSet(name)
+                      }
+                    />{" "}
+                    <span className="ml-3">
                       {parameter.icon && (
                         <FontAwesomeIcon
                           icon={parameter.icon}
@@ -353,40 +358,8 @@ const SideMapControl = ({ type }) => {
                         />
                       )}{" "}
                       {name[0].toUpperCase() + name.slice(1)}
-                    </Label>
-                  </FormGroup>
-                  {/* <Button
-                    key={name}
-                    id={name}
-                    color="dark"
-                    className={`p-1 filter-button ${
-                      parameter.buttonClass && parameter.buttonClass
-                    }`}
-                    onClick={
-                      parameter.handler
-                        ? parameter.handler
-                        : (event) => handleFilterClick(event, group)
-                    }
-                    active={
-                      parameter.isSelected
-                        ? parameter.isSelected
-                        : isFilterSet(name)
-                    }
-                    outline={
-                      parameter.isSelected
-                        ? !parameter.isSelected
-                        : !isFilterSet(name)
-                    }
-                  >
-                    {parameter.icon && (
-                      <FontAwesomeIcon
-                        icon={parameter.icon}
-                        className="mr-1 ml-1"
-                        color={parameter.iconColor && parameter.iconColor}
-                      />
-                    )}
-                    {parameter.text}
-                  </Button> */}
+                    </span>
+                  </Label>
                 </Col>
               );
             })}
