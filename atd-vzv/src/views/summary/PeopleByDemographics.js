@@ -119,19 +119,17 @@ const PeopleByDemographics = () => {
         })
       );
 
-      axios.all(requests).then(
-        axios.spread((...resArr) => {
-          const responses = resArr.reduce(
-            (acc, res) => ({ ...acc, ...{ [res.config.dataId]: res.data } }),
-            {}
-          );
+      axios.all(requests).then((resArr) => {
+        const responses = resArr.reduce(
+          (acc, res) => ({ ...acc, ...{ [res.config.dataId]: res.data } }),
+          {}
+        );
 
-          dispatch({
-            type: "setData",
-            payload: responses,
-          });
-        })
-      );
+        dispatch({
+          type: "setData",
+          payload: responses,
+        });
+      });
     }
   }, [crashType, demoData]);
 
