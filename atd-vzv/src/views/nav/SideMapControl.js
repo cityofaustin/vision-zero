@@ -18,6 +18,7 @@ import {
   faMotorcycle,
   faHeartbeat,
   faMedkit,
+  faEllipsisH,
 } from "@fortawesome/free-solid-svg-icons";
 
 const StyledCard = styled.div`
@@ -163,7 +164,7 @@ const SideMapControl = ({ type }) => {
         uiType: "checkbox",
       },
       other: {
-        text: "Other",
+        icon: faEllipsisH,
         fatalSyntax: `other_death_count > 0`,
         injurySyntax: `other_serious_injury_count > 0`,
         type: `where`,
@@ -330,20 +331,20 @@ const SideMapControl = ({ type }) => {
                   </Button>
                 </Col>
               ) : (
-                <Col xs={12} key={name}>
+                <Col xs={12} key={name} className="py-1">
                   <Label className="text-dark" check>
                     <Input
                       key={name}
                       id={name}
                       type="checkbox"
-                      className={"py-1 filter-button "}
+                      className={"filter-button"}
                       color="dark"
                       onClick={
                         parameter.handler
                           ? parameter.handler
                           : (event) => handleFilterClick(event, group)
                       }
-                      active={
+                      checked={
                         parameter.isSelected
                           ? parameter.isSelected
                           : isFilterSet(name)
@@ -353,7 +354,7 @@ const SideMapControl = ({ type }) => {
                       {parameter.icon && (
                         <FontAwesomeIcon
                           icon={parameter.icon}
-                          className="mr-1"
+                          className="mr-1 fa-fw"
                           color={parameter.iconColor && parameter.iconColor}
                         />
                       )}{" "}
