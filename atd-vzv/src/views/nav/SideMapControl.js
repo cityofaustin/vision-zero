@@ -21,8 +21,11 @@ import {
   faEllipsisH,
 } from "@fortawesome/free-solid-svg-icons";
 
+// Keep type buttons from wrapping on Windows (scroll bar takes extra width)
+const typeFilterTextSize = navigator.appVersion.indexOf("Win") !== -1 ? 12 : 14;
+
 const StyledCard = styled.div`
-  font-size: 1.2em;
+  font-size: 1rem;
 
   .card-title {
     font-weight: bold;
@@ -43,7 +46,7 @@ const StyledCard = styled.div`
   }
 
   .type-button {
-    font-size: 12px;
+    font-size: ${typeFilterTextSize}px;
     color: ${colors.dark};
     background: ${colors.buttonBackground};
     border-style: none;
@@ -55,10 +58,6 @@ const StyledCard = styled.div`
   }
   [class^="DateInput_"] {
     text-align: center;
-  }
-
-  .icon-container {
-    min-width: 24px;
   }
 `;
 
@@ -291,78 +290,85 @@ const SideMapControl = ({ type }) => {
           <Row className="mx-0 mb-3" key={`${group}-buttons`}>
             {/* Create buttons for each filter within a group of mapFilters */}
             {Object.entries(groupParameters).map(([name, parameter], i) => {
-              return parameter.uiType === "button" ? (
-                <Col
-                  xs={parameter.colSize && parameter.colSize}
-                  className="px-0"
-                  key={name}
-                >
-                  <Button
-                    key={name}
-                    id={name}
-                    color="dark"
-                    className={`p-1 filter-button ${
-                      parameter.buttonClass && parameter.buttonClass
-                    }`}
-                    onClick={
-                      parameter.handler
-                        ? parameter.handler
-                        : (event) => handleFilterClick(event, group)
-                    }
-                    active={
-                      parameter.isSelected
-                        ? parameter.isSelected
-                        : isFilterSet(name)
-                    }
-                    outline={
-                      parameter.isSelected
-                        ? !parameter.isSelected
-                        : !isFilterSet(name)
-                    }
-                  >
-                    {parameter.icon && (
-                      <FontAwesomeIcon
-                        icon={parameter.icon}
-                        className="mr-1 ml-1"
-                        color={parameter.iconColor && parameter.iconColor}
-                      />
-                    )}
-                    {parameter.text}
-                  </Button>
-                </Col>
-              ) : (
-                <Col xs={12} key={name} className="py-1">
-                  <Label className="text-dark" check>
-                    <Input
+              switch (parameter.uiType) {
+                case "button":
+                  return (
+                    <Col
+                      xs={parameter.colSize && parameter.colSize}
+                      className="px-0"
                       key={name}
-                      id={name}
-                      type="checkbox"
-                      className={"filter-button"}
-                      color="dark"
-                      onClick={
-                        parameter.handler
-                          ? parameter.handler
-                          : (event) => handleFilterClick(event, group)
-                      }
-                      checked={
-                        parameter.isSelected
-                          ? parameter.isSelected
-                          : isFilterSet(name)
-                      }
-                    />{" "}
-                    <span className="ml-3">
-                      {parameter.icon && (
-                        <FontAwesomeIcon
-                          icon={parameter.icon}
-                          className="mr-1 fa-fw"
-                          color={parameter.iconColor && parameter.iconColor}
-                        />
-                      )}{" "}
-                      {name[0].toUpperCase() + name.slice(1)}
-                    </span>
-                  </Label>
-                </Col>
-              );
+                    >
+                      <Button
+                        key={name}
+                        id={name}
+                        color="dark"
+                        className={`p-1 filter-button ${
+                          parameter.buttonClass && parameter.buttonClass
+                        }`}
+                        onClick={
+                          parameter.handler
+                            ? parameter.handler
+                            : (event) => handleFilterClick(event, group)
+                        }
+                        active={
+                          parameter.isSelected
+                            ? parameter.isSelected
+                            : isFilterSet(name)
+                        }
+                        outline={
+                          parameter.isSelected
+                            ? !parameter.isSelected
+                            : !isFilterSet(name)
+                        }
+                      >
+                        {parameter.icon && (
+                          <FontAwesomeIcon
+                            icon={parameter.icon}
+                            className="mr-1 ml-1"
+                            color={parameter.iconColor && parameter.iconColor}
+                          />
+                        )}
+                        {parameter.text}
+                      </Button>
+                    </Col>
+                  );
+                case "checkbox":
+                  return (
+                    <Col xs={12} key={name} className="py-1">
+                      <Label className="text-dark" check>
+                        <Input
+                          key={name}
+                          id={name}
+                          type="checkbox"
+                          className={"filter-button"}
+                          color="dark"
+                          onClick={
+                            parameter.handler
+                              ? parameter.handler
+                              : (event) => handleFilterClick(event, group)
+                          }
+                          checked={
+                            parameter.isSelected
+                              ? parameter.isSelected
+                              : isFilterSet(name)
+                          }
+                        />{" "}
+                        <span className="ml-3">
+                          {parameter.icon && (
+                            <FontAwesomeIcon
+                              icon={parameter.icon}
+                              className="mr-1 fa-fw"
+                              color={parameter.iconColor && parameter.iconColor}
+                            />
+                          )}{" "}
+                          {name[0].toUpperCase() + name.slice(1)}
+                        </span>
+                      </Label>
+                    </Col>
+                  );
+                default:
+                  return null;
+              }
             })}
           </Row>
         ))}
