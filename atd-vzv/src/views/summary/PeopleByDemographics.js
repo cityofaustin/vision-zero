@@ -177,13 +177,14 @@ const PeopleByDemographics = () => {
       const isTarget = categoryType === "target";
       const isRange = categoryType === "range";
       const years = yearsArray();
+      const currentYear = years[years.length - 1];
 
       const formattedTypes = {};
 
       Object.entries(data).forEach(([typeLabel, typeData]) => {
         let formatted = {};
 
-        labelCategories.forEach((category, i) => {
+        labelCategories.forEach((category) => {
           const categoryData = [];
           for (let i = 0; i < years.length; i++) {
             categoryData.push(0);
@@ -200,8 +201,6 @@ const PeopleByDemographics = () => {
             const categoryValue = record[categoryKey];
             const categoryIndex = socrataCategories.indexOf(categoryValue);
             const labelCategory = labelCategories[categoryIndex];
-
-            const currentYear = years[years.length - 1];
             const yearIndex = getYearIndex(currentYear, record.year);
 
             if (categoryIndex < 0 || categoryValue === undefined) {
@@ -220,7 +219,6 @@ const PeopleByDemographics = () => {
               const ceiling = rangeArray[1];
               const age = parseInt(record.prsn_age);
               const total = parseInt(record.total);
-              const currentYear = years[years.length - 1];
               const yearIndex = getYearIndex(currentYear, record.year);
 
               if (!age && !floor && !ceiling) {
