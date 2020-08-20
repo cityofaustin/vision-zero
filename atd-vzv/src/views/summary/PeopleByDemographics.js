@@ -32,15 +32,16 @@ const chartConfigs = {
     label: "Race/Ethnicity",
     categoryKey: "prsn_ethnicity_id", // Field used to filter data
     categoryType: "target", // Filter response data by target value or ranges of values
-    categories: {
-      "1": "White",
-      "2": "Hispanic",
-      "3": "Black",
-      "4": "Asian",
-      "5": "Other or unknown",
-      "6": "American Indian or Alaska Native",
-    },
-    categoryForExceptions: "5", // Category for missing or unknown data
+    socrataCategories: ["1", "2", "3", "4", "5", "6"], // Use array so we can control order in chart and legend
+    labelCategories: [
+      "White",
+      "Hispanic",
+      "Black",
+      "Asian",
+      "Other or unknown",
+      "American Indian or Alaska Native",
+    ],
+    exceptionCategory: "Other or unknown", // Category for missing or unknown data
     query: `SELECT date_extract_y(crash_date) as year, COUNT(*) as total, prsn_ethnicity_id, prsn_injry_sev_id
               WHERE ${dateCondition}
               GROUP BY year, prsn_ethnicity_id, prsn_injry_sev_id
@@ -51,17 +52,27 @@ const chartConfigs = {
     label: "Age",
     categoryKey: "prsn_age",
     categoryType: "range",
-    categories: {
-      "0 to 15": [0, 15],
-      "16 to 25": [16, 25],
-      "26 to 35": [26, 35],
-      "36 to 45": [36, 45],
-      "46 to 55": [46, 55],
-      "55 to 64": [56, 64],
-      "65 or greater": [65, 200],
-      Unknown: [null, null],
-    },
-    categoryForExceptions: "Unknown",
+    socrataCategories: [
+      [0, 15],
+      [16, 25],
+      [26, 35],
+      [36, 45],
+      [46, 55],
+      [56, 64],
+      [65, 200],
+      [null, null],
+    ],
+    labelCategories: [
+      "0 to 15",
+      "16 to 25",
+      "26 to 35",
+      "36 to 45",
+      "46 to 55",
+      "55 to 64",
+      "65 or greater",
+      "Unknown",
+    ],
+    exceptionCategory: "Unknown",
     query: `SELECT date_extract_y(crash_date) as year, COUNT(*) as total, prsn_age, prsn_injry_sev_id
               WHERE ${dateCondition}
               GROUP BY year, prsn_age, prsn_injry_sev_id
@@ -81,12 +92,9 @@ const chartConfigs = {
     label: "Gender",
     categoryKey: "prsn_gndr_id",
     categoryType: "target",
-    categories: {
-      "1": "Male",
-      "2": "Female",
-      "0": "Unknown",
-    },
-    categoryForExceptions: "0",
+    socrataCategories: ["1", "2", "0"],
+    labelCategories: ["Male", "Female", "Unknown"],
+    exceptionCategory: "Unknown",
     query: `SELECT date_extract_y(crash_date) as year, COUNT(*) as total, prsn_gndr_id, prsn_injry_sev_id
               WHERE ${dateCondition}
               GROUP BY year, prsn_gndr_id, prsn_injry_sev_id
@@ -115,13 +123,13 @@ const PeopleByDemographics = () => {
     if (crashType !== null && Object.keys(demoData).length === 0) {
       const requests = Object.entries(chartConfigs).map(([dataKey, config]) =>
         axios.get(url + encodeURIComponent(config.query), {
-          dataId: dataKey,
+          dataKey,
         })
       );
 
       axios.all(requests).then((resArr) => {
         const responses = resArr.reduce(
-          (acc, res) => ({ ...acc, ...{ [res.config.dataId]: res.data } }),
+          (acc, res) => ({ ...acc, ...{ [res.config.dataKey]: res.data } }),
           {}
         );
 
@@ -159,31 +167,30 @@ const PeopleByDemographics = () => {
     };
 
     const formatChartData = (dataKey, data) => {
-      const isTarget = chartConfigs[dataKey].categoryType === "target";
-      const isRange = chartConfigs[dataKey].categoryType === "range";
+      const {
+        exceptionCategory,
+        categoryKey,
+        labelCategories,
+        socrataCategories,
+        categoryType,
+      } = chartConfigs[dataKey];
+      const isTarget = categoryType === "target";
+      const isRange = categoryType === "range";
+      const years = yearsArray();
 
       const formattedTypes = {};
-      const categoriesMap = chartConfigs[dataKey].categories;
-      const categoryKey = chartConfigs[dataKey].categoryKey;
-      const years = yearsArray();
 
       Object.entries(data).forEach(([typeLabel, typeData]) => {
         let formatted = {};
 
-        Object.entries(categoriesMap).forEach(
-          ([categoryKey, categoryValue]) => {
-            const categoryData = [];
-            for (let i = 0; i < years.length; i++) {
-              categoryData.push(0);
-            }
-
-            if (isTarget) {
-              formatted[categoryValue] = categoryData;
-            } else if (isRange) {
-              formatted[categoryKey] = categoryData;
-            }
+        labelCategories.forEach((category, i) => {
+          const categoryData = [];
+          for (let i = 0; i < years.length; i++) {
+            categoryData.push(0);
           }
-        );
+
+          formatted[category] = categoryData;
+        });
 
         const getYearIndex = (currentYear, recordYear) =>
           years.length - 1 - (currentYear - parseInt(recordYear));
@@ -191,28 +198,24 @@ const PeopleByDemographics = () => {
         if (isTarget) {
           typeData.forEach((record) => {
             const categoryValue = record[categoryKey];
-            const category = categoriesMap[categoryValue];
-            const exceptionCategory =
-              categoriesMap[chartConfigs[dataKey].categoryForExceptions];
+            const categoryIndex = socrataCategories.indexOf(categoryValue);
+            const labelCategory = labelCategories[categoryIndex];
+
             const currentYear = years[years.length - 1];
             const yearIndex = getYearIndex(currentYear, record.year);
 
-            // Divert undefined categories or missing values to specified category
-            if (category === undefined || categoryValue === undefined) {
+            if (categoryIndex < 0 || categoryValue === undefined) {
               formatted[exceptionCategory][yearIndex] += parseInt(record.total);
             } else {
-              formatted[category][yearIndex] += parseInt(record.total);
+              formatted[labelCategory][yearIndex] += parseInt(record.total);
             }
           });
         }
 
         if (isRange) {
-          const ranges = Object.entries(categoriesMap);
-          const rangeForExceptions =
-            chartConfigs[dataKey].categoryForExceptions;
-
           typeData.forEach((record) => {
-            ranges.forEach(([rangeString, rangeArray], i) => {
+            socrataCategories.forEach((rangeArray, i) => {
+              const label = labelCategories[i];
               const floor = rangeArray[0];
               const ceiling = rangeArray[1];
               const age = parseInt(record.prsn_age);
@@ -221,9 +224,9 @@ const PeopleByDemographics = () => {
               const yearIndex = getYearIndex(currentYear, record.year);
 
               if (!age && !floor && !ceiling) {
-                formatted[rangeForExceptions][yearIndex] += total;
+                formatted[exceptionCategory][yearIndex] += total;
               } else if (age >= floor && age <= ceiling) {
-                formatted[rangeString][yearIndex] += total;
+                formatted[label][yearIndex] += total;
               }
             });
           });
@@ -256,15 +259,10 @@ const PeopleByDemographics = () => {
         ([configName, config]) => config.label === chartType
       );
 
-      const barLabels =
-        config.categoryType === "range"
-          ? Object.keys(config.categories)
-          : Object.values(config.categories);
-
       const data = {
         labels: yearsArray(),
-        datasets: barLabels.map((category, i) => ({
-          label: barLabels[i],
+        datasets: config.labelCategories.map((category, i) => ({
+          label: config.labelCategories[i],
           data: demoData[configName][crashType.name][category],
           backgroundColor: config.colors[i],
           borderColor: config.colors[i],
