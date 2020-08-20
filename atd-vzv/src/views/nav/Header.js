@@ -35,7 +35,7 @@ const Header = () => {
 
   .nav-button {
     /* Set width to keep buttons equal width */
-  width: ${responsive.headerButtonWidth}px;
+    width: ${responsive.headerButtonWidth}px;
     height: ${responsive.headerButtonHeight}px;
     font-size: 18px;
   }
@@ -127,27 +127,27 @@ const Header = () => {
             }`}
             navbar
           >
-            {navConfig.map((config, i) => (
-              <NavItem key={i}>
-                <NavLink
-                  tag={A}
-                  href={config.url}
-                  className="pr-0 pl-2 mr-0 ml-2"
-                >
-                  <Button
-                    className={`nav-button ${
-                      currentPath === config.url
-                        ? "btn-dark"
-                        : "inactive-nav-button"
-                    } mx-xs-0 mx-lg-2`}
-                    onClick={() => trackPageEvent(config.eventKey)}
-                    active={currentPath === config.url}
-                  >
-                    {config.icon} {config.title}
-                  </Button>
-                </NavLink>
-              </NavItem>
-            ))}
+            {navConfig.map(
+              (config, i) =>
+                currentPath !== config.url && (
+                  <NavItem key={i}>
+                    <NavLink
+                      tag={A}
+                      href={config.url}
+                      className="pr-0 pl-2 mr-0 ml-2"
+                    >
+                      <Button
+                        className={`nav-button inactive-nav-button mx-xs-0 mx-lg-2`}
+                        onClick={() => trackPageEvent(config.eventKey)}
+                        active={currentPath === config.url}
+                      >
+                        {config.icon}
+                        <span className="pl-2">{config.title}</span>
+                      </Button>
+                    </NavLink>
+                  </NavItem>
+                )
+            )}
           </Nav>
         </Container>
       </Navbar>

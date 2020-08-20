@@ -11,13 +11,13 @@ export const isDevelopment =
 
 export const navConfig = [
   {
-    title: "Summary",
+    title: "Go to Summary",
     url: "/",
     eventKey: "summaryNavButton",
     icon: <FontAwesomeIcon icon={faChartBar} />,
   },
   {
-    title: "Map",
+    title: "Go to Map",
     url: "/map",
     eventKey: "mapNavButton",
     icon: <FontAwesomeIcon icon={faMap} />,
