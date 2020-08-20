@@ -41,11 +41,14 @@ const Header = () => {
   }
 
   .inactive-nav-button {
-    color: ${colors.dark};
-    background: ${colors.buttonBackground};
+    color: ${colors.white};
+    background: ${colors.info};
     opacity: 1;
     margin-left: 5px;
     margin-right: 5px;
+    :hover {
+      background: ${colors.infoDark};
+    }
   }
 
   .sidedrawer-toggle {
