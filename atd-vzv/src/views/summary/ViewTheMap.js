@@ -6,7 +6,41 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMap } from "@fortawesome/free-solid-svg-icons";
 import { colors } from "../../constants/colors";
 
+// https://usehooks.com/useWindowSize/
+function useWindowSize() {
+  // Initialize state with undefined width/height so server and client renders match
+  // Learn more here: https://joshwcomeau.com/react/the-perils-of-rehydration/
+  const [windowSize, setWindowSize] = useState({
+    width: undefined,
+    height: undefined,
+  });
+
+  useEffect(() => {
+    // Handler to call on window resize
+    function handleResize() {
+      // Set window width/height to state
+      setWindowSize({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    }
+
+    // Add event listener
+    window.addEventListener("resize", handleResize);
+
+    // Call handler right away so state gets updated with initial window size
+    handleResize();
+
+    // Remove event listener on cleanup
+    return () => window.removeEventListener("resize", handleResize);
+  }, []); // Empty array ensures that effect is only run on mount
+
+  return windowSize;
+}
+
 const ViewTheMap = () => {
+  const size = useWindowSize();
+
   const StyledViewTheMap = styled.div`
     .img-wrapper {
       position: relative;
@@ -29,7 +63,10 @@ const ViewTheMap = () => {
     }
     .map-image {
       width: 100%;
+      height: ${size.width > 1325 ? "403px" : "442px"};
       vertical-align: top;
+      background-image: url(${process.env.PUBLIC_URL + "/map_preview.jpg"});
+      background-position: center;
     }
     .map-icon-row {
       height: 40px;
@@ -63,11 +100,7 @@ const ViewTheMap = () => {
           <Col>
             <A href="/map">
               <div className="img-wrapper">
-                <img
-                  src={process.env.PUBLIC_URL + "/map_preview.jpg"}
-                  className={"map-image"}
-                  alt="Screenshot of map displaying crashes with serious injuries or fatalities"
-                />
+                <div className={"map-image"}></div>
               </div>
             </A>
           </Col>
@@ -78,10 +111,12 @@ const ViewTheMap = () => {
           </div>
         </Row>
         <Row className=" mb-4 justify-content-center">
-          <h2 className="text-center">
-            View crash data <br />
-            on interactive map
-          </h2>
+          <A href="/map" className="card-link text-decoration-none">
+            <h2 className="text-center text-dark text-decoration-none">
+              View crash data <br />
+              on interactive map
+            </h2>
+          </A>
         </Row>
       </StyledViewTheMap>
     </Container>
