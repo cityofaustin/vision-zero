@@ -278,7 +278,7 @@ const PeopleByDemographics = () => {
       <Row>
         <Col>
           <h2 className="text-left font-weight-bold">
-            Demographics{" "}
+            By Demographics{" "}
             <InfoPopover config={popoverConfig.summary.demographics} />
           </h2>
         </Col>
