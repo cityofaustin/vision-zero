@@ -8,7 +8,7 @@ import { trackPageEvent } from "../../constants/nav";
 import InfoPopover from "../../Components/Popover/InfoPopover";
 import { popoverConfig } from "../../Components/Popover/popoverConfig";
 import { colors } from "../../constants/colors";
-import { Button, Card, Label, Row, Col, Input } from "reactstrap";
+import { Button, Card, Label, Row, Col } from "reactstrap";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -19,7 +19,9 @@ import {
   faHeartbeat,
   faMedkit,
   faEllipsisH,
+  faCheckSquare,
 } from "@fortawesome/free-solid-svg-icons";
+import { faSquare } from "@fortawesome/free-regular-svg-icons";
 
 // Keep type buttons from wrapping on Windows (scroll bar takes extra width)
 const typeFilterTextSize = navigator.appVersion.indexOf("Win") !== -1 ? 12 : 14;
@@ -59,6 +61,27 @@ const StyledCard = styled.div`
   [class^="DateInput_"] {
     text-align: center;
   }
+
+  .outlined {
+    border: 1px solid ${colors.dark};
+    border-radius: 4px;
+  }
+
+  .dark-checkbox {
+    cursor: pointer;
+
+    .active,
+    .inactive {
+      color: ${colors.dark} !important;
+    }
+  }
+
+  .dark-checkbox:hover {
+    .active,
+    .inactive {
+      color: ${colors.secondary} !important;
+    }
+  }
 `;
 
 const SideMapControl = ({ type }) => {
@@ -94,7 +117,7 @@ const SideMapControl = ({ type }) => {
   const mapButtonFilters = {
     type: {
       shared: {
-        buttonClass: `type-button`,
+        eachClass: `type-button`,
         uiType: "button",
       },
       each: {
@@ -126,7 +149,11 @@ const SideMapControl = ({ type }) => {
       },
     },
     mode: {
-      shared: { uiType: "checkbox" },
+      shared: {
+        uiType: "checkbox",
+        allClass: "outlined py-2 px-0",
+        eachClass: "dark-checkbox",
+      },
       each: {
         pedestrian: {
           icon: faWalking, // Font Awesome icon object
@@ -136,7 +163,7 @@ const SideMapControl = ({ type }) => {
           operator: `OR`, // Logical operator for joining multiple query strings
           default: true, // Apply filter as default on render
         },
-        pedalcyclist: {
+        bicyclist: {
           icon: faBiking,
           fatalSyntax: `bicycle_death_count > 0`,
           injurySyntax: `bicycle_serious_injury_count > 0`,
@@ -144,7 +171,7 @@ const SideMapControl = ({ type }) => {
           operator: `OR`,
           default: true,
         },
-        motor: {
+        motorist: {
           icon: faCar,
           fatalSyntax: `motor_vehicle_death_count > 0`,
           injurySyntax: `motor_vehicle_serious_injury_count > 0`,
@@ -152,7 +179,7 @@ const SideMapControl = ({ type }) => {
           operator: `OR`,
           default: true,
         },
-        motorcycle: {
+        motorcyclist: {
           icon: faMotorcycle,
           fatalSyntax: `motorcycle_death_count > 0`,
           injurySyntax: `motorcycle_serious_injury_count > 0`,
@@ -285,13 +312,14 @@ const SideMapControl = ({ type }) => {
         </Label>
         {/* Create a button group for each group of mapFilters */}
         {Object.entries(mapButtonFilters).map(([group, groupParameters], i) => (
-          <Row className="mx-0 mb-3" key={`${group}-buttons`}>
+          <Row
+            className={`mx-0 mb-3 ${groupParameters.shared.allClass || ""}`}
+            key={`${group}-buttons`}
+          >
             {/* Create buttons for each filter within a group of mapFilters */}
             {Object.entries(groupParameters.each).map(
               ([name, parameter], i) => {
-                const uiClassName =
-                  groupParameters.shared.buttonClass &&
-                  groupParameters.shared.buttonClass;
+                const eachClassName = groupParameters.shared.eachClass || "";
 
                 switch (groupParameters.shared.uiType) {
                   case "button":
@@ -305,7 +333,7 @@ const SideMapControl = ({ type }) => {
                           key={name}
                           id={name}
                           color="dark"
-                          className={`p-1 filter-button ${uiClassName}`}
+                          className={`p-1 filter-button ${eachClassName}`}
                           onClick={
                             parameter.handler
                               ? parameter.handler
@@ -336,37 +364,37 @@ const SideMapControl = ({ type }) => {
                   case "checkbox":
                     return (
                       <Col xs={12} key={name} className="py-1">
-                        <Label className="text-dark" check>
-                          <Input
-                            key={name}
-                            id={name}
-                            type="checkbox"
-                            className={"filter-button"}
-                            color="dark"
-                            onClick={
-                              parameter.handler
-                                ? parameter.handler
-                                : (event) => handleFilterClick(event, group)
-                            }
-                            checked={
-                              parameter.isSelected
-                                ? parameter.isSelected
-                                : isFilterSet(name)
-                            }
-                          />{" "}
-                          <span className="ml-3">
-                            {parameter.icon && (
-                              <FontAwesomeIcon
-                                icon={parameter.icon}
-                                className="mr-1 fa-fw"
-                                color={
-                                  parameter.iconColor && parameter.iconColor
-                                }
-                              />
-                            )}{" "}
-                            {name[0].toUpperCase() + name.slice(1)}
-                          </span>
-                        </Label>
+                        <span
+                          id={name}
+                          className={`text-dark ${
+                            groupParameters.shared.eachClass || ""
+                          }`}
+                          onClick={
+                            parameter.handler
+                              ? parameter.handler
+                              : (event) => handleFilterClick(event, group)
+                          }
+                        >
+                          {parameter.isSelected || isFilterSet(name) ? (
+                            <FontAwesomeIcon
+                              icon={faCheckSquare}
+                              className="mr-1 active far"
+                            />
+                          ) : (
+                            <FontAwesomeIcon
+                              icon={faSquare}
+                              className="mr-1 inactive far"
+                            />
+                          )}
+                          {parameter.icon && (
+                            <FontAwesomeIcon
+                              icon={parameter.icon}
+                              className="mr-1 ml-2 fa-fw"
+                              color={parameter.iconColor && parameter.iconColor}
+                            />
+                          )}{" "}
+                          {name[0].toUpperCase() + name.slice(1)}
+                        </span>
                       </Col>
                     );
                   default:
