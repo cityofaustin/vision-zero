@@ -206,7 +206,12 @@ gqlAbstractTableAggregateName (
    * @param {string} syntax - either 'asc' or 'desc'
    */
   setOrder(key, syntax) {
-    this.config["order_by"][key] = syntax;
+    if (this.config && this.config["order_by"]) {
+      this.config["order_by"][key] = syntax;
+    } else {
+      this.config["order_by"] = {};
+      this.config["order_by"][key] = syntax;
+    }
   }
 
   /**
