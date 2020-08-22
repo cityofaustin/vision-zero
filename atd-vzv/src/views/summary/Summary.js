@@ -6,6 +6,7 @@ import CrashesByMode from "./CrashesByMode";
 import CrashesByPopulation from "./CrashesByPopulation";
 import SummaryView from "./SummaryView";
 import SummaryCard from "./SummaryCard";
+import ViewTheMap from "./ViewTheMap";
 import { colors } from "../../constants/colors";
 import { dataEndDate } from "../../constants/time";
 import InfoPopover from "../../Components/Popover/InfoPopover";
@@ -22,6 +23,7 @@ const children = [
   { component: <CrashesByTimeOfDay /> },
   { component: <PeopleByDemographics /> },
   { component: <CrashesByPopulation /> },
+  { component: <ViewTheMap /> },
 ];
 
 const Summary = () => {
