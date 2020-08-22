@@ -4,7 +4,6 @@ import { Container, Row, Col } from "reactstrap";
 import { A } from "hookrouter";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMap } from "@fortawesome/free-solid-svg-icons";
-import { colors } from "../../constants/colors";
 
 // https://usehooks.com/useWindowSize/
 function useWindowSize() {
