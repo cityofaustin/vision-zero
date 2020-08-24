@@ -220,10 +220,11 @@ const PeopleByDemographics = () => {
               const age = parseInt(record.prsn_age);
               const total = parseInt(record.total);
               const yearIndex = getYearIndex(currentYear, record.year);
+              const isRangeDefined = floor !== null && ceiling !== null;
 
-              if (!age && !floor && !ceiling) {
+              if (!isRangeDefined && Number.isNaN(age)) {
                 formatted[exceptionCategory][yearIndex] += total;
-              } else if (age >= floor && age <= ceiling) {
+              } else if (isRangeDefined && age >= floor && age <= ceiling) {
                 formatted[label][yearIndex] += total;
               }
             });
