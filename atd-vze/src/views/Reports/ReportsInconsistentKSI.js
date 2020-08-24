@@ -15,6 +15,7 @@ let queryConf = {
   showDateRange: false,
   columns: crashGridTableColumns,
   where: {},
+  order_by: {},
   limit: 25,
   offset: 0,
 };

@@ -84,7 +84,7 @@ except Exception as e:
     crashes_list = []
     print("Error, could not run CR3 processing: " + str(e))
 
-with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
+with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
     for crash_record in crashes_list:
         executor.submit(process_crash_cr3, crash_record, CRIS_BROWSER_COOKIES)
 

@@ -80,6 +80,7 @@ def get_crash_id_list(downloads_per_run="25"):
             limit: %s,
             where: {
                 cr3_stored_flag: {_eq: "N"}
+                temp_record: {_eq: false}
             }
           ) {
             crash_id

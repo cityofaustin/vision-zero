@@ -48,7 +48,9 @@ export const primaryPersonDataMap = [
       },
       prsn_age: {
         label: "Age",
-        editable: false,
+        editable: true,
+        format: "text",
+        mutationVariableKey: "personId",
       },
       drvr_city_name: {
         label: "City",
@@ -91,7 +93,9 @@ export const personDataMap = [
       },
       prsn_age: {
         label: "Age",
-        editable: false,
+        editable: true,
+        format: "text",
+        mutationVariableKey: "personId",
       },
     },
   },
