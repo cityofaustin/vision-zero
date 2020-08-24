@@ -59,7 +59,7 @@ const chartConfigs = {
       [36, 45],
       [46, 55],
       [56, 64],
-      [65, 200],
+      [65, Number.POSITIVE_INFINITY],
       [null, null],
     ],
     labelCategories: [
@@ -107,7 +107,7 @@ const PeopleByDemographics = () => {
   const [chartType, setChartType] = useState("Race/Ethnicity");
   const [crashType, setCrashType] = useState(null);
   const [chartData, setChartData] = useState({});
-  const [demoData, dispatch] = useReducer(demoDataReducer, {});
+  const [demoData, demoDataDispatch] = useReducer(demoDataReducer, {});
 
   function demoDataReducer(demoData, action) {
     switch (action.type) {
@@ -133,7 +133,7 @@ const PeopleByDemographics = () => {
           {}
         );
 
-        dispatch({
+        demoDataDispatch({
           type: "setData",
           payload: responses,
         });
@@ -242,7 +242,7 @@ const PeopleByDemographics = () => {
         const sorted = sortByType(data);
         const formatted = formatChartData(dataKey, sorted);
 
-        dispatch({
+        demoDataDispatch({
           type: "setData",
           payload: { [dataKey]: formatted, status: "formatted" },
         });
