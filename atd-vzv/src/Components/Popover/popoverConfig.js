@@ -207,8 +207,8 @@ export const popoverConfig = {
             <div className="mb-2">
               <div className="mb-2">
                 <strong>Suspected Serious Injury</strong>: A suspected serious
-                is defined as a severe injury that prevents continuation of
-                normal activities, including:
+                injury is defined as a severe injury that prevents continuation
+                of normal activities, including:
               </div>
               <ul className="pl-3">
                 <li>
