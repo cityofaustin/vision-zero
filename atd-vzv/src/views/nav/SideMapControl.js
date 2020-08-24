@@ -18,10 +18,16 @@ import {
   faMotorcycle,
   faHeartbeat,
   faMedkit,
+  faEllipsisH,
+  faCheckSquare,
 } from "@fortawesome/free-solid-svg-icons";
+import { faSquare } from "@fortawesome/free-regular-svg-icons";
+
+// Keep type buttons from wrapping on Windows (scroll bar takes extra width)
+const typeFilterTextSize = navigator.appVersion.indexOf("Win") !== -1 ? 12 : 14;
 
 const StyledCard = styled.div`
-  font-size: 1.2em;
+  font-size: 1rem;
 
   .card-title {
     font-weight: bold;
@@ -42,7 +48,7 @@ const StyledCard = styled.div`
   }
 
   .type-button {
-    font-size: 12px;
+    font-size: ${typeFilterTextSize}px;
     color: ${colors.dark};
     background: ${colors.buttonBackground};
     border-style: none;
@@ -54,6 +60,27 @@ const StyledCard = styled.div`
   }
   [class^="DateInput_"] {
     text-align: center;
+  }
+
+  .outlined {
+    border: 1px solid ${colors.dark};
+    border-radius: 4px;
+  }
+
+  .dark-checkbox {
+    cursor: pointer;
+
+    .active,
+    .inactive {
+      color: ${colors.dark} !important;
+    }
+  }
+
+  .dark-checkbox:hover {
+    .active,
+    .inactive {
+      color: ${colors.secondary} !important;
+    }
   }
 `;
 
@@ -89,75 +116,85 @@ const SideMapControl = ({ type }) => {
   // Define groups of map button filters
   const mapButtonFilters = {
     type: {
-      all: {
-        text: `All`,
-        colSize: "auto",
-        handler: () => handleTypeFilterClick(["injury", "fatal"]),
-        isSelected: isMapTypeSet.injury && isMapTypeSet.fatal,
-        default: false,
-        buttonClass: `type-button`,
+      shared: {
+        eachClass: `type-button`,
+        uiType: "button",
       },
-      fatal: {
-        text: `Fatal`,
-        colSize: "auto",
-        icon: faHeartbeat,
-        iconColor: colors.fatalities,
-        handler: () => handleTypeFilterClick(["fatal"]),
-        isSelected: isMapTypeSet.fatal && !isMapTypeSet.injury,
-        default: false,
-        buttonClass: `type-button`,
-      },
-      seriousInjury: {
-        text: `Serious Injuries`,
-        colSize: "auto",
-        icon: faMedkit,
-        iconColor: colors.seriousInjuries,
-        handler: () => handleTypeFilterClick(["injury"]),
-        isSelected: isMapTypeSet.injury && !isMapTypeSet.fatal,
-        default: false,
-        buttonClass: `type-button`,
+      each: {
+        all: {
+          text: `All`,
+          colSize: "auto",
+          handler: () => handleTypeFilterClick(["injury", "fatal"]),
+          isSelected: isMapTypeSet.injury && isMapTypeSet.fatal,
+          default: false,
+        },
+        fatal: {
+          text: `Fatal`,
+          colSize: "auto",
+          icon: faHeartbeat,
+          iconColor: colors.fatalities,
+          handler: () => handleTypeFilterClick(["fatal"]),
+          isSelected: isMapTypeSet.fatal && !isMapTypeSet.injury,
+          default: false,
+        },
+        seriousInjury: {
+          text: `Serious Injuries`,
+          colSize: "auto",
+          icon: faMedkit,
+          iconColor: colors.seriousInjuries,
+          handler: () => handleTypeFilterClick(["injury"]),
+          isSelected: isMapTypeSet.injury && !isMapTypeSet.fatal,
+          default: false,
+        },
       },
     },
     mode: {
-      pedestrian: {
-        icon: faWalking, // Font Awesome icon object
-        fatalSyntax: `pedestrian_death_count > 0`, // Fatality query string
-        injurySyntax: `pedestrian_serious_injury_count > 0`, // Injury query string
-        type: `where`, // Socrata SoQL query type
-        operator: `OR`, // Logical operator for joining multiple query strings
-        default: true, // Apply filter as default on render
+      shared: {
+        uiType: "checkbox",
+        allClass: "outlined py-2 px-0",
+        eachClass: "dark-checkbox",
       },
-      pedalcyclist: {
-        icon: faBiking,
-        fatalSyntax: `bicycle_death_count > 0`,
-        injurySyntax: `bicycle_serious_injury_count > 0`,
-        type: `where`,
-        operator: `OR`,
-        default: true,
-      },
-      motor: {
-        icon: faCar,
-        fatalSyntax: `motor_vehicle_death_count > 0`,
-        injurySyntax: `motor_vehicle_serious_injury_count > 0`,
-        type: `where`,
-        operator: `OR`,
-        default: true,
-      },
-      motorcycle: {
-        icon: faMotorcycle,
-        fatalSyntax: `motorcycle_death_count > 0`,
-        injurySyntax: `motorcycle_serious_injury_count > 0`,
-        type: `where`,
-        operator: `OR`,
-        default: true,
-      },
-      other: {
-        text: "Other",
-        fatalSyntax: `other_death_count > 0`,
-        injurySyntax: `other_serious_injury_count > 0`,
-        type: `where`,
-        operator: `OR`,
-        default: true,
+      each: {
+        pedestrian: {
+          icon: faWalking, // Font Awesome icon object
+          fatalSyntax: `pedestrian_death_count > 0`, // Fatality query string
+          injurySyntax: `pedestrian_serious_injury_count > 0`, // Injury query string
+          type: `where`, // Socrata SoQL query type
+          operator: `OR`, // Logical operator for joining multiple query strings
+          default: true, // Apply filter as default on render
+        },
+        bicyclist: {
+          icon: faBiking,
+          fatalSyntax: `bicycle_death_count > 0`,
+          injurySyntax: `bicycle_serious_injury_count > 0`,
+          type: `where`,
+          operator: `OR`,
+          default: true,
+        },
+        motorist: {
+          icon: faCar,
+          fatalSyntax: `motor_vehicle_death_count > 0`,
+          injurySyntax: `motor_vehicle_serious_injury_count > 0`,
+          type: `where`,
+          operator: `OR`,
+          default: true,
+        },
+        motorcyclist: {
+          icon: faMotorcycle,
+          fatalSyntax: `motorcycle_death_count > 0`,
+          injurySyntax: `motorcycle_serious_injury_count > 0`,
+          type: `where`,
+          operator: `OR`,
+          default: true,
+        },
+        other: {
+          icon: faEllipsisH,
+          fatalSyntax: `other_death_count > 0`,
+          injurySyntax: `other_serious_injury_count > 0`,
+          type: `where`,
+          operator: `OR`,
+          default: true,
+        },
       },
     },
   };
@@ -179,7 +216,7 @@ const SideMapControl = ({ type }) => {
     if (Object.keys(buttonFilters).length === 0) {
       const initialFiltersArray = Object.entries(mapButtonFilters).reduce(
         (allFiltersAccumulator, [type, filtersGroup]) => {
-          const groupFilters = Object.entries(filtersGroup).reduce(
+          const groupFilters = Object.entries(filtersGroup.each).reduce(
             (groupFiltersAccumulator, [name, filterConfig]) => {
               // Apply filter only if set as a default on render
               if (filterConfig.default) {
@@ -254,7 +291,7 @@ const SideMapControl = ({ type }) => {
         : filters;
       setButtonFilters(updatedFiltersArray);
     } else {
-      const filter = mapButtonFilters[filterGroup][filterName];
+      const filter = mapButtonFilters[filterGroup].each[filterName];
       // Add filterName and group to object for IDing and grouping
       filter["name"] = filterName;
       filter["group"] = filterGroup;
@@ -275,48 +312,96 @@ const SideMapControl = ({ type }) => {
         </Label>
         {/* Create a button group for each group of mapFilters */}
         {Object.entries(mapButtonFilters).map(([group, groupParameters], i) => (
-          <Row className="mx-0 mb-3" key={`${group}-buttons`}>
+          <Row
+            className={`mx-0 mb-3 ${groupParameters.shared.allClass || ""}`}
+            key={`${group}-buttons`}
+          >
             {/* Create buttons for each filter within a group of mapFilters */}
-            {Object.entries(groupParameters).map(([name, parameter], i) => (
-              <Col
-                xs={parameter.colSize && parameter.colSize}
-                className="px-0"
-                key={name}
-              >
-                <Button
-                  key={name}
-                  id={name}
-                  color="dark"
-                  className={`p-1 filter-button ${
-                    parameter.buttonClass && parameter.buttonClass
-                  }`}
-                  onClick={
-                    parameter.handler
-                      ? parameter.handler
-                      : (event) => handleFilterClick(event, group)
-                  }
-                  active={
-                    parameter.isSelected
-                      ? parameter.isSelected
-                      : isFilterSet(name)
-                  }
-                  outline={
-                    parameter.isSelected
-                      ? !parameter.isSelected
-                      : !isFilterSet(name)
-                  }
-                >
-                  {parameter.icon && (
-                    <FontAwesomeIcon
-                      icon={parameter.icon}
-                      className="mr-1 ml-1"
-                      color={parameter.iconColor && parameter.iconColor}
-                    />
-                  )}
-                  {parameter.text}
-                </Button>
-              </Col>
-            ))}
+            {Object.entries(groupParameters.each).map(
+              ([name, parameter], i) => {
+                const eachClassName = groupParameters.shared.eachClass || "";
+
+                switch (groupParameters.shared.uiType) {
+                  case "button":
+                    return (
+                      <Col
+                        xs={parameter.colSize && parameter.colSize}
+                        className="px-0"
+                        key={name}
+                      >
+                        <Button
+                          key={name}
+                          id={name}
+                          color="dark"
+                          className={`p-1 filter-button ${eachClassName}`}
+                          onClick={
+                            parameter.handler
+                              ? parameter.handler
+                              : (event) => handleFilterClick(event, group)
+                          }
+                          active={
+                            parameter.isSelected
+                              ? parameter.isSelected
+                              : isFilterSet(name)
+                          }
+                          outline={
+                            parameter.isSelected
+                              ? !parameter.isSelected
+                              : !isFilterSet(name)
+                          }
+                        >
+                          {parameter.icon && (
+                            <FontAwesomeIcon
+                              icon={parameter.icon}
+                              className="mr-1 ml-1"
+                              color={parameter.iconColor && parameter.iconColor}
+                            />
+                          )}
+                          {parameter.text}
+                        </Button>
+                      </Col>
+                    );
+                  case "checkbox":
+                    return (
+                      <Col xs={12} key={name} className="py-1">
+                        <span
+                          id={name}
+                          className={`text-dark ${
+                            groupParameters.shared.eachClass || ""
+                          }`}
+                          onClick={
+                            parameter.handler
+                              ? parameter.handler
+                              : (event) => handleFilterClick(event, group)
+                          }
+                        >
+                          {parameter.isSelected || isFilterSet(name) ? (
+                            <FontAwesomeIcon
+                              icon={faCheckSquare}
+                              className="mr-1 active far"
+                            />
+                          ) : (
+                            <FontAwesomeIcon
+                              icon={faSquare}
+                              className="mr-1 inactive far"
+                            />
+                          )}
+                          {parameter.icon && (
+                            <FontAwesomeIcon
+                              icon={parameter.icon}
+                              className="mr-1 ml-2 fa-fw"
+                              color={parameter.iconColor && parameter.iconColor}
+                            />
+                          )}{" "}
+                          {name[0].toUpperCase() + name.slice(1)}
+                        </span>
+                      </Col>
+                    );
+                  default:
+                    return null;
+                }
+              }
+            )}
           </Row>
         ))}
         <SideMapControlDateRange type={type} />
