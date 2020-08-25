@@ -22,17 +22,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "Build"
-          env:
-            AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-            AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-            AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-            PR_NUMBER: ${{ github.event.pull_request.number }}
-          run: |
-            export BRANCH_NAME=${GITHUB_REF##*/}
-            echo "SHA: ${GITHUB_SHA}"
-            echo "ACTION: ${BRANCH_NAME}"
-            echo "GR: ${GITHUB_REF}"
-            echo "PWD: $(pwd)"
-            echo "PR_NUMBER: ${PR_NUMBER}"
-            source ./.github/workflows/aws-lambda-helper.sh
-          # deploy_event_functions
+        env:
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          export BRANCH_NAME=${GITHUB_REF##*/}
+          echo "SHA: ${GITHUB_SHA}"
+          echo "ACTION: ${BRANCH_NAME}"
+          echo "GR: ${GITHUB_REF}"
+          echo "PWD: $(pwd)"
+          echo "PR_NUMBER: ${PR_NUMBER}"
+          source ./.github/workflows/aws-lambda-helper.sh
+# deploy_event_functions
