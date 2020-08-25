@@ -31,6 +31,7 @@ const CrashesByTimeOfDay = () => {
   const [activeTab, setActiveTab] = useState(0);
   const [crashType, setCrashType] = useState([]);
   const [heatmapData, setHeatmapData] = useState([]);
+  const [maxForLegend, setMaxForLegend] = useState(null);
 
   const toggle = (tab) => {
     if (activeTab !== tab) setActiveTab(tab);
@@ -105,11 +106,32 @@ const CrashesByTimeOfDay = () => {
 
     // Wait for crashType to be passed up from setCrashType component,
     // then fetch records for selected year
-    if (crashType.queryStringCrash)
+    if (crashType.queryStringCrash) {
       axios.get(getFatalitiesByYearsAgoUrl()).then((res) => {
-        setHeatmapData(calculateHourBlockTotals(res.data));
+        const formattedData = calculateHourBlockTotals(res.data);
+        setHeatmapData(formattedData);
       });
+    }
   }, [activeTab, crashType, hourBlockArray]);
+
+  // Query to find maximum day total per crash type
+  useEffect(() => {
+    const maxQuery = `
+    SELECT date_extract_dow(crash_date) as day, date_extract_hh(crash_date) as hour, date_extract_y(crash_date) as year, SUM(death_cnt) as death, SUM(sus_serious_injry_cnt) as serious, serious + death as all 
+    WHERE crash_date BETWEEN '2016-01-01' and '2020-06-30' 
+    GROUP BY day, hour, year ORDER BY year 
+    |> 
+    SELECT max(death) as max_death, max(serious) as max_serious, max(all) as max_all
+    `;
+
+    if (!maxForLegend) {
+      axios
+        .get(crashEndpointUrl + `?$query=` + encodeURIComponent(maxQuery))
+        .then((res) => {
+          setMaxForLegend(res.data[0]);
+        });
+    }
+  }, [maxForLegend, crashType]);
 
   const formatValue = (d) => {
     const value = d.data.value ? d.data.value : 0;
