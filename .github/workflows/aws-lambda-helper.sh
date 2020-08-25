@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+echo "SOURCE -> BRANCH_NAME: ${BRANCH_NAME}";
+
 case "${BRANCH_NAME}" in
   "production")
     export WORKING_STAGE="production";
@@ -13,6 +15,8 @@ case "${BRANCH_NAME}" in
     echo "New working stage: ${WORKING_STAGE}...";
   ;;
 esac
+
+echo "SOURCE -> WORKING_STAGE: ${WORKING_STAGE}";
 
 ##
 ## First, we need to create the python package by installing requirements
