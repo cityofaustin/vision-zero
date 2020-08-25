@@ -1,7 +1,7 @@
 #
 # Builds SQS Triggers for the ATD-Events
 #
-name: "Publish SQS With Branches"
+name: "Build & Publish SQS"
 
 on:
   push:
