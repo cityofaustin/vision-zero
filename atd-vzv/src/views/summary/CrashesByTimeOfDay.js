@@ -41,6 +41,13 @@ const CrashesByTimeOfDay = () => {
     []
   );
 
+  // Look for the elements within this range and hide them on render (then change to extra row of data that will determine weighting)
+  // When iterating data, find maximum value and use to set max value for last row that will be hidden
+  // Scoot heatmap chart to the right with Col wrapper (Bootstrap class)
+  // Set legend with min 0 and max from data https://github.com/reaviz/reaviz/blob/5fd88e8e8c5bd21572b7b21ffe0ec12df2cc8ba5/src/common/legends/SequentialLegend/SequentialLegend.story.tsx#L15
+  // #demographics-heatmap > div > svg > g > g:nth-child(170)
+  // #demographics-heatmap > div > svg > g > g:nth-child(164)
+
   useEffect(() => {
     const dayOfWeekArray = moment.weekdaysShort();
 
@@ -164,7 +171,7 @@ const CrashesByTimeOfDay = () => {
         </Col>
       </Row>
       <Row className="h-auto">
-        <Col>
+        <Col id="demographics-heatmap">
           <Heatmap
             height={267}
             data={heatmapData}
