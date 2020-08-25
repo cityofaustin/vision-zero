@@ -34,5 +34,5 @@ jobs:
           echo "GR: ${GITHUB_REF}"
           echo "PWD: $(pwd)"
           echo "PR_NUMBER: ${PR_NUMBER}"
-          source ./.github/workflows/aws-lambda-helper.sh
+# source ./.github/workflows/aws-lambda-helper.sh
 # deploy_event_functions
