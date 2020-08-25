@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import moment from "moment";
 import clonedeep from "lodash.clonedeep";
@@ -28,6 +28,11 @@ import { crashEndpointUrl } from "./queries/socrataQueries";
 import { getYearsAgoLabel } from "./helpers/helpers";
 import { colors } from "../../constants/colors";
 
+const dayOfWeekArray = moment.weekdaysShort();
+const hourBlockArray = [...Array(24).keys()].map((hour) =>
+  moment({ hour }).format("hhA")
+);
+
 const CrashesByTimeOfDay = () => {
   const [activeTab, setActiveTab] = useState(0);
   const [crashType, setCrashType] = useState([]);
@@ -38,21 +43,13 @@ const CrashesByTimeOfDay = () => {
     if (activeTab !== tab) setActiveTab(tab);
   };
 
-  const hourBlockArray = useMemo(
-    () => [...Array(24).keys()].map((hour) => moment({ hour }).format("hhA")),
-    []
-  );
-
   // Look for the elements within this range and hide them on render (then change to extra row of data that will determine weighting)
   // When iterating data, find maximum value and use to set max value for last row that will be hidden
   // Scoot heatmap chart to the right with Col wrapper (Bootstrap class)
-  // Set legend with min 0 and max from data https://github.com/reaviz/reaviz/blob/5fd88e8e8c5bd21572b7b21ffe0ec12df2cc8ba5/src/common/legends/SequentialLegend/SequentialLegend.story.tsx#L15
   // #demographics-heatmap > div > svg > g > g:nth-child(170)
   // #demographics-heatmap > div > svg > g > g:nth-child(164)
 
   useEffect(() => {
-    const dayOfWeekArray = moment.weekdaysShort();
-
     const buildDataArray = () => {
       // This array holds weekday totals for each hour window within a day
       // Reaviz Heatmap expects array of weekday total objs to be reversed in order
@@ -113,7 +110,7 @@ const CrashesByTimeOfDay = () => {
         setHeatmapData(formattedData);
       });
     }
-  }, [activeTab, crashType, hourBlockArray]);
+  }, [activeTab, crashType]);
 
   // Query to find maximum day total per crash type
   useEffect(() => {
@@ -137,14 +134,31 @@ const CrashesByTimeOfDay = () => {
     }
   }, [maxForLegend, crashType]);
 
-  // useEffect(() => {
-  //   if(!!maxForLegend && !!heatmapData){
-  //     const currentData = heatmapData;
+  // When crashType changes, add a placeholder column containing max values to weight each year consistently
+  useEffect(() => {
+    const lastRecordInHeatmapData = heatmapData[heatmapData.length - 1];
+    const isPlaceholderArraySet =
+      lastRecordInHeatmapData && lastRecordInHeatmapData.key === "";
 
-  //     const dummyArray = [];
+    if (!!maxForLegend && heatmapData.length > 0 && !isPlaceholderArraySet) {
+      const placeholderArray = heatmapData[0].data.map((data, i) => ({
+        key: dayOfWeekArray[i],
+        data: maxForLegend[crashType.name],
+      }));
 
-  //   }
-  // }, [maxForLegend, heatmapData])
+      const placeholderObjForChartWeighting = {
+        key: "",
+        data: placeholderArray,
+      };
+
+      const updatedWeightingData = [
+        ...heatmapData,
+        placeholderObjForChartWeighting,
+      ];
+
+      setHeatmapData(updatedWeightingData);
+    }
+  }, [maxForLegend, heatmapData, crashType]);
 
   const formatValue = (d) => {
     const value = d.data.value ? d.data.value : 0;
