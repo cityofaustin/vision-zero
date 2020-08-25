@@ -43,12 +43,6 @@ const CrashesByTimeOfDay = () => {
     if (activeTab !== tab) setActiveTab(tab);
   };
 
-  // Look for the elements within this range and hide them on render (then change to extra row of data that will determine weighting)
-  // When iterating data, find maximum value and use to set max value for last row that will be hidden
-  // Scoot heatmap chart to the right with Col wrapper (Bootstrap class)
-  // #demographics-heatmap > div > svg > g > g:nth-child(170)
-  // #demographics-heatmap > div > svg > g > g:nth-child(164)
-
   useEffect(() => {
     const buildDataArray = () => {
       // This array holds weekday totals for each hour window within a day
@@ -159,6 +153,24 @@ const CrashesByTimeOfDay = () => {
       setHeatmapData(updatedWeightingData);
     }
   }, [maxForLegend, heatmapData, crashType]);
+
+  useEffect(() => {
+    const heatmapChildCellNumbers = [171, 172, 173, 174, 175, 176, 177];
+
+    let cellsToHide = heatmapChildCellNumbers.map((num) =>
+      document.querySelector(
+        `#demographics-heatmap > div > svg > g > g:nth-child(${num})`
+      )
+    );
+
+    cellsToHide.forEach((cell) => {
+      if (!!cell) {
+        cell.style.visibility = "hidden";
+      }
+    });
+  }, [heatmapData, crashType]);
+
+  // Scoot heatmap chart to the right with Col wrapper (Bootstrap class)
 
   const formatValue = (d) => {
     const value = d.data.value ? d.data.value : 0;
