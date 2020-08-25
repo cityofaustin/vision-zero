@@ -21,6 +21,7 @@ import {
   summaryCurrentYearStartDate,
   summaryCurrentYearEndDate,
   yearsArray,
+  dataStartDate,
   dataEndDate,
 } from "../../constants/time";
 import { crashEndpointUrl } from "./queries/socrataQueries";
@@ -118,10 +119,13 @@ const CrashesByTimeOfDay = () => {
   useEffect(() => {
     const maxQuery = `
     SELECT date_extract_dow(crash_date) as day, date_extract_hh(crash_date) as hour, date_extract_y(crash_date) as year, SUM(death_cnt) as death, SUM(sus_serious_injry_cnt) as serious, serious + death as all 
-    WHERE crash_date BETWEEN '2016-01-01' and '2020-06-30' 
-    GROUP BY day, hour, year ORDER BY year 
+    WHERE crash_date BETWEEN '${dataStartDate.format(
+      "YYYY-MM-DD"
+    )}' and '${summaryCurrentYearEndDate}' 
+    GROUP BY day, hour, year 
+    ORDER BY year 
     |> 
-    SELECT max(death) as max_death, max(serious) as max_serious, max(all) as max_all
+    SELECT max(death) as fatalities, max(serious) as seriousInjuries, max(all) as fatalitiesAndSeriousInjuries
     `;
 
     if (!maxForLegend) {
@@ -132,6 +136,15 @@ const CrashesByTimeOfDay = () => {
         });
     }
   }, [maxForLegend, crashType]);
+
+  // useEffect(() => {
+  //   if(!!maxForLegend && !!heatmapData){
+  //     const currentData = heatmapData;
+
+  //     const dummyArray = [];
+
+  //   }
+  // }, [maxForLegend, heatmapData])
 
   const formatValue = (d) => {
     const value = d.data.value ? d.data.value : 0;
@@ -243,16 +256,19 @@ const CrashesByTimeOfDay = () => {
       </Row>
       <Row>
         <Col className="py-2">
-          <SequentialLegend
-            data={heatmapData}
-            orientation="horizontal"
-            colorScheme={[
-              colors.intensity2Of5,
-              colors.intensity3Of5,
-              colors.intensity4Of5,
-              colors.viridis1Of6Highest,
-            ]}
-          />
+          {!!maxForLegend && (
+            <SequentialLegend
+              data={[
+                { key: "Max", data: maxForLegend[crashType.name] },
+                { key: "Min", data: 0 },
+              ]}
+              orientation="horizontal"
+              colorScheme={[
+                colors.intensity1Of5Lowest,
+                colors.viridis1Of6Highest,
+              ]}
+            />
+          )}
         </Col>
       </Row>
     </Container>
