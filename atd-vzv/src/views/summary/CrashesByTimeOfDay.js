@@ -101,9 +101,6 @@ const CrashesByTimeOfDay = () => {
       return queryUrl;
     };
 
-    // Wait for crashType to be passed up from setCrashType component,
-    // then fetch records for selected year
-
     axios.get(getFatalitiesByYearsAgoUrl()).then((res) => {
       const formattedData = calculateHourBlockTotals(res.data);
       setHeatmapData(formattedData);
@@ -138,24 +135,25 @@ const CrashesByTimeOfDay = () => {
     const isPlaceholderArraySet =
       lastRecordInHeatmapData && lastRecordInHeatmapData.key === "";
 
-    if (!!maxForLegend && heatmapData.length > 0 && !isPlaceholderArraySet) {
-      const placeholderArray = heatmapData[0].data.map((data, i) => ({
-        key: dayOfWeekArray[i],
-        data: maxForLegend[crashType.name],
-      }));
+    if (!maxForLegend || heatmapData.length === 0 || isPlaceholderArraySet)
+      return;
 
-      const placeholderObjForChartWeighting = {
-        key: "",
-        data: placeholderArray,
-      };
+    const placeholderArray = heatmapData[0].data.map((data, i) => ({
+      key: dayOfWeekArray[i],
+      data: maxForLegend[crashType.name],
+    }));
 
-      const updatedWeightingData = [
-        ...heatmapData,
-        placeholderObjForChartWeighting,
-      ];
+    const placeholderObjForChartWeighting = {
+      key: "",
+      data: placeholderArray,
+    };
 
-      setHeatmapDataWithPlaceholder(updatedWeightingData);
-    }
+    const updatedWeightingData = [
+      ...heatmapData,
+      placeholderObjForChartWeighting,
+    ];
+
+    setHeatmapDataWithPlaceholder(updatedWeightingData);
   }, [maxForLegend, heatmapData, crashType]);
 
   // Hide placeholder cells
