@@ -21,6 +21,15 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
+      # Get the code first
+      - name: "Checkout"
+        uses: actions/checkout@v2
+      # Then install the AWC CLI tools & boto3
+      - name: "Install AWS Cli"
+        run: |
+          sudo apt-get install python3-setuptools
+          pip3 install awscli boto3
+      # Run the shell commands using the AWS environment variables
       - name: "Build"
         env:
           AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -34,5 +43,5 @@ jobs:
           echo "GR: ${GITHUB_REF}"
           echo "PWD: $(pwd)"
           echo "PR_NUMBER: ${PR_NUMBER}"
-          ls -lha
+          source $(pwd)/.github/workflows/aws-lambda-helper.sh
 # deploy_event_functions
