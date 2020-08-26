@@ -68,8 +68,9 @@ function generate_env_vars {
       echo "Validating JSON syntax for zappa settings file...";
       jq type zappa_settings.json;
       echo "LOCAL_STAGE: ${LOCAL_STAGE}";
-      STAGE_ENV_VARS=$(cat zappa_settings.json | jq ".${LOCAL_STAGE}.aws_environment_variables");
-      echo -e "{\"Description\": \"ATD VisionZero Events Handler\", \"Environment\": { \"Variables\": ${STAGE_ENV_VARS}}}" | jq -c > handler_config.json;
+      STAGE_ENV_VARS=$(cat zappa_settings.json | jq -r ".${LOCAL_STAGE}.aws_environment_variables");
+      echo $STAGE_ENV_VARS | cut -c0-35;
+      echo -e "{\"Description\": \"ATD VisionZero Events Handler\", \"Environment\": { \"Variables\": ${STAGE_ENV_VARS}}}" | jq -rc > handler_config.json;
 }
 
 #
@@ -104,14 +105,14 @@ function deploy_event_function {
   echo "Resetting environment variables: ${FUNCTION_NAME} @ ${PWD}";
   aws lambda update-function-configuration \
         --function-name "${FUNCTION_NAME}" \
-        --cli-input-json file://$PWD/handler_config.json | jq ".LastModified";
+        --cli-input-json file://$PWD/handler_config.json | jq -r ".LastModified";
   echo "Finished Lambda Update/Deployment";
 }
 
 function deploy_event_source_mapping {
     FUNCTION_NAME=$1
     EVENT_SOURCE_ARN=$2
-    MAPPINGS_COUNT=$(aws lambda list-event-source-mappings --function-name "${FUNCTION_NAME}" | jq ".EventSourceMappings | length");
+    MAPPINGS_COUNT=$(aws lambda list-event-source-mappings --function-name "${FUNCTION_NAME}" | jq -r ".EventSourceMappings | length");
 
     # If no mappings are found, then create it...
     if [[ "${MAPPINGS_COUNT}" = "0" ]]; then
@@ -132,7 +133,7 @@ function deploy_sqs {
     QUEUE_NAME=$1
     echo "Deploying queue '${QUEUE_NAME}'";
     {
-        QUEUE_URL=$(aws sqs get-queue-url --queue-name "${QUEUE_NAME}" 2>/dev/null | jq ".QueueUrl");
+        QUEUE_URL=$(aws sqs get-queue-url --queue-name "${QUEUE_NAME}" 2>/dev/null | jq -r ".QueueUrl");
         echo "The queue already exists: '${QUEUE_URL}'";
     } || {
         QUEUE_URL="";
@@ -144,14 +145,14 @@ function deploy_sqs {
         # Create with default values, no re-drive policy.
         echo "Creating Queue";
         CREATE_SQS=$(aws sqs create-queue --queue-name "${QUEUE_NAME}" --attributes "DelaySeconds=0,MaximumMessageSize=262144,MessageRetentionPeriod=345600,VisibilityTimeout=30,RedrivePolicy='{\"deadLetterTargetArn\":\"arn:aws:sqs:us-east-1:295525487728:atd_vz_deadletter_queue\",\"maxReceiveCount\":3}'" 2> /dev/null);
-        QUEUE_URL=$(aws sqs get-queue-url --queue-name "${QUEUE_NAME}" 2>/dev/null | jq ".QueueUrl");
+        QUEUE_URL=$(aws sqs get-queue-url --queue-name "${QUEUE_NAME}" 2>/dev/null | jq -r ".QueueUrl");
         echo "Done creating queue: QUEUE_URL: ${QUEUE_URL}";
     else
         echo "Skipping SQS creation, the queue already exists: ${QUEUE_NAME}";
     fi;
 
     # Gather SQS attributes from URL, extract amazon resource name
-    QUEUE_ARN=$(aws sqs get-queue-attributes --queue-url "${QUEUE_URL}" --attribute-names "QueueArn" 2>/dev/null | jq ".Attributes.QueueArn");
+    QUEUE_ARN=$(aws sqs get-queue-attributes --queue-url "${QUEUE_URL}" --attribute-names "QueueArn" 2>/dev/null | jq -r ".Attributes.QueueArn");
     echo "QUEUE_ARN: ${QUEUE_ARN}";
     echo "QUEUE_URL: ${QUEUE_URL}";
 
