@@ -59,12 +59,6 @@ function generate_env_vars {
         LOCAL_STAGE="${WORKING_STAGE}";
       fi;
       echo "Using stage: '${LOCAL_STAGE}' (Current working stage: '${WORKING_STAGE}')...";
-      echo "Current directory: '$(pwd)'";
-      echo "Current directory content: ";
-      ls -lha;
-      echo "Zappa settings contents: ";
-      cat zappa_settings.json | head -c 210;
-      echo "...";
       echo "Validating JSON syntax for zappa settings file...";
       jq type zappa_settings.json;
       echo "LOCAL_STAGE: ${LOCAL_STAGE}";
