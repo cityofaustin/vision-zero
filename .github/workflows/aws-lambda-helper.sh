@@ -65,6 +65,9 @@ function generate_env_vars {
       echo "Zappa settings contents: ";
       cat zappa_settings.json | head -c 210;
       echo "...";
+      echo "Validating JSON syntax for zappa settings file...";
+      jq type zappa_settings.json;
+      echo "LOCAL_STAGE: ${LOCAL_STAGE}";
       STAGE_ENV_VARS=$(cat zappa_settings.json | jq -r ".${LOCAL_STAGE}.aws_environment_variables");
       echo -e "{\"Description\": \"ATD VisionZero Events Handler\", \"Environment\": { \"Variables\": ${STAGE_ENV_VARS}}}" | jq -rc > handler_config.json;
 }
