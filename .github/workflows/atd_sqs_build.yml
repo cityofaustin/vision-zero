@@ -21,24 +21,20 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/setup-python@v2
+          with:
+            python-version: "3.8"
+            architecture: "x64"
       # Get the code first
       - name: "Checkout"
         uses: actions/checkout@v2
       # Then install the AWC CLI tools & boto3
       - name: "Install AWS Cli"
-      - uses: actions/setup-python@v2
-        with:
-          python-version: "3.8"
-          architecture: "x64"
         run: |
           sudo apt-get install python3-setuptools
           pip3 install awscli boto3
       # Run the shell commands using the AWS environment variables
       - name: "Build"
-      - uses: actions/setup-python@v2
-        with:
-          python-version: "3.8"
-          architecture: "x64"
         env:
           AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
