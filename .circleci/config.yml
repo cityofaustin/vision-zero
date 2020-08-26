@@ -35,4 +35,3 @@ workflows:
               only:
                 - master
                 - production
-                - /^(?!pull\/).*$/
