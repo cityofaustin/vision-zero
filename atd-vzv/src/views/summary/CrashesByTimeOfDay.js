@@ -37,6 +37,9 @@ const CrashesByTimeOfDay = () => {
   const [activeTab, setActiveTab] = useState(0);
   const [crashType, setCrashType] = useState([]);
   const [heatmapData, setHeatmapData] = useState([]);
+  const [heatmapDataWithPlaceholder, setHeatmapDataWithPlaceholder] = useState(
+    []
+  );
   const [maxForLegend, setMaxForLegend] = useState(null);
 
   const toggle = (tab) => {
@@ -44,6 +47,8 @@ const CrashesByTimeOfDay = () => {
   };
 
   useEffect(() => {
+    if (!crashType.queryStringCrash) return;
+
     const buildDataArray = () => {
       // This array holds weekday totals for each hour window within a day
       // Reaviz Heatmap expects array of weekday total objs to be reversed in order
@@ -98,16 +103,17 @@ const CrashesByTimeOfDay = () => {
 
     // Wait for crashType to be passed up from setCrashType component,
     // then fetch records for selected year
-    if (crashType.queryStringCrash) {
-      axios.get(getFatalitiesByYearsAgoUrl()).then((res) => {
-        const formattedData = calculateHourBlockTotals(res.data);
-        setHeatmapData(formattedData);
-      });
-    }
+
+    axios.get(getFatalitiesByYearsAgoUrl()).then((res) => {
+      const formattedData = calculateHourBlockTotals(res.data);
+      setHeatmapData(formattedData);
+    });
   }, [activeTab, crashType]);
 
   // Query to find maximum day total per crash type
   useEffect(() => {
+    if (maxForLegend) return;
+
     const maxQuery = `
     SELECT date_extract_dow(crash_date) as day, date_extract_hh(crash_date) as hour, date_extract_y(crash_date) as year, SUM(death_cnt) as death, SUM(sus_serious_injry_cnt) as serious, serious + death as all 
     WHERE crash_date BETWEEN '${dataStartDate.format(
@@ -119,13 +125,11 @@ const CrashesByTimeOfDay = () => {
     SELECT max(death) as fatalities, max(serious) as seriousInjuries, max(all) as fatalitiesAndSeriousInjuries
     `;
 
-    if (!maxForLegend) {
-      axios
-        .get(crashEndpointUrl + `?$query=` + encodeURIComponent(maxQuery))
-        .then((res) => {
-          setMaxForLegend(res.data[0]);
-        });
-    }
+    axios
+      .get(crashEndpointUrl + `?$query=` + encodeURIComponent(maxQuery))
+      .then((res) => {
+        setMaxForLegend(res.data[0]);
+      });
   }, [maxForLegend, crashType]);
 
   // When crashType changes, add a placeholder column containing max values to weight each year consistently
@@ -150,10 +154,11 @@ const CrashesByTimeOfDay = () => {
         placeholderObjForChartWeighting,
       ];
 
-      setHeatmapData(updatedWeightingData);
+      setHeatmapDataWithPlaceholder(updatedWeightingData);
     }
   }, [maxForLegend, heatmapData, crashType]);
 
+  // Hide placeholder cells
   useEffect(() => {
     const heatmapChildCellNumbers = [171, 172, 173, 174, 175, 176, 177];
 
@@ -168,9 +173,7 @@ const CrashesByTimeOfDay = () => {
         cell.style.visibility = "hidden";
       }
     });
-  }, [heatmapData, crashType]);
-
-  // Scoot heatmap chart to the right with Col wrapper (Bootstrap class)
+  }, [heatmapDataWithPlaceholder, crashType, maxForLegend]);
 
   const formatValue = (d) => {
     const value = d.data.value ? d.data.value : 0;
@@ -232,10 +235,10 @@ const CrashesByTimeOfDay = () => {
         </Col>
       </Row>
       <Row className="h-auto">
-        <Col id="demographics-heatmap">
+        <Col id="demographics-heatmap" className="pl-4">
           <Heatmap
             height={267}
-            data={heatmapData}
+            data={heatmapDataWithPlaceholder}
             series={
               <HeatmapSeries
                 colorScheme={[
