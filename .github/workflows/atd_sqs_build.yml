@@ -44,4 +44,4 @@ jobs:
           echo "PWD: $(pwd)"
           echo "PR_NUMBER: ${PR_NUMBER}"
           source $(pwd)/.github/workflows/aws-lambda-helper.sh
-# deploy_event_functions
+          deploy_event_functions
