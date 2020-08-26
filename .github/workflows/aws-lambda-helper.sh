@@ -71,6 +71,7 @@ function generate_env_vars {
       STAGE_ENV_VARS=$(cat zappa_settings.json | jq -r ".${LOCAL_STAGE}.aws_environment_variables");
       echo $STAGE_ENV_VARS | cut -c1-35;
       echo -e "{\"Description\": \"ATD VisionZero Events Handler\", \"Environment\": { \"Variables\": ${STAGE_ENV_VARS}}}" | jq -rc > handler_config.json;
+      echo "Done";
 }
 
 #
