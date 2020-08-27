@@ -21,6 +21,7 @@ import { withApollo } from "react-apollo";
 import { gql } from "apollo-boost";
 import "./CreateCrashRecord.css";
 import UnitsForm from "./UnitsForm";
+import CreateCrashRecordTable from "./CreateCrashRecordTable";
 
 const CreateCrashRecord = ({ client }) => {
   const unitsInitialState = [
@@ -450,6 +451,7 @@ const CreateCrashRecord = ({ client }) => {
           </div>
         </CardFooter>
       </Card>
+      <CreateCrashRecordTable />
     </Form>
   );
 };
