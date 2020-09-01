@@ -95,20 +95,23 @@ const SideMapControl = ({ type }) => {
 
   const setTypeFilters = (typeArray) => {
     // Set types in array as true and others as false
-    const updatedState = Object.keys(isMapTypeSet).reduce((acc, type) => {
-      if (typeArray.includes(type)) {
-        acc = { ...acc, [type]: true };
-      } else {
-        acc = { ...acc, [type]: false };
-      }
-      return acc;
-    }, {});
+    const updatedState = Object.keys({ ...isMapTypeSet }).reduce(
+      (acc, type) => {
+        if (typeArray.includes(type)) {
+          acc = { ...acc, [type]: true };
+        } else {
+          acc = { ...acc, [type]: false };
+        }
+        return acc;
+      },
+      {}
+    );
 
     setIsMapTypeSet(updatedState);
   };
 
   const handleTypeFilterClick = (filterArr) => {
-    setTypeFilters(filterArr);
+    setTypeFilters([...filterArr]);
     // Track single filter clicks with GA
     filterArr.length === 1 && trackPageEvent(filterArr[0]);
   };
@@ -234,6 +237,7 @@ const SideMapControl = ({ type }) => {
         []
       );
       setButtonFilters(initialFiltersArray);
+      //  TODO: Not here!
     }
   }, [mapButtonFilters, setButtonFilters, buttonFilters]);
 
@@ -242,25 +246,27 @@ const SideMapControl = ({ type }) => {
     if (Object.keys(buttonFilters).length !== 0) {
       const filterModeSyntaxByType = (filtersArray) =>
         filtersArray.map((filter) => {
+          const updatedFilter = { ...filter };
           // Set syntax for generateWhereFilters() map helper
           if (isMapTypeSet.fatal && isMapTypeSet.injury) {
-            filter.syntax = `${filter.fatalSyntax} ${filter.operator} ${filter.injurySyntax}`;
+            updatedFilter.syntax = `${filter.fatalSyntax} ${filter.operator} ${filter.injurySyntax}`;
           } else if (isMapTypeSet.fatal) {
-            filter.syntax = filter.fatalSyntax;
+            updatedFilter.syntax = filter.fatalSyntax;
           } else if (isMapTypeSet.injury) {
-            filter.syntax = filter.injurySyntax;
+            updatedFilter.syntax = filter.injurySyntax;
           }
-          return filter;
+          return updatedFilter;
         });
 
-      const updatedFiltersArray = filterModeSyntaxByType(buttonFilters);
+      const updatedFiltersArray = filterModeSyntaxByType([...buttonFilters]);
+      console.log("Filters updated", updatedFiltersArray);
       setFilters(updatedFiltersArray);
     }
   }, [buttonFilters, isMapTypeSet, setFilters]);
 
   // Set count of filters applied per type
   useEffect(() => {
-    const filtersCount = filters.reduce((accumulator, filter) => {
+    const filtersCount = [...filters].reduce((accumulator, { ...filter }) => {
       if (accumulator[filter.group]) {
         accumulator = {
           ...accumulator,

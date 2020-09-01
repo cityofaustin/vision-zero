@@ -28,6 +28,8 @@ export default ({ children }) => {
     !isTablet && setIsOpen(false);
   }, [isTablet, setIsOpen]);
 
+  console.log("Context updated", mapFilters);
+
   const store = {
     mapFilters: [mapFilters, setMapFilters],
     mapFilterType: [isMapTypeSet, setIsMapTypeSet],
