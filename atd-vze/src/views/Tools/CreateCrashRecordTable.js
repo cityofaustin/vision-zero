@@ -3,17 +3,18 @@ import { Link } from "react-router-dom";
 
 import { withApollo } from "react-apollo";
 import { gql } from "apollo-boost";
-import { useQuery } from "@apollo/react-hooks";
+import { useQuery, useMutation } from "@apollo/react-hooks";
 
 import {
+  Alert,
   Button,
   Card,
   CardBody,
   CardHeader,
   FormGroup,
   Input,
-  Label,
-  Table,
+  Label, Modal, ModalBody, ModalFooter, ModalHeader,
+  Table
 } from "reactstrap";
 
 const GET_TEMP_RECORDS = gql`
@@ -49,23 +50,52 @@ const DELETE_TEMP_RECORD = gql`
 const CreateCrashRecordTable = ({ client }) => {
   const [crashesData, setCrashesData] = useState(null);
   const [crashSearch, setCrashSearch] = useState("");
-  const { loading, error, data } = useQuery(GET_TEMP_RECORDS);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [deleteId, setDeleteId] = useState(null);
+  const [feedback, setFeedback] = useState(null);
+  const { loading, error, data } = useQuery(GET_TEMP_RECORDS, {fetchPolicy: 'no-cache'});
+  const [deleteRecord] = useMutation(DELETE_TEMP_RECORD);
 
   useEffect(() => {
     setCrashesData(data);
   }, [data]);
 
-  useEffect(() => {
-    console.log("Crashes Data change detected");
-  }, [crashesData]);
-
-  useEffect(() => {
-    console.log(crashSearch);
-  }, [crashSearch]);
-
+  /**
+   * Updates the case_id being searched
+   * @param {Object} e - The Event being handled
+   */
   const onKeyboardTypeHandler = e => {
     setCrashSearch(e.target.value);
   };
+
+  /**
+   * Deletes all the temporary records in the database
+   */
+  const handleDelete = () => {
+    setFeedback(null);
+    deleteRecord({ variables: { crashId: deleteId } }).then(() => {
+      const newData = crashesData["atd_txdot_crashes"].filter((item) => {
+        return item.crash_id !== deleteId;
+      });
+      setDeleteId(null);
+      setFeedback(`Crash ID ${deleteId} has been deleted.`);
+      setCrashesData({"atd_txdot_crashes": newData});
+      toggleModalDelete();
+    }).catch(err => {
+
+      setFeedback(String(err));
+      setDeleteId(null);
+    });
+  }
+
+  const toggleModalDelete = () => {
+    setModalOpen(!modalOpen);
+  }
+
+  const openModalDelete = (crashId) => {
+    setDeleteId(crashId);
+    toggleModalDelete();
+  }
 
   return (
     <>
@@ -78,6 +108,13 @@ const CreateCrashRecordTable = ({ client }) => {
             Database
           </CardHeader>
           <CardBody>
+            <Alert
+              color="secondary"
+              isOpen={!!feedback}
+              toggle={() => setFeedback(null)}
+            >
+              {feedback}
+            </Alert>
             <FormGroup>
               <Label htmlFor="company">
                 Type to search by case id (exact match)
@@ -123,6 +160,7 @@ const CreateCrashRecordTable = ({ client }) => {
                             color="danger"
                             className="btn-pill"
                             size={"sm"}
+                            onClick={() => openModalDelete(item.crash_id)}
                           >
                             <i className="fa fa-remove"></i>&nbsp;Delete
                           </Button>
@@ -135,6 +173,24 @@ const CreateCrashRecordTable = ({ client }) => {
           </CardBody>
         </Card>
       )}
+      <Modal
+        isOpen={modalOpen}
+        className={"modal-danger"}
+        toggle={toggleModalDelete}
+      >
+        <ModalHeader toggle={toggleModalDelete}>
+          Delete this record?
+        </ModalHeader>
+        <ModalBody>Are you sure you want to delete crash id <strong>{deleteId}</strong>? This cannot be undone.</ModalBody>
+        <ModalFooter>
+          <Button color="danger" onClick={handleDelete}>
+            Ok
+          </Button>
+          <Button color="secondary" onClick={toggleModalDelete}>
+            Cancel
+          </Button>
+        </ModalFooter>
+      </Modal>
     </>
   );
 };
