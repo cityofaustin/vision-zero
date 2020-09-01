@@ -142,7 +142,7 @@ const GridTable = ({
         setChartQuery(updatedChartsQuery);
       }
     }
-  }, [] ); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Execute aggregate query each time query filters change
   useEffect(() => {
@@ -346,9 +346,9 @@ const GridTable = ({
       query.deleteWhere(column);
     });
 
-    const useEqSearch =
-      searchParameters["column"] === "crash_id" ||
-      searchParameters["column"] === "form_id";
+    const useEqSearch = ["crash_id", "form_id", "record_id"].includes(
+      searchParameters["column"]
+    );
 
     if (useEqSearch) {
       // Search Integer for exact value
