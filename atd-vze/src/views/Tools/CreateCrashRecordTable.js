@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { withApollo } from "react-apollo";
 import { gql } from "apollo-boost";
 import { useQuery } from "@apollo/react-hooks";
-import "./CreateCrashRecordTable.css";
+
 import {
   Button,
   Card,
