@@ -29,4 +29,5 @@ variables for the staging environment only:
    ```
    # Run a specific test:
    $ pytest -v tests/your_test.py
+   $ pytest -v tests/your_tests.py::TestClass::test_method
    ```
