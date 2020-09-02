@@ -21,8 +21,12 @@ import { withApollo } from "react-apollo";
 import { gql } from "apollo-boost";
 import "./CreateCrashRecord.css";
 import UnitsForm from "./UnitsForm";
+import CreateCrashRecordTable from "./CreateCrashRecordTable";
+import { useAuth0 } from "../../auth/authContext";
 
 const CreateCrashRecord = ({ client }) => {
+  const { user } = useAuth0();
+
   const unitsInitialState = [
     { unit_desc_id: 1, atd_fatality_count: 0, sus_serious_injry_cnt: 0 },
   ];
@@ -200,8 +204,9 @@ const CreateCrashRecord = ({ client }) => {
         $crash_date: date
         $crash_fatal_fl: String
         $crash_id: Int
-        $crash_time: time
-        $sus_serious_injry_cnt: Int
+        $crash_time: time,
+        $sus_serious_injry_cnt: Int,
+        $updated_by: String
       ) {
         insert_atd_txdot_crashes(
           objects: [
@@ -216,6 +221,7 @@ const CreateCrashRecord = ({ client }) => {
               crash_id: $crash_id
               crash_time: $crash_time
               sus_serious_injry_cnt: $sus_serious_injry_cnt
+              updated_by: $updated_by 
               temp_record: true
             }
           ]
@@ -256,6 +262,7 @@ const CreateCrashRecord = ({ client }) => {
             crash_id: tempId,
             crash_time: crashTime,
             sus_serious_injry_cnt: susSeriousInjuryCountSum,
+            updated_by: user.email
           };
 
           client
@@ -450,6 +457,7 @@ const CreateCrashRecord = ({ client }) => {
           </div>
         </CardFooter>
       </Card>
+      <CreateCrashRecordTable />
     </Form>
   );
 };
