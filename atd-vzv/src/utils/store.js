@@ -7,7 +7,6 @@ export const StoreContext = React.createContext(null);
 
 export default ({ children }) => {
   const [isOpen, setIsOpen] = useState(false);
-  // const [mapFilters, setMapFilters] = useState([]);
   const [mapFilters, mapFilterDispatch] = useReducer(mapFilterReducer, []);
   const [isMapTypeSet, setIsMapTypeSet] = useState({
     fatal: true,
@@ -29,8 +28,6 @@ export default ({ children }) => {
   useEffect(() => {
     !isTablet && setIsOpen(false);
   }, [isTablet, setIsOpen]);
-
-  console.log("Context updated", mapFilters);
 
   const store = {
     mapFilters: [mapFilters, mapFilterDispatch],
