@@ -238,6 +238,45 @@ def get_full_purpose_flag(crash_id: int) -> str:
         return "N"
 
 
+def get_city_id_from_db(crash_id: int) -> Optional[int]:
+    """
+    Attempts to find the jurisdiction flag of a crash by it's ID
+    :param int crash_id: The crash_id to be evaluated
+    :return str: Y or N
+    """
+    if not str(crash_id).isdigit():
+        print("It's bad")
+        return None
+
+    get_city_id_query = """
+        query getCityId($crash_id:Int!){
+            atd_txdot_crashes(where: {
+                crash_id: {_eq:$crash_id}
+            }){
+                city_id
+            }
+        }
+    """
+
+    try:
+        response = requests.post(
+            HASURA_ENDPOINT,
+            data=json.dumps(
+                {
+                    "query": get_city_id_query,
+                    "variables": {
+                        "crash_id": crash_id
+                    }
+                }
+            ),
+            headers=HEADERS
+        )
+        return response.json()["data"]["atd_txdot_crashes"][0]["city_id"]
+    except Exception as e:
+        print(f"LIttle error: {str(e)}")
+        return None
+
+
 def update_city_id(crash_id: int, city_id: int) -> dict:
     """
     Returns a dictionary and HTTP response from the GraphQL query
@@ -245,22 +284,24 @@ def update_city_id(crash_id: int, city_id: int) -> dict:
     :param str city_id: The new city_id
     :return dict:
     """
-    if not str(city_id).isdigit():
+    if not str(crash_id).isdigit():
         raise_critical_error(
             message=f"Invalid crash_id provided to update the city_id",
         )
 
-    if not str(city_id).isdigit():
+    if not str(city_id).isdigit() and city_id is not None:
         raise_critical_error(
-            message=f"Invalid crash_id provided to update the city_id",
+            message=f"Invalid city_id provided to update the city_id",
         )
+
+    print(f"Hello, new value: {city_id}")
 
     # Output
     mutation_response = {}
     # Prepare the query body
     mutation_json_body = {
         "query": """
-            mutation updateCrashCityId($crash_id: Int!, $city_id: Int!) {
+            mutation updateCrashCityId($crash_id: Int!, $city_id: Int) {
                 update_atd_txdot_crashes(where: {crash_id: {_eq: $crash_id}}, _set: {city_id: $city_id}) {
                     affected_rows
                 }
@@ -278,6 +319,7 @@ def update_city_id(crash_id: int, city_id: int) -> dict:
             data=json.dumps(mutation_json_body),
             headers=HEADERS
         )
+        print(f"Response: {mutation_response.json()}")
     except Exception as e:
         raise_critical_error(
             message=f"Unable to update crash_id '{crash_id}' city_id {city_id}: {str(e)}"
