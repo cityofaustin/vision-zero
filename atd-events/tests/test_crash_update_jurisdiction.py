@@ -112,7 +112,7 @@ class TestCrashUpdateJurisdiction:
         """
         Tests if the city id is being returned as expected
         """
-        assert get_city_id(data_cr3_insertion_invalid) == 0
+        assert get_city_id(data_cr3_insertion_invalid) is None
 
     def test_get_original_city_id_success(self):
         """
@@ -124,7 +124,7 @@ class TestCrashUpdateJurisdiction:
         """
         Tests if the city id is being returned as expected
         """
-        assert get_original_city_id(data_cr3_insertion_invalid) == 0
+        assert get_original_city_id(data_cr3_insertion_invalid) is None
 
 
     def test_load_data_success(self):
