@@ -2,7 +2,7 @@
 # Resolves the location for a crash.
 #
 import json
-from typing import Optional
+from typing import Optional, Set, List
 
 import requests
 import time
@@ -91,6 +91,22 @@ def get_original_city_id(data: dict) -> Optional[int]:
         return data["event"]["data"]["new"]["original_city_id"]
     except (TypeError, KeyError):
         return None
+
+
+def get_jurisdiction_common_members(a: List[int], b: List[int]) -> Set[int]:
+    """
+    Compares two arrays of integers, and returns a set of unique common members
+    :param List[int] a: An array you want to compare against
+    :param List[int] b: The other array you want to compare against
+    :return Set[int]:
+    """
+    a_set = set(a)
+    b_set = set(b)
+
+    if a_set & b_set:
+        return a_set & b_set
+    else:
+        return set()
 
 
 def load_data(record: str) -> dict:
