@@ -84,17 +84,49 @@ const StyledCard = styled.div`
   }
 `;
 
+const createModeFilterSyntax = (isMapTypeSet, config) => {
+  if (isMapTypeSet.fatal && isMapTypeSet.injury) {
+    return `${config.fatalSyntax} ${config.operator} ${config.injurySyntax}`;
+  } else if (isMapTypeSet.fatal) {
+    return `${config.fatalSyntax}`;
+  } else if (isMapTypeSet.injury) {
+    return `${config.injurySyntax}`;
+  }
+};
+
+export const mapFilterReducer = (mapFilters, action) => {
+  // TODO: Action - set mode filter
+  const { type, payload } = action;
+
+  switch (type) {
+    case "setInitialModeFilters":
+      const initialFiltersArray = payload;
+      return initialFiltersArray;
+    case "updateModeSyntax":
+      const isMapTypeSet = payload;
+
+      const updatedModeFilters = mapFilters.map((filter) => ({
+        ...filter,
+        syntax: createModeFilterSyntax(isMapTypeSet, filter),
+      }));
+      return updatedModeFilters;
+    default:
+      return null;
+  }
+};
+
 const SideMapControl = ({ type }) => {
   const {
-    mapFilters: [filters, setFilters],
+    mapFilters: [filters, dispatchFilters],
     mapFilterType: [isMapTypeSet, setIsMapTypeSet],
   } = React.useContext(StoreContext);
 
-  const [buttonFilters, setButtonFilters] = useState({});
-  const [filterGroupCounts, setFilterGroupCounts] = useState({});
+  // const [buttonFilters, setButtonFilters] = useState({});
+  // const [filterGroupCounts, setFilterGroupCounts] = useState({});
 
   const setTypeFilters = (typeArray) => {
     // Set types in array as true and others as false
+    console.log(typeArray);
     const updatedState = Object.keys(isMapTypeSet).reduce((acc, type) => {
       if (typeArray.includes(type)) {
         acc = { ...acc, [type]: true };
@@ -106,6 +138,11 @@ const SideMapControl = ({ type }) => {
 
     setIsMapTypeSet(updatedState);
   };
+
+  // Update mode syntax (fatal, injury, or both) when type filters updates
+  useEffect(() => {
+    dispatchFilters({ type: "updateModeSyntax", payload: isMapTypeSet });
+  }, [isMapTypeSet, dispatchFilters]);
 
   const handleTypeFilterClick = (filterArr) => {
     setTypeFilters(filterArr);
@@ -215,36 +252,75 @@ const SideMapControl = ({ type }) => {
   // TODO: Create reducer
   // TODO: Create initial mode filters
 
-  const initialFiltersArray = useMemo(() => {
-    Object.entries(mapButtonFiltersConfig).reduce(
-      (allFiltersAccumulator, [type, filtersGroup]) => {
-        const groupFilters = Object.entries(filtersGroup.each).reduce(
-          (groupFiltersAccumulator, [name, filterConfig]) => {
-            // Apply filter only if set as a default on render
-            if (filterConfig.default) {
-              filterConfig["name"] = name;
-              filterConfig["group"] = type;
-              groupFiltersAccumulator.push(filterConfig);
-            }
-            return groupFiltersAccumulator;
-          },
-          []
-        );
-        allFiltersAccumulator = [...allFiltersAccumulator, ...groupFilters];
-        return allFiltersAccumulator;
-      },
-      []
-    );
-  }, [mapButtonFiltersConfig]);
+  useEffect(() => {
+    if (filters.length !== 0) return;
 
-  const mapFilterReducer = (mapFilters, action) => {
-    // TODO: Action - set mode filter
-  };
+    const namedAndGroupedFilters = Object.entries(
+      mapButtonFiltersConfig
+    ).reduce((allFiltersAccumulator, [type, filtersGroup]) => {
+      const groupFilters = Object.entries(filtersGroup.each).reduce(
+        (groupFiltersAccumulator, [name, filterConfig]) => {
+          // Apply filter only if set as a default on render
+          if (filterConfig.default) {
+            filterConfig["name"] = name;
+            filterConfig["group"] = type;
+            groupFiltersAccumulator.push(filterConfig);
+          }
 
-  const [mapFilters, mapFilterDispatch] = useReducer(
-    mapFilterReducer,
-    initialFiltersArray
-  );
+          // Set initial query syntax for each mode filter
+          if (type === "mode") {
+            filterConfig["syntax"] = createModeFilterSyntax(
+              isMapTypeSet,
+              filterConfig
+            );
+          }
+
+          return groupFiltersAccumulator;
+        },
+        []
+      );
+      allFiltersAccumulator = [...allFiltersAccumulator, ...groupFilters];
+      return allFiltersAccumulator;
+    }, []);
+
+    dispatchFilters({
+      type: "setInitialModeFilters",
+      payload: namedAndGroupedFilters,
+    });
+  }, [mapButtonFiltersConfig, dispatchFilters, filters, isMapTypeSet]);
+
+  // useEffect(() => {
+  //   if (filters.length === 0) return;
+
+  //   const filterModeSyntaxByType = (filtersArray) =>
+  //     filtersArray.map((filter) => {
+  //       // Set syntax for generateWhereFilters() map helper
+  //       if (isMapTypeSet.fatal && isMapTypeSet.injury) {
+  //         filter.syntax = `${filter.fatalSyntax} ${filter.operator} ${filter.injurySyntax}`;
+  //       } else if (isMapTypeSet.fatal) {
+  //         filter.syntax = filter.fatalSyntax;
+  //       } else if (isMapTypeSet.injury) {
+  //         filter.syntax = filter.injurySyntax;
+  //       }
+  //       return filter;
+  //     });
+
+  //   const syntaxSetFilters = filterModeSyntaxByType(filters);
+
+  //   dispatchFilters({
+  //     type: "updateModeFilters",
+  //     payload: syntaxSetFilters,
+  //   });
+  // }, [filters, isMapTypeSet, dispatchFilters]);
+
+  // useEffect(() => {
+  //   if (filters.length !== 0) return;
+
+  //   dispatchFilters({
+  //     type: "setInitialModeFilters",
+  //     payload: initialFiltersArray,
+  //   });
+  // }, [initialFiltersArray, filters, dispatchFilters]);
 
   // // On inital render, reduce all default filters and apply to map data
   // useEffect(() => {
@@ -273,66 +349,69 @@ const SideMapControl = ({ type }) => {
   // }, [mapButtonFilters, setButtonFilters, buttonFilters]);
 
   // After inital render, create mode syntax and set filters state for map data
-  useEffect(() => {
-    if (Object.keys(buttonFilters).length !== 0) {
-      const filterModeSyntaxByType = (filtersArray) =>
-        filtersArray.map((filter) => {
-          // Set syntax for generateWhereFilters() map helper
-          if (isMapTypeSet.fatal && isMapTypeSet.injury) {
-            filter.syntax = `${filter.fatalSyntax} ${filter.operator} ${filter.injurySyntax}`;
-          } else if (isMapTypeSet.fatal) {
-            filter.syntax = filter.fatalSyntax;
-          } else if (isMapTypeSet.injury) {
-            filter.syntax = filter.injurySyntax;
-          }
-          return filter;
-        });
+  // useEffect(() => {
+  //   if (Object.keys(buttonFilters).length !== 0) {
+  //     const filterModeSyntaxByType = (filtersArray) =>
+  //       filtersArray.map((filter) => {
+  //         // Set syntax for generateWhereFilters() map helper
+  //         if (isMapTypeSet.fatal && isMapTypeSet.injury) {
+  //           filter.syntax = `${filter.fatalSyntax} ${filter.operator} ${filter.injurySyntax}`;
+  //         } else if (isMapTypeSet.fatal) {
+  //           filter.syntax = filter.fatalSyntax;
+  //         } else if (isMapTypeSet.injury) {
+  //           filter.syntax = filter.injurySyntax;
+  //         }
+  //         return filter;
+  //       });
 
-      const updatedFiltersArray = filterModeSyntaxByType(buttonFilters);
-      setFilters(updatedFiltersArray);
-    }
-  }, [buttonFilters, isMapTypeSet, setFilters]);
+  //     const updatedFiltersArray = filterModeSyntaxByType(buttonFilters);
+  //     setFilters(updatedFiltersArray);
+  //   }
+  // }, [buttonFilters, isMapTypeSet, setFilters]);
 
   // Set count of filters applied per type
-  useEffect(() => {
-    const filtersCount = filters.reduce((accumulator, filter) => {
-      if (accumulator[filter.group]) {
-        accumulator = {
-          ...accumulator,
-          [filter.group]: accumulator[filter.group] + 1,
-        };
-      } else {
-        accumulator = { ...accumulator, [filter.group]: 1 };
-      }
-      return accumulator;
-    }, {});
-    setFilterGroupCounts(filtersCount);
-  }, [filters]);
+  // useEffect(() => {
+  //   const filtersCount = filters.reduce((accumulator, filter) => {
+  //     if (accumulator[filter.group]) {
+  //       accumulator = {
+  //         ...accumulator,
+  //         [filter.group]: accumulator[filter.group] + 1,
+  //       };
+  //     } else {
+  //       accumulator = { ...accumulator, [filter.group]: 1 };
+  //     }
+  //     return accumulator;
+  //   }, {});
+  //   setFilterGroupCounts(filtersCount);
+  // }, [filters]);
 
   const isFilterSet = (filterName) => {
-    return !!filters.find((setFilter) => setFilter.name === filterName);
+    return (
+      filters.length > 0 &&
+      filters.find((setFilter) => setFilter.name === filterName)
+    );
   };
 
-  const isOneFilterOfGroupApplied = (group) => filterGroupCounts[group] > 1;
+  // const isOneFilterOfGroupApplied = (group) => filterGroupCounts[group] > 1;
 
-  // Set filter or remove if already set
+  // // Set filter or remove if already set
   const handleFilterClick = (event, filterGroup) => {
     const filterName = event.currentTarget.id;
 
-    if (isFilterSet(filterName)) {
-      // Always leave one filter applied per group
-      let updatedFiltersArray = isOneFilterOfGroupApplied(filterGroup)
-        ? filters.filter((setFilter) => setFilter.name !== filterName)
-        : filters;
-      setButtonFilters(updatedFiltersArray);
-    } else {
-      const filter = mapButtonFilters[filterGroup].each[filterName];
-      // Add filterName and group to object for IDing and grouping
-      filter["name"] = filterName;
-      filter["group"] = filterGroup;
-      const filtersArray = [...filters, filter];
-      setButtonFilters(filtersArray);
-    }
+    // if (isFilterSet(filterName)) {
+    //   // Always leave one filter applied per group
+    //   let updatedFiltersArray = isOneFilterOfGroupApplied(filterGroup)
+    //     ? filters.filter((setFilter) => setFilter.name !== filterName)
+    //     : filters;
+    //   setButtonFilters(updatedFiltersArray);
+    // } else {
+    //   const filter = mapButtonFilters[filterGroup].each[filterName];
+    //   // Add filterName and group to object for IDing and grouping
+    //   filter["name"] = filterName;
+    //   filter["group"] = filterGroup;
+    //   const filtersArray = [...filters, filter];
+    //   setButtonFilters(filtersArray);
+    // }
   };
 
   return (
@@ -346,99 +425,105 @@ const SideMapControl = ({ type }) => {
           <h3 className="h5">Filters</h3>
         </Label>
         {/* Create a button group for each group of mapFilters */}
-        {Object.entries(mapButtonFilters).map(([group, groupParameters], i) => (
-          <Row
-            className={`mx-0 mb-3 ${groupParameters.shared.allClass || ""}`}
-            key={`${group}-buttons`}
-          >
-            {/* Create buttons for each filter within a group of mapFilters */}
-            {Object.entries(groupParameters.each).map(
-              ([name, parameter], i) => {
-                const eachClassName = groupParameters.shared.eachClass || "";
+        {Object.entries(mapButtonFiltersConfig).map(
+          ([group, groupParameters], i) => (
+            <Row
+              className={`mx-0 mb-3 ${groupParameters.shared.allClass || ""}`}
+              key={`${group}-buttons`}
+            >
+              {/* Create buttons for each filter within a group of mapFilters */}
+              {Object.entries(groupParameters.each).map(
+                ([name, parameter], i) => {
+                  const eachClassName = groupParameters.shared.eachClass || "";
 
-                switch (groupParameters.shared.uiType) {
-                  case "button":
-                    return (
-                      <Col
-                        xs={parameter.colSize && parameter.colSize}
-                        className="px-0"
-                        key={name}
-                      >
-                        <Button
+                  switch (groupParameters.shared.uiType) {
+                    case "button":
+                      return (
+                        <Col
+                          xs={parameter.colSize && parameter.colSize}
+                          className="px-0"
                           key={name}
-                          id={name}
-                          color="dark"
-                          className={`p-1 filter-button ${eachClassName}`}
-                          onClick={
-                            parameter.handler
-                              ? parameter.handler
-                              : (event) => handleFilterClick(event, group)
-                          }
-                          active={
-                            parameter.isSelected
-                              ? parameter.isSelected
-                              : isFilterSet(name)
-                          }
-                          outline={
-                            parameter.isSelected
-                              ? !parameter.isSelected
-                              : !isFilterSet(name)
-                          }
                         >
-                          {parameter.icon && (
-                            <FontAwesomeIcon
-                              icon={parameter.icon}
-                              className="mr-1 ml-1"
-                              color={parameter.iconColor && parameter.iconColor}
-                            />
-                          )}
-                          {parameter.text}
-                        </Button>
-                      </Col>
-                    );
-                  case "checkbox":
-                    return (
-                      <Col xs={12} key={name} className="py-1">
-                        <span
-                          id={name}
-                          className={`text-dark ${
-                            groupParameters.shared.eachClass || ""
-                          }`}
-                          onClick={
-                            parameter.handler
-                              ? parameter.handler
-                              : (event) => handleFilterClick(event, group)
-                          }
-                        >
-                          {parameter.isSelected || isFilterSet(name) ? (
-                            <FontAwesomeIcon
-                              icon={faCheckSquare}
-                              className="mr-1 active far"
-                            />
-                          ) : (
-                            <FontAwesomeIcon
-                              icon={faSquare}
-                              className="mr-1 inactive far"
-                            />
-                          )}
-                          {parameter.icon && (
-                            <FontAwesomeIcon
-                              icon={parameter.icon}
-                              className="mr-1 ml-2 fa-fw"
-                              color={parameter.iconColor && parameter.iconColor}
-                            />
-                          )}{" "}
-                          {name[0].toUpperCase() + name.slice(1)}
-                        </span>
-                      </Col>
-                    );
-                  default:
-                    return null;
+                          <Button
+                            key={name}
+                            id={name}
+                            color="dark"
+                            className={`p-1 filter-button ${eachClassName}`}
+                            onClick={
+                              parameter.handler
+                                ? parameter.handler
+                                : (event) => handleFilterClick(event, group)
+                            }
+                            active={
+                              parameter.isSelected
+                                ? parameter.isSelected
+                                : isFilterSet(name)
+                            }
+                            outline={
+                              parameter.isSelected
+                                ? !parameter.isSelected
+                                : !isFilterSet(name)
+                            }
+                          >
+                            {parameter.icon && (
+                              <FontAwesomeIcon
+                                icon={parameter.icon}
+                                className="mr-1 ml-1"
+                                color={
+                                  parameter.iconColor && parameter.iconColor
+                                }
+                              />
+                            )}
+                            {parameter.text}
+                          </Button>
+                        </Col>
+                      );
+                    case "checkbox":
+                      return (
+                        <Col xs={12} key={name} className="py-1">
+                          <span
+                            id={name}
+                            className={`text-dark ${
+                              groupParameters.shared.eachClass || ""
+                            }`}
+                            onClick={
+                              parameter.handler
+                                ? parameter.handler
+                                : (event) => handleFilterClick(event, group)
+                            }
+                          >
+                            {parameter.isSelected || isFilterSet(name) ? (
+                              <FontAwesomeIcon
+                                icon={faCheckSquare}
+                                className="mr-1 active far"
+                              />
+                            ) : (
+                              <FontAwesomeIcon
+                                icon={faSquare}
+                                className="mr-1 inactive far"
+                              />
+                            )}
+                            {parameter.icon && (
+                              <FontAwesomeIcon
+                                icon={parameter.icon}
+                                className="mr-1 ml-2 fa-fw"
+                                color={
+                                  parameter.iconColor && parameter.iconColor
+                                }
+                              />
+                            )}{" "}
+                            {name[0].toUpperCase() + name.slice(1)}
+                          </span>
+                        </Col>
+                      );
+                    default:
+                      return null;
+                  }
                 }
-              }
-            )}
-          </Row>
-        ))}
+              )}
+            </Row>
+          )
+        )}
         <SideMapControlDateRange type={type} />
         <SideMapTimeOfDayChart filters={mapOtherFilters.timeOfDay} />
       </Card>

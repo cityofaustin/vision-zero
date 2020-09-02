@@ -47,6 +47,7 @@ export const createMapDataUrl = (
   if (dateRange.start === null || dateRange.end === null) return null;
   const startDate = convertDateToSocrataFormat(dateRange.start, "T00:00:00");
   const endDate = convertDateToSocrataFormat(dateRange.end, "T23:59:59");
+  console.log(filters, "in Map");
 
   // Return null to prevent populating map with unfiltered data
   return filterCount === 0
