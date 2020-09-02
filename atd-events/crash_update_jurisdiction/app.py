@@ -294,8 +294,6 @@ def update_city_id(crash_id: int, city_id: int) -> dict:
             message=f"Invalid city_id provided to update the city_id",
         )
 
-    print(f"Hello, new value: {city_id}")
-
     # Output
     mutation_response = {}
     # Prepare the query body
@@ -319,7 +317,6 @@ def update_city_id(crash_id: int, city_id: int) -> dict:
             data=json.dumps(mutation_json_body),
             headers=HEADERS
         )
-        print(f"Response: {mutation_response.json()}")
     except Exception as e:
         raise_critical_error(
             message=f"Unable to update crash_id '{crash_id}' city_id {city_id}: {str(e)}"
