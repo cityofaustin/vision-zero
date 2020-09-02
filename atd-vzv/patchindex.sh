@@ -5,12 +5,6 @@
 # based on provided environment variables.
 #
 
-# First let's make sure we have VZV_ENVIRONMENT, if not exit entirely.
-if [[ "${VZV_ENVIRONMENT}" = "" ]]; then
-  echo "No environment has been specified. Exiting patch script.";
-  exit 0;
-fi;
-
 # If we do have it, then make assumptions about the environment.
 if [[ "${VZV_ENVIRONMENT}" = "PRODUCTION" ]]; then
   # Assume production env
