@@ -137,7 +137,7 @@ const SideMapControl = ({ type }) => {
     setIsMapTypeSet(updatedState);
   };
 
-  // Update mode syntax (fatal, injury, or both) when type filters updates
+  // Update mode syntax (fatal, injury, or both) when type filters update
   useEffect(() => {
     dispatchFilters({ type: "updateModeSyntax", payload: isMapTypeSet });
   }, [isMapTypeSet, dispatchFilters]);
@@ -149,7 +149,7 @@ const SideMapControl = ({ type }) => {
   };
 
   // Define groups of map button filters
-  const mapButtonFiltersConfig = {
+  const mapFiltersConfig = {
     type: {
       shared: {
         eachClass: `type-button`,
@@ -250,39 +250,40 @@ const SideMapControl = ({ type }) => {
   useEffect(() => {
     if (filters.length !== 0) return;
 
-    const namedAndGroupedFilters = Object.entries(
-      mapButtonFiltersConfig
-    ).reduce((allFiltersAccumulator, [type, filtersGroup]) => {
-      const groupFilters = Object.entries(filtersGroup.each).reduce(
-        (groupFiltersAccumulator, [name, filterConfig]) => {
-          // Apply filter only if set as a default on render
-          if (filterConfig.default) {
-            filterConfig["name"] = name;
-            filterConfig["group"] = type;
-            groupFiltersAccumulator.push(filterConfig);
-          }
+    const namedAndGroupedFilters = Object.entries(mapFiltersConfig).reduce(
+      (allFiltersAccumulator, [type, filtersGroup]) => {
+        const groupFilters = Object.entries(filtersGroup.each).reduce(
+          (groupFiltersAccumulator, [name, filterConfig]) => {
+            // Apply filter only if set as a default on render
+            if (filterConfig.default) {
+              filterConfig["name"] = name;
+              filterConfig["group"] = type;
+              groupFiltersAccumulator.push(filterConfig);
+            }
 
-          // Set initial query syntax for each mode filter
-          if (type === "mode") {
-            filterConfig["syntax"] = createModeFilterSyntax(
-              isMapTypeSet,
-              filterConfig
-            );
-          }
+            // Set initial query syntax for each mode filter
+            if (type === "mode") {
+              filterConfig["syntax"] = createModeFilterSyntax(
+                isMapTypeSet,
+                filterConfig
+              );
+            }
 
-          return groupFiltersAccumulator;
-        },
-        []
-      );
-      allFiltersAccumulator = [...allFiltersAccumulator, ...groupFilters];
-      return allFiltersAccumulator;
-    }, []);
+            return groupFiltersAccumulator;
+          },
+          []
+        );
+        allFiltersAccumulator = [...allFiltersAccumulator, ...groupFilters];
+        return allFiltersAccumulator;
+      },
+      []
+    );
 
     dispatchFilters({
       type: "setInitialModeFilters",
       payload: namedAndGroupedFilters,
     });
-  }, [mapButtonFiltersConfig, dispatchFilters, filters, isMapTypeSet]);
+  }, [mapFiltersConfig, dispatchFilters, filters, isMapTypeSet]);
 
   const isFilterSet = (filterName) =>
     filters.find((setFilter) => setFilter.name === filterName);
@@ -299,7 +300,7 @@ const SideMapControl = ({ type }) => {
           ? filters.filter((setFilter) => setFilter.name !== filterName)
           : filters;
     } else {
-      const filter = mapButtonFiltersConfig[filterGroup].each[filterName];
+      const filter = mapFiltersConfig[filterGroup].each[filterName];
       // Add filterName and group to object for IDing and grouping and create query syntax
       filter["name"] = filterName;
       filter["group"] = filterGroup;
@@ -324,105 +325,99 @@ const SideMapControl = ({ type }) => {
           <h3 className="h5">Filters</h3>
         </Label>
         {/* Create a button group for each group of mapFilters */}
-        {Object.entries(mapButtonFiltersConfig).map(
-          ([group, groupParameters], i) => (
-            <Row
-              className={`mx-0 mb-3 ${groupParameters.shared.allClass || ""}`}
-              key={`${group}-buttons`}
-            >
-              {/* Create buttons for each filter within a group of mapFilters */}
-              {Object.entries(groupParameters.each).map(
-                ([name, parameter], i) => {
-                  const eachClassName = groupParameters.shared.eachClass || "";
+        {Object.entries(mapFiltersConfig).map(([group, groupParameters], i) => (
+          <Row
+            className={`mx-0 mb-3 ${groupParameters.shared.allClass || ""}`}
+            key={`${group}-buttons`}
+          >
+            {/* Create buttons for each filter within a group of mapFilters */}
+            {Object.entries(groupParameters.each).map(
+              ([name, parameter], i) => {
+                const eachClassName = groupParameters.shared.eachClass || "";
 
-                  switch (groupParameters.shared.uiType) {
-                    case "button":
-                      return (
-                        <Col
-                          xs={parameter.colSize && parameter.colSize}
-                          className="px-0"
+                switch (groupParameters.shared.uiType) {
+                  case "button":
+                    return (
+                      <Col
+                        xs={parameter.colSize && parameter.colSize}
+                        className="px-0"
+                        key={name}
+                      >
+                        <Button
                           key={name}
+                          id={name}
+                          color="dark"
+                          className={`p-1 filter-button ${eachClassName}`}
+                          onClick={
+                            parameter.handler
+                              ? parameter.handler
+                              : (event) => handleFilterClick(event, group)
+                          }
+                          active={
+                            parameter.isSelected
+                              ? parameter.isSelected
+                              : isFilterSet(name)
+                          }
+                          outline={
+                            parameter.isSelected
+                              ? !parameter.isSelected
+                              : !isFilterSet(name)
+                          }
                         >
-                          <Button
-                            key={name}
-                            id={name}
-                            color="dark"
-                            className={`p-1 filter-button ${eachClassName}`}
-                            onClick={
-                              parameter.handler
-                                ? parameter.handler
-                                : (event) => handleFilterClick(event, group)
-                            }
-                            active={
-                              parameter.isSelected
-                                ? parameter.isSelected
-                                : isFilterSet(name)
-                            }
-                            outline={
-                              parameter.isSelected
-                                ? !parameter.isSelected
-                                : !isFilterSet(name)
-                            }
-                          >
-                            {parameter.icon && (
-                              <FontAwesomeIcon
-                                icon={parameter.icon}
-                                className="mr-1 ml-1"
-                                color={
-                                  parameter.iconColor && parameter.iconColor
-                                }
-                              />
-                            )}
-                            {parameter.text}
-                          </Button>
-                        </Col>
-                      );
-                    case "checkbox":
-                      return (
-                        <Col xs={12} key={name} className="py-1">
-                          <span
-                            id={name}
-                            className={`text-dark ${
-                              groupParameters.shared.eachClass || ""
-                            }`}
-                            onClick={
-                              parameter.handler
-                                ? parameter.handler
-                                : (event) => handleFilterClick(event, group)
-                            }
-                          >
-                            {parameter.isSelected || isFilterSet(name) ? (
-                              <FontAwesomeIcon
-                                icon={faCheckSquare}
-                                className="mr-1 active far"
-                              />
-                            ) : (
-                              <FontAwesomeIcon
-                                icon={faSquare}
-                                className="mr-1 inactive far"
-                              />
-                            )}
-                            {parameter.icon && (
-                              <FontAwesomeIcon
-                                icon={parameter.icon}
-                                className="mr-1 ml-2 fa-fw"
-                                color={
-                                  parameter.iconColor && parameter.iconColor
-                                }
-                              />
-                            )}{" "}
-                            {name[0].toUpperCase() + name.slice(1)}
-                          </span>
-                        </Col>
-                      );
-                    default:
-                      return null;
-                  }
+                          {parameter.icon && (
+                            <FontAwesomeIcon
+                              icon={parameter.icon}
+                              className="mr-1 ml-1"
+                              color={parameter.iconColor && parameter.iconColor}
+                            />
+                          )}
+                          {parameter.text}
+                        </Button>
+                      </Col>
+                    );
+                  case "checkbox":
+                    return (
+                      <Col xs={12} key={name} className="py-1">
+                        <span
+                          id={name}
+                          className={`text-dark ${
+                            groupParameters.shared.eachClass || ""
+                          }`}
+                          onClick={
+                            parameter.handler
+                              ? parameter.handler
+                              : (event) => handleFilterClick(event, group)
+                          }
+                        >
+                          {parameter.isSelected || isFilterSet(name) ? (
+                            <FontAwesomeIcon
+                              icon={faCheckSquare}
+                              className="mr-1 active far"
+                            />
+                          ) : (
+                            <FontAwesomeIcon
+                              icon={faSquare}
+                              className="mr-1 inactive far"
+                            />
+                          )}
+                          {parameter.icon && (
+                            <FontAwesomeIcon
+                              icon={parameter.icon}
+                              className="mr-1 ml-2 fa-fw"
+                              color={parameter.iconColor && parameter.iconColor}
+                            />
+                          )}{" "}
+                          {name[0].toUpperCase() + name.slice(1)}
+                        </span>
+                      </Col>
+                    );
+                  default:
+                    return null;
                 }
-              )}
-            </Row>
-          )
-        )}
+              }
+            )}
+          </Row>
+        ))}
         <SideMapControlDateRange type={type} />
         <SideMapTimeOfDayChart filters={mapOtherFilters.timeOfDay} />
       </Card>
