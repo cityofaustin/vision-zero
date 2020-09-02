@@ -501,23 +501,23 @@ class TestCrashUpdateJurisdiction:
         )
         update_jurisdiction_flag.assert_not_called()
 
-    # @patch("crash_update_jurisdiction.app.update_jurisdiction_flag")
-    # def test_hasura_request_is_crash_in_jurisdiction_false(self, update_jurisdiction_flag):
-    #     """
-    #     Makes sure the update function does not get called if the conditions are not met
-    #     """
-    #     data = load_file("tests/data/data_cr3_insertion_invalid.json")
-    #     data["event"]["data"] = {
-    #         "old": None,
-    #         "new": {
-    #             "crash_id": -9000,
-    #             "austin_full_purpose": "Y"
-    #         },
-    #     }
-    #     hasura_request(
-    #         record=json.dumps(data)
-    #     )
-    #     update_jurisdiction_flag.assert_not_called()
+    @patch("crash_update_jurisdiction.app.update_jurisdiction_flag")
+    def test_hasura_request_is_crash_in_jurisdiction_false(self, update_jurisdiction_flag):
+        """
+        Makes sure the update function does not get called if the conditions are not met
+        """
+        data = load_file("tests/data/data_cr3_insertion_invalid.json")
+        data["event"]["data"] = {
+            "old": None,
+            "new": {
+                "crash_id": -9000,
+                "austin_full_purpose": "Y"
+            },
+        }
+        hasura_request(
+            record=json.dumps(data)
+        )
+        update_jurisdiction_flag.assert_not_called()
 
     def test_is_crash_in_jurisdictions_success(self):
         """
