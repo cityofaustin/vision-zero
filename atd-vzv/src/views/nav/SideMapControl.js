@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useReducer, useMemo } from "react";
 import { StoreContext } from "../../utils/store";
 
 import SideMapControlDateRange from "./SideMapControlDateRange";
@@ -90,34 +90,31 @@ const SideMapControl = ({ type }) => {
     mapFilterType: [isMapTypeSet, setIsMapTypeSet],
   } = React.useContext(StoreContext);
 
-  const [buttonFilters, setButtonFilters] = useState([]);
+  const [buttonFilters, setButtonFilters] = useState({});
   const [filterGroupCounts, setFilterGroupCounts] = useState({});
 
   const setTypeFilters = (typeArray) => {
     // Set types in array as true and others as false
-    const updatedState = Object.keys({ ...isMapTypeSet }).reduce(
-      (acc, type) => {
-        if (typeArray.includes(type)) {
-          acc = { ...acc, [type]: true };
-        } else {
-          acc = { ...acc, [type]: false };
-        }
-        return acc;
-      },
-      {}
-    );
+    const updatedState = Object.keys(isMapTypeSet).reduce((acc, type) => {
+      if (typeArray.includes(type)) {
+        acc = { ...acc, [type]: true };
+      } else {
+        acc = { ...acc, [type]: false };
+      }
+      return acc;
+    }, {});
 
     setIsMapTypeSet(updatedState);
   };
 
   const handleTypeFilterClick = (filterArr) => {
-    setTypeFilters([...filterArr]);
+    setTypeFilters(filterArr);
     // Track single filter clicks with GA
     filterArr.length === 1 && trackPageEvent(filterArr[0]);
   };
 
   // Define groups of map button filters
-  const mapButtonFilters = {
+  const mapButtonFiltersConfig = {
     type: {
       shared: {
         eachClass: `type-button`,
@@ -214,11 +211,12 @@ const SideMapControl = ({ type }) => {
     },
   };
 
-  // On inital render, reduce all default filters and apply to map data
-  useEffect(() => {
-    if (Object.keys(buttonFilters).length !== 0) return;
+  // TODO: Set initial state in useReducer (default filters)
+  // TODO: Create reducer
+  // TODO: Create initial mode filters
 
-    const initialFiltersArray = Object.entries(mapButtonFilters).reduce(
+  const initialFiltersArray = useMemo(() => {
+    Object.entries(mapButtonFiltersConfig).reduce(
       (allFiltersAccumulator, [type, filtersGroup]) => {
         const groupFilters = Object.entries(filtersGroup.each).reduce(
           (groupFiltersAccumulator, [name, filterConfig]) => {
@@ -237,55 +235,82 @@ const SideMapControl = ({ type }) => {
       },
       []
     );
-    setButtonFilters(initialFiltersArray);
-    console.log("Filters initialized");
-    //  TODO: Not here!
-  }, [mapButtonFilters, setButtonFilters, buttonFilters]);
+  }, [mapButtonFiltersConfig]);
+
+  const mapFilterReducer = (mapFilters, action) => {
+    // TODO: Action - set mode filter
+  };
+
+  const [mapFilters, mapFilterDispatch] = useReducer(
+    mapFilterReducer,
+    initialFiltersArray
+  );
+
+  // // On inital render, reduce all default filters and apply to map data
+  // useEffect(() => {
+  //   if (Object.keys(buttonFilters).length === 0) {
+  //     const initialFiltersArray = Object.entries(mapButtonFilters).reduce(
+  //       (allFiltersAccumulator, [type, filtersGroup]) => {
+  //         const groupFilters = Object.entries(filtersGroup.each).reduce(
+  //           (groupFiltersAccumulator, [name, filterConfig]) => {
+  //             // Apply filter only if set as a default on render
+  //             if (filterConfig.default) {
+  //               filterConfig["name"] = name;
+  //               filterConfig["group"] = type;
+  //               groupFiltersAccumulator.push(filterConfig);
+  //             }
+  //             return groupFiltersAccumulator;
+  //           },
+  //           []
+  //         );
+  //         allFiltersAccumulator = [...allFiltersAccumulator, ...groupFilters];
+  //         return allFiltersAccumulator;
+  //       },
+  //       []
+  //     );
+  //     setButtonFilters(initialFiltersArray);
+  //   }
+  // }, [mapButtonFilters, setButtonFilters, buttonFilters]);
 
   // After inital render, create mode syntax and set filters state for map data
   useEffect(() => {
-    if (Object.keys(buttonFilters).length === 0) return;
+    if (Object.keys(buttonFilters).length !== 0) {
+      const filterModeSyntaxByType = (filtersArray) =>
+        filtersArray.map((filter) => {
+          // Set syntax for generateWhereFilters() map helper
+          if (isMapTypeSet.fatal && isMapTypeSet.injury) {
+            filter.syntax = `${filter.fatalSyntax} ${filter.operator} ${filter.injurySyntax}`;
+          } else if (isMapTypeSet.fatal) {
+            filter.syntax = filter.fatalSyntax;
+          } else if (isMapTypeSet.injury) {
+            filter.syntax = filter.injurySyntax;
+          }
+          return filter;
+        });
 
-    const filterModeSyntaxByType = (filtersArray) =>
-      filtersArray.map((filter) => {
-        const updatedFilter = { ...filter };
-        // Set syntax for generateWhereFilters() map helper
-        if (isMapTypeSet.fatal && isMapTypeSet.injury) {
-          updatedFilter.syntax = `${filter.fatalSyntax} ${filter.operator} ${filter.injurySyntax}`;
-        } else if (isMapTypeSet.fatal) {
-          updatedFilter.syntax = filter.fatalSyntax;
-        } else if (isMapTypeSet.injury) {
-          updatedFilter.syntax = filter.injurySyntax;
-        }
-        return updatedFilter;
-      });
-
-    const updatedFiltersArray = filterModeSyntaxByType([...buttonFilters]);
-    console.log("Filters updated", updatedFiltersArray);
-    setFilters(updatedFiltersArray);
+      const updatedFiltersArray = filterModeSyntaxByType(buttonFilters);
+      setFilters(updatedFiltersArray);
+    }
   }, [buttonFilters, isMapTypeSet, setFilters]);
 
   // Set count of filters applied per type
   useEffect(() => {
-    const filtersCount = [...buttonFilters].reduce(
-      (accumulator, { ...filter }) => {
-        if (accumulator[filter.group]) {
-          accumulator = {
-            ...accumulator,
-            [filter.group]: accumulator[filter.group] + 1,
-          };
-        } else {
-          accumulator = { ...accumulator, [filter.group]: 1 };
-        }
-        return accumulator;
-      },
-      {}
-    );
+    const filtersCount = filters.reduce((accumulator, filter) => {
+      if (accumulator[filter.group]) {
+        accumulator = {
+          ...accumulator,
+          [filter.group]: accumulator[filter.group] + 1,
+        };
+      } else {
+        accumulator = { ...accumulator, [filter.group]: 1 };
+      }
+      return accumulator;
+    }, {});
     setFilterGroupCounts(filtersCount);
-  }, [buttonFilters]);
+  }, [filters]);
 
   const isFilterSet = (filterName) => {
-    return !!buttonFilters.find((setFilter) => setFilter.name === filterName);
+    return !!filters.find((setFilter) => setFilter.name === filterName);
   };
 
   const isOneFilterOfGroupApplied = (group) => filterGroupCounts[group] > 1;
