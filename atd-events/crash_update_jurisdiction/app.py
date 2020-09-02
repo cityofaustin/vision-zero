@@ -79,6 +79,18 @@ def get_city_id(data: dict) -> int:
         return 0
 
 
+def get_original_city_id(data: dict) -> int:
+    """
+    Returns the original city id of the record in question
+    :param dict data: The record in question
+    :return int: The city id as an integer, 0 if it can't find it.
+    """
+    try:
+        return data["event"]["data"]["new"]["original_city_id"]
+    except (TypeError, KeyError):
+        return 0
+
+
 def load_data(record: str) -> dict:
     """
     Attempts to parse the event data
