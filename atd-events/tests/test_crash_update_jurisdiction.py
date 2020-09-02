@@ -548,3 +548,57 @@ class TestCrashUpdateJurisdiction:
         Makes sure only positive integer values work
         """
         assert is_crash_in_jurisdictions("1230.0") is False
+
+    def test_get_city_id_from_db_success_a(self):
+        """
+        Makes sure it can find the city id for a crash
+        """
+        get_city_id_from_db(17211142) == 9999
+
+    def test_get_city_id_from_db_success_b(self):
+        """
+        Makes sure it can find the city id for a crash
+        """
+        get_city_id_from_db("15830818") == 99999
+
+    def test_get_city_id_from_db_fail_a(self):
+        """
+        Makes sure it can find the city id for a crash
+        """
+        get_city_id_from_db(False) is None
+
+    def test_get_city_id_from_db_fail_b(self):
+        """
+        Makes sure it can find the city id for a crash
+        """
+        get_city_id_from_db("123.2") is None
+
+    def test_get_city_id_from_db_fail_c(self):
+        """
+        Makes sure it can find the city id for a crash
+        """
+        get_city_id_from_db(2072423140) is None
+
+    def test_update_city_id_success_a(self):
+        """
+        Makes sure it can update the city id of a record
+        """
+        crash_id = 17211142
+        city_id = 9999
+        assert get_city_id_from_db(crash_id) == city_id
+        assert isinstance(update_city_id(crash_id=crash_id, city_id=None), dict)
+        assert get_city_id_from_db(crash_id) is None
+        assert isinstance(update_city_id(crash_id=crash_id, city_id=city_id), dict)
+        assert get_city_id_from_db(crash_id) == city_id
+
+    def test_update_city_id_success_b(self):
+        """
+        Makes sure it can update the city id of a record
+        """
+        crash_id = 17211142
+        city_id = 9999
+        assert get_city_id_from_db(crash_id) == city_id
+        assert isinstance(update_city_id(crash_id=crash_id, city_id=1), dict)
+        assert get_city_id_from_db(crash_id) == 1
+        assert isinstance(update_city_id(crash_id=crash_id, city_id=city_id), dict)
+        assert get_city_id_from_db(crash_id) == city_id
