@@ -1,9 +1,6 @@
 #!/usr/bin/env bash
 
-# CIRCLE_PR_NUMBER only works on forked PRs
-export ATD_PR_NUMBER=$(curl -s -H "Accept: application/vnd.github.groot-preview+json" "https://api.github.com/repos/cityofaustin/atd-vz-data/commits/${CIRCLE_SHA1}/pulls" | jq -r '.[].number')
-
-case "${CIRCLE_BRANCH}" in
+case "${BRANCH_NAME}" in
   "production")
     export WORKING_STAGE="production";
   ;;
@@ -12,10 +9,13 @@ case "${CIRCLE_BRANCH}" in
   ;;
   *)
     echo "PR Detected, resetting working stage";
-    export WORKING_STAGE="pr_${ATD_PR_NUMBER}";
+    export WORKING_STAGE="pr_${PR_NUMBER}";
     echo "New working stage: ${WORKING_STAGE}...";
   ;;
 esac
+
+echo "SOURCE -> BRANCH_NAME: ${BRANCH_NAME}";
+echo "SOURCE -> WORKING_STAGE: ${WORKING_STAGE}";
 
 #
 # First, we need to create the python package by installing requirements
@@ -59,6 +59,9 @@ function generate_env_vars {
         LOCAL_STAGE="${WORKING_STAGE}";
       fi;
       echo "Using stage: '${LOCAL_STAGE}' (Current working stage: '${WORKING_STAGE}')...";
+      echo "Validating JSON syntax for zappa settings file...";
+      jq type zappa_settings.json;
+      echo "LOCAL_STAGE: ${LOCAL_STAGE}";
       STAGE_ENV_VARS=$(cat zappa_settings.json | jq -r ".${LOCAL_STAGE}.aws_environment_variables");
       echo -e "{\"Description\": \"ATD VisionZero Events Handler\", \"Environment\": { \"Variables\": ${STAGE_ENV_VARS}}}" | jq -rc > handler_config.json;
 }

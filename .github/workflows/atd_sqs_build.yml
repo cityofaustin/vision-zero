@@ -1,0 +1,53 @@
+#
+# Builds SQS Triggers for the ATD-Events
+#
+name: "Build & Publish SQS"
+
+on:
+  push:
+    branches:
+      - master
+      - production
+    paths:
+      - "atd-events/**"
+  pull_request:
+    branches:
+      - master
+    paths:
+      - "atd-events/**"
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/setup-python@v2
+        with:
+          python-version: "3.8"
+          architecture: "x64"
+      # Get the code first
+      - name: "Checkout"
+        uses: actions/checkout@v2
+      # Then install the AWC CLI tools & boto3
+      - name: "Install AWS Cli"
+        run: |
+          sudo apt-get install python3-setuptools
+          pip3 install awscli boto3
+      # Run the shell commands using the AWS environment variables
+      - name: "Build"
+        env:
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          ATD_VZ_DATA_EVENTS_ROLE: ${{ secrets.ATD_VZ_DATA_EVENTS_ROLE }}
+          ZAPPA_SETTINGS: ${{ secrets.ZAPPA_SETTINGS }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          export BRANCH_NAME=${GITHUB_REF##*/}
+          echo "SHA: ${GITHUB_SHA}"
+          echo "ACTION/BRANCH_NAME: ${BRANCH_NAME}"
+          echo "GR: ${GITHUB_REF}"
+          echo "PWD: $(pwd)"
+          echo "PR_NUMBER: ${PR_NUMBER}"
+          source $(pwd)/.github/workflows/aws-lambda-helper.sh
+          deploy_event_functions
