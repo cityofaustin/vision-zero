@@ -88,10 +88,17 @@ const CreateCrashRecordTable = () => {
     });
   }
 
+  /**
+   * Opens/Closes the delete modal
+   */
   const toggleModalDelete = () => {
     setModalOpen(!modalOpen);
   }
 
+  /**
+   * Commits the crash_id to be deleted to state, and prompts for deletion.
+   * @param {int} crashId - The crash id to be deleted.
+   */
   const openModalDelete = (crashId) => {
     setDeleteId(crashId);
     toggleModalDelete();
