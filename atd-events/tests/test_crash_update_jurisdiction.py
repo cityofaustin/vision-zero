@@ -102,6 +102,12 @@ class TestCrashUpdateJurisdiction:
         """
         assert get_jurisdiction_flag(None) == "N"
 
+    def test_get_city_id_success(self):
+        """
+        Tests if the city id is being returned as expected
+        """
+        assert get_city_id(data_cr3_insertion_valid) == 22
+
     def test_load_data_success(self):
         """
         Tests whether load_data can parse a string into a dictionary
