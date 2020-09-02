@@ -115,7 +115,7 @@ const Footer = () => {
           height="100px"
           src={logo}
         />
-        <Row className="link-table">
+        <Row className="col-12 link-table">
           <Col xs="12" className="link link-title">
             City of Austin Transportation Department
           </Col>
