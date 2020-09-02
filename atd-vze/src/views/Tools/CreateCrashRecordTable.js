@@ -47,7 +47,8 @@ const DELETE_TEMP_RECORD = gql`
   }
 `;
 
-const CreateCrashRecordTable = ({ client }) => {
+const CreateCrashRecordTable = () => {
+
   const [crashesData, setCrashesData] = useState(null);
   const [crashSearch, setCrashSearch] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
@@ -82,7 +83,6 @@ const CreateCrashRecordTable = ({ client }) => {
       setCrashesData({"atd_txdot_crashes": newData});
       toggleModalDelete();
     }).catch(err => {
-
       setFeedback(String(err));
       setDeleteId(null);
     });
@@ -134,6 +134,7 @@ const CreateCrashRecordTable = ({ client }) => {
                   <th>Crash Date</th>
                   <th>Crash Time</th>
                   <th>Updated By</th>
+                  <th>Last Update</th>
                   <th>Action</th>
                 </tr>
               </thead>
@@ -154,6 +155,7 @@ const CreateCrashRecordTable = ({ client }) => {
                         <td>{item.case_id}</td>
                         <td>{item.crash_date}</td>
                         <td>{item.crash_time}</td>
+                        <td>{item.updated_by}</td>
                         <td>{item.last_update}</td>
                         <td>
                           <Button
