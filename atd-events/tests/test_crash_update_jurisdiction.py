@@ -126,6 +126,20 @@ class TestCrashUpdateJurisdiction:
         """
         assert get_original_city_id(data_cr3_insertion_invalid) is None
 
+    def test_get_jurisdiction_common_members_success(self):
+        array_a = [0, 1, 2]
+        array_b = [1, 2, 3]
+        assert get_jurisdiction_common_members(array_a, array_b) == {1, 2}
+
+    def test_get_jurisdiction_common_members_success_b(self):
+        array_a = [0, 1, 2]
+        array_b = [3, 4]
+        assert get_jurisdiction_common_members(array_a, array_b) == set()
+
+    def test_get_jurisdiction_common_members_success_c(self):
+        array_a = [1000, 1008, 1010]
+        array_b = [1000, 1008, 1010]
+        assert get_jurisdiction_common_members(array_a, array_b) == {1000, 1008, 1010}
 
     def test_load_data_success(self):
         """
@@ -487,20 +501,50 @@ class TestCrashUpdateJurisdiction:
         )
         update_jurisdiction_flag.assert_not_called()
 
-    @patch("crash_update_jurisdiction.app.update_jurisdiction_flag")
-    def test_hasura_request_is_crash_in_jurisdiction_false(self, update_jurisdiction_flag):
+    # @patch("crash_update_jurisdiction.app.update_jurisdiction_flag")
+    # def test_hasura_request_is_crash_in_jurisdiction_false(self, update_jurisdiction_flag):
+    #     """
+    #     Makes sure the update function does not get called if the conditions are not met
+    #     """
+    #     data = load_file("tests/data/data_cr3_insertion_invalid.json")
+    #     data["event"]["data"] = {
+    #         "old": None,
+    #         "new": {
+    #             "crash_id": -9000,
+    #             "austin_full_purpose": "Y"
+    #         },
+    #     }
+    #     hasura_request(
+    #         record=json.dumps(data)
+    #     )
+    #     update_jurisdiction_flag.assert_not_called()
+
+    def test_is_crash_in_jurisdictions_success(self):
         """
-        Makes sure the update function does not get called if the conditions are not met
+        Checks whether a crash falls is part of any jurisdictions
         """
-        data = load_file("tests/data/data_cr3_insertion_invalid.json")
-        data["event"]["data"] = {
-            "old": None,
-            "new": {
-                "crash_id": 1000,
-                "austin_full_purpose": "Y"
-            },
-        }
-        hasura_request(
-            record=json.dumps(data)
-        )
-        update_jurisdiction_flag.assert_not_called()
+        assert is_crash_in_jurisdictions(1020)
+
+    def test_is_crash_in_jurisdictions_success_b(self):
+        """
+        Checks whether a crash falls is part of any jurisdictions with a string
+        """
+        assert is_crash_in_jurisdictions("1020")
+
+    def test_is_crash_in_jurisdictions_fail_a(self):
+        """
+        Makes sure only numeric values work
+        """
+        assert is_crash_in_jurisdictions(False) is False
+
+    def test_is_crash_in_jurisdictions_fail_b(self):
+        """
+        Makes sure only numeric integer values work
+        """
+        assert is_crash_in_jurisdictions("-1230") is False
+
+    def test_is_crash_in_jurisdictions_fail_c(self):
+        """
+        Makes sure only positive integer values work
+        """
+        assert is_crash_in_jurisdictions("1230.0") is False
