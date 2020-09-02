@@ -110,6 +110,13 @@ export const mapFilterReducer = (mapFilters, action) => {
         syntax: createModeFilterSyntax(isMapTypeSet, filter),
       }));
       return updatedModeFilters;
+    case "updateModeFilters":
+      // Payload - filter config
+      // If filter config present, remove (if it isn't the last filter)
+      // If filter config not present, add
+      // return array
+      const updatedFiltersArray = payload;
+      return updatedFiltersArray;
     default:
       return null;
   }
@@ -252,6 +259,7 @@ const SideMapControl = ({ type }) => {
   // TODO: Create reducer
   // TODO: Create initial mode filters
 
+  // Set initial filters
   useEffect(() => {
     if (filters.length !== 0) return;
 
@@ -288,30 +296,6 @@ const SideMapControl = ({ type }) => {
       payload: namedAndGroupedFilters,
     });
   }, [mapButtonFiltersConfig, dispatchFilters, filters, isMapTypeSet]);
-
-  // useEffect(() => {
-  //   if (filters.length === 0) return;
-
-  //   const filterModeSyntaxByType = (filtersArray) =>
-  //     filtersArray.map((filter) => {
-  //       // Set syntax for generateWhereFilters() map helper
-  //       if (isMapTypeSet.fatal && isMapTypeSet.injury) {
-  //         filter.syntax = `${filter.fatalSyntax} ${filter.operator} ${filter.injurySyntax}`;
-  //       } else if (isMapTypeSet.fatal) {
-  //         filter.syntax = filter.fatalSyntax;
-  //       } else if (isMapTypeSet.injury) {
-  //         filter.syntax = filter.injurySyntax;
-  //       }
-  //       return filter;
-  //     });
-
-  //   const syntaxSetFilters = filterModeSyntaxByType(filters);
-
-  //   dispatchFilters({
-  //     type: "updateModeFilters",
-  //     payload: syntaxSetFilters,
-  //   });
-  // }, [filters, isMapTypeSet, dispatchFilters]);
 
   // useEffect(() => {
   //   if (filters.length !== 0) return;
@@ -385,33 +369,33 @@ const SideMapControl = ({ type }) => {
   //   setFilterGroupCounts(filtersCount);
   // }, [filters]);
 
-  const isFilterSet = (filterName) => {
-    return (
-      filters.length > 0 &&
-      filters.find((setFilter) => setFilter.name === filterName)
-    );
-  };
-
-  // const isOneFilterOfGroupApplied = (group) => filterGroupCounts[group] > 1;
+  const isFilterSet = (filterName) =>
+    filters.find((setFilter) => setFilter.name === filterName);
 
   // // Set filter or remove if already set
   const handleFilterClick = (event, filterGroup) => {
     const filterName = event.currentTarget.id;
+    let updatedFiltersArray;
 
-    // if (isFilterSet(filterName)) {
-    //   // Always leave one filter applied per group
-    //   let updatedFiltersArray = isOneFilterOfGroupApplied(filterGroup)
-    //     ? filters.filter((setFilter) => setFilter.name !== filterName)
-    //     : filters;
-    //   setButtonFilters(updatedFiltersArray);
-    // } else {
-    //   const filter = mapButtonFilters[filterGroup].each[filterName];
-    //   // Add filterName and group to object for IDing and grouping
-    //   filter["name"] = filterName;
-    //   filter["group"] = filterGroup;
-    //   const filtersArray = [...filters, filter];
-    //   setButtonFilters(filtersArray);
-    // }
+    if (isFilterSet(filterName)) {
+      // Always leave one filter applied per group
+      updatedFiltersArray =
+        filters.length > 1
+          ? filters.filter((setFilter) => setFilter.name !== filterName)
+          : filters;
+    } else {
+      const filter = mapButtonFiltersConfig[filterGroup].each[filterName];
+      // Add filterName and group to object for IDing and grouping
+      filter["name"] = filterName;
+      filter["group"] = filterGroup;
+      filter["syntax"] = createModeFilterSyntax(isMapTypeSet, filter);
+      updatedFiltersArray = [...filters, filter];
+    }
+
+    dispatchFilters({
+      type: "updateModeFilters",
+      payload: updatedFiltersArray,
+    });
   };
 
   return (
