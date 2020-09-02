@@ -2,6 +2,8 @@
 # Resolves the location for a crash.
 #
 import json
+from typing import Optional
+
 import requests
 import time
 import os
@@ -67,28 +69,28 @@ def get_jurisdiction_flag(data: dict) -> str:
         return "N"
 
 
-def get_city_id(data: dict) -> int:
+def get_city_id(data: dict) -> Optional[int]:
     """
     Returns the city id of the record in question
     :param dict data: The record in question
-    :return int: The city id as an integer, 0 if it can't find it.
+    :return Optional[int]: The city id as an integer, 0 if it can't find it.
     """
     try:
         return data["event"]["data"]["new"]["city_id"]
     except (TypeError, KeyError):
-        return 0
+        return None
 
 
-def get_original_city_id(data: dict) -> int:
+def get_original_city_id(data: dict) -> Optional[int]:
     """
     Returns the original city id of the record in question
     :param dict data: The record in question
-    :return int: The city id as an integer, 0 if it can't find it.
+    :return Optional[int]: The city id as an integer, 0 if it can't find it.
     """
     try:
         return data["event"]["data"]["new"]["original_city_id"]
     except (TypeError, KeyError):
-        return 0
+        return None
 
 
 def load_data(record: str) -> dict:
