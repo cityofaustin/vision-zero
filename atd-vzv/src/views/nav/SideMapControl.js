@@ -69,6 +69,7 @@ const StyledCard = styled.div`
 
   .dark-checkbox {
     cursor: pointer;
+    box-shadow: none !important;
 
     .active,
     .inactive {
@@ -84,7 +85,8 @@ const StyledCard = styled.div`
   }
 `;
 
-const createModeFilterSyntax = (isMapTypeSet, config) => {
+// Build query string for crash type filter
+const createModeFilterString = (isMapTypeSet, config) => {
   if (isMapTypeSet.fatal && isMapTypeSet.injury) {
     return `${config.fatalSyntax} ${config.operator} ${config.injurySyntax}`;
   } else if (isMapTypeSet.fatal) {
@@ -106,7 +108,7 @@ export const mapFilterReducer = (mapFilters, action) => {
 
       const updatedModeFilters = mapFilters.map((filter) => ({
         ...filter,
-        syntax: createModeFilterSyntax(isMapTypeSet, filter),
+        syntax: createModeFilterString(isMapTypeSet, filter),
       }));
       return updatedModeFilters;
     case "updateModeFilters":
@@ -137,14 +139,14 @@ const SideMapControl = ({ type }) => {
     setIsMapTypeSet(updatedState);
   };
 
-  // Update mode syntax (fatal, injury, or both) when type filters update
+  // Update mode syntax (fatal, injury, or both) when type filter updates
   useEffect(() => {
     dispatchFilters({ type: "updateModeSyntax", payload: isMapTypeSet });
   }, [isMapTypeSet, dispatchFilters]);
 
   const handleTypeFilterClick = (filterArr) => {
     setTypeFilters(filterArr);
-    // Track single filter clicks with GA
+    // Track single filter clicks with Google Analytics
     filterArr.length === 1 && trackPageEvent(filterArr[0]);
   };
 
@@ -263,7 +265,7 @@ const SideMapControl = ({ type }) => {
 
             // Set initial query syntax for each mode filter
             if (type === "mode") {
-              filterConfig["syntax"] = createModeFilterSyntax(
+              filterConfig["syntax"] = createModeFilterString(
                 isMapTypeSet,
                 filterConfig
               );
@@ -304,7 +306,7 @@ const SideMapControl = ({ type }) => {
       // Add filterName and group to object for IDing and grouping and create query syntax
       filter["name"] = filterName;
       filter["group"] = filterGroup;
-      filter["syntax"] = createModeFilterSyntax(isMapTypeSet, filter);
+      filter["syntax"] = createModeFilterString(isMapTypeSet, filter);
       updatedFiltersArray = [...filters, filter];
     }
 
@@ -334,6 +336,7 @@ const SideMapControl = ({ type }) => {
             {Object.entries(groupParameters.each).map(
               ([name, parameter], i) => {
                 const eachClassName = groupParameters.shared.eachClass || "";
+                const title = name[0].toUpperCase() + name.slice(1);
 
                 switch (groupParameters.shared.uiType) {
                   case "button":
@@ -377,10 +380,11 @@ const SideMapControl = ({ type }) => {
                     );
                   case "checkbox":
                     return (
-                      <Col xs={12} key={name} className="py-1">
-                        <span
+                      <Col xs={12} key={name}>
+                        <Button
                           id={name}
-                          className={`text-dark ${
+                          color="link"
+                          className={`text-dark py-1 px-0 ${
                             groupParameters.shared.eachClass || ""
                           }`}
                           onClick={
@@ -388,6 +392,7 @@ const SideMapControl = ({ type }) => {
                               ? parameter.handler
                               : (event) => handleFilterClick(event, group)
                           }
+                          title={`${title} filter`}
                         >
                           {parameter.isSelected || isFilterSet(name) ? (
                             <FontAwesomeIcon
@@ -407,8 +412,8 @@ const SideMapControl = ({ type }) => {
                               color={parameter.iconColor && parameter.iconColor}
                             />
                           )}{" "}
-                          {name[0].toUpperCase() + name.slice(1)}
-                        </span>
+                          {title}
+                        </Button>
                       </Col>
                     );
                   default:
