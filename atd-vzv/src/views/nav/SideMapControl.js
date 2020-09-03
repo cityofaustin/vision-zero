@@ -408,10 +408,10 @@ const SideMapControl = ({ type }) => {
                           {parameter.icon && (
                             <FontAwesomeIcon
                               icon={parameter.icon}
-                              className="mr-1 ml-2 fa-fw"
+                              className="mr-2 ml-2 fa-fw"
                               color={parameter.iconColor && parameter.iconColor}
                             />
-                          )}{" "}
+                          )}
                           {title}
                         </Button>
                       </Col>
