@@ -95,6 +95,7 @@ export const GET_CRASH = gql`
       updated_by
       wthr_cond_id
       location_id
+      temp_record
     }
     atd_txdot_charges(where: { crash_id: { _eq: $crashId } }) {
       citation_nbr
