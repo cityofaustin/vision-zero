@@ -23,7 +23,16 @@ function CR3Record(props) {
     <Card>
       <CardHeader>Crash Report</CardHeader>
       <CardBody>
-        {props.isCr3Stored ? (
+        {props.isTempRecord ? (
+          <Alert color="warning">
+            <strong>CR3 PDFs are not available for temporary records.</strong><br />
+            Using the crash id, check the{" "}
+            <a href={"https://cris.dot.state.tx.us/"} target={"_new"}>
+              CRIS website
+            </a>{" "}
+            for the latest status of this crash.
+          </Alert>
+        ) : props.isCr3Stored ? (
           <Button color="primary" onClick={requestCR3}>
             Download CR-3 PDF
           </Button>
