@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { StoreContext } from "../../utils/store";
 
 import SideMapControlDateRange from "./SideMapControlDateRange";
@@ -69,6 +69,7 @@ const StyledCard = styled.div`
 
   .dark-checkbox {
     cursor: pointer;
+    box-shadow: none !important;
 
     .active,
     .inactive {
@@ -84,14 +85,45 @@ const StyledCard = styled.div`
   }
 `;
 
+// Build query string for crash type filter
+const createModeFilterString = (isMapTypeSet, config) => {
+  if (isMapTypeSet.fatal && isMapTypeSet.injury) {
+    return `${config.fatalSyntax} ${config.operator} ${config.injurySyntax}`;
+  } else if (isMapTypeSet.fatal) {
+    return `${config.fatalSyntax}`;
+  } else if (isMapTypeSet.injury) {
+    return `${config.injurySyntax}`;
+  }
+};
+
+export const mapFilterReducer = (mapFilters, action) => {
+  const { type, payload } = action;
+
+  switch (type) {
+    case "setInitialModeFilters":
+      const initialFiltersArray = payload;
+      return initialFiltersArray;
+    case "updateModeSyntax":
+      const isMapTypeSet = payload;
+
+      const updatedModeFilters = mapFilters.map((filter) => ({
+        ...filter,
+        syntax: createModeFilterString(isMapTypeSet, filter),
+      }));
+      return updatedModeFilters;
+    case "updateModeFilters":
+      const updatedFiltersArray = payload;
+      return updatedFiltersArray;
+    default:
+      return null;
+  }
+};
+
 const SideMapControl = ({ type }) => {
   const {
-    mapFilters: [filters, setFilters],
+    mapFilters: [filters, dispatchFilters],
     mapFilterType: [isMapTypeSet, setIsMapTypeSet],
   } = React.useContext(StoreContext);
-
-  const [buttonFilters, setButtonFilters] = useState({});
-  const [filterGroupCounts, setFilterGroupCounts] = useState({});
 
   const setTypeFilters = (typeArray) => {
     // Set types in array as true and others as false
@@ -107,14 +139,19 @@ const SideMapControl = ({ type }) => {
     setIsMapTypeSet(updatedState);
   };
 
+  // Update mode syntax (fatal, injury, or both) when type filter updates
+  useEffect(() => {
+    dispatchFilters({ type: "updateModeSyntax", payload: isMapTypeSet });
+  }, [isMapTypeSet, dispatchFilters]);
+
   const handleTypeFilterClick = (filterArr) => {
     setTypeFilters(filterArr);
-    // Track single filter clicks with GA
+    // Track single filter clicks with Google Analytics
     filterArr.length === 1 && trackPageEvent(filterArr[0]);
   };
 
   // Define groups of map button filters
-  const mapButtonFilters = {
+  const mapFiltersConfig = {
     type: {
       shared: {
         eachClass: `type-button`,
@@ -211,93 +248,72 @@ const SideMapControl = ({ type }) => {
     },
   };
 
-  // On inital render, reduce all default filters and apply to map data
+  // Set initial filters
   useEffect(() => {
-    if (Object.keys(buttonFilters).length === 0) {
-      const initialFiltersArray = Object.entries(mapButtonFilters).reduce(
-        (allFiltersAccumulator, [type, filtersGroup]) => {
-          const groupFilters = Object.entries(filtersGroup.each).reduce(
-            (groupFiltersAccumulator, [name, filterConfig]) => {
-              // Apply filter only if set as a default on render
-              if (filterConfig.default) {
-                filterConfig["name"] = name;
-                filterConfig["group"] = type;
-                groupFiltersAccumulator.push(filterConfig);
-              }
-              return groupFiltersAccumulator;
-            },
-            []
-          );
-          allFiltersAccumulator = [...allFiltersAccumulator, ...groupFilters];
-          return allFiltersAccumulator;
-        },
-        []
-      );
-      setButtonFilters(initialFiltersArray);
-    }
-  }, [mapButtonFilters, setButtonFilters, buttonFilters]);
+    if (filters.length !== 0) return;
 
-  // After inital render, create mode syntax and set filters state for map data
-  useEffect(() => {
-    if (Object.keys(buttonFilters).length !== 0) {
-      const filterModeSyntaxByType = (filtersArray) =>
-        filtersArray.map((filter) => {
-          // Set syntax for generateWhereFilters() map helper
-          if (isMapTypeSet.fatal && isMapTypeSet.injury) {
-            filter.syntax = `${filter.fatalSyntax} ${filter.operator} ${filter.injurySyntax}`;
-          } else if (isMapTypeSet.fatal) {
-            filter.syntax = filter.fatalSyntax;
-          } else if (isMapTypeSet.injury) {
-            filter.syntax = filter.injurySyntax;
-          }
-          return filter;
-        });
+    const namedAndGroupedFilters = Object.entries(mapFiltersConfig).reduce(
+      (allFiltersAccumulator, [type, filtersGroup]) => {
+        const groupFilters = Object.entries(filtersGroup.each).reduce(
+          (groupFiltersAccumulator, [name, filterConfig]) => {
+            // Apply filter only if set as a default on render
+            if (filterConfig.default) {
+              filterConfig["name"] = name;
+              filterConfig["group"] = type;
+              groupFiltersAccumulator.push(filterConfig);
+            }
 
-      const updatedFiltersArray = filterModeSyntaxByType(buttonFilters);
-      setFilters(updatedFiltersArray);
-    }
-  }, [buttonFilters, isMapTypeSet, setFilters]);
+            // Set initial query syntax for each mode filter
+            if (type === "mode") {
+              filterConfig["syntax"] = createModeFilterString(
+                isMapTypeSet,
+                filterConfig
+              );
+            }
 
-  // Set count of filters applied per type
-  useEffect(() => {
-    const filtersCount = filters.reduce((accumulator, filter) => {
-      if (accumulator[filter.group]) {
-        accumulator = {
-          ...accumulator,
-          [filter.group]: accumulator[filter.group] + 1,
-        };
-      } else {
-        accumulator = { ...accumulator, [filter.group]: 1 };
-      }
-      return accumulator;
-    }, {});
-    setFilterGroupCounts(filtersCount);
-  }, [filters]);
+            return groupFiltersAccumulator;
+          },
+          []
+        );
+        allFiltersAccumulator = [...allFiltersAccumulator, ...groupFilters];
+        return allFiltersAccumulator;
+      },
+      []
+    );
 
-  const isFilterSet = (filterName) => {
-    return !!filters.find((setFilter) => setFilter.name === filterName);
-  };
+    dispatchFilters({
+      type: "setInitialModeFilters",
+      payload: namedAndGroupedFilters,
+    });
+  }, [mapFiltersConfig, dispatchFilters, filters, isMapTypeSet]);
 
-  const isOneFilterOfGroupApplied = (group) => filterGroupCounts[group] > 1;
+  const isFilterSet = (filterName) =>
+    filters.find((setFilter) => setFilter.name === filterName);
 
   // Set filter or remove if already set
   const handleFilterClick = (event, filterGroup) => {
     const filterName = event.currentTarget.id;
+    let updatedFiltersArray;
 
     if (isFilterSet(filterName)) {
       // Always leave one filter applied per group
-      let updatedFiltersArray = isOneFilterOfGroupApplied(filterGroup)
-        ? filters.filter((setFilter) => setFilter.name !== filterName)
-        : filters;
-      setButtonFilters(updatedFiltersArray);
+      updatedFiltersArray =
+        filters.length > 1
+          ? filters.filter((setFilter) => setFilter.name !== filterName)
+          : filters;
     } else {
-      const filter = mapButtonFilters[filterGroup].each[filterName];
-      // Add filterName and group to object for IDing and grouping
+      const filter = mapFiltersConfig[filterGroup].each[filterName];
+      // Add filterName and group to object for IDing and grouping and create query syntax
       filter["name"] = filterName;
       filter["group"] = filterGroup;
-      const filtersArray = [...filters, filter];
-      setButtonFilters(filtersArray);
+      filter["syntax"] = createModeFilterString(isMapTypeSet, filter);
+      updatedFiltersArray = [...filters, filter];
     }
+
+    dispatchFilters({
+      type: "updateModeFilters",
+      payload: updatedFiltersArray,
+    });
   };
 
   return (
@@ -311,7 +327,7 @@ const SideMapControl = ({ type }) => {
           <h3 className="h5">Filters</h3>
         </Label>
         {/* Create a button group for each group of mapFilters */}
-        {Object.entries(mapButtonFilters).map(([group, groupParameters], i) => (
+        {Object.entries(mapFiltersConfig).map(([group, groupParameters], i) => (
           <Row
             className={`mx-0 mb-3 ${groupParameters.shared.allClass || ""}`}
             key={`${group}-buttons`}
@@ -320,6 +336,7 @@ const SideMapControl = ({ type }) => {
             {Object.entries(groupParameters.each).map(
               ([name, parameter], i) => {
                 const eachClassName = groupParameters.shared.eachClass || "";
+                const title = name[0].toUpperCase() + name.slice(1);
 
                 switch (groupParameters.shared.uiType) {
                   case "button":
@@ -363,10 +380,11 @@ const SideMapControl = ({ type }) => {
                     );
                   case "checkbox":
                     return (
-                      <Col xs={12} key={name} className="py-1">
-                        <span
+                      <Col xs={12} key={name}>
+                        <Button
                           id={name}
-                          className={`text-dark ${
+                          color="link"
+                          className={`text-dark py-1 px-0 ${
                             groupParameters.shared.eachClass || ""
                           }`}
                           onClick={
@@ -374,6 +392,7 @@ const SideMapControl = ({ type }) => {
                               ? parameter.handler
                               : (event) => handleFilterClick(event, group)
                           }
+                          title={`${title} filter`}
                         >
                           {parameter.isSelected || isFilterSet(name) ? (
                             <FontAwesomeIcon
@@ -389,12 +408,12 @@ const SideMapControl = ({ type }) => {
                           {parameter.icon && (
                             <FontAwesomeIcon
                               icon={parameter.icon}
-                              className="mr-1 ml-2 fa-fw"
+                              className="mr-2 ml-2 fa-fw"
                               color={parameter.iconColor && parameter.iconColor}
                             />
-                          )}{" "}
-                          {name[0].toUpperCase() + name.slice(1)}
-                        </span>
+                          )}
+                          {title}
+                        </Button>
                       </Col>
                     );
                   default:

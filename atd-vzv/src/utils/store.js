@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useReducer } from "react";
 import { mapStartDate, mapEndDate } from "../constants/time";
 import { useIsTablet } from "../constants/responsive";
+import { mapFilterReducer } from "../views/nav/SideMapControl";
 
 export const StoreContext = React.createContext(null);
 
 export default ({ children }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [mapFilters, setMapFilters] = useState([]);
+  const [mapFilters, mapFilterDispatch] = useReducer(mapFilterReducer, []);
   const [isMapTypeSet, setIsMapTypeSet] = useState({
     fatal: true,
     injury: true,
@@ -29,7 +30,7 @@ export default ({ children }) => {
   }, [isTablet, setIsOpen]);
 
   const store = {
-    mapFilters: [mapFilters, setMapFilters],
+    mapFilters: [mapFilters, mapFilterDispatch],
     mapFilterType: [isMapTypeSet, setIsMapTypeSet],
     mapDateRange,
     setMapDateRange,
