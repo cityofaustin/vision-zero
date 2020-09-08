@@ -26,7 +26,7 @@ function CR3Record(props) {
         {props.isTempRecord ? (
           <Alert color="warning">
             <strong>CR3 PDFs are not available for temporary records.</strong><br />
-            Using the crash id, check the{" "}
+            Using the case id, check the{" "}
             <a href={"https://cris.dot.state.tx.us/"} target={"_new"}>
               CRIS website
             </a>{" "}
