@@ -142,6 +142,7 @@ function Crash(props) {
     address_confirmed_primary: primaryAddress,
     address_confirmed_secondary: secondaryAddress,
     cr3_stored_flag: cr3StoredFlag,
+    temp_record: tempRecord,
     geocode_method: geocodeMethod,
   } = data.atd_txdot_crashes[0];
 
@@ -265,7 +266,7 @@ function Crash(props) {
           </div>
         </Col>
         <Col xs="12" md="6">
-          <CR3Record crashId={crashId} isCr3Stored={cr3StoredFlag === "Y"} />
+          <CR3Record crashId={crashId} isCr3Stored={cr3StoredFlag === "Y"} isTempRecord={tempRecord} />
         </Col>
         <Col xs="12">
           <CrashCollapses data={data} props={props} />
