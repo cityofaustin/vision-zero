@@ -60,7 +60,9 @@ let queryConf = {
       type: "Currency",
     },
   },
-  order_by: {},
+  order_by: {
+    crashes_count_cost_summary: `{ est_comp_cost: desc }`
+  },
   where: {
     // Only show Locations inside CoA Limits.
     council_district: "_gt: 0",
