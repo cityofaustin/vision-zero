@@ -111,7 +111,10 @@ browser.find_by_text("Next").click()
 wait(10)
 
 print("Submit Request")
-browser.find_by_text("Submit Extract Request").click()
+submit_button = browser.find_by_text("Submit Extract Request")
+submit_button.click()
+
+wait(10)
 
 print("\nProcess done.")
 
