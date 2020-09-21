@@ -76,10 +76,11 @@ print(
     "Selecting data extract request, from '%s' to '%s'"
     % (CRIS_EXTRACT_DATE_START, CRIS_EXTRACT_DATE_END)
 )
-browser.find_by_text("Create Data Extract Request").click()
+start_button = browser.find_by_text("Create Data Extract Request")
+start_button.click()
 wait(10)
 
-browser.find_by_text("Continue").click()
+browser.find_by_text("Next").click()
 wait(10)
 
 print("Selecting Counties to be Included in the Extract")
@@ -88,18 +89,19 @@ browser.execute_script("$(\"div[data-value='105']\").click()")  # Travis
 browser.execute_script("$(\"div[data-value='227']\").click()")  # Williamson
 browser.execute_script("$(\"div[data-value='246']\").click()")  # Hays
 wait(3)
-browser.find_by_text("Continue").click()
+
+browser.find_by_text("Next").click()
 wait(10)
 
 print("Selecting type IDS PROCESS")
 browser.find_by_css('input[ng-value="shareConstants.DATE_TYPE_IDS.PROCESS"]').click()
 browser.find_by_id("requestDateProcessBegin").fill(CRIS_EXTRACT_DATE_START)
 browser.find_by_id("requestDateProcessEnd").fill(CRIS_EXTRACT_DATE_END)
-browser.find_by_text("Continue").click()
+browser.find_by_text("Next").click()
 wait(10)
 
 print("Submit Request")
-browser.find_by_text("Submit").click()
+browser.find_by_text("Submit Extract Request").click()
 
 print("\nProcess done.")
 
