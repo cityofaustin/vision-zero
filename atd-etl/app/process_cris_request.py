@@ -85,21 +85,21 @@ wait(10)
 
 print("Selecting Counties to be Included in the Extract")
 browser.find_by_id('rdoCounties').click()
+# Open ng-select dropdown
 browser.find_by_id('requestCounties').click() 
-browser.driver.save_screenshot("screenshot.png")
 
-wait(3)
-browser.execute_script("document.getElementById('acc19a5a0565-226').click()")  # Travis
-wait(1)
-# browser.execute_script("$(\"div#acc19a5a0565-226.ng-option\").click()")  # Travis
-browser.driver.save_screenshot("screenshot_travis.png")
+browser.find_by_text('TRAVIS').click()
+
+# Reopen dropdown
 browser.find_by_id('requestCounties').click() 
-browser.execute_script("$(\"div[data-value='227']\").click()")  # Williamson
-browser.execute_script("$(\"div[data-value='246']\").click()")  # Hays
+browser.find_by_text('WILLIAMSON').click()
+
+# Reopen dropdown
+browser.find_by_id('requestCounties').click() 
+browser.find_by_text('HAYS').click()
 wait(3)
 
 browser.find_by_text("Next").click()
-browser.driver.save_screenshot("screenshot1.png")
 wait(10)
 
 print("Selecting type IDS PROCESS")
