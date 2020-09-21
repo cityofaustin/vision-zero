@@ -207,6 +207,10 @@ gqlAbstractTableAggregateName (
    */
   setOrder(key, syntax) {
     if (this.config && this.config["order_by"]) {
+      // First, RESET the order_by value.
+      // - Our assumption is that there should only by 1 order_by at a time.
+      this.config["order_by"] = {};
+      // Now, set new key, syntax pair for order_by
       this.config["order_by"][key] = syntax;
     } else {
       this.config["order_by"] = {};
