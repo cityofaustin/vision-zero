@@ -203,7 +203,13 @@ CRIS_TXDOT_FIELDS = {
                     "cmv_trlr1_disabling_dmag_id",
                     "cmv_trlr2_disabling_dmag_id",
                     "cmv_bus_type_id",
-                    "unit_id"
+                    "unit_id",
+                    "veh_damage_description1_id",
+                    "veh_damage_severity1_id",
+                    "veh_damage_direction_of_force1_id",
+                    "veh_damage_description2_id",
+                    "veh_damage_severity2_id",
+                    "veh_damage_direction_of_force2_id",
                 ]
             ],
             [
