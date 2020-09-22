@@ -18,7 +18,9 @@ function LocationCrashes(props) {
     single_item: "crashes",
     showDateRange: true,
     columns: crashGridTableColumns,
-    order_by: {},
+    order_by: {
+      est_comp_cost: "desc"
+    },
     where: {
       location_id: `_eq: "${props.locationId}"`,
     },
