@@ -24,12 +24,7 @@ jobs:
           command: |
             source .circleci/aws-helper.sh
             deploy_aws_lambda
-      - run:
-          # Builds master, production and PR branches
-          name: "Build VZ SQS Functions"
-          command: |
-            source .circleci/aws-lambda-helper.sh
-            deploy_event_functions
+
 workflows:
   version: 2.1
   build-and-deploy:
@@ -40,4 +35,3 @@ workflows:
               only:
                 - master
                 - production
-                - /^(?!pull\/).*$/

@@ -117,9 +117,10 @@ const GridTable = ({
   const [loadChartData, { data: chartData }] = useLazyQuery(chartQuery);
 
   // Update aggregate and chart queries with latest filters
-  // No dependencies added because we need to depend on changes in the query
-  // instance to propogate changes to children. This does not work properly so
-  // changes in the aggregateQuery and chartQuery are compared in if blocks.
+  //  Use `[query.gql]` for dependency list because we need to depend on changes
+  //  in the query instance to propogate changes to children. This does not work
+  //  properly so changes in the aggregateQuery and chartQuery are compared in
+  //  if blocks.
   useEffect(() => {
     if (aggregateQueryConfig) {
       const updatedAggregateQuery = query.queryAggregate(
@@ -142,7 +143,7 @@ const GridTable = ({
         setChartQuery(updatedChartsQuery);
       }
     }
-  }, [] ); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [query.gql]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Execute aggregate query each time query filters change
   useEffect(() => {
@@ -346,9 +347,9 @@ const GridTable = ({
       query.deleteWhere(column);
     });
 
-    const useEqSearch =
-      searchParameters["column"] === "crash_id" ||
-      searchParameters["column"] === "form_id";
+    const useEqSearch = ["crash_id", "form_id", "record_id"].includes(
+      searchParameters["column"]
+    );
 
     if (useEqSearch) {
       // Search Integer for exact value

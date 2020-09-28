@@ -7,9 +7,11 @@
         "data": {
             "old": null,
             "new": {
+                "city_id": 22,
                 "crash_id": 1000,
                 "case_id": "987654321",
-                "location_id": "SCRAMBLED1234"
+                "location_id": "SCRAMBLED1234",
+                "original_city_id": 123
             }
         }
     },

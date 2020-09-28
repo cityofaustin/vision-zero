@@ -56,7 +56,7 @@ const Summary = () => {
         <Col className="px-xs-0">
           <StyledSummary>
             <Row className="summary-child">
-              <Alert color="secondary" className="mb-0 banner">
+              <Alert color="secondary" className="col-12 mb-0 banner">
                 <div className="mb-2">
                   Austin is consistently ranked as one of America's best places
                   to live, but too many of our fellow Austinites are killed or

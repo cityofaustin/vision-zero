@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import moment from "moment";
 import clonedeep from "lodash.clonedeep";
@@ -21,28 +21,33 @@ import {
   summaryCurrentYearStartDate,
   summaryCurrentYearEndDate,
   yearsArray,
+  dataStartDate,
   dataEndDate,
 } from "../../constants/time";
 import { crashEndpointUrl } from "./queries/socrataQueries";
 import { getYearsAgoLabel } from "./helpers/helpers";
 import { colors } from "../../constants/colors";
 
+const dayOfWeekArray = moment.weekdaysShort();
+const hourBlockArray = [...Array(24).keys()].map((hour) =>
+  moment({ hour }).format("hhA")
+);
+
 const CrashesByTimeOfDay = () => {
   const [activeTab, setActiveTab] = useState(0);
   const [crashType, setCrashType] = useState([]);
   const [heatmapData, setHeatmapData] = useState([]);
+  const [heatmapDataWithPlaceholder, setHeatmapDataWithPlaceholder] = useState(
+    []
+  );
+  const [maxForLegend, setMaxForLegend] = useState(null);
 
   const toggle = (tab) => {
     if (activeTab !== tab) setActiveTab(tab);
   };
 
-  const hourBlockArray = useMemo(
-    () => [...Array(24).keys()].map((hour) => moment({ hour }).format("hhA")),
-    []
-  );
-
   useEffect(() => {
-    const dayOfWeekArray = moment.weekdaysShort();
+    if (!crashType.queryStringCrash) return;
 
     const buildDataArray = () => {
       // This array holds weekday totals for each hour window within a day
@@ -96,13 +101,77 @@ const CrashesByTimeOfDay = () => {
       return queryUrl;
     };
 
-    // Wait for crashType to be passed up from setCrashType component,
-    // then fetch records for selected year
-    if (crashType.queryStringCrash)
-      axios.get(getFatalitiesByYearsAgoUrl()).then((res) => {
-        setHeatmapData(calculateHourBlockTotals(res.data));
+    axios.get(getFatalitiesByYearsAgoUrl()).then((res) => {
+      const formattedData = calculateHourBlockTotals(res.data);
+      setHeatmapData(formattedData);
+    });
+  }, [activeTab, crashType]);
+
+  // Query to find maximum day total per crash type
+  useEffect(() => {
+    if (maxForLegend) return;
+
+    const maxQuery = `
+    SELECT date_extract_dow(crash_date) as day, date_extract_hh(crash_date) as hour, date_extract_y(crash_date) as year, SUM(death_cnt) as death, SUM(sus_serious_injry_cnt) as serious, serious + death as all 
+    WHERE crash_date BETWEEN '${dataStartDate.format(
+      "YYYY-MM-DD"
+    )}' and '${summaryCurrentYearEndDate}' 
+    GROUP BY day, hour, year 
+    ORDER BY year 
+    |> 
+    SELECT max(death) as fatalities, max(serious) as seriousInjuries, max(all) as fatalitiesAndSeriousInjuries
+    `;
+
+    axios
+      .get(crashEndpointUrl + `?$query=` + encodeURIComponent(maxQuery))
+      .then((res) => {
+        setMaxForLegend(res.data[0]);
       });
-  }, [activeTab, crashType, hourBlockArray]);
+  }, [maxForLegend, crashType]);
+
+  // When crashType changes, add a placeholder column containing max values to weight each year consistently
+  useEffect(() => {
+    const lastRecordInHeatmapData = heatmapData[heatmapData.length - 1];
+    const isPlaceholderArraySet =
+      lastRecordInHeatmapData && lastRecordInHeatmapData.key === "";
+
+    if (!maxForLegend || heatmapData.length === 0 || isPlaceholderArraySet)
+      return;
+
+    const placeholderArray = heatmapData[0].data.map((data, i) => ({
+      key: dayOfWeekArray[i],
+      data: maxForLegend[crashType.name],
+    }));
+
+    const placeholderObjForChartWeighting = {
+      key: "",
+      data: placeholderArray,
+    };
+
+    const updatedWeightingData = [
+      ...heatmapData,
+      placeholderObjForChartWeighting,
+    ];
+
+    setHeatmapDataWithPlaceholder(updatedWeightingData);
+  }, [maxForLegend, heatmapData, crashType]);
+
+  // Hide placeholder cells
+  useEffect(() => {
+    const heatmapChildCellNumbers = [171, 172, 173, 174, 175, 176, 177];
+
+    let cellsToHide = heatmapChildCellNumbers.map((num) =>
+      document.querySelector(
+        `#demographics-heatmap > div > svg > g > g:nth-child(${num})`
+      )
+    );
+
+    cellsToHide.forEach((cell) => {
+      if (!!cell) {
+        cell.style.visibility = "hidden";
+      }
+    });
+  }, [heatmapDataWithPlaceholder, crashType, maxForLegend]);
 
   const formatValue = (d) => {
     const value = d.data.value ? d.data.value : 0;
@@ -164,10 +233,10 @@ const CrashesByTimeOfDay = () => {
         </Col>
       </Row>
       <Row className="h-auto">
-        <Col>
+        <Col id="demographics-heatmap" className="pl-4">
           <Heatmap
             height={267}
-            data={heatmapData}
+            data={heatmapDataWithPlaceholder}
             series={
               <HeatmapSeries
                 colorScheme={[
@@ -214,16 +283,19 @@ const CrashesByTimeOfDay = () => {
       </Row>
       <Row>
         <Col className="py-2">
-          <SequentialLegend
-            data={heatmapData}
-            orientation="horizontal"
-            colorScheme={[
-              colors.intensity2Of5,
-              colors.intensity3Of5,
-              colors.intensity4Of5,
-              colors.viridis1Of6Highest,
-            ]}
-          />
+          {!!maxForLegend && (
+            <SequentialLegend
+              data={[
+                { key: "Max", data: maxForLegend[crashType.name] },
+                { key: "Min", data: 0 },
+              ]}
+              orientation="horizontal"
+              colorScheme={[
+                colors.intensity1Of5Lowest,
+                colors.viridis1Of6Highest,
+              ]}
+            />
+          )}
         </Col>
       </Row>
     </Container>

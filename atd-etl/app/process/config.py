@@ -59,8 +59,6 @@ ATD_ETL_CONFIG = {
     "AWS_CRIS_REQUEST_BUCKET_NAME": os.getenv("AWS_CRIS_REQUEST_BUCKET_NAME", ""),
     "AWS_CRIS_REQUEST_BUCKET_PATH": os.getenv("AWS_CRIS_REQUEST_BUCKET_PATH", "txdot-email-pending/"),
     "ATD_CRIS_REQUEST_WEBSITE_HOME": "https://cris.dot.state.tx.us/secure/Share/app/home/welcome",
-    "ATD_CRIS_REQUEST_DOWNLOAD_LINK_PATTERN": "(https://cris.dot.state.tx.us/secure/Share/app/home/download\?token\=)([A-Z0-9]+)",
+    "ATD_CRIS_REQUEST_DOWNLOAD_LINK_PATTERN": "(https%3A%2F%2Fcris.dot.state.tx.us%2Fsecure%2FShare%2Fapp%2Fextract-download%2F)([A-Z0-9]+)",
     "ATD_CRIS_REQUEST_RETRIEVE_URL_ENDPOINT": "https://cris.dot.state.tx.us/secure/Share/rest/retrievedownload?token=",
 }
-
-

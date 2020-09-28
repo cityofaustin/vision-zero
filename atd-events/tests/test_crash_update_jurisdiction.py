@@ -102,6 +102,45 @@ class TestCrashUpdateJurisdiction:
         """
         assert get_jurisdiction_flag(None) == "N"
 
+    def test_get_city_id_success(self):
+        """
+        Tests if the city id is being returned as expected
+        """
+        assert get_city_id(data_cr3_insertion_valid) == 22
+
+    def test_get_city_id_invalid(self):
+        """
+        Tests if the city id is being returned as expected
+        """
+        assert get_city_id(data_cr3_insertion_invalid) is None
+
+    def test_get_original_city_id_success(self):
+        """
+        Tests if the city id is being returned as expected
+        """
+        assert get_original_city_id(data_cr3_insertion_valid) == 123
+
+    def test_get_original_city_id_invalid(self):
+        """
+        Tests if the city id is being returned as expected
+        """
+        assert get_original_city_id(data_cr3_insertion_invalid) is None
+
+    def test_get_jurisdiction_common_members_success(self):
+        array_a = [0, 1, 2]
+        array_b = [1, 2, 3]
+        assert get_jurisdiction_common_members(array_a, array_b) == {1, 2}
+
+    def test_get_jurisdiction_common_members_success_b(self):
+        array_a = [0, 1, 2]
+        array_b = [3, 4]
+        assert get_jurisdiction_common_members(array_a, array_b) == set()
+
+    def test_get_jurisdiction_common_members_success_c(self):
+        array_a = [1000, 1008, 1010]
+        array_b = [1000, 1008, 1010]
+        assert get_jurisdiction_common_members(array_a, array_b) == {1000, 1008, 1010}
+
     def test_load_data_success(self):
         """
         Tests whether load_data can parse a string into a dictionary
@@ -471,7 +510,7 @@ class TestCrashUpdateJurisdiction:
         data["event"]["data"] = {
             "old": None,
             "new": {
-                "crash_id": 1000,
+                "crash_id": -9000,
                 "austin_full_purpose": "Y"
             },
         }
@@ -479,3 +518,87 @@ class TestCrashUpdateJurisdiction:
             record=json.dumps(data)
         )
         update_jurisdiction_flag.assert_not_called()
+
+    def test_is_crash_in_jurisdictions_success(self):
+        """
+        Checks whether a crash falls is part of any jurisdictions
+        """
+        assert is_crash_in_jurisdictions(1020)
+
+    def test_is_crash_in_jurisdictions_success_b(self):
+        """
+        Checks whether a crash falls is part of any jurisdictions with a string
+        """
+        assert is_crash_in_jurisdictions("1020")
+
+    def test_is_crash_in_jurisdictions_fail_a(self):
+        """
+        Makes sure only numeric values work
+        """
+        assert is_crash_in_jurisdictions(False) is False
+
+    def test_is_crash_in_jurisdictions_fail_b(self):
+        """
+        Makes sure only numeric integer values work
+        """
+        assert is_crash_in_jurisdictions("-1230") is False
+
+    def test_is_crash_in_jurisdictions_fail_c(self):
+        """
+        Makes sure only positive integer values work
+        """
+        assert is_crash_in_jurisdictions("1230.0") is False
+
+    def test_get_city_id_from_db_success_a(self):
+        """
+        Makes sure it can find the city id for a crash
+        """
+        get_city_id_from_db(17211142) == 9999
+
+    def test_get_city_id_from_db_success_b(self):
+        """
+        Makes sure it can find the city id for a crash
+        """
+        get_city_id_from_db("15830818") == 99999
+
+    def test_get_city_id_from_db_fail_a(self):
+        """
+        Makes sure it can find the city id for a crash
+        """
+        get_city_id_from_db(False) is None
+
+    def test_get_city_id_from_db_fail_b(self):
+        """
+        Makes sure it can find the city id for a crash
+        """
+        get_city_id_from_db("123.2") is None
+
+    def test_get_city_id_from_db_fail_c(self):
+        """
+        Makes sure it can find the city id for a crash
+        """
+        get_city_id_from_db(2072423140) is None
+
+    def test_update_city_id_success_a(self):
+        """
+        Makes sure it can update the city id of a record
+        """
+        crash_id = 17211142
+        city_id = 9999
+        assert get_city_id_from_db(crash_id) == city_id
+        assert isinstance(update_city_id(crash_id=crash_id, city_id=None), dict)
+        assert get_city_id_from_db(crash_id) is None
+        assert isinstance(update_city_id(crash_id=crash_id, city_id=city_id), dict)
+        assert get_city_id_from_db(crash_id) == city_id
+
+    def test_update_city_id_success_b(self):
+        """
+        Makes sure it can update the city id of a record
+        """
+        crash_id = 17211142
+        city_id = 9999
+        assert get_city_id_from_db(crash_id) == city_id
+        assert isinstance(update_city_id(crash_id=crash_id, city_id=1), dict)
+        assert get_city_id_from_db(crash_id) == 1
+        assert isinstance(update_city_id(crash_id=crash_id, city_id=city_id), dict)
+        assert get_city_id_from_db(crash_id) == city_id

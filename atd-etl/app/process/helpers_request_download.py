@@ -103,7 +103,7 @@ def extract_email_download_link(email_body):
     """
     download_link_string = re.search(AWS_CRIS_REQUEST_DOWNLOAD_LINK_PATTERN, email_body, re.IGNORECASE)
     if download_link_string:
-        url = download_link_string.group(1) + download_link_string.group(2)
+        url = download_link_string.group(1).replace("%2F", "/").replace("%3A", ":") + download_link_string.group(2)
         token = download_link_string.group(2)
         return url, token
     else:

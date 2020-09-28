@@ -76,30 +76,45 @@ print(
     "Selecting data extract request, from '%s' to '%s'"
     % (CRIS_EXTRACT_DATE_START, CRIS_EXTRACT_DATE_END)
 )
-browser.find_by_text("Create Data Extract Request").click()
+start_button = browser.find_by_text("Create Data Extract Request")
+start_button.click()
 wait(10)
 
-browser.find_by_text("Continue").click()
+browser.find_by_text("Next").click()
 wait(10)
 
 print("Selecting Counties to be Included in the Extract")
-browser.find_by_css('input[ng-value="shareConstants.LOCATION_TYPE_IDS.COUNTY"]').click()
-browser.execute_script("$(\"div[data-value='105']\").click()")  # Travis
-browser.execute_script("$(\"div[data-value='227']\").click()")  # Williamson
-browser.execute_script("$(\"div[data-value='246']\").click()")  # Hays
+browser.find_by_id('rdoCounties').click()
+# Open ng-select dropdown
+browser.find_by_id('requestCounties').click() 
+
+browser.find_by_text('TRAVIS').click()
+
+# Reopen dropdown
+browser.find_by_id('requestCounties').click() 
+browser.find_by_text('WILLIAMSON').click()
+
+# Reopen dropdown
+browser.find_by_id('requestCounties').click() 
+browser.find_by_text('HAYS').click()
 wait(3)
-browser.find_by_text("Continue").click()
+
+browser.find_by_text("Next").click()
 wait(10)
 
 print("Selecting type IDS PROCESS")
-browser.find_by_css('input[ng-value="shareConstants.DATE_TYPE_IDS.PROCESS"]').click()
+browser.find_by_id('rdoProcessDates').click()
+# browser.find_by_css('input[ng-value="shareConstants.DATE_TYPE_IDS.PROCESS"]').click()
 browser.find_by_id("requestDateProcessBegin").fill(CRIS_EXTRACT_DATE_START)
 browser.find_by_id("requestDateProcessEnd").fill(CRIS_EXTRACT_DATE_END)
-browser.find_by_text("Continue").click()
+browser.find_by_text("Next").click()
 wait(10)
 
 print("Submit Request")
-browser.find_by_text("Submit").click()
+submit_button = browser.find_by_text("Submit Extract Request")
+submit_button.click()
+
+wait(10)
 
 print("\nProcess done.")
 
