@@ -122,6 +122,10 @@ const CrashesByTimeOfDay = () => {
     SELECT max(death) as fatalities, max(serious) as seriousInjuries, max(all) as fatalitiesAndSeriousInjuries
     `;
 
+    console.log(
+      "this is a trivial code change to test a no-op Netlify deployment"
+    );
+
     axios
       .get(crashEndpointUrl + `?$query=` + encodeURIComponent(maxQuery))
       .then((res) => {
