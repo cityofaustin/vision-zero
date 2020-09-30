@@ -9,7 +9,7 @@ The application requires the requests and sodapy libraries:
     https://pypi.org/project/requests/
     https://pypi.org/project/sodapy/
 """
-
+import sys
 import requests
 import json
 from copy import deepcopy
@@ -320,8 +320,19 @@ def get_date_limit():
     :return str:
     """
     d = date.today()
-    return d.replace(
-        year=d.year if d.month > 1 else d.year - 1,
-        month=d.month - 1 if d.month > 1 else 12,
-        day=1
-    ).strftime("%Y-%m-%d")
+    if is_no_time_constraint():
+        return d.strftime("%Y-%m-%d")
+    else:
+        return d.replace(
+            year=d.year if d.month > 1 else d.year - 1,
+            month=d.month - 1 if d.month > 1 else 12,
+            day=1
+        ).strftime("%Y-%m-%d")
+
+
+def is_no_time_constraint():
+    """
+    Returns True if the no-time-constraint flag is present
+    :return bool:
+    """
+    return "--no-time-constraint" in sys.argv
