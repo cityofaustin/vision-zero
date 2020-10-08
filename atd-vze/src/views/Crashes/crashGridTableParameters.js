@@ -132,6 +132,16 @@ export const crashGridTableAdvancedFilters = {
     icon: "cab",
     label: "Deaths & Injuries",
     filters: [{
+        id: "dni_atd_deaths",
+        label: "ATD Fatality Crashes",
+        filter: {
+          where: [{
+            or: {
+              atd_fatality_count: "_gt: 0",
+            },
+          }, ],
+        },
+      },{
         id: "dni_cris_deaths",
         label: "CRIS Fatality Crashes",
         filter: {
@@ -166,7 +176,7 @@ export const crashGridTableAdvancedFilters = {
       },
       {
         id: "dni_non_fatal",
-        label: "Non-Suspected Serious Injury Crashes",
+        label: "Non-Incapacitating Injury Crashes",
         filter: {
           where: [{
             or: {
