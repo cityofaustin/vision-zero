@@ -137,7 +137,11 @@ const RelatedRecordsTable = ({
                                   handleInputChange(e, updateFieldKey)
                                 }
                                 defaultValue={
+                                  // Check for null values and display as blank
+                                  row[field] &&
                                   row[field][`${fieldLookupPrefix}_id`]
+                                    ? row[field][`${fieldLookupPrefix}_id`]
+                                    : ""
                                 }
                                 type="select"
                               >
