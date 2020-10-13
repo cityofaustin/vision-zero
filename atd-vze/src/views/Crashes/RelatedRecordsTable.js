@@ -76,7 +76,10 @@ const RelatedRecordsTable = ({
     }
 
     // Display null values as blanks, but allow 0
-    return fieldValue === null || fieldValue === "" ? "" : fieldValue;
+    const isFieldNull = fieldValue === null;
+    const isFieldBlank = fieldValue === "";
+
+    return isFieldNull || isFieldBlank ? "NO DATA" : fieldValue;
   };
 
   return (
@@ -137,10 +140,18 @@ const RelatedRecordsTable = ({
                                   handleInputChange(e, updateFieldKey)
                                 }
                                 defaultValue={
+                                  // Check for null values and display as blank
+                                  row[field] &&
                                   row[field][`${fieldLookupPrefix}_id`]
+                                    ? row[field][`${fieldLookupPrefix}_id`]
+                                    : ""
                                 }
                                 type="select"
                               >
+                                {/* Show a NO DATA option only when formatValue is displayed. */}
+                                {formatValue(row, field) === "NO DATA" && (
+                                  <option value={null}>NO DATA</option>
+                                )}
                                 {lookupOptions[
                                   fieldConfig.fields[field].lookupOptions
                                 ].map(option => {
@@ -191,7 +202,15 @@ const RelatedRecordsTable = ({
                               {formatValue(row, field)}
                             </Badge>
                           ) : (
-                            formatValue(row, field)
+                            <span
+                              className={
+                                formatValue(row, field) === "NO DATA"
+                                  ? "text-muted"
+                                  : ""
+                              }
+                            >
+                              {formatValue(row, field)}
+                            </span>
                           ))}
 
                         {fieldConfig.fields[field].editable &&
