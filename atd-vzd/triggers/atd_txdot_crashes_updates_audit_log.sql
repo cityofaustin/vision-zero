@@ -1,7 +1,7 @@
-CREATE OR REPLACE FUNCTION public.atd_txdot_crashes_updates_audit_log()
- RETURNS trigger
- LANGUAGE plpgsql
-AS $function$
+create function atd_txdot_crashes_updates_audit_log() returns trigger
+    language plpgsql
+as
+$$
 DECLARE
     estCompCostList decimal(10,2)[];
     estCompEconList decimal(10,2)[];
@@ -15,8 +15,8 @@ BEGIN
         INSERT INTO atd_txdot_change_log (record_id, record_crash_id, record_type, record_json, updated_by)
         VALUES (old.crash_id, old.crash_id, 'crashes', row_to_json(old), NEW.updated_by);
     END IF;
-
-    -- COPIES THE CITY_ID INTO ORIGINAL_CITY_ID FOR BACKUP
+            
+    -- COPIES THE CITY_ID INTO ORIGINAL_CITY_ID FOR BACKUP 
     IF (TG_OP = 'INSERT') THEN
             NEW.original_city_id = NEW.city_id;
     END IF;
@@ -48,9 +48,7 @@ BEGIN
         NEW.longitude_primary = NEW.longitude_geocoded;
     END IF;
     -- Finally we update the position field
-    IF (NEW.longitude_primary is not null AND NEW.latitude_primary is not null) THEN
-        NEW.position = ST_SetSRID(ST_MakePoint(NEW.longitude_primary, NEW.latitude_primary), 4326);
-    END IF;
+    NEW.position = ST_SetSRID(ST_MakePoint(NEW.longitude_primary, NEW.latitude_primary), 4326);
     --- END OF LAT/LONG OPERATIONS ---
 
 
@@ -82,7 +80,7 @@ BEGIN
     ELSE
         IF (NEW.apd_confirmed_death_count > 0) THEN
             NEW.apd_confirmed_fatality = 'Y';
-        ELSE 
+        ELSE
             NEW.apd_confirmed_fatality = 'N';
         END IF;
     END IF;
@@ -103,8 +101,8 @@ BEGIN
     estCompEconList = ARRAY(SELECT est_econ_cost_amount FROM atd_txdot__est_econ_cost ORDER BY est_econ_cost_id ASC);
 
     NEW.est_comp_cost = (0
-       + (NEW.unkn_injry_cnt * (estCompCostList[1])) -- Needed only for comp. cost.
-       + (NEW.death_cnt * (estCompCostList[2]))
+       + (NEW.unkn_injry_cnt * (estCompCostList[1]))
+       + (NEW.atd_fatality_count * (estCompCostList[2]))
        + (NEW.sus_serious_injry_cnt * (estCompCostList[3]))
        + (NEW.nonincap_injry_cnt * (estCompCostList[4]))
        + (NEW.poss_injry_cnt * (estCompCostList[5]))
@@ -112,7 +110,8 @@ BEGIN
    )::decimal(10,2);
 
     NEW.est_econ_cost = (0
-       + (NEW.death_cnt * (estCompEconList[2]))
+       + (NEW.unkn_injry_cnt * (estCompEconList[1]))
+       + (NEW.atd_fatality_count * (estCompEconList[2]))
        + (NEW.sus_serious_injry_cnt * (estCompEconList[3]))
        + (NEW.nonincap_injry_cnt * (estCompEconList[4]))
        + (NEW.poss_injry_cnt * (estCompEconList[5]))
@@ -120,29 +119,26 @@ BEGIN
    )::decimal(10,2);
 
     --- END OF COST OPERATIONS ---
-    
+
     ------------------------------------------------------------------------------------------
     -- SPEED MGMT POINTS
     ------------------------------------------------------------------------------------------
     speedMgmtList = ARRAY (SELECT speed_mgmt_points FROM atd_txdot__speed_mgmt_lkp ORDER BY speed_mgmt_id ASC);
 
-	NEW.speed_mgmt_points = (0 
-		+ (NEW.death_cnt * (speedMgmtList [2])) 
-        + (NEW.sus_serious_injry_cnt * (speedMgmtList [3])) 
-        + (NEW.nonincap_injry_cnt * (speedMgmtList [4])) 
-        + (NEW.poss_injry_cnt * (speedMgmtList [5])) 
+	NEW.speed_mgmt_points = (0
+		+ (NEW.unkn_injry_cnt * (speedMgmtList [1]))
+        + (NEW.atd_fatality_count * (speedMgmtList [2]))
+        + (NEW.sus_serious_injry_cnt * (speedMgmtList [3]))
+        + (NEW.nonincap_injry_cnt * (speedMgmtList [4]))
+        + (NEW.poss_injry_cnt * (speedMgmtList [5]))
         + (NEW.non_injry_cnt * (speedMgmtList [6]))
     )::decimal (10,2);
     --- END OF SPEED MGMT POINTS ---
 
-    ------------------------------------------------------------------------------------------
-    -- MODE CATEGORY DATA
-    ------------------------------------------------------------------------------------------
-    NEW.atd_mode_category_metadata = get_crash_modes(NEW.crash_id);
-    --- END OF MODE CATEGORY DATA ---
-    
     -- Record the current timestamp
     NEW.last_update = current_timestamp;
     RETURN NEW;
 END;
-$function$
+$$;
+
+alter function atd_txdot_crashes_updates_audit_log() owner to atd_vz_data;
