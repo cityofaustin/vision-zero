@@ -135,6 +135,12 @@ BEGIN
     )::decimal (10,2);
     --- END OF SPEED MGMT POINTS ---
 
+    ------------------------------------------------------------------------------------------
+    -- MODE CATEGORY DATA
+    ------------------------------------------------------------------------------------------
+    NEW.atd_mode_category_metadata = get_crash_modes(NEW.crash_id);
+    --- END OF MODE CATEGORY DATA ---
+
     -- Record the current timestamp
     NEW.last_update = current_timestamp;
     RETURN NEW;
