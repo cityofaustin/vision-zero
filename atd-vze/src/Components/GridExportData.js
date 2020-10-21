@@ -68,8 +68,8 @@ const GridExportData = ({ query, columnsToExport, totalRecords }) => {
     // Move nested keys to top level object (CSVLink uses each top level key as a column header)
     const flattenRow = (row, flattenedRow) => {
       Object.entries(row).forEach(([columnName, columnValue]) => {
-        // Ignore __typename (contains table name which is already in filename)
         if (columnName === "__typename") {
+          // Ignore __typename (contains table name which is already in filename)
           return;
         } else if (Array.isArray(columnValue)) {
           // If value is array, recursive call and handle objects in array
@@ -77,6 +77,9 @@ const GridExportData = ({ query, columnsToExport, totalRecords }) => {
         } else if (typeof columnValue === "object" && columnValue !== null) {
           // If value is object, recursive call and handle k/v pairs in object
           flattenRow(columnValue, flattenedRow);
+        } else if (columnName === "death_cnt") {
+          // Rename death_cnt column to cris_death_cnt at the request of VZ Team
+          flattenedRow["cris_death_cnt"] = columnValue;
         } else {
           // Handle key/value pairs, concat if column already exists
           if (flattenedRow[columnName]) {
