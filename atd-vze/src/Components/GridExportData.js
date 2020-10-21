@@ -77,6 +77,17 @@ const GridExportData = ({ query, columnsToExport, totalRecords }) => {
         } else if (typeof columnValue === "object" && columnValue !== null) {
           // If value is object, recursive call and handle k/v pairs in object
           flattenRow(columnValue, flattenedRow);
+          // Rename death_cnt column to cris_death_cnt at the request of VZ Team
+        } else if (columnName === "death_cnt") {
+          flattenedRow["cris_death_cnt"] = columnValue;
+          // } else if (
+          //   columnName === "travel_direction_desc" ||
+          //   columnName === "movement" ||
+          //   columnName === "body_style" ||
+          //   columnName === "unit_description" ||
+          //   columnName === "collision"
+          // ) {
+          //   return;
         } else {
           // Handle key/value pairs, concat if column already exists
           if (flattenedRow[columnName]) {
@@ -84,7 +95,12 @@ const GridExportData = ({ query, columnsToExport, totalRecords }) => {
               columnName
             ] = `${flattenedRow[columnName]}, ${columnValue}`;
           } else {
-            flattenedRow[columnName] = columnValue;
+            // if (columnValue === null) {
+            //   return;
+            // } else {
+              flattenedRow[columnName] = columnValue;
+            // }
+            // flattenedRow[columnName] = columnValue;
           }
         }
       });
@@ -103,6 +119,8 @@ const GridExportData = ({ query, columnsToExport, totalRecords }) => {
       // imported into MSFT Excel, Acces & Power BI. For now, we're just going to
       // modify the data for export to solve issues related to returns and double-quotes
       // In the future, we may choose to clean these values at the database level.
+
+      // console.log(item);
 
       const columnsToClean = [
         "rpt_street_name",
