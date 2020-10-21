@@ -138,7 +138,7 @@ const GridExportData = ({ query, columnsToExport, totalRecords }) => {
 
     const cleanedFlattenedAndParsedData = cleanedAndFlattenedData.map(item => {
       // Delete keys for which values are not present in any row
-      // so there are no empty rows in the table
+      // so there are no empty columns in the table
       Object.keys(item).forEach(col => {
         if (!columnsWithValues.includes(col)) {
           delete item[col];
