@@ -65,6 +65,9 @@ const GridExportData = ({ query, columnsToExport, totalRecords }) => {
    * @returns {array}
    */
   const formatExportData = data => {
+    // Create array of columns that have at least one value to parse out unnecessary columns
+    let columnsWithValues = [];
+
     // Move nested keys to top level object (CSVLink uses each top level key as a column header)
     const flattenRow = (row, flattenedRow) => {
       Object.entries(row).forEach(([columnName, columnValue]) => {
@@ -122,10 +125,29 @@ const GridExportData = ({ query, columnsToExport, totalRecords }) => {
           item[col] = item[col].replace(/"/g, "");
         }
       });
+
+      Object.keys(item).forEach(col => {
+        if (item[col] && !columnsWithValues.includes(col)) {
+          // If a column has a value, add it to the columnsWithValues array
+          columnsWithValues.push(col);
+        }
+      });
+
       return item;
     });
 
-    return cleanedAndFlattenedData;
+    const cleanedFlattenedAndParsedData = cleanedAndFlattenedData.map(item => {
+      // Delete keys for which values are not present in any row
+      // so there are no empty tables in the chart
+      Object.keys(item).forEach(col => {
+        if (!columnsWithValues.includes(col)) {
+          delete item[col];
+        }
+      });
+      return item;
+    });
+
+    return cleanedFlattenedAndParsedData;
   };
 
   return (
