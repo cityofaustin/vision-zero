@@ -131,7 +131,7 @@ const GridExportData = ({ query, columnsToExport, totalRecords }) => {
       // push resulting column names to columnsToExportParsed array
       if (line === "") {
         return;
-      } else if (line.includes(" ")) {
+      } else if (line.includes(" { ")) {
         const nestedKeyArray = line.split(" { ");
         const nestedKeyString = nestedKeyArray[nestedKeyArray.length - 1];
         const nestedKey = nestedKeyString.split(" ")[0];
