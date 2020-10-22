@@ -65,9 +65,6 @@ const GridExportData = ({ query, columnsToExport, totalRecords }) => {
    * @returns {array}
    */
   const formatExportData = data => {
-    // Create array of columns that have at least one value to parse out unnecessary columns
-    let columnsWithValues = [];
-
     // Move nested keys to top level object (CSVLink uses each top level key as a column header)
     const flattenRow = (row, flattenedRow) => {
       Object.entries(row).forEach(([columnName, columnValue]) => {
@@ -80,9 +77,6 @@ const GridExportData = ({ query, columnsToExport, totalRecords }) => {
         } else if (typeof columnValue === "object" && columnValue !== null) {
           // If value is object, recursive call and handle k/v pairs in object
           flattenRow(columnValue, flattenedRow);
-        } else if (columnName === "death_cnt") {
-          // Rename death_cnt column to cris_death_cnt at the request of VZ Team
-          flattenedRow["cris_death_cnt"] = columnValue;
         } else {
           // Handle key/value pairs, concat if column already exists
           if (flattenedRow[columnName]) {
@@ -126,22 +120,37 @@ const GridExportData = ({ query, columnsToExport, totalRecords }) => {
         }
       });
 
-      Object.keys(item).forEach(col => {
-        if (item[col] && !columnsWithValues.includes(col)) {
-          // If a column has a value, add it to the columnsWithValues array
-          columnsWithValues.push(col);
-        }
-      });
-
       return item;
     });
 
+    // Create array of columns that should be displayed in the table
+    let columnsToExportParsed = [];
+
+    // Parse out unnecessary text and nesting keys from columnsToExport string,
+    // push resulting column names to columnsToExportParsed array
+    columnsToExport.split("\n").forEach(line => {
+      if (line === "") {
+        return;
+      } else if (line.includes(" ")) {
+        const nestedKeyArray = line.split(" { ");
+        const nestedKeyString = nestedKeyArray[nestedKeyArray.length - 1];
+        const nestedKey = nestedKeyString.split(" ")[0];
+        columnsToExportParsed.push(nestedKey);
+      } else {
+        columnsToExportParsed.push(line);
+      }
+    });
+
     const cleanedFlattenedAndParsedData = cleanedAndFlattenedData.map(item => {
-      // Delete keys for which values are not present in any row
-      // so there are no empty columns in the table
       Object.keys(item).forEach(col => {
-        if (!columnsWithValues.includes(col)) {
+        if (!columnsToExportParsed.includes(col)) {
+          // Delete the key/value pair if the column is not present in columnsToExportParsed
+          // array so there are no unnecessary columns in the table
           delete item[col];
+        } else if (col === "death_cnt") {
+          // Rename death_cnt column to cris_death_cnt at the request of VZ Team
+          item["cris_death_cnt"] = item["death_cnt"];
+          delete item["death_cnt"];
         }
       });
       return item;
