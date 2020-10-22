@@ -85,7 +85,8 @@ for config in query_configs:
         data = run_hasura_query(query)
 
         if "data" not in data:
-            print(data)
+            print("query: ", query)
+            print("data: ", data)
             raise RuntimeError("There was a problem gathering data.")
 
         # Format records
