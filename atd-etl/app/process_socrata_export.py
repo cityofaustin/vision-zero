@@ -84,6 +84,10 @@ for config in query_configs:
         offset += limit
         data = run_hasura_query(query)
 
+        if "data" not in data:
+            print(data)
+            raise RuntimeError("There was a problem gathering data.")
+
         # Format records
         records = config["formatter"](data, config["formatter_config"])
 
