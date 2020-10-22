@@ -126,9 +126,9 @@ const GridExportData = ({ query, columnsToExport, totalRecords }) => {
     // Create array of columns that should be displayed in the table
     let columnsToExportParsed = [];
 
-    // Parse out unnecessary text and nesting keys from columnsToExport string,
-    // push resulting column names to columnsToExportParsed array
     columnsToExport.split("\n").forEach(line => {
+      // Parse out unnecessary text and nesting keys from columnsToExport string,
+      // push resulting column names to columnsToExportParsed array
       if (line === "") {
         return;
       } else if (line.includes(" ")) {
@@ -142,10 +142,10 @@ const GridExportData = ({ query, columnsToExport, totalRecords }) => {
     });
 
     const cleanedFlattenedAndParsedData = cleanedAndFlattenedData.map(item => {
+      // Parse out unnecessary columns before exporting table, rename one column
       Object.keys(item).forEach(col => {
         if (!columnsToExportParsed.includes(col)) {
-          // Delete the key/value pair if the column is not present in columnsToExportParsed
-          // array so there are no unnecessary columns in the table
+          // Delete the key/value pair if the column is not present in columnsToExportParsed array
           delete item[col];
         } else if (col === "death_cnt") {
           // Rename death_cnt column to cris_death_cnt at the request of VZ Team
