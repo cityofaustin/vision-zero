@@ -68,8 +68,8 @@ const GridExportData = ({ query, columnsToExport, totalRecords }) => {
     // Move nested keys to top level object (CSVLink uses each top level key as a column header)
     const flattenRow = (row, flattenedRow) => {
       Object.entries(row).forEach(([columnName, columnValue]) => {
-        // Ignore __typename (contains table name which is already in filename)
         if (columnName === "__typename") {
+          // Ignore __typename (contains table name which is already in filename)
           return;
         } else if (Array.isArray(columnValue)) {
           // If value is array, recursive call and handle objects in array
@@ -119,10 +119,44 @@ const GridExportData = ({ query, columnsToExport, totalRecords }) => {
           item[col] = item[col].replace(/"/g, "");
         }
       });
+
       return item;
     });
 
-    return cleanedAndFlattenedData;
+    // Create array of columns that should be displayed in the table
+    let columnsToExportParsed = [];
+
+    columnsToExport.split("\n").forEach(line => {
+      // Parse out unnecessary text and nesting keys from columnsToExport string,
+      // push resulting column names to columnsToExportParsed array
+      if (line === "") {
+        return;
+      } else if (line.includes(" { ")) {
+        const nestedKeyArray = line.split(" { ");
+        const nestedKeyString = nestedKeyArray[nestedKeyArray.length - 1];
+        const nestedKey = nestedKeyString.split(" ")[0];
+        columnsToExportParsed.push(nestedKey);
+      } else {
+        columnsToExportParsed.push(line);
+      }
+    });
+
+    const cleanedFlattenedAndParsedData = cleanedAndFlattenedData.map(item => {
+      // Parse out unnecessary columns before exporting table, rename one column
+      Object.keys(item).forEach(col => {
+        if (!columnsToExportParsed.includes(col)) {
+          // Delete the key/value pair if the column is not present in columnsToExportParsed array
+          delete item[col];
+        } else if (col === "death_cnt") {
+          // Rename death_cnt column to cris_death_cnt at the request of VZ Team
+          item["cris_death_cnt"] = item["death_cnt"];
+          delete item["death_cnt"];
+        }
+      });
+      return item;
+    });
+
+    return cleanedFlattenedAndParsedData;
   };
 
   return (

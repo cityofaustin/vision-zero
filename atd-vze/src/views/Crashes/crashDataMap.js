@@ -162,7 +162,8 @@ export const crashDataMap = [
     fields: {
       crash_sev_id: {
         label: "Crash Severity",
-        editable: false,
+        editable: true,
+        uiType: "select",
         lookupOptions: "atd_txdot__injry_sev_lkp",
         lookupPrefix: "injry_sev",
       },
@@ -180,11 +181,13 @@ export const crashDataMap = [
       },
       sus_serious_injry_cnt: {
         label: "Suspected Serious Injury Count",
-        editable: false,
+        editable: true,
+        uiType: "text",
       },
       tot_injry_cnt: {
         label: "Total Injury Count",
-        editable: false,
+        editable: true,
+        uiType: "text",
       },
       unkn_injry_cnt: {
         label: "Unknown Injury Count",
