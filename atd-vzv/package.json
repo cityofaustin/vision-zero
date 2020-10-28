@@ -55,6 +55,7 @@
     "build": "./patchindex.sh && CI= react-scripts build && cp _redirects build && cp -r build viewer && mv viewer build",
     "build:staging": "VZV_ENVIRONMENT=STAGING npm run build",
     "build:production": "VZV_ENVIRONMENT=PRODUCTION npm run build",
+    "build:preview": "VZV_ENVIRONMENT=PREVIEW npm run build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "postinstall": "patch-package"
@@ -67,6 +68,12 @@
   },
   "browserslist": {
     "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all",
+      "ie 11"
+    ],
+    "preview": [
       ">0.2%",
       "not dead",
       "not op_mini all",
