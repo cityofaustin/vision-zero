@@ -152,14 +152,12 @@ export const popoverConfig = {
               <div className="mt-2">
                 Source:{" "}
                 <a
-                  href="http://www.austintexas.gov/sites/default/files/files/Planning/Demographics/Austin_Forecast_2020_pub.pdf"
+                  href={populationEstimates[5].sourceURL}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  Ryan Robinson, City Demographer, Department of Planning, City
-                  of Austin. December 2019
+                  {populationEstimates[5].sourceString}
                 </a>
-                .
               </div>
             </div>
           </div>
