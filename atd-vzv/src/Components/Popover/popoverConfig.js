@@ -2,6 +2,10 @@ import React from "react";
 import raceEthnicityTable2018 from "./raceEthnicityTable2018.png";
 import { populationEstimates } from "../../constants/populationEstimates";
 
+const formatNumber = (num) => {
+  return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
+};
+
 export const popoverConfig = {
   summary: {
     yearsOfLifeLost: {
@@ -124,23 +128,23 @@ export const popoverConfig = {
                   <tbody>
                     <tr>
                       <th scope="row">{populationEstimates[0].year}</th>
-                      <td>{populationEstimates[0].estimate}</td>
+                      <td>{formatNumber(populationEstimates[0].estimate)}</td>
                     </tr>
                     <tr>
-                    <th scope="row">{populationEstimates[1].year}</th>
-                      <td>{populationEstimates[1].estimate}</td>
+                      <th scope="row">{populationEstimates[1].year}</th>
+                      <td>{formatNumber(populationEstimates[1].estimate)}</td>
                     </tr>
                     <tr>
-                    <th scope="row">{populationEstimates[2].year}</th>
-                      <td>{populationEstimates[2].estimate}</td>
+                      <th scope="row">{populationEstimates[2].year}</th>
+                      <td>{formatNumber(populationEstimates[2].estimate)}</td>
                     </tr>
                     <tr>
-                    <th scope="row">{populationEstimates[3].year}</th>
-                      <td>{populationEstimates[3].estimate}</td>
+                      <th scope="row">{populationEstimates[3].year}</th>
+                      <td>{formatNumber(populationEstimates[3].estimate)}</td>
                     </tr>
                     <tr>
-                    <th scope="row">{populationEstimates[4].year}</th>
-                      <td>{populationEstimates[4].estimate}</td>
+                      <th scope="row">{populationEstimates[4].year}</th>
+                      <td>{formatNumber(populationEstimates[4].estimate)}</td>
                     </tr>
                   </tbody>
                 </table>
