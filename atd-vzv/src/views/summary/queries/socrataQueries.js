@@ -1,4 +1,4 @@
-import { isDevelopment } from "../../../constants/nav";
+import { isDevelopment, isPreview } from "../../../constants/nav";
 
 const crashDatasetID = isDevelopment || isPreview ? "3aut-fhzp" : "y2wy-tgr5";
 const personDatasetID = isDevelopment || isPreview ? "v3x4-fjgm" : "xecs-rpy9";
