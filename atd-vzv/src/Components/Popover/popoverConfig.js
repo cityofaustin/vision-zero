@@ -113,11 +113,6 @@ export const popoverConfig = {
             individual city's population over time. Below is a table showing how
             Austin's population continues to increase each year.
             <div>
-              {/* <img
-                className="mt-2 img-fluid"
-                src={byYearTable}
-                alt="Table showing how Austin's population continues to increase each year"
-              /> */}
               <div className="mt-2">
                 <table className="table">
                   <thead>
