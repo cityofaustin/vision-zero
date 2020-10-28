@@ -9,6 +9,7 @@ import InfoPopover from "../../Components/Popover/InfoPopover";
 import { popoverConfig } from "../../Components/Popover/popoverConfig";
 import { crashEndpointUrl } from "./queries/socrataQueries";
 import { dataStartDate, fiveYearAvgEndDate } from "../../constants/time";
+import { populationEstimates } from "../../constants/populationEstimates";
 import { colors } from "../../constants/colors";
 
 const CrashesByPopulation = () => {
@@ -33,10 +34,10 @@ const CrashesByPopulation = () => {
     };
 
     const chartConfig = {
-      barOne: { color: colors.viridis1Of6Highest, population: 913917 },
-      barTwo: { color: colors.viridis1Of6Highest, population: 937065 },
-      barThree: { color: colors.viridis1Of6Highest, population: 955094 },
-      barFour: { color: colors.viridis1Of6Highest, population: 972499 },
+      barOne: { color: colors.viridis1Of6Highest, population: populationEstimates[4].estimate },
+      barTwo: { color: colors.viridis1Of6Highest, population: populationEstimates[3].estimate },
+      barThree: { color: colors.viridis1Of6Highest, population: populationEstimates[2].estimate },
+      barFour: { color: colors.viridis1Of6Highest, population: populationEstimates[1].estimate },
     };
 
     const calculateRatePer100000 = (data) => {

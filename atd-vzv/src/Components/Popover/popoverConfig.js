@@ -1,6 +1,6 @@
 import React from "react";
 import raceEthnicityTable2018 from "./raceEthnicityTable2018.png";
-import byYearTable from "./byYearTable.png";
+import { populationEstimates } from "../../constants/populationEstimates";
 
 export const popoverConfig = {
   summary: {
@@ -113,20 +113,52 @@ export const popoverConfig = {
             individual city's population over time. Below is a table showing how
             Austin's population continues to increase each year.
             <div>
-              <img
+              {/* <img
                 className="mt-2 img-fluid"
                 src={byYearTable}
                 alt="Table showing how Austin's population continues to increase each year"
-              />
+              /> */}
+              <div className="mt-2">
+                <table className="table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Year</th>
+                      <th scope="col">Population</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <th scope="row">{populationEstimates[0].year}</th>
+                      <td>{populationEstimates[0].estimate}</td>
+                    </tr>
+                    <tr>
+                    <th scope="row">{populationEstimates[1].year}</th>
+                      <td>{populationEstimates[1].estimate}</td>
+                    </tr>
+                    <tr>
+                    <th scope="row">{populationEstimates[2].year}</th>
+                      <td>{populationEstimates[2].estimate}</td>
+                    </tr>
+                    <tr>
+                    <th scope="row">{populationEstimates[3].year}</th>
+                      <td>{populationEstimates[3].estimate}</td>
+                    </tr>
+                    <tr>
+                    <th scope="row">{populationEstimates[4].year}</th>
+                      <td>{populationEstimates[4].estimate}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
               <div className="mt-2">
                 Source:{" "}
                 <a
-                  href="https://www.austintexas.gov/sites/default/files/files/Planning/Demographics/austin_forecast_2019_pub.pdf"
+                  href="http://www.austintexas.gov/sites/default/files/files/Planning/Demographics/Austin_Forecast_2020_pub.pdf"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
                   Ryan Robinson, City Demographer, Department of Planning, City
-                  of Austin. November 2018
+                  of Austin. December 2019
                 </a>
                 .
               </div>
