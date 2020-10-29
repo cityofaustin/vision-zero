@@ -5,8 +5,6 @@ import moment from "moment";
 export const ROLLING_YEARS_OF_DATA = 4;
 // Number of months window slides in the past (to display most accurate data)
 // Accommodate for a preview instance that provide and extra month of data
-
-console.log(process.env);
 export const MONTHS_AGO = process.env.REACT_APP_VZV_ENVIRONMENT === "PREVIEW" ? 1 : 2;
 
 // Create array of ints of last n years
