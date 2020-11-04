@@ -128,7 +128,7 @@ export const popoverConfig = {
                   <tbody>
                     <tr>
                       <th scope="row">{new Date().getFullYear()}</th>
-                      <td>{formatNumber(popEsts["years"][new Date().getFullYear()])}</td>
+                      <td>{!!popEsts["years"][new Date().getFullYear()] ? formatNumber(popEsts["years"][new Date().getFullYear()]) : "No data available"}</td>
                     </tr>
                     <tr>
                       <th scope="row">{new Date().getFullYear() - 1}</th>
