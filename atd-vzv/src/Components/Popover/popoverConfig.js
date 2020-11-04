@@ -1,6 +1,6 @@
 import React from "react";
 import raceEthnicityTable2018 from "./raceEthnicityTable2018.png";
-import { populationEstimates } from "../../constants/populationEstimates";
+import { popEsts } from "../../constants/popEsts";
 
 const formatNumber = (num) => {
   return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
@@ -127,24 +127,24 @@ export const popoverConfig = {
                   </thead>
                   <tbody>
                     <tr>
-                      <th scope="row">{populationEstimates[0].year}</th>
-                      <td>{formatNumber(populationEstimates[0].estimate)}</td>
+                      <th scope="row">{new Date().getFullYear()}</th>
+                      <td>{formatNumber(popEsts["years"][new Date().getFullYear()])}</td>
                     </tr>
                     <tr>
-                      <th scope="row">{populationEstimates[1].year}</th>
-                      <td>{formatNumber(populationEstimates[1].estimate)}</td>
+                      <th scope="row">{new Date().getFullYear() - 1}</th>
+                      <td>{formatNumber(popEsts["years"][new Date().getFullYear() - 1])}</td>
                     </tr>
                     <tr>
-                      <th scope="row">{populationEstimates[2].year}</th>
-                      <td>{formatNumber(populationEstimates[2].estimate)}</td>
+                      <th scope="row">{new Date().getFullYear() - 2}</th>
+                      <td>{formatNumber(popEsts["years"][new Date().getFullYear() - 2])}</td>
                     </tr>
                     <tr>
-                      <th scope="row">{populationEstimates[3].year}</th>
-                      <td>{formatNumber(populationEstimates[3].estimate)}</td>
+                      <th scope="row">{new Date().getFullYear() - 3}</th>
+                      <td>{formatNumber(popEsts["years"][new Date().getFullYear() - 3])}</td>
                     </tr>
                     <tr>
-                      <th scope="row">{populationEstimates[4].year}</th>
-                      <td>{formatNumber(populationEstimates[4].estimate)}</td>
+                      <th scope="row">{new Date().getFullYear() - 4}</th>
+                      <td>{formatNumber(popEsts["years"][new Date().getFullYear() - 4])}</td>
                     </tr>
                   </tbody>
                 </table>
@@ -152,11 +152,11 @@ export const popoverConfig = {
               <div className="mt-2">
                 Source:{" "}
                 <a
-                  href={populationEstimates[5].sourceURL}
+                  href={popEsts["sourceURL"]}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  {populationEstimates[5].sourceString}
+                  {popEsts["sourceString"]}
                 </a>
               </div>
             </div>
