@@ -9,6 +9,7 @@ import InfoPopover from "../../Components/Popover/InfoPopover";
 import { popoverConfig } from "../../Components/Popover/popoverConfig";
 import { crashEndpointUrl } from "./queries/socrataQueries";
 import { dataStartDate, fiveYearAvgEndDate } from "../../constants/time";
+import { popEsts } from "../../constants/popEsts";
 import { colors } from "../../constants/colors";
 
 const CrashesByPopulation = () => {
@@ -32,18 +33,11 @@ const CrashesByPopulation = () => {
                         WHERE sus_serious_injry_cnt > 0 AND ${dateCondition} ${queryGroupAndOrder}`,
     };
 
-    const chartConfig = {
-      barOne: { color: colors.viridis1Of6Highest, population: 913917 },
-      barTwo: { color: colors.viridis1Of6Highest, population: 937065 },
-      barThree: { color: colors.viridis1Of6Highest, population: 955094 },
-      barFour: { color: colors.viridis1Of6Highest, population: 972499 },
-    };
-
     const calculateRatePer100000 = (data) => {
       const round = (num) => Math.floor(num * 10) / 10;
 
       return data.map((year, i) => {
-        const population = Object.values(chartConfig)[i].population;
+        const population = popEsts["years"][year["year"]];
         const rate = (year.total / population) * 100000;
         year.total = round(rate);
         return year;
@@ -53,15 +47,15 @@ const CrashesByPopulation = () => {
     const formatChartData = (data) => {
       const labels = data.map((year) => year.year);
       const rateValues = data.map((year) => year.total);
-      const colors = Object.values(chartConfig).map((bar) => bar.color);
+      const color = colors.viridis1Of6Highest;
 
       return {
         labels,
         datasets: [
           {
             label: "Ratio",
-            backgroundColor: colors,
-            hoverBackgroundColor: colors,
+            backgroundColor: color,
+            hoverBackgroundColor: color,
             data: rateValues,
             barPercentage: 1.0,
           },

@@ -9,6 +9,8 @@ import { faChartBar, faMap } from "@fortawesome/free-solid-svg-icons";
 export const isDevelopment =
   !process.env.NODE_ENV || process.env.NODE_ENV === "development";
 
+export const isPreview = process.env.REACT_APP_VZV_ENVIRONMENT === "PREVIEW";
+
 export const navConfig = [
   {
     title: "Go to Summary",
