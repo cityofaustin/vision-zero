@@ -41,7 +41,11 @@ export const Auth0Provider = ({
   // Instantiate Auth0, handle auth callback, and set loading and user params
   useEffect(() => {
     const initAuth0 = async () => {
-      const auth0FromHook = await createAuth0Client(initOptions);
+      const auth0FromHook = await createAuth0Client({
+        ...initOptions,
+        useRefreshTokens: true,
+        cacheLocation: "localstorage",
+      });
       setAuth0(auth0FromHook);
 
       // If callback URL, handle it

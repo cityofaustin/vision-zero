@@ -1,6 +1,10 @@
 import React from "react";
 import raceEthnicityTable2018 from "./raceEthnicityTable2018.png";
-import byYearTable from "./byYearTable.png";
+import { popEsts } from "../../constants/popEsts";
+
+const formatNumber = (num) => {
+  return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
+};
 
 export const popoverConfig = {
   summary: {
@@ -113,22 +117,47 @@ export const popoverConfig = {
             individual city's population over time. Below is a table showing how
             Austin's population continues to increase each year.
             <div>
-              <img
-                className="mt-2 img-fluid"
-                src={byYearTable}
-                alt="Table showing how Austin's population continues to increase each year"
-              />
+              <div className="mt-2">
+                <table className="table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Year</th>
+                      <th scope="col">Population</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <th scope="row">{new Date().getFullYear()}</th>
+                      <td>{!!popEsts["years"][new Date().getFullYear()] ? formatNumber(popEsts["years"][new Date().getFullYear()]) : "No data available"}</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">{new Date().getFullYear() - 1}</th>
+                      <td>{formatNumber(popEsts["years"][new Date().getFullYear() - 1])}</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">{new Date().getFullYear() - 2}</th>
+                      <td>{formatNumber(popEsts["years"][new Date().getFullYear() - 2])}</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">{new Date().getFullYear() - 3}</th>
+                      <td>{formatNumber(popEsts["years"][new Date().getFullYear() - 3])}</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">{new Date().getFullYear() - 4}</th>
+                      <td>{formatNumber(popEsts["years"][new Date().getFullYear() - 4])}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
               <div className="mt-2">
                 Source:{" "}
                 <a
-                  href="https://www.austintexas.gov/sites/default/files/files/Planning/Demographics/austin_forecast_2019_pub.pdf"
+                  href={popEsts["sourceURL"]}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  Ryan Robinson, City Demographer, Department of Planning, City
-                  of Austin. November 2018
+                  {popEsts["sourceString"]}
                 </a>
-                .
               </div>
             </div>
           </div>

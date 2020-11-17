@@ -66,6 +66,13 @@ let queryConf = {
   where: {
     // Only show Locations inside CoA Limits.
     council_district: "_gt: 0",
+    // We only need levels 1-4 (not level 5s)
+    _and: `_or: [
+              { level_1: { _gt: 0} },
+              { level_2: { _gt: 0} },
+              { level_3: { _gt: 0} },
+              { level_4: { _gt: 0} },
+    ]`
   },
   limit: 25,
   offset: 0,
