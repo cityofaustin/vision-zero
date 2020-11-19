@@ -49,14 +49,34 @@ const Summary = () => {
 
   const lastUpdated = moment(dataEndDate).format("MMMM DD, YYYY");
 
+  // Display disclaimer when viewing preview instance
+  const previewDisclaimer = (
+    process.env.REACT_APP_VZV_ENVIRONMENT === "PREVIEW" &&
+    <Row className="summary-child">
+      <Alert color="danger" className="col-12 mb-0">
+        <div className="mb-2">
+          This instance of the Vision Zero Viewer is for internal use only and
+          the quality of the data presented here has not yet been assured by
+          Austin Transportation Department staff.
+        </div>
+        <div>
+          For quality assured data, visit the current instance of the{" "}
+          <a href="https://visionzero.austin.gov/viewer/">Vision Zero Viewer</a>
+          .
+        </div>
+      </Alert>
+    </Row>
+  );
+
   return (
     <Container fluid>
       {/* Create whitespace on sides of view until mobile */}
       <Row className="px-xs-0 mx-xs-0 px-lg-3 mx-lg-4 mt-md-3 mt-lg-4">
         <Col className="px-xs-0">
           <StyledSummary>
+            {previewDisclaimer}
             <Row className="summary-child">
-              <Alert color="secondary" className="col-12 mb-0 banner">
+              <Alert className="col-12 mb-0 banner">
                 <div className="mb-2">
                   Austin is consistently ranked as one of America's best places
                   to live, but too many of our fellow Austinites are killed or
