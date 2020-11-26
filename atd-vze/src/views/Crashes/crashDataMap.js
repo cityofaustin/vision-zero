@@ -131,23 +131,11 @@ export const crashDataMap = [
         label: "CRIS Death Count",
         editable: false,
       },
-      crash_fatal_fl: {
-        label: "CRIS Fatality Flag",
-        editable: false,
-        lookupOptions: "atd_txdot__y_n_lkp",
-        lookupPrefix: "y_n",
-      },
       apd_confirmed_death_count: {
         label: "APD Death Count",
         editable: true,
         uiType: "text",
         secondaryFieldUpdate: { apd_human_update: "Y" },
-      },
-      apd_confirmed_fatality: {
-        label: "APD Fatality Flag",
-        editable: false,
-        lookupOptions: "atd_txdot__y_n_lkp",
-        lookupPrefix: "y_n",
       },
       apd_human_update: {
         label: "Manually Edited?",
