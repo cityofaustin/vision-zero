@@ -122,6 +122,13 @@ export const crashDataMap = [
       secondaryFieldUpdate: { apd_human_update: "N" },
     },
     fields: {
+      crash_sev_id: {
+        label: "Crash Severity",
+        editable: true,
+        uiType: "select",
+        lookupOptions: "atd_txdot__injry_sev_lkp",
+        lookupPrefix: "injry_sev",
+      },
       atd_fatality_count: {
         label: "ATD Fatality Count",
         editable: true,
@@ -131,23 +138,11 @@ export const crashDataMap = [
         label: "CRIS Death Count",
         editable: false,
       },
-      crash_fatal_fl: {
-        label: "CRIS Fatality Flag",
-        editable: false,
-        lookupOptions: "atd_txdot__y_n_lkp",
-        lookupPrefix: "y_n",
-      },
       apd_confirmed_death_count: {
         label: "APD Death Count",
         editable: true,
         uiType: "text",
         secondaryFieldUpdate: { apd_human_update: "Y" },
-      },
-      apd_confirmed_fatality: {
-        label: "APD Fatality Flag",
-        editable: false,
-        lookupOptions: "atd_txdot__y_n_lkp",
-        lookupPrefix: "y_n",
       },
       apd_human_update: {
         label: "Manually Edited?",
@@ -160,13 +155,6 @@ export const crashDataMap = [
   {
     title: "Injuries",
     fields: {
-      crash_sev_id: {
-        label: "Crash Severity",
-        editable: true,
-        uiType: "select",
-        lookupOptions: "atd_txdot__injry_sev_lkp",
-        lookupPrefix: "injry_sev",
-      },
       non_injry_cnt: {
         label: "Not Injured Count",
         editable: false,
