@@ -21,7 +21,7 @@ const CrashesByPopulation = () => {
   useEffect(() => {
     const dateCondition = `crash_date BETWEEN '${dataStartDate.format(
       "YYYY-MM-DD"
-    )}' and '${fiveYearAvgEndDate}'`;
+    )}T00:00:00' and '${fiveYearAvgEndDate}T23:59:59'`;
     const queryGroupAndOrder = `GROUP BY year ORDER BY year`;
 
     const queries = {
