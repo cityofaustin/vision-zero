@@ -29,8 +29,8 @@ const CrashesByYear = () => {
 
   // Fetch data for By Month Average and Cumulative visualizations
   useEffect(() => {
-    const avgDateCondition = `crash_date BETWEEN '${fiveYearAvgStartDate}' and '${fiveYearAvgEndDate}'`;
-    const currentYearDateCondition = `crash_date BETWEEN '${summaryCurrentYearStartDate}' and '${summaryCurrentYearEndDate}'`;
+    const avgDateCondition = `crash_date BETWEEN '${fiveYearAvgStartDate}T00:00:00' and '${fiveYearAvgEndDate}T23:59:59'`;
+    const currentYearDateCondition = `crash_date BETWEEN '${summaryCurrentYearStartDate}T00:00:00' and '${summaryCurrentYearEndDate}T23:59:59'`;
     const queryGroupAndOrder = `GROUP BY month ORDER BY month`;
 
     const avgQueries = {
