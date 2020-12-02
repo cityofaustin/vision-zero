@@ -18,7 +18,8 @@ import CrashMap from "./Maps/CrashMap";
 import CrashEditCoordsMap from "./Maps/CrashEditCoordsMap";
 import Widget02 from "../Widgets/Widget02";
 import CrashChangeLog from "./CrashChangeLog";
-import CR3Record from "./CR3Record";
+import CrashDiagram from "./CrashDiagram";
+import CrashNarrative from "./CrashNarrative";
 import DataTable from "../../Components/DataTable";
 import { crashDataMap } from "./crashDataMap";
 
@@ -204,17 +205,19 @@ function Crash(props) {
                 <Row>
                   <Col>
                     Crash Location (ID:{" "}
-                    {(data && data.atd_txdot_crashes.length > 0 && data.atd_txdot_crashes[0]["location_id"] && (
-                      <>
-                        <Link
-                          to={`/locations/${
-                            data.atd_txdot_crashes[0]["location_id"]
-                          }`}
-                        >
-                          {data.atd_txdot_crashes[0]["location_id"]}
-                        </Link>
-                      </>
-                    )) ||
+                    {(data &&
+                      data.atd_txdot_crashes.length > 0 &&
+                      data.atd_txdot_crashes[0]["location_id"] && (
+                        <>
+                          <Link
+                            to={`/locations/${
+                              data.atd_txdot_crashes[0]["location_id"]
+                            }`}
+                          >
+                            {data.atd_txdot_crashes[0]["location_id"]}
+                          </Link>
+                        </>
+                      )) ||
                       "unassigned"}
                     )
                     <br />
@@ -266,9 +269,20 @@ function Crash(props) {
           </div>
         </Col>
         <Col xs="12" md="6">
-          <CR3Record crashId={crashId} isCr3Stored={cr3StoredFlag === "Y"} isTempRecord={tempRecord} />
+          <CrashDiagram
+            crashId={crashId}
+            isCr3Stored={cr3StoredFlag === "Y"}
+            isTempRecord={tempRecord}
+          />
         </Col>
-        <Col xs="12">
+      </Row>
+      <Row>
+        <Col>
+          <CrashNarrative />
+        </Col>
+      </Row>
+      <Row>
+        <Col>
           <CrashCollapses data={data} props={props} />
         </Col>
       </Row>
