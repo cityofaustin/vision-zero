@@ -58,9 +58,17 @@ const GridDateRange = ({ setDateRangeFilter, initStartDate, initEndDate, uniqueK
   /**
    * Returns a date in a valid SQL format.
    * @param {string} date - The string to be transformed
+   * @param {string} fallbackValue - The value to use if the formattedDate is invalid
    * @returns {string}
    */
-  const formatDate = date => moment(date).format("YYYY-MM-DD");
+  const formatDate = (date, fallbackValue) => {
+    let formattedDate = moment(date).format("YYYY-MM-DD");
+
+    if (formattedDate === "Invalid date") {
+      formattedDate = moment(fallbackValue).format("YYYY-MM-DD");
+    }
+    return formattedDate;
+  };
 
   /**
    * Returns today
@@ -74,8 +82,8 @@ const GridDateRange = ({ setDateRangeFilter, initStartDate, initEndDate, uniqueK
   // Set date range filter in GridTable if startDate or endDate changes
   useEffect(() => {
     setDateRangeFilter({
-      startDate: formatDate(startDate),
-      endDate: formatDate(endDate),
+      startDate: formatDate(startDate, initStartDate),
+      endDate: formatDate(endDate, initEndDate),
     });
   }, [startDate, endDate, setDateRangeFilter]);
 
