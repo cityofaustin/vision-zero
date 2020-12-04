@@ -11,8 +11,7 @@ import {
 } from "reactstrap";
 import axios from "axios";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
-import cat from "../../assets/img/brand/cat.jpg";
-import cat2 from "../../assets/img/brand/cat2.jpg";
+import sample from "../../assets/img/brand/sample.png";
 
 function CrashDiagram(props) {
   const requestCR3 = () => {
@@ -32,75 +31,84 @@ function CrashDiagram(props) {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <Row>
-          <Col>Crash Diagram</Col>
-          <Col>
-            {props.isTempRecord ? (
-              <Alert color="warning">
-                <strong>
-                  CR3 PDFs are not available for temporary records.
-                </strong>
-                <br />
-                Using the case id, check the{" "}
-                <a href={"https://cris.dot.state.tx.us/"} target={"_new"}>
-                  CRIS website
-                </a>{" "}
-                for the latest status of this crash.
-              </Alert>
-            ) : props.isCr3Stored ? (
-              <Button
-                color="primary"
-                style={{ float: "right" }}
-                onClick={requestCR3}
-              >
-                Download CR-3 PDF
-              </Button>
-            ) : (
-              <Alert color="warning">
-                The CR-3 file for this crash has not been imported. Use Brazos
-                to search for the associated CR-3 Crash Report.
-              </Alert>
-            )}
-          </Col>
-        </Row>
-      </CardHeader>
-      <CardBody>
-        <TransformWrapper
-          defaultScale={1}
-        //   defaultPositionX={200}
-        //   defaultPositionY={100}
-        >
-          {({ zoomIn, zoomOut, resetTransform, ...rest }) => (
-            <React.Fragment>
-              <div className="tools mb-2">
-                <ButtonGroup>
-                    <Button color="primary" onClick={zoomIn}>
-                    <i className="fa fa-search-plus"></i>
-                    </Button>
-                    <Button color="primary" onClick={zoomOut}>
-                    <i className="fa fa-search-minus"></i>
-                    </Button>
-                </ButtonGroup>
+    <div>
+      <Card>
+        <CardHeader>
+          <Row>
+            <Col>Crash Diagram</Col>
+            <Col>
+              {props.isTempRecord ? (
+                <Alert color="warning">
+                  <strong>
+                    CR3 PDFs are not available for temporary records.
+                  </strong>
+                  <br />
+                  Using the case id, check the{" "}
+                  <a href={"https://cris.dot.state.tx.us/"} target={"_new"}>
+                    CRIS website
+                  </a>{" "}
+                  for the latest status of this crash.
+                </Alert>
+              ) : props.isCr3Stored ? (
                 <Button
                   color="primary"
                   style={{ float: "right" }}
-                  onClick={resetTransform}
+                  onClick={requestCR3}
                 >
-                  <i className="fa fa-expand"></i>
+                  Download CR-3 PDF
                 </Button>
-              </div>
-              <div className="d-flex justify-content-center">
-              <TransformComponent>
-                <img src={cat} alt="test" />
-              </TransformComponent>
-              </div>
-            </React.Fragment>
-          )}
-        </TransformWrapper>
-      </CardBody>
-    </Card>
+              ) : (
+                <Alert color="warning">
+                  The CR-3 file for this crash has not been imported. Use Brazos
+                  to search for the associated CR-3 Crash Report.
+                </Alert>
+              )}
+            </Col>
+          </Row>
+        </CardHeader>
+        <CardBody>
+          <TransformWrapper
+            options={{
+              limitToBounds: true,
+              limitToWrapper: true,
+              centerContent: true,
+              minScale: 0.5,
+            }}
+          >
+            {({ zoomIn, zoomOut, resetTransform, ...rest }) => (
+              <React.Fragment>
+                <Row>
+                  <Col className="tools mb-2">
+                    <ButtonGroup>
+                      <Button color="primary" onClick={zoomIn}>
+                        <i className="fa fa-search-plus"></i>
+                      </Button>
+                      <Button color="primary" onClick={zoomOut}>
+                        <i className="fa fa-search-minus"></i>
+                      </Button>
+                    </ButtonGroup>
+                    <Button
+                      color="primary"
+                      style={{ float: "right" }}
+                      onClick={resetTransform}
+                    >
+                      <i className="fa fa-expand"></i>
+                    </Button>
+                  </Col>
+                </Row>
+                <TransformComponent>
+                  <Row>
+                    <Col className="d-flex justify-content-center">
+                      <img className="img-fluid w-75" src={sample} alt="test" />
+                    </Col>
+                  </Row>
+                </TransformComponent>
+              </React.Fragment>
+            )}
+          </TransformWrapper>
+        </CardBody>
+      </Card>
+    </div>
   );
 }
 
