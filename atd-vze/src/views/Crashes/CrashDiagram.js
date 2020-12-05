@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Card,
   CardHeader,
@@ -13,7 +13,9 @@ import axios from "axios";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import sample from "../../assets/img/brand/sample.png";
 
-function CrashDiagram(props) {
+const CrashDiagram = props => {
+  const [rotation, setRotation] = useState(0);
+
   const requestCR3 = () => {
     const requestUrl = `${process.env.REACT_APP_CR3_API_DOMAIN}/cr3/download/${props.crashId}`;
     const token = window.localStorage.getItem("id_token");
@@ -28,6 +30,14 @@ function CrashDiagram(props) {
         const win = window.open(res.data.message, "_blank");
         win.focus();
       });
+  };
+
+  const rotate = event => {
+    setRotation(event.target.value);
+  };
+
+  const resetRotate = () => {
+    setRotation(0);
   };
 
   return (
@@ -99,10 +109,42 @@ function CrashDiagram(props) {
                 <TransformComponent>
                   <Row>
                     <Col className="d-flex justify-content-center">
-                      <img className="img-fluid w-75" src={sample} alt="test" />
+                      <img
+                        className="img-fluid w-75"
+                        style={{ transform: `rotate(${rotation}deg)` }}
+                        src={sample}
+                        alt="test"
+                      />
                     </Col>
                   </Row>
                 </TransformComponent>
+                <form>
+                  <Row>
+                    <Col className="form-group d-flex justify-content-center">
+                      <label for="formControlRange">Rotate image</label>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col>
+                      <input
+                        type="range"
+                        min="-180"
+                        max="180"
+                        value={rotation}
+                        className="form-control-range"
+                        id="formControlRange"
+                        onChange={rotate}
+                      ></input>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col className="form-group d-flex justify-content-center">
+                      <Button color="primary" onClick={resetRotate}>
+                        Reset
+                      </Button>
+                    </Col>
+                  </Row>
+                </form>
               </React.Fragment>
             )}
           </TransformWrapper>
@@ -110,6 +152,6 @@ function CrashDiagram(props) {
       </Card>
     </div>
   );
-}
+};
 
 export default CrashDiagram;
