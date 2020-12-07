@@ -66,6 +66,8 @@ let queryConf = {
   where: {
     // Only show Locations inside CoA Limits.
     council_district: "_gt: 0",
+    // 1 = ASMP Levels 1-4, 2 = ASMP Level 5
+    location_group: "_eq: 1",
   },
   limit: 25,
   offset: 0,
