@@ -16,6 +16,8 @@ import sample from "../../assets/img/brand/sample.png";
 const CrashDiagram = props => {
   const [rotation, setRotation] = useState(0);
 
+  console.log(props);
+
   const requestCR3 = () => {
     const requestUrl = `${process.env.REACT_APP_CR3_API_DOMAIN}/cr3/download/${props.crashId}`;
     const token = window.localStorage.getItem("id_token");
@@ -121,7 +123,7 @@ const CrashDiagram = props => {
                 <form>
                   <Row>
                     <Col className="form-group d-flex justify-content-center">
-                      <label for="formControlRange">Rotate image</label>
+                      <label htmlFor="formControlRange">Rotate image</label>
                     </Col>
                   </Row>
                   <Row>

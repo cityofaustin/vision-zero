@@ -145,6 +145,7 @@ function Crash(props) {
     cr3_stored_flag: cr3StoredFlag,
     temp_record: tempRecord,
     geocode_method: geocodeMethod,
+    cr3_file_metadata: cr3FileMetadata
   } = data.atd_txdot_crashes[0];
 
   const mapGeocoderAddress = createGeocoderAddressString(data);
@@ -273,6 +274,7 @@ function Crash(props) {
             crashId={crashId}
             isCr3Stored={cr3StoredFlag === "Y"}
             isTempRecord={tempRecord}
+            cr3FileMetadata={cr3FileMetadata}
           />
         </Col>
       </Row>
