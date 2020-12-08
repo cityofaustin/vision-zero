@@ -8,6 +8,10 @@ import {
   Alert,
   Col,
   Row,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
 } from "reactstrap";
 import axios from "axios";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
@@ -15,6 +19,9 @@ import sample from "../../assets/img/brand/sample.png";
 
 const CrashDiagram = props => {
   const [rotation, setRotation] = useState(0);
+  const [modal, setModal] = useState(false);
+
+  const toggle = () => setModal(!modal);
 
   console.log(props);
 
@@ -70,10 +77,24 @@ const CrashDiagram = props => {
                   Download CR-3 PDF
                 </Button>
               ) : (
-                <Alert color="warning">
-                  The CR-3 file for this crash has not been imported. Use Brazos
-                  to search for the associated CR-3 Crash Report.
-                </Alert>
+                <div>
+                  <Button
+                    color="primary"
+                    style={{ float: "right" }}
+                    onClick={toggle}
+                  >
+                    CR-3 PDF Not Available
+                  </Button>
+                  <Modal isOpen={modal} toggle={toggle}>
+                    <ModalHeader toggle={toggle}>
+                      CR-3 PDF Not Available
+                    </ModalHeader>
+                    <ModalBody>
+                      The CR-3 file for this crash has not been imported. Use
+                      Brazos to search for the associated CR-3 Crash Report.
+                    </ModalBody>
+                  </Modal>
+                </div>
               )}
             </Col>
           </Row>
