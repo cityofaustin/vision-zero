@@ -3,6 +3,7 @@ import {
   Card,
   CardHeader,
   CardBody,
+  CardFooter,
   Button,
   ButtonGroup,
   Col,
@@ -136,33 +137,6 @@ const CrashDiagram = props => {
                       </Col>
                     </Row>
                   </TransformComponent>
-                  <form>
-                    <Row>
-                      <Col className="form-group d-flex justify-content-center">
-                        <label htmlFor="formControlRange">Rotate image</label>
-                      </Col>
-                    </Row>
-                    <Row>
-                      <Col>
-                        <input
-                          type="range"
-                          min="-180"
-                          max="180"
-                          value={rotation}
-                          className="form-control-range"
-                          id="formControlRange"
-                          onChange={rotate}
-                        ></input>
-                      </Col>
-                    </Row>
-                    <Row>
-                      <Col className="form-group d-flex justify-content-center">
-                        <Button color="primary" onClick={resetRotate}>
-                          Reset
-                        </Button>
-                      </Col>
-                    </Row>
-                  </form>
                 </React.Fragment>
               )}
             </TransformWrapper>
@@ -170,6 +144,35 @@ const CrashDiagram = props => {
             <div>Crash diagram unavailable.</div>
           )}
         </CardBody>
+        {props.cr3FileMetadata.successful_ocr_diagram_extraction ? (
+          <CardFooter>
+            <form>
+              <Row className="form-group d-flex align-items-center mb-0">
+                <Col md="2">
+                  <label htmlFor="formControlRange">Rotate Image:</label>
+                </Col>
+                <Col md="8">
+                  <input
+                    type="range"
+                    min="-180"
+                    max="180"
+                    value={rotation}
+                    className="form-control-range"
+                    id="formControlRange"
+                    onChange={rotate}
+                  ></input>
+                </Col>
+                <Col className="d-flex justify-content-center" md="2">
+                  <Button color="primary" onClick={resetRotate}>
+                    Reset
+                  </Button>
+                </Col>
+              </Row>
+            </form>
+          </CardFooter>
+        ) : (
+          <div></div>
+        )}
       </Card>
     </div>
   );
