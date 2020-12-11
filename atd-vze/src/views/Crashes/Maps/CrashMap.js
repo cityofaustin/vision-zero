@@ -77,7 +77,7 @@ export default class CrashMap extends Component {
       <MapGL
         {...viewport}
         width="100%"
-        height="350px"
+        height="100%"
         mapStyle="mapbox://styles/mapbox/satellite-streets-v9"
         onViewportChange={this._updateViewport}
         mapboxApiAccessToken={TOKEN}

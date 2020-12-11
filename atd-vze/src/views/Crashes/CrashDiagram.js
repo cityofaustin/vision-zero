@@ -41,135 +41,139 @@ const CrashDiagram = props => {
   };
 
   return (
-    <div>
-      <Card>
-        <CardHeader>
-          <Row>
-            <Col>Crash Diagram</Col>
-            <Col>
-              {props.isTempRecord ? (
-                <CrashDiagramModal
-                  buttonTitle={[
-                    "CR-3 PDF Unavailable",
-                    " ",
-                    <i className="fa fa-info-circle"></i>,
-                  ]}
-                  modalTitle={["CR-3 PDF Unavailable"]}
-                  modalText={[
-                    "CR-3 PDFs are not available for temporary records. Using the case id, check the",
-                    " ",
-                    <a href={"https://cris.dot.state.tx.us/"} target={"_new"}>
-                      CRIS website
-                    </a>,
-                    " ",
-                    "for the latest status of this crash.",
-                  ]}
-                />
-              ) : props.isCr3Stored ? (
-                <Button
-                  color="primary"
-                  style={{ float: "right" }}
-                  onClick={requestCR3}
-                >
-                  Download CR-3 PDF
-                </Button>
-              ) : (
-                <CrashDiagramModal
-                  buttonTitle={[
-                    "CR-3 PDF Unavailable",
-                    " ",
-                    <i className="fa fa-info-circle"></i>,
-                  ]}
-                  modalTitle={["CR-3 PDF Unavailable"]}
-                  modalText={[
-                    "The CR-3 file for this crash has not been imported.",
-                    <br></br>,
-                    "Use Brazos to search for the associated CR-3 Crash Report.",
-                  ]}
-                />
-              )}
-            </Col>
-          </Row>
-        </CardHeader>
-        {!!props.cr3FileMetadata && props.cr3FileMetadata.diagram_s3_file ? (
-          <div>
-            <CardBody>
-              <TransformWrapper
-                options={{
-                  limitToBounds: true,
-                  limitToWrapper: true,
-                  centerContent: true,
-                  minScale: 0.5,
-                }}
+    <Card className="h-100">
+      <CardHeader>
+        <Row className="d-flex align-items-center">
+          <Col>Crash Diagram</Col>
+          <Col>
+            {props.isTempRecord ? (
+              <CrashDiagramModal
+                buttonTitle={[
+                  "CR-3 PDF Unavailable",
+                  " ",
+                  <i className="fa fa-info-circle"></i>,
+                ]}
+                modalTitle={["CR-3 PDF Unavailable"]}
+                modalText={[
+                  "CR-3 PDFs are not available for temporary records. Using the case id, check the",
+                  " ",
+                  <a href={"https://cris.dot.state.tx.us/"} target={"_new"}>
+                    CRIS website
+                  </a>,
+                  " ",
+                  "for the latest status of this crash.",
+                ]}
+              />
+            ) : props.isCr3Stored ? (
+              <Button
+                color="primary"
+                style={{ float: "right" }}
+                onClick={requestCR3}
               >
-                {({ zoomIn, zoomOut, resetTransform, ...rest }) => (
-                  <React.Fragment>
-                    <Row>
-                      <Col className="tools mb-2">
-                        <ButtonGroup>
-                          <Button color="primary" onClick={zoomIn}>
-                            <i className="fa fa-search-plus"></i>
-                          </Button>
-                          <Button color="primary" onClick={zoomOut}>
-                            <i className="fa fa-search-minus"></i>
-                          </Button>
-                        </ButtonGroup>
-                        <Button
-                          color="primary"
-                          style={{ float: "right" }}
-                          onClick={resetTransform}
-                        >
-                          <i className="fa fa-repeat"></i>
-                        </Button>
-                      </Col>
-                    </Row>
-                    <TransformComponent>
-                      <Row>
-                        <Col className="d-flex justify-content-center">
-                          <img
-                            className="img-fluid w-75"
-                            style={{ transform: `rotate(${rotation}deg)` }}
-                            src={`https://atd-vision-zero-website.s3.amazonaws.com/cr3_crash_diagrams/staging/${props.cr3FileMetadata.diagram_s3_file}`}
-                            alt="test"
-                          />
-                        </Col>
-                      </Row>
-                    </TransformComponent>
-                  </React.Fragment>
-                )}
-              </TransformWrapper>
-            </CardBody>
-            <CardFooter>
-              <form>
-                <Row className="form-group d-flex align-items-center mb-0">
-                  <Col md="2">
-                    <label htmlFor="formControlRange">Rotate Image:</label>
-                  </Col>
-                  <Col md="8">
-                    <input
-                      type="range"
-                      min="-180"
-                      max="180"
-                      value={rotation}
-                      className="form-control-range"
-                      id="formControlRange"
-                      onChange={rotate}
-                    ></input>
-                  </Col>
-                  <Col className="d-flex justify-content-center" md="2">
-                    <Button color="primary" onClick={resetRotate}>
-                      Reset
+                Download CR-3 PDF
+              </Button>
+            ) : (
+              <CrashDiagramModal
+                buttonTitle={[
+                  "CR-3 PDF Unavailable",
+                  " ",
+                  <i className="fa fa-info-circle"></i>,
+                ]}
+                modalTitle={["CR-3 PDF Unavailable"]}
+                modalText={[
+                  "The CR-3 file for this crash has not been imported.",
+                  <br></br>,
+                  "Use Brazos to search for the associated CR-3 Crash Report.",
+                ]}
+              />
+            )}
+          </Col>
+        </Row>
+      </CardHeader>
+      <CardBody>
+        {!!props.cr3FileMetadata && props.cr3FileMetadata.diagram_s3_file ? (
+          <TransformWrapper
+            options={{
+              limitToBounds: true,
+              limitToWrapper: true,
+              centerContent: true,
+              minScale: 0.5,
+            }}
+          >
+            {({ zoomIn, zoomOut, resetTransform, ...rest }) => (
+              <React.Fragment>
+                <Row>
+                  <Col className="tools mb-2">
+                    <ButtonGroup>
+                      <Button color="primary" onClick={zoomIn}>
+                        <i className="fa fa-search-plus"></i>
+                      </Button>
+                      <Button color="primary" onClick={zoomOut}>
+                        <i className="fa fa-search-minus"></i>
+                      </Button>
+                    </ButtonGroup>
+                    <Button
+                      color="primary"
+                      style={{ float: "right" }}
+                      onClick={resetTransform}
+                    >
+                      <i className="fa fa-repeat"></i>
                     </Button>
                   </Col>
                 </Row>
-              </form>
-            </CardFooter>
-          </div>
+                <TransformComponent>
+                  <Row>
+                    <Col className="d-flex justify-content-center">
+                      <img
+                        className="img-fluid w-75"
+                        style={{ transform: `rotate(${rotation}deg)` }}
+                        src={`https://atd-vision-zero-website.s3.amazonaws.com/cr3_crash_diagrams/staging/${props.cr3FileMetadata.diagram_s3_file}`}
+                        alt="test"
+                      />
+                    </Col>
+                  </Row>
+                </TransformComponent>
+              </React.Fragment>
+            )}
+          </TransformWrapper>
         ) : (
-          <CardBody>Crash diagram unavailable.</CardBody>
+          <Row className="h-100 d-flex align-items-center">
+            <Col className="d-flex justify-content-center">
+              Crash diagram unavailable.
+            </Col>
+          </Row>
         )}
-      </Card>
-    </div>
+      </CardBody>
+      {!!props.cr3FileMetadata && props.cr3FileMetadata.diagram_s3_file ? (
+        <CardFooter>
+          <form>
+            <Row className="form-group d-flex align-items-center mb-0">
+              <Col md="2">
+                <label htmlFor="formControlRange">Rotate Image:</label>
+              </Col>
+              <Col md="8">
+                <input
+                  type="range"
+                  min="-180"
+                  max="180"
+                  value={rotation}
+                  className="form-control-range"
+                  id="formControlRange"
+                  onChange={rotate}
+                ></input>
+              </Col>
+              <Col className="d-flex justify-content-center" md="2">
+                <Button color="primary" onClick={resetRotate}>
+                  Reset
+                </Button>
+              </Col>
+            </Row>
+          </form>
+        </CardFooter>
+      ) : (
+        <div></div>
+      )}
+    </Card>
   );
 };
 

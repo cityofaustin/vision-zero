@@ -146,7 +146,7 @@ function Crash(props) {
     temp_record: tempRecord,
     geocode_method: geocodeMethod,
     cr3_file_metadata: cr3FileMetadata,
-    investigator_narrative: investigatorNarrative
+    investigator_narrative: investigatorNarrative,
   } = data.atd_txdot_crashes[0];
 
   const mapGeocoderAddress = createGeocoderAddressString(data);
@@ -200,77 +200,75 @@ function Crash(props) {
         </Col>
       </Row>
       <Row>
-        <Col xs="12" md="6">
-          <div className="mb-4">
-            <Card>
-              <CardHeader>
-                <Row>
-                  <Col>
-                    Crash Location (ID:{" "}
-                    {(data &&
-                      data.atd_txdot_crashes.length > 0 &&
-                      data.atd_txdot_crashes[0]["location_id"] && (
-                        <>
-                          <Link
-                            to={`/locations/${
-                              data.atd_txdot_crashes[0]["location_id"]
-                            }`}
-                          >
-                            {data.atd_txdot_crashes[0]["location_id"]}
-                          </Link>
-                        </>
-                      )) ||
-                      "unassigned"}
-                    )
-                    <br />
-                    Geocode Provider:{" "}
-                    {latitude && longitude
-                      ? geocodeMethod.name
-                      : "No Primary Coordinates"}
-                  </Col>
-                  <Col>
-                    {!isEditingCoords && (
-                      <Button
-                        color="primary"
-                        style={{ float: "right" }}
-                        onClick={e => setIsEditingCoords(!isEditingCoords)}
-                      >
-                        Edit Coordinates
-                      </Button>
-                    )}
-                  </Col>
-                </Row>
-              </CardHeader>
-              <CardBody>
-                {(!latitude || !longitude) && (
-                  <Alert color="danger">
-                    Crash record is missing latitude and longitude values
-                    required for map display.
-                  </Alert>
-                )}
-                {!isEditingCoords && latitude && longitude ? (
-                  <>
-                    <CrashMap data={data.atd_txdot_crashes[0]} />
-                    <Table responsive striped hover>
-                      <tbody></tbody>
-                    </Table>
-                  </>
-                ) : (
-                  <>
-                    <CrashEditCoordsMap
-                      data={data.atd_txdot_crashes[0]}
-                      mapGeocoderAddress={mapGeocoderAddress}
-                      crashId={crashId}
-                      refetchCrashData={refetch}
-                      setIsEditingCoords={setIsEditingCoords}
-                    />
-                  </>
-                )}
-              </CardBody>
-            </Card>
-          </div>
+        <Col xs="12" md="6" className="mb-4">
+          <Card className="h-100">
+            <CardHeader>
+              <Row>
+                <Col>
+                  Crash Location (ID:{" "}
+                  {(data &&
+                    data.atd_txdot_crashes.length > 0 &&
+                    data.atd_txdot_crashes[0]["location_id"] && (
+                      <>
+                        <Link
+                          to={`/locations/${
+                            data.atd_txdot_crashes[0]["location_id"]
+                          }`}
+                        >
+                          {data.atd_txdot_crashes[0]["location_id"]}
+                        </Link>
+                      </>
+                    )) ||
+                    "unassigned"}
+                  )
+                  <br />
+                  Geocode Provider:{" "}
+                  {latitude && longitude
+                    ? geocodeMethod.name
+                    : "No Primary Coordinates"}
+                </Col>
+                <Col>
+                  {!isEditingCoords && (
+                    <Button
+                      color="primary"
+                      style={{ float: "right" }}
+                      onClick={e => setIsEditingCoords(!isEditingCoords)}
+                    >
+                      Edit Coordinates
+                    </Button>
+                  )}
+                </Col>
+              </Row>
+            </CardHeader>
+            <CardBody style={{ minHeight: "350px" }}>
+              {(!latitude || !longitude) && (
+                <Alert color="danger">
+                  Crash record is missing latitude and longitude values required
+                  for map display.
+                </Alert>
+              )}
+              {!isEditingCoords && latitude && longitude ? (
+                <>
+                  <CrashMap data={data.atd_txdot_crashes[0]} />
+                  <Table responsive striped hover>
+                    <tbody></tbody>
+                  </Table>
+                </>
+              ) : (
+                <>
+                  <CrashEditCoordsMap
+                    data={data.atd_txdot_crashes[0]}
+                    mapGeocoderAddress={mapGeocoderAddress}
+                    crashId={crashId}
+                    refetchCrashData={refetch}
+                    setIsEditingCoords={setIsEditingCoords}
+                  />
+                </>
+              )}
+            </CardBody>
+          </Card>
         </Col>
-        <Col xs="12" md="6">
+        <Col xs="12" md="6" className="mb-4">
           <CrashDiagram
             crashId={crashId}
             isCr3Stored={cr3StoredFlag === "Y"}
@@ -281,7 +279,7 @@ function Crash(props) {
       </Row>
       <Row>
         <Col>
-            <CrashNarrative investigatorNarrative={investigatorNarrative} />
+          <CrashNarrative investigatorNarrative={investigatorNarrative} />
         </Col>
       </Row>
       <Row>
