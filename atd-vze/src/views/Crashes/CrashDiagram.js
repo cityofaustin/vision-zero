@@ -11,7 +11,6 @@ import {
 } from "reactstrap";
 import axios from "axios";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
-import sample from "../../assets/img/brand/sample.png";
 import CrashDiagramModal from "./CrashDiagramModal";
 
 const CrashDiagram = props => {
@@ -94,84 +93,83 @@ const CrashDiagram = props => {
             </Col>
           </Row>
         </CardHeader>
-        <CardBody>
-          {props.cr3FileMetadata.successful_ocr_diagram_extraction ? (
-            <TransformWrapper
-              options={{
-                limitToBounds: true,
-                limitToWrapper: true,
-                centerContent: true,
-                minScale: 0.5,
-              }}
-            >
-              {({ zoomIn, zoomOut, resetTransform, ...rest }) => (
-                <React.Fragment>
-                  <Row>
-                    <Col className="tools mb-2">
-                      <ButtonGroup>
-                        <Button color="primary" onClick={zoomIn}>
-                          <i className="fa fa-search-plus"></i>
-                        </Button>
-                        <Button color="primary" onClick={zoomOut}>
-                          <i className="fa fa-search-minus"></i>
-                        </Button>
-                      </ButtonGroup>
-                      <Button
-                        color="primary"
-                        style={{ float: "right" }}
-                        onClick={resetTransform}
-                      >
-                        <i className="fa fa-expand"></i>
-                      </Button>
-                    </Col>
-                  </Row>
-                  <TransformComponent>
+        {!!props.cr3FileMetadata && props.cr3FileMetadata.diagram_s3_file ? (
+          <div>
+            <CardBody>
+              <TransformWrapper
+                options={{
+                  limitToBounds: true,
+                  limitToWrapper: true,
+                  centerContent: true,
+                  minScale: 0.5,
+                }}
+              >
+                {({ zoomIn, zoomOut, resetTransform, ...rest }) => (
+                  <React.Fragment>
                     <Row>
-                      <Col className="d-flex justify-content-center">
-                        <img
-                          className="img-fluid w-75"
-                          style={{ transform: `rotate(${rotation}deg)` }}
-                          src={sample}
-                          alt="test"
-                        />
+                      <Col className="tools mb-2">
+                        <ButtonGroup>
+                          <Button color="primary" onClick={zoomIn}>
+                            <i className="fa fa-search-plus"></i>
+                          </Button>
+                          <Button color="primary" onClick={zoomOut}>
+                            <i className="fa fa-search-minus"></i>
+                          </Button>
+                        </ButtonGroup>
+                        <Button
+                          color="primary"
+                          style={{ float: "right" }}
+                          onClick={resetTransform}
+                        >
+                          <i className="fa fa-expand"></i>
+                          {/* <i className="fa fa-redo"></i> */}
+                        </Button>
                       </Col>
                     </Row>
-                  </TransformComponent>
-                </React.Fragment>
-              )}
-            </TransformWrapper>
-          ) : (
-            <div>Crash diagram unavailable.</div>
-          )}
-        </CardBody>
-        {props.cr3FileMetadata.successful_ocr_diagram_extraction ? (
-          <CardFooter>
-            <form>
-              <Row className="form-group d-flex align-items-center mb-0">
-                <Col md="2">
-                  <label htmlFor="formControlRange">Rotate Image:</label>
-                </Col>
-                <Col md="8">
-                  <input
-                    type="range"
-                    min="-180"
-                    max="180"
-                    value={rotation}
-                    className="form-control-range"
-                    id="formControlRange"
-                    onChange={rotate}
-                  ></input>
-                </Col>
-                <Col className="d-flex justify-content-center" md="2">
-                  <Button color="primary" onClick={resetRotate}>
-                    Reset
-                  </Button>
-                </Col>
-              </Row>
-            </form>
-          </CardFooter>
+                    <TransformComponent>
+                      <Row>
+                        <Col className="d-flex justify-content-center">
+                          <img
+                            className="img-fluid w-75"
+                            style={{ transform: `rotate(${rotation}deg)` }}
+                            src={`https://atd-vision-zero-website.s3.amazonaws.com/cr3_crash_diagrams/staging/${props.cr3FileMetadata.diagram_s3_file}`}
+                            alt="test"
+                          />
+                        </Col>
+                      </Row>
+                    </TransformComponent>
+                  </React.Fragment>
+                )}
+              </TransformWrapper>
+            </CardBody>
+            <CardFooter>
+              <form>
+                <Row className="form-group d-flex align-items-center mb-0">
+                  <Col md="2">
+                    <label htmlFor="formControlRange">Rotate Image:</label>
+                  </Col>
+                  <Col md="8">
+                    <input
+                      type="range"
+                      min="-180"
+                      max="180"
+                      value={rotation}
+                      className="form-control-range"
+                      id="formControlRange"
+                      onChange={rotate}
+                    ></input>
+                  </Col>
+                  <Col className="d-flex justify-content-center" md="2">
+                    <Button color="primary" onClick={resetRotate}>
+                      Reset
+                    </Button>
+                  </Col>
+                </Row>
+              </form>
+            </CardFooter>
+          </div>
         ) : (
-          <div></div>
+          <CardBody>Crash diagram unavailable.</CardBody>
         )}
       </Card>
     </div>

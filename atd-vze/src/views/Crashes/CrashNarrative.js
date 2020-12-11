@@ -1,12 +1,12 @@
 import React from "react";
 import { Card, CardHeader, CardBody } from "reactstrap";
 
-function CrashNarrative({ narrativeText }) {
+function CrashNarrative({ investigatorNarrative }) {
   return (
     <Card>
       <CardHeader>Crash Narrative</CardHeader>
       <CardBody>
-        {!!narrativeText ? narrativeText : "Crash narrative unavailable."}
+        {!!investigatorNarrative ? investigatorNarrative : "Crash narrative unavailable."}
       </CardBody>
     </Card>
   );
