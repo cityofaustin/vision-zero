@@ -16,8 +16,6 @@ import CrashDiagramModal from "./CrashDiagramModal";
 const CrashDiagram = props => {
   const [rotation, setRotation] = useState(0);
 
-  console.log(props);
-
   const requestCR3 = () => {
     const requestUrl = `${process.env.REACT_APP_CR3_API_DOMAIN}/cr3/download/${props.crashId}`;
     const token = window.localStorage.getItem("id_token");
@@ -121,8 +119,7 @@ const CrashDiagram = props => {
                           style={{ float: "right" }}
                           onClick={resetTransform}
                         >
-                          <i className="fa fa-expand"></i>
-                          {/* <i className="fa fa-redo"></i> */}
+                          <i className="fa fa-repeat"></i>
                         </Button>
                       </Col>
                     </Row>
