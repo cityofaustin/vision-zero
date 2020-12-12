@@ -16,6 +16,8 @@ import CrashDiagramModal from "./CrashDiagramModal";
 const CrashDiagram = props => {
   const [rotation, setRotation] = useState(0);
 
+  const s3Folder = process.env.NODE_ENV === "production" ? "production" : "staging";
+
   const requestCR3 = () => {
     const requestUrl = `${process.env.REACT_APP_CR3_API_DOMAIN}/cr3/download/${props.crashId}`;
     const token = window.localStorage.getItem("id_token");
@@ -127,8 +129,8 @@ const CrashDiagram = props => {
                       <img
                         className="img-fluid w-75"
                         style={{ transform: `rotate(${rotation}deg)` }}
-                        src={`https://atd-vision-zero-website.s3.amazonaws.com/cr3_crash_diagrams/staging/${props.cr3FileMetadata.diagram_s3_file}`}
-                        alt="test"
+                        src={`https://atd-vision-zero-website.s3.amazonaws.com/cr3_crash_diagrams/${s3Folder}/${props.cr3FileMetadata.diagram_s3_file}`}
+                        alt="crash diagram"
                       />
                     </Col>
                   </Row>
