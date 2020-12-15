@@ -6,7 +6,6 @@ import {
   CardHeader,
   Col,
   Row,
-  Table,
   Alert,
   Button,
 } from "reactstrap";
@@ -250,9 +249,6 @@ function Crash(props) {
               {!isEditingCoords && latitude && longitude ? (
                 <>
                   <CrashMap data={data.atd_txdot_crashes[0]} />
-                  <Table responsive striped hover>
-                    <tbody></tbody>
-                  </Table>
                 </>
               ) : (
                 <>
@@ -277,11 +273,15 @@ function Crash(props) {
           />
         </Col>
       </Row>
-      <Row>
-        <Col>
-          <CrashNarrative investigatorNarrative={investigatorNarrative} />
-        </Col>
-      </Row>
+      {!!investigatorNarrative ? (
+        <Row>
+          <Col>
+            <CrashNarrative investigatorNarrative={investigatorNarrative} />
+          </Col>
+        </Row>
+      ) : (
+        <div></div>
+      )}
       <Row>
         <Col>
           <CrashCollapses data={data} props={props} />

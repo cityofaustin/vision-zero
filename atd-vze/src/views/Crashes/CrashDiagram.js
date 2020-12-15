@@ -11,7 +11,6 @@ import {
 } from "reactstrap";
 import axios from "axios";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
-import CrashDiagramModal from "./CrashDiagramModal";
 
 const CrashDiagram = props => {
   const [rotation, setRotation] = useState(0);
@@ -52,25 +51,7 @@ const CrashDiagram = props => {
         <Row className="d-flex align-items-center">
           <Col>Crash Diagram</Col>
           <Col>
-            {props.isTempRecord ? (
-              <CrashDiagramModal
-                buttonTitle={[
-                  "CR-3 PDF Unavailable",
-                  " ",
-                  <i className="fa fa-info-circle"></i>,
-                ]}
-                modalTitle={["CR-3 PDF Unavailable"]}
-                modalText={[
-                  "CR-3 PDFs are not available for temporary records. Using the case id, check the",
-                  " ",
-                  <a href={"https://cris.dot.state.tx.us/"} target={"_new"}>
-                    CRIS website
-                  </a>,
-                  " ",
-                  "for the latest status of this crash.",
-                ]}
-              />
-            ) : props.isCr3Stored ? (
+            {props.isCr3Stored ? (
               <Button
                 color="primary"
                 style={{ float: "right" }}
@@ -79,19 +60,7 @@ const CrashDiagram = props => {
                 Download CR-3 PDF
               </Button>
             ) : (
-              <CrashDiagramModal
-                buttonTitle={[
-                  "CR-3 PDF Unavailable",
-                  " ",
-                  <i className="fa fa-info-circle"></i>,
-                ]}
-                modalTitle={["CR-3 PDF Unavailable"]}
-                modalText={[
-                  "The CR-3 file for this crash has not been imported.",
-                  <br></br>,
-                  "Use Brazos to search for the associated CR-3 Crash Report.",
-                ]}
-              />
+              <div></div>
             )}
           </Col>
         </Row>
@@ -142,12 +111,21 @@ const CrashDiagram = props => {
               </React.Fragment>
             )}
           </TransformWrapper>
+        ) : props.isTempRecord ? (
+          <div>
+            CR-3 PDFs, diagrams and narratives are not available for temporary
+            records. Using the case id, check the{" "}
+            <a href={"https://cris.dot.state.tx.us/"} target={"_new"}>
+              CRIS website
+            </a>{" "}
+            for the latest status of this crash.
+          </div>
         ) : (
-          <Row className="h-100 d-flex align-items-center">
-            <Col className="d-flex justify-content-center">
-              Crash diagram unavailable.
-            </Col>
-          </Row>
+          <div>
+            The CR-3 file for this crash has not been imported, so there is no
+            PDF, diagram or narrative available. Use Brazos to search for the
+            associated CR-3 Crash Report.
+          </div>
         )}
       </CardBody>
       {!!props.cr3FileMetadata && props.cr3FileMetadata.diagram_s3_file ? (
