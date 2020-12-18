@@ -22,6 +22,12 @@
   publish = "build"
   command = "npm run build:staging"
 
+# Deploy Preview context:
+# All deploys generated from a pull/merge request
+# will inherit these settings.
+[context.deploy-preview.environment]
+  NODE_ENV = "deploy-preview"
+
 [[headers]]
   # Define which paths this specific [[headers]] block will cover.
   for = "/*"

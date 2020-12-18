@@ -16,10 +16,10 @@ const CrashDiagram = props => {
   const [rotation, setRotation] = useState(0);
 
   // Need to revisit setting the s3 folder based on environment, manually setting to "staging" for PR testing
-  // const s3Folder = process.env.NODE_ENV === "production" ? "production" : "staging";
-  const s3Folder = "staging";
+  const s3Folder = process.env.NODE_ENV === "production" ? "production" : "staging";
 
   console.log(process.env.NODE_ENV);
+  console.log(s3Folder);
 
   const requestCR3 = () => {
     const requestUrl = `${process.env.REACT_APP_CR3_API_DOMAIN}/cr3/download/${props.crashId}`;
