@@ -18,7 +18,8 @@ const CrashDiagram = props => {
   // Need to revisit setting the s3 folder based on environment, manually setting to "staging" for PR testing
   const s3Folder = process.env.NODE_ENV === "production" ? "production" : "staging";
 
-  console.log(process.env.NODE_ENV);
+  console.log(process.env);
+  console.log(process.env.CONTEXT);
   console.log(s3Folder);
 
   const requestCR3 = () => {
