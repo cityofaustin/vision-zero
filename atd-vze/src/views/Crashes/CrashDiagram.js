@@ -15,12 +15,9 @@ import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 const CrashDiagram = props => {
   const [rotation, setRotation] = useState(0);
 
-  // Need to revisit setting the s3 folder based on environment, manually setting to "staging" for PR testing
-  const s3Folder = process.env.NODE_ENV === "production" ? "production" : "staging";
-
-  console.log(process.env);
-  console.log(process.env.CONTEXT);
-  console.log(s3Folder);
+  // Set S3 folder for diagram depending on environment
+  const s3Folder =
+    process.env.NODE_ENV === "production" ? "production" : "staging";
 
   const requestCR3 = () => {
     const requestUrl = `${process.env.REACT_APP_CR3_API_DOMAIN}/cr3/download/${props.crashId}`;
@@ -51,13 +48,9 @@ const CrashDiagram = props => {
       <CardHeader>
         <Row className="d-flex align-items-center">
           <Col>Crash Diagram</Col>
-          <Col>
+          <Col className="d-flex justify-content-end">
             {props.isCr3Stored ? (
-              <Button
-                color="primary"
-                style={{ float: "right" }}
-                onClick={requestCR3}
-              >
+              <Button color="primary" onClick={requestCR3}>
                 Download CR-3 PDF
               </Button>
             ) : (
@@ -77,9 +70,9 @@ const CrashDiagram = props => {
             }}
           >
             {({ zoomIn, zoomOut, resetTransform, ...rest }) => (
-              <React.Fragment>
-                <Row>
-                  <Col className="tools mb-2">
+              <>
+                <Row className="mb-2">
+                  <Col>
                     <ButtonGroup>
                       <Button color="primary" onClick={zoomIn}>
                         <i className="fa fa-search-plus"></i>
@@ -88,11 +81,9 @@ const CrashDiagram = props => {
                         <i className="fa fa-search-minus"></i>
                       </Button>
                     </ButtonGroup>
-                    <Button
-                      color="primary"
-                      style={{ float: "right" }}
-                      onClick={resetTransform}
-                    >
+                  </Col>
+                  <Col className="d-flex justify-content-end">
+                    <Button color="primary" onClick={resetTransform}>
                       <i className="fa fa-repeat"></i>
                     </Button>
                   </Col>
@@ -109,14 +100,14 @@ const CrashDiagram = props => {
                     </Col>
                   </Row>
                 </TransformComponent>
-              </React.Fragment>
+              </>
             )}
           </TransformWrapper>
         ) : props.isTempRecord ? (
           <div>
             CR-3 PDFs, diagrams and narratives are not available for temporary
             records. Using the case id, check the{" "}
-            <a href={"https://cris.dot.state.tx.us/"} target={"_new"}>
+            <a href={"https://cris.dot.state.tx.us/"} target={"_blank"}>
               CRIS website
             </a>{" "}
             for the latest status of this crash.

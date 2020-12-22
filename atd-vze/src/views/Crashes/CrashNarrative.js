@@ -6,7 +6,7 @@ function CrashNarrative({ investigatorNarrative }) {
     <Card>
       <CardHeader>Crash Narrative</CardHeader>
       <CardBody>
-        {!!investigatorNarrative ? investigatorNarrative : "Crash narrative unavailable."}
+        {investigatorNarrative}
       </CardBody>
     </Card>
   );

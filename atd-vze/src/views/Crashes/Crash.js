@@ -152,6 +152,11 @@ function Crash(props) {
   const yearsLifeLostCount = calculateYearsLifeLost(
     peopleData.atd_txdot_primaryperson.concat(peopleData.atd_txdot_person)
   );
+  const hasLocation =
+    data &&
+    data.atd_txdot_crashes.length > 0 &&
+    data.atd_txdot_crashes[0]["location_id"];
+  const notEditingCoords = !isEditingCoords && latitude && longitude;
 
   return (
     <div className="animated fadeIn">
@@ -205,19 +210,15 @@ function Crash(props) {
               <Row>
                 <Col>
                   Crash Location (ID:{" "}
-                  {(data &&
-                    data.atd_txdot_crashes.length > 0 &&
-                    data.atd_txdot_crashes[0]["location_id"] && (
-                      <>
-                        <Link
-                          to={`/locations/${
-                            data.atd_txdot_crashes[0]["location_id"]
-                          }`}
-                        >
-                          {data.atd_txdot_crashes[0]["location_id"]}
-                        </Link>
-                      </>
-                    )) ||
+                  {(hasLocation && (
+                    <Link
+                      to={`/locations/${
+                        data.atd_txdot_crashes[0]["location_id"]
+                      }`}
+                    >
+                      {data.atd_txdot_crashes[0]["location_id"]}
+                    </Link>
+                  )) ||
                     "unassigned"}
                   )
                   <br />
@@ -246,20 +247,16 @@ function Crash(props) {
                   for map display.
                 </Alert>
               )}
-              {!isEditingCoords && latitude && longitude ? (
-                <>
-                  <CrashMap data={data.atd_txdot_crashes[0]} />
-                </>
+              {notEditingCoords ? (
+                <CrashMap data={data.atd_txdot_crashes[0]} />
               ) : (
-                <>
-                  <CrashEditCoordsMap
-                    data={data.atd_txdot_crashes[0]}
-                    mapGeocoderAddress={mapGeocoderAddress}
-                    crashId={crashId}
-                    refetchCrashData={refetch}
-                    setIsEditingCoords={setIsEditingCoords}
-                  />
-                </>
+                <CrashEditCoordsMap
+                  data={data.atd_txdot_crashes[0]}
+                  mapGeocoderAddress={mapGeocoderAddress}
+                  crashId={crashId}
+                  refetchCrashData={refetch}
+                  setIsEditingCoords={setIsEditingCoords}
+                />
               )}
             </CardBody>
           </Card>

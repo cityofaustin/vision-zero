@@ -5,7 +5,6 @@ import MapGL, {
   FullscreenControl,
 } from "react-map-gl";
 
-// import ControlPanel from "./control-panel";
 import Pin from "./Pin";
 
 const TOKEN = process.env.REACT_APP_MAPBOX_TOKEN;
