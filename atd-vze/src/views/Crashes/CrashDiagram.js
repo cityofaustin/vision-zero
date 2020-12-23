@@ -94,7 +94,7 @@ const CrashDiagram = props => {
                     <TransformComponent>
                       <img
                         style={{
-                          maxHeight: "50vh",
+                          maxHeight: "60vh",
                           maxWidth: "100%",
                           transform: `rotate(${rotation}deg)`,
                         }}
@@ -125,13 +125,13 @@ const CrashDiagram = props => {
         )}
       </CardBody>
       {!!props.cr3FileMetadata && props.cr3FileMetadata.diagram_s3_file ? (
-        <CardFooter>
+        <CardFooter className="py-0">
           <form>
             <Row className="form-group d-flex align-items-center mb-0">
-              <Col md="2">
+              <Col md="3" className="d-flex justify-content-center mt-1">
                 <label htmlFor="formControlRange">Rotate Image:</label>
               </Col>
-              <Col md="8">
+              <Col md="6" className="d-flex justify-content-center mt-1">
                 <input
                   type="range"
                   min="-180"
@@ -142,7 +142,7 @@ const CrashDiagram = props => {
                   onChange={rotate}
                 ></input>
               </Col>
-              <Col className="d-flex justify-content-center" md="2">
+              <Col md="3" className="d-flex justify-content-center my-1">
                 <Button color="primary" onClick={resetRotate}>
                   Reset
                 </Button>
