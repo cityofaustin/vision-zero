@@ -59,7 +59,7 @@ const CrashDiagram = props => {
           </Col>
         </Row>
       </CardHeader>
-      <CardBody>
+      <CardBody className="pb-0">
         {!!props.cr3FileMetadata && props.cr3FileMetadata.diagram_s3_file ? (
           <TransformWrapper
             options={{
@@ -88,18 +88,21 @@ const CrashDiagram = props => {
                     </Button>
                   </Col>
                 </Row>
-                <TransformComponent>
-                  <Row>
-                    <Col className="d-flex justify-content-center">
+                <Row className="d-flex align-items-center mb-0">
+                  <Col className="d-flex justify-content-center">
+                    <TransformComponent>
                       <img
-                        className="img-fluid w-75"
-                        style={{ transform: `rotate(${rotation}deg)` }}
+                        style={{
+                          maxHeight: "50vh",
+                          maxWidth: "100%",
+                          transform: `rotate(${rotation}deg)`,
+                        }}
                         src={`https://atd-vision-zero-website.s3.amazonaws.com/cr3_crash_diagrams/${s3Folder}/${props.cr3FileMetadata.diagram_s3_file}`}
                         alt="crash diagram"
                       />
-                    </Col>
-                  </Row>
-                </TransformComponent>
+                    </TransformComponent>
+                  </Col>
+                </Row>
               </>
             )}
           </TransformWrapper>
