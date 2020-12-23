@@ -67,7 +67,7 @@ const CrashDiagram = props => {
               limitToBounds: true,
               limitToWrapper: true,
               centerContent: true,
-              minScale: .5,
+              minScale: 0.5,
             }}
           >
             {({ zoomIn, zoomOut, resetTransform, ...rest }) => (
