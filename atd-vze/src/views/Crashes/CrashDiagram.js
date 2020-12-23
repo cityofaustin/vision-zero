@@ -44,7 +44,7 @@ const CrashDiagram = props => {
   };
 
   return (
-    <Card className="h-100">
+    <Card className="h-100 my-auto">
       <CardHeader>
         <Row className="d-flex align-items-center">
           <Col>Crash Diagram</Col>
@@ -59,19 +59,20 @@ const CrashDiagram = props => {
           </Col>
         </Row>
       </CardHeader>
-      <CardBody>
+      <CardBody className="py-0">
         {!!props.cr3FileMetadata && props.cr3FileMetadata.diagram_s3_file ? (
           <TransformWrapper
+            defaultScale={1}
             options={{
               limitToBounds: true,
               limitToWrapper: true,
               centerContent: true,
-              minScale: 0.5,
+              minScale: .5,
             }}
           >
             {({ zoomIn, zoomOut, resetTransform, ...rest }) => (
               <>
-                <Row className="mb-2">
+                <Row className="my-2">
                   <Col>
                     <ButtonGroup>
                       <Button color="primary" onClick={zoomIn}>
@@ -88,7 +89,7 @@ const CrashDiagram = props => {
                     </Button>
                   </Col>
                 </Row>
-                <Row className="d-flex align-items-center mb-0">
+                <Row className="d-flex align-items-center">
                   <Col className="d-flex justify-content-center">
                     <TransformComponent>
                       <img
