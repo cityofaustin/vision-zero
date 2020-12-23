@@ -59,7 +59,7 @@ const CrashDiagram = props => {
           </Col>
         </Row>
       </CardHeader>
-      <CardBody className="pb-0">
+      <CardBody>
         {!!props.cr3FileMetadata && props.cr3FileMetadata.diagram_s3_file ? (
           <TransformWrapper
             options={{
