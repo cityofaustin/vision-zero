@@ -44,7 +44,7 @@ const CrashDiagram = props => {
   };
 
   return (
-    <Card className="h-100">
+    <Card className="h-100 my-auto">
       <CardHeader>
         <Row className="d-flex align-items-center">
           <Col>Crash Diagram</Col>
@@ -59,9 +59,10 @@ const CrashDiagram = props => {
           </Col>
         </Row>
       </CardHeader>
-      <CardBody>
+      <CardBody className="py-0">
         {!!props.cr3FileMetadata && props.cr3FileMetadata.diagram_s3_file ? (
           <TransformWrapper
+            defaultScale={1}
             options={{
               limitToBounds: true,
               limitToWrapper: true,
@@ -71,7 +72,7 @@ const CrashDiagram = props => {
           >
             {({ zoomIn, zoomOut, resetTransform, ...rest }) => (
               <>
-                <Row className="mb-2">
+                <Row className="my-2">
                   <Col>
                     <ButtonGroup>
                       <Button color="primary" onClick={zoomIn}>
@@ -88,23 +89,26 @@ const CrashDiagram = props => {
                     </Button>
                   </Col>
                 </Row>
-                <TransformComponent>
-                  <Row>
-                    <Col className="d-flex justify-content-center">
+                <Row className="d-flex align-items-center">
+                  <Col className="d-flex justify-content-center">
+                    <TransformComponent>
                       <img
-                        className="img-fluid w-75"
-                        style={{ transform: `rotate(${rotation}deg)` }}
+                        style={{
+                          maxHeight: "60vh",
+                          maxWidth: "100%",
+                          transform: `rotate(${rotation}deg)`,
+                        }}
                         src={`https://atd-vision-zero-website.s3.amazonaws.com/cr3_crash_diagrams/${s3Folder}/${props.cr3FileMetadata.diagram_s3_file}`}
                         alt="crash diagram"
                       />
-                    </Col>
-                  </Row>
-                </TransformComponent>
+                    </TransformComponent>
+                  </Col>
+                </Row>
               </>
             )}
           </TransformWrapper>
         ) : props.isTempRecord ? (
-          <div>
+          <div className="mt-2">
             CR-3 PDFs, diagrams and narratives are not available for temporary
             records. Using the case id, check the{" "}
             <a href={"https://cris.dot.state.tx.us/"} target={"_blank"}>
@@ -113,7 +117,7 @@ const CrashDiagram = props => {
             for the latest status of this crash.
           </div>
         ) : (
-          <div>
+          <div className="mt-2">
             The CR-3 file for this crash has not been imported, so there is no
             PDF, diagram or narrative available. Use Brazos to search for the
             associated CR-3 Crash Report.
@@ -121,13 +125,13 @@ const CrashDiagram = props => {
         )}
       </CardBody>
       {!!props.cr3FileMetadata && props.cr3FileMetadata.diagram_s3_file ? (
-        <CardFooter>
+        <CardFooter className="py-0">
           <form>
             <Row className="form-group d-flex align-items-center mb-0">
-              <Col md="2">
+              <Col md="3" className="d-flex justify-content-center mt-1">
                 <label htmlFor="formControlRange">Rotate Image:</label>
               </Col>
-              <Col md="8">
+              <Col md="6" className="d-flex justify-content-center mt-1">
                 <input
                   type="range"
                   min="-180"
@@ -138,7 +142,7 @@ const CrashDiagram = props => {
                   onChange={rotate}
                 ></input>
               </Col>
-              <Col className="d-flex justify-content-center" md="2">
+              <Col md="3" className="d-flex justify-content-center my-1">
                 <Button color="primary" onClick={resetRotate}>
                   Reset
                 </Button>
