@@ -108,7 +108,7 @@ const CrashDiagram = props => {
             )}
           </TransformWrapper>
         ) : props.isTempRecord ? (
-          <div>
+          <div className="mt-2">
             CR-3 PDFs, diagrams and narratives are not available for temporary
             records. Using the case id, check the{" "}
             <a href={"https://cris.dot.state.tx.us/"} target={"_blank"}>
@@ -117,7 +117,7 @@ const CrashDiagram = props => {
             for the latest status of this crash.
           </div>
         ) : (
-          <div>
+          <div className="mt-2">
             The CR-3 file for this crash has not been imported, so there is no
             PDF, diagram or narrative available. Use Brazos to search for the
             associated CR-3 Crash Report.
