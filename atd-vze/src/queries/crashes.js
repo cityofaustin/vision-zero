@@ -15,6 +15,7 @@ export const GET_CRASH = gql`
       atd_fatality_count
       case_id
       city_id
+      cr3_file_metadata
       cr3_stored_flag
       crash_date
       crash_fatal_fl
