@@ -63,8 +63,10 @@ browser.visit(ATD_ETL_CONFIG["ATD_CRIS_WEBSITE"])
 
 # Select the agency, then click Continue
 print("Filling out agency.")
-browser.find_by_id('idpSelectInput').fill('* Texas Department of Transportation')
 browser.find_by_id('idpSelectSelectButton').click()
+browser.find_by_id("idpSelectInput").fill(
+    "** Texas Department of Transportation - External Agencies"
+)
 
 # We log in
 print("Filling out credentials.")
