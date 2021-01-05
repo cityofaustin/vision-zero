@@ -79,6 +79,8 @@ print(
     "Selecting data extract request, from '%s' to '%s'"
     % (CRIS_EXTRACT_DATE_START, CRIS_EXTRACT_DATE_END)
 )
+
+wait(10)
 start_button = browser.find_by_text("Create Data Extract Request")
 start_button.click()
 wait(10)

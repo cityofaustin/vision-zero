@@ -41,8 +41,8 @@ start = time.time()
 # Report Dates
 date_now = datetime.datetime.now()
 date_month_ago = date_now + dateutil.relativedelta.relativedelta(days=-3)
-CRIS_EXTRACT_DATE_START=date_month_ago.strftime('%m/%d/%Y')
-CRIS_EXTRACT_DATE_END=date_now.strftime('%m/%d/%Y')
+CRIS_EXTRACT_DATE_START = date_month_ago.strftime("%m/%d/%Y")
+CRIS_EXTRACT_DATE_END = date_now.strftime("%m/%d/%Y")
 
 #
 # We need to initialize our browser with the following options
@@ -50,29 +50,34 @@ CRIS_EXTRACT_DATE_END=date_now.strftime('%m/%d/%Y')
 
 print("Initializing browser options.")
 chrome_options = Options()
-chrome_options.add_argument('--headless')  # We don't need to run xvfb (X Virtual Frame-buffer)
-chrome_options.add_argument('--no-sandbox')
-chrome_options.add_argument('--disable-dev-shm-usage')
-chrome_options.add_argument("--window-size=1920,1080")  # CRIS will not render in small resolutions
+chrome_options.add_argument(
+    "--headless"
+)  # We don't need to run xvfb (X Virtual Frame-buffer)
+chrome_options.add_argument("--no-sandbox")
+chrome_options.add_argument("--disable-dev-shm-usage")
+chrome_options.add_argument(
+    "--window-size=1920,1080"
+)  # CRIS will not render in small resolutions
 print("Initializing Chrome headless browser.")
-browser = Browser('chrome', options=chrome_options)
+browser = Browser("chrome", options=chrome_options)
 
-# Visit Chris
+# Visit CRIS
 print("Logging in to '%s'" % ATD_ETL_CONFIG["ATD_CRIS_WEBSITE"])
 browser.visit(ATD_ETL_CONFIG["ATD_CRIS_WEBSITE"])
 
 # Select the agency, then click Continue
 print("Filling out agency.")
-browser.find_by_id('idpSelectSelectButton').click()
 browser.find_by_id("idpSelectInput").fill(
     "** Texas Department of Transportation - External Agencies"
 )
+browser.find_by_id("idpSelectSelectButton").click()
 
 # We log in
 print("Filling out credentials.")
-browser.find_by_id('username').fill(ATD_ETL_CONFIG["ATD_CRIS_REQUEST_USERNAME"])
-browser.find_by_id('password').fill(ATD_ETL_CONFIG["ATD_CRIS_REQUEST_PASSWORD"])
-browser.find_by_name('_eventId_proceed').click()
+wait(10)
+browser.find_by_id("username").fill(ATD_ETL_CONFIG["ATD_CRIS_REQUEST_USERNAME"])
+browser.find_by_id("password").fill(ATD_ETL_CONFIG["ATD_CRIS_REQUEST_PASSWORD"])
+browser.find_by_name("_eventId_proceed").click()
 
 wait(5)
 
@@ -86,7 +91,9 @@ for email in email_file_list:
 for email_file in email_file_list:
     # Parse the file
     cris_email = parse_email(email_file)
-    cris_download_link, cris_download_token = extract_email_download_link(cris_email.body)
+    cris_download_link, cris_download_token = extract_email_download_link(
+        cris_email.body
+    )
     print("Loaded Email File: '%s'" % email_file)
     print("Body: %s" % cris_email.body)
     print("Url Download: '%s'" % cris_download_link)
@@ -96,8 +103,9 @@ for email_file in email_file_list:
         print("\n\nFailed to obtain file url from email.\n\n")
         continue
 
-    request_download_url = request_zip_file_url(cris_download_token,
-                                                cookies=browser.cookies.all())
+    request_download_url = request_zip_file_url(
+        cris_download_token, cookies=browser.cookies.all()
+    )
 
     if "error" in request_download_url:
         print(request_download_url)
@@ -131,6 +139,6 @@ for email_file in email_file_list:
 print("\nProcess done.")
 
 end = time.time()
-hours, rem = divmod(end-start, 3600)
+hours, rem = divmod(end - start, 3600)
 minutes, seconds = divmod(rem, 60)
-print("Finished in: {:0>2}:{:0>2}:{:05.2f}".format(int(hours),int(minutes),seconds))
+print("Finished in: {:0>2}:{:0>2}:{:05.2f}".format(int(hours), int(minutes), seconds))
