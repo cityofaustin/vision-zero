@@ -118,9 +118,8 @@ const CrashDiagram = props => {
           </div>
         ) : (
           <div className="mt-2">
-            The CR-3 file for this crash has not been imported, so there is no
-            PDF, diagram or narrative available. Use Brazos to search for the
-            associated CR-3 Crash Report.
+            The crash diagram and investigator narrative are not available
+            at this time.
           </div>
         )}
       </CardBody>
