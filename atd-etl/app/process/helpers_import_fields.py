@@ -107,6 +107,12 @@ CRIS_TXDOT_FIELDS = {
                 ]
             ]
         ]
+                    "pedestrian_action_id",
+                    "pedalcyclist_action_id",
+                    "pbcat_pedestrian_id",
+                    "pbcat_pedalcyclist_id",
+                    "e_scooter_id",
+                    "autonomous_unit_id",
     },
 
     "charges": {
