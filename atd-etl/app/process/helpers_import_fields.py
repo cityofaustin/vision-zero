@@ -6,10 +6,7 @@ CRIS_TXDOT_FIELDS = {
         "query_name": "insertCrashQuery",
         "function_name": "insert_atd_txdot_crashes",
         "filters": [
-            [
-              filter_remove_field,
-              []
-            ],
+            [filter_remove_field, []],
             [
                 filter_numeric_field,
                 [
@@ -104,22 +101,23 @@ CRIS_TXDOT_FIELDS = {
                     "est_econ_cost",
                     "apd_confirmed_death_count",
                     "speed_mgmt_points",
-                ]
-            ]
-        ]
+                ],
+            ],
+        ],
     },
-
     "charges": {
         "query_name": "insertChargeQuery",
         "function_name": "insert_atd_txdot_charges",
         "filters": [
             [filter_numeric_empty_to_zero, ["charge_cat_id"]],
             [filter_numeric_null_to_zero, ["charge_cat_id"]],
-            [filter_numeric_field, ["charge_id", "crash_id", "unit_nbr", "prsn_nbr", "charge_cat_id"]],
-            [filter_text_null_to_empty, ["citation_nbr"]]
-        ]
+            [
+                filter_numeric_field,
+                ["charge_id", "crash_id", "unit_nbr", "prsn_nbr", "charge_cat_id"],
+            ],
+            [filter_text_null_to_empty, ["citation_nbr"]],
+        ],
     },
-
     "unit": {
         "query_name": "insertUnitQuery",
         "function_name": "insert_atd_txdot_units",
@@ -141,8 +139,8 @@ CRIS_TXDOT_FIELDS = {
                     "trlr_type_id",
                     "trlr_disabling_dmag_id",
                     "cmv_intermodal_container_permit_fl",
-                    "cmv_actual_gross_weight"
-                ]
+                    "cmv_actual_gross_weight",
+                ],
             ],
             [
                 filter_numeric_field,
@@ -204,17 +202,28 @@ CRIS_TXDOT_FIELDS = {
                     "veh_damage_description2_id",
                     "veh_damage_severity2_id",
                     "veh_damage_direction_of_force2_id",
-                ]
+                    "pedestrian_action_id",
+                    "pedalcyclist_action_id",
+                    "pbcat_pedestrian_id",
+                    "pbcat_pedalcyclist_id",
+                    "e_scooter_id",
+                    "autonomous_unit_id",
+                ],
             ],
             [
                 filter_numeric_empty_to_null,
                 [
-                    "cmv_bus_type_id"
-                ]
+                    "cmv_bus_type_id",
+                    "pedestrian_action_id",
+                    "pedalcyclist_action_id",
+                    "pbcat_pedestrian_id",
+                    "pbcat_pedalcyclist_id",
+                    "e_scooter_id",
+                    "autonomous_unit_id",
+                ],
             ],
-        ]
+        ],
     },
-
     "person": {
         "query_name": "insertPersonQuery",
         "function_name": "insert_atd_txdot_person",
@@ -227,7 +236,7 @@ CRIS_TXDOT_FIELDS = {
                     "prsn_first_name",
                     "prsn_mid_name",
                     "prsn_name_sfx",
-                ]
+                ],
             ],
             [
                 filter_numeric_field,
@@ -258,11 +267,10 @@ CRIS_TXDOT_FIELDS = {
                     "death_cnt",
                     "person_id",
                     "years_of_life_lost",
-                ]
+                ],
             ],
-        ]
+        ],
     },
-
     "primaryperson": {
         "query_name": "insertPersonQuery",
         "function_name": "insert_atd_txdot_primaryperson",
@@ -283,7 +291,7 @@ CRIS_TXDOT_FIELDS = {
                     "drvr_street_name",
                     "drvr_street_sfx",
                     "drvr_apt_nbr",
-                ]
+                ],
             ],
             [
                 filter_numeric_field,
@@ -318,10 +326,10 @@ CRIS_TXDOT_FIELDS = {
                     "drvr_state_id",
                     "primaryperson_id",
                     "years_of_life_lost",
-                ]
+                ],
             ],
-        ]
-    }
+        ],
+    },
 }
 
 CRIS_TXDOT_COMPARE_FIELDS_LIST = [
