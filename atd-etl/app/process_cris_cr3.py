@@ -40,14 +40,16 @@ chrome_options.add_argument("--window-size=1920,1080")  # CRIS will not render i
 print("Initializing Chrome headless browser.")
 browser = Browser('chrome', options=chrome_options)
 
-# Visit Chris
+# Visit CRIS
 print("Logging in to '%s'" % ATD_ETL_CONFIG["ATD_CRIS_WEBSITE"])
 browser.visit(ATD_ETL_CONFIG["ATD_CRIS_WEBSITE"])
 
 # Select the agency, then click Continue
 print("Filling out agency.")
-browser.find_by_id('idpSelectInput').fill('* Texas Department of Transportation')
 browser.find_by_id('idpSelectSelectButton').click()
+browser.find_by_id("idpSelectInput").fill(
+    "** Texas Department of Transportation - External Agencies"
+)
 
 # We log in
 print("Filling out credentials.")
