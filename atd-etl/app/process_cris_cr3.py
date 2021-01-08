@@ -25,6 +25,12 @@ from process.helpers_cr3 import *
 from splinter import Browser
 from selenium.webdriver.chrome.options import Options
 
+
+def wait(int):
+    print("Should wait: %s" % str(int))
+    time.sleep(int)
+
+
 # Start timer
 start = time.time()
 
@@ -50,8 +56,10 @@ browser.find_by_id('idpSelectSelectButton').click()
 browser.find_by_id("idpSelectInput").fill(
     "** Texas Department of Transportation - External Agencies"
 )
+browser.find_by_id("idpSelectSelectButton").click()
 
 # We log in
+wait(10)
 print("Filling out credentials.")
 browser.find_by_id('username').fill(ATD_ETL_CONFIG["ATD_CRIS_USERNAME_CR3"])
 browser.find_by_id('password').fill(ATD_ETL_CONFIG["ATD_CRIS_PASSWORD_CR3"])
