@@ -25,6 +25,12 @@ from process.helpers_cr3 import *
 from splinter import Browser
 from selenium.webdriver.chrome.options import Options
 
+
+def wait(int):
+    print("Should wait: %s" % str(int))
+    time.sleep(int)
+
+
 # Start timer
 start = time.time()
 
@@ -40,16 +46,20 @@ chrome_options.add_argument("--window-size=1920,1080")  # CRIS will not render i
 print("Initializing Chrome headless browser.")
 browser = Browser('chrome', options=chrome_options)
 
-# Visit Chris
+# Visit CRIS
 print("Logging in to '%s'" % ATD_ETL_CONFIG["ATD_CRIS_WEBSITE"])
 browser.visit(ATD_ETL_CONFIG["ATD_CRIS_WEBSITE"])
 
 # Select the agency, then click Continue
 print("Filling out agency.")
-browser.find_by_id('idpSelectInput').fill('* Texas Department of Transportation')
 browser.find_by_id('idpSelectSelectButton').click()
+browser.find_by_id("idpSelectInput").fill(
+    "** Texas Department of Transportation - External Agencies"
+)
+browser.find_by_id("idpSelectSelectButton").click()
 
 # We log in
+wait(10)
 print("Filling out credentials.")
 browser.find_by_id('username').fill(ATD_ETL_CONFIG["ATD_CRIS_USERNAME_CR3"])
 browser.find_by_id('password').fill(ATD_ETL_CONFIG["ATD_CRIS_PASSWORD_CR3"])

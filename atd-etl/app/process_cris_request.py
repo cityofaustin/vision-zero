@@ -23,6 +23,7 @@ from process.helpers_cr3 import *
 #
 from splinter import Browser
 from selenium.webdriver.chrome.options import Options
+import web_pdb
 
 
 def wait(int):
@@ -55,13 +56,15 @@ chrome_options.add_argument(
 print("Initializing Chrome headless browser.")
 browser = Browser("chrome", options=chrome_options)
 
-# Visit Chris
+# Visit CRIS
 print("Logging in to '%s'" % ATD_ETL_CONFIG["ATD_CRIS_WEBSITE"])
 browser.visit(ATD_ETL_CONFIG["ATD_CRIS_WEBSITE"])
 
 # Select the agency, then click Continue
 print("Filling out agency.")
-browser.find_by_id("idpSelectInput").fill("* Texas Department of Transportation")
+browser.find_by_id("idpSelectInput").fill(
+    "** Texas Department of Transportation - External Agencies"
+)
 browser.find_by_id("idpSelectSelectButton").click()
 
 # We log in
@@ -76,6 +79,8 @@ print(
     "Selecting data extract request, from '%s' to '%s'"
     % (CRIS_EXTRACT_DATE_START, CRIS_EXTRACT_DATE_END)
 )
+
+wait(10)
 start_button = browser.find_by_text("Create Data Extract Request")
 start_button.click()
 wait(10)
@@ -84,26 +89,26 @@ browser.find_by_text("Next").click()
 wait(10)
 
 print("Selecting Counties to be Included in the Extract")
-browser.find_by_id('rdoCounties').click()
+browser.find_by_id("rdoCounties").click()
 # Open ng-select dropdown
-browser.find_by_id('requestCounties').click() 
+browser.find_by_id("requestCounties").click()
 
-browser.find_by_text('TRAVIS').click()
-
-# Reopen dropdown
-browser.find_by_id('requestCounties').click() 
-browser.find_by_text('WILLIAMSON').click()
+browser.find_by_text("TRAVIS").click()
 
 # Reopen dropdown
-browser.find_by_id('requestCounties').click() 
-browser.find_by_text('HAYS').click()
+browser.find_by_id("requestCounties").click()
+browser.find_by_text("WILLIAMSON").click()
+
+# Reopen dropdown
+browser.find_by_id("requestCounties").click()
+browser.find_by_text("HAYS").click()
 wait(3)
 
 browser.find_by_text("Next").click()
 wait(10)
 
 print("Selecting type IDS PROCESS")
-browser.find_by_id('rdoProcessDates').click()
+browser.find_by_id("rdoProcessDates").click()
 # browser.find_by_css('input[ng-value="shareConstants.DATE_TYPE_IDS.PROCESS"]').click()
 browser.find_by_id("requestDateProcessBegin").fill(CRIS_EXTRACT_DATE_START)
 browser.find_by_id("requestDateProcessEnd").fill(CRIS_EXTRACT_DATE_END)

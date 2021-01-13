@@ -40,7 +40,7 @@ export const GET_CRASH = gql`
       hwy_sys
       hwy_sys_2
       intrsct_relat_id
-      investigator_narrative
+      investigator_narrative_ocr
       is_retired
       last_update
       latitude

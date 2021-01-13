@@ -11,6 +11,7 @@ import { Auth0Provider, urlPath, onRedirectCallback } from "./auth/authContext";
 import { HashRouter } from "react-router-dom";
 import * as serviceWorker from "./serviceWorker";
 
+console.log("🤖 Release Drafter Test");
 // Setup Auth0 config for Auth0Provider component
 ReactDOM.render(
   <HashRouter history={history}>
