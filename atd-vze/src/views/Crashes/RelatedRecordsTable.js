@@ -69,7 +69,7 @@ const RelatedRecordsTable = ({
 
   const formatValue = (data, field) => {
     let fieldValue = data[field];
-    
+
     if (typeof data[field] === "object") {
       fieldValue =
         data[field] && data[field][fieldConfig.fields[field].lookup_desc];
