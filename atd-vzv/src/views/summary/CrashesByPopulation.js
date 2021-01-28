@@ -18,6 +18,8 @@ const CrashesByPopulation = () => {
 
   const url = `${crashEndpointUrl}?$query=`;
 
+  console.log(fiveYearAvgEndDate);
+
   useEffect(() => {
     const dateCondition = `crash_date BETWEEN '${dataStartDate.format(
       "YYYY-MM-DD"
