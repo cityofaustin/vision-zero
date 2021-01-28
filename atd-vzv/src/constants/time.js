@@ -60,7 +60,6 @@ export const fiveYearAvgStartDate = dataEndDate
   .startOf("year")
   .subtract(5, "year")
   .format("YYYY-MM-DD");
-
 export const fiveYearAvgEndDate = dataEndDate
   .clone()
   .add(1, "month")
