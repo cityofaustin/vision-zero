@@ -62,6 +62,13 @@ export const fiveYearAvgStartDate = dataEndDate
   .format("YYYY-MM-DD");
 export const fiveYearAvgEndDate = dataEndDate
   .clone()
+  .subtract(1, "year")
+  .endOf("year")
+  .format("YYYY-MM-DD");
+// Unique variable for the byPop chart that prevents the edge case
+// where the Feb. 1 query ends a year earlier than intended
+export const fiveYearAvgEndDateByPop = dataEndDate
+  .clone()
   .add(1, "month")
   .subtract(1, "year")
   .endOf("year")
