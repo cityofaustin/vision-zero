@@ -8,6 +8,8 @@ const propTypes = {
   header: PropTypes.string,
   mainText: PropTypes.string,
   icon: PropTypes.string,
+  raster_icon: PropTypes.string,
+  raster_icon_alt: PropTypes.string,
   color: PropTypes.string,
   variant: PropTypes.string,
   footer: PropTypes.bool,
@@ -22,6 +24,8 @@ const defaultProps = {
   header: "$1,999.50",
   mainText: "Income",
   icon: "fa fa-cogs",
+  raster_icon: null,
+  raster_icon_alt: null,
   color: "primary",
   variant: "0",
   link: "#",
@@ -36,6 +40,8 @@ class VZLinksWidget extends Component {
       header,
       mainText,
       icon,
+      raster_icon,
+      raster_icon_alt,
       color,
       footer,
       link,
@@ -57,7 +63,7 @@ class VZLinksWidget extends Component {
           }
         : { card: "p-0", icon: "p-4 px-5", lead: "pt-3" };
 
-    const card = { style: "clearfix", color: color, icon: icon, classes: "" };
+    const card = { style: "clearfix", color: color, icon: icon, raster_icon: raster_icon, raster_icon_alt: raster_icon_alt, classes: "" };
     card.classes = mapToCssModules(
       classNames(className, card.style, padding.card),
       cssModule
@@ -66,14 +72,15 @@ class VZLinksWidget extends Component {
     const lead = { style: "h5 mb-0", color: color, classes: "" };
     lead.classes = classNames(lead.style, "text-" + card.color, padding.lead);
 
-    const blockIcon = function(icon) {
+    const blockIcon = function(icon, raster_icon) {
       const classes = classNames(
-        icon,
+        raster_icon ? null : icon,
         "bg-" + card.color,
         padding.icon,
-        "font-2xl mr-3 float-left"
+        raster_icon ? null : "font-2xl",
+         "mr-3 float-left"
       );
-      return <i className={classes}></i>;
+      return <i className={classes}>{raster_icon ? <img src={raster_icon} alt={raster_icon_alt} /> : null}</i>;
     };
 
     const cardFooter = function() {
@@ -95,7 +102,7 @@ class VZLinksWidget extends Component {
     return (
       <Card>
         <CardBody className={card.classes} {...attributes}>
-          {blockIcon(card.icon)}
+          {blockIcon(card.icon, card.raster_icon)}
           <div className={lead.classes}>
             <a target={target} href={link}>
               {header}
