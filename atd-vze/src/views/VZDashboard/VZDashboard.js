@@ -33,13 +33,10 @@ function VZDashboard() {
     apd_confirmed_death_count: deathCount,
   } = data.fatalities.aggregate.sum;
 
-  //const { count: crashesCount } = data.seriousInjuriesAndTotal.aggregate;
-
   const yearsOfLifeLostYTD =
     yearsOfLifeLostPrimaryPerson + yearsOfLifeLostPerson;
   const fatalitiesYTD = deathCount;
   const seriousInjuriesYTD = seriousInjuryCount;
-  //const crashesYTD = crashesCount;
 
   // Widget02 expects a string value, DB returns number or null
   const commaSeparator = number =>
@@ -72,16 +69,6 @@ function VZDashboard() {
             color="info"
           />
         </Col>
-        {/*
-          <Col xs="12" sm="6" md="4">
-            <Widget02
-              header={commaSeparator(crashesYTD)}
-              mainText={`Crashes in ${year}`}
-              icon="fa fa-car"
-              color="warning"
-            />
-          </Col>
-        */}
       </Row>
       <Row>
         <Col className="ml-1">
