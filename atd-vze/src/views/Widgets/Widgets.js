@@ -4,6 +4,7 @@ import Widget01 from "./Widget01";
 import Widget02 from "./Widget02";
 import Widget03 from "./Widget03";
 import Widget04 from "./Widget04";
+import VZLinksWidget from "./VZLinksWidget";
 import { Line } from "react-chartjs-2";
 
 // Brand Card Chart
@@ -487,6 +488,15 @@ class Widgets extends Component {
             >
               Comments
             </Widget04>
+
+            <VZLinksWidget
+              header={`Name of resouce`}
+              mainText={`Description of resource`}
+              icon="fa fa-arrows"
+              color="success"
+              link="https://austintexas.gov"
+              target='_new'
+             />
           </Col>
         </Row>
       </div>
