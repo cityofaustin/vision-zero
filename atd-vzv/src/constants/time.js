@@ -6,7 +6,7 @@ export const ROLLING_YEARS_OF_DATA = 4;
 // Number of months window slides in the past (to display most accurate data)
 // Accommodate for a preview instance that provide and extra month of data
 export const MONTHS_AGO =
-  process.env.REACT_APP_VZV_ENVIRONMENT === "PREVIEW" ? 1 : 2;
+  process.env.REACT_APP_VZV_ENVIRONMENT === "PREVIEW" ? 1 : 1;
 
 // Create array of ints of last n years
 export const yearsArray = () => {
@@ -62,14 +62,6 @@ export const fiveYearAvgStartDate = dataEndDate
   .format("YYYY-MM-DD");
 export const fiveYearAvgEndDate = dataEndDate
   .clone()
-  .subtract(1, "year")
-  .endOf("year")
-  .format("YYYY-MM-DD");
-// Unique variable for the byPop chart that prevents the edge case
-// where the Feb. 1 query ends a year earlier than intended
-export const fiveYearAvgEndDateByPop = dataEndDate
-  .clone()
-  .add(1, "month")
   .subtract(1, "year")
   .endOf("year")
   .format("YYYY-MM-DD");

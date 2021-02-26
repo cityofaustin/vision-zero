@@ -8,7 +8,7 @@ import CrashTypeSelector from "./Components/CrashTypeSelector";
 import InfoPopover from "../../Components/Popover/InfoPopover";
 import { popoverConfig } from "../../Components/Popover/popoverConfig";
 import { crashEndpointUrl } from "./queries/socrataQueries";
-import { dataStartDate, fiveYearAvgEndDateByPop } from "../../constants/time";
+import { dataStartDate, dataEndDate } from "../../constants/time";
 import { popEsts } from "../../constants/popEsts";
 import { colors } from "../../constants/colors";
 
@@ -21,7 +21,7 @@ const CrashesByPopulation = () => {
   useEffect(() => {
     const dateCondition = `crash_date BETWEEN '${dataStartDate.format(
       "YYYY-MM-DD"
-    )}T00:00:00' and '${fiveYearAvgEndDateByPop}T23:59:59'`;
+    )}T00:00:00' and '${dataEndDate.format("YYYY-MM-DD")}T23:59:59'`;
     const queryGroupAndOrder = `GROUP BY year ORDER BY year`;
 
     const queries = {
