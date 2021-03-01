@@ -142,7 +142,7 @@ const RelatedRecordsTable = ({
                                 defaultValue={
                                   // Check for null values and display as blank
                                   row[field] &&
-                                  row[field][`${fieldLookupPrefix}_id`]
+                                  row[field][`${fieldLookupPrefix}_id`] !== null
                                     ? row[field][`${fieldLookupPrefix}_id`]
                                     : ""
                                 }
