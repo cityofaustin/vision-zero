@@ -8,6 +8,8 @@ import logo from "./coa_seal_transparent_white.png";
 
 let pckg = require("../../../package.json");
 
+console.log(pckg.version);
+
 const Footer = () => {
   const StyledFooter = styled.div`
     color: ${colors.light};
