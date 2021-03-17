@@ -13,11 +13,22 @@ The application requires the requests library:
 import requests
 import base64
 import subprocess
+import time
 
 
 # We need to import our configuration, and the run_query method
 from .config import ATD_ETL_CONFIG
 from .request import run_query
+
+
+def wait(int):
+    """
+    Waits int number of seconds
+    :param integer int: The number of seconds to wait
+    :return:
+    """
+    print("Should wait: %s" % str(int))
+    time.sleep(int)
 
 
 def run_command(command):
