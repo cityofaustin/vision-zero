@@ -49,11 +49,6 @@ export const crashDataMap = [
         lookupOptions: "atd_txdot__collsn_lkp",
         lookupPrefix: "collsn", // We need this field so we can reference the collsn_id & collsn_desc fields in the lookup table
       },
-      investigator_narrative: {
-        label: "Investigator Narrative",
-        editable: true,
-        uiType: "text",
-      },
       city_id: {
         label: "City",
         editable: true,
