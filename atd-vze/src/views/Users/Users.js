@@ -39,6 +39,8 @@ const UserRow = ({ user }) => {
         <Link to={userLink}>{user.email}</Link>
       </td>
       <td>{moment(user.created_at).format("MM/DD/YYYY")}</td>
+      <td>{user.logins_count}</td>
+      <td>{moment(user.last_login).format("MM/DD/YYYY")}</td>
       <td>{rules[user.app_metadata.roles[0]].label}</td>
       <td>
         <Link to={userLink}>
@@ -99,6 +101,8 @@ const Users = () => {
                           <th scope="col">Name</th>
                           <th scope="col">Email</th>
                           <th scope="col">Created</th>
+                          <th scope="col">Logins Count</th>
+                          <th scope="col">Last Login</th>
                           <th scope="col">Role</th>
                           <th scope="col">Status</th>
                         </tr>
