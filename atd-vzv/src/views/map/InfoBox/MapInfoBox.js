@@ -8,7 +8,6 @@ import { StyledMobileInfo, setPopupPosition } from "./infoBoxStyles";
 const MapInfoBox = ({
   selectedFeature,
   setSelectedFeature,
-  isTablet,
   type, // id of feature layer
 }) => {
   const popupInfo = selectedFeature && selectedFeature.properties;
@@ -70,25 +69,6 @@ const MapInfoBox = ({
       </StyledPopup>
     )
   );
-  // return (
-  //   popupInfo &&
-  //   (isTablet ? (
-  //     <StyledPopup>
-  //       <Popup
-  //         tipSize={10}
-  //         anchor="top"
-  //         longitude={parseFloat(popupInfo.longitude)}
-  //         latitude={parseFloat(popupInfo.latitude)}
-  //         onClose={() => setSelectedFeature(null)}
-  //         dynamicPosition={false} // Set popup position with StyledPopup
-  //       >
-  //         <StyledMobileInfo>{infoCard}</StyledMobileInfo>
-  //       </Popup>
-  //     </StyledPopup>
-  //   ) : (
-  //     <StyledDesktopInfo>{infoCard}</StyledDesktopInfo>
-  //   ))
-  // );
 };
 
 export default MapInfoBox;
