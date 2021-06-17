@@ -234,7 +234,7 @@ const Map = () => {
         },
       };
     }
-
+    console.log(selectedFeature);
     setSelectedFeature(selectedFeature);
   };
 
@@ -305,8 +305,8 @@ const Map = () => {
       mapboxApiAccessToken={MAPBOX_TOKEN}
       getCursor={_getCursor}
       interactiveLayerIds={interactiveLayerIds}
-      onHover={!isTablet ? _onSelectCrashPoint : null}
-      onClick={isTablet ? _onSelectCrashPoint : null}
+      // onHover={!isTablet ? _onSelectCrashPoint : null}
+      onClick={_onSelectCrashPoint}
       ref={(ref) => (mapRef.current = ref && ref.getMap())}
     >
       {/* Provide empty source and layer as target for beforeId params to set order of layers */}

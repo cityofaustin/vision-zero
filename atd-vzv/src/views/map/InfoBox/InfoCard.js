@@ -7,7 +7,7 @@ export default class InfoCard extends PureComponent {
     const { content } = this.props;
 
     return (
-      <Card className="p-1">
+      <Card className="p-2 m-1">
         <Table borderless size="sm" className="mt-0 mb-0">
           <tbody>
             {content.map((item) => (
