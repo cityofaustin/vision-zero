@@ -235,6 +235,7 @@ const Map = () => {
       };
     }
     console.log(selectedFeature);
+    console.log(mapData);
     setSelectedFeature(selectedFeature);
   };
 
@@ -268,6 +269,31 @@ const Map = () => {
       </>
     );
     return bothLayers;
+  };
+
+  const layerStyle = {
+    id: "point",
+    type: "circle",
+    paint: {
+      "circle-radius": 10,
+      "circle-color": "#007cbf",
+    },
+  };
+
+  const renderSelectedLayer = () => {
+    const type =
+      selectedFeature.layer.id === "fatalities" ? "fatalities" : "injuries";
+    const crashId = selectedFeature.properties.crash_id;
+    const selectedCrash = mapData[type].features.find(
+      (crash) => crash.properties.crash_id.toString() === crashId
+    );
+
+    const selectedLayer = (
+      <Source id="selectedCrash" type="geojson" data={selectedCrash}>
+        <Layer {...layerStyle} />
+      </Source>
+    );
+    return selectedLayer;
   };
 
   // Show/hide type layers based on isMapTypeSet state in Context
@@ -313,6 +339,7 @@ const Map = () => {
       {baseSourceAndLayer}
       {/* Crash Data Points */}
       {!!mapData && renderCrashDataLayers()}
+      {selectedFeature && renderSelectedLayer()}
       {/* ASMP Street Level Layers */}
       {buildAsmpLayers(asmpConfig, overlay)}
       {/* High Injury Network Layer */}
