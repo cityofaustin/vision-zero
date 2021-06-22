@@ -21,6 +21,7 @@ import {
 } from "./map-style";
 import axios from "axios";
 import { useIsTablet } from "../../constants/responsive";
+import AnimatedIcon from "./AnimatedIcon";
 
 import "mapbox-gl/dist/mapbox-gl.css";
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css"; // Get out-of-the-box icons
@@ -271,26 +272,41 @@ const Map = () => {
     return bothLayers;
   };
 
-  const layerStyle = {
-    id: "point",
-    type: "circle",
-    paint: {
-      "circle-radius": 10,
-      "circle-color": "#007cbf",
-    },
-  };
+  function pointOnCircle() {
+    return {
+      type: "Point",
+      coordinates: [
+        selectedFeature.properties.longitude,
+        selectedFeature.properties.latitude,
+      ],
+    };
+  }
+
+  const [pointData, setPointData] = useState(null);
+
+  useEffect(() => {
+    const animation = window.requestAnimationFrame(() => {
+      if (selectedFeature) return setPointData(pointOnCircle());
+    });
+    return () => window.cancelAnimationFrame(animation);
+  });
 
   const renderSelectedLayer = () => {
     const type =
       selectedFeature.layer.id === "fatalities" ? "fatalities" : "injuries";
     const crashId = selectedFeature.properties.crash_id;
     const selectedCrash = mapData[type].features.find(
-      (crash) => crash.properties.crash_id.toString() === crashId
+      (crash) => crash.properties.crash_id === crashId
     );
 
     const selectedLayer = (
       <Source id="selectedCrash" type="geojson" data={selectedCrash}>
-        <Layer {...layerStyle} />
+        <AnimatedIcon
+          location={{
+            x: parseFloat(selectedCrash.properties.longitude),
+            y: parseFloat(selectedCrash.properties.latitude),
+          }}
+        />
       </Source>
     );
     return selectedLayer;
