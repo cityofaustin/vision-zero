@@ -284,12 +284,12 @@ const Map = () => {
 
   const [pointData, setPointData] = useState(null);
 
-  useEffect(() => {
-    const animation = window.requestAnimationFrame(() => {
-      if (selectedFeature) return setPointData(pointOnCircle());
-    });
-    return () => window.cancelAnimationFrame(animation);
-  });
+  // useEffect(() => {
+  //   const animation = window.requestAnimationFrame(() => {
+  //     if (selectedFeature) return setPointData(pointOnCircle());
+  //   });
+  //   return () => window.cancelAnimationFrame(animation);
+  // });
 
   const renderSelectedLayer = () => {
     const type =
