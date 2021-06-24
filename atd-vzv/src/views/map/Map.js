@@ -279,13 +279,6 @@ const Map = () => {
   });
 
   const renderSelectedLayer = () => {
-    const type =
-      selectedFeature.layer.id === "fatalities" ? "fatalities" : "injuries";
-    const crashId = selectedFeature.properties.crash_id;
-    const selectedCrash = mapData[type].features.find(
-      (crash) => crash.properties.crash_id === crashId
-    );
-
     const color = {
       r: selectedFeature.layer.paint["circle-color"].r * 255,
       g: selectedFeature.layer.paint["circle-color"].g * 255,
@@ -294,11 +287,11 @@ const Map = () => {
     };
 
     const selectedLayer = (
-      <Source id="selectedCrash" type="geojson" data={selectedCrash}>
+      <Source id="selectedCrash" type="geojson" data={selectedFeature}>
         <AnimatedIcon
           location={{
-            x: parseFloat(selectedCrash.properties.longitude),
-            y: parseFloat(selectedCrash.properties.latitude),
+            x: parseFloat(selectedFeature.properties.longitude),
+            y: parseFloat(selectedFeature.properties.latitude),
           }}
           paint={color}
         />
