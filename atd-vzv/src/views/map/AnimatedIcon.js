@@ -17,7 +17,7 @@ const AnimatedIcon = ({ location, paint }) => {
     ctx.clearRect(0, 0, width, height);
     ctx.beginPath();
     ctx.arc(coordinates[0], coordinates[1], outerRadius, 0, Math.PI * 2);
-    ctx.fillStyle = "rgba(255, 200, 200," + (1 - t) + ")";
+    ctx.fillStyle = `rgba(${paint.r}, ${paint.g}, ${paint.b}, ${1 - t})`;
     ctx.fill();
 
     // Draw the inner circle.
