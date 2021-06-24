@@ -59,6 +59,7 @@ const Map = () => {
   const [cityCouncilOverlay, setCityCouncilOverlay] = useState(null);
   const [isMapDataLoading, setIsMapDataLoading] = useState(false);
   const [crashCounts, setCrashCounts] = useState(null);
+  const [, setPointData] = useState(null);
 
   const {
     mapFilters: [filters],
@@ -188,7 +189,6 @@ const Map = () => {
       )
         return;
     }
-
     const { features } = event;
     // Filter feature to set in state and set hierarchy
     let selectedFeature =
@@ -272,8 +272,6 @@ const Map = () => {
     return bothLayers;
   };
 
-  const [, setPointData] = useState(null);
-
   useEffect(() => {
     const animation = window.requestAnimationFrame(() => {
       if (selectedFeature) setPointData({});
@@ -289,6 +287,13 @@ const Map = () => {
       (crash) => crash.properties.crash_id === crashId
     );
 
+    const color = {
+      r: selectedFeature.layer.paint["circle-color"].r * 255,
+      g: selectedFeature.layer.paint["circle-color"].g * 255,
+      b: selectedFeature.layer.paint["circle-color"].b * 255,
+      a: selectedFeature.layer.paint["circle-color"].a,
+    };
+
     const selectedLayer = (
       <Source id="selectedCrash" type="geojson" data={selectedCrash}>
         <AnimatedIcon
@@ -296,6 +301,7 @@ const Map = () => {
             x: parseFloat(selectedCrash.properties.longitude),
             y: parseFloat(selectedCrash.properties.latitude),
           }}
+          paint={color}
         />
       </Source>
     );
