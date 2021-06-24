@@ -1,8 +1,14 @@
 import * as React from "react";
 import { PureComponent } from "react";
-import { Card, Table, Button, UncontrolledPopover, PopoverBody } from "reactstrap";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faClipboard } from '@fortawesome/free-solid-svg-icons'
+import {
+  Card,
+  Table,
+  Button,
+  UncontrolledPopover,
+  PopoverBody,
+} from "reactstrap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faClipboard } from "@fortawesome/free-solid-svg-icons";
 import styled from "styled-components";
 
 const StyledTableRow = styled.tr`
@@ -19,24 +25,47 @@ export default class InfoCard extends PureComponent {
       <Card className="p-2 m-1">
         <Table borderless size="sm" className="mt-0 mb-0">
           <tbody>
-            {content.map((item) =>  (
+            {content.map((item) => (
               <StyledTableRow key={item.title}>
-                <th className="align" scope="row">{item.title}</th>
-                <td className="align" >{item.content}</td>
-                {item.title === 'Crash ID' ? 
-                  <td className="align" >
-                    <Button id="PopoverFocus" color="link" onClick={() => {navigator.clipboard.writeText(item.content)}}>
+                <th className="align" scope="row">
+                  {item.title}
+                </th>
+                <td className="align">{item.content}</td>
+                {item.title === "Crash ID" ? (
+                  <td className="align">
+                    <Button
+                      id="PopoverFocus"
+                      style={{
+                        boxShadow: "none",
+                        width: "30px",
+                        height: "30px",
+                        padding: "6px 0px",
+                        borderRadius: "15px",
+                        textAlign: "center",
+                        fontSize: "12px",
+                        lineHeight: 1.42857,
+                      }}
+                      color="info"
+                      outline={false}
+                      onClick={() => {
+                        navigator.clipboard.writeText(item.content);
+                      }}
+                    >
                       <FontAwesomeIcon icon={faClipboard} />
                     </Button>
-                  </td> 
-                  : null }
+                  </td>
+                ) : null}
               </StyledTableRow>
             ))}
           </tbody>
         </Table>
-        <UncontrolledPopover trigger="focus" placement="top" target="PopoverFocus">
-        <PopoverBody>Copied</PopoverBody>
-      </UncontrolledPopover>
+        <UncontrolledPopover
+          trigger="focus"
+          placement="top"
+          target="PopoverFocus"
+        >
+          <PopoverBody>Copied</PopoverBody>
+        </UncontrolledPopover>
       </Card>
     );
   }

@@ -272,24 +272,14 @@ const Map = () => {
     return bothLayers;
   };
 
-  function pointOnCircle() {
-    return {
-      type: "Point",
-      coordinates: [
-        selectedFeature.properties.longitude,
-        selectedFeature.properties.latitude,
-      ],
-    };
-  }
+  const [, setPointData] = useState(null);
 
-  const [pointData, setPointData] = useState(null);
-
-  // useEffect(() => {
-  //   const animation = window.requestAnimationFrame(() => {
-  //     if (selectedFeature) return setPointData(pointOnCircle());
-  //   });
-  //   return () => window.cancelAnimationFrame(animation);
-  // });
+  useEffect(() => {
+    const animation = window.requestAnimationFrame(() => {
+      if (selectedFeature) setPointData({});
+    });
+    return () => window.cancelAnimationFrame(animation);
+  });
 
   const renderSelectedLayer = () => {
     const type =
