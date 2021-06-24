@@ -235,8 +235,7 @@ const Map = () => {
         },
       };
     }
-    console.log(selectedFeature);
-    console.log(mapData);
+
     setSelectedFeature(selectedFeature);
   };
 
