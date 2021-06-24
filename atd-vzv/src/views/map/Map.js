@@ -342,7 +342,6 @@ const Map = () => {
       mapboxApiAccessToken={MAPBOX_TOKEN}
       getCursor={_getCursor}
       interactiveLayerIds={interactiveLayerIds}
-      // onHover={!isTablet ? _onSelectCrashPoint : null}
       onClick={_onSelectCrashPoint}
       ref={(ref) => (mapRef.current = ref && ref.getMap())}
     >
