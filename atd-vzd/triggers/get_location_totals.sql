@@ -38,7 +38,7 @@ FROM
     SELECT
       atdl.location_id AS location_id,
       count(atdbf) AS total_crashes,
-      coalesce((count(1) * cost_per_crash), 0) AS est_comp_cost
+      coalesce((count(atdbf) * cost_per_crash), 0) AS est_comp_cost
     FROM
       atd_txdot_locations AS atdl
       LEFT JOIN atd_apd_blueform AS atdbf ON (
