@@ -13,7 +13,7 @@ with
   ),
   cr3 as (
     select count(atc.crash_id) as total_crashes,
-    sum(est_crash_based_comp_cost) as est_comp_cost
+    sum(est_comp_cost) as est_comp_cost
     from atd_txdot_crashes atc
     where atc.location_id = cr3_location
     and atc.crash_date >= cr3_crash_date
