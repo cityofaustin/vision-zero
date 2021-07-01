@@ -1,17 +1,18 @@
 import React from "react";
 import { CanvasOverlay } from "react-map-gl";
 
+const SIZE = 66.6667;
+const DURATION = 1000;
+
 const AnimatedIcon = ({ location, paint }) => {
   const { x, y } = location;
   const _redraw = ({ width, height, ctx, project }) => {
     const coordinates = project([x, y]);
 
-    var size = 66.6667;
-    var duration = 1000;
-    var t = (performance.now() % duration) / duration;
+    const t = (performance.now() % DURATION) / DURATION;
 
-    var radius = (size / 2) * 0.3;
-    var outerRadius = (size / 2) * 0.7 * t + radius;
+    const radius = (SIZE / 2) * 0.3;
+    const outerRadius = (SIZE / 2) * 0.7 * t + radius;
 
     // Draw the outer circle.
     ctx.clearRect(0, 0, width, height);
