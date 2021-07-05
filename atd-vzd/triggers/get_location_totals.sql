@@ -35,7 +35,10 @@ WITH
   -- for CR3 crashes. 
   cr3 AS (
     SELECT COUNT(atc.crash_id) AS total_crashes,
-      SUM(est_comp_cost) AS est_comp_cost
+      -- In the case of no CR3 crashes, the SUM() returns null,
+      -- which in turn causes 'total_est_comp_cost' to be null
+      -- in the main query, as INT + null = null.
+      COALESCE(SUM(est_comp_cost),0) AS est_comp_cost
     FROM atd_txdot_crashes atc
     WHERE atc.location_id = cr3_location
       AND atc.crash_date >= cr3_crash_date
