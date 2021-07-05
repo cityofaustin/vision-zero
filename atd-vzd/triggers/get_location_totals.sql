@@ -2,8 +2,7 @@ CREATE OR REPLACE FUNCTION public.get_location_totals(
   cr3_crash_date    date, 
   noncr3_crash_date date, 
   cr3_location      character varying, 
-  noncr3_location   character varying, 
-  cost_per_crash    numeric
+  noncr3_location   character varying
   ) RETURNS SETOF atd_location_crash_and_cost_totals
  LANGUAGE sql STABLE
   AS $function$
@@ -25,7 +24,9 @@ WITH
   -- only return a single row under any circumstances.
   noncr3 AS (
     SELECT COUNT(aab.case_id) AS total_crashes,
-      COUNT(aab.case_id) * cost_per_crash AS est_comp_cost
+      COUNT(aab.case_id) *
+        (select est_comp_cost_amount from atd_txdot__est_comp_cost where est_comp_cost_id = 6)
+      AS est_comp_cost
     FROM atd_apd_blueform aab
     WHERE aab.location_id = noncr3_location
       AND aab.date >= noncr3_crash_date
