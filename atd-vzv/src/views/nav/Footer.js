@@ -83,8 +83,7 @@ const Footer = () => {
   const footerLinks = [
     {
       text: "Data",
-      url:
-        "https://data.austintexas.gov/Transportation-and-Mobility/Vision-Zero-Crash-Report-Data/y2wy-tgr5/data",
+      url: "https://data.austintexas.gov/browse?q=vision%20zero%20crash%20report%20data&sortBy=relevance",
     },
     {
       text: "Code",
