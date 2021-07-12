@@ -22,7 +22,7 @@
     "apollo-boost": "^0.4.4",
     "axios": "^0.21.1",
     "bootstrap": "^4.3.1",
-    "chart.js": "^2.8.0",
+    "chart.js": "^2.9.4",
     "classnames": "^2.2.6",
     "core-js": "^3.1.4",
     "env-cmd": "^10.0.1",
