@@ -1,4 +1,4 @@
-create function atd_txdot_crashes_updates_audit_log() returns trigger
+create or replace function atd_txdot_crashes_updates_audit_log() returns trigger
     language plpgsql
 as
 $$
@@ -141,12 +141,6 @@ BEGIN
     NEW.atd_mode_category_metadata = get_crash_modes(NEW.crash_id);
     --- END OF MODE CATEGORY DATA ---
 
-    -- Record the current timestamp
-    NEW.last_update = current_timestamp;
-    RETURN NEW;
-
-    --- END OF MODE CATEGORY DATA ---
-
     ------------------------------------------------------------------------------------------
     -- AUSTIN FULL PURPOSE
     ------------------------------------------------------------------------------------------
@@ -155,6 +149,10 @@ BEGIN
         NEW.austin_full_purpose = 'Y';
 	END IF;    
     --- END OF AUSTIN FULL PURPOSE ---
+
+    -- Record the current timestamp
+    NEW.last_update = current_timestamp;
+    RETURN NEW;
 END;
 $$;
 
