@@ -152,11 +152,8 @@ BEGIN
     ------------------------------------------------------------------------------------------
 	-- Set Austin Full Purpose to Y (TRUE) when it has Austin City ID and no coordinates.
     IF (NEW.position IS NULL and NEW.city_id = 22) THEN
-        NEW.austin_full_purpose = 'Y'
-	END IF;
-
-    NEW
-    
+        NEW.austin_full_purpose = 'Y';
+	END IF;    
     --- END OF AUSTIN FULL PURPOSE ---
 END;
 $$;
