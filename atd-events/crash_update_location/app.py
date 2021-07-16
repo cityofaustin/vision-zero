@@ -11,7 +11,7 @@ from typing import Optional
 HASURA_ADMIN_SECRET = os.getenv("HASURA_ADMIN_SECRET", "")
 HASURA_ENDPOINT = os.getenv("HASURA_ENDPOINT", "")
 HASURA_EVENT_API = os.getenv("HASURA_EVENT_API", "")
-HASURA_SSL_VERIFY = True# Set False for local hasura with self-generated SSL cert
+HASURA_SSL_VERIFY = True # Set False for local hasura with self-generated SSL cert
 
 # Prep Hasura query
 HEADERS = {
@@ -374,7 +374,7 @@ def handler(event, context):
 
 
 
-# Work-around to test easily on the command line
+# Mechanism to test easily on the command line
 
 #if __name__ == "__main__":
     #event = {'Records': [{'body': """ { "event": { "data": { "old": null, "new": {
