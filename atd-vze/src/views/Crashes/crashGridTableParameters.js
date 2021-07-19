@@ -141,7 +141,8 @@ export const crashGridTableAdvancedFilters = {
             },
           }, ],
         },
-      },{
+      },
+      {
         id: "dni_cris_deaths",
         label: "CRIS Fatality Crashes",
         filter: {
