@@ -427,15 +427,31 @@ gqlAbstractTableAggregateName (
   loadFilters(filters, filtersState) {
     for (let group in filters) {
       for (let filter of filters[group]["filters"]) {
-        for (let filterItem of filter.filter["where"]) {
-          for (let [key, syntax] of this.getEntries(filterItem)) {
-            // If enabled, add to the list or remove it from the query.
-            if (filtersState[filter.id]) {
-              key === "or"
-                ? this.setOr(Object.keys(syntax), Object.values(syntax))
-                : this.setWhere(key, syntax);
-            } else {
-              key === "or" ? this.deleteOr(syntax) : this.deleteWhere(key);
+        if (filter.filter.hasOwnProperty('where')) {
+          for (let filterItem of filter.filter["where"]) {
+            for (let [key, syntax] of this.getEntries(filterItem)) {
+              // If enabled, add to the list or remove it from the query.
+              if (filtersState[filter.id]) {
+                key === "or"
+                  ? this.setOr(Object.keys(syntax), Object.values(syntax))
+                  : this.setWhere(key, syntax);
+              } else {
+                key === "or" ? this.deleteOr(syntax) : this.deleteWhere(key);
+              }
+            }
+          }
+        }
+        if (filter.filter.hasOwnProperty('where_false')) {
+          for (let filterItem of filter.filter["where_false"]) {
+            for (let [key, syntax] of this.getEntries(filterItem)) {
+              // If disabled, add to the list or remove it from the query.
+              if (!filtersState[filter.id]) {
+                key === "or"
+                  ? this.setOr(Object.keys(syntax), Object.values(syntax))
+                  : this.setWhere(key, syntax);
+              } else {
+                key === "or" ? this.deleteOr(syntax) : this.deleteWhere(key);
+              }
             }
           }
         }
