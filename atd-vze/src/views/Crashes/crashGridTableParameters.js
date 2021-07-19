@@ -225,6 +225,16 @@ export const crashGridTableAdvancedFilters = {
           ],
         },
       },
+      {
+        id: "geo_afd",
+        label: "Include Outside Austin Full Purpose",
+        filter: {
+          where_false: [{
+            austin_full_purpose: '_eq: "Y"',
+            },
+          ],
+        },
+      },
     ],
   },
   groupUnitTypes: {
