@@ -153,6 +153,15 @@ BEGIN
     NEW.atd_mode_category_metadata = get_crash_modes(NEW.crash_id);
     --- END OF MODE CATEGORY DATA ---
 
+    ------------------------------------------------------------------------------------------
+    -- AUSTIN FULL PURPOSE
+    ------------------------------------------------------------------------------------------
+    -- Set Austin Full Purpose to Y (TRUE) when it has Austin City ID and no coordinates.
+    IF (NEW.position IS NULL and NEW.city_id = 22) THEN
+        NEW.austin_full_purpose = 'Y';
+    END IF;
+    --- END OF AUSTIN FULL PURPOSE ---
+
     -- Record the current timestamp
     NEW.last_update = current_timestamp;
     RETURN NEW;
