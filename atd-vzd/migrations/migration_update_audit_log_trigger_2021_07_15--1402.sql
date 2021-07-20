@@ -1,6 +1,3 @@
--- To extend the atd_txdot_crashes_updates_audit_log() function, we must first drop the trigger which invokes it.
-drop trigger if exists atd_txdot_crashes_audit_log on atd_txdot_crashes;
-
 -- Augment the atd_txdot_crashes_update_audit_log() function to compute and store the crash based comprehensive cost
 -- This updated version of the function is also found in atd-vzd/triggers/atd_txdot_crashes_updates_audit_log.sql
 create or replace function atd_txdot_crashes_updates_audit_log() returns trigger
@@ -156,6 +153,15 @@ BEGIN
     NEW.atd_mode_category_metadata = get_crash_modes(NEW.crash_id);
     --- END OF MODE CATEGORY DATA ---
 
+    ------------------------------------------------------------------------------------------
+    -- AUSTIN FULL PURPOSE
+    ------------------------------------------------------------------------------------------
+    -- Set Austin Full Purpose to Y (TRUE) when it has Austin City ID and no coordinates.
+    IF (NEW.position IS NULL and NEW.city_id = 22) THEN
+        NEW.austin_full_purpose = 'Y';
+    END IF;
+    --- END OF AUSTIN FULL PURPOSE ---
+
     -- Record the current timestamp
     NEW.last_update = current_timestamp;
     RETURN NEW;
@@ -164,7 +170,3 @@ $$;
 
 -- set ownership if needed
 alter function atd_txdot_crashes_updates_audit_log() owner to atd_vz_data;
-
--- replace the trigger to invoke the function on upsert
-create trigger atd_txdot_crashes_audit_log before insert or update on
-    public.atd_txdot_crashes for each row execute function atd_txdot_crashes_updates_audit_log();
