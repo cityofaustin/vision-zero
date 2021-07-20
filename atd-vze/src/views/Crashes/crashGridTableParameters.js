@@ -229,8 +229,9 @@ export const crashGridTableAdvancedFilters = {
       {
         id: "geo_afd",
         label: "Include Outside Austin Full Purpose",
+        invert_toggle_state: true,
         filter: {
-          where_false: [{
+          where: [{
             austin_full_purpose: '_eq: "Y"',
             },
           ],
