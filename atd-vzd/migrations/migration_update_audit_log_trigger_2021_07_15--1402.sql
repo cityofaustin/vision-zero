@@ -1,6 +1,3 @@
--- To extend the atd_txdot_crashes_updates_audit_log() function, we must first drop the trigger which invokes it.
-drop trigger if exists atd_txdot_crashes_audit_log on atd_txdot_crashes;
-
 -- Augment the atd_txdot_crashes_update_audit_log() function to compute and store the crash based comprehensive cost
 -- This updated version of the function is also found in atd-vzd/triggers/atd_txdot_crashes_updates_audit_log.sql
 create or replace function atd_txdot_crashes_updates_audit_log() returns trigger
@@ -164,7 +161,3 @@ $$;
 
 -- set ownership if needed
 alter function atd_txdot_crashes_updates_audit_log() owner to atd_vz_data;
-
--- replace the trigger to invoke the function on upsert
-create trigger atd_txdot_crashes_audit_log before insert or update on
-    public.atd_txdot_crashes for each row execute function atd_txdot_crashes_updates_audit_log();
