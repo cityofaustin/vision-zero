@@ -1,16 +1,3 @@
-name-template: v$NEXT_PATCH_VERSION
-tag-template: v$NEXT_PATCH_VERSION
-categories:
-  - title: VZ Viewer
-    label: "PR: Viewer"
-  - title: VZ Editor
-    label: "PR: Editor"
-  - title: VZ Database
-    label: "PR: Database"
-  - title: ETL
-    label: "PR: ETL"
-tag-template: - $TITLE @$AUTHOR (#$NUMBER)
 template: |
-  ## What's Changed
-
+  ## What’s Changed
   $CHANGES
