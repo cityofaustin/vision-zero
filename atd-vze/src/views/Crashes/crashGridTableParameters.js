@@ -141,7 +141,8 @@ export const crashGridTableAdvancedFilters = {
             },
           }, ],
         },
-      },{
+      },
+      {
         id: "dni_cris_deaths",
         label: "CRIS Fatality Crashes",
         filter: {
@@ -221,6 +222,17 @@ export const crashGridTableAdvancedFilters = {
             },
             {
               longitude: "_is_null: true",
+            },
+          ],
+        },
+      },
+      {
+        id: "geo_afd",
+        label: "Remove Austin Full Purpose",
+        invert_toggle_state: true,
+        filter: {
+          where: [{
+            austin_full_purpose: '_eq: "Y"',
             },
           ],
         },
