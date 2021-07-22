@@ -46,7 +46,7 @@ export const crashGridTableColumns = {
     label_table: "ATD Death Count",
     type: "Date",
   },
-  est_comp_cost: {
+  est_comp_cost_crash_based: {
     searchable: false,
     sortable: true,
     label_table: "Est Comprehensive Cost",
@@ -111,19 +111,19 @@ export const nonCR3CrashGridTableColumns = {
     label_table: "Speed Management Points",
     type: "Int",
   },
-  est_comp_cost: {
+  est_comp_cost_crash_based: {
     primary_key: false,
     searchable: false,
     sortable: true,
     label_table: "Est Comprehensive Cost",
-    type: "Int",
+    type: "Currency",
   },
   est_econ_cost: {
     primary_key: false,
     searchable: false,
     sortable: true,
     label_table: "Est Economic Cost",
-    type: "Int",
+    type: "Currency",
   },
 };
 
@@ -141,7 +141,8 @@ export const crashGridTableAdvancedFilters = {
             },
           }, ],
         },
-      },{
+      },
+      {
         id: "dni_cris_deaths",
         label: "CRIS Fatality Crashes",
         filter: {
@@ -221,6 +222,17 @@ export const crashGridTableAdvancedFilters = {
             },
             {
               longitude: "_is_null: true",
+            },
+          ],
+        },
+      },
+      {
+        id: "geo_afd",
+        label: "Remove Austin Full Purpose",
+        invert_toggle_state: true,
+        filter: {
+          where: [{
+            austin_full_purpose: '_eq: "Y"',
             },
           ],
         },

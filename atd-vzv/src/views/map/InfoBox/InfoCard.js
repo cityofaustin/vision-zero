@@ -1,23 +1,71 @@
 import * as React from "react";
 import { PureComponent } from "react";
-import { Card, Table } from "reactstrap";
+import {
+  Card,
+  Table,
+  Button,
+  UncontrolledPopover,
+  PopoverBody,
+} from "reactstrap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faClipboard } from "@fortawesome/free-solid-svg-icons";
+import styled from "styled-components";
+
+const StyledTableRow = styled.tr`
+  .align {
+    vertical-align: initial;
+  }
+`;
 
 export default class InfoCard extends PureComponent {
   render() {
     const { content } = this.props;
 
     return (
-      <Card className="p-1">
+      <Card className="p-2 m-1">
         <Table borderless size="sm" className="mt-0 mb-0">
           <tbody>
             {content.map((item) => (
-              <tr key={item.title}>
-                <th scope="row">{item.title}</th>
-                <td>{item.content}</td>
-              </tr>
+              <StyledTableRow key={item.title}>
+                <th className="align" scope="row">
+                  {item.title}
+                </th>
+                <td className="align">{item.content}</td>
+                {item.title === "Crash ID" ? (
+                  <td className="align">
+                    <Button
+                      id="PopoverFocus"
+                      style={{
+                        boxShadow: "none",
+                        width: "30px",
+                        height: "30px",
+                        padding: "6px 0px",
+                        borderRadius: "15px",
+                        textAlign: "center",
+                        fontSize: "12px",
+                        lineHeight: 1.42857,
+                      }}
+                      color="info"
+                      outline={false}
+                      onClick={() => {
+                        navigator.clipboard.writeText(item.content);
+                      }}
+                    >
+                      <FontAwesomeIcon icon={faClipboard} />
+                    </Button>
+                  </td>
+                ) : null}
+              </StyledTableRow>
             ))}
           </tbody>
         </Table>
+        <UncontrolledPopover
+          trigger="focus"
+          placement="top"
+          target="PopoverFocus"
+        >
+          <PopoverBody>Copied</PopoverBody>
+        </UncontrolledPopover>
       </Card>
     );
   }

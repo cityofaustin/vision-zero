@@ -21,6 +21,7 @@ import {
 } from "./map-style";
 import axios from "axios";
 import { useIsTablet } from "../../constants/responsive";
+import AnimatedIcon from "./AnimatedIcon";
 
 import "mapbox-gl/dist/mapbox-gl.css";
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css"; // Get out-of-the-box icons
@@ -58,6 +59,7 @@ const Map = () => {
   const [cityCouncilOverlay, setCityCouncilOverlay] = useState(null);
   const [isMapDataLoading, setIsMapDataLoading] = useState(false);
   const [crashCounts, setCrashCounts] = useState(null);
+  const [, setPointData] = useState(null);
 
   const {
     mapFilters: [filters],
@@ -187,7 +189,6 @@ const Map = () => {
       )
         return;
     }
-
     const { features } = event;
     // Filter feature to set in state and set hierarchy
     let selectedFeature =
@@ -270,6 +271,35 @@ const Map = () => {
     return bothLayers;
   };
 
+  useEffect(() => {
+    const animation = window.requestAnimationFrame(() => {
+      if (selectedFeature) setPointData({});
+    });
+    return () => window.cancelAnimationFrame(animation);
+  });
+
+  const renderSelectedLayer = () => {
+    const color = {
+      r: selectedFeature.layer.paint["circle-color"].r * 255,
+      g: selectedFeature.layer.paint["circle-color"].g * 255,
+      b: selectedFeature.layer.paint["circle-color"].b * 255,
+      a: selectedFeature.layer.paint["circle-color"].a,
+    };
+
+    const selectedLayer = (
+      <Source id="selectedCrash" type="geojson" data={selectedFeature}>
+        <AnimatedIcon
+          location={{
+            x: parseFloat(selectedFeature.properties.longitude),
+            y: parseFloat(selectedFeature.properties.latitude),
+          }}
+          paint={color}
+        />
+      </Source>
+    );
+    return selectedLayer;
+  };
+
   // Show/hide type layers based on isMapTypeSet state in Context
   useEffect(() => {
     const map = mapRef.current;
@@ -305,14 +335,14 @@ const Map = () => {
       mapboxApiAccessToken={MAPBOX_TOKEN}
       getCursor={_getCursor}
       interactiveLayerIds={interactiveLayerIds}
-      onHover={!isTablet ? _onSelectCrashPoint : null}
-      onClick={isTablet ? _onSelectCrashPoint : null}
+      onClick={_onSelectCrashPoint}
       ref={(ref) => (mapRef.current = ref && ref.getMap())}
     >
       {/* Provide empty source and layer as target for beforeId params to set order of layers */}
       {baseSourceAndLayer}
       {/* Crash Data Points */}
       {!!mapData && renderCrashDataLayers()}
+      {selectedFeature && renderSelectedLayer()}
       {/* ASMP Street Level Layers */}
       {buildAsmpLayers(asmpConfig, overlay)}
       {/* High Injury Network Layer */}

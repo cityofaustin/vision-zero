@@ -30,7 +30,7 @@ SELECT
 	COALESCE(ccs.total_crashes, 0) + COALESCE(blueform_ccs.total_crashes, 0) AS total_crashes,
 	COALESCE(ccs.total_deaths, (0)::bigint) AS total_deaths,
 	COALESCE(ccs.total_serious_injuries, (0)::bigint) AS total_serious_injuries,
-	COALESCE(ccs.est_comp_cost, 0) + COALESCE(blueform_ccs.est_comp_cost, 0) AS est_comp_cost,
+	COALESCE(ccs.est_comp_cost, 0) + COALESCE(blueform_ccs.est_comp_cost, 0)::numeric AS est_comp_cost,
 FROM ((atd_txdot_locations atcloc
 	LEFT JOIN (
 		SELECT
@@ -38,7 +38,7 @@ FROM ((atd_txdot_locations atcloc
 			count(1) AS total_crashes,
 			sum(atc.death_cnt) AS total_deaths,
 			sum(atc.sus_serious_injry_cnt) AS total_serious_injuries,
-			sum(atc.est_comp_cost) AS est_comp_cost
+			sum(atc.est_comp_cost_crash_based) AS est_comp_cost
 		FROM 
 			atd_txdot_crashes AS atc
 	WHERE ((1 = 1)
@@ -50,7 +50,7 @@ FROM ((atd_txdot_locations atcloc
 	LEFT JOIN(
 		SELECT
 			aab.location_id,
-			sum(aab.est_comp_cost) AS est_comp_cost,
+			sum(aab.est_comp_cost_crash_based) AS est_comp_cost,
 			count(1) AS total_crashes
 		FROM
 			atd_apd_blueform AS aab
@@ -59,7 +59,7 @@ FROM ((atd_txdot_locations atcloc
 			AND(aab.location_id IS NOT NULL)
 			AND((aab.location_id)::text <> 'None'::text))
 		GROUP BY
-			aab.location_id) blueform_ccs ON (blueform_ccs.location_id = atcloc.location_id)
+			aab.location_id) blueform_ccs ON (blueform_ccs.location_id = atcloc.location_id);
 
 
 ALTER TABLE public.view_location_injry_count_cost_summary OWNER TO atd_vz_data;
