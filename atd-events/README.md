@@ -2,7 +2,8 @@
 
 An event handler is basically a python script that
 will run every time we submit a message to AWS Simple
-Queue Service (SQS).
+Queue Service (SQS). Currently, the Python 3.8 runtime
+is being used in AWS Lambda.
 
 A message is basically any trivial text with a limit
 of 256kb, as well as 10 metadata optional attributes.
