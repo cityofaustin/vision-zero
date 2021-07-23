@@ -79,7 +79,7 @@ function deploy_event_function {
         --role $ATD_VZ_DATA_EVENTS_ROLE \
         --handler "app.handler" \
         --tags "project=atd-vz-data,environment=${WORKING_STAGE}" \
-        --runtime python3.7 \
+        --runtime python3.8 \
         --function-name "${FUNCTION_NAME}" \
         --zip-file fileb://$PWD/function.zip > /dev/null;
   } || { # catch: update
