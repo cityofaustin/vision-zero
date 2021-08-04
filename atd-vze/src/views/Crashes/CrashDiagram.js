@@ -8,16 +8,35 @@ import {
   ButtonGroup,
   Col,
   Row,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Modal,
 } from "reactstrap";
 import axios from "axios";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
+import { crashCr3MarkForRedownload } from "../../queries/crashes";
+
+import { useMutation } from "@apollo/react-hooks";
 
 const CrashDiagram = props => {
   const [rotation, setRotation] = useState(0);
+  const [redownloadModalOpen, setRedownloadModalOpen] = useState(false);
+
+  const [mutationMarkCr3Redownload] = useMutation(crashCr3MarkForRedownload);
 
   // Set S3 folder for diagram depending on environment
   const s3Folder =
     process.env.NODE_ENV === "production" ? "production" : "staging";
+
+  const markForRedownload = () => {
+    mutationMarkCr3Redownload({ variables: { crashId: props.crashId } }).then(
+      () => {
+        if (props.hasOwnProperty("refetch")) props.refetch(); // If refetch is provided, run it!
+        setRedownloadModalOpen(false);
+      }
+    );
+  };
 
   const requestCR3 = () => {
     const requestUrl = `${process.env.REACT_APP_CR3_API_DOMAIN}/cr3/download/${props.crashId}`;
@@ -48,15 +67,20 @@ const CrashDiagram = props => {
       <CardHeader>
         <Row className="d-flex align-items-center">
           <Col>Crash Diagram</Col>
-          <Col className="d-flex justify-content-end">
-            {props.isCr3Stored ? (
+          {props.isCr3Stored && (
+            <Col className="d-flex justify-content-end">
               <Button color="primary" onClick={requestCR3}>
                 Download CR-3 PDF
               </Button>
-            ) : (
-              <div></div>
-            )}
-          </Col>
+              <Button
+                color="danger"
+                onClick={() => setRedownloadModalOpen(true)}
+                style={{ marginLeft: "1rem" }}
+              >
+                Re-Download
+              </Button>
+            </Col>
+          )}
         </Row>
       </CardHeader>
       <CardBody className="py-0">
@@ -118,8 +142,8 @@ const CrashDiagram = props => {
           </div>
         ) : (
           <div className="mt-2">
-            The crash diagram and investigator narrative are not available
-            at this time.
+            The crash diagram and investigator narrative are not available at
+            this time.
           </div>
         )}
       </CardBody>
@@ -152,6 +176,28 @@ const CrashDiagram = props => {
       ) : (
         <div></div>
       )}
+      <Modal
+        isOpen={redownloadModalOpen}
+        toggle={() => setRedownloadModalOpen(false)}
+      >
+        <ModalHeader toggle={() => setRedownloadModalOpen(false)}>
+          Mark CR3 for Re-Download
+        </ModalHeader>
+        <ModalBody>
+          Re-downloading can take up to 30 minutes to complete. Proceed?
+        </ModalBody>
+        <ModalFooter>
+          <Button color="primary" onClick={markForRedownload}>
+            Yes
+          </Button>{" "}
+          <Button
+            color="secondary"
+            onClick={() => setRedownloadModalOpen(false)}
+          >
+            Cancel
+          </Button>
+        </ModalFooter>
+      </Modal>
     </Card>
   );
 };
