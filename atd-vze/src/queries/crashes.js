@@ -296,3 +296,16 @@ est_comp_cost
 est_comp_cost_crash_based
 est_econ_cost
 `;
+
+export const crashCr3MarkForRedownload = gql`
+    mutation markCR3ForRedownload($crashId: Int!) {
+        update_atd_txdot_crashes(where: {
+            crash_id: {_eq: $crashId}
+        }, _set: {
+            cr3_stored_flag: "N",
+            cr3_file_metadata: null
+        }) {
+            affected_rows
+        }
+    }
+`;
