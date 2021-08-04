@@ -267,6 +267,7 @@ function Crash(props) {
             isCr3Stored={cr3StoredFlag === "Y"}
             isTempRecord={tempRecord}
             cr3FileMetadata={cr3FileMetadata}
+            refetch={refetch}
           />
         </Col>
       </Row>
