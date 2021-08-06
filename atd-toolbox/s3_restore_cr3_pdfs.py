@@ -41,5 +41,5 @@ try:
     prefix = 'production' if args.production else 'staging' + '/cris-cr3-files'
     s3.list_objects(Bucket= 'atd-vision-zero-editor', Prefix = prefix)['Contents']
 except:
-    print("Unable to list directory; check AWS credentials")
+    print("Unable to complete call to S3; check AWS credentials")
     sys.exit(1)
