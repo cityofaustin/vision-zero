@@ -20,6 +20,7 @@ except:
     sys.exit(1)
 
 
+# connect to AWS/S3 and validate connection
 try:
     aws_config = Config(
             region_name = 'us-east-1',
