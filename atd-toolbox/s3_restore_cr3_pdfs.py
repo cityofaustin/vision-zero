@@ -4,7 +4,6 @@ import os
 import sys
 import boto3
 from botocore.config import Config
-from botocore.client import ClientError
 
 #FIXME
 # add command arg to specify production; default to staging
