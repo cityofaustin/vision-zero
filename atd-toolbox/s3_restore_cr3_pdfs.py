@@ -46,7 +46,7 @@ try:
             aws_access_key_id = ACCESS_KEY, 
             aws_secret_access_key = SECRET_KEY, 
             config = aws_config)
-    prefix = 'production' if args.production else 'staging' + '/cris-cr3-files'
+    prefix = ('production' if args.production else 'staging') + '/cris-cr3-files/'
     s3.list_objects(Bucket = bucket, Prefix = prefix)
 except:
     print("Unable to complete call to S3; check AWS credentials")
@@ -73,8 +73,10 @@ with open(args.crashes) as input_file:
 for crash in crashes:
     print("Crash: " + str(crash))
 
-    key = prefix + '/cris-cr3-files/' + str(crash)
+    key = prefix +  str(crash) + '.pdf'
+    print(key)
     versions = s3_resource.Bucket(bucket).object_versions.filter(Prefix = key)
     for version in versions:
         obj = version.get()
-        print(obj.get('VersionId'), obj.get('ContentLength'), obj.get('LastModified'))
+        if obj.get('ContentLength') > 10 * 2**10: # 10K
+            print(obj.get('VersionId'), obj.get('ContentLength'), obj.get('LastModified'))
