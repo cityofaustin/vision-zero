@@ -74,9 +74,12 @@ for crash in crashes:
     print("Crash: " + str(crash))
 
     key = prefix +  str(crash) + '.pdf'
-    print(key)
     versions = s3_resource.Bucket(bucket).object_versions.filter(Prefix = key)
+    previous_version_found = False
     for version in versions:
         obj = version.get()
         if obj.get('ContentLength') > 10 * 2**10: # 10K
+            previous_version_found = True
             print(obj.get('VersionId'), obj.get('ContentLength'), obj.get('LastModified'))
+    if not previous_version_found:
+        print("No previous versions found for crash " + str(crash))
