@@ -22,7 +22,7 @@ try:
 except:
     sys.exit(1)
 
-# verify that environment variables were available and have populated variables used to auth to AWS
+# verify that environment variables were available and have populated values to be used to auth to AWS
 try:
     assert(ACCESS_KEY is not None and SECRET_KEY is not None)
 except:
