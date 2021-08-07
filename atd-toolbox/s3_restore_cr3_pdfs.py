@@ -7,8 +7,13 @@ import boto3
 import argparse
 from botocore.config import Config
 
+s3_resource = boto3.resource('s3')
+
+
 ACCESS_KEY = os.getenv('AWS_ACCESS_KEY_ID')
 SECRET_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
+
+bucket = 'atd-vision-zero-editor'
 
 #FIXME
 # print errors to stderr where they belong
@@ -42,7 +47,7 @@ try:
             aws_secret_access_key = SECRET_KEY, 
             config = aws_config)
     prefix = 'production' if args.production else 'staging' + '/cris-cr3-files'
-    s3.list_objects(Bucket= 'atd-vision-zero-editor', Prefix = prefix)
+    s3.list_objects(Bucket = bucket, Prefix = prefix)
 except:
     print("Unable to complete call to S3; check AWS credentials")
     sys.exit(1)
@@ -64,5 +69,12 @@ with open(args.crashes) as input_file:
         print("Crashes file is invalid JSON")
         sys.exit(1)
 
+# iterate over crashes found in JSON object
 for crash in crashes:
-    print(crash)
+    print("Crash: " + str(crash))
+
+    key = prefix + '/cris-cr3-files/' + str(crash)
+    versions = s3_resource.Bucket(bucket).object_versions.filter(Prefix = key)
+    for version in versions:
+        obj = version.get()
+        print(obj.get('VersionId'), obj.get('ContentLength'), obj.get('LastModified'))
