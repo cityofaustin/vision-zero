@@ -30,6 +30,14 @@ bucket = 'atd-vision-zero-editor'
 #FIXME
 # print errors to stderr where they belong
 
+# https://github.com/cityofaustin/atd-airflow/blob/master/dags/python_scripts/atd_vzd_cr3_scan_pdf_records.py#L24
+def is_valid_metadata(metadata: dict) -> bool:
+    if metadata.get("last_update", None) is not None \
+       and metadata.get("file_size", None) is not None \
+       and metadata.get("mime_type", None) is not None \
+       and metadata.get("encoding", None) is not None:
+        return True
+    return False
 
 # setup and parse arguments
 try:
@@ -193,6 +201,11 @@ for crash in crashes:
         cr3_metadata['encoding'] = encoding
         cr3_metadata['file_size'] = obj.get('ContentLength')
         cr3_metadata['last_update'] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+        # check for complete metadata
+        if not is_valid_metadata(cr3_metadata):
+            print("Invalid metadata after updates")
+            continue
 
         print("Updated metadata:")
         print(cr3_metadata)
