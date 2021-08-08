@@ -5,6 +5,7 @@ import os
 import sys
 import json
 import boto3
+import magic
 import requests
 import argparse
 from operator import attrgetter
@@ -47,7 +48,6 @@ try:
         print("Warning: This program changes S3 Objects.")
         print('')
         print("This program will restore previous file versions which are larger than 10K for crashes specified in the JSON object you provide.")
-        print("This program does NOT validate the suitability of the file its replacing nor the contents of the replacement.")
         print("If you specify a crash ID in the JSON, and there is a previous version larger than 10K for that crash, this program will overwrite the current version.")
         print("Please type 'I understand' to continue.")
         print('')
@@ -144,7 +144,7 @@ for crash in crashes:
         print("No metadata in database for crash; creating empty object to populate")
         cr3_metadata = {}
 
-    print(cr3_metadata)
+    #print(cr3_metadata)
 
     key = prefix +  str(crash) + '.pdf'
 
@@ -157,19 +157,30 @@ for crash in crashes:
     for version in versions:
         obj = version.get()
 
-        # check if version is larger than 10K to seperate PDFs from HTML documents
-        if obj.get('ContentLength') > 10 * 2**10: # 10K
+        # read canidate previous version into a variable
+        previous_version = obj['Body'].read()
 
-            # if we get here, we have found one, so note it and log it
-            previous_version_found = True
-            print(obj.get('VersionId'), obj.get('ContentLength'), obj.get('LastModified'))
-            print("Restoring " +  obj.get('VersionId') + " to " + key)
+        # not really magic; the underlying library of the `file` command on unix is called libmagic
+        # use libmagic to figure out what kind of file the file is
+        mime_type = magic.Magic(flags = magic.MAGIC_MIME_TYPE).id_buffer(previous_version)
 
-            # restore the file, in situ on s3, from the previous version
-            s3_resource.Object(bucket, key).copy_from(CopySource = { 'Bucket': bucket, 'Key': key, 'VersionId': obj.get('VersionId') } )
+        if mime_type != 'application/pdf':
+            print("Skipping version " + obj.get('VersionId') + " because it is a " + mime_type)
+            continue;
+        else:
+            print("Version " + obj.get('VersionId') + " is acceptable for restore because it is a " + mime_type)
 
-            # once we've restored, we don't want to restore anymore, as we only want the most recent valid file
-            break;
+
+        # if we get here, we have found one, so note it and log it
+        previous_version_found = True
+        #print(obj.get('VersionId'), obj.get('ContentLength'), obj.get('LastModified'))
+        print("Restoring " +  obj.get('VersionId') + " to " + key)
+
+        # restore the file, in situ on s3, from the previous version
+        s3_resource.Object(bucket, key).copy_from(CopySource = { 'Bucket': bucket, 'Key': key, 'VersionId': obj.get('VersionId') } )
+
+        # once we've restored, we don't want to restore anymore, as we only want the most recent valid file
+        break;
 
     # this bool remains false if we never did a restore, so alert the user
     if not previous_version_found:
