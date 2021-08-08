@@ -116,6 +116,7 @@ for crash in crashes:
     print("Crash: " + str(crash))
 
     try:
+        # graphql query to get current cr3_file_metadata
         get_metadata = """
         query get_cr3_metadata($crashId: Int) {
             atd_txdot_crashes(where: {crash_id: {_eq: $crashId}}) {
@@ -124,19 +125,21 @@ for crash in crashes:
             }
         """
 
+        # get the metadata as a dict or None if null in DB
         cr3_metadata = requests.post(HASURA_ENDPOINT, headers = HEADERS, data = json.dumps(
             {
             "query": get_metadata,
             "variables": {
-                "crashId": 14683802
+                "crashId": crash
                 }
-            }))
+            })).json()['data']['atd_txdot_crashes'][0]['cr3_file_metadata']
+        #cr3_metadata = json.reads(cr3_metadata_json)
 
     except:
         print("Request to get existing CR3 metadata failed.")
         sys.exit(1)
 
-    print(cr3_metadata.json())
+    print(cr3_metadata)
 
 
     key = prefix +  str(crash) + '.pdf'
