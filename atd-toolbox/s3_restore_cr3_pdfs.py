@@ -194,9 +194,7 @@ for crash in crashes:
         else:
             print("Version " + obj.get('VersionId') + " is acceptable for restore because it is a " + mime_type)
 
-        print("Previous metadata:")
-        print(cr3_metadata)
-
+        # update the cr3 file metadata dict
         cr3_metadata['mime_type'] = mime_type
         cr3_metadata['encoding'] = encoding
         cr3_metadata['file_size'] = obj.get('ContentLength')
@@ -206,9 +204,6 @@ for crash in crashes:
         if not is_valid_metadata(cr3_metadata):
             print("Invalid metadata after updates")
             continue
-
-        print("Updated metadata:")
-        print(cr3_metadata)
 
 
         # if we get here, we have found one, so note it and log it
