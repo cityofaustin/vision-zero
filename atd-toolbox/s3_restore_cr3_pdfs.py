@@ -139,8 +139,12 @@ for crash in crashes:
         print("Request to get existing CR3 metadata failed.")
         sys.exit(1)
 
-    print(cr3_metadata)
 
+    if cr3_metadata is None:
+        print("No metadata in database for crash; creating empty object to populate")
+        cr3_metadata = {}
+
+    print(cr3_metadata)
 
     key = prefix +  str(crash) + '.pdf'
 
