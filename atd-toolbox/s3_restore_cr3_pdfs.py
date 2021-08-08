@@ -89,4 +89,5 @@ for crash in crashes:
     if not previous_version_found:
         print("No previous versions found for crash " + str(crash))
         continue
-
+    else:
+        s3_resource.Object(bucket, key).copy_from(CopySource = { 'Bucket': bucket, 'Key': key, 'VersionId': obj.get('VersionId') } )
