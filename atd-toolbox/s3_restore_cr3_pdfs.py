@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+import re
 import os
 import sys
 import json
@@ -23,9 +24,28 @@ bucket = 'atd-vision-zero-editor'
 try:
     argparse = argparse.ArgumentParser(description = 'Utility to restore last valid PDF in S3 for ATD VZ')
     argparse.add_argument("-p", "--production", help = 'Specify the use of production environment', action = 'store_true')
+    argparse.add_argument("--i-understand", help = 'Do not ask the user to acknoledge that this program changes the state of S3 objects.', action = 'store_true')
     argparse.add_argument("-c", "--crashes", help = 'Specify JSON file containing crashes to operate on. Format: { "crashes": [ crash_id_0, crash_id_1, .. ] }', required=True, metavar = 'crashes.json')
     args = argparse.parse_args()
 except:
+    sys.exit(1)
+
+
+# This program will change the state of S3 objects.  Make sure the user is OK with what is about to happen.
+try:
+    if not args.i_understand:
+        print('')
+        print("Warning: This program changes S3 Objects.")
+        print('')
+        print("This program will restore previous file versions which are larger than 10K for crashes specified in the JSON object you provide.")
+        print("This program does NOT validate the suitability of the file its replacing nor the contents of the replacement.")
+        print("If you specify a crash ID in the JSON, and there is a previous version larger than 10K for that crash, this program will overwrite the current version.")
+        print("Please type 'I understand' to continue.")
+        print('')
+        ack = input()
+        assert(re.match("^i understand$", ack, re.I))
+except:
+    print("User acknoledgement failed.")
     sys.exit(1)
 
 
