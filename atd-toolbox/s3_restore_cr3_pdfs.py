@@ -1,5 +1,7 @@
 #!/usr/bin/python3
 
+from __future__ import print_function
+
 import re
 import os
 import sys
@@ -11,6 +13,10 @@ import datetime
 import requests
 from operator import attrgetter
 from botocore.config import Config
+
+# https://stackoverflow.com/questions/5574702/how-to-print-to-stderr-in-python
+def eprint(*args, **kwargs):
+    print(*args, file=sys.stderr, **kwargs)
 
 s3_resource = boto3.resource('s3')
 
@@ -26,9 +32,6 @@ HEADERS = {
           }
 
 bucket = 'atd-vision-zero-editor'
-
-#FIXME
-# print errors to stderr where they belong
 
 # https://github.com/cityofaustin/atd-airflow/blob/master/dags/python_scripts/atd_vzd_cr3_scan_pdf_records.py#L24
 def is_valid_metadata(metadata: dict) -> bool:
@@ -47,6 +50,7 @@ try:
     argparse.add_argument("-c", "--crashes", help = 'Specify JSON file containing crashes to operate on. Format: { "crashes": [ crash_id_0, crash_id_1, .. ] }', required=True, metavar = 'crashes.json')
     args = argparse.parse_args()
 except:
+    # a stderr log is not needed, argparse croaks verbosly
     sys.exit(1)
 
 
@@ -63,7 +67,7 @@ try:
         ack = input()
         assert(re.match("^i understand$", ack, re.I))
 except:
-    print("User acknoledgement failed.")
+    eprint("User acknoledgement failed.")
     sys.exit(1)
 
 
@@ -71,7 +75,7 @@ except:
 try:
     assert(ACCESS_KEY is not None and SECRET_KEY is not None)
 except:
-    print("Please set environment variables AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY")
+    eprint("Please set environment variables AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY")
     sys.exit(1)
 
 
@@ -79,7 +83,7 @@ except:
 try:
     assert(HASURA_ADMIN_KEY is not None and HASURA_ENDPOINT is not None)
 except:
-    print("Please set environment variables HASURA_ADMIN_KEY and HASURA_ENDPOINT")
+    eprint("Please set environment variables HASURA_ADMIN_KEY and HASURA_ENDPOINT")
     sys.exit(1)
 
 
@@ -88,13 +92,13 @@ if (args.production):
     try:
         assert(not re.search("staging", HASURA_ENDPOINT, re.I))
     except:
-        print("Production flag used but staging appears in the Hasura endpoint URL")
+        eprint("Production flag used but staging appears in the Hasura endpoint URL")
         sys.exit(1)
 else:
     try:
         assert(re.search("staging", HASURA_ENDPOINT, re.I))
     except:
-        print("Production flag is not used and staging doesn't appear in the Hasura endpoint URL")
+        eprint("Production flag is not used and staging doesn't appear in the Hasura endpoint URL")
         sys.exit(1)
 
 
@@ -113,7 +117,7 @@ try:
     prefix = ('production' if args.production else 'staging') + '/cris-cr3-files/'
     s3.list_objects(Bucket = bucket, Prefix = prefix)
 except:
-    print("Unable to complete call to S3; check AWS credentials")
+    eprint("Unable to complete call to S3; check AWS credentials")
     sys.exit(1)
 
 
@@ -121,7 +125,7 @@ except:
 try:
     assert(os.path.isfile(args.crashes))
 except:
-    print("Crashes file is not available on disk")
+    eprint("Crashes file is not available on disk")
     sys.exit(1)
 
 
@@ -130,7 +134,7 @@ with open(args.crashes) as input_file:
     try:
         crashes = json.load(input_file)['crashes']
     except:
-        print("Crashes file is invalid JSON")
+        eprint("Crashes file is invalid JSON")
         sys.exit(1)
 
 
@@ -159,7 +163,7 @@ for crash in crashes:
         #cr3_metadata = json.reads(cr3_metadata_json)
 
     except:
-        print("Request to get existing CR3 metadata failed.")
+        eprint("Request to get existing CR3 metadata failed.")
         sys.exit(1)
 
 
