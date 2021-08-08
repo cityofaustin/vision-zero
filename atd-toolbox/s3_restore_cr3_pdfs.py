@@ -66,7 +66,7 @@ except:
     sys.exit(1)
 
 
-# verify that environment Hasura variables were available and have populated values to be used to auth to AWS
+# verify that environment Hasura variables were available and have populated values
 try:
     assert(HASURA_ADMIN_KEY is not None and HASURA_ENDPOINT is not None)
 except:
