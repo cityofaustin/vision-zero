@@ -208,11 +208,36 @@ for crash in crashes:
 
         # if we get here, we have found one, so note it and log it
         previous_version_found = True
-        #print(obj.get('VersionId'), obj.get('ContentLength'), obj.get('LastModified'))
+
         print("Restoring " +  obj.get('VersionId') + " to " + key)
 
         # restore the file, in situ on s3, from the previous version
         s3_resource.Object(bucket, key).copy_from(CopySource = { 'Bucket': bucket, 'Key': key, 'VersionId': obj.get('VersionId') } )
+
+        # update the files metadata in the database
+        update_cr3_metadata = """
+        mutation update_cr3_metadata ($crashId: Int, $cr3_file_metadata: jsonb) {
+          update_atd_txdot_crashes(
+            where: { crash_id: {_eq: $crashId} },
+            _set: {
+              cr3_file_metadata: $cr3_file_metadata
+            }
+          ) {
+            affected_rows
+          }
+        }
+        """
+
+        affected_rows = requests.post(HASURA_ENDPOINT, headers = HEADERS, data = json.dumps(
+            {
+            "query": update_cr3_metadata,
+            "variables": {
+                "crashId": crash,
+                "cr3_file_metadata": cr3_metadata
+                }
+            })).json()['data']['update_atd_txdot_crashes']['affected_rows']
+
+        print("Affected rows: " + str(affected_rows))
 
         # once we've restored, we don't want to restore anymore, as we only want the most recent valid file
         break;
