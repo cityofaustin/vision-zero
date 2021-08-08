@@ -6,8 +6,9 @@ import sys
 import json
 import boto3
 import magic
-import requests
 import argparse
+import datetime
+import requests
 from operator import attrgetter
 from botocore.config import Config
 
@@ -190,6 +191,8 @@ for crash in crashes:
 
         cr3_metadata['mime_type'] = mime_type
         cr3_metadata['encoding'] = encoding
+        cr3_metadata['file_size'] = obj.get('ContentLength')
+        cr3_metadata['last_update'] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
         print("Updated metadata:")
         print(cr3_metadata)
