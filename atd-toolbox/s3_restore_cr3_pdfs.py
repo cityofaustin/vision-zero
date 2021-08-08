@@ -61,7 +61,7 @@ try:
         print("Warning: This program changes S3 Objects.")
         print('')
         print("This program will restore previous file versions which are larger than 10K for crashes specified in the JSON object you provide.")
-        print("If you specify a crash ID in the JSON, and there is a previous version larger than 10K for that crash, this program will overwrite the current version.")
+        print("If there is a 'application/pdf' stored as a previous version of a specified crash's CR3, this program will restore that file to the current version.")
         print("Please type 'I understand' to continue.")
         print('')
         ack = input()
