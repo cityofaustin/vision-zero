@@ -5,6 +5,7 @@ import sys
 import json
 import boto3
 import argparse
+from operator import attrgetter
 from botocore.config import Config
 
 s3_resource = boto3.resource('s3')
@@ -77,7 +78,8 @@ for crash in crashes:
     print("Crash: " + str(crash))
 
     key = prefix +  str(crash) + '.pdf'
-    versions = s3_resource.Bucket(bucket).object_versions.filter(Prefix = key)
+    versions = sorted(s3_resource.Bucket(bucket).object_versions.filter(Prefix = key), 
+                        key=attrgetter('last_modified'), reverse=True)
     previous_version_found = False
     for version in versions:
         obj = version.get()
