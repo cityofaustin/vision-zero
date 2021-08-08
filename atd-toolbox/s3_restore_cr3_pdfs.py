@@ -73,6 +73,19 @@ except:
     print("Please set environment variables HASURA_ADMIN_KEY and HASURA_ENDPOINT")
     sys.exit(1)
 
+# sanity check the provided hasura endpoint and the assertion from the user about staging/production
+if (args.production):
+    try:
+        assert(not re.search("staging", HASURA_ENDPOINT, re.I))
+    except:
+        print("Production flag used but staging appears in the Hasura endpoint URL")
+        sys.exit(1)
+else:
+    try:
+        assert(re.search("staging", HASURA_ENDPOINT, re.I))
+    except:
+        print("Production flag is not used and staging doesn't appear in the Hasura endpoint URL")
+        sys.exit(1)
 
 
 # connect to AWS/S3 and validate connection
