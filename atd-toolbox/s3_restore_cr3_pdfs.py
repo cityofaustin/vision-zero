@@ -27,6 +27,7 @@ try:
 except:
     sys.exit(1)
 
+
 # verify that environment variables were available and have populated values to be used to auth to AWS
 try:
     assert(ACCESS_KEY is not None and SECRET_KEY is not None)
@@ -45,7 +46,8 @@ try:
             's3', 
             aws_access_key_id = ACCESS_KEY, 
             aws_secret_access_key = SECRET_KEY, 
-            config = aws_config)
+            config = aws_config
+            )
     prefix = ('production' if args.production else 'staging') + '/cris-cr3-files/'
     s3.list_objects(Bucket = bucket, Prefix = prefix)
 except:
@@ -61,13 +63,14 @@ except:
     sys.exit(1)
 
 
-#parse JSON file containing crashes
+# parse JSON file containing crashes
 with open(args.crashes) as input_file:
     try:
         crashes = json.load(input_file)['crashes']
     except:
         print("Crashes file is invalid JSON")
         sys.exit(1)
+
 
 # iterate over crashes found in JSON object
 for crash in crashes:
@@ -83,3 +86,5 @@ for crash in crashes:
             print(obj.get('VersionId'), obj.get('ContentLength'), obj.get('LastModified'))
     if not previous_version_found:
         print("No previous versions found for crash " + str(crash))
+        continue
+
