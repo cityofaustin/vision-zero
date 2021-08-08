@@ -206,6 +206,9 @@ for crash in crashes:
         cr3_metadata['file_size'] = obj.get('ContentLength')
         # it's debatable if we should inherit the last modified time of the version being restored
         cr3_metadata['last_update'] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        # date of restore and indication that this was populated by this restoration script
+        cr3_metadata['restored'] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
 
         # check for complete metadata
         if not is_valid_metadata(cr3_metadata):
