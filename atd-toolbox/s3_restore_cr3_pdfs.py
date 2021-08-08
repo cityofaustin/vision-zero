@@ -5,6 +5,7 @@ import os
 import sys
 import json
 import boto3
+import requests
 import argparse
 from operator import attrgetter
 from botocore.config import Config
@@ -14,11 +15,19 @@ s3_resource = boto3.resource('s3')
 
 ACCESS_KEY = os.getenv('AWS_ACCESS_KEY_ID')
 SECRET_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
+HASURA_ADMIN_KEY = os.getenv('HASURA_ADMIN_KEY')
+HASURA_ENDPOINT = os.getenv('HASURA_ENDPOINT')
+
+HEADERS = {
+          "X-Hasura-Admin-Secret": HASURA_ADMIN_KEY,
+          "Content-Type": "application/json",
+          }
 
 bucket = 'atd-vision-zero-editor'
 
 #FIXME
 # print errors to stderr where they belong
+
 
 # setup and parse arguments
 try:
@@ -49,12 +58,21 @@ except:
     sys.exit(1)
 
 
-# verify that environment variables were available and have populated values to be used to auth to AWS
+# verify that environment AWS variables were available and have populated values to be used to auth to AWS
 try:
     assert(ACCESS_KEY is not None and SECRET_KEY is not None)
 except:
     print("Please set environment variables AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY")
     sys.exit(1)
+
+
+# verify that environment Hasura variables were available and have populated values to be used to auth to AWS
+try:
+    assert(HASURA_ADMIN_KEY is not None and HASURA_ENDPOINT is not None)
+except:
+    print("Please set environment variables HASURA_ADMIN_KEY and HASURA_ENDPOINT")
+    sys.exit(1)
+
 
 
 # connect to AWS/S3 and validate connection
@@ -96,6 +114,30 @@ with open(args.crashes) as input_file:
 # iterate over crashes found in JSON object
 for crash in crashes:
     print("Crash: " + str(crash))
+
+    try:
+        get_metadata = """
+        query get_cr3_metadata($crashId: Int) {
+            atd_txdot_crashes(where: {crash_id: {_eq: $crashId}}) {
+                cr3_file_metadata
+                }
+            }
+        """
+
+        cr3_metadata = requests.post(HASURA_ENDPOINT, headers = HEADERS, data = json.dumps(
+            {
+            "query": get_metadata,
+            "variables": {
+                "crashId": 14683802
+                }
+            }))
+
+    except:
+        print("Request to get existing CR3 metadata failed.")
+        sys.exit(1)
+
+    print(cr3_metadata.json())
+
 
     key = prefix +  str(crash) + '.pdf'
 
