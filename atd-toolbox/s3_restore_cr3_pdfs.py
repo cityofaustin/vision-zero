@@ -33,6 +33,7 @@ HEADERS = {
 
 bucket = 'atd-vision-zero-editor'
 
+
 # https://github.com/cityofaustin/atd-airflow/blob/master/dags/python_scripts/atd_vzd_cr3_scan_pdf_records.py#L24
 def is_valid_metadata(metadata: dict) -> bool:
     if metadata.get("last_update", None) is not None \
@@ -41,6 +42,7 @@ def is_valid_metadata(metadata: dict) -> bool:
        and metadata.get("encoding", None) is not None:
         return True
     return False
+
 
 # setup and parse arguments
 try:
@@ -194,9 +196,9 @@ for crash in crashes:
 
         if mime_type != 'application/pdf':
             print("Skipping version " + obj.get('VersionId') + " because it is a " + mime_type)
-            continue;
+            continue
         else:
-            print("Version " + obj.get('VersionId') + " is acceptable for restore because it is a " + mime_type)
+            print("Version " + obj.get('VersionId') + " is acceptable for restoration because it is a " + mime_type)
 
         # update the cr3 file metadata dict
         cr3_metadata['mime_type'] = mime_type
@@ -241,10 +243,10 @@ for crash in crashes:
                 }
             })).json()['data']['update_atd_txdot_crashes']['affected_rows']
 
-        print("Affected rows: " + str(affected_rows))
+        print("Affected database rows: " + str(affected_rows))
 
         # once we've restored, we don't want to restore anymore, as we only want the most recent valid file
-        break;
+        break
 
     # this bool remains false if we never did a restore, so alert the user
     if not previous_version_found:
