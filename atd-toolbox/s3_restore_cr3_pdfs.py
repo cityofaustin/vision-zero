@@ -86,8 +86,9 @@ for crash in crashes:
         if obj.get('ContentLength') > 10 * 2**10: # 10K
             previous_version_found = True
             print(obj.get('VersionId'), obj.get('ContentLength'), obj.get('LastModified'))
+            print("Restoring " +  obj.get('VersionId') + " to " + key)
+            s3_resource.Object(bucket, key).copy_from(CopySource = { 'Bucket': bucket, 'Key': key, 'VersionId': obj.get('VersionId') } )
+            break;
     if not previous_version_found:
         print("No previous versions found for crash " + str(crash))
-        continue
-    else:
-        s3_resource.Object(bucket, key).copy_from(CopySource = { 'Bucket': bucket, 'Key': key, 'VersionId': obj.get('VersionId') } )
+    print("")
