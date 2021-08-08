@@ -155,10 +155,9 @@ for crash in crashes:
 
 
     if cr3_metadata is None:
-        print("No metadata in database for crash; creating empty object to populate")
+        print("No metadata in database for crash; creating empty dict to populate")
         cr3_metadata = {}
 
-    #print(cr3_metadata)
 
     key = prefix +  str(crash) + '.pdf'
 
@@ -172,17 +171,28 @@ for crash in crashes:
         obj = version.get()
 
         # read canidate previous version into a variable
+        # this avoids needing to put the file to disk for the use of the `file` command
         previous_version = obj['Body'].read()
 
         # not really magic; the underlying library of the `file` command on unix is called libmagic
         # use libmagic to figure out what kind of file the file is
         mime_type = magic.Magic(flags = magic.MAGIC_MIME_TYPE).id_buffer(previous_version)
+        encoding = magic.Magic(flags = magic.MAGIC_MIME_ENCODING).id_buffer(previous_version)
 
         if mime_type != 'application/pdf':
             print("Skipping version " + obj.get('VersionId') + " because it is a " + mime_type)
             continue;
         else:
             print("Version " + obj.get('VersionId') + " is acceptable for restore because it is a " + mime_type)
+
+        print("Previous metadata:")
+        print(cr3_metadata)
+
+        cr3_metadata['mime_type'] = mime_type
+        cr3_metadata['encoding'] = encoding
+
+        print("Updated metadata:")
+        print(cr3_metadata)
 
 
         # if we get here, we have found one, so note it and log it
