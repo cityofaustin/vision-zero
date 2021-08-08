@@ -73,6 +73,7 @@ except:
     print("Please set environment variables HASURA_ADMIN_KEY and HASURA_ENDPOINT")
     sys.exit(1)
 
+
 # sanity check the provided hasura endpoint and the assertion from the user about staging/production
 if (args.production):
     try:
