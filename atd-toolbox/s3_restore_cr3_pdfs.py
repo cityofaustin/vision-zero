@@ -47,9 +47,20 @@ def is_valid_metadata(metadata: dict) -> bool:
 # setup and parse arguments
 try:
     argparse = argparse.ArgumentParser(description = 'Utility to restore last valid PDF in S3 for ATD VZ')
-    argparse.add_argument("-p", "--production", help = 'Specify the use of production environment', action = 'store_true')
-    argparse.add_argument("--i-understand", help = 'Do not ask the user to acknoledge that this program changes the state of S3 objects.', action = 'store_true')
-    argparse.add_argument("-c", "--crashes", help = 'Specify JSON file containing crashes to operate on. Format: { "crashes": [ crash_id_0, crash_id_1, .. ] }', required=True, metavar = 'crashes.json')
+
+    argparse.add_argument("-p", "--production",
+            help = 'Specify the use of production environment',
+            action = 'store_true')
+
+    argparse.add_argument("-c", "--crashes",
+            help = 'Specify JSON file containing crashes to operate on. Format: { "crashes": [ crash_id_0, crash_id_1, .. ] }',
+            required=True,
+            metavar = 'crashes.json')
+
+    argparse.add_argument("--i-understand",
+            help = 'Do not ask the user to acknoledge that this program changes the state of S3 objects and the database.',
+            action = 'store_true')
+
     args = argparse.parse_args()
 except:
     # a stderr log is not needed, argparse croaks verbosly
@@ -64,6 +75,7 @@ try:
         print('')
         print("This program will restore previous file versions which are larger than 10K for crashes specified in the JSON object you provide.")
         print("If there is a 'application/pdf' stored as a previous version of a specified crash's CR3, this program will restore that file to the current version.")
+        print("This program will also update the databases cr3_file_metadata field for crash records based on the S3 file restored.")
         print("Please type 'I understand' to continue.")
         print('')
         ack = input()
@@ -136,7 +148,7 @@ with open(args.crashes) as input_file:
     try:
         crashes = json.load(input_file)['crashes']
     except:
-        eprint("Crashes file is invalid JSON")
+        eprint("Crashes file contains invalid JSON")
         sys.exit(1)
 
 
@@ -162,7 +174,6 @@ for crash in crashes:
                 "crashId": crash
                 }
             })).json()['data']['atd_txdot_crashes'][0]['cr3_file_metadata']
-        #cr3_metadata = json.reads(cr3_metadata_json)
 
     except:
         eprint("Request to get existing CR3 metadata failed.")
@@ -253,7 +264,7 @@ for crash in crashes:
 
     # this bool remains false if we never did a restore, so alert the user
     if not previous_version_found:
-        print("No previous versions found for crash " + str(crash))
+        print("No previous PDF versions found for crash " + str(crash))
 
     # drop a new line for more human readable stdout
     print("")
