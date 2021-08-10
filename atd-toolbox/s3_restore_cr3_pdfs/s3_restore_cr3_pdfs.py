@@ -2,11 +2,13 @@ import re
 import os
 import sys
 import json
-import boto3
-import magic
 import argparse
 import datetime
+
+import boto3
+import magic
 import requests
+
 from operator import attrgetter
 from botocore.config import Config
 
