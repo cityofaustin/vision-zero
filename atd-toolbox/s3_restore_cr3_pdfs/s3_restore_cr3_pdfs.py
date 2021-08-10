@@ -69,9 +69,9 @@ except:
 try:
     if not args.i_understand:
         print('')
-        print("Warning: This program changes S3 Objects.")
+        print("Warning: This program changes S3 Objects and the Vision Zero database.")
         print('')
-        print("This program will restore previous file versions which are larger than 10K for crashes specified in the JSON object you provide.")
+        print("This program will restore previous PDF CR3 versions for crashes specified in the JSON object you provide.")
         print("If there is a 'application/pdf' stored as a previous version of a specified crash's CR3, this program will restore that file to the current version.")
         print("This program will also update the databases cr3_file_metadata field for crash records based on the S3 file restored.")
         print("Please type 'I understand' to continue.")
