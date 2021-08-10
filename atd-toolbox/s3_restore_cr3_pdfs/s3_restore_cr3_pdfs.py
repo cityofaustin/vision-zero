@@ -70,11 +70,18 @@ except Exception as e:
 try:
     if not args.i_understand:
         # these do not use the logging functionality to avoid the timestamp on each and increase readability
+        print('')
         print("This program changes S3 Objects and the Vision Zero database.")
         print('')
-        print("This program will restore previous PDF CR3 versions for crashes specified in the JSON object you provide.")
-        print("If there is a 'application/pdf' stored as a previous version of a specified crash's CR3, this program will restore that file to the current version.")
-        print("This program will also update the databases cr3_file_metadata field for crash records based on the S3 file restored.")
+        print("This program will restore previous PDF CR3 versions for crashes")
+        print("specified in the JSON object you provide.")
+        print('')
+        print("If there is a 'application/pdf' stored as a previous version of a specified")
+        print("crash's CR3, this program will restore that file to the current version.")
+        print('')
+        print("This program will also update the databases cr3_file_metadata field")
+        print("for crash records based on the S3 file restored.")
+        print('')
         print("Please type 'I understand' to continue.")
         print('')
         ack = input()
