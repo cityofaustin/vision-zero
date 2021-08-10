@@ -58,7 +58,7 @@ try:
             action = 'store_true')
 
     args = argparse.parse_args()
-except:
+except Exception as e:
     # a stderr log is not needed, argparse croaks verbosly
     sys.exit(1)
 
@@ -76,7 +76,7 @@ try:
         print('')
         ack = input()
         assert(re.match("^i understand$", ack, re.I))
-except:
+except Exception as e:
     eprint("User acknoledgement failed.")
     sys.exit(1)
 
@@ -84,7 +84,7 @@ except:
 # verify that environment AWS variables were available and have populated values to be used to auth to AWS
 try:
     assert(ACCESS_KEY is not None and SECRET_KEY is not None)
-except:
+except Exception as e:
     eprint("Please set environment variables AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY")
     sys.exit(1)
 
@@ -92,7 +92,7 @@ except:
 # verify that environment Hasura variables were available and have populated values
 try:
     assert(HASURA_ADMIN_KEY is not None and HASURA_ENDPOINT is not None)
-except:
+except Exception as e:
     eprint("Please set environment variables HASURA_ADMIN_KEY and HASURA_ENDPOINT")
     sys.exit(1)
 
@@ -101,13 +101,13 @@ except:
 if (args.production):
     try:
         assert(not re.search("staging", HASURA_ENDPOINT, re.I))
-    except:
+    except Exception as e:
         eprint("Production flag used but staging appears in the Hasura endpoint URL")
         sys.exit(1)
 else:
     try:
         assert(re.search("staging", HASURA_ENDPOINT, re.I))
-    except:
+    except Exception as e:
         eprint("Production flag is not used and staging doesn't appear in the Hasura endpoint URL")
         sys.exit(1)
 
@@ -126,15 +126,16 @@ try:
             )
     prefix = ('production' if args.production else 'staging') + '/cris-cr3-files/'
     s3.list_objects(Bucket = bucket, Prefix = prefix)
-except:
+except Exception as e:
     eprint("Unable to complete call to S3; check AWS credentials")
+    eprint(str(e))
     sys.exit(1)
 
 
 # check to see if file is available on disk
 try:
     assert(os.path.isfile(args.crashes))
-except:
+except Exception as e:
     eprint("Crashes file is not available on disk")
     sys.exit(1)
 
@@ -143,8 +144,9 @@ except:
 with open(args.crashes) as input_file:
     try:
         crashes = json.load(input_file)['crashes']
-    except:
+    except Exception as e:
         eprint("Crashes file contains invalid JSON")
+        eprint(str(e))
         sys.exit(1)
 
 
@@ -171,8 +173,9 @@ for crash in crashes:
                 }
             })).json()['data']['atd_txdot_crashes'][0]['cr3_file_metadata']
 
-    except:
+    except Exception as e:
         eprint("Request to get existing CR3 metadata failed.")
+        eprint(str(e))
         sys.exit(1)
 
 
