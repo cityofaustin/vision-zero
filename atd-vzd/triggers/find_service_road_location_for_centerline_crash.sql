@@ -1,3 +1,8 @@
+-- This function is intended to be called via Hasura when the AWS lambda function, crash_update_location/app.py, 
+-- when a crash is found to be on a main-lane. It will return the location_id of a VZ location which belongs
+-- to the closest location that was formed from a service road and has its centroid lie within a cone
+-- eminating from the crash location in a direction 90 degrees out of phase of the direction of travel
+-- notated in the 'rpt_street_name' field or the 'rpt_sec_street_name' field of the crash.
 create or replace function find_service_road_location_for_centerline_crash(input_crash_id integer)
 returns setof atd_txdot_locations
 language 'sql'
