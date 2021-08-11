@@ -71,11 +71,12 @@ def is_crash_nonproper_and_directional(crash_id: int) -> str:
         return False
 
     check_nonproper_polygon_query = """
-        query has_alt_polygon($crash_id: Int) {
-          cr3_nonproper_crashes_on_mainlane(where: {crash_id: {_eq: $crash_id}}) {
-            surface_street_polygon
-          }
-        }
+    query find_service_road_location($crashId: Int!) {
+      find_service_road_location_for_centerline_crash(args: {input_crash_id: $crashId})
+      {
+        location_id
+      }
+    }
     """
 
     try:
@@ -89,17 +90,17 @@ def is_crash_nonproper_and_directional(crash_id: int) -> str:
                 {
                     "query": check_nonproper_polygon_query,
                     "variables": {
-                        "crash_id": crash_id
+                        "crashId": crash_id
                     }
                 }
             ),
             headers=HEADERS,
             verify=HASURA_SSL_VERIFY
         )
-        if (response.json()["data"]["cr3_nonproper_crashes_on_mainlane"][0]["surface_street_polygon"] is None):
+        if (response.json()["data"]["find_service_road_location_for_centerline_crash"][0]["location_id"] is None):
             return ''
         else:
-            return response.json()["data"]["cr3_nonproper_crashes_on_mainlane"][0]["surface_street_polygon"]
+            return response.json()["data"]["find_service_road_location_for_centerline_crash"][0]["location_id"]
     except:
         """
             In case the response is broken or invalid, we need to:
@@ -382,7 +383,7 @@ def handler(event, context):
 
 #if __name__ == "__main__":
     #event = {'Records': [{'body': """ { "event": { "data": { "old": null, "new": {
-                #"crash_id": 15359199,
+                #"crash_id": 17797640,
               #"location_id": null } } } } """}]}
     #context = {}
     #handler(event, context)
