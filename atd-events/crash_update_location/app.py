@@ -13,7 +13,6 @@ HASURA_ENDPOINT = os.getenv("HASURA_ENDPOINT", "")
 HASURA_EVENT_API = os.getenv("HASURA_EVENT_API", "")
 HASURA_SSL_VERIFY = True # Set False for local hasura with self-generated SSL cert
 
-HASURA_SSL_VERIFY = False # Set False for local hasura with self-generated SSL cert
 if not HASURA_SSL_VERIFY:
     requests.packages.urllib3.disable_warnings()
 
