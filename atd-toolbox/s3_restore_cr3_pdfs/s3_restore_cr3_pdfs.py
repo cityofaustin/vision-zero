@@ -1,23 +1,24 @@
-from __future__ import print_function
-
 import re
 import os
 import sys
 import json
-import boto3
-import magic
+import logging
 import argparse
 import datetime
-import requests
 from operator import attrgetter
+
+import boto3
+import magic
+import requests
 from botocore.config import Config
 
-# https://stackoverflow.com/questions/5574702/how-to-print-to-stderr-in-python
-def eprint(*args, **kwargs):
-    print(*args, file=sys.stderr, **kwargs)
+
+logging.basicConfig()
+log = logging.getLogger('restore')
+log.setLevel(logging.DEBUG)
+
 
 s3_resource = boto3.resource('s3')
-
 
 ACCESS_KEY = os.getenv('AWS_ACCESS_KEY_ID')
 SECRET_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
@@ -60,7 +61,7 @@ try:
             action = 'store_true')
 
     args = argparse.parse_args()
-except:
+except Exception as e:
     # a stderr log is not needed, argparse croaks verbosly
     sys.exit(1)
 
@@ -68,34 +69,42 @@ except:
 # This program will change the state of S3 objects.  Make sure the user is OK with what is about to happen.
 try:
     if not args.i_understand:
+        # these do not use the logging functionality to avoid the timestamp on each and increase readability
         print('')
-        print("Warning: This program changes S3 Objects and the Vision Zero database.")
+        print("This program changes S3 Objects and the Vision Zero database.")
         print('')
-        print("This program will restore previous PDF CR3 versions for crashes specified in the JSON object you provide.")
-        print("If there is a 'application/pdf' stored as a previous version of a specified crash's CR3, this program will restore that file to the current version.")
-        print("This program will also update the databases cr3_file_metadata field for crash records based on the S3 file restored.")
+        print("This program will restore previous PDF CR3 versions for crashes")
+        print("specified in the JSON object you provide.")
+        print('')
+        print("If there is a 'application/pdf' stored as a previous version of a specified")
+        print("crash's CR3, this program will restore that file to the current version.")
+        print('')
+        print("This program will also update the databases cr3_file_metadata field")
+        print("for crash records based on the S3 file restored.")
+        print('')
         print("Please type 'I understand' to continue.")
         print('')
         ack = input()
         assert(re.match("^i understand$", ack, re.I))
-except:
-    eprint("User acknoledgement failed.")
+except Exception as e:
+    log.error("User acknoledgement failed.")
+    log.debug(str(e))
     sys.exit(1)
 
 
 # verify that environment AWS variables were available and have populated values to be used to auth to AWS
 try:
     assert(ACCESS_KEY is not None and SECRET_KEY is not None)
-except:
-    eprint("Please set environment variables AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY")
+except Exception as e:
+    log.error("Please set environment variables AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY")
     sys.exit(1)
 
 
 # verify that environment Hasura variables were available and have populated values
 try:
     assert(HASURA_ADMIN_KEY is not None and HASURA_ENDPOINT is not None)
-except:
-    eprint("Please set environment variables HASURA_ADMIN_KEY and HASURA_ENDPOINT")
+except Exception as e:
+    log.error("Please set environment variables HASURA_ADMIN_KEY and HASURA_ENDPOINT")
     sys.exit(1)
 
 
@@ -103,14 +112,14 @@ except:
 if (args.production):
     try:
         assert(not re.search("staging", HASURA_ENDPOINT, re.I))
-    except:
-        eprint("Production flag used but staging appears in the Hasura endpoint URL")
+    except Exception as e:
+        log.error("Production flag used but staging appears in the Hasura endpoint URL")
         sys.exit(1)
 else:
     try:
         assert(re.search("staging", HASURA_ENDPOINT, re.I))
-    except:
-        eprint("Production flag is not used and staging doesn't appear in the Hasura endpoint URL")
+    except Exception as e:
+        log.error("Production flag is not used and staging doesn't appear in the Hasura endpoint URL")
         sys.exit(1)
 
 
@@ -128,16 +137,17 @@ try:
             )
     prefix = ('production' if args.production else 'staging') + '/cris-cr3-files/'
     s3.list_objects(Bucket = bucket, Prefix = prefix)
-except:
-    eprint("Unable to complete call to S3; check AWS credentials")
+except Exception as e:
+    log.error("Unable to complete call to S3; check AWS credentials")
+    log.debug(str(e))
     sys.exit(1)
 
 
 # check to see if file is available on disk
 try:
     assert(os.path.isfile(args.crashes))
-except:
-    eprint("Crashes file is not available on disk")
+except Exception as e:
+    log.error("Crashes file is not available on disk")
     sys.exit(1)
 
 
@@ -145,14 +155,15 @@ except:
 with open(args.crashes) as input_file:
     try:
         crashes = json.load(input_file)['crashes']
-    except:
-        eprint("Crashes file contains invalid JSON")
+    except Exception as e:
+        log.error("Crashes file contains invalid JSON")
+        log.debug(str(e))
         sys.exit(1)
 
 
 # iterate over crashes found in JSON object
 for crash in crashes:
-    print("Crash: " + str(crash))
+    log.info("Crash: " + str(crash))
 
     try:
         # graphql query to get current cr3_file_metadata
@@ -173,13 +184,14 @@ for crash in crashes:
                 }
             })).json()['data']['atd_txdot_crashes'][0]['cr3_file_metadata']
 
-    except:
-        eprint("Request to get existing CR3 metadata failed.")
+    except Exception as e:
+        log.error("Request to get existing CR3 metadata failed.")
+        log.debug(str(e))
         sys.exit(1)
 
 
     if cr3_metadata is None:
-        print("No metadata in database for crash; creating empty dict to populate")
+        log.info("No metadata in database for crash; creating empty dict to populate")
         cr3_metadata = {}
 
 
@@ -204,10 +216,10 @@ for crash in crashes:
         encoding = magic.Magic(flags = magic.MAGIC_MIME_ENCODING).id_buffer(previous_version)
 
         if mime_type != 'application/pdf':
-            print("Skipping version " + obj.get('VersionId') + " because it is a " + mime_type)
+            log.info("Skipping version " + obj.get('VersionId') + " because it is a " + mime_type)
             continue
         else:
-            print("Version " + obj.get('VersionId') + " is acceptable for restoration because it is a " + mime_type)
+            log.info("Version " + obj.get('VersionId') + " is acceptable for restoration because it is a " + mime_type)
 
         # update the cr3 file metadata dict
         cr3_metadata['mime_type'] = mime_type
@@ -221,13 +233,13 @@ for crash in crashes:
 
         # check for complete metadata
         if not is_valid_metadata(cr3_metadata):
-            print("Invalid metadata after updates")
+            log.warning("Invalid metadata after updates")
             continue
 
         # if we get here, we have found one, so note it and log it
         previous_version_found = True
 
-        print("Restoring " +  obj.get('VersionId') + " to " + key)
+        log.info("Restoring " +  obj.get('VersionId') + " to " + key)
 
         # restore the file, in situ on s3, from the previous version
         s3_resource.Object(bucket, key).copy_from(CopySource = { 'Bucket': bucket, 'Key': key, 'VersionId': obj.get('VersionId') } )
@@ -255,14 +267,14 @@ for crash in crashes:
                 }
             })).json()['data']['update_atd_txdot_crashes']['affected_rows']
 
-        print("Affected database rows: " + str(affected_rows))
+        log.info("Affected database rows: " + str(affected_rows))
 
         # once we've restored, we don't want to restore anymore, as we only want the most recent valid file
         break
 
     # this bool remains false if we never did a restore, so alert the user
     if not previous_version_found:
-        print("No previous PDF versions found for crash " + str(crash))
+        log.warning("No previous PDF versions found for crash " + str(crash))
 
     # drop a new line for more human readable stdout
     print("")
