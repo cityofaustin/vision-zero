@@ -7,7 +7,7 @@ import { colors } from "../../../constants/colors";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeartbeat, faMedkit } from "@fortawesome/free-solid-svg-icons";
 
-const CrashTypeSelector = ({ setCrashType }) => {
+const CrashTypeSelector = ({ setCrashType, componentName }) => {
   const fatalitiesAndSeriousInjuries = {
     name: "fatalitiesAndSeriousInjuries",
     textString: "Fatalities and Serious Injuries",
@@ -73,7 +73,7 @@ const CrashTypeSelector = ({ setCrashType }) => {
   return (
     <StyledButton>
       <Button
-        id="all-btn"
+        id={`${componentName}-all-btn`}
         type="button"
         className={classnames(
           { active: activeTab.name === "fatalitiesAndSeriousInjuries" },
@@ -86,7 +86,7 @@ const CrashTypeSelector = ({ setCrashType }) => {
         All
       </Button>
       <Button
-        id="fatalities-btn"
+        id={`${componentName}-fatalities-btn`}
         type="button"
         className={classnames(
           { active: activeTab.name === "fatalities" },
@@ -100,7 +100,7 @@ const CrashTypeSelector = ({ setCrashType }) => {
         {fatalitiesIcon} Fatalities
       </Button>
       <Button
-        id="serious-injuries-btn"
+        id={`${componentName}-serious-injuries-btn`}
         type="button"
         className={classnames(
           { active: activeTab.name === "seriousInjuries" },

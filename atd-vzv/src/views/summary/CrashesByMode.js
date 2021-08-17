@@ -201,7 +201,7 @@ const CrashesByMode = () => {
       </Row>
       <Row>
         <Col>
-          <CrashTypeSelector setCrashType={setCrashType} />
+          <CrashTypeSelector setCrashType={setCrashType} componentName="CrashesByMode"/>
         </Col>
       </Row>
       <Row>

@@ -95,27 +95,25 @@ const ViewTheMap = () => {
   return (
     <Container className="m-0 p-0">
       <StyledViewTheMap>
-      <A href="/map" className="text-dark text-decoration-none">
-        <Row>
-          <Col>
-              <div className="img-wrapper">
-                <div className={"map-image"}></div>
-              </div>
-          </Col>
-        </Row>
-        <Row className={"justify-content-center map-icon-row"}>
-          <div className={"map-icon-circle"}>
-            <FontAwesomeIcon size="3x" icon={faMap} className={"map-fa-icon"} />
-          </div>
-        </Row>
-        <Row className=" mb-4 justify-content-center">
-          {/* <A href="/map" className="card-link text-decoration-none"> */}
-            <h2 className="text-center card-link">
-              View crash data <br />
-              on interactive map
-            </h2>
-          {/* </A> */}
-        </Row>
+        <A href="/map" className="text-dark text-decoration-none">
+          <Row>
+            <Col>
+                <div className="img-wrapper">
+                  <div className={"map-image"}></div>
+                </div>
+            </Col>
+          </Row>
+          <Row className={"justify-content-center map-icon-row"}>
+            <div className={"map-icon-circle"}>
+              <FontAwesomeIcon size="3x" icon={faMap} className={"map-fa-icon"} />
+            </div>
+          </Row>
+          <Row className="mb-4 justify-content-center">
+              <h2 className="text-center card-link">
+                View crash data <br />
+                on interactive map
+              </h2>
+          </Row>
         </A>
       </StyledViewTheMap>
     </Container>
