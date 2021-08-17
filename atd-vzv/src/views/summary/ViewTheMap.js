@@ -95,13 +95,12 @@ const ViewTheMap = () => {
   return (
     <Container className="m-0 p-0">
       <StyledViewTheMap>
+      <A href="/map" className="text-dark text-decoration-none">
         <Row>
           <Col>
-            <A href="/map">
               <div className="img-wrapper">
                 <div className={"map-image"}></div>
               </div>
-            </A>
           </Col>
         </Row>
         <Row className={"justify-content-center map-icon-row"}>
@@ -110,13 +109,14 @@ const ViewTheMap = () => {
           </div>
         </Row>
         <Row className=" mb-4 justify-content-center">
-          <A href="/map" className="card-link text-decoration-none">
-            <h2 className="text-center text-dark text-decoration-none">
+          {/* <A href="/map" className="card-link text-decoration-none"> */}
+            <h2 className="text-center card-link">
               View crash data <br />
               on interactive map
             </h2>
-          </A>
+          {/* </A> */}
         </Row>
+        </A>
       </StyledViewTheMap>
     </Container>
   );
