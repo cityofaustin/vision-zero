@@ -42,12 +42,12 @@ const Header = () => {
 
   .inactive-nav-button {
     color: ${colors.white};
-    background: ${colors.info};
+    background: ${colors.infoDark};
     opacity: 1;
     margin-left: 5px;
     margin-right: 5px;
     :hover {
-      background: ${colors.infoDark};
+      background: ${colors.info};
     }
   }
 

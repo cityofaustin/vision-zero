@@ -287,7 +287,7 @@ const CrashesByMode = () => {
                                   onClick={customLegendClickHandler}
                                 >
                                   <hr className="my-0"></hr>
-                                  <h3 className="h6 text-center my-0 py-1">
+                                  <p className="h6 text-center my-0 py-1">
                                     <FontAwesomeIcon
                                       aria-hidden="true"
                                       className="block-icon"
@@ -301,7 +301,7 @@ const CrashesByMode = () => {
                                       {" "}
                                       {dataset.label}
                                     </p>
-                                  </h3>
+                                  </p>
                                 </div>
                               );
                             })}
@@ -318,9 +318,9 @@ const CrashesByMode = () => {
                               <StyledDiv>
                                 <div className="year-total-div">
                                   <div>
-                                    <h4 className="h6 text-center my-1 pt-2">
+                                    <p className="h6 text-center my-1 pt-2">
                                       <strong>{year}</strong>
-                                    </h4>
+                                    </p>
                                   </div>
                                   {chart.data.datasets.map(
                                     (mode, modeIterator) => {
@@ -329,11 +329,11 @@ const CrashesByMode = () => {
                                       return (
                                         <div key={modeIterator}>
                                           <hr className="my-0"></hr>
-                                          <h4
+                                          <p
                                             className={`h6 text-center my-1 ${paddingBottom}`}
                                           >
                                             {mode.data[yearIterator]}
-                                          </h4>
+                                          </p>
                                         </div>
                                       );
                                     }

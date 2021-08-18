@@ -101,13 +101,18 @@ const SummaryWidget = ({
         <Row>
           <Col>
             {/* Show spinner while waiting for data, add thousands separator to total */}
-            <h2 className="h1 total">
               {!!totalsObject ? (
-                numberWithCommas(totalsObject[currentYear])
+                <h2 className="h1 total">
+                  {numberWithCommas(totalsObject[currentYear])}
+                </h2>
               ) : (
-                <ColorSpinner color={backgroundColor} />
+                <h2 className="h1 total">
+                  <p className="sr-only">
+                    Data loading
+                  </p>
+                  <ColorSpinner color={backgroundColor} />
+                </h2>
               )}
-            </h2>
           </Col>
         </Row>
         <div className="text-left d-flex flex-row">
