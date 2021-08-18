@@ -11,7 +11,9 @@ from typing import Optional
 HASURA_ADMIN_SECRET = os.getenv("HASURA_ADMIN_SECRET", "")
 HASURA_ENDPOINT = os.getenv("HASURA_ENDPOINT", "")
 HASURA_EVENT_API = os.getenv("HASURA_EVENT_API", "")
-HASURA_SSL_VERIFY = True # Set False for local hasura with self-generated SSL cert
+# The following environment variable should only bet set to False for local development.
+# In production, this variable should be set be omitted or set explicitly to true.
+HASURA_SSL_VERIFY = os.getenv("HASURA_SSL_VERIFY", True) 
 
 if not HASURA_SSL_VERIFY:
     requests.packages.urllib3.disable_warnings()
@@ -327,6 +329,7 @@ def hasura_request(record: str) -> bool:
     # Try getting the crash data
     crash_id = get_crash_id(data)
     old_location_id = get_location_id(data)
+    relocate_crash_to_service_road_centroid = False
 
     # Check if this crash is a main-lane
     if is_crash_mainlane(crash_id):
