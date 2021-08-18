@@ -15,7 +15,7 @@ HASURA_EVENT_API = os.getenv("HASURA_EVENT_API", "")
 # In production, this variable should be omitted or set explicitly to true.
 HASURA_SSL_VERIFY = os.getenv("HASURA_SSL_VERIFY", True)
 
-# Workaround to allow setting of a bool via environment variables
+# Mechanism to allow setting of a bool via environment variables
 if type(HASURA_SSL_VERIFY) == str and HASURA_SSL_VERIFY.lower() in ('false', '0'):
     HASURA_SSL_VERIFY = False
 
@@ -159,7 +159,6 @@ def is_crash_mainlane(crash_id: int) -> bool:
             - Output the problem for debugging
             - Default to False, let it be part of a location for now.
         """
-        print("We've had a hasura error..")
         print(str(e))
         return False
 
