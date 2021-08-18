@@ -80,8 +80,8 @@ def is_crash_nonproper_and_directional(crash_id: int) -> str:
 
     try:
         """
-            We will attempt to find the record through a query on the cr3_nonproper_crashes_on_mainlane view.
-            if no matches are returned, then it means the crash does not meet all criteria to have an association to a SVRD polygon.
+            We will attempt to find the record through a query using the find_service_road_location_for_centerline_crash function via Hasura.
+            If the location_id key does not contain a location_id, then the crash is not a canidate for being linked to a service road location.
         """
         response = requests.post(
             HASURA_ENDPOINT,
