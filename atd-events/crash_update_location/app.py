@@ -13,7 +13,11 @@ HASURA_ENDPOINT = os.getenv("HASURA_ENDPOINT", "")
 HASURA_EVENT_API = os.getenv("HASURA_EVENT_API", "")
 # The following environment variable should only be set to False for local development.
 # In production, this variable should be omitted or set explicitly to true.
-HASURA_SSL_VERIFY = os.getenv("HASURA_SSL_VERIFY", True) 
+HASURA_SSL_VERIFY = os.getenv("HASURA_SSL_VERIFY", True)
+
+# Workaround to allow setting of a bool via environment variables
+if type(HASURA_SSL_VERIFY) == 'str' and HASURA_SSL_VERIFY.lower() in ('false', '0'):
+    HASURA_SSL_VERIFY = False
 
 if not HASURA_SSL_VERIFY:
     requests.packages.urllib3.disable_warnings()
@@ -155,6 +159,7 @@ def is_crash_mainlane(crash_id: int) -> bool:
             - Output the problem for debugging
             - Default to False, let it be part of a location for now.
         """
+        print("We've had a hasura error..")
         return False
 
 
@@ -331,8 +336,11 @@ def hasura_request(record: str) -> bool:
     old_location_id = get_location_id(data)
     relocate_crash_to_service_road_centroid = False
 
+    print("Crash: " + str(crash_id))
+
     # Check if this crash is a main-lane
     if is_crash_mainlane(crash_id):
+        print("Crash found to be mainlane")
         if(nonproper_level_5_directional_polygon := is_crash_nonproper_and_directional(crash_id)):
             new_location_id = nonproper_level_5_directional_polygon
             relocate_crash_to_service_road_centroid = True
@@ -340,8 +348,11 @@ def hasura_request(record: str) -> bool:
             # If so, make sure to nullify the new location_id
             new_location_id = None
     else:
+        print("Crash not found to be mainlane")
         # If not, then try to find the location...
         new_location_id = find_crash_location(crash_id)
+
+    print("Move to SVRD: " + str(relocate_crash_to_service_road_centroid))
 
     # Now compare the location values:
     if new_location_id == old_location_id:
@@ -384,9 +395,9 @@ def handler(event, context):
 
 # Mechanism to test easily on the command line
 
-#if __name__ == "__main__":
-    #event = {'Records': [{'body': """ { "event": { "data": { "old": null, "new": {
-                #"crash_id": 17797640,
-              #"location_id": null } } } } """}]}
-    #context = {}
-    #handler(event, context)
+if __name__ == "__main__":
+    event = {'Records': [{'body': """ { "event": { "data": { "old": null, "new": {
+                "crash_id": 16262508,
+              "location_id": null } } } } """}]}
+    context = {}
+    handler(event, context)
