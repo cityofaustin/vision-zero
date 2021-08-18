@@ -335,6 +335,7 @@ def hasura_request(record: str) -> bool:
     if is_crash_mainlane(crash_id):
         if(nonproper_level_5_directional_polygon := is_crash_nonproper_and_directional(crash_id)):
             new_location_id = nonproper_level_5_directional_polygon
+            relocate_crash_to_service_road_centroid = True
         else:
             # If so, make sure to nullify the new location_id
             new_location_id = None
