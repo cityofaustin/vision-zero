@@ -16,7 +16,7 @@ HASURA_EVENT_API = os.getenv("HASURA_EVENT_API", "")
 HASURA_SSL_VERIFY = os.getenv("HASURA_SSL_VERIFY", True)
 
 # Workaround to allow setting of a bool via environment variables
-if type(HASURA_SSL_VERIFY) == 'str' and HASURA_SSL_VERIFY.lower() in ('false', '0'):
+if type(HASURA_SSL_VERIFY) == str and HASURA_SSL_VERIFY.lower() in ('false', '0'):
     HASURA_SSL_VERIFY = False
 
 if not HASURA_SSL_VERIFY:
@@ -153,13 +153,14 @@ def is_crash_mainlane(crash_id: int) -> bool:
             verify=HASURA_SSL_VERIFY
         )
         return len(response.json()["data"]["find_cr3_mainlane_crash"]) > 0
-    except:
+    except Exception as e:
         """
             In case the response is broken or invalid, we need to:
             - Output the problem for debugging
             - Default to False, let it be part of a location for now.
         """
         print("We've had a hasura error..")
+        print(str(e))
         return False
 
 
