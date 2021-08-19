@@ -108,26 +108,28 @@ const Footer = () => {
   ];
 
   return (
-    <StyledFooter>
-      <Container fluid className="mt-5">
-        <img
-          alt="City of Austin seal"
-          className="coa-seal float-left"
-          height="100px"
-          src={logo}
-        />
-        <Row className="col-12 link-table">
-          <Col xs="12" className="link link-title">
-            City of Austin Transportation Department
-          </Col>
-          {footerLinks.map((link, i) => (
-            <Col key={i} xs="12" md="6" className="link">
-              {link.url ? <a href={link.url}>{link.text}</a> : link.text}
+    <footer>
+      <StyledFooter>
+        <Container fluid className="mt-5">
+          <img
+            alt="City of Austin seal"
+            className="coa-seal float-left"
+            height="100px"
+            src={logo}
+          />
+          <Row className="col-12 link-table">
+            <Col xs="12" className="link link-title">
+              City of Austin Transportation Department
             </Col>
-          ))}
-        </Row>
-      </Container>
-    </StyledFooter>
+            {footerLinks.map((link, i) => (
+              <Col key={i} xs="12" md="6" className="link">
+                {link.url ? <a href={link.url}>{link.text}</a> : link.text}
+              </Col>
+            ))}
+          </Row>
+        </Container>
+      </StyledFooter>
+    </footer>
   );
 };
 

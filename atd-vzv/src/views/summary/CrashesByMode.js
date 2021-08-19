@@ -297,10 +297,10 @@ const CrashesByMode = () => {
                                     <span className="sr-only">
                                       {dataset.label}
                                     </span>
-                                    <p className="mode-label-text">
+                                    <span className="mode-label-text">
                                       {" "}
                                       {dataset.label}
-                                    </p>
+                                    </span>
                                   </p>
                                 </div>
                               );

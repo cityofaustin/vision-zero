@@ -90,71 +90,73 @@ const Header = () => {
   } = React.useContext(StoreContext);
 
   return (
-    <StyledNavbar>
-      <Navbar
-        light
-        className="navbar shadow-sm fixed-top header-navbar px-0"
-        expand="md"
-      >
-        <Container
-          fluid
-          // In Summary view, match padding and margins of Summary content below
-          className={`${
-            isSummaryView
-              ? "px-xs-0 mx-xs-0 pl-md-2 pr-md-1 px-lg-3 mx-lg-4"
-              : "px-0"
-          }`}
+    <header role="banner">
+      <StyledNavbar>
+        <Navbar
+          light
+          className="navbar shadow-sm fixed-top header-navbar px-0"
+          expand="md"
         >
-          <Button
-            className="ml-3 sidedrawer-toggle"
-            color="dark"
-            onClick={() => setIsOpen(!isOpen)}
-          >
-            <span className="sr-only">Menu Button</span>
-            <FontAwesomeIcon icon={faBars} />
-          </Button>
-          <div className="vz-logo-wrapper">
-            <h1 className="sr-only">
-              Vision Zero -- Help Austin reach zero traffic deaths
-            </h1>
-            <img
-              className="vz-logo pl-lg-3"
-              // Need to adjust location of public folder to account for /viewer/ basepath
-              src={process.env.PUBLIC_URL + "/vz_logo.svg"}
-              alt="Vision Zero Austin Logo"
-            ></img>
-          </div>
-          <Nav
-            className={`navbar-links ml-auto ${
-              isSummaryView ? "px-lg-3" : "px-3"
+          <Container
+            fluid
+            // In Summary view, match padding and margins of Summary content below
+            className={`${
+              isSummaryView
+                ? "px-xs-0 mx-xs-0 pl-md-2 pr-md-1 px-lg-3 mx-lg-4"
+                : "px-0"
             }`}
-            navbar
           >
-            {navConfig.map(
-              (config, i) =>
-                currentPath !== config.url && (
-                  <NavItem key={i}>
-                    <NavLink
-                      tag={A}
-                      href={config.url}
-                      className="pr-0 pl-2 mr-0 ml-2"
-                    >
-                      <Button
-                        className={`nav-button inactive-nav-button mx-xs-0 mx-lg-2`}
-                        onClick={() => trackPageEvent(config.eventKey)}
-                        active={currentPath === config.url}
+            <Button
+              className="ml-3 sidedrawer-toggle"
+              color="dark"
+              onClick={() => setIsOpen(!isOpen)}
+            >
+              <span className="sr-only">Menu Button</span>
+              <FontAwesomeIcon icon={faBars} />
+            </Button>
+            <div className="vz-logo-wrapper">
+              <h1 className="sr-only">
+                Vision Zero -- Help Austin reach zero traffic deaths
+              </h1>
+              <img
+                className="vz-logo pl-lg-3"
+                // Need to adjust location of public folder to account for /viewer/ basepath
+                src={process.env.PUBLIC_URL + "/vz_logo.svg"}
+                alt="Vision Zero Austin Logo"
+              ></img>
+            </div>
+            <Nav
+              className={`navbar-links ml-auto ${
+                isSummaryView ? "px-lg-3" : "px-3"
+              }`}
+              navbar
+            >
+              {navConfig.map(
+                (config, i) =>
+                  currentPath !== config.url && (
+                    <NavItem key={i}>
+                      <NavLink
+                        tag={A}
+                        href={config.url}
+                        className="pr-0 pl-2 mr-0 ml-2"
                       >
-                        {config.icon}
-                        <span className="pl-2">{config.title}</span>
-                      </Button>
-                    </NavLink>
-                  </NavItem>
-                )
-            )}
-          </Nav>
-        </Container>
-      </Navbar>
-    </StyledNavbar>
+                        <Button
+                          className={`nav-button inactive-nav-button mx-xs-0 mx-lg-2`}
+                          onClick={() => trackPageEvent(config.eventKey)}
+                          active={currentPath === config.url}
+                        >
+                          {config.icon}
+                          <span className="pl-2">{config.title}</span>
+                        </Button>
+                      </NavLink>
+                    </NavItem>
+                  )
+              )}
+            </Nav>
+          </Container>
+        </Navbar>
+      </StyledNavbar>
+    </header>
   );
 };
 
