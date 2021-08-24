@@ -286,7 +286,7 @@ const PeopleByDemographics = () => {
       </Row>
       <Row>
         <Col>
-          <CrashTypeSelector setCrashType={setCrashType} />
+          <CrashTypeSelector setCrashType={setCrashType} componentName="PeopleByDemographics"/>
         </Col>
       </Row>
       <Row>

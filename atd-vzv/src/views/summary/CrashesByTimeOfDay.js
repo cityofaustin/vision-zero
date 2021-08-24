@@ -199,7 +199,7 @@ const CrashesByTimeOfDay = () => {
       </Row>
       <Row>
         <Col>
-          <CrashTypeSelector setCrashType={setCrashType} />
+          <CrashTypeSelector setCrashType={setCrashType} componentName="CrashesByTimeOfDay"/>
         </Col>
       </Row>
       <Row>
