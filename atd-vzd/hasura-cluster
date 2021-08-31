@@ -1,0 +1,270 @@
+#!/usr/bin/env bash
+#
+# Hasura Cluster Tool(kit)
+#   This is a tool kit that helps manage the VZD cluster.
+#
+# Austin Transportation Department
+# Data & Technology Services
+#
+set -o errexit
+
+HIDE_HASURA_KIT_BANNER="FALSE"
+
+#
+# Check if docker is running
+#
+function __get_docker_running() {
+  {
+    docker ps -q &> /dev/null && echo "TRUE";
+  } || {
+    echo "FALSE";
+  }
+}
+
+#
+# Gets the current hasura cluster status
+#
+function __get_status() {
+  echo $(curl --silent "http://localhost:8080/healthz");
+}
+
+#
+# Gets the current hasura cluster version
+#
+function __get_version() {
+  echo $(curl --silent "http://localhost:8080/v1/version");
+}
+
+#
+# Prints TRUE if the current configuration is local
+#
+function __is_local() {
+  if grep -q "endpoint: http://localhost:8080" config.yaml; then
+    echo "TRUE";
+  else
+    echo "FALSE";
+  fi;
+}
+
+#
+# Pings the Hasura server, returns True if it is ready to accept connections.
+#
+function hasura_server_ready() {
+  HASURA_SERVER_STATUS=$(curl --silent http://localhost:8080/v1/version)
+  if [[ "${HASURA_SERVER_STATUS}" =~ "version" ]]; then
+    echo "TRUE"
+  else
+    echo "FALSE"
+  fi
+}
+
+#
+# Checks the hasura server output (if any) and checks if it is ready,
+# if not, it waits 1 second and tries again (up to 60 seconds)
+#
+function wait_server_ready() {
+  INITIALIZATION_TIMEOUT_LIMIT=60
+  INITIALIZATION_COUNT=1
+  while [ "$(hasura_server_ready)" = "FALSE" ]; do
+    echo -ne "Hasura server not ready, please wait. ${INITIALIZATION_COUNT}/${INITIALIZATION_TIMEOUT_LIMIT} 🕔\r";
+    if [ $INITIALIZATION_COUNT -gt $INITIALIZATION_TIMEOUT_LIMIT ]; then
+      echo "Hasura server unavailable"
+      exit 1
+    fi
+    sleep 1
+    INITIALIZATION_COUNT=$(($INITIALIZATION_COUNT + 1))
+  done
+  echo "[λ] Hasura server ready!                    ✅";
+}
+
+#
+# Waits until the local hasura server is ready
+#
+function run_migration() {
+  if [[ "$(__is_local)" != "TRUE" ]]; then
+    echo "--------------------------------------------------------------------";
+    echo " 🛑️ Non-Local environment detected. Aborting.";
+    echo " Switch back to your local environment: './hasura-console setenv local'";
+    echo "--------------------------------------------------------------------";
+    stop;
+    exit 1;
+  fi;
+
+  echo "Checking the Hasura server is ready...";
+  CURRENT_STAGE_NAME="";
+  wait_server_ready;
+  echo "--------------------------------------------------------------------";
+  echo " ♻️  MIGRATIONS STARTED";
+  echo "--------------------------------------------------------------------";
+  {
+    {
+      CURRENT_STAGE_NAME="MIGRATE APPLY";
+      hasura migrate apply;
+    } && {
+      CURRENT_STAGE_NAME="METADATA APPLY";
+      hasura metadata apply;
+    } && {
+      CURRENT_STAGE_NAME="SEEDS APPLY";
+      hasura seeds apply;
+    }
+  } || {
+    echo "--------------------------------------------------------------------";
+    echo -e " 🛑️ Stopping hasura cluster. Error in stage: \e[31m ${CURRENT_STAGE_NAME}️ \e[0m";
+    echo "--------------------------------------------------------------------";
+    stop;
+    echo "--------------------------------------------------------------------";
+    echo -e " ⚠️  HASURA CLUSTER STOPPED! \n";
+    exit 1;
+  }
+  echo "--------------------------------------------------------------------";
+  echo -e " Migrations Finished! \n";
+}
+
+#
+# Starts the cluster and does NOT run migrations...
+#
+function start_only() {
+  START_MODE=$1;
+  if [[ "${START_MODE}" = "" ]]; then
+    docker-compose -f docker-compose.yml up -d;
+  else
+    docker-compose -f "${START_MODE}" up -d;
+  fi;
+
+}
+
+#
+# Starts the cluster, runs the migrations automatically
+#
+function start() {
+  START_MODE=$1;
+  if [[ $(__get_status) == "OK" ]]; then
+    status;
+    echo "The Hasura Cluster is already running...";
+    echo " - To stop, try: './hasura-cluster stop'";
+    echo -e " - To open the hasura console, try: './hasura-cluster console' \n";
+    exit 0;
+  else
+    start_only $START_MODE;
+    run_migration;
+    status;
+  fi;
+}
+
+#
+# Changes the current environment
+#
+function setenv() {
+  ENVIRONMENT=$1
+  if [[ "${ENVIRONMENT}" != "production" ]] && [[ "${ENVIRONMENT}" != "staging" ]] && [[ "${ENVIRONMENT}" != "local" ]]; then
+    echo "Invalid environment: '${ENVIRONMENT}' (command ignored)";
+    exit 0;
+  fi
+
+  echo "Switched environment to ${ENVIRONMENT}";
+  cat "./config/hasura.${ENVIRONMENT}.yaml" > ./config.yaml;
+  echo "current_environment: ${ENVIRONMENT}" >./hasura.current_environment.yaml;
+  cat ./hasura.current_environment.yaml
+}
+
+#
+# Stops the cluster and removes any created volumes
+#
+function stop() {
+  docker-compose -f docker-compose.yml down --volumes --remove-orphans;
+}
+
+#
+# Restarts the cluster
+#
+function restart() {
+  echo "--------------------------------------------------------------------";
+  echo " ⭕ Restarting the Hasura Cluster...️";
+  echo "--------------------------------------------------------------------";
+  stop;
+  start;
+}
+
+#
+# Removes any volumes whose names start with the string "atd-vzd"
+#
+function prune() {
+   docker volume rm $(docker volume ls --filter name=atd-vzd* -q);
+}
+
+#
+# Attaches to the log output of all containers in the cluster
+#
+function follow() {
+  docker-compose logs --follow
+}
+
+#
+# Shows the status of the server (after being started)
+#
+function status() {
+  VERSION=$(__get_version);
+  STATUS=$(__get_status);
+  MESSAGE=""
+  if [[ "${STATUS}" == "OK" ]]; then
+    EMOJI="✅";
+    MESSAGE="You may run 'hasura console' now!"
+  else
+    STATUS=" Unreachable"
+    VERSION="?"
+    EMOJI="⚠️";
+    MESSAGE="Try './hasura-cluster start' or 'docker ps -a' to check..."
+  fi;
+  echo -e "\n--------------------------------------------------------------------";
+  echo " ⛅️  Hasura Server Status";
+  echo "--------------------------------------------------------------------";
+  echo " Status: ${EMOJI} ${STATUS}";
+  echo " Version: ${VERSION}";
+  echo " ${MESSAGE}";
+  echo -e "--------------------------------------------------------------------\n";
+}
+
+#
+# Run the Hasura Console
+#
+function console() {
+  echo "Starting the Hasura Console... (press Ctrl+C to stop)";
+  hasura console;
+}
+
+#
+# Shows a fancy banner
+#
+function show_hasura_kit_banner() {
+  cat <<HASURA_EOM
+▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
+██░██░█░▄▄▀█░▄▄█░██░█░▄▄▀█░▄▄▀████░▄▄▀█░██░██░█░▄▄█▄░▄█░▄▄█░▄▄▀████░█▀▄██▄██▄░▄██
+██░▄▄░█░▀▀░█▄▄▀█░██░█░▀▀▄█░▀▀░████░████░██░██░█▄▄▀██░██░▄▄█░▀▀▄████░▄▀███░▄██░███
+██░██░█▄██▄█▄▄▄██▄▄▄█▄█▄▄█▄██▄████░▀▀▄█▄▄██▄▄▄█▄▄▄██▄██▄▄▄█▄█▄▄████░██░█▄▄▄██▄███
+▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
+HASURA_EOM
+}
+
+function show_banner() {
+  show_hasura_kit_banner;
+  echo -e " Hasura Cluster: \e[32m $1 \e[0m";
+  echo "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -";
+}
+
+#
+# Let's make sure docker is running...
+#
+if [[ "$(__get_docker_running)" != "TRUE" ]]; then
+  show_banner "$1" && echo "Docker is not running. Please start docker on your computer"
+  exit;
+fi;
+
+#
+# Start the hasura cluster...
+#
+if [[ "${HIDE_HASURA_KIT_BANNER}" != "TRUE" ]]; then
+   show_banner "$1" && $1 $2 $3;
+else
+  echo "Hasura Cluster: $1" && $1 $2 $3;
+fi;
+
