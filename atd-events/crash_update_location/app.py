@@ -348,13 +348,10 @@ def get_centroid_for_location(location_id: str) -> array:
             headers=HEADERS,
             verify=HASURA_SSL_VERIFY
         )
+
         return response.json()["data"]["atd_txdot_locations_with_centroids"][0]["centroid"]["coordinates"]
     except (IndexError, KeyError, TypeError):
         return None
-
-
-
-
 
 def hasura_request(record: str) -> bool:
     """
