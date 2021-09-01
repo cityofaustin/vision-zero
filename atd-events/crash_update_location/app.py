@@ -321,12 +321,12 @@ def update_location(crash_id: int, new_location_id: str) -> dict:
         "response": mutation_response.json()
     }
 
-def get_centroid_for_location(location_id: str) -> array:
+def get_centroid_for_location(location_id: str) -> list:
     """
     Returns a array of the longitude and latitude for a given location.
 
     :param location_id: The location_id to be queried
-    :return array:
+    :return list:
     """
 
     centroid_query = {
