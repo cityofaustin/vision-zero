@@ -464,9 +464,9 @@ def handler(event, context):
 
 # Mechanism to test easily on the command line
 
-if __name__ == "__main__":
-    event = {'Records': [{'body': """ { "event": { "data": { "old": null, "new": {
-                "crash_id": 18267534,
-              "location_id": null } } } } """}]}
-    context = {}
-    handler(event, context)
+#if __name__ == "__main__":
+    #event = {'Records': [{'body': """ { "event": { "data": { "old": null, "new": {
+                #"crash_id": 18267534,
+              #"location_id": null } } } } """}]}
+    #context = {}
+    #handler(event, context)
