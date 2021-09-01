@@ -321,6 +321,40 @@ def update_location(crash_id: int, new_location_id: str) -> dict:
         "response": mutation_response.json()
     }
 
+def get_centroid_for_location(location_id: str) -> array:
+    """
+    Returns a array of the longitude and latitude for a given location.
+
+    :param location_id: The location_id to be queried
+    :return array:
+    """
+
+    centroid_query = {
+        "query": """
+        query get_centroid($locationId: String) {
+          atd_txdot_locations_with_centroids(where: {location_id: {_eq: $locationId}}) {
+            centroid
+            }
+          }
+        """,
+        "variables": {
+            "locationId": location_id
+        }}
+
+    try:
+        response = requests.post(
+            HASURA_ENDPOINT,
+            data=json.dumps(centroid_query),
+            headers=HEADERS,
+            verify=HASURA_SSL_VERIFY
+        )
+        return response.json()["data"]["atd_txdot_locations_with_centroids"][0]["centroid"]["coordinates"]
+    except (IndexError, KeyError, TypeError):
+        return None
+
+
+
+
 
 def hasura_request(record: str) -> bool:
     """
@@ -344,6 +378,13 @@ def hasura_request(record: str) -> bool:
         if(nonproper_level_5_directional_polygon := is_crash_nonproper_and_directional(crash_id)):
             new_location_id = nonproper_level_5_directional_polygon
             relocate_crash_to_service_road_centroid = True
+            print("Move to SVRD: " + str(relocate_crash_to_service_road_centroid))
+            centroid = get_centroid_for_location(new_location_id)
+            print(centroid)
+
+
+
+
         else:
             # If so, make sure to nullify the new location_id
             new_location_id = None
@@ -352,7 +393,6 @@ def hasura_request(record: str) -> bool:
         # If not, then try to find the location...
         new_location_id = find_crash_location(crash_id)
 
-    print("Move to SVRD: " + str(relocate_crash_to_service_road_centroid))
 
     # Now compare the location values:
     if new_location_id == old_location_id:
