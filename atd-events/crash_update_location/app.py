@@ -353,6 +353,49 @@ def get_centroid_for_location(location_id: str) -> list:
     except (IndexError, KeyError, TypeError):
         return None
 
+
+def set_crash_position(crashId: int, point: list) -> bool:
+    """
+    Update a crashes latitude_primary and longitude_primary field and return boolean indicating success of failure.
+
+    :param crashId: The ID of the crash to move
+    :param point: A list containing the X, Y float values representing the longitude and latitude of a location.
+    :return bool:
+    """
+
+    mutation = {
+        "query": """
+            mutation update_crash_position($crashId: Int!, $longitude: float8, $latitude: float8) {
+                update_atd_txdot_crashes(where: {crash_id: {_eq: $crashId}},
+                _set:{latitude_primary:$latitude, longitude_primary: $longitude}) {
+                    affected_rows
+                }
+            }
+        """,
+        "variables": {
+            "crashId": crashId,
+            "longitude": point[0],
+            "latitude": point[1]
+            }
+        }
+
+    try:
+        response = requests.post(
+            HASURA_ENDPOINT,
+            data=json.dumps(mutation),
+            headers=HEADERS,
+            verify=HASURA_SSL_VERIFY
+        )
+
+        print(response.json())
+        return
+        #return response.json()["data"]["atd_txdot_locations_with_centroids"][0]["centroid"]["coordinates"]
+    except (IndexError, KeyError, TypeError):
+        return None
+
+
+
+
 def hasura_request(record: str) -> bool:
     """
     Returns True if the record was processed, False if no need for update.
@@ -378,6 +421,7 @@ def hasura_request(record: str) -> bool:
             print("Move to SVRD: " + str(relocate_crash_to_service_road_centroid))
             centroid = get_centroid_for_location(new_location_id)
             print(centroid)
+            set_crash_position(crash_id, centroid)
 
 
 
