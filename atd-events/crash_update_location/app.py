@@ -354,13 +354,13 @@ def get_centroid_for_location(location_id: str) -> list:
         return None
 
 
-def set_crash_position(crashId: int, point: list) -> bool:
+def set_crash_position(crashId: int, point: list) -> int:
     """
     Update a crashes latitude_primary and longitude_primary field and return boolean indicating success of failure.
 
     :param crashId: The ID of the crash to move
     :param point: A list containing the X, Y float values representing the longitude and latitude of a location.
-    :return bool:
+    :return int:
     """
 
     mutation = {
@@ -387,9 +387,7 @@ def set_crash_position(crashId: int, point: list) -> bool:
             verify=HASURA_SSL_VERIFY
         )
 
-        print(response.json())
-        return
-        #return response.json()["data"]["atd_txdot_locations_with_centroids"][0]["centroid"]["coordinates"]
+        return response.json()["data"]["atd_txdot_locations_with_centroids"][0]["centroid"]["coordinates"]
     except (IndexError, KeyError, TypeError):
         return None
 
@@ -410,27 +408,17 @@ def hasura_request(record: str) -> bool:
     old_location_id = get_location_id(data)
     relocate_crash_to_service_road_centroid = False
 
-    print("Crash: " + str(crash_id))
-
     # Check if this crash is a main-lane
     if is_crash_mainlane(crash_id):
-        print("Crash found to be mainlane")
         if(nonproper_level_5_directional_polygon := is_crash_nonproper_and_directional(crash_id)):
             new_location_id = nonproper_level_5_directional_polygon
             relocate_crash_to_service_road_centroid = True
-            print("Move to SVRD: " + str(relocate_crash_to_service_road_centroid))
             centroid = get_centroid_for_location(new_location_id)
-            print(centroid)
             set_crash_position(crash_id, centroid)
-
-
-
-
         else:
             # If so, make sure to nullify the new location_id
             new_location_id = None
     else:
-        print("Crash not found to be mainlane")
         # If not, then try to find the location...
         new_location_id = find_crash_location(crash_id)
 
@@ -478,7 +466,7 @@ def handler(event, context):
 
 if __name__ == "__main__":
     event = {'Records': [{'body': """ { "event": { "data": { "old": null, "new": {
-                "crash_id": 16262508,
+                "crash_id": 18267534,
               "location_id": null } } } } """}]}
     context = {}
     handler(event, context)
