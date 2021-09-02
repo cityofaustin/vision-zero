@@ -1,5 +1,5 @@
 # ATD - Toolbox
-This is a collection of scripts which have been written to serve a one-time or infrequent purpose. They are not intended to be run in an automated fashion, and commonly would be used from the command line when needed. They will each have different parameters and possible environment variables which need to be set for the script to function as intended. 
+This is a collection of scripts which have been written to serve a one-time or infrequent purpose. They are not intended to be run in an automated fashion and commonly would be used from the command line when needed. They will each have different parameters and possible environment variables which need to be set for the script to function as intended. 
 
 ##### `s3_restore_cr3_pdfs/`
 This contains a Python script will take a JSON file of crash ids, and download and check the CR3 file stored in S3 for each crash. It will verify the type of file using the `libmagic` library will restore the most recent `application/pdf` from the S3 version history of the file. 
