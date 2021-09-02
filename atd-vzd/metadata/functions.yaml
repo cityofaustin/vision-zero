@@ -1,0 +1,36 @@
+- function:
+    schema: public
+    name: find_cr3_collisions_for_location
+- function:
+    schema: public
+    name: find_cr3_mainlane_crash
+- function:
+    schema: public
+    name: find_crash_in_jurisdiction
+- function:
+    schema: public
+    name: find_crash_jurisdictions
+- function:
+    schema: public
+    name: find_crashes_in_jurisdiction
+- function:
+    schema: public
+    name: find_location_for_cr3_collision
+- function:
+    schema: public
+    name: find_location_for_noncr3_collision
+- function:
+    schema: public
+    name: find_noncr3_collisions_for_location
+- function:
+    schema: public
+    name: find_noncr3_mainlane_crash
+- function:
+    schema: public
+    name: find_service_road_location_for_centerline_crash
+- function:
+    schema: public
+    name: get_location_totals
+- function:
+    schema: public
+    name: search_atd_location_crashes
