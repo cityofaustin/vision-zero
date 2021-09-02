@@ -11,7 +11,7 @@ services:
   #   and access configuration (user, db, password) are all the same.
   #
   vzd-pgsql:
-    image: postgis/postgis:12-master
+    image: postgis/postgis:10-2.5-alpine
     volumes:
       - vzd_vol:/var/lib/postgresql/data
     expose:
