@@ -39,7 +39,7 @@ except Exception as e:
     # a stderr log is not needed, argparse croaks verbosly
     sys.exit(1)
 
-# This program will change the state of S3 objects.  Make sure the user is OK with what is about to happen.
+# This program will change crash positions.  Make sure the user is OK with what is about to happen.
 try:
     if not args.i_understand:
         # these do not use the logging functionality to avoid the timestamp on each and increase readability
