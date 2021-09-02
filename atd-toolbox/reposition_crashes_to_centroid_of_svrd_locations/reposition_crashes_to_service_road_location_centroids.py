@@ -30,7 +30,7 @@ try:
             action = 'store_true')
 
     argparse.add_argument("--i-understand",
-            help = 'Do not ask the user to acknoledge that this program changes the state of S3 objects and the database.',
+            help = 'Do not ask the user to acknoledge that this program changes the state of the database.',
             action = 'store_true')
 
 
