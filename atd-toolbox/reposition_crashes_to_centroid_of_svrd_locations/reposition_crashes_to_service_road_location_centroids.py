@@ -1,6 +1,8 @@
+import re
 import os
 import sys
 import json
+import argparse
 import logging
 
 import requests
@@ -8,7 +10,6 @@ import requests
 logging.basicConfig()
 log = logging.getLogger('crashmove')
 log.setLevel(logging.DEBUG)
-
 
 HASURA_ADMIN_KEY = os.getenv('HASURA_ADMIN_KEY')
 HASURA_ENDPOINT = os.getenv('HASURA_ENDPOINT')
@@ -79,4 +80,29 @@ else:
         log.error("Production flag is not used and staging doesn't appear in the Hasura endpoint URL")
         sys.exit(1)
 
+
+
+
+try:
+    # graphql query to get current cr3_file_metadata
+    get_crashes = """
+    query get_crashes_to_move {
+      cr3_nonproper_crashes_on_mainlane(where: {surface_street_polygon: {_is_null: false}}) {
+        crash_id
+        }
+      }
+    """
+    # get the metadata as a dict or None if null in DB
+    crashes = requests.post(HASURA_ENDPOINT, headers = HEADERS, data = json.dumps(
+        {
+        "query": get_crashes,
+        "variables": { }
+        })).json()['data']#['atd_txdot_crashes'][0]['cr3_file_metadata']
+
+except Exception as e:
+    log.error("Request to get crashes to move failed.")
+    log.debug(str(e))
+    sys.exit(1)
+
+print(crashes)
 
