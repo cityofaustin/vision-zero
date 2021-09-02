@@ -140,3 +140,36 @@ for crash in (crashes):
     position[1] = position[1] + delta;
 
     log.info("Updated Position: " + str(position))
+
+    try:
+        # graphql query to get current cr3_file_metadata
+        set_position = """
+        mutation update_crash_position($crashId: Int!, $longitude: float8, $latitude: float8) {
+            update_atd_txdot_crashes(where: {crash_id: {_eq: $crashId}},
+                _set:{latitude_primary:$latitude, longitude_primary: $longitude}) {
+            affected_rows
+            }
+        }
+        """
+        # get the metadata as a dict or None if null in DB
+        update = requests.post(HASURA_ENDPOINT, headers = HEADERS, data = json.dumps(
+            {
+            "query": set_position,
+            "variables": {
+                "crashId": crash_id,
+                "longitude": position[0],
+                "latitude": position[1]
+                }
+            })).json()
+
+    except Exception as e:
+        log.error("Request to set crash position failed.")
+        log.debug(str(e))
+        sys.exit(1)
+
+    log.info("Updated: " + str(update))
+
+    # new line for readability
+    print('');
+
+    break;
