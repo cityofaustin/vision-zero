@@ -97,12 +97,46 @@ try:
         {
         "query": get_crashes,
         "variables": { }
-        })).json()['data']#['atd_txdot_crashes'][0]['cr3_file_metadata']
+        })).json()['data']['cr3_nonproper_crashes_on_mainlane']
 
 except Exception as e:
     log.error("Request to get crashes to move failed.")
     log.debug(str(e))
     sys.exit(1)
 
-print(crashes)
 
+for crash in (crashes):
+
+    crash_id = int(crash['crash_id'])
+    print("Crash ID: " + str(crash_id))
+
+    try:
+        # graphql query to get current cr3_file_metadata
+        get_position = """
+        query get_position_of_crash($crashId: Int) {
+          atd_txdot_crashes(where: {crash_id: {_eq: $crashId}}) {
+            position
+            }
+          }
+        """
+        # get the metadata as a dict or None if null in DB
+        position = requests.post(HASURA_ENDPOINT, headers = HEADERS, data = json.dumps(
+            {
+            "query": get_position,
+            "variables": {
+                "crashId": crash_id
+                }
+            })).json()['data']['atd_txdot_crashes'][0]['position']['coordinates']
+
+    except Exception as e:
+        log.error("Request to get crash position failed.")
+        log.debug(str(e))
+        sys.exit(1)
+
+    delta = 0.00000001
+    log.info("Current Position: " + str(position))
+
+    log.info("Adding " + str(delta) + " to the latitude.")
+    position[1] = position[1] + delta;
+
+    log.info("Updated Position: " + str(position))
