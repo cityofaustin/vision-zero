@@ -95,7 +95,7 @@ const CrashesByPopulation = () => {
       </Row>
       <Row>
         <Col>
-          <CrashTypeSelector setCrashType={setCrashType} />
+          <CrashTypeSelector setCrashType={setCrashType} componentName="CrashesByPopulation"/>
         </Col>
       </Row>
       <Row>
@@ -106,11 +106,11 @@ const CrashesByPopulation = () => {
       <Row className="pb-2">
         <Col xs={4} s={2} m={2} l={2} xl={2}>
           <div>
-            <h3 className="h6 text-center pt-2 my-1">
+            <p className="h6 text-center pt-2 my-1">
               <strong>Year</strong>
-            </h3>
+            </p>
             <hr className="my-1"></hr>
-            <h3 className="h6 text-center py-1">Ratio</h3>
+            <p className="h6 text-center py-1">Ratio</p>
           </div>
         </Col>
         {!!chartData &&
@@ -119,13 +119,13 @@ const CrashesByPopulation = () => {
             <Col xs={4} s={2} m={2} l={2} xl={2} key={i}>
               <StyledDiv>
                 <div className="year-total-div">
-                  <h6 className="text-center pt-2 my-1">
+                  <p className="text-center pt-2 my-1">
                     <strong>{year}</strong>
-                  </h6>
+                  </p>
                   <hr className="my-1"></hr>
-                  <h6 className="text-center py-1">
+                  <p className="text-center py-1">
                     {chartData.datasets[0].data[i]}
-                  </h6>
+                  </p>
                 </div>
               </StyledDiv>
             </Col>
