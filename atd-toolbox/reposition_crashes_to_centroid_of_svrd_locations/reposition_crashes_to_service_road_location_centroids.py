@@ -1,6 +1,7 @@
 import re
 import os
 import sys
+import time
 import json
 import argparse
 import logging
@@ -84,7 +85,7 @@ else:
 
 
 try:
-    # graphql query to get current cr3_file_metadata
+    # Get crashes that have a polygon they should be moved to a service road polygon centroid
     get_crashes = """
     query get_crashes_to_move {
       cr3_nonproper_crashes_on_mainlane(where: {surface_street_polygon: {_is_null: false}}) {
@@ -92,7 +93,6 @@ try:
         }
       }
     """
-    # get the metadata as a dict or None if null in DB
     crashes = requests.post(HASURA_ENDPOINT, headers = HEADERS, data = json.dumps(
         {
         "query": get_crashes,
@@ -106,12 +106,11 @@ except Exception as e:
 
 
 for crash in (crashes):
-
     crash_id = int(crash['crash_id'])
-    print("Crash ID: " + str(crash_id))
+    log.info("Crash ID: " + str(crash_id))
 
     try:
-        # graphql query to get current cr3_file_metadata
+        # get current crash position
         get_position = """
         query get_position_of_crash($crashId: Int) {
           atd_txdot_crashes(where: {crash_id: {_eq: $crashId}}) {
@@ -119,7 +118,7 @@ for crash in (crashes):
             }
           }
         """
-        # get the metadata as a dict or None if null in DB
+
         position = requests.post(HASURA_ENDPOINT, headers = HEADERS, data = json.dumps(
             {
             "query": get_position,
@@ -142,7 +141,7 @@ for crash in (crashes):
     log.info("Updated Position: " + str(position))
 
     try:
-        # graphql query to get current cr3_file_metadata
+        # update the position
         set_position = """
         mutation update_crash_position($crashId: Int!, $longitude: float8, $latitude: float8) {
             update_atd_txdot_crashes(where: {crash_id: {_eq: $crashId}},
@@ -151,7 +150,7 @@ for crash in (crashes):
             }
         }
         """
-        # get the metadata as a dict or None if null in DB
+
         update = requests.post(HASURA_ENDPOINT, headers = HEADERS, data = json.dumps(
             {
             "query": set_position,
@@ -172,4 +171,5 @@ for crash in (crashes):
     # new line for readability
     print('');
 
-    break;
+    # slow down this function to quell the SQS queue
+    time.sleep(3)
