@@ -1,3 +1,38 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 10.15
+-- Dumped by pg_dump version 13.3
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- Name: public; Type: SCHEMA; Schema: -; Owner: atd_vz_data
+--
+
+ALTER SCHEMA public OWNER TO atd_vz_data;
+
+--
+-- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: atd_vz_data
+--
+
+COMMENT ON SCHEMA public IS 'standard public schema';
+
+
+--
+-- Name: atd_txdot_blueform_update_position(); Type: FUNCTION; Schema: public; Owner: atd_vz_data
+--
+
 CREATE FUNCTION public.atd_txdot_blueform_update_position() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
@@ -6,15 +41,32 @@ BEGIN
    RETURN NEW;
 END;
 $$;
+
+
+ALTER FUNCTION public.atd_txdot_blueform_update_position() OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot_charges_updates_audit_log(); Type: FUNCTION; Schema: public; Owner: atd_vz_data
+--
+
 CREATE FUNCTION public.atd_txdot_charges_updates_audit_log() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 BEGIN
     INSERT INTO atd_txdot_change_log (record_id, record_crash_id, record_type, record_json)
     VALUES (old.unique_id, old.crash_id, 'charges', row_to_json(old));
+
    RETURN NEW;
 END;
 $$;
+
+
+ALTER FUNCTION public.atd_txdot_charges_updates_audit_log() OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot_crashes_updates_audit_log(); Type: FUNCTION; Schema: public; Owner: atd_vz_data
+--
+
 CREATE FUNCTION public.atd_txdot_crashes_updates_audit_log() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
@@ -32,13 +84,16 @@ BEGIN
         INSERT INTO atd_txdot_change_log (record_id, record_crash_id, record_type, record_json, updated_by)
         VALUES (old.crash_id, old.crash_id, 'crashes', row_to_json(old), NEW.updated_by);
     END IF;
+            
     -- COPIES THE CITY_ID INTO ORIGINAL_CITY_ID FOR BACKUP 
     IF (TG_OP = 'INSERT') THEN
             NEW.original_city_id = NEW.city_id;
     END IF;
+
     ------------------------------------------------------------------------------------------
     -- LATITUDE / LONGITUDE OPERATIONS
     ------------------------------------------------------------------------------------------
+
     -- When CRIS is present, populate values to Primary column
     -- NOTE: It will update primary only if there is no lat/long data in the geo-coded or primary columns.
     -- If there is data in primary coordinates, then it will not do anything.
@@ -51,6 +106,7 @@ BEGIN
         NEW.latitude_primary = NEW.latitude;
         NEW.longitude_primary = NEW.longitude;
     END IF;
+
     -- When GeoCoded lat/longs are present, populate value to Primary
     -- NOTE: It will only update if there are geocoded lat/longs and there are no primary lat/longs
     IF (
@@ -63,9 +119,12 @@ BEGIN
     -- Finally we update the position field
     NEW.position = ST_SetSRID(ST_MakePoint(NEW.longitude_primary, NEW.latitude_primary), 4326);
     --- END OF LAT/LONG OPERATIONS ---
+
+
 	------------------------------------------------------------------------------------------
     -- CONFIRMED ADDRESSES
     ------------------------------------------------------------------------------------------
+
     -- If there is no confirmed primary address provided, then generate it:
     IF (NEW.address_confirmed_primary IS NULL) THEN
     	  NEW.address_confirmed_primary 	= TRIM(CONCAT(NEW.rpt_street_pfx, ' ', NEW.rpt_block_num, ' ', NEW.rpt_street_name, ' ', NEW.rpt_street_sfx));
@@ -75,6 +134,7 @@ BEGIN
 		    NEW.address_confirmed_secondary = TRIM(CONCAT(NEW.rpt_sec_street_pfx, ' ', NEW.rpt_sec_block_num, ' ', NEW.rpt_sec_street_name, ' ', NEW.rpt_sec_street_sfx));
     END IF;
     --- END OF ADDRESS OPERATIONS ---
+
     ------------------------------------------------------------------------------------------
     -- APD's Death Count
     ------------------------------------------------------------------------------------------
@@ -82,6 +142,7 @@ BEGIN
     IF (NEW.atd_fatality_count IS NULL) THEN
         NEW.atd_fatality_count = NEW.death_cnt;
 	  END IF;
+
     IF (NEW.apd_confirmed_death_count IS NULL) THEN
         NEW.apd_confirmed_death_count = NEW.death_cnt;
     -- Otherwise, the value has been entered manually, signal change with confirmed as 'Y'
@@ -99,13 +160,16 @@ BEGIN
         NEW.apd_human_update = 'Y';
     END IF;
     -- END OF APD's DEATH COUNT
+
     ------------------------------------------------------------------------------------------
     -- ESTIMATED COSTS
     ------------------------------------------------------------------------------------------
+
     -- First we need to gather a list of all of our costs, comprehensive and economic.
     estCompCostList = ARRAY(SELECT est_comp_cost_amount FROM atd_txdot__est_comp_cost ORDER BY est_comp_cost_id ASC);
     estCompCostListCrashBased = ARRAY(SELECT est_comp_cost_amount FROM atd_txdot__est_comp_cost_crash_based ORDER BY est_comp_cost_id ASC);
     estCompEconList = ARRAY(SELECT est_econ_cost_amount FROM atd_txdot__est_econ_cost ORDER BY est_econ_cost_id ASC);
+
     NEW.est_comp_cost = (0
        + (NEW.unkn_injry_cnt * (estCompCostList[1]))
        + (NEW.atd_fatality_count * (estCompCostList[2]))
@@ -114,6 +178,7 @@ BEGIN
        + (NEW.poss_injry_cnt * (estCompCostList[5]))
        + (NEW.non_injry_cnt * (estCompCostList[6]))
     )::decimal(10,2);
+
     IF (NEW.atd_fatality_count > 0) THEN NEW.est_comp_cost_crash_based = estCompCostListCrashBased[1];
     ELSIF (NEW.sus_serious_injry_cnt > 0) THEN NEW.est_comp_cost_crash_based = estCompCostListCrashBased[2];
     ELSIF (NEW.nonincap_injry_cnt > 0) THEN NEW.est_comp_cost_crash_based = estCompCostListCrashBased[3];
@@ -122,6 +187,7 @@ BEGIN
     ELSIF (NEW.unkn_injry_cnt > 0) THEN NEW.est_comp_cost_crash_based = estCompCostListCrashBased[6];
     ELSE NEW.est_comp_cost_crash_based = 0;
     END IF;
+
     NEW.est_econ_cost = (0
        + (NEW.unkn_injry_cnt * (estCompEconList[1]))
        + (NEW.atd_fatality_count * (estCompEconList[2]))
@@ -130,11 +196,14 @@ BEGIN
        + (NEW.poss_injry_cnt * (estCompEconList[5]))
        + (NEW.non_injry_cnt * (estCompEconList[6]))
     )::decimal(10,2);
+
     --- END OF COST OPERATIONS ---
+
     ------------------------------------------------------------------------------------------
     -- SPEED MGMT POINTS
     ------------------------------------------------------------------------------------------
     speedMgmtList = ARRAY (SELECT speed_mgmt_points FROM atd_txdot__speed_mgmt_lkp ORDER BY speed_mgmt_id ASC);
+
 	  NEW.speed_mgmt_points = (0
 	  	 + (NEW.unkn_injry_cnt * (speedMgmtList [1]))
        + (NEW.atd_fatality_count * (speedMgmtList [2]))
@@ -144,11 +213,13 @@ BEGIN
        + (NEW.non_injry_cnt * (speedMgmtList [6]))
     )::decimal (10,2);
     --- END OF SPEED MGMT POINTS ---
+
     ------------------------------------------------------------------------------------------
     -- MODE CATEGORY DATA
     ------------------------------------------------------------------------------------------
     NEW.atd_mode_category_metadata = get_crash_modes(NEW.crash_id);
     --- END OF MODE CATEGORY DATA ---
+
     ------------------------------------------------------------------------------------------
     -- AUSTIN FULL PURPOSE
     ------------------------------------------------------------------------------------------
@@ -157,17 +228,27 @@ BEGIN
         NEW.austin_full_purpose = 'Y';
     END IF;    
     --- END OF AUSTIN FULL PURPOSE ---
+
     -- Record the current timestamp
     NEW.last_update = current_timestamp;
     RETURN NEW;
 END;
 $$;
+
+
+ALTER FUNCTION public.atd_txdot_crashes_updates_audit_log() OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot_locations_updates_audit_log(); Type: FUNCTION; Schema: public; Owner: atd_vz_data
+--
+
 CREATE FUNCTION public.atd_txdot_locations_updates_audit_log() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 BEGIN
     INSERT INTO atd_txdot_locations_change_log (location_id, record_json)
     VALUES (OLD.location_id, row_to_json(OLD));
+
     ------------------------------------------------------------------------------------------
     -- Street Name Standardization
     ------------------------------------------------------------------------------------------
@@ -180,6 +261,9 @@ BEGIN
         NEW.description = (SELECT TRIM(STRING_AGG(TRIM(val), ' @ ')) AS output
                             FROM ( SELECT regexp_split_to_table(NEW.description, '@') AS val ORDER BY val ) AS sub);
     END IF;
+
+
+
     ------------------------------------------------------------------------------------------
     -- SCALE FACTOR
     ------------------------------------------------------------------------------------------
@@ -192,6 +276,7 @@ BEGIN
     END IF;
     NEW.scale_factor = NULL; -- CLEAN UP FOR NEXT USE, REGARDLESS.
     --- END OF SCALE FACTOR OPERATIONS ---
+
     ------------------------------------------------------------------------------------------
     -- ST_CENTROID (latitude, longitude)
     ------------------------------------------------------------------------------------------
@@ -205,11 +290,20 @@ BEGIN
         NEW.latitude = NULL;
     END IF;
     --- END OF CENTROID OPERATIONS ---
+
     -- Record the current timestamp
     NEW.last_update = current_timestamp;
     RETURN NEW;
 END;
 $$;
+
+
+ALTER FUNCTION public.atd_txdot_locations_updates_audit_log() OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot_locations_updates_crash_locations(); Type: FUNCTION; Schema: public; Owner: atd_vz_data
+--
+
 CREATE FUNCTION public.atd_txdot_locations_updates_crash_locations() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
@@ -217,36 +311,73 @@ BEGIN
     UPDATE atd_txdot_crash_locations
         SET location_id = NEW.location_id
     WHERE crash_id IN (SELECT crash_id FROM search_atd_location_crashes(NEW.location_id));
+
     RETURN NEW;
 END;
 $$;
+
+
+ALTER FUNCTION public.atd_txdot_locations_updates_crash_locations() OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot_person_updates_audit_log(); Type: FUNCTION; Schema: public; Owner: atd_vz_data
+--
+
 CREATE FUNCTION public.atd_txdot_person_updates_audit_log() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 BEGIN
     INSERT INTO atd_txdot_change_log (record_id, record_crash_id, record_type, record_json)
     VALUES (old.person_id, old.crash_id, 'person', row_to_json(old));
+
    RETURN NEW;
 END;
 $$;
+
+
+ALTER FUNCTION public.atd_txdot_person_updates_audit_log() OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot_primaryperson_updates_audit_log(); Type: FUNCTION; Schema: public; Owner: atd_vz_data
+--
+
 CREATE FUNCTION public.atd_txdot_primaryperson_updates_audit_log() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 BEGIN 
     INSERT INTO atd_txdot_change_log (record_id, record_crash_id, record_type, record_json)
     VALUES (old.primaryperson_id, old.crash_id, 'primaryperson', row_to_json(old));
+
    RETURN NEW;
 END;
 $$;
+
+
+ALTER FUNCTION public.atd_txdot_primaryperson_updates_audit_log() OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot_units_create(); Type: FUNCTION; Schema: public; Owner: atd_vz_data
+--
+
 CREATE FUNCTION public.atd_txdot_units_create() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 BEGIN
+
   NEW.travel_direction = NEW.veh_trvl_dir_id;
  	NEW.movement_id = 0;
+
     RETURN NEW;
 END;
 $$;
+
+
+ALTER FUNCTION public.atd_txdot_units_create() OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot_units_create_update(); Type: FUNCTION; Schema: public; Owner: atd_vz_data
+--
+
 CREATE FUNCTION public.atd_txdot_units_create_update() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
@@ -269,24 +400,53 @@ BEGIN
            WHEN NEW.veh_body_styl_id IN (30, 69, 103, 106) THEN 2
            -- MOTORCYCLE
            WHEN NEW.veh_body_styl_id = 71 THEN 3
+
            ELSE 4 END
        ) ELSE 9
     END);
+
     RETURN NEW;
 END;
 $$;
+
+
+ALTER FUNCTION public.atd_txdot_units_create_update() OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot_units_updates_audit_log(); Type: FUNCTION; Schema: public; Owner: atd_vz_data
+--
+
 CREATE FUNCTION public.atd_txdot_units_updates_audit_log() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 BEGIN
     INSERT INTO atd_txdot_change_log (record_id, record_crash_id, record_type, record_json)
     VALUES (old.unit_id, old.crash_id, 'units', row_to_json(old));
+
    RETURN NEW;
 END;
 $$;
+
+
+ALTER FUNCTION public.atd_txdot_units_updates_audit_log() OWNER TO atd_vz_data;
+
+--
+-- Name: exec(text); Type: FUNCTION; Schema: public; Owner: atd_vz_data
+--
+
 CREATE FUNCTION public.exec(text) RETURNS text
     LANGUAGE plpgsql
     AS $_$ BEGIN EXECUTE $1; RETURN $1; END; $_$;
+
+
+ALTER FUNCTION public.exec(text) OWNER TO atd_vz_data;
+
+SET default_tablespace = '';
+
+--
+-- Name: atd_txdot_crashes; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot_crashes (
     crash_id integer NOT NULL,
     crash_fatal_fl character varying(1),
@@ -500,6 +660,14 @@ CREATE TABLE public.atd_txdot_crashes (
     investigator_narrative_ocr text,
     est_comp_cost_crash_based numeric(10,2) DEFAULT 0
 );
+
+
+ALTER TABLE public.atd_txdot_crashes OWNER TO atd_vz_data;
+
+--
+-- Name: find_cr3_collisions_for_location(character varying); Type: FUNCTION; Schema: public; Owner: atd_vz_data
+--
+
 CREATE FUNCTION public.find_cr3_collisions_for_location(id character varying) RETURNS SETOF public.atd_txdot_crashes
     LANGUAGE sql STABLE
     AS $$
@@ -515,6 +683,14 @@ FROM atd_txdot_locations AS atd_loc
 WHERE
 			atd_loc.location_id::VARCHAR=id), ST_SetSRID(ST_MakePoint(cr3_crash.longitude_primary, cr3_crash.latitude_primary), 4326))
 $$;
+
+
+ALTER FUNCTION public.find_cr3_collisions_for_location(id character varying) OWNER TO atd_vz_data;
+
+--
+-- Name: find_cr3_mainlane_crash(integer); Type: FUNCTION; Schema: public; Owner: atd_vz_data
+--
+
 CREATE FUNCTION public.find_cr3_mainlane_crash(cr3_crash_id integer) RETURNS SETOF public.atd_txdot_crashes
     LANGUAGE sql STABLE
     AS $$
@@ -535,6 +711,14 @@ CREATE FUNCTION public.find_cr3_mainlane_crash(cr3_crash_id integer) RETURNS SET
         )
     WHERE atc.crash_id = cr3_crash_id
 $$;
+
+
+ALTER FUNCTION public.find_cr3_mainlane_crash(cr3_crash_id integer) OWNER TO atd_vz_data;
+
+--
+-- Name: find_crash_in_jurisdiction(integer, integer); Type: FUNCTION; Schema: public; Owner: atd_vz_data
+--
+
 CREATE FUNCTION public.find_crash_in_jurisdiction(jurisdiction_id integer, given_crash_id integer) RETURNS SETOF public.atd_txdot_crashes
     LANGUAGE sql STABLE
     AS $$
@@ -550,12 +734,28 @@ CREATE FUNCTION public.find_crash_in_jurisdiction(jurisdiction_id integer, given
           AND crash_id = given_crash_id
     )
 $$;
+
+
+ALTER FUNCTION public.find_crash_in_jurisdiction(jurisdiction_id integer, given_crash_id integer) OWNER TO atd_vz_data;
+
+--
+-- Name: atd_jurisdictions; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_jurisdictions (
     id integer NOT NULL,
     city_name character varying(30),
     jurisdiction_label character varying(50),
     geometry public.geometry(MultiPolygon,4326)
 );
+
+
+ALTER TABLE public.atd_jurisdictions OWNER TO atd_vz_data;
+
+--
+-- Name: find_crash_jurisdictions(integer); Type: FUNCTION; Schema: public; Owner: atd_vz_data
+--
+
 CREATE FUNCTION public.find_crash_jurisdictions(given_crash_id integer) RETURNS SETOF public.atd_jurisdictions
     LANGUAGE sql STABLE
     AS $$
@@ -571,6 +771,14 @@ CREATE FUNCTION public.find_crash_jurisdictions(given_crash_id integer) RETURNS 
     AND atc.crash_id = given_crash_id
 )
 $$;
+
+
+ALTER FUNCTION public.find_crash_jurisdictions(given_crash_id integer) OWNER TO atd_vz_data;
+
+--
+-- Name: find_crashes_in_jurisdiction(integer, date, date); Type: FUNCTION; Schema: public; Owner: atd_vz_data
+--
+
 CREATE FUNCTION public.find_crashes_in_jurisdiction(jurisdiction_id integer, crash_date_min date, crash_date_max date) RETURNS SETOF public.atd_txdot_crashes
     LANGUAGE sql STABLE
     AS $$
@@ -595,6 +803,14 @@ CREATE FUNCTION public.find_crashes_in_jurisdiction(jurisdiction_id integer, cra
           AND atc.crash_date <= crash_date_max
     )
 $$;
+
+
+ALTER FUNCTION public.find_crashes_in_jurisdiction(jurisdiction_id integer, crash_date_min date, crash_date_max date) OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot_locations; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot_locations (
     location_id character varying NOT NULL,
     description text NOT NULL,
@@ -654,6 +870,14 @@ CREATE TABLE public.atd_txdot_locations (
     polygon_hex_id character varying(16),
     location_group smallint DEFAULT 0
 );
+
+
+ALTER TABLE public.atd_txdot_locations OWNER TO atd_vz_data;
+
+--
+-- Name: find_location_for_cr3_collision(integer); Type: FUNCTION; Schema: public; Owner: atd_vz_data
+--
+
 CREATE FUNCTION public.find_location_for_cr3_collision(id integer) RETURNS SETOF public.atd_txdot_locations
     LANGUAGE sql STABLE
     AS $$SELECT atl.* FROM atd_txdot_crashes AS atc
@@ -666,6 +890,14 @@ CREATE FUNCTION public.find_location_for_cr3_collision(id integer) RETURNS SETOF
 WHERE 1=1
   AND atc.crash_id = id
 $$;
+
+
+ALTER FUNCTION public.find_location_for_cr3_collision(id integer) OWNER TO atd_vz_data;
+
+--
+-- Name: find_location_for_noncr3_collision(integer); Type: FUNCTION; Schema: public; Owner: atd_vz_data
+--
+
 CREATE FUNCTION public.find_location_for_noncr3_collision(id integer) RETURNS SETOF public.atd_txdot_locations
     LANGUAGE sql STABLE
     AS $$SELECT atl.* FROM atd_apd_blueform AS aab
@@ -678,6 +910,14 @@ CREATE FUNCTION public.find_location_for_noncr3_collision(id integer) RETURNS SE
 WHERE 1=1
   AND aab.case_id = id
 $$;
+
+
+ALTER FUNCTION public.find_location_for_noncr3_collision(id integer) OWNER TO atd_vz_data;
+
+--
+-- Name: find_location_id_for_cr3_collision(integer); Type: FUNCTION; Schema: public; Owner: atd_vz_data
+--
+
 CREATE FUNCTION public.find_location_id_for_cr3_collision(id integer) RETURNS character varying
     LANGUAGE sql STABLE
     AS $$    SELECT atl.location_id FROM atd_txdot_crashes AS atc
@@ -689,6 +929,14 @@ CREATE FUNCTION public.find_location_id_for_cr3_collision(id integer) RETURNS ch
 		 )
     WHERE atc.crash_id = id LIMIT 1
 $$;
+
+
+ALTER FUNCTION public.find_location_id_for_cr3_collision(id integer) OWNER TO atd_vz_data;
+
+--
+-- Name: atd_apd_blueform; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_apd_blueform (
     form_id integer NOT NULL,
     date date NOT NULL,
@@ -704,6 +952,14 @@ CREATE TABLE public.atd_apd_blueform (
     "position" public.geometry(Geometry,4326),
     est_comp_cost_crash_based numeric(10,2) DEFAULT 10000
 );
+
+
+ALTER TABLE public.atd_apd_blueform OWNER TO atd_vz_data;
+
+--
+-- Name: find_noncr3_collisions_for_location(character varying); Type: FUNCTION; Schema: public; Owner: atd_vz_data
+--
+
 CREATE FUNCTION public.find_noncr3_collisions_for_location(id character varying) RETURNS SETOF public.atd_apd_blueform
     LANGUAGE sql STABLE
     AS $$
@@ -719,6 +975,14 @@ FROM atd_txdot_locations AS atd_loc
 WHERE
 			atd_loc.location_id::VARCHAR=id), ST_SetSRID(ST_MakePoint (blueform.longitude, blueform.latitude), 4326))
 $$;
+
+
+ALTER FUNCTION public.find_noncr3_collisions_for_location(id character varying) OWNER TO atd_vz_data;
+
+--
+-- Name: find_noncr3_mainlane_crash(integer); Type: FUNCTION; Schema: public; Owner: atd_vz_data
+--
+
 CREATE FUNCTION public.find_noncr3_mainlane_crash(ncr3_case_id integer) RETURNS SETOF public.atd_apd_blueform
     LANGUAGE sql STABLE
     AS $$
@@ -740,9 +1004,19 @@ FROM atd_apd_blueform AS atc
     )
 WHERE atc.case_id = ncr3_case_id
 $$;
+
+
+ALTER FUNCTION public.find_noncr3_mainlane_crash(ncr3_case_id integer) OWNER TO atd_vz_data;
+
+--
+-- Name: find_service_road_location_for_centerline_crash(integer); Type: FUNCTION; Schema: public; Owner: atd_vz_data
+--
+
 CREATE FUNCTION public.find_service_road_location_for_centerline_crash(input_crash_id integer) RETURNS SETOF public.atd_txdot_locations
     LANGUAGE sql STABLE
     AS $$
+-- this CTE will setup a in-memory table containing one crash_id, its position, 
+-- and the seek direction if and only if the crash supplied lies within a mainlane strip
 with crash as (
   WITH cr3_mainlanes AS (
     SELECT st_transform(st_buffer(st_transform(st_union(cr3_mainlanes.geometry), 2277), 1), 4326) AS geometry
@@ -769,6 +1043,8 @@ with crash as (
   and c.crash_id = input_crash_id
   limit 1
 )
+-- this query joins the crash found in the CTE with the polygon layer to find the closest 
+-- polygon centroid in the cone eminating from the crash location in the seek_direction defined in the CTE
 select l.*
 from atd_txdot_locations l
 join crash c on (1 = 1)
@@ -796,6 +1072,14 @@ AND l.description ~~* '%SVRD%'
 ORDER BY (st_distance(st_centroid(l.shape), c.position))
 limit 1
 $$;
+
+
+ALTER FUNCTION public.find_service_road_location_for_centerline_crash(input_crash_id integer) OWNER TO atd_vz_data;
+
+--
+-- Name: get_crash_modes(integer); Type: FUNCTION; Schema: public; Owner: atd_vz_data
+--
+
 CREATE FUNCTION public.get_crash_modes(input_crash_id integer) RETURNS json
     LANGUAGE plpgsql
     AS $$
@@ -834,6 +1118,7 @@ BEGIN
                                WHEN vbody.veh_body_styl_id IN (30, 69, 103, 106) THEN 2
                                -- MOTORCYCLE
                                WHEN vbody.veh_body_styl_id = 71 THEN 3
+
                                ELSE 4 END
                            ) ELSE 9
                        END
@@ -845,6 +1130,7 @@ BEGIN
                     non_injry_cnt,
                     unkn_injry_cnt,
                     tot_injry_cnt
+
                 FROM atd_txdot_units AS atu
                     LEFT JOIN atd_txdot__veh_unit_desc_lkp AS vdesc ON vdesc.veh_unit_desc_id = atu.unit_desc_id
                     LEFT JOIN atd_txdot__veh_body_styl_lkp AS vbody ON vbody.veh_body_styl_id = atu.veh_body_styl_id
@@ -854,6 +1140,14 @@ BEGIN
     ) AS result;
     RETURN totals;
 END; $$;
+
+
+ALTER FUNCTION public.get_crash_modes(input_crash_id integer) OWNER TO atd_vz_data;
+
+--
+-- Name: get_est_comp_cost(integer, integer, integer, integer, integer, integer); Type: FUNCTION; Schema: public; Owner: atd_vz_data
+--
+
 CREATE FUNCTION public.get_est_comp_cost(unkn_injry_cnt integer, atd_fatality_count integer, sus_serious_injry_cnt integer, nonincap_injry_cnt integer, poss_injry_cnt integer, non_injry_cnt integer) RETURNS numeric
     LANGUAGE plpgsql
     AS $$
@@ -868,6 +1162,14 @@ BEGIN
    )::decimal(10,2);
 END;
 $$;
+
+
+ALTER FUNCTION public.get_est_comp_cost(unkn_injry_cnt integer, atd_fatality_count integer, sus_serious_injry_cnt integer, nonincap_injry_cnt integer, poss_injry_cnt integer, non_injry_cnt integer) OWNER TO atd_vz_data;
+
+--
+-- Name: get_est_econ_cost(integer, integer, integer, integer, integer, integer); Type: FUNCTION; Schema: public; Owner: atd_vz_data
+--
+
 CREATE FUNCTION public.get_est_econ_cost(unkn_injry_cnt integer, atd_fatality_count integer, sus_serious_injry_cnt integer, nonincap_injry_cnt integer, poss_injry_cnt integer, non_injry_cnt integer) RETURNS numeric
     LANGUAGE plpgsql
     AS $$
@@ -882,6 +1184,14 @@ BEGIN
    )::decimal(10,2);
 END;
 $$;
+
+
+ALTER FUNCTION public.get_est_econ_cost(unkn_injry_cnt integer, atd_fatality_count integer, sus_serious_injry_cnt integer, nonincap_injry_cnt integer, poss_injry_cnt integer, non_injry_cnt integer) OWNER TO atd_vz_data;
+
+--
+-- Name: atd_location_crash_and_cost_totals; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_location_crash_and_cost_totals (
     location_id character varying NOT NULL,
     total_crashes bigint NOT NULL,
@@ -891,7 +1201,21 @@ CREATE TABLE public.atd_location_crash_and_cost_totals (
     noncr3_total_crashes bigint NOT NULL,
     noncr3_est_comp_cost numeric NOT NULL
 );
+
+
+ALTER TABLE public.atd_location_crash_and_cost_totals OWNER TO atd_vz_data;
+
+--
+-- Name: TABLE atd_location_crash_and_cost_totals; Type: COMMENT; Schema: public; Owner: atd_vz_data
+--
+
 COMMENT ON TABLE public.atd_location_crash_and_cost_totals IS 'Table provides SETOF output for get_location_totals fn';
+
+
+--
+-- Name: get_location_totals(date, date, character varying, character varying); Type: FUNCTION; Schema: public; Owner: atd_vz_data
+--
+
 CREATE FUNCTION public.get_location_totals(cr3_crash_date date, noncr3_crash_date date, cr3_location character varying, noncr3_location character varying) RETURNS SETOF public.atd_location_crash_and_cost_totals
     LANGUAGE sql STABLE
     AS $$
@@ -933,6 +1257,10 @@ WITH
     WHERE atc.location_id = cr3_location
       AND atc.crash_date >= cr3_crash_date
   )
+-- Add the two crash types respective values together to
+-- get values for all crashes for the location. Also,
+-- pass through the individual crash type values in the final
+-- result.
 SELECT cr3_location AS location_id,
        cr3.total_crashes + noncr3.total_crashes AS total_crashes,
        cr3.est_comp_cost + noncr3.est_comp_cost AS total_est_comp_cost,
@@ -940,8 +1268,22 @@ SELECT cr3_location AS location_id,
        cr3.est_comp_cost AS cr3_est_comp_cost,
        noncr3.total_crashes AS noncr3_total_crashes,
        noncr3.est_comp_cost AS noncr3_est_comp_cost
+-- This is an implicit join of the two CTE tables. Because each
+-- table is known to have only a single row, the result will also
+-- be a single row, 1 * 1 = 1. This is why we have no need for a WHERE
+-- clause, as we narrowed down to the actual data we need in the CTEs.
+-- Joining a table of a single row to another talbe of a single row
+-- essentaily performs a concatenation of the two rows.
 FROM noncr3, cr3
   $$;
+
+
+ALTER FUNCTION public.get_location_totals(cr3_crash_date date, noncr3_crash_date date, cr3_location character varying, noncr3_location character varying) OWNER TO atd_vz_data;
+
+--
+-- Name: get_speed_mgmt_points(integer, integer, integer, integer, integer, integer); Type: FUNCTION; Schema: public; Owner: atd_vz_data
+--
+
 CREATE FUNCTION public.get_speed_mgmt_points(unkn_injry_cnt integer, atd_fatality_count integer, sus_serious_injry_cnt integer, nonincap_injry_cnt integer, poss_injry_cnt integer, non_injry_cnt integer) RETURNS numeric
     LANGUAGE plpgsql
     AS $$
@@ -956,12 +1298,28 @@ CREATE FUNCTION public.get_speed_mgmt_points(unkn_injry_cnt integer, atd_fatalit
         )::decimal (10,2);
     END;
 $$;
+
+
+ALTER FUNCTION public.get_speed_mgmt_points(unkn_injry_cnt integer, atd_fatality_count integer, sus_serious_injry_cnt integer, nonincap_injry_cnt integer, poss_injry_cnt integer, non_injry_cnt integer) OWNER TO atd_vz_data;
+
+--
+-- Name: search_atd_crash_location(integer); Type: FUNCTION; Schema: public; Owner: atd_vz_data
+--
+
 CREATE FUNCTION public.search_atd_crash_location(crash_id integer) RETURNS SETOF public.atd_txdot_locations
     LANGUAGE sql STABLE
     AS $$
     SELECT * FROM atd_txdot_locations AS atl
     WHERE ST_Contains(atl.shape, (SELECT atc.position FROM atd_txdot_crashes AS atc WHERE atc.crash_id = crash_id))
 $$;
+
+
+ALTER FUNCTION public.search_atd_crash_location(crash_id integer) OWNER TO atd_vz_data;
+
+--
+-- Name: search_atd_crash_locations(integer); Type: FUNCTION; Schema: public; Owner: atd_vz_data
+--
+
 CREATE FUNCTION public.search_atd_crash_locations(crash_id integer) RETURNS SETOF public.atd_txdot_locations
     LANGUAGE sql STABLE
     AS $$
@@ -969,6 +1327,14 @@ CREATE FUNCTION public.search_atd_crash_locations(crash_id integer) RETURNS SETO
     WHERE ST_Contains(atl.shape, (SELECT atc.position FROM atd_txdot_crashes AS atc WHERE atc.crash_id = crash_id LIMIT 1))
     LIMIT 1
 $$;
+
+
+ALTER FUNCTION public.search_atd_crash_locations(crash_id integer) OWNER TO atd_vz_data;
+
+--
+-- Name: search_atd_location_crashes(character varying); Type: FUNCTION; Schema: public; Owner: atd_vz_data
+--
+
 CREATE FUNCTION public.search_atd_location_crashes(location_id character varying) RETURNS SETOF public.atd_txdot_crashes
     LANGUAGE sql STABLE
     AS $$
@@ -976,11 +1342,20 @@ CREATE FUNCTION public.search_atd_location_crashes(location_id character varying
     JOIN atd_txdot_locations AS atl ON ST_CONTAINS(atl.shape, atc.position)
     WHERE atl.unique_id = location_id;
 $$;
+
+
+ALTER FUNCTION public.search_atd_location_crashes(location_id character varying) OWNER TO atd_vz_data;
+
+--
+-- Name: update_modified_crash_row(); Type: FUNCTION; Schema: public; Owner: atd_vz_data
+--
+
 CREATE FUNCTION public.update_modified_crash_row() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 BEGIN
     NEW.last_update = now();
+
     -- We need to update the position if both latitude_confirmed and longitude_confirmed are provided
     IF NEW.latitude_confirmed IS NOT NULL AND NEW.longitude_confirmed IS NOT NULL THEN
         NEW.position = point(NEW.latitude_confirmed, NEW.longitude_confirmed);
@@ -988,6 +1363,14 @@ BEGIN
     RETURN NEW;
 END;
 $$;
+
+
+ALTER FUNCTION public.update_modified_crash_row() OWNER TO atd_vz_data;
+
+--
+-- Name: all_atd_apd_blueform; Type: MATERIALIZED VIEW; Schema: public; Owner: atd_vz_data
+--
+
 CREATE MATERIALIZED VIEW public.all_atd_apd_blueform AS
  SELECT c.form_id,
     c.date,
@@ -1006,6 +1389,14 @@ CREATE MATERIALIZED VIEW public.all_atd_apd_blueform AS
      LEFT JOIN public.atd_txdot_locations p ON (((p.location_group = 1) AND (c."position" OPERATOR(public.&&) p.geometry) AND public.st_contains(p.geometry, c."position"))))
   WHERE (c.date >= ('2020-11-23'::date - '5 years'::interval))
   WITH NO DATA;
+
+
+ALTER TABLE public.all_atd_apd_blueform OWNER TO atd_vz_data;
+
+--
+-- Name: all_atd_txdot_crashes; Type: MATERIALIZED VIEW; Schema: public; Owner: atd_vz_data
+--
+
 CREATE MATERIALIZED VIEW public.all_atd_txdot_crashes AS
  SELECT c.crash_id,
     c.crash_fatal_fl,
@@ -1221,12 +1612,28 @@ CREATE MATERIALIZED VIEW public.all_atd_txdot_crashes AS
      LEFT JOIN public.atd_txdot_locations p ON (((p.location_group = 1) AND (c."position" OPERATOR(public.&&) p.geometry) AND public.st_contains(p.geometry, c."position"))))
   WHERE (c.crash_date >= ('2020-11-23'::date - '5 years'::interval))
   WITH NO DATA;
+
+
+ALTER TABLE public.all_atd_txdot_crashes OWNER TO atd_vz_data;
+
+--
+-- Name: cr3_mainlanes_gid_seq; Type: SEQUENCE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE SEQUENCE public.cr3_mainlanes_gid_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
+
+
+ALTER TABLE public.cr3_mainlanes_gid_seq OWNER TO atd_vz_data;
+
+--
+-- Name: cr3_mainlanes; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.cr3_mainlanes (
     gid integer DEFAULT nextval('public.cr3_mainlanes_gid_seq'::regclass) NOT NULL,
     fid numeric,
@@ -1386,6 +1793,14 @@ CREATE TABLE public.cr3_mainlanes (
     shape_leng numeric,
     geometry public.geometry(MultiLineString,4326)
 );
+
+
+ALTER TABLE public.cr3_mainlanes OWNER TO atd_vz_data;
+
+--
+-- Name: all_cr3_crashes_off_mainlane; Type: MATERIALIZED VIEW; Schema: public; Owner: atd_vz_data
+--
+
 CREATE MATERIALIZED VIEW public.all_cr3_crashes_off_mainlane AS
  WITH cr3_mainlanes AS (
          SELECT public.st_transform(public.st_buffer(public.st_transform(public.st_union(cr3_mainlanes.geometry), 2277), (1)::double precision), 4326) AS geometry
@@ -1605,12 +2020,28 @@ CREATE MATERIALIZED VIEW public.all_cr3_crashes_off_mainlane AS
     cr3_mainlanes l
   WHERE (NOT public.st_contains(l.geometry, c."position"))
   WITH NO DATA;
+
+
+ALTER TABLE public.all_cr3_crashes_off_mainlane OWNER TO atd_vz_data;
+
+--
+-- Name: non_cr3_mainlane_gid_seq; Type: SEQUENCE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE SEQUENCE public.non_cr3_mainlane_gid_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
+
+
+ALTER TABLE public.non_cr3_mainlane_gid_seq OWNER TO atd_vz_data;
+
+--
+-- Name: non_cr3_mainlanes; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.non_cr3_mainlanes (
     gid integer DEFAULT nextval('public.non_cr3_mainlane_gid_seq'::regclass) NOT NULL,
     __gid bigint,
@@ -1645,6 +2076,14 @@ CREATE TABLE public.non_cr3_mainlanes (
     shape__len numeric,
     geometry public.geometry(MultiLineString,4326)
 );
+
+
+ALTER TABLE public.non_cr3_mainlanes OWNER TO atd_vz_data;
+
+--
+-- Name: all_non_cr3_crashes_off_mainlane; Type: MATERIALIZED VIEW; Schema: public; Owner: atd_vz_data
+--
+
 CREATE MATERIALIZED VIEW public.all_non_cr3_crashes_off_mainlane AS
  WITH non_cr3_mainlanes AS (
          SELECT public.st_transform(public.st_buffer(public.st_transform(public.st_union(non_cr3_mainlanes.geometry), 2277), (1)::double precision), 4326) AS geometry
@@ -1667,6 +2106,14 @@ CREATE MATERIALIZED VIEW public.all_non_cr3_crashes_off_mainlane AS
     non_cr3_mainlanes l
   WHERE (NOT public.st_contains(l.geometry, c."position"))
   WITH NO DATA;
+
+
+ALTER TABLE public.all_non_cr3_crashes_off_mainlane OWNER TO atd_vz_data;
+
+--
+-- Name: all_crashes_off_mainlane; Type: MATERIALIZED VIEW; Schema: public; Owner: atd_vz_data
+--
+
 CREATE MATERIALIZED VIEW public.all_crashes_off_mainlane AS
  SELECT 1 AS non_cr3,
     0 AS cr3,
@@ -1702,11 +2149,27 @@ UNION
     all_cr3_crashes_off_mainlane.death_cnt
    FROM public.all_cr3_crashes_off_mainlane
   WITH NO DATA;
+
+
+ALTER TABLE public.all_crashes_off_mainlane OWNER TO atd_vz_data;
+
+--
+-- Name: atd__mode_category_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd__mode_category_lkp (
     id integer NOT NULL,
     atd_mode_category_mode_name character varying(128),
     atd_mode_category_desc character varying(128)
 );
+
+
+ALTER TABLE public.atd__mode_category_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_apd_blueform_form_id_seq; Type: SEQUENCE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE SEQUENCE public.atd_apd_blueform_form_id_seq
     AS integer
     START WITH 1
@@ -1714,7 +2177,21 @@ CREATE SEQUENCE public.atd_apd_blueform_form_id_seq
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
+
+
+ALTER TABLE public.atd_apd_blueform_form_id_seq OWNER TO atd_vz_data;
+
+--
+-- Name: atd_apd_blueform_form_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: atd_vz_data
+--
+
 ALTER SEQUENCE public.atd_apd_blueform_form_id_seq OWNED BY public.atd_apd_blueform.form_id;
+
+
+--
+-- Name: atd_jurisdictions_id_seq; Type: SEQUENCE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE SEQUENCE public.atd_jurisdictions_id_seq
     AS integer
     START WITH 1
@@ -1722,155 +2199,369 @@ CREATE SEQUENCE public.atd_jurisdictions_id_seq
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
+
+
+ALTER TABLE public.atd_jurisdictions_id_seq OWNER TO atd_vz_data;
+
+--
+-- Name: atd_jurisdictions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: atd_vz_data
+--
+
 ALTER SEQUENCE public.atd_jurisdictions_id_seq OWNED BY public.atd_jurisdictions.id;
+
+
+--
+-- Name: atd_txdot__agency_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__agency_lkp (
     agency_id integer NOT NULL,
     agency_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__agency_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__airbag_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__airbag_lkp (
     airbag_id integer NOT NULL,
     airbag_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__airbag_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__asmp_level_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__asmp_level_lkp (
     asmp_level_id integer NOT NULL,
     asmp_level_desc text NOT NULL
 );
+
+
+ALTER TABLE public.atd_txdot__asmp_level_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__base_type_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__base_type_lkp (
     base_type_id integer NOT NULL,
     base_type_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__base_type_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__bridge_detail_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__bridge_detail_lkp (
     bridge_detail_id integer NOT NULL,
     bridge_detail_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__bridge_detail_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__bridge_dir_of_traffic_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__bridge_dir_of_traffic_lkp (
     bridge_dir_of_traffic_id integer NOT NULL,
     bridge_dir_of_traffic_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__bridge_dir_of_traffic_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__bridge_ir_struct_func_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__bridge_ir_struct_func_lkp (
     bridge_ir_struct_func_id integer NOT NULL,
     bridge_ir_struct_func_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__bridge_ir_struct_func_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__bridge_loading_type_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__bridge_loading_type_lkp (
     bridge_loading_type_id integer NOT NULL,
     bridge_loading_type_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__bridge_loading_type_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__bridge_median_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__bridge_median_lkp (
     bridge_median_id integer NOT NULL,
     bridge_median_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__bridge_median_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__bridge_rte_struct_func_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__bridge_rte_struct_func_lkp (
     bridge_rte_struct_func_id integer NOT NULL,
     bridge_rte_struct_func_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__bridge_rte_struct_func_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__bridge_srvc_type_on_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__bridge_srvc_type_on_lkp (
     bridge_srvc_type_on_id integer NOT NULL,
     bridge_srvc_type_on_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__bridge_srvc_type_on_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__bridge_srvc_type_under_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__bridge_srvc_type_under_lkp (
     bridge_srvc_type_under_id integer NOT NULL,
     bridge_srvc_type_under_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__bridge_srvc_type_under_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__bus_type_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__bus_type_lkp (
     bus_type_id integer NOT NULL,
     bus_type_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__bus_type_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__carrier_id_type_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__carrier_id_type_lkp (
     carrier_id_type_id integer NOT NULL,
     carrier_id_type_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__carrier_id_type_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__carrier_type_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__carrier_type_lkp (
     carrier_type_id integer NOT NULL,
     carrier_type_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__carrier_type_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__cas_transp_locat_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__cas_transp_locat_lkp (
     cas_transp_locat_id integer NOT NULL,
     cas_transp_locat_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__cas_transp_locat_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__cas_transp_name_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__cas_transp_name_lkp (
     cas_transp_name_id integer NOT NULL,
     cas_transp_name_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__cas_transp_name_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__charge_cat_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__charge_cat_lkp (
     charge_cat_id integer NOT NULL,
     charge_cat_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__charge_cat_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__city_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__city_lkp (
     city_id integer NOT NULL,
     city_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__city_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__cmv_cargo_body_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__cmv_cargo_body_lkp (
     cmv_cargo_body_id integer NOT NULL,
     cmv_cargo_body_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__cmv_cargo_body_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__cmv_event_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__cmv_event_lkp (
     cmv_event_id integer NOT NULL,
     cmv_event_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__cmv_event_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__cmv_road_acc_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__cmv_road_acc_lkp (
     cmv_road_acc_id integer NOT NULL,
     cmv_road_acc_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__cmv_road_acc_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__cmv_trlr_type_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__cmv_trlr_type_lkp (
     cmv_trlr_type_id integer NOT NULL,
     cmv_trlr_type_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__cmv_trlr_type_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__cmv_veh_oper_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__cmv_veh_oper_lkp (
     cmv_veh_oper_id integer NOT NULL,
     cmv_veh_oper_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__cmv_veh_oper_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__cmv_veh_type_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__cmv_veh_type_lkp (
     cmv_veh_type_id integer NOT NULL,
     cmv_veh_type_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__cmv_veh_type_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__cntl_sect_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__cntl_sect_lkp (
     dps_region_id integer,
     dps_district_id integer,
@@ -1891,18 +2582,42 @@ CREATE TABLE public.atd_txdot__cntl_sect_lkp (
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__cntl_sect_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__cnty_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__cnty_lkp (
     cnty_id integer NOT NULL,
     cnty_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__cnty_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__collsn_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__collsn_lkp (
     collsn_id integer NOT NULL,
     collsn_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__collsn_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__contrib_factr_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__contrib_factr_lkp (
     contrib_factr_id integer NOT NULL,
     contrib_factr_desc character varying(128),
@@ -1910,94 +2625,222 @@ CREATE TABLE public.atd_txdot__contrib_factr_lkp (
     eff_end_date character varying(32),
     other character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__contrib_factr_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__crash_sev_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__crash_sev_lkp (
     crash_sev_id integer NOT NULL,
     crash_sev_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__crash_sev_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__culvert_type_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__culvert_type_lkp (
     culvert_type_id integer NOT NULL,
     culvert_type_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__culvert_type_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__curb_type_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__curb_type_lkp (
     curb_type_id integer NOT NULL,
     curb_type_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__curb_type_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__curve_type_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__curve_type_lkp (
     curve_type_id integer NOT NULL,
     curve_type_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__curve_type_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__delta_left_right_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__delta_left_right_lkp (
     delta_left_right_id integer NOT NULL,
     delta_left_right_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__delta_left_right_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__drug_category_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__drug_category_lkp (
     drug_category_id integer NOT NULL,
     drug_category_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__drug_category_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__drvr_ethncty_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__drvr_ethncty_lkp (
     drvr_ethncty_id integer NOT NULL,
     drvr_ethncty_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__drvr_ethncty_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__drvr_lic_cls_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__drvr_lic_cls_lkp (
     drvr_lic_cls_id integer NOT NULL,
     drvr_lic_cls_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__drvr_lic_cls_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__drvr_lic_endors_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__drvr_lic_endors_lkp (
     drvr_lic_endors_id integer NOT NULL,
     drvr_lic_endors_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__drvr_lic_endors_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__drvr_lic_restric_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__drvr_lic_restric_lkp (
     drvr_lic_restric_id integer NOT NULL,
     drvr_lic_restric_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__drvr_lic_restric_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__drvr_lic_type_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__drvr_lic_type_lkp (
     drvr_lic_type_id integer NOT NULL,
     drvr_lic_type_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__drvr_lic_type_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__ejct_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__ejct_lkp (
     ejct_id integer NOT NULL,
     ejct_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__ejct_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__entr_road_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__entr_road_lkp (
     entr_road_id integer NOT NULL,
     entr_road_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__entr_road_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__est_comp_cost; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__est_comp_cost (
     est_comp_cost_id integer NOT NULL,
     est_comp_cost_desc character varying(64),
     est_comp_cost_amount numeric
 );
+
+
+ALTER TABLE public.atd_txdot__est_comp_cost OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__est_comp_cost_crash_based; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__est_comp_cost_crash_based (
     est_comp_cost_id integer NOT NULL,
     est_comp_cost_desc character varying,
     est_comp_cost_amount numeric(10,2)
 );
+
+
+ALTER TABLE public.atd_txdot__est_comp_cost_crash_based OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__est_comp_cost_crash_based_est_comp_cost_id_seq; Type: SEQUENCE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE SEQUENCE public.atd_txdot__est_comp_cost_crash_based_est_comp_cost_id_seq
     AS integer
     START WITH 1
@@ -2005,291 +2848,689 @@ CREATE SEQUENCE public.atd_txdot__est_comp_cost_crash_based_est_comp_cost_id_seq
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
+
+
+ALTER TABLE public.atd_txdot__est_comp_cost_crash_based_est_comp_cost_id_seq OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__est_comp_cost_crash_based_est_comp_cost_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: atd_vz_data
+--
+
 ALTER SEQUENCE public.atd_txdot__est_comp_cost_crash_based_est_comp_cost_id_seq OWNED BY public.atd_txdot__est_comp_cost_crash_based.est_comp_cost_id;
+
+
+--
+-- Name: atd_txdot__est_econ_cost; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__est_econ_cost (
     est_econ_cost_id integer NOT NULL,
     est_econ_cost_desc character varying(64),
     est_econ_cost_amount numeric
 );
+
+
+ALTER TABLE public.atd_txdot__est_econ_cost OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__ethnicity_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__ethnicity_lkp (
     ethnicity_id integer NOT NULL,
     ethnicity_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__ethnicity_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__func_sys_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__func_sys_lkp (
     func_sys_id integer NOT NULL,
     func_sys_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__func_sys_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__gndr_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__gndr_lkp (
     gndr_id integer NOT NULL,
     gndr_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__gndr_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__harm_evnt_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__harm_evnt_lkp (
     harm_evnt_id integer NOT NULL,
     harm_evnt_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__harm_evnt_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__hazmat_cls_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__hazmat_cls_lkp (
     hazmat_cls_id integer NOT NULL,
     hazmat_cls_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__hazmat_cls_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__hazmat_idnbr_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__hazmat_idnbr_lkp (
     hazmat_idnbr_id integer NOT NULL,
     hazmat_idnbr_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__hazmat_idnbr_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__helmet_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__helmet_lkp (
     helmet_id integer NOT NULL,
     helmet_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__helmet_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__hwy_dsgn_hrt_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__hwy_dsgn_hrt_lkp (
     hwy_dsgn_hrt_id integer NOT NULL,
     hwy_dsgn_hrt_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__hwy_dsgn_hrt_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__hwy_dsgn_lane_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__hwy_dsgn_lane_lkp (
     hwy_dsgn_lane_id integer NOT NULL,
     hwy_dsgn_lane_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__hwy_dsgn_lane_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__hwy_sys_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__hwy_sys_lkp (
     hwy_sys_id integer NOT NULL,
     hwy_sys_short_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__hwy_sys_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__injry_sev_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__injry_sev_lkp (
     injry_sev_id integer NOT NULL,
     injry_sev_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__injry_sev_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__ins_co_name_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__ins_co_name_lkp (
     ins_co_name_id integer NOT NULL,
     ins_co_name_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__ins_co_name_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__ins_proof_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__ins_proof_lkp (
     ins_proof_id integer NOT NULL,
     ins_proof_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__ins_proof_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__ins_type_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__ins_type_lkp (
     ins_type_id integer NOT NULL,
     ins_type_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__ins_type_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__insurance_proof_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__insurance_proof_lkp (
     insurance_proof_id integer NOT NULL,
     insurance_proof_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__insurance_proof_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__insurance_type_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__insurance_type_lkp (
     insurance_type_id integer NOT NULL,
     insurance_type_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__insurance_type_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__intrsct_relat_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__intrsct_relat_lkp (
     intrsct_relat_id integer NOT NULL,
     intrsct_relat_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__intrsct_relat_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__inv_da_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__inv_da_lkp (
     inv_da_id integer NOT NULL,
     inv_da_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__inv_da_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__inv_notify_meth_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__inv_notify_meth_lkp (
     inv_notify_meth_id integer NOT NULL,
     inv_notify_meth_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__inv_notify_meth_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__inv_region_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__inv_region_lkp (
     inv_region_id integer NOT NULL,
     inv_region_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__inv_region_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__inv_service_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__inv_service_lkp (
     inv_service_id integer NOT NULL,
     inv_service_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__inv_service_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__light_cond_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__light_cond_lkp (
     light_cond_id integer NOT NULL,
     light_cond_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__light_cond_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__median_type_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__median_type_lkp (
     median_type_id integer NOT NULL,
     median_type_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__median_type_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__movt_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__movt_lkp (
     movement_id integer NOT NULL,
     movement_desc character varying(128)
 );
+
+
+ALTER TABLE public.atd_txdot__movt_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__mpo_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__mpo_lkp (
     mpo_id integer NOT NULL,
     mpo_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__mpo_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__nsew_dir_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__nsew_dir_lkp (
     nsew_dir_id integer NOT NULL,
     nsew_dir_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__nsew_dir_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__obj_struck_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__obj_struck_lkp (
     obj_struck_id integer NOT NULL,
     obj_struck_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__obj_struck_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__occpnt_pos_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__occpnt_pos_lkp (
     occpnt_pos_id integer NOT NULL,
     occpnt_pos_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__occpnt_pos_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__othr_factr_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__othr_factr_lkp (
     othr_factr_id integer NOT NULL,
     othr_factr_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__othr_factr_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__phys_featr_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__phys_featr_lkp (
     phys_featr_id integer NOT NULL,
     phys_featr_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__phys_featr_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__pop_group_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__pop_group_lkp (
     pop_group_id integer NOT NULL,
     pop_group_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__pop_group_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__poscrossing_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__poscrossing_lkp (
     poscrossing_id integer NOT NULL,
     poscrossing_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__poscrossing_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__prsn_type_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__prsn_type_lkp (
     prsn_type_id integer NOT NULL,
     prsn_type_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__prsn_type_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__ref_mark_nbr_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__ref_mark_nbr_lkp (
     ref_mark_nbr_id integer NOT NULL,
     ref_mark_nbr_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__ref_mark_nbr_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__rest_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__rest_lkp (
     rest_id integer NOT NULL,
     rest_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__rest_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__road_algn_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__road_algn_lkp (
     road_algn_id integer NOT NULL,
     road_algn_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__road_algn_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__road_cls_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__road_cls_lkp (
     road_cls_id integer NOT NULL,
     road_cls_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__road_cls_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__road_part_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__road_part_lkp (
     road_part_id integer NOT NULL,
     road_part_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__road_part_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__road_relat_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__road_relat_lkp (
     road_relat_id integer NOT NULL,
     road_relat_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__road_relat_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__road_type_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__road_type_lkp (
     road_type_id integer NOT NULL,
     road_type_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__road_type_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__rural_urban_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__rural_urban_lkp (
     rural_urban_id integer NOT NULL,
     rural_urban_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__rural_urban_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__rural_urban_type_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__rural_urban_type_lkp (
     rural_urban_type_id integer NOT NULL,
     rural_urban_type_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__rural_urban_type_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__rwy_sys_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__rwy_sys_lkp (
     rwy_sys_id integer NOT NULL,
     rwy_sys_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__rwy_sys_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__shldr_type_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__shldr_type_lkp (
     shldr_type_id integer NOT NULL,
     shldr_type_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__shldr_type_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__shldr_use_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__shldr_use_lkp (
     shldr_use_id integer NOT NULL,
     shldr_use_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__shldr_use_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__specimen_type_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__specimen_type_lkp (
     specimen_type_id integer NOT NULL,
     specimen_type_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__specimen_type_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__speed_mgmt_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__speed_mgmt_lkp (
     speed_mgmt_id integer NOT NULL,
     speed_mgmt_desc character varying(64),
     speed_mgmt_points numeric
 );
+
+
+ALTER TABLE public.atd_txdot__speed_mgmt_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__state_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__state_lkp (
     state_id integer NOT NULL,
     state_short_desc character varying(8),
@@ -2297,154 +3538,362 @@ CREATE TABLE public.atd_txdot__state_lkp (
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__state_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__street_sfx_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__street_sfx_lkp (
     street_sfx_id integer NOT NULL,
     street_sfx_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__street_sfx_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__substnc_cat_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__substnc_cat_lkp (
     substnc_cat_id integer NOT NULL,
     substnc_cat_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__substnc_cat_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__substnc_tst_result_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__substnc_tst_result_lkp (
     substnc_tst_result_id integer NOT NULL,
     substnc_tst_result_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__substnc_tst_result_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__surf_cond_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__surf_cond_lkp (
     surf_cond_id integer NOT NULL,
     surf_cond_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__surf_cond_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__surf_type_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__surf_type_lkp (
     surf_type_id integer NOT NULL,
     surf_type_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__surf_type_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__traffic_cntl_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__traffic_cntl_lkp (
     traffic_cntl_id integer NOT NULL,
     traffic_cntl_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__traffic_cntl_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__trvl_dir_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__trvl_dir_lkp (
     trvl_dir_id integer NOT NULL,
     trvl_dir_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__trvl_dir_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__tst_result_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__tst_result_lkp (
     tst_result_id integer NOT NULL,
     tst_result_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__tst_result_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__unit_desc_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__unit_desc_lkp (
     unit_desc_id integer NOT NULL,
     unit_desc_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__unit_desc_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__unit_dfct_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__unit_dfct_lkp (
     unit_dfct_id integer NOT NULL,
     unit_dfct_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__unit_dfct_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__uom_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__uom_lkp (
     uom_id integer NOT NULL,
     uom_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__uom_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__veh_body_styl_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__veh_body_styl_lkp (
     veh_body_styl_id integer NOT NULL,
     veh_body_styl_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__veh_body_styl_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__veh_color_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__veh_color_lkp (
     veh_color_id integer NOT NULL,
     veh_color_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__veh_color_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__veh_damage_description_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__veh_damage_description_lkp (
     veh_damage_description_id integer NOT NULL,
     veh_damage_description_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__veh_damage_description_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__veh_damage_severity_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__veh_damage_severity_lkp (
     veh_damage_severity_id integer NOT NULL,
     veh_damage_severity_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__veh_damage_severity_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__veh_direction_of_force_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__veh_direction_of_force_lkp (
     veh_direction_of_force_id integer NOT NULL,
     veh_direction_of_force_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__veh_direction_of_force_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__veh_make_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__veh_make_lkp (
     veh_make_id integer NOT NULL,
     veh_make_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__veh_make_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__veh_mod_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__veh_mod_lkp (
     veh_mod_id integer NOT NULL,
     veh_mod_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__veh_mod_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__veh_trvl_dir_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__veh_trvl_dir_lkp (
     veh_trvl_dir_id integer NOT NULL,
     veh_trvl_dir_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__veh_trvl_dir_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__veh_unit_desc_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__veh_unit_desc_lkp (
     veh_unit_desc_id integer NOT NULL,
     veh_unit_desc_desc text NOT NULL,
     eff_beg_date text NOT NULL,
     eff_end_date text NOT NULL
 );
+
+
+ALTER TABLE public.atd_txdot__veh_unit_desc_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__veh_year_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__veh_year_lkp (
     veh_mod_year integer NOT NULL,
     veh_mod_year_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__veh_year_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__wdcode_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__wdcode_lkp (
     wdcode_id integer NOT NULL,
     wdcode_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__wdcode_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__wthr_cond_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__wthr_cond_lkp (
     wthr_cond_id integer NOT NULL,
     wthr_cond_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__wthr_cond_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__y_n_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__y_n_lkp (
     y_n_id character varying(1) NOT NULL,
     y_n_desc text
 );
+
+
+ALTER TABLE public.atd_txdot__y_n_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__yes_no_choice_lkp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot__yes_no_choice_lkp (
     yes_no_choice_id integer NOT NULL,
     yes_no_choice_desc character varying(128),
     eff_beg_date character varying(32),
     eff_end_date character varying(32)
 );
+
+
+ALTER TABLE public.atd_txdot__yes_no_choice_lkp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot_change_log; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot_change_log (
     change_log_id integer NOT NULL,
     record_id integer NOT NULL,
@@ -2455,6 +3904,14 @@ CREATE TABLE public.atd_txdot_change_log (
     id integer,
     updated_by character varying(128)
 );
+
+
+ALTER TABLE public.atd_txdot_change_log OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot_change_log_id_seq; Type: SEQUENCE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE SEQUENCE public.atd_txdot_change_log_id_seq
     AS integer
     START WITH 1
@@ -2462,7 +3919,21 @@ CREATE SEQUENCE public.atd_txdot_change_log_id_seq
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
+
+
+ALTER TABLE public.atd_txdot_change_log_id_seq OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot_change_log_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: atd_vz_data
+--
+
 ALTER SEQUENCE public.atd_txdot_change_log_id_seq OWNED BY public.atd_txdot_change_log.change_log_id;
+
+
+--
+-- Name: atd_txdot_change_pending; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot_change_pending (
     id integer NOT NULL,
     record_id integer NOT NULL,
@@ -2473,6 +3944,14 @@ CREATE TABLE public.atd_txdot_change_pending (
     last_update timestamp without time zone DEFAULT now(),
     is_retired boolean DEFAULT true
 );
+
+
+ALTER TABLE public.atd_txdot_change_pending OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot_change_pending_id_seq; Type: SEQUENCE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE SEQUENCE public.atd_txdot_change_pending_id_seq
     AS integer
     START WITH 1
@@ -2480,7 +3959,21 @@ CREATE SEQUENCE public.atd_txdot_change_pending_id_seq
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
+
+
+ALTER TABLE public.atd_txdot_change_pending_id_seq OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot_change_pending_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: atd_vz_data
+--
+
 ALTER SEQUENCE public.atd_txdot_change_pending_id_seq OWNED BY public.atd_txdot_change_pending.id;
+
+
+--
+-- Name: atd_txdot_change_status; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot_change_status (
     change_status_id integer NOT NULL,
     description character varying(128) DEFAULT NULL::character varying,
@@ -2488,6 +3981,14 @@ CREATE TABLE public.atd_txdot_change_status (
     last_update date DEFAULT now(),
     is_retired boolean DEFAULT false
 );
+
+
+ALTER TABLE public.atd_txdot_change_status OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot_change_status_change_status_id_seq; Type: SEQUENCE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE SEQUENCE public.atd_txdot_change_status_change_status_id_seq
     AS integer
     START WITH 1
@@ -2495,7 +3996,21 @@ CREATE SEQUENCE public.atd_txdot_change_status_change_status_id_seq
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
+
+
+ALTER TABLE public.atd_txdot_change_status_change_status_id_seq OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot_change_status_change_status_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: atd_vz_data
+--
+
 ALTER SEQUENCE public.atd_txdot_change_status_change_status_id_seq OWNED BY public.atd_txdot_change_status.change_status_id;
+
+
+--
+-- Name: atd_txdot_changes; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot_changes (
     change_id integer NOT NULL,
     record_id integer NOT NULL,
@@ -2509,6 +4024,14 @@ CREATE TABLE public.atd_txdot_changes (
     crash_date date,
     record_uqid integer NOT NULL
 );
+
+
+ALTER TABLE public.atd_txdot_changes OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot_changes_change_id_seq; Type: SEQUENCE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE SEQUENCE public.atd_txdot_changes_change_id_seq
     AS integer
     START WITH 1
@@ -2516,7 +4039,21 @@ CREATE SEQUENCE public.atd_txdot_changes_change_id_seq
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
+
+
+ALTER TABLE public.atd_txdot_changes_change_id_seq OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot_changes_change_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: atd_vz_data
+--
+
 ALTER SEQUENCE public.atd_txdot_changes_change_id_seq OWNED BY public.atd_txdot_changes.change_id;
+
+
+--
+-- Name: atd_txdot_charges; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot_charges (
     charge_id integer NOT NULL,
     crash_id integer DEFAULT 0 NOT NULL,
@@ -2529,6 +4066,14 @@ CREATE TABLE public.atd_txdot_charges (
     updated_by character varying(64),
     is_retired boolean DEFAULT false NOT NULL
 );
+
+
+ALTER TABLE public.atd_txdot_charges OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot_charges_id_seq; Type: SEQUENCE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE SEQUENCE public.atd_txdot_charges_id_seq
     AS integer
     START WITH 1
@@ -2536,13 +4081,35 @@ CREATE SEQUENCE public.atd_txdot_charges_id_seq
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
+
+
+ALTER TABLE public.atd_txdot_charges_id_seq OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot_charges_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: atd_vz_data
+--
+
 ALTER SEQUENCE public.atd_txdot_charges_id_seq OWNED BY public.atd_txdot_charges.charge_id;
+
+
+--
+-- Name: atd_txdot_cities; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot_cities (
     city_id integer NOT NULL,
     city_desc text,
     eff_beg_date date,
     eff_end_date date
 );
+
+
+ALTER TABLE public.atd_txdot_cities OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot_crash_locations; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot_crash_locations (
     crash_location_id integer NOT NULL,
     crash_id integer NOT NULL,
@@ -2552,13 +4119,35 @@ CREATE TABLE public.atd_txdot_crash_locations (
     last_update date DEFAULT now(),
     is_retired boolean DEFAULT false
 );
+
+
+ALTER TABLE public.atd_txdot_crash_locations OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot_crash_locations_crash_location_id_seq; Type: SEQUENCE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE SEQUENCE public.atd_txdot_crash_locations_crash_location_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
+
+
+ALTER TABLE public.atd_txdot_crash_locations_crash_location_id_seq OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot_crash_locations_crash_location_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: atd_vz_data
+--
+
 ALTER SEQUENCE public.atd_txdot_crash_locations_crash_location_id_seq OWNED BY public.atd_txdot_crash_locations.crash_location_id;
+
+
+--
+-- Name: atd_txdot_crash_locations_ranking; Type: VIEW; Schema: public; Owner: atd_vz_data
+--
+
 CREATE VIEW public.atd_txdot_crash_locations_ranking AS
  SELECT l.location_id,
     sum(1) AS crashes,
@@ -2568,6 +4157,14 @@ CREATE VIEW public.atd_txdot_crash_locations_ranking AS
      LEFT JOIN public.atd_txdot_crashes c ON ((c.crash_id = l.crash_id)))
   GROUP BY l.location_id
   ORDER BY (sum(c.sus_serious_injry_cnt)) DESC;
+
+
+ALTER TABLE public.atd_txdot_crash_locations_ranking OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot_crash_status; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot_crash_status (
     crash_status_id integer NOT NULL,
     description character varying(128) DEFAULT NULL::character varying,
@@ -2575,6 +4172,14 @@ CREATE TABLE public.atd_txdot_crash_status (
     last_update date DEFAULT now(),
     is_retired boolean DEFAULT false
 );
+
+
+ALTER TABLE public.atd_txdot_crash_status OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot_crash_status_crash_status_id_seq; Type: SEQUENCE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE SEQUENCE public.atd_txdot_crash_status_crash_status_id_seq
     AS integer
     START WITH 1
@@ -2582,12 +4187,34 @@ CREATE SEQUENCE public.atd_txdot_crash_status_crash_status_id_seq
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
+
+
+ALTER TABLE public.atd_txdot_crash_status_crash_status_id_seq OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot_crash_status_crash_status_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: atd_vz_data
+--
+
 ALTER SEQUENCE public.atd_txdot_crash_status_crash_status_id_seq OWNED BY public.atd_txdot_crash_status.crash_status_id;
+
+
+--
+-- Name: atd_txdot_geocoders; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot_geocoders (
     geocoder_id integer NOT NULL,
     name character varying,
     description text
 );
+
+
+ALTER TABLE public.atd_txdot_geocoders OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot_geocoders_geocoder_id_seq; Type: SEQUENCE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE SEQUENCE public.atd_txdot_geocoders_geocoder_id_seq
     AS integer
     START WITH 1
@@ -2595,13 +4222,35 @@ CREATE SEQUENCE public.atd_txdot_geocoders_geocoder_id_seq
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
+
+
+ALTER TABLE public.atd_txdot_geocoders_geocoder_id_seq OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot_geocoders_geocoder_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: atd_vz_data
+--
+
 ALTER SEQUENCE public.atd_txdot_geocoders_geocoder_id_seq OWNED BY public.atd_txdot_geocoders.geocoder_id;
+
+
+--
+-- Name: atd_txdot_locations_change_log; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot_locations_change_log (
     change_log_id integer NOT NULL,
     location_id character varying(32),
     record_json json NOT NULL,
     update_timestamp timestamp without time zone DEFAULT now()
 );
+
+
+ALTER TABLE public.atd_txdot_locations_change_log OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot_locations_change_log_id_seq; Type: SEQUENCE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE SEQUENCE public.atd_txdot_locations_change_log_id_seq
     AS integer
     START WITH 1
@@ -2609,7 +4258,89 @@ CREATE SEQUENCE public.atd_txdot_locations_change_log_id_seq
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
+
+
+ALTER TABLE public.atd_txdot_locations_change_log_id_seq OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot_locations_change_log_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: atd_vz_data
+--
+
 ALTER SEQUENCE public.atd_txdot_locations_change_log_id_seq OWNED BY public.atd_txdot_locations_change_log.change_log_id;
+
+
+--
+-- Name: atd_txdot_locations_with_centroids; Type: VIEW; Schema: public; Owner: atd_vz_data
+--
+
+CREATE VIEW public.atd_txdot_locations_with_centroids AS
+ SELECT atd_txdot_locations.location_id,
+    atd_txdot_locations.description,
+    atd_txdot_locations.address,
+    atd_txdot_locations.metadata,
+    atd_txdot_locations.last_update,
+    atd_txdot_locations.is_retired,
+    atd_txdot_locations.is_studylocation,
+    atd_txdot_locations.priority_level,
+    atd_txdot_locations.shape,
+    atd_txdot_locations.latitude,
+    atd_txdot_locations.longitude,
+    atd_txdot_locations.scale_factor,
+    atd_txdot_locations.geometry,
+    atd_txdot_locations.unique_id,
+    atd_txdot_locations.asmp_street_level,
+    atd_txdot_locations.road,
+    atd_txdot_locations.intersection,
+    atd_txdot_locations.spine,
+    atd_txdot_locations.overlapping_geometry,
+    atd_txdot_locations.intersection_union,
+    atd_txdot_locations.broken_out_intersections_union,
+    atd_txdot_locations.road_name,
+    atd_txdot_locations.level_1,
+    atd_txdot_locations.level_2,
+    atd_txdot_locations.level_3,
+    atd_txdot_locations.level_4,
+    atd_txdot_locations.level_5,
+    atd_txdot_locations.street_level,
+    atd_txdot_locations.is_intersection,
+    atd_txdot_locations.is_svrd,
+    atd_txdot_locations.council_district,
+    atd_txdot_locations.non_cr3_report_count,
+    atd_txdot_locations.cr3_report_count,
+    atd_txdot_locations.total_crash_count,
+    atd_txdot_locations.total_comprehensive_cost,
+    atd_txdot_locations.total_speed_mgmt_points,
+    atd_txdot_locations.non_injury_count,
+    atd_txdot_locations.unknown_injury_count,
+    atd_txdot_locations.possible_injury_count,
+    atd_txdot_locations.non_incapacitating_injury_count,
+    atd_txdot_locations.suspected_serious_injury_count,
+    atd_txdot_locations.death_count,
+    atd_txdot_locations.crash_history_score,
+    atd_txdot_locations.sidewalk_score,
+    atd_txdot_locations.bicycle_score,
+    atd_txdot_locations.transit_score,
+    atd_txdot_locations.community_dest_score,
+    atd_txdot_locations.minority_score,
+    atd_txdot_locations.poverty_score,
+    atd_txdot_locations.community_context_score,
+    atd_txdot_locations.total_cc_and_history_score,
+    atd_txdot_locations.is_intersecting_district,
+    atd_txdot_locations.polygon_id,
+    atd_txdot_locations.signal_engineer_area_id,
+    atd_txdot_locations.development_engineer_area_id,
+    atd_txdot_locations.polygon_hex_id,
+    atd_txdot_locations.location_group,
+    public.st_centroid(atd_txdot_locations.shape) AS centroid
+   FROM public.atd_txdot_locations;
+
+
+ALTER TABLE public.atd_txdot_locations_with_centroids OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot_person; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot_person (
     crash_id integer,
     unit_nbr integer,
@@ -2652,6 +4383,14 @@ CREATE TABLE public.atd_txdot_person (
     is_retired boolean DEFAULT false,
     years_of_life_lost integer DEFAULT 0 NOT NULL
 );
+
+
+ALTER TABLE public.atd_txdot_person OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot_person_person_id_seq; Type: SEQUENCE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE SEQUENCE public.atd_txdot_person_person_id_seq
     AS integer
     START WITH 1
@@ -2659,7 +4398,21 @@ CREATE SEQUENCE public.atd_txdot_person_person_id_seq
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
+
+
+ALTER TABLE public.atd_txdot_person_person_id_seq OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot_person_person_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: atd_vz_data
+--
+
 ALTER SEQUENCE public.atd_txdot_person_person_id_seq OWNED BY public.atd_txdot_person.person_id;
+
+
+--
+-- Name: atd_txdot_primaryperson; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot_primaryperson (
     crash_id integer,
     unit_nbr integer,
@@ -2704,6 +4457,14 @@ CREATE TABLE public.atd_txdot_primaryperson (
     is_retired boolean DEFAULT false,
     years_of_life_lost integer DEFAULT 0 NOT NULL
 );
+
+
+ALTER TABLE public.atd_txdot_primaryperson OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot_primaryperson_primaryperson_id_seq; Type: SEQUENCE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE SEQUENCE public.atd_txdot_primaryperson_primaryperson_id_seq
     AS integer
     START WITH 1
@@ -2711,7 +4472,21 @@ CREATE SEQUENCE public.atd_txdot_primaryperson_primaryperson_id_seq
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
+
+
+ALTER TABLE public.atd_txdot_primaryperson_primaryperson_id_seq OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot_primaryperson_primaryperson_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: atd_vz_data
+--
+
 ALTER SEQUENCE public.atd_txdot_primaryperson_primaryperson_id_seq OWNED BY public.atd_txdot_primaryperson.primaryperson_id;
+
+
+--
+-- Name: atd_txdot_streets; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot_streets (
     street_id integer NOT NULL,
     posted_speed_limit integer,
@@ -2747,6 +4522,14 @@ CREATE TABLE public.atd_txdot_streets (
     shape_length numeric,
     shape public.geometry(MultiLineString,4326)
 );
+
+
+ALTER TABLE public.atd_txdot_streets OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot_units; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot_units (
     crash_id integer,
     unit_nbr integer,
@@ -2864,6 +4647,14 @@ CREATE TABLE public.atd_txdot_units (
     pbcat_pedalcyclist_id integer,
     e_scooter_id integer
 );
+
+
+ALTER TABLE public.atd_txdot_units OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot_units_temp; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.atd_txdot_units_temp (
     crash_id integer,
     unit_nbr integer,
@@ -2975,6 +4766,14 @@ CREATE TABLE public.atd_txdot_units_temp (
     veh_damage_severity2_id integer,
     veh_damage_direction_of_force2_id integer
 );
+
+
+ALTER TABLE public.atd_txdot_units_temp OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot_units_temp_unit_id_seq; Type: SEQUENCE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE SEQUENCE public.atd_txdot_units_temp_unit_id_seq
     AS integer
     START WITH 1
@@ -2982,7 +4781,21 @@ CREATE SEQUENCE public.atd_txdot_units_temp_unit_id_seq
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
+
+
+ALTER TABLE public.atd_txdot_units_temp_unit_id_seq OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot_units_temp_unit_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: atd_vz_data
+--
+
 ALTER SEQUENCE public.atd_txdot_units_temp_unit_id_seq OWNED BY public.atd_txdot_units_temp.unit_id;
+
+
+--
+-- Name: atd_txdot_units_unit_id_seq; Type: SEQUENCE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE SEQUENCE public.atd_txdot_units_unit_id_seq
     AS integer
     START WITH 1
@@ -2990,10 +4803,32 @@ CREATE SEQUENCE public.atd_txdot_units_unit_id_seq
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
+
+
+ALTER TABLE public.atd_txdot_units_unit_id_seq OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot_units_unit_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: atd_vz_data
+--
+
 ALTER SEQUENCE public.atd_txdot_units_unit_id_seq OWNED BY public.atd_txdot_units.unit_id;
+
+
+--
+-- Name: costs_list; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.costs_list (
     "array" numeric[]
 );
+
+
+ALTER TABLE public.costs_list OWNER TO atd_vz_data;
+
+--
+-- Name: council_districts; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.council_districts (
     gid integer NOT NULL,
     objectid bigint,
@@ -3008,6 +4843,14 @@ CREATE TABLE public.council_districts (
     shape__len numeric,
     geometry public.geometry(MultiPolygon,4326)
 );
+
+
+ALTER TABLE public.council_districts OWNER TO atd_vz_data;
+
+--
+-- Name: council_districts_gid_seq; Type: SEQUENCE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE SEQUENCE public.council_districts_gid_seq
     AS integer
     START WITH 1
@@ -3015,7 +4858,21 @@ CREATE SEQUENCE public.council_districts_gid_seq
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
+
+
+ALTER TABLE public.council_districts_gid_seq OWNER TO atd_vz_data;
+
+--
+-- Name: council_districts_gid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: atd_vz_data
+--
+
 ALTER SEQUENCE public.council_districts_gid_seq OWNED BY public.council_districts.gid;
+
+
+--
+-- Name: cr3_nonproper_crashes_on_mainlane; Type: VIEW; Schema: public; Owner: atd_vz_data
+--
+
 CREATE VIEW public.cr3_nonproper_crashes_on_mainlane AS
  WITH cr3_mainlanes AS (
          SELECT public.st_transform(public.st_buffer(public.st_transform(public.st_union(cr3_mainlanes.geometry), 2277), (1)::double precision), 4326) AS geometry
@@ -3294,6 +5151,14 @@ CREATE VIEW public.cr3_nonproper_crashes_on_mainlane AS
     (seek_direction d
      JOIN public.atd_jurisdictions aj ON ((aj.id = 5)))
   WHERE ((1 = 1) AND (d.crash_id = c.crash_id) AND public.st_contains(aj.geometry, c."position") AND ((c.private_dr_fl)::text = 'N'::text) AND (c.rpt_road_part_id = ANY (ARRAY[2, 3, 4, 5, 7])) AND public.st_contains(l.geometry, c."position"));
+
+
+ALTER TABLE public.cr3_nonproper_crashes_on_mainlane OWNER TO atd_vz_data;
+
+--
+-- Name: five_year_atd_apd_blueform; Type: MATERIALIZED VIEW; Schema: public; Owner: atd_vz_data
+--
+
 CREATE MATERIALIZED VIEW public.five_year_atd_apd_blueform AS
  SELECT c.form_id,
     c.date,
@@ -3312,6 +5177,14 @@ CREATE MATERIALIZED VIEW public.five_year_atd_apd_blueform AS
      LEFT JOIN public.atd_txdot_locations p ON (((p.location_group = 1) AND (c."position" OPERATOR(public.&&) p.geometry) AND public.st_contains(p.geometry, c."position"))))
   WHERE ((c.date >= '2015-10-30'::date) AND (c.date < '2020-10-30'::date))
   WITH NO DATA;
+
+
+ALTER TABLE public.five_year_atd_apd_blueform OWNER TO atd_vz_data;
+
+--
+-- Name: five_year_atd_txdot_crashes; Type: MATERIALIZED VIEW; Schema: public; Owner: atd_vz_data
+--
+
 CREATE MATERIALIZED VIEW public.five_year_atd_txdot_crashes AS
  SELECT c.crash_id,
     c.crash_fatal_fl,
@@ -3527,6 +5400,14 @@ CREATE MATERIALIZED VIEW public.five_year_atd_txdot_crashes AS
      LEFT JOIN public.atd_txdot_locations p ON (((p.location_group = 1) AND (c."position" OPERATOR(public.&&) p.geometry) AND public.st_contains(p.geometry, c."position"))))
   WHERE ((c.crash_date >= '2015-10-30'::date) AND (c.crash_date < '2020-10-30'::date))
   WITH NO DATA;
+
+
+ALTER TABLE public.five_year_atd_txdot_crashes OWNER TO atd_vz_data;
+
+--
+-- Name: five_year_cr3_crashes_off_mainlane; Type: MATERIALIZED VIEW; Schema: public; Owner: atd_vz_data
+--
+
 CREATE MATERIALIZED VIEW public.five_year_cr3_crashes_off_mainlane AS
  WITH cr3_mainlanes AS (
          SELECT public.st_transform(public.st_buffer(public.st_transform(public.st_union(cr3_mainlanes.geometry), 2277), (1)::double precision), 4326) AS geometry
@@ -3746,6 +5627,14 @@ CREATE MATERIALIZED VIEW public.five_year_cr3_crashes_off_mainlane AS
     cr3_mainlanes l
   WHERE (NOT public.st_contains(l.geometry, c."position"))
   WITH NO DATA;
+
+
+ALTER TABLE public.five_year_cr3_crashes_off_mainlane OWNER TO atd_vz_data;
+
+--
+-- Name: five_year_non_cr3_crashes_off_mainlane; Type: MATERIALIZED VIEW; Schema: public; Owner: atd_vz_data
+--
+
 CREATE MATERIALIZED VIEW public.five_year_non_cr3_crashes_off_mainlane AS
  WITH non_cr3_mainlanes AS (
          SELECT public.st_transform(public.st_buffer(public.st_transform(public.st_union(non_cr3_mainlanes.geometry), 2277), (1)::double precision), 4326) AS geometry
@@ -3768,6 +5657,14 @@ CREATE MATERIALIZED VIEW public.five_year_non_cr3_crashes_off_mainlane AS
     non_cr3_mainlanes l
   WHERE (NOT public.st_contains(l.geometry, c."position"))
   WITH NO DATA;
+
+
+ALTER TABLE public.five_year_non_cr3_crashes_off_mainlane OWNER TO atd_vz_data;
+
+--
+-- Name: five_year_all_crashes_off_mainlane; Type: MATERIALIZED VIEW; Schema: public; Owner: atd_vz_data
+--
+
 CREATE MATERIALIZED VIEW public.five_year_all_crashes_off_mainlane AS
  SELECT 1 AS non_cr3,
     0 AS cr3,
@@ -3803,6 +5700,14 @@ UNION
     five_year_cr3_crashes_off_mainlane.death_cnt
    FROM public.five_year_cr3_crashes_off_mainlane
   WITH NO DATA;
+
+
+ALTER TABLE public.five_year_all_crashes_off_mainlane OWNER TO atd_vz_data;
+
+--
+-- Name: five_year_all_crashes_off_mainlane_outside_surface_polygons; Type: MATERIALIZED VIEW; Schema: public; Owner: atd_vz_data
+--
+
 CREATE MATERIALIZED VIEW public.five_year_all_crashes_off_mainlane_outside_surface_polygons AS
  SELECT c.non_cr3,
     c.cr3,
@@ -3823,6 +5728,14 @@ CREATE MATERIALIZED VIEW public.five_year_all_crashes_off_mainlane_outside_surfa
      LEFT JOIN public.atd_txdot_locations p ON (((p.location_group = 1) AND (p.geometry OPERATOR(public.&&) c.geometry) AND public.st_contains(p.geometry, c.geometry))))
   WHERE (p.polygon_hex_id IS NULL)
   WITH NO DATA;
+
+
+ALTER TABLE public.five_year_all_crashes_off_mainlane_outside_surface_polygons OWNER TO atd_vz_data;
+
+--
+-- Name: five_year_cr3_crashes_outside_surface_polygons; Type: MATERIALIZED VIEW; Schema: public; Owner: atd_vz_data
+--
+
 CREATE MATERIALIZED VIEW public.five_year_cr3_crashes_outside_surface_polygons AS
  SELECT c.crash_id,
     c.crash_fatal_fl,
@@ -4037,6 +5950,14 @@ CREATE MATERIALIZED VIEW public.five_year_cr3_crashes_outside_surface_polygons A
    FROM public.five_year_atd_txdot_crashes c
   WHERE (c.surface_polygon_hex_id IS NULL)
   WITH NO DATA;
+
+
+ALTER TABLE public.five_year_cr3_crashes_outside_surface_polygons OWNER TO atd_vz_data;
+
+--
+-- Name: five_year_non_cr3_crashes_outside_surface_polygons; Type: MATERIALIZED VIEW; Schema: public; Owner: atd_vz_data
+--
+
 CREATE MATERIALIZED VIEW public.five_year_non_cr3_crashes_outside_surface_polygons AS
  SELECT c.form_id,
     c.date,
@@ -4054,6 +5975,14 @@ CREATE MATERIALIZED VIEW public.five_year_non_cr3_crashes_outside_surface_polygo
    FROM public.five_year_atd_apd_blueform c
   WHERE (c.surface_polygon_hex_id IS NULL)
   WITH NO DATA;
+
+
+ALTER TABLE public.five_year_non_cr3_crashes_outside_surface_polygons OWNER TO atd_vz_data;
+
+--
+-- Name: five_year_all_crashes_outside_surface_polygons; Type: MATERIALIZED VIEW; Schema: public; Owner: atd_vz_data
+--
+
 CREATE MATERIALIZED VIEW public.five_year_all_crashes_outside_surface_polygons AS
  SELECT 1 AS non_cr3,
     0 AS cr3,
@@ -4089,6 +6018,14 @@ UNION
     five_year_cr3_crashes_outside_surface_polygons.death_cnt
    FROM public.five_year_cr3_crashes_outside_surface_polygons
   WITH NO DATA;
+
+
+ALTER TABLE public.five_year_all_crashes_outside_surface_polygons OWNER TO atd_vz_data;
+
+--
+-- Name: five_year_all_crashes_outside_any_polygons; Type: MATERIALIZED VIEW; Schema: public; Owner: atd_vz_data
+--
+
 CREATE MATERIALIZED VIEW public.five_year_all_crashes_outside_any_polygons AS
  SELECT c.non_cr3,
     c.cr3,
@@ -4109,12 +6046,28 @@ CREATE MATERIALIZED VIEW public.five_year_all_crashes_outside_any_polygons AS
      LEFT JOIN public.atd_txdot_locations p ON (((p.location_group = 2) AND (p.geometry OPERATOR(public.&&) c.geometry) AND public.st_contains(p.geometry, c.geometry))))
   WHERE (p.polygon_hex_id IS NULL)
   WITH NO DATA;
+
+
+ALTER TABLE public.five_year_all_crashes_outside_any_polygons OWNER TO atd_vz_data;
+
+--
+-- Name: hin_corridors; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.hin_corridors (
     id integer NOT NULL,
     name character varying(128),
     corridor public.geometry(MultiLineString,4326),
     buffered_corridor public.geometry(MultiPolygon,4326)
 );
+
+
+ALTER TABLE public.hin_corridors OWNER TO atd_vz_data;
+
+--
+-- Name: hin_corridors_id_seq; Type: SEQUENCE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE SEQUENCE public.hin_corridors_id_seq
     AS integer
     START WITH 1
@@ -4122,34 +6075,88 @@ CREATE SEQUENCE public.hin_corridors_id_seq
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
+
+
+ALTER TABLE public.hin_corridors_id_seq OWNER TO atd_vz_data;
+
+--
+-- Name: hin_corridors_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: atd_vz_data
+--
+
 ALTER SEQUENCE public.hin_corridors_id_seq OWNED BY public.hin_corridors.id;
+
+
+--
+-- Name: intersection_road_map_id_seq; Type: SEQUENCE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE SEQUENCE public.intersection_road_map_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
+
+
+ALTER TABLE public.intersection_road_map_id_seq OWNER TO atd_vz_data;
+
+--
+-- Name: intersection_road_map; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.intersection_road_map (
     id integer DEFAULT nextval('public.intersection_road_map_id_seq'::regclass) NOT NULL,
     intersection integer NOT NULL,
     road integer NOT NULL
 );
+
+
+ALTER TABLE public.intersection_road_map OWNER TO atd_vz_data;
+
+--
+-- Name: intersections_id_seq; Type: SEQUENCE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE SEQUENCE public.intersections_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
+
+
+ALTER TABLE public.intersections_id_seq OWNER TO atd_vz_data;
+
+--
+-- Name: intersections; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.intersections (
     id integer DEFAULT nextval('public.intersections_id_seq'::regclass) NOT NULL,
     geometry public.geometry(Point,4326)
 );
+
+
+ALTER TABLE public.intersections OWNER TO atd_vz_data;
+
+--
+-- Name: polygons_id_seq; Type: SEQUENCE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE SEQUENCE public.polygons_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
+
+
+ALTER TABLE public.polygons_id_seq OWNER TO atd_vz_data;
+
+--
+-- Name: polygons; Type: TABLE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TABLE public.polygons (
     id integer DEFAULT nextval('public.polygons_id_seq'::regclass) NOT NULL,
     road integer,
@@ -4195,6 +6202,14 @@ CREATE TABLE public.polygons (
     development_engineer_area_id integer,
     polygon_hex_id character varying(16)
 );
+
+
+ALTER TABLE public.polygons OWNER TO atd_vz_data;
+
+--
+-- Name: view_atd_crashes_full_purpose; Type: VIEW; Schema: public; Owner: atd_vz_data
+--
+
 CREATE VIEW public.view_atd_crashes_full_purpose AS
  SELECT atc.crash_id,
     atc.crash_fatal_fl,
@@ -4610,6 +6625,14 @@ UNION ALL
     atc.austin_full_purpose
    FROM public.atd_txdot_crashes atc
   WHERE ((1 = 1) AND (atc.city_id = 22) AND (atc."position" IS NULL) AND (atc.crash_date >= (concat(date_part('year'::text, now()), '-01-01'))::date));
+
+
+ALTER TABLE public.view_atd_crashes_full_purpose OWNER TO atd_vz_data;
+
+--
+-- Name: view_crashes_inconsistent_numbers; Type: VIEW; Schema: public; Owner: atd_vz_data
+--
+
 CREATE VIEW public.view_crashes_inconsistent_numbers AS
  WITH persons AS (
          SELECT atd_txdot_person.crash_id,
@@ -4644,6 +6667,14 @@ CREATE VIEW public.view_crashes_inconsistent_numbers AS
      LEFT JOIN primarypersons atpp ON ((atc.crash_id = atpp.crash_id)))
      LEFT JOIN units atu ON ((atc.crash_id = atu.crash_id)))
   WHERE ((1 = 1) AND (atc.city_id = 22) AND ((atc.death_cnt <> (atp.death_cnt + atpp.death_cnt)) OR (atc.death_cnt <> atu.death_cnt) OR (atc.sus_serious_injry_cnt <> (atp.sus_serious_injry_cnt + atpp.sus_serious_injry_cnt)) OR (atc.sus_serious_injry_cnt <> atu.sus_serious_injry_cnt)));
+
+
+ALTER TABLE public.view_crashes_inconsistent_numbers OWNER TO atd_vz_data;
+
+--
+-- Name: view_location_crashes_by_manner_collision; Type: VIEW; Schema: public; Owner: atd_vz_data
+--
+
 CREATE VIEW public.view_location_crashes_by_manner_collision AS
  SELECT atcloc.location_id,
     atcol.collsn_desc,
@@ -4653,6 +6684,14 @@ CREATE VIEW public.view_location_crashes_by_manner_collision AS
      LEFT JOIN public.atd_txdot_crash_locations atcloc ON ((atcloc.crash_id = atc.crash_id)))
   WHERE ((1 = 1) AND (atcloc.location_id IS NOT NULL) AND ((atcloc.location_id)::text <> 'None'::text))
   GROUP BY atcloc.location_id, atcol.collsn_desc;
+
+
+ALTER TABLE public.view_location_crashes_by_manner_collision OWNER TO atd_vz_data;
+
+--
+-- Name: view_location_crashes_by_veh_body_style; Type: VIEW; Schema: public; Owner: atd_vz_data
+--
+
 CREATE VIEW public.view_location_crashes_by_veh_body_style AS
  SELECT atcl.location_id,
     atvbsl.veh_body_styl_desc,
@@ -4662,6 +6701,14 @@ CREATE VIEW public.view_location_crashes_by_veh_body_style AS
      LEFT JOIN public.atd_txdot_crash_locations atcl ON ((atcl.crash_id = atu.crash_id)))
   WHERE ((1 = 1) AND (atcl.location_id IS NOT NULL) AND ((atcl.location_id)::text <> 'None'::text))
   GROUP BY atcl.location_id, atvbsl.veh_body_styl_desc;
+
+
+ALTER TABLE public.view_location_crashes_by_veh_body_style OWNER TO atd_vz_data;
+
+--
+-- Name: view_location_crashes_global; Type: VIEW; Schema: public; Owner: atd_vz_data
+--
+
 CREATE VIEW public.view_location_crashes_global AS
 SELECT
     NULL::integer AS crash_id,
@@ -4689,6 +6736,14 @@ SELECT
     NULL::text AS movement_desc,
     NULL::text AS veh_body_styl_desc,
     NULL::text AS veh_unit_desc_desc;
+
+
+ALTER TABLE public.view_location_crashes_global OWNER TO atd_vz_data;
+
+--
+-- Name: view_location_injry_count_cost_summary; Type: VIEW; Schema: public; Owner: atd_vz_data
+--
+
 CREATE VIEW public.view_location_injry_count_cost_summary AS
  SELECT (atcloc.location_id)::character varying(32) AS location_id,
     (COALESCE(ccs.total_crashes, (0)::bigint) + COALESCE(blueform_ccs.total_crashes, (0)::bigint)) AS total_crashes,
@@ -4710,6 +6765,14 @@ CREATE VIEW public.view_location_injry_count_cost_summary AS
            FROM public.atd_apd_blueform aab
           WHERE ((1 = 1) AND (aab.date > (now() - '5 years'::interval)) AND (aab.location_id IS NOT NULL) AND ((aab.location_id)::text <> 'None'::text))
           GROUP BY aab.location_id) blueform_ccs ON (((blueform_ccs.location_id)::text = (atcloc.location_id)::text)));
+
+
+ALTER TABLE public.view_location_injry_count_cost_summary OWNER TO atd_vz_data;
+
+--
+-- Name: view_vzv_by_mode; Type: VIEW; Schema: public; Owner: atd_vz_data
+--
+
 CREATE VIEW public.view_vzv_by_mode AS
  SELECT date_part('year'::text, atc.crash_date) AS year,
         CASE
@@ -4751,6 +6814,14 @@ CREATE VIEW public.view_vzv_by_mode AS
             WHEN (vdesc.veh_unit_desc_id = 4) THEN 'Pedestrian'::text
             ELSE 'Other'::text
         END;
+
+
+ALTER TABLE public.view_vzv_by_mode OWNER TO atd_vz_data;
+
+--
+-- Name: view_vzv_by_month_year; Type: VIEW; Schema: public; Owner: atd_vz_data
+--
+
 CREATE VIEW public.view_vzv_by_month_year AS
  SELECT date_part('year'::text, atc.crash_date) AS year,
     date_part('month'::text, atc.crash_date) AS month,
@@ -4759,6 +6830,14 @@ CREATE VIEW public.view_vzv_by_month_year AS
    FROM public.atd_txdot_crashes atc
   WHERE ((1 = 1) AND (((atc.austin_full_purpose)::text = 'Y'::text) OR ((atc.city_id = 22) AND (atc."position" IS NULL))) AND ((atc.death_cnt > 0) OR (atc.sus_serious_injry_cnt > 0)) AND (atc.crash_date >= (concat((date_part('year'::text, (now() - '4 years'::interval)))::text, '-01-01'))::date) AND (atc.crash_date < (concat((date_part('year'::text, now()))::text, '-', lpad((date_part('month'::text, (now() - '1 mon'::interval)))::text, 2, '0'::text), '-01'))::date))
   GROUP BY (date_part('year'::text, atc.crash_date)), (date_part('month'::text, atc.crash_date));
+
+
+ALTER TABLE public.view_vzv_by_month_year OWNER TO atd_vz_data;
+
+--
+-- Name: view_vzv_by_time_of_day; Type: VIEW; Schema: public; Owner: atd_vz_data
+--
+
 CREATE VIEW public.view_vzv_by_time_of_day AS
  SELECT date_part('year'::text, atc.crash_date) AS year,
     to_char((atc.crash_date)::timestamp with time zone, 'Dy'::text) AS dow,
@@ -4769,6 +6848,14 @@ CREATE VIEW public.view_vzv_by_time_of_day AS
   WHERE ((1 = 1) AND (((atc.austin_full_purpose)::text = 'Y'::text) OR ((atc.city_id = 22) AND (atc."position" IS NULL))) AND ((atc.death_cnt > 0) OR (atc.sus_serious_injry_cnt > 0)) AND (atc.crash_date >= (concat((date_part('year'::text, (now() - '4 years'::interval)))::text, '-01-01'))::date) AND (atc.crash_date < (concat((date_part('year'::text, now()))::text, '-', lpad((date_part('month'::text, (now() - '1 mon'::interval)))::text, 2, '0'::text), '-01'))::date))
   GROUP BY (date_part('year'::text, atc.crash_date)), (to_char((atc.crash_date)::timestamp with time zone, 'Dy'::text)), (date_part('hour'::text, atc.crash_time))
   ORDER BY (date_part('year'::text, atc.crash_date)), (to_char((atc.crash_date)::timestamp with time zone, 'Dy'::text)), (date_part('hour'::text, atc.crash_time));
+
+
+ALTER TABLE public.view_vzv_by_time_of_day OWNER TO atd_vz_data;
+
+--
+-- Name: view_vzv_demographics_age_sex_eth; Type: VIEW; Schema: public; Owner: atd_vz_data
+--
+
 CREATE VIEW public.view_vzv_demographics_age_sex_eth AS
  SELECT data.year,
     data.type,
@@ -5100,6 +7187,14 @@ CREATE VIEW public.view_vzv_demographics_age_sex_eth AS
           GROUP BY (date_part('year'::text, atc.crash_date))) data
   GROUP BY data.year, data.type
   ORDER BY data.year, data.type;
+
+
+ALTER TABLE public.view_vzv_demographics_age_sex_eth OWNER TO atd_vz_data;
+
+--
+-- Name: view_vzv_header_totals; Type: VIEW; Schema: public; Owner: atd_vz_data
+--
+
 CREATE VIEW public.view_vzv_header_totals AS
  SELECT people.year,
     people.death_cnt,
@@ -5149,26 +7244,148 @@ CREATE VIEW public.view_vzv_header_totals AS
            FROM public.atd_txdot_crashes atc
           WHERE ((1 = 1) AND (((atc.austin_full_purpose)::text = 'Y'::text) OR ((atc.city_id = 22) AND (atc."position" IS NULL))) AND (((atc.crash_date >= (concat((date_part('year'::text, (now() - '1 year'::interval)))::text, '-01-01'))::date) AND (atc.crash_date < (concat((date_part('year'::text, (now() - '1 year'::interval)))::text, '-', lpad((date_part('month'::text, (now() - '1 mon'::interval)))::text, 2, '0'::text), '-01'))::date)) OR ((atc.crash_date >= (concat((date_part('year'::text, now()))::text, '-01-01'))::date) AND (atc.crash_date < (concat((date_part('year'::text, now()))::text, '-', lpad((date_part('month'::text, (now() - '1 mon'::interval)))::text, 2, '0'::text), '-01'))::date))))
           GROUP BY (date_part('year'::text, atc.crash_date))) crashes ON ((crashes.year = people.year)));
+
+
+ALTER TABLE public.view_vzv_header_totals OWNER TO atd_vz_data;
+
+--
+-- Name: atd_apd_blueform form_id; Type: DEFAULT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_apd_blueform ALTER COLUMN form_id SET DEFAULT nextval('public.atd_apd_blueform_form_id_seq'::regclass);
+
+
+--
+-- Name: atd_jurisdictions id; Type: DEFAULT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_jurisdictions ALTER COLUMN id SET DEFAULT nextval('public.atd_jurisdictions_id_seq'::regclass);
+
+
+--
+-- Name: atd_txdot__est_comp_cost_crash_based est_comp_cost_id; Type: DEFAULT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__est_comp_cost_crash_based ALTER COLUMN est_comp_cost_id SET DEFAULT nextval('public.atd_txdot__est_comp_cost_crash_based_est_comp_cost_id_seq'::regclass);
+
+
+--
+-- Name: atd_txdot_change_log change_log_id; Type: DEFAULT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot_change_log ALTER COLUMN change_log_id SET DEFAULT nextval('public.atd_txdot_change_log_id_seq'::regclass);
+
+
+--
+-- Name: atd_txdot_change_pending id; Type: DEFAULT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot_change_pending ALTER COLUMN id SET DEFAULT nextval('public.atd_txdot_change_pending_id_seq'::regclass);
+
+
+--
+-- Name: atd_txdot_change_status change_status_id; Type: DEFAULT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot_change_status ALTER COLUMN change_status_id SET DEFAULT nextval('public.atd_txdot_change_status_change_status_id_seq'::regclass);
+
+
+--
+-- Name: atd_txdot_changes change_id; Type: DEFAULT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot_changes ALTER COLUMN change_id SET DEFAULT nextval('public.atd_txdot_changes_change_id_seq'::regclass);
+
+
+--
+-- Name: atd_txdot_charges charge_id; Type: DEFAULT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot_charges ALTER COLUMN charge_id SET DEFAULT nextval('public.atd_txdot_charges_id_seq'::regclass);
+
+
+--
+-- Name: atd_txdot_crash_locations crash_location_id; Type: DEFAULT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot_crash_locations ALTER COLUMN crash_location_id SET DEFAULT nextval('public.atd_txdot_crash_locations_crash_location_id_seq'::regclass);
+
+
+--
+-- Name: atd_txdot_crash_status crash_status_id; Type: DEFAULT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot_crash_status ALTER COLUMN crash_status_id SET DEFAULT nextval('public.atd_txdot_crash_status_crash_status_id_seq'::regclass);
+
+
+--
+-- Name: atd_txdot_geocoders geocoder_id; Type: DEFAULT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot_geocoders ALTER COLUMN geocoder_id SET DEFAULT nextval('public.atd_txdot_geocoders_geocoder_id_seq'::regclass);
+
+
+--
+-- Name: atd_txdot_locations_change_log change_log_id; Type: DEFAULT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot_locations_change_log ALTER COLUMN change_log_id SET DEFAULT nextval('public.atd_txdot_locations_change_log_id_seq'::regclass);
+
+
+--
+-- Name: atd_txdot_person person_id; Type: DEFAULT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot_person ALTER COLUMN person_id SET DEFAULT nextval('public.atd_txdot_person_person_id_seq'::regclass);
+
+
+--
+-- Name: atd_txdot_primaryperson primaryperson_id; Type: DEFAULT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot_primaryperson ALTER COLUMN primaryperson_id SET DEFAULT nextval('public.atd_txdot_primaryperson_primaryperson_id_seq'::regclass);
+
+
+--
+-- Name: atd_txdot_units unit_id; Type: DEFAULT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot_units ALTER COLUMN unit_id SET DEFAULT nextval('public.atd_txdot_units_unit_id_seq'::regclass);
+
+
+--
+-- Name: atd_txdot_units_temp unit_id; Type: DEFAULT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot_units_temp ALTER COLUMN unit_id SET DEFAULT nextval('public.atd_txdot_units_temp_unit_id_seq'::regclass);
+
+
+--
+-- Name: council_districts gid; Type: DEFAULT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.council_districts ALTER COLUMN gid SET DEFAULT nextval('public.council_districts_gid_seq'::regclass);
+
+
+--
+-- Name: hin_corridors id; Type: DEFAULT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.hin_corridors ALTER COLUMN id SET DEFAULT nextval('public.hin_corridors_id_seq'::regclass);
+
+
+--
+-- Name: atd_txdot_locations atd_txdot_locations_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot_locations
     ADD CONSTRAINT atd_txdot_locations_pk PRIMARY KEY (location_id);
+
+
+--
+-- Name: five_year_highway_polygons_with_crash_data; Type: MATERIALIZED VIEW; Schema: public; Owner: atd_vz_data
+--
+
 CREATE MATERIALIZED VIEW public.five_year_highway_polygons_with_crash_data AS
  SELECT p.location_id,
     p.road,
@@ -5206,6 +7423,14 @@ CREATE MATERIALIZED VIEW public.five_year_highway_polygons_with_crash_data AS
   WHERE (p.location_group = 2)
   GROUP BY p.location_id
   WITH NO DATA;
+
+
+ALTER TABLE public.five_year_highway_polygons_with_crash_data OWNER TO atd_vz_data;
+
+--
+-- Name: five_year_surface_polygons_with_crash_data; Type: MATERIALIZED VIEW; Schema: public; Owner: atd_vz_data
+--
+
 CREATE MATERIALIZED VIEW public.five_year_surface_polygons_with_crash_data AS
  SELECT p.location_id,
     p.road,
@@ -5244,468 +7469,2300 @@ CREATE MATERIALIZED VIEW public.five_year_surface_polygons_with_crash_data AS
   WHERE (p.location_group = 1)
   GROUP BY p.location_id
   WITH NO DATA;
+
+
+ALTER TABLE public.five_year_surface_polygons_with_crash_data OWNER TO atd_vz_data;
+
+--
+-- Name: atd_txdot__agency_lkp agency_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__agency_lkp
     ADD CONSTRAINT agency_lkp_pk PRIMARY KEY (agency_id);
+
+
+--
+-- Name: atd__mode_category_lkp atd__mode_category_lkp_pkey; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd__mode_category_lkp
     ADD CONSTRAINT atd__mode_category_lkp_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: atd_apd_blueform atd_apd_blueform_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_apd_blueform
     ADD CONSTRAINT atd_apd_blueform_pk PRIMARY KEY (case_id);
+
+
+--
+-- Name: atd_location_crash_and_cost_totals atd_location_crash_and_cost_totals_pkey; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_location_crash_and_cost_totals
     ADD CONSTRAINT atd_location_crash_and_cost_totals_pkey PRIMARY KEY (location_id);
+
+
+--
+-- Name: atd_txdot__airbag_lkp atd_txdot__airbag_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__airbag_lkp
     ADD CONSTRAINT atd_txdot__airbag_lkp_pk PRIMARY KEY (airbag_id);
+
+
+--
+-- Name: atd_txdot__asmp_level_lkp atd_txdot__asmp_level_lkp_pkey; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__asmp_level_lkp
     ADD CONSTRAINT atd_txdot__asmp_level_lkp_pkey PRIMARY KEY (asmp_level_id);
+
+
+--
+-- Name: atd_txdot__base_type_lkp atd_txdot__base_type_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__base_type_lkp
     ADD CONSTRAINT atd_txdot__base_type_lkp_pk PRIMARY KEY (base_type_id);
+
+
+--
+-- Name: atd_txdot__bridge_detail_lkp atd_txdot__bridge_detail_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__bridge_detail_lkp
     ADD CONSTRAINT atd_txdot__bridge_detail_lkp_pk PRIMARY KEY (bridge_detail_id);
+
+
+--
+-- Name: atd_txdot__bridge_dir_of_traffic_lkp atd_txdot__bridge_dir_of_traffic_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__bridge_dir_of_traffic_lkp
     ADD CONSTRAINT atd_txdot__bridge_dir_of_traffic_lkp_pk PRIMARY KEY (bridge_dir_of_traffic_id);
+
+
+--
+-- Name: atd_txdot__bridge_ir_struct_func_lkp atd_txdot__bridge_ir_struct_func_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__bridge_ir_struct_func_lkp
     ADD CONSTRAINT atd_txdot__bridge_ir_struct_func_lkp_pk PRIMARY KEY (bridge_ir_struct_func_id);
+
+
+--
+-- Name: atd_txdot__bridge_loading_type_lkp atd_txdot__bridge_loading_type_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__bridge_loading_type_lkp
     ADD CONSTRAINT atd_txdot__bridge_loading_type_lkp_pk PRIMARY KEY (bridge_loading_type_id);
+
+
+--
+-- Name: atd_txdot__bridge_median_lkp atd_txdot__bridge_median_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__bridge_median_lkp
     ADD CONSTRAINT atd_txdot__bridge_median_lkp_pk PRIMARY KEY (bridge_median_id);
+
+
+--
+-- Name: atd_txdot__bridge_rte_struct_func_lkp atd_txdot__bridge_rte_struct_func_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__bridge_rte_struct_func_lkp
     ADD CONSTRAINT atd_txdot__bridge_rte_struct_func_lkp_pk PRIMARY KEY (bridge_rte_struct_func_id);
+
+
+--
+-- Name: atd_txdot__bridge_srvc_type_on_lkp atd_txdot__bridge_srvc_type_on_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__bridge_srvc_type_on_lkp
     ADD CONSTRAINT atd_txdot__bridge_srvc_type_on_lkp_pk PRIMARY KEY (bridge_srvc_type_on_id);
+
+
+--
+-- Name: atd_txdot__bridge_srvc_type_under_lkp atd_txdot__bridge_srvc_type_under_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__bridge_srvc_type_under_lkp
     ADD CONSTRAINT atd_txdot__bridge_srvc_type_under_lkp_pk PRIMARY KEY (bridge_srvc_type_under_id);
+
+
+--
+-- Name: atd_txdot__bus_type_lkp atd_txdot__bus_type_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__bus_type_lkp
     ADD CONSTRAINT atd_txdot__bus_type_lkp_pk PRIMARY KEY (bus_type_id);
+
+
+--
+-- Name: atd_txdot__carrier_id_type_lkp atd_txdot__carrier_id_type_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__carrier_id_type_lkp
     ADD CONSTRAINT atd_txdot__carrier_id_type_lkp_pk PRIMARY KEY (carrier_id_type_id);
+
+
+--
+-- Name: atd_txdot__carrier_type_lkp atd_txdot__carrier_type_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__carrier_type_lkp
     ADD CONSTRAINT atd_txdot__carrier_type_lkp_pk PRIMARY KEY (carrier_type_id);
+
+
+--
+-- Name: atd_txdot__cas_transp_locat_lkp atd_txdot__cas_transp_locat_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__cas_transp_locat_lkp
     ADD CONSTRAINT atd_txdot__cas_transp_locat_lkp_pk PRIMARY KEY (cas_transp_locat_id);
+
+
+--
+-- Name: atd_txdot__cas_transp_name_lkp atd_txdot__cas_transp_name_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__cas_transp_name_lkp
     ADD CONSTRAINT atd_txdot__cas_transp_name_lkp_pk PRIMARY KEY (cas_transp_name_id);
+
+
+--
+-- Name: atd_txdot__charge_cat_lkp atd_txdot__charge_cat_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__charge_cat_lkp
     ADD CONSTRAINT atd_txdot__charge_cat_lkp_pk PRIMARY KEY (charge_cat_id);
+
+
+--
+-- Name: atd_txdot__city_lkp atd_txdot__city_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__city_lkp
     ADD CONSTRAINT atd_txdot__city_lkp_pk PRIMARY KEY (city_id);
+
+
+--
+-- Name: atd_txdot__cmv_cargo_body_lkp atd_txdot__cmv_cargo_body_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__cmv_cargo_body_lkp
     ADD CONSTRAINT atd_txdot__cmv_cargo_body_lkp_pk PRIMARY KEY (cmv_cargo_body_id);
+
+
+--
+-- Name: atd_txdot__cmv_event_lkp atd_txdot__cmv_evnt_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__cmv_event_lkp
     ADD CONSTRAINT atd_txdot__cmv_evnt_lkp_pk PRIMARY KEY (cmv_event_id);
+
+
+--
+-- Name: atd_txdot__cmv_road_acc_lkp atd_txdot__cmv_road_acc_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__cmv_road_acc_lkp
     ADD CONSTRAINT atd_txdot__cmv_road_acc_lkp_pk PRIMARY KEY (cmv_road_acc_id);
+
+
+--
+-- Name: atd_txdot__cmv_trlr_type_lkp atd_txdot__cmv_trlr_type_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__cmv_trlr_type_lkp
     ADD CONSTRAINT atd_txdot__cmv_trlr_type_lkp_pk PRIMARY KEY (cmv_trlr_type_id);
+
+
+--
+-- Name: atd_txdot__cmv_veh_oper_lkp atd_txdot__cmv_veh_oper_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__cmv_veh_oper_lkp
     ADD CONSTRAINT atd_txdot__cmv_veh_oper_lkp_pk PRIMARY KEY (cmv_veh_oper_id);
+
+
+--
+-- Name: atd_txdot__cmv_veh_type_lkp atd_txdot__cmv_veh_type_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__cmv_veh_type_lkp
     ADD CONSTRAINT atd_txdot__cmv_veh_type_lkp_pk PRIMARY KEY (cmv_veh_type_id);
+
+
+--
+-- Name: atd_txdot__cntl_sect_lkp atd_txdot__cntl_sect_lkp_district; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__cntl_sect_lkp
     ADD CONSTRAINT atd_txdot__cntl_sect_lkp_district UNIQUE (dps_district_id);
+
+
+--
+-- Name: atd_txdot__cntl_sect_lkp atd_txdot__cntl_sect_lkp_dps_district; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__cntl_sect_lkp
     ADD CONSTRAINT atd_txdot__cntl_sect_lkp_dps_district UNIQUE (txdot_district_id);
+
+
+--
+-- Name: atd_txdot__cntl_sect_lkp atd_txdot__cntl_sect_lkp_region; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__cntl_sect_lkp
     ADD CONSTRAINT atd_txdot__cntl_sect_lkp_region UNIQUE (dps_region_id);
+
+
+--
+-- Name: atd_txdot__cntl_sect_lkp atd_txdot__cntl_sect_lkp_road; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__cntl_sect_lkp
     ADD CONSTRAINT atd_txdot__cntl_sect_lkp_road UNIQUE (road_id);
+
+
+--
+-- Name: atd_txdot__cnty_lkp atd_txdot__cnty_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__cnty_lkp
     ADD CONSTRAINT atd_txdot__cnty_lkp_pk PRIMARY KEY (cnty_id);
+
+
+--
+-- Name: atd_txdot__collsn_lkp atd_txdot__collsn_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__collsn_lkp
     ADD CONSTRAINT atd_txdot__collsn_lkp_pk PRIMARY KEY (collsn_id);
+
+
+--
+-- Name: atd_txdot__contrib_factr_lkp atd_txdot__contrib_factr_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__contrib_factr_lkp
     ADD CONSTRAINT atd_txdot__contrib_factr_lkp_pk PRIMARY KEY (contrib_factr_id);
+
+
+--
+-- Name: atd_txdot__crash_sev_lkp atd_txdot__crash_sev_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__crash_sev_lkp
     ADD CONSTRAINT atd_txdot__crash_sev_lkp_pk PRIMARY KEY (crash_sev_id);
+
+
+--
+-- Name: atd_txdot__culvert_type_lkp atd_txdot__culvert_type_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__culvert_type_lkp
     ADD CONSTRAINT atd_txdot__culvert_type_lkp_pk PRIMARY KEY (culvert_type_id);
+
+
+--
+-- Name: atd_txdot__curb_type_lkp atd_txdot__curb_type_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__curb_type_lkp
     ADD CONSTRAINT atd_txdot__curb_type_lkp_pk PRIMARY KEY (curb_type_id);
+
+
+--
+-- Name: atd_txdot__curve_type_lkp atd_txdot__curve_type_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__curve_type_lkp
     ADD CONSTRAINT atd_txdot__curve_type_lkp_pk PRIMARY KEY (curve_type_id);
+
+
+--
+-- Name: atd_txdot__delta_left_right_lkp atd_txdot__delta_left_right_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__delta_left_right_lkp
     ADD CONSTRAINT atd_txdot__delta_left_right_lkp_pk PRIMARY KEY (delta_left_right_id);
+
+
+--
+-- Name: atd_txdot__drug_category_lkp atd_txdot__drug_category_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__drug_category_lkp
     ADD CONSTRAINT atd_txdot__drug_category_lkp_pk PRIMARY KEY (drug_category_id);
+
+
+--
+-- Name: atd_txdot__drvr_ethncty_lkp atd_txdot__drvr_ethncty_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__drvr_ethncty_lkp
     ADD CONSTRAINT atd_txdot__drvr_ethncty_lkp_pk PRIMARY KEY (drvr_ethncty_id);
+
+
+--
+-- Name: atd_txdot__drvr_lic_cls_lkp atd_txdot__drvr_lic_cls_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__drvr_lic_cls_lkp
     ADD CONSTRAINT atd_txdot__drvr_lic_cls_lkp_pk PRIMARY KEY (drvr_lic_cls_id);
+
+
+--
+-- Name: atd_txdot__drvr_lic_endors_lkp atd_txdot__drvr_lic_endors_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__drvr_lic_endors_lkp
     ADD CONSTRAINT atd_txdot__drvr_lic_endors_lkp_pk PRIMARY KEY (drvr_lic_endors_id);
+
+
+--
+-- Name: atd_txdot__drvr_lic_restric_lkp atd_txdot__drvr_lic_restric_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__drvr_lic_restric_lkp
     ADD CONSTRAINT atd_txdot__drvr_lic_restric_lkp_pk PRIMARY KEY (drvr_lic_restric_id);
+
+
+--
+-- Name: atd_txdot__drvr_lic_type_lkp atd_txdot__drvr_lic_type_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__drvr_lic_type_lkp
     ADD CONSTRAINT atd_txdot__drvr_lic_type_lkp_pk PRIMARY KEY (drvr_lic_type_id);
+
+
+--
+-- Name: atd_txdot__ejct_lkp atd_txdot__ejct_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__ejct_lkp
     ADD CONSTRAINT atd_txdot__ejct_lkp_pk PRIMARY KEY (ejct_id);
+
+
+--
+-- Name: atd_txdot__entr_road_lkp atd_txdot__entr_road_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__entr_road_lkp
     ADD CONSTRAINT atd_txdot__entr_road_lkp_pk PRIMARY KEY (entr_road_id);
+
+
+--
+-- Name: atd_txdot__est_comp_cost_crash_based atd_txdot__est_comp_cost_crash_based_pkey; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__est_comp_cost_crash_based
     ADD CONSTRAINT atd_txdot__est_comp_cost_crash_based_pkey PRIMARY KEY (est_comp_cost_id);
+
+
+--
+-- Name: atd_txdot__est_comp_cost atd_txdot__est_comp_cost_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__est_comp_cost
     ADD CONSTRAINT atd_txdot__est_comp_cost_pk PRIMARY KEY (est_comp_cost_id);
+
+
+--
+-- Name: atd_txdot__est_econ_cost atd_txdot__est_econ_cost_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__est_econ_cost
     ADD CONSTRAINT atd_txdot__est_econ_cost_pk PRIMARY KEY (est_econ_cost_id);
+
+
+--
+-- Name: atd_txdot__ethnicity_lkp atd_txdot__ethnicity_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__ethnicity_lkp
     ADD CONSTRAINT atd_txdot__ethnicity_lkp_pk PRIMARY KEY (ethnicity_id);
+
+
+--
+-- Name: atd_txdot__func_sys_lkp atd_txdot__func_sys_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__func_sys_lkp
     ADD CONSTRAINT atd_txdot__func_sys_lkp_pk PRIMARY KEY (func_sys_id);
+
+
+--
+-- Name: atd_txdot__gndr_lkp atd_txdot__gndr_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__gndr_lkp
     ADD CONSTRAINT atd_txdot__gndr_lkp_pk PRIMARY KEY (gndr_id);
+
+
+--
+-- Name: atd_txdot__harm_evnt_lkp atd_txdot__harm_evnt_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__harm_evnt_lkp
     ADD CONSTRAINT atd_txdot__harm_evnt_lkp_pk PRIMARY KEY (harm_evnt_id);
+
+
+--
+-- Name: atd_txdot__hazmat_cls_lkp atd_txdot__hazmat_cls_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__hazmat_cls_lkp
     ADD CONSTRAINT atd_txdot__hazmat_cls_lkp_pk PRIMARY KEY (hazmat_cls_id);
+
+
+--
+-- Name: atd_txdot__hazmat_idnbr_lkp atd_txdot__hazmat_idnbr_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__hazmat_idnbr_lkp
     ADD CONSTRAINT atd_txdot__hazmat_idnbr_lkp_pk PRIMARY KEY (hazmat_idnbr_id);
+
+
+--
+-- Name: atd_txdot__helmet_lkp atd_txdot__helmet_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__helmet_lkp
     ADD CONSTRAINT atd_txdot__helmet_lkp_pk PRIMARY KEY (helmet_id);
+
+
+--
+-- Name: atd_txdot__hwy_dsgn_hrt_lkp atd_txdot__hwy_dsgn_hrt_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__hwy_dsgn_hrt_lkp
     ADD CONSTRAINT atd_txdot__hwy_dsgn_hrt_lkp_pk PRIMARY KEY (hwy_dsgn_hrt_id);
+
+
+--
+-- Name: atd_txdot__hwy_dsgn_lane_lkp atd_txdot__hwy_dsgn_lane_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__hwy_dsgn_lane_lkp
     ADD CONSTRAINT atd_txdot__hwy_dsgn_lane_lkp_pk PRIMARY KEY (hwy_dsgn_lane_id);
+
+
+--
+-- Name: atd_txdot__hwy_sys_lkp atd_txdot__hwy_sys_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__hwy_sys_lkp
     ADD CONSTRAINT atd_txdot__hwy_sys_lkp_pk PRIMARY KEY (hwy_sys_id);
+
+
+--
+-- Name: atd_txdot__injry_sev_lkp atd_txdot__injry_sev_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__injry_sev_lkp
     ADD CONSTRAINT atd_txdot__injry_sev_lkp_pk PRIMARY KEY (injry_sev_id);
+
+
+--
+-- Name: atd_txdot__ins_co_name_lkp atd_txdot__ins_co_name_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__ins_co_name_lkp
     ADD CONSTRAINT atd_txdot__ins_co_name_lkp_pk PRIMARY KEY (ins_co_name_id);
+
+
+--
+-- Name: atd_txdot__ins_proof_lkp atd_txdot__ins_proof_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__ins_proof_lkp
     ADD CONSTRAINT atd_txdot__ins_proof_lkp_pk PRIMARY KEY (ins_proof_id);
+
+
+--
+-- Name: atd_txdot__ins_type_lkp atd_txdot__ins_type_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__ins_type_lkp
     ADD CONSTRAINT atd_txdot__ins_type_lkp_pk PRIMARY KEY (ins_type_id);
+
+
+--
+-- Name: atd_txdot__insurance_proof_lkp atd_txdot__insurance_proof_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__insurance_proof_lkp
     ADD CONSTRAINT atd_txdot__insurance_proof_lkp_pk PRIMARY KEY (insurance_proof_id);
+
+
+--
+-- Name: atd_txdot__insurance_type_lkp atd_txdot__insurance_type_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__insurance_type_lkp
     ADD CONSTRAINT atd_txdot__insurance_type_lkp_pk PRIMARY KEY (insurance_type_id);
+
+
+--
+-- Name: atd_txdot__intrsct_relat_lkp atd_txdot__intrsct_relat_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__intrsct_relat_lkp
     ADD CONSTRAINT atd_txdot__intrsct_relat_lkp_pk PRIMARY KEY (intrsct_relat_id);
+
+
+--
+-- Name: atd_txdot__inv_da_lkp atd_txdot__inv_da_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__inv_da_lkp
     ADD CONSTRAINT atd_txdot__inv_da_lkp_pk PRIMARY KEY (inv_da_id);
+
+
+--
+-- Name: atd_txdot__inv_notify_meth_lkp atd_txdot__inv_notify_meth_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__inv_notify_meth_lkp
     ADD CONSTRAINT atd_txdot__inv_notify_meth_lkp_pk PRIMARY KEY (inv_notify_meth_id);
+
+
+--
+-- Name: atd_txdot__inv_region_lkp atd_txdot__inv_region_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__inv_region_lkp
     ADD CONSTRAINT atd_txdot__inv_region_lkp_pk PRIMARY KEY (inv_region_id);
+
+
+--
+-- Name: atd_txdot__inv_service_lkp atd_txdot__inv_service_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__inv_service_lkp
     ADD CONSTRAINT atd_txdot__inv_service_lkp_pk PRIMARY KEY (inv_service_id);
+
+
+--
+-- Name: atd_txdot__light_cond_lkp atd_txdot__light_cond_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__light_cond_lkp
     ADD CONSTRAINT atd_txdot__light_cond_lkp_pk PRIMARY KEY (light_cond_id);
+
+
+--
+-- Name: atd_txdot__median_type_lkp atd_txdot__median_type_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__median_type_lkp
     ADD CONSTRAINT atd_txdot__median_type_lkp_pk PRIMARY KEY (median_type_id);
+
+
+--
+-- Name: atd_txdot__movt_lkp atd_txdot__movt_lkp_pkey; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__movt_lkp
     ADD CONSTRAINT atd_txdot__movt_lkp_pkey PRIMARY KEY (movement_id);
+
+
+--
+-- Name: atd_txdot__mpo_lkp atd_txdot__mpo_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__mpo_lkp
     ADD CONSTRAINT atd_txdot__mpo_lkp_pk PRIMARY KEY (mpo_id);
+
+
+--
+-- Name: atd_txdot__nsew_dir_lkp atd_txdot__nsew_dir_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__nsew_dir_lkp
     ADD CONSTRAINT atd_txdot__nsew_dir_lkp_pk PRIMARY KEY (nsew_dir_id);
+
+
+--
+-- Name: atd_txdot__obj_struck_lkp atd_txdot__obj_struck_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__obj_struck_lkp
     ADD CONSTRAINT atd_txdot__obj_struck_lkp_pk PRIMARY KEY (obj_struck_id);
+
+
+--
+-- Name: atd_txdot__occpnt_pos_lkp atd_txdot__occpnt_pos_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__occpnt_pos_lkp
     ADD CONSTRAINT atd_txdot__occpnt_pos_lkp_pk PRIMARY KEY (occpnt_pos_id);
+
+
+--
+-- Name: atd_txdot__othr_factr_lkp atd_txdot__othr_factr_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__othr_factr_lkp
     ADD CONSTRAINT atd_txdot__othr_factr_lkp_pk PRIMARY KEY (othr_factr_id);
+
+
+--
+-- Name: atd_txdot__phys_featr_lkp atd_txdot__phys_featr_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__phys_featr_lkp
     ADD CONSTRAINT atd_txdot__phys_featr_lkp_pk PRIMARY KEY (phys_featr_id);
+
+
+--
+-- Name: atd_txdot__pop_group_lkp atd_txdot__pop_group_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__pop_group_lkp
     ADD CONSTRAINT atd_txdot__pop_group_lkp_pk PRIMARY KEY (pop_group_id);
+
+
+--
+-- Name: atd_txdot__poscrossing_lkp atd_txdot__poscrossing_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__poscrossing_lkp
     ADD CONSTRAINT atd_txdot__poscrossing_lkp_pk PRIMARY KEY (poscrossing_id);
+
+
+--
+-- Name: atd_txdot__prsn_type_lkp atd_txdot__prsn_type_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__prsn_type_lkp
     ADD CONSTRAINT atd_txdot__prsn_type_lkp_pk PRIMARY KEY (prsn_type_id);
+
+
+--
+-- Name: atd_txdot__ref_mark_nbr_lkp atd_txdot__ref_mark_nbr_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__ref_mark_nbr_lkp
     ADD CONSTRAINT atd_txdot__ref_mark_nbr_lkp_pk PRIMARY KEY (ref_mark_nbr_id);
+
+
+--
+-- Name: atd_txdot__rest_lkp atd_txdot__rest_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__rest_lkp
     ADD CONSTRAINT atd_txdot__rest_lkp_pk PRIMARY KEY (rest_id);
+
+
+--
+-- Name: atd_txdot__road_algn_lkp atd_txdot__road_algn_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__road_algn_lkp
     ADD CONSTRAINT atd_txdot__road_algn_lkp_pk PRIMARY KEY (road_algn_id);
+
+
+--
+-- Name: atd_txdot__road_cls_lkp atd_txdot__road_cls_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__road_cls_lkp
     ADD CONSTRAINT atd_txdot__road_cls_lkp_pk PRIMARY KEY (road_cls_id);
+
+
+--
+-- Name: atd_txdot__road_part_lkp atd_txdot__road_part_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__road_part_lkp
     ADD CONSTRAINT atd_txdot__road_part_lkp_pk PRIMARY KEY (road_part_id);
+
+
+--
+-- Name: atd_txdot__road_relat_lkp atd_txdot__road_relat_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__road_relat_lkp
     ADD CONSTRAINT atd_txdot__road_relat_lkp_pk PRIMARY KEY (road_relat_id);
+
+
+--
+-- Name: atd_txdot__road_type_lkp atd_txdot__road_type_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__road_type_lkp
     ADD CONSTRAINT atd_txdot__road_type_lkp_pk PRIMARY KEY (road_type_id);
+
+
+--
+-- Name: atd_txdot__rural_urban_lkp atd_txdot__rural_urban_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__rural_urban_lkp
     ADD CONSTRAINT atd_txdot__rural_urban_lkp_pk PRIMARY KEY (rural_urban_id);
+
+
+--
+-- Name: atd_txdot__rural_urban_type_lkp atd_txdot__rural_urban_type_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__rural_urban_type_lkp
     ADD CONSTRAINT atd_txdot__rural_urban_type_lkp_pk PRIMARY KEY (rural_urban_type_id);
+
+
+--
+-- Name: atd_txdot__rwy_sys_lkp atd_txdot__rwy_sys_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__rwy_sys_lkp
     ADD CONSTRAINT atd_txdot__rwy_sys_lkp_pk PRIMARY KEY (rwy_sys_id);
+
+
+--
+-- Name: atd_txdot__shldr_type_lkp atd_txdot__shldr_type_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__shldr_type_lkp
     ADD CONSTRAINT atd_txdot__shldr_type_lkp_pk PRIMARY KEY (shldr_type_id);
+
+
+--
+-- Name: atd_txdot__shldr_use_lkp atd_txdot__shldr_use_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__shldr_use_lkp
     ADD CONSTRAINT atd_txdot__shldr_use_lkp_pk PRIMARY KEY (shldr_use_id);
+
+
+--
+-- Name: atd_txdot__specimen_type_lkp atd_txdot__specimen_type_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__specimen_type_lkp
     ADD CONSTRAINT atd_txdot__specimen_type_lkp_pk PRIMARY KEY (specimen_type_id);
+
+
+--
+-- Name: atd_txdot__speed_mgmt_lkp atd_txdot__speed_mgmt_lkp_pkey; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__speed_mgmt_lkp
     ADD CONSTRAINT atd_txdot__speed_mgmt_lkp_pkey PRIMARY KEY (speed_mgmt_id);
+
+
+--
+-- Name: atd_txdot__state_lkp atd_txdot__state_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__state_lkp
     ADD CONSTRAINT atd_txdot__state_lkp_pk PRIMARY KEY (state_id);
+
+
+--
+-- Name: atd_txdot__street_sfx_lkp atd_txdot__street_sfx_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__street_sfx_lkp
     ADD CONSTRAINT atd_txdot__street_sfx_lkp_pk PRIMARY KEY (street_sfx_id);
+
+
+--
+-- Name: atd_txdot__substnc_cat_lkp atd_txdot__substnc_cat_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__substnc_cat_lkp
     ADD CONSTRAINT atd_txdot__substnc_cat_lkp_pk PRIMARY KEY (substnc_cat_id);
+
+
+--
+-- Name: atd_txdot__substnc_tst_result_lkp atd_txdot__substnc_tst_result_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__substnc_tst_result_lkp
     ADD CONSTRAINT atd_txdot__substnc_tst_result_lkp_pk PRIMARY KEY (substnc_tst_result_id);
+
+
+--
+-- Name: atd_txdot__surf_cond_lkp atd_txdot__surf_cond_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__surf_cond_lkp
     ADD CONSTRAINT atd_txdot__surf_cond_lkp_pk PRIMARY KEY (surf_cond_id);
+
+
+--
+-- Name: atd_txdot__surf_type_lkp atd_txdot__surf_type_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__surf_type_lkp
     ADD CONSTRAINT atd_txdot__surf_type_lkp_pk PRIMARY KEY (surf_type_id);
+
+
+--
+-- Name: atd_txdot__traffic_cntl_lkp atd_txdot__traffic_cntl_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__traffic_cntl_lkp
     ADD CONSTRAINT atd_txdot__traffic_cntl_lkp_pk PRIMARY KEY (traffic_cntl_id);
+
+
+--
+-- Name: atd_txdot__trvl_dir_lkp atd_txdot__trvl_dir_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__trvl_dir_lkp
     ADD CONSTRAINT atd_txdot__trvl_dir_lkp_pk PRIMARY KEY (trvl_dir_id);
+
+
+--
+-- Name: atd_txdot__tst_result_lkp atd_txdot__tst_result_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__tst_result_lkp
     ADD CONSTRAINT atd_txdot__tst_result_lkp_pk PRIMARY KEY (tst_result_id);
+
+
+--
+-- Name: atd_txdot__unit_desc_lkp atd_txdot__unit_desc_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__unit_desc_lkp
     ADD CONSTRAINT atd_txdot__unit_desc_lkp_pk PRIMARY KEY (unit_desc_id);
+
+
+--
+-- Name: atd_txdot__unit_dfct_lkp atd_txdot__unit_dfct_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__unit_dfct_lkp
     ADD CONSTRAINT atd_txdot__unit_dfct_lkp_pk PRIMARY KEY (unit_dfct_id);
+
+
+--
+-- Name: atd_txdot__uom_lkp atd_txdot__uom_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__uom_lkp
     ADD CONSTRAINT atd_txdot__uom_lkp_pk PRIMARY KEY (uom_id);
+
+
+--
+-- Name: atd_txdot__veh_body_styl_lkp atd_txdot__veh_body_styl_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__veh_body_styl_lkp
     ADD CONSTRAINT atd_txdot__veh_body_styl_lkp_pk PRIMARY KEY (veh_body_styl_id);
+
+
+--
+-- Name: atd_txdot__veh_color_lkp atd_txdot__veh_color_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__veh_color_lkp
     ADD CONSTRAINT atd_txdot__veh_color_lkp_pk PRIMARY KEY (veh_color_id);
+
+
+--
+-- Name: atd_txdot__veh_damage_severity_lkp atd_txdot__veh_damage_severity_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__veh_damage_severity_lkp
     ADD CONSTRAINT atd_txdot__veh_damage_severity_lkp_pk PRIMARY KEY (veh_damage_severity_id);
+
+
+--
+-- Name: atd_txdot__veh_direction_of_force_lkp atd_txdot__veh_direction_of_force_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__veh_direction_of_force_lkp
     ADD CONSTRAINT atd_txdot__veh_direction_of_force_lkp_pk PRIMARY KEY (veh_direction_of_force_id);
+
+
+--
+-- Name: atd_txdot__veh_make_lkp atd_txdot__veh_make_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__veh_make_lkp
     ADD CONSTRAINT atd_txdot__veh_make_lkp_pk PRIMARY KEY (veh_make_id);
+
+
+--
+-- Name: atd_txdot__veh_trvl_dir_lkp atd_txdot__veh_trvl_dir_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__veh_trvl_dir_lkp
     ADD CONSTRAINT atd_txdot__veh_trvl_dir_lkp_pk PRIMARY KEY (veh_trvl_dir_id);
+
+
+--
+-- Name: atd_txdot__veh_unit_desc_lkp atd_txdot__veh_unit_desc_lkp_VEH_UNIT_DESC_ID_key; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__veh_unit_desc_lkp
     ADD CONSTRAINT "atd_txdot__veh_unit_desc_lkp_VEH_UNIT_DESC_ID_key" UNIQUE (veh_unit_desc_id);
+
+
+--
+-- Name: atd_txdot__veh_unit_desc_lkp atd_txdot__veh_unit_lkp_pkey; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__veh_unit_desc_lkp
     ADD CONSTRAINT atd_txdot__veh_unit_lkp_pkey PRIMARY KEY (veh_unit_desc_id);
+
+
+--
+-- Name: atd_txdot__wdcode_lkp atd_txdot__wdcode_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__wdcode_lkp
     ADD CONSTRAINT atd_txdot__wdcode_lkp_pk PRIMARY KEY (wdcode_id);
+
+
+--
+-- Name: atd_txdot__wthr_cond_lkp atd_txdot__wthr_cond_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__wthr_cond_lkp
     ADD CONSTRAINT atd_txdot__wthr_cond_lkp_pk PRIMARY KEY (wthr_cond_id);
+
+
+--
+-- Name: atd_txdot__y_n_lkp atd_txdot__y_n_lkp_pkey; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__y_n_lkp
     ADD CONSTRAINT atd_txdot__y_n_lkp_pkey PRIMARY KEY (y_n_id);
+
+
+--
+-- Name: atd_txdot__yes_no_choice_lkp atd_txdot__yes_no_choice_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__yes_no_choice_lkp
     ADD CONSTRAINT atd_txdot__yes_no_choice_lkp_pk PRIMARY KEY (yes_no_choice_id);
+
+
+--
+-- Name: atd_txdot_change_log atd_txdot_change_log_id_key; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot_change_log
     ADD CONSTRAINT atd_txdot_change_log_id_key UNIQUE (change_log_id);
+
+
+--
+-- Name: atd_txdot_change_log atd_txdot_change_log_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot_change_log
     ADD CONSTRAINT atd_txdot_change_log_pk PRIMARY KEY (change_log_id);
+
+
+--
+-- Name: atd_txdot_change_pending atd_txdot_change_pending_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot_change_pending
     ADD CONSTRAINT atd_txdot_change_pending_pk PRIMARY KEY (id);
+
+
+--
+-- Name: atd_txdot_change_status atd_txdot_change_status_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot_change_status
     ADD CONSTRAINT atd_txdot_change_status_pk PRIMARY KEY (change_status_id);
+
+
+--
+-- Name: atd_txdot_changes atd_txdot_changes_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot_changes
     ADD CONSTRAINT atd_txdot_changes_pk PRIMARY KEY (change_id);
+
+
+--
+-- Name: atd_txdot_changes atd_txdot_changes_unique; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot_changes
     ADD CONSTRAINT atd_txdot_changes_unique UNIQUE (record_id, record_type, record_uqid, status_id);
+
+
+--
+-- Name: atd_txdot_charges atd_txdot_charges_pkey; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot_charges
     ADD CONSTRAINT atd_txdot_charges_pkey PRIMARY KEY (charge_id);
+
+
+--
+-- Name: atd_txdot_charges atd_txdot_charges_unique_id_key; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot_charges
     ADD CONSTRAINT atd_txdot_charges_unique_id_key UNIQUE (charge_id);
+
+
+--
+-- Name: atd_txdot_cities atd_txdot_cities_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot_cities
     ADD CONSTRAINT atd_txdot_cities_pk PRIMARY KEY (city_id);
+
+
+--
+-- Name: atd_txdot_crash_locations atd_txdot_crash_locations_unique_id_key; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot_crash_locations
     ADD CONSTRAINT atd_txdot_crash_locations_unique_id_key UNIQUE (crash_location_id);
+
+
+--
+-- Name: atd_txdot_crash_status atd_txdot_crash_status_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot_crash_status
     ADD CONSTRAINT atd_txdot_crash_status_pk PRIMARY KEY (crash_status_id);
+
+
+--
+-- Name: atd_txdot_crash_status atd_txdot_crash_status_unique_id_key; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot_crash_status
     ADD CONSTRAINT atd_txdot_crash_status_unique_id_key UNIQUE (crash_status_id);
+
+
+--
+-- Name: atd_txdot_crash_locations atd_txdot_crashes_locations_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot_crash_locations
     ADD CONSTRAINT atd_txdot_crashes_locations_pk PRIMARY KEY (crash_location_id);
+
+
+--
+-- Name: atd_txdot_crashes atd_txdot_crashes_pkey; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot_crashes
     ADD CONSTRAINT atd_txdot_crashes_pkey PRIMARY KEY (crash_id);
+
+
+--
+-- Name: atd_txdot_geocoders atd_txdot_geocoders_pkey; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot_geocoders
     ADD CONSTRAINT atd_txdot_geocoders_pkey PRIMARY KEY (geocoder_id);
+
+
+--
+-- Name: atd_txdot_geocoders atd_txdot_geocoders_unique_id_key; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot_geocoders
     ADD CONSTRAINT atd_txdot_geocoders_unique_id_key UNIQUE (geocoder_id);
+
+
+--
+-- Name: atd_txdot_locations_change_log atd_txdot_location_change_log_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot_locations_change_log
     ADD CONSTRAINT atd_txdot_location_change_log_pk PRIMARY KEY (change_log_id);
+
+
+--
+-- Name: atd_txdot_locations atd_txdot_locations_unique_id_key; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot_locations
     ADD CONSTRAINT atd_txdot_locations_unique_id_key UNIQUE (location_id);
+
+
+--
+-- Name: atd_txdot_person atd_txdot_person_unique; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot_person
     ADD CONSTRAINT atd_txdot_person_unique UNIQUE (crash_id, unit_nbr, prsn_nbr, prsn_type_id, prsn_occpnt_pos_id);
+
+
+--
+-- Name: atd_txdot_primaryperson atd_txdot_primaryperson_unique; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot_primaryperson
     ADD CONSTRAINT atd_txdot_primaryperson_unique UNIQUE (crash_id, unit_nbr, prsn_nbr, prsn_type_id, prsn_occpnt_pos_id);
+
+
+--
+-- Name: atd_txdot_streets atd_txdot_streets_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot_streets
     ADD CONSTRAINT atd_txdot_streets_pk PRIMARY KEY (street_id);
+
+
+--
+-- Name: atd_txdot_streets atd_txdot_streets_street_id_key; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot_streets
     ADD CONSTRAINT atd_txdot_streets_street_id_key UNIQUE (street_id);
+
+
+--
+-- Name: atd_txdot_units_temp atd_txdot_units_temp_unique; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot_units_temp
     ADD CONSTRAINT atd_txdot_units_temp_unique UNIQUE (crash_id, unit_nbr);
+
+
+--
+-- Name: atd_txdot_units atd_txdot_units_unique; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot_units
     ADD CONSTRAINT atd_txdot_units_unique UNIQUE (crash_id, unit_nbr);
+
+
+--
+-- Name: council_districts council_districts_pkey; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.council_districts
     ADD CONSTRAINT council_districts_pkey PRIMARY KEY (gid);
+
+
+--
+-- Name: cr3_mainlanes cr3_mainlanes_pkey; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.cr3_mainlanes
     ADD CONSTRAINT cr3_mainlanes_pkey PRIMARY KEY (gid);
+
+
+--
+-- Name: hin_corridors hin_corridors_pkey; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.hin_corridors
     ADD CONSTRAINT hin_corridors_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: intersection_road_map intersection_road_map_pkey; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.intersection_road_map
     ADD CONSTRAINT intersection_road_map_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: intersections intersections_pkey; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.intersections
     ADD CONSTRAINT intersections_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: atd_jurisdictions jurisdictions_pkey; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_jurisdictions
     ADD CONSTRAINT jurisdictions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: non_cr3_mainlanes non_cr3_mainlane_pkey; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.non_cr3_mainlanes
     ADD CONSTRAINT non_cr3_mainlane_pkey PRIMARY KEY (gid);
+
+
+--
+-- Name: polygons polygons_pkey; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.polygons
     ADD CONSTRAINT polygons_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: atd_txdot_charges uniq_atd_txdot_charges; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot_charges
     ADD CONSTRAINT uniq_atd_txdot_charges UNIQUE (crash_id, unit_nbr, prsn_nbr, charge_cat_id, charge, citation_nbr);
+
+
+--
+-- Name: atd_txdot__veh_damage_description_lkp veh_damage_description_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__veh_damage_description_lkp
     ADD CONSTRAINT veh_damage_description_lkp_pk PRIMARY KEY (veh_damage_description_id);
+
+
+--
+-- Name: atd_txdot__veh_mod_lkp veh_mod_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__veh_mod_lkp
     ADD CONSTRAINT veh_mod_lkp_pk PRIMARY KEY (veh_mod_id);
+
+
+--
+-- Name: atd_txdot__veh_year_lkp veh_year_lkp_pk; Type: CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot__veh_year_lkp
     ADD CONSTRAINT veh_year_lkp_pk PRIMARY KEY (veh_mod_year);
+
+
+--
+-- Name: atd_apd_blueform_date_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX atd_apd_blueform_date_index ON public.atd_apd_blueform USING btree (date);
+
+
+--
+-- Name: atd_apd_blueform_form_id_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX atd_apd_blueform_form_id_index ON public.atd_apd_blueform USING btree (form_id);
+
+
+--
+-- Name: atd_apd_blueform_hour_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX atd_apd_blueform_hour_index ON public.atd_apd_blueform USING btree (hour);
+
+
+--
+-- Name: atd_apd_blueform_latitude_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX atd_apd_blueform_latitude_index ON public.atd_apd_blueform USING btree (latitude);
+
+
+--
+-- Name: atd_apd_blueform_location_id_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX atd_apd_blueform_location_id_index ON public.atd_apd_blueform USING btree (location_id);
+
+
+--
+-- Name: atd_apd_blueform_longitude_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX atd_apd_blueform_longitude_index ON public.atd_apd_blueform USING btree (longitude);
+
+
+--
+-- Name: atd_apd_blueform_position_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX atd_apd_blueform_position_index ON public.atd_apd_blueform USING gist ("position");
+
+
+--
+-- Name: atd_txdot__collsn_lkp_collsn_id_uindex; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE UNIQUE INDEX atd_txdot__collsn_lkp_collsn_id_uindex ON public.atd_txdot__collsn_lkp USING btree (collsn_id);
+
+
+--
+-- Name: atd_txdot_change_log_record_crash_id_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX atd_txdot_change_log_record_crash_id_index ON public.atd_txdot_change_log USING btree (record_crash_id);
+
+
+--
+-- Name: atd_txdot_change_log_record_id_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX atd_txdot_change_log_record_id_index ON public.atd_txdot_change_log USING btree (record_id);
+
+
+--
+-- Name: atd_txdot_change_log_record_type_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX atd_txdot_change_log_record_type_index ON public.atd_txdot_change_log USING btree (record_type);
+
+
+--
+-- Name: atd_txdot_change_pending_record_crash_id_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX atd_txdot_change_pending_record_crash_id_index ON public.atd_txdot_change_pending USING btree (record_crash_id);
+
+
+--
+-- Name: atd_txdot_change_pending_record_id_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX atd_txdot_change_pending_record_id_index ON public.atd_txdot_change_pending USING btree (record_id);
+
+
+--
+-- Name: atd_txdot_change_pending_record_type_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX atd_txdot_change_pending_record_type_index ON public.atd_txdot_change_pending USING btree (record_type);
+
+
+--
+-- Name: atd_txdot_cities_city_id_uindex; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE UNIQUE INDEX atd_txdot_cities_city_id_uindex ON public.atd_txdot_cities USING btree (city_id);
+
+
+--
+-- Name: atd_txdot_crash_locations_crash_id_location_id_uindex; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE UNIQUE INDEX atd_txdot_crash_locations_crash_id_location_id_uindex ON public.atd_txdot_crash_locations USING btree (crash_id, location_id);
+
+
+--
+-- Name: atd_txdot_crashes_apd_confirmed_fatality_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX atd_txdot_crashes_apd_confirmed_fatality_index ON public.atd_txdot_crashes USING btree (apd_confirmed_fatality);
+
+
+--
+-- Name: atd_txdot_crashes_austin_full_purpose_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX atd_txdot_crashes_austin_full_purpose_index ON public.atd_txdot_crashes USING btree (austin_full_purpose);
+
+
+--
+-- Name: atd_txdot_crashes_case_id_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX atd_txdot_crashes_case_id_index ON public.atd_txdot_crashes USING btree (case_id);
+
+
+--
+-- Name: atd_txdot_crashes_city_id_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX atd_txdot_crashes_city_id_index ON public.atd_txdot_crashes USING btree (city_id);
+
+
+--
+-- Name: atd_txdot_crashes_cr3_file_metadata_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX atd_txdot_crashes_cr3_file_metadata_index ON public.atd_txdot_crashes USING gin (cr3_file_metadata);
+
+
+--
+-- Name: atd_txdot_crashes_cr3_stored_flag_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX atd_txdot_crashes_cr3_stored_flag_index ON public.atd_txdot_crashes USING btree (cr3_stored_flag);
+
+
+--
+-- Name: atd_txdot_crashes_crash_date_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX atd_txdot_crashes_crash_date_index ON public.atd_txdot_crashes USING btree (crash_date);
+
+
+--
+-- Name: atd_txdot_crashes_crash_fatal_fl_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX atd_txdot_crashes_crash_fatal_fl_index ON public.atd_txdot_crashes USING btree (crash_fatal_fl);
+
+
+--
+-- Name: atd_txdot_crashes_death_cnt_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX atd_txdot_crashes_death_cnt_index ON public.atd_txdot_crashes USING btree (death_cnt);
+
+
+--
+-- Name: atd_txdot_crashes_geocode_provider_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX atd_txdot_crashes_geocode_provider_index ON public.atd_txdot_crashes USING btree (geocode_provider);
+
+
+--
+-- Name: atd_txdot_crashes_geocode_status_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX atd_txdot_crashes_geocode_status_index ON public.atd_txdot_crashes USING btree (geocode_status);
+
+
+--
+-- Name: atd_txdot_crashes_geocoded_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX atd_txdot_crashes_geocoded_index ON public.atd_txdot_crashes USING btree (geocoded);
+
+
+--
+-- Name: atd_txdot_crashes_investigat_agency_id_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX atd_txdot_crashes_investigat_agency_id_index ON public.atd_txdot_crashes USING btree (investigat_agency_id);
+
+
+--
+-- Name: atd_txdot_crashes_is_retired_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX atd_txdot_crashes_is_retired_index ON public.atd_txdot_crashes USING btree (is_retired);
+
+
+--
+-- Name: atd_txdot_crashes_original_city_id_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX atd_txdot_crashes_original_city_id_index ON public.atd_txdot_crashes USING btree (original_city_id);
+
+
+--
+-- Name: atd_txdot_crashes_position_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX atd_txdot_crashes_position_index ON public.atd_txdot_crashes USING gist ("position");
+
+
+--
+-- Name: atd_txdot_crashes_qa_status_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX atd_txdot_crashes_qa_status_index ON public.atd_txdot_crashes USING btree (qa_status);
+
+
+--
+-- Name: atd_txdot_crashes_sus_serious_injry_cnt_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX atd_txdot_crashes_sus_serious_injry_cnt_index ON public.atd_txdot_crashes USING btree (sus_serious_injry_cnt);
+
+
+--
+-- Name: atd_txdot_crashes_temp_record_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX atd_txdot_crashes_temp_record_index ON public.atd_txdot_crashes USING btree (temp_record);
+
+
+--
+-- Name: atd_txdot_locations_change_log_unique_id_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX atd_txdot_locations_change_log_unique_id_index ON public.atd_txdot_locations_change_log USING btree (location_id);
+
+
+--
+-- Name: atd_txdot_locations_geometry_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX atd_txdot_locations_geometry_index ON public.atd_txdot_locations USING gist (geometry);
+
+
+--
+-- Name: atd_txdot_locations_group_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX atd_txdot_locations_group_index ON public.atd_txdot_locations USING btree (location_group);
+
+
+--
+-- Name: atd_txdot_locations_level_1_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX atd_txdot_locations_level_1_index ON public.atd_txdot_locations USING btree (level_1);
+
+
+--
+-- Name: atd_txdot_locations_level_2_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX atd_txdot_locations_level_2_index ON public.atd_txdot_locations USING btree (level_2);
+
+
+--
+-- Name: atd_txdot_locations_level_3_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX atd_txdot_locations_level_3_index ON public.atd_txdot_locations USING btree (level_3);
+
+
+--
+-- Name: atd_txdot_locations_level_4_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX atd_txdot_locations_level_4_index ON public.atd_txdot_locations USING btree (level_4);
+
+
+--
+-- Name: atd_txdot_locations_level_5_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX atd_txdot_locations_level_5_index ON public.atd_txdot_locations USING btree (level_5);
+
+
+--
+-- Name: atd_txdot_locations_shape_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX atd_txdot_locations_shape_index ON public.atd_txdot_locations USING gist (shape);
+
+
+--
+-- Name: atd_txdot_locations_unique_id_uindex; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE UNIQUE INDEX atd_txdot_locations_unique_id_uindex ON public.atd_txdot_locations USING btree (location_id);
+
+
+--
+-- Name: atd_txdot_person_death_cnt_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX atd_txdot_person_death_cnt_index ON public.atd_txdot_person USING btree (death_cnt);
+
+
+--
+-- Name: atd_txdot_person_is_retired_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX atd_txdot_person_is_retired_index ON public.atd_txdot_person USING btree (is_retired);
+
+
+--
+-- Name: atd_txdot_person_person_id_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX atd_txdot_person_person_id_index ON public.atd_txdot_person USING btree (person_id);
+
+
+--
+-- Name: atd_txdot_person_prsn_age_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX atd_txdot_person_prsn_age_index ON public.atd_txdot_person USING btree (prsn_age);
+
+
+--
+-- Name: atd_txdot_person_prsn_death_date_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX atd_txdot_person_prsn_death_date_index ON public.atd_txdot_person USING btree (prsn_death_date);
+
+
+--
+-- Name: atd_txdot_person_prsn_death_time_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX atd_txdot_person_prsn_death_time_index ON public.atd_txdot_person USING btree (prsn_death_time);
+
+
+--
+-- Name: atd_txdot_person_prsn_ethnicity_id_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX atd_txdot_person_prsn_ethnicity_id_index ON public.atd_txdot_person USING btree (prsn_ethnicity_id);
+
+
+--
+-- Name: atd_txdot_person_prsn_gndr_id_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX atd_txdot_person_prsn_gndr_id_index ON public.atd_txdot_person USING btree (prsn_gndr_id);
+
+
+--
+-- Name: atd_txdot_person_prsn_injry_sev_id_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX atd_txdot_person_prsn_injry_sev_id_index ON public.atd_txdot_person USING btree (prsn_injry_sev_id);
+
+
+--
+-- Name: atd_txdot_person_sus_serious_injry_cnt_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX atd_txdot_person_sus_serious_injry_cnt_index ON public.atd_txdot_person USING btree (sus_serious_injry_cnt);
+
+
+--
+-- Name: atd_txdot_person_years_of_life_lost_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX atd_txdot_person_years_of_life_lost_index ON public.atd_txdot_person USING btree (years_of_life_lost);
+
+
+--
+-- Name: atd_txdot_primaryperson_death_cnt_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX atd_txdot_primaryperson_death_cnt_index ON public.atd_txdot_primaryperson USING btree (death_cnt);
+
+
+--
+-- Name: atd_txdot_primaryperson_is_retired_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX atd_txdot_primaryperson_is_retired_index ON public.atd_txdot_primaryperson USING btree (is_retired);
+
+
+--
+-- Name: atd_txdot_primaryperson_primaryperson_id_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX atd_txdot_primaryperson_primaryperson_id_index ON public.atd_txdot_primaryperson USING btree (primaryperson_id);
+
+
+--
+-- Name: atd_txdot_primaryperson_prsn_age_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX atd_txdot_primaryperson_prsn_age_index ON public.atd_txdot_primaryperson USING btree (prsn_age);
+
+
+--
+-- Name: atd_txdot_primaryperson_prsn_death_date_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX atd_txdot_primaryperson_prsn_death_date_index ON public.atd_txdot_primaryperson USING btree (prsn_death_date);
+
+
+--
+-- Name: atd_txdot_primaryperson_prsn_death_time_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX atd_txdot_primaryperson_prsn_death_time_index ON public.atd_txdot_primaryperson USING btree (prsn_death_time);
+
+
+--
+-- Name: atd_txdot_primaryperson_prsn_ethnicity_id_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX atd_txdot_primaryperson_prsn_ethnicity_id_index ON public.atd_txdot_primaryperson USING btree (prsn_ethnicity_id);
+
+
+--
+-- Name: atd_txdot_primaryperson_prsn_gndr_id_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX atd_txdot_primaryperson_prsn_gndr_id_index ON public.atd_txdot_primaryperson USING btree (prsn_gndr_id);
+
+
+--
+-- Name: atd_txdot_primaryperson_prsn_injry_sev_id_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX atd_txdot_primaryperson_prsn_injry_sev_id_index ON public.atd_txdot_primaryperson USING btree (prsn_injry_sev_id);
+
+
+--
+-- Name: atd_txdot_primaryperson_sus_serious_injry_cnt_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX atd_txdot_primaryperson_sus_serious_injry_cnt_index ON public.atd_txdot_primaryperson USING btree (sus_serious_injry_cnt);
+
+
+--
+-- Name: atd_txdot_primaryperson_years_of_life_lost_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX atd_txdot_primaryperson_years_of_life_lost_index ON public.atd_txdot_primaryperson USING btree (years_of_life_lost);
+
+
+--
+-- Name: atd_txdot_streets_full_streer_name_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX atd_txdot_streets_full_streer_name_index ON public.atd_txdot_streets USING btree (full_street_name);
+
+
+--
+-- Name: atd_txdot_streets_segment_id_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX atd_txdot_streets_segment_id_index ON public.atd_txdot_streets USING btree (segment_id);
+
+
+--
+-- Name: atd_txdot_streets_street_place_id_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX atd_txdot_streets_street_place_id_index ON public.atd_txdot_streets USING btree (street_place_id);
+
+
+--
+-- Name: atd_txdot_units_death_cnt_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX atd_txdot_units_death_cnt_index ON public.atd_txdot_units USING btree (death_cnt);
+
+
+--
+-- Name: atd_txdot_units_movement_id_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX atd_txdot_units_movement_id_index ON public.atd_txdot_units USING btree (movement_id);
+
+
+--
+-- Name: atd_txdot_units_sus_serious_injry_cnt_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX atd_txdot_units_sus_serious_injry_cnt_index ON public.atd_txdot_units USING btree (sus_serious_injry_cnt);
+
+
+--
+-- Name: atd_txdot_units_temp_death_cnt_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX atd_txdot_units_temp_death_cnt_index ON public.atd_txdot_units_temp USING btree (death_cnt);
+
+
+--
+-- Name: atd_txdot_units_temp_movement_id_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX atd_txdot_units_temp_movement_id_index ON public.atd_txdot_units_temp USING btree (movement_id);
+
+
+--
+-- Name: atd_txdot_units_temp_sus_serious_injry_cnt_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX atd_txdot_units_temp_sus_serious_injry_cnt_index ON public.atd_txdot_units_temp USING btree (sus_serious_injry_cnt);
+
+
+--
+-- Name: atd_txdot_units_temp_unit_id_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX atd_txdot_units_temp_unit_id_index ON public.atd_txdot_units_temp USING btree (unit_id);
+
+
+--
+-- Name: atd_txdot_units_unit_id_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX atd_txdot_units_unit_id_index ON public.atd_txdot_units USING btree (unit_id);
+
+
+--
+-- Name: hin_corridors_buffered_corridor_idx; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX hin_corridors_buffered_corridor_idx ON public.hin_corridors USING gist (buffered_corridor);
+
+
+--
+-- Name: hin_corridors_corridor_idx; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX hin_corridors_corridor_idx ON public.hin_corridors USING gist (corridor);
+
+
+--
+-- Name: idx_atd_txdot_person_crash_id; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX idx_atd_txdot_person_crash_id ON public.atd_txdot_person USING btree (crash_id);
+
+
+--
+-- Name: idx_atd_txdot_primaryperson_crash_id; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX idx_atd_txdot_primaryperson_crash_id ON public.atd_txdot_primaryperson USING btree (crash_id);
+
+
+--
+-- Name: idx_atd_txdot_units_crash_id; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX idx_atd_txdot_units_crash_id ON public.atd_txdot_units USING btree (crash_id);
+
+
+--
+-- Name: idx_atd_txdot_units_temp_crash_id; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX idx_atd_txdot_units_temp_crash_id ON public.atd_txdot_units_temp USING btree (crash_id);
+
+
+--
+-- Name: mv_aaab_case_id_idx; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX mv_aaab_case_id_idx ON public.all_atd_apd_blueform USING btree (case_id);
+
+
+--
+-- Name: mv_aaab_date_idx; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX mv_aaab_date_idx ON public.all_atd_apd_blueform USING btree (date);
+
+
+--
+-- Name: mv_aaab_geometry_idx; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX mv_aaab_geometry_idx ON public.all_atd_apd_blueform USING gist ("position");
+
+
+--
+-- Name: mv_aatc_crash_id_idx; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX mv_aatc_crash_id_idx ON public.all_atd_txdot_crashes USING btree (crash_id);
+
+
+--
+-- Name: mv_aatc_date_idx; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX mv_aatc_date_idx ON public.all_atd_txdot_crashes USING btree (crash_date);
+
+
+--
+-- Name: mv_aatc_deaths_idx; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX mv_aatc_deaths_idx ON public.all_atd_txdot_crashes USING btree (death_cnt);
+
+
+--
+-- Name: mv_aatc_geometry_idx; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX mv_aatc_geometry_idx ON public.all_atd_txdot_crashes USING gist ("position");
+
+
+--
+-- Name: mv_accom_crash_id_idx; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX mv_accom_crash_id_idx ON public.all_cr3_crashes_off_mainlane USING btree (crash_id);
+
+
+--
+-- Name: mv_accom_date_idx; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX mv_accom_date_idx ON public.all_cr3_crashes_off_mainlane USING btree (crash_date);
+
+
+--
+-- Name: mv_accom_deaths_idx; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX mv_accom_deaths_idx ON public.all_cr3_crashes_off_mainlane USING btree (death_cnt);
+
+
+--
+-- Name: mv_accom_geometry_idx; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX mv_accom_geometry_idx ON public.all_cr3_crashes_off_mainlane USING gist ("position");
+
+
+--
+-- Name: mv_acom_crash_id_idx; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX mv_acom_crash_id_idx ON public.all_crashes_off_mainlane USING btree (crash_id);
+
+
+--
+-- Name: mv_acom_date_idx; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX mv_acom_date_idx ON public.all_crashes_off_mainlane USING btree (date);
+
+
+--
+-- Name: mv_acom_deaths_idx; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX mv_acom_deaths_idx ON public.all_crashes_off_mainlane USING btree (death_cnt);
+
+
+--
+-- Name: mv_acom_geometry_idx; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX mv_acom_geometry_idx ON public.all_crashes_off_mainlane USING gist (geometry);
+
+
+--
+-- Name: mv_anccom_case_id_idx; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX mv_anccom_case_id_idx ON public.all_non_cr3_crashes_off_mainlane USING btree (case_id);
+
+
+--
+-- Name: mv_anccom_date_idx; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX mv_anccom_date_idx ON public.all_non_cr3_crashes_off_mainlane USING btree (date);
+
+
+--
+-- Name: mv_anccom_geometry_idx; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX mv_anccom_geometry_idx ON public.all_non_cr3_crashes_off_mainlane USING gist ("position");
+
+
+--
+-- Name: mv_fyaab_case_id_idx; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX mv_fyaab_case_id_idx ON public.five_year_atd_apd_blueform USING btree (case_id);
+
+
+--
+-- Name: mv_fyaab_date_idx; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX mv_fyaab_date_idx ON public.five_year_atd_apd_blueform USING btree (date);
+
+
+--
+-- Name: mv_fyaab_geometry_idx; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX mv_fyaab_geometry_idx ON public.five_year_atd_apd_blueform USING gist ("position");
+
+
+--
+-- Name: mv_fyacoap_crash_id_idx; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX mv_fyacoap_crash_id_idx ON public.five_year_all_crashes_outside_any_polygons USING btree (crash_id);
+
+
+--
+-- Name: mv_fyacoap_date_idx; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX mv_fyacoap_date_idx ON public.five_year_all_crashes_outside_any_polygons USING btree (date);
+
+
+--
+-- Name: mv_fyacoap_deaths_idx; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX mv_fyacoap_deaths_idx ON public.five_year_all_crashes_outside_any_polygons USING btree (death_cnt);
+
+
+--
+-- Name: mv_fyacoap_geometry_idx; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX mv_fyacoap_geometry_idx ON public.five_year_all_crashes_outside_any_polygons USING gist (geometry);
+
+
+--
+-- Name: mv_fyacom_crash_id_idx; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX mv_fyacom_crash_id_idx ON public.five_year_all_crashes_off_mainlane USING btree (crash_id);
+
+
+--
+-- Name: mv_fyacom_date_idx; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX mv_fyacom_date_idx ON public.five_year_all_crashes_off_mainlane USING btree (date);
+
+
+--
+-- Name: mv_fyacom_deaths_idx; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX mv_fyacom_deaths_idx ON public.five_year_all_crashes_off_mainlane USING btree (death_cnt);
+
+
+--
+-- Name: mv_fyacom_geometry_idx; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX mv_fyacom_geometry_idx ON public.five_year_all_crashes_off_mainlane USING gist (geometry);
+
+
+--
+-- Name: mv_fyacomosp_crash_id_idx; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX mv_fyacomosp_crash_id_idx ON public.five_year_all_crashes_off_mainlane_outside_surface_polygons USING btree (crash_id);
+
+
+--
+-- Name: mv_fyacomosp_date_idx; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX mv_fyacomosp_date_idx ON public.five_year_all_crashes_off_mainlane_outside_surface_polygons USING btree (date);
+
+
+--
+-- Name: mv_fyacomosp_deaths_idx; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX mv_fyacomosp_deaths_idx ON public.five_year_all_crashes_off_mainlane_outside_surface_polygons USING btree (death_cnt);
+
+
+--
+-- Name: mv_fyacomosp_geometry_idx; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX mv_fyacomosp_geometry_idx ON public.five_year_all_crashes_off_mainlane_outside_surface_polygons USING gist (geometry);
+
+
+--
+-- Name: mv_fyacosp_crash_id_idx; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX mv_fyacosp_crash_id_idx ON public.five_year_all_crashes_outside_surface_polygons USING btree (crash_id);
+
+
+--
+-- Name: mv_fyacosp_date_idx; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX mv_fyacosp_date_idx ON public.five_year_all_crashes_outside_surface_polygons USING btree (date);
+
+
+--
+-- Name: mv_fyacosp_deaths_idx; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX mv_fyacosp_deaths_idx ON public.five_year_all_crashes_outside_surface_polygons USING btree (death_cnt);
+
+
+--
+-- Name: mv_fyacosp_geometry_idx; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX mv_fyacosp_geometry_idx ON public.five_year_all_crashes_outside_surface_polygons USING gist (geometry);
+
+
+--
+-- Name: mv_fyatc_crash_id_idx; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX mv_fyatc_crash_id_idx ON public.five_year_atd_txdot_crashes USING btree (crash_id);
+
+
+--
+-- Name: mv_fyatc_date_idx; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX mv_fyatc_date_idx ON public.five_year_atd_txdot_crashes USING btree (crash_date);
+
+
+--
+-- Name: mv_fyatc_deaths_idx; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX mv_fyatc_deaths_idx ON public.five_year_atd_txdot_crashes USING btree (death_cnt);
+
+
+--
+-- Name: mv_fyatc_geometry_idx; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX mv_fyatc_geometry_idx ON public.five_year_atd_txdot_crashes USING gist ("position");
+
+
+--
+-- Name: mv_fyccom_crash_id_idx; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX mv_fyccom_crash_id_idx ON public.five_year_cr3_crashes_off_mainlane USING btree (crash_id);
+
+
+--
+-- Name: mv_fyccom_date_idx; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX mv_fyccom_date_idx ON public.five_year_cr3_crashes_off_mainlane USING btree (crash_date);
+
+
+--
+-- Name: mv_fyccom_deaths_idx; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX mv_fyccom_deaths_idx ON public.five_year_cr3_crashes_off_mainlane USING btree (death_cnt);
+
+
+--
+-- Name: mv_fyccom_geometry_idx; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX mv_fyccom_geometry_idx ON public.five_year_cr3_crashes_off_mainlane USING gist ("position");
+
+
+--
+-- Name: mv_fyccosp_crash_id_idx; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX mv_fyccosp_crash_id_idx ON public.five_year_cr3_crashes_outside_surface_polygons USING btree (crash_id);
+
+
+--
+-- Name: mv_fyccosp_date_idx; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX mv_fyccosp_date_idx ON public.five_year_cr3_crashes_outside_surface_polygons USING btree (crash_date);
+
+
+--
+-- Name: mv_fyccosp_deaths_idx; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX mv_fyccosp_deaths_idx ON public.five_year_cr3_crashes_outside_surface_polygons USING btree (death_cnt);
+
+
+--
+-- Name: mv_fyccosp_geometry_idx; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX mv_fyccosp_geometry_idx ON public.five_year_cr3_crashes_outside_surface_polygons USING gist ("position");
+
+
+--
+-- Name: mv_fyhpwcd_deaths_idx; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX mv_fyhpwcd_deaths_idx ON public.five_year_highway_polygons_with_crash_data USING btree (total_death_cnt);
+
+
+--
+-- Name: mv_fyhpwcd_geometry_idx; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX mv_fyhpwcd_geometry_idx ON public.five_year_highway_polygons_with_crash_data USING gist (geometry);
+
+
+--
+-- Name: mv_fyhpwcd_location_id_idx; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX mv_fyhpwcd_location_id_idx ON public.five_year_highway_polygons_with_crash_data USING btree (location_id);
+
+
+--
+-- Name: mv_fynccom_case_id_idx; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX mv_fynccom_case_id_idx ON public.five_year_non_cr3_crashes_off_mainlane USING btree (case_id);
+
+
+--
+-- Name: mv_fynccom_date_idx; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX mv_fynccom_date_idx ON public.five_year_non_cr3_crashes_off_mainlane USING btree (date);
+
+
+--
+-- Name: mv_fynccom_geometry_idx; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX mv_fynccom_geometry_idx ON public.five_year_non_cr3_crashes_off_mainlane USING gist ("position");
+
+
+--
+-- Name: mv_fynccosp_case_id_idx; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX mv_fynccosp_case_id_idx ON public.five_year_non_cr3_crashes_outside_surface_polygons USING btree (case_id);
+
+
+--
+-- Name: mv_fynccosp_date_idx; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX mv_fynccosp_date_idx ON public.five_year_non_cr3_crashes_outside_surface_polygons USING btree (date);
+
+
+--
+-- Name: mv_fynccosp_geometry_idx; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX mv_fynccosp_geometry_idx ON public.five_year_non_cr3_crashes_outside_surface_polygons USING gist ("position");
+
+
+--
+-- Name: mv_fyspwcd_deaths_idx; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX mv_fyspwcd_deaths_idx ON public.five_year_surface_polygons_with_crash_data USING btree (total_death_cnt);
+
+
+--
+-- Name: mv_fyspwcd_geometry_idx; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX mv_fyspwcd_geometry_idx ON public.five_year_surface_polygons_with_crash_data USING gist (geometry);
+
+
+--
+-- Name: mv_fyspwcd_location_id_idx; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX mv_fyspwcd_location_id_idx ON public.five_year_surface_polygons_with_crash_data USING btree (location_id);
+
+
+--
+-- Name: polygons_geometry_index; Type: INDEX; Schema: public; Owner: atd_vz_data
+--
+
 CREATE INDEX polygons_geometry_index ON public.polygons USING gist (geometry);
+
+
+--
+-- Name: view_location_crashes_global _RETURN; Type: RULE; Schema: public; Owner: atd_vz_data
+--
+
 CREATE OR REPLACE VIEW public.view_location_crashes_global AS
  SELECT atc.crash_id,
     'CR3'::text AS type,
@@ -5779,19 +9836,89 @@ UNION ALL
     ''::text AS veh_unit_desc_desc
    FROM public.atd_apd_blueform aab
   WHERE (aab.date >= ((now() - '5 years'::interval))::date);
+
+
+--
+-- Name: atd_apd_blueform atd_txdot_blueform_update_position; Type: TRIGGER; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TRIGGER atd_txdot_blueform_update_position BEFORE INSERT OR UPDATE ON public.atd_apd_blueform FOR EACH ROW EXECUTE PROCEDURE public.atd_txdot_blueform_update_position();
+
+
+--
+-- Name: atd_txdot_charges atd_txdot_charges_audit_log; Type: TRIGGER; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TRIGGER atd_txdot_charges_audit_log BEFORE UPDATE ON public.atd_txdot_charges FOR EACH ROW EXECUTE PROCEDURE public.atd_txdot_charges_updates_audit_log();
+
 ALTER TABLE public.atd_txdot_charges DISABLE TRIGGER atd_txdot_charges_audit_log;
+
+
+--
+-- Name: atd_txdot_crashes atd_txdot_crashes_audit_log; Type: TRIGGER; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TRIGGER atd_txdot_crashes_audit_log BEFORE INSERT OR UPDATE ON public.atd_txdot_crashes FOR EACH ROW EXECUTE PROCEDURE public.atd_txdot_crashes_updates_audit_log();
+
+
+--
+-- Name: atd_txdot_locations atd_txdot_location_audit_log; Type: TRIGGER; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TRIGGER atd_txdot_location_audit_log BEFORE INSERT OR UPDATE ON public.atd_txdot_locations FOR EACH ROW EXECUTE PROCEDURE public.atd_txdot_locations_updates_audit_log();
+
 ALTER TABLE public.atd_txdot_locations DISABLE TRIGGER atd_txdot_location_audit_log;
+
+
+--
+-- Name: atd_txdot_locations atd_txdot_locations_updates_crash_locations; Type: TRIGGER; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TRIGGER atd_txdot_locations_updates_crash_locations BEFORE UPDATE ON public.atd_txdot_locations FOR EACH ROW EXECUTE PROCEDURE public.atd_txdot_locations_updates_crash_locations();
+
 ALTER TABLE public.atd_txdot_locations DISABLE TRIGGER atd_txdot_locations_updates_crash_locations;
+
+
+--
+-- Name: atd_txdot_person atd_txdot_person_audit_log; Type: TRIGGER; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TRIGGER atd_txdot_person_audit_log BEFORE UPDATE ON public.atd_txdot_person FOR EACH ROW EXECUTE PROCEDURE public.atd_txdot_person_updates_audit_log();
+
 ALTER TABLE public.atd_txdot_person DISABLE TRIGGER atd_txdot_person_audit_log;
+
+
+--
+-- Name: atd_txdot_primaryperson atd_txdot_primaryperson_audit_log; Type: TRIGGER; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TRIGGER atd_txdot_primaryperson_audit_log BEFORE UPDATE ON public.atd_txdot_primaryperson FOR EACH ROW EXECUTE PROCEDURE public.atd_txdot_primaryperson_updates_audit_log();
+
+
+--
+-- Name: atd_txdot_units atd_txdot_units_audit_log; Type: TRIGGER; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TRIGGER atd_txdot_units_audit_log BEFORE UPDATE ON public.atd_txdot_units FOR EACH ROW EXECUTE PROCEDURE public.atd_txdot_units_updates_audit_log();
+
+
+--
+-- Name: atd_txdot_units atd_txdot_units_create; Type: TRIGGER; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TRIGGER atd_txdot_units_create BEFORE INSERT ON public.atd_txdot_units FOR EACH ROW EXECUTE PROCEDURE public.atd_txdot_units_create();
+
+
+--
+-- Name: atd_txdot_units atd_txdot_units_create_update; Type: TRIGGER; Schema: public; Owner: atd_vz_data
+--
+
 CREATE TRIGGER atd_txdot_units_create_update BEFORE INSERT OR UPDATE ON public.atd_txdot_units FOR EACH ROW EXECUTE PROCEDURE public.atd_txdot_units_create_update();
+
+--
+-- Name: atd_txdot_person atd_txdot_person_prsn_injry_sev_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: atd_vz_data
+--
+
 ALTER TABLE ONLY public.atd_txdot_person
     ADD CONSTRAINT atd_txdot_person_prsn_injry_sev_id_fkey FOREIGN KEY (prsn_injry_sev_id) REFERENCES public.atd_txdot__injry_sev_lkp(injry_sev_id) ON UPDATE RESTRICT ON DELETE RESTRICT;
+
