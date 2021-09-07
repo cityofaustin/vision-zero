@@ -1,45 +1,42 @@
 #
-# Vision Zero Database Development Environment
+# VisionZero Local Database
 #
 
-version: "3.7"
+version: '3.7'
 services:
-  #
-  # Local PostgreSQL database
-  #   Note: Attempted using the leanest version (alpine), feel free
-  #   to use any other image, as long as the port configuration
-  #   and access configuration (user, db, password) are all the same.
-  #
-  vzd-pgsql:
-    image: postgis/postgis:10-2.5-alpine
-    volumes:
-      - vzd_vol:/var/lib/postgresql/data
-    expose:
-      - 5432
-    ports:
-      - 5432:5432
-    environment:
-      - POSTGRES_USER=vzd
-      - POSTGRES_PASSWORD=vzd
-      - POSTGRES_DB=vzd
+    #
+    # Local PostgreSQL database
+    #   Note: Attempted using the leanest version (alpine), feel free
+    #   to use any other image, as long as the port configuration
+    #   and access configuration (user, db, password) are all the same.
+    #
+    visionzero-pgsql:
+        image: postgis/postgis:12-master
+        volumes:
+            - visionzero-db-vol:/var/lib/postgresql/data
+        expose:
+            - 5432
+        ports:
+            - 5432:5432
+        environment:
+            - POSTGRES_USER=atd_vz_data
+            - POSTGRES_PASSWORD=atd_vz_data
+            - POSTGRES_DB=atd_vz_data
 
-  hasura:
-    image: hasura/graphql-engine:v1.2.1
-    restart: always
-    depends_on:
-      - vzd-pgsql
-    expose:
-      - 8080
-    ports:
-      - 8080:8080
-    environment:
-      - HASURA_GRAPHQL_ENABLE_CONSOLE=false
-      - HASURA_GRAPHQL_ENABLE_TELEMETRY=false
-      - HASURA_GRAPHQL_DATABASE_URL=postgres://vzd:vzd@vzd-pgsql:5432/vzd
-      - MOPED_API_ACTIONS_URL=http://localhost:5000/actions
-      - MOPED_API_EVENTS_URL=http://localhost:5000/events
-      - MOPED_API_APIKEY=DuMmyApiKeyHFVOVto19otC1wX6sP2N0VSKrCD70L10B7Sm525ZR6L672i2F79M9!
-
+    hasura:
+        image: hasura/graphql-engine:v1.2.1
+        restart: always
+        depends_on:
+            - visionzero-pgsql
+        expose:
+            - 8080
+        ports:
+            - 8080:8080
+        environment:
+            - HASURA_GRAPHQL_ENABLE_CONSOLE=true
+            - HASURA_GRAPHQL_ENABLE_TELEMETRY=false
+            - HASURA_GRAPHQL_DATABASE_URL=postgres://atd_vz_data:atd_vz_data@visionzero-pgsql:5432/atd_vz_data
+            - HASURA_GRAPHQL_ADMIN_SECRET=atd_vz_data
 volumes:
-  vzd_vol:
-    driver: local
+    visionzero-db-vol:
+        driver: local
