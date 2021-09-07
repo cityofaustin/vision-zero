@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # Hasura Cluster Tool(kit)
-#   This is a tool kit that helps manage the VZD cluster.
+#   This is a tool kit that helps manage the VisionZero cluster.
 #
 # Austin Transportation Department
 # Data & Technology Services
@@ -186,10 +186,10 @@ function restart() {
 }
 
 #
-# Removes any volumes whose names start with the string "atd-vzd"
+# Removes any volumes whose names start with the string "VisionZero"
 #
 function prune() {
-   docker volume rm $(docker volume ls --filter name=atd-vzd* -q);
+   docker volume rm $(docker volume ls --filter name=visionzero* -q);
 }
 
 #
@@ -267,4 +267,3 @@ if [[ "${HIDE_HASURA_KIT_BANNER}" != "TRUE" ]]; then
 else
   echo "Hasura Cluster: $1" && $1 $2 $3;
 fi;
-
