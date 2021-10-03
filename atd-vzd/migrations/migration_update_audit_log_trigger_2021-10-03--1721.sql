@@ -1,3 +1,5 @@
+-- Augment the atd_txdot_crashes_update_audit_log() function to compute and store the crash based comprehensive cost
+-- This updated version of the function is also found in atd-vzd/triggers/atd_txdot_crashes_updates_audit_log.sql
 create or replace function atd_txdot_crashes_updates_audit_log() returns trigger
     language plpgsql
 as
@@ -16,8 +18,8 @@ BEGIN
         INSERT INTO atd_txdot_change_log (record_id, record_crash_id, record_type, record_json, updated_by)
         VALUES (old.crash_id, old.crash_id, 'crashes', row_to_json(old), NEW.updated_by);
     END IF;
-            
-    -- COPIES THE CITY_ID INTO ORIGINAL_CITY_ID FOR BACKUP 
+
+    -- COPIES THE CITY_ID INTO ORIGINAL_CITY_ID FOR BACKUP
     IF (TG_OP = 'INSERT') THEN
             NEW.original_city_id = NEW.city_id;
     END IF;
@@ -53,17 +55,17 @@ BEGIN
     --- END OF LAT/LONG OPERATIONS ---
 
 
-	------------------------------------------------------------------------------------------
+    ------------------------------------------------------------------------------------------
     -- CONFIRMED ADDRESSES
     ------------------------------------------------------------------------------------------
 
     -- If there is no confirmed primary address provided, then generate it:
     IF (NEW.address_confirmed_primary IS NULL) THEN
-    	  NEW.address_confirmed_primary 	= TRIM(CONCAT(NEW.rpt_street_pfx, ' ', NEW.rpt_block_num, ' ', NEW.rpt_street_name, ' ', NEW.rpt_street_sfx));
+      NEW.address_confirmed_primary   = TRIM(CONCAT(NEW.rpt_street_pfx, ' ', NEW.rpt_block_num, ' ', NEW.rpt_street_name, ' ', NEW.rpt_street_sfx));
     END IF;
     -- If there is no confirmed secondary address provided, then generate it:
     IF (NEW.address_confirmed_secondary IS NULL) THEN
-		    NEW.address_confirmed_secondary = TRIM(CONCAT(NEW.rpt_sec_street_pfx, ' ', NEW.rpt_sec_block_num, ' ', NEW.rpt_sec_street_name, ' ', NEW.rpt_sec_street_sfx));
+    NEW.address_confirmed_secondary = TRIM(CONCAT(NEW.rpt_sec_street_pfx, ' ', NEW.rpt_sec_block_num, ' ', NEW.rpt_sec_street_name, ' ', NEW.rpt_sec_street_sfx));
     END IF;
     --- END OF ADDRESS OPERATIONS ---
 
@@ -73,7 +75,7 @@ BEGIN
     -- If our apd death count is null, then assume death_cnt's value
     IF (NEW.atd_fatality_count IS NULL) THEN
         NEW.atd_fatality_count = NEW.death_cnt;
-	  END IF;
+    END IF;
 
     IF (NEW.apd_confirmed_death_count IS NULL) THEN
         NEW.apd_confirmed_death_count = NEW.death_cnt;
@@ -117,7 +119,7 @@ BEGIN
     ELSIF (NEW.poss_injry_cnt > 0) THEN NEW.est_comp_cost_crash_based = estCompCostListCrashBased[4];
     ELSIF (NEW.non_injry_cnt > 0) THEN NEW.est_comp_cost_crash_based = estCompCostListCrashBased[5];
     ELSIF (NEW.unkn_injry_cnt > 0) THEN NEW.est_comp_cost_crash_based = estCompCostListCrashBased[6];
-    ELSE NEW.est_comp_cost_crash_based = estCompCostListCrashBased[5]; -- default value of non-injury
+    ELSE NEW.est_comp_cost_crash_based = estCompCostListCrashBased[5]; -- default value of non-injury;
     END IF;
 
     NEW.est_econ_cost = (0
@@ -128,7 +130,6 @@ BEGIN
        + (NEW.poss_injry_cnt * (estCompEconList[5]))
        + (NEW.non_injry_cnt * (estCompEconList[6]))
     )::decimal(10,2);
-
     --- END OF COST OPERATIONS ---
 
     ------------------------------------------------------------------------------------------
@@ -136,8 +137,8 @@ BEGIN
     ------------------------------------------------------------------------------------------
     speedMgmtList = ARRAY (SELECT speed_mgmt_points FROM atd_txdot__speed_mgmt_lkp ORDER BY speed_mgmt_id ASC);
 
-	  NEW.speed_mgmt_points = (0
-	  	 + (NEW.unkn_injry_cnt * (speedMgmtList [1]))
+    NEW.speed_mgmt_points = (0
+       + (NEW.unkn_injry_cnt * (speedMgmtList [1]))
        + (NEW.atd_fatality_count * (speedMgmtList [2]))
        + (NEW.sus_serious_injry_cnt * (speedMgmtList [3]))
        + (NEW.nonincap_injry_cnt * (speedMgmtList [4]))
@@ -158,7 +159,7 @@ BEGIN
     -- Set Austin Full Purpose to Y (TRUE) when it has Austin City ID and no coordinates.
     IF (NEW.position IS NULL and NEW.city_id = 22) THEN
         NEW.austin_full_purpose = 'Y';
-    END IF;    
+    END IF;
     --- END OF AUSTIN FULL PURPOSE ---
 
     -- Record the current timestamp
@@ -167,4 +168,5 @@ BEGIN
 END;
 $$;
 
+-- set ownership if needed
 alter function atd_txdot_crashes_updates_audit_log() owner to atd_vz_data;
