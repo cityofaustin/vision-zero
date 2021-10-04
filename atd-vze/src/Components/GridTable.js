@@ -376,7 +376,7 @@ const GridTable = ({
   query.offset = offset;
 
   // Show us the current state of the query in the console!
-  console.log(query.query);
+  // console.log(query.query);
 
   /**
    *
