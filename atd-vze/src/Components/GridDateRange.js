@@ -75,6 +75,9 @@ const GridDateRange = ({ setDateRangeFilter, initStartDate, initEndDate, uniqueK
    * @type {Date}
    */
   const maxDate = new Date();
+  const minDate = moment(new Date())
+      .subtract(10, "year")
+      .toDate();
 
   const [startDate, setStartDate] = useState(parseDate(initStartDate));
   const [endDate, setEndDate] = useState(parseDate(initEndDate));
@@ -105,6 +108,7 @@ const GridDateRange = ({ setDateRangeFilter, initStartDate, initEndDate, uniqueK
           endDate={endDate}
           // Prevent user from selecting start date after current date
           maxDate={maxDate}
+          minDate={minDate}
         />
         <span>{" to "}</span>
         <DatePicker
