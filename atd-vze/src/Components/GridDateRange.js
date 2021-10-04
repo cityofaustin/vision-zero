@@ -47,14 +47,14 @@ const StyledDatePicker = styled.div`
   }
 `;
 
-const GridDateRange = ({ setDateRangeFilter, initStartDate, initEndDate, uniqueKey }) => {
+const GridDateRange = ({ setDateRangeFilter, initStartDate, initEndDate, uniqueKey, minDate }) => {
   /**
    * Parses a string into proper format
    * @param {string} date - date string to be formatted
    * @returns {Date}
    */
   const parseDate = date => new Date(moment(date).format());
-
+  //debugger;
   /**
    * Returns a date in a valid SQL format.
    * @param {string} date - The string to be transformed
@@ -75,9 +75,6 @@ const GridDateRange = ({ setDateRangeFilter, initStartDate, initEndDate, uniqueK
    * @type {Date}
    */
   const maxDate = new Date();
-  const minDate = moment(new Date())
-      .subtract(10, "year")
-      .toDate();
 
   const [startDate, setStartDate] = useState(parseDate(initStartDate));
   const [endDate, setEndDate] = useState(parseDate(initEndDate));
@@ -95,6 +92,8 @@ const GridDateRange = ({ setDateRangeFilter, initStartDate, initEndDate, uniqueK
     setStartDate(parseDate(initStartDate));
     setEndDate(parseDate(initEndDate));
   }, [initStartDate, initEndDate]);
+
+  //debugger;
 
   return (
     <>

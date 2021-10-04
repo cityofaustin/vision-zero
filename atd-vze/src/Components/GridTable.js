@@ -40,6 +40,7 @@ const GridTable = ({
   chartConfig,
   widgetsConfig,
   helperText,
+  minDate,
 }) => {
   // Load table filters from localStorage by title
   const savedFilterState = JSON.parse(
@@ -504,6 +505,7 @@ const GridTable = ({
                       setDateRangeFilter={setDateRangeFilter}
                       initStartDate={dateRangeFilter.startDate}
                       initEndDate={dateRangeFilter.endDate}
+                      minDate={minDate}
                       uniqueKey={query.table}
                     />
                   </ButtonGroup>
