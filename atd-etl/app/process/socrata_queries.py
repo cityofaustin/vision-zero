@@ -19,7 +19,7 @@ crashes_query_template = Template(
                 offset: $offset,
                 order_by: {crash_id: asc},
                 where: {
-                    crash_date: { _lt: "$date_limit" }
+                    crash_date: { _lt: "$date_limit", _gte: "$initial_date_limit" }
                     private_dr_fl: { _eq: "N" },
                     _and: [
                       { crash_date: { _is_null: false }},
