@@ -329,6 +329,16 @@ def get_date_limit():
             day=1
         ).strftime("%Y-%m-%d")
 
+def get_initial_date_limit():
+    """
+    Returns a string with the date ten years ago in iso format: yyyy-mm-dd
+    :return str:
+    """
+    d = date.today()
+    return d.replace(
+        year=d.year - 10 
+    ).strftime("%Y-%m-%d")
+
 
 def is_no_time_constraint():
     """
