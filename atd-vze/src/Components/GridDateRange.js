@@ -47,7 +47,7 @@ const StyledDatePicker = styled.div`
   }
 `;
 
-const GridDateRange = ({ setDateRangeFilter, initStartDate, initEndDate, uniqueKey }) => {
+const GridDateRange = ({ setDateRangeFilter, initStartDate, initEndDate, uniqueKey, minDate }) => {
   /**
    * Parses a string into proper format
    * @param {string} date - date string to be formatted
@@ -105,6 +105,7 @@ const GridDateRange = ({ setDateRangeFilter, initStartDate, initEndDate, uniqueK
           endDate={endDate}
           // Prevent user from selecting start date after current date
           maxDate={maxDate}
+          minDate={minDate}
         />
         <span>{" to "}</span>
         <DatePicker
