@@ -54,7 +54,7 @@ const GridDateRange = ({ setDateRangeFilter, initStartDate, initEndDate, uniqueK
    * @returns {Date}
    */
   const parseDate = date => new Date(moment(date).format());
-  //debugger;
+
   /**
    * Returns a date in a valid SQL format.
    * @param {string} date - The string to be transformed
@@ -92,8 +92,6 @@ const GridDateRange = ({ setDateRangeFilter, initStartDate, initEndDate, uniqueK
     setStartDate(parseDate(initStartDate));
     setEndDate(parseDate(initEndDate));
   }, [initStartDate, initEndDate]);
-
-  //debugger;
 
   return (
     <>
