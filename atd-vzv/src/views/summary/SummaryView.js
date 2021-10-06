@@ -29,7 +29,6 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 const SummaryView = ({ measure }) => {
-  console.log(measure);
   const [fatalities, setFatalities] = useState(null);
   const [yearsOfLifeLost, setYearsOfLifeLost] = useState(null);
   const [seriousInjuries, setSeriousInjuries] = useState(null);
