@@ -14,6 +14,7 @@ const Content = () => {
   const routeResult = useTrackedRoutes(routes);
   const currentPath = usePath();
   const isMapPath = currentPath === "/map";
+  const isMeasuresPath = currentPath === "/measures"
 
   // TODO: Slide content to the right when SideDrawer opens
   // Adding conditional styles based on sidebarToggle in the store causes children to re-render on toggle
@@ -47,12 +48,12 @@ const Content = () => {
 
   return (
     <>
-      <Header />
+      {!isMeasuresPath && <Header />}
       <StyledContent>
         {/* Remove padding from all content */}
         <Container fluid className="content px-0">
           {routeResult || <NotFound />}
-          {!isMapPath && <Footer />}
+          {!isMapPath && !isMeasuresPath && <Footer />}
         </Container>
       </StyledContent>
     </>
