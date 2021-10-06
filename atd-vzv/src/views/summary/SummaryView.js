@@ -28,7 +28,8 @@ import {
   faMedkit,
 } from "@fortawesome/free-solid-svg-icons";
 
-const SummaryView = () => {
+const SummaryView = ({ measure }) => {
+  console.log(measure);
   const [fatalities, setFatalities] = useState(null);
   const [yearsOfLifeLost, setYearsOfLifeLost] = useState(null);
   const [seriousInjuries, setSeriousInjuries] = useState(null);
@@ -106,13 +107,24 @@ const SummaryView = () => {
       {summaryWidgetsConfig.map((config, i) => (
         // Set Bootstrap breakpoints to divide into two rows on large mobile devices and below
         <Col className="summary-child" key={i} xs="12" sm="6" xl="3">
-          <SummaryWidget
-            text={config.title}
-            totalsObject={config.totalsObject}
-            icon={config.icon}
-            backgroundColor={config.color}
-            infoPopover={config.infoPopover}
-          />
+          {!!measure && measure === config.title && (
+            <SummaryWidget
+              text={config.title}
+              totalsObject={config.totalsObject}
+              icon={config.icon}
+              backgroundColor={config.color}
+              infoPopover={config.infoPopover}
+            />
+          )}
+          {!measure && (
+            <SummaryWidget
+              text={config.title}
+              totalsObject={config.totalsObject}
+              icon={config.icon}
+              backgroundColor={config.color}
+              infoPopover={config.infoPopover}
+            />
+          )}
         </Col>
       ))}
     </Row>

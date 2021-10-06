@@ -14,7 +14,7 @@ const Content = () => {
   const routeResult = useTrackedRoutes(routes);
   const currentPath = usePath();
   const isMapPath = currentPath === "/map";
-  const isMeasuresPath = currentPath === "/measures"
+  const isMeasuresPath = currentPath.includes("/measures")
 
   // TODO: Slide content to the right when SideDrawer opens
   // Adding conditional styles based on sidebarToggle in the store causes children to re-render on toggle
