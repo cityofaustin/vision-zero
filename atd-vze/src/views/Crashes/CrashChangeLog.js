@@ -115,28 +115,27 @@ class CrashChangeLog extends Component {
       }
     }
 
+    // Define a function to pass to JSON.stringify which will skip over
+    // the __typename key in the JS object being stringified.
+    const stringifyReplacer = (key, value) => {
+      if (key === '__typename') {
+        return undefined;
+      }
+      return value;
+    }
+
     // For each entry created in the diff array, generate an HTML table row.
     let modalItems = diff.map(item => {
-
-      // Define a function to pass to JSON.stringify which will skip over
-      // the __typename key in the JS object being stringified.
-      const stringify_replacer = (key, value) => {
-        if (key === '__typename') {
-          return undefined;
-        }
-        return value;
-      }
-      
       // The following two conditions check if an the current or archived value to
       // to be shown in the crach's changelog are objects, such as found when a jsonb
       // field is pulled from the database. In this case, they are stringified for 
       // human-readble output.
       if (typeof item.original_record_value === 'object') {
-        item.original_record_value = JSON.stringify(item.original_record_value, stringify_replacer);
+        item.original_record_value = JSON.stringify(item.original_record_value, stringifyReplacer);
       }
 
       if (typeof item.archived_record_value === 'object') {
-        item.archived_record_value = JSON.stringify(item.archived_record_value, stringify_replacer);
+        item.archived_record_value = JSON.stringify(item.archived_record_value, stringifyReplacer);
       }
 
       return (
