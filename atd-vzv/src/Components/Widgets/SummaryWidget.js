@@ -28,6 +28,7 @@ const SummaryWidget = ({
   infoPopover,
 }) => {
   const StyledWidgetCard = styled(Card)`
+    max-width: 100%;
     height: 100%;
     flex-grow: 1;
 
