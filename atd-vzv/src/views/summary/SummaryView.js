@@ -27,6 +27,7 @@ import {
   faHeartbeat,
   faMedkit,
 } from "@fortawesome/free-solid-svg-icons";
+import styled from "styled-components";
 
 const SummaryView = ({ measure }) => {
   const [fatalities, setFatalities] = useState(null);
@@ -101,7 +102,12 @@ const SummaryView = ({ measure }) => {
     },
   ];
 
+  const StyledSummaryWidget = styled.div`
+    background: #fff !important;
+  `;
+
   return (
+    <StyledSummaryWidget>
     <Row>
       {summaryWidgetsConfig.map((config, i) => (
         // Set Bootstrap breakpoints to divide into two rows on large mobile devices and below
@@ -127,6 +133,7 @@ const SummaryView = ({ measure }) => {
         </Col>
       ))}
     </Row>
+    </StyledSummaryWidget>
   );
 };
 
