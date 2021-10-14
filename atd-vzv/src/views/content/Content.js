@@ -33,6 +33,10 @@ const Content = () => {
     top: ${responsive.headerHeight}px;
   `
 
+  const mainMobileStilye = `
+    top: ${responsive.headerHeightMobile}px;
+  `
+
   const StyledContent = styled.div`
     .content {
       position: relative;
@@ -45,7 +49,7 @@ const Content = () => {
       .content {
         width: 100vw;
         height: calc(100% - ${responsive.headerHeightMobile}px);
-        top: ${responsive.headerHeightMobile}px;
+        ${!isMeasuresPath && mainMobileStilye}
       }
     }
   `;
