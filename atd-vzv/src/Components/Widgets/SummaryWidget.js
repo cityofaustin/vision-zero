@@ -30,7 +30,6 @@ const SummaryWidget = ({
   const StyledWidgetCard = styled(Card)`
     height: 100%;
     flex-grow: 1;
-    background: #fff;
 
     .total {
       font-size: 4em;
