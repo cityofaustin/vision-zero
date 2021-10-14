@@ -29,9 +29,14 @@ const Content = () => {
     width: calc(100vw - ${responsive.drawerWidth}px);
   `;
 
+  const mainSyles = `
+    top: ${responsive.headerHeight}px;
+  `
+
   const StyledContent = styled.div`
     .content {
       position: relative;
+      ${!isMeasuresPath && mainSyles}
       ${isMapPath && mapStyles}
     }
 
