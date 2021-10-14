@@ -15,8 +15,6 @@ import { popoverConfig } from "../../Components/Popover/popoverConfig";
 import { Container, Row, Col, Alert } from "reactstrap";
 
 import styled from "styled-components";
-import { createGlobalStyle } from "styled-components";
-
 import moment from "moment";
 
 const children = [
@@ -29,15 +27,7 @@ const children = [
 ];
 
 const Summary = () => {
-
-  const GlobalStyle = createGlobalStyle`
-  body {
-    background: #fff !important;
-  }
-`
   const StyledSummary = styled.div`
-    background: #fff !important;
-
     /* Set padding for all Summary children in grid that are Bootstrap columns and have .summary-child class */
     .summary-child,
     [class*=".col-"] {
@@ -84,7 +74,6 @@ const Summary = () => {
         {/* Create whitespace on sides of view until mobile */}
         <Row className="px-xs-0 mx-xs-0 px-lg-3 mx-lg-4 mt-md-3 mt-lg-4">
           <Col className="px-xs-0">
-            <GlobalStyle>
             <StyledSummary>
               {previewDisclaimer}
               <Row className="summary-child">
@@ -127,7 +116,6 @@ const Summary = () => {
                 ))}
               </Row>
             </StyledSummary>
-            </GlobalStyle>
           </Col>
         </Row>
       </Container>
