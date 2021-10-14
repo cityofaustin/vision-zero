@@ -32,7 +32,7 @@ const Content = () => {
   const StyledContent = styled.div`
     .content {
       position: relative;
-      top: ${responsive.headerHeight}px;
+      ${!isMeasuresPath} && top: ${responsive.headerHeight}px
       ${isMapPath && mapStyles}
     }
 
