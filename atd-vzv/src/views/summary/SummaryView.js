@@ -28,7 +28,7 @@ import {
   faMedkit,
 } from "@fortawesome/free-solid-svg-icons";
 
-const SummaryView = ({ measure, multipleView }) => {
+const SummaryView = () => {
   const [fatalities, setFatalities] = useState(null);
   const [yearsOfLifeLost, setYearsOfLifeLost] = useState(null);
   const [seriousInjuries, setSeriousInjuries] = useState(null);
@@ -102,46 +102,18 @@ const SummaryView = ({ measure, multipleView }) => {
   ];
 
   // optional prop multipleView used in widgets. If true, measure is an array of widget titles to display
-  return multipleView ? (
-    <Row>
-      {summaryWidgetsConfig.map((config, i) => (
-        // Set Bootstrap breakpoints to divide into two rows on large mobile devices and below
-        <Col className="summary-child" key={i} xs="12" sm="6" xl="6">
-          {measure.indexOf(config.title) > -1 && (
-            <SummaryWidget
-              text={config.title}
-              totalsObject={config.totalsObject}
-              icon={config.icon}
-              backgroundColor={config.color}
-              infoPopover={config.infoPopover}
-            />
-          )}
-        </Col>
-      ))}
-    </Row>
-  ) : (
+  return (
     <Row>
       {summaryWidgetsConfig.map((config, i) => (
         // Set Bootstrap breakpoints to divide into two rows on large mobile devices and below
         <Col className="summary-child" key={i} xs="12" sm="6" xl="3">
-          {!!measure && measure === config.title && (
-            <SummaryWidget
-              text={config.title}
-              totalsObject={config.totalsObject}
-              icon={config.icon}
-              backgroundColor={config.color}
-              infoPopover={config.infoPopover}
-            />
-          )}
-          {!measure && (
-            <SummaryWidget
-              text={config.title}
-              totalsObject={config.totalsObject}
-              icon={config.icon}
-              backgroundColor={config.color}
-              infoPopover={config.infoPopover}
-            />
-          )}
+          <SummaryWidget
+            text={config.title}
+            totalsObject={config.totalsObject}
+            icon={config.icon}
+            backgroundColor={config.color}
+            infoPopover={config.infoPopover}
+          />
         </Col>
       ))}
     </Row>

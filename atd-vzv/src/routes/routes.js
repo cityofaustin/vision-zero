@@ -10,22 +10,4 @@ export const routes = {
   "/": () => <Summary />,
   "/map": () => <Map />,
   "/measures": () => <SummaryView />,
-  "/measures/fatalities": () => <SummaryView measure="Fatalities" />,
-  "/measures/yearsoflifelost": () => (
-    <SummaryView measure="Years of Life Lost" />
-  ),
-  "/measures/seriousinjuries": () => <SummaryView measure="Serious Injuries" />,
-  "/measures/totalcrashes": () => <SummaryView measure="Total Crashes" />,
-  "/measures/fatalities-years": () => (
-    <SummaryView
-      measure={["Fatalities", "Years of Life Lost"]}
-      multipleView={true}
-    />
-  ),
-  "/measures/injuries-totalcrashes": () => (
-    <SummaryView
-      measure={["Serious Injuries", "Total Crashes"]}
-      multipleView={true}
-    />
-  ),
 };
