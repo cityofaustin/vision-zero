@@ -6,7 +6,7 @@ import "./App.css";
 
 const App = () => {
   const currentPath = usePath();
-  const isMeasuresPath = currentPath.includes("/measures");
+  const isMeasuresPath = currentPath === "/measures";
 
   return (
     <div className="App">
