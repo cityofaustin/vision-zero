@@ -31,11 +31,11 @@ const Content = () => {
 
   const mainSyles = `
     top: ${responsive.headerHeight}px;
-  `
+  `;
 
   const mainMobileStilye = `
     top: ${responsive.headerHeightMobile}px;
-  `
+  `;
 
   const StyledContent = styled.div`
     .content {
