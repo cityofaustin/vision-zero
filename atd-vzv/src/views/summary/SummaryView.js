@@ -101,7 +101,6 @@ const SummaryView = () => {
     },
   ];
 
-  // optional prop multipleView used in widgets. If true, measure is an array of widget titles to display
   return (
     <Row>
       {summaryWidgetsConfig.map((config, i) => (
