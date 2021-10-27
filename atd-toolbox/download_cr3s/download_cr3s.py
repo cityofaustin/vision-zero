@@ -39,6 +39,7 @@ for row in reader:
 # dedup this list
 crash_ids = set()
 
+# iterate over data rows and grab crash IDs based on header values
 for crash in crashes:
     crash_id = [value for key, value in crash.items() if crash_id_header_pattern.match(key)]
     crash_ids.add(int(crash_id[0]))
