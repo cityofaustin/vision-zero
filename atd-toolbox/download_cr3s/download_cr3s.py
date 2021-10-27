@@ -1,3 +1,4 @@
+import os
 import re
 import csv
 import sys
@@ -14,6 +15,12 @@ crash_id_header_pattern = re.compile("^crash.{1}id$", re.I)
 
 # configure our pretty printer
 pp = pprint.PrettyPrinter(indent=2)
+
+# get some environment variables to auth to S3
+ACCESS_KEY = os.getenv('AWS_ACCESS_KEY_ID')
+SECRET_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
+
+bucket = 'atd-vision-zero-editor'
 
 # Python should detect the encoding of the stream coming in on stdin,
 # but it's failing on output from the VZE crash export function. 
