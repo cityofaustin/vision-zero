@@ -15,7 +15,7 @@ log = logging.getLogger('CR3_download')
 log.setLevel(logging.DEBUG)
 
 argparse = argparse.ArgumentParser(description = 'Utility to restore last valid PDF in S3 for ATD VZ')
-argparse.add_argument("-c", "--verbose",
+argparse.add_argument("-v", "--verbose",
     help = 'Be verbose about actions',
     required=False)
 
