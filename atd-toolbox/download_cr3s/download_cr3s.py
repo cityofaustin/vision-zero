@@ -3,8 +3,8 @@ import re
 import csv
 import sys
 import pprint
-import argparse
 import logging
+import argparse
 from datetime import datetime
 
 import boto3
@@ -81,4 +81,3 @@ for crash_id in crash_ids:
     s3_object = 'production/cris-cr3-files/' + str(crash_id) + '.pdf'
     log.info("Downloading: " + s3_object)
     s3_client.download_file(bucket, s3_object, path + str(crash_id) + '.pdf')
- 
