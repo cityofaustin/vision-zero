@@ -57,10 +57,12 @@ for crash in crashes:
 
 s3_client = boto3.client('s3')
 
+# create a path and make a location to receive the CR3 files
 now = datetime.now()
 path = 'downloaded_files/' + now.strftime("%Y%m%d-%-H%M%S") + '/'
 os.makedirs(path)
 
+# iterate over set of unique crash IDs and download the files from S3
 for crash_id in crash_ids:
     s3_object = 'production/cris-cr3-files/' + str(crash_id) + '.pdf'
     #print(s3_object)
