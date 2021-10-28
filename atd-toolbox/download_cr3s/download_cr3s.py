@@ -3,6 +3,7 @@ import re
 import csv
 import sys
 import pprint
+from datetime import datetime
 
 import boto3
 
@@ -52,5 +53,16 @@ for crash in crashes:
     crash_ids.add(int(crash_id[0]))
 
 # let's take a peek at our set of crash ids
-pp.pprint(crash_ids)
+#pp.pprint(crash_ids)
 
+s3_client = boto3.client('s3')
+
+now = datetime.now()
+path = 'downloaded_files/' + now.strftime("%Y%m%d-%-H%M%S") + '/'
+os.makedirs(path)
+
+for crash_id in crash_ids:
+    s3_object = 'production/cris-cr3-files/' + str(crash_id) + '.pdf'
+    #print(s3_object)
+    s3_client.download_file(bucket, s3_object, path + str(crash_id) + '.pdf')
+ 
