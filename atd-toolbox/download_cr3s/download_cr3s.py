@@ -15,9 +15,11 @@ log = logging.getLogger('CR3_download')
 log.setLevel(logging.DEBUG)
 
 argparse = argparse.ArgumentParser(description = 'Utility to restore last valid PDF in S3 for ATD VZ')
-argparse.add_argument("-c", "--verbose",
+argparse.add_argument("-v", "--verbose",
     help = 'Be verbose about actions',
-    required=False)
+    required=False,
+    action = 'store_true')
+args = argparse.parse_args()
 
 # This will be the pattern that we check column headers against to 
 # decide if they are providing us a crash id. The regex is used to provide
@@ -52,8 +54,9 @@ for row in reader:
     crashes.append( {key: value for key, value in zip(headers, row[0:])} )
 
 # take a peek at what we have
-log.info("Parsed input from CSV file")
-log.info(pp.pprint(crashes))
+if args.verbose:
+    log.info("Parsed input from CSV file")
+    log.info(pp.pprint(crashes))
 
 # define a set to hold our crash IDs. the nature of the set will 
 # dedup this list
@@ -65,19 +68,22 @@ for crash in crashes:
     crash_ids.add(int(crash_id[0]))
 
 # let's take a peek at our set of crash ids
-log.info("Unique set of crash IDs to download CR3s for:")
-log.info(pp.pprint(crash_ids))
+if args.verbose:
+    log.info("Unique set of crash IDs to download CR3s for:")
+    log.info(pp.pprint(crash_ids))
 
 s3_client = boto3.client('s3')
 
 # create a path and make a location to receive the CR3 files
 now = datetime.now()
 path = 'downloaded_files/' + now.strftime("%Y%m%d-%-H%M%S") + '/'
-log.info("Making directory to store CR3 files: ./" + path)
+if args.verbose:
+    log.info("Making directory to store CR3 files: ./" + path)
 os.makedirs(path)
 
 # iterate over set of unique crash IDs and download the files from S3
 for crash_id in crash_ids:
     s3_object = 'production/cris-cr3-files/' + str(crash_id) + '.pdf'
-    log.info("Downloading: " + s3_object)
+    if args.verbose:
+        log.info("Downloading: " + s3_object)
     s3_client.download_file(bucket, s3_object, path + str(crash_id) + '.pdf')
