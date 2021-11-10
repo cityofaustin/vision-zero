@@ -1,6 +1,7 @@
 import React from "react";
 import { withApollo } from "react-apollo";
 
+import moment from 'moment';
 import GridTable from "../../Components/GridTable";
 import gqlAbstract from "../../queries/gqlAbstract";
 import { crashQueryExportFields } from "../../queries/crashes";
@@ -247,6 +248,10 @@ function LocationCrashes(props) {
     },
   ];
 
+  const minDate = moment(new Date())
+  .subtract(10, "year")
+  .toDate();
+  
   return (
     <GridTable
       query={crashesQuery}
@@ -256,6 +261,7 @@ function LocationCrashes(props) {
       aggregateQueryConfig={aggregateQueryConfig}
       widgetsConfig={widgetsConfig}
       chartConfig={chartConfig}
+      minDate={minDate}
     />
   );
 }

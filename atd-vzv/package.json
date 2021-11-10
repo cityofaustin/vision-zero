@@ -1,7 +1,7 @@
 {
   "name": "atd-vzv",
-  "version": "1.21.0",
-  "homepage": "./",
+  "version": "1.22.0",
+  "homepage": "/viewer",
   "description": "ATD Vision Zero Viewer",
   "author": "ATD Data & Technology Services",
   "license": "MIT",

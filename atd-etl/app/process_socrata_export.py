@@ -79,7 +79,8 @@ for config in query_configs:
         query = config["template"].substitute(
             limit=limit,
             offset=offset,
-            date_limit=get_date_limit()
+            date_limit=get_date_limit(),
+            initial_date_limit=get_initial_date_limit()
         )
         offset += limit
         data = run_hasura_query(query)

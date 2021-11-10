@@ -11,7 +11,13 @@ from typing import Optional
 HASURA_ADMIN_SECRET = os.getenv("HASURA_ADMIN_SECRET", "")
 HASURA_ENDPOINT = os.getenv("HASURA_ENDPOINT", "")
 HASURA_EVENT_API = os.getenv("HASURA_EVENT_API", "")
-HASURA_SSL_VERIFY = True # Set False for local hasura with self-generated SSL cert
+# The following environment variable should only be set to False for local development.
+# In production, this variable should be omitted or set explicitly to true.
+HASURA_SSL_VERIFY = os.getenv("HASURA_SSL_VERIFY", True)
+
+# Mechanism to allow setting of a bool via environment variables
+if type(HASURA_SSL_VERIFY) == str and HASURA_SSL_VERIFY.lower() in ('false', '0'):
+    HASURA_SSL_VERIFY = False
 
 if not HASURA_SSL_VERIFY:
     requests.packages.urllib3.disable_warnings()
@@ -80,8 +86,8 @@ def is_crash_nonproper_and_directional(crash_id: int) -> str:
 
     try:
         """
-            We will attempt to find the record through a query on the cr3_nonproper_crashes_on_mainlane view.
-            if no matches are returned, then it means the crash does not meet all criteria to have an association to a SVRD polygon.
+            We will attempt to find the record through a query using the find_service_road_location_for_centerline_crash function via Hasura.
+            If the location_id key does not contain a location_id, then the crash is not a canidate for being linked to a service road location.
         """
         response = requests.post(
             HASURA_ENDPOINT,
@@ -147,12 +153,13 @@ def is_crash_mainlane(crash_id: int) -> bool:
             verify=HASURA_SSL_VERIFY
         )
         return len(response.json()["data"]["find_cr3_mainlane_crash"]) > 0
-    except:
+    except Exception as e:
         """
             In case the response is broken or invalid, we need to:
             - Output the problem for debugging
             - Default to False, let it be part of a location for now.
         """
+        print(str(e))
         return False
 
 
@@ -314,6 +321,78 @@ def update_location(crash_id: int, new_location_id: str) -> dict:
         "response": mutation_response.json()
     }
 
+def get_centroid_for_location(location_id: str) -> list:
+    """
+    Returns a array of the longitude and latitude for a given location.
+
+    :param location_id: The location_id to be queried
+    :return list:
+    """
+
+    centroid_query = {
+        "query": """
+        query get_centroid($locationId: String) {
+          atd_txdot_locations_with_centroids(where: {location_id: {_eq: $locationId}}) {
+            centroid
+            }
+          }
+        """,
+        "variables": {
+            "locationId": location_id
+        }}
+
+    try:
+        response = requests.post(
+            HASURA_ENDPOINT,
+            data=json.dumps(centroid_query),
+            headers=HEADERS,
+            verify=HASURA_SSL_VERIFY
+        )
+
+        return response.json()["data"]["atd_txdot_locations_with_centroids"][0]["centroid"]["coordinates"]
+    except (IndexError, KeyError, TypeError):
+        return None
+
+
+def set_crash_position(crashId: int, point: list) -> int:
+    """
+    Update a crashes latitude_primary and longitude_primary field and return boolean indicating success of failure.
+
+    :param crashId: The ID of the crash to move
+    :param point: A list containing the X, Y float values representing the longitude and latitude of a location.
+    :return int:
+    """
+
+    mutation = {
+        "query": """
+            mutation update_crash_position($crashId: Int!, $longitude: float8, $latitude: float8) {
+                update_atd_txdot_crashes(where: {crash_id: {_eq: $crashId}},
+                _set:{latitude_primary:$latitude, longitude_primary: $longitude}) {
+                    affected_rows
+                }
+            }
+        """,
+        "variables": {
+            "crashId": crashId,
+            "longitude": point[0],
+            "latitude": point[1]
+            }
+        }
+
+    try:
+        response = requests.post(
+            HASURA_ENDPOINT,
+            data=json.dumps(mutation),
+            headers=HEADERS,
+            verify=HASURA_SSL_VERIFY
+        )
+
+        return response.json()["data"]["atd_txdot_locations_with_centroids"][0]["centroid"]["coordinates"]
+    except (IndexError, KeyError, TypeError):
+        return None
+
+
+
 
 def hasura_request(record: str) -> bool:
     """
@@ -327,17 +406,22 @@ def hasura_request(record: str) -> bool:
     # Try getting the crash data
     crash_id = get_crash_id(data)
     old_location_id = get_location_id(data)
+    relocate_crash_to_service_road_centroid = False
 
     # Check if this crash is a main-lane
     if is_crash_mainlane(crash_id):
         if(nonproper_level_5_directional_polygon := is_crash_nonproper_and_directional(crash_id)):
             new_location_id = nonproper_level_5_directional_polygon
+            relocate_crash_to_service_road_centroid = True
+            centroid = get_centroid_for_location(new_location_id)
+            set_crash_position(crash_id, centroid)
         else:
             # If so, make sure to nullify the new location_id
             new_location_id = None
     else:
         # If not, then try to find the location...
         new_location_id = find_crash_location(crash_id)
+
 
     # Now compare the location values:
     if new_location_id == old_location_id:
@@ -382,7 +466,7 @@ def handler(event, context):
 
 #if __name__ == "__main__":
     #event = {'Records': [{'body': """ { "event": { "data": { "old": null, "new": {
-                #"crash_id": 17797640,
+                #"crash_id": 18267534,
               #"location_id": null } } } } """}]}
     #context = {}
     #handler(event, context)
