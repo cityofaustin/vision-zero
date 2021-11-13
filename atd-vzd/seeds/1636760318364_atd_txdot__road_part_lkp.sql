@@ -1,0 +1,10 @@
+INSERT INTO "public"."atd_txdot__road_part_lkp" ("road_part_id", "road_part_desc", "eff_beg_date", "eff_end_date") VALUES
+(1, 'MAIN/PROPER LANE', '2010-01-01', '9999-12-31'),
+(2, 'SERVICE/FRONTAGE ROAD', '2010-01-01', '9999-12-31'),
+(3, 'ENTRANCE/ON RAMP', '2010-01-01', '9999-12-31'),
+(4, 'EXIT/OFF RAMP', '2010-01-01', '9999-12-31'),
+(5, 'CONNECTOR/FLYOVER', '2010-01-01', '9999-12-31'),
+(7, 'OTHER (EXPLAIN IN NARRATIVE)', '2010-01-01', '9999-12-31'),
+(10, 'NOT REPORTED', NULL, NULL),
+(93, 'UNDETERMINED - FAIL BR', NULL, NULL),
+(94, 'REPORTED INVALID', NULL, NULL);
