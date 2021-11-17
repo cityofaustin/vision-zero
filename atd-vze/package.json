@@ -62,7 +62,7 @@
     "eslint-config-prettier": "^6.0.0",
     "eslint-plugin-prettier": "^3.1.0",
     "prettier": "1.18.2",
-    "react-scripts": "^3.0.1"
+    "react-scripts": "^3.4.4"
   },
   "scripts": {
     "start": "export HTTPS=true && react-scripts start",
