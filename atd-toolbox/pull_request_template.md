@@ -1,7 +1,7 @@
 ## Associated issues
 
 ## Testing
-**URL to test:** <!-- https://moped-test.austinmobility.io/moped/ or Netlify -->
+**URL to test:** <!-- VZ URL or Netlify -->
 
 **Steps to test:**
 
