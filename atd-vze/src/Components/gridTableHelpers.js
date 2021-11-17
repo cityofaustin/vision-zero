@@ -11,7 +11,7 @@ export const getChartData = (chartData, config) => {
     chartData[config.table].forEach(record => {
       // If record is a string, increment total if match
       if (config.isSingleRecord) {
-        record[config.nestedKey][config.nestedPath] === label && labelTotal++;
+        record?.[config.nestedKey]?.[config.nestedPath] === label && labelTotal++;
       } else {
         // If record is an array of objects, iterate and increment total if match
         record[config.nestedKey].forEach(unit => {
