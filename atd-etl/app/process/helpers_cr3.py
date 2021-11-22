@@ -130,10 +130,10 @@ def process_crash_cr3(crash_record, cookies):
         crash_id = str(crash_record["crash_id"])
         print("Processing Crash: " + crash_id)
 
-        download_cr3(crash_id, cookies)
-        upload_cr3(crash_id)
-        update_crash_id(crash_id)
-        delete_cr3s(crash_id)
+        #download_cr3(crash_id, cookies)
+        #upload_cr3(crash_id)
+        #update_crash_id(crash_id)
+        #delete_cr3s(crash_id)
 
     except Exception as e:
         print("Error: %s" % str(e))

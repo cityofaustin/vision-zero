@@ -19,13 +19,6 @@ import concurrent.futures
 from process.config import ATD_ETL_CONFIG
 from process.helpers_cr3 import *
 
-#
-# Now we import Splinter-related libraries
-#
-from splinter import Browser
-from selenium.webdriver.chrome.options import Options
-
-
 def wait(int):
     print("Should wait: %s" % str(int))
     time.sleep(int)
@@ -33,41 +26,6 @@ def wait(int):
 
 # Start timer
 start = time.time()
-
-#
-# We need to initialize our browser with the following options
-#
-print("Initializing browser options.")
-chrome_options = Options()
-chrome_options.add_argument('--headless')  # We don't need to run xvfb (X Virtual Frame-buffer)
-chrome_options.add_argument('--no-sandbox')
-chrome_options.add_argument('--disable-dev-shm-usage')
-chrome_options.add_argument("--window-size=1920,1080")  # CRIS will not render in small resolutions
-print("Initializing Chrome headless browser.")
-browser = Browser('chrome', options=chrome_options)
-
-# Visit CRIS
-print("Logging in to '%s'" % ATD_ETL_CONFIG["ATD_CRIS_WEBSITE"])
-browser.visit(ATD_ETL_CONFIG["ATD_CRIS_WEBSITE"])
-
-# Select the agency, then click Continue
-print("Filling out agency.")
-browser.find_by_id('idpSelectSelectButton').click()
-browser.find_by_id("idpSelectInput").fill(
-    "** Texas Department of Transportation - External Agencies"
-)
-browser.find_by_id("idpSelectSelectButton").click()
-
-# We log in
-wait(10)
-print("Filling out credentials.")
-browser.find_by_id('username').fill(ATD_ETL_CONFIG["ATD_CRIS_USERNAME_CR3"])
-browser.find_by_id('password').fill(ATD_ETL_CONFIG["ATD_CRIS_PASSWORD_CR3"])
-browser.find_by_name('_eventId_proceed').click()
-
-# At this point, we have all we need from the browser, the cookies:
-print("Gathering cookies.")
-CRIS_BROWSER_COOKIES = browser.cookies.all()
 
 #
 # We now need to request a list of N number of records
@@ -86,7 +44,8 @@ try:
     response = get_crash_id_list(downloads_per_run=downloads_per_run)
     print("\nResponse from Hasura: %s" % json.dumps(response))
 
-    crashes_list = response['data']['atd_txdot_crashes']
+    #crashes_list = response['data']['atd_txdot_crashes']
+    crashes_list = [18597808, 18597755]
     print("\nList of crashes: %s" % json.dumps(crashes_list))
 
     print("\nInitializing Execution Thread Pool:")
@@ -94,9 +53,9 @@ except Exception as e:
     crashes_list = []
     print("Error, could not run CR3 processing: " + str(e))
 
-with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
-    for crash_record in crashes_list:
-        executor.submit(process_crash_cr3, crash_record, CRIS_BROWSER_COOKIES)
+#with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+    #for crash_record in crashes_list:
+        #executor.submit(process_crash_cr3, crash_record, CRIS_BROWSER_COOKIES)
 
 print("\nProcess done.")
 
