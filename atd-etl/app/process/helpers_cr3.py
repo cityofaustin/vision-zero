@@ -14,6 +14,7 @@ import requests
 import base64
 import subprocess
 import time
+from http.cookies import SimpleCookie
 
 
 # We need to import our configuration, and the run_query method
@@ -47,12 +48,19 @@ def download_cr3(crash_id, cookies):
     :param crash_id: string - The crash id
     :param cookies: dict - A dictionary containing key=value pairs with cookie name and values.
     """
+
+    cookie = SimpleCookie()
+    cookie.load(cookies)
+    baked_cookies = {}
+    for key, morsel in cookie.items():
+        baked_cookies[key] = morsel.value
+
     crash_id_encoded = base64.b64encode(str("CrashId=" + crash_id).encode("utf-8")).decode("utf-8")
     url = ATD_ETL_CONFIG["ATD_CRIS_CR3_URL"] + crash_id_encoded
     download_path = ATD_ETL_CONFIG["AWS_CRIS_CR3_DOWNLOAD_PATH"] + "%s.pdf" % crash_id
 
     print("Downloading (%s): '%s' from %s" % (crash_id, download_path, url))
-    resp = requests.get(url, allow_redirects=True, cookies=cookies)
+    resp = requests.get(url, allow_redirects=True, cookies=baked_cookies)
     open(download_path, 'wb').write(resp.content)
 
 
@@ -120,20 +128,21 @@ def update_crash_id(crash_id):
     return run_query(update_record_cr3)
 
 
-def process_crash_cr3(crash_record, cookies):
+def process_crash_cr3(crash_id, cookies):
     """
     Downloads a CR3 pdf, uploads it to s3, updates the database and deletes the pdf.
     :param crash_record: dict - The individual crash record being processed
     :param cookies: dict - The cookies taken from the browser object
     """
     try:
-        crash_id = str(crash_record["crash_id"])
+        #crash_id = str(crash_record["crash_id"])
+
         print("Processing Crash: " + crash_id)
 
-        #download_cr3(crash_id, cookies)
-        #upload_cr3(crash_id)
-        #update_crash_id(crash_id)
-        #delete_cr3s(crash_id)
+        download_cr3(crash_id, cookies)
+        upload_cr3(crash_id)
+        update_crash_id(crash_id)
+        delete_cr3s(crash_id)
 
     except Exception as e:
         print("Error: %s" % str(e))

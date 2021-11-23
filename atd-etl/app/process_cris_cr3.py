@@ -32,6 +32,10 @@ start = time.time()
 # that do not have a CR3. For each record we must download
 # the CR3 pdf, upload to S3
 #
+
+# put your valid cookies here, just as a big string like you find in the headers.
+CRIS_BROWSER_COOKIES = ""
+
 print("Preparing download loop.")
 
 print("Gathering list of crashes.")
@@ -44,8 +48,7 @@ try:
     response = get_crash_id_list(downloads_per_run=downloads_per_run)
     print("\nResponse from Hasura: %s" % json.dumps(response))
 
-    #crashes_list = response['data']['atd_txdot_crashes']
-    crashes_list = [18597808, 18597755]
+    #crashes_list = ["18597808", "18597755"] # strings of ints in a list
     print("\nList of crashes: %s" % json.dumps(crashes_list))
 
     print("\nInitializing Execution Thread Pool:")
@@ -53,9 +56,9 @@ except Exception as e:
     crashes_list = []
     print("Error, could not run CR3 processing: " + str(e))
 
-#with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
-    #for crash_record in crashes_list:
-        #executor.submit(process_crash_cr3, crash_record, CRIS_BROWSER_COOKIES)
+with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+    for crash_record in crashes_list:
+        executor.submit(process_crash_cr3, crash_record, CRIS_BROWSER_COOKIES)
 
 print("\nProcess done.")
 
