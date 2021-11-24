@@ -33,8 +33,8 @@ start = time.time()
 # the CR3 pdf, upload to S3
 #
 
-# put your valid cookies here, just as a big string like you find in the headers.
-CRIS_BROWSER_COOKIES = ""
+# ask user for a set of valid cookies for requests to the CRIS website
+CRIS_BROWSER_COOKIES = input('Please login to CRIS and extract the contents of the Cookie: header and please paste it here:')
 
 print("Preparing download loop.")
 
@@ -48,9 +48,9 @@ try:
     response = get_crash_id_list(downloads_per_run=downloads_per_run)
     print("\nResponse from Hasura: %s" % json.dumps(response))
 
-    #crashes_list = ["18597808", "18597755"] # strings of ints in a list
+    crashes_list = response['data']['atd_txdot_crashes']
     print("\nList of crashes: %s" % json.dumps(crashes_list))
-
+ 
     print("\nInitializing Execution Thread Pool:")
 except Exception as e:
     crashes_list = []
