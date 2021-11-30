@@ -128,14 +128,14 @@ def update_crash_id(crash_id):
     return run_query(update_record_cr3)
 
 
-def process_crash_cr3(crash_id, cookies):
+def process_crash_cr3(crash_record, cookies):
     """
     Downloads a CR3 pdf, uploads it to s3, updates the database and deletes the pdf.
     :param crash_record: dict - The individual crash record being processed
     :param cookies: dict - The cookies taken from the browser object
     """
     try:
-        #crash_id = str(crash_record["crash_id"])
+        crash_id = str(crash_record["crash_id"])
 
         print("Processing Crash: " + crash_id)
 
