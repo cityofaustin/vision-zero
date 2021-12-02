@@ -60,7 +60,7 @@ function runetl {
         echo "Using environment variables in '${ATD_CRIS_CONFIG}'...";
     else
         echo "Error: The ATD_CRIS_CONFIG variable is not set because it cannot find the file '${ATD_CRIS_CONFIG}'";
-        echo "Please refer to the documentation to create and env file.";
+        echo "Please refer to the documentation to create an env file.";
         return;
     fi;
 

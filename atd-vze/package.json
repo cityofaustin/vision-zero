@@ -1,6 +1,6 @@
 {
   "name": "atd-vz-data",
-  "version": "1.22.0",
+  "version": "1.23.0",
   "homepage": "./",
   "description": "ATD Vision Zero Editor",
   "author": "ATD Data & Technology Services",
@@ -62,7 +62,7 @@
     "eslint-config-prettier": "^6.0.0",
     "eslint-plugin-prettier": "^3.1.0",
     "prettier": "1.18.2",
-    "react-scripts": "^3.0.1"
+    "react-scripts": "^3.4.4"
   },
   "scripts": {
     "start": "export HTTPS=true && react-scripts start",
