@@ -634,9 +634,11 @@ def is_important_update(differences):
 def record_crash_compare(line, fieldnames, crash_id, record_existing):
     """
     Hook that finds an existing record, and compares it with a new incoming record built from a raw csv line.
-    :param str  line: The raw csv line
+    :param str line: The raw csv line
     :param str[] fieldnames: The strings to be used as headers
-    :return bool, string: A tuple: False if we want to ignore changes. True if it needs to be updated. Returns a feed back message
+    :param str crash_id: crash id
+    :param str record_existing: existing record
+    :return tuple(bool, string): False if we want to ignore changes. True if it needs to be updated. Returns a feedback message
     """
     # Gather the field names
     fieldnames = [column.lower() for column in fieldnames]
@@ -663,19 +665,21 @@ def record_crash_compare(line, fieldnames, crash_id, record_existing):
         else:
             print(differences)
 
-        # If no changes approved, or longer than 3 days
+        # check if record is at least 3 days old
         if can_update is False:
             # It's too soon, ignore change.
             return False, "Cannot update this record (Record is not older than 3 days)"
 
-        # There are differences, and it can update unless
+        # There are differences, and it can automatically update unless
         # either human_updated or important_update is true
         compare_enabled = (
             ATD_ETL_CONFIG["ATD_CRIS_IMPORT_COMPARE_FUNCTION"] == "ENABLED"
         )
-        if human_updated or important_update:
+        if human_updated:
+          return False, "Skipping changes on manually QA/updated record"
+        elif important_update:
             affected_rows = 0
-            if compare_enabled:
+            if compare_enabled: # what happens if this is false? silent skip?
                 mutation_template = insert_crash_change_template(
                     new_record_dict=record_new,
                     differences=differences,
