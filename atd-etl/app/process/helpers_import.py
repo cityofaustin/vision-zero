@@ -509,12 +509,10 @@ def clean_up_record(record):
 def record_compare(record_new, record_existing):
     """
     Compares two dictionaries. It uses the CRIS_TXDOT_COMPARE_FIELDS_LIST
-    to determine what fields are important enough, and returns True if
-    there is one important difference. Returns False if none of the fields
-    present any differences.
+    to determine what fields are important enough, and returns list of differences
     :param dict record_new: The new object being parsed from csv
     :param dict record_existing: The existing object, as parsed from an HTTP query
-    :return: bool
+    :return: list
     """
     differences = []
     record_new = clean_up_record(record_new)
@@ -549,6 +547,8 @@ def insert_crash_change_template(new_record_dict, differences, crash_id):
     """
     Generates a crash insertion graphql query
     :param new_record_dict: dict - The new record as a dictionary
+    :param differences
+    :param str crash_id
     :return: string
     """
     # Turn the dictionary into a character-escaped json string

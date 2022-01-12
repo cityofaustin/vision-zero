@@ -289,6 +289,10 @@ gqlAbstractTableAggregateName (
       value = String(value);
     }
 
+    if (!!this.config.columns[columnName].filter) {
+      return this.config.columns[columnName].filter(value);
+    }
+
     switch (type) {
       case "string": {
         if (typeof value === "object") return JSON.stringify(value);
