@@ -1,3 +1,5 @@
+import React from "react";
+
 export const crashChangesGridTableColumns = {
   record_id: {
     primary_key: true,
@@ -15,24 +17,29 @@ export const crashChangesGridTableColumns = {
   },
   record_json: {
     searchable: false,
-    sortable: true,
-    label_table: "Suspected Serious Injury Count",
+    sortable: false,
+    label_table: "Suspected Serious Injury Count / Crash Fatality Flag",
     type: "string",
     filter: values => {
       const parsedValues = JSON.parse(values);
-      return parsedValues.sus_serious_injry_cnt;
+      return (<>
+{/*        <span>{`Suspected Serious Injury Count: ${parsedValues.sus_serious_injry_cnt}` }
+        </span>
+        <span>{`Crash Fatality Flag: ${parsedValues.crash_fatal_fl}`}</span>*/}
+        {`${parsedValues.sus_serious_injry_cnt} / ${parsedValues.crash_fatal_fl} `}
+         </>);
     },
   },
-  record_json: {
-    searchable: false,
-    sortable: true,
-    label_table: "Crash Fatality",
-    type: "string",
-    filter: values => {
-      const parsedValues = JSON.parse(values);
-      return parsedValues.crash_fatal_fl;
-    },
-  },
+  // record_json: {
+  //   searchable: false,
+  //   sortable: true,
+  //   label_table: "Crash Fatality",
+  //   type: "string",
+  //   filter: values => {
+  //     const parsedValues = JSON.parse(values);
+  //     return parsedValues.crash_fatal_fl;
+  //   },
+  // },
   created_timestamp: {
     searchable: false,
     sortable: true,
