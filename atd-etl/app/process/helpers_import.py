@@ -679,7 +679,7 @@ def record_crash_compare(line, fieldnames, crash_id, record_existing):
           return False, "Skipping changes on manually QA/updated record"
         elif important_update:
             affected_rows = 0
-            if compare_enabled: # what happens if this is false? silent skip?
+            if compare_enabled:
                 mutation_template = insert_crash_change_template(
                     new_record_dict=record_new,
                     differences=differences,
