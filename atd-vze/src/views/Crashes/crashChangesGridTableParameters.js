@@ -15,38 +15,25 @@ export const crashChangesGridTableColumns = {
     label_table: "Change ID",
     type: "int",
   },
-  record_json: {
+  sus_serious_injury_cnt: {
     searchable: false,
-    sortable: false,
-    label_table: "Suspected Serious Injury Count / Crash Fatality Flag",
+    sortable: true,
+    label_table: "Suspected Serious Injury Count",
     type: "string",
-    filter: values => {
-      const parsedValues = JSON.parse(values);
-      return (<>
-{/*        <span>{`Suspected Serious Injury Count: ${parsedValues.sus_serious_injry_cnt}` }
-        </span>
-        <span>{`Crash Fatality Flag: ${parsedValues.crash_fatal_fl}`}</span>*/}
-        {`${parsedValues.sus_serious_injry_cnt} / ${parsedValues.crash_fatal_fl} `}
-         </>);
-    },
   },
-  // record_json: {
-  //   searchable: false,
-  //   sortable: true,
-  //   label_table: "Crash Fatality",
-  //   type: "string",
-  //   filter: values => {
-  //     const parsedValues = JSON.parse(values);
-  //     return parsedValues.crash_fatal_fl;
-  //   },
-  // },
+  crash_fatal_flag: {
+    searchable: false,
+    sortable: true,
+    label_table: "Crash Fatality",
+    type: "string",
+  },
   created_timestamp: {
     searchable: false,
     sortable: true,
     label_table: "Create Date",
     type: "date_iso",
   },
-  "status { description }": {
+  "status_description": {
     searchable: false,
     sortable: true,
     label_table: "Status",

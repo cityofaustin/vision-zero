@@ -22,5 +22,5 @@ SELECT
 FROM
    changes_formatted 
    LEFT JOIN
-      atd_txdot_change_status atcs
+      atd_txdot_change_status atcs 
       ON changes_formatted.status_id = atcs.change_status_id
