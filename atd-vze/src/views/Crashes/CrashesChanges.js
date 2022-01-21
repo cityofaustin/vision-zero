@@ -13,13 +13,11 @@ let queryConf = {
       fetchPolicy: 'no-cache'
     }
   },
-  table: "atd_txdot_changes",
+  table: "atd_txdot_changes_view",
   single_item: "changes",
   columns: crashChangesGridTableColumns,
   order_by: {},
-  where: {
-    record_type: "_eq: \"crash\""
-  },
+  where: {},
   limit: 25,
   offset: 0,
 };
