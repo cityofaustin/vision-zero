@@ -100,7 +100,8 @@ def get_crash_id_list(downloads_per_run="25"):
             where: {
                 cr3_stored_flag: {_eq: "N"}
                 temp_record: {_eq: false}
-            }
+            },
+            order_by: {crash_date: desc}
           ) {
             crash_id
           }
