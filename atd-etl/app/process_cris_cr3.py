@@ -43,6 +43,7 @@ crashes_list = []
 try:
     print("Hasura endpoint: '%s' " % ATD_ETL_CONFIG["HASURA_ENDPOINT"])
     downloads_per_run = ATD_ETL_CONFIG["ATD_CRIS_CR3_DOWNLOADS_PER_RUN"]
+    downloads_per_run = 2000
     print("Downloads Per This Run: %s" % str(downloads_per_run))
 
     response = get_crash_id_list(downloads_per_run=downloads_per_run)
