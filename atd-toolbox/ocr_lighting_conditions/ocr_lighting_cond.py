@@ -78,8 +78,10 @@ for crash in response.json()["data"]["atd_txdot_crashes"]:
     # if (args.v):
     # print('Rendering PDF into images');
     pages = []
-    pages = convert_from_bytes(pdf["Body"].read(), 150)
-
+    try:
+        pages = convert_from_bytes(pdf["Body"].read(), 150)
+    except:
+        continue
     # if (args.d):
     # if (args.v):
     # print('Excuting a check for a digitally created PDF');
