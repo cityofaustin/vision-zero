@@ -109,8 +109,8 @@ for crash in response.json()["data"]["atd_txdot_crashes"]:
     if digital_end_to_end:
         diagram_image = pages[1].crop((3360, 3400, 3600, 3510))  # real one
         # diagram_image = pages[1].crop((96,3683,2580,6049))
-        path = "./extracts/" + str(crash["crash_id"]) + ".png"
-        diagram_image.save(path)
+        #path = "./extracts/" + str(crash["crash_id"]) + ".png"
+        #diagram_image.save(path)
         # diagram_uuid = uuid4()
         # buffer = io.BytesIO()
         # diagram_image.save(buffer, format='PNG')
