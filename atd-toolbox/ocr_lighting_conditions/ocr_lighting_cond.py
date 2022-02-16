@@ -56,7 +56,7 @@ response = requests.post(
         "content-type": "application/json",
         "x-hasura-admin-secret": os.getenv("HASURA_ADMIN_KEY"),
     },
-    json={"query": query, "variables": {"limit": 100}},
+    json={"query": query, "variables": {"limit": 500}},
 )
 
 print(response)
