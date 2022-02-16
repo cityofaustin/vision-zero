@@ -1,3 +1,4 @@
+import io
 import os
 import sys
 from   uuid import uuid4
@@ -7,6 +8,10 @@ import argparse
 
 import boto3
 from   pdf2image import convert_from_path, convert_from_bytes
+import pytesseract
+
+custom_oem_psm_config = r'--oem 3 --psm 10'
+
 
 # configure logging
 logging.basicConfig()
@@ -49,7 +54,7 @@ response = requests.post(
     json={
         "query": query,
         "variables": {
-            "limit": 1
+            "limit": 10
             }
         }
     )
@@ -95,12 +100,13 @@ for crash in response.json()['data']['atd_txdot_crashes']:
             #sys.stderr.write("Error: Non-digitally created PDF detected.\n")
         #continue
     if digital_end_to_end:
-        print("digi")
-
-        #diagram_uuid = uuid4()
-        #buffer = io.BytesIO()
-        diagram_image = pages[1].crop((3360,3400,3600,3510))
+        diagram_image = pages[1].crop((3360,3400,3600,3510)) # real one
+        #diagram_image = pages[1].crop((96,3683,2580,6049))
         path =  './extracts/' + str(crash['crash_id']) + '.png'
         diagram_image.save(path)
-
+        #diagram_uuid = uuid4()
+        #buffer = io.BytesIO()
         #diagram_image.save(buffer, format='PNG')
+        print(diagram_image)
+        lighting_condition = pytesseract.image_to_string(diagram_image, config=custom_oem_psm_config)
+        print("lighting condition: " + lighting_condition)
