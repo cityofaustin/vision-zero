@@ -10,8 +10,8 @@ import boto3
 from   pdf2image import convert_from_path, convert_from_bytes
 import pytesseract
 
+# the ocr engine expects a page of text, psm indicates that you're looking for a single char
 custom_oem_psm_config = r'--oem 3 --psm 10'
-
 
 # configure logging
 logging.basicConfig()
@@ -54,7 +54,7 @@ response = requests.post(
     json={
         "query": query,
         "variables": {
-            "limit": 10
+            "limit": 1
             }
         }
     )
@@ -110,3 +110,31 @@ for crash in response.json()['data']['atd_txdot_crashes']:
         print(diagram_image)
         lighting_condition = pytesseract.image_to_string(diagram_image, config=custom_oem_psm_config)
         print("lighting condition: " + lighting_condition)
+
+        if lighting_condition:
+            query = """
+                mutation writeLightCondition($crashId: Int, $lightingCondition: Int) {
+                update_atd_txdot_crashes(where: {crash_id: {_eq: $crashId}},
+                    _set: {ocr_light_cond_id: $lightingCondition})
+                {
+                affected_rows
+
+                }
+                }
+            """
+            response = requests.post(
+                url=os.getenv("GRAPHQL_ENDPOINT"),
+                headers={
+                    "Accept": "*/*",
+                    "content-type": "application/json",
+                    "x-hasura-admin-secret": os.getenv("HASURA_ADMIN_KEY")
+                    },
+                json={
+                    "query": query,
+                    "variables": {
+                        "crashId": crash['crash_id'],
+                        "lightingCondition": int(lighting_condition)
+                        }
+                    }
+                )
+            print(response.json())
