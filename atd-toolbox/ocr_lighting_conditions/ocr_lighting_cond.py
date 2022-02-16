@@ -1,4 +1,5 @@
 import os
+import sys
 import logging
 import requests
 import argparse
@@ -17,6 +18,10 @@ argparse.add_argument("-v", "--verbose",
     required=False,
     action = 'store_true')
 args = argparse.parse_args()
+
+print(args)
+
+s3 = boto3.client('s3')
 
 # get some environment variables to auth to S3
 ACCESS_KEY = os.getenv('AWS_ACCESS_KEY_ID')
@@ -50,3 +55,15 @@ response = requests.post(
 print(response)
 for crash in response.json()['data']['atd_txdot_crashes']:
     print(crash)
+
+    # build url and download the CR3
+    #if (args.v):
+        #print('Pulling CR3 PDF from S3');
+    key =  os.getenv("CR3_PATH") + '/' + str(crash['crash_id']) + '.pdf'
+    print(key)
+    obj = []
+    try:
+        pdf = s3.get_object(Bucket=os.getenv("CR3_BUCKET"), Key=key)
+    except:
+        sys.stderr.write("Error: Failed to get PDF from the S3 object\n")
+        continue
