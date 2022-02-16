@@ -99,7 +99,7 @@ for crash in response.json()['data']['atd_txdot_crashes']:
 
         #diagram_uuid = uuid4()
         #buffer = io.BytesIO()
-        diagram_image = pages[1].crop((2589,3531,5001,6048))
+        diagram_image = pages[1].crop((3360,3400,3600,3510))
         path =  './extracts/' + str(crash['crash_id']) + '.png'
         diagram_image.save(path)
 
