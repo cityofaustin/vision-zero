@@ -1,5 +1,6 @@
 import os
 import sys
+from   uuid import uuid4
 import logging
 import requests
 import argparse
@@ -48,7 +49,7 @@ response = requests.post(
     json={
         "query": query,
         "variables": {
-            "limit": 10
+            "limit": 1
             }
         }
     )
@@ -95,3 +96,11 @@ for crash in response.json()['data']['atd_txdot_crashes']:
         #continue
     if digital_end_to_end:
         print("digi")
+
+        #diagram_uuid = uuid4()
+        #buffer = io.BytesIO()
+        diagram_image = pages[1].crop((2589,3531,5001,6048))
+        path =  './extracts/' + str(crash['crash_id']) + '.png'
+        diagram_image.save(path)
+
+        #diagram_image.save(buffer, format='PNG')
