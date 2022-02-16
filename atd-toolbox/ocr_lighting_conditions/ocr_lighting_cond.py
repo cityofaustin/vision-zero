@@ -1,38 +1,43 @@
 import io
 import os
 import sys
-from   uuid import uuid4
+from uuid import uuid4
 import logging
 import requests
 import argparse
 
 import boto3
-from   pdf2image import convert_from_path, convert_from_bytes
+from pdf2image import convert_from_path, convert_from_bytes
 import pytesseract
 
 # the ocr engine expects a page of text, psm indicates that you're looking for a single char
-custom_oem_psm_config = r'--oem 3 --psm 10'
+custom_oem_psm_config = r"--oem 3 --psm 10"
 
 # configure logging
 logging.basicConfig()
-log = logging.getLogger('CR3_download')
+log = logging.getLogger("CR3_download")
 log.setLevel(logging.DEBUG)
 
 
-argparse = argparse.ArgumentParser(description = 'A utility to OCR lighting conditions from CR3 files')
-argparse.add_argument("-v", "--verbose",
-    help = 'Be verbose about actions',
+argparse = argparse.ArgumentParser(
+    description="A utility to OCR lighting conditions from CR3 files"
+)
+argparse.add_argument(
+    "-v",
+    "--verbose",
+    help="Be verbose about actions",
     required=False,
-    action = 'store_true')
+    action="store_true",
+)
 args = argparse.parse_args()
 
 print(args)
 
-s3 = boto3.client('s3')
+s3 = boto3.client("s3")
 
 # get some environment variables to auth to S3
-ACCESS_KEY = os.getenv('AWS_ACCESS_KEY_ID')
-SECRET_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
+ACCESS_KEY = os.getenv("AWS_ACCESS_KEY_ID")
+SECRET_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
 
 query = """
 query getCrashes($limit: Int!) {
@@ -49,24 +54,19 @@ response = requests.post(
     headers={
         "Accept": "*/*",
         "content-type": "application/json",
-        "x-hasura-admin-secret": os.getenv("HASURA_ADMIN_KEY")
-        },
-    json={
-        "query": query,
-        "variables": {
-            "limit": 1
-            }
-        }
-    )
+        "x-hasura-admin-secret": os.getenv("HASURA_ADMIN_KEY"),
+    },
+    json={"query": query, "variables": {"limit": 1}},
+)
 
 print(response)
-for crash in response.json()['data']['atd_txdot_crashes']:
+for crash in response.json()["data"]["atd_txdot_crashes"]:
     print(crash)
 
     # build url and download the CR3
-    #if (args.v):
-        #print('Pulling CR3 PDF from S3');
-    key =  os.getenv("CR3_PATH") + '/' + str(crash['crash_id']) + '.pdf'
+    # if (args.v):
+    # print('Pulling CR3 PDF from S3');
+    key = os.getenv("CR3_PATH") + "/" + str(crash["crash_id"]) + ".pdf"
     print(key)
     obj = []
     try:
@@ -75,40 +75,49 @@ for crash in response.json()['data']['atd_txdot_crashes']:
         sys.stderr.write("Error: Failed to get PDF from the S3 object\n")
         continue
 
-    #if (args.v):
-        #print('Rendering PDF into images');
+    # if (args.v):
+    # print('Rendering PDF into images');
     pages = []
-    pages = convert_from_bytes(pdf['Body'].read(), 150)
+    pages = convert_from_bytes(pdf["Body"].read(), 150)
 
-
-    #if (args.d):
-        #if (args.v):
-            #print('Excuting a check for a digitally created PDF');
+    # if (args.d):
+    # if (args.v):
+    # print('Excuting a check for a digitally created PDF');
     digital_end_to_end = True
     # these pixels are expected to be black on digitally created PDFs
-    pixels = [(110,3520), (3080, 3046), (3050, 2264), (2580, 6056), (1252, 154), (2582, 4166), (1182, 1838)]
+    pixels = [
+        (110, 3520),
+        (3080, 3046),
+        (3050, 2264),
+        (2580, 6056),
+        (1252, 154),
+        (2582, 4166),
+        (1182, 1838),
+    ]
     for pixel in pixels:
         rgb_pixel = pages[1].getpixel(pixel)
-        if not(rgb_pixel[0] == 0 and rgb_pixel[1] == 0 and rgb_pixel[2] == 0):
+        if not (rgb_pixel[0] == 0 and rgb_pixel[1] == 0 and rgb_pixel[2] == 0):
             digital_end_to_end = False
-        #if (args.v):
-            #print('Pixel' + "(%04d,%04d)" % pixel + ': ' + str(rgb_pixel))
-    #if (args.v):
-        #print('PDF Digital End to End?: ' + str(digital_end_to_end));
-    #if not(digital_end_to_end):
-        #if (args.v):
-            #sys.stderr.write("Error: Non-digitally created PDF detected.\n")
-        #continue
+        # if (args.v):
+        # print('Pixel' + "(%04d,%04d)" % pixel + ': ' + str(rgb_pixel))
+    # if (args.v):
+    # print('PDF Digital End to End?: ' + str(digital_end_to_end));
+    # if not(digital_end_to_end):
+    # if (args.v):
+    # sys.stderr.write("Error: Non-digitally created PDF detected.\n")
+    # continue
     if digital_end_to_end:
-        diagram_image = pages[1].crop((3360,3400,3600,3510)) # real one
-        #diagram_image = pages[1].crop((96,3683,2580,6049))
-        path =  './extracts/' + str(crash['crash_id']) + '.png'
+        diagram_image = pages[1].crop((3360, 3400, 3600, 3510))  # real one
+        # diagram_image = pages[1].crop((96,3683,2580,6049))
+        path = "./extracts/" + str(crash["crash_id"]) + ".png"
         diagram_image.save(path)
-        #diagram_uuid = uuid4()
-        #buffer = io.BytesIO()
-        #diagram_image.save(buffer, format='PNG')
+        # diagram_uuid = uuid4()
+        # buffer = io.BytesIO()
+        # diagram_image.save(buffer, format='PNG')
         print(diagram_image)
-        lighting_condition = pytesseract.image_to_string(diagram_image, config=custom_oem_psm_config)
+        lighting_condition = pytesseract.image_to_string(
+            diagram_image, config=custom_oem_psm_config
+        )
         print("lighting condition: " + lighting_condition)
 
         if lighting_condition:
@@ -127,14 +136,14 @@ for crash in response.json()['data']['atd_txdot_crashes']:
                 headers={
                     "Accept": "*/*",
                     "content-type": "application/json",
-                    "x-hasura-admin-secret": os.getenv("HASURA_ADMIN_KEY")
-                    },
+                    "x-hasura-admin-secret": os.getenv("HASURA_ADMIN_KEY"),
+                },
                 json={
                     "query": query,
                     "variables": {
-                        "crashId": crash['crash_id'],
-                        "lightingCondition": int(lighting_condition)
-                        }
-                    }
-                )
+                        "crashId": crash["crash_id"],
+                        "lightingCondition": int(lighting_condition),
+                    },
+                },
+            )
             print(response.json())
