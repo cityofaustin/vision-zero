@@ -5,6 +5,7 @@ import requests
 import argparse
 
 import boto3
+from   pdf2image import convert_from_path, convert_from_bytes
 
 # configure logging
 logging.basicConfig()
@@ -67,3 +68,30 @@ for crash in response.json()['data']['atd_txdot_crashes']:
     except:
         sys.stderr.write("Error: Failed to get PDF from the S3 object\n")
         continue
+
+    #if (args.v):
+        #print('Rendering PDF into images');
+    pages = []
+    pages = convert_from_bytes(pdf['Body'].read(), 150)
+
+
+    #if (args.d):
+        #if (args.v):
+            #print('Excuting a check for a digitally created PDF');
+    digital_end_to_end = True
+    # these pixels are expected to be black on digitally created PDFs
+    pixels = [(110,3520), (3080, 3046), (3050, 2264), (2580, 6056), (1252, 154), (2582, 4166), (1182, 1838)]
+    for pixel in pixels:
+        rgb_pixel = pages[1].getpixel(pixel)
+        if not(rgb_pixel[0] == 0 and rgb_pixel[1] == 0 and rgb_pixel[2] == 0):
+            digital_end_to_end = False
+        #if (args.v):
+            #print('Pixel' + "(%04d,%04d)" % pixel + ': ' + str(rgb_pixel))
+    #if (args.v):
+        #print('PDF Digital End to End?: ' + str(digital_end_to_end));
+    #if not(digital_end_to_end):
+        #if (args.v):
+            #sys.stderr.write("Error: Non-digitally created PDF detected.\n")
+        #continue
+    if digital_end_to_end:
+        print("digi")
