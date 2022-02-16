@@ -41,7 +41,7 @@ SECRET_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
 
 query = """
 query getCrashes($limit: Int!) {
-  atd_txdot_crashes(limit: $limit, where: {ocr_light_cond_id: {_is_null: true}}) {
+  atd_txdot_crashes(limit: $limit, where: {ocr_light_cond_id: {_is_null: true}}, order_by: {crash_date: desc}) {
     crash_id
     light_cond_id
     ocr_light_cond_id
