@@ -10,7 +10,7 @@ import boto3
 from pdf2image import convert_from_path, convert_from_bytes
 import pytesseract
 
-# the ocr engine expects a page of text, psm indicates that you're looking for a single char
+# the ocr engine expects a page of text, psm 10 indicates that you're looking for a single char
 custom_oem_psm_config = r"--oem 3 --psm 10"
 
 # configure logging
@@ -20,7 +20,7 @@ log.setLevel(logging.DEBUG)
 
 
 argparse = argparse.ArgumentParser(
-    description="A utility to OCR lighting conditions from CR3 files"
+    description="A utility to extract OCR lighting conditions from CR3 files"
 )
 argparse.add_argument(
     "-v",
@@ -31,7 +31,7 @@ argparse.add_argument(
 )
 args = argparse.parse_args()
 
-print(args)
+#print(args)
 
 s3 = boto3.client("s3")
 
@@ -40,9 +40,13 @@ ACCESS_KEY = os.getenv("AWS_ACCESS_KEY_ID")
 SECRET_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
 
 query = """
-query getCrashes($limit: Int!) {
-  atd_txdot_crashes(limit: $limit, where: {ocr_light_cond_id: {_is_null: true}}, order_by: {crash_date: desc}) {
+query getCrashes($limit: Int!, $_lt: date = "2021-06-23") {
+  atd_txdot_crashes(limit: $limit, 
+    where: {ocr_light_cond_id: {_is_null: true}, 
+            crash_date: {_lt: $_lt}}, 
+    order_by: {crash_date: desc}) {
     crash_id
+    crash_date
     light_cond_id
     ocr_light_cond_id
   }
@@ -56,18 +60,18 @@ response = requests.post(
         "content-type": "application/json",
         "x-hasura-admin-secret": os.getenv("HASURA_ADMIN_KEY"),
     },
-    json={"query": query, "variables": {"limit": 500}},
+    json={"query": query, "variables": {"limit": 1000}},
 )
 
-print(response)
+#print(response)
 for crash in response.json()["data"]["atd_txdot_crashes"]:
-    print(crash)
+    print(crash['crash_id'])
 
     # build url and download the CR3
     # if (args.v):
     # print('Pulling CR3 PDF from S3');
     key = os.getenv("CR3_PATH") + "/" + str(crash["crash_id"]) + ".pdf"
-    print(key)
+    #print(key)
     obj = []
     try:
         pdf = s3.get_object(Bucket=os.getenv("CR3_BUCKET"), Key=key)
@@ -116,7 +120,7 @@ for crash in response.json()["data"]["atd_txdot_crashes"]:
         # diagram_uuid = uuid4()
         # buffer = io.BytesIO()
         # diagram_image.save(buffer, format='PNG')
-        print(diagram_image)
+        #print(diagram_image)
         lighting_condition = pytesseract.image_to_string(
             diagram_image, config=custom_oem_psm_config
         )
