@@ -81,8 +81,6 @@ export const importantCrashFields = {
   crash_fatal_fl: { type: "string" },
   private_dr_fl: { type: "string" },
   rpt_outside_city_limit_fl: { type: "string" },
-  rpt_latitude: { type: "double" },
-  rpt_longitude: { type: "double" },
   rpt_hwy_num: { type: "string" },
   rpt_block_num: { type: "string" },
   rpt_street_name: { type: "string" },
@@ -107,6 +105,8 @@ export const importantCrashFields = {
   unkn_injry_cnt: { type: "integer" },
   tot_injry_cnt: { type: "integer" },
   death_cnt: { type: "integer" },
+  onsys_fl: { type: "string" },
+  crash_sev_id: { type: "integer" },
 };
 
 /**

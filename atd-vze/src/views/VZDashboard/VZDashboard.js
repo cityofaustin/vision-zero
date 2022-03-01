@@ -97,7 +97,7 @@ function VZDashboard() {
             raster_icon={bi_logo}
             raster_icon_alt="Power BI"
             color="dark"
-            link="https://app.powerbigov.us/sharedwithme/reports/42c00944-3a44-4d0a-bdd4-d19d7e3647fe/ReportSection512b18e1068b03c18800?ctid=5c5e19f6-a6ab-4b45-b1d0-be4608a9a67f"
+            link="https://app.powerbigov.us/links/GACOsce5fi?ctid=5c5e19f6-a6ab-4b45-b1d0-be4608a9a67f&pbi_source=linkShare"
             target='_bi_amd'
           />
           <VZLinksWidget
@@ -107,7 +107,7 @@ function VZDashboard() {
             raster_icon={bi_logo}
             raster_icon_alt="Power BI"
             color="dark"
-            link="https://app.powerbigov.us/groups/me/reports/5fd3a24f-839c-4702-870c-c44bf02abbfa/ReportSectiona58ac4e954138e705130?ctid=5c5e19f6-a6ab-4b45-b1d0-be4608a9a67f"
+            link="https://app.powerbigov.us/links/pdguGuhSGE?ctid=5c5e19f6-a6ab-4b45-b1d0-be4608a9a67f&pbi_source=linkShare"
             target='_bi_hir'
           />
           <VZLinksWidget
@@ -117,7 +117,7 @@ function VZDashboard() {
             raster_icon={bi_logo}
             raster_icon_alt="Power BI"
             color="dark"
-            link="https://app.powerbigov.us/groups/me/reports/ec595df7-a0ac-44ad-a973-e389a61bce80/ReportSection7bcb3c8d66b4510de019?ctid=5c5e19f6-a6ab-4b45-b1d0-be4608a9a67f"
+            link="https://app.powerbigov.us/links/RmMrnaSMLp?ctid=5c5e19f6-a6ab-4b45-b1d0-be4608a9a67f&pbi_source=linkShare"
             target='_bi_hotspots'
           />
         </Col>

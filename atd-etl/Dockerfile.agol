@@ -6,7 +6,7 @@
 FROM python:3.8.0-slim-buster
 RUN mkdir /app && mkdir /app/tmp && mkdir /data
 
-RUN apt-get update && apt-get install -y bash p7zip
+RUN apt-get update && apt-get install -y bash p7zip libkrb5-dev build-essential
 RUN pip install requests awscli boto3 web-pdb sodapy atd-agol-util
 
 WORKDIR /app
