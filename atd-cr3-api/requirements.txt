@@ -38,5 +38,5 @@ troposphere==2.6.0
 urllib3==1.25.8
 Werkzeug==0.16.1
 wsgi-request-logger==0.4.6
-zappa==0.51.0
+zappa
 zipp==3.1.0
