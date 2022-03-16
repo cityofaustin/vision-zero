@@ -2,6 +2,7 @@
 
 #import json
 
+import pprint
 import psycopg2
 from psycopg2 import extras # this feels like i should be able to just use the line above somehow
 
@@ -29,7 +30,6 @@ def get_change_events_from_past():
     and record_type = 'units'
     and (((extract(hour from update_timestamp) * 60) + extract(minute from update_timestamp))/30)::integer not in (16,17,18,19,20)
     order by update_timestamp desc
-    limit 100
     """
     cursor = past.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cursor.execute(sql)
@@ -37,6 +37,7 @@ def get_change_events_from_past():
     return changes
 
 def check_current_state(id, previous_record):
+    changes = {}
     sql = f"""
     select * from atd_txdot_units where unit_id = {id}
     """
@@ -47,13 +48,18 @@ def check_current_state(id, previous_record):
         if previous_record[key] != current_value[key]:
             if key in fields_to_skip:
                 continue
-            print(key)
-            print("old: \t" + str(previous_record[key]))
-            print("new: \t" + str(current_value[key]))
+            #print(key)
+            #print("old: \t" + str(previous_record[key]))
+            #print("new: \t" + str(current_value[key]))
+            changes[key] = {'old': previous_record[key], 'new': current_value[key]} 
+    return changes
 
-changes = get_change_events_from_past()
-for change in changes:
-    check_current_state(change['record_id'], change['record_json'])
+pp = pprint.PrettyPrinter(indent=2)
+
+change_records = get_change_events_from_past()
+for change_record in change_records:
+    diff = check_current_state(change_record['record_id'], change_record['record_json'])
+    pp.pprint(diff)
     input()
     print(chr(27)+'[2j')
     print('\033c')
