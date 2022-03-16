@@ -5,4 +5,3 @@ RUN apt-get -y upgrade
 RUN apt-get install -y aptitude postgresql-plperl-13 vim procps
 RUN apt-get install -y python3 pip python3-psycopg2
 WORKDIR /root/app
-#CMD tail -f /dev/null
