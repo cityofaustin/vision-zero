@@ -7,9 +7,9 @@ services:
     build: recovery_environment
     #image: frankinaustin/postgis:13-3.2
     environment:
-      POSTGRES_PASSWORD: frank
-      POSTGRES_USER: frank
-      POSTGRES_DB: frank
+      POSTGRES_PASSWORD: moped
+      POSTGRES_USER: moped
+      POSTGRES_DB: moped
       POSTGRES_HOST_AUTH_METHOD: trust
       PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
