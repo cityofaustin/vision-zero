@@ -48,6 +48,10 @@ def check_current_state(id, previous_record):
         if previous_record[key] != current_value[key]:
             if key in fields_to_skip:
                 continue
+            if ( (previous_record[key] is None and current_value[key] == '') 
+                   or 
+                 (previous_record[key] == '' and current_value[key] is None) ):
+                continue
             changes[key] = {'old': previous_record[key], 'new': current_value[key]} 
     return changes
 
