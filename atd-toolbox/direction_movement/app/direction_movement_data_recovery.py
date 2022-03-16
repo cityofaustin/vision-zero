@@ -48,9 +48,6 @@ def check_current_state(id, previous_record):
         if previous_record[key] != current_value[key]:
             if key in fields_to_skip:
                 continue
-            #print(key)
-            #print("old: \t" + str(previous_record[key]))
-            #print("new: \t" + str(current_value[key]))
             changes[key] = {'old': previous_record[key], 'new': current_value[key]} 
     return changes
 
