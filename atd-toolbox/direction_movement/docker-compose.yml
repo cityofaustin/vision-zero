@@ -5,7 +5,6 @@ services:
   recovery_environment:
     container_name: vz_mvt_dir_recoverty_environment
     build: recovery_environment
-    #image: frankinaustin/postgis:13-3.2
     environment:
       POSTGRES_PASSWORD: moped
       POSTGRES_USER: moped
