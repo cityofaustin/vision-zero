@@ -5,6 +5,9 @@
 import psycopg2
 from psycopg2 import extras # this feels like i should be able to just use the line above somehow
 
+# fields we're not going to worry about
+fields_to_skip = {"last_update", "updated_by"}
+
 past = psycopg2.connect(
     host="localhost",
     database="past_vz",
@@ -17,7 +20,6 @@ now = psycopg2.connect(
     user="moped",
     password="")
 
-
 def get_change_events_from_past():
     sql = """
     select *,
@@ -27,7 +29,7 @@ def get_change_events_from_past():
     and record_type = 'units'
     and (((extract(hour from update_timestamp) * 60) + extract(minute from update_timestamp))/30)::integer not in (16,17,18,19,20)
     order by update_timestamp desc
-    limit 1
+    limit 100
     """
     cursor = past.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cursor.execute(sql)
@@ -43,11 +45,16 @@ def check_current_state(id, previous_record):
     current_value = cursor.fetchone()
     for key in previous_record.keys():
         if previous_record[key] != current_value[key]:
-            print('')
+            if key in fields_to_skip:
+                continue
             print(key)
-            print(previous_record[key])
-            print(current_value[key])
+            print("old: \t" + str(previous_record[key]))
+            print("new: \t" + str(current_value[key]))
 
 changes = get_change_events_from_past()
 for change in changes:
     check_current_state(change['record_id'], change['record_json'])
+    input()
+    print(chr(27)+'[2j')
+    print('\033c')
+    print('\x1bc')
