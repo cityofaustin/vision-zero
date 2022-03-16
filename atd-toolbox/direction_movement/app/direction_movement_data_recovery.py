@@ -60,6 +60,8 @@ pp = pprint.PrettyPrinter(indent=2)
 change_records = get_change_events_from_past()
 for change_record in change_records:
     diff = check_current_state(change_record['record_id'], change_record['record_json'])
+    if len(diff.keys()) == 0:
+        continue
     pp.pprint(diff)
     input()
     print(chr(27)+'[2j')
