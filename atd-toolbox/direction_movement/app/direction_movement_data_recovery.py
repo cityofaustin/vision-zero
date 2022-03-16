@@ -2,8 +2,14 @@
 
 import psycopg2
 
-conn = psycopg2.connect(
+past = psycopg2.connect(
     host="localhost",
     database="past_vz",
+    user="moped",
+    password="")
+
+now = psycopg2.connect(
+    host="localhost",
+    database="current_vz",
     user="moped",
     password="")
