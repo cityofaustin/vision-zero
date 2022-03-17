@@ -61,6 +61,9 @@ fields_to_skip = {"last_update", "updated_by"}
 # the fields we're focused on
 fields_to_require = {"movement_id", "travel_direction", "veh_trvl_dir_id"}
 
+# the units we've already seen
+updated_unit_fields = dict()
+
 change_records = get_change_events_from_past()
 for change_record in change_records:
     diff = check_current_state(change_record["record_id"], change_record["record_json"])
@@ -68,7 +71,7 @@ for change_record in change_records:
     # continue to next iteration if there are no meaningful fields which have changed
     if len(diff.keys()) == 0:
         continue
-    # continue to next iteration if we don't have a field of interested that is changed
+    # continue to next iteration if we don't have a field of interest that is changed
     if not len(fields_to_require.intersection(diff_keys)) > 1:
         continue
 
