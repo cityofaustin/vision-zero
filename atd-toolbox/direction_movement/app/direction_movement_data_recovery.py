@@ -6,21 +6,7 @@ import pprint
 import psycopg2
 from psycopg2 import extras # this feels like i should be able to just use the line above somehow
 
-# fields we're not going to worry about
-fields_to_skip = {"last_update", "updated_by"}
-fields_to_require = {"movement_id", "travel_direction", "veh_trvl_dir_id"}
 
-past = psycopg2.connect(
-    host="localhost",
-    database="past_vz",
-    user="moped",
-    password="")
-
-now = psycopg2.connect(
-    host="localhost",
-    database="current_vz",
-    user="moped",
-    password="")
 
 def get_change_events_from_past():
     sql = """
@@ -56,7 +42,22 @@ def check_current_state(id, previous_record):
             changes[key] = {'old': previous_record[key], 'new': current_value[key]} 
     return changes
 
-pp = pprint.PrettyPrinter(indent=2)
+# setup both DB connections
+past = psycopg2.connect(
+    host="localhost",
+    database="past_vz",
+    user="moped",
+    password="")
+
+now = psycopg2.connect(
+    host="localhost",
+    database="current_vz",
+    user="moped",
+    password="")
+
+# fields we're not going to worry about
+fields_to_skip = {"last_update", "updated_by"}
+fields_to_require = {"movement_id", "travel_direction", "veh_trvl_dir_id"}
 
 change_records = get_change_events_from_past()
 for change_record in change_records:
