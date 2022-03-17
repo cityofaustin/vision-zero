@@ -71,7 +71,7 @@ for change_record in change_records:
 
     pp.pprint(diff)
 
+    # let user review the data for dev purposes
     input()
-    print(chr(27)+'[2j')
-    print('\033c')
-    print('\x1bc')
+    # escape + clear entire screen
+    print('\033c\x1bc')
