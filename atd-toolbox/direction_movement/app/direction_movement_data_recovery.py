@@ -8,6 +8,7 @@ from psycopg2 import extras # this feels like i should be able to just use the l
 
 # fields we're not going to worry about
 fields_to_skip = {"last_update", "updated_by"}
+fields_to_require = {"movement_id", "travel_direction", "veh_trvl_dir_id"}
 
 past = psycopg2.connect(
     host="localhost",
@@ -60,9 +61,16 @@ pp = pprint.PrettyPrinter(indent=2)
 change_records = get_change_events_from_past()
 for change_record in change_records:
     diff = check_current_state(change_record['record_id'], change_record['record_json'])
+    diff_keys = set(diff.keys())
+    # continue to next iteration if there are no meaningful fields which have changed
     if len(diff.keys()) == 0:
         continue
+    # continue to next iteration if we don't have a field of interested that is changed
+    if not len(fields_to_require.intersection(diff_keys)) > 1:
+        continue
+
     pp.pprint(diff)
+
     input()
     print(chr(27)+'[2j')
     print('\033c')
