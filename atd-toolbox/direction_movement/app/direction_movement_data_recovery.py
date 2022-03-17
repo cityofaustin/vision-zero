@@ -1,11 +1,12 @@
 #!/usr/bin/python3
 
-#import json
+# import json
 
 import pprint
 import psycopg2
-from psycopg2 import extras # this feels like i should be able to just use the line above somehow
-
+from psycopg2 import (
+    extras,
+)
 
 
 def get_change_events_from_past():
@@ -23,6 +24,7 @@ def get_change_events_from_past():
     changes = cursor.fetchall()
     return changes
 
+
 def check_current_state(id, previous_record):
     changes = {}
     sql = f"""
@@ -35,25 +37,20 @@ def check_current_state(id, previous_record):
         if previous_record[key] != current_value[key]:
             if key in fields_to_skip:
                 continue
-            if ( (previous_record[key] is None and current_value[key] == '') 
-                   or 
-                 (previous_record[key] == '' and current_value[key] is None) ):
+            if (previous_record[key] is None and current_value[key] == "") or (
+                previous_record[key] == "" and current_value[key] is None
+            ):
                 continue
-            changes[key] = {'old': previous_record[key], 'new': current_value[key]} 
+            changes[key] = {"old": previous_record[key], "new": current_value[key]}
     return changes
 
+
 # setup both DB connections
-past = psycopg2.connect(
-    host="localhost",
-    database="past_vz",
-    user="moped",
-    password="")
+past = psycopg2.connect(host="localhost", database="past_vz", user="moped", password="")
 
 now = psycopg2.connect(
-    host="localhost",
-    database="current_vz",
-    user="moped",
-    password="")
+    host="localhost", database="current_vz", user="moped", password=""
+)
 
 # fields we're not going to worry about
 fields_to_skip = {"last_update", "updated_by"}
@@ -61,7 +58,7 @@ fields_to_require = {"movement_id", "travel_direction", "veh_trvl_dir_id"}
 
 change_records = get_change_events_from_past()
 for change_record in change_records:
-    diff = check_current_state(change_record['record_id'], change_record['record_json'])
+    diff = check_current_state(change_record["record_id"], change_record["record_json"])
     diff_keys = set(diff.keys())
     # continue to next iteration if there are no meaningful fields which have changed
     if len(diff.keys()) == 0:
@@ -75,4 +72,4 @@ for change_record in change_records:
     # let user review the data for dev purposes
     input()
     # escape + clear entire screen
-    print('\033c\x1bc')
+    print("\033c\x1bc")
