@@ -50,8 +50,9 @@ now = psycopg2.connect(
     host="localhost", database="current_vz", user="moped", password=""
 )
 
-# fields we're not going to worry about
+# the fields we're not going to worry about
 fields_to_skip = {"last_update", "updated_by"}
+# the fields we're focused on
 fields_to_require = {"movement_id", "travel_direction", "veh_trvl_dir_id"}
 
 change_records = get_change_events_from_past()
