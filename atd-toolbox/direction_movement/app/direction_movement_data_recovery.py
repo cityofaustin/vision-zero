@@ -1,7 +1,5 @@
 #!/usr/bin/python3
 
-# import json
-
 import pprint
 import psycopg2
 from psycopg2 import (
