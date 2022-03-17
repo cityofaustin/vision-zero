@@ -31,6 +31,11 @@ def check_current_state(id, previous_record):
     cursor = now.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cursor.execute(sql)
     current_value = cursor.fetchone()
+
+    if not current_value:
+        print(f"⚠️ Couldn't find unit record in current database for ID {id}?")
+        return dict()
+
     for key in previous_record.keys():
         if previous_record[key] != current_value[key]:
             if key in fields_to_skip:
@@ -42,6 +47,7 @@ def check_current_state(id, previous_record):
             changes[key] = {"old": previous_record[key], "new": current_value[key]}
     return changes
 
+pp = pprint.PrettyPrinter(indent=2)
 
 # setup both DB connections
 past = psycopg2.connect(host="localhost", database="past_vz", user="moped", password="")
@@ -69,6 +75,6 @@ for change_record in change_records:
     pp.pprint(diff)
 
     # let user review the data for dev purposes
-    input()
+    #input()
     # escape + clear entire screen
-    print("\033c\x1bc")
+    #print("\033c\x1bc")
