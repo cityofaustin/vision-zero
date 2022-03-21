@@ -6,7 +6,6 @@ from psycopg2 import (
     extras,
 )
 
-
 def get_change_events_from_past():
     sql = """
     select *,
@@ -84,7 +83,8 @@ for change_record in change_records:
             if field in updated_unit_fields[change_record["record_id"]]:
                 continue
             else: # we'll only visit this branch for a given crashId + field combination once
-                print(str(change_record["record_id"]) + '/' + str(field) + ': ' + str(diff[field]['old']) + ' → ' + str(diff[field]['new']))
+                #print(str(change_record["record_id"]) + '/' + str(field) + ': ' + str(diff[field]['old']) + ' → ' + str(diff[field]['new']))
+                print(f'UPDATE atd_txdot_unit SET {field} = {diff[field]["new"]} WHERE unit_id = {change_record["record_id"]};')
                 updated_unit_fields[change_record["record_id"]].update({field: True})
 
 
