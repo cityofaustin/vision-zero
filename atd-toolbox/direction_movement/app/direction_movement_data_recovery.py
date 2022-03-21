@@ -64,6 +64,7 @@ fields_to_require = {"movement_id", "travel_direction", "veh_trvl_dir_id"}
 
 # the units we've already seen
 updated_unit_fields = dict()
+update_sql_statements = set()
 
 change_records = get_change_events_from_past()
 for change_record in change_records:
@@ -86,12 +87,13 @@ for change_record in change_records:
                 continue
             else:  # we'll only visit this branch for a given crashId + field combination once
                 # print(str(change_record["record_id"]) + '/' + str(field) + ': ' + str(diff[field]['old']) + ' → ' + str(diff[field]['new']))
-                print(
-                    f'UPDATE atd_txdot_unit SET {field} = {diff[field]["new"]} WHERE unit_id = {change_record["record_id"]};'
-                )
+                update = f'UPDATE atd_txdot_unit SET {field} = {diff[field]["new"]} WHERE unit_id = {change_record["record_id"]};'
+                update_sql_statements.add(update)
                 updated_unit_fields[change_record["record_id"]].update({field: True})
 
     # let user review the data for dev purposes
     # input()
     # escape + clear entire screen
     # print("\033c\x1bc")
+
+pp.pprint(update_sql_statements)
