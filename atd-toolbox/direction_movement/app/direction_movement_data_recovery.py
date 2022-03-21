@@ -6,6 +6,7 @@ from psycopg2 import (
     extras,
 )
 
+
 def get_change_events_from_past():
     sql = """
     select *,
@@ -32,7 +33,7 @@ def check_current_state(id, previous_record):
     current_value = cursor.fetchone()
 
     if not current_value:
-        print(f"⚠️ Couldn't find unit record in current database for ID {id}?")
+        # print(f"⚠️ Couldn't find unit record in current database for ID {id}?")
         return dict()
 
     for key in previous_record.keys():
@@ -45,6 +46,7 @@ def check_current_state(id, previous_record):
                 continue
             changes[key] = {"old": previous_record[key], "new": current_value[key]}
     return changes
+
 
 pp = pprint.PrettyPrinter(indent=2)
 
@@ -82,11 +84,12 @@ for change_record in change_records:
         if field in diff:
             if field in updated_unit_fields[change_record["record_id"]]:
                 continue
-            else: # we'll only visit this branch for a given crashId + field combination once
-                #print(str(change_record["record_id"]) + '/' + str(field) + ': ' + str(diff[field]['old']) + ' → ' + str(diff[field]['new']))
-                print(f'UPDATE atd_txdot_unit SET {field} = {diff[field]["new"]} WHERE unit_id = {change_record["record_id"]};')
+            else:  # we'll only visit this branch for a given crashId + field combination once
+                # print(str(change_record["record_id"]) + '/' + str(field) + ': ' + str(diff[field]['old']) + ' → ' + str(diff[field]['new']))
+                print(
+                    f'UPDATE atd_txdot_unit SET {field} = {diff[field]["new"]} WHERE unit_id = {change_record["record_id"]};'
+                )
                 updated_unit_fields[change_record["record_id"]].update({field: True})
-
 
     # let user review the data for dev purposes
     # input()
