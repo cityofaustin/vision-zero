@@ -75,9 +75,21 @@ for change_record in change_records:
     if not len(fields_to_require.intersection(diff_keys)) > 1:
         continue
 
+    if not change_record["record_id"] in updated_unit_fields:
+        updated_unit_fields[change_record["record_id"]] = dict()
+
+    for field in fields_to_require:
+        if field in diff:
+            if field in updated_unit_fields[change_record["record_id"]]:
+                continue
+            else: # we'll only visit this branch for a given crashId + field combination once
+                updated_unit_fields[change_record["record_id"]].update({field: True})
+
     pp.pprint(diff)
 
     # let user review the data for dev purposes
-    #input()
+    # input()
     # escape + clear entire screen
-    #print("\033c\x1bc")
+    # print("\033c\x1bc")
+
+pp.pprint(updated_unit_fields)
