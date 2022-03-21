@@ -1,9 +1,9 @@
-# the usual cycle: docker-compose stop; docker-compose build --no-cache; docker-compose up -d; docker ps; docker exec -it vz_mvt_dir_recoverty_environment bash
+# the usual cycle: docker-compose stop; docker-compose build --no-cache; docker-compose up -d; docker ps; docker exec -it vz_mvt_dir_recovery_environment bash
 
 version: '3.7'
 services:
   recovery_environment:
-    container_name: vz_mvt_dir_recoverty_environment
+    container_name: vz_mvt_dir_recovery_environment
     build: recovery_environment
     environment:
       POSTGRES_PASSWORD: moped
