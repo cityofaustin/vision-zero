@@ -17,6 +17,9 @@ def get_change_events_from_past():
     and (((extract(hour from update_timestamp) * 60) + extract(minute from update_timestamp))/30)::integer not in (16,17,18,19,20)
     order by update_timestamp desc
     """
+
+    # and record_id = 3867282
+
     cursor = past.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cursor.execute(sql)
     changes = cursor.fetchall()
@@ -87,7 +90,18 @@ for change_record in change_records:
                 continue
             else:  # we'll only visit this branch for a given crashId + field combination once
                 # print(str(change_record["record_id"]) + '/' + str(field) + ': ' + str(diff[field]['old']) + ' → ' + str(diff[field]['new']))
+                sql = f'select {field} from atd_txdot_units where unit_id = {change_record["record_id"]}'
+                cursor = now.cursor(cursor_factory=psycopg2.extras.DictCursor)
+                cursor.execute(sql)
+                current_value = cursor.fetchone()
+
+                print(current_value[field])
+                print(current_value[field])
+
                 update = f'UPDATE atd_txdot_unit SET {field} = {diff[field]["new"]} WHERE unit_id = {change_record["record_id"]};'
+                if update in update_sql_statements:
+                    continue
+                print(f"{update} [current value: {current_value}")
                 update_sql_statements.add(update)
                 updated_unit_fields[change_record["record_id"]].update({field: True})
 
@@ -96,4 +110,4 @@ for change_record in change_records:
     # escape + clear entire screen
     # print("\033c\x1bc")
 
-pp.pprint(update_sql_statements)
+# pp.pprint(update_sql_statements)
