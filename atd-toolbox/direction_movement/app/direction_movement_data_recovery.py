@@ -38,15 +38,27 @@ def find_next_state(unit_id, update_timestamp):
     order by update_timestamp asc
     limit 1
     """
-    # print(sql)
+
     cursor = past.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cursor.execute(sql)
     changes = cursor.fetchone()
-    print(changes)
-    if not changes:
-        print("found a 'next' record")
+    # pp.pprint(changes)
+    next_state = dict()
+    if changes:
+        # print("found a 'next' record")
+        next_state = changes["record_json"]
     else:
-        print("need to get current record state")
+        # print("need to get current record state")
+        sql = f"""
+        select *
+        from atd_txdot_units
+        where unit_id = {unit_id}
+        """
+        cursor = past.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        cursor.execute(sql)
+        current_state = cursor.fetchone()
+        next_state = current_state
+    pp.pprint(next_state["unit_id"])
 
 
 def get_change_events_outside_etl_window():
