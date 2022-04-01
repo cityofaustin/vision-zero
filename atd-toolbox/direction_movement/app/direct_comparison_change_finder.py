@@ -16,3 +16,14 @@ past = psycopg2.connect(host="localhost", database="past_vz", user="moped", pass
 now = psycopg2.connect(
     host="localhost", database="current_vz", user="moped", password=""
 )
+
+
+def main():
+    sql = """
+    select crash_id, unit_id, 
+    from atd_txdot_units
+    """
+
+
+if __name__ == "__main__":
+    main()
