@@ -63,13 +63,14 @@ def get_diff_from_past(current_unit):
     if not past_unit:
         return None
 
-    fields_to_check = {"movement_id", "travel_direction", "veh_trvl_dir_id"}
+    fields_to_check = {"movement_id", "travel_direction"}  # , "veh_trvl_dir_id"}
     diff = dict()
     for field in fields_to_check:
         if current_unit[field] != past_unit[field]:
             # is data defined for the crash?
             if not current_unit["crash_id"] in diff:
                 diff[current_unit["crash_id"]] = dict()
+            # is there a unit defined in this crash?
             if not current_unit["unit_id"] in diff[current_unit["crash_id"]]:
                 diff[current_unit["crash_id"]][current_unit["unit_id"]] = dict()
             diff[current_unit["crash_id"]][current_unit["unit_id"]][field] = {
@@ -77,21 +78,31 @@ def get_diff_from_past(current_unit):
                 "current": current_unit[field],
             }
     if len(diff):
+        # the data returned here is a per-crash, per-unit slice of the entire difference set
         return diff
     else:
         return None
 
 
+def find_change_log_entry_for_change(crash, unit, field, value):
+    print(str(crash), " ", str(unit), " ", str(field), " ", str(value))
+
+    return None
+
+
 def main():
     units = get_current_units()
     for unit in units:
-        # pp.pprint(unit)
-        # print("")
-        # print(unit["crash_id"])
         diff = get_diff_from_past(unit)
         if not diff:
             continue
-        pp.pprint(diff)
+        # pp.pprint(diff)
+        crash = list(diff.keys())[0]
+        unit = list(diff[crash].keys())[0]
+        fields = list(diff[crash][unit].keys())
+        for field in fields:
+            current_value = diff[crash][unit][field]["current"]
+            find_change_log_entry_for_change(crash, unit, field, current_value)
 
 
 if __name__ == "__main__":
