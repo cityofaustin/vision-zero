@@ -27,7 +27,7 @@ def get_current_units():
     left join atd_txdot_crashes crashes on (units.crash_id = crashes.crash_id)
     where 1 = 1
     and crashes.crash_date <= %s
-    order by crashes.crash_id desc;
+    order by crashes.crash_date desc;
     """
     cursor = now.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cursor.execute(sql, (date_prior_to_cris_reprocessing,))
@@ -44,7 +44,7 @@ def get_diff_from_past(current_unit):
     and crashes.crash_date <= %s
     and units.unit_id = %s 
     and crashes.crash_id = %s 
-    order by crash_id desc;
+    order by crash_date desc;
     """
     cursor = past.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cursor.execute(
@@ -61,12 +61,20 @@ def get_diff_from_past(current_unit):
     if not past_unit:
         return None
 
-    print(str(past_unit["crash_id"]) + ": " + str(past_unit["crash_date"]))
-
     fields_to_check = {"movement_id", "travel_direction", "veh_trvl_dir_id"}
+    diff = dict()
     for field in fields_to_check:
-        print(field)
-    pp.pprint(past_unit)
+        if current_unit[field] != past_unit[field]:
+            if not current_unit["crash_id"] in diff:
+                diff[current_unit["crash_id"]] = dict()
+            diff[current_unit["crash_id"]][field] = {
+                "old": past_unit[field],
+                "current": current_unit[field],
+            }
+    if len(diff):
+        return diff
+    else:
+        return None
 
 
 def main():
@@ -76,7 +84,9 @@ def main():
         # print("")
         # print(unit["crash_id"])
         diff = get_diff_from_past(unit)
-        # pp.pprint(diff)
+        if not diff:
+            continue
+        pp.pprint(diff)
 
 
 if __name__ == "__main__":
