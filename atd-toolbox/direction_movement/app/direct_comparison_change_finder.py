@@ -17,6 +17,8 @@ now = psycopg2.connect(
     host="localhost", database="current_vz", user="moped", password=""
 )
 
+date_prior_to_cris_reprocessing = "2022-01-08"
+
 
 def get_current_units():
     sql = """
@@ -28,7 +30,7 @@ def get_current_units():
     order by crashes.crash_id desc;
     """
     cursor = now.cursor(cursor_factory=psycopg2.extras.DictCursor)
-    cursor.execute(sql, ("2022-01-08",))
+    cursor.execute(sql, (date_prior_to_cris_reprocessing,))
     current_units = cursor.fetchall()
     return current_units
 
@@ -46,7 +48,12 @@ def get_diff_from_past(current_unit):
     """
     cursor = past.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cursor.execute(
-        sql, ("2022-01-08", current_unit["unit_id"], current_unit["crash_id"])
+        sql,
+        (
+            date_prior_to_cris_reprocessing,
+            current_unit["unit_id"],
+            current_unit["crash_id"],
+        ),
     )
     past_unit = cursor.fetchone()
 
