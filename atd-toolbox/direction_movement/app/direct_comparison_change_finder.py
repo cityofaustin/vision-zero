@@ -20,12 +20,15 @@ now = psycopg2.connect(
 
 def get_current_units():
     sql = """
-    select crash_id, unit_id, movement_id, travel_direction, veh_trvl_dir_id 
+    select units.crash_id, crashes.crash_date, units.unit_id, units.movement_id, units.travel_direction, units.veh_trvl_dir_id 
     from atd_txdot_units units
-    order by crash_id desc;
+    left join atd_txdot_crashes crashes on (units.crash_id = crashes.crash_id)
+    where 1 = 1
+    and crashes.crash_date <= %s
+    order by crashes.crash_id desc;
     """
     cursor = now.cursor(cursor_factory=psycopg2.extras.DictCursor)
-    cursor.execute(sql)
+    cursor.execute(sql, ("2022-01-08",))
     current_units = cursor.fetchall()
     return current_units
 
