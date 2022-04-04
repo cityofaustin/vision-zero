@@ -67,9 +67,12 @@ def get_diff_from_past(current_unit):
     diff = dict()
     for field in fields_to_check:
         if current_unit[field] != past_unit[field]:
+            # is data defined for the crash?
             if not current_unit["crash_id"] in diff:
                 diff[current_unit["crash_id"]] = dict()
-            diff[current_unit["crash_id"]][field] = {
+            if not current_unit["unit_id"] in diff[current_unit["crash_id"]]:
+                diff[current_unit["crash_id"]][current_unit["unit_id"]] = dict()
+            diff[current_unit["crash_id"]][current_unit["unit_id"]][field] = {
                 "old": past_unit[field],
                 "current": current_unit[field],
             }
