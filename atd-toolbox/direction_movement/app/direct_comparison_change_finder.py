@@ -56,6 +56,8 @@ def get_diff_from_past(current_unit):
         ),
     )
     past_unit = cursor.fetchone()
+    if not past_unit:
+        return None
 
     # we didn't find a crash in the past, this one is new.
     if not past_unit:
