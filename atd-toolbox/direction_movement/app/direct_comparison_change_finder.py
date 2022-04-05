@@ -85,6 +85,7 @@ def get_diff_from_past(current_unit):
 
 
 def find_change_log_entry_for_change(crash, unit, field, value):
+    print("Potential: ", str(crash), " ", str(unit), " ", str(field), " ", str(value))
 
     sql = """
     select *, (((extract(hour from update_timestamp) * 60) + extract(minute from update_timestamp))/30)::integer not in (16,17,18,19,20) as time_bin
@@ -114,8 +115,9 @@ def find_change_log_entry_for_change(crash, unit, field, value):
             and change["time_bin"] not in invalid_time_bins
             and change["record_json"][field] == value
         ):
-            print(str(crash), " ", str(unit), " ", str(field), " ", str(value))
-            print("Found one!: ", change["update_timestamp"])
+            print(
+                "Found: ", str(crash), " ", str(unit), " ", str(field), " ", str(value)
+            )
 
     return None
 
