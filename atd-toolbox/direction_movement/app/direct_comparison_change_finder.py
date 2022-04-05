@@ -85,7 +85,37 @@ def get_diff_from_past(current_unit):
 
 
 def find_change_log_entry_for_change(crash, unit, field, value):
-    print(str(crash), " ", str(unit), " ", str(field), " ", str(value))
+
+    sql = """
+    select *, (((extract(hour from update_timestamp) * 60) + extract(minute from update_timestamp))/30)::integer not in (16,17,18,19,20) as time_bin
+    from atd_txdot_change_log
+    where 1 = 1
+    and record_type = 'units'
+    and record_crash_id = %s
+    and record_id = %s
+    --and (((extract(hour from update_timestamp) * 60) + extract(minute from update_timestamp))/30)::integer not in (16,17,18,19,20)
+    order by update_timestamp asc
+    """
+
+    event_one_found = False
+
+    cursor = now.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    cursor.execute(sql, (crash, unit))
+    changes = cursor.fetchall()
+
+    invalid_time_bins = {16, 17, 18, 19, 20}
+
+    for change in changes:
+        if event_one_found == False and change["record_json"][field] != value:
+            event_one_found = True
+            continue
+        if (
+            event_one_found == True
+            and change["time_bin"] not in invalid_time_bins
+            and change["record_json"][field] == value
+        ):
+            print(str(crash), " ", str(unit), " ", str(field), " ", str(value))
+            print("Found one!: ", change["update_timestamp"])
 
     return None
 
