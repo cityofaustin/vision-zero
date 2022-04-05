@@ -139,6 +139,16 @@ def find_change_log_entry_for_change(crash, unit, field, value):
             print(
                 "Found: ", str(crash), " ", str(unit), " ", str(field), " ", str(value)
             )
+            file_fix(
+                {
+                    "potential": False,
+                    "found": True,
+                    "crash_id": crash,
+                    "unit_id": unit,
+                    "field": field,
+                    "value": value,
+                }
+            )
 
     return None
 
