@@ -144,6 +144,11 @@ def find_change_log_entry_for_change(crash, unit, field, value):
 
 
 def main():
+
+    cursor = now.cursor()
+    cursor.execute("TRUNCATE movement_direction_corrections;")
+    cursor.close()
+
     units = get_current_units()
     for unit in units:
         diff = get_diff_from_past(unit)
