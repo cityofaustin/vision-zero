@@ -139,7 +139,6 @@ def main():
         diff = get_diff_from_past(unit)
         if not diff:
             continue
-        # pp.pprint(diff)
         crash = list(diff.keys())[0]
         unit = list(diff[crash].keys())[0]
         fields = list(diff[crash][unit].keys())
