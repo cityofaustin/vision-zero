@@ -29,6 +29,7 @@ def file_fix(fix):
     """
     cursor = now.cursor()
     cursor.execute(sql, fix)
+    cursor.close()
 
 
 def get_current_units():
@@ -43,6 +44,7 @@ def get_current_units():
     cursor = now.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cursor.execute(sql, (date_prior_to_cris_reprocessing,))
     current_units = cursor.fetchall()
+    cursor.close()
     return current_units
 
 
@@ -67,6 +69,7 @@ def get_diff_from_past(current_unit):
         ),
     )
     past_unit = cursor.fetchone()
+    cursor.close()
     if not past_unit:
         return None
 
@@ -124,6 +127,7 @@ def find_change_log_entry_for_change(crash, unit, field, value):
     cursor = now.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cursor.execute(sql, (crash, unit))
     changes = cursor.fetchall()
+    cursor.close()
 
     invalid_time_bins = {16, 17, 18, 19, 20}
 
