@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 import pprint
-from re import I
+
 import psycopg2
 from psycopg2 import (
     extras,
