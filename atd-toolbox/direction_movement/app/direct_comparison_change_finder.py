@@ -25,10 +25,10 @@ def file_fix(fix):
     insert into movement_direction_corrections 
       (potential, found, crash_id, unit_id, field, value) 
         values
-      (%s, %s, %s, %s, %s, %s);
+      (%(potential)s, %(found)s, %(crash_id)s, %(unit_id)s, %(field)s, %(value)s);
+    """
     cursor = now.cursor()
     cursor.execute(sql, fix)
-    """
 
 
 def get_current_units():
@@ -96,6 +96,16 @@ def get_diff_from_past(current_unit):
 
 
 def find_change_log_entry_for_change(crash, unit, field, value):
+    file_fix(
+        {
+            "potential": True,
+            "found": False,
+            "crash_id": crash,
+            "unit_id": unit,
+            "field": field,
+            "value": value,
+        }
+    )
     print("Potential: ", str(crash), " ", str(unit), " ", str(field), " ", str(value))
 
     sql = """
@@ -145,6 +155,7 @@ def main():
         for field in fields:
             current_value = diff[crash][unit][field]["current"]
             find_change_log_entry_for_change(crash, unit, field, current_value)
+    now.commit()  # commit implicit transaction of the connection
 
 
 if __name__ == "__main__":
