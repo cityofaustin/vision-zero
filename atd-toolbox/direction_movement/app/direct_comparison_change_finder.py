@@ -28,6 +28,7 @@ def file_fix(fix):
       (%s, %s, %s, %s, %s, %s);
     cursor = now.cursor()
     cursor.execute(sql, fix)
+    """
 
 
 def get_current_units():
