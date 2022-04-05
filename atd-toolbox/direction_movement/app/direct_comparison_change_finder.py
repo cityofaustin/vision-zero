@@ -20,6 +20,16 @@ now = psycopg2.connect(
 date_prior_to_cris_reprocessing = "2022-01-08"
 
 
+def file_fix(fix):
+    sql = """
+    insert into movement_direction_corrections 
+      (potential, found, crash_id, unit_id, field, value) 
+        values
+      (%s, %s, %s, %s, %s, %s);
+    cursor = now.cursor()
+    cursor.execute(sql, fix)
+
+
 def get_current_units():
     sql = """
     select units.crash_id, crashes.crash_date, units.unit_id, units.movement_id, units.travel_direction, units.veh_trvl_dir_id 
