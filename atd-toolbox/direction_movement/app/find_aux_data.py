@@ -90,7 +90,6 @@ def main():
         geometry= %s
         where id = %s
         """
-        print(injuries["b"])
         cursor = db.cursor()
         cursor.execute(
             sql,
@@ -101,9 +100,10 @@ def main():
                 True if cardinal_direction_status else False,
                 True if qa_status else False,
                 geometry,
-                crash["crash_id"],
+                crash["id"],
             ),
         )
+    db.commit()
 
 
 if __name__ == "__main__":
