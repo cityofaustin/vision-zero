@@ -38,6 +38,15 @@ def get_people(crash):
     return injuries
 
 
+def get_geometry(crash):
+    sql = "select position from atd_txdot_crashes where crash_id = %s"
+    cursor = db.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    cursor.execute(sql, (crash,))
+    geometry = cursor.fetchone()
+    cursor.close()
+    return geometry
+
+
 def main():
     sql = """
     select crash_id
@@ -50,6 +59,8 @@ def main():
 
     for crash in crashes:
         injuries = get_people(crash[0])
+        geometry = get_geometry(crash[0])
+        pp.pprint(geometry)
         print(injuries)
 
 
