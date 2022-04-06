@@ -44,7 +44,7 @@ def get_geometry(crash):
     cursor.execute(sql, (crash,))
     geometry = cursor.fetchone()
     cursor.close()
-    return geometry
+    return geometry[0]
 
 
 def get_qa_status(crash):
@@ -76,8 +76,34 @@ def main():
     for crash in remediations:
         injuries = get_people(crash["crash_id"])
         geometry = get_geometry(crash["crash_id"])
-        cardinal_direction = check_direction(crash["value"])
+        cardinal_direction_status = check_direction(crash["value"])
         qa_status = get_qa_status(crash["crash_id"])
+
+        sql = """
+        update movement_direction_corrections 
+        set
+        k = %s,
+        a = %s,
+        b = %s,
+        cardinal_direction = %s,
+        manual_qa = %s,
+        geometry= %s
+        where id = %s
+        """
+        print(injuries["b"])
+        cursor = db.cursor()
+        cursor.execute(
+            sql,
+            (
+                True if injuries["k"] else False,
+                True if injuries["a"] else False,
+                True if injuries["b"] else False,
+                True if cardinal_direction_status else False,
+                True if qa_status else False,
+                geometry,
+                crash["crash_id"],
+            ),
+        )
 
 
 if __name__ == "__main__":
