@@ -47,21 +47,37 @@ def get_geometry(crash):
     return geometry
 
 
+def get_qa_status(crash):
+    sql = "select qa_status from atd_txdot_crashes where crash_id = %s"
+    cursor = db.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    cursor.execute(sql, (crash,))
+    qa_status = cursor.fetchone()
+    cursor.close()
+    return qa_status
+
+
+def check_direction(direction):
+    valid_directions = {1, 3, 5, 7}
+    if direction in valid_directions:
+        return True
+    return False
+
+
 def main():
     sql = """
-    select crash_id
+    select *
     from movement_direction_corrections
     """
     cursor = db.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cursor.execute(sql)
-    crashes = cursor.fetchall()
+    remediations = cursor.fetchall()
     cursor.close()
 
-    for crash in crashes:
-        injuries = get_people(crash[0])
-        geometry = get_geometry(crash[0])
-        pp.pprint(geometry)
-        print(injuries)
+    for crash in remediations:
+        injuries = get_people(crash["crash_id"])
+        geometry = get_geometry(crash["crash_id"])
+        cardinal_direction = check_direction(crash["value"])
+        qa_status = get_qa_status(crash["crash_id"])
 
 
 if __name__ == "__main__":
