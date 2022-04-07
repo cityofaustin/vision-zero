@@ -14,7 +14,7 @@ import requests
 import json
 from copy import deepcopy
 from process.config import ATD_ETL_CONFIG
-from datetime import date
+from datetime import date, timedelta
 
 # Dict to translate canonical modes to broader categories for VZV
 mode_categories = {
@@ -316,18 +316,15 @@ def format_person_data(data, formatter_config):
 
 def get_date_limit():
     """
-    Returns a string with the date of first day of the previous month in iso format: yyyy-mm-dd
+    Returns a string with the date two weeks ago in iso format: yyyy-mm-dd
     :return str:
     """
     d = date.today()
     if is_no_time_constraint():
         return d.strftime("%Y-%m-%d")
     else:
-        return d.replace(
-            year=d.year if d.month > 1 else d.year - 1,
-            month=d.month - 1 if d.month > 1 else 12,
-            day=1
-        ).strftime("%Y-%m-%d")
+        return (d - timedelta(days=14)).strftime("%Y-%m-%d")
+
 
 def get_initial_date_limit():
     """
@@ -335,9 +332,7 @@ def get_initial_date_limit():
     :return str:
     """
     d = date.today()
-    return d.replace(
-        year=d.year - 10 
-    ).strftime("%Y-%m-%d")
+    return d.replace(year=d.year - 10).strftime("%Y-%m-%d")
 
 
 def is_no_time_constraint():
