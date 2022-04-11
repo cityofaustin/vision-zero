@@ -172,8 +172,8 @@ def main():
         unit = list(diff[crash].keys())[0]
         fields = list(diff[crash][unit].keys())
         for field in fields:
-            current_value = diff[crash][unit][field]["current"]
-            find_change_log_entry_for_change(crash, unit, field, current_value)
+            old_value = diff[crash][unit][field]["old"]
+            find_change_log_entry_for_change(crash, unit, field, old_value)
     now.commit()  # commit implicit transaction of the connection
 
 
