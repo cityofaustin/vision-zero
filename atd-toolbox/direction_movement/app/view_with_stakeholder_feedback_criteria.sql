@@ -12,7 +12,7 @@ REPLACE VIEW check_vz_restore AS (
             ' where unit_id = ',
             unit_id,
             ';'
-        )
+        ) as update_statement
     FROM movement_direction_corrections
         JOIN atd_txdot_crashes crashes
         ON (
