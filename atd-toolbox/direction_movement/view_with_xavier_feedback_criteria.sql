@@ -1,5 +1,5 @@
 CREATE OR
-replace VIEW check_vz_restore AS (
+REPLACE VIEW check_vz_restore AS (
     SELECT
         movement_direction_corrections. *,
         crashes.qa_status,
@@ -8,7 +8,7 @@ replace VIEW check_vz_restore AS (
             'update atd_txdot_units set ',
             field,
             ' = ',
-            VALUE,
+            value,
             ' where unit_id = ',
             unit_id,
             ';'
