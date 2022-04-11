@@ -1,0 +1,22 @@
+# the usual cycle: docker-compose stop; docker-compose build --no-cache; docker-compose up -d; docker ps; docker exec -it vz_mvt_dir_recovery_environment bash
+
+version: '3.7'
+services:
+  recovery_environment:
+    container_name: vz_mvt_dir_recovery_environment
+    build: recovery_environment
+    environment:
+      POSTGRES_PASSWORD: vz
+      POSTGRES_USER: vz 
+      POSTGRES_DB: vz 
+      POSTGRES_HOST_AUTH_METHOD: trust
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - movement_direction_pgdata:/var/lib/postgresql/data
+      - ./app:/root/app
+    ports:
+      - 5432:5432
+
+volumes:
+  movement_direction_pgdata:
+    name: movement_direction_pgdata
