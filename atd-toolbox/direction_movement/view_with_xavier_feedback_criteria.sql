@@ -1,29 +1,29 @@
-create
-or replace view check_vz_restore as (
-    select
-        movement_direction_corrections.*,
+CREATE OR
+replace VIEW check_vz_restore AS (
+    SELECT
+        movement_direction_corrections. *,
         crashes.qa_status,
         crashes.position,
         concat(
             'update atd_txdot_units set ',
             field,
             ' = ',
-            value,
+            VALUE,
             ' where unit_id = ',
             unit_id,
             ';'
         )
-    from
-        movement_direction_corrections
-        join atd_txdot_crashes crashes on (
+    FROM movement_direction_corrections
+        JOIN atd_txdot_crashes crashes
+        ON (
             movement_direction_corrections.crash_id = crashes.crash_id
         )
-    where
-        movement_direction_corrections.potential is true
-        and not (
-            1 = 1
-            and crashes.qa_status = 3
-            and last_update >= '2022-03-01'
-            and movement_direction_corrections.cardinal_direction is true
+    WHERE
+        movement_direction_corrections.potential IS TRUE AND
+        NOT (
+            1 = 1 AND
+            crashes.qa_status = 3 AND
+            last_update >= '2022-03-01' AND
+            movement_direction_corrections.cardinal_direction IS TRUE
         )
 );
