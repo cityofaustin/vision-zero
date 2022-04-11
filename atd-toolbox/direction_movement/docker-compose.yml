@@ -6,9 +6,9 @@ services:
     container_name: vz_mvt_dir_recovery_environment
     build: recovery_environment
     environment:
-      POSTGRES_PASSWORD: moped
-      POSTGRES_USER: moped
-      POSTGRES_DB: moped
+      POSTGRES_PASSWORD: vz
+      POSTGRES_USER: vz 
+      POSTGRES_DB: vz 
       POSTGRES_HOST_AUTH_METHOD: trust
       PGDATA: /var/lib/postgresql/data/pgdata
     volumes:

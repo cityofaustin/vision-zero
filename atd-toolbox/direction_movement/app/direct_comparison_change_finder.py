@@ -11,10 +11,10 @@ from psycopg2 import (
 pp = pprint.PrettyPrinter(indent=2)
 
 # setup both DB connections
-past = psycopg2.connect(host="localhost", database="past_vz", user="moped", password="")
+past = psycopg2.connect(host="localhost", database="past_vz", user="vz", password="")
 
 now = psycopg2.connect(
-    host="localhost", database="current_vz", user="moped", password=""
+    host="localhost", database="current_vz", user="vz", password=""
 )
 
 date_prior_to_cris_reprocessing = "2022-01-08"

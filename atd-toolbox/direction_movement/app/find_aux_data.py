@@ -11,7 +11,7 @@ from psycopg2 import (
 pp = pprint.PrettyPrinter(indent=2)
 
 db = psycopg2.connect(
-    host="localhost", database="current_vz", user="moped", password=""
+    host="localhost", database="current_vz", user="vz", password=""
 )
 
 
