@@ -37,7 +37,7 @@ The program will collect the unique set of crash IDs from this input and then do
 
 This is a tool created to address a specific issue the Austin Transportation Department ran into as a result of a CRIS updating certain geospatial resources and reprocessing the entire corps of crashes. This CRIS process caused all crashes to be redelivered to ATD and run through the ETL which loads them into the Vision Zero Crash Database. Due to a particular configuration around the fields `movement_id` and `travel_direction`, changes to these fields which had been made by VZ stakeholders were reverted to the value provided from CRIS.
 
-While it is unlikely that other installations of the Vision Zero crash system would need this tool chain as-is, it does provide an example implementation of restoring data from the change log entries. As an aside, during the course of this work, there have been certain modifications to the Vision Zero change log system that would facilitate this type of data recovery in the future.
+While it is unlikely that other installations of the Vision Zero crash system would need this tool chain as-is, it does provide an example implementation of restoring data from the change log entries. As an aside, during the course of this work, there have been certain modifications to the Vision Zero change log system identified which would facilitate this type of data recovery in the future.
 
 To use this toolchain:
 
