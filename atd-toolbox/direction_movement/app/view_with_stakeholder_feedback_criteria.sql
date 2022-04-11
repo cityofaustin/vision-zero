@@ -12,7 +12,7 @@ REPLACE VIEW check_vz_restore AS (
             ' where unit_id = ',
             unit_id,
             ';'
-        ) as update_statement
+        ) AS update_statement
     FROM movement_direction_corrections
         JOIN atd_txdot_crashes crashes
         ON (
@@ -21,9 +21,16 @@ REPLACE VIEW check_vz_restore AS (
     WHERE
         movement_direction_corrections.potential IS TRUE AND
         NOT (
-            1 = 1 AND
             crashes.qa_status = 3 AND
-            last_update >= '2022-03-01' AND
-            movement_direction_corrections.cardinal_direction IS TRUE
+            last_update >= '2022-03-01'
+        )
+        AND
+        NOT (
+            movement_direction_corrections.field = 'travel_direction' AND
+            movement_direction_corrections.cardinal_direction IS FALSE
+        ) AND
+        NOT (
+            movement_direction_corrections.field = 'movement_id' AND
+            movement_direction_corrections.value = 0
         )
 );
