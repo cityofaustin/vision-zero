@@ -20,6 +20,7 @@ import CrashChangeLog from "./CrashChangeLog";
 import CrashDiagram from "./CrashDiagram";
 import CrashNarrative from "./CrashNarrative";
 import DataTable from "../../Components/DataTable";
+import Notes from "./Notes";
 import { crashDataMap } from "./crashDataMap";
 
 import "./crash.scss";
@@ -279,6 +280,11 @@ function Crash(props) {
       ) : (
         <div></div>
       )}
+      <Row>
+        <Col>
+          <Notes data={data} props={props} />
+        </Col>
+      </Row>
       <Row>
         <Col>
           <CrashCollapses data={data} props={props} />
