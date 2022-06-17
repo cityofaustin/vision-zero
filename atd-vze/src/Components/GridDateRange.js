@@ -91,7 +91,8 @@ const GridDateRange = ({
       startDate: formatDate(startDate, initStartDate),
       endDate: formatDate(endDate, initEndDate),
     });
-  }, [startDate, endDate, setDateRangeFilter, initStartDate, initEndDate]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [startDate, endDate, setDateRangeFilter]);
 
   // Set startDate or endDate state if props change
   useEffect(() => {
