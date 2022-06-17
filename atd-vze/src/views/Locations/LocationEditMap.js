@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import MapGL, { NavigationControl, FullscreenControl } from "react-map-gl";
+import "mapbox-gl/dist/mapbox-gl.css";
 import { Editor, EditorModes } from "react-map-gl-draw";
 import { withApollo } from "react-apollo";
 import styled from "styled-components";
