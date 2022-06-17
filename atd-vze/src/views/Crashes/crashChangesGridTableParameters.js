@@ -1,5 +1,3 @@
-import React from "react";
-
 export const crashChangesGridTableColumns = {
   record_id: {
     primary_key: true,
@@ -33,7 +31,7 @@ export const crashChangesGridTableColumns = {
     label_table: "Create Date",
     type: "date_iso",
   },
-  "status_description": {
+  status_description: {
     searchable: false,
     sortable: true,
     label_table: "Status",

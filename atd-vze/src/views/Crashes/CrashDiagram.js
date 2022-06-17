@@ -111,15 +111,19 @@ const CrashDiagram = props => {
           <div className="mt-2">
             CR-3 PDFs, diagrams and narratives are not available for temporary
             records. Using the case id, check the{" "}
-            <a href={"https://cris.dot.state.tx.us/"} target={"_blank"}>
+            <a
+              href={"https://cris.dot.state.tx.us/"}
+              target={"_blank"}
+              rel="noopener noreferrer"
+            >
               CRIS website
             </a>{" "}
             for the latest status of this crash.
           </div>
         ) : (
           <div className="mt-2">
-            The crash diagram and investigator narrative are not available
-            at this time.
+            The crash diagram and investigator narrative are not available at
+            this time.
           </div>
         )}
       </CardBody>
