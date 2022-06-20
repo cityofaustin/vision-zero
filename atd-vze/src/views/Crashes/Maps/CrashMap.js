@@ -4,6 +4,7 @@ import MapGL, {
   NavigationControl,
   FullscreenControl,
 } from "react-map-gl";
+import "mapbox-gl/dist/mapbox-gl.css";
 
 import Pin from "./Pin";
 

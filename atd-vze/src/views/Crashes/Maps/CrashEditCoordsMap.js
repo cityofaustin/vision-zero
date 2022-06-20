@@ -7,6 +7,7 @@ import MapGL, {
   NavigationControl,
   FullscreenControl,
 } from "react-map-gl";
+import "mapbox-gl/dist/mapbox-gl.css";
 import Geocoder from "react-map-gl-geocoder";
 import { CustomGeocoderMapController } from "./customGeocoderMapController";
 import "react-map-gl-geocoder/dist/mapbox-gl-geocoder.css";
