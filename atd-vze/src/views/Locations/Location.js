@@ -22,9 +22,9 @@ function Location(props) {
     .subtract(5, "years")
     .format("YYYY-MM-DD");
 
-  const [variables, setVariables] = useState({
+  const [variables] = useState({
     id: locationId,
-    yearsAgoDate: fiveYearsAgo
+    yearsAgoDate: fiveYearsAgo,
   });
 
   const { loading, error, data, refetch } = useQuery(GET_LOCATION, {
