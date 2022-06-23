@@ -282,7 +282,7 @@ function Crash(props) {
       )}
       <Row>
         <Col>
-          <Notes data={data} props={props} />
+          <Notes data={data} {...props} />
         </Col>
       </Row>
       <Row>
