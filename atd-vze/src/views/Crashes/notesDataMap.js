@@ -1,12 +1,12 @@
 export const notesDataMap = [
   {
     title: "Notes",
-    mutationVariableKey: "id", //FIXME what is this for
 
     fields: {
       date: {
         label: "Date",
         editable: false,
+        format: "datetime",
       },
       user_id: {
         label: "Updated By",
