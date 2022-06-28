@@ -1,23 +1,16 @@
-import React, { Component, useState } from "react";
+import React, { Component } from "react";
 import { useQuery } from "@apollo/react-hooks";
-import { Card, CardHeader, CardBody, CardFooter, Table, Col, Row } from "reactstrap";
-import { Link } from "react-router-dom";
-import { withApollo } from "react-apollo";
+import { Card, CardHeader, CardBody, CardFooter, Table} from "reactstrap";
 import moment from "moment";
-
-import DataTable from "../../Components/DataTable";
 import { notesDataMap } from "./notesDataMap";
 import { GET_NOTES } from "../../queries/notes";
-import { GET_CRASH, UPDATE_CRASH } from "../../queries/crashes";
-import RelatedRecordsTable from "./RelatedRecordsTable";
-
-//FIXME page crashes if there are no notes for that crash id in table`
 
 // declare a notes component
 const Notes = ({...props }) => {
+  // pull crashid for page
   const crashId = props.match.params.id;
 
-  // fetch data using graphQL query from database
+  // fetch data from database using graphQL query
   const { loading, error, data, refetch } = useQuery(GET_NOTES, {
     variables: { crashId },
   });
@@ -32,13 +25,13 @@ const Notes = ({...props }) => {
   // function to format date field values
   function formatDate(field, row) {
     if (field == "date") {
-      return moment(row[field]).format("YYYY-MM-DD");
+      return moment(row[field]).format("MM/DD/YYYY");
     } else {
       return row[field];
     }
-
   }
 
+  // render notes card and table
   return (
     <Card>
       <CardHeader>Notes</CardHeader>
@@ -46,6 +39,7 @@ const Notes = ({...props }) => {
         <Table>
           <thead>
             <tr>
+              {/* display label for each field in table header */}
               {Object.keys(fieldConfig.fields).map(field => (
                 <th key={`th_${fieldConfig.fields[field].label}`}>
                   {fieldConfig.fields[field].label}
@@ -54,12 +48,15 @@ const Notes = ({...props }) => {
             </tr>
           </thead>
           <tbody>
+            {/* iterate through each row in notes table */}
             {data.notes.map(row => {
               return (
                 <tr key={`table-${tableName}-${row[keyField]}`}>
+                  {/* iterate through each field in the row and render its value */}
                   {Object.keys(fieldConfig.fields).map((field, i) => {
                     return (
                       <td key={i}>
+                        {/* call function to format value if the field is a date */}
                         {formatDate(field, row)}
                       </td>
                     )
@@ -71,7 +68,6 @@ const Notes = ({...props }) => {
         </Table>
       </CardBody>
       <CardFooter>
-
       </CardFooter>
     </Card>
   );
