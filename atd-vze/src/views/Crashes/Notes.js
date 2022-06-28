@@ -48,7 +48,7 @@ const Notes = ({ ...props }) => {
                     return (
                       <td key={i}>
                         {/* format value if the field is a date */}
-                        {field == "date"
+                        {field === "date"
                           ? moment(row[field]).format("MM/DD/YYYY")
                           : row[field]}
                       </td>
