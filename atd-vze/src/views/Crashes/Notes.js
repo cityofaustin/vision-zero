@@ -1,12 +1,12 @@
 import React, { Component } from "react";
 import { useQuery } from "@apollo/react-hooks";
-import { Card, CardHeader, CardBody, CardFooter, Table} from "reactstrap";
+import { Card, CardHeader, CardBody, CardFooter, Table } from "reactstrap";
 import moment from "moment";
 import { notesDataMap } from "./notesDataMap";
 import { GET_NOTES } from "../../queries/notes";
 
 // declare a notes component
-const Notes = ({...props }) => {
+const Notes = ({ ...props }) => {
   // pull crashid for page
   const crashId = props.match.params.id;
 
@@ -21,15 +21,6 @@ const Notes = ({...props }) => {
   const tableName = "notes";
   const keyField = "id";
   const fieldConfig = notesDataMap[0];
-
-  // function to format date field values
-  function formatDate(field, row) {
-    if (field == "date") {
-      return moment(row[field]).format("MM/DD/YYYY");
-    } else {
-      return row[field];
-    }
-  }
 
   // render notes card and table
   return (
@@ -56,21 +47,22 @@ const Notes = ({...props }) => {
                   {Object.keys(fieldConfig.fields).map((field, i) => {
                     return (
                       <td key={i}>
-                        {/* call function to format value if the field is a date */}
-                        {formatDate(field, row)}
+                        {/* format value if the field is a date */}
+                        {field == "date"
+                          ? moment(row[field]).format("MM/DD/YYYY")
+                          : row[field]}
                       </td>
-                    )
+                    );
                   })}
                 </tr>
-              )
+              );
             })}
           </tbody>
         </Table>
       </CardBody>
-      <CardFooter>
-      </CardFooter>
+      <CardFooter></CardFooter>
     </Card>
   );
-}
+};
 
 export default Notes;
