@@ -8,7 +8,7 @@ export const notesDataMap = [
         editable: false,
         format: "datetime",
       },
-      user_id: {
+      user_email: {
         label: "Updated By",
         editable: false,
       },
