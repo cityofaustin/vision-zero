@@ -1,14 +1,26 @@
-import React, { Component } from "react";
+import React, { useState } from "react";
 import { useQuery } from "@apollo/react-hooks";
-import { Card, CardHeader, CardBody, CardFooter, Table } from "reactstrap";
+import { Card, CardHeader, CardBody, CardFooter, Table, Input, Button } from "reactstrap";
 import moment from "moment";
 import { notesDataMap } from "./notesDataMap";
-import { GET_NOTES } from "../../queries/notes";
+import { GET_NOTES, INSERT_NOTE } from "../../queries/notes";
+import { useAuth0, isReadOnly } from "../../auth/authContext";
+
+import DatePicker from "react-datepicker";
+// import required css from library
+import 'react-datepicker/dist/react-datepicker-cssmodules.css';
+import styled from "styled-components";
+import { colors } from "../../styles/colors";
 
 // declare a notes component
-const Notes = ({ ...props }) => {
-  // pull crashid for page
-  const crashId = props.match.params.id;
+const Notes = ({crashId}) => {
+
+  // disable edit features if only role is "readonly"
+  const { getRoles } = useAuth0();
+  const roles = getRoles();
+
+  // add a state variable to manage the value when date is selected
+  const [date, setDate] = useState(new Date());
 
   // fetch data from database using graphQL query
   const { loading, error, data, refetch } = useQuery(GET_NOTES, {
@@ -22,10 +34,26 @@ const Notes = ({ ...props }) => {
   const keyField = "id";
   const fieldConfig = notesDataMap[0];
 
+  const StyledDatePicker = styled.div`
+  /* Add Bootstrap styles to picker inputs */
+  .react-datepicker__input-container > input {
+    height: calc(1.5em + 0.75rem + 2px);
+    padding: 0.375rem 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: ${colors.grey700};
+    background-color: ${colors.white};
+    background-clip: padding-box;
+    border: 1px solid ${colors.grey200};
+    border-radius: 0.25rem;
+  }
+`;
+
   // render notes card and table
   return (
     <Card>
-      <CardHeader>Notes</CardHeader>
+      <CardHeader>{fieldConfig.title}</CardHeader>
       <CardBody>
         <Table>
           <thead>
@@ -39,6 +67,31 @@ const Notes = ({ ...props }) => {
             </tr>
           </thead>
           <tbody>
+            {/* display user input row if user is not read only */}
+            {!isReadOnly(roles) &&
+              <tr>
+                <td>
+                  {/* render date input with calendar drop down */}
+                  <StyledDatePicker>
+                    <DatePicker selected={date} onChange={(date) =>
+                    setDate(date)}/>
+                  </StyledDatePicker>
+                </td>
+                <td>
+                </td>
+                <td>
+                  <Input>
+                  </Input>
+                </td>
+                <td>
+                  <Button
+                  type="submit"
+                  color="primary"
+                  >
+                    Add
+                  </Button>
+                </td>
+              </tr>}
             {/* iterate through each row in notes table */}
             {data.notes.map(row => {
               return (
