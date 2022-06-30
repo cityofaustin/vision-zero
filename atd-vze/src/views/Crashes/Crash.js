@@ -282,7 +282,7 @@ function Crash(props) {
       )}
       <Row>
         <Col>
-          <Notes data={data} {...props} />
+          <Notes crashId={props.match.params.id} />
         </Col>
       </Row>
       <Row>
