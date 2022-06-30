@@ -13,3 +13,16 @@ export const GET_NOTES = gql`
     }
   }
 `;
+
+export const INSERT_NOTE = gql`
+  mutation InsertNote (
+    $note: notes_insert_input!) {
+    insert_notes(
+      objects: [$note]) {
+      returning {
+        text
+        crash_id
+      }
+    }
+  }
+`;
