@@ -6,9 +6,7 @@ import { notesDataMap } from "./notesDataMap";
 import { GET_NOTES } from "../../queries/notes";
 
 // declare a notes component
-const Notes = ({ ...props }) => {
-  // pull crashid for page
-  const crashId = props.match.params.id;
+const Notes = ({ crashId }) => {
 
   // fetch data from database using graphQL query
   const { loading, error, data, refetch } = useQuery(GET_NOTES, {
@@ -25,7 +23,7 @@ const Notes = ({ ...props }) => {
   // render notes card and table
   return (
     <Card>
-      <CardHeader>Notes</CardHeader>
+      <CardHeader>{fieldConfig.title}</CardHeader>
       <CardBody>
         <Table>
           <thead>
