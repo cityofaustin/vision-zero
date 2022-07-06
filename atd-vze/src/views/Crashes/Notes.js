@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useQuery } from "@apollo/react-hooks";
+import { useQuery, useMutation } from "@apollo/react-hooks";
 import { Card, CardHeader, CardBody, CardFooter, Table, Input, Button } from "reactstrap";
 import moment from "moment";
 import { notesDataMap } from "./notesDataMap";
@@ -11,21 +11,27 @@ import DatePicker from "react-datepicker";
 import 'react-datepicker/dist/react-datepicker-cssmodules.css';
 import styled from "styled-components";
 import { colors } from "../../styles/colors";
+import Handsontable from "handsontable";
 
 // declare a notes component
-const Notes = ({crashId}) => {
+const Notes = ({ crashId }) => {
+
+  // add a state variable to manage value when new note in entered
+  const [newNote, setNewNote] = useState("");
+  // add a state variable to manage the value when date is selected
+  const [date, setDate] = useState(new Date());
+  const [notesData, setNotesData] = useState([]);
 
   // disable edit features if only role is "readonly"
   const { getRoles } = useAuth0();
   const roles = getRoles();
 
-  // add a state variable to manage the value when date is selected
-  const [date, setDate] = useState(new Date());
-
   // fetch data from database using graphQL query
   const { loading, error, data, refetch } = useQuery(GET_NOTES, {
     variables: { crashId },
   });
+
+  const [addNote] = useMutation(INSERT_NOTE);
 
   if (loading) return "Loading...";
   if (error) return `Error! ${error.message}`;
@@ -49,6 +55,20 @@ const Notes = ({crashId}) => {
     border-radius: 0.25rem;
   }
 `;
+
+  // function to handle add button
+  const handleAddNoteClick = () => {
+    const userEmail = localStorage.getItem("hasura_user_email"); //FIXME: is this the best place to declare this variable?
+    addNote({
+      variables: {
+        note: newNote,
+        crashId: crashId,
+        date: date,
+        userEmail: userEmail
+      }
+    });
+    refetch();
+  };
 
   // render notes card and table
   return (
@@ -74,19 +94,26 @@ const Notes = ({crashId}) => {
                   {/* render date input with calendar drop down */}
                   <StyledDatePicker>
                     <DatePicker selected={date} onChange={(date) =>
-                    setDate(date)}/>
+                      setDate(date)} />
                   </StyledDatePicker>
                 </td>
                 <td>
                 </td>
+                {/* render text box for user to add note */}
                 <td>
-                  <Input>
-                  </Input>
+                  <Input
+                    type="textarea"
+                    placeholder="Enter new note here..."
+                    onChange={e => setNewNote(e.target.value)}
+                  />
                 </td>
                 <td>
                   <Button
-                  type="submit"
-                  color="primary"
+                    type="submit"
+                    color="primary"
+                    onClick={(e) => {
+                      handleAddNoteClick();
+                    }}
                   >
                     Add
                   </Button>
