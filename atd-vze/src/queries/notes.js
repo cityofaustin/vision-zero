@@ -15,13 +15,18 @@ export const GET_NOTES = gql`
 `;
 
 export const INSERT_NOTE = gql`
-  mutation InsertNote (
-    $note: notes_insert_input!) {
-    insert_notes(
-      objects: [$note]) {
+  mutation InsertNote($note: String!, $crashId: Int!, $date: timestamptz!, $userEmail: String){
+    insert_notes(objects: {
+      text: $note
+      crash_id: $crashId
+      date: $date
+      user_email: $userEmail
+    }) {
       returning {
-        text
         crash_id
+        text
+        date
+        user_email
       }
     }
   }
