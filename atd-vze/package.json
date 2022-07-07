@@ -35,7 +35,7 @@
     "handsontable": "7.3.0",
     "lodash.get": "^4.4.2",
     "mapbox-gl": "^0.47.0",
-    "moment": "^2.24.0",
+    "moment": "^2.29.4",
     "nebula.gl": "^0.15.0",
     "prop-types": "^15.7.2",
     "react": "^16.8.6",
