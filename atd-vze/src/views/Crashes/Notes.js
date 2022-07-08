@@ -41,10 +41,9 @@ const Notes = ({ crashId }) => {
         userEmail: userEmail
       }
     }).then(response => {
-      setNewNote("")
-      .catch(error => console.error(error));
+      setNewNote("");
       refetch();
-    });
+    }).catch(error => console.error(error));
   };
 
   // render notes card and table
@@ -83,9 +82,7 @@ const Notes = ({ crashId }) => {
                   <Button
                     type="submit"
                     color="primary"
-                    onClick={(e) => {
-                      handleAddNoteClick();
-                    }}
+                    onClick={handleAddNoteClick}
                   >
                     Add
                   </Button>
