@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useQuery, useMutation } from "@apollo/react-hooks";
-import { Card, CardHeader, CardBody, CardFooter, Table, Input, Button, Col } from "reactstrap";
+import { Card, CardHeader, CardBody, CardFooter, Table, Input, Button } from "reactstrap";
 import moment from "moment";
 import { notesDataMap } from "./notesDataMap";
 import { GET_NOTES, INSERT_NOTE } from "../../queries/notes";
@@ -9,10 +9,10 @@ import { useAuth0, isReadOnly } from "../../auth/authContext";
 // declare a notes component
 const Notes = ({ crashId }) => {
 
-  // add a state variable to manage value when new note in entered
+  // add a state variable to manage value when new note is entered
   const [newNote, setNewNote] = useState("");
 
-  // disable edit features if only role is "readonly"
+  // disable edit features if role is "readonly"
   const { getRoles } = useAuth0();
   const roles = getRoles();
 
@@ -41,7 +41,8 @@ const Notes = ({ crashId }) => {
         userEmail: userEmail
       }
     }).then(response => {
-      setNewNote("");
+      setNewNote("")
+      .catch(error => console.error(error));
       refetch();
     });
   };
