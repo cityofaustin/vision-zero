@@ -30,3 +30,17 @@ export const INSERT_NOTE = gql`
     }
   }
 `;
+
+export const UPDATE_NOTE = gql`
+  mutation UpdateNote($note: String!, $id: Int!) {
+    update_notes_by_pk(
+      pk_columns: {id: $id}
+      _set: {text: $note}
+    ) {
+        crash_id
+        text
+        date
+        user_email
+      }
+  }
+`;
