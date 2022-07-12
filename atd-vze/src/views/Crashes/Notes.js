@@ -3,7 +3,7 @@ import { useQuery, useMutation } from "@apollo/react-hooks";
 import { Card, CardHeader, CardBody, CardFooter, Table, Input, Button } from "reactstrap";
 import moment from "moment";
 import { notesDataMap } from "./notesDataMap";
-import { GET_NOTES, INSERT_NOTE } from "../../queries/notes";
+import { GET_NOTES, INSERT_NOTE, UPDATE_NOTE } from "../../queries/notes";
 import { useAuth0, isReadOnly } from "../../auth/authContext";
 
 // declare a notes component
@@ -11,6 +11,8 @@ const Notes = ({ crashId }) => {
 
   // add a state variable to manage value when new note is entered
   const [newNote, setNewNote] = useState("");
+  const [editedNote, setEditedNote] = useState("");
+  const [editRow, setEditRow] = useState("");
 
   // disable edit features if role is "readonly"
   const { getRoles } = useAuth0();
@@ -23,6 +25,7 @@ const Notes = ({ crashId }) => {
 
   // declare insert mutation function
   const [addNote] = useMutation(INSERT_NOTE);
+  const [editNote] = useMutation(UPDATE_NOTE);
 
   if (loading) return "Loading...";
   if (error) return `Error! ${error.message}`;
@@ -44,6 +47,29 @@ const Notes = ({ crashId }) => {
       setNewNote("");
       refetch();
     }).catch(error => console.error(error));
+  };
+
+  const handleEditClick = (row) => {
+    setEditRow(row);
+  };
+
+
+  const handleCheckClick = (row) => {
+    const id = row.id
+    console.log(editedNote);
+    editNote({
+      variables: {
+        note: editedNote,
+        id: id
+      }
+    }).then(response => {
+      setEditedNote("");
+      refetch();
+    }).catch(error => console.error(error));
+  };
+
+  const handleDeleteClick = () => {
+
   };
 
   // render notes card and table
@@ -90,21 +116,83 @@ const Notes = ({ crashId }) => {
               </tr>}
             {/* iterate through each row in notes table */}
             {data.notes.map(row => {
+              const isEditing = editRow === row;
               return (
                 <tr key={`table-${tableName}-${row[keyField]}`}>
                   {/* iterate through each field in the row and render its value */}
                   {Object.keys(fieldConfig.fields).map((field, i) => {
                     return (
                       <td key={i}>
-                        {/* format value if the field is a date */}
-                        {field === "date"
-                          ? moment(row[field]).format("MM/DD/YYYY")
-                          : row[field]}
+                        {/* if user is editing display editing input text box */}
+                        {isEditing && field === "text"
+                          ? <Input
+                          type="textarea"
+                          defaultValue={row[field]}
+                          onChange={e => setEditedNote(e.target.value)}
+                          />
+                          : field === "date"
+                            ? moment(row[field]).format("MM/DD/YYYY")
+                            : row[field]
+                        }
                       </td>
                     );
                   })}
-                  <td>
-                  </td>
+                  {/* display edit button if user has edit permissions */}
+                  {!isReadOnly(roles) && !isEditing&&
+                    <td>
+                        <Button
+                          type="submit"
+                          color="secondary"
+                          size="sm"
+                          className="btn-pill mt-2"
+                          style={{ width: "50px" }}
+                          onClick={e => handleEditClick(row)}
+                        >
+                          <i className="fa fa-pencil edit-toggle" />
+                        </Button>
+                    </td>}
+                  {/* display delete button if user has edit permissions */}
+                  {!isReadOnly(roles) && !isEditing &&
+                    <td>
+                      <Button
+                      type="submit"
+                      color="secondary"
+                      className="btn-pill mt-2"
+                      size="sm"
+                      style={{ width: "50px" }}
+                      onClick={handleDeleteClick()}
+                      >
+                        <i className="fa fa-trash" />
+                      </Button>
+                    </td>}
+                  {/* display accept button if user is editing */}
+                  {!isReadOnly(roles) && isEditing &&
+                    <td>
+                      <Button
+                      color="primary"
+                      className="btn-pill mt-2"
+                      size="sm"
+                      style={{ width: "50px" }}
+                      onClick={handleCheckClick(row)}
+                      >
+                        <i className="fa fa-check edit-toggle" />
+                      </Button>
+                    </td>
+                  }
+                  {/* display cancel button if user is editing */}
+                  {!isReadOnly(roles) && isEditing &&
+                    <td>
+                      <Button
+                      type="submit"
+                      color="danger"
+                      className="btn-pill mt-2"
+                      size="sm"
+                      style={{ width: "50px" }}
+                      >
+                        <i className="fa fa-times edit-toggle" />
+                      </Button>
+                    </td>
+                  }
                 </tr>
               );
             })}
