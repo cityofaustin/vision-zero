@@ -44,3 +44,16 @@ export const UPDATE_NOTE = gql`
       }
   }
 `;
+
+export const DELETE_NOTE = gql`
+  mutation DeleteNote($id: Int!) {
+    delete_notes_by_pk(
+      id: $id
+    ) {
+      crash_id
+      text
+      date
+      user_email
+    }
+  }
+`
