@@ -3,7 +3,7 @@ import { useQuery, useMutation } from "@apollo/react-hooks";
 import { Card, CardHeader, CardBody, CardFooter, Table, Input, Button } from "reactstrap";
 import moment from "moment";
 import { notesDataMap } from "./notesDataMap";
-import { GET_NOTES, INSERT_NOTE, UPDATE_NOTE } from "../../queries/notes";
+import { GET_NOTES, INSERT_NOTE, UPDATE_NOTE, DELETE_NOTE } from "../../queries/notes";
 import { useAuth0, isReadOnly } from "../../auth/authContext";
 
 // declare a notes component
@@ -23,9 +23,10 @@ const Notes = ({ crashId }) => {
     variables: { crashId },
   });
 
-  // declare insert mutation function
+  // declare mutation functions
   const [addNote] = useMutation(INSERT_NOTE);
   const [editNote] = useMutation(UPDATE_NOTE);
+  const [deleteNote] = useMutation(DELETE_NOTE);
 
   if (loading) return "Loading...";
   if (error) return `Error! ${error.message}`;
@@ -53,10 +54,13 @@ const Notes = ({ crashId }) => {
     setEditRow(row);
   };
 
+  const handleInputChange = e => {
+    setEditedNote(e.target.value);
+  };
+
 
   const handleCheckClick = (row) => {
     const id = row.id
-    console.log(editedNote);
     editNote({
       variables: {
         note: editedNote,
@@ -68,8 +72,19 @@ const Notes = ({ crashId }) => {
     }).catch(error => console.error(error));
   };
 
-  const handleDeleteClick = () => {
+  const handleCancelClick = () => {
+    setEditRow("");
+  }
 
+  const handleDeleteClick = (row) => {
+    const id = row.id
+    deleteNote({
+      variables: {
+        id: id
+      }
+    }).then(response => {
+      refetch();
+    }).catch(error => console.error(error));
   };
 
   // render notes card and table
@@ -123,12 +138,12 @@ const Notes = ({ crashId }) => {
                   {Object.keys(fieldConfig.fields).map((field, i) => {
                     return (
                       <td key={i}>
-                        {/* if user is editing display editing input text box */}
+                        {/* if user is editing & column is notes display editing input text box */}
                         {isEditing && field === "text"
                           ? <Input
                           type="textarea"
                           defaultValue={row[field]}
-                          onChange={e => setEditedNote(e.target.value)}
+                          onChange={handleInputChange}
                           />
                           : field === "date"
                             ? moment(row[field]).format("MM/DD/YYYY")
@@ -138,7 +153,7 @@ const Notes = ({ crashId }) => {
                     );
                   })}
                   {/* display edit button if user has edit permissions */}
-                  {!isReadOnly(roles) && !isEditing&&
+                  {!isReadOnly(roles) && !isEditing &&
                     <td>
                         <Button
                           type="submit"
@@ -160,7 +175,7 @@ const Notes = ({ crashId }) => {
                       className="btn-pill mt-2"
                       size="sm"
                       style={{ width: "50px" }}
-                      onClick={handleDeleteClick()}
+                      onClick={e => handleDeleteClick(row)}
                       >
                         <i className="fa fa-trash" />
                       </Button>
@@ -173,7 +188,7 @@ const Notes = ({ crashId }) => {
                       className="btn-pill mt-2"
                       size="sm"
                       style={{ width: "50px" }}
-                      onClick={handleCheckClick(row)}
+                      onClick={e => handleCheckClick(row)}
                       >
                         <i className="fa fa-check edit-toggle" />
                       </Button>
@@ -188,6 +203,7 @@ const Notes = ({ crashId }) => {
                       className="btn-pill mt-2"
                       size="sm"
                       style={{ width: "50px" }}
+                      onClick={e => handleCancelClick(e)}
                       >
                         <i className="fa fa-times edit-toggle" />
                       </Button>
