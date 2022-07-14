@@ -50,15 +50,12 @@ const Notes = ({ crashId }) => {
     }).catch(error => console.error(error));
   };
 
+  // function to handle edit button click
   const handleEditClick = (row) => {
     setEditRow(row);
   };
 
-  const handleInputChange = e => {
-    setEditedNote(e.target.value);
-  };
-
-
+  // function to handle save edit button click
   const handleCheckClick = (row) => {
     const id = row.id
     editNote({
@@ -72,10 +69,13 @@ const Notes = ({ crashId }) => {
     }).catch(error => console.error(error));
   };
 
+  // function to handle cancel button click
   const handleCancelClick = () => {
     setEditRow("");
+    setEditedNote("");
   }
 
+  //function to handle delete note button click
   const handleDeleteClick = (row) => {
     const id = row.id
     deleteNote({
@@ -102,6 +102,8 @@ const Notes = ({ crashId }) => {
             ))}
             <th>
             </th>
+            <th>
+            </th>
           </tr>
           <tbody>
             {/* display user input row for users with edit permissions*/}
@@ -124,9 +126,12 @@ const Notes = ({ crashId }) => {
                     type="submit"
                     color="primary"
                     onClick={handleAddNoteClick}
+                    className="btn-pill mt-2"
                   >
                     Add
                   </Button>
+                </td>
+                <td>
                 </td>
               </tr>}
             {/* iterate through each row in notes table */}
@@ -138,12 +143,12 @@ const Notes = ({ crashId }) => {
                   {Object.keys(fieldConfig.fields).map((field, i) => {
                     return (
                       <td key={i}>
-                        {/* if user is editing & column is notes display editing input text box */}
+                        {/* if user is editing display editing input text box */}
                         {isEditing && field === "text"
                           ? <Input
                           type="textarea"
                           defaultValue={row[field]}
-                          onChange={handleInputChange}
+                          onChange={e => setEditedNote(e.target.value)}
                           />
                           : field === "date"
                             ? moment(row[field]).format("MM/DD/YYYY")
