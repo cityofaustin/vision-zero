@@ -52,6 +52,7 @@ const Notes = ({ crashId }) => {
 
   // function to handle edit button click
   const handleEditClick = (row) => {
+    setEditedNote(row.text);
     setEditRow(row);
   };
 
@@ -141,7 +142,6 @@ const Notes = ({ crashId }) => {
                 <tr key={`table-${tableName}-${row[keyField]}`}>
                   {/* iterate through each field in the row and render its value */}
                   {Object.keys(fieldConfig.fields).map((field, i) => {
-                    const originalNote = row.text;
                     return (
                       <td key={i}>
                         {/* if user is editing display editing input text box */}
@@ -149,7 +149,7 @@ const Notes = ({ crashId }) => {
                           ? <Input
                           type="textarea"
                           className="form-control"
-                          defaultValue={originalNote}
+                          defaultValue={row.text}
                           onChange={e => setEditedNote(e.target.value)}
                           />
                           : field === "date"
