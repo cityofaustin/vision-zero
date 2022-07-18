@@ -141,13 +141,15 @@ const Notes = ({ crashId }) => {
                 <tr key={`table-${tableName}-${row[keyField]}`}>
                   {/* iterate through each field in the row and render its value */}
                   {Object.keys(fieldConfig.fields).map((field, i) => {
+                    const originalNote = row.text;
                     return (
                       <td key={i}>
                         {/* if user is editing display editing input text box */}
                         {isEditing && field === "text"
                           ? <Input
                           type="textarea"
-                          defaultValue={row[field]}
+                          className="form-control"
+                          defaultValue={originalNote}
                           onChange={e => setEditedNote(e.target.value)}
                           />
                           : field === "date"
