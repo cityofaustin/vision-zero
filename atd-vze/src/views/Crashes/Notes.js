@@ -94,24 +94,15 @@ const Notes = ({ crashId }) => {
       <CardHeader>{fieldConfig.title}</CardHeader>
       <CardBody>
         <Table style={{width: "100%"}}>
+          {/* display label for each field in table header*/}
           <tr>
-            {/* display label for each field in table header
-            {Object.keys(fieldConfig.fields).map(field => (
-              <th key={`th_${fieldConfig.fields[field].label}`} style={{ width: "25%"}}>
-                {fieldConfig.fields[field].label}
-              </th>
-            ))}
-            <th>
-            </th>
-            <th>
-            </th> */}
-            <th style={{width: "8%"}}>
+            <th style={{width: "10%"}}>
             {fieldConfig.fields.date.label}
             </th>
-            <th style={{width: "20%"}}>
+            <th style={{width: "26%"}}>
             {fieldConfig.fields.user_email.label}
             </th>
-            <th style={{width: "58%"}}>
+            <th style={{width: "50%"}}>
             {fieldConfig.fields.text.label}
             </th>
             <th style={{width: "7%"}}>
