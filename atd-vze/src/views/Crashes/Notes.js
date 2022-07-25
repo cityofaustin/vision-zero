@@ -93,17 +93,30 @@ const Notes = ({ crashId }) => {
     <Card>
       <CardHeader>{fieldConfig.title}</CardHeader>
       <CardBody>
-        <Table>
+        <Table style={{width: "100%"}}>
           <tr>
-            {/* display label for each field in table header */}
+            {/* display label for each field in table header
             {Object.keys(fieldConfig.fields).map(field => (
-              <th key={`th_${fieldConfig.fields[field].label}`}>
+              <th key={`th_${fieldConfig.fields[field].label}`} style={{ width: "25%"}}>
                 {fieldConfig.fields[field].label}
               </th>
             ))}
             <th>
             </th>
             <th>
+            </th> */}
+            <th style={{width: "8%"}}>
+            {fieldConfig.fields.date.label}
+            </th>
+            <th style={{width: "20%"}}>
+            {fieldConfig.fields.user_email.label}
+            </th>
+            <th style={{width: "58%"}}>
+            {fieldConfig.fields.text.label}
+            </th>
+            <th style={{width: "7%"}}>
+            </th>
+            <th style={{width: "7%"}}>
             </th>
           </tr>
           <tbody>
@@ -148,7 +161,6 @@ const Notes = ({ crashId }) => {
                         {isEditing && field === "text"
                           ? <Input
                           type="textarea"
-                          className="form-control"
                           defaultValue={row.text}
                           onChange={e => setEditedNote(e.target.value)}
                           />
