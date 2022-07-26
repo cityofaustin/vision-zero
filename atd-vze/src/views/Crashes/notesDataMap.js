@@ -14,7 +14,7 @@ export const notesDataMap = [
       },
       text: {
         label: "Note",
-        editable: false,
+        editable: true,
       },
     },
   },
