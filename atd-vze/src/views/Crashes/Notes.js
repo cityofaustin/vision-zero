@@ -76,7 +76,7 @@ const Notes = ({ crashId }) => {
     setEditedNote("");
   }
 
-  //function to handle delete note button click
+  // function to handle delete note button click
   const handleDeleteClick = (row) => {
     const id = row.id
     deleteNote({
@@ -99,15 +99,15 @@ const Notes = ({ crashId }) => {
             <th style={{width: "10%"}}>
             {fieldConfig.fields.date.label}
             </th>
-            <th style={{width: "26%"}}>
+            <th style={{width: "24%"}}>
             {fieldConfig.fields.user_email.label}
             </th>
-            <th style={{width: "50%"}}>
+            <th style={{width: "54%"}}>
             {fieldConfig.fields.text.label}
             </th>
-            <th style={{width: "7%"}}>
+            <th style={{width: "6%"}}>
             </th>
-            <th style={{width: "7%"}}>
+            <th style={{width: "6%"}}>
             </th>
           </tr>
           <tbody>
@@ -126,12 +126,14 @@ const Notes = ({ crashId }) => {
                     onChange={e => setNewNote(e.target.value)}
                   />
                 </td>
-                <td>
+                <td style={{padding: "12px 4px 12px 12px"}}>
                   <Button
                     type="submit"
                     color="primary"
                     onClick={handleAddNoteClick}
                     className="btn-pill mt-2"
+                    size="sm"
+                    style={{width: "50px"}}
                   >
                     Add
                   </Button>
@@ -164,13 +166,13 @@ const Notes = ({ crashId }) => {
                   })}
                   {/* display edit button if user has edit permissions */}
                   {!isReadOnly(roles) && !isEditing &&
-                    <td>
+                    <td style={{padding: "12px 4px 12px 12px"}}>
                         <Button
                           type="submit"
                           color="secondary"
                           size="sm"
                           className="btn-pill mt-2"
-                          style={{ width: "50px" }}
+                          style={{width: "50px"}}
                           onClick={e => handleEditClick(row)}
                         >
                           <i className="fa fa-pencil edit-toggle" />
@@ -178,13 +180,13 @@ const Notes = ({ crashId }) => {
                     </td>}
                   {/* display delete button if user has edit permissions */}
                   {!isReadOnly(roles) && !isEditing &&
-                    <td>
+                    <td style={{padding: "12px 4px 12px 4px"}}>
                       <Button
                       type="submit"
                       color="secondary"
                       className="btn-pill mt-2"
                       size="sm"
-                      style={{ width: "50px" }}
+                      style={{width: "50px"}}
                       onClick={e => handleDeleteClick(row)}
                       >
                         <i className="fa fa-trash" />
@@ -192,12 +194,12 @@ const Notes = ({ crashId }) => {
                     </td>}
                   {/* display accept button if user is editing */}
                   {!isReadOnly(roles) && isEditing &&
-                    <td>
+                    <td style={{padding: "12px 4px 12px 12px"}}>
                       <Button
                       color="primary"
                       className="btn-pill mt-2"
                       size="sm"
-                      style={{ width: "50px" }}
+                      style={{width: "50px"}}
                       onClick={e => handleCheckClick(row)}
                       >
                         <i className="fa fa-check edit-toggle" />
@@ -206,13 +208,13 @@ const Notes = ({ crashId }) => {
                   }
                   {/* display cancel button if user is editing */}
                   {!isReadOnly(roles) && isEditing &&
-                    <td>
+                    <td style={{padding: "12px 4px 12px 4px"}}>
                       <Button
                       type="submit"
                       color="danger"
                       className="btn-pill mt-2"
                       size="sm"
-                      style={{ width: "50px" }}
+                      style={{width: "50px"}}
                       onClick={e => handleCancelClick(e)}
                       >
                         <i className="fa fa-times edit-toggle" />
