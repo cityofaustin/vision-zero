@@ -47,7 +47,13 @@ const StyledDatePicker = styled.div`
   }
 `;
 
-const GridDateRange = ({ setDateRangeFilter, initStartDate, initEndDate, uniqueKey, minDate }) => {
+const GridDateRange = ({
+  setDateRangeFilter,
+  initStartDate,
+  initEndDate,
+  uniqueKey,
+  minDate,
+}) => {
   /**
    * Parses a string into proper format
    * @param {string} date - date string to be formatted
@@ -85,6 +91,7 @@ const GridDateRange = ({ setDateRangeFilter, initStartDate, initEndDate, uniqueK
       startDate: formatDate(startDate, initStartDate),
       endDate: formatDate(endDate, initEndDate),
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [startDate, endDate, setDateRangeFilter]);
 
   // Set startDate or endDate state if props change

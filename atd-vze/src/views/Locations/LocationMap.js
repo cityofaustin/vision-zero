@@ -5,6 +5,7 @@ import MapGL, {
   Source,
   Layer,
 } from "react-map-gl";
+import "mapbox-gl/dist/mapbox-gl.css";
 import axios from "axios";
 import moment from "moment";
 
