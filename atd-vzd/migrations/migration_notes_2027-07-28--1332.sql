@@ -23,3 +23,19 @@ CREATE SEQUENCE public.notes_id_seq
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
+
+ALTER TABLE public.notes_id_seq OWNER TO atd_vz_data;
+
+--
+-- Name: notes_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: atd_vz_data
+--
+
+ALTER SEQUENCE public.notes_id_seq OWNED BY public.notes.id;
+
+
+--
+-- Name: notes id; Type: DEFAULT; Schema: public; Owner: atd_vz_data
+--
+
+ALTER TABLE ONLY public.notes ALTER COLUMN id SET DEFAULT nextval('public.notes_id_seq'::regclass);
+
