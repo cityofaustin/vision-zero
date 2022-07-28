@@ -5,6 +5,7 @@ import { recommendationsDataMap } from "./recommendationsDataMap";
 import { GET_RECOMMENDATIONS } from "../../queries/recommendations";
 import { useAuth0, isReadOnly } from "../../auth/authContext";
 
+// declare fatality review board recommendations component
 const Recommendations = ({ crashId }) => {
 
   // fetch data from database using graphQL query
@@ -15,9 +16,6 @@ const Recommendations = ({ crashId }) => {
   if (loading) return "Loading...";
   if (error) return `Error! ${error.message}`;
 
-  // may not need to use some of these variables
-  const tableName = "recommendations";
-  const keyField = "id";
   const fieldConfig = recommendationsDataMap[0];
 
     return(
@@ -26,20 +24,27 @@ const Recommendations = ({ crashId }) => {
             <CardBody>
                 <Table>
                     <tr style={{width: "100%"}}>
-                        <td style={{width: "25%"}}>
+                        <td style={{width: "35%"}}>
                             <b>{fieldConfig.fields.coordination_partner_id.label}</b>
-                            {data.recommendations[0].atd__coordination_partners_lkp.description}
+                            {/* i feel like this part of my code where i check if there is a record for the current
+                            crash is repetive, would welcome more efficient methods so i dont have to write the
+                            same conditional three times */}
+                            {data.recommendations[0] &&
+                                data.recommendations[0].atd__coordination_partners_lkp.description
+                            }
                         </td>
-                        <td style={{width: "75%"}}>
+                        <td style={{width: "65%"}}>
                             <b>{fieldConfig.fields.recommendation_status_id.label}</b>
-                            {data.recommendations[0].atd__recommendation_status_lkp.description}
+                            {data.recommendations[0] &&
+                                data.recommendations[0].atd__recommendation_status_lkp.description
+                            }
                         </td>
                     </tr>
                     <tr>
-                        <td>
-                            {data.recommendations[0].text}
-                        </td>
-                        <td>
+                        <td colspan={2}>
+                            {data.recommendations[0] &&
+                                data.recommendations[0].text
+                            }
                         </td>
                     </tr>
                 </Table>
