@@ -16,6 +16,18 @@ const Recommendations = ({ crashId }) => {
   if (loading) return "Loading...";
   if (error) return `Error! ${error.message}`;
 
+  // if crash has data in recommendations table, display it
+  const displayData = (field) => {
+    if (data.recommendations[0]) {
+        if (field === "partner") {
+            return data.recommendations[0].atd__coordination_partners_lkp.description
+        } else if (field === "status") {
+            return data.recommendations[0].atd__recommendation_status_lkp.description
+        } else if (field === "note") {
+            return data.recommendations[0].text
+        }}
+  }
+
   const fieldConfig = recommendationsDataMap[0];
 
     return(
@@ -26,27 +38,19 @@ const Recommendations = ({ crashId }) => {
                     <tr style={{width: "100%"}}>
                         <td style={{width: "35%"}}>
                             <b>{fieldConfig.fields.coordination_partner_id.label}</b>
-                            {/* i feel like this part of my code where i check if there is a record for the current
-                            crash is repetive, would welcome more efficient methods so i dont have to write the
-                            same conditional three times */}
-                            {data.recommendations[0] &&
-                                data.recommendations[0].atd__coordination_partners_lkp.description
-                            }
+                            {displayData("partner")}
                         </td>
                         <td style={{width: "65%"}}>
                             <b>{fieldConfig.fields.recommendation_status_id.label}</b>
-                            {data.recommendations[0] &&
-                                data.recommendations[0].atd__recommendation_status_lkp.description
-                            }
+                            {displayData("status")}
                         </td>
                     </tr>
                     <tr>
                         <td colspan={2}>
-                            {data.recommendations[0] &&
-                                data.recommendations[0].text
-                            }
+                            {displayData("note")}
                         </td>
                     </tr>
+                
                 </Table>
             </CardBody>
             <CardFooter>
