@@ -18,6 +18,9 @@ const Notes = ({ crashId }) => {
   const { getRoles } = useAuth0();
   const roles = getRoles();
 
+  // get current users email
+  const userEmail = localStorage.getItem("hasura_user_email");
+
   // fetch data from database using graphQL query
   const { loading, error, data, refetch } = useQuery(GET_NOTES, {
     variables: { crashId },
@@ -37,7 +40,6 @@ const Notes = ({ crashId }) => {
 
   // function to handle add button click
   const handleAddNoteClick = () => {
-    const userEmail = localStorage.getItem("hasura_user_email");
     addNote({
       variables: {
         note: newNote,
@@ -57,7 +59,7 @@ const Notes = ({ crashId }) => {
   };
 
   // function to handle save edit button click
-  const handleCheckClick = (row) => {
+  const handleSaveClick = (row) => {
     const id = row.id
     editNote({
       variables: {
@@ -105,10 +107,16 @@ const Notes = ({ crashId }) => {
             <th style={{width: "54%"}}>
             {fieldConfig.fields.text.label}
             </th>
-            <th style={{width: "6%"}}>
-            </th>
-            <th style={{width: "6%"}}>
-            </th>
+            {/* only create extra columns if user has edit permissions */}
+            {!isReadOnly(roles) &&
+              <th style={{width: "6%"}}>
+              </th>
+            }
+            {/* only create extra columns if user has edit permissions */}
+            {!isReadOnly(roles) &&
+              <th style={{width: "6%"}}>
+              </th>
+            }
           </tr>
           <tbody>
             {/* display user input row for users with edit permissions*/}
@@ -144,6 +152,7 @@ const Notes = ({ crashId }) => {
             {/* iterate through each row in notes table */}
             {data.notes.map(row => {
               const isEditing = editRow === row;
+              const isUser = row.user_email === userEmail;
               return (
                 <tr key={`table-${tableName}-${row[keyField]}`}>
                   {/* iterate through each field in the row and render its value */}
@@ -164,35 +173,43 @@ const Notes = ({ crashId }) => {
                       </td>
                     );
                   })}
-                  {/* display edit button if user has edit permissions */}
-                  {!isReadOnly(roles) && !isEditing &&
-                    <td style={{padding: "12px 4px 12px 12px"}}>
+                  {/* display edit button if row was created by current user,
+                  user has edit permissions, and user is not currently editing */}
+                  {isUser && !isReadOnly(roles) && !isEditing
+                    ? <td style={{padding: "12px 4px 12px 12px"}}>
+                            <Button
+                              type="submit"
+                              color="secondary"
+                              size="sm"
+                              className="btn-pill mt-2"
+                              style={{width: "50px"}}
+                              onClick={e => handleEditClick(row)}
+                            >
+                              <i className="fa fa-pencil edit-toggle" />
+                            </Button>
+                      </td>
+                    // else if user has edit permissions and is not editing render empty cell
+                    : !isReadOnly(roles) && !isEditing && <td></td>
+                  }
+                  {/* display delete button if row was created by current user,
+                  user has edit permissions, and user is not currently editing */}
+                  {isUser && !isReadOnly(roles) && !isEditing
+                    ? <td style={{padding: "12px 4px 12px 4px"}}>
                         <Button
                           type="submit"
                           color="secondary"
-                          size="sm"
                           className="btn-pill mt-2"
+                          size="sm"
                           style={{width: "50px"}}
-                          onClick={e => handleEditClick(row)}
-                        >
-                          <i className="fa fa-pencil edit-toggle" />
+                          onClick={e => handleDeleteClick(row)}
+                          >
+                            <i className="fa fa-trash" />
                         </Button>
-                    </td>}
-                  {/* display delete button if user has edit permissions */}
-                  {!isReadOnly(roles) && !isEditing &&
-                    <td style={{padding: "12px 4px 12px 4px"}}>
-                      <Button
-                      type="submit"
-                      color="secondary"
-                      className="btn-pill mt-2"
-                      size="sm"
-                      style={{width: "50px"}}
-                      onClick={e => handleDeleteClick(row)}
-                      >
-                        <i className="fa fa-trash" />
-                      </Button>
-                    </td>}
-                  {/* display accept button if user is editing */}
+                      </td>
+                    // else if user has edit permissions and is not editing render empty cell
+                    : !isReadOnly(roles) && !isEditing && <td></td>
+                  }
+                  {/* display save button if user is editing */}
                   {!isReadOnly(roles) && isEditing &&
                     <td style={{padding: "12px 4px 12px 12px"}}>
                       <Button
@@ -200,7 +217,7 @@ const Notes = ({ crashId }) => {
                       className="btn-pill mt-2"
                       size="sm"
                       style={{width: "50px"}}
-                      onClick={e => handleCheckClick(row)}
+                      onClick={e => handleSaveClick(row)}
                       >
                         <i className="fa fa-check edit-toggle" />
                       </Button>
