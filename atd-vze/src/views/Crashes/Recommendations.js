@@ -16,41 +16,40 @@ const Recommendations = ({ crashId }) => {
   if (loading) return "Loading...";
   if (error) return `Error! ${error.message}`;
 
-  // if crash has data in recommendations table, display it
-  const displayData = (field) => {
-    if (data.recommendations[0]) {
-        if (field === "partner") {
-            return data.recommendations[0].atd__coordination_partners_lkp.description
-        } else if (field === "status") {
-            return data.recommendations[0].atd__recommendation_status_lkp.description
-        } else if (field === "note") {
-            return data.recommendations[0].text
-        }}
-  }
+  const fieldConfig = recommendationsDataMap;
+  const recommendation = data?.recommendations?.[0];
 
-  const fieldConfig = recommendationsDataMap[0];
+  // if crash has data in recommendations table, display it
+  const displayData = (data, {lookupOptions, key}) => {
+    if (recommendation) {
+        if (lookupOptions) {
+            return data[lookupOptions][key];
+        } else {
+            return data[key];
+        }
+    }
+  };
 
     return(
         <Card>
-            <CardHeader>{fieldConfig.title}</CardHeader>
-            <CardBody>
+            <CardHeader>Fatality Review Board Recommendations</CardHeader>
+            <CardBody style={{padding:"5px 20px 20px 20px" }}>
                 <Table>
-                    <tr style={{width: "100%"}}>
-                        <td style={{width: "35%"}}>
-                            <b>{fieldConfig.fields.coordination_partner_id.label}</b>
-                            {displayData("partner")}
+                    <tr style={{width: "100%", "border-top": "0px"}}>
+                        <td style={{width: "35%", "border-top": "0px"}}>
+                            <b>Coordination Partner: </b>
+                            {displayData(recommendation, fieldConfig.fields.coordination_partner_id)}
                         </td>
-                        <td style={{width: "65%"}}>
-                            <b>{fieldConfig.fields.recommendation_status_id.label}</b>
-                            {displayData("status")}
+                        <td style={{width: "65%", "border-top": "0px"}}>
+                            <b>Status: </b>
+                            {displayData(recommendation, fieldConfig.fields.recommendation_status_id)}
                         </td>
                     </tr>
                     <tr>
                         <td colspan={2}>
-                            {displayData("note")}
+                            {displayData(recommendation, fieldConfig.fields.text)}
                         </td>
                     </tr>
-                
                 </Table>
             </CardBody>
             <CardFooter>
