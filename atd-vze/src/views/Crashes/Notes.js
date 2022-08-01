@@ -94,27 +94,27 @@ const Notes = ({ crashId }) => {
   return (
     <Card>
       <CardHeader>{fieldConfig.title}</CardHeader>
-      <CardBody>
+      <CardBody style={{padding:"5px 20px 20px 20px" }}>
         <Table style={{width: "100%"}}>
           {/* display label for each field in table header*/}
-          <tr>
-            <th style={{width: "10%"}}>
+          <tr style={{"border-top": "0px"}}>
+            <th style={{width: "10%", "border-top": "0px"}}>
             {fieldConfig.fields.date.label}
             </th>
-            <th style={{width: "24%"}}>
+            <th style={{width: "24%", "border-top": "0px"}}>
             {fieldConfig.fields.user_email.label}
             </th>
-            <th style={{width: "54%"}}>
+            <th style={{width: "54%", "border-top": "0px"}}>
             {fieldConfig.fields.text.label}
             </th>
             {/* only create extra columns if user has edit permissions */}
             {!isReadOnly(roles) &&
-              <th style={{width: "6%"}}>
+              <th style={{width: "6%", "border-top": "0px"}}>
               </th>
             }
             {/* only create extra columns if user has edit permissions */}
             {!isReadOnly(roles) &&
-              <th style={{width: "6%"}}>
+              <th style={{width: "6%", "border-top": "0px"}}>
               </th>
             }
           </tr>
