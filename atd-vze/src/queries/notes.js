@@ -56,4 +56,4 @@ export const DELETE_NOTE = gql`
       user_email
     }
   }
-`
+`;
