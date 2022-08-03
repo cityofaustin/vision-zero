@@ -20,8 +20,6 @@ const LocationNotes = ({ locationId }) => {
 		variables: { locationId },
 	});
 
-	console.log(data);
-
 	if (loading) return "Loading...";
 	if (error) return `Error! ${error.message}`;
 
@@ -36,14 +34,14 @@ const LocationNotes = ({ locationId }) => {
 				<Table style={{ width: "100%" }}>
 					<thead>
 						{/* display label for each field in table header*/}
-						<tr style={{ "border-top": "0px" }}>
-							<th style={{ width: "10%", "border-top": "0px" }}>
+						<tr>
+							<th style={{ width: "10%", "border-top": "0px", "border-bottom": "1px" }}>
 								{fieldConfig.fields.date.label}
 							</th>
-							<th style={{ width: "24%", "border-top": "0px" }}>
+							<th style={{ width: "24%", "border-top": "0px", "border-bottom": "1px" }}>
 								{fieldConfig.fields.user_email.label}
 							</th>
-							<th style={{ width: "54%", "border-top": "0px" }}>
+							<th style={{ width: "54%", "border-top": "0px", "border-bottom": "1px" }}>
 								{fieldConfig.fields.text.label}
 							</th>
 						</tr>
