@@ -3,7 +3,7 @@ import { useQuery, useMutation } from "@apollo/react-hooks";
 import { Card, CardHeader, CardBody, CardFooter, Table, Input, Button } from "reactstrap";
 import moment from "moment";
 import { notesDataMap } from "./notesDataMap";
-import { GET_NOTES, INSERT_NOTE, UPDATE_NOTE, DELETE_NOTE } from "../../queries/notes";
+import { GET_NOTES, INSERT_NOTE, UPDATE_NOTE, DELETE_NOTE } from "../../queries/crashNotes";
 import { useAuth0, isReadOnly } from "../../auth/authContext";
 
 // declare a notes component
@@ -34,7 +34,7 @@ const Notes = ({ crashId }) => {
   if (loading) return "Loading...";
   if (error) return `Error! ${error.message}`;
 
-  const tableName = "notes";
+  const tableName = "crash_notes";
   const keyField = "id";
   const fieldConfig = notesDataMap[0];
 
@@ -96,28 +96,30 @@ const Notes = ({ crashId }) => {
       <CardHeader>{fieldConfig.title}</CardHeader>
       <CardBody style={{padding:"5px 20px 20px 20px" }}>
         <Table style={{width: "100%"}}>
-          {/* display label for each field in table header*/}
-          <tr style={{"border-top": "0px"}}>
-            <th style={{width: "10%", "border-top": "0px"}}>
-            {fieldConfig.fields.date.label}
-            </th>
-            <th style={{width: "24%", "border-top": "0px"}}>
-            {fieldConfig.fields.user_email.label}
-            </th>
-            <th style={{width: "54%", "border-top": "0px"}}>
-            {fieldConfig.fields.text.label}
-            </th>
-            {/* only create extra columns if user has edit permissions */}
-            {!isReadOnly(roles) &&
-              <th style={{width: "6%", "border-top": "0px"}}>
+          <thead>
+            {/* display label for each field in table header*/}
+            <tr>
+              <th style={{width: "10%", "border-top": "0px", "border-bottom": "1px"}}>
+                {fieldConfig.fields.date.label}
               </th>
-            }
-            {/* only create extra columns if user has edit permissions */}
-            {!isReadOnly(roles) &&
-              <th style={{width: "6%", "border-top": "0px"}}>
+              <th style={{width: "24%", "border-top": "0px", "border-bottom": "1px"}}>
+                {fieldConfig.fields.user_email.label}
               </th>
-            }
-          </tr>
+              <th style={{width: "54%", "border-top": "0px", "border-bottom": "1px"}}>
+                {fieldConfig.fields.text.label}
+              </th>
+              {/* only create extra columns if user has edit permissions */}
+              {!isReadOnly(roles) &&
+                <th style={{width: "6%", "border-top": "0px", "border-bottom": "1px"}}>
+                </th>
+              }
+              {/* only create extra columns if user has edit permissions */}
+              {!isReadOnly(roles) &&
+                <th style={{width: "6%", "border-top": "0px", "border-bottom": "1px"}}>
+                </th>
+              }
+            </tr>
+          </thead>
           <tbody>
             {/* display user input row for users with edit permissions*/}
             {!isReadOnly(roles) &&
@@ -150,7 +152,7 @@ const Notes = ({ crashId }) => {
                 </td>
               </tr>}
             {/* iterate through each row in notes table */}
-            {data.notes.map(row => {
+            {data.crash_notes.map(row => {
               const isEditing = editRow === row;
               const isUser = row.user_email === userEmail;
               return (
