@@ -67,8 +67,10 @@ const Notes = ({ crashId }) => {
         id: id
       }
     }).then(response => {
-      setEditedNote("");
-      refetch();
+			refetch().then(response => {
+        setEditedNote("");
+        setEditRow("");
+        })
     }).catch(error => console.error(error));
   };
 
@@ -76,7 +78,7 @@ const Notes = ({ crashId }) => {
   const handleCancelClick = () => {
     setEditRow("");
     setEditedNote("");
-  }
+  };
 
   // function to handle delete note button click
   const handleDeleteClick = (row) => {
