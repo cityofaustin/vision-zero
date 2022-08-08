@@ -2,12 +2,12 @@ import React, { useState } from "react";
 import { useQuery, useMutation } from "@apollo/react-hooks";
 import { Card, CardHeader, CardBody, CardFooter, Table, Input, Button } from "reactstrap";
 import moment from "moment";
-import { notesDataMap } from "./notesDataMap";
-import { GET_NOTES, INSERT_NOTE, UPDATE_NOTE, DELETE_NOTE } from "../../queries/crashNotes";
+import { locationNotesDataMap } from "./locationNotesDataMap";
+import { GET_LOCATION_NOTES, INSERT_LOCATION_NOTE, UPDATE_LOCATION_NOTE, DELETE_LOCATION_NOTE } from "../../queries/locationNotes";
 import { useAuth0, isReadOnly } from "../../auth/authContext";
 
 // declare a notes component
-const Notes = ({ crashId }) => {
+const LocationNotes = ({ locationId }) => {
 
   // add a state variable to manage value when new note is entered
   const [newNote, setNewNote] = useState("");
@@ -22,28 +22,28 @@ const Notes = ({ crashId }) => {
   const userEmail = localStorage.getItem("hasura_user_email");
 
   // fetch data from database using graphQL query
-  const { loading, error, data, refetch } = useQuery(GET_NOTES, {
-    variables: { crashId },
+  const { loading, error, data, refetch } = useQuery(GET_LOCATION_NOTES, {
+    variables: { locationId },
   });
 
   // declare mutation functions
-  const [addNote] = useMutation(INSERT_NOTE);
-  const [editNote] = useMutation(UPDATE_NOTE);
-  const [deleteNote] = useMutation(DELETE_NOTE);
+  const [addNote] = useMutation(INSERT_LOCATION_NOTE);
+  const [editNote] = useMutation(UPDATE_LOCATION_NOTE);
+  const [deleteNote] = useMutation(DELETE_LOCATION_NOTE);
 
   if (loading) return "Loading...";
   if (error) return `Error! ${error.message}`;
 
-  const tableName = "crash_notes";
+  const tableName = "location_notes";
   const keyField = "id";
-  const fieldConfig = notesDataMap[0];
+  const fieldConfig = locationNotesDataMap[0];
 
   // function to handle add button click
   const handleAddNoteClick = () => {
     addNote({
       variables: {
         note: newNote,
-        crashId: crashId,
+        locationId: locationId,
         userEmail: userEmail
       }
     }).then(response => {
@@ -68,16 +68,16 @@ const Notes = ({ crashId }) => {
       }
     }).then(response => {
 			refetch().then(response => {
-        setEditedNote("");
-        setEditRow("");
-        })
+			setEditedNote("");
+			setEditRow("");
+			})
     }).catch(error => console.error(error));
   };
 
   // function to handle cancel button click
   const handleCancelClick = () => {
-    setEditRow("");
     setEditedNote("");
+		setEditRow("");
   };
 
   // function to handle delete note button click
@@ -154,7 +154,7 @@ const Notes = ({ crashId }) => {
                 </td>
               </tr>}
             {/* iterate through each row in notes table */}
-            {data.crash_notes.map(row => {
+            {data.location_notes.map(row => {
               const isEditing = editRow === row;
               const isUser = row.user_email === userEmail;
               return (
@@ -254,4 +254,4 @@ const Notes = ({ crashId }) => {
   );
 };
 
-export default Notes;
+export default LocationNotes;
