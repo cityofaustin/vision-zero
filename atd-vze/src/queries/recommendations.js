@@ -17,3 +17,38 @@ export const GET_RECOMMENDATIONS = gql`
     }
   }
 `;
+
+export const GET_PARTNERS = gql`
+  query FindPartners {
+    atd__coordination_partners_lkp {
+      id
+      description
+    }
+  }
+`;
+
+export const GET_STATUS = gql`
+  query FindStatus {
+    atd__recommendation_status_lkp {
+      id
+      description
+    }
+  }
+`;
+
+// export const INSERT_RECOMMENDATION = gql`
+//   mutation InsertNote($note: String!, $crashId: Int!, $userEmail: String){
+//     insert_crash_notes(objects: {
+//       text: $note
+//       crash_id: $crashId
+//       user_email: $userEmail
+//     }) {
+//       returning {
+//         crash_id
+//         text
+//         date
+//         user_email
+//       }
+//     }
+//   }
+// `;
