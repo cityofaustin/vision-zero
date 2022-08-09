@@ -13,8 +13,11 @@ export const recommendationsDataMap = {
       key: "description",
     },
     text: {
-      label: "Note",
+      label: "Recommendation",
       key: "text",
+    },
+    update: {
+      label: "Updates"
     },
   },
 };
