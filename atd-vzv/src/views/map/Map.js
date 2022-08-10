@@ -280,10 +280,10 @@ const Map = () => {
 
   const renderSelectedLayer = () => {
     const color = {
-      r: selectedFeature.layer.paint["circle-color"].r * 255,
-      g: selectedFeature.layer.paint["circle-color"].g * 255,
-      b: selectedFeature.layer.paint["circle-color"].b * 255,
-      a: selectedFeature.layer.paint["circle-color"].a,
+      r: selectedFeature.layer.paint["fill-color"].r * 255,
+      g: selectedFeature.layer.paint["fill-color"].g * 255,
+      b: selectedFeature.layer.paint["fill-color"].b * 255,
+      a: selectedFeature.layer.paint["fill-color"].a,
     };
 
     const selectedLayer = (
