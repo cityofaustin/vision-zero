@@ -19,8 +19,6 @@ function Location(props) {
   // Set initial variables for GET_LOCATION query
   const locationId = props.match.params.id;
 
-  console.log(typeof(locationId))
-
   const fiveYearsAgo = moment()
     .subtract(5, "years")
     .format("YYYY-MM-DD");
