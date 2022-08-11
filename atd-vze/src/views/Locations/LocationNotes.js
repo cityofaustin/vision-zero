@@ -82,11 +82,12 @@ const LocationNotes = ({ locationId }) => {
       },
     })
       .then(response => {
-        setEditedNote("");
-        refetch();
+        refetch().then(response => {
+          setEditedNote("");
+          setEditRow("");
+        });
       })
       .catch(error => console.error(error));
-    console.log(editRow);
   };
 
   // function to handle cancel button click

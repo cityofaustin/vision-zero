@@ -72,8 +72,6 @@ const Notes = ({ crashId }) => {
     setEditRow(row);
   };
 
-  console.log(editRow);
-
   // function to handle save edit button click
   const handleSaveClick = row => {
     const id = row.id;
@@ -84,11 +82,12 @@ const Notes = ({ crashId }) => {
       },
     })
       .then(response => {
-        setEditedNote("");
-        refetch();
+        refetch().then(response => {
+          setEditedNote("");
+          setEditRow("");
+        });
       })
       .catch(error => console.error(error));
-    console.log(editRow);
   };
 
   // function to handle cancel button click
