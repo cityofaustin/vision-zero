@@ -22,6 +22,7 @@ import CrashNarrative from "./CrashNarrative";
 import DataTable from "../../Components/DataTable";
 import Notes from "./Notes";
 import { crashDataMap } from "./crashDataMap";
+import Recommendations from "./Recommendations";
 
 import "./crash.scss";
 
@@ -280,6 +281,11 @@ function Crash(props) {
       ) : (
         <div></div>
       )}
+      <Row>
+        <Col>
+          <Recommendations crashId={props.match.params.id} />
+        </Col>
+      </Row>
       <Row>
         <Col>
           <Notes crashId={props.match.params.id} />
