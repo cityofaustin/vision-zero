@@ -11,6 +11,7 @@ import locationDataMap from "./locationDataMap";
 import LocationCrashes from "./LocationCrashes";
 import LocationNonCR3Crashes from "./LocationNonCR3Crashes";
 import LocationDownloadGlobal from "./LocationDownloadGlobal";
+import LocationNotes from "./LocationNotes";
 
 import { GET_LOCATION, UPDATE_LOCATION } from "../../queries/Locations";
 
@@ -100,6 +101,11 @@ function Location(props) {
           data={data}
           downloadGlobal={downloadAllData}
         />
+      </Row>
+      <Row>
+        <Col>
+          <LocationNotes locationId={locationId} />
+        </Col>
       </Row>
       <Row>
         <Col>
