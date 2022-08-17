@@ -36,13 +36,57 @@ const RowLabelData = ({
   placeholder,
   hasData,
   field,
-  updateMutation,
-  variableDict,
   displayData,
   refetch,
-  handleAddClick,
+  addVariableDict,
+  editVariableDict,
+  editedVariableDict,
 }) => {
   const [editMode, setEditMode] = useState(false);
+
+  // declare mutation functions
+  const [addRecommendation] = useMutation(INSERT_RECOMMENDATION);
+  const [editRecommendation] = useMutation(UPDATE_RECOMMENDATION);
+
+  const handleAddClick = () => {
+    if (data) {
+      const id = table?.id;
+      editRecommendation({
+        variables: editVariableDict,
+      })
+        .then(response => {
+          setNewInput("");
+          refetch();
+        })
+        .catch(error => console.error(error));
+    } else {
+      addRecommendation({
+        variables: addVariableDict,
+      })
+        .then(response => {
+          setNewInput("");
+          refetch();
+        })
+        .catch(error => console.error(error));
+    }
+  };
+
+  const handleSaveClick = () => {
+    editRecommendation({
+      variables: editedVariableDict,
+    })
+      .then(response => {
+        refetch().then(response => {
+          setEditedField("");
+        });
+      })
+      .catch(error => console.error(error));
+  };
+
+  const handleEditClick = () => {
+    setEditedField(data);
+    setEditMode(true);
+  };
 
   return (
     <td>
@@ -57,21 +101,30 @@ const RowLabelData = ({
             value={newInput}
             onChange={e => setNewInput(e.target.value)}
           ></Input>
-          <AddButton
-            setNewInput={setNewInput}
-            onClick={e => handleAddClick(setNewInput, data)}
-            data={data}
-          ></AddButton>
+          <Button
+            type="submit"
+            color="primary"
+            onClick={handleAddClick}
+            className="btn-pill mt-2"
+            size="sm"
+            style={{ width: "50px" }}
+          >
+            Add
+          </Button>
         </div>
       )}
       {data && !editMode && (
         <div>
           {displayData(hasData, field)}
-          <EditButton
-            setEditMode={setEditMode}
-            setEditedField={setEditedField}
-            fieldData={data}
-          ></EditButton>
+          <Button
+            color="secondary"
+            size="sm"
+            className="btn-pill mt-2"
+            style={{ width: "50px" }}
+            onClick={handleEditClick}
+          >
+            <i className="fa fa-pencil edit-toggle" />
+          </Button>
         </div>
       )}
       {data && editMode && (
@@ -81,13 +134,15 @@ const RowLabelData = ({
             defaultValue={data}
             onChange={e => setEditedField(e.target.value)}
           ></Input>
-          <SaveButton
-            table={table}
-            setEditedField={setEditedField}
-            mutation={updateMutation}
-            variableDict={variableDict}
-            refetch={refetch}
-          ></SaveButton>
+          <Button
+            color="primary"
+            className="btn-pill mt-2"
+            size="sm"
+            style={{ width: "50px" }}
+            onClick={e => handleSaveClick}
+          >
+            <i className="fa fa-check edit-toggle" />
+          </Button>
           <CancelButton></CancelButton>
         </div>
       )}
@@ -164,60 +219,10 @@ const Recommendations = ({ crashId }) => {
     );
   };
 
-  const handleAddClick = (setNewInput, data) => {
-    console.log("hello");
-    if (data) {
-      const id = recommendation?.id;
-      editRecommendation({
-        variables: {
-          id: id,
-          recommendation: newRecommendation,
-          update: newUpdate,
-        },
-      })
-        .then(response => {
-          setNewInput("");
-          refetch();
-        })
-        .catch(error => console.error(error));
-    } else {
-      addRecommendation({
-        variables: {
-          recommendation: newRecommendation,
-          update: newUpdate,
-          crashId: crashId,
-          userEmail: userEmail,
-        },
-      })
-        .then(response => {
-          setNewInput("");
-          refetch();
-        })
-        .catch(error => console.error(error));
-    }
-  };
-
-  // const handleSaveClick = () => {
-  //   mutation({
-  //     variables: variableDict,
-  //   })
-  //     .then(response => {
-  //       [refetch]().then(response => {
-  //         setEditedField("");
-  //       });
-  //     })
-  //     .catch(error => console.error(error));
-  // };
-
-  // const handleEditClick = () => {
-  //   setEditedField(fieldData);
-  //   setEditMode(true);
-  // };
-
-  const hasPartner = !!recommendation.coordination_partner_id;
-  const hasStatus = !!recommendation.recommendation_status_id;
-  const hasUpdate = !!recommendation.update;
-  const hasRecommendation = !!recommendation.text;
+  const hasPartner = !!recommendation?.coordination_partner_id;
+  const hasStatus = !!recommendation?.recommendation_status_id;
+  const hasUpdate = !!recommendation?.update;
+  const hasRecommendation = !!recommendation?.text;
   const id = recommendation?.id;
 
   return (
@@ -285,7 +290,8 @@ const Recommendations = ({ crashId }) => {
             <tr>
               <RowLabelData
                 label={"Recommendation"}
-                data={recommendation.text}
+                table={recommendation}
+                data={recommendation?.text}
                 placeholder={"Enter recommendation here..."}
                 displayData={displayData}
                 hasData={hasRecommendation}
@@ -295,14 +301,24 @@ const Recommendations = ({ crashId }) => {
                 newInput={newRecommendation}
                 setNewInput={setNewRecommendation}
                 refetch={refetch}
-                handleAddClick={handleAddClick}
+                addVariableDict={{
+                  recommendation: newRecommendation,
+                  crashId: crashId,
+                  userEmail: userEmail,
+                }}
+                editVariableDict={{
+                  recommendation: newRecommendation,
+                }}
+                editedVariableDict={{
+                  recommendation: editedRecommendation,
+                }}
               ></RowLabelData>
             </tr>
             <tr>
               <RowLabelData
                 label={"Updates"}
                 table={recommendation}
-                data={recommendation.update}
+                data={recommendation?.update}
                 placeholder={"Enter updates here..."}
                 displayData={displayData}
                 hasData={hasUpdate}
@@ -311,10 +327,18 @@ const Recommendations = ({ crashId }) => {
                 setEditedField={setEditedUpdate}
                 newInput={newUpdate}
                 setNewInput={setNewUpdate}
-                insertMutation={addRecommendation}
-                updateMutation={editRecommendation}
-                variableDict={{ update: editedUpdate, id: id }}
                 refetch={refetch}
+                addVariableDict={{
+                  update: newUpdate,
+                  crashId: crashId,
+                  userEmail: userEmail,
+                }}
+                editVariableDict={{
+                  update: newUpdate,
+                }}
+                editedVariableDict={{
+                  update: editedUpdate,
+                }}
               ></RowLabelData>
             </tr>
           </tbody>
