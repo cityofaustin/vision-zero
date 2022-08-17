@@ -152,11 +152,11 @@ export const buildHighInjuryLayer = (overlay) => {
     source: {
       type: "vector",
       tiles: [
-        "https://tiles.arcgis.com/tiles/0L95CJ0VTaxqcmED/arcgis/rest/services/High_Injury_Network_Vision_Zero_Viewer/VectorTileServer/tile/{z}/{y}/{x}.pbf",
+        "https://tiles.arcgis.com/tiles/0L95CJ0VTaxqcmED/arcgis/rest/services/High_Injury_Network_HIR_2022/VectorTileServer/tile/{z}/{y}/{x}.pbf",
       ],
     },
-    "source-layer": "HIN_for_VZV",
-    filter: ["==", "_symbol", 0], // Select line within layer by ID
+    "source-layer": "Combined_HIN_HIR",
+    filter: ["==", "_symbol", 1], // Select line within layer by ID
     layout: {
       "line-join": "round",
       visibility: `${overlay.name === overlayId ? "visible" : "none"}`,
@@ -174,11 +174,11 @@ export const buildHighInjuryLayer = (overlay) => {
     source: {
       type: "vector",
       tiles: [
-        "https://tiles.arcgis.com/tiles/0L95CJ0VTaxqcmED/arcgis/rest/services/High_Injury_Network_Vision_Zero_Viewer/VectorTileServer/tile/{z}/{y}/{x}.pbf",
+        "https://tiles.arcgis.com/tiles/0L95CJ0VTaxqcmED/arcgis/rest/services/High_Injury_Network_HIR_2022/VectorTileServer/tile/{z}/{y}/{x}.pbf",
       ],
     },
-    "source-layer": "HIN_for_VZV",
-    filter: ["==", "_symbol", 1],
+    "source-layer": "Combined_HIN_HIR",
+    filter: ["==", "_symbol", 0],
     layout: {
       "line-join": "round",
       visibility: `${overlay.name === overlayId ? "visible" : "none"}`,
