@@ -22,7 +22,7 @@ import CrashNarrative from "./CrashNarrative";
 import DataTable from "../../Components/DataTable";
 import Notes from "./Notes";
 import { crashDataMap } from "./crashDataMap";
-import Recommendations from "./Recommendations";
+import Recommendations from "./Recommendations/Recommendations";
 
 import "./crash.scss";
 
