@@ -15,20 +15,10 @@ export const GET_RECOMMENDATIONS = gql`
         description
       }
     }
-  }
-`;
-
-export const GET_PARTNERS = gql`
-  query FindPartners {
     atd__coordination_partners_lkp {
       id
       description
     }
-  }
-`;
-
-export const GET_STATUS = gql`
-  query FindStatus {
     atd__recommendation_status_lkp {
       id
       description
@@ -36,19 +26,45 @@ export const GET_STATUS = gql`
   }
 `;
 
-// export const INSERT_RECOMMENDATION = gql`
-//   mutation InsertNote($note: String!, $crashId: Int!, $userEmail: String){
-//     insert_crash_notes(objects: {
-//       text: $note
-//       crash_id: $crashId
-//       user_email: $userEmail
-//     }) {
-//       returning {
-//         crash_id
-//         text
-//         date
-//         user_email
-//       }
-//     }
-//   }
-// `;
+export const INSERT_RECOMMENDATION = gql`
+  mutation InsertNote(
+    $recommendation: String
+    $update: String
+    $crashId: Int
+    $userEmail: String
+  ) {
+    insert_recommendations(
+      objects: {
+        text: $recommendation
+        update: $update
+        crash_id: $crashId
+        created_by: $userEmail
+      }
+    ) {
+      returning {
+        crash_id
+        update
+        text
+        created_at
+        created_by
+      }
+    }
+  }
+`;
+
+export const UPDATE_RECOMMENDATION = gql`
+  mutation UpdateRecommendations(
+    $recommendation: String
+    $id: Int!
+    $update: String
+  ) {
+    update_recommendations_notes_by_pk(
+      pk_columns: { id: $id }
+      _set: { text: $recommendation, update: $update }
+    ) {
+      crash_id
+      text
+      update
+    }
+  }
+`;
