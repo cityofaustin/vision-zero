@@ -294,9 +294,9 @@ export const popoverConfig = {
           <div className="mb-2">
             This is an online version of the Combined High-Injury Network Map
             included in the adopted Austin Strategic Mobility Plan policy
-            document. A detailed crash analysis of crashes from 2013 to 2017 was
+            document. A detailed crash analysis of crashes from 2017-2021 was
             used to identify the Combined High-Injury Network, which includes
-            just 8% of the city’s street network but contains nearly 70% of all
+            just 8% of the city’s street network but contains nearly 60% of all
             serious injury or fatal crashes for all modes. For more information,
             visit{" "}
             <a
