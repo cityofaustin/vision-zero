@@ -228,25 +228,121 @@ const Recommendations = ({ crashId }) => {
   return (
     <Card>
       <CardHeader>Fatality Review Board Recommendations</CardHeader>
-      <CardBody style={{ padding: "5px 20px 20px 20px" }}>
-        <Table>
+      <CardBody>
+        <div class="row">
+          <div class="col-6">
+            <div class="row">
+              <div class="col-11">
+                Coordination Partner:{" "}
+                {displayData(
+                  hasPartner,
+                  fieldConfig.fields.coordination_partner_id
+                )}
+              </div>
+              <div class="col-1 float-right">
+                {renderDropDown(
+                  data.atd__coordination_partners_lkp,
+                  setPartnerOpen,
+                  partnerDropdownOpen
+                )}
+              </div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="row">
+              <div class="col-11">
+                Status:{" "}
+                {displayData(
+                  hasStatus,
+                  fieldConfig.fields.recommendation_status_id
+                )}
+              </div>
+              <div class="col-1 float-right">
+                {renderDropDown(
+                  data.atd__recommendation_status_lkp,
+                  setStatusOpen,
+                  statusDropdownOpen
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12">
+            <RowLabelData
+              label={"Recommendation"}
+              table={recommendation}
+              data={recommendation?.text}
+              placeholder={"Enter recommendation here..."}
+              displayData={displayData}
+              hasData={hasRecommendation}
+              field={fieldConfig.fields.text}
+              editedField={editedRecommendation}
+              setEditedField={setEditedRecommendation}
+              newInput={newRecommendation}
+              setNewInput={setNewRecommendation}
+              refetch={refetch}
+              addVariableDict={{
+                recommendation: newRecommendation,
+                crashId: crashId,
+                userEmail: userEmail,
+              }}
+              editVariableDict={{
+                recommendation: newRecommendation,
+              }}
+              editedVariableDict={{
+                recommendation: editedRecommendation,
+              }}
+            ></RowLabelData>
+          </div>
+          <div class="row">
+            <div class="col-12">
+              <RowLabelData
+                label={"Updates"}
+                table={recommendation}
+                data={recommendation?.update}
+                placeholder={"Enter updates here..."}
+                displayData={displayData}
+                hasData={hasUpdate}
+                field={fieldConfig.fields.update}
+                editedField={editedUpdate}
+                setEditedField={setEditedUpdate}
+                newInput={newUpdate}
+                setNewInput={setNewUpdate}
+                refetch={refetch}
+                addVariableDict={{
+                  update: newUpdate,
+                  crashId: crashId,
+                  userEmail: userEmail,
+                }}
+                editVariableDict={{
+                  update: newUpdate,
+                }}
+                editedVariableDict={{
+                  update: editedUpdate,
+                }}
+              ></RowLabelData>
+            </div>
+          </div>
+        </div>
+        {/* <Table>
           <thead>
             <tr>
               <th
-                style={{
-                  width: "17%",
-                  "border-top": "0px",
-                  "border-bottom": "1px",
-                }}
+              // style={{
+              //   width: "17%",
+              //   "border-top": "0px",
+              //   "border-bottom": "1px",
+              // }}
               >
                 Coordination Partner:
               </th>
               <td
-                style={{
-                  width: "30%",
-                  "border-top": "0px",
-                  "border-bottom": "1px",
-                }}
+              // style={{
+              //   width: "30%",
+              //   "border-top": "0px",
+              //   "border-bottom": "1px",
+              // }}
               >
                 {displayData(
                   hasPartner,
@@ -259,20 +355,20 @@ const Recommendations = ({ crashId }) => {
                 )}
               </td>
               <th
-                style={{
-                  width: "7%",
-                  "border-top": "0px",
-                  "border-bottom": "1px",
-                }}
+              // style={{
+              //   width: "7%",
+              //   "border-top": "0px",
+              //   "border-bottom": "1px",
+              // }}
               >
                 Status:
               </th>
               <td
-                style={{
-                  width: "46%",
-                  "border-top": "0px",
-                  "border-bottom": "1px",
-                }}
+              // style={{
+              //   width: "46%",
+              //   "border-top": "0px",
+              //   "border-bottom": "1px",
+              // }}
               >
                 {displayData(
                   hasStatus,
@@ -342,7 +438,7 @@ const Recommendations = ({ crashId }) => {
               ></RowLabelData>
             </tr>
           </tbody>
-        </Table>
+        </Table> */}
       </CardBody>
       <CardFooter></CardFooter>
     </Card>
