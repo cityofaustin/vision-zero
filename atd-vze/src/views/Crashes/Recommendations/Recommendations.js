@@ -88,65 +88,77 @@ const RowLabelData = ({
     setEditMode(true);
   };
 
+  // 1. if there is a recommendation or update - show the content
+  // 2. if there is not a recommendation or update - take the same width but empty
+  // 3. if we are in edit mode - show text area input and check button and
+  // 4. Add and edit pencil icons overlap (one col for pencil/add and on col for cancel/empty)
+  // 5. Show pencil when editing
+
+  // State:
+  // 1. isEditing each (dropdowns, recommendation, update)
+  // 2. Show/hide based on those bools
+  // 3. add/update mutation based on those bools?
   return (
-    <td>
+    <div>
       <p>
         <b>{label}</b>
       </p>
-      {!data && (
-        <div>
-          <Input
-            type="textarea"
-            placeholder={placeholder}
-            value={newInput}
-            onChange={e => setNewInput(e.target.value)}
-          ></Input>
-          <Button
-            type="submit"
-            color="primary"
-            onClick={handleAddClick}
-            className="btn-pill mt-2"
-            size="sm"
-            style={{ width: "50px" }}
-          >
-            Add
-          </Button>
-        </div>
-      )}
-      {data && !editMode && (
-        <div>
-          {displayData(hasData, field)}
-          <Button
-            color="secondary"
-            size="sm"
-            className="btn-pill mt-2"
-            style={{ width: "50px" }}
-            onClick={handleEditClick}
-          >
-            <i className="fa fa-pencil edit-toggle" />
-          </Button>
-        </div>
-      )}
-      {data && editMode && (
-        <div>
-          <Input
-            type="textarea"
-            defaultValue={data}
-            onChange={e => setEditedField(e.target.value)}
-          ></Input>
-          <Button
-            color="primary"
-            className="btn-pill mt-2"
-            size="sm"
-            style={{ width: "50px" }}
-            onClick={e => handleSaveClick}
-          >
-            <i className="fa fa-check edit-toggle" />
-          </Button>
-          <CancelButton></CancelButton>
-        </div>
-      )}
-    </td>
+      <div className="row">
+        {!data && (
+          <div className="col-10">
+            <Input
+              type="textarea"
+              placeholder={placeholder}
+              value={newInput}
+              onChange={e => setNewInput(e.target.value)}
+            ></Input>
+            <Button
+              type="submit"
+              color="primary"
+              onClick={handleAddClick}
+              className="btn-pill mt-2"
+              size="sm"
+              style={{ width: "50px" }}
+            >
+              Add
+            </Button>
+          </div>
+        )}
+        {data && !editMode && (
+          <div className="col-10">
+            {displayData(hasData, field)}
+            <Button
+              color="secondary"
+              size="sm"
+              className="btn-pill mt-2"
+              style={{ width: "50px" }}
+              onClick={handleEditClick}
+            >
+              <i className="fa fa-pencil edit-toggle" />
+            </Button>
+          </div>
+        )}
+        {data && editMode && (
+          <div className="col-2">
+            <Input
+              type="textarea"
+              defaultValue={data}
+              onChange={e => setEditedField(e.target.value)}
+            ></Input>
+            <Button
+              color="primary"
+              className="btn-pill mt-2"
+              size="sm"
+              style={{ width: "50px" }}
+              onClick={e => handleSaveClick}
+            >
+              <i className="fa fa-check edit-toggle" />
+            </Button>
+            <CancelButton></CancelButton>
+          </div>
+        )}
+      </div>
+    </div>
   );
 };
 
@@ -325,120 +337,6 @@ const Recommendations = ({ crashId }) => {
             </div>
           </div>
         </div>
-        {/* <Table>
-          <thead>
-            <tr>
-              <th
-              // style={{
-              //   width: "17%",
-              //   "border-top": "0px",
-              //   "border-bottom": "1px",
-              // }}
-              >
-                Coordination Partner:
-              </th>
-              <td
-              // style={{
-              //   width: "30%",
-              //   "border-top": "0px",
-              //   "border-bottom": "1px",
-              // }}
-              >
-                {displayData(
-                  hasPartner,
-                  fieldConfig.fields.coordination_partner_id
-                )}
-                {renderDropDown(
-                  data.atd__coordination_partners_lkp,
-                  setPartnerOpen,
-                  partnerDropdownOpen
-                )}
-              </td>
-              <th
-              // style={{
-              //   width: "7%",
-              //   "border-top": "0px",
-              //   "border-bottom": "1px",
-              // }}
-              >
-                Status:
-              </th>
-              <td
-              // style={{
-              //   width: "46%",
-              //   "border-top": "0px",
-              //   "border-bottom": "1px",
-              // }}
-              >
-                {displayData(
-                  hasStatus,
-                  fieldConfig.fields.recommendation_status_id
-                )}
-                {renderDropDown(
-                  data.atd__recommendation_status_lkp,
-                  setStatusOpen,
-                  statusDropdownOpen
-                )}
-              </td>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <RowLabelData
-                label={"Recommendation"}
-                table={recommendation}
-                data={recommendation?.text}
-                placeholder={"Enter recommendation here..."}
-                displayData={displayData}
-                hasData={hasRecommendation}
-                field={fieldConfig.fields.text}
-                editedField={editedRecommendation}
-                setEditedField={setEditedRecommendation}
-                newInput={newRecommendation}
-                setNewInput={setNewRecommendation}
-                refetch={refetch}
-                addVariableDict={{
-                  recommendation: newRecommendation,
-                  crashId: crashId,
-                  userEmail: userEmail,
-                }}
-                editVariableDict={{
-                  recommendation: newRecommendation,
-                }}
-                editedVariableDict={{
-                  recommendation: editedRecommendation,
-                }}
-              ></RowLabelData>
-            </tr>
-            <tr>
-              <RowLabelData
-                label={"Updates"}
-                table={recommendation}
-                data={recommendation?.update}
-                placeholder={"Enter updates here..."}
-                displayData={displayData}
-                hasData={hasUpdate}
-                field={fieldConfig.fields.update}
-                editedField={editedUpdate}
-                setEditedField={setEditedUpdate}
-                newInput={newUpdate}
-                setNewInput={setNewUpdate}
-                refetch={refetch}
-                addVariableDict={{
-                  update: newUpdate,
-                  crashId: crashId,
-                  userEmail: userEmail,
-                }}
-                editVariableDict={{
-                  update: newUpdate,
-                }}
-                editedVariableDict={{
-                  update: editedUpdate,
-                }}
-              ></RowLabelData>
-            </tr>
-          </tbody>
-        </Table> */}
       </CardBody>
       <CardFooter></CardFooter>
     </Card>
