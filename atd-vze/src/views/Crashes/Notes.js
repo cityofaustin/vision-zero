@@ -121,8 +121,8 @@ const Notes = ({ crashId }) => {
               <th
                 style={{
                   width: "10%",
-                  "border-top": "0px",
-                  "border-bottom": "1px",
+                  borderTop: "0px",
+                  borderBottom: "1px",
                 }}
               >
                 {fieldConfig.fields.date.label}
@@ -130,8 +130,8 @@ const Notes = ({ crashId }) => {
               <th
                 style={{
                   width: "24%",
-                  "border-top": "0px",
-                  "border-bottom": "1px",
+                  borderTop: "0px",
+                  borderBottom: "1px",
                 }}
               >
                 {fieldConfig.fields.user_email.label}
@@ -139,8 +139,8 @@ const Notes = ({ crashId }) => {
               <th
                 style={{
                   width: "54%",
-                  "border-top": "0px",
-                  "border-bottom": "1px",
+                  borderTop: "0px",
+                  borderBottom: "1px",
                 }}
               >
                 {fieldConfig.fields.text.label}
@@ -150,8 +150,8 @@ const Notes = ({ crashId }) => {
                 <th
                   style={{
                     width: "6%",
-                    "border-top": "0px",
-                    "border-bottom": "1px",
+                    borderTop: "0px",
+                    borderBottom: "1px",
                   }}
                 ></th>
               )}
@@ -160,8 +160,8 @@ const Notes = ({ crashId }) => {
                 <th
                   style={{
                     width: "6%",
-                    "border-top": "0px",
-                    "border-bottom": "1px",
+                    borderTop: "0px",
+                    borderBottom: "1px",
                   }}
                 ></th>
               )}

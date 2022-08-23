@@ -105,38 +105,44 @@ const RowLabelData = ({
       </p>
       <div className="row">
         {!data && (
-          <div className="col-10">
-            <Input
-              type="textarea"
-              placeholder={placeholder}
-              value={newInput}
-              onChange={e => setNewInput(e.target.value)}
-            ></Input>
-            <Button
-              type="submit"
-              color="primary"
-              onClick={handleAddClick}
-              className="btn-pill mt-2"
-              size="sm"
-              style={{ width: "50px" }}
-            >
-              Add
-            </Button>
-          </div>
+          <>
+            <div className="col-10">
+              <Input
+                type="textarea"
+                placeholder={placeholder}
+                value={newInput}
+                onChange={e => setNewInput(e.target.value)}
+              ></Input>
+            </div>
+            <div className="col-1">
+              <Button
+                type="submit"
+                color="primary"
+                onClick={handleAddClick}
+                className="btn-pill mt-2"
+                size="sm"
+                style={{ width: "50px" }}
+              >
+                Add
+              </Button>
+            </div>
+          </>
         )}
         {data && !editMode && (
-          <div className="col-10">
-            {displayData(hasData, field)}
-            <Button
-              color="secondary"
-              size="sm"
-              className="btn-pill mt-2"
-              style={{ width: "50px" }}
-              onClick={handleEditClick}
-            >
-              <i className="fa fa-pencil edit-toggle" />
-            </Button>
-          </div>
+          <>
+            <div className="col-10">{displayData(hasData, field)}</div>
+            <div className="col-1">
+              <Button
+                color="secondary"
+                size="sm"
+                className="btn-pill mt-2"
+                style={{ width: "50px" }}
+                onClick={handleEditClick}
+              >
+                <i className="fa fa-pencil edit-toggle" />
+              </Button>
+            </div>
+          </>
         )}
         {data && editMode && (
           <div className="col-2">
@@ -241,17 +247,17 @@ const Recommendations = ({ crashId }) => {
     <Card>
       <CardHeader>Fatality Review Board Recommendations</CardHeader>
       <CardBody>
-        <div class="row">
-          <div class="col-6">
-            <div class="row">
-              <div class="col-11">
+        <div className="row">
+          <div className="col-6">
+            <div className="row">
+              <div className="col-11">
                 Coordination Partner:{" "}
                 {displayData(
                   hasPartner,
                   fieldConfig.fields.coordination_partner_id
                 )}
               </div>
-              <div class="col-1 float-right">
+              <div className="col-1 float-right">
                 {renderDropDown(
                   data.atd__coordination_partners_lkp,
                   setPartnerOpen,
@@ -260,16 +266,16 @@ const Recommendations = ({ crashId }) => {
               </div>
             </div>
           </div>
-          <div class="col-6">
-            <div class="row">
-              <div class="col-11">
+          <div className="col-6">
+            <div className="row">
+              <div className="col-11">
                 Status:{" "}
                 {displayData(
                   hasStatus,
                   fieldConfig.fields.recommendation_status_id
                 )}
               </div>
-              <div class="col-1 float-right">
+              <div className="col-1 float-right">
                 {renderDropDown(
                   data.atd__recommendation_status_lkp,
                   setStatusOpen,
@@ -279,8 +285,8 @@ const Recommendations = ({ crashId }) => {
             </div>
           </div>
         </div>
-        <div class="row">
-          <div class="col-12">
+        <div className="row">
+          <div className="col-12">
             <RowLabelData
               label={"Recommendation"}
               table={recommendation}
@@ -307,34 +313,34 @@ const Recommendations = ({ crashId }) => {
               }}
             ></RowLabelData>
           </div>
-          <div class="row">
-            <div class="col-12">
-              <RowLabelData
-                label={"Updates"}
-                table={recommendation}
-                data={recommendation?.update}
-                placeholder={"Enter updates here..."}
-                displayData={displayData}
-                hasData={hasUpdate}
-                field={fieldConfig.fields.update}
-                editedField={editedUpdate}
-                setEditedField={setEditedUpdate}
-                newInput={newUpdate}
-                setNewInput={setNewUpdate}
-                refetch={refetch}
-                addVariableDict={{
-                  update: newUpdate,
-                  crashId: crashId,
-                  userEmail: userEmail,
-                }}
-                editVariableDict={{
-                  update: newUpdate,
-                }}
-                editedVariableDict={{
-                  update: editedUpdate,
-                }}
-              ></RowLabelData>
-            </div>
+        </div>
+        <div className="row">
+          <div className="col-12">
+            <RowLabelData
+              label={"Updates"}
+              table={recommendation}
+              data={recommendation?.update}
+              placeholder={"Enter updates here..."}
+              displayData={displayData}
+              hasData={hasUpdate}
+              field={fieldConfig.fields.update}
+              editedField={editedUpdate}
+              setEditedField={setEditedUpdate}
+              newInput={newUpdate}
+              setNewInput={setNewUpdate}
+              refetch={refetch}
+              addVariableDict={{
+                update: newUpdate,
+                crashId: crashId,
+                userEmail: userEmail,
+              }}
+              editVariableDict={{
+                update: newUpdate,
+              }}
+              editedVariableDict={{
+                update: editedUpdate,
+              }}
+            ></RowLabelData>
           </div>
         </div>
       </CardBody>
