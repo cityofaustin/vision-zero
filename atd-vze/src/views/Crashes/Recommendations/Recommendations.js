@@ -7,7 +7,7 @@ import {
   CardFooter,
   Table,
   Button,
-  ButtonDropdown,
+  Dropdown,
   DropdownToggle,
   DropdownMenu,
   Input,
@@ -213,30 +213,6 @@ const Recommendations = ({ crashId }) => {
 
   // displayData(recommendation, fieldConfig.fields.text);
 
-  // render dropdown menu
-  const renderDropDown = (table, setOpen, dropdownOpen) => {
-    return (
-      <ButtonDropdown
-        toggle={() => {
-          setOpen(!dropdownOpen);
-        }}
-        isOpen={dropdownOpen}
-        direction={"down"}
-      >
-        <DropdownToggle
-          caret
-          style={{ backgroundColor: "transparent", border: "0" }}
-        >
-          <DropdownMenu>
-            {table.map(row => {
-              return <DropdownItem>{row.description}</DropdownItem>;
-            })}
-          </DropdownMenu>
-        </DropdownToggle>
-      </ButtonDropdown>
-    );
-  };
-
   const hasPartner = !!recommendation?.coordination_partner_id;
   const hasStatus = !!recommendation?.recommendation_status_id;
   const hasUpdate = !!recommendation?.update;
@@ -248,39 +224,73 @@ const Recommendations = ({ crashId }) => {
       <CardHeader>Fatality Review Board Recommendations</CardHeader>
       <CardBody>
         <div className="row">
-          <div className="col-6">
+          <div className="col-12 col-lg-6">
             <div className="row">
-              <div className="col-11">
-                Coordination Partner:{" "}
-                {displayData(
-                  hasPartner,
-                  fieldConfig.fields.coordination_partner_id
-                )}
+              <div className="col-auto pr-0">
+                <div className="font-weight-bold">Coordination Partner:</div>
               </div>
-              <div className="col-1 float-right">
-                {renderDropDown(
-                  data.atd__coordination_partners_lkp,
-                  setPartnerOpen,
-                  partnerDropdownOpen
-                )}
+              <div className="col-8">
+                <Dropdown
+                  toggle={() => {
+                    setPartnerOpen(!partnerDropdownOpen);
+                  }}
+                  isOpen={partnerDropdownOpen}
+                  className="mb-3"
+                >
+                  <DropdownToggle className="w-100">
+                    <div className="row">
+                      <div className="col-11 px-0">
+                        {displayData(
+                          hasPartner,
+                          fieldConfig.fields.coordination_partner_id
+                        )}
+                      </div>
+                      <div className="col-1 px-1">
+                        <i className="fa fa-caret-down fa-lg"></i>
+                      </div>
+                    </div>
+                  </DropdownToggle>
+                  <DropdownMenu>
+                    {data.atd__coordination_partners_lkp.map(row => {
+                      return <DropdownItem>{row.description}</DropdownItem>;
+                    })}
+                  </DropdownMenu>
+                </Dropdown>
               </div>
             </div>
           </div>
-          <div className="col-6">
+          <div className="col-12 col-lg-6">
             <div className="row">
-              <div className="col-11">
-                Status:{" "}
-                {displayData(
-                  hasStatus,
-                  fieldConfig.fields.recommendation_status_id
-                )}
+              <div className="col-auto pr-0">
+                <div className="font-weight-bold">Status:</div>
               </div>
-              <div className="col-1 float-right">
-                {renderDropDown(
-                  data.atd__recommendation_status_lkp,
-                  setStatusOpen,
-                  statusDropdownOpen
-                )}
+              <div className="col-8">
+                <Dropdown
+                  toggle={() => {
+                    setStatusOpen(!statusDropdownOpen);
+                  }}
+                  isOpen={statusDropdownOpen}
+                  className="mb-3"
+                >
+                  <DropdownToggle className="w-100">
+                    <div className="row">
+                      <div className="col-11 px-0">
+                        {displayData(
+                          hasStatus,
+                          fieldConfig.fields.recommendation_status_id
+                        )}
+                      </div>
+                      <div className="col-1 px-1">
+                        <i className="fa fa-caret-down fa-lg"></i>
+                      </div>
+                    </div>
+                  </DropdownToggle>
+                  <DropdownMenu>
+                    {data.atd__recommendation_status_lkp.map(row => {
+                      return <DropdownItem>{row.description}</DropdownItem>;
+                    })}
+                  </DropdownMenu>
+                </Dropdown>
               </div>
             </div>
           </div>
