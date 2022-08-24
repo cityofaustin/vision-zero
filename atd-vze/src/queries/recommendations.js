@@ -57,10 +57,17 @@ export const UPDATE_RECOMMENDATION = gql`
     $recommendation: String
     $id: Int!
     $update: String
+    $coordination_partner_id: Int
+    $recommendation_status_id: Int
   ) {
-    update_recommendations_notes_by_pk(
+    update_recommendations_by_pk(
       pk_columns: { id: $id }
-      _set: { text: $recommendation, update: $update }
+      _set: {
+        text: $recommendation
+        update: $update
+        coordination_partner_id: $coordination_partner_id
+        recommendation_status_id: $recommendation_status_id
+      }
     ) {
       crash_id
       text

@@ -71,16 +71,17 @@ const RowLabelData = ({
     }
   };
 
-  const handleSaveClick = () => {
-    editRecommendation({
-      variables: editedVariableDict,
-    })
-      .then(response => {
-        refetch().then(response => {
-          setEditedField("");
-        });
-      })
-      .catch(error => console.error(error));
+  const handleSaveClick = variables => {
+    console.log("saving", variables);
+    // editRecommendation({
+    //   variables: variables,
+    // })
+    //   .then(response => {
+    //     refetch().then(response => {
+    //       setEditedField("");
+    //     });
+    //   })
+    //   .catch(error => console.error(error));
   };
 
   const handleEditClick = () => {
@@ -168,8 +169,14 @@ const RowLabelData = ({
   );
 };
 
-const SelectValueDropdown = ({ value, setValue, options }) => {
+const SelectValueDropdown = ({ value, onOptionClick, options, field }) => {
   const [isOpen, setIsOpen] = useState(false);
+
+  const handleOptionClick = e => {
+    const value = e.target.id;
+
+    onOptionClick(field, value);
+  };
 
   return (
     <Dropdown
@@ -190,7 +197,11 @@ const SelectValueDropdown = ({ value, setValue, options }) => {
       <DropdownMenu>
         {options.map(option => {
           return (
-            <DropdownItem key={option.description}>
+            <DropdownItem
+              id={option.id}
+              key={option.id}
+              onClick={handleOptionClick}
+            >
               {option.description}
             </DropdownItem>
           );
@@ -235,14 +246,23 @@ const Recommendations = ({ crashId }) => {
     return recommendation?.[lookupOptions]?.[key] || "";
   };
 
-  // displayData(recommendation, fieldConfig.fields.text);
-
   const hasPartner = !!recommendation?.coordination_partner_id;
   const hasStatus = !!recommendation?.recommendation_status_id;
   const hasUpdate = !!recommendation?.update;
   const hasRecommendation = !!recommendation?.text;
-  const id = recommendation?.id;
-  console.log(data);
+  const recommendationRecordId = recommendation?.id;
+
+  const onEditClick = (field, id) => {
+    const variables = { [field]: parseInt(id), id: recommendationRecordId };
+
+    editRecommendation({
+      variables: variables,
+    })
+      .then(() => {
+        refetch();
+      })
+      .catch(error => console.error(error));
+  };
 
   return (
     <Card>
@@ -261,10 +281,9 @@ const Recommendations = ({ crashId }) => {
                   value={displayData(
                     fieldConfig.fields.coordination_partner_id
                   )}
-                  setValue={() => {
-                    console.log("set the value");
-                  }}
+                  onOptionClick={onEditClick}
                   options={data.atd__coordination_partners_lkp}
+                  field={"coordination_partner_id"}
                 />
               </div>
             </div>
