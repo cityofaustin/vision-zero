@@ -30,7 +30,7 @@ const RowLabelData = ({
   table,
   data,
   newInput,
-  setNewInput,
+  // setNewInput,
   editedField,
   setEditedField,
   placeholder,
@@ -41,6 +41,7 @@ const RowLabelData = ({
   addVariableDict,
   editVariableDict,
   editedVariableDict,
+  showInput,
 }) => {
   const [editMode, setEditMode] = useState(false);
 
@@ -55,7 +56,7 @@ const RowLabelData = ({
         variables: editVariableDict,
       })
         .then(response => {
-          setNewInput("");
+          // setNewInput("");
           refetch();
         })
         .catch(error => console.error(error));
@@ -64,7 +65,7 @@ const RowLabelData = ({
         variables: addVariableDict,
       })
         .then(response => {
-          setNewInput("");
+          // setNewInput("");
           refetch();
         })
         .catch(error => console.error(error));
@@ -96,23 +97,32 @@ const RowLabelData = ({
   // 5. Show pencil when editing
 
   // State:
-  // 1. isEditing each (dropdowns, recommendation, update)
-  // 2. Show/hide based on those bools
-  // 3. add/update mutation based on those bools?
+  // 1. isEditing (toggle between #2 and #3 below)
+  // Modes:
+  // 1. Add (no rec yet)
+  //  - Show input
+  //  - Show Add button
+  // 2. Can Edit (rec already)
+  //  - Show value text
+  //  - Show Pencil icon
+  // 3. Is Editing
+  //  - Show value in input
+  //  - Show check icon (fires mutation)
+  //  - Show cancel button (closes edit mode)
   return (
     <div>
       <p>
         <b>{label}</b>
       </p>
       <div className="row">
-        {!data && (
+        {showInput && (
           <>
             <div className="col-10">
               <Input
                 type="textarea"
                 placeholder={placeholder}
                 value={newInput}
-                onChange={e => setNewInput(e.target.value)}
+                // onChange={e => setNewInput(e.target.value)}
               ></Input>
             </div>
             <div className="col-1">
@@ -186,7 +196,10 @@ const SelectValueDropdown = ({ value, onOptionClick, options, field }) => {
       isOpen={isOpen}
       className="mb-3"
     >
-      <DropdownToggle className="w-100">
+      <DropdownToggle
+        className="w-100 pt-1"
+        style={{ backgroundColor: "transparent", border: "0" }}
+      >
         <div className="row">
           <div className="col-11 px-0">{value}</div>
           <div className="col-1 px-1">
@@ -251,8 +264,6 @@ const Recommendations = ({ crashId }) => {
 
   // Use these booleans to determine what show in the UI
   // Do we need the partner and status ones?
-  const hasPartner = !!recommendation?.coordination_partner_id;
-  const hasStatus = !!recommendation?.recommendation_status_id;
   const hasUpdate = !!recommendation?.update;
   const hasRecommendation = !!recommendation?.text;
   const recommendationRecordId = recommendation?.id;
@@ -292,110 +303,112 @@ const Recommendations = ({ crashId }) => {
     <Card>
       <CardHeader>Fatality Review Board Recommendations</CardHeader>
       <CardBody>
-        <div className="row">
-          <div className="col-12 col-lg-6">
-            <div className="row">
-              <div className="col-auto pr-0">
-                <div className="font-weight-bold">
-                  {fieldConfig.fields.coordination_partner_id.label}
+        <div className="container">
+          <div className="row border-bottom">
+            <div className="col-12 col-lg-6">
+              <div className="row">
+                <div className="col-auto pr-0">
+                  <div className="font-weight-bold pt-1">
+                    {fieldConfig.fields.coordination_partner_id.label}
+                  </div>
+                </div>
+                <div className="col-8">
+                  <SelectValueDropdown
+                    value={displayData(
+                      fieldConfig.fields.coordination_partner_id
+                    )}
+                    onOptionClick={
+                      doesFatalityRecommendationExist
+                        ? onEditFromDropdownClick
+                        : onAddFromDropdownClick
+                    }
+                    options={data.atd__coordination_partners_lkp}
+                    field={"coordination_partner_id"}
+                  />
                 </div>
               </div>
-              <div className="col-8">
-                <SelectValueDropdown
-                  value={displayData(
-                    fieldConfig.fields.coordination_partner_id
-                  )}
-                  onOptionClick={
-                    doesFatalityRecommendationExist
-                      ? onEditFromDropdownClick
-                      : onAddFromDropdownClick
-                  }
-                  options={data.atd__coordination_partners_lkp}
-                  field={"coordination_partner_id"}
-                />
+            </div>
+            <div className="col-12 col-lg-6">
+              <div className="row">
+                <div className="col-auto pr-0">
+                  <div className="font-weight-bold pt-1">
+                    {fieldConfig.fields.recommendation_status_id.label}
+                  </div>
+                </div>
+                <div className="col-8">
+                  <SelectValueDropdown
+                    value={displayData(
+                      fieldConfig.fields.recommendation_status_id
+                    )}
+                    onOptionClick={
+                      doesFatalityRecommendationExist
+                        ? onEditFromDropdownClick
+                        : onAddFromDropdownClick
+                    }
+                    options={data.atd__recommendation_status_lkp}
+                    field={"recommendation_status_id"}
+                  />
+                </div>
               </div>
             </div>
           </div>
-          <div className="col-12 col-lg-6">
-            <div className="row">
-              <div className="col-auto pr-0">
-                <div className="font-weight-bold">
-                  {fieldConfig.fields.recommendation_status_id.label}
-                </div>
-              </div>
-              <div className="col-8">
-                <SelectValueDropdown
-                  value={displayData(
-                    fieldConfig.fields.recommendation_status_id
-                  )}
-                  onOptionClick={
-                    doesFatalityRecommendationExist
-                      ? onEditFromDropdownClick
-                      : onAddFromDropdownClick
-                  }
-                  options={data.atd__recommendation_status_lkp}
-                  field={"recommendation_status_id"}
-                />
-              </div>
+          <div className="row">
+            <div className="col-12">
+              <RowLabelData
+                label={"Recommendation"}
+                table={recommendation}
+                data={recommendation?.text}
+                placeholder={"Enter recommendation here..."}
+                displayData={displayData}
+                hasData={hasRecommendation}
+                field={fieldConfig.fields.text}
+                editedField={editedRecommendation}
+                setEditedField={setEditedRecommendation}
+                newInput={newRecommendation}
+                setNewInput={setNewRecommendation}
+                refetch={refetch}
+                addVariableDict={{
+                  recommendation: newRecommendation,
+                  crashId: crashId,
+                  userEmail: userEmail,
+                }}
+                editVariableDict={{
+                  recommendation: newRecommendation,
+                }}
+                editedVariableDict={{
+                  recommendation: editedRecommendation,
+                }}
+              ></RowLabelData>
             </div>
           </div>
-        </div>
-        <div className="row">
-          <div className="col-12">
-            <RowLabelData
-              label={"Recommendation"}
-              table={recommendation}
-              data={recommendation?.text}
-              placeholder={"Enter recommendation here..."}
-              displayData={displayData}
-              hasData={hasRecommendation}
-              field={fieldConfig.fields.text}
-              editedField={editedRecommendation}
-              setEditedField={setEditedRecommendation}
-              newInput={newRecommendation}
-              setNewInput={setNewRecommendation}
-              refetch={refetch}
-              addVariableDict={{
-                recommendation: newRecommendation,
-                crashId: crashId,
-                userEmail: userEmail,
-              }}
-              editVariableDict={{
-                recommendation: newRecommendation,
-              }}
-              editedVariableDict={{
-                recommendation: editedRecommendation,
-              }}
-            ></RowLabelData>
-          </div>
-        </div>
-        <div className="row">
-          <div className="col-12">
-            <RowLabelData
-              label={"Updates"}
-              table={recommendation}
-              data={recommendation?.update}
-              placeholder={"Enter updates here..."}
-              displayData={displayData}
-              hasData={hasUpdate}
-              field={fieldConfig.fields.update}
-              editedField={editedUpdate}
-              setEditedField={setEditedUpdate}
-              newInput={newUpdate}
-              setNewInput={setNewUpdate}
-              refetch={refetch}
-              addVariableDict={{
-                update: newUpdate,
-                crashId: crashId,
-                userEmail: userEmail,
-              }}
-              editVariableDict={{
-                update: newUpdate,
-              }}
-              editedVariableDict={{
-                update: editedUpdate,
-              }}
-            ></RowLabelData>
+          <div className="row">
+            <div className="col-12">
+              <RowLabelData
+                label={"Updates"}
+                table={recommendation}
+                data={recommendation?.update}
+                placeholder={"Enter updates here..."}
+                displayData={displayData}
+                hasData={hasUpdate}
+                field={fieldConfig.fields.update}
+                editedField={editedUpdate}
+                setEditedField={setEditedUpdate}
+                newInput={newUpdate}
+                setNewInput={setNewUpdate}
+                refetch={refetch}
+                addVariableDict={{
+                  update: newUpdate,
+                  crashId: crashId,
+                  userEmail: userEmail,
+                }}
+                editVariableDict={{
+                  update: newUpdate,
+                }}
+                editedVariableDict={{
+                  update: editedUpdate,
+                }}
+              ></RowLabelData>
+            </div>
           </div>
         </div>
       </CardBody>
