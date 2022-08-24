@@ -3,7 +3,7 @@ CREATE SEQUENCE IF NOT EXISTS afd__incidents_id_seq;
 -- Table Definition
 CREATE TABLE "public"."afd__incidents" (
     "incident_number" text,
-    "ems_incident_number" text,
+    "ems_incident_number_raw" text,
     "calendar_year" text,
     "jurisdiction" text,
     "address" text,
@@ -16,6 +16,10 @@ CREATE TABLE "public"."afd__incidents" (
     "location_id" varchar,
     "latitude" float8,
     "longitude" float8,
+    "ems_incident_number_1" text,
+    "ems_incident_number_2" text,
+    "call_date" date,
+    "call_time" time,
     CONSTRAINT "afd__incidents_location_id_fkey" FOREIGN KEY ("location_id") REFERENCES "public"."atd_txdot_locations"("location_id"),
     PRIMARY KEY ("id")
 );
