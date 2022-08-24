@@ -240,19 +240,40 @@ const Recommendations = ({ crashId }) => {
 
   const fieldConfig = recommendationsDataMap;
   const recommendation = data?.recommendations?.[0];
+  const doesFatalityRecommendationExist = data?.recommendations?.[0]
+    ? true
+    : false;
 
   // Get current value from returned data if there is one
   const displayData = ({ lookupOptions, key }) => {
     return recommendation?.[lookupOptions]?.[key] || "";
   };
 
+  // Use these booleans to determine what show in the UI
+  // Do we need the partner and status ones?
   const hasPartner = !!recommendation?.coordination_partner_id;
   const hasStatus = !!recommendation?.recommendation_status_id;
   const hasUpdate = !!recommendation?.update;
   const hasRecommendation = !!recommendation?.text;
   const recommendationRecordId = recommendation?.id;
 
-  const onEditClick = (field, id) => {
+  const onAddFromDropdownClick = (field, id) => {
+    const recommendationRecord = {
+      crashId,
+      userEmail,
+      [field]: parseInt(id),
+    };
+
+    addRecommendation({
+      variables: recommendationRecord,
+    })
+      .then(() => {
+        refetch();
+      })
+      .catch(error => console.error(error));
+  };
+
+  const onEditFromDropdownClick = (field, id) => {
     const changes = { [field]: parseInt(id) };
 
     editRecommendation({
@@ -284,7 +305,11 @@ const Recommendations = ({ crashId }) => {
                   value={displayData(
                     fieldConfig.fields.coordination_partner_id
                   )}
-                  onOptionClick={onEditClick}
+                  onOptionClick={
+                    doesFatalityRecommendationExist
+                      ? onEditFromDropdownClick
+                      : onAddFromDropdownClick
+                  }
                   options={data.atd__coordination_partners_lkp}
                   field={"coordination_partner_id"}
                 />
@@ -303,7 +328,11 @@ const Recommendations = ({ crashId }) => {
                   value={displayData(
                     fieldConfig.fields.recommendation_status_id
                   )}
-                  onOptionClick={onEditClick}
+                  onOptionClick={
+                    doesFatalityRecommendationExist
+                      ? onEditFromDropdownClick
+                      : onAddFromDropdownClick
+                  }
                   options={data.atd__recommendation_status_lkp}
                   field={"recommendation_status_id"}
                 />

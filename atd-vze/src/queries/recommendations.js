@@ -32,6 +32,8 @@ export const INSERT_RECOMMENDATION = gql`
     $update: String
     $crashId: Int
     $userEmail: String
+    $coordination_partner_id: Int
+    $recommendation_status_id: Int
   ) {
     insert_recommendations(
       objects: {
@@ -39,6 +41,8 @@ export const INSERT_RECOMMENDATION = gql`
         update: $update
         crash_id: $crashId
         created_by: $userEmail
+        coordination_partner_id: $coordination_partner_id
+        recommendation_status_id: $recommendation_status_id
       }
     ) {
       returning {
