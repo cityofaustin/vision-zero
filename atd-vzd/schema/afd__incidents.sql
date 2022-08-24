@@ -14,6 +14,8 @@ CREATE TABLE "public"."afd__incidents" (
     "id" int4 NOT NULL DEFAULT nextval('afd__incidents_id_seq'::regclass),
     "austin_full_purpose" bool,
     "location_id" varchar,
+    "latitude" float8,
+    "longitude" float8,
     CONSTRAINT "afd__incidents_location_id_fkey" FOREIGN KEY ("location_id") REFERENCES "public"."atd_txdot_locations"("location_id"),
     PRIMARY KEY ("id")
 );
