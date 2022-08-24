@@ -253,10 +253,13 @@ const Recommendations = ({ crashId }) => {
   const recommendationRecordId = recommendation?.id;
 
   const onEditClick = (field, id) => {
-    const variables = { [field]: parseInt(id), id: recommendationRecordId };
+    const changes = { [field]: parseInt(id) };
 
     editRecommendation({
-      variables: variables,
+      variables: {
+        id: recommendationRecordId,
+        changes,
+      },
     })
       .then(() => {
         refetch();
@@ -300,10 +303,9 @@ const Recommendations = ({ crashId }) => {
                   value={displayData(
                     fieldConfig.fields.recommendation_status_id
                   )}
-                  setValue={() => {
-                    console.log("set the value");
-                  }}
+                  onOptionClick={onEditClick}
                   options={data.atd__recommendation_status_lkp}
+                  field={"recommendation_status_id"}
                 />
               </div>
             </div>

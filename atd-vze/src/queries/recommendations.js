@@ -27,7 +27,7 @@ export const GET_RECOMMENDATIONS = gql`
 `;
 
 export const INSERT_RECOMMENDATION = gql`
-  mutation InsertNote(
+  mutation InsertRecommendation(
     $recommendation: String
     $update: String
     $crashId: Int
@@ -54,21 +54,10 @@ export const INSERT_RECOMMENDATION = gql`
 
 export const UPDATE_RECOMMENDATION = gql`
   mutation UpdateRecommendations(
-    $recommendation: String
     $id: Int!
-    $update: String
-    $coordination_partner_id: Int
-    $recommendation_status_id: Int
+    $changes: recommendations_set_input
   ) {
-    update_recommendations_by_pk(
-      pk_columns: { id: $id }
-      _set: {
-        text: $recommendation
-        update: $update
-        coordination_partner_id: $coordination_partner_id
-        recommendation_status_id: $recommendation_status_id
-      }
-    ) {
+    update_recommendations_by_pk(pk_columns: { id: $id }, _set: $changes) {
       crash_id
       text
       update
