@@ -3,12 +3,12 @@ export const recommendationsDataMap = {
 
   fields: {
     coordination_partner_id: {
-      label: "Coordination Partner: ",
+      label: "Coordination Partner:",
       lookupOptions: "atd__coordination_partners_lkp",
       key: "description",
     },
     recommendation_status_id: {
-      label: "Status: ",
+      label: "Status:",
       lookupOptions: "atd__recommendation_status_lkp",
       key: "description",
     },

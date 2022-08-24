@@ -168,6 +168,38 @@ const RowLabelData = ({
   );
 };
 
+const SelectValueDropdown = ({ value, setValue, options }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <Dropdown
+      toggle={() => {
+        setIsOpen(!isOpen);
+      }}
+      isOpen={isOpen}
+      className="mb-3"
+    >
+      <DropdownToggle className="w-100">
+        <div className="row">
+          <div className="col-11 px-0">{value}</div>
+          <div className="col-1 px-1">
+            <i className="fa fa-caret-down fa-lg"></i>
+          </div>
+        </div>
+      </DropdownToggle>
+      <DropdownMenu>
+        {options.map(option => {
+          return (
+            <DropdownItem key={option.description}>
+              {option.description}
+            </DropdownItem>
+          );
+        })}
+      </DropdownMenu>
+    </Dropdown>
+  );
+};
+
 // declare fatality review board recommendations component
 const Recommendations = ({ crashId }) => {
   // add state variable to manage when user is editing
@@ -175,8 +207,6 @@ const Recommendations = ({ crashId }) => {
   const [newUpdate, setNewUpdate] = useState("");
   const [editedRecommendation, setEditedRecommendation] = useState("");
   const [editedUpdate, setEditedUpdate] = useState("");
-  const [statusDropdownOpen, setStatusOpen] = useState(false);
-  const [partnerDropdownOpen, setPartnerOpen] = useState(false);
 
   // disable edit features if role is "readonly"
   const { getRoles } = useAuth0();
@@ -200,15 +230,9 @@ const Recommendations = ({ crashId }) => {
   const fieldConfig = recommendationsDataMap;
   const recommendation = data?.recommendations?.[0];
 
-  // if there is data for a certain field in the recommendations table, display it
-  const displayData = (hasData, { lookupOptions, key }) => {
-    if (hasData) {
-      if (lookupOptions) {
-        return recommendation[lookupOptions][key];
-      } else {
-        return recommendation[key];
-      }
-    }
+  // Get current value from returned data if there is one
+  const displayData = ({ lookupOptions, key }) => {
+    return recommendation?.[lookupOptions]?.[key] || "";
   };
 
   // displayData(recommendation, fieldConfig.fields.text);
@@ -218,6 +242,7 @@ const Recommendations = ({ crashId }) => {
   const hasUpdate = !!recommendation?.update;
   const hasRecommendation = !!recommendation?.text;
   const id = recommendation?.id;
+  console.log(data);
 
   return (
     <Card>
@@ -227,70 +252,40 @@ const Recommendations = ({ crashId }) => {
           <div className="col-12 col-lg-6">
             <div className="row">
               <div className="col-auto pr-0">
-                <div className="font-weight-bold">Coordination Partner:</div>
+                <div className="font-weight-bold">
+                  {fieldConfig.fields.coordination_partner_id.label}
+                </div>
               </div>
               <div className="col-8">
-                <Dropdown
-                  toggle={() => {
-                    setPartnerOpen(!partnerDropdownOpen);
+                <SelectValueDropdown
+                  value={displayData(
+                    fieldConfig.fields.coordination_partner_id
+                  )}
+                  setValue={() => {
+                    console.log("set the value");
                   }}
-                  isOpen={partnerDropdownOpen}
-                  className="mb-3"
-                >
-                  <DropdownToggle className="w-100">
-                    <div className="row">
-                      <div className="col-11 px-0">
-                        {displayData(
-                          hasPartner,
-                          fieldConfig.fields.coordination_partner_id
-                        )}
-                      </div>
-                      <div className="col-1 px-1">
-                        <i className="fa fa-caret-down fa-lg"></i>
-                      </div>
-                    </div>
-                  </DropdownToggle>
-                  <DropdownMenu>
-                    {data.atd__coordination_partners_lkp.map(row => {
-                      return <DropdownItem>{row.description}</DropdownItem>;
-                    })}
-                  </DropdownMenu>
-                </Dropdown>
+                  options={data.atd__coordination_partners_lkp}
+                />
               </div>
             </div>
           </div>
           <div className="col-12 col-lg-6">
             <div className="row">
               <div className="col-auto pr-0">
-                <div className="font-weight-bold">Status:</div>
+                <div className="font-weight-bold">
+                  {fieldConfig.fields.recommendation_status_id.label}
+                </div>
               </div>
               <div className="col-8">
-                <Dropdown
-                  toggle={() => {
-                    setStatusOpen(!statusDropdownOpen);
+                <SelectValueDropdown
+                  value={displayData(
+                    fieldConfig.fields.recommendation_status_id
+                  )}
+                  setValue={() => {
+                    console.log("set the value");
                   }}
-                  isOpen={statusDropdownOpen}
-                  className="mb-3"
-                >
-                  <DropdownToggle className="w-100">
-                    <div className="row">
-                      <div className="col-11 px-0">
-                        {displayData(
-                          hasStatus,
-                          fieldConfig.fields.recommendation_status_id
-                        )}
-                      </div>
-                      <div className="col-1 px-1">
-                        <i className="fa fa-caret-down fa-lg"></i>
-                      </div>
-                    </div>
-                  </DropdownToggle>
-                  <DropdownMenu>
-                    {data.atd__recommendation_status_lkp.map(row => {
-                      return <DropdownItem>{row.description}</DropdownItem>;
-                    })}
-                  </DropdownMenu>
-                </Dropdown>
+                  options={data.atd__recommendation_status_lkp}
+                />
               </div>
             </div>
           </div>
