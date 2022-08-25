@@ -67,7 +67,8 @@ function Crash(props) {
   const { getRoles } = useAuth0();
   const roles = getRoles();
 
-  const isCrashFatal = data?.atd_txdot_crashes?.[0]?.atd_fatality_count > 0;
+  const isCrashFatal =
+    data?.atd_txdot_crashes?.[0]?.atd_fatality_count > 0 ? true : false;
   const shouldShowFatalityRecommendations =
     (isAdmin(roles) || isItSupervisor(roles)) && isCrashFatal;
 

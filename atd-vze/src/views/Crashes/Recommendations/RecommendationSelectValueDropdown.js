@@ -31,23 +31,22 @@ const RecommendationSelectValueDropdown = ({
       className="mb-3"
     >
       <DropdownToggle
-        className="w-100 pt-1"
+        className="w-100 pt-1 pl-2 d-flex text-left"
         style={{ backgroundColor: "transparent", border: "0" }}
       >
-        <div className="row">
-          <div className="col-11 px-0">{value}</div>
-          <div className="col-1 px-1">
-            <i className="fa fa-caret-down fa-lg"></i>
-          </div>
+        <div className="flex-grow-1">{value}</div>
+        <div>
+          <i className="fa fa-caret-down fa-lg"></i>
         </div>
       </DropdownToggle>
-      <DropdownMenu>
+      <DropdownMenu style={{ right: 0 }}>
         {options.map(option => {
           return (
             <DropdownItem
               id={option.id}
               key={option.id}
               onClick={handleOptionClick}
+              className="pl-2"
             >
               {option.description}
             </DropdownItem>
