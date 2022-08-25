@@ -23,24 +23,29 @@ import { useAuth0, isReadOnly } from "../../../auth/authContext";
 const RowLabelData = ({
   label,
   placeholder,
-  displayData,
+  existingValue,
   field,
   doesRecommendationRecordExist,
-  onSave,
+  onAdd,
+  onEdit,
 }) => {
-  const isExistingValue = displayData.length > 0 && displayData !== null;
-  const initialInputValue = isExistingValue ? displayData : "";
+  const isExistingValue = existingValue.length > 0 && existingValue !== null;
+  const initialInputValue = isExistingValue ? existingValue : "";
 
   const [isEditing, setIsEditing] = useState(false);
   const [inputValue, setInputValue] = useState(initialInputValue);
 
   const handleAddClick = () => {
-    console.log("adding");
+    const valuesObject = { [field]: inputValue };
+
+    onAdd(valuesObject);
+    setIsEditing(false);
   };
 
   const handleSaveClick = () => {
     const valuesObject = { [field]: inputValue };
-    onSave(valuesObject);
+
+    onEdit(valuesObject);
     setIsEditing(false);
   };
 
@@ -58,7 +63,12 @@ const RowLabelData = ({
     doesRecommendationRecordExist === true && isEditing === false;
   const isEditingRecommendation =
     doesRecommendationRecordExist === true && isEditing === true;
-  console.log(canEditRecommendation, displayData, inputValue);
+  console.log(
+    field,
+    isAddingRecommendation,
+    canEditRecommendation,
+    isEditingRecommendation
+  );
 
   return (
     <div>
@@ -66,7 +76,9 @@ const RowLabelData = ({
         <b>{label}</b>
       </p>
       <div className="row">
-        {(isAddingRecommendation || isEditingRecommendation) && (
+        {(isAddingRecommendation ||
+          isEditingRecommendation ||
+          !isExistingValue) && (
           <div className="col-10">
             <Input
               type="textarea"
@@ -75,6 +87,9 @@ const RowLabelData = ({
               onChange={e => setInputValue(e.target.value)}
             ></Input>
           </div>
+        )}
+        {canEditRecommendation && isExistingValue && (
+          <div className="col-10">{existingValue}</div>
         )}
         {isAddingRecommendation && (
           <div className="col-1">
@@ -90,21 +105,32 @@ const RowLabelData = ({
             </Button>
           </div>
         )}
-        {canEditRecommendation && (
-          <>
-            <div className="col-10">{displayData}</div>
-            <div className="col-1">
-              <Button
-                color="secondary"
-                size="sm"
-                className="btn-pill mt-2"
-                style={{ width: "50px" }}
-                onClick={handleEditClick}
-              >
-                <i className="fa fa-pencil edit-toggle" />
-              </Button>
-            </div>
-          </>
+        {!isExistingValue && (
+          <div className="col-1">
+            <Button
+              type="submit"
+              color="primary"
+              onClick={handleSaveClick}
+              className="btn-pill mt-2"
+              size="sm"
+              style={{ width: "50px" }}
+            >
+              Add
+            </Button>
+          </div>
+        )}
+        {canEditRecommendation && isExistingValue && (
+          <div className="col-1">
+            <Button
+              color="secondary"
+              size="sm"
+              className="btn-pill mt-2"
+              style={{ width: "50px" }}
+              onClick={handleEditClick}
+            >
+              <i className="fa fa-pencil edit-toggle" />
+            </Button>
+          </div>
         )}
         {isEditingRecommendation && (
           <>
@@ -214,6 +240,7 @@ const Recommendations = ({ crashId }) => {
   const fieldConfig = recommendationsDataMap;
   const recommendation = data?.recommendations?.[0];
   const doesRecommendationRecordExist = recommendation ? true : false;
+  const recommendationRecordId = recommendation?.id;
 
   // Get current value from returned data if there is one
   const getLookupValue = ({ lookupOptions, key }) => {
@@ -221,12 +248,6 @@ const Recommendations = ({ crashId }) => {
   };
 
   const getFieldValue = field => recommendation?.[field] || "";
-
-  // Use these booleans to determine what show in the UI
-  // Do we need the partner and status ones?
-  const hasUpdate = !!recommendation?.update;
-  const hasRecommendation = !!recommendation?.text;
-  const recommendationRecordId = recommendation?.id;
 
   const onAdd = valuesObject => {
     const recommendationRecord = {
@@ -312,11 +333,11 @@ const Recommendations = ({ crashId }) => {
                 label={"Recommendation"}
                 data={recommendation?.text}
                 placeholder={"Enter recommendation here..."}
-                displayData={getFieldValue(fieldConfig.fields.text.key)}
-                hasFieldValue={hasRecommendation}
+                existingValue={getFieldValue(fieldConfig.fields.text.key)}
                 field={fieldConfig.fields.text.key}
                 doesRecommendationRecordExist={doesRecommendationRecordExist}
-                onSave={doesRecommendationRecordExist ? onEdit : onAdd}
+                onAdd={onAdd}
+                onEdit={onEdit}
               ></RowLabelData>
             </div>
           </div>
@@ -326,11 +347,11 @@ const Recommendations = ({ crashId }) => {
                 label={"Updates"}
                 data={recommendation?.update}
                 placeholder={"Enter updates here..."}
-                displayData={getFieldValue(fieldConfig.fields.update.key)}
-                hasData={hasUpdate}
+                existingValue={getFieldValue(fieldConfig.fields.update.key)}
                 field={fieldConfig.fields.update.key}
                 doesRecommendationRecordExist={doesRecommendationRecordExist}
-                onSave={doesRecommendationRecordExist ? onEdit : onAdd}
+                onAdd={onAdd}
+                onEdit={onEdit}
               ></RowLabelData>
             </div>
           </div>
