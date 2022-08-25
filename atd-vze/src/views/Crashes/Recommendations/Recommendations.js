@@ -10,10 +10,6 @@ import {
 import RecommendationTextInput from "./RecommendationTextInput";
 import RecommendationSelectValueDropdown from "./RecommendationSelectValueDropdown";
 
-// TODOs
-// 2. Match styling designs
-// 3. Make sure add/edit/cancel buttons align with notes
-
 const Recommendations = ({ crashId }) => {
   // get current users email
   const userEmail = localStorage.getItem("hasura_user_email");
@@ -35,11 +31,12 @@ const Recommendations = ({ crashId }) => {
   const doesRecommendationRecordExist = recommendation ? true : false;
   const recommendationRecordId = recommendation?.id;
 
-  // Get current value from returned data if there is one
+  // Use lookup values to translate id to human readable value
   const getLookupValue = ({ lookupOptions, key }) => {
     return recommendation?.[lookupOptions]?.[key] || "";
   };
 
+  // Get field value from data by field name
   const getFieldValue = field => recommendation?.[field] || "";
 
   const onAdd = valuesObject => {
