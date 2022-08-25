@@ -124,7 +124,7 @@ const Recommendations = ({ crashId }) => {
             className="row border-bottom"
             style={{ paddingTop: "12px", paddingBottom: "12px" }}
           >
-            <div className="col-12">
+            <div className="col-12 pr-0">
               <RecommendationTextInput
                 label={"Recommendation"}
                 data={recommendation?.text}
@@ -137,11 +137,8 @@ const Recommendations = ({ crashId }) => {
               />
             </div>
           </div>
-          <div
-            className="row"
-            style={{ paddingTop: "12px", paddingBottom: "12px" }}
-          >
-            <div className="col-12">
+          <div className="row" style={{ paddingTop: "12px" }}>
+            <div className="col-12 pr-0">
               <RecommendationTextInput
                 label={"Updates"}
                 data={recommendation?.update}

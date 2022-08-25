@@ -55,11 +55,11 @@ const RecommendationTextInput = ({
       <p>
         <b>{label}</b>
       </p>
-      <div className="row d-flex">
+      <div className="d-flex ">
         {(isAddingRecommendation ||
           isEditingRecommendation ||
           !isExistingValue) && (
-          <div className="col flex-grow-1">
+          <div className="col flex-grow-1 pl-0">
             <Input
               type="textarea"
               placeholder={placeholder}
@@ -72,7 +72,8 @@ const RecommendationTextInput = ({
           <div className="col flex-grow-1">{existingValue}</div>
         )}
         {/* First button*/}
-        <div className="col-1" style={{ padding: "12px 4px 12px 4px" }}>
+        {/* Inline pixel widths and padding are based on lining up button grid with table used in Notes component */}
+        <div style={{ width: "121px", padding: "12px 4px 12px 9px" }}>
           {isAddingRecommendation && (
             <Button
               type="submit"
@@ -119,15 +120,13 @@ const RecommendationTextInput = ({
               <i className="fa fa-check edit-toggle" />
             </Button>
           )}
-        </div>
-        {/* Second button */}
-        <div className="col-1" style={{ padding: "12px 4px 12px 4px" }}>
+          {/* Second button */}
           {isEditingRecommendation && (
             <Button
               color="danger"
               className="btn-pill mt-2"
               size="sm"
-              style={{ width: "50px" }}
+              style={{ width: "50px", marginLeft: "8px" }}
               onClick={handleCancelClick}
             >
               <i className="fa fa-times edit-toggle" />
