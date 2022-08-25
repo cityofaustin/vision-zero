@@ -7,7 +7,7 @@ import {
   INSERT_RECOMMENDATION,
   UPDATE_RECOMMENDATION,
 } from "../../../queries/recommendations";
-import RecommendationTextInputRow from "./RecommendationTextInputRow";
+import RecommendationTextInput from "./RecommendationTextInput";
 import RecommendationSelectValueDropdown from "./RecommendationSelectValueDropdown";
 
 // TODOs
@@ -74,7 +74,7 @@ const Recommendations = ({ crashId }) => {
   return (
     <Card>
       <CardHeader>Fatality Review Board Recommendations</CardHeader>
-      <CardBody>
+      <CardBody className="px-1">
         <div className="container-fluid">
           <div className="row border-bottom">
             <div className="col-12 col-lg-6">
@@ -120,26 +120,40 @@ const Recommendations = ({ crashId }) => {
               </div>
             </div>
           </div>
-          <RecommendationTextInputRow
-            label={"Recommendation"}
-            data={recommendation?.text}
-            placeholder={"Enter recommendation here..."}
-            existingValue={getFieldValue(fieldConfig.fields.text.key)}
-            field={fieldConfig.fields.text.key}
-            doesRecommendationRecordExist={doesRecommendationRecordExist}
-            onAdd={onAdd}
-            onEdit={onEdit}
-          />
-          <RecommendationTextInputRow
-            label={"Updates"}
-            data={recommendation?.update}
-            placeholder={"Enter updates here..."}
-            existingValue={getFieldValue(fieldConfig.fields.update.key)}
-            field={fieldConfig.fields.update.key}
-            doesRecommendationRecordExist={doesRecommendationRecordExist}
-            onAdd={onAdd}
-            onEdit={onEdit}
-          />
+          <div
+            className="row border-bottom"
+            style={{ paddingTop: "12px", paddingBottom: "12px" }}
+          >
+            <div className="col-12">
+              <RecommendationTextInput
+                label={"Recommendation"}
+                data={recommendation?.text}
+                placeholder={"Enter recommendation here..."}
+                existingValue={getFieldValue(fieldConfig.fields.text.key)}
+                field={fieldConfig.fields.text.key}
+                doesRecommendationRecordExist={doesRecommendationRecordExist}
+                onAdd={onAdd}
+                onEdit={onEdit}
+              />
+            </div>
+          </div>
+          <div
+            className="row"
+            style={{ paddingTop: "12px", paddingBottom: "12px" }}
+          >
+            <div className="col-12">
+              <RecommendationTextInput
+                label={"Updates"}
+                data={recommendation?.update}
+                placeholder={"Enter updates here..."}
+                existingValue={getFieldValue(fieldConfig.fields.update.key)}
+                field={fieldConfig.fields.update.key}
+                doesRecommendationRecordExist={doesRecommendationRecordExist}
+                onAdd={onAdd}
+                onEdit={onEdit}
+              />
+            </div>
+          </div>
         </div>
       </CardBody>
       <CardFooter></CardFooter>

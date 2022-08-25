@@ -17,7 +17,7 @@ const RecommendationSelectValueDropdown = ({
   const handleOptionClick = e => {
     const { id } = e.target;
 
-    // Mutation expects ids as integers
+    // Mutation expect lookup IDs as integers
     const valuesObject = { [field]: parseInt(id) };
     onOptionClick(valuesObject);
   };
