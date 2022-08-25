@@ -98,6 +98,10 @@ const RowLabelData = ({
     setIsEditing(true);
   };
 
+  const handleCancelClick = () => {
+    setIsEditing(false);
+  };
+
   // 1. if there is a recommendation or update - show the content
   // 2. if there is not a recommendation or update - take the same width but empty
   // 3. if we are in edit mode - show text area input and check button and
@@ -189,32 +193,13 @@ const RowLabelData = ({
                 className="btn-pill mt-2"
                 size="sm"
                 style={{ width: "50px" }}
-                onClick={() => setIsEditing(false)}
+                onClick={handleCancelClick}
               >
                 <i className="fa fa-times edit-toggle" />
               </Button>
             </div>
           </>
         )}
-        {/* {data && isEditing && (
-          <div className="col-2">
-            <Input
-              type="textarea"
-              defaultValue={data}
-              onChange={e => setEditedField(e.target.value)}
-            ></Input>
-            <Button
-              color="primary"
-              className="btn-pill mt-2"
-              size="sm"
-              style={{ width: "50px" }}
-              onClick={e => handleSaveClick}
-            >
-              <i className="fa fa-check edit-toggle" />
-            </Button>
-            <CancelButton></CancelButton>
-          </div>
-        )} */}
       </div>
     </div>
   );
@@ -224,9 +209,11 @@ const SelectValueDropdown = ({ value, onOptionClick, options, field }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleOptionClick = e => {
-    const value = e.target.id;
+    const { id } = e.target;
 
-    onOptionClick(field, value);
+    // Mutation expects ids as integers
+    const valuesObject = { [field]: parseInt(id) };
+    onOptionClick(valuesObject);
   };
 
   return (
@@ -267,12 +254,6 @@ const SelectValueDropdown = ({ value, onOptionClick, options, field }) => {
 
 // declare fatality review board recommendations component
 const Recommendations = ({ crashId }) => {
-  // add state variable to manage when user is editing
-  const [newRecommendation, setNewRecommendation] = useState("");
-  const [newUpdate, setNewUpdate] = useState("");
-  const [editedRecommendation, setEditedRecommendation] = useState("");
-  const [editedUpdate, setEditedUpdate] = useState("");
-
   // disable edit features if role is "readonly"
   const { getRoles } = useAuth0();
   const roles = getRoles();
@@ -307,11 +288,11 @@ const Recommendations = ({ crashId }) => {
   const hasRecommendation = !!recommendation?.text;
   const recommendationRecordId = recommendation?.id;
 
-  const onAddFromDropdownClick = (field, id) => {
+  const onAdd = valuesObject => {
     const recommendationRecord = {
       crashId,
       userEmail,
-      [field]: parseInt(id),
+      ...valuesObject,
     };
 
     addRecommendation({
@@ -323,13 +304,11 @@ const Recommendations = ({ crashId }) => {
       .catch(error => console.error(error));
   };
 
-  const onEditFromDropdownClick = (field, id) => {
-    const changes = { [field]: parseInt(id) };
-
+  const onEdit = changesObject => {
     editRecommendation({
       variables: {
         id: recommendationRecordId,
-        changes,
+        changes: changesObject,
       },
     })
       .then(() => {
@@ -357,9 +336,7 @@ const Recommendations = ({ crashId }) => {
                       fieldConfig.fields.coordination_partner_id
                     )}
                     onOptionClick={
-                      doesRecommendationRecordExist
-                        ? onEditFromDropdownClick
-                        : onAddFromDropdownClick
+                      doesRecommendationRecordExist ? onEdit : onAdd
                     }
                     options={data.atd__coordination_partners_lkp}
                     field={"coordination_partner_id"}
@@ -380,9 +357,7 @@ const Recommendations = ({ crashId }) => {
                       fieldConfig.fields.recommendation_status_id
                     )}
                     onOptionClick={
-                      doesRecommendationRecordExist
-                        ? onEditFromDropdownClick
-                        : onAddFromDropdownClick
+                      doesRecommendationRecordExist ? onEdit : onAdd
                     }
                     options={data.atd__recommendation_status_lkp}
                     field={"recommendation_status_id"}
