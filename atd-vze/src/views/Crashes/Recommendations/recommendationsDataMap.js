@@ -18,6 +18,7 @@ export const recommendationsDataMap = {
     },
     update: {
       label: "Updates",
+      key: "update",
     },
   },
 };

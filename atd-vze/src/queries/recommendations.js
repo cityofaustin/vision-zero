@@ -8,6 +8,7 @@ export const GET_RECOMMENDATIONS = gql`
       text
       created_by
       crash_id
+      update
       atd__coordination_partners_lkp {
         description
       }
