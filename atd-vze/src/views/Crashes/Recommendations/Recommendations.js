@@ -18,7 +18,6 @@ import {
   INSERT_RECOMMENDATION,
   UPDATE_RECOMMENDATION,
 } from "../../../queries/recommendations";
-import { useAuth0, isReadOnly } from "../../../auth/authContext";
 
 const RowLabelData = ({
   label,
@@ -211,16 +210,11 @@ const SelectValueDropdown = ({ value, onOptionClick, options, field }) => {
 };
 
 // TODOs
-// 1. Only show recommendation card if atd_fatality_count > 0 && user is role = "Admin" or above
 // 2. Match styling designs
 // 3. Make sure add/edit/cancel buttons align with notes
 
 // declare fatality review board recommendations component
 const Recommendations = ({ crashId }) => {
-  // disable edit features if role is "readonly"
-  const { getRoles } = useAuth0();
-  const roles = getRoles();
-
   // get current users email
   const userEmail = localStorage.getItem("hasura_user_email");
 
