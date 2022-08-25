@@ -37,61 +37,31 @@ const RowLabelData = ({
   hasFieldValue,
   // field,
   displayData,
-  // refetch,
+  refetch,
   // addVariableDict,
   // editVariableDict,
   // editedVariableDict,
   // Added
   field,
-  value,
   doesRecommendationRecordExist,
+  onSave,
   // handleAddClick,
   // handleEditClick,
 }) => {
+  const isExistingValue = displayData.length > 0 && displayData !== null;
+  const initialInputValue = isExistingValue ? displayData : "";
+
   const [isEditing, setIsEditing] = useState(false);
-  const [inputValue, setInputValue] = useState(value);
+  const [inputValue, setInputValue] = useState(initialInputValue);
 
-  // declare mutation functions
-  // const [addRecommendation] = useMutation(INSERT_RECOMMENDATION);
-  // const [editRecommendation] = useMutation(UPDATE_RECOMMENDATION);
-
-  // const handleAddClick = () => {
-  //   if (data) {
-  //     const id = table?.id;
-  //     editRecommendation({
-  //       variables: editVariableDict,
-  //     })
-  //       .then(response => {
-  //         // setNewInput("");
-  //         refetch();
-  //       })
-  //       .catch(error => console.error(error));
-  //   } else {
-  //     addRecommendation({
-  //       variables: addVariableDict,
-  //     })
-  //       .then(response => {
-  //         // setNewInput("");
-  //         refetch();
-  //       })
-  //       .catch(error => console.error(error));
-  //   }
-  // };
   const handleAddClick = () => {
     console.log("adding");
   };
 
-  const handleSaveClick = variables => {
-    console.log("saving", variables);
-    // editRecommendation({
-    //   variables: variables,
-    // })
-    //   .then(response => {
-    //     refetch().then(response => {
-    //       setEditedField("");
-    //     });
-    //   })
-    //   .catch(error => console.error(error));
+  const handleSaveClick = () => {
+    const valuesObject = { [field]: inputValue };
+    onSave(valuesObject);
+    setIsEditing(false);
   };
 
   const handleEditClick = () => {
@@ -127,6 +97,7 @@ const RowLabelData = ({
     doesRecommendationRecordExist === true && isEditing === false;
   const isEditingRecommendation =
     doesRecommendationRecordExist === true && isEditing === true;
+  console.log(canEditRecommendation, displayData, inputValue);
 
   return (
     <div>
@@ -182,7 +153,7 @@ const RowLabelData = ({
                 className="btn-pill mt-2"
                 size="sm"
                 style={{ width: "50px" }}
-                onClick={e => handleSaveClick}
+                onClick={handleSaveClick}
               >
                 <i className="fa fa-check edit-toggle" />
               </Button>
@@ -278,9 +249,11 @@ const Recommendations = ({ crashId }) => {
   const doesRecommendationRecordExist = recommendation ? true : false;
 
   // Get current value from returned data if there is one
-  const displayData = ({ lookupOptions, key }) => {
+  const getLookupValue = ({ lookupOptions, key }) => {
     return recommendation?.[lookupOptions]?.[key] || "";
   };
+
+  const getFieldValue = field => recommendation?.[field] || "";
 
   // Use these booleans to determine what show in the UI
   // Do we need the partner and status ones?
@@ -321,7 +294,7 @@ const Recommendations = ({ crashId }) => {
     <Card>
       <CardHeader>Fatality Review Board Recommendations</CardHeader>
       <CardBody>
-        <div className="container">
+        <div className="container-fluid">
           <div className="row border-bottom">
             <div className="col-12 col-lg-6">
               <div className="row">
@@ -332,7 +305,7 @@ const Recommendations = ({ crashId }) => {
                 </div>
                 <div className="col-8">
                   <SelectValueDropdown
-                    value={displayData(
+                    value={getLookupValue(
                       fieldConfig.fields.coordination_partner_id
                     )}
                     onOptionClick={
@@ -353,7 +326,7 @@ const Recommendations = ({ crashId }) => {
                 </div>
                 <div className="col-8">
                   <SelectValueDropdown
-                    value={displayData(
+                    value={getLookupValue(
                       fieldConfig.fields.recommendation_status_id
                     )}
                     onOptionClick={
@@ -373,10 +346,12 @@ const Recommendations = ({ crashId }) => {
                 table={recommendation}
                 data={recommendation?.text}
                 placeholder={"Enter recommendation here..."}
-                displayData={displayData(fieldConfig.fields.text)}
+                displayData={getFieldValue(fieldConfig.fields.text.key)}
                 hasFieldValue={hasRecommendation}
-                field={fieldConfig.fields.text}
+                field={fieldConfig.fields.text.key}
                 doesRecommendationRecordExist={doesRecommendationRecordExist}
+                onSave={doesRecommendationRecordExist ? onEdit : onAdd}
+                refecth={refetch}
                 // editedField={editedRecommendation}
                 // setEditedField={setEditedRecommendation}
                 // newInput={newRecommendation}
@@ -403,10 +378,12 @@ const Recommendations = ({ crashId }) => {
                 table={recommendation}
                 data={recommendation?.update}
                 placeholder={"Enter updates here..."}
-                displayData={displayData(fieldConfig.fields.update)}
+                displayData={getFieldValue(fieldConfig.fields.update.key)}
                 hasData={hasUpdate}
-                field={fieldConfig.fields.update}
+                field={fieldConfig.fields.update.key}
                 doesRecommendationRecordExist={doesRecommendationRecordExist}
+                onSave={doesRecommendationRecordExist ? onEdit : onAdd}
+                refecth={refetch}
                 // editedField={editedUpdate}
                 // setEditedField={setEditedUpdate}
                 // newInput={newUpdate}
