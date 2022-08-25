@@ -1,211 +1,14 @@
-import React, { useState } from "react";
+import React from "react";
 import { useQuery, useMutation } from "@apollo/react-hooks";
-import {
-  Card,
-  CardHeader,
-  CardBody,
-  CardFooter,
-  Button,
-  Dropdown,
-  DropdownToggle,
-  DropdownMenu,
-  Input,
-  DropdownItem,
-} from "reactstrap";
+import { Card, CardHeader, CardBody, CardFooter } from "reactstrap";
 import { recommendationsDataMap } from "./recommendationsDataMap";
 import {
   GET_RECOMMENDATIONS,
   INSERT_RECOMMENDATION,
   UPDATE_RECOMMENDATION,
 } from "../../../queries/recommendations";
-
-const RecommendationTextInputRow = ({
-  label,
-  placeholder,
-  existingValue,
-  field,
-  doesRecommendationRecordExist,
-  onAdd,
-  onEdit,
-}) => {
-  const isExistingValue = existingValue.length > 0 && existingValue !== null;
-  const initialInputValue = isExistingValue ? existingValue : "";
-
-  const [isEditing, setIsEditing] = useState(false);
-  const [inputValue, setInputValue] = useState(initialInputValue);
-
-  const handleAddClick = () => {
-    const valuesObject = { [field]: inputValue };
-
-    onAdd(valuesObject);
-    setIsEditing(false);
-  };
-
-  const handleSaveClick = () => {
-    const valuesObject = { [field]: inputValue };
-
-    onEdit(valuesObject);
-    setIsEditing(false);
-  };
-
-  const handleEditClick = () => {
-    setIsEditing(true);
-  };
-
-  const handleCancelClick = () => {
-    setIsEditing(false);
-  };
-
-  const isAddingRecommendation =
-    doesRecommendationRecordExist === false && isEditing === false;
-  const canEditRecommendation =
-    doesRecommendationRecordExist === true && isEditing === false;
-  const isEditingRecommendation =
-    doesRecommendationRecordExist === true && isEditing === true;
-
-  return (
-    <div className="row">
-      <div className="col-12">
-        <div>
-          <p>
-            <b>{label}</b>
-          </p>
-          <div className="row">
-            {(isAddingRecommendation ||
-              isEditingRecommendation ||
-              !isExistingValue) && (
-              <div className="col-10">
-                <Input
-                  type="textarea"
-                  placeholder={placeholder}
-                  value={inputValue}
-                  onChange={e => setInputValue(e.target.value)}
-                ></Input>
-              </div>
-            )}
-            {canEditRecommendation && isExistingValue && (
-              <div className="col-10">{existingValue}</div>
-            )}
-            {isAddingRecommendation && (
-              <div className="col-1">
-                <Button
-                  type="submit"
-                  color="primary"
-                  onClick={handleAddClick}
-                  className="btn-pill mt-2"
-                  size="sm"
-                  style={{ width: "50px" }}
-                >
-                  Add
-                </Button>
-              </div>
-            )}
-            {!isExistingValue && (
-              <div className="col-1">
-                <Button
-                  type="submit"
-                  color="primary"
-                  onClick={handleSaveClick}
-                  className="btn-pill mt-2"
-                  size="sm"
-                  style={{ width: "50px" }}
-                >
-                  Add
-                </Button>
-              </div>
-            )}
-            {canEditRecommendation && isExistingValue && (
-              <div className="col-1">
-                <Button
-                  color="secondary"
-                  size="sm"
-                  className="btn-pill mt-2"
-                  style={{ width: "50px" }}
-                  onClick={handleEditClick}
-                >
-                  <i className="fa fa-pencil edit-toggle" />
-                </Button>
-              </div>
-            )}
-            {isEditingRecommendation && (
-              <>
-                <div className="col-1">
-                  <Button
-                    color="primary"
-                    className="btn-pill mt-2"
-                    size="sm"
-                    style={{ width: "50px" }}
-                    onClick={handleSaveClick}
-                  >
-                    <i className="fa fa-check edit-toggle" />
-                  </Button>
-                </div>
-                <div className="col-1">
-                  <Button
-                    color="danger"
-                    className="btn-pill mt-2"
-                    size="sm"
-                    style={{ width: "50px" }}
-                    onClick={handleCancelClick}
-                  >
-                    <i className="fa fa-times edit-toggle" />
-                  </Button>
-                </div>
-              </>
-            )}
-          </div>
-        </div>{" "}
-      </div>
-    </div>
-  );
-};
-
-const SelectValueDropdown = ({ value, onOptionClick, options, field }) => {
-  const [isOpen, setIsOpen] = useState(false);
-
-  const handleOptionClick = e => {
-    const { id } = e.target;
-
-    // Mutation expects ids as integers
-    const valuesObject = { [field]: parseInt(id) };
-    onOptionClick(valuesObject);
-  };
-
-  return (
-    <Dropdown
-      toggle={() => {
-        setIsOpen(!isOpen);
-      }}
-      isOpen={isOpen}
-      className="mb-3"
-    >
-      <DropdownToggle
-        className="w-100 pt-1"
-        style={{ backgroundColor: "transparent", border: "0" }}
-      >
-        <div className="row">
-          <div className="col-11 px-0">{value}</div>
-          <div className="col-1 px-1">
-            <i className="fa fa-caret-down fa-lg"></i>
-          </div>
-        </div>
-      </DropdownToggle>
-      <DropdownMenu>
-        {options.map(option => {
-          return (
-            <DropdownItem
-              id={option.id}
-              key={option.id}
-              onClick={handleOptionClick}
-            >
-              {option.description}
-            </DropdownItem>
-          );
-        })}
-      </DropdownMenu>
-    </Dropdown>
-  );
-};
+import RecommendationTextInputRow from "./RecommendationTextInputRow";
+import RecommendationSelectValueDropdown from "./RecommendationSelectValueDropdown";
 
 // TODOs
 // 2. Match styling designs
@@ -282,7 +85,7 @@ const Recommendations = ({ crashId }) => {
                   </div>
                 </div>
                 <div className="col-8">
-                  <SelectValueDropdown
+                  <RecommendationSelectValueDropdown
                     value={getLookupValue(
                       fieldConfig.fields.coordination_partner_id
                     )}
@@ -303,7 +106,7 @@ const Recommendations = ({ crashId }) => {
                   </div>
                 </div>
                 <div className="col-8">
-                  <SelectValueDropdown
+                  <RecommendationSelectValueDropdown
                     value={getLookupValue(
                       fieldConfig.fields.recommendation_status_id
                     )}
