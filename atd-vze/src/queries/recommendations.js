@@ -29,7 +29,7 @@ export const GET_RECOMMENDATIONS = gql`
 
 export const INSERT_RECOMMENDATION = gql`
   mutation InsertRecommendation(
-    $recommendation: String
+    $text: String
     $update: String
     $crashId: Int
     $userEmail: String
@@ -38,7 +38,7 @@ export const INSERT_RECOMMENDATION = gql`
   ) {
     insert_recommendations(
       objects: {
-        text: $recommendation
+        text: $text
         update: $update
         crash_id: $crashId
         created_by: $userEmail

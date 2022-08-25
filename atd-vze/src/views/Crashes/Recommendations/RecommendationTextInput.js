@@ -38,6 +38,7 @@ const RecommendationTextInput = ({
 
   const handleCancelClick = () => {
     setIsEditing(false);
+    setInputValue(existingValue);
   };
 
   // Recommendation record does not exist yet, adding a value will create record
