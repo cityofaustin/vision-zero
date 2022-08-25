@@ -27,49 +27,58 @@ import { useAuth0, isReadOnly } from "../../../auth/authContext";
 
 const RowLabelData = ({
   label,
-  table,
+  // table,
   data,
   newInput,
   // setNewInput,
   editedField,
   setEditedField,
   placeholder,
-  hasData,
-  field,
+  hasFieldValue,
+  // field,
   displayData,
-  refetch,
-  addVariableDict,
-  editVariableDict,
-  editedVariableDict,
-  showInput,
+  // refetch,
+  // addVariableDict,
+  // editVariableDict,
+  // editedVariableDict,
+  // Added
+  field,
+  value,
+  doesRecommendationRecordExist,
+  // handleAddClick,
+  // handleEditClick,
 }) => {
-  const [isEditing, setIsEditing] = useState(true);
+  const [isEditing, setIsEditing] = useState(false);
+  const [inputValue, setInputValue] = useState(value);
 
   // declare mutation functions
-  const [addRecommendation] = useMutation(INSERT_RECOMMENDATION);
-  const [editRecommendation] = useMutation(UPDATE_RECOMMENDATION);
+  // const [addRecommendation] = useMutation(INSERT_RECOMMENDATION);
+  // const [editRecommendation] = useMutation(UPDATE_RECOMMENDATION);
 
+  // const handleAddClick = () => {
+  //   if (data) {
+  //     const id = table?.id;
+  //     editRecommendation({
+  //       variables: editVariableDict,
+  //     })
+  //       .then(response => {
+  //         // setNewInput("");
+  //         refetch();
+  //       })
+  //       .catch(error => console.error(error));
+  //   } else {
+  //     addRecommendation({
+  //       variables: addVariableDict,
+  //     })
+  //       .then(response => {
+  //         // setNewInput("");
+  //         refetch();
+  //       })
+  //       .catch(error => console.error(error));
+  //   }
+  // };
   const handleAddClick = () => {
-    if (data) {
-      const id = table?.id;
-      editRecommendation({
-        variables: editVariableDict,
-      })
-        .then(response => {
-          // setNewInput("");
-          refetch();
-        })
-        .catch(error => console.error(error));
-    } else {
-      addRecommendation({
-        variables: addVariableDict,
-      })
-        .then(response => {
-          // setNewInput("");
-          refetch();
-        })
-        .catch(error => console.error(error));
-    }
+    console.log("adding");
   };
 
   const handleSaveClick = variables => {
@@ -86,7 +95,6 @@ const RowLabelData = ({
   };
 
   const handleEditClick = () => {
-    // setEditedField(data);
     setIsEditing(true);
   };
 
@@ -99,28 +107,22 @@ const RowLabelData = ({
   // State:
   // 1. isEditing (toggle between #2 and #3 below)
   // Modes:
-  // 1. Add (no rec yet) doesFatalityRecommendationExist = false isEditing = false showInput = true
+  // 1. Add (no rec yet) doesRecommendationRecordExist = false isEditing = false showInput = true
   //  - Show input
   //  - Show Add button
-  // 2. Can Edit (rec already) doesFatalityRecommendationExist = true isEditing = false showInput = false
+  // 2. Can Edit (rec already) doesRecommendationRecordExist = true isEditing = false showInput = false
   //  - Show value text
   //  - Show Pencil icon
-  // 3. Is Editing doesFatalityRecommendationExist = true isEditing = true showInput = true
+  // 3. Is Editing doesRecommendationRecordExist = true isEditing = true showInput = true
   //  - Show value in input
   //  - Show check icon (fires mutation)
   //  - Show cancel button (closes edit mode)
   const isAddingRecommendation =
-    doesFatalityRecommendationExist === false &&
-    isEditing === false &&
-    showInput === true;
-  const canEditingRecommendation =
-    doesFatalityRecommendationExist === true &&
-    isEditing === false &&
-    showInput === false;
+    doesRecommendationRecordExist === false && isEditing === false;
+  const canEditRecommendation =
+    doesRecommendationRecordExist === true && isEditing === false;
   const isEditingRecommendation =
-    doesFatalityRecommendationExist === true &&
-    isEditing === true &&
-    showInput === true;
+    doesRecommendationRecordExist === true && isEditing === true;
 
   return (
     <div>
@@ -128,33 +130,33 @@ const RowLabelData = ({
         <b>{label}</b>
       </p>
       <div className="row">
-        {showInput && (
-          <>
-            <div className="col-10">
-              <Input
-                type="textarea"
-                placeholder={placeholder}
-                value={newInput}
-                // onChange={e => setNewInput(e.target.value)}
-              ></Input>
-            </div>
-            <div className="col-1">
-              <Button
-                type="submit"
-                color="primary"
-                onClick={handleAddClick}
-                className="btn-pill mt-2"
-                size="sm"
-                style={{ width: "50px" }}
-              >
-                Add
-              </Button>
-            </div>
-          </>
+        {(isAddingRecommendation || isEditingRecommendation) && (
+          <div className="col-10">
+            <Input
+              type="textarea"
+              placeholder={placeholder}
+              value={inputValue}
+              onChange={e => setInputValue(e.target.value)}
+            ></Input>
+          </div>
         )}
-        {data && !isEditing && (
+        {isAddingRecommendation && (
+          <div className="col-1">
+            <Button
+              type="submit"
+              color="primary"
+              onClick={handleAddClick}
+              className="btn-pill mt-2"
+              size="sm"
+              style={{ width: "50px" }}
+            >
+              Add
+            </Button>
+          </div>
+        )}
+        {canEditRecommendation && (
           <>
-            <div className="col-10">{displayData(hasData, field)}</div>
+            <div className="col-10">{displayData}</div>
             <div className="col-1">
               <Button
                 color="secondary"
@@ -164,6 +166,32 @@ const RowLabelData = ({
                 onClick={handleEditClick}
               >
                 <i className="fa fa-pencil edit-toggle" />
+              </Button>
+            </div>
+          </>
+        )}
+        {isEditingRecommendation && (
+          <>
+            <div className="col-1">
+              <Button
+                color="primary"
+                className="btn-pill mt-2"
+                size="sm"
+                style={{ width: "50px" }}
+                onClick={e => handleSaveClick}
+              >
+                <i className="fa fa-check edit-toggle" />
+              </Button>
+            </div>
+            <div className="col-1">
+              <Button
+                color="danger"
+                className="btn-pill mt-2"
+                size="sm"
+                style={{ width: "50px" }}
+                onClick={() => setIsEditing(false)}
+              >
+                <i className="fa fa-times edit-toggle" />
               </Button>
             </div>
           </>
@@ -266,9 +294,7 @@ const Recommendations = ({ crashId }) => {
 
   const fieldConfig = recommendationsDataMap;
   const recommendation = data?.recommendations?.[0];
-  const doesFatalityRecommendationExist = data?.recommendations?.[0]
-    ? true
-    : false;
+  const doesRecommendationRecordExist = recommendation ? true : false;
 
   // Get current value from returned data if there is one
   const displayData = ({ lookupOptions, key }) => {
@@ -331,7 +357,7 @@ const Recommendations = ({ crashId }) => {
                       fieldConfig.fields.coordination_partner_id
                     )}
                     onOptionClick={
-                      doesFatalityRecommendationExist
+                      doesRecommendationRecordExist
                         ? onEditFromDropdownClick
                         : onAddFromDropdownClick
                     }
@@ -354,7 +380,7 @@ const Recommendations = ({ crashId }) => {
                       fieldConfig.fields.recommendation_status_id
                     )}
                     onOptionClick={
-                      doesFatalityRecommendationExist
+                      doesRecommendationRecordExist
                         ? onEditFromDropdownClick
                         : onAddFromDropdownClick
                     }
@@ -372,25 +398,26 @@ const Recommendations = ({ crashId }) => {
                 table={recommendation}
                 data={recommendation?.text}
                 placeholder={"Enter recommendation here..."}
-                displayData={displayData}
-                hasData={hasRecommendation}
+                displayData={displayData(fieldConfig.fields.text)}
+                hasFieldValue={hasRecommendation}
                 field={fieldConfig.fields.text}
-                editedField={editedRecommendation}
-                setEditedField={setEditedRecommendation}
-                newInput={newRecommendation}
-                setNewInput={setNewRecommendation}
-                refetch={refetch}
-                addVariableDict={{
-                  recommendation: newRecommendation,
-                  crashId: crashId,
-                  userEmail: userEmail,
-                }}
-                editVariableDict={{
-                  recommendation: newRecommendation,
-                }}
-                editedVariableDict={{
-                  recommendation: editedRecommendation,
-                }}
+                doesRecommendationRecordExist={doesRecommendationRecordExist}
+                // editedField={editedRecommendation}
+                // setEditedField={setEditedRecommendation}
+                // newInput={newRecommendation}
+                // setNewInput={setNewRecommendation}
+                // refetch={refetch}
+                // addVariableDict={{
+                //   recommendation: newRecommendation,
+                //   crashId: crashId,
+                //   userEmail: userEmail,
+                // }}
+                // editVariableDict={{
+                //   recommendation: newRecommendation,
+                // }}
+                // editedVariableDict={{
+                //   recommendation: editedRecommendation,
+                // }}
               ></RowLabelData>
             </div>
           </div>
@@ -401,25 +428,26 @@ const Recommendations = ({ crashId }) => {
                 table={recommendation}
                 data={recommendation?.update}
                 placeholder={"Enter updates here..."}
-                displayData={displayData}
+                displayData={displayData(fieldConfig.fields.update)}
                 hasData={hasUpdate}
                 field={fieldConfig.fields.update}
-                editedField={editedUpdate}
-                setEditedField={setEditedUpdate}
-                newInput={newUpdate}
-                setNewInput={setNewUpdate}
-                refetch={refetch}
-                addVariableDict={{
-                  update: newUpdate,
-                  crashId: crashId,
-                  userEmail: userEmail,
-                }}
-                editVariableDict={{
-                  update: newUpdate,
-                }}
-                editedVariableDict={{
-                  update: editedUpdate,
-                }}
+                doesRecommendationRecordExist={doesRecommendationRecordExist}
+                // editedField={editedUpdate}
+                // setEditedField={setEditedUpdate}
+                // newInput={newUpdate}
+                // setNewInput={setNewUpdate}
+                // refetch={refetch}
+                // addVariableDict={{
+                //   update: newUpdate,
+                //   crashId: crashId,
+                //   userEmail: userEmail,
+                // }}
+                // editVariableDict={{
+                //   update: newUpdate,
+                // }}
+                // editedVariableDict={{
+                //   update: editedUpdate,
+                // }}
               ></RowLabelData>
             </div>
           </div>
