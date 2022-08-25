@@ -90,6 +90,7 @@ const LocationNotes = ({ locationId }) => {
 
   // function to handle cancel button click
   const handleCancelClick = () => {
+    setEditRow("");
     setEditedNote("");
     setEditRow("");
   };

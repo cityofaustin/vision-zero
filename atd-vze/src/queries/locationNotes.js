@@ -2,7 +2,10 @@ import { gql } from "apollo-boost";
 
 export const GET_LOCATION_NOTES = gql`
   query FindLocationNotes($locationId: String!) {
-    location_notes(where: {location_id: {_eq: $locationId}}, order_by: {date: desc}) {
+    location_notes(
+      where: { location_id: { _eq: $locationId } }
+      order_by: { date: desc }
+    ) {
       id
       created_at
       updated_at
@@ -15,12 +18,14 @@ export const GET_LOCATION_NOTES = gql`
 `;
 
 export const INSERT_LOCATION_NOTE = gql`
-  mutation InsertLocationNote($note: String!, $locationId: String!, $userEmail: String){
-    insert_location_notes(objects: {
-      text: $note
-      location_id: $locationId
-      user_email: $userEmail
-    }) {
+  mutation InsertLocationNote(
+    $note: String!
+    $locationId: String!
+    $userEmail: String
+  ) {
+    insert_location_notes(
+      objects: { text: $note, location_id: $locationId, user_email: $userEmail }
+    ) {
       returning {
         location_id
         text
@@ -34,22 +39,20 @@ export const INSERT_LOCATION_NOTE = gql`
 export const UPDATE_LOCATION_NOTE = gql`
   mutation UpdateNote($note: String!, $id: Int!) {
     update_location_notes_by_pk(
-      pk_columns: {id: $id}
-      _set: {text: $note}
+      pk_columns: { id: $id }
+      _set: { text: $note }
     ) {
-        location_id
-        text
-        date
-        user_email
-      }
+      location_id
+      text
+      date
+      user_email
+    }
   }
 `;
 
 export const DELETE_LOCATION_NOTE = gql`
   mutation DeleteNote($id: Int!) {
-    delete_location_notes_by_pk(
-      id: $id
-    ) {
+    delete_location_notes_by_pk(id: $id) {
       location_id
       text
       date
