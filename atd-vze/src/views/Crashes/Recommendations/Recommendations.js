@@ -214,7 +214,6 @@ const SelectValueDropdown = ({ value, onOptionClick, options, field }) => {
 // 1. Only show recommendation card if atd_fatality_count > 0 && user is role = "Admin" or above
 // 2. Match styling designs
 // 3. Make sure add/edit/cancel buttons align with notes
-// 4. Test adding with each field in new records
 
 // declare fatality review board recommendations component
 const Recommendations = ({ crashId }) => {
