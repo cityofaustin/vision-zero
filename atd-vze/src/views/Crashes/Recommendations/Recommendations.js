@@ -19,7 +19,7 @@ import {
   UPDATE_RECOMMENDATION,
 } from "../../../queries/recommendations";
 
-const RowLabelData = ({
+const RecommendationTextInputRow = ({
   label,
   placeholder,
   existingValue,
@@ -62,101 +62,99 @@ const RowLabelData = ({
     doesRecommendationRecordExist === true && isEditing === false;
   const isEditingRecommendation =
     doesRecommendationRecordExist === true && isEditing === true;
-  console.log(
-    field,
-    isAddingRecommendation,
-    canEditRecommendation,
-    isEditingRecommendation
-  );
 
   return (
-    <div>
-      <p>
-        <b>{label}</b>
-      </p>
-      <div className="row">
-        {(isAddingRecommendation ||
-          isEditingRecommendation ||
-          !isExistingValue) && (
-          <div className="col-10">
-            <Input
-              type="textarea"
-              placeholder={placeholder}
-              value={inputValue}
-              onChange={e => setInputValue(e.target.value)}
-            ></Input>
+    <div className="row">
+      <div className="col-12">
+        <div>
+          <p>
+            <b>{label}</b>
+          </p>
+          <div className="row">
+            {(isAddingRecommendation ||
+              isEditingRecommendation ||
+              !isExistingValue) && (
+              <div className="col-10">
+                <Input
+                  type="textarea"
+                  placeholder={placeholder}
+                  value={inputValue}
+                  onChange={e => setInputValue(e.target.value)}
+                ></Input>
+              </div>
+            )}
+            {canEditRecommendation && isExistingValue && (
+              <div className="col-10">{existingValue}</div>
+            )}
+            {isAddingRecommendation && (
+              <div className="col-1">
+                <Button
+                  type="submit"
+                  color="primary"
+                  onClick={handleAddClick}
+                  className="btn-pill mt-2"
+                  size="sm"
+                  style={{ width: "50px" }}
+                >
+                  Add
+                </Button>
+              </div>
+            )}
+            {!isExistingValue && (
+              <div className="col-1">
+                <Button
+                  type="submit"
+                  color="primary"
+                  onClick={handleSaveClick}
+                  className="btn-pill mt-2"
+                  size="sm"
+                  style={{ width: "50px" }}
+                >
+                  Add
+                </Button>
+              </div>
+            )}
+            {canEditRecommendation && isExistingValue && (
+              <div className="col-1">
+                <Button
+                  color="secondary"
+                  size="sm"
+                  className="btn-pill mt-2"
+                  style={{ width: "50px" }}
+                  onClick={handleEditClick}
+                >
+                  <i className="fa fa-pencil edit-toggle" />
+                </Button>
+              </div>
+            )}
+            {isEditingRecommendation && (
+              <>
+                <div className="col-1">
+                  <Button
+                    color="primary"
+                    className="btn-pill mt-2"
+                    size="sm"
+                    style={{ width: "50px" }}
+                    onClick={handleSaveClick}
+                  >
+                    <i className="fa fa-check edit-toggle" />
+                  </Button>
+                </div>
+                <div className="col-1">
+                  <Button
+                    color="danger"
+                    className="btn-pill mt-2"
+                    size="sm"
+                    style={{ width: "50px" }}
+                    onClick={handleCancelClick}
+                  >
+                    <i className="fa fa-times edit-toggle" />
+                  </Button>
+                </div>
+              </>
+            )}
           </div>
-        )}
-        {canEditRecommendation && isExistingValue && (
-          <div className="col-10">{existingValue}</div>
-        )}
-        {isAddingRecommendation && (
-          <div className="col-1">
-            <Button
-              type="submit"
-              color="primary"
-              onClick={handleAddClick}
-              className="btn-pill mt-2"
-              size="sm"
-              style={{ width: "50px" }}
-            >
-              Add
-            </Button>
-          </div>
-        )}
-        {!isExistingValue && (
-          <div className="col-1">
-            <Button
-              type="submit"
-              color="primary"
-              onClick={handleSaveClick}
-              className="btn-pill mt-2"
-              size="sm"
-              style={{ width: "50px" }}
-            >
-              Add
-            </Button>
-          </div>
-        )}
-        {canEditRecommendation && isExistingValue && (
-          <div className="col-1">
-            <Button
-              color="secondary"
-              size="sm"
-              className="btn-pill mt-2"
-              style={{ width: "50px" }}
-              onClick={handleEditClick}
-            >
-              <i className="fa fa-pencil edit-toggle" />
-            </Button>
-          </div>
-        )}
-        {isEditingRecommendation && (
-          <>
-            <div className="col-1">
-              <Button
-                color="primary"
-                className="btn-pill mt-2"
-                size="sm"
-                style={{ width: "50px" }}
-                onClick={handleSaveClick}
-              >
-                <i className="fa fa-check edit-toggle" />
-              </Button>
-            </div>
-            <div className="col-1">
-              <Button
-                color="danger"
-                className="btn-pill mt-2"
-                size="sm"
-                style={{ width: "50px" }}
-                onClick={handleCancelClick}
-              >
-                <i className="fa fa-times edit-toggle" />
-              </Button>
-            </div>
-          </>
-        )}
+        </div>{" "}
       </div>
     </div>
   );
@@ -213,7 +211,6 @@ const SelectValueDropdown = ({ value, onOptionClick, options, field }) => {
 // 2. Match styling designs
 // 3. Make sure add/edit/cancel buttons align with notes
 
-// declare fatality review board recommendations component
 const Recommendations = ({ crashId }) => {
   // get current users email
   const userEmail = localStorage.getItem("hasura_user_email");
@@ -320,34 +317,26 @@ const Recommendations = ({ crashId }) => {
               </div>
             </div>
           </div>
-          <div className="row">
-            <div className="col-12">
-              <RowLabelData
-                label={"Recommendation"}
-                data={recommendation?.text}
-                placeholder={"Enter recommendation here..."}
-                existingValue={getFieldValue(fieldConfig.fields.text.key)}
-                field={fieldConfig.fields.text.key}
-                doesRecommendationRecordExist={doesRecommendationRecordExist}
-                onAdd={onAdd}
-                onEdit={onEdit}
-              ></RowLabelData>
-            </div>
-          </div>
-          <div className="row">
-            <div className="col-12">
-              <RowLabelData
-                label={"Updates"}
-                data={recommendation?.update}
-                placeholder={"Enter updates here..."}
-                existingValue={getFieldValue(fieldConfig.fields.update.key)}
-                field={fieldConfig.fields.update.key}
-                doesRecommendationRecordExist={doesRecommendationRecordExist}
-                onAdd={onAdd}
-                onEdit={onEdit}
-              ></RowLabelData>
-            </div>
-          </div>
+          <RecommendationTextInputRow
+            label={"Recommendation"}
+            data={recommendation?.text}
+            placeholder={"Enter recommendation here..."}
+            existingValue={getFieldValue(fieldConfig.fields.text.key)}
+            field={fieldConfig.fields.text.key}
+            doesRecommendationRecordExist={doesRecommendationRecordExist}
+            onAdd={onAdd}
+            onEdit={onEdit}
+          />
+          <RecommendationTextInputRow
+            label={"Updates"}
+            data={recommendation?.update}
+            placeholder={"Enter updates here..."}
+            existingValue={getFieldValue(fieldConfig.fields.update.key)}
+            field={fieldConfig.fields.update.key}
+            doesRecommendationRecordExist={doesRecommendationRecordExist}
+            onAdd={onAdd}
+            onEdit={onEdit}
+          />
         </div>
       </CardBody>
       <CardFooter></CardFooter>
