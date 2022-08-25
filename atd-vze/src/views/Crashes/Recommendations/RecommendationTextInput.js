@@ -55,11 +55,11 @@ const RecommendationTextInput = ({
       <p>
         <b>{label}</b>
       </p>
-      <div className="row">
+      <div className="row d-flex">
         {(isAddingRecommendation ||
           isEditingRecommendation ||
           !isExistingValue) && (
-          <div className="col-10">
+          <div className="col flex-grow-1">
             <Input
               type="textarea"
               placeholder={placeholder}
@@ -69,10 +69,11 @@ const RecommendationTextInput = ({
           </div>
         )}
         {canEditRecommendation && isExistingValue && (
-          <div className="col-10">{existingValue}</div>
+          <div className="col flex-grow-1">{existingValue}</div>
         )}
-        {isAddingRecommendation && (
-          <div className="col-1">
+        {/* First button*/}
+        <div className="col-1" style={{ padding: "12px 4px 12px 4px" }}>
+          {isAddingRecommendation && (
             <Button
               type="submit"
               color="primary"
@@ -83,10 +84,8 @@ const RecommendationTextInput = ({
             >
               Add
             </Button>
-          </div>
-        )}
-        {!isExistingValue && (
-          <div className="col-1">
+          )}
+          {!isExistingValue && (
             <Button
               type="submit"
               color="primary"
@@ -97,10 +96,8 @@ const RecommendationTextInput = ({
             >
               Add
             </Button>
-          </div>
-        )}
-        {canEditRecommendation && isExistingValue && (
-          <div className="col-1">
+          )}
+          {canEditRecommendation && isExistingValue && (
             <Button
               color="secondary"
               size="sm"
@@ -110,34 +107,33 @@ const RecommendationTextInput = ({
             >
               <i className="fa fa-pencil edit-toggle" />
             </Button>
-          </div>
-        )}
-        {isEditingRecommendation && (
-          <>
-            <div className="col-1">
-              <Button
-                color="primary"
-                className="btn-pill mt-2"
-                size="sm"
-                style={{ width: "50px" }}
-                onClick={handleSaveClick}
-              >
-                <i className="fa fa-check edit-toggle" />
-              </Button>
-            </div>
-            <div className="col-1">
-              <Button
-                color="danger"
-                className="btn-pill mt-2"
-                size="sm"
-                style={{ width: "50px" }}
-                onClick={handleCancelClick}
-              >
-                <i className="fa fa-times edit-toggle" />
-              </Button>
-            </div>
-          </>
-        )}
+          )}
+          {isEditingRecommendation && (
+            <Button
+              color="primary"
+              className="btn-pill mt-2"
+              size="sm"
+              style={{ width: "50px" }}
+              onClick={handleSaveClick}
+            >
+              <i className="fa fa-check edit-toggle" />
+            </Button>
+          )}
+        </div>
+        {/* Second button */}
+        <div className="col-1" style={{ padding: "12px 4px 12px 4px" }}>
+          {isEditingRecommendation && (
+            <Button
+              color="danger"
+              className="btn-pill mt-2"
+              size="sm"
+              style={{ width: "50px" }}
+              onClick={handleCancelClick}
+            >
+              <i className="fa fa-times edit-toggle" />
+            </Button>
+          )}
+        </div>
       </div>
     </div>
   );
