@@ -86,7 +86,7 @@ const RecommendationTextInput = ({
               Add
             </Button>
           )}
-          {!isExistingValue && (
+          {!isAddingRecommendation && !isExistingValue && (
             <Button
               type="submit"
               color="primary"
