@@ -43,7 +43,7 @@ const RowLabelData = ({
   editedVariableDict,
   showInput,
 }) => {
-  const [editMode, setEditMode] = useState(false);
+  const [isEditing, setIsEditing] = useState(true);
 
   // declare mutation functions
   const [addRecommendation] = useMutation(INSERT_RECOMMENDATION);
@@ -86,8 +86,8 @@ const RowLabelData = ({
   };
 
   const handleEditClick = () => {
-    setEditedField(data);
-    setEditMode(true);
+    // setEditedField(data);
+    setIsEditing(true);
   };
 
   // 1. if there is a recommendation or update - show the content
@@ -99,16 +99,29 @@ const RowLabelData = ({
   // State:
   // 1. isEditing (toggle between #2 and #3 below)
   // Modes:
-  // 1. Add (no rec yet)
+  // 1. Add (no rec yet) doesFatalityRecommendationExist = false isEditing = false showInput = true
   //  - Show input
   //  - Show Add button
-  // 2. Can Edit (rec already)
+  // 2. Can Edit (rec already) doesFatalityRecommendationExist = true isEditing = false showInput = false
   //  - Show value text
   //  - Show Pencil icon
-  // 3. Is Editing
+  // 3. Is Editing doesFatalityRecommendationExist = true isEditing = true showInput = true
   //  - Show value in input
   //  - Show check icon (fires mutation)
   //  - Show cancel button (closes edit mode)
+  const isAddingRecommendation =
+    doesFatalityRecommendationExist === false &&
+    isEditing === false &&
+    showInput === true;
+  const canEditingRecommendation =
+    doesFatalityRecommendationExist === true &&
+    isEditing === false &&
+    showInput === false;
+  const isEditingRecommendation =
+    doesFatalityRecommendationExist === true &&
+    isEditing === true &&
+    showInput === true;
+
   return (
     <div>
       <p>
@@ -139,7 +152,7 @@ const RowLabelData = ({
             </div>
           </>
         )}
-        {data && !editMode && (
+        {data && !isEditing && (
           <>
             <div className="col-10">{displayData(hasData, field)}</div>
             <div className="col-1">
@@ -155,7 +168,7 @@ const RowLabelData = ({
             </div>
           </>
         )}
-        {data && editMode && (
+        {/* {data && isEditing && (
           <div className="col-2">
             <Input
               type="textarea"
@@ -173,7 +186,7 @@ const RowLabelData = ({
             </Button>
             <CancelButton></CancelButton>
           </div>
-        )}
+        )} */}
       </div>
     </div>
   );
