@@ -22,6 +22,12 @@ const RecommendationSelectValueDropdown = ({
     onOptionClick(valuesObject);
   };
 
+  // Add a null option to enable users to clear out the value
+  const makeOptionsWithNullOption = options => [
+    { id: null, description: "None" },
+    ...options,
+  ];
+
   return (
     <Dropdown
       toggle={() => {
@@ -40,7 +46,7 @@ const RecommendationSelectValueDropdown = ({
         </div>
       </DropdownToggle>
       <DropdownMenu className="w-100">
-        {options.map(option => {
+        {makeOptionsWithNullOption(options).map(option => {
           return (
             <DropdownItem
               id={option.id}
