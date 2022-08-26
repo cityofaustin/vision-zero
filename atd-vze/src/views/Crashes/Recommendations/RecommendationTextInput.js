@@ -56,7 +56,7 @@ const RecommendationTextInput = ({
       <p>
         <b>{label}</b>
       </p>
-      <div className="d-flex ">
+      <div className="d-flex">
         {(isAddingRecommendation ||
           isEditingRecommendation ||
           !isExistingValue) && (

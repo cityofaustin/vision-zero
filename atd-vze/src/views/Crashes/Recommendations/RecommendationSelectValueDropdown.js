@@ -35,11 +35,11 @@ const RecommendationSelectValueDropdown = ({
         style={{ backgroundColor: "transparent", border: "0" }}
       >
         <div className="flex-grow-1">{value}</div>
-        <div>
+        <div className="pl-3">
           <i className="fa fa-caret-down fa-lg"></i>
         </div>
       </DropdownToggle>
-      <DropdownMenu style={{ right: 0 }}>
+      <DropdownMenu className="w-100">
         {options.map(option => {
           return (
             <DropdownItem

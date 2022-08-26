@@ -76,7 +76,7 @@ const Recommendations = ({ crashId }) => {
           <div className="row border-bottom">
             <div className="col-12 col-lg-6">
               <div className="row">
-                <div className="col-auto pr-0">
+                <div className="col-4 pr-0">
                   <div className="font-weight-bold pt-1">
                     {fieldConfig.fields.coordination_partner_id.label}
                   </div>
@@ -97,12 +97,12 @@ const Recommendations = ({ crashId }) => {
             </div>
             <div className="col-12 col-lg-6">
               <div className="row">
-                <div className="col-auto pr-0">
+                <div className="col-2 pr-0">
                   <div className="font-weight-bold pt-1">
                     {fieldConfig.fields.recommendation_status_id.label}
                   </div>
                 </div>
-                <div className="col-8">
+                <div className="col-10">
                   <RecommendationSelectValueDropdown
                     value={getLookupValue(
                       fieldConfig.fields.recommendation_status_id
