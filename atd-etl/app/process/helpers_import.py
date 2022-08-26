@@ -552,8 +552,17 @@ def insert_crash_change_template(new_record_dict, differences, crash_id):
     :return: string
     """
     # Turn the dictionary into a character-escaped json string
-    new_record_escaped = json.dumps(json.dumps(new_record_dict))
-    new_record_crash_date = convert_date(new_record_dict["crash_date"])
+    print(new_record_dict)
+
+    # need to iterate over fields and stringify dates and times, but not datetimes 😜
+    new_record_crash_date = new_record_dict["crash_date"].strftime("%m/%d/%Y")  #convert_date(new_record_dict["crash_date"])
+    for key in new_record_dict:
+        if isinstance(new_record_dict[key], datetime.date):
+            new_record_dict[key] = new_record_dict[key].strftime("%Y/%d/%m")
+        if isinstance(new_record_dict[key], datetime.time):
+            new_record_dict[key] = new_record_dict[key].strftime("%H:%M:%S")
+
+    new_record_escaped = json.dumps(json.dumps(new_record_dict), default=str)
     # Build the template and inject required values
     output = (
         """
