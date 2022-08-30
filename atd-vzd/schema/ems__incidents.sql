@@ -1,3 +1,4 @@
+-- Table Definition
 CREATE TABLE "public"."ems__incidents" (
     "pcr_key" int4 NOT NULL,
     "incident_date_received" date,
@@ -49,6 +50,8 @@ CREATE TABLE "public"."ems__incidents" (
     "apd_incident_number_2" varchar(255),
     "mvc_form_time" time,
     "mvc_form_date" date,
+    "crash_id" int4,
+    CONSTRAINT "ems__incidents_crash_id_fkey" FOREIGN KEY ("crash_id") REFERENCES "public"."atd_txdot_crashes"("crash_id"),
     CONSTRAINT "ems__incidents_location_id_fkey" FOREIGN KEY ("location_id") REFERENCES "public"."atd_txdot_locations"("location_id"),
     PRIMARY KEY ("pcr_key")
 );

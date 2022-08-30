@@ -21,6 +21,8 @@ CREATE TABLE "public"."afd__incidents" (
     "ems_incident_number_2" text,
     "call_date" date,
     "call_time" time,
+    "crash_id" int4,
+    CONSTRAINT "afd__incidents_crash_id_fkey" FOREIGN KEY ("crash_id") REFERENCES "public"."atd_txdot_crashes"("crash_id"),
     CONSTRAINT "afd__incidents_location_id_fkey" FOREIGN KEY ("location_id") REFERENCES "public"."atd_txdot_locations"("location_id"),
     PRIMARY KEY ("id")
 );
