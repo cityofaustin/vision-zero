@@ -1,3 +1,4 @@
+-- Sequence and defined type
 CREATE SEQUENCE IF NOT EXISTS afd__incidents_id_seq;
 
 -- Table Definition

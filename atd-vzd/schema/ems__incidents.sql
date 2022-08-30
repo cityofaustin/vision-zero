@@ -45,6 +45,10 @@ CREATE TABLE "public"."ems__incidents" (
     "geometry" geometry,
     "austin_full_purpose" bool,
     "location_id" varchar,
+    "apd_incident_number_1" varchar(255),
+    "apd_incident_number_2" varchar(255),
+    "mvc_form_time" time,
+    "mvc_form_date" date,
     CONSTRAINT "ems__incidents_location_id_fkey" FOREIGN KEY ("location_id") REFERENCES "public"."atd_txdot_locations"("location_id"),
     PRIMARY KEY ("pcr_key")
 );
@@ -93,4 +97,8 @@ COMMENT ON COLUMN "public"."ems__incidents"."apd_incident_numbers" IS 'A comma d
 COMMENT ON COLUMN "public"."ems__incidents"."pcr_patient_acuity_initial" IS 'Initial patient acuity determined by provider';
 COMMENT ON COLUMN "public"."ems__incidents"."pcr_patient_acuity_final" IS 'Final patient acuity determined by provider';
 COMMENT ON COLUMN "public"."ems__incidents"."geometry" IS 'ATD created x, y point value ';
+COMMENT ON COLUMN "public"."ems__incidents"."apd_incident_number_1" IS 'A comma delimitted list of incident numbers for APD incidents that are linked to the EMS incident. This field can be used to determin if there is an associated APD incident.';
+COMMENT ON COLUMN "public"."ems__incidents"."apd_incident_number_2" IS 'A comma delimitted list of incident numbers for APD incidents that are linked to the EMS incident. This field can be used to determin if there is an associated APD incident.';
+COMMENT ON COLUMN "public"."ems__incidents"."mvc_form_time" IS 'The time that an extrication was performed';
+COMMENT ON COLUMN "public"."ems__incidents"."mvc_form_date" IS 'The date that an extrication was performed';
 
