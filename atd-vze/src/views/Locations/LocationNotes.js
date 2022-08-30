@@ -82,10 +82,8 @@ const LocationNotes = ({ locationId }) => {
       },
     })
       .then(response => {
-        refetch().then(response => {
-          setEditedNote("");
-          setEditRow("");
-        });
+        refetch();
+        setEditedNote("");
       })
       .catch(error => console.error(error));
   };
@@ -94,6 +92,7 @@ const LocationNotes = ({ locationId }) => {
   const handleCancelClick = () => {
     setEditRow("");
     setEditedNote("");
+    setEditRow("");
   };
 
   // function to handle delete note button click
