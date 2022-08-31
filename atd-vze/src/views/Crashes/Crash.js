@@ -11,6 +11,7 @@ import {
 } from "reactstrap";
 import { withApollo } from "react-apollo";
 import { useQuery } from "@apollo/react-hooks";
+import { useAuth0, isAdmin, isItSupervisor } from "../../auth/authContext";
 
 import CrashCollapses from "./CrashCollapses";
 import CrashMap from "./Maps/CrashMap";
@@ -22,6 +23,7 @@ import CrashNarrative from "./CrashNarrative";
 import DataTable from "../../Components/DataTable";
 import Notes from "./Notes";
 import { crashDataMap } from "./crashDataMap";
+import Recommendations from "./Recommendations/Recommendations";
 
 import "./crash.scss";
 
@@ -61,6 +63,14 @@ function Crash(props) {
   const [editField, setEditField] = useState("");
   const [formData, setFormData] = useState({});
   const [isEditingCoords, setIsEditingCoords] = useState(false);
+
+  const { getRoles } = useAuth0();
+  const roles = getRoles();
+
+  const isCrashFatal =
+    data?.atd_txdot_crashes?.[0]?.atd_fatality_count > 0 ? true : false;
+  const shouldShowFatalityRecommendations =
+    (isAdmin(roles) || isItSupervisor(roles)) && isCrashFatal;
 
   if (loading || peopleLoading) return "Loading...";
   if (error) return `Error! ${error.message}`;
@@ -279,6 +289,13 @@ function Crash(props) {
         </Row>
       ) : (
         <div></div>
+      )}
+      {shouldShowFatalityRecommendations && (
+        <Row>
+          <Col>
+            <Recommendations crashId={props.match.params.id} />
+          </Col>
+        </Row>
       )}
       <Row>
         <Col>
