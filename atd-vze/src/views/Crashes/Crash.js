@@ -296,13 +296,13 @@ function Crash(props) {
         </Col>
       </Row>
        {shouldShowFatalityRecommendations && (
-        <Row>
+      <Row>
         <Col>
           <Recommendations crashId={props.match.params.id} />
         </Col>
       </Row>
       )}
-    <Row>
+      <Row>
         <Col>
           <Notes crashId={props.match.params.id} />
         </Col>
