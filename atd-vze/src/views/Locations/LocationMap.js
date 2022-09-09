@@ -12,10 +12,10 @@ import moment from "moment";
 import styled from "styled-components";
 import { colors } from "../../styles/colors";
 import { Button } from "reactstrap";
+import { LOCATION_MAP_CONFIG } from "../../helpers/map";
 
 const TOKEN = process.env.REACT_APP_MAPBOX_TOKEN;
-// This API key is managed by CTM. Contact help desk for maintenance and troubleshooting.
-const NEARMAP_KEY = process.env.REACT_APP_NEARMAP_KEY;
+
 
 const fullscreenControlStyle = {
   position: "absolute",
@@ -29,30 +29,6 @@ const navStyle = {
   top: 36,
   left: 0,
   padding: "10px",
-};
-
-// Provide style parameters to render Nearmap tiles in react-map-gl
-// https://docs.mapbox.com/mapbox-gl-js/example/map-tiles/
-const rasterStyle = {
-  version: 8,
-  sources: {
-    "raster-tiles": {
-      type: "raster",
-      tiles: [
-        `https://api.nearmap.com/tiles/v3/Vert/{z}/{x}/{y}.jpg?apikey=${NEARMAP_KEY}`,
-      ],
-      tileSize: 256,
-    },
-  },
-  layers: [
-    {
-      id: "simple-tiles",
-      type: "raster",
-      source: "raster-tiles",
-      minzoom: 0,
-      maxzoom: 22,
-    },
-  ],
 };
 
 const TimestampDisplay = styled.div`
@@ -142,17 +118,20 @@ export default class LocationMap extends Component {
         {...viewport}
         width="100%"
         height="500px"
-        // Mapbox Satellite layer as fallback or for testing
-        mapStyle={
-          isDev ? "mapbox://styles/mapbox/satellite-streets-v9" : rasterStyle
-        }
+        mapStyle={LOCATION_MAP_CONFIG.mapStyle}
         onViewportChange={this._updateViewport}
         mapboxApiAccessToken={TOKEN}
       >
+        {/* add nearmap raster source and style */}
+        <Source {...LOCATION_MAP_CONFIG.sources.aerials}/>
+        <Layer {...LOCATION_MAP_CONFIG.layers.aerials} />
+      
         {/* Show polygon on map */}
         <Source type="geojson" data={this.locationPolygonGeoJson}>
           <Layer {...polygonDataLayer} />
         </Source>
+        {/* show street labels on top of other layers */}
+        <Layer {...LOCATION_MAP_CONFIG.layers.streetLabels} />
         <div className="fullscreen" style={fullscreenControlStyle}>
           <FullscreenControl />
         </div>
