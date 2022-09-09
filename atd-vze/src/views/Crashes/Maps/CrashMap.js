@@ -3,6 +3,8 @@ import MapGL, {
   Marker,
   NavigationControl,
   FullscreenControl,
+  Source,
+  Layer,
 } from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 
@@ -10,8 +12,6 @@ import Pin from "./Pin";
 import { LOCATION_MAP_CONFIG } from "../../../helpers/map";
 
 const TOKEN = process.env.REACT_APP_MAPBOX_TOKEN;
-// This API key is managed by CTM. Contact help desk for maintenance and troubleshooting.
-const NEARMAP_KEY = process.env.REACT_APP_NEARMAP_KEY;
 
 const fullscreenControlStyle = {
   position: "absolute",
@@ -25,30 +25,6 @@ const navStyle = {
   top: 36,
   left: 0,
   padding: "10px",
-};
-
-// Provide style parameters to render Nearmap tiles in react-map-gl
-// https://docs.mapbox.com/mapbox-gl-js/example/map-tiles/
-const rasterStyle = {
-  version: 8,
-  sources: {
-    "raster-tiles": {
-      type: "raster",
-      tiles: [
-        `https://api.nearmap.com/tiles/v3/Vert/{z}/{x}/{y}.jpg?apikey=${NEARMAP_KEY}`,
-      ],
-      tileSize: 256,
-    },
-  },
-  layers: [
-    {
-      id: "simple-tiles",
-      type: "raster",
-      source: "raster-tiles",
-      minzoom: 0,
-      maxzoom: 22,
-    },
-  ],
 };
 
 export default class CrashMap extends Component {
