@@ -7,6 +7,7 @@ import MapGL, {
 import "mapbox-gl/dist/mapbox-gl.css";
 
 import Pin from "./Pin";
+import { LOCATION_MAP_CONFIG } from "../../../helpers/map";
 
 const TOKEN = process.env.REACT_APP_MAPBOX_TOKEN;
 // This API key is managed by CTM. Contact help desk for maintenance and troubleshooting.
@@ -65,7 +66,7 @@ export default class CrashMap extends Component {
     };
   }
 
-  _updateViewport = viewport => {
+  _updateViewport = (viewport) => {
     this.setState({ viewport });
   };
 
@@ -105,9 +106,7 @@ export default class CrashMap extends Component {
         {...viewport}
         width="100%"
         height="100%"
-        mapStyle={
-          isDev ? "mapbox://styles/mapbox/satellite-streets-v9" : rasterStyle
-        }
+        mapStyle={LOCATION_MAP_CONFIG.mapStyle}
         onViewportChange={this._updateViewport}
         mapboxApiAccessToken={TOKEN}
       >
@@ -117,7 +116,11 @@ export default class CrashMap extends Component {
         <div className="nav" style={navStyle}>
           <NavigationControl showCompass={false} />
         </div>
-
+        {/* add nearmap raster source and style */}
+        <Source {...LOCATION_MAP_CONFIG.sources.aerials} />
+        <Layer {...LOCATION_MAP_CONFIG.layers.aerials} />
+        {/* show street labels on top of other layers */}
+        <Layer {...LOCATION_MAP_CONFIG.layers.streetLabels} />
         <Marker
           latitude={this.props.data.latitude_primary}
           longitude={this.props.data.longitude_primary}
