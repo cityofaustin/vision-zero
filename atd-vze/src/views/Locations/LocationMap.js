@@ -81,13 +81,13 @@ export default class LocationMap extends Component {
     };
   }
 
-  _updateViewport = viewport => {
+  _updateViewport = (viewport) => {
     this.setState({ viewport });
   };
 
-  getLatestAerialTimestamp = timestampArray => timestampArray.slice(-1)[0];
+  getLatestAerialTimestamp = (timestampArray) => timestampArray.slice(-1)[0];
 
-  convertNearMapTimeFormat = date => moment(date).format("MM/DD/YYYY");
+  convertNearMapTimeFormat = (date) => moment(date).format("MM/DD/YYYY");
 
   getAerialTimestamps = () => {
     // Get all available aerial capture dates and set and format latest to state
@@ -97,7 +97,7 @@ export default class LocationMap extends Component {
       .get(
         `https://us0.nearmap.com/maps?ll=${latitude},${longitude}&nmq=INFO&nmf=json&zoom=${zoom}&httpauth=false&apikey=${NEARMAP_KEY}`
       )
-      .then(res => {
+      .then((res) => {
         const aerialTimestamp = this.convertNearMapTimeFormat(
           this.getLatestAerialTimestamp(res.data.layers.Vert)
         );
@@ -123,9 +123,9 @@ export default class LocationMap extends Component {
         mapboxApiAccessToken={TOKEN}
       >
         {/* add nearmap raster source and style */}
-        <Source {...LOCATION_MAP_CONFIG.sources.aerials}/>
+        <Source {...LOCATION_MAP_CONFIG.sources.aerials} />
         <Layer {...LOCATION_MAP_CONFIG.layers.aerials} />
-      
+
         {/* Show polygon on map */}
         <Source type="geojson" data={this.locationPolygonGeoJson}>
           <Layer {...polygonDataLayer} />
