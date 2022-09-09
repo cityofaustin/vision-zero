@@ -170,7 +170,7 @@ function CrashChange(props) {
   };
 
   /**
-   * Returns an deconstructable array with two objects containing the old record and the new record.
+   * Returns a deconstructable array with two objects containing the old record and the new record.
    * @returns {object[]}
    */
   const getOriginalNewRecords = () => {
