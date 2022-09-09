@@ -5,6 +5,7 @@ export const LOCATION_MAP_CONFIG = {
   mapStyle: "mapbox://styles/mapbox/satellite-streets-v11",
   sources: {
     aerials: {
+      id: "raster-tiles",
       type: "raster",
       tiles: [
         `https://api.nearmap.com/tiles/v3/Vert/{z}/{x}/{y}.jpg?apikey=${NEARMAP_KEY}`,
