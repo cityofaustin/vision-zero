@@ -15,7 +15,7 @@ import { Button } from "reactstrap";
 import { LOCATION_MAP_CONFIG } from "../../helpers/map";
 
 const TOKEN = process.env.REACT_APP_MAPBOX_TOKEN;
-
+const NEARMAP_KEY = process.env.REACT_APP_NEARMAP_KEY;
 
 const fullscreenControlStyle = {
   position: "absolute",
