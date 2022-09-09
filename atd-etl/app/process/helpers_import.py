@@ -555,10 +555,10 @@ def insert_crash_change_template(new_record_dict, differences, crash_id):
     print(new_record_dict)
 
     # need to iterate over fields and stringify dates and times, but not datetimes 😜
-    new_record_crash_date = new_record_dict["crash_date"].strftime("%m/%d/%Y")  #convert_date(new_record_dict["crash_date"])
+    new_record_crash_date = new_record_dict["crash_date"].strftime("%Y-%m-%d")  #convert_date(new_record_dict["crash_date"])
     for key in new_record_dict:
         if isinstance(new_record_dict[key], datetime.date):
-            new_record_dict[key] = new_record_dict[key].strftime("%Y/%d/%m")
+            new_record_dict[key] = new_record_dict[key].strftime("%Y-%m-%d")
         if isinstance(new_record_dict[key], datetime.time):
             new_record_dict[key] = new_record_dict[key].strftime("%H:%M:%S")
 
