@@ -118,20 +118,28 @@ export default class LocationMap extends Component {
         {...viewport}
         width="100%"
         height="500px"
-        mapStyle={LOCATION_MAP_CONFIG.mapStyle}
+        mapStyle={
+          isDev
+            ? "mapbox://styles/mapbox/satellite-streets-v9"
+            : LOCATION_MAP_CONFIG.mapStyle
+        }
         onViewportChange={this._updateViewport}
         mapboxApiAccessToken={TOKEN}
       >
         {/* add nearmap raster source and style */}
-        <Source {...LOCATION_MAP_CONFIG.sources.aerials} />
-        <Layer {...LOCATION_MAP_CONFIG.layers.aerials} />
+        {!isDev && (
+          <>
+            <Source {...LOCATION_MAP_CONFIG.sources.aerials} />
+            <Layer {...LOCATION_MAP_CONFIG.layers.aerials} />
+          </>
+        )}
 
         {/* Show polygon on map */}
         <Source type="geojson" data={this.locationPolygonGeoJson}>
           <Layer {...polygonDataLayer} />
         </Source>
         {/* show street labels on top of other layers */}
-        <Layer {...LOCATION_MAP_CONFIG.layers.streetLabels} />
+        {!isDev && <Layer {...LOCATION_MAP_CONFIG.layers.streetLabels} />}
         <div className="fullscreen" style={fullscreenControlStyle}>
           <FullscreenControl />
         </div>
