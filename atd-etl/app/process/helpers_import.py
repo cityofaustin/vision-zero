@@ -554,8 +554,13 @@ def insert_crash_change_template(new_record_dict, differences, crash_id):
     # Turn the dictionary into a character-escaped json string
     print(new_record_dict)
 
-    # need to iterate over fields and stringify dates and times, but not datetimes 😜
-    new_record_crash_date = new_record_dict["crash_date"].strftime("%Y-%m-%d")  #convert_date(new_record_dict["crash_date"])
+    new_record_crash_date = None
+
+    try: 
+        new_record_crash_date = new_record_dict["crash_date"].strftime("%Y-%m-%d")  #convert_date(new_record_dict["crash_date"])
+    except:
+        print("Failed to convert crash_date")
+
     for key in new_record_dict:
         if isinstance(new_record_dict[key], datetime.date):
             new_record_dict[key] = new_record_dict[key].strftime("%Y-%m-%d")
