@@ -289,22 +289,22 @@ function Crash(props) {
         </Row>
       ) : (
         <div></div>
-      )}
-      {shouldShowFatalityRecommendations && (
-        <Row>
-          <Col>
-            <Recommendations crashId={props.match.params.id} />
-          </Col>
-        </Row>
+      )}     
+      <Row>
+        <Col>
+          <CrashCollapses data={data} props={props} />
+        </Col>
+      </Row>
+       {shouldShowFatalityRecommendations && (
+      <Row>
+        <Col>
+          <Recommendations crashId={props.match.params.id} />
+        </Col>
+      </Row>
       )}
       <Row>
         <Col>
           <Notes crashId={props.match.params.id} />
-        </Col>
-      </Row>
-      <Row>
-        <Col>
-          <CrashCollapses data={data} props={props} />
         </Col>
       </Row>
       <Row>
@@ -323,6 +323,7 @@ function Crash(props) {
           <CrashChangeLog data={data} />
         </Col>
       </Row>
+     
     </div>
   );
 }
