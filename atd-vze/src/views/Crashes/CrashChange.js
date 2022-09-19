@@ -61,7 +61,7 @@ function CrashChange(props) {
   const [errorDialog, setErrorDialog] = useState(false);
   const [saveStatus, setSaveStatus] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-  // CR3 Availbable
+  // CR3 Available
   const [cr3available, setCR3Available] = useState(false);
   const [upsertRecordQuery, setUpsertRecordQuery] = useState(
     UPSERT_MUTATION_DUMMY
@@ -170,7 +170,7 @@ function CrashChange(props) {
   };
 
   /**
-   * Returns an deconstructable array with two objects containing the old record and the new record.
+   * Returns a deconstructable array with two objects containing the old record and the new record.
    * @returns {object[]}
    */
   const getOriginalNewRecords = () => {
