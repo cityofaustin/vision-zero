@@ -21,7 +21,7 @@ import CrashChangeLog from "./CrashChangeLog";
 import CrashDiagram from "./CrashDiagram";
 import CrashNarrative from "./CrashNarrative";
 import DataTable from "../../Components/DataTable";
-import Notes from "../../Components/Notes/Notes";
+import Notes from "./Notes";
 import { crashDataMap } from "./crashDataMap";
 import Recommendations from "./Recommendations/Recommendations";
 
@@ -29,12 +29,6 @@ import "./crash.scss";
 
 import { GET_CRASH, UPDATE_CRASH } from "../../queries/crashes";
 import { GET_PEOPLE } from "../../queries/people";
-import {
-  GET_NOTES,
-  INSERT_NOTE,
-  UPDATE_NOTE,
-  DELETE_NOTE,
-} from "../../queries/crashNotes";
 
 const calculateYearsLifeLost = people => {
   // Assume 75 year life expectancy,
@@ -295,29 +289,22 @@ function Crash(props) {
         </Row>
       ) : (
         <div></div>
-      )}
+      )}     
       <Row>
         <Col>
           <CrashCollapses data={data} props={props} />
         </Col>
       </Row>
-      {shouldShowFatalityRecommendations && (
-        <Row>
-          <Col>
-            <Recommendations crashId={props.match.params.id} />
-          </Col>
-        </Row>
+       {shouldShowFatalityRecommendations && (
+      <Row>
+        <Col>
+          <Recommendations crashId={props.match.params.id} />
+        </Col>
+      </Row>
       )}
       <Row>
         <Col>
-          <Notes
-            crashLocationId={props.match.params.id}
-            tableName={"crash_notes"}
-            GET_NOTES={GET_NOTES}
-            INSERT_NOTE={INSERT_NOTE}
-            UPDATE_NOTE={UPDATE_NOTE}
-            DELETE_NOTE={DELETE_NOTE}
-          />
+          <Notes crashId={props.match.params.id} />
         </Col>
       </Row>
       <Row>
@@ -336,6 +323,7 @@ function Crash(props) {
           <CrashChangeLog data={data} />
         </Col>
       </Row>
+     
     </div>
   );
 }
