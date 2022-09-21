@@ -1,9 +1,9 @@
 import { gql } from "apollo-boost";
 
 export const GET_NOTES = gql`
-  query FindNotes($crashLocationId: Int) {
+  query FindNotes($crashId: Int) {
     crash_notes(
-      where: { crash_id: { _eq: $crashLocationId } }
+      where: { crash_id: { _eq: $crashId } }
       order_by: { date: desc }
     ) {
       id
@@ -18,17 +18,9 @@ export const GET_NOTES = gql`
 `;
 
 export const INSERT_NOTE = gql`
-  mutation InsertNote(
-    $note: String!
-    $crashLocationId: Int!
-    $userEmail: String
-  ) {
+  mutation InsertNote($note: String!, $crashId: Int!, $userEmail: String) {
     insert_crash_notes(
-      objects: {
-        text: $note
-        crash_id: $crashLocationId
-        user_email: $userEmail
-      }
+      objects: { text: $note, crash_id: $crashId, user_email: $userEmail }
     ) {
       returning {
         crash_id
