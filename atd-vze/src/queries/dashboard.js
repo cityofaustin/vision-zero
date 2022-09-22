@@ -42,77 +42,21 @@ export const GET_CRASHES_YTD = gql`
         }
       }
     }
-    atd_txdot_person_aggregate(
+    primaryPersonFatalities: atd_txdot_primaryperson(
       where: {
-        crash: { private_dr_fl: { _eq: "N" } }
-        _or: [
-          { prsn_injry_sev_id: { _eq: 1 } }
-          { prsn_injry_sev_id: { _eq: 4 } }
-        ]
-        _and: {
-          crash: { crash_date: { _lt: $yearEnd, _gte: $yearStart } }
-          _or: [
-            { crash: { austin_full_purpose: { _eq: "Y" } } }
-            {
-              _and: [
-                { crash: { city_id: { _eq: 22 } } }
-                { crash: { position: { _is_null: true } } }
-              ]
-            }
-          ]
-        }
+        crash: { crash_date: { _lt: $yearEnd, _gte: $yearStart } }
+        _and: { prsn_injry_sev_id: { _eq: 4 } }
       }
     ) {
-      aggregate {
-        sum {
-          years_of_life_lost
-        }
-      }
+      prsn_age
     }
-    atd_txdot_primaryperson_aggregate(
+    personFatalities: atd_txdot_person(
       where: {
-        injury_severity: { injry_sev_desc: { _eq: "KILLED" } }
-        crash: {
-          city_id: { _eq: 22 }
-          crash_date: { _gte: $yearStart, _lte: $yearEnd }
-          apd_confirmed_fatality: { _neq: "N" }
-        }
+        crash: { crash_date: { _lt: $yearEnd, _gte: $yearStart } }
+        _and: { prsn_injry_sev_id: { _eq: 4 } }
       }
     ) {
-      aggregate {
-        sum {
-          years_of_life_lost
-        }
-      }
+      prsn_age
     }
   }
 `;
-
-// Notes
-// atd_txdot_person_aggregate(
-//   where: {
-//       crash: { private_dr_fl: { _eq: "N" }},
-//       _or: [
-//           {prsn_injry_sev_id: {_eq: 1}},
-//           {prsn_injry_sev_id: {_eq: 4}}
-//       ],
-//       _and: {
-//           crash: {crash_date: {_lt: $yearEnd, _gte: $yearStart }}
-//           _or: [
-//               {crash: {austin_full_purpose: {_eq: "Y"}}},
-//               {
-//                   _and: [
-//                       {crash: {city_id: {_eq: 22}}},
-//                       {crash: {position: {_is_null: true}}}
-//                   ]
-//               }
-//           ]
-//       }
-//   }
-// ) {
-// aggregate {
-// sum {
-// prsn_age
-// }
-// }
-// }
