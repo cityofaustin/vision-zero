@@ -16,7 +16,7 @@ export const GET_RECOMMENDATIONS = gql`
         description
       }
     }
-    atd__coordination_partners_lkp {
+    atd__coordination_partners_lkp(order_by: { description: asc }) {
       id
       description
     }
