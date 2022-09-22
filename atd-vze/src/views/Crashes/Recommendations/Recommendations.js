@@ -68,12 +68,6 @@ const Recommendations = ({ crashId }) => {
       .catch(error => console.error(error));
   };
 
-  // Function to alphabetize an array by a certain field
-  const alphabetizeArray = (array, field) => {
-    array.sort((a, b) => a[field].localeCompare(b[field]));
-    return array;
-  };
-
   return (
     <Card>
       <CardHeader>Fatality Review Board Recommendations</CardHeader>
@@ -95,10 +89,7 @@ const Recommendations = ({ crashId }) => {
                     onOptionClick={
                       doesRecommendationRecordExist ? onEdit : onAdd
                     }
-                    options={alphabetizeArray(
-                      data.atd__coordination_partners_lkp,
-                      "description"
-                    )}
+                    options={data.atd__coordination_partners_lkp}
                     field={"coordination_partner_id"}
                   />
                 </div>
