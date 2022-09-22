@@ -11,9 +11,15 @@ import locationDataMap from "./locationDataMap";
 import LocationCrashes from "./LocationCrashes";
 import LocationNonCR3Crashes from "./LocationNonCR3Crashes";
 import LocationDownloadGlobal from "./LocationDownloadGlobal";
-import LocationNotes from "./LocationNotes";
+import Notes from "../../Components/Notes/Notes";
 
 import { GET_LOCATION, UPDATE_LOCATION } from "../../queries/Locations";
+import {
+  GET_LOCATION_NOTES,
+  INSERT_LOCATION_NOTE,
+  UPDATE_LOCATION_NOTE,
+  DELETE_LOCATION_NOTE,
+} from "../../queries/locationNotes";
 
 function Location(props) {
   // Set initial variables for GET_LOCATION query
@@ -104,7 +110,14 @@ function Location(props) {
       </Row>
       <Row>
         <Col>
-          <LocationNotes locationId={locationId} />
+          <Notes
+            crashLocationId={locationId}
+            tableName={"location_notes"}
+            GET_NOTES={GET_LOCATION_NOTES}
+            INSERT_NOTE={INSERT_LOCATION_NOTE}
+            UPDATE_NOTE={UPDATE_LOCATION_NOTE}
+            DELETE_NOTE={DELETE_LOCATION_NOTE}
+          />
         </Col>
       </Row>
       <Row>
