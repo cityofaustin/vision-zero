@@ -202,7 +202,7 @@ class CrashEditCoordsMap extends Component {
             <Pin size={40} color={pinColor} isDragging={isDragging} animated />
           </Marker>
           <MapStyleSelector>
-              <ButtonGroup className="float-right">
+            <ButtonGroup className="float-right">
               <Button
                 active={mapStyle === "satellite-streets"}
                 id="satellite-streets"
