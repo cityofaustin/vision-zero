@@ -201,6 +201,28 @@ class CrashEditCoordsMap extends Component {
           <Marker latitude={markerLatitude} longitude={markerLongitude}>
             <Pin size={40} color={pinColor} isDragging={isDragging} animated />
           </Marker>
+          <MapStyleSelector>
+              <ButtonGroup className="float-right">
+              <Button
+                active={mapStyle === "satellite-streets"}
+                id="satellite-streets"
+                className="map-style-selector"
+                onClick={this.handleMapStyleChange}
+                color="light"
+              >
+                Satellite
+              </Button>
+              <Button
+                active={mapStyle === "streets"}
+                id="streets"
+                className="map-style-selector"
+                onClick={this.handleMapStyleChange}
+                color="light"
+              >
+                Street
+              </Button>
+            </ButtonGroup>
+          </MapStyleSelector>
         </MapGL>
         <CrashEditLatLonForm
           latitude={markerLatitude}
