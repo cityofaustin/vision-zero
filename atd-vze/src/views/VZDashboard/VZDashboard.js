@@ -12,18 +12,22 @@ import bi_logo from "../../assets/img/brand/power_bi_icon_white_on_transparent.p
 
 function VZDashboard() {
   const year = new Date().getFullYear();
+  // TODO: Use same data range as VZV
   const yearStart = `${year}-01-01`;
   const yearEnd = `${year}-12-31`;
+  console.log(yearStart, yearEnd);
   const { loading, error, data } = useQuery(GET_CRASHES_YTD, {
     variables: { yearStart, yearEnd },
   });
 
   if (loading) return "Loading...";
   if (error) return `Error! ${error.message}`;
-
+  console.log(data);
   const {
     years_of_life_lost: yearsOfLifeLostPrimaryPerson,
   } = data.atd_txdot_primaryperson_aggregate.aggregate.sum;
+
+  // years_of_life_lost is equal to 0 for every person record
   const {
     years_of_life_lost: yearsOfLifeLostPerson,
   } = data.atd_txdot_person_aggregate.aggregate.sum;
@@ -88,7 +92,7 @@ function VZDashboard() {
           }
         </Col>
       </Row>
-      <Row className='mt-3'>
+      <Row className="mt-3">
         <Col xs="12" sm="6" md="6">
           <VZLinksWidget
             header={`Arterial Management Division Overview`}
@@ -98,7 +102,7 @@ function VZDashboard() {
             raster_icon_alt="Power BI"
             color="dark"
             link="https://app.powerbigov.us/links/GACOsce5fi?ctid=5c5e19f6-a6ab-4b45-b1d0-be4608a9a67f&pbi_source=linkShare"
-            target='_bi_amd'
+            target="_bi_amd"
           />
           <VZLinksWidget
             header={`High Injury Roadways`}
@@ -108,7 +112,7 @@ function VZDashboard() {
             raster_icon_alt="Power BI"
             color="dark"
             link="https://app.powerbigov.us/links/pdguGuhSGE?ctid=5c5e19f6-a6ab-4b45-b1d0-be4608a9a67f&pbi_source=linkShare"
-            target='_bi_hir'
+            target="_bi_hir"
           />
           <VZLinksWidget
             header={`Emerging Hotspots and Bond Locations`}
@@ -118,7 +122,7 @@ function VZDashboard() {
             raster_icon_alt="Power BI"
             color="dark"
             link="https://app.powerbigov.us/links/RmMrnaSMLp?ctid=5c5e19f6-a6ab-4b45-b1d0-be4608a9a67f&pbi_source=linkShare"
-            target='_bi_hotspots'
+            target="_bi_hotspots"
           />
         </Col>
         <Col xs="12" sm="6" md="6">
@@ -128,7 +132,7 @@ function VZDashboard() {
             icon="fa fa-map"
             color="primary"
             link="https://austin.maps.arcgis.com/apps/instant/interactivelegend/index.html?appid=32b276f4e6cd406aa1c2040d2eb26b37"
-            target='_compcostmap'
+            target="_compcostmap"
           />
           <VZLinksWidget
             header={`Vision Zero Viewer`}
@@ -136,7 +140,7 @@ function VZDashboard() {
             icon="fa fa-map"
             color="primary"
             link="https://visionzero.austin.gov/viewer/"
-            target='_vzv'
+            target="_vzv"
           />
         </Col>
       </Row>
