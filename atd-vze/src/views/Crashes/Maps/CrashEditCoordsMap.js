@@ -6,8 +6,6 @@ import MapGL, {
   Marker,
   NavigationControl,
   FullscreenControl,
-  Source,
-  Layer,
 } from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import Geocoder from "react-map-gl-geocoder";
@@ -22,8 +20,6 @@ import { Button, ButtonGroup } from "reactstrap";
 import Pin from "./Pin";
 import { setPinColor } from "../../../styles/mapPinStyles";
 import { CrashEditLatLonForm } from "./CrashEditLatLonForm";
-
-import { LOCATION_MAP_CONFIG } from "../../../helpers/map";
 
 const TOKEN = process.env.REACT_APP_MAPBOX_TOKEN;
 
@@ -155,7 +151,6 @@ class CrashEditCoordsMap extends Component {
       isDragging,
     } = this.state;
     const geocoderAddress = this.props.mapGeocoderAddress;
-    const isDev = window.location.hostname === "localhost";
 
     return (
       <div>
@@ -164,11 +159,7 @@ class CrashEditCoordsMap extends Component {
           ref={this.mapRef}
           width="100%"
           height="350px"
-          mapStyle={
-            isDev
-              ? "mapbox://styles/mapbox/satellite-streets-v11"
-              : LOCATION_MAP_CONFIG.mapStyle
-          }
+          mapStyle={`mapbox://styles/mapbox/${mapStyle}-v9`}
           onViewportChange={this._updateViewport}
           getCursor={this.getCursor}
           controller={customGeocoderMapController}
@@ -189,18 +180,31 @@ class CrashEditCoordsMap extends Component {
           <div className="nav" style={navStyle}>
             <NavigationControl showCompass={false} />
           </div>
-          {/* add nearmap raster source and style */}
-          {!isDev && (
-            <>
-              <Source {...LOCATION_MAP_CONFIG.sources.aerials} />
-              <Layer {...LOCATION_MAP_CONFIG.layers.aerials} />
-              {/* show street labels on top of other layers */}
-              <Layer {...LOCATION_MAP_CONFIG.layers.streetLabels} />
-            </>
-          )}
           <Marker latitude={markerLatitude} longitude={markerLongitude}>
             <Pin size={40} color={pinColor} isDragging={isDragging} animated />
           </Marker>
+          <MapStyleSelector>
+            <ButtonGroup className="float-right">
+              <Button
+                active={mapStyle === "satellite-streets"}
+                id="satellite-streets"
+                className="map-style-selector"
+                onClick={this.handleMapStyleChange}
+                color="light"
+              >
+                Satellite
+              </Button>
+              <Button
+                active={mapStyle === "streets"}
+                id="streets"
+                className="map-style-selector"
+                onClick={this.handleMapStyleChange}
+                color="light"
+              >
+                Street
+              </Button>
+            </ButtonGroup>
+          </MapStyleSelector>
         </MapGL>
         <CrashEditLatLonForm
           latitude={markerLatitude}
