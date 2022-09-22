@@ -24,13 +24,19 @@ export const GET_CRASHES_YTD = gql`
     }
     seriousInjuriesAndTotal: atd_txdot_crashes_aggregate(
       where: {
-        city_id: { _eq: 22 }
-        crash_date: { _gte: $yearStart, _lte: $yearEnd }
-        private_dr_fl: { _neq: "Y" }
+        crash_date: { _lt: $yearEnd, _gte: $yearStart }
+        private_dr_fl: { _eq: "N" }
+        _and: [
+          { crash_date: { _is_null: false } }
+          { crash_time: { _is_null: false } }
+        ]
+        _or: [
+          { austin_full_purpose: { _eq: "Y" } }
+          { _and: [{ city_id: { _eq: 22 } }, { position: { _is_null: true } }] }
+        ]
       }
     ) {
       aggregate {
-        count
         sum {
           sus_serious_injry_cnt
         }

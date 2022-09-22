@@ -12,7 +12,7 @@ import bi_logo from "../../assets/img/brand/power_bi_icon_white_on_transparent.p
 
 function VZDashboard() {
   const year = new Date().getFullYear();
-  // TODO: Use same data range as VZV
+  // TODO: Use same date range as VZV
   const yearStart = `${year}-01-01`;
   const yearEnd = `${year}-12-31`;
   console.log(yearStart, yearEnd);
