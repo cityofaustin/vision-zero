@@ -9,8 +9,6 @@ export const LOCATION_MAP_CONFIG = {
       type: "raster",
       tiles: [
         `https://api.nearmap.com/tiles/v3/Vert/{z}/{x}/{y}.jpg?apikey=${NEARMAP_KEY}`,
-               // testing basic raster tile server for TX, US
-               // "https://tiles.frankhereford.io/tile/{z}/{x}/{y}.png",
       ],
       tileSize: 256,
     },
