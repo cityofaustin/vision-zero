@@ -84,7 +84,7 @@ export default class CrashMap extends Component {
         height="100%"
         mapStyle={
           isDev
-            ? "mapbox://styles/mapbox/satellite-streets-v9"
+            ? "mapbox://styles/mapbox/satellite-streets-v11"
             : LOCATION_MAP_CONFIG.mapStyle
         }
         onViewportChange={this._updateViewport}
