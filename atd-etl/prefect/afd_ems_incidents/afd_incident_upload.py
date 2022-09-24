@@ -14,6 +14,7 @@ import os
 import datetime
 import boto3
 import pprint
+import time
 import email
 import tempfile
 import pandas
@@ -47,13 +48,15 @@ DB_DATABASE = os.getenv("AFD_DB_DATABASE")
 AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
 AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
 AFD_S3_SOURCE_BUCKET = os.getenv("AFD_S3_SOURCE_BUCKET")
+AFD_S3_ARCHIVE_BUCKET = os.getenv("AFD_S3_ARCHIVE_BUCKET")
 AFD_S3_SOURCE_PREFIX = os.getenv("AFD_S3_SOURCE_PREFIX")
+AFD_S3_ARCHIVE_PREFIX = os.getenv("AFD_S3_ARCHIVE_PREFIX")
 
 
 @task
 def get_timestamp():
     current = datetime.now()
-    return f"{str(current.year)}-{str(current.month)}-{str(current.day)}-{str(current.hour)}-{str(current.minute)}-{str(current.second)}"
+    return time.mktime(current.timetuple())
 
 
 @task
@@ -98,18 +101,30 @@ def extract_email_attachment(message):
 
 
 @task
-def upload_attachment_to_S3(attachment, timestamp, aws_s3_client):
+def upload_attachment_to_S3(location, timestamp):
+
+    session = boto3.Session(
+        aws_access_key_id=AWS_ACCESS_KEY_ID,
+        aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+    )
+    s3 = session.resource("s3")
+
+    s3.Bucket(AFD_S3_ARCHIVE_BUCKET).upload_file(
+        f"{location}/attachment.xlsx",
+        f"{AFD_S3_ARCHIVE_PREFIX}upload-{timestamp}.xlsx",
+    )
+
     # Upload the file to an archive location in S3 bucket and append timestamp to the filename
     # Extracted attachment is temporarily saved as attach.csv and then uploaded as upload-<timestamp>.xlsx
-    try:
-        aws_s3_client.upload_file(
-            "/tmp/attach.csv",
-            "atd-afd-incident-data",
-            "attachments/upload-" + timestamp + ".xlsx",
-        )
-        pp.pprint(f"Upload Successful")
-    except FileNotFoundError:
-        pp.pprint("The file was not uploaded")
+    #try:
+        #aws_s3_client.upload_file(
+            #"/tmp/attach.csv",
+            #"atd-afd-incident-data",
+            #"attachments/upload-" + timestamp + ".xlsx",
+        #)
+        #pp.pprint(f"Upload Successful")
+    #except FileNotFoundError:
+        #pp.pprint("The file was not uploaded")
 
 
 @task
