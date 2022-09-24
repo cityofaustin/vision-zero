@@ -23,6 +23,7 @@ import pprint
 import time
 import email
 import tempfile
+import shutil
 import pandas
 from datetime import datetime, timedelta
 import psycopg2
@@ -150,7 +151,8 @@ def upload_data_to_postgres(data, age_cutoff):
 
         ems_numbers = str(row["EMS_IncidentNumber"]).replace("-", "").split(";")
         if (len(ems_numbers) > 1):
-            print(f"🛎 Found multiple ems numbers: " + str(row["EMS_IncidentNumber"]))
+            pass
+            #print(f"🛎 Found multiple ems numbers: " + str(row["EMS_IncidentNumber"]))
 
         # Prevent geometry creation error on "-" X/Y value
         longitude = row["X"]
@@ -242,14 +244,12 @@ def upload_data_to_postgres(data, age_cutoff):
             print(f"Values: {values}")
             print(f"Error: {error}")
 
+    return True
 
 @task
-def clean_up():
-    # Clean up the file from temp location
-    try:
-        os.remove("/tmp/attach.csv")
-    except OSError:
-        pass
+def clean_up(path):
+    # Clean up the temp location
+    shutil.rmtree(path)
 
 
 with Flow("AFD Import ETL") as flow:
@@ -260,18 +260,8 @@ with Flow("AFD Import ETL") as flow:
     uploaded_token = upload_attachment_to_S3(attachment_location, timestamp)
     data = create_and_parse_dataframe(attachment_location)
     upload_token = upload_data_to_postgres(data, record_age_maximum)
+    clean_up_token = clean_up(attachment_location, upstream_tasks=[upload_token])
 
-    
-    # if ONLY_SIXTY_DAYS:
-    # partial upload
-    # sixty_day_data = filter_data_to_last_sixty_days(data)
-    # pg_upload = upload_data_to_postgres(sixty_day_data)
-    # else:
-    # pg_upload = upload_data_to_postgres(data)
-
-    # cleanup = clean_up()
-    # cleanup.set_upstream(pg_upload)
-
-flow.run(parameters=dict(record_age_maximum=False))
-# f.visualize()
+# you can use record_age_maximum=False if you want a full import
+flow.run(parameters=dict(record_age_maximum=60))
 # f.register(project_name="vision-zero")
