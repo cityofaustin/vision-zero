@@ -250,25 +250,23 @@ with Flow(
     "AFD Import ETL"
     ) as flow:
     timestamp = get_timestamp()
-    aws_s3_client = create_boto_client()
-    newest_email = get_most_recent_email(
-        "atd-afd-incident-data", aws_s3_client)
-    attachment = extract_email_attachment(newest_email)
-    upload = upload_attachment_to_S3(attachment, timestamp, aws_s3_client)
-    data = create_and_parse_dataframe()
-    data.set_upstream(upload)
+    newest_email = get_most_recent_email()
+    #attachment = extract_email_attachment(newest_email)
+    #upload = upload_attachment_to_S3(attachment, timestamp, aws_s3_client)
+    #data = create_and_parse_dataframe()
+    #data.set_upstream(upload)
 
-    ONLY_SIXTY_DAYS = False
+    #ONLY_SIXTY_DAYS = False
 
-    if ONLY_SIXTY_DAYS:
+    #if ONLY_SIXTY_DAYS:
         # partial upload
-        sixty_day_data = filter_data_to_last_sixty_days(data)
-        pg_upload = upload_data_to_postgres(sixty_day_data)
-    else:
-        pg_upload = upload_data_to_postgres(data)
+        #sixty_day_data = filter_data_to_last_sixty_days(data)
+        #pg_upload = upload_data_to_postgres(sixty_day_data)
+    #else:
+        #pg_upload = upload_data_to_postgres(data)
 
-    cleanup = clean_up()
-    cleanup.set_upstream(pg_upload)
+    #cleanup = clean_up()
+    #cleanup.set_upstream(pg_upload)
 
 
 flow.run()
