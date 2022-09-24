@@ -83,16 +83,18 @@ def get_most_recent_email():
 
 
 @task
-def extract_email_attachment(email_file):
-    contents = email_file["Body"].read().decode("utf-8")
-
+def extract_email_attachment(message):
     # Given the s3 object content is the SES email,
     # get the message content and attachment using email package
-    msg = email.message_from_string(contents)
+    msg = email.message_from_string(message)
     attachment = msg.get_payload()[1]
+    
+    tmpdir = tempfile.mkdtemp()
+
+    print(f"Tmpdir: {tmpdir}")
     # Write the attachment to a temp location
-    open("/tmp/attach.xlsx", "wb").write(attachment.get_payload(decode=True))
-    return attachment
+    open(f"{tmpdir}/attachment.xlsx", "wb").write(attachment.get_payload(decode=True))
+    return tmpdir
 
 
 @task
