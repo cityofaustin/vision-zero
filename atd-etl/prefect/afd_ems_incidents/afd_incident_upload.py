@@ -70,7 +70,6 @@ def get_most_recent_email():
 
     bucket = s3.Bucket(AFD_S3_SOURCE_BUCKET)
 
-    # FIXME we have a hardcoded value here denoting a S3 prefix
     files = []
     for file in bucket.objects.filter(Prefix=AFD_S3_SOURCE_PREFIX):
         files.append(file)
@@ -251,7 +250,7 @@ with Flow(
     ) as flow:
     timestamp = get_timestamp()
     newest_email = get_most_recent_email()
-    #attachment = extract_email_attachment(newest_email)
+    attachment = extract_email_attachment(newest_email)
     #upload = upload_attachment_to_S3(attachment, timestamp, aws_s3_client)
     #data = create_and_parse_dataframe()
     #data.set_upstream(upload)
