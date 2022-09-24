@@ -33,21 +33,21 @@ FLOW_NAME = "afd_incident_upload"
 environment_variables = get_key_value(key="vision_zero_staging")
 
 # Retrieve the db configuration
-#DB_USERNAME = environment_variables.DB_USERNAME
-#DB_PASSWORD = environment_variables.DB_PASSWORD
-#DB_HOSTNAME = environment_variables.DB_HOSTNAME
-#DB_PORT = environment_variables.DB_PORT
-#DB_DATABASE = environment_variables.DB_DATABASE
+# DB_USERNAME = environment_variables.DB_USERNAME
+# DB_PASSWORD = environment_variables.DB_PASSWORD
+# DB_HOSTNAME = environment_variables.DB_HOSTNAME
+# DB_PORT = environment_variables.DB_PORT
+# DB_DATABASE = environment_variables.DB_DATABASE
 
-DB_USERNAME = os.getenv('AFD_DB_USERNAME')
-DB_PASSWORD = os.getenv('AFD_DB_PASSWORD')
-DB_HOSTNAME = os.getenv('AFD_DB_HOSTNAME')
-DB_PORT     = os.getenv('AFD_DB_PORT')
-DB_DATABASE = os.getenv('AFD_DB_DATABASE')
-AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
-AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
-AFD_S3_SOURCE_BUCKET = os.getenv('AFD_S3_SOURCE_BUCKET')
-AFD_S3_SOURCE_PREFIX = os.getenv('AFD_S3_SOURCE_PREFIX')
+DB_USERNAME = os.getenv("AFD_DB_USERNAME")
+DB_PASSWORD = os.getenv("AFD_DB_PASSWORD")
+DB_HOSTNAME = os.getenv("AFD_DB_HOSTNAME")
+DB_PORT = os.getenv("AFD_DB_PORT")
+DB_DATABASE = os.getenv("AFD_DB_DATABASE")
+AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
+AFD_S3_SOURCE_BUCKET = os.getenv("AFD_S3_SOURCE_BUCKET")
+AFD_S3_SOURCE_PREFIX = os.getenv("AFD_S3_SOURCE_PREFIX")
 
 
 @task
@@ -88,7 +88,7 @@ def extract_email_attachment(message):
     # get the message content and attachment using email package
     msg = email.message_from_string(message)
     attachment = msg.get_payload()[1]
-    
+
     tmpdir = tempfile.mkdtemp()
 
     print(f"Tmpdir: {tmpdir}")
@@ -171,8 +171,7 @@ def upload_data_to_postgres(data):
 
         # Split EMS Incident Numbers when there is more than once.
         # Also format incident number to exclude "-"
-        ems_numbers = str(row["EMS_IncidentNumber"]
-                          ).replace('-', '').split(";")
+        ems_numbers = str(row["EMS_IncidentNumber"]).replace("-", "").split(";")
         ems_number_1 = ems_numbers[0] or None
         if len(ems_numbers) > 1:
             ems_number_2 = ems_numbers[1] or None
@@ -182,9 +181,9 @@ def upload_data_to_postgres(data):
         # Prevent geometry creation error on "-" X/Y value
         longitude = row["X"]
         latitude = row["Y"]
-        if row["X"] == '-':
+        if row["X"] == "-":
             longitude = None
-        if row["Y"] == '-':
+        if row["Y"] == "-":
             latitude = None
 
         sql = """
@@ -228,7 +227,7 @@ def upload_data_to_postgres(data):
             row["Inc_Date"].strftime("%Y-%m-%d"),
             row["Inc_Time"].strftime("%H:%M:%S"),
             longitude,
-            latitude
+            latitude,
         ]
 
         cursor.execute(sql, values)
@@ -248,27 +247,25 @@ def clean_up():
         pass
 
 
-with Flow(
-    "AFD Import ETL"
-    ) as flow:
+with Flow("AFD Import ETL") as flow:
     timestamp = get_timestamp()
     newest_email = get_most_recent_email()
-    attachment = extract_email_attachment(newest_email)
-    #upload = upload_attachment_to_S3(attachment, timestamp, aws_s3_client)
-    #data = create_and_parse_dataframe()
-    #data.set_upstream(upload)
+    attachment_location = extract_email_attachment(newest_email)
+    upload = upload_attachment_to_S3(attachment_location, timestamp)
+    # data = create_and_parse_dataframe()
+    # data.set_upstream(upload)
 
-    #ONLY_SIXTY_DAYS = False
+    # ONLY_SIXTY_DAYS = False
 
-    #if ONLY_SIXTY_DAYS:
-        # partial upload
-        #sixty_day_data = filter_data_to_last_sixty_days(data)
-        #pg_upload = upload_data_to_postgres(sixty_day_data)
-    #else:
-        #pg_upload = upload_data_to_postgres(data)
+    # if ONLY_SIXTY_DAYS:
+    # partial upload
+    # sixty_day_data = filter_data_to_last_sixty_days(data)
+    # pg_upload = upload_data_to_postgres(sixty_day_data)
+    # else:
+    # pg_upload = upload_data_to_postgres(data)
 
-    #cleanup = clean_up()
-    #cleanup.set_upstream(pg_upload)
+    # cleanup = clean_up()
+    # cleanup.set_upstream(pg_upload)
 
 
 flow.run()
