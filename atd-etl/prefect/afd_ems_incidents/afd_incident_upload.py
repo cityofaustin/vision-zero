@@ -40,11 +40,11 @@ pp = pprint.PrettyPrinter(indent=4)
 environment_variables = get_key_value(key="Vision Zero Development")
 
 # Retrieve the db configuration
-DB_USERNAME = environment_variables.DB_USERNAME
-DB_PASSWORD = environment_variables.DB_PASSWORD
-DB_HOSTNAME = environment_variables.DB_HOSTNAME
-DB_PORT = environment_variables.DB_PORT
-DB_DATABASE = environment_variables.DB_DATABASE
+DB_USERNAME = environment_variables.AFD_DB_USERNAME
+DB_PASSWORD = environment_variables.AFD_DB_PASSWORD
+DB_HOSTNAME = environment_variables.AFD_DB_HOSTNAME
+DB_PORT = environment_variables.AFD_DB_PORT
+DB_DATABASE = environment_variables.AFD_DB_DATABASE
 AWS_ACCESS_KEY_ID = environment_variables.AWS_ACCESS_KEY_ID
 AWS_SECRET_ACCESS_KEY = environment_variables.AWS_SECRET_ACCESS_KEY
 AFD_S3_SOURCE_BUCKET = environment_variables.AFD_S3_SOURCE_BUCKET
