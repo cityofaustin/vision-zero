@@ -32,18 +32,17 @@ FLOW_NAME = "afd_incident_upload"
 environment_variables = get_key_value(key="vision_zero_staging")
 
 # Retrieve the db configuration
-DB_USERNAME = environment_variables.DB_USERNAME
-DB_PASSWORD = environment_variables.DB_PASSWORD
-DB_HOSTNAME = environment_variables.DB_HOSTNAME
-DB_PORT = environment_variables.DB_PORT
-DB_DATABASE = environment_variables.DB_DATABASE
+#DB_USERNAME = environment_variables.DB_USERNAME
+#DB_PASSWORD = environment_variables.DB_PASSWORD
+#DB_HOSTNAME = environment_variables.DB_HOSTNAME
+#DB_PORT = environment_variables.DB_PORT
+#DB_DATABASE = environment_variables.DB_DATABASE
 
-# Configure code storage
-STORAGE = GitHub(
-    repo="cityofaustin/atd-prefect",
-    path=f"flows/vision_zero/{FLOW_NAME}.py",
-    ref="mc_8159_afd_etl_prefect",
-)
+DB_USERNAME = os.getenv('AFD_DB_USERNAME')
+DB_PASSWORD = os.getenv('AFD_DB_PASSWORD')
+DB_HOSTNAME = os.getenv('AFD_DB_HOSTNAME')
+DB_PORT     = os.getenv('AFD_DB_PORT')
+DB_DATABASE = os.getenv('AFD_DB_DATABASE')
 
 
 @task
