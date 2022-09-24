@@ -14,6 +14,7 @@ Labels: test
 #select dropgeometrycolumn('afd__incidents', 'geometry');
 #select addgeometrycolumn('afd__incidents', 'geometry', 4326, 'point', 2); 
 
+import prefect
 from prefect import Flow, task, Parameter, case
 import os
 import datetime
