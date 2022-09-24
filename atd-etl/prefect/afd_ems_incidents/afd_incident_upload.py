@@ -37,28 +37,33 @@ from prefect.backend import get_key_value
 
 pp = pprint.PrettyPrinter(indent=4)
 
-FLOW_NAME = "afd_incident_upload"
-# environment_variables = get_key_value(key="vision_zero_production")
-environment_variables = get_key_value(key="vision_zero_staging")
+# environment_variables = get_key_value(key="Vision Zero")
+environment_variables = get_key_value(key="Vision Zero Development")
 
 # Retrieve the db configuration
-# DB_USERNAME = environment_variables.DB_USERNAME
-# DB_PASSWORD = environment_variables.DB_PASSWORD
-# DB_HOSTNAME = environment_variables.DB_HOSTNAME
-# DB_PORT = environment_variables.DB_PORT
-# DB_DATABASE = environment_variables.DB_DATABASE
+DB_USERNAME = environment_variables.DB_USERNAME
+DB_PASSWORD = environment_variables.DB_PASSWORD
+DB_HOSTNAME = environment_variables.DB_HOSTNAME
+DB_PORT = environment_variables.DB_PORT
+DB_DATABASE = environment_variables.DB_DATABASE
+AWS_ACCESS_KEY_ID = environment_variables.AWS_ACCESS_KEY_ID
+AWS_SECRET_ACCESS_KEY = environment_variables.AWS_SECRET_ACCESS_KEY
+AFD_S3_SOURCE_BUCKET = environment_variables.AFD_S3_SOURCE_BUCKET
+AFD_S3_ARCHIVE_BUCKET = environment_variables.AFD_S3_ARCHIVE_BUCKET
+AFD_S3_SOURCE_PREFIX = environment_variables.AFD_S3_SOURCE_PREFIX
+AFD_S3_ARCHIVE_PREFIX = environment_variables.AFD_S3_ARCHIVE_PREFIX
 
-DB_USERNAME = os.getenv("AFD_DB_USERNAME")
-DB_PASSWORD = os.getenv("AFD_DB_PASSWORD")
-DB_HOSTNAME = os.getenv("AFD_DB_HOSTNAME")
-DB_PORT = os.getenv("AFD_DB_PORT")
-DB_DATABASE = os.getenv("AFD_DB_DATABASE")
-AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
-AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
-AFD_S3_SOURCE_BUCKET = os.getenv("AFD_S3_SOURCE_BUCKET")
-AFD_S3_ARCHIVE_BUCKET = os.getenv("AFD_S3_ARCHIVE_BUCKET")
-AFD_S3_SOURCE_PREFIX = os.getenv("AFD_S3_SOURCE_PREFIX")
-AFD_S3_ARCHIVE_PREFIX = os.getenv("AFD_S3_ARCHIVE_PREFIX")
+# DB_USERNAME = os.getenv("AFD_DB_USERNAME")
+# DB_PASSWORD = os.getenv("AFD_DB_PASSWORD")
+# DB_HOSTNAME = os.getenv("AFD_DB_HOSTNAME")
+# DB_PORT = os.getenv("AFD_DB_PORT")
+# DB_DATABASE = os.getenv("AFD_DB_DATABASE")
+# AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
+# AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
+# AFD_S3_SOURCE_BUCKET = os.getenv("AFD_S3_SOURCE_BUCKET")
+# AFD_S3_ARCHIVE_BUCKET = os.getenv("AFD_S3_ARCHIVE_BUCKET")
+# AFD_S3_SOURCE_PREFIX = os.getenv("AFD_S3_SOURCE_PREFIX")
+# AFD_S3_ARCHIVE_PREFIX = os.getenv("AFD_S3_ARCHIVE_PREFIX")
 
 
 @task
