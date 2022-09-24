@@ -9,6 +9,11 @@ Schedule: Daily at 03:30
 Labels: test
 """
 
+#alter table afd__incidents add column ems_incident_numbers integer[];
+#alter table afd__incidents rename column ems_incident_number to unparsed_ems_incident_number;
+#select dropgeometrycolumn('afd__incidents', 'geometry');
+#select addgeometrycolumn('afd__incidents', 'geometry', 4326, 'point', 2); 
+
 from prefect import Flow, task, Parameter, case
 import os
 import datetime
