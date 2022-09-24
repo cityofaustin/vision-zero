@@ -130,14 +130,117 @@ def create_and_parse_dataframe(location):
     return data
 
 
-
 @task
 def upload_data_to_postgres(data, age_cutoff):
+    pg = psycopg2.connect(host=DB_HOSTNAME, user=DB_USERNAME, password=DB_PASSWORD, dbname=DB_DATABASE)
+    
+    print(f"Max record age: {age_cutoff}")
+    print(f"Input Dataframe shape: {data.shape}")
     if age_cutoff:
         data["Inc_Date"] = pandas.to_datetime(data["Inc_Date"], format="%Y-%m-%d")
         age_threshold = datetime.today() - timedelta(days=age_cutoff)
-        fresh_data = data[data["Inc_Date"] > age_threshold] 
-        print(fresh_data)
+        data = data[data["Inc_Date"] > age_threshold] 
+    print(f"Trimmed data shape: {data.shape}")
+    print(data)
+
+    # this emits indices in reverse order, very odd, but not a problem
+    for index, row in data.iloc[::-1].iterrows(): 
+        if not index % 100:
+            print(f"Row {str(index)} of {str(data.shape[0])}")
+
+        ems_numbers = str(row["EMS_IncidentNumber"]).replace("-", "").split(";")
+        if (len(ems_numbers) > 1):
+            print(f"🛎 Found multiple ems numbers: " + str(row["EMS_IncidentNumber"]))
+
+        # Prevent geometry creation error on "-" X/Y value
+        longitude = row["X"]
+        latitude = row["Y"]
+        if row["X"] == "-":
+            longitude = None
+        if row["Y"] == "-":
+            latitude = None
+
+        sql = "select count(id) as existing from afd__incidents where incident_number = %s"
+
+        cursor = pg.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        cursor.execute(sql, (row["Incident_Number"],))
+        existing = cursor.fetchone()
+
+        sql = ""
+        values = []
+        if existing["existing"] > 0:
+            #print("Updating existing record")
+            sql = """
+                update afd__incidents set
+                    unparsed_ems_incident_number = %s,
+                    ems_incident_numbers = %s,
+                    call_datetime = %s,
+                    calendar_year = %s,
+                    jurisdiction = %s,
+                    address= %s,
+                    problem = %s,
+                    flagged_incs = %s,
+                    geometry = ST_SetSRID(ST_MakePoint(%s, %s), 4326)
+                where incident_number = %s
+            """
+
+            values = [
+                row["EMS_IncidentNumber"],
+                "{" + ", ".join(ems_numbers) + "}",
+                row["Inc_Date"].strftime("%Y-%m-%d")
+                + " "
+                + row["Inc_Time"].strftime("%H:%M:%S"),
+                row["CalendarYear"],
+                row["Jurisdiction"],
+                row["CAD_Address"],
+                row["CAD_Problem"],
+                row["Flagged_Incs"],
+                longitude,
+                latitude,
+                row["Incident_Number"]
+            ]
+        else:
+            #print("Inserting new record")
+            sql = """
+                insert into afd__incidents (
+                    incident_number, 
+                    unparsed_ems_incident_number, 
+                    ems_incident_numbers,
+                    call_datetime, 
+                    calendar_year, 
+                    jurisdiction, 
+                    address, 
+                    problem, 
+                    flagged_incs, 
+                    geometry
+                ) values (%s, %s, %s, %s, %s, %s, %s, %s, %s, ST_SetSRID(ST_Point(%s, %s), 4326))
+                ON CONFLICT DO NOTHING;
+            """
+
+            values = [
+                row["Incident_Number"],
+                row["EMS_IncidentNumber"],
+                "{" + ", ".join(ems_numbers) + "}",
+                row["Inc_Date"].strftime("%Y-%m-%d")
+                + " "
+                + row["Inc_Time"].strftime("%H:%M:%S"),
+                row["CalendarYear"],
+                row["Jurisdiction"],
+                row["CAD_Address"],
+                row["CAD_Problem"],
+                row["Flagged_Incs"],
+                longitude,
+                latitude
+            ]
+
+        try:
+            cursor = pg.cursor()
+            cursor.execute(sql, values)
+            pg.commit()
+        except Exception as error:
+            print(f"Error executing:\n\n{sql}\n")
+            print(f"Values: {values}")
+            print(f"Error: {error}")
 
 
 @task
@@ -150,15 +253,13 @@ def clean_up():
 
 
 with Flow("AFD Import ETL") as flow:
-    age_threshold = Parameter('full_import', default = False)
+    record_age_maximum = Parameter('record_age_maximum', default = False)
     timestamp = get_timestamp()
     newest_email = get_most_recent_email()
     attachment_location = extract_email_attachment(newest_email)
     uploaded_token = upload_attachment_to_S3(attachment_location, timestamp)
     data = create_and_parse_dataframe(attachment_location)
-    # data.set_upstream(upload)
-
-    pg_upload = upload_data_to_postgres(data, age_threshold)
+    upload_token = upload_data_to_postgres(data, record_age_maximum)
 
     
     # if ONLY_SIXTY_DAYS:
@@ -171,7 +272,6 @@ with Flow("AFD Import ETL") as flow:
     # cleanup = clean_up()
     # cleanup.set_upstream(pg_upload)
 
-
-flow.run(parameters=dict(full_import=True))
+flow.run(parameters=dict(record_age_maximum=False))
 # f.visualize()
 # f.register(project_name="vision-zero")
