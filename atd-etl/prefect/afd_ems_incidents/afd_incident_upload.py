@@ -29,7 +29,6 @@ from datetime import datetime, timedelta
 import psycopg2
 import psycopg2.extras
 from psycopg2 import Error
-import numpy as np
 from prefect.storage import GitHub
 from prefect.run_configs import UniversalRun
 from prefect.backend import get_key_value
