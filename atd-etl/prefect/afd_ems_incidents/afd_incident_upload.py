@@ -112,11 +112,13 @@ def upload_attachment_to_S3(location, timestamp):
         f"{location}/attachment.xlsx",
         f"{AFD_S3_ARCHIVE_PREFIX}upload-{timestamp}.xlsx",
     )
+    return True
 
 @task
-def create_and_parse_dataframe():
+def create_and_parse_dataframe(location):
     # Extract the csv from email
-    data = pandas.read_excel("/tmp/attach.xlsx", header=0)
+    data = pandas.read_excel(f"{location}/attachment.xlsx", header=0)
+    print(data)
 
     return data
 
@@ -252,8 +254,8 @@ with Flow("AFD Import ETL") as flow:
     timestamp = get_timestamp()
     newest_email = get_most_recent_email()
     attachment_location = extract_email_attachment(newest_email)
-    upload = upload_attachment_to_S3(attachment_location, timestamp)
-    # data = create_and_parse_dataframe()
+    uploaded_token = upload_attachment_to_S3(attachment_location, timestamp)
+    data = create_and_parse_dataframe(attachment_location)
     # data.set_upstream(upload)
 
     # ONLY_SIXTY_DAYS = False
