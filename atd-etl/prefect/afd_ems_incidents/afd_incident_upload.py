@@ -9,10 +9,10 @@ Schedule: Daily at 03:30
 Labels: test
 """
 
-#alter table afd__incidents add column ems_incident_numbers integer[];
-#alter table afd__incidents rename column ems_incident_number to unparsed_ems_incident_number;
-#select dropgeometrycolumn('afd__incidents', 'geometry');
-#select addgeometrycolumn('afd__incidents', 'geometry', 4326, 'point', 2); 
+# alter table afd__incidents add column ems_incident_numbers integer[];
+# alter table afd__incidents rename column ems_incident_number to unparsed_ems_incident_number;
+# select dropgeometrycolumn('afd__incidents', 'geometry');
+# select addgeometrycolumn('afd__incidents', 'geometry', 4326, 'point', 2);
 
 import prefect
 from prefect import Flow, task, Parameter, case
@@ -124,6 +124,7 @@ def upload_attachment_to_S3(location, timestamp):
     )
     return True
 
+
 @task
 def create_and_parse_dataframe(location):
     # Parse XLSX into pandas dataframe
@@ -133,26 +134,28 @@ def create_and_parse_dataframe(location):
 
 @task
 def upload_data_to_postgres(data, age_cutoff):
-    pg = psycopg2.connect(host=DB_HOSTNAME, user=DB_USERNAME, password=DB_PASSWORD, dbname=DB_DATABASE)
-    
+    pg = psycopg2.connect(
+        host=DB_HOSTNAME, user=DB_USERNAME, password=DB_PASSWORD, dbname=DB_DATABASE
+    )
+
     print(f"Max record age: {age_cutoff}")
     print(f"Input Dataframe shape: {data.shape}")
     if age_cutoff:
         data["Inc_Date"] = pandas.to_datetime(data["Inc_Date"], format="%Y-%m-%d")
         age_threshold = datetime.today() - timedelta(days=age_cutoff)
-        data = data[data["Inc_Date"] > age_threshold] 
+        data = data[data["Inc_Date"] > age_threshold]
     print(f"Trimmed data shape: {data.shape}")
     print(data)
 
     # this emits indices in reverse order, very odd, but not a problem
-    for index, row in data.iloc[::-1].iterrows(): 
+    for index, row in data.iloc[::-1].iterrows():
         if not index % 100:
             print(f"Row {str(index)} of {str(data.shape[0])}")
 
         ems_numbers = str(row["EMS_IncidentNumber"]).replace("-", "").split(";")
-        if (len(ems_numbers) > 1):
+        if len(ems_numbers) > 1:
             pass
-            #print(f"🛎 Found multiple ems numbers: " + str(row["EMS_IncidentNumber"]))
+            # print(f"🛎 Found multiple ems numbers: " + str(row["EMS_IncidentNumber"]))
 
         # Prevent geometry creation error on "-" X/Y value
         longitude = row["X"]
@@ -171,7 +174,7 @@ def upload_data_to_postgres(data, age_cutoff):
         sql = ""
         values = []
         if existing["existing"] > 0:
-            #print("Updating existing record")
+            # print("Updating existing record")
             sql = """
                 update afd__incidents set
                     unparsed_ems_incident_number = %s,
@@ -199,10 +202,10 @@ def upload_data_to_postgres(data, age_cutoff):
                 row["Flagged_Incs"],
                 longitude,
                 latitude,
-                row["Incident_Number"]
+                row["Incident_Number"],
             ]
         else:
-            #print("Inserting new record")
+            # print("Inserting new record")
             sql = """
                 insert into afd__incidents (
                     incident_number, 
@@ -232,7 +235,7 @@ def upload_data_to_postgres(data, age_cutoff):
                 row["CAD_Problem"],
                 row["Flagged_Incs"],
                 longitude,
-                latitude
+                latitude,
             ]
 
         try:
@@ -246,6 +249,7 @@ def upload_data_to_postgres(data, age_cutoff):
 
     return True
 
+
 @task
 def clean_up(path):
     # Clean up the temp location
@@ -253,7 +257,7 @@ def clean_up(path):
 
 
 with Flow("AFD Import ETL") as flow:
-    record_age_maximum = Parameter('record_age_maximum', default = False)
+    record_age_maximum = Parameter("record_age_maximum", default=False)
     timestamp = get_timestamp()
     newest_email = get_most_recent_email()
     attachment_location = extract_email_attachment(newest_email)
