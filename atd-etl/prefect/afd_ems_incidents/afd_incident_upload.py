@@ -102,7 +102,6 @@ def extract_email_attachment(message):
 
 @task
 def upload_attachment_to_S3(location, timestamp):
-
     session = boto3.Session(
         aws_access_key_id=AWS_ACCESS_KEY_ID,
         aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
@@ -113,19 +112,6 @@ def upload_attachment_to_S3(location, timestamp):
         f"{location}/attachment.xlsx",
         f"{AFD_S3_ARCHIVE_PREFIX}upload-{timestamp}.xlsx",
     )
-
-    # Upload the file to an archive location in S3 bucket and append timestamp to the filename
-    # Extracted attachment is temporarily saved as attach.csv and then uploaded as upload-<timestamp>.xlsx
-    #try:
-        #aws_s3_client.upload_file(
-            #"/tmp/attach.csv",
-            #"atd-afd-incident-data",
-            #"attachments/upload-" + timestamp + ".xlsx",
-        #)
-        #pp.pprint(f"Upload Successful")
-    #except FileNotFoundError:
-        #pp.pprint("The file was not uploaded")
-
 
 @task
 def create_and_parse_dataframe():
