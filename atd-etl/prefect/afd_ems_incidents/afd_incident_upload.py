@@ -68,11 +68,11 @@ def get_most_recent_email():
     )
     s3 = session.resource("s3")
 
-    my_bucket = s3.Bucket(bucket)
+    my_bucket = s3.Bucket(AFD_S3_SOURCE_BUCKET)
 
     # FIXME we have a hardcoded value here denoting a S3 prefix
     files = []
-    for file in my_bucket.objects.filter(Prefix='atd-afd/'):
+    for file in my_bucket.objects.filter(Prefix=AFD_S3_SOURCE_PREFIX):
         files.append(file)
     files.sort(key=lambda x: x.last_modified, reverse=True)
 
