@@ -123,106 +123,12 @@ def create_and_parse_dataframe(location):
 
 
 @task
-def upload_data_to_postgres(data):
-    try:
-        connection = psycopg2.connect(
-            user=DB_USERNAME,
-            password=DB_PASSWORD,
-            host=DB_HOSTNAME,
-            port=DB_PORT,
-            database=DB_DATABASE,
-        )
-        cursor = connection.cursor()
-        cursor.execute("TRUNCATE afd__incidents;")
-        cursor.close()
-    except (Exception, Error) as error:
-        print("Error while connecting to PostgreSQL", error)
-
-    # Format NaN values for DB
-    # https://stackoverflow.com/questions/32107558/how-do-i-convert-numpy-nan-objects-to-sql-nulls
-    def nan_to_null(
-        f, _NULL=psycopg2.extensions.AsIs("NULL"), _Float=psycopg2.extensions.Float
-    ):
-        if not np.isnan(f):
-            return _Float(f)
-        return _NULL
-
-    psycopg2.extensions.register_adapter(float, nan_to_null)
-
-    cursor = connection.cursor()
-
-    for index, row in data.iloc[::-1].iterrows():
-        print(row)
-        if not index % 1000:
-            print(str(index) + ":")
-
-        # Split EMS Incident Numbers when there is more than once.
-        # Also format incident number to exclude "-"
-        ems_numbers = str(row["EMS_IncidentNumber"]).replace("-", "").split(";")
-        ems_number_1 = ems_numbers[0] or None
-        if len(ems_numbers) > 1:
-            ems_number_2 = ems_numbers[1] or None
-        else:
-            ems_number_2 = None
-
-        # Prevent geometry creation error on "-" X/Y value
-        longitude = row["X"]
-        latitude = row["Y"]
-        if row["X"] == "-":
-            longitude = None
-        if row["Y"] == "-":
-            latitude = None
-
-        sql = """
-            insert into afd__incidents (
-                incident_number, 
-                ems_incident_number_raw, 
-                call_datetime, 
-                calendar_year, 
-                jurisdiction, 
-                address, 
-                problem, 
-                flagged_incs, 
-                geometry,
-                ems_incident_number_1,
-                ems_incident_number_2,
-                call_date,
-                call_time,
-                latitude,
-                longitude
-            ) values (
-                %s, %s, %s, %s, %s, %s, %s, %s, 
-                ST_SetSRID(ST_Point(%s, %s), 4326),
-                %s, %s, %s, %s, %s, %s
-            ) ON CONFLICT DO NOTHING;
-        """
-        values = [
-            row["Incident_Number"],
-            row["EMS_IncidentNumber"],
-            row["Inc_Date"].strftime("%Y-%m-%d")
-            + " "
-            + row["Inc_Time"].strftime("%H:%M:%S"),
-            row["CalendarYear"],
-            row["Jurisdiction"],
-            row["CAD_Address"],
-            row["CAD_Problem"],
-            row["Flagged_Incs"],
-            longitude,
-            latitude,
-            ems_number_1,
-            ems_number_2,
-            row["Inc_Date"].strftime("%Y-%m-%d"),
-            row["Inc_Time"].strftime("%H:%M:%S"),
-            longitude,
-            latitude,
-        ]
-
-        cursor.execute(sql, values)
-    connection.commit()
-
-    if connection:
-        connection.close()
-        print("PostgreSQL connection is closed")
+def upload_data_to_postgres(data, age_cutoff):
+    if age_cutoff:
+        data["Inc_Date"] = pandas.to_datetime(data["Inc_Date"], format="%Y-%m-%d")
+        age_threshold = datetime.today() - timedelta(days=age_cutoff)
+        fresh_data = data[data["Inc_Date"] > age_threshold] 
+        print(fresh_data)
 
 
 @task
@@ -235,6 +141,7 @@ def clean_up():
 
 
 with Flow("AFD Import ETL") as flow:
+    age_threshold = Parameter('full_import', default = False)
     timestamp = get_timestamp()
     newest_email = get_most_recent_email()
     attachment_location = extract_email_attachment(newest_email)
@@ -242,8 +149,9 @@ with Flow("AFD Import ETL") as flow:
     data = create_and_parse_dataframe(attachment_location)
     # data.set_upstream(upload)
 
-    # ONLY_SIXTY_DAYS = False
+    pg_upload = upload_data_to_postgres(data, age_threshold)
 
+    
     # if ONLY_SIXTY_DAYS:
     # partial upload
     # sixty_day_data = filter_data_to_last_sixty_days(data)
@@ -255,6 +163,6 @@ with Flow("AFD Import ETL") as flow:
     # cleanup.set_upstream(pg_upload)
 
 
-flow.run()
+flow.run(parameters=dict(full_import=True))
 # f.visualize()
 # f.register(project_name="vision-zero")
