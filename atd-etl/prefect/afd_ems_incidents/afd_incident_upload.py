@@ -118,8 +118,6 @@ def upload_attachment_to_S3(location, timestamp):
 def create_and_parse_dataframe(location):
     # Extract the csv from email
     data = pandas.read_excel(f"{location}/attachment.xlsx", header=0)
-    print(data)
-
     return data
 
 
