@@ -15,6 +15,7 @@ import datetime
 import boto3
 import pprint
 import email
+import tempfile
 import pandas
 from datetime import datetime, timedelta
 import psycopg2
