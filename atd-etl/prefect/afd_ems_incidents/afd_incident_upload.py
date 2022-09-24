@@ -101,7 +101,9 @@ def extract_email_attachment(message):
 
     tmpdir = tempfile.mkdtemp()
 
-    print(f"Tmpdir: {tmpdir}")
+    logger = prefect.context.get("logger")
+    logger.info(f"Tmpdir: {tmpdir}")
+
     # Write the attachment to a temp location
     open(f"{tmpdir}/attachment.xlsx", "wb").write(attachment.get_payload(decode=True))
     return tmpdir
