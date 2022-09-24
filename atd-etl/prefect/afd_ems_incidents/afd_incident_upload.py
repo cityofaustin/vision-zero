@@ -56,46 +56,30 @@ def get_timestamp():
 
 
 @task
-def create_boto_client():
-    # Initialize AWS clients and connect to S3 resources
-    pp.pprint("Connecting to AWS S3  bucket...")
-    aws_s3_client = boto3.client("s3")
-    return aws_s3_client
-
-
-@task
-def get_most_recent_email(bucket, client):
+def get_most_recent_email():
     """
     Find the most recently updated file in the bucket. This will be the newest email.
-    Gets a string version of the Key representing the most recent S3 file.
-    :param bucket: string key to bucket
-    :param client: instance of S3 Client objects
     :return: string
     """
 
-    # Stack Overflow helped:
-    # https://stackoverflow.com/questions/45375999/how-to-download-the-latest-file-of-an-s3-bucket-using-boto3
-    def get_last_modified(obj): return int(obj["LastModified"].strftime("%s"))
-
-    all_bucket_objects = client.list_objects_v2(Bucket=bucket)["Contents"]
-    # only look in "atd-afd/" directory
-    raw_emails_list = [
-        obj for obj in all_bucket_objects if "atd-afd/" in obj["Key"]]
-    # Newest Key as string
-    last_added_key = [
-        obj["Key"] for obj in sorted(raw_emails_list, key=get_last_modified)
-    ][-1]
-
-    pp.pprint(f"Downloading file from S3: {last_added_key}")
-
-    # Get the newest item in the bucket
-    # https://gist.github.com/sandeepmanchi/365bff15f2f395eeee45dd2d70e85e09
-    newest_object = client.get_object(
-        Bucket=bucket,
-        Key=last_added_key,
+    session = boto3.Session(
+        aws_access_key_id=AWS_ACCESS_KEY_ID,
+        aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
     )
+    s3 = session.resource("s3")
 
-    return newest_object
+    my_bucket = s3.Bucket(bucket)
+
+    # FIXME we have a hardcoded value here denoting a S3 prefix
+    files = []
+    for file in my_bucket.objects.filter(Prefix='atd-afd/'):
+        files.append(file)
+    files.sort(key=lambda x: x.last_modified, reverse=True)
+
+    file = files[0].get()
+    email = file["Body"].read().decode("utf-8")
+
+    return email
 
 
 @task
