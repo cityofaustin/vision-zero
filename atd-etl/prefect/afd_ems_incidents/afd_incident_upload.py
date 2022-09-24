@@ -16,8 +16,8 @@ Labels: test
 
 import prefect
 from prefect import Flow, task, Parameter, case
-import os
 import datetime
+import json
 import boto3
 import pprint
 import time
@@ -33,24 +33,23 @@ from prefect.storage import GitHub
 from prefect.run_configs import UniversalRun
 from prefect.backend import get_key_value
 
-
 pp = pprint.PrettyPrinter(indent=4)
 
-# environment_variables = get_key_value(key="Vision Zero")
-environment_variables = get_key_value(key="Vision Zero Development")
+kv_data = get_key_value(key="Vision Zero Development")
+environment_variables = json.loads(kv_data)
 
 # Retrieve the db configuration
-DB_USERNAME = environment_variables.AFD_DB_USERNAME
-DB_PASSWORD = environment_variables.AFD_DB_PASSWORD
-DB_HOSTNAME = environment_variables.AFD_DB_HOSTNAME
-DB_PORT = environment_variables.AFD_DB_PORT
-DB_DATABASE = environment_variables.AFD_DB_DATABASE
-AWS_ACCESS_KEY_ID = environment_variables.AWS_ACCESS_KEY_ID
-AWS_SECRET_ACCESS_KEY = environment_variables.AWS_SECRET_ACCESS_KEY
-AFD_S3_SOURCE_BUCKET = environment_variables.AFD_S3_SOURCE_BUCKET
-AFD_S3_ARCHIVE_BUCKET = environment_variables.AFD_S3_ARCHIVE_BUCKET
-AFD_S3_SOURCE_PREFIX = environment_variables.AFD_S3_SOURCE_PREFIX
-AFD_S3_ARCHIVE_PREFIX = environment_variables.AFD_S3_ARCHIVE_PREFIX
+DB_USERNAME = environment_variables["AFD_DB_USERNAME"]
+DB_PASSWORD = environment_variables["AFD_DB_PASSWORD"]
+DB_HOSTNAME = environment_variables["AFD_DB_HOSTNAME"]
+DB_PORT = environment_variables["AFD_DB_PORT"]
+DB_DATABASE = environment_variables["AFD_DB_DATABASE"]
+AWS_ACCESS_KEY_ID = environment_variables["AWS_ACCESS_KEY_ID"]
+AWS_SECRET_ACCESS_KEY = environment_variables["AWS_SECRET_ACCESS_KEY"]
+AFD_S3_SOURCE_BUCKET = environment_variables["AFD_S3_SOURCE_BUCKET"]
+AFD_S3_ARCHIVE_BUCKET = environment_variables["AFD_S3_ARCHIVE_BUCKET"]
+AFD_S3_SOURCE_PREFIX = environment_variables["AFD_S3_SOURCE_PREFIX"]
+AFD_S3_ARCHIVE_PREFIX = environment_variables["AFD_S3_ARCHIVE_PREFIX"]
 
 # DB_USERNAME = os.getenv("AFD_DB_USERNAME")
 # DB_PASSWORD = os.getenv("AFD_DB_PASSWORD")
