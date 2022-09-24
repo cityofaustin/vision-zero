@@ -121,20 +121,6 @@ def create_and_parse_dataframe(location):
     return data
 
 
-@task
-def filter_data_to_last_sixty_days(data):
-    # Filter data to last 2 months of records
-    # We learned that its rare for incident updates to change after the first 30 days.
-    # Allowing 60 days just to be safe.
-    data["Inc_Date"] = pandas.to_datetime(data["Inc_Date"], format="%Y-%m-%d")
-
-    today = datetime.today()
-    sixty_days_ago = today - timedelta(days=60)
-
-    data_60days = data[data["Inc_Date"] > sixty_days_ago]
-
-    return data_60days
-
 
 @task
 def upload_data_to_postgres(data):
