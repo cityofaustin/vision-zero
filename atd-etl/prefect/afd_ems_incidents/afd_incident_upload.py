@@ -259,12 +259,8 @@ def clean_up():
 
 
 with Flow(
-    FLOW_NAME,
-    storage=STORAGE,
-    run_config=UniversalRun(
-        labels=["atd-data02", "staging"], env={"EXTRA_PIP_PACKAGES": "pandas"}
-    ),
-) as f:
+    "AFD Import ETL"
+    ) as flow:
     timestamp = get_timestamp()
     aws_s3_client = create_boto_client()
     newest_email = get_most_recent_email(
@@ -287,6 +283,6 @@ with Flow(
     cleanup.set_upstream(pg_upload)
 
 
-f.run()
+flow.run()
 # f.visualize()
 # f.register(project_name="vision-zero")
