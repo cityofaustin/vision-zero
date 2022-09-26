@@ -145,4 +145,3 @@ COMMENT ON COLUMN "public"."ems__incidents"."pcr_transport_priority" IS 'Code 1 
 COMMENT ON COLUMN "public"."ems__incidents"."apd_incident_numbers" IS 'A comma delimitted list of incident numbers for APD incidents that are linked to the EMS incident. This field can be used to determin if there is an associated APD incident.';
 COMMENT ON COLUMN "public"."ems__incidents"."pcr_patient_acuity_initial" IS 'Initial patient acuity determined by provider';
 COMMENT ON COLUMN "public"."ems__incidents"."pcr_patient_acuity_final" IS 'Final patient acuity determined by provider';
-
