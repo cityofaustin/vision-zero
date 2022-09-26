@@ -3,7 +3,7 @@
 """
 Name: AFD Incident Uploads
 Description: This flow uploads AFD Incident Response CSVs (AFD Contact: Gus). 
-    The data is emailed to atd-afd-incident-data@austinmobility.io daily ~ 3:30AM. From there it
+    The data is emailed to atd-afd-incident-data@austinmobility.io daily ~ 6:30AM. From there it
     gets forwarded to a S3 bucket via AWS Simple Email Service.
 """
 
