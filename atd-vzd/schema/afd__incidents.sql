@@ -51,11 +51,11 @@ END;
 $$
 LANGUAGE 'plpgsql';
 
-create trigger afd_incidents_insert_trigger_insert
+create trigger afd_incidents_trigger_insert
 after insert on public.afd__incidents
 for each row execute procedure afd_incidents_trigger();
 
-create trigger afd_incidents_insert_trigger_update
+create trigger afd_incidents_trigger_update
 after update on public.afd__incidents
 for each row 
 WHEN (false 

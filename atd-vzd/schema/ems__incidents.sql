@@ -1,60 +1,105 @@
--- Table Definition
-CREATE TABLE "public"."ems__incidents" (
-    "pcr_key" int4 NOT NULL,
-    "incident_date_received" date,
-    "incident_time_received" time,
-    "incident_number" varchar(255),
-    "incident_location_address" varchar(400),
-    "incident_location_city" varchar(35),
-    "incident_location_state" varchar(30),
-    "incident_location_zip" varchar(30),
-    "incident_location_longitude" numeric,
-    "incident_location_latitude" numeric,
-    "incident_problem" varchar(255),
-    "incident_priority_number" varchar(10),
-    "pcr_cause_of_injury" varchar,
-    "pcr_patient_complaints" varchar,
-    "pcr_provider_impression_primary" varchar(255),
-    "pcr_provider_impression_secondary" varchar(255),
-    "pcr_outcome" varchar(30),
-    "pcr_transport_destination" varchar(255),
-    "pcr_patient_acuity_level" varchar(255),
-    "pcr_patient_acuity_level_reason" varchar(255),
-    "pcr_patient_age" int4,
-    "pcr_patient_gender" varchar(30),
-    "pcr_patient_race" varchar(255),
-    "mvc_form_airbag_deployment" varchar(255),
-    "mvc_form_airbag_deployment_status" varchar(60),
-    "mvc_form_collision_indicators" varchar(255),
-    "mvc_form_damage_location" varchar(255),
-    "mvc_form_estimated_speed_kph" int4,
-    "mvc_form_estimated_speed_mph" int4,
-    "mvc_form_extrication_comments" varchar(255),
-    "mvc_form_extrication_time" timestamp,
-    "mvc_form_extrication_required_flag" int4,
-    "mvc_form_patient_injured_flag" int4,
-    "mvc_form_position_in_vehicle" varchar(255),
-    "mvc_form_safety_devices" varchar(255),
-    "mvc_form_seat_row_number" varchar(10),
-    "mvc_form_vehicle_type" varchar(60),
-    "mvc_form_weather" varchar(60),
-    "pcr_additional_agencies" varchar(100),
-    "pcr_transport_priority" varchar(255),
-    "apd_incident_numbers" varchar(255),
-    "pcr_patient_acuity_initial" varchar(60),
-    "pcr_patient_acuity_final" varchar(60),
-    "geometry" geometry,
-    "austin_full_purpose" bool,
-    "location_id" varchar,
-    "apd_incident_number_1" varchar(255),
-    "apd_incident_number_2" varchar(255),
-    "mvc_form_time" time,
-    "mvc_form_date" date,
-    "crash_id" int4,
-    CONSTRAINT "ems__incidents_crash_id_fkey" FOREIGN KEY ("crash_id") REFERENCES "public"."atd_txdot_crashes"("crash_id"),
-    CONSTRAINT "ems__incidents_location_id_fkey" FOREIGN KEY ("location_id") REFERENCES "public"."atd_txdot_locations"("location_id"),
-    PRIMARY KEY ("pcr_key")
+DROP TABLE public.ems__incidents;
+
+CREATE TABLE public.ems__incidents (
+	id serial primary key,
+	pcr_key int4 NOT NULL,
+	incident_date_received date NULL,
+	incident_time_received time NULL,
+	incident_number text NULL,
+	incident_location_address text NULL,
+	incident_location_city text NULL,
+	incident_location_state text NULL,
+	incident_location_zip text NULL,
+	incident_location_longitude float NULL,
+	incident_location_latitude float NULL,
+	incident_problem text NULL,
+	incident_priority_number text NULL,
+	pcr_cause_of_injury text NULL,
+	pcr_patient_complaints text NULL,
+	pcr_provider_impression_primary text NULL,
+	pcr_provider_impression_secondary text NULL,
+	pcr_outcome text NULL,
+	pcr_transport_destination text NULL,
+	pcr_patient_acuity_level text NULL,
+	pcr_patient_acuity_level_reason text NULL,
+	pcr_patient_age integer NULL,
+	pcr_patient_gender text NULL,
+	pcr_patient_race text NULL,
+	mvc_form_airbag_deployment text NULL,
+	mvc_form_airbag_deployment_status text NULL,
+	mvc_form_collision_indicators text NULL,
+	mvc_form_damage_location text NULL,
+	mvc_form_estimated_speed_kph integer NULL,
+	mvc_form_estimated_speed_mph integer NULL,
+	mvc_form_extrication_comments text NULL,
+	mvc_form_extrication_datetime timestamp NULL,
+	mvc_form_extrication_required_flag integer NULL,
+	mvc_form_patient_injured_flag integer NULL,
+	mvc_form_position_in_vehicle text NULL,
+	mvc_form_safety_devices text NULL,
+	mvc_form_seat_row_number text NULL,
+	mvc_form_vehicle_type text NULL,
+	mvc_form_weather text NULL,
+	pcr_additional_agencies text NULL,
+	pcr_transport_priority text NULL,
+	pcr_patient_acuity_initial text NULL,
+	pcr_patient_acuity_final text NULL,
+	unparsed_apd_incident_numbers text NULL,
+	apd_incident_numbers integer[] NULL,
+	geometry public.geometry(point, 4326) NULL,
+    austin_full_purpose bool default null,
+    location_id text default null,
+    latitude float8 default null,
+    longitude float8 default null,
+    apd_incident_number_1 integer default null,
+    apd_incident_number_2 integer default null,
+    mvc_form_date date default null,
+    mvc_form_time time default null
 );
+
+
+
+CREATE OR REPLACE FUNCTION ems_incidents_trigger()
+  RETURNS trigger AS
+$$
+BEGIN
+  update ems__incidents set
+    austin_full_purpose = (
+      select ST_Contains(jurisdiction.geometry, incidents.geometry)
+      from ems__incidents incidents
+      left join atd_jurisdictions jurisdiction on (jurisdiction.jurisdiction_label = 'AUSTIN FULL PURPOSE')
+      where incidents.id = new.id),
+    location_id = (
+      select locations.location_id
+      from ems__incidents incidents
+      join atd_txdot_locations locations on (incidents.geometry && locations.shape and ST_Contains(locations.shape, incidents.geometry))
+      where incidents.id = new.id),
+    latitude = ST_Y(ems__incidents.geometry),
+    longitude = ST_X(ems__incidents.geometry),
+    apd_incident_number_1 = ems__incidents.apd_incident_numbers[1],
+    apd_incident_number_2 = ems__incidents.apd_incident_numbers[2],
+    mvc_form_date = date(ems__incidents.mvc_form_extrication_datetime),
+    mvc_form_time = ems__incidents.mvc_form_extrication_datetime::time
+    where ems__incidents.id = new.id;
+RETURN NEW;
+END;
+$$
+LANGUAGE 'plpgsql';
+
+create trigger ems_incidents_trigger_insert
+after insert on public.ems__incidents
+for each row execute procedure ems_incidents_trigger();
+
+create trigger ems_incidents_trigger_update
+after update on public.ems__incidents
+for each row 
+WHEN (false 
+  or old.geometry IS DISTINCT FROM new.geometry
+  or old.apd_incident_numbers is distinct from new.apd_incident_numbers
+  or old.mvc_form_extrication_datetime is distinct from new.mvc_form_extrication_datetime)
+execute procedure ems_incidents_trigger();
+
+
 
 -- Column Comment
 COMMENT ON COLUMN "public"."ems__incidents"."pcr_key" IS 'Unique identifier for the patient care record in the EMS Data Warehouse. Can be used to uniquely identify records in this dataset';
@@ -86,7 +131,7 @@ COMMENT ON COLUMN "public"."ems__incidents"."mvc_form_damage_location" IS 'Locat
 COMMENT ON COLUMN "public"."ems__incidents"."mvc_form_estimated_speed_kph" IS 'Estimated speed of the vehicle in kilometers per hour';
 COMMENT ON COLUMN "public"."ems__incidents"."mvc_form_estimated_speed_mph" IS 'Estimated speed of the vehicle in miles per hour';
 COMMENT ON COLUMN "public"."ems__incidents"."mvc_form_extrication_comments" IS 'Provider notes about any extrication that was performed';
-COMMENT ON COLUMN "public"."ems__incidents"."mvc_form_extrication_time" IS 'The time that an extrication was performed';
+COMMENT ON COLUMN "public"."ems__incidents"."mvc_form_extrication_datetime" IS 'The time that an extrication was performed';
 COMMENT ON COLUMN "public"."ems__incidents"."mvc_form_extrication_required_flag" IS 'Indicates whether the patient needed to be extricated from the vehicle (1 = yes, 0 = no)';
 COMMENT ON COLUMN "public"."ems__incidents"."mvc_form_patient_injured_flag" IS 'Indicates whether the patient was injured ( 1 = yes, 0 = no)';
 COMMENT ON COLUMN "public"."ems__incidents"."mvc_form_position_in_vehicle" IS 'Where the patient was in the vehicle (front seat, second seat, etc)';
@@ -99,9 +144,4 @@ COMMENT ON COLUMN "public"."ems__incidents"."pcr_transport_priority" IS 'Code 1 
 COMMENT ON COLUMN "public"."ems__incidents"."apd_incident_numbers" IS 'A comma delimitted list of incident numbers for APD incidents that are linked to the EMS incident. This field can be used to determin if there is an associated APD incident.';
 COMMENT ON COLUMN "public"."ems__incidents"."pcr_patient_acuity_initial" IS 'Initial patient acuity determined by provider';
 COMMENT ON COLUMN "public"."ems__incidents"."pcr_patient_acuity_final" IS 'Final patient acuity determined by provider';
-COMMENT ON COLUMN "public"."ems__incidents"."geometry" IS 'ATD created x, y point value ';
-COMMENT ON COLUMN "public"."ems__incidents"."apd_incident_number_1" IS 'A comma delimitted list of incident numbers for APD incidents that are linked to the EMS incident. This field can be used to determin if there is an associated APD incident.';
-COMMENT ON COLUMN "public"."ems__incidents"."apd_incident_number_2" IS 'A comma delimitted list of incident numbers for APD incidents that are linked to the EMS incident. This field can be used to determin if there is an associated APD incident.';
-COMMENT ON COLUMN "public"."ems__incidents"."mvc_form_time" IS 'The time that an extrication was performed';
-COMMENT ON COLUMN "public"."ems__incidents"."mvc_form_date" IS 'The date that an extrication was performed';
 
