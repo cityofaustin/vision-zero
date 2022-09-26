@@ -4,7 +4,7 @@ DROP TABLE public.afd__incidents;
 CREATE TABLE "public"."afd__incidents" (
     id serial primary key,
     incident_number integer,
-    crash_id int4 default null,
+    crash_id integer default null,
     unparsed_ems_incident_number text default null,
     ems_incident_numbers integer[] default null,
     call_datetime timestamp default null,

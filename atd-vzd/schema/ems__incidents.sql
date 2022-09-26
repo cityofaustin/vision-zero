@@ -3,6 +3,7 @@ DROP TABLE public.ems__incidents;
 CREATE TABLE public.ems__incidents (
 	id serial primary key,
 	pcr_key int4 NOT NULL,
+	crash_id integer default null,
 	incident_date_received date NULL,
 	incident_time_received time NULL,
 	incident_number text NULL,
