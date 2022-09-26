@@ -185,7 +185,7 @@ def upload_data_to_postgres(data, age_cutoff):
         #print(data["Incident_Date_Received"][index])
 
         apd_incident_numbers = str(row["APD_Incident_Numbers"]).replace("-", "").replace(" ", "").split(",")
-        apd_incident_numbers[:] = (value for value in apd_incident_numbers if pandas.isna(value))
+        apd_incident_numbers[:] = (value for value in apd_incident_numbers if not value == 'nan')
         if len(apd_incident_numbers) > 1:
             pass
             # print(f"🛎 Found multiple incident numbers: " + str(row["EMS_IncidentNumber"]))
@@ -442,5 +442,5 @@ with Flow("EMS Import ETL") as flow:
     clean_up_token = clean_up(attachment_location, upstream_tasks=[upload_token])
 
 # you can use record_age_maximum=0 if you want a full import
-flow.run(parameters=dict(record_age_maximum=100))
+flow.run(parameters=dict(record_age_maximum=0))
 # f.register(project_name="vision-zero")
