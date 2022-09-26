@@ -9,6 +9,7 @@ import {
 } from "../../../queries/recommendations";
 import RecommendationTextInput from "./RecommendationTextInput";
 import RecommendationSelectValueDropdown from "./RecommendationSelectValueDropdown";
+import RecommendationMultipleSelectDropdown from "./RecommendationMultipleSelectDropdown";
 
 const Recommendations = ({ crashId }) => {
   // get current users email
@@ -82,15 +83,11 @@ const Recommendations = ({ crashId }) => {
                   </div>
                 </div>
                 <div className="col-8">
-                  <RecommendationSelectValueDropdown
-                    value={getLookupValue(
-                      fieldConfig.fields.coordination_partner_id
-                    )}
+                  <RecommendationMultipleSelectDropdown
+                    options={data.atd__coordination_partners_lkp}
                     onOptionClick={
                       doesRecommendationRecordExist ? onEdit : onAdd
                     }
-                    options={data.atd__coordination_partners_lkp}
-                    field={"coordination_partner_id"}
                   />
                 </div>
               </div>
