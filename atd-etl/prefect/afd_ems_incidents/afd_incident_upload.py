@@ -5,14 +5,7 @@ Name: AFD Incident Uploads
 Description: This flow uploads AFD Incident Response CSVs (AFD Contact: Gus). 
     The data is emailed to atd-afd-incident-data@austinmobility.io daily ~ 3:30AM. From there it
     gets forwarded to a S3 bucket via AWS Simple Email Service.
-Schedule: Daily at 03:30
-Labels: test
 """
-
-# alter table afd__incidents add column ems_incident_numbers integer[];
-# alter table afd__incidents rename column ems_incident_number to unparsed_ems_incident_number;
-# select dropgeometrycolumn('afd__incidents', 'geometry');
-# select addgeometrycolumn('afd__incidents', 'geometry', 4326, 'point', 2);
 
 import prefect
 from prefect import Flow, task, Parameter, case
@@ -29,9 +22,6 @@ import pandas
 from datetime import datetime, timedelta
 import psycopg2
 import psycopg2.extras
-from psycopg2 import Error
-from prefect.storage import GitHub
-from prefect.run_configs import UniversalRun
 from prefect.backend import get_key_value
 
 pp = pprint.PrettyPrinter(indent=4)
@@ -285,5 +275,5 @@ with Flow("AFD Import ETL") as flow:
     clean_up_token = clean_up(attachment_location, upstream_tasks=[upload_token])
 
 # you can use record_age_maximum=False if you want a full import
-flow.run(parameters=dict(record_age_maximum=0))
+flow.run(parameters=dict(record_age_maximum=90))
 # f.register(project_name="vision-zero")

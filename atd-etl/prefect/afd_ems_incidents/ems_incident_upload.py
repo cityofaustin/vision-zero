@@ -5,14 +5,7 @@ Name: EMS Incident Uploads
 Description: This flow uploads EMS Incident Response CSVs (EMS Contact: Lynn C). 
     The data is emailed to atd-ems-incident-data@austinmobility.io daily ~ 3:30AM. From there it
     gets forwarded to a S3 bucket via AWS Simple Email Service.
-Schedule: Daily at 03:30
-Labels: test
 """
-
-# alter table ems__incidents rename column apd_incident_numbers to unparsed_apd_incident_numbers;
-# alter table ems__incidents add column apd_incident_numbers integer[];
-# select dropgeometrycolumn('ems__incidents', 'geometry');
-# select addgeometrycolumn('ems__incidents', 'geometry', 4326, 'point', 2);
 
 import prefect
 from prefect import Flow, task, Parameter, case
@@ -443,5 +436,5 @@ with Flow("EMS Import ETL") as flow:
     clean_up_token = clean_up(attachment_location, upstream_tasks=[upload_token])
 
 # you can use record_age_maximum=0 if you want a full import
-flow.run(parameters=dict(record_age_maximum=0))
+flow.run(parameters=dict(record_age_maximum=90))
 # f.register(project_name="vision-zero")
