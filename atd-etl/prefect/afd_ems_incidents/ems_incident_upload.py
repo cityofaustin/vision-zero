@@ -40,37 +40,55 @@ kv_data = get_key_value(key="Vision Zero Development")
 environment_variables = json.loads(kv_data)
 
 # Retrieve the db configuration
-DB_USERNAME = environment_variables["AFD_DB_USERNAME"]
-DB_PASSWORD = environment_variables["AFD_DB_PASSWORD"]
-DB_HOSTNAME = environment_variables["AFD_DB_HOSTNAME"]
-DB_PORT = environment_variables["AFD_DB_PORT"]
-DB_DATABASE = environment_variables["AFD_DB_DATABASE"]
-AWS_ACCESS_KEY_ID = environment_variables["AWS_ACCESS_KEY_ID"]
-AWS_SECRET_ACCESS_KEY = environment_variables["AWS_SECRET_ACCESS_KEY"]
-AFD_S3_SOURCE_BUCKET = environment_variables["AFD_S3_SOURCE_BUCKET"]
-AFD_S3_ARCHIVE_BUCKET = environment_variables["AFD_S3_ARCHIVE_BUCKET"]
-AFD_S3_SOURCE_PREFIX = environment_variables["AFD_S3_SOURCE_PREFIX"]
-AFD_S3_ARCHIVE_PREFIX = environment_variables["AFD_S3_ARCHIVE_PREFIX"]
-EMS_S3_SOURCE_BUCKET = environment_variables["EMS_S3_SOURCE_BUCKET"]
-EMS_S3_ARCHIVE_BUCKET = environment_variables["EMS_S3_ARCHIVE_BUCKET"]
-EMS_S3_SOURCE_PREFIX = environment_variables["EMS_S3_SOURCE_PREFIX"]
-EMS_S3_ARCHIVE_PREFIX = environment_variables["EMS_S3_ARCHIVE_PREFIX"]
+DB_USERNAME = None
+DB_PASSWORD = None
+DB_HOSTNAME = None
+DB_PORT = None
+DB_DATABASE = None
+AWS_ACCESS_KEY_ID = None
+AWS_SECRET_ACCESS_KEY = None
+AFD_S3_SOURCE_BUCKET = None
+AFD_S3_ARCHIVE_BUCKET = None
+AFD_S3_SOURCE_PREFIX = None
+AFD_S3_ARCHIVE_PREFIX = None
+EMS_S3_SOURCE_BUCKET = None
+EMS_S3_ARCHIVE_BUCKET = None
+EMS_S3_SOURCE_PREFIX = None
+EMS_S3_ARCHIVE_PREFIX = None
 
-# DB_USERNAME = os.getenv("AFD_DB_USERNAME")
-# DB_PASSWORD = os.getenv("AFD_DB_PASSWORD")
-# DB_HOSTNAME = os.getenv("AFD_DB_HOSTNAME")
-# DB_PORT = os.getenv("AFD_DB_PORT")
-# DB_DATABASE = os.getenv("AFD_DB_DATABASE")
-# AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
-# AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
-# AFD_S3_SOURCE_BUCKET = os.getenv("AFD_S3_SOURCE_BUCKET")
-# AFD_S3_ARCHIVE_BUCKET = os.getenv("AFD_S3_ARCHIVE_BUCKET")
-# AFD_S3_SOURCE_PREFIX = os.getenv("AFD_S3_SOURCE_PREFIX")
-# AFD_S3_ARCHIVE_PREFIX = os.getenv("AFD_S3_ARCHIVE_PREFIX")
-#EMS_S3_SOURCE_BUCKET = os.getenv("EMS_S3_SOURCE_BUCKET")
-#EMS_S3_ARCHIVE_BUCKET = os.getenv("EMS_S3_ARCHIVE_BUCKET")
-#EMS_S3_SOURCE_PREFIX = os.getenv("EMS_S3_SOURCE_PREFIX")
-#EMS_S3_ARCHIVE_PREFIX = os.getenv("EMS_S3_ARCHIVE_PREFIX")
+if False:
+    # Retrieve the db configuration
+    DB_USERNAME = environment_variables["AFD_DB_USERNAME"]
+    DB_PASSWORD = environment_variables["AFD_DB_PASSWORD"]
+    DB_HOSTNAME = environment_variables["AFD_DB_HOSTNAME"]
+    DB_PORT = environment_variables["AFD_DB_PORT"]
+    DB_DATABASE = environment_variables["AFD_DB_DATABASE"]
+    AWS_ACCESS_KEY_ID = environment_variables["AWS_ACCESS_KEY_ID"]
+    AWS_SECRET_ACCESS_KEY = environment_variables["AWS_SECRET_ACCESS_KEY"]
+    AFD_S3_SOURCE_BUCKET = environment_variables["AFD_S3_SOURCE_BUCKET"]
+    AFD_S3_ARCHIVE_BUCKET = environment_variables["AFD_S3_ARCHIVE_BUCKET"]
+    AFD_S3_SOURCE_PREFIX = environment_variables["AFD_S3_SOURCE_PREFIX"]
+    AFD_S3_ARCHIVE_PREFIX = environment_variables["AFD_S3_ARCHIVE_PREFIX"]
+    EMS_S3_SOURCE_BUCKET = environment_variables["EMS_S3_SOURCE_BUCKET"]
+    EMS_S3_ARCHIVE_BUCKET = environment_variables["EMS_S3_ARCHIVE_BUCKET"]
+    EMS_S3_SOURCE_PREFIX = environment_variables["EMS_S3_SOURCE_PREFIX"]
+    EMS_S3_ARCHIVE_PREFIX = environment_variables["EMS_S3_ARCHIVE_PREFIX"]
+else:
+    DB_USERNAME = os.getenv("AFD_DB_USERNAME")
+    DB_PASSWORD = os.getenv("AFD_DB_PASSWORD")
+    DB_HOSTNAME = os.getenv("AFD_DB_HOSTNAME")
+    DB_PORT = os.getenv("AFD_DB_PORT")
+    DB_DATABASE = os.getenv("AFD_DB_DATABASE")
+    AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
+    AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
+    AFD_S3_SOURCE_BUCKET = os.getenv("AFD_S3_SOURCE_BUCKET")
+    AFD_S3_ARCHIVE_BUCKET = os.getenv("AFD_S3_ARCHIVE_BUCKET")
+    AFD_S3_SOURCE_PREFIX = os.getenv("AFD_S3_SOURCE_PREFIX")
+    AFD_S3_ARCHIVE_PREFIX = os.getenv("AFD_S3_ARCHIVE_PREFIX")
+    EMS_S3_SOURCE_BUCKET = os.getenv("EMS_S3_SOURCE_BUCKET")
+    EMS_S3_ARCHIVE_BUCKET = os.getenv("EMS_S3_ARCHIVE_BUCKET")
+    EMS_S3_SOURCE_PREFIX = os.getenv("EMS_S3_SOURCE_PREFIX")
+    EMS_S3_ARCHIVE_PREFIX = os.getenv("EMS_S3_ARCHIVE_PREFIX")
 
 
 
@@ -214,7 +232,7 @@ def upload_data_to_postgres(data, age_cutoff):
                     mvc_form_estimated_speed_kph = %s,
                     mvc_form_estimated_speed_mph = %s,
                     mvc_form_extrication_comments = %s,
-                    mvc_form_extrication_time = %s,
+                    mvc_form_extrication_datetime = %s,
                     mvc_form_extrication_required_flag = %s,
                     mvc_form_patient_injured_flag = %s,
                     mvc_form_position_in_vehicle = %s,
@@ -318,7 +336,7 @@ def upload_data_to_postgres(data, age_cutoff):
                     mvc_form_estimated_speed_kph,
                     mvc_form_estimated_speed_mph,
                     mvc_form_extrication_comments,
-                    mvc_form_extrication_time,
+                    mvc_form_extrication_datetime,
                     mvc_form_extrication_required_flag,
                     mvc_form_patient_injured_flag,
                     mvc_form_position_in_vehicle,
@@ -424,5 +442,5 @@ with Flow("EMS Import ETL") as flow:
     clean_up_token = clean_up(attachment_location, upstream_tasks=[upload_token])
 
 # you can use record_age_maximum=0 if you want a full import
-flow.run(parameters=dict(record_age_maximum=0))
+flow.run(parameters=dict(record_age_maximum=100))
 # f.register(project_name="vision-zero")
