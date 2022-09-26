@@ -153,7 +153,7 @@ def upload_data_to_postgres(data, age_cutoff):
 
     print(f"Max record age: {age_cutoff}")
     print(f"Input Dataframe shape: {data.shape}")
-    if age_cutoff:
+    if age_cutoff > 0:
         data["Incident_Date_Received"] = pandas.to_datetime(data["Incident_Date_Received"], format="%Y-%m-%d")
         age_threshold = datetime.today() - timedelta(days=age_cutoff)
         data = data[data["Incident_Date_Received"] > age_threshold]
@@ -423,6 +423,6 @@ with Flow("EMS Import ETL") as flow:
     upload_token = upload_data_to_postgres(data, record_age_maximum)
     clean_up_token = clean_up(attachment_location, upstream_tasks=[upload_token])
 
-# you can use record_age_maximum=False if you want a full import
-flow.run(parameters=dict(record_age_maximum=70))
+# you can use record_age_maximum=0 if you want a full import
+flow.run(parameters=dict(record_age_maximum=0))
 # f.register(project_name="vision-zero")
