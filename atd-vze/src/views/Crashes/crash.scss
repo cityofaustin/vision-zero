@@ -28,18 +28,18 @@ span > strong {
 
 .minidiff--switchlabel {
   position: relative;
-  top: -.5rem;
+  top: -0.5rem;
   font-weight: bold;
 }
 
 .minidiff--switchrow {
-  margin-top: .25rem;
+  margin-top: 0.25rem;
 }
 
 .difftable-row__header {
   border-bottom: 1px solid #f0f3f5;
   padding-bottom: 0.5rem;
-  margin-bottom: 1.0rem;
+  margin-bottom: 1rem;
 }
 
 .crash-process-modal {
@@ -48,10 +48,17 @@ span > strong {
 
 .crash-process-modal__body {
   margin-left: 1rem;
-  top: -.5rem;
+  top: -0.5rem;
   position: relative;
 }
 
 .crash-process-modal__header {
   color: black;
+}
+
+/* Recommendations */
+
+.searchBox#css_custom_input::placeholder {
+  color: black;
+  opacity: 90%;
 }
