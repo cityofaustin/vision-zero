@@ -20,5 +20,10 @@ export const recommendationsDataMap = {
       label: "Updates",
       key: "update",
     },
+    partner_id: {
+      label: "Coordination Partner:",
+      lookupOptions: "atd__coordination_partners_lkp",
+      key: "description",
+    },
   },
 };
