@@ -1,7 +1,7 @@
 import { gql } from "apollo-boost";
 
 export const GET_RECOMMENDATIONS = gql`
-  query FindRecommendations($crashId: Int) {
+  query FindRecommendations($crashId: Int, $recommendationId: Int) {
     recommendations(where: { crash_id: { _eq: $crashId } }) {
       id
       created_at
@@ -23,6 +23,15 @@ export const GET_RECOMMENDATIONS = gql`
     atd__recommendation_status_lkp {
       id
       description
+    }
+    recommendations_partners(
+      where: { recommendation_id: { _eq: $recommendationId } }
+    ) {
+      recommendation_id
+      partner_id
+      atd__coordination_partners_lkp {
+        description
+      }
     }
   }
 `;
