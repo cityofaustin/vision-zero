@@ -29,6 +29,7 @@ const Recommendations = ({ crashId }) => {
 
   const fieldConfig = recommendationsDataMap;
   const recommendation = data?.recommendations?.[0];
+  const partners = data?.recommendations_partners;
   const doesRecommendationRecordExist = recommendation ? true : false;
   const recommendationRecordId = recommendation?.id;
 
@@ -88,6 +89,8 @@ const Recommendations = ({ crashId }) => {
                     onOptionClick={
                       doesRecommendationRecordExist ? onEdit : onAdd
                     }
+                    partners={partners}
+                    fieldConfig={fieldConfig}
                   />
                 </div>
               </div>
