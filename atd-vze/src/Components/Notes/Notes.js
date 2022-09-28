@@ -15,7 +15,7 @@ import { useAuth0, isReadOnly } from "../../auth/authContext";
 
 // declare a notes component
 const Notes = ({
-  crashLocationId,
+  recordId,
   tableName,
   GET_NOTES,
   INSERT_NOTE,
@@ -36,7 +36,7 @@ const Notes = ({
 
   // fetch data from database using graphQL query
   const { loading, error, data, refetch } = useQuery(GET_NOTES, {
-    variables: { crashLocationId: crashLocationId },
+    variables: { recordId: recordId },
   });
 
   // declare mutation functions
@@ -55,7 +55,7 @@ const Notes = ({
     addNote({
       variables: {
         note: newNote,
-        crashLocationId: crashLocationId,
+        recordId: recordId,
         userEmail: userEmail,
       },
     })

@@ -111,7 +111,7 @@ function Location(props) {
       <Row>
         <Col>
           <Notes
-            crashLocationId={locationId}
+            recordId={locationId}
             tableName={"location_notes"}
             GET_NOTES={GET_LOCATION_NOTES}
             INSERT_NOTE={INSERT_LOCATION_NOTE}

@@ -311,7 +311,7 @@ function Crash(props) {
       <Row>
         <Col>
           <Notes
-            crashLocationId={props.match.params.id}
+            recordId={props.match.params.id}
             tableName={"crash_notes"}
             GET_NOTES={GET_NOTES}
             INSERT_NOTE={INSERT_NOTE}
