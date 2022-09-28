@@ -18,8 +18,6 @@ const RecommendationMultipleSelectDropdown = ({
     return partners.map(partner => partner?.[lookupOptions] || "");
   };
 
-  console.log(getSelectedValues(fieldConfig.fields.partner_id));
-
   return (
     <Multiselect
       options={makeOptionsWithNullOption(options)}
@@ -28,9 +26,9 @@ const RecommendationMultipleSelectDropdown = ({
       selectedValues={getSelectedValues(fieldConfig.fields.partner_id)}
       showArrow
       hideSelectedList
-      placeholder={getSelectedValues(fieldConfig.fields.partner_id).map(
-        partner => partner.description
-      )}
+      placeholder={getSelectedValues(fieldConfig.fields.partner_id)
+        .map(partner => partner.description)
+        .join(",  ")}
       id="css_custom"
       style={{
         searchBox: {
