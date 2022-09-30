@@ -9,10 +9,8 @@ const RecommendationMultipleSelectDropdown = ({
   fieldConfig,
   field,
 }) => {
-  const handleOptionClick = selectedItem => {
-    console.log(selectedItem[0].id);
-    // Mutation expect lookup IDs as integers
-    const valuesObject = { [field]: parseInt(selectedItem[0].id) };
+  const handleOptionClick = (selectedList, selectedItem) => {
+    const valuesObject = { [field]: parseInt(selectedItem.id) };
     onOptionClick(valuesObject);
   };
   // Add a null option to enable users to clear out the value
