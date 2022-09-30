@@ -22,26 +22,26 @@ function VZDashboard() {
 
   if (loading) return "Loading...";
   if (error) return `Error! ${error.message}`;
-  console.log(data);
+
   const {
     years_of_life_lost: yearsOfLifeLostPrimaryPerson,
-  } = data.atd_txdot_primaryperson_aggregate.aggregate.sum;
+  } = data.primaryPersonFatalities.aggregate.sum;
 
-  // years_of_life_lost is equal to 0 for every person record
   const {
     years_of_life_lost: yearsOfLifeLostPerson,
-  } = data.atd_txdot_person_aggregate.aggregate.sum;
+  } = data.personFatalities.aggregate.sum;
+
   const {
     sus_serious_injry_cnt: seriousInjuryCount,
   } = data.seriousInjuriesAndTotal.aggregate.sum;
-  const {
-    apd_confirmed_death_count: deathCount,
-  } = data.fatalities.aggregate.sum;
+  const { atd_fatality_count: deathCount } = data.fatalities.aggregate.sum;
 
   const yearsOfLifeLostYTD =
     yearsOfLifeLostPrimaryPerson + yearsOfLifeLostPerson;
   const fatalitiesYTD = deathCount;
   const seriousInjuriesYTD = seriousInjuryCount;
+
+  console.log(data, yearsOfLifeLostYTD, fatalitiesYTD, seriousInjuriesYTD);
 
   // Widget02 expects a string value, DB returns number or null
   const commaSeparator = number =>

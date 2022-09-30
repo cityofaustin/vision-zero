@@ -42,24 +42,58 @@ export const GET_CRASHES_YTD = gql`
         }
       }
     }
-    primaryPersonFatalities: atd_txdot_primaryperson(
+    primaryPersonFatalities: atd_txdot_primaryperson_aggregate(
       where: {
-        crash: { crash_date: { _lt: $yearEnd, _gte: $yearStart } }
-        _and: { prsn_injry_sev_id: { _eq: 4 } }
+        crash: { private_dr_fl: { _eq: "N" } }
+        _and: {
+          prsn_injry_sev_id: { _eq: 4 }
+          crash: { crash_date: { _lt: $yearEnd, _gte: $yearStart } }
+          _or: [
+            { crash: { austin_full_purpose: { _eq: "Y" } } }
+            {
+              _and: [
+                { crash: { city_id: { _eq: 22 } } }
+                { crash: { position: { _is_null: true } } }
+              ]
+            }
+          ]
+        }
       }
     ) {
-      prsn_age
+      aggregate {
+        sum {
+          years_of_life_lost
+        }
+      }
     }
-    personFatalities: atd_txdot_person(
+    personFatalities: atd_txdot_person_aggregate(
       where: {
-        crash: { crash_date: { _lt: $yearEnd, _gte: $yearStart } }
-        _and: { prsn_injry_sev_id: { _eq: 4 } }
+        crash: { private_dr_fl: { _eq: "N" } }
+        _and: {
+          prsn_injry_sev_id: { _eq: 4 }
+          crash: { crash_date: { _lt: $yearEnd, _gte: $yearStart } }
+          _or: [
+            { crash: { austin_full_purpose: { _eq: "Y" } } }
+            {
+              _and: [
+                { crash: { city_id: { _eq: 22 } } }
+                { crash: { position: { _is_null: true } } }
+              ]
+            }
+          ]
+        }
       }
     ) {
-      prsn_age
+      aggregate {
+        sum {
+          years_of_life_lost
+        }
+      }
     }
   }
 `;
+
+// TODO: Try old query!!!!!!!
 
 // SELECT
 //   75 - prsn_age as years_of_life_lost
