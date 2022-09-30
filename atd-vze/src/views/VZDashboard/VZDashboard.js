@@ -5,6 +5,7 @@ import { useQuery } from "@apollo/react-hooks";
 import Widget02 from "../Widgets/Widget02";
 import VZLinksWidget from "../Widgets/VZLinksWidget";
 import VZNoticeWidget from "../Widgets/VZNoticeWidget";
+import moment from "moment";
 
 import { GET_CRASHES_YTD } from "../../queries/dashboard";
 
@@ -12,10 +13,11 @@ import bi_logo from "../../assets/img/brand/power_bi_icon_white_on_transparent.p
 
 function VZDashboard() {
   const year = new Date().getFullYear();
-  // TODO: Use same date range as VZV
   const yearStart = `${year}-01-01`;
-  const yearEnd = `${year}-12-31`;
-  console.log(yearStart, yearEnd);
+  // We use the same end date as VZV so VZE widget totals match VZV widgets
+  const yearEnd = moment()
+    .subtract(14, "day")
+    .format("YYYY-MM-DD");
   const { loading, error, data } = useQuery(GET_CRASHES_YTD, {
     variables: { yearStart, yearEnd },
   });
@@ -40,8 +42,6 @@ function VZDashboard() {
     yearsOfLifeLostPrimaryPerson + yearsOfLifeLostPerson;
   const fatalitiesYTD = deathCount;
   const seriousInjuriesYTD = seriousInjuryCount;
-
-  console.log(data, yearsOfLifeLostYTD, fatalitiesYTD, seriousInjuriesYTD);
 
   // Widget02 expects a string value, DB returns number or null
   const commaSeparator = number =>
