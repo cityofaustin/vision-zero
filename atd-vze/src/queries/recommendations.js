@@ -72,3 +72,23 @@ export const UPDATE_RECOMMENDATION = gql`
     }
   }
 `;
+
+export const INSERT_RECOMMENDATION_PARTNER = gql`
+  mutation InsertRecommendationPartner(
+    $recommendationRecordId: Int!
+    $partner_id: Int!
+  ) {
+    insert_recommendations_partners(
+      objects: {
+        recommendation_id: $recommendationRecordId
+        partner_id: $partner_id
+      }
+    ) {
+      returning {
+        id
+        partner_id
+        recommendation_id
+      }
+    }
+  }
+`;
