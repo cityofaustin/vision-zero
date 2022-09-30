@@ -1,5 +1,8 @@
 import { gql } from "apollo-boost";
 
+// These queries are derived from the ETL that populates our Socrata data sets
+// so that the VZV and VZE widget totals match up
+// See https://github.com/cityofaustin/atd-vz-data/blob/master/atd-etl/app/process/socrata_queries.py
 export const GET_CRASHES_YTD = gql`
   query GetCrashesYTD($yearStart: date, $yearEnd: date) {
     fatalities: atd_txdot_crashes_aggregate(
@@ -92,19 +95,3 @@ export const GET_CRASHES_YTD = gql`
     }
   }
 `;
-
-// TODO: Try old query!!!!!!!
-
-// SELECT
-//   75 - prsn_age as years_of_life_lost
-// FROM
-//   atd_txdot_primaryperson as pp
-// WHERE
-//   1 = 1
-//   AND pp.prsn_injry_sev_id = 4
-//   AND pp.prsn_age < 75
-//   AND pp.prsn_age IS NOT NULL
-
-// ALTER TABLE atd_txdot_person
-// ADD COLUMN years_of_life_lost integer
-// GENERATED ALWAYS AS (GREATEST(75 - prsn_age, 0)) STORED;
