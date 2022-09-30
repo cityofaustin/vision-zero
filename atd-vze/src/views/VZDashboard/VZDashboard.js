@@ -62,14 +62,6 @@ function VZDashboard() {
       <Row>
         <Col xs="12" sm="6" md="4">
           <Widget02
-            header={commaSeparator(yearsOfLifeLostYTD)}
-            mainText={`Years of life lost in ${year}`}
-            icon="fa fa-hourglass-end"
-            color="info"
-          />
-        </Col>
-        <Col xs="12" sm="6" md="4">
-          <Widget02
             header={commaSeparator(fatalitiesYTD)}
             mainText={`Fatalities in ${year}`}
             icon="fa fa-heartbeat"
@@ -78,10 +70,18 @@ function VZDashboard() {
         </Col>
         <Col xs="12" sm="6" md="4">
           <Widget02
+            header={commaSeparator(yearsOfLifeLostYTD)}
+            mainText={`Years of life lost in ${year}`}
+            icon="fa fa-hourglass-end"
+            color="info"
+          />
+        </Col>
+        <Col xs="12" sm="6" md="4">
+          <Widget02
             header={commaSeparator(seriousInjuriesYTD)}
             mainText={`Suspected Serious Injuries in ${year}`}
             icon="fa fa-medkit"
-            color="info"
+            color="warning"
           />
         </Col>
       </Row>
