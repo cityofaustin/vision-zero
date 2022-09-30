@@ -5,6 +5,7 @@ import { recommendationsDataMap } from "./recommendationsDataMap";
 import {
   GET_RECOMMENDATIONS,
   INSERT_RECOMMENDATION,
+  INSERT_RECOMMENDATION_PARTNER,
   UPDATE_RECOMMENDATION,
 } from "../../../queries/recommendations";
 import RecommendationTextInput from "./RecommendationTextInput";
@@ -23,6 +24,7 @@ const Recommendations = ({ crashId }) => {
   // declare mutation functions
   const [addRecommendation] = useMutation(INSERT_RECOMMENDATION);
   const [editRecommendation] = useMutation(UPDATE_RECOMMENDATION);
+  const [addPartner] = useMutation(INSERT_RECOMMENDATION_PARTNER);
 
   if (loading) return "Loading...";
   if (error) return `Error! ${error.message}`;
@@ -48,8 +50,6 @@ const Recommendations = ({ crashId }) => {
       ...valuesObject,
     };
 
-    console.log(recommendationRecord);
-
     addRecommendation({
       variables: recommendationRecord,
     })
@@ -65,6 +65,20 @@ const Recommendations = ({ crashId }) => {
         id: recommendationRecordId,
         changes: changesObject,
       },
+    })
+      .then(() => {
+        refetch();
+      })
+      .catch(error => console.error(error));
+  };
+
+  const onAddPartner = valuesObject => {
+    const recommendationPartnerRecord = {
+      recommendationRecordId,
+      ...valuesObject,
+    };
+    addPartner({
+      variables: recommendationPartnerRecord,
     })
       .then(() => {
         refetch();
@@ -89,7 +103,7 @@ const Recommendations = ({ crashId }) => {
                   <RecommendationMultipleSelectDropdown
                     options={data.atd__coordination_partners_lkp}
                     onOptionClick={
-                      doesRecommendationRecordExist ? onEdit : onAdd
+                      doesRecommendationRecordExist ? onAddPartner : onAdd
                     }
                     partners={partners}
                     fieldConfig={fieldConfig}
