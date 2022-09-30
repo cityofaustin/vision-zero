@@ -29,7 +29,7 @@ const Recommendations = ({ crashId }) => {
 
   const fieldConfig = recommendationsDataMap;
   const recommendation = data?.recommendations?.[0];
-  const partners = data?.recommendations_partners;
+  const partners = recommendation?.recommendations_partners;
   const doesRecommendationRecordExist = recommendation ? true : false;
   const recommendationRecordId = recommendation?.id;
 
@@ -47,6 +47,8 @@ const Recommendations = ({ crashId }) => {
       userEmail,
       ...valuesObject,
     };
+
+    console.log(recommendationRecord);
 
     addRecommendation({
       variables: recommendationRecord,
@@ -91,6 +93,7 @@ const Recommendations = ({ crashId }) => {
                     }
                     partners={partners}
                     fieldConfig={fieldConfig}
+                    field={"partner_id"}
                   />
                 </div>
               </div>
