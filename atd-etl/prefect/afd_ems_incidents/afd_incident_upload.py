@@ -265,7 +265,7 @@ def clean_up(path):
 
 
 with Flow("AFD Import ETL") as flow:
-    record_age_maximum = Parameter("record_age_maximum", default=False)
+    record_age_maximum = Parameter("record_age_maximum", default=0)
     timestamp = get_timestamp()
     newest_email = get_most_recent_email()
     attachment_location = extract_email_attachment(newest_email)
