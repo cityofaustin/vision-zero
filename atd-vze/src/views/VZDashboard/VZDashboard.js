@@ -5,6 +5,7 @@ import { useQuery } from "@apollo/react-hooks";
 import Widget02 from "../Widgets/Widget02";
 import VZLinksWidget from "../Widgets/VZLinksWidget";
 import VZNoticeWidget from "../Widgets/VZNoticeWidget";
+import moment from "moment";
 
 import { GET_CRASHES_YTD } from "../../queries/dashboard";
 
@@ -13,7 +14,10 @@ import bi_logo from "../../assets/img/brand/power_bi_icon_white_on_transparent.p
 function VZDashboard() {
   const year = new Date().getFullYear();
   const yearStart = `${year}-01-01`;
-  const yearEnd = `${year}-12-31`;
+  // We use the same end date as VZV so VZE widget totals match VZV widgets
+  const yearEnd = moment()
+    .subtract(14, "day")
+    .format("YYYY-MM-DD");
   const { loading, error, data } = useQuery(GET_CRASHES_YTD, {
     variables: { yearStart, yearEnd },
   });
@@ -23,16 +27,16 @@ function VZDashboard() {
 
   const {
     years_of_life_lost: yearsOfLifeLostPrimaryPerson,
-  } = data.atd_txdot_primaryperson_aggregate.aggregate.sum;
+  } = data.primaryPersonFatalities.aggregate.sum;
+
   const {
     years_of_life_lost: yearsOfLifeLostPerson,
-  } = data.atd_txdot_person_aggregate.aggregate.sum;
+  } = data.personFatalities.aggregate.sum;
+
   const {
     sus_serious_injry_cnt: seriousInjuryCount,
   } = data.seriousInjuriesAndTotal.aggregate.sum;
-  const {
-    apd_confirmed_death_count: deathCount,
-  } = data.fatalities.aggregate.sum;
+  const { atd_fatality_count: deathCount } = data.fatalities.aggregate.sum;
 
   const yearsOfLifeLostYTD =
     yearsOfLifeLostPrimaryPerson + yearsOfLifeLostPerson;
@@ -58,14 +62,6 @@ function VZDashboard() {
       <Row>
         <Col xs="12" sm="6" md="4">
           <Widget02
-            header={commaSeparator(yearsOfLifeLostYTD)}
-            mainText={`Years of life lost in ${year}`}
-            icon="fa fa-hourglass-end"
-            color="info"
-          />
-        </Col>
-        <Col xs="12" sm="6" md="4">
-          <Widget02
             header={commaSeparator(fatalitiesYTD)}
             mainText={`Fatalities in ${year}`}
             icon="fa fa-heartbeat"
@@ -74,10 +70,18 @@ function VZDashboard() {
         </Col>
         <Col xs="12" sm="6" md="4">
           <Widget02
+            header={commaSeparator(yearsOfLifeLostYTD)}
+            mainText={`Years of life lost in ${year}`}
+            icon="fa fa-hourglass-end"
+            color="info"
+          />
+        </Col>
+        <Col xs="12" sm="6" md="4">
+          <Widget02
             header={commaSeparator(seriousInjuriesYTD)}
             mainText={`Suspected Serious Injuries in ${year}`}
             icon="fa fa-medkit"
-            color="info"
+            color="warning"
           />
         </Col>
       </Row>
@@ -88,7 +92,7 @@ function VZDashboard() {
           }
         </Col>
       </Row>
-      <Row className='mt-3'>
+      <Row className="mt-3">
         <Col xs="12" sm="6" md="6">
           <VZLinksWidget
             header={`Arterial Management Division Overview`}
@@ -98,7 +102,7 @@ function VZDashboard() {
             raster_icon_alt="Power BI"
             color="dark"
             link="https://app.powerbigov.us/links/GACOsce5fi?ctid=5c5e19f6-a6ab-4b45-b1d0-be4608a9a67f&pbi_source=linkShare"
-            target='_bi_amd'
+            target="_bi_amd"
           />
           <VZLinksWidget
             header={`High Injury Roadways`}
@@ -108,7 +112,7 @@ function VZDashboard() {
             raster_icon_alt="Power BI"
             color="dark"
             link="https://app.powerbigov.us/links/pdguGuhSGE?ctid=5c5e19f6-a6ab-4b45-b1d0-be4608a9a67f&pbi_source=linkShare"
-            target='_bi_hir'
+            target="_bi_hir"
           />
           <VZLinksWidget
             header={`Emerging Hotspots and Bond Locations`}
@@ -118,7 +122,7 @@ function VZDashboard() {
             raster_icon_alt="Power BI"
             color="dark"
             link="https://app.powerbigov.us/links/RmMrnaSMLp?ctid=5c5e19f6-a6ab-4b45-b1d0-be4608a9a67f&pbi_source=linkShare"
-            target='_bi_hotspots'
+            target="_bi_hotspots"
           />
         </Col>
         <Col xs="12" sm="6" md="6">
@@ -128,7 +132,7 @@ function VZDashboard() {
             icon="fa fa-map"
             color="primary"
             link="https://austin.maps.arcgis.com/apps/instant/interactivelegend/index.html?appid=32b276f4e6cd406aa1c2040d2eb26b37"
-            target='_compcostmap'
+            target="_compcostmap"
           />
           <VZLinksWidget
             header={`Vision Zero Viewer`}
@@ -136,7 +140,7 @@ function VZDashboard() {
             icon="fa fa-map"
             color="primary"
             link="https://visionzero.austin.gov/viewer/"
-            target='_vzv'
+            target="_vzv"
           />
         </Col>
       </Row>

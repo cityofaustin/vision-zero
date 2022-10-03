@@ -551,9 +551,21 @@ def insert_crash_change_template(new_record_dict, differences, crash_id):
     :param str crash_id
     :return: string
     """
+
+    new_record_crash_date = None
+    try: 
+        new_record_crash_date = new_record_dict["crash_date"].strftime("%Y-%m-%d")  #convert_date(new_record_dict["crash_date"])
+    except:
+        print("Failed to convert crash_date")
+
+    for key in new_record_dict:
+        if isinstance(new_record_dict[key], datetime.date):
+            new_record_dict[key] = new_record_dict[key].strftime("%Y-%m-%d")
+        if isinstance(new_record_dict[key], datetime.time):
+            new_record_dict[key] = new_record_dict[key].strftime("%H:%M:%S")
+
     # Turn the dictionary into a character-escaped json string
-    new_record_escaped = json.dumps(json.dumps(new_record_dict))
-    new_record_crash_date = convert_date(new_record_dict["crash_date"])
+    new_record_escaped = json.dumps(json.dumps(new_record_dict), default=str)
     # Build the template and inject required values
     output = (
         """
@@ -590,7 +602,7 @@ def insert_crash_change_template(new_record_dict, differences, crash_id):
         )
         .replace("%NEW_RECORD_ID%", crash_id)
         .replace("%NEW_UNIQUE_ID%", crash_id)
-        .replace("%AFFECTED_COLUMNS%", json.dumps(json.dumps(differences)))
+        .replace("%AFFECTED_COLUMNS%", json.dumps(json.dumps(differences), default=str))
         .replace(
             "%NEW_RECORD_CRASH_DATE%",
             "null" if new_record_crash_date is None else f'"{new_record_crash_date}"',
