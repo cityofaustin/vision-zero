@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import Multiselect from "multiselect-react-dropdown";
+import Select from "react-select";
 import "../crash.scss";
 
 const RecommendationMultipleSelectDropdown = ({
@@ -19,8 +20,16 @@ const RecommendationMultipleSelectDropdown = ({
     ...options,
   ];
 
+  console.log(options);
+
   const getSelectedValues = ({ lookupOptions, key }) => {
     return partners.map(partner => partner?.[lookupOptions] || "");
+  };
+
+  const customStyles = {
+    control: () => ({
+      border: "none",
+    }),
   };
 
   return (
@@ -49,6 +58,7 @@ const RecommendationMultipleSelectDropdown = ({
       onSelect={(selectedList, selectedItem) =>
         handleOptionClick(selectedList, selectedItem)
       }
+      closeOnSelect={false}
     ></Multiselect>
   );
 };
