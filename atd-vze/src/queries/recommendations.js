@@ -92,3 +92,13 @@ export const INSERT_RECOMMENDATION_PARTNER = gql`
     }
   }
 `;
+
+export const REMOVE_RECOMMENDATION_PARTNER = gql`
+  mutation DeleteRecommendationPartner($id: Int!) {
+    delete_recommendations_partners_by_pk(id: $id) {
+      id
+      partner_id
+      recommendation_id
+    }
+  }
+`;
