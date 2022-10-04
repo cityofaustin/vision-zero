@@ -16,7 +16,7 @@ import {
   FormText,
   FormFeedback,
 } from "reactstrap";
-import moment from "moment";
+import { format } from "date-fns";
 import { withApollo } from "react-apollo";
 import { gql } from "apollo-boost";
 import "./CreateCrashRecord.css";
@@ -34,8 +34,8 @@ const CreateCrashRecord = ({ client }) => {
   const formInitialState = {
     tempId: 1000,
     caseId: "",
-    crashTime: moment(new Date()).format("HH:mm:ss"),
-    crashDate: moment(new Date()).format("YYYY-MM-DD"),
+    crashTime: format(new Date(), "HH:mm:ss"),
+    crashDate: format(new Date(), "yyyy-MM-dd"),
     primaryAddress: "",
     secondayAddress: "",
     units: [
@@ -262,7 +262,7 @@ const CreateCrashRecord = ({ client }) => {
             crash_id: tempId,
             crash_time: crashTime,
             sus_serious_injry_cnt: susSeriousInjuryCountSum,
-            updated_by: user.email
+            updated_by: user.email,
           };
 
           client

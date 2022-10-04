@@ -1,6 +1,6 @@
 import React from "react";
 import { withApollo } from "react-apollo";
-import moment from "moment";
+import { format, subYears } from "date-fns";
 
 import GridTable from "../../Components/GridTable";
 import gqlAbstract from "../../queries/gqlAbstract";
@@ -61,7 +61,7 @@ let queryConf = {
     },
   },
   order_by: {
-    crashes_count_cost_summary: `{ est_comp_cost: desc }`
+    crashes_count_cost_summary: `{ est_comp_cost: desc }`,
   },
   where: {
     // Only show Locations inside CoA Limits.
@@ -73,10 +73,8 @@ let queryConf = {
   offset: 0,
 };
 
-const dateRangeStart = moment()
-  .subtract(5, "years")
-  .format("MM/DD/YYYY");
-const dateRangeEnd = moment().format("MM/DD/YYYY");
+const dateRangeStart = format(subYears(new Date(), 5), "MM/dd/yyyy");
+const dateRangeEnd = format(new Date(), "MM/dd/yyyy");
 const helperText = `Totals calculated using the previous five years of crash data (${dateRangeStart} - ${dateRangeEnd})`;
 
 let locationsQuery = new gqlAbstract(queryConf);

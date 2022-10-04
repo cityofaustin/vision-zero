@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { withApollo } from "react-apollo";
 import { useLazyQuery } from "@apollo/react-hooks";
-import moment from "moment";
+import { formatISO } from "date-fns";
 import { CSVLink } from "react-csv";
 import {
   Button,
@@ -21,7 +21,12 @@ import { AppSwitch } from "@coreui/react";
 
 const exportWarningLimit = 4000;
 
-const GridExportDataButton = ({ query, columnsToExport, totalRecords, label }) => {
+const GridExportDataButton = ({
+  query,
+  columnsToExport,
+  totalRecords,
+  label,
+}) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Use .queryCSV to insert columnsToExport prop into query
@@ -114,7 +119,7 @@ const GridExportDataButton = ({ query, columnsToExport, totalRecords, label }) =
 
     return cleanedAndFlattenedData;
   };
-// fa-2x ml-2 mt-1
+  // fa-2x ml-2 mt-1
   return (
     <>
       <Button color="primary" onClick={toggleModalAndExport}>
@@ -169,7 +174,7 @@ const GridExportDataButton = ({ query, columnsToExport, totalRecords, label }) =
             <CSVLink
               className=""
               data={formatExportData(data[query.table])}
-              filename={query.table + moment(Date.now()).format()}
+              filename={query.table + formatISO(Date.now())}
             >
               <Button color="primary" onClick={toggleModal}>
                 Save

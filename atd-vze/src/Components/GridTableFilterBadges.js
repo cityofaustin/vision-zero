@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import moment from "moment";
+import { format, parseISO } from "date-fns";
 
 import { Col, Row, Badge } from "reactstrap";
 
@@ -24,11 +24,13 @@ const GridTableFilterBadges = ({
 
   // Update date range badge text
   useEffect(() => {
-    const startDateRangeText = moment(dateRangeParams.startDate).format(
-      "MM/DD/YYYY"
+    const startDateRangeText = format(
+      parseISO(dateRangeParams.startDate),
+      "MM/dd/yyyy"
     );
-    const endDateRangeText = moment(dateRangeParams.endDate).format(
-      "MM/DD/YYYY"
+    const endDateRangeText = format(
+      parseISO(dateRangeParams.endDate),
+      "MM/dd/yyyy"
     );
     const formattedDateRangeText = `${startDateRangeText} to ${endDateRangeText}`;
 

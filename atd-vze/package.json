@@ -25,6 +25,7 @@
     "chart.js": "^2.9.4",
     "classnames": "^2.2.6",
     "core-js": "^3.1.4",
+    "date-fns": "^2.29.3",
     "env-cmd": "^10.0.1",
     "enzyme": "^3.10.0",
     "enzyme-adapter-react-16": "^1.14.0",

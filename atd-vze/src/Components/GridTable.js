@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { useQuery, useLazyQuery } from "@apollo/react-hooks";
 
 import { withApollo } from "react-apollo";
-import moment from "moment";
+import { format, subYears } from "date-fns";
 
 import {
   Card,
@@ -52,10 +52,8 @@ const GridTable = ({
     (savedFilterState && savedFilterState[`${stateName}`]) || false;
 
   const defaultTimeRange = {
-    startDate: moment(new Date())
-      .subtract(1, "year")
-      .format("YYYY-MM-DD"),
-    endDate: moment(new Date()).format("YYYY-MM-DD"),
+    startDate: format(subYears(new Date(), 1), "yyyy-MM-dd"),
+    endDate: format(new Date(), "yyyy-MM-dd"),
   };
 
   /**

@@ -1,7 +1,7 @@
 import React from "react";
 import { withApollo } from "react-apollo";
 
-import moment from 'moment';
+import { subYears } from "date-fns";
 import GridTable from "../../Components/GridTable";
 import gqlAbstract from "../../queries/gqlAbstract";
 import { crashQueryExportFields } from "../../queries/crashes";
@@ -20,7 +20,7 @@ function LocationCrashes(props) {
     showDateRange: true,
     columns: crashGridTableColumns,
     order_by: {
-      est_comp_cost_crash_based: "desc"
+      est_comp_cost_crash_based: "desc",
     },
     where: {
       location_id: `_eq: "${props.locationId}"`,
@@ -248,10 +248,8 @@ function LocationCrashes(props) {
     },
   ];
 
-  const minDate = moment(new Date())
-  .subtract(10, "year")
-  .toDate();
-  
+  const minDate = subYears(new Date(), 10);
+
   return (
     <GridTable
       query={crashesQuery}
