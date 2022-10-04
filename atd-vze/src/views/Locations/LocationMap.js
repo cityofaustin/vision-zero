@@ -7,7 +7,7 @@ import MapGL, {
 } from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import axios from "axios";
-import moment from "moment";
+import { format } from "date-fns";
 
 import styled from "styled-components";
 import { colors } from "../../styles/colors";
@@ -16,8 +16,6 @@ import { LOCATION_MAP_CONFIG } from "../../helpers/map";
 
 const TOKEN = process.env.REACT_APP_MAPBOX_TOKEN;
 const NEARMAP_KEY = process.env.REACT_APP_NEARMAP_KEY;
-
-console.log("hello");
 
 const fullscreenControlStyle = {
   position: "absolute",
@@ -89,7 +87,7 @@ export default class LocationMap extends Component {
 
   getLatestAerialTimestamp = timestampArray => timestampArray.slice(-1)[0];
 
-  convertNearMapTimeFormat = date => moment(date).format("MM/DD/YYYY");
+  convertNearMapTimeFormat = date => format(date, "MM/dd/yyyy");
 
   getAerialTimestamps = () => {
     // Get all available aerial capture dates and set and format latest to state

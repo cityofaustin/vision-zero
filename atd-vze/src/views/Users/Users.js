@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
-import moment from "moment";
+import { format, parseISO } from "date-fns";
 import {
   Badge,
   Card,
@@ -38,9 +38,9 @@ const UserRow = ({ user }) => {
       <td>
         <Link to={userLink}>{user.email}</Link>
       </td>
-      <td>{moment(user.created_at).format("MM/DD/YYYY")}</td>
+      <td>{format(parseISO(user.created_at), "MM/dd/yyyy")}</td>
       <td>{user.logins_count}</td>
-      <td>{moment(user.last_login).format("MM/DD/YYYY")}</td>
+      <td>{format(parseISO(user.last_login), "MM/dd/yyyy")}</td>
       <td>{rules[user.app_metadata.roles[0]].label}</td>
       <td>
         <Link to={userLink}>
