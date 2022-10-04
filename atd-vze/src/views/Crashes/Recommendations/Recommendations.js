@@ -6,7 +6,7 @@ import {
   GET_RECOMMENDATIONS,
   INSERT_RECOMMENDATION,
   INSERT_RECOMMENDATION_PARTNER,
-  DELETE_RECOMMENDATION_PARTNER,
+  REMOVE_RECOMMENDATION_PARTNER,
   UPDATE_RECOMMENDATION,
 } from "../../../queries/recommendations";
 import RecommendationTextInput from "./RecommendationTextInput";
@@ -26,7 +26,7 @@ const Recommendations = ({ crashId }) => {
   const [addRecommendation] = useMutation(INSERT_RECOMMENDATION);
   const [editRecommendation] = useMutation(UPDATE_RECOMMENDATION);
   const [addPartner] = useMutation(INSERT_RECOMMENDATION_PARTNER);
-  const [deletePartner] = useMutation(DELETE_RECOMMENDATION_PARTNER);
+  const [removePartner] = useMutation(REMOVE_RECOMMENDATION_PARTNER);
 
   if (loading) return "Loading...";
   if (error) return `Error! ${error.message}`;
