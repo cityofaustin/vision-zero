@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import Multiselect from "multiselect-react-dropdown";
-import Select from "react-select";
 import "../crash.scss";
 
 const RecommendationMultipleSelectDropdown = ({
