@@ -7,7 +7,7 @@ import MapGL, {
 } from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import axios from "axios";
-import { format } from "date-fns";
+import { format, parseISO } from "date-fns";
 
 import styled from "styled-components";
 import { colors } from "../../styles/colors";
@@ -87,9 +87,13 @@ export default class LocationMap extends Component {
 
   getLatestAerialTimestamp = timestampArray => timestampArray.slice(-1)[0];
 
-  convertNearMapTimeFormat = date => format(date, "MM/dd/yyyy");
+  convertNearMapTimeFormat = date => {
+    format(parseISO(date), "MM/dd/yyyy");
+    console.log(date);
+  };
 
   getAerialTimestamps = () => {
+    console.log("hello");
     // Get all available aerial capture dates and set and format latest to state
     // Tiles from API default to latest capture
     const { latitude, longitude, zoom } = this.state.viewport;
