@@ -89,7 +89,6 @@ export default class LocationMap extends Component {
 
   convertNearMapTimeFormat = date => {
     format(parseISO(date), "MM/dd/yyyy");
-    console.log(date);
   };
 
   getAerialTimestamps = () => {
@@ -105,7 +104,6 @@ export default class LocationMap extends Component {
           this.getLatestAerialTimestamp(res.data.layers.Vert)
         );
         this.setState({ aerialTimestamp });
-        console.log(aerialTimestamp);
       });
   };
 
