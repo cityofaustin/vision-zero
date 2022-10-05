@@ -93,7 +93,6 @@ export default class LocationMap extends Component {
   };
 
   getAerialTimestamps = () => {
-    console.log("hello");
     // Get all available aerial capture dates and set and format latest to state
     // Tiles from API default to latest capture
     const { latitude, longitude, zoom } = this.state.viewport;
@@ -106,6 +105,7 @@ export default class LocationMap extends Component {
           this.getLatestAerialTimestamp(res.data.layers.Vert)
         );
         this.setState({ aerialTimestamp });
+        console.log(aerialTimestamp);
       });
   };
 
