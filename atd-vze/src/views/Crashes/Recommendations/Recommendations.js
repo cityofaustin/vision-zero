@@ -88,6 +88,19 @@ const Recommendations = ({ crashId }) => {
       .catch(error => console.error(error));
   };
 
+  const onRemovePartner = partnerId => {
+    removePartner({
+      variables: {
+        partner_id: partnerId,
+        recommendationRecordId: recommendationRecordId,
+      },
+    })
+      .then(response => {
+        refetch();
+      })
+      .catch(error => console.error(error));
+  };
+
   return (
     <Card>
       <CardHeader>Fatality Review Board Recommendations</CardHeader>
@@ -107,6 +120,7 @@ const Recommendations = ({ crashId }) => {
                     onOptionClick={
                       doesRecommendationRecordExist ? onAddPartner : onAdd
                     }
+                    onOptionRemove={onRemovePartner}
                     partners={partners}
                     fieldConfig={fieldConfig}
                     field={"partner_id"}
