@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React from "react";
 import Multiselect from "multiselect-react-dropdown";
 import "../crash.scss";
 
 const RecommendationMultipleSelectDropdown = ({
   options,
   onOptionClick,
+  onOptionRemove,
   partners,
   fieldConfig,
   field,
@@ -19,16 +20,13 @@ const RecommendationMultipleSelectDropdown = ({
     ...options,
   ];
 
-  console.log(options);
+  const handleRemoveClick = (selectedList, removedItem) => {
+    const partnerId = parseInt(removedItem.id);
+    onOptionRemove(partnerId);
+  };
 
   const getSelectedValues = ({ lookupOptions, key }) => {
     return partners.map(partner => partner?.[lookupOptions] || "");
-  };
-
-  const customStyles = {
-    control: () => ({
-      border: "none",
-    }),
   };
 
   return (
@@ -56,6 +54,9 @@ const RecommendationMultipleSelectDropdown = ({
       }}
       onSelect={(selectedList, selectedItem) =>
         handleOptionClick(selectedList, selectedItem)
+      }
+      onRemove={(selectedList, removedItem) =>
+        handleRemoveClick(selectedList, removedItem)
       }
       closeOnSelect={false}
     ></Multiselect>
