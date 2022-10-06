@@ -13,6 +13,9 @@ export const GET_RECOMMENDATIONS = gql`
         description
       }
       recommendations_partners {
+        id
+        partner_id
+        recommendation_id
         atd__coordination_partners_lkp {
           id
           description
@@ -94,11 +97,23 @@ export const INSERT_RECOMMENDATION_PARTNER = gql`
 `;
 
 export const REMOVE_RECOMMENDATION_PARTNER = gql`
-  mutation DeleteRecommendationPartner($id: Int!) {
-    delete_recommendations_partners_by_pk(id: $id) {
-      id
-      partner_id
-      recommendation_id
+  mutation DeleteRecommendationPartner(
+    $partner_id: Int!
+    $recommendationRecordId: Int!
+  ) {
+    delete_recommendations_partners(
+      where: {
+        _and: [
+          { partner_id: { _eq: $partner_id } }
+          { recommendation_id: { _eq: $recommendationRecordId } }
+        ]
+      }
+    ) {
+      returning {
+        id
+        partner_id
+        recommendation_id
+      }
     }
   }
 `;
