@@ -31,21 +31,15 @@ const RecommendationMultipleSelectDropdown = ({
 
   return (
     <Multiselect
-      options={makeOptionsWithNullOption(options)}
+      options={options}
       displayValue={"description"}
       showCheckbox
       selectedValues={
         partners ? getSelectedValues(fieldConfig.fields.partner_id) : null
       }
       showArrow
-      hideSelectedList
-      placeholder={
-        partners
-          ? getSelectedValues(fieldConfig.fields.partner_id)
-              .map(partner => partner.description)
-              .join(",  ")
-          : null
-      }
+      hidePlaceholder
+      placeholder={""}
       id="css_custom"
       style={{
         searchBox: {
@@ -59,6 +53,8 @@ const RecommendationMultipleSelectDropdown = ({
         handleRemoveClick(selectedList, removedItem)
       }
       closeOnSelect={false}
+      customCloseIcon={<i className="fa fa-times edit-toggle"></i>}
+      customArrow={<i className="fa fa-caret-down fa-lg"></i>}
     ></Multiselect>
   );
 };
