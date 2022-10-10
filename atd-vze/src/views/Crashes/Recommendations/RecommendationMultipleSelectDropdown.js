@@ -55,6 +55,7 @@ const RecommendationMultipleSelectDropdown = ({
       closeOnSelect={false}
       customCloseIcon={<i className="fa fa-times edit-toggle"></i>}
       customArrow={<i className="fa fa-caret-down fa-lg"></i>}
+      avoidHighlightFirstOption
     ></Multiselect>
   );
 };
