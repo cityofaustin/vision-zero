@@ -65,14 +65,15 @@ span > strong {
 
 .search-wrapper.searchWrapper {
   padding-top: 0px;
+  padding-bottom: 0px;
   cursor: pointer;
 }
 
 .chip.false {
-  background: #c8ced3;
+  background: white;
   color: black;
   font-size: 0.875rem;
-  padding-top: 0px;
+  line-height: 21px;
 }
 
 .custom-close {
@@ -87,4 +88,5 @@ span > strong {
   top: 0px;
   transform: none;
   padding-left: 10px;
+  padding-top: 4px;
 }
