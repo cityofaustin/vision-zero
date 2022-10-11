@@ -119,7 +119,7 @@ const GridExportDataButton = ({
 
     return cleanedAndFlattenedData;
   };
-  // fa-2x ml-2 mt-1
+
   return (
     <>
       <Button color="primary" onClick={toggleModalAndExport}>
