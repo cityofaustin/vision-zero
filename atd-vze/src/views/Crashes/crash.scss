@@ -74,6 +74,7 @@ span > strong {
   color: black;
   font-size: 0.875rem;
   line-height: 21px;
+  padding-bottom: 0px;
 }
 
 .custom-close {
@@ -81,7 +82,7 @@ span > strong {
 }
 
 .icon_down_dir::before {
-  content: none;
+  content: none !important;
 }
 
 .icon_down_dir {
@@ -89,4 +90,8 @@ span > strong {
   transform: none;
   padding-left: 10px;
   padding-top: 4px;
+}
+
+.option.selected {
+  background: #c8ced3;
 }
