@@ -84,17 +84,11 @@ function CrashChange(props) {
     `
   );
 
-  const {
-    data,
-    error,
-    refetch,
-  } = useQuery(GET_CRASH_CHANGE, {
+  const { data, error, refetch } = useQuery(GET_CRASH_CHANGE, {
     variables: { crashId },
   });
 
-  const {
-    data: secondaryData
-  } = useQuery(GET_CRASH_SECONDARY_RECORDS, {
+  const { data: secondaryData } = useQuery(GET_CRASH_SECONDARY_RECORDS, {
     variables: { crashId },
   });
 
@@ -153,7 +147,7 @@ function CrashChange(props) {
    * @returns {object|null} - The object data from the database
    */
   const getOriginalRecord = () => {
-    return recordData["atd_txdot_crashes"][0] || null;
+    return recordData?.["atd_txdot_crashes"][0] || null;
   };
 
   /**
@@ -330,12 +324,14 @@ function CrashChange(props) {
     );
   };
 
+  console.log(recordData);
+
   /**
    * In this useEffect, we listen for any changes to the data or to the
    * selected fields. If they change, so does our two groups of fields.
    */
   useEffect(() => {
-    if (Object.keys(recordData).length > 0) {
+    if (recordData && Object.keys(recordData).length > 0) {
       if (
         (recordData["atd_txdot_crashes"][0]["cr3_stored_flag"] || null) === "Y"
       ) {
@@ -354,7 +350,6 @@ function CrashChange(props) {
       } catch {
         redirectToQueueIndex();
       }
-
     }
   }, [recordData]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -363,17 +358,19 @@ function CrashChange(props) {
    * group, as well as any changes to the showFieldsDiffOnly variable.
    */
   useEffect(() => {
-    if (Object.keys(recordData).length === 0) return;
+    if (recordData && Object.keys(recordData).length === 0) return;
 
     const [originalRecord, newRecord] = getOriginalNewRecords();
     const importantFields = Object.keys(importantCrashFields);
 
-    try {
-      delete originalRecord["cr3_stored_flag"];
-      delete originalRecord["crash_id"];
-      delete originalRecord["__typename"];
-    } finally {
-      // do nothing
+    if (originalRecord) {
+      try {
+        delete originalRecord["cr3_stored_flag"];
+        delete originalRecord["crash_id"];
+        delete originalRecord["__typename"];
+      } finally {
+        // do nothing
+      }
     }
 
     try {
@@ -398,7 +395,6 @@ function CrashChange(props) {
     } catch {
       redirectToQueueIndex();
     }
-
   }, [importantFieldList, showFieldsDiffOnly, recordData, selectedFields]); // eslint-disable-line react-hooks/exhaustive-deps
 
   /**
@@ -406,7 +402,7 @@ function CrashChange(props) {
    * group, as well as any changes to the showFieldsDiffOnly variable.
    */
   useEffect(() => {
-    if (Object.keys(recordData).length === 0) return;
+    if (recordData && Object.keys(recordData).length === 0) return;
 
     const [originalRecord, newRecord] = getOriginalNewRecords();
 
@@ -424,7 +420,6 @@ function CrashChange(props) {
     } catch {
       redirectToQueueIndex();
     }
-
   }, [differentFieldsList, showFieldsDiffOnly, recordData, selectedFields]); // eslint-disable-line react-hooks/exhaustive-deps
 
   /**
