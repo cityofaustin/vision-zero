@@ -147,7 +147,7 @@ function CrashChange(props) {
    * @returns {object|null} - The object data from the database
    */
   const getOriginalRecord = () => {
-    return recordData?.["atd_txdot_crashes"][0] || null;
+    return recordData["atd_txdot_crashes"][0] || null;
   };
 
   /**
@@ -331,7 +331,7 @@ function CrashChange(props) {
    * selected fields. If they change, so does our two groups of fields.
    */
   useEffect(() => {
-    if (recordData && Object.keys(recordData).length > 0) {
+    if (Object.keys(recordData).length > 0) {
       if (
         (recordData["atd_txdot_crashes"][0]["cr3_stored_flag"] || null) === "Y"
       ) {
@@ -358,7 +358,7 @@ function CrashChange(props) {
    * group, as well as any changes to the showFieldsDiffOnly variable.
    */
   useEffect(() => {
-    if (recordData && Object.keys(recordData).length === 0) return;
+    if (Object.keys(recordData).length === 0) return;
 
     const [originalRecord, newRecord] = getOriginalNewRecords();
     const importantFields = Object.keys(importantCrashFields);
@@ -402,7 +402,7 @@ function CrashChange(props) {
    * group, as well as any changes to the showFieldsDiffOnly variable.
    */
   useEffect(() => {
-    if (recordData && Object.keys(recordData).length === 0) return;
+    if (Object.keys(recordData).length === 0) return;
 
     const [originalRecord, newRecord] = getOriginalNewRecords();
 
