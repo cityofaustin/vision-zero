@@ -324,8 +324,6 @@ function CrashChange(props) {
     );
   };
 
-  console.log(recordData);
-
   /**
    * In this useEffect, we listen for any changes to the data or to the
    * selected fields. If they change, so does our two groups of fields.
