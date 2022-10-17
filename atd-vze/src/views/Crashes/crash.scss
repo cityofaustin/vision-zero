@@ -81,15 +81,11 @@ span > strong {
   padding-left: 5px;
 }
 
-.icon_down_dir::before {
-  content: none !important;
-}
-
-.icon_down_dir {
+.icon_cancel.icon_down_dir {
   top: 0px;
   transform: none;
-  padding-left: 10px;
-  padding-top: 4px;
+  padding-top: 7px;
+  right: 0px;
 }
 
 .option.selected {
