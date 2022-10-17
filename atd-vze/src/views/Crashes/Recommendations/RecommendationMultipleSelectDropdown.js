@@ -10,22 +10,22 @@ const RecommendationMultipleSelectDropdown = ({
   fieldConfig,
   field,
 }) => {
-  const handleOptionClick = (selectedList, selectedItem) => {
+  // Trigger mutation call to add partner upon click
+  const handleOptionClick = selectedItem => {
+    console.log(selectedItem);
+    // Mutation expect lookup IDs as integers
     const valuesObject = { [field]: parseInt(selectedItem.id) };
     onOptionClick(valuesObject);
   };
-  // Add a null option to enable users to clear out the value
-  const makeOptionsWithNullOption = options => [
-    { id: null, description: "None" },
-    ...options,
-  ];
 
-  const handleRemoveClick = (selectedList, removedItem) => {
+  // Trigger mutation call to remove partner upon click
+  const handleRemoveClick = removedItem => {
     const partnerId = parseInt(removedItem.id);
     onOptionRemove(partnerId);
   };
 
-  const getSelectedValues = ({ lookupOptions, key }) => {
+  // Return a list of selected partners for current crash recommendation
+  const getSelectedValues = ({ lookupOptions }) => {
     return partners.map(partner => partner?.[lookupOptions] || "");
   };
 
@@ -46,15 +46,10 @@ const RecommendationMultipleSelectDropdown = ({
           border: "none",
         },
       }}
-      onSelect={(selectedList, selectedItem) =>
-        handleOptionClick(selectedList, selectedItem)
-      }
-      onRemove={(selectedList, removedItem) =>
-        handleRemoveClick(selectedList, removedItem)
-      }
+      onSelect={(selectedList, selectedItem) => handleOptionClick(selectedItem)}
+      onRemove={(selectedList, removedItem) => handleRemoveClick(removedItem)}
       closeOnSelect={false}
       customCloseIcon={<i className="fa fa-times edit-toggle"></i>}
-      customArrow={<i className="fa fa-caret-down fa-lg"></i>}
       avoidHighlightFirstOption
     ></Multiselect>
   );
