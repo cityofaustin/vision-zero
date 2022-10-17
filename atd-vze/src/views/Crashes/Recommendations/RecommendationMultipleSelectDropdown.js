@@ -12,7 +12,6 @@ const RecommendationMultipleSelectDropdown = ({
 }) => {
   // Trigger mutation call to add partner upon click
   const handleOptionClick = selectedItem => {
-    console.log(selectedItem);
     // Mutation expect lookup IDs as integers
     const valuesObject = { [field]: parseInt(selectedItem.id) };
     onOptionClick(valuesObject);
