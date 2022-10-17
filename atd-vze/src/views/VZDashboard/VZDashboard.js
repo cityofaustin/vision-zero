@@ -5,7 +5,7 @@ import { useQuery } from "@apollo/react-hooks";
 import Widget02 from "../Widgets/Widget02";
 import VZLinksWidget from "../Widgets/VZLinksWidget";
 import VZNoticeWidget from "../Widgets/VZNoticeWidget";
-import moment from "moment";
+import { format, subDays } from "date-fns";
 
 import { GET_CRASHES_YTD } from "../../queries/dashboard";
 
@@ -15,9 +15,7 @@ function VZDashboard() {
   const year = new Date().getFullYear();
   const yearStart = `${year}-01-01`;
   // We use the same end date as VZV so VZE widget totals match VZV widgets
-  const yearEnd = moment()
-    .subtract(14, "day")
-    .format("YYYY-MM-DD");
+  const yearEnd = format(subDays(new Date(), 14), "yyyy-MM-dd");
   const { loading, error, data } = useQuery(GET_CRASHES_YTD, {
     variables: { yearStart, yearEnd },
   });

@@ -7,7 +7,7 @@ import MapGL, {
 } from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import axios from "axios";
-import moment from "moment";
+import { format, parse } from "date-fns";
 
 import styled from "styled-components";
 import { colors } from "../../styles/colors";
@@ -81,23 +81,27 @@ export default class LocationMap extends Component {
     };
   }
 
-  _updateViewport = (viewport) => {
+  _updateViewport = viewport => {
     this.setState({ viewport });
   };
 
-  getLatestAerialTimestamp = (timestampArray) => timestampArray.slice(-1)[0];
+  getLatestAerialTimestamp = timestampArray => timestampArray.slice(-1)[0];
 
-  convertNearMapTimeFormat = (date) => moment(date).format("MM/DD/YYYY");
+  convertNearMapTimeFormat = date => {
+    format(parse(date, "'/Date('T')/'", new Date()), "MM/dd/yyyy");
+  };
 
   getAerialTimestamps = () => {
     // Get all available aerial capture dates and set and format latest to state
     // Tiles from API default to latest capture
+    // The following link contains helpful information about the API and its responses such as the date format:
+    // https://docs.nearmap.com/display/ND/Nearmap+TMS+Integration#NearmapTMSIntegration-Attributes
     const { latitude, longitude, zoom } = this.state.viewport;
     axios
       .get(
         `https://us0.nearmap.com/maps?ll=${latitude},${longitude}&nmq=INFO&nmf=json&zoom=${zoom}&httpauth=false&apikey=${NEARMAP_KEY}`
       )
-      .then((res) => {
+      .then(res => {
         const aerialTimestamp = this.convertNearMapTimeFormat(
           this.getLatestAerialTimestamp(res.data.layers.Vert)
         );

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { withApollo } from "react-apollo";
 import styled from "styled-components";
-import moment from "moment";
+import { format, parseISO } from "date-fns";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { colors } from "../styles/colors";
@@ -59,7 +59,8 @@ const GridDateRange = ({
    * @param {string} date - date string to be formatted
    * @returns {Date}
    */
-  const parseDate = date => new Date(moment(date).format());
+
+  const parseDate = date => parseISO(date);
 
   /**
    * Returns a date in a valid SQL format.
@@ -68,10 +69,10 @@ const GridDateRange = ({
    * @returns {string}
    */
   const formatDate = (date, fallbackValue) => {
-    let formattedDate = moment(date).format("YYYY-MM-DD");
+    let formattedDate = format(date, "yyyy-MM-dd");
 
     if (formattedDate === "Invalid date") {
-      formattedDate = moment(fallbackValue).format("YYYY-MM-DD");
+      formattedDate = format(fallbackValue, "yyyy-MM-dd");
     }
     return formattedDate;
   };

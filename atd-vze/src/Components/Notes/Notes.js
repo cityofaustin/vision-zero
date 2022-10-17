@@ -9,7 +9,7 @@ import {
   Input,
   Button,
 } from "reactstrap";
-import moment from "moment";
+import { format, parseISO } from "date-fns";
 import { notesDataMap } from "./notesDataMap.js";
 import { useAuth0, isReadOnly } from "../../auth/authContext";
 
@@ -214,7 +214,7 @@ const Notes = ({
                             onChange={e => setEditedNote(e.target.value)}
                           />
                         ) : field === "date" ? (
-                          moment(row[field]).format("MM/DD/YYYY")
+                          format(parseISO(row[field]), "MM/dd/yyyy")
                         ) : (
                           row[field]
                         )}

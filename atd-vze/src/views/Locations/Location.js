@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import moment from "moment";
+import { format, subYears } from "date-fns";
 import DataTable from "../../Components/DataTable";
 import LocationMap from "./LocationMap";
 import { Card, CardBody, CardHeader, Col, Row } from "reactstrap";
@@ -25,9 +25,7 @@ function Location(props) {
   // Set initial variables for GET_LOCATION query
   const locationId = props.match.params.id;
 
-  const fiveYearsAgo = moment()
-    .subtract(5, "years")
-    .format("YYYY-MM-DD");
+  const fiveYearsAgo = format(subYears(Date.now(), 5), "yyyy-MM-dd");
 
   const [variables] = useState({
     id: locationId,
