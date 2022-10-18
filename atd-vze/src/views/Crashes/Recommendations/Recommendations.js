@@ -5,10 +5,13 @@ import { recommendationsDataMap } from "./recommendationsDataMap";
 import {
   GET_RECOMMENDATIONS,
   INSERT_RECOMMENDATION,
+  INSERT_RECOMMENDATION_PARTNER,
+  REMOVE_RECOMMENDATION_PARTNER,
   UPDATE_RECOMMENDATION,
 } from "../../../queries/recommendations";
 import RecommendationTextInput from "./RecommendationTextInput";
 import RecommendationSelectValueDropdown from "./RecommendationSelectValueDropdown";
+import RecommendationMultipleSelectDropdown from "./RecommendationMultipleSelectDropdown";
 
 const Recommendations = ({ crashId }) => {
   // get current users email
@@ -22,12 +25,15 @@ const Recommendations = ({ crashId }) => {
   // declare mutation functions
   const [addRecommendation] = useMutation(INSERT_RECOMMENDATION);
   const [editRecommendation] = useMutation(UPDATE_RECOMMENDATION);
+  const [addPartner] = useMutation(INSERT_RECOMMENDATION_PARTNER);
+  const [removePartner] = useMutation(REMOVE_RECOMMENDATION_PARTNER);
 
   if (loading) return "Loading...";
   if (error) return `Error! ${error.message}`;
 
   const fieldConfig = recommendationsDataMap;
   const recommendation = data?.recommendations?.[0];
+  const partners = recommendation?.recommendations_partners;
   const doesRecommendationRecordExist = recommendation ? true : false;
   const recommendationRecordId = recommendation?.id;
 
@@ -68,6 +74,33 @@ const Recommendations = ({ crashId }) => {
       .catch(error => console.error(error));
   };
 
+  const onAddPartner = valuesObject => {
+    const recommendationPartnerRecord = {
+      recommendationRecordId,
+      ...valuesObject,
+    };
+    addPartner({
+      variables: recommendationPartnerRecord,
+    })
+      .then(() => {
+        refetch();
+      })
+      .catch(error => console.error(error));
+  };
+
+  const onRemovePartner = partnerId => {
+    removePartner({
+      variables: {
+        partner_id: partnerId,
+        recommendationRecordId: recommendationRecordId,
+      },
+    })
+      .then(response => {
+        refetch();
+      })
+      .catch(error => console.error(error));
+  };
+
   return (
     <Card>
       <CardHeader>Fatality Review Board Recommendations</CardHeader>
@@ -82,15 +115,15 @@ const Recommendations = ({ crashId }) => {
                   </div>
                 </div>
                 <div className="col-8">
-                  <RecommendationSelectValueDropdown
-                    value={getLookupValue(
-                      fieldConfig.fields.coordination_partner_id
-                    )}
-                    onOptionClick={
-                      doesRecommendationRecordExist ? onEdit : onAdd
-                    }
+                  <RecommendationMultipleSelectDropdown
                     options={data.atd__coordination_partners_lkp}
-                    field={"coordination_partner_id"}
+                    onOptionClick={
+                      doesRecommendationRecordExist ? onAddPartner : onAdd
+                    }
+                    onOptionRemove={onRemovePartner}
+                    partners={partners}
+                    fieldConfig={fieldConfig}
+                    field={"partner_id"}
                   />
                 </div>
               </div>

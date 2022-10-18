@@ -36,6 +36,7 @@
     "handsontable": "7.3.0",
     "lodash.get": "^4.4.2",
     "mapbox-gl": "^0.47.0",
+    "multiselect-react-dropdown": "^2.0.25",
     "nebula.gl": "^0.15.0",
     "prop-types": "^15.7.2",
     "react": "^16.8.6",
