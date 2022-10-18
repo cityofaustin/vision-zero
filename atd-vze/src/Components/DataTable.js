@@ -251,14 +251,11 @@ const DataTable = ({
                     </>
                   )}
               </CardBody>
-              <CardFooter>
-                {downloadGlobal}
-              </CardFooter>
+              <CardFooter>{downloadGlobal}</CardFooter>
             </Card>
           </Col>
         );
       })}
-
     </>
   );
 };
