@@ -71,7 +71,7 @@ function Location(props) {
   };
 
   const downloadAllData = (
-    <div class={"float-right"}>
+    <div className={"float-right"}>
       <LocationDownloadGlobal locationId={locationId} />
     </div>
   );
