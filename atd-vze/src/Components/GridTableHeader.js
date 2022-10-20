@@ -40,7 +40,7 @@ const GridTableHeader = ({
       <thead>
         {helperText && (
           <tr>
-            <th colspan={colspan}>
+            <th colSpan={colspan}>
               <small className="pull-right">{helperText}</small>
             </th>
           </tr>
