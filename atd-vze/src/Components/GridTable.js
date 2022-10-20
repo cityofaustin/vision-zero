@@ -392,9 +392,9 @@ const GridTable = ({
   let totalPages = 1;
 
   // If we have data
-  if (data[query.table]) {
+  if (data?.[query.table]) {
     loading = false;
-    totalRecords = data[query.table + "_aggregate"]["aggregate"]["count"];
+    totalRecords = data?.[query.table + "_aggregate"]["aggregate"]["count"];
     totalPages = Math.ceil(totalRecords / limit);
 
     // DataEntries: For each item in the data array, generate a row with each column
