@@ -119,7 +119,7 @@ const DataTable = ({
                       // If there is no lookup options, we can assume the field value can be displayed as is.
                       // If there is a lookup option, then the value is an ID to be referenced in a lookup table.
                       const selectOptions =
-                        lookupSelectOptions[fieldConfigObject.lookupOptions];
+                        lookupSelectOptions?.[fieldConfigObject.lookupOptions];
 
                       const renderLookupDescString = () => {
                         // make sure the value isn't null blank
