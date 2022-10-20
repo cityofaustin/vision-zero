@@ -10,8 +10,8 @@ import { crashChangesGridTableColumns } from "./crashChangesGridTableParameters"
 let queryConf = {
   options: {
     useQuery: {
-      fetchPolicy: 'no-cache'
-    }
+      fetchPolicy: "no-cache",
+    },
   },
   table: "atd_txdot_changes_view",
   single_item: "changes",
