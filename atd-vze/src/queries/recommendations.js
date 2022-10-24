@@ -9,11 +9,17 @@ export const GET_RECOMMENDATIONS = gql`
       created_by
       crash_id
       update
-      atd__coordination_partners_lkp {
-        description
-      }
       atd__recommendation_status_lkp {
         description
+      }
+      recommendations_partners {
+        id
+        partner_id
+        recommendation_id
+        atd__coordination_partners_lkp {
+          id
+          description
+        }
       }
     }
     atd__coordination_partners_lkp(order_by: { description: asc }) {
@@ -33,8 +39,8 @@ export const INSERT_RECOMMENDATION = gql`
     $update: String
     $crashId: Int
     $userEmail: String
-    $coordination_partner_id: Int
     $recommendation_status_id: Int
+    $partner_id: Int
   ) {
     insert_recommendations(
       objects: {
@@ -42,8 +48,8 @@ export const INSERT_RECOMMENDATION = gql`
         update: $update
         crash_id: $crashId
         created_by: $userEmail
-        coordination_partner_id: $coordination_partner_id
         recommendation_status_id: $recommendation_status_id
+        recommendations_partners: { data: { partner_id: $partner_id } }
       }
     ) {
       returning {
@@ -66,6 +72,48 @@ export const UPDATE_RECOMMENDATION = gql`
       crash_id
       text
       update
+    }
+  }
+`;
+
+export const INSERT_RECOMMENDATION_PARTNER = gql`
+  mutation InsertRecommendationPartner(
+    $recommendationRecordId: Int!
+    $partner_id: Int!
+  ) {
+    insert_recommendations_partners(
+      objects: {
+        recommendation_id: $recommendationRecordId
+        partner_id: $partner_id
+      }
+    ) {
+      returning {
+        id
+        partner_id
+        recommendation_id
+      }
+    }
+  }
+`;
+
+export const REMOVE_RECOMMENDATION_PARTNER = gql`
+  mutation DeleteRecommendationPartner(
+    $partner_id: Int!
+    $recommendationRecordId: Int!
+  ) {
+    delete_recommendations_partners(
+      where: {
+        _and: [
+          { partner_id: { _eq: $partner_id } }
+          { recommendation_id: { _eq: $recommendationRecordId } }
+        ]
+      }
+    ) {
+      returning {
+        id
+        partner_id
+        recommendation_id
+      }
     }
   }
 `;

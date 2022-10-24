@@ -1,7 +1,7 @@
 import React from "react";
 import { withApollo } from "react-apollo";
 
-import moment from "moment";
+import { subYears } from "date-fns";
 import GridTable from "../../Components/GridTable";
 import gqlAbstract from "../../queries/gqlAbstract";
 import { crashQueryExportFields } from "../../queries/crashes";
@@ -26,9 +26,7 @@ let crashesQuery = new gqlAbstract(queryConf);
 
 let customFilters = crashGridTableAdvancedFilters;
 
-const minDate = moment(new Date())
-.subtract(10, "year")
-.toDate();
+const minDate = subYears(new Date(), 10);
 
 const Crashes = () => (
   <GridTable
@@ -36,7 +34,7 @@ const Crashes = () => (
     title={"Crashes"}
     filters={customFilters}
     columnsToExport={crashQueryExportFields}
-    minDate ={minDate}
+    minDate={minDate}
   />
 );
 

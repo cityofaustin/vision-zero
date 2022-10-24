@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, Redirect, useParams } from "react-router-dom";
 import axios from "axios";
-import moment from "moment";
+import { format, parseISO } from "date-fns";
 import {
   Button,
   Card,
@@ -67,9 +67,9 @@ const User = () => {
       const label = userAttributes[key].label;
       let formattedValue = null;
 
-      const format = userAttributes[key].format;
+      const attributeFormat = userAttributes[key].format;
 
-      switch (format) {
+      switch (attributeFormat) {
         case "string":
           formattedValue = user[key];
           break;
@@ -77,7 +77,7 @@ const User = () => {
           formattedValue = !!user[key] ? "Yes" : "No";
           break;
         case "time":
-          formattedValue = moment(user[key]).format("MM/DD/YYYY, h:mm:ss a");
+          formattedValue = format(parseISO(user[key]), "MM/dd/yyyy, h:mm:ss a");
           break;
         case "roleObject":
           const nestedKey = value.nestedKey;

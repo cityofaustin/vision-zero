@@ -131,59 +131,70 @@ export const crashGridTableAdvancedFilters = {
   groupInjuries: {
     icon: "cab",
     label: "Deaths & Injuries",
-    filters: [{
+    filters: [
+      {
         id: "dni_atd_deaths",
         label: "ATD Fatality Crashes",
         filter: {
-          where: [{
-            or: {
-              atd_fatality_count: "_gt: 0",
+          where: [
+            {
+              or: {
+                atd_fatality_count: "_gt: 0",
+              },
             },
-          }, ],
+          ],
         },
       },
       {
         id: "dni_cris_deaths",
         label: "CRIS Fatality Crashes",
         filter: {
-          where: [{
-            or: {
-              death_cnt: "_gt: 0",
+          where: [
+            {
+              or: {
+                death_cnt: "_gt: 0",
+              },
             },
-          }, ],
+          ],
         },
       },
       {
         id: "dni_apd_deaths",
         label: "APD Confirmed Fatality Crashes",
         filter: {
-          where: [{
-            or: {
-              apd_confirmed_death_count: "_gt: 0",
+          where: [
+            {
+              or: {
+                apd_confirmed_death_count: "_gt: 0",
+              },
             },
-          }, ],
+          ],
         },
       },
       {
         id: "dni_serious_injuries",
         label: "Suspected Serious Injury Crashes",
         filter: {
-          where: [{
-            or: {
-              sus_serious_injry_cnt: "_gt: 0",
+          where: [
+            {
+              or: {
+                sus_serious_injry_cnt: "_gt: 0",
+              },
             },
-          }, ],
+          ],
         },
       },
       {
         id: "dni_non_fatal",
         label: "Non-Incapacitating Injury Crashes",
         filter: {
-          where: [{
-            or: {
-              nonincap_injry_cnt: "_gt: 0",
+          where: [
+            {
+              or: {
+                nonincap_injry_cnt: "_gt: 0",
+              },
             },
-          }, ],
+          ],
         },
       },
     ],
@@ -191,11 +202,13 @@ export const crashGridTableAdvancedFilters = {
   groupGeography: {
     icon: "map-marker",
     label: "Geography",
-    filters: [{
+    filters: [
+      {
         id: "geo_no_coordinates",
         label: "No Primary Coordinates",
         filter: {
-          where: [{
+          where: [
+            {
               latitude_primary: "_is_null: true",
             },
             {
@@ -208,16 +221,19 @@ export const crashGridTableAdvancedFilters = {
         id: "geo_geocoded",
         label: "Has been Geocoded",
         filter: {
-          where: [{
-            geocoded: '_eq: "Y"',
-          }, ],
+          where: [
+            {
+              geocoded: '_eq: "Y"',
+            },
+          ],
         },
       },
       {
         id: "geo_confirmed_coordinates",
         label: "No CRIS Coordinates",
         filter: {
-          where: [{
+          where: [
+            {
               latitude: "_is_null: true",
             },
             {
@@ -231,8 +247,9 @@ export const crashGridTableAdvancedFilters = {
         label: "Remove Austin Full Purpose",
         invert_toggle_state: true,
         filter: {
-          where: [{
-            austin_full_purpose: '_eq: "Y"',
+          where: [
+            {
+              austin_full_purpose: '_eq: "Y"',
             },
           ],
         },
@@ -242,31 +259,38 @@ export const crashGridTableAdvancedFilters = {
   groupUnitTypes: {
     icon: "bicycle",
     label: "Units Involved",
-    filters: [{
+    filters: [
+      {
         id: "pedestrian",
         label: "Pedestrian Involved",
         filter: {
-          where: [{
-            'units: { unit_description: { veh_unit_desc_desc: { _eq: "PEDESTRIAN" } } }': null,
-          }, ],
+          where: [
+            {
+              'units: { unit_description: { veh_unit_desc_desc: { _eq: "PEDESTRIAN" } } }': null,
+            },
+          ],
         },
       },
       {
         id: "pedacyclist",
         label: "Cyclist Involved",
         filter: {
-          where: [{
-            'units: { unit_description: { veh_unit_desc_desc: { _eq: "PEDALCYCLIST" } } }': null,
-          }, ],
+          where: [
+            {
+              'units: { unit_description: { veh_unit_desc_desc: { _eq: "PEDALCYCLIST" } } }': null,
+            },
+          ],
         },
       },
       {
         id: "motorized_conveyance",
         label: "Motorized Conveyance Involved",
         filter: {
-          where: [{
-            'units: { unit_description: { veh_unit_desc_desc: { _eq: "MOTORIZED CONVEYANCE" } } }': null,
-          }, ],
+          where: [
+            {
+              'units: { unit_description: { veh_unit_desc_desc: { _eq: "MOTORIZED CONVEYANCE" } } }': null,
+            },
+          ],
         },
       },
     ],
@@ -274,22 +298,27 @@ export const crashGridTableAdvancedFilters = {
   groupCase: {
     icon: "vcard-o",
     label: "Internal",
-    filters: [{
+    filters: [
+      {
         id: "int_nocasenumber",
         label: "No Case Number",
         filter: {
-          where: [{
-            case_id: "_is_null: true",
-          }, ],
+          where: [
+            {
+              case_id: "_is_null: true",
+            },
+          ],
         },
       },
       {
         id: "int_excludeprivdrive",
         label: "Exclude Private Driveway Crashes",
         filter: {
-          where: [{
-            private_dr_fl: '_neq: "Y"',
-          }, ],
+          where: [
+            {
+              private_dr_fl: '_neq: "Y"',
+            },
+          ],
         },
       },
     ],
