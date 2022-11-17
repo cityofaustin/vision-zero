@@ -1,0 +1,55 @@
+#!env python
+
+import argparse
+import subprocess
+import shtab
+
+def doCommand(args):
+    if args.command == 'rebuild':
+        rebuildTools()
+    elif args.command == 'db-up':
+        dbUp()
+    elif args.command == 'graphql-engine-up':
+        dbUp()
+        graphqlEngineUp()
+    elif args.command == 'tools-shell':
+        dbUp()
+        toolsShell()
+    elif args.command == 'stop':
+        stop()
+
+def get_main_parser():
+    parser = argparse.ArgumentParser(prog="vision-zero")
+    # 🪄 generate a autocompletion script for the shell
+    shtab.add_argument_to(parser, ["-s", "--print-completion"])
+    parser.add_argument('command', choices=['rebuild', 'db-up', 'graphql-engine-up', 'stop', 'tools-shell'])
+    return parser
+
+def rebuildTools():
+    print("🛠️  Rebuilding images with --no-cache")
+    print("☕️ You have time to grab a coffee")
+    # run docker-compose build --no-cache with subprocess
+    subprocess.run(["docker-compose", "build", "--no-cache"])
+
+def dbUp():
+    print("🛢️  Starting database")
+    subprocess.run(["docker-compose", "up", "-d", "postgis"])
+    subprocess.run(["docker", "ps"])
+
+def graphqlEngineUp():
+    print("🚀  Starting GraphQL Engine")
+    subprocess.run(["docker-compose", "up", "-d", "graphql-engine"])
+    subprocess.run(["docker", "ps"])
+
+def toolsShell():
+    print("🐚  Starting tools shell")
+    subprocess.run(["docker-compose", "run", "--rm", "db-tools", "bash"])
+
+def stop():
+    print("🛑  Stopping containers")
+    subprocess.run(["docker-compose", "stop"])
+
+if __name__ == "__main__":
+    parser = get_main_parser()
+    args = parser.parse_args()
+    doCommand(args)
