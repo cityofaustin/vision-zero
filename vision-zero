@@ -143,6 +143,24 @@ def stop():
     print("🛑  Stopping containers")
     subprocess.run(["docker-compose", "stop"])
 
+def get_main_parser():
+    parser = argparse.ArgumentParser(prog="vision-zero")
+    # 🪄 generate a autocompletion script for the shell
+    shtab.add_argument_to(parser, ["-s", "--print-completion"])
+    shtab.add_argument_to(parser, ["-c", "--include-change-log-data"])
+    parser.add_argument(
+        "command",
+        choices=[
+            "build",
+            "db-up",
+            "graphql-engine-up",
+            "stop",
+            "tools-shell",
+            "replicate-db",
+        ],
+    )
+    return parser
+
 
 if __name__ == "__main__":
     parser = get_main_parser()
