@@ -48,7 +48,7 @@ def replicateDb():
     print("️🗄 Downloading remote database")
 
     # fmt: off
-    tool_runner_command = [
+    replicate_runner_command = [
         "docker-compose",
         "run",
         "--rm",
@@ -61,8 +61,50 @@ def replicateDb():
 
     replicate_command = [
         "pg_dump",
-        "-T", "atd_txdot_change_log",
-        "-t", "atd_txdot_crashes",
+        "--clean",
+        "--create",
+        "--no-owner",
+        "--no-privileges",
+        "--if-exists",
+        #"--table", "atd_txdot__airbag_lkp",
+        #"-t", "atd_txdot_crashes",
+    ]
+    if not includeChangeLogData:
+        replicate_command.append("--exclude-table-data")
+        replicate_command.append("atd_txdot_change_log")
+
+    
+    populate_runner_command = [
+        "docker-compose",
+        "run",
+        "--rm",
+        "-e", "PGHOST=" + 'postgis',
+        "-e", "PGUSER=" + os.environ["POSTGRES_USER"],
+        "-e", "PGPASSWORD=" + os.environ["POSTGRES_PASSWORD"],
+        "-e", "PGDATABASE=" + os.environ["POSTGRES_DB"],
+        "db-tools",
+    ]
+    populate_command = [
+        "psql",
+        "-f", "/snapshots/" + snapshotFilename
+    ]
+    # fmt: on
+
+    print("️🗄  Downloading remote database")
+    if includeChangeLogData:
+        print("This will take a while, on the order of half an hour.")
+    else:
+        print("This will take a few minutes.")
+    print(replicate_command.join(" "))
+    snapshot = open(snapshotFQP, "w")
+    subprocess.run(replicate_runner_command + replicate_command, stdout=snapshot)
+    snapshot.close()
+
+    print("️💾 Loading the database with snapshot")
+    print(populate_command.join(" "))
+    subprocess.run(populate_runner_command + populate_command)
+
+
     ]
     # fmt: on
 
