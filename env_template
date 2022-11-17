@@ -1,0 +1,12 @@
+# credentials specific to local database
+POSTGRES_PASSWORD="visionzero"
+POSTGRES_USER="visionzero"
+POSTGRES_DB="visionzero"
+POSTGRES_HOST_AUTH_METHOD="trust"
+PGDATA="/var/lib/postgresql/data/pgdata"
+
+# developer's personal credentials to VZ read reaplica
+RR_USERNAME=""
+RR_PASSWORD=""
+RR_HOSTNAME=""
+RR_DATABASE=""
