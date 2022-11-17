@@ -1,0 +1,34 @@
+version: '3.7'
+services:
+  postgis:
+    container_name: visionzero_postgis
+    build: atd-vzd
+    env_file:
+      - .env
+    volumes:
+      - visionzero_postgis_pgdata:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+  graphql-engine:
+    image: hasura/graphql-engine:latest
+    volumes:
+      - ./atd-vzd/graphql-engine-metadata:/metadata
+    container_name: visionzero_hasura
+    ports:
+      - 8080:8080
+    environment:
+      HASURA_GRAPHQL_DATABASE_URL: postgres://visionzero:visionzero@postgis:5432/visionzero
+      HASURA_GRAPHQL_ENABLE_CONSOLE: "true"
+      HASURA_GRAPHQL_CONSOLE_ASSETS_DIR: /srv/console-assets
+  db-tools:
+    container_name: visionzero_download_db_data
+    build: atd-toolbox/download-db-data
+    #command: /bin/bash -c "sleep 10 && python3 download_db_data.py"
+    command: tail -f /dev/null
+    env_file:
+      - .env
+    volumes:
+      - visionzero_postgis_pgdata:/var/lib/postgresql/data
+volumes:
+  visionzero_postgis_pgdata:
+    name: visionzero_postgis_pgdata
