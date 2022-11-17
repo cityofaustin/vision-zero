@@ -133,9 +133,20 @@ def graphqlEngineUp():
 def toolsShell():
     print("🐚  Starting tools shell")
 
-    tool_runner_command = ["docker-compose", "run", "--rm", "db-tools"]
-    shell_command = ["bash"]
+    # fmt: off
+    tool_runner_command = [
+        "docker-compose",
+        "run",
+        "--rm",
+        "-e", "PGHOST=" + "postgis",
+        "-e", "PGUSER=" + os.environ["POSTGRES_USER"],
+        "-e", "PGPASSWORD=" + os.environ["POSTGRES_PASSWORD"],
+        "-e", "PGDATABASE=" + os.environ["POSTGRES_DB"],
+        "db-tools",
+    ]
+    # fmt: on
 
+    shell_command = ["bash"]
     subprocess.run(tool_runner_command + shell_command)
 
 
