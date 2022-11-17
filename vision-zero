@@ -81,18 +81,19 @@ def replicateDb(includeChangeLogData = False):
     ]
     # fmt: on
 
-    print("️🗄  Downloading remote database")
-    if includeChangeLogData:
-        print("This will take a while, on the order of half an hour.")
-    else:
-        print("This will take a few minutes.")
-    print(replicate_command.join(" "))
-    snapshot = open(snapshotFQP, "w")
-    subprocess.run(replicate_runner_command + replicate_command, stdout=snapshot)
-    snapshot.close()
+    if not (os.path.exists(snapshotFQP)):
+        print("️🗄  Downloading remote database")
+        if includeChangeLogData:
+            print("This will take a while, on the order of half an hour.")
+        else:
+            print("This will take a few minutes.")
+        print(replicate_command)
+        snapshot = open(snapshotFQP, "w")
+        subprocess.run(replicate_runner_command + replicate_command, stdout=snapshot)
+        snapshot.close()
 
     print("️💾 Loading the database with snapshot")
-    print(populate_command.join(" "))
+    print(populate_command)
     subprocess.run(populate_runner_command + populate_command)
 
 
