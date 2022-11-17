@@ -4,6 +4,7 @@ import argparse
 import subprocess
 import os
 import shtab
+from datetime import date
 import pprint
 from dotenv import load_dotenv
 
