@@ -2,11 +2,19 @@
 
 import argparse
 import subprocess
-import shtab
+import os
+import shtab # maybe skip this to not need an venv?
+import pprint
+from dotenv import load_dotenv
+
+load_dotenv()
+
+
+tool_runner_command = ["docker-compose", "run", "--rm", "db-tools"]
 
 def doCommand(args):
-    if args.command == 'rebuild':
-        rebuildTools()
+    if args.command == 'build':
+        buildTools()
     elif args.command == 'db-up':
         dbUp()
     elif args.command == 'graphql-engine-up':
@@ -17,19 +25,42 @@ def doCommand(args):
         toolsShell()
     elif args.command == 'stop':
         stop()
+    elif args.command == 'replicate-db':
+        replicateDb()
 
 def get_main_parser():
     parser = argparse.ArgumentParser(prog="vision-zero")
     # 🪄 generate a autocompletion script for the shell
     shtab.add_argument_to(parser, ["-s", "--print-completion"])
-    parser.add_argument('command', choices=['rebuild', 'db-up', 'graphql-engine-up', 'stop', 'tools-shell'])
+    parser.add_argument('command', choices=['build', 'db-up', 'graphql-engine-up', 'stop', 'tools-shell', 'replicate-db'])
     return parser
 
-def rebuildTools():
+def replicateDb():
+    print("️🗄 Downloading remote database")
+
+    tool_runner_command = ["docker-compose",
+        "run",
+        "--rm",
+        "-e", "PGHOST=" + os.environ['RR_HOSTNAME'],
+        "-e", "PGDATABASE=" + os.environ['RR_DATABASE'],
+        "-e", "PGUSER=" + os.environ['RR_USERNAME'],
+        "-e", "PGPASSWORD=" + os.environ['RR_PASSWORD'],
+        "db-tools"]
+
+    replicate_command = [
+    "pg_dump", 
+    "-T", "atd_txdot_change_log",
+    "-t", "atd_txdot_crashes",
+    ]
+
+    print(tool_runner_command + replicate_command)
+    subprocess.run(tool_runner_command + replicate_command)
+
+
+def buildTools():
     print("🛠️  Rebuilding images with --no-cache")
-    print("☕️ You have time to grab a coffee")
-    # run docker-compose build --no-cache with subprocess
     subprocess.run(["docker-compose", "build", "--no-cache"])
+
 
 def dbUp():
     print("🛢️  Starting database")
@@ -43,7 +74,8 @@ def graphqlEngineUp():
 
 def toolsShell():
     print("🐚  Starting tools shell")
-    subprocess.run(["docker-compose", "run", "--rm", "db-tools", "bash"])
+    shell_command = ["bash"]
+    subprocess.run(tool_runner_command + shell_command)
 
 def stop():
     print("🛑  Stopping containers")
