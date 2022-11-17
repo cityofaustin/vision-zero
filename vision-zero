@@ -3,15 +3,11 @@
 import argparse
 import subprocess
 import os
-import shtab  # maybe skip this to not need an venv?
+import shtab
 import pprint
 from dotenv import load_dotenv
 
 load_dotenv()
-
-
-tool_runner_command = ["docker-compose", "run", "--rm", "db-tools"]
-
 
 def doCommand(args):
     if args.command == "build":
@@ -51,28 +47,24 @@ def get_main_parser():
 def replicateDb():
     print("️🗄 Downloading remote database")
 
+    # fmt: off
     tool_runner_command = [
         "docker-compose",
         "run",
         "--rm",
-        "-e",
-        "PGHOST=" + os.environ["RR_HOSTNAME"],
-        "-e",
-        "PGDATABASE=" + os.environ["RR_DATABASE"],
-        "-e",
-        "PGUSER=" + os.environ["RR_USERNAME"],
-        "-e",
-        "PGPASSWORD=" + os.environ["RR_PASSWORD"],
+        "-e", "PGHOST=" + os.environ["RR_HOSTNAME"],
+        "-e", "PGDATABASE=" + os.environ["RR_DATABASE"],
+        "-e", "PGUSER=" + os.environ["RR_USERNAME"],
+        "-e", "PGPASSWORD=" + os.environ["RR_PASSWORD"],
         "db-tools",
     ]
 
     replicate_command = [
         "pg_dump",
-        "-T",
-        "atd_txdot_change_log",
-        "-t",
-        "atd_txdot_crashes",
+        "-T", "atd_txdot_change_log",
+        "-t", "atd_txdot_crashes",
     ]
+    # fmt: on
 
     print(tool_runner_command + replicate_command)
     subprocess.run(tool_runner_command + replicate_command)
@@ -97,7 +89,10 @@ def graphqlEngineUp():
 
 def toolsShell():
     print("🐚  Starting tools shell")
+
+    tool_runner_command = ["docker-compose", "run", "--rm", "db-tools"]
     shell_command = ["bash"]
+
     subprocess.run(tool_runner_command + shell_command)
 
 
