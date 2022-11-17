@@ -14,6 +14,8 @@ def doCommand(args):
         buildTools()
     elif args.command == "db-up":
         dbUp()
+    elif args.command == "psql":
+        psql()
     elif args.command == "graphql-engine-up":
         dbUp()
         graphqlEngineUp()
@@ -92,11 +94,23 @@ def replicateDb(includeChangeLogData = False):
     subprocess.run(populate_runner_command + populate_command)
 
 
+def psql():
+    # fmt: off
+    replicate_runner_command = [
+        "docker-compose",
+        "run",
+        "--rm",
+        "-e", "PGHOST=" + os.environ["RR_HOSTNAME"],
+        "-e", "PGDATABASE=" + os.environ["RR_DATABASE"],
+        "-e", "PGUSER=" + os.environ["RR_USERNAME"],
+        "-e", "PGPASSWORD=" + os.environ["RR_PASSWORD"],
+        "db-tools",
     ]
     # fmt: on
 
-    print(tool_runner_command + replicate_command)
-    subprocess.run(tool_runner_command + replicate_command)
+    print("📺  Starting psql")
+    subprocess.run(populate_runner_command + ["psql"])
+    snapshot.close()
 
 
 def buildTools():
