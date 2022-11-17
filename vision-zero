@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+
 def doCommand(args):
     if args.command == "build":
         buildTools()
@@ -25,7 +26,7 @@ def doCommand(args):
     elif args.command == "stop":
         stop()
     elif args.command == "replicate-db":
-        replicateDb()
+        replicateDb(args.include_change_log_data)
 
 
 
