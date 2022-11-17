@@ -28,7 +28,7 @@ services:
     env_file:
       - .env
     volumes:
-      - visionzero_postgis_pgdata:/var/lib/postgresql/data
+      - ./atd-vzd/snapshots:/snapshots
 volumes:
   visionzero_postgis_pgdata:
     name: visionzero_postgis_pgdata
