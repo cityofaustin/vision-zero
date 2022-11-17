@@ -26,26 +26,13 @@ def doCommand(args):
         replicateDb()
 
 
-def get_main_parser():
-    parser = argparse.ArgumentParser(prog="vision-zero")
-    # 🪄 generate a autocompletion script for the shell
-    shtab.add_argument_to(parser, ["-s", "--print-completion"])
-    parser.add_argument(
-        "command",
-        choices=[
-            "build",
-            "db-up",
-            "graphql-engine-up",
-            "stop",
-            "tools-shell",
-            "replicate-db",
-        ],
-    )
-    return parser
 
 
-def replicateDb():
-    print("️🗄 Downloading remote database")
+def replicateDb(includeChangeLogData = False):
+    # print(tool_runner_command + replicate_command)
+    today = date.today().strftime("%Y-%m-%d")
+    snapshotFilename = "visionzero_" + today + ".sql"
+    snapshotFQP = "atd-vzd/snapshots/" + snapshotFilename
 
     # fmt: off
     replicate_runner_command = [
