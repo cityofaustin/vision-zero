@@ -76,5 +76,13 @@ export const GET_PERSON_LOOKUPS = gql`
       injry_sev_id
       injry_sev_desc
     }
+    atd_txdot__ethnicity_lkp {
+      ethnicity_id
+      ethnicity_desc
+    }
+    atd_txdot__gndr_lkp {
+      gndr_id
+      gndr_desc
+    }
   }
 `;
