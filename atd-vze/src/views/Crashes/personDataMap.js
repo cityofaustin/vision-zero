@@ -53,7 +53,7 @@ export const primaryPersonDataMap = [
         mutationVariableKey: "personId",
       },
       gender: {
-        label: "Gender",
+        label: "Sex",
         editable: true,
         lookup_desc: "gndr_desc",
         format: "select",
