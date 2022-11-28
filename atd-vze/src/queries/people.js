@@ -17,9 +17,11 @@ export const GET_PEOPLE = gql`
         prsn_type_desc
       }
       gender {
+        gndr_id
         gndr_desc
       }
       ethnicity {
+        ethnicity_id
         ethnicity_desc
       }
       unit_nbr
@@ -37,9 +39,11 @@ export const GET_PEOPLE = gql`
         prsn_type_desc
       }
       gender {
+        gndr_id
         gndr_desc
       }
       ethnicity {
+        ethnicity_id
         ethnicity_desc
       }
       unit_nbr
