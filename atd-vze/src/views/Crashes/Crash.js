@@ -24,6 +24,7 @@ import DataTable from "../../Components/DataTable";
 import Notes from "../../Components/Notes/Notes";
 import { crashDataMap } from "./crashDataMap";
 import Recommendations from "./Recommendations/Recommendations";
+import CrashWeather from "./CrashWeather";
 
 import "./crash.scss";
 
@@ -332,6 +333,11 @@ function Crash(props) {
           handleButtonClick={handleButtonClick}
           data={data}
         />
+        <Row>
+          <Col>
+            <CrashWeather data={data} />
+          </Col>
+        </Row>
         <Col md="6">
           <CrashChangeLog data={data} />
         </Col>
