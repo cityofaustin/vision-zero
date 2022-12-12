@@ -42,11 +42,11 @@ export const popoverConfig = {
             </a>
             .
           </div>
-          <div className="font-weight-bold">Gender</div>
+          <div className="font-weight-bold">Sex</div>
           <div className="mb-2">
             This visualization relies on the information entered by officers
             into the official crash reports. Officers are encouraged to use the
-            gender that appears on the Driver License/ID Card.
+            sex that appears on the Driver License/ID Card.
           </div>
           <div className="font-weight-bold">Race/Ethnicity</div>
           <div className="mb-2">
@@ -128,23 +128,45 @@ export const popoverConfig = {
                   <tbody>
                     <tr>
                       <th scope="row">{new Date().getFullYear()}</th>
-                      <td>{!!popEsts["years"][new Date().getFullYear()] ? formatNumber(popEsts["years"][new Date().getFullYear()]) : "No data available"}</td>
+                      <td>
+                        {!!popEsts["years"][new Date().getFullYear()]
+                          ? formatNumber(
+                              popEsts["years"][new Date().getFullYear()]
+                            )
+                          : "No data available"}
+                      </td>
                     </tr>
                     <tr>
                       <th scope="row">{new Date().getFullYear() - 1}</th>
-                      <td>{formatNumber(popEsts["years"][new Date().getFullYear() - 1])}</td>
+                      <td>
+                        {formatNumber(
+                          popEsts["years"][new Date().getFullYear() - 1]
+                        )}
+                      </td>
                     </tr>
                     <tr>
                       <th scope="row">{new Date().getFullYear() - 2}</th>
-                      <td>{formatNumber(popEsts["years"][new Date().getFullYear() - 2])}</td>
+                      <td>
+                        {formatNumber(
+                          popEsts["years"][new Date().getFullYear() - 2]
+                        )}
+                      </td>
                     </tr>
                     <tr>
                       <th scope="row">{new Date().getFullYear() - 3}</th>
-                      <td>{formatNumber(popEsts["years"][new Date().getFullYear() - 3])}</td>
+                      <td>
+                        {formatNumber(
+                          popEsts["years"][new Date().getFullYear() - 3]
+                        )}
+                      </td>
                     </tr>
                     <tr>
                       <th scope="row">{new Date().getFullYear() - 4}</th>
-                      <td>{formatNumber(popEsts["years"][new Date().getFullYear() - 4])}</td>
+                      <td>
+                        {formatNumber(
+                          popEsts["years"][new Date().getFullYear() - 4]
+                        )}
+                      </td>
                     </tr>
                   </tbody>
                 </table>
