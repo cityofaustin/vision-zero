@@ -115,21 +115,26 @@ const CrashesByPopulation = () => {
         </Col>
         {!!chartData &&
           chartData.labels &&
-          chartData.labels.map((year, i) => (
-            <Col xs={4} s={2} m={2} l={2} xl={2} key={i}>
-              <StyledDiv>
-                <div className="year-total-div">
-                  <p className="text-center pt-2 my-1">
-                    <strong>{year}</strong>
-                  </p>
-                  <hr className="my-1"></hr>
-                  <p className="text-center py-1">
-                    {chartData.datasets[0].data[i]}
-                  </p>
-                </div>
-              </StyledDiv>
-            </Col>
-          ))}
+          chartData.labels.map((year, i) => {
+            const yearRatio = chartData.datasets?.[0]?.data?.[i];
+
+            return (
+              <Col xs={4} s={2} m={2} l={2} xl={2} key={i}>
+                <StyledDiv>
+                  <div className="year-total-div">
+                    <p className="text-center pt-2 my-1">
+                      <strong>{year}</strong>
+                    </p>
+                    <hr className="my-1"></hr>
+                    <p className="text-center py-1">
+                      {/* Fallback if we haven't added the population for the year yet in popEsts.js */}
+                      {yearRatio ? yearRatio : "-"}
+                    </p>
+                  </div>
+                </StyledDiv>
+              </Col>
+            );
+          })}
       </Row>
       <Row className="mt-1">
         <Col>
