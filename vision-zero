@@ -89,7 +89,7 @@ def replicateDb(includeChangeLogData = False):
         "-e", "PGHOST=" + 'postgis',
         "-e", "PGUSER=" + os.environ["POSTGRES_USER"],
         "-e", "PGPASSWORD=" + os.environ["POSTGRES_PASSWORD"],
-        "-e", "PGDATABASE=" + os.environ["POSTGRES_DB"],
+        "-e", "PGDATABASE=postgres",
         "db-tools",
     ]
     # fmt: on
