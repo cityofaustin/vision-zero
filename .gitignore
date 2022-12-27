@@ -79,3 +79,8 @@ atd-events/**/*.json
 atd-events/**/*.zip
 atd-events/**/package
 atd-etl/app/**/*.json
+
+
+# vim 
+[._]*.s[a-v][a-z]
+[._]*.sw[a-p]
