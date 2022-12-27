@@ -196,7 +196,7 @@ def get_main_parser():
     parser = argparse.ArgumentParser(prog="vision-zero")
     # 🪄 generate a autocompletion script for the shell
     shtab.add_argument_to(parser, ["-s", "--print-completion"])
-    shtab.add_argument_to(parser, ["-c", "--include-change-log-data"])
+    parser.add_argument("-c", "--include-change-log-data", action='store_true')
     parser.add_argument(
         "command",
         choices=[
