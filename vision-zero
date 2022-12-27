@@ -71,6 +71,16 @@ def replicateDb(includeChangeLogData = False):
         replicate_command.append("--exclude-table-data")
         replicate_command.append("atd_txdot_change_log")
 
+    postgres_db_runner_command = [
+        "docker-compose",
+        "run",
+        "--rm",
+        "-e", "PGHOST=" + 'postgis',
+        "-e", "PGUSER=" + os.environ["POSTGRES_USER"],
+        "-e", "PGPASSWORD=" + os.environ["POSTGRES_PASSWORD"],
+        "-e", "PGDATABASE=postgres",
+        "db-tools",
+    ]
     
     populate_runner_command = [
         "docker-compose",
@@ -82,10 +92,6 @@ def replicateDb(includeChangeLogData = False):
         "-e", "PGDATABASE=" + os.environ["POSTGRES_DB"],
         "db-tools",
     ]
-    populate_command = [
-        "psql",
-        "-f", "/snapshots/" + snapshotFilename
-    ]
     # fmt: on
 
     if not (os.path.exists(snapshotFQP)):
@@ -93,34 +99,47 @@ def replicateDb(includeChangeLogData = False):
         if includeChangeLogData:
             print("This will take a while, on the order of half an hour.")
         else:
-            print("This will take a few minutes.")
+            print("This can take up to 15 minutes.")
         print(replicate_command)
         snapshot = open(snapshotFQP, "w")
         subprocess.run(replicate_runner_command + replicate_command, stdout=snapshot)
         snapshot.close()
 
-    print("️💾 Loading the database with snapshot")
-    print(populate_command)
-    subprocess.run(populate_runner_command + populate_command)
+    drop_database_command = [
+        "psql", "drop", "database", os.environ["POSTGRES_DB"]
+    ]
+
+    print("️💾 Dropping the local database")
+    print(" ".join(postgres_db_runner_command))
+    print(" ".join(drop_database_command))
+    #subprocess.run(postgres_db_runner_command + drop_database_command)
+
+    populate_command = [
+        "psql",
+        "-f", "/snapshots/" + snapshotFilename
+    ]
+
+    #print("️💾 Loading the database with snapshot")
+    #print(populate_command)
+    #subprocess.run(populate_runner_command + populate_command)
 
 
 def psql():
     # fmt: off
-    replicate_runner_command = [
+    db_tools_runner_command = [
         "docker-compose",
         "run",
         "--rm",
-        "-e", "PGHOST=" + os.environ["RR_HOSTNAME"],
-        "-e", "PGDATABASE=" + os.environ["RR_DATABASE"],
-        "-e", "PGUSER=" + os.environ["RR_USERNAME"],
-        "-e", "PGPASSWORD=" + os.environ["RR_PASSWORD"],
+        "-e", "PGHOST=postgis",
+        "-e", "PGDATABASE=" + os.environ["POSTGRES_DB"],
+        "-e", "PGUSER=" + os.environ["POSTGRES_USER"],
+        "-e", "PGPASSWORD=" + os.environ["POSTGRES_PASSWORD"],
         "db-tools",
     ]
     # fmt: on
 
     print("📺  Starting psql")
-    # subprocess.run(populate_runner_command + ["psql"])
-    # snapshot.close()
+    subprocess.run(db_tools_runner_command + ["psql"])
 
 
 def buildTools():
@@ -176,6 +195,7 @@ def get_main_parser():
             "db-up",
             "graphql-engine-up",
             "stop",
+            "psql",
             "tools-shell",
             "replicate-db",
             "remove-snapshots",
