@@ -21,8 +21,8 @@ def doCommand(args):
     elif args.command == "graphql-engine-up":
         dbUp()
         graphqlEngineUp()
-    elif args.command == 'graphql-engine-down':
-        pass        
+    elif args.command == "graphql-engine-down":
+        pass
     elif args.command == "tools-shell":
         dbUp()
         toolsShell()
@@ -34,12 +34,14 @@ def doCommand(args):
     elif args.command == "remove-snapshots":
         removeSnapshots()
 
+
 ## function to list the files in a directory and delete them
 def removeSnapshots():
     print("🗑️  Removing snapshots")
     subprocess.run(["rm", "-rf", "atd-vzd/snapshots/*.sql"])
 
-def replicateDb(includeChangeLogData = False):
+
+def replicateDb(includeChangeLogData=False):
     # print(tool_runner_command + replicate_command)
     today = date.today().strftime("%Y-%m-%d")
     snapshotFilename = "visionzero_" + today + ".sql"
@@ -100,28 +102,30 @@ def replicateDb(includeChangeLogData = False):
             print("This will take a while, on the order of half an hour.")
         else:
             print("This can take up to 15 minutes.")
-        print(replicate_command)
+        print(" ".join(replicate_runner_command) + " " + " ".join(replicate_command))
         snapshot = open(snapshotFQP, "w")
         subprocess.run(replicate_runner_command + replicate_command, stdout=snapshot)
         snapshot.close()
 
     drop_database_command = [
-        "psql", "--command=DROP DATABASE "+  os.environ["POSTGRES_DB"] + ""
+        "psql",
+        "--command=DROP DATABASE " + os.environ["POSTGRES_DB"] + "",
     ]
 
     print("️🫳 Dropping the local database")
-    print(" ".join(postgres_db_runner_command) + ' ' + " ".join(drop_database_command))
+    print(" ".join(postgres_db_runner_command) + " " + " ".join(drop_database_command))
     subprocess.run(postgres_db_runner_command + drop_database_command)
 
     populate_command = [
-        "bash", "-c",
+        "bash",
+        "-c",
         "cat /snapshots/visionzero_2022-12-27.sql | \
         perl -pe 's/^(SELECT pg_catalog\.set_config)/-- $1/g' | \
-        psql -v ON_ERROR_STOP=1"
+        psql -v ON_ERROR_STOP=1",
     ]
 
     print("️🏗️ Loading the database with snapshot")
-    print(" ".join(postgres_db_runner_command) + ' ' + " ".join(populate_command))
+    print(" ".join(postgres_db_runner_command) + " " + " ".join(populate_command))
     subprocess.run(populate_runner_command + populate_command)
 
 
@@ -183,6 +187,7 @@ def toolsShell():
 def stop():
     print("🛑  Stopping containers")
     subprocess.run(["docker-compose", "stop"])
+
 
 def get_main_parser():
     parser = argparse.ArgumentParser(prog="vision-zero")
