@@ -114,13 +114,14 @@ def replicateDb(includeChangeLogData = False):
     subprocess.run(postgres_db_runner_command + drop_database_command)
 
     populate_command = [
-        "psql",
-        "-f", "/snapshots/" + snapshotFilename
+        "bash", "-c",
+        "cat /snapshots/visionzero_2022-12-27.sql | \
+        psql -v ON_ERROR_STOP=1"
     ]
 
-    #print("️💾 Loading the database with snapshot")
-    #print(populate_command)
-    #subprocess.run(populate_runner_command + populate_command)
+    print("️🏗️ Loading the database with snapshot")
+    print(" ".join(postgres_db_runner_command) + ' ' + " ".join(populate_command))
+    subprocess.run(populate_runner_command + populate_command)
 
 
 def psql():
