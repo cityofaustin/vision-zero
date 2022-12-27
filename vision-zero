@@ -106,13 +106,12 @@ def replicateDb(includeChangeLogData = False):
         snapshot.close()
 
     drop_database_command = [
-        "psql", "drop", "database", os.environ["POSTGRES_DB"]
+        "psql", "--command=DROP DATABASE "+  os.environ["POSTGRES_DB"] + ""
     ]
 
-    print("️💾 Dropping the local database")
-    print(" ".join(postgres_db_runner_command))
-    print(" ".join(drop_database_command))
-    #subprocess.run(postgres_db_runner_command + drop_database_command)
+    print("️🫳 Dropping the local database")
+    print(" ".join(postgres_db_runner_command) + ' ' + " ".join(drop_database_command))
+    subprocess.run(postgres_db_runner_command + drop_database_command)
 
     populate_command = [
         "psql",
