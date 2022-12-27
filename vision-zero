@@ -116,6 +116,7 @@ def replicateDb(includeChangeLogData = False):
     populate_command = [
         "bash", "-c",
         "cat /snapshots/visionzero_2022-12-27.sql | \
+        perl -pe 's/^(SELECT pg_catalog\.set_config)/-- $1/g' | \
         psql -v ON_ERROR_STOP=1"
     ]
 
