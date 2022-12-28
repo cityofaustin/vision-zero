@@ -10,14 +10,27 @@ services:
     ports:
       - 5432:5432
   graphql-engine:
-    image: hasura/graphql-engine:latest
+    # image: hasura/graphql-engine:latest
+    image: hasura/graphql-engine:v2.16.1 # can jump cleanly to this with shorter event names
+
+    # image: hasura/graphql-engine:v2.13.2 # exhibits the regression 
+    # image: hasura/graphql-engine:v2.12.1 # can get to this one, valid after 2.9.0
+    # image: hasura/graphql-engine:v2.9.0 # valid first jump
+    
+    # image: hasura/graphql-engine:v2.11.3 # too far for first start-up
+    # image: hasura/graphql-engine:v2.10.2 # too far for first start-up, valid after 2.2.2
+    # image: hasura/graphql-engine:v2.6.2
+    # image: hasura/graphql-engine:v2.2.2 # valid first jump
+    # 2.0 and 2.1 segfault and core dump when run via qemu
+    # image: hasura/graphql-engine:v1.3.3
+    # image: hasura/graphql-engine:v1.3.1 # does not run under qemu
     volumes:
       - ./atd-vzd/graphql-engine-metadata:/metadata
     container_name: visionzero_hasura
     ports:
       - 8080:8080
     environment:
-      HASURA_GRAPHQL_DATABASE_URL: postgres://visionzero:visionzero@postgis:5432/visionzero
+      HASURA_GRAPHQL_DATABASE_URL: postgres://visionzero:visionzero@postgis:5432/atd_vz_data
       HASURA_GRAPHQL_ENABLE_CONSOLE: "true"
       HASURA_GRAPHQL_CONSOLE_ASSETS_DIR: /srv/console-assets
   db-tools:
@@ -29,6 +42,11 @@ services:
       - .env
     volumes:
       - ./atd-vzd/snapshots:/snapshots
+  vze:
+    container_name: visionzero_vze
+    command: tail -f /dev/null
+    build: atd-vze
+
 volumes:
   visionzero_postgis_pgdata:
     name: visionzero_postgis_pgdata
