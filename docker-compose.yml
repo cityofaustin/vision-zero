@@ -24,8 +24,8 @@ services:
   db-tools:
     container_name: visionzero_download_db_data
     build: atd-toolbox/download-db-data
-    #command: /bin/bash -c "sleep 10 && python3 download_db_data.py"
     command: tail -f /dev/null
+    hostname: db-tools
     env_file:
       - .env
     volumes:
@@ -33,6 +33,7 @@ services:
   vze:
     container_name: visionzero_vze
     command: tail -f /dev/null
+    hostname: vze
     build: atd-vze
 
 volumes:
