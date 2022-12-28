@@ -10,20 +10,8 @@ services:
     ports:
       - 5432:5432
   graphql-engine:
-    # image: hasura/graphql-engine:latest
     image: hasura/graphql-engine:v2.16.1 # can jump cleanly to this with shorter event names
-
-    # image: hasura/graphql-engine:v2.13.2 # exhibits the regression 
-    # image: hasura/graphql-engine:v2.12.1 # can get to this one, valid after 2.9.0
-    # image: hasura/graphql-engine:v2.9.0 # valid first jump
-    
-    # image: hasura/graphql-engine:v2.11.3 # too far for first start-up
-    # image: hasura/graphql-engine:v2.10.2 # too far for first start-up, valid after 2.2.2
-    # image: hasura/graphql-engine:v2.6.2
-    # image: hasura/graphql-engine:v2.2.2 # valid first jump
-    # 2.0 and 2.1 segfault and core dump when run via qemu
-    # image: hasura/graphql-engine:v1.3.3
-    # image: hasura/graphql-engine:v1.3.1 # does not run under qemu
+    # image: hasura/graphql-engine:v1.3.3 # use this to rename the events
     volumes:
       - ./atd-vzd/graphql-engine-metadata:/metadata
     container_name: visionzero_hasura
