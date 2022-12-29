@@ -35,6 +35,8 @@ services:
     command: tail -f /dev/null
     hostname: vze
     build: atd-vze
+    volumes:
+      - ./atd-vze:/root/vze
 
 volumes:
   visionzero_postgis_pgdata:
