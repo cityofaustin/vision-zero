@@ -5,8 +5,11 @@ services:
     build: atd-vzd
     env_file:
       - .env
-    volumes:
-      - visionzero_postgis_pgdata:/var/lib/postgresql/data
+    #volumes:
+      #- visionzero_postgis_pgdata:/var/lib/postgresql/data
+      #- ./atd-vzd/ramDisk:/var/lib/postgresql/data
+    tmpfs:
+      - /var/lib/postgresql/data
     ports:
       - 5432:5432
   graphql-engine:
@@ -38,6 +41,6 @@ services:
     volumes:
       - ./atd-vze:/root/vze
 
-volumes:
-  visionzero_postgis_pgdata:
-    name: visionzero_postgis_pgdata
+#volumes:
+  #visionzero_postgis_pgdata:
+    #name: visionzero_postgis_pgdata
