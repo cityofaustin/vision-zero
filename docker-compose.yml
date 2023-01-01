@@ -1,7 +1,7 @@
 version: '3.7'
 services:
   postgis:
-    container_name: visionzero_postgis
+    container_name: visionzero-postgis
     build: atd-vzd
     env_file:
       - .env
@@ -16,7 +16,7 @@ services:
     # image: hasura/graphql-engine:v1.3.3 # use this to rename the events
     volumes:
       - ./atd-vzd/graphql-engine-metadata:/metadata
-    container_name: visionzero_hasura
+    container_name: visionzero-graphql-engine
     ports:
       - 8080:8080
     environment:
@@ -33,7 +33,7 @@ services:
     volumes:
       - ./atd-vzd/snapshots:/snapshots
   vze:
-    container_name: visionzero_vze
+    container_name: visionzero-vze
     command: tail -f /dev/null
     hostname: vze
     build: atd-vze
