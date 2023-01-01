@@ -22,7 +22,7 @@ def doCommand(args):
         dbUp()
         graphqlEngineUp()
     elif args.command == "graphql-engine-down":
-        pass
+        graphqlEngineDown()
     elif args.command == "tools-shell":
         dbUp()
         toolsShell()
@@ -42,6 +42,8 @@ def removeSnapshots():
 
 
 def replicateDb(includeChangeLogData=False):
+    graphqlEngineDown()
+
     # print(tool_runner_command + replicate_command)
     today = date.today().strftime("%Y-%m-%d")
     snapshotFilename = (
@@ -167,6 +169,12 @@ def graphqlEngineUp():
     subprocess.run(["docker", "ps"])
 
 
+def graphqlEngineDown():
+    print("🚀  Stopping GraphQL Engine")
+    subprocess.run(["docker-compose", "stop", "graphql-engine"])
+    subprocess.run(["docker", "ps"])
+
+
 def toolsShell():
     print("🐚  Starting tools shell")
 
@@ -203,6 +211,7 @@ def get_main_parser():
             "build",
             "db-up",
             "graphql-engine-up",
+            "graphql-engine-down",
             "stop",
             "psql",
             "tools-shell",
