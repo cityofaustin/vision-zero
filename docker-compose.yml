@@ -7,7 +7,6 @@ services:
       - .env
     #volumes:
       #- visionzero_postgis_pgdata:/var/lib/postgresql/data
-      #- ./atd-vzd/ramDisk:/var/lib/postgresql/data
     tmpfs:
       - /var/lib/postgresql/data
     ports:
@@ -41,6 +40,6 @@ services:
     volumes:
       - ./atd-vze:/root/vze
 
-#volumes:
-  #visionzero_postgis_pgdata:
-    #name: visionzero_postgis_pgdata
+volumes:
+  visionzero_postgis_pgdata:
+    name: visionzero_postgis_pgdata
