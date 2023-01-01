@@ -33,6 +33,7 @@ services:
     volumes:
       - ./atd-vzd/snapshots:/snapshots
   vze:
+    tty: true
     container_name: visionzero-vze
     # command: tail -f /dev/null
     command: npm start
@@ -41,7 +42,7 @@ services:
     hostname: vze
     build: atd-vze
     volumes:
-      - ./atd-vze:/root/vze
+      - ./atd-vze:/root/atd-vze
 
 volumes:
   visionzero_postgis_pgdata:
