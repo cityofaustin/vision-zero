@@ -34,7 +34,10 @@ services:
       - ./atd-vzd/snapshots:/snapshots
   vze:
     container_name: visionzero-vze
-    command: tail -f /dev/null
+    # command: tail -f /dev/null
+    command: npm start
+    ports:
+      - 3000:3000
     hostname: vze
     build: atd-vze
     volumes:
