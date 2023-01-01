@@ -5,5 +5,6 @@ WORKDIR /root/
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
 RUN npm install -g npm-check-updates
 WORKDIR /root/atd-vze
-COPY . /root/atd-vze
-RUN npm install
+#COPY . /root/atd-vze
+#RUN npm install
+CMD ["npm", "start"]
