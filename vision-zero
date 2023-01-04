@@ -18,13 +18,21 @@ def doCommand(args):
         dbUp(args)
     elif args.command == "db-down":
         dbDown(args)
-    elif args.command == "psql":
-        psql(args)
     elif args.command == "graphql-engine-up":
         dbUp(args)
         graphqlEngineUp(args)
     elif args.command == "graphql-engine-down":
         graphqlEngineDown(args)
+    elif args.command == "vze-up":
+        vzeUp(args)
+    elif args.command == "vze-down":
+        vzeDown(args)
+    elif args.command == "vzv-up":
+        vzvUp(args)
+    elif args.command == "vzv-down":
+        vzvDown(args)
+    elif args.command == "psql":
+        psql(args)
     elif args.command == "tools-shell":
         dbUp(args)
         toolsShell(args)
@@ -40,7 +48,9 @@ def doCommand(args):
 ## function to list the files in a directory and delete them
 def removeSnapshots(args):
     print("🗑️  Removing snapshots")
-    subprocess.run(["rm", "-rf", "atd-vzd/snapshots/*.sql"])
+    command = ["rm", "-rvf", "atd-vzd/snapshots/*.sql"]
+    print(" ".join(command))
+    subprocess.run(" ".join(command))
 
 
 # def replicateDb(includeChangeLogData=False):
@@ -218,6 +228,41 @@ def graphqlEngineDown(args):
         "stop", "graphql-engine"])
     subprocess.run(["docker", "ps"])
 
+def vzeUp(args):
+    print("📝  Starting Vision Zero Editor")
+    subprocess.run(["docker-compose", 
+        "-f", "docker-compose.yml", 
+        "-f",
+        "docker-compose-ram-disk.yml" if args.ram_disk else "docker-compose-docker-volume.yml",
+        "up", "-d", "vze"])
+    subprocess.run(["docker", "ps"])
+
+def vzeDown(args):
+    print("📝  Stopping Vision Zero Editor")
+    subprocess.run(["docker-compose", 
+        "-f", "docker-compose.yml", 
+        "-f",
+        "docker-compose-ram-disk.yml" if args.ram_disk else "docker-compose-docker-volume.yml",
+        "stop", "vze"])
+    subprocess.run(["docker", "ps"])
+
+def vzvUp(args):
+    print("👀 Starting Vision Zero Viewer")
+    subprocess.run(["docker-compose", 
+        "-f", "docker-compose.yml", 
+        "-f",
+        "docker-compose-ram-disk.yml" if args.ram_disk else "docker-compose-docker-volume.yml",
+        "up", "-d", "vzv"])
+    subprocess.run(["docker", "ps"])
+
+def vzvDown(args):
+    print("👀 Stopping Vision Zero Viewer")
+    subprocess.run(["docker-compose", 
+        "-f", "docker-compose.yml", 
+        "-f",
+        "docker-compose-ram-disk.yml" if args.ram_disk else "docker-compose-docker-volume.yml",
+        "stop", "vzv"])
+    subprocess.run(["docker", "ps"])
 
 def toolsShell(args):
     print("🐚  Starting tools shell")
@@ -265,6 +310,10 @@ def get_main_parser():
             "db-down",
             "graphql-engine-up",
             "graphql-engine-down",
+            "vze-up",
+            "vze-down",
+            "vzv-up",
+            "vzv-down",
             "stop",
             "psql",
             "tools-shell",
