@@ -50,7 +50,7 @@ Collection of utilities related to maintaining data and other resources related 
 ## Local Development
 The suite has a python script which can be used to run and populate a local development instance of the stack. The script is found in the root of the repository, and is named `vision-zero`. It's recommended to create a virtual environment in the root of the repo, and if you name it `venv`, it will be ignored by the `.gitignore` file in place. VS Code will automatically source the activation script, if you start a terminal from within it to interface with the stack.
 
-The `vision-zero` program is a light wrapper around the functionality provided by `docker compose`. By inspecting the `docker-compose.yml` file, you can find the definitions of the services in the stack, and you can use the `docker compose` command to turn up, stop, and attach terminals to the running containers and execute on-off commands. This can provide you access to containers to install nodejs libraries, use postgres' supporting programs (`psql`, '`pg_dump`) and other lower level utilities.
+The `vision-zero` program is a light wrapper around the functionality provided by `docker compose`. By inspecting the `docker-compose.yml` file, you can find the definitions of the services in the stack, and you can use the `docker compose` command to turn up, stop, and attach terminals to the running containers and execute on-off commands. This can provide you access to containers to install nodejs libraries, use postgres' supporting programs (`psql`, `pg_dump`) and other lower level utilities.
 
 Ideally, you should be able to operate and run the entire vision zero suite and access all needed supporting tooling from any host that can provide a working docker service -- no local node, python, etc. needed.
 
@@ -58,7 +58,8 @@ Ideally, you should be able to operate and run the entire vision zero suite and 
 
 ### Examples of `vision-zero` commands
 
-#### `./vision-zero build`
+#### `vision-zero build`
+Rebuild the stack's images based on the Dockerfiles found in the repository. They are built with the `--no-cache` flag which will make the build process slower, but avoid any stale image layers that have inadvertently cached out-of-date apt resource lists. 
 
 ## Technology Stack
 
