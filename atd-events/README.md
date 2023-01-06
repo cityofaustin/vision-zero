@@ -91,7 +91,7 @@ $ pip freeze > requirements.txt
 
 #### New PRs
 First, it is recommended that you create a PR. Whenever a PR is created
-CircleCI will begin creating the python bundles for Lambda and SQS and it
+a GitHub Action flow will begin creating the python bundles for Lambda and SQS and it
 will deploy them automatically.
 
 Secondly, it is recommended that you log in to AWS with your credentials
