@@ -95,7 +95,10 @@ const CrashesByPopulation = () => {
       </Row>
       <Row>
         <Col>
-          <CrashTypeSelector setCrashType={setCrashType} componentName="CrashesByPopulation"/>
+          <CrashTypeSelector
+            setCrashType={setCrashType}
+            componentName="CrashesByPopulation"
+          />
         </Col>
       </Row>
       <Row>
