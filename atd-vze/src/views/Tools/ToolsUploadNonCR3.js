@@ -215,12 +215,14 @@ const ToolsUploadNonCR3 = () => {
     (addr ? addr : "").replace(/[^A-Za-z0-9\\/\-\s.,&]/gi, "");
 
   /**
-   * Returns true if both x and y are valid float values
+   * Returns true if both x and y are valid float values and latitude is positive and longitude is negative
    * @param {string} x - The Xcoord value (as string, later converted to float)
    * @param {string} y - The Ycoord value (as string, later converted to float)
    * @return {boolean}
    */
-  const isValidCoord = (x, y) => isFloat(Number(x)) && isFloat(Number(y));
+  const isValidCoord = (x, y) => {
+    Number(x) < 0 && Number(y) > 0 && isFloat(Number(x)) && isFloat(Number(y));
+  };
 
   /**
    * Returns true if the string is a float
@@ -302,24 +304,30 @@ const ToolsUploadNonCR3 = () => {
     // We have data, let's check if there are any duplicates
     const counts = getDuplicateCount(data);
 
-    const duplicates = Object.keys(counts).filter((node) => {
-      return counts[node] > 1;
-    }).map(node => {
-      return `${node}: ${counts[node]} occurrences`;
-    })
+    const duplicates = Object.keys(counts)
+      .filter(node => {
+        return counts[node] > 1;
+      })
+      .map(node => {
+        return `${node}: ${counts[node]} occurrences`;
+      });
 
-    if(duplicates.length > 0) {
-      setFeedback(
-        {
-          title: "Error",
-          message: <div>
-            <p>Validation Error: Within the <strong>{data.length}</strong> existing records, there are <strong>{duplicates.length}</strong> with the same Case IDs:</p>
-            <textarea style={{"width": "100%", "height": "15rem"}}>
-                {String(duplicates.join(",\n"))}
-              </textarea>
+    if (duplicates.length > 0) {
+      setFeedback({
+        title: "Error",
+        message: (
+          <div>
+            <p>
+              Validation Error: Within the <strong>{data.length}</strong>{" "}
+              existing records, there are <strong>{duplicates.length}</strong>{" "}
+              with the same Case IDs:
+            </p>
+            <textarea style={{ width: "100%", height: "15rem" }}>
+              {String(duplicates.join(",\n"))}
+            </textarea>
           </div>
-        }
-      )
+        ),
+      });
       return;
     }
 
@@ -360,7 +368,7 @@ const ToolsUploadNonCR3 = () => {
    * @param {Object} data
    * @return {Array}
    */
-  const getDuplicateCount = (data) => {
+  const getDuplicateCount = data => {
     return data.reduce((acc, currNode) => {
       // Convert the call num to string so we can use as a key
       const case_id = String(currNode["case_id"]);
@@ -369,7 +377,7 @@ const ToolsUploadNonCR3 = () => {
       // Return new state of out count dictionary
       return acc;
     }, {});
-  }
+  };
 
   /**
    * Saves the files into the database. Not yet implemented.
@@ -406,25 +414,31 @@ const ToolsUploadNonCR3 = () => {
       // We have data, let's check if there are any duplicates
       const counts = getDuplicateCount(data);
 
-      const duplicates = Object.keys(counts).filter((node) => {
-        return counts[node] > 1;
-      }).map(node => {
-        return `${node}: ${counts[node]} occurrences`;
-      })
+      const duplicates = Object.keys(counts)
+        .filter(node => {
+          return counts[node] > 1;
+        })
+        .map(node => {
+          return `${node}: ${counts[node]} occurrences`;
+        });
 
-      if(duplicates.length > 0) {
+      if (duplicates.length > 0) {
         setModalSaveConfirm(false);
-        setFeedback(
-          {
-            title: "Error",
-            message: <div>
-              <p>Action canceled. Please resolve the duplicates before inserting. Within the <strong>{data.length}</strong> valid records, there are <strong>{duplicates.length}</strong> with the same Case IDs:</p>
-              <textarea style={{"width": "100%", "height": "15rem"}}>
+        setFeedback({
+          title: "Error",
+          message: (
+            <div>
+              <p>
+                Action canceled. Please resolve the duplicates before inserting.
+                Within the <strong>{data.length}</strong> valid records, there
+                are <strong>{duplicates.length}</strong> with the same Case IDs:
+              </p>
+              <textarea style={{ width: "100%", height: "15rem" }}>
                 {String(duplicates.join(",\n"))}
               </textarea>
             </div>
-          }
-        )
+          ),
+        });
       } else {
         // We have no duplicates, proceed...
         setModalSaveProcess(true);
@@ -483,7 +497,7 @@ const ToolsUploadNonCR3 = () => {
    */
   useEffect(() => {
     const type = feedback.title || "undefined";
-    if(type === "Error" || type === "Success") {
+    if (type === "Error" || type === "Success") {
       setModalSaveProcess(false);
       setModalSaveConfirm(false);
       setModalFeedback(true);
