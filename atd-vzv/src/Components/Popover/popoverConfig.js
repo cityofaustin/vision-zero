@@ -2,8 +2,13 @@ import React from "react";
 import raceEthnicityTable2018 from "./raceEthnicityTable2018.png";
 import { popEsts } from "../../constants/popEsts";
 
-const formatNumber = (num) => {
-  return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
+/**
+ * Format a number with commas
+ * @param {Number} num - a number that needs commas added
+ * @returns {String} - a string of the number with commas added
+ */
+const addCommasToNumber = (num) => {
+  return num ? num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") : "";
 };
 
 export const popoverConfig = {
@@ -130,7 +135,7 @@ export const popoverConfig = {
                       <th scope="row">{new Date().getFullYear()}</th>
                       <td>
                         {!!popEsts["years"][new Date().getFullYear()]
-                          ? formatNumber(
+                          ? addCommasToNumber(
                               popEsts["years"][new Date().getFullYear()]
                             )
                           : "No data available"}
@@ -139,7 +144,7 @@ export const popoverConfig = {
                     <tr>
                       <th scope="row">{new Date().getFullYear() - 1}</th>
                       <td>
-                        {formatNumber(
+                        {addCommasToNumber(
                           popEsts["years"][new Date().getFullYear() - 1]
                         )}
                       </td>
@@ -147,7 +152,7 @@ export const popoverConfig = {
                     <tr>
                       <th scope="row">{new Date().getFullYear() - 2}</th>
                       <td>
-                        {formatNumber(
+                        {addCommasToNumber(
                           popEsts["years"][new Date().getFullYear() - 2]
                         )}
                       </td>
@@ -155,7 +160,7 @@ export const popoverConfig = {
                     <tr>
                       <th scope="row">{new Date().getFullYear() - 3}</th>
                       <td>
-                        {formatNumber(
+                        {addCommasToNumber(
                           popEsts["years"][new Date().getFullYear() - 3]
                         )}
                       </td>
@@ -163,7 +168,7 @@ export const popoverConfig = {
                     <tr>
                       <th scope="row">{new Date().getFullYear() - 4}</th>
                       <td>
-                        {formatNumber(
+                        {addCommasToNumber(
                           popEsts["years"][new Date().getFullYear() - 4]
                         )}
                       </td>
