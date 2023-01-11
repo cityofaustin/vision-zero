@@ -163,7 +163,9 @@ const ToolsUploadNonCR3 = () => {
     }
 
     if (!isValidCoord(record["longitude"], record["latitude"])) {
-      errors.push("Invalid coordinate pair");
+      errors.push(
+        "Invalid coordinate pair (for example, -97.7404, 30.2747 is a valid Austin coordinate pair)"
+      );
     }
 
     if (!isValidHour(record["hour"])) {
@@ -215,13 +217,29 @@ const ToolsUploadNonCR3 = () => {
     (addr ? addr : "").replace(/[^A-Za-z0-9\\/\-\s.,&]/gi, "");
 
   /**
-   * Returns true if both x and y are valid float values and latitude is positive and longitude is negative
+   * Returns true if both x and y are valid float values and are within the bounding box
    * @param {string} x - The Xcoord value (as string, later converted to float)
    * @param {string} y - The Ycoord value (as string, later converted to float)
    * @return {boolean}
    */
   const isValidCoord = (x, y) => {
-    Number(x) < 0 && Number(y) > 0 && isFloat(Number(x)) && isFloat(Number(y));
+    /**
+     * This bounding box encompasses Austin and surrounding areas,
+     * derived by adding/subtracting 2 degrees from the Texas Capitol
+     */
+    const boundingBox = {
+      bottomLeft: [-99.7404, 28.2747],
+      topRight: [-95.7404, 32.2747],
+    };
+    const isLongInRange =
+      Number(x) >= boundingBox.bottomLeft[0] &&
+      Number(x) <= boundingBox.topRight[0];
+    const isLatInRange =
+      Number(y) >= boundingBox.bottomLeft[1] &&
+      Number(y) <= boundingBox.topRight[1];
+    return (
+      isLongInRange && isLatInRange && isFloat(Number(x)) && isFloat(Number(y))
+    );
   };
 
   /**
