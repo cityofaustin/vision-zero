@@ -30,6 +30,7 @@ export const navigation = roles => {
         url: "/locations",
         icon: "icon-map",
       },
+      { name: "Fatalities", url: "/fatalities" },
       {
         divider: true,
       },
