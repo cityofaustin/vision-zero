@@ -26,7 +26,7 @@ from prefect.backend import get_key_value
 
 pp = pprint.PrettyPrinter(indent=4)
 
-kv_data = get_key_value(key="Vision Zero Development")
+kv_data = get_key_value(key="Vision Zero")
 environment_variables = json.loads(kv_data)
 
 DB_USERNAME = None

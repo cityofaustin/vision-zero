@@ -29,7 +29,7 @@ from prefect.backend import get_key_value
 
 pp = pprint.PrettyPrinter(indent=4)
 
-kv_data = get_key_value(key="Vision Zero Development")
+kv_data = get_key_value(key="Vision Zero")
 environment_variables = json.loads(kv_data)
 
 # Retrieve the db configuration
@@ -49,7 +49,7 @@ EMS_S3_ARCHIVE_BUCKET = None
 EMS_S3_SOURCE_PREFIX = None
 EMS_S3_ARCHIVE_PREFIX = None
 
-if False:
+if True:
     # Retrieve the db configuration
     DB_USERNAME = environment_variables["AFD_DB_USERNAME"]
     DB_PASSWORD = environment_variables["AFD_DB_PASSWORD"]
@@ -436,5 +436,5 @@ with Flow("EMS Import ETL") as flow:
     clean_up_token = clean_up(attachment_location, upstream_tasks=[upload_token])
 
 # you can use record_age_maximum=0 if you want a full import
-flow.run(parameters=dict(record_age_maximum=90))
-# f.register(project_name="vision-zero")
+#flow.run(parameters=dict(record_age_maximum=10))
+flow.register(project_name="vision-zero")
