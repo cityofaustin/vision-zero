@@ -275,5 +275,5 @@ with Flow("AFD Import ETL") as flow:
     clean_up_token = clean_up(attachment_location, upstream_tasks=[upload_token])
 
 # you can use record_age_maximum=False if you want a full import
-flow.run(parameters=dict(record_age_maximum=90))
-# f.register(project_name="vision-zero")
+# flow.run(parameters=dict(record_age_maximum=90))
+flow.register(project_name="vision-zero")
