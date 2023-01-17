@@ -35,14 +35,11 @@ services:
   vzv:
     tty: true
     container_name: visionzero-vzv
-    command: tail -f /dev/null
-    # command: npm start
+    # command: tail -f /dev/null
+    command: npm start
     ports:
       - 3001:3000
     hostname: vzv
     build: atd-vzv
     volumes:
       - ./atd-vzv:/root/atd-vzv
-volumes:
-  visionzero_postgis_pgdata:
-    name: visionzero_postgis_pgdata
