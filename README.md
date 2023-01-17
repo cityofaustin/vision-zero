@@ -54,7 +54,17 @@ The `vision-zero` program is a light wrapper around the functionality provided b
 
 Ideally, you should be able to operate and run the entire vision zero suite and access all needed supporting tooling from any host that can provide a working docker service -- no local node, python, etc. needed.
 
+### `vision-zero` command auto-completion
 
+The `vision-zero` application is able to generate auto-completion scripts via the `shtab` python library. For example, `zsh` users may use the following to enable this feature. `bash` and `csh` users will have similar steps to follow particular to their shell of choice. 
+
+```
+mkdir ~/.zsh_completion_functions;
+chmod g-w,o-w ~/.zsh_completion_functions;
+cd $WHEREVER_YOU_HAVE_VZ_CHECKED_OUT;
+source ./venv/bin/active;
+./vision-zero -s zsh | tee ~/.zsh_completion_functions/_vision-zero
+```
 
 ### Examples of `vision-zero` commands
 
