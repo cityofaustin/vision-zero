@@ -52,7 +52,7 @@ The suite has a python script which can be used to run and populate a local deve
 
 The `vision-zero` program is a light wrapper around the functionality provided by `docker compose`. By inspecting the `docker-compose.yml` file, you can find the definitions of the services in the stack, and you can use the `docker compose` command to turn up, stop, and attach terminals to the running containers and execute on-off commands. This can provide you access to containers to install nodejs libraries, use postgres' supporting programs (`psql`, `pg_dump`) and other lower level utilities.
 
-Ideally, you should be able to operate and run the entire vision zero suite and access all needed supporting tooling from any host that can provide a working docker service -- no local node, python, etc. needed.
+Ideally, you should be able to operate the entire vision zero suite and access all needed supporting tooling from any host that can provide a working docker service & python interpreter for the orchestration script.
 
 ### `vision-zero` command auto-completion
 
