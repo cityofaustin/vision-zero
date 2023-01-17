@@ -22,7 +22,7 @@ print("Socrata - Exporter:  Started.")
 
 # Setup connection to Socrata
 client = Socrata(
-    "data.austintexas.gov",
+    "datahub.austintexas.gov",
     ATD_ETL_CONFIG["SOCRATA_APP_TOKEN"],
     username=ATD_ETL_CONFIG["SOCRATA_KEY_ID"],
     password=ATD_ETL_CONFIG["SOCRATA_KEY_SECRET"],
