@@ -739,9 +739,7 @@ const ToolsUploadNonCR3 = () => {
         toggle={toggleModalSaveConfirm}
         className={"modal-primary"}
       >
-        <ModalHeader toggle={toggleModalSaveConfirm}>
-          {feedback["title"]}
-        </ModalHeader>
+        <ModalHeader>{feedback["title"]}</ModalHeader>
         <ModalBody>{feedback["message"]}</ModalBody>
         <ModalFooter>
           <Button color="secondary" onClick={() => setModalFeedback(false)}>
