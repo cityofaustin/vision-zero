@@ -710,7 +710,7 @@ const ToolsUploadNonCR3 = () => {
         toggle={toggleModalSaveConfirm}
         className={"modal-primary"}
       >
-        <ModalHeader toggle={toggleModalSaveConfirm}>Confirm Save</ModalHeader>
+        <ModalHeader>Confirm Save</ModalHeader>
         <ModalBody>
           <p>
             Only valid records will be processed, if you have any invalid
@@ -736,7 +736,7 @@ const ToolsUploadNonCR3 = () => {
 
       <Modal
         isOpen={modalFeedback}
-        toggle={toggleModalSaveConfirm}
+        toggle={() => setModalFeedback(false)}
         className={"modal-primary"}
       >
         <ModalHeader>{feedback["title"]}</ModalHeader>
