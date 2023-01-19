@@ -179,6 +179,7 @@ const CrashesByTimeOfDay = () => {
 
     if (node?.props?.data?.metadata?.isPlaceholder) {
       console.log(node, "found one");
+      node.rect.current.style.visibility = "hidden";
     }
   }, []);
 
