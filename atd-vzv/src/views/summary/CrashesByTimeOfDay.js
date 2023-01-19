@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useCallback, useState, useEffect } from "react";
 import axios from "axios";
 import moment from "moment";
 import clonedeep from "lodash.clonedeep";
@@ -141,6 +141,8 @@ const CrashesByTimeOfDay = () => {
     const placeholderArray = heatmapData[0].data.map((data, i) => ({
       key: dayOfWeekArray[i],
       data: maxForLegend[crashType.name],
+      // Add this metadata to find which cells to hide in the callback ref
+      metadata: { isPlaceholder: true },
     }));
 
     const placeholderObjForChartWeighting = {
@@ -172,6 +174,13 @@ const CrashesByTimeOfDay = () => {
   //     }
   //   });
   // }, [heatmapDataWithPlaceholder, crashType, maxForLegend]);
+  const heatmapCellRef = useCallback((node) => {
+    if (node === null) return;
+
+    if (node?.props?.data?.metadata?.isPlaceholder) {
+      console.log(node, "found one");
+    }
+  }, []);
 
   const formatValue = (d) => {
     const value = d.data.value ? d.data.value : 0;
@@ -251,6 +260,7 @@ const CrashesByTimeOfDay = () => {
                 emptyColor={colors.intensity1Of5Lowest}
                 cell={
                   <HeatmapCell
+                    ref={heatmapCellRef}
                     tooltip={
                       <ChartTooltip
                         content={(d) =>
