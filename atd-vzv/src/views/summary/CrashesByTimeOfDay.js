@@ -157,21 +157,21 @@ const CrashesByTimeOfDay = () => {
   }, [maxForLegend, heatmapData, crashType]);
 
   // Hide placeholder cells
-  useEffect(() => {
-    const heatmapChildCellNumbers = [171, 172, 173, 174, 175, 176, 177];
+  // useEffect(() => {
+  //   const heatmapChildCellNumbers = [171, 172, 173, 174, 175, 176, 177];
 
-    let cellsToHide = heatmapChildCellNumbers.map((num) =>
-      document.querySelector(
-        `#demographics-heatmap > div > svg > g > g:nth-child(${num})`
-      )
-    );
+  //   let cellsToHide = heatmapChildCellNumbers.map((num) =>
+  //     document.querySelector(
+  //       `#demographics-heatmap > div > svg > g > g:nth-child(${num})`
+  //     )
+  //   );
 
-    cellsToHide.forEach((cell) => {
-      if (!!cell) {
-        cell.style.visibility = "hidden";
-      }
-    });
-  }, [heatmapDataWithPlaceholder, crashType, maxForLegend]);
+  //   cellsToHide.forEach((cell) => {
+  //     if (!!cell) {
+  //       cell.style.visibility = "hidden";
+  //     }
+  //   });
+  // }, [heatmapDataWithPlaceholder, crashType, maxForLegend]);
 
   const formatValue = (d) => {
     const value = d.data.value ? d.data.value : 0;
@@ -199,7 +199,10 @@ const CrashesByTimeOfDay = () => {
       </Row>
       <Row>
         <Col>
-          <CrashTypeSelector setCrashType={setCrashType} componentName="CrashesByTimeOfDay"/>
+          <CrashTypeSelector
+            setCrashType={setCrashType}
+            componentName="CrashesByTimeOfDay"
+          />
         </Col>
       </Row>
       <Row>
