@@ -141,7 +141,7 @@ const CrashesByTimeOfDay = () => {
     const placeholderArray = heatmapData[0].data.map((data, i) => ({
       key: dayOfWeekArray[i],
       data: maxForLegend[crashType.name],
-      // Add this metadata to find which cells to hide in the callback ref
+      // Add this metadata to find which cells to hide in the callback ref below
       metadata: { isPlaceholder: true },
     }));
 
@@ -159,24 +159,7 @@ const CrashesByTimeOfDay = () => {
   }, [maxForLegend, heatmapData, crashType]);
 
   // Hide placeholder cells
-  // useEffect(() => {
-  //   const heatmapChildCellNumbers = [171, 172, 173, 174, 175, 176, 177];
-
-  //   let cellsToHide = heatmapChildCellNumbers.map((num) =>
-  //     document.querySelector(
-  //       `#demographics-heatmap > div > svg > g > g:nth-child(${num})`
-  //     )
-  //   );
-
-  //   cellsToHide.forEach((cell) => {
-  //     if (!!cell) {
-  //       cell.style.visibility = "hidden";
-  //     }
-  //   });
-  // }, [heatmapDataWithPlaceholder, crashType, maxForLegend]);
   const heatmapCellRef = useCallback((node) => {
-    if (node === null) return;
-
     if (node?.props?.data?.metadata?.isPlaceholder) {
       console.log(node, "found one");
       node.rect.current.style.visibility = "hidden";
@@ -261,6 +244,7 @@ const CrashesByTimeOfDay = () => {
                 emptyColor={colors.intensity1Of5Lowest}
                 cell={
                   <HeatmapCell
+                    // This callback ref is used to hide placeholder cells
                     ref={heatmapCellRef}
                     tooltip={
                       <ChartTooltip
