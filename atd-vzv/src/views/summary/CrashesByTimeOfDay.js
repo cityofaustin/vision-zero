@@ -33,6 +33,57 @@ const hourBlockArray = [...Array(24).keys()].map((hour) =>
   moment({ hour }).format("hhA")
 );
 
+const buildDataArray = () => {
+  // This array holds weekday totals for each hour window within a day
+  // Reaviz Heatmap expects array of weekday total objs to be reversed in order
+  const hourWindowTotalsByDay = dayOfWeekArray
+    .map((day) => ({ key: day, data: null })) // Initialize totals as null to unweight 0 in viz
+    .reverse();
+
+  // Return array of objs for each hour window that holds totals of each day of the week
+  return hourBlockArray.map((hour) => ({
+    key: hour,
+    data: clonedeep(hourWindowTotalsByDay),
+  }));
+};
+
+const calculateHourBlockTotals = (records, crashType) => {
+  const dataArray = buildDataArray();
+
+  records.forEach((record) => {
+    const recordDateTime = moment(record.crash_date);
+    const recordHour = recordDateTime.format("hhA");
+    const recordDay = recordDateTime.format("ddd");
+
+    const hourData = dataArray.find((hour) => hour.key === recordHour).data;
+    const dayToIncrement = hourData.find((day) => day.key === recordDay);
+
+    switch (crashType.name) {
+      case "fatalities":
+        dayToIncrement.data += parseInt(record.death_cnt);
+        break;
+      case "seriousInjuries":
+        dayToIncrement.data += parseInt(record.sus_serious_injry_cnt);
+        break;
+      default:
+        dayToIncrement.data +=
+          parseInt(record.death_cnt) + parseInt(record.sus_serious_injry_cnt);
+        break;
+    }
+  });
+
+  return dataArray;
+};
+
+const getFatalitiesByYearsAgoUrl = (activeTab, crashType) => {
+  const yearsAgoDate = moment().subtract(activeTab, "year").format("YYYY");
+  let queryUrl =
+    activeTab === 0
+      ? `${crashEndpointUrl}?$where=${crashType.queryStringCrash} AND crash_date between '${summaryCurrentYearStartDate}T00:00:00' and '${summaryCurrentYearEndDate}T23:59:59'`
+      : `${crashEndpointUrl}?$where=${crashType.queryStringCrash} AND crash_date between '${yearsAgoDate}-01-01T00:00:00' and '${yearsAgoDate}-12-31T23:59:59'`;
+  return queryUrl;
+};
+
 const CrashesByTimeOfDay = () => {
   const [activeTab, setActiveTab] = useState(0);
   const [crashType, setCrashType] = useState([]);
@@ -49,60 +100,8 @@ const CrashesByTimeOfDay = () => {
   useEffect(() => {
     if (!crashType.queryStringCrash) return;
 
-    const buildDataArray = () => {
-      // This array holds weekday totals for each hour window within a day
-      // Reaviz Heatmap expects array of weekday total objs to be reversed in order
-      const hourWindowTotalsByDay = dayOfWeekArray
-        .map((day) => ({ key: day, data: null })) // Initialize totals as null to unweight 0 in viz
-        .reverse();
-
-      // Return array of objs for each hour window that holds totals of each day of the week
-      return hourBlockArray.map((hour) => ({
-        key: hour,
-        data: clonedeep(hourWindowTotalsByDay),
-      }));
-    };
-
-    const calculateHourBlockTotals = (records) => {
-      const dataArray = buildDataArray();
-
-      records.forEach((record) => {
-        const recordDateTime = moment(record.crash_date);
-        const recordHour = recordDateTime.format("hhA");
-        const recordDay = recordDateTime.format("ddd");
-
-        const hourData = dataArray.find((hour) => hour.key === recordHour).data;
-        const dayToIncrement = hourData.find((day) => day.key === recordDay);
-
-        switch (crashType.name) {
-          case "fatalities":
-            dayToIncrement.data += parseInt(record.death_cnt);
-            break;
-          case "seriousInjuries":
-            dayToIncrement.data += parseInt(record.sus_serious_injry_cnt);
-            break;
-          default:
-            dayToIncrement.data +=
-              parseInt(record.death_cnt) +
-              parseInt(record.sus_serious_injry_cnt);
-            break;
-        }
-      });
-
-      return dataArray;
-    };
-
-    const getFatalitiesByYearsAgoUrl = () => {
-      const yearsAgoDate = moment().subtract(activeTab, "year").format("YYYY");
-      let queryUrl =
-        activeTab === 0
-          ? `${crashEndpointUrl}?$where=${crashType.queryStringCrash} AND crash_date between '${summaryCurrentYearStartDate}T00:00:00' and '${summaryCurrentYearEndDate}T23:59:59'`
-          : `${crashEndpointUrl}?$where=${crashType.queryStringCrash} AND crash_date between '${yearsAgoDate}-01-01T00:00:00' and '${yearsAgoDate}-12-31T23:59:59'`;
-      return queryUrl;
-    };
-
-    axios.get(getFatalitiesByYearsAgoUrl()).then((res) => {
-      const formattedData = calculateHourBlockTotals(res.data);
+    axios.get(getFatalitiesByYearsAgoUrl(activeTab, crashType)).then((res) => {
+      const formattedData = calculateHourBlockTotals(res.data, crashType);
       setHeatmapData(formattedData);
     });
   }, [activeTab, crashType]);
