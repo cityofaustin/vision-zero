@@ -33,6 +33,10 @@ const hourBlockArray = [...Array(24).keys()].map((hour) =>
   moment({ hour }).format("hhA")
 );
 
+/**
+ * Build an array of objs for each hour window that holds totals of each day of the week
+ * @returns {Array} Array of objs for each hour window that holds totals of each day of the week
+ */
 const buildDataArray = () => {
   // This array holds weekday totals for each hour window within a day
   // Reaviz Heatmap expects array of weekday total objs to be reversed in order
@@ -40,13 +44,18 @@ const buildDataArray = () => {
     .map((day) => ({ key: day, data: null })) // Initialize totals as null to unweight 0 in viz
     .reverse();
 
-  // Return array of objs for each hour window that holds totals of each day of the week
   return hourBlockArray.map((hour) => ({
     key: hour,
     data: clonedeep(hourWindowTotalsByDay),
   }));
 };
 
+/**
+ * Calculate the figures to populate the heatmap cells
+ * @param {*} records - Array of crash records returned from the Socrata query
+ * @param {Object} crashType - Object containing query and name details (see CrashTypeSelector component)
+ * @returns
+ */
 const calculateHourBlockTotals = (records, crashType) => {
   const dataArray = buildDataArray();
 
@@ -75,7 +84,14 @@ const calculateHourBlockTotals = (records, crashType) => {
   return dataArray;
 };
 
+/**
+ * Generate the query url for the Socrata query based on the active tab and crash type
+ * @param {Number} activeTab - The active tab index that corresponds to year option selected
+ * @param {Object} crashType - Object containing query and name details (see CrashTypeSelector component)
+ * @returns {String} The query url for the Socrata query
+ */
 const getFatalitiesByYearsAgoUrl = (activeTab, crashType) => {
+  console.log("activeTab", activeTab);
   const yearsAgoDate = moment().subtract(activeTab, "year").format("YYYY");
   let queryUrl =
     activeTab === 0
@@ -157,10 +173,11 @@ const CrashesByTimeOfDay = () => {
     setHeatmapDataWithPlaceholder(updatedWeightingData);
   }, [maxForLegend, heatmapData, crashType]);
 
-  // Hide placeholder cells
+  // Hide placeholder cells with a callback ref
   const heatmapCellRef = useCallback((node) => {
+    // Look for the isPlaceholder metadata that we placed there to identify the cells to hide
     if (node?.props?.data?.metadata?.isPlaceholder) {
-      console.log(node, "found one");
+      // Update the cell's style to hide it and its tooltip
       node.rect.current.style.visibility = "hidden";
     }
   }, []);
