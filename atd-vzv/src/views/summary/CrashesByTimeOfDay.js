@@ -91,7 +91,6 @@ const calculateHourBlockTotals = (records, crashType) => {
  * @returns {String} The query url for the Socrata query
  */
 const getFatalitiesByYearsAgoUrl = (activeTab, crashType) => {
-  console.log("activeTab", activeTab);
   const yearsAgoDate = moment().subtract(activeTab, "year").format("YYYY");
   let queryUrl =
     activeTab === 0
@@ -260,7 +259,7 @@ const CrashesByTimeOfDay = () => {
                 emptyColor={colors.intensity1Of5Lowest}
                 cell={
                   <HeatmapCell
-                    // This callback ref is used to hide placeholder cells
+                    // This ref is needed to hide placeholder cells
                     ref={heatmapCellRef}
                     tooltip={
                       <ChartTooltip
