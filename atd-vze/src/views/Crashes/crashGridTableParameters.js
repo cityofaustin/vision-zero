@@ -10,8 +10,8 @@ export const crashGridTableColumns = {
   case_id: {
     searchable: true,
     sortable: true,
-    label_search: "Search by Case Number",
-    label_table: "Case Number",
+    label_search: "Search by Case ID",
+    label_table: "Case ID",
     type: "String",
   },
   crash_date: {
