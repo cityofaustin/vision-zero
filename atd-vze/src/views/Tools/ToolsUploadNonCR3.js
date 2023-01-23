@@ -736,10 +736,10 @@ const ToolsUploadNonCR3 = () => {
 
       <Modal
         isOpen={modalFeedback}
-        toggle={toggleModalSaveConfirm}
+        toggle={() => setModalFeedback(false)}
         className={"modal-primary"}
       >
-        <ModalHeader toggle={toggleModalSaveConfirm}>
+        <ModalHeader toggle={() => setModalFeedback(false)}>
           {feedback["title"]}
         </ModalHeader>
         <ModalBody>{feedback["message"]}</ModalBody>
