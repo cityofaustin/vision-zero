@@ -284,8 +284,7 @@ gqlAbstractTableAggregateName (
 
     if (value === null) {
       return "-";
-    }
-    else {
+    } else {
       value = String(value);
     }
 
@@ -435,11 +434,13 @@ gqlAbstractTableAggregateName (
           for (let [key, syntax] of this.getEntries(filterItem)) {
             // The invert_toggle_state property can be used to control if the condition is applied
             // when the switch is 'on', the default, or when the switch is off.
-            // Based on the switch state and invert_toggle state, 
-            // add to the list or remove it from the query. 
-            if (filter.hasOwnProperty('invert_toggle_state') 
-                ? !filtersState[filter.id] 
-                : filtersState[filter.id]) {
+            // Based on the switch state and invert_toggle state,
+            // add to the list or remove it from the query.
+            if (
+              filter.hasOwnProperty("invert_toggle_state")
+                ? !filtersState[filter.id]
+                : filtersState[filter.id]
+            ) {
               key === "or"
                 ? this.setOr(Object.keys(syntax), Object.values(syntax))
                 : this.setWhere(key, syntax);
