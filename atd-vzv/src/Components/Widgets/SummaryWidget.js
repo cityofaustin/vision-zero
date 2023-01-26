@@ -82,15 +82,12 @@ const SummaryWidget = ({
       (currentYearTotal > lastYearTotal && "Up from") ||
       (currentYearTotal < lastYearTotal && "Down from") ||
       "Same as";
-
     return (
       <div className="text-left widget-footer-icon d-flex flex-row align-items-center">
         <FontAwesomeIcon size="2x" icon={icon} color={colors.dark} />
-        {!!lastYearTotal && (
           <span className="text-muted text-wrap pl-4">
             {`${text} ${numberWithCommas(lastYearTotal)} this time last year`}
           </span>
-        )}
       </div>
     );
   };

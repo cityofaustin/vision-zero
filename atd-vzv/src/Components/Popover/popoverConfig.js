@@ -47,11 +47,11 @@ export const popoverConfig = {
             </a>
             .
           </div>
-          <div className="font-weight-bold">Gender</div>
+          <div className="font-weight-bold">Sex</div>
           <div className="mb-2">
             This visualization relies on the information entered by officers
             into the official crash reports. Officers are encouraged to use the
-            gender that appears on the Driver License/ID Card.
+            sex that appears on the Driver License/ID Card.
           </div>
           <div className="font-weight-bold">Race/Ethnicity</div>
           <div className="mb-2">
