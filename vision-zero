@@ -204,6 +204,7 @@ def dbUp(args):
     time.sleep(5)
 
 def dbDown(args):
+    graphqlEngineDown(args)
     print("🛢️  Stopping database")
     subprocess.run(["docker-compose",
         "-f", "docker-compose.yml", 
