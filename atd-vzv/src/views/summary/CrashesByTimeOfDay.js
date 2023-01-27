@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useCallback, useState, useEffect } from "react";
 import axios from "axios";
 import moment from "moment";
 import clonedeep from "lodash.clonedeep";
@@ -33,6 +33,72 @@ const hourBlockArray = [...Array(24).keys()].map((hour) =>
   moment({ hour }).format("hhA")
 );
 
+/**
+ * Build an array of objs for each hour window that holds totals of each day of the week
+ * @returns {Array} Array of objs for each hour window that holds totals of each day of the week
+ */
+const buildDataArray = () => {
+  // This array holds weekday totals for each hour window within a day
+  // Reaviz Heatmap expects array of weekday total objs to be reversed in order
+  const hourWindowTotalsByDay = dayOfWeekArray
+    .map((day) => ({ key: day, data: null })) // Initialize totals as null to unweight 0 in viz
+    .reverse();
+
+  return hourBlockArray.map((hour) => ({
+    key: hour,
+    data: clonedeep(hourWindowTotalsByDay),
+  }));
+};
+
+/**
+ * Calculate the figures to populate the heatmap cells
+ * @param {*} records - Array of crash records returned from the Socrata query
+ * @param {Object} crashType - Object containing query and name details (see CrashTypeSelector component)
+ * @returns
+ */
+const calculateHourBlockTotals = (records, crashType) => {
+  const dataArray = buildDataArray();
+
+  records.forEach((record) => {
+    const recordDateTime = moment(record.crash_date);
+    const recordHour = recordDateTime.format("hhA");
+    const recordDay = recordDateTime.format("ddd");
+
+    const hourData = dataArray.find((hour) => hour.key === recordHour).data;
+    const dayToIncrement = hourData.find((day) => day.key === recordDay);
+
+    switch (crashType.name) {
+      case "fatalities":
+        dayToIncrement.data += parseInt(record.death_cnt);
+        break;
+      case "seriousInjuries":
+        dayToIncrement.data += parseInt(record.sus_serious_injry_cnt);
+        break;
+      default:
+        dayToIncrement.data +=
+          parseInt(record.death_cnt) + parseInt(record.sus_serious_injry_cnt);
+        break;
+    }
+  });
+
+  return dataArray;
+};
+
+/**
+ * Generate the query url for the Socrata query based on the active tab and crash type
+ * @param {Number} activeTab - The active tab index that corresponds to year option selected
+ * @param {Object} crashType - Object containing query and name details (see CrashTypeSelector component)
+ * @returns {String} The query url for the Socrata query
+ */
+const getFatalitiesByYearsAgoUrl = (activeTab, crashType) => {
+  const yearsAgoDate = moment().subtract(activeTab, "year").format("YYYY");
+  let queryUrl =
+    activeTab === 0
+      ? `${crashEndpointUrl}?$where=${crashType.queryStringCrash} AND crash_date between '${summaryCurrentYearStartDate}T00:00:00' and '${summaryCurrentYearEndDate}T23:59:59'`
+      : `${crashEndpointUrl}?$where=${crashType.queryStringCrash} AND crash_date between '${yearsAgoDate}-01-01T00:00:00' and '${yearsAgoDate}-12-31T23:59:59'`;
+  return queryUrl;
+};
+
 const CrashesByTimeOfDay = () => {
   const [activeTab, setActiveTab] = useState(0);
   const [crashType, setCrashType] = useState([]);
@@ -49,60 +115,8 @@ const CrashesByTimeOfDay = () => {
   useEffect(() => {
     if (!crashType.queryStringCrash) return;
 
-    const buildDataArray = () => {
-      // This array holds weekday totals for each hour window within a day
-      // Reaviz Heatmap expects array of weekday total objs to be reversed in order
-      const hourWindowTotalsByDay = dayOfWeekArray
-        .map((day) => ({ key: day, data: null })) // Initialize totals as null to unweight 0 in viz
-        .reverse();
-
-      // Return array of objs for each hour window that holds totals of each day of the week
-      return hourBlockArray.map((hour) => ({
-        key: hour,
-        data: clonedeep(hourWindowTotalsByDay),
-      }));
-    };
-
-    const calculateHourBlockTotals = (records) => {
-      const dataArray = buildDataArray();
-
-      records.forEach((record) => {
-        const recordDateTime = moment(record.crash_date);
-        const recordHour = recordDateTime.format("hhA");
-        const recordDay = recordDateTime.format("ddd");
-
-        const hourData = dataArray.find((hour) => hour.key === recordHour).data;
-        const dayToIncrement = hourData.find((day) => day.key === recordDay);
-
-        switch (crashType.name) {
-          case "fatalities":
-            dayToIncrement.data += parseInt(record.death_cnt);
-            break;
-          case "seriousInjuries":
-            dayToIncrement.data += parseInt(record.sus_serious_injry_cnt);
-            break;
-          default:
-            dayToIncrement.data +=
-              parseInt(record.death_cnt) +
-              parseInt(record.sus_serious_injry_cnt);
-            break;
-        }
-      });
-
-      return dataArray;
-    };
-
-    const getFatalitiesByYearsAgoUrl = () => {
-      const yearsAgoDate = moment().subtract(activeTab, "year").format("YYYY");
-      let queryUrl =
-        activeTab === 0
-          ? `${crashEndpointUrl}?$where=${crashType.queryStringCrash} AND crash_date between '${summaryCurrentYearStartDate}T00:00:00' and '${summaryCurrentYearEndDate}T23:59:59'`
-          : `${crashEndpointUrl}?$where=${crashType.queryStringCrash} AND crash_date between '${yearsAgoDate}-01-01T00:00:00' and '${yearsAgoDate}-12-31T23:59:59'`;
-      return queryUrl;
-    };
-
-    axios.get(getFatalitiesByYearsAgoUrl()).then((res) => {
-      const formattedData = calculateHourBlockTotals(res.data);
+    axios.get(getFatalitiesByYearsAgoUrl(activeTab, crashType)).then((res) => {
+      const formattedData = calculateHourBlockTotals(res.data, crashType);
       setHeatmapData(formattedData);
     });
   }, [activeTab, crashType]);
@@ -141,6 +155,8 @@ const CrashesByTimeOfDay = () => {
     const placeholderArray = heatmapData[0].data.map((data, i) => ({
       key: dayOfWeekArray[i],
       data: maxForLegend[crashType.name],
+      // Add this metadata to find which cells to hide in the callback ref below
+      metadata: { isPlaceholder: true },
     }));
 
     const placeholderObjForChartWeighting = {
@@ -156,22 +172,14 @@ const CrashesByTimeOfDay = () => {
     setHeatmapDataWithPlaceholder(updatedWeightingData);
   }, [maxForLegend, heatmapData, crashType]);
 
-  // Hide placeholder cells
-  useEffect(() => {
-    const heatmapChildCellNumbers = [171, 172, 173, 174, 175, 176, 177];
-
-    let cellsToHide = heatmapChildCellNumbers.map((num) =>
-      document.querySelector(
-        `#demographics-heatmap > div > svg > g > g:nth-child(${num})`
-      )
-    );
-
-    cellsToHide.forEach((cell) => {
-      if (!!cell) {
-        cell.style.visibility = "hidden";
-      }
-    });
-  }, [heatmapDataWithPlaceholder, crashType, maxForLegend]);
+  // Hide placeholder cells with a callback ref
+  const heatmapCellRef = useCallback((node) => {
+    // Look for the isPlaceholder metadata that we placed there to identify the cells to hide
+    if (node?.props?.data?.metadata?.isPlaceholder) {
+      // Update the cell's style to hide it and its tooltip
+      node.rect.current.style.visibility = "hidden";
+    }
+  }, []);
 
   const formatValue = (d) => {
     const value = d.data.value ? d.data.value : 0;
@@ -199,7 +207,10 @@ const CrashesByTimeOfDay = () => {
       </Row>
       <Row>
         <Col>
-          <CrashTypeSelector setCrashType={setCrashType} componentName="CrashesByTimeOfDay"/>
+          <CrashTypeSelector
+            setCrashType={setCrashType}
+            componentName="CrashesByTimeOfDay"
+          />
         </Col>
       </Row>
       <Row>
@@ -248,6 +259,8 @@ const CrashesByTimeOfDay = () => {
                 emptyColor={colors.intensity1Of5Lowest}
                 cell={
                   <HeatmapCell
+                    // This ref is needed to hide placeholder cells
+                    ref={heatmapCellRef}
                     tooltip={
                       <ChartTooltip
                         content={(d) =>

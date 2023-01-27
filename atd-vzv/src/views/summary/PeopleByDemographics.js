@@ -88,8 +88,8 @@ const chartConfigs = {
       colors.demoAge8of8,
     ],
   },
-  genderData: {
-    label: "Gender",
+  sexData: {
+    label: "Sex",
     categoryKey: "prsn_gndr_id",
     categoryType: "target",
     socrataCategories: ["1", "2", "0"],
@@ -286,7 +286,10 @@ const PeopleByDemographics = () => {
       </Row>
       <Row>
         <Col>
-          <CrashTypeSelector setCrashType={setCrashType} componentName="PeopleByDemographics"/>
+          <CrashTypeSelector
+            setCrashType={setCrashType}
+            componentName="PeopleByDemographics"
+          />
         </Col>
       </Row>
       <Row>

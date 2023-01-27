@@ -16,6 +16,14 @@ export const GET_PEOPLE = gql`
       person_type {
         prsn_type_desc
       }
+      gender {
+        gndr_id
+        gndr_desc
+      }
+      ethnicity {
+        ethnicity_id
+        ethnicity_desc
+      }
       unit_nbr
     }
     atd_txdot_person(where: { crash_id: { _eq: $crashId } }) {
@@ -29,6 +37,14 @@ export const GET_PEOPLE = gql`
       }
       person_type {
         prsn_type_desc
+      }
+      gender {
+        gndr_id
+        gndr_desc
+      }
+      ethnicity {
+        ethnicity_id
+        ethnicity_desc
       }
       unit_nbr
     }
