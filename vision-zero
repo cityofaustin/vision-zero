@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 
 # check if the .env file exists
 if not os.path.exists(".env"):
-    print("No .env file found. Please copy .env.example to .env and update the values.")
+    print("No .env file found. Please copy env_template to .env and update the values.")
     exit()
 
 load_dotenv()
