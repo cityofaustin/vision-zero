@@ -1,1 +1,2 @@
-shtab==1.5.7
+shtab
+python-dotenv
