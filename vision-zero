@@ -53,10 +53,11 @@ def doCommand(args):
 ## function to list the files in a directory and delete them
 def removeSnapshots(args):
     print("🗑️  Removing snapshots")
-    command = ["rm", "-rvf", "atd-vzd/snapshots/*.sql"]
-    print(" ".join(command))
-    subprocess.run(" ".join(command))
-
+    for f in os.listdir("atd-vzd/snapshots/"):
+        if not f.endswith(".sql"):
+            continue
+        print ("Removing " + f)
+        os.remove("atd-vzd/snapshots/" + f)
 
 # def replicateDb(includeChangeLogData=False):
 def replicateDb(args):
