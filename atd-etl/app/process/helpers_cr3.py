@@ -64,6 +64,7 @@ def download_cr3(crash_id, cookies):
     resp = requests.get(url, allow_redirects=True, cookies=baked_cookies)
     open(download_path, 'wb').write(resp.content)
 
+    return download_path
 
 def upload_cr3(crash_id):
     """
@@ -129,6 +130,16 @@ def update_crash_id(crash_id):
     print(update_record_cr3)
     return run_query(update_record_cr3)
 
+def check_if_pdf(file):
+    """
+    Checks if a file is a pdf
+    :param file: string - The file path
+    :return: boolean - True if the file is a pdf
+    """
+    mime = magic.Magic(mime=True)
+    file_type = mime.from_file(file)
+    return file_type == "application/pdf"
+
 
 def process_crash_cr3(crash_record, cookies):
     """
@@ -141,9 +152,16 @@ def process_crash_cr3(crash_record, cookies):
 
         print("Processing Crash: " + crash_id)
 
-        download_cr3(crash_id, cookies)
-        upload_cr3(crash_id)
-        update_crash_id(crash_id)
+        download_path = download_cr3(crash_id, cookies)
+        is_file_pdf = check_if_pdf(download_path)
+
+        if not is_file_pdf:
+            print("File is not a pdf - skipping upload and update")
+            return
+        else:
+            upload_cr3(crash_id)
+            update_crash_id(crash_id)
+            
         delete_cr3s(crash_id)
 
     except Exception as e:
