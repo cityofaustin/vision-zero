@@ -154,10 +154,9 @@ def process_crash_cr3(crash_record, cookies):
 
         download_path = download_cr3(crash_id, cookies)
         is_file_pdf = check_if_pdf(download_path)
-        print(f"File is pdf: {is_file_pdf}")
 
         if not is_file_pdf:
-            print("File is not a pdf - skipping upload and update")
+            print(f"File {download_path} is not a pdf - skipping upload and update")
             return
         else:
             upload_cr3(crash_id)

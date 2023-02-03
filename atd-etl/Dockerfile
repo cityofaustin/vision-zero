@@ -13,7 +13,7 @@ RUN apk add bash build-base python3-dev libffi-dev openssl-dev \
 #RUN apk update && apk add build-base python3-dev libffi-dev openssl-dev && pip3 install magic-wormhole
 
 RUN pip install cryptography==3.3.2 splinter selenium requests \
-    awscli web-pdb sodapy boto3 mail-parser filemagic==1.6
+    awscli web-pdb sodapy boto3 mail-parser python-magic==0.4.27
 
 WORKDIR /app
 
