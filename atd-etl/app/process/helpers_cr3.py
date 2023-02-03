@@ -130,14 +130,14 @@ def update_crash_id(crash_id):
     print(update_record_cr3)
     return run_query(update_record_cr3)
 
-def check_if_pdf(file):
+def check_if_pdf(file_path):
     """
     Checks if a file is a pdf
     :param file: string - The file path
     :return: boolean - True if the file is a pdf
     """
     mime = magic.Magic(mime=True)
-    file_type = mime.from_file(file)
+    file_type = mime.from_file(file_path)
     return file_type == "application/pdf"
 
 
@@ -154,6 +154,7 @@ def process_crash_cr3(crash_record, cookies):
 
         download_path = download_cr3(crash_id, cookies)
         is_file_pdf = check_if_pdf(download_path)
+        print(f"File is pdf: {is_file_pdf}")
 
         if not is_file_pdf:
             print("File is not a pdf - skipping upload and update")
