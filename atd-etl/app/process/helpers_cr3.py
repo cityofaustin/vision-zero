@@ -16,6 +16,7 @@ import subprocess
 import time
 from http.cookies import SimpleCookie
 
+import magic
 
 # We need to import our configuration, and the run_query method
 from .config import ATD_ETL_CONFIG
