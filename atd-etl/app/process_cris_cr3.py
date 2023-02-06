@@ -64,10 +64,13 @@ with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
     for crash_record in crashes_list:
         executor.submit(process_crash_cr3, crash_record, CRIS_BROWSER_COOKIES, skipped_uploads_and_updates)
 
-skipped_downloads = ", ".join(skipped_uploads_and_updates)
-print(f"\nProcess done. \nUnable to download pdfs for crash IDs: {skipped_downloads}\n")
+print("\nProcess done.")
+
+if len(skipped_uploads_and_updates) > 0:
+    skipped_downloads = ", ".join(skipped_uploads_and_updates)
+    print(f"\nUnable to download pdfs for crash IDs: {skipped_downloads}")
 
 end = time.time()
 hours, rem = divmod(end-start, 3600)
 minutes, seconds = divmod(rem, 60)
-print("Finished in: {:0>2}:{:0>2}:{:05.2f}".format(int(hours),int(minutes),seconds))
+print("\nFinished in: {:0>2}:{:0>2}:{:05.2f}".format(int(hours),int(minutes),seconds))
