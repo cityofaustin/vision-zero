@@ -1,6 +1,6 @@
 argcomplete==1.11.1
-boto3>1
-botocore>1
+boto3==1.*
+botocore==1.*
 certifi==2022.12.7
 cfn-flip==1.2.2
 chardet==3.0.4
