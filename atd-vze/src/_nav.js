@@ -54,7 +54,7 @@ export const navigation = roles => {
     {
       name: "Fatalities",
       url: "/fatalities",
-      icon: "fa fa-heartbeat",
+      icon: "fa fa-heart-o",
     },
     {
       name: "Reports",
