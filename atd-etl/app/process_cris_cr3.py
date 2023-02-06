@@ -40,6 +40,9 @@ print("Preparing download loop.")
 
 print("Gathering list of crashes.")
 crashes_list = []
+# Track crash IDs that we don't successfully retrieve a pdf file for
+skipped_uploads_and_updates = []
+
 try:
     print("Hasura endpoint: '%s' " % ATD_ETL_CONFIG["HASURA_ENDPOINT"])
     downloads_per_run = ATD_ETL_CONFIG["ATD_CRIS_CR3_DOWNLOADS_PER_RUN"]
@@ -59,9 +62,10 @@ except Exception as e:
 
 with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
     for crash_record in crashes_list:
-        executor.submit(process_crash_cr3, crash_record, CRIS_BROWSER_COOKIES)
+        executor.submit(process_crash_cr3, crash_record, CRIS_BROWSER_COOKIES, skipped_uploads_and_updates)
 
-print("\nProcess done.")
+skipped_downloads = ", ".join(skipped_uploads_and_updates)
+print(f"\nProcess done. \nUnable to download pdfs for crash IDs: {skipped_downloads}\n")
 
 end = time.time()
 hours, rem = divmod(end-start, 3600)

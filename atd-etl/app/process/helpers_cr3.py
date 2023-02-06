@@ -141,7 +141,7 @@ def check_if_pdf(file_path):
     return file_type == "application/pdf"
 
 
-def process_crash_cr3(crash_record, cookies):
+def process_crash_cr3(crash_record, cookies, skipped_uploads_and_updates):
     """
     Downloads a CR3 pdf, uploads it to s3, updates the database and deletes the pdf.
     :param crash_record: dict - The individual crash record being processed
@@ -153,10 +153,12 @@ def process_crash_cr3(crash_record, cookies):
         print("Processing Crash: " + crash_id)
 
         download_path = download_cr3(crash_id, cookies)
-        is_file_pdf = check_if_pdf(download_path)
+        # is_file_pdf = check_if_pdf(download_path)
+        is_file_pdf = False
 
         if not is_file_pdf:
-            print(f"File {download_path} is not a pdf - skipping upload and update")
+            print(f"\nFile {download_path} is not a pdf - skipping upload and update")
+            skipped_uploads_and_updates.append(crash_id)
             return
         else:
             upload_cr3(crash_id)
