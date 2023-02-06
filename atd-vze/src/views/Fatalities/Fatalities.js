@@ -8,6 +8,11 @@ import { fatalityGridTableColumns } from "./fatalityGridTableParameters";
 
 // Our initial query configuration
 let queryConf = {
+  options: {
+    useQuery: {
+      fetchPolicy: "no-cache",
+    },
+  },
   table: "fatalities",
   single_item: "crashes",
   showDateRange: false,
