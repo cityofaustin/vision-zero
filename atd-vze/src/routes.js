@@ -162,7 +162,7 @@ const routes = roles => [
     name: "Crash Details",
     component: Crash,
   },
-  {
+  (isAdmin(roles) || isItSupervisor(roles)) && {
     path: "/fatalities",
     exact: true,
     name: "Fatalities",
