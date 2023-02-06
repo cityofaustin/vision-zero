@@ -146,6 +146,7 @@ def process_crash_cr3(crash_record, cookies, skipped_uploads_and_updates):
     Downloads a CR3 pdf, uploads it to s3, updates the database and deletes the pdf.
     :param crash_record: dict - The individual crash record being processed
     :param cookies: dict - The cookies taken from the browser object
+    :param skipped_uploads_and_updates: list - Crash IDs of unsuccessful pdf downloads
     """
     try:
         crash_id = str(crash_record["crash_id"])
@@ -153,8 +154,7 @@ def process_crash_cr3(crash_record, cookies, skipped_uploads_and_updates):
         print("Processing Crash: " + crash_id)
 
         download_path = download_cr3(crash_id, cookies)
-        # is_file_pdf = check_if_pdf(download_path)
-        is_file_pdf = False
+        is_file_pdf = check_if_pdf(download_path)
 
         if not is_file_pdf:
             print(f"\nFile {download_path} is not a pdf - skipping upload and update")
