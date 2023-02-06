@@ -133,7 +133,7 @@ def update_crash_id(crash_id):
 def check_if_pdf(file_path):
     """
     Checks if a file is a pdf
-    :param file: string - The file path
+    :param file_path: string - The file path
     :return: boolean - True if the file is a pdf
     """
     mime = magic.Magic(mime=True)
@@ -159,7 +159,6 @@ def process_crash_cr3(crash_record, cookies, skipped_uploads_and_updates):
         if not is_file_pdf:
             print(f"\nFile {download_path} is not a pdf - skipping upload and update")
             skipped_uploads_and_updates.append(crash_id)
-            return
         else:
             upload_cr3(crash_id)
             update_crash_id(crash_id)
