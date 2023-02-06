@@ -3,7 +3,7 @@
 # credentials specific to local database
 POSTGRES_PASSWORD="visionzero"
 POSTGRES_USER="visionzero"
-POSTGRES_DB="visionzero"
+POSTGRES_DB="atd_vz_data"
 POSTGRES_HOST_AUTH_METHOD="trust"
 PGDATA="/var/lib/postgresql/data/pgdata"
 
