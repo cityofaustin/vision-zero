@@ -7,14 +7,10 @@ Description: This script allows the user to log in to the CRIS website
 and download CR3 pdf files as needed. The list of CR3 files to be downloaded
 is obtained from Hasura, and it is contingent to records that do not have
 any CR3 files associated.
-
-The application requires the splinter library, and the requests library:
-    https://splinter.readthedocs.io/en/latest/
 """
 
 import time
 import json
-import concurrent.futures
 
 from process.config import ATD_ETL_CONFIG
 from process.helpers_cr3 import *
@@ -55,18 +51,18 @@ try:
     crashes_list = response['data']['atd_txdot_crashes']
     print("\nList of crashes: %s" % json.dumps(crashes_list))
  
-    print("\nInitializing Execution Thread Pool:")
+    print("\nStarting CR3 downloads :")
 except Exception as e:
     crashes_list = []
     print("Error, could not run CR3 processing: " + str(e))
 
-with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
-    for crash_record in crashes_list:
-        executor.submit(process_crash_cr3, crash_record, CRIS_BROWSER_COOKIES, skipped_uploads_and_updates)
+
+for crash_record in crashes_list:
+    process_crash_cr3(crash_record, CRIS_BROWSER_COOKIES, skipped_uploads_and_updates)
 
 print("\nProcess done.")
 
-if len(skipped_uploads_and_updates) > 0:
+if skipped_uploads_and_updates:
     skipped_downloads = ", ".join(skipped_uploads_and_updates)
     print(f"\nUnable to download pdfs for crash IDs: {skipped_downloads}")
 
