@@ -51,7 +51,7 @@ try:
     crashes_list = response['data']['atd_txdot_crashes']
     print("\nList of crashes: %s" % json.dumps(crashes_list))
  
-    print("\nStarting CR3 downloads :")
+    print("\nStarting CR3 downloads:")
 except Exception as e:
     crashes_list = []
     print("Error, could not run CR3 processing: " + str(e))
