@@ -1,3 +1,7 @@
+drop if exists schema cris cascade;
+create schema cris;
+
+
 CREATE TABLE cris.atd_txdot_crashes (
     crash_id integer NOT NULL,
     crash_fatal_fl character varying(1),
@@ -190,7 +194,7 @@ CREATE TABLE cris.atd_txdot_crashes (
     address_confirmed_secondary text,
     est_comp_cost numeric(10,2) DEFAULT 0.00,
     est_econ_cost numeric(10,2) DEFAULT 0.00,
-    "position" cris.geometry(Geometry,4326),
+    "position" geometry(Geometry,4326),
     apd_confirmed_fatality character varying(1) DEFAULT 'N'::character varying NOT NULL,
     apd_confirmed_death_count integer,
     micromobility_device_flag character varying(1) DEFAULT 'N'::character varying NOT NULL,
@@ -310,8 +314,10 @@ CREATE INDEX atd_txdot_person_prsn_ethnicity_id_index ON cris.atd_txdot_person U
 CREATE INDEX atd_txdot_person_prsn_gndr_id_index ON cris.atd_txdot_person USING btree (prsn_gndr_id);
 CREATE INDEX atd_txdot_person_prsn_injry_sev_id_index ON cris.atd_txdot_person USING btree (prsn_injry_sev_id);
 CREATE INDEX atd_txdot_person_sus_serious_injry_cnt_index ON cris.atd_txdot_person USING btree (sus_serious_injry_cnt);
+CREATE INDEX idx_atd_txdot_person_crash_id ON cris.atd_txdot_person USING btree (crash_id);
 
-
+--ALTER TABLE ONLY cris.atd_txdot_person
+    --ADD CONSTRAINT atd_txdot_person_prsn_injry_sev_id_fkey FOREIGN KEY (prsn_injry_sev_id) REFERENCES cris.atd_txdot__injry_sev_lkp(injry_sev_id) ON UPDATE RESTRICT ON DELETE RESTRICT;
 --------------------------------------------------------------------------------
 
 CREATE TABLE cris.atd_txdot_primaryperson (
@@ -388,6 +394,7 @@ CREATE INDEX atd_txdot_primaryperson_prsn_ethnicity_id_index ON cris.atd_txdot_p
 CREATE INDEX atd_txdot_primaryperson_prsn_gndr_id_index ON cris.atd_txdot_primaryperson USING btree (prsn_gndr_id);
 CREATE INDEX atd_txdot_primaryperson_prsn_injry_sev_id_index ON cris.atd_txdot_primaryperson USING btree (prsn_injry_sev_id);
 CREATE INDEX atd_txdot_primaryperson_sus_serious_injry_cnt_index ON cris.atd_txdot_primaryperson USING btree (sus_serious_injry_cnt);
+CREATE INDEX idx_atd_txdot_primaryperson_crash_id ON cris.atd_txdot_primaryperson USING btree (crash_id);
 
 --------------------------------------------------------------------------------
 
@@ -529,14 +536,8 @@ CREATE INDEX atd_txdot_units_death_cnt_index ON cris.atd_txdot_units USING btree
 CREATE INDEX atd_txdot_units_movement_id_index ON cris.atd_txdot_units USING btree (movement_id);
 CREATE INDEX atd_txdot_units_sus_serious_injry_cnt_index ON cris.atd_txdot_units USING btree (sus_serious_injry_cnt);
 CREATE INDEX atd_txdot_units_unit_id_index ON cris.atd_txdot_units USING btree (unit_id);
-CREATE INDEX idx_atd_txdot_person_crash_id ON cris.atd_txdot_person USING btree (crash_id);
-CREATE INDEX idx_atd_txdot_primaryperson_crash_id ON cris.atd_txdot_primaryperson USING btree (crash_id);
 CREATE INDEX idx_atd_txdot_units_crash_id ON cris.atd_txdot_units USING btree (crash_id);
 
-
-
-ALTER TABLE ONLY cris.atd_txdot_person
-    ADD CONSTRAINT atd_txdot_person_prsn_injry_sev_id_fkey FOREIGN KEY (prsn_injry_sev_id) REFERENCES cris.atd_txdot__injry_sev_lkp(injry_sev_id) ON UPDATE RESTRICT ON DELETE RESTRICT;
 
 
 
