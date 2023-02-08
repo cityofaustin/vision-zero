@@ -12,8 +12,8 @@ RUN apk add bash build-base python3-dev libffi-dev openssl-dev \
 # the following is helpful when developing using this image but is not needed for a production build
 #RUN apk update && apk add build-base python3-dev libffi-dev openssl-dev && pip3 install magic-wormhole
 
-RUN pip install cryptography==3.3.2 splinter selenium requests \
-    awscli web-pdb sodapy boto3 mail-parser
+COPY requirements.txt /tmp/
+RUN pip install -r /tmp/requirements.txt
 
 WORKDIR /app
 

@@ -16,6 +16,7 @@ import subprocess
 import time
 from http.cookies import SimpleCookie
 
+import magic
 
 # We need to import our configuration, and the run_query method
 from .config import ATD_ETL_CONFIG
@@ -63,6 +64,7 @@ def download_cr3(crash_id, cookies):
     resp = requests.get(url, allow_redirects=True, cookies=baked_cookies)
     open(download_path, 'wb').write(resp.content)
 
+    return download_path
 
 def upload_cr3(crash_id):
     """
@@ -128,21 +130,39 @@ def update_crash_id(crash_id):
     print(update_record_cr3)
     return run_query(update_record_cr3)
 
+def check_if_pdf(file_path):
+    """
+    Checks if a file is a pdf
+    :param file_path: string - The file path
+    :return: boolean - True if the file is a pdf
+    """
+    mime = magic.Magic(mime=True)
+    file_type = mime.from_file(file_path)
+    return file_type == "application/pdf"
 
-def process_crash_cr3(crash_record, cookies):
+
+def process_crash_cr3(crash_record, cookies, skipped_uploads_and_updates):
     """
     Downloads a CR3 pdf, uploads it to s3, updates the database and deletes the pdf.
     :param crash_record: dict - The individual crash record being processed
     :param cookies: dict - The cookies taken from the browser object
+    :param skipped_uploads_and_updates: list - Crash IDs of unsuccessful pdf downloads
     """
     try:
         crash_id = str(crash_record["crash_id"])
 
         print("Processing Crash: " + crash_id)
 
-        download_cr3(crash_id, cookies)
-        upload_cr3(crash_id)
-        update_crash_id(crash_id)
+        download_path = download_cr3(crash_id, cookies)
+        is_file_pdf = check_if_pdf(download_path)
+
+        if not is_file_pdf:
+            print(f"\nFile {download_path} is not a pdf - skipping upload and update")
+            skipped_uploads_and_updates.append(crash_id)
+        else:
+            upload_cr3(crash_id)
+            update_crash_id(crash_id)
+            
         delete_cr3s(crash_id)
 
     except Exception as e:
