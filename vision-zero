@@ -15,7 +15,6 @@ if not os.path.exists(".env"):
     print("No .env file found. Please copy env_template to .env and update the values.")
     exit()
 
-
 load_dotenv()
 
 def checkDockerComposeAvailability():
