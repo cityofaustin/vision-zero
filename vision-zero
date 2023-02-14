@@ -1,10 +1,11 @@
-#!env python
+#!/usr/bin/env python
 
 import time
 import argparse
 import subprocess
 import os
 import shtab
+import shutil
 from datetime import date
 import pprint
 from dotenv import load_dotenv
@@ -15,6 +16,31 @@ if not os.path.exists(".env"):
     exit()
 
 load_dotenv()
+
+def checkDockerComposeAvailability():
+    docker_compose_stand_alone = False # old docker-compose
+    docker_compose_bundled = False # new docker compose
+    try:
+        docker_compose_stand_alone = shutil.which("docker-compose")
+    except:
+        pass
+
+    try:
+        subprocess.check_output("docker compose", stderr=subprocess.STDOUT, shell = True)
+        docker_compose_bundled = True
+    except:
+        pass
+
+    if docker_compose_bundled:
+        print("Using `docker compose`")
+        return ["docker", "compose"]
+    elif docker_compose_stand_alone:
+        print("Using `docker-compose`")
+        return ["docker-compose"]
+    elif not docker_compose_stand_alone and not docker_compose_bundled:
+        print("Neither `docker-compose` nor `docker compose` is available.")
+        exit()
+
 
 def doCommand(args):
     if args.command == "build":
@@ -74,8 +100,7 @@ def replicateDb(args):
     snapshotFQP = "atd-vzd/snapshots/" + snapshotFilename
 
     # fmt: off
-    replicate_runner_command = [
-        "docker-compose",
+    replicate_runner_command = docker_compose_invocation + [
         "-f", "docker-compose.yml", 
         "-f",
         "docker-compose-ram-disk.yml" if args.ram_disk else "docker-compose-docker-volume.yml",
@@ -102,8 +127,7 @@ def replicateDb(args):
         replicate_command.append("--exclude-table-data")
         replicate_command.append("atd_txdot_change_log")
 
-    postgres_db_runner_command = [
-        "docker-compose",
+    postgres_db_runner_command = docker_compose_invocation + [
         "-f", "docker-compose.yml", 
         "-f",
         "docker-compose-ram-disk.yml" if args.ram_disk else "docker-compose-docker-volume.yml",
@@ -116,8 +140,7 @@ def replicateDb(args):
         "db-tools",
     ]
     
-    populate_runner_command = [
-        "docker-compose",
+    populate_runner_command = docker_compose_invocation + [
         "-f", "docker-compose.yml", 
         "-f",
         "docker-compose-ram-disk.yml" if args.ram_disk else "docker-compose-docker-volume.yml",
@@ -168,8 +191,7 @@ def replicateDb(args):
 
 def psql(args):
     # fmt: off
-    db_tools_runner_command = [
-        "docker-compose",
+    db_tools_runner_command = docker_compose_invocation + [
         "-f", "docker-compose.yml", 
         "-f",
         "docker-compose-ram-disk.yml" if args.ram_disk else "docker-compose-docker-volume.yml",
@@ -188,8 +210,8 @@ def psql(args):
 
 
 def buildTools(args):
-    print("🛠️  Rebuilding images with --no-cache")
-    subprocess.run(["docker-compose", 
+    print("🛠️  Rebuilding images with --no-cache -q")
+    subprocess.run(docker_compose_invocation + [
         "-f", "docker-compose.yml", 
         "-f",
         "docker-compose-ram-disk.yml" if args.ram_disk else "docker-compose-docker-volume.yml",
@@ -198,7 +220,7 @@ def buildTools(args):
 
 def dbUp(args):
     print("🛢️  Starting database")
-    subprocess.run(["docker-compose",
+    subprocess.run(docker_compose_invocation + [
         "-f", "docker-compose.yml", 
         "-f",
         "docker-compose-ram-disk.yml" if args.ram_disk else "docker-compose-docker-volume.yml",
@@ -209,7 +231,7 @@ def dbUp(args):
 def dbDown(args):
     graphqlEngineDown(args)
     print("🛢️  Stopping database")
-    subprocess.run(["docker-compose",
+    subprocess.run(docker_compose_invocation + [
         "-f", "docker-compose.yml", 
         "-f",
         "docker-compose-ram-disk.yml" if args.ram_disk else "docker-compose-docker-volume.yml",
@@ -220,7 +242,7 @@ def dbDown(args):
 
 def graphqlEngineUp(args):
     print("🚀  Starting GraphQL Engine")
-    subprocess.run(["docker-compose", 
+    subprocess.run(docker_compose_invocation + [
         "-f", "docker-compose.yml", 
         "-f",
         "docker-compose-ram-disk.yml" if args.ram_disk else "docker-compose-docker-volume.yml",
@@ -230,7 +252,7 @@ def graphqlEngineUp(args):
 
 def graphqlEngineDown(args):
     print("🚀  Stopping GraphQL Engine")
-    subprocess.run(["docker-compose", 
+    subprocess.run(docker_compose_invocation + [
         "-f", "docker-compose.yml", 
         "-f",
         "docker-compose-ram-disk.yml" if args.ram_disk else "docker-compose-docker-volume.yml",
@@ -239,7 +261,7 @@ def graphqlEngineDown(args):
 
 def vzeUp(args):
     print("📝  Starting Vision Zero Editor")
-    subprocess.run(["docker-compose", 
+    subprocess.run(docker_compose_invocation + [
         "-f", "docker-compose.yml", 
         "-f",
         "docker-compose-ram-disk.yml" if args.ram_disk else "docker-compose-docker-volume.yml",
@@ -248,7 +270,7 @@ def vzeUp(args):
 
 def vzeDown(args):
     print("📝  Stopping Vision Zero Editor")
-    subprocess.run(["docker-compose", 
+    subprocess.run(docker_compose_invocation + [
         "-f", "docker-compose.yml", 
         "-f",
         "docker-compose-ram-disk.yml" if args.ram_disk else "docker-compose-docker-volume.yml",
@@ -257,7 +279,7 @@ def vzeDown(args):
 
 def vzvUp(args):
     print("👀 Starting Vision Zero Viewer")
-    subprocess.run(["docker-compose", 
+    subprocess.run(docker_compose_invocation + [
         "-f", "docker-compose.yml", 
         "-f",
         "docker-compose-ram-disk.yml" if args.ram_disk else "docker-compose-docker-volume.yml",
@@ -266,7 +288,7 @@ def vzvUp(args):
 
 def vzvDown(args):
     print("👀 Stopping Vision Zero Viewer")
-    subprocess.run(["docker-compose", 
+    subprocess.run(docker_compose_invocation + [
         "-f", "docker-compose.yml", 
         "-f",
         "docker-compose-ram-disk.yml" if args.ram_disk else "docker-compose-docker-volume.yml",
@@ -277,8 +299,7 @@ def toolsShell(args):
     print("🐚  Starting tools shell")
 
     # fmt: off
-    tool_runner_command = [
-        "docker-compose",
+    tool_runner_command = docker_compose_invocation + [
         "-f", "docker-compose.yml", 
         "-f",
         "docker-compose-ram-disk.yml" if args.ram_disk else "docker-compose-docker-volume.yml",
@@ -298,7 +319,7 @@ def toolsShell(args):
 
 def stop(args):
     print("🛑  Stopping containers")
-    subprocess.run(["docker-compose",
+    subprocess.run(docker_compose_invocation + [
         "-f", "docker-compose.yml", 
         "-f",
         "docker-compose-ram-disk.yml" if args.ram_disk else "docker-compose-docker-volume.yml",
@@ -336,4 +357,5 @@ def get_main_parser():
 if __name__ == "__main__":
     parser = get_main_parser()
     args = parser.parse_args()
+    docker_compose_invocation = checkDockerComposeAvailability() # global .. 👎
     doCommand(args)
