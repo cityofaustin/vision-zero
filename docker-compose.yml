@@ -1,0 +1,45 @@
+version: '3.7'
+services:
+  graphql-engine:
+    image: hasura/graphql-engine:v2.16.1 # can jump cleanly to this with shorter event names
+    # image: hasura/graphql-engine:v1.3.3 # use this to rename the events
+    volumes:
+      - ./atd-vzd/graphql-engine-metadata:/metadata
+    container_name: visionzero-graphql-engine
+    ports:
+      - 8080:8080
+    environment:
+      HASURA_GRAPHQL_DATABASE_URL: postgres://visionzero:visionzero@postgis:5432/atd_vz_data
+      HASURA_GRAPHQL_ENABLE_CONSOLE: "true"
+      HASURA_GRAPHQL_CONSOLE_ASSETS_DIR: /srv/console-assets
+  db-tools:
+    container_name: visionzero_download_db_data
+    build: atd-toolbox/download-db-data
+    command: tail -f /dev/null
+    hostname: db-tools
+    env_file:
+      - .env
+    volumes:
+      - ./atd-vzd/snapshots:/snapshots
+  vze:
+    tty: true
+    container_name: visionzero-vze
+    # command: tail -f /dev/null
+    command: npm start
+    ports:
+      - 3000:3000
+    hostname: vze
+    build: atd-vze
+    volumes:
+      - ./atd-vze:/root/atd-vze
+  vzv:
+    tty: true
+    container_name: visionzero-vzv
+    # command: tail -f /dev/null
+    command: npm start
+    ports:
+      - 3001:3000
+    hostname: vzv
+    build: atd-vzv
+    volumes:
+      - ./atd-vzv:/root/atd-vzv
