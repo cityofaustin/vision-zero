@@ -1,0 +1,15 @@
+version: '3.7'
+services:
+  postgis:
+    container_name: visionzero-postgis
+    build: atd-vzd
+    env_file:
+      - .env
+    volumes:
+      - visionzero_postgis_pgdata:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+
+volumes:
+  visionzero_postgis_pgdata:
+    name: visionzero_postgis_pgdata

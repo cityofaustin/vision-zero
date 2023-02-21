@@ -1,0 +1,14 @@
+# copy this file to .env and fill in the values
+
+# credentials specific to local database
+POSTGRES_PASSWORD="visionzero"
+POSTGRES_USER="visionzero"
+POSTGRES_DB="atd_vz_data"
+POSTGRES_HOST_AUTH_METHOD="trust"
+PGDATA="/var/lib/postgresql/data/pgdata"
+
+# developer's personal credentials to VZ read reaplica
+RR_USERNAME=""
+RR_PASSWORD=""
+RR_HOSTNAME=""
+RR_DATABASE=""

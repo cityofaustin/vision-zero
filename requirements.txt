@@ -1,0 +1,2 @@
+shtab==1.*
+python-dotenv==0.*

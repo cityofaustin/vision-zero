@@ -1,0 +1,361 @@
+#!/usr/bin/env python
+
+import time
+import argparse
+import subprocess
+import os
+import shtab
+import shutil
+from datetime import date
+import pprint
+from dotenv import load_dotenv
+
+# check if the .env file exists
+if not os.path.exists(".env"):
+    print("No .env file found. Please copy env_template to .env and update the values.")
+    exit()
+
+load_dotenv()
+
+def checkDockerComposeAvailability():
+    docker_compose_stand_alone = False # old docker-compose
+    docker_compose_bundled = False # new docker compose
+    try:
+        docker_compose_stand_alone = shutil.which("docker-compose")
+    except:
+        pass
+
+    try:
+        subprocess.check_output("docker compose", stderr=subprocess.STDOUT, shell = True)
+        docker_compose_bundled = True
+    except:
+        pass
+
+    if docker_compose_bundled:
+        print("Using `docker compose`")
+        return ["docker", "compose"]
+    elif docker_compose_stand_alone:
+        print("Using `docker-compose`")
+        return ["docker-compose"]
+    elif not docker_compose_stand_alone and not docker_compose_bundled:
+        print("Neither `docker-compose` nor `docker compose` is available.")
+        exit()
+
+
+def doCommand(args):
+    if args.command == "build":
+        buildTools(args)
+    elif args.command == "db-up":
+        dbUp(args)
+    elif args.command == "db-down":
+        dbDown(args)
+    elif args.command == "graphql-engine-up":
+        dbUp(args)
+        graphqlEngineUp(args)
+    elif args.command == "graphql-engine-down":
+        graphqlEngineDown(args)
+    elif args.command == "vze-up":
+        dbUp(args)
+        graphqlEngineUp(args)
+        vzeUp(args)
+    elif args.command == "vze-down":
+        vzeDown(args)
+    elif args.command == "vzv-up":
+        vzvUp(args)
+    elif args.command == "vzv-down":
+        vzvDown(args)
+    elif args.command == "psql":
+        psql(args)
+    elif args.command == "tools-shell":
+        dbUp(args)
+        toolsShell(args)
+    elif args.command == "stop":
+        stop(args)
+    elif args.command == "replicate-db":
+        dbUp(args)
+        replicateDb(args)
+    elif args.command == "remove-snapshots":
+        removeSnapshots(args)
+
+
+## function to list the files in a directory and delete them
+def removeSnapshots(args):
+    print("🗑️  Removing snapshots")
+    for f in os.listdir("atd-vzd/snapshots/"):
+        if not f.endswith(".sql"):
+            continue
+        print ("Removing " + f)
+        os.remove("atd-vzd/snapshots/" + f)
+
+# def replicateDb(includeChangeLogData=False):
+def replicateDb(args):
+    graphqlEngineDown(args)
+
+    # print(tool_runner_command + replicate_command)
+    today = date.today().strftime("%Y-%m-%d")
+    snapshotFilename = (
+        "visionzero_" + today + "_" + (
+            "with-change-log" if args.include_change_log_data else "without-change-log") + ".sql"
+    )
+    snapshotFQP = "atd-vzd/snapshots/" + snapshotFilename
+
+    # fmt: off
+    replicate_runner_command = docker_compose_invocation + [
+        "-f", "docker-compose.yml", 
+        "-f",
+        "docker-compose-ram-disk.yml" if args.ram_disk else "docker-compose-docker-volume.yml",
+        "run",
+        "--rm",
+        "-e", "PGHOST=" + os.environ["RR_HOSTNAME"],
+        "-e", "PGDATABASE=" + os.environ["RR_DATABASE"],
+        "-e", "PGUSER=" + os.environ["RR_USERNAME"],
+        "-e", "PGPASSWORD=" + os.environ["RR_PASSWORD"],
+        "db-tools",
+    ]
+
+    replicate_command = [
+        "pg_dump",
+        "--clean",
+        "--create",
+        "--no-owner",
+        "--no-privileges",
+        "--if-exists",
+        #"--table", "atd_txdot__airbag_lkp",
+        #"-t", "atd_txdot_crashes",
+    ]
+    if not args.include_change_log_data:
+        replicate_command.append("--exclude-table-data")
+        replicate_command.append("atd_txdot_change_log")
+
+    postgres_db_runner_command = docker_compose_invocation + [
+        "-f", "docker-compose.yml", 
+        "-f",
+        "docker-compose-ram-disk.yml" if args.ram_disk else "docker-compose-docker-volume.yml",
+        "run",
+        "--rm",
+        "-e", "PGHOST=" + 'postgis',
+        "-e", "PGUSER=" + os.environ["POSTGRES_USER"],
+        "-e", "PGPASSWORD=" + os.environ["POSTGRES_PASSWORD"],
+        "-e", "PGDATABASE=postgres",
+        "db-tools",
+    ]
+    
+    populate_runner_command = docker_compose_invocation + [
+        "-f", "docker-compose.yml", 
+        "-f",
+        "docker-compose-ram-disk.yml" if args.ram_disk else "docker-compose-docker-volume.yml",
+        "run",
+        "--rm",
+        "-e", "PGHOST=" + 'postgis',
+        "-e", "PGUSER=" + os.environ["POSTGRES_USER"],
+        "-e", "PGPASSWORD=" + os.environ["POSTGRES_PASSWORD"],
+        "-e", "PGDATABASE=postgres",
+        "db-tools",
+    ]
+    # fmt: on
+
+    if not (os.path.exists(snapshotFQP)):
+        print("️🗄  Downloading remote database")
+        if args.include_change_log_data:
+            print("This will take a while, on the order of half an hour.")
+        else:
+            print("This can take up to 15 minutes.")
+        print(" ".join(replicate_runner_command) + " " + " ".join(replicate_command))
+        snapshot = open(snapshotFQP, "w")
+        subprocess.run(replicate_runner_command + replicate_command, stdout=snapshot)
+        snapshot.close()
+
+    drop_database_command = [
+        "psql",
+        "--command=DROP DATABASE " + os.environ["POSTGRES_DB"] + "",
+    ]
+
+    print("️🫳 Dropping the local database")
+    print(" ".join(postgres_db_runner_command) + " " + " ".join(drop_database_command))
+    subprocess.run(postgres_db_runner_command + drop_database_command)
+
+    populate_command = [
+        "bash",
+        "-c",
+        "cat /snapshots/" + snapshotFilename + " | \
+        perl -pe 's/^(SELECT pg_catalog\.set_config)/-- $1/g' | \
+        psql -v ON_ERROR_STOP=1",
+    ]
+
+    print("️🏗️ Loading the database with snapshot")
+    print(" ".join(postgres_db_runner_command) + " " + " ".join(populate_command))
+    subprocess.run(populate_runner_command + populate_command)
+
+    graphqlEngineUp(args)
+
+
+def psql(args):
+    # fmt: off
+    db_tools_runner_command = docker_compose_invocation + [
+        "-f", "docker-compose.yml", 
+        "-f",
+        "docker-compose-ram-disk.yml" if args.ram_disk else "docker-compose-docker-volume.yml",
+        "run",
+        "--rm",
+        "-e", "PGHOST=postgis",
+        "-e", "PGDATABASE=" + os.environ["POSTGRES_DB"],
+        "-e", "PGUSER=" + os.environ["POSTGRES_USER"],
+        "-e", "PGPASSWORD=" + os.environ["POSTGRES_PASSWORD"],
+        "db-tools",
+    ]
+    # fmt: on
+
+    print("📺  Starting psql")
+    subprocess.run(db_tools_runner_command + ["psql"])
+
+
+def buildTools(args):
+    print("🛠️  Rebuilding images with --no-cache -q")
+    subprocess.run(docker_compose_invocation + [
+        "-f", "docker-compose.yml", 
+        "-f",
+        "docker-compose-ram-disk.yml" if args.ram_disk else "docker-compose-docker-volume.yml",
+        "build", "--no-cache"])
+
+
+def dbUp(args):
+    print("🛢️  Starting database")
+    subprocess.run(docker_compose_invocation + [
+        "-f", "docker-compose.yml", 
+        "-f",
+        "docker-compose-ram-disk.yml" if args.ram_disk else "docker-compose-docker-volume.yml",
+        "up", "-d", "postgis"])
+    subprocess.run(["docker", "ps"])
+    time.sleep(5)
+
+def dbDown(args):
+    graphqlEngineDown(args)
+    print("🛢️  Stopping database")
+    subprocess.run(docker_compose_invocation + [
+        "-f", "docker-compose.yml", 
+        "-f",
+        "docker-compose-ram-disk.yml" if args.ram_disk else "docker-compose-docker-volume.yml",
+        "stop", "postgis"])
+    subprocess.run(["docker", "ps"])
+    time.sleep(5)
+
+
+def graphqlEngineUp(args):
+    print("🚀  Starting GraphQL Engine")
+    subprocess.run(docker_compose_invocation + [
+        "-f", "docker-compose.yml", 
+        "-f",
+        "docker-compose-ram-disk.yml" if args.ram_disk else "docker-compose-docker-volume.yml",
+        "up", "-d", "graphql-engine"])
+    subprocess.run(["docker", "ps"])
+
+
+def graphqlEngineDown(args):
+    print("🚀  Stopping GraphQL Engine")
+    subprocess.run(docker_compose_invocation + [
+        "-f", "docker-compose.yml", 
+        "-f",
+        "docker-compose-ram-disk.yml" if args.ram_disk else "docker-compose-docker-volume.yml",
+        "stop", "graphql-engine"])
+    subprocess.run(["docker", "ps"])
+
+def vzeUp(args):
+    print("📝  Starting Vision Zero Editor")
+    subprocess.run(docker_compose_invocation + [
+        "-f", "docker-compose.yml", 
+        "-f",
+        "docker-compose-ram-disk.yml" if args.ram_disk else "docker-compose-docker-volume.yml",
+        "up", "-d", "vze"])
+    subprocess.run(["docker", "ps"])
+
+def vzeDown(args):
+    print("📝  Stopping Vision Zero Editor")
+    subprocess.run(docker_compose_invocation + [
+        "-f", "docker-compose.yml", 
+        "-f",
+        "docker-compose-ram-disk.yml" if args.ram_disk else "docker-compose-docker-volume.yml",
+        "stop", "vze"])
+    subprocess.run(["docker", "ps"])
+
+def vzvUp(args):
+    print("👀 Starting Vision Zero Viewer")
+    subprocess.run(docker_compose_invocation + [
+        "-f", "docker-compose.yml", 
+        "-f",
+        "docker-compose-ram-disk.yml" if args.ram_disk else "docker-compose-docker-volume.yml",
+        "up", "-d", "vzv"])
+    subprocess.run(["docker", "ps"])
+
+def vzvDown(args):
+    print("👀 Stopping Vision Zero Viewer")
+    subprocess.run(docker_compose_invocation + [
+        "-f", "docker-compose.yml", 
+        "-f",
+        "docker-compose-ram-disk.yml" if args.ram_disk else "docker-compose-docker-volume.yml",
+        "stop", "vzv"])
+    subprocess.run(["docker", "ps"])
+
+def toolsShell(args):
+    print("🐚  Starting tools shell")
+
+    # fmt: off
+    tool_runner_command = docker_compose_invocation + [
+        "-f", "docker-compose.yml", 
+        "-f",
+        "docker-compose-ram-disk.yml" if args.ram_disk else "docker-compose-docker-volume.yml",
+        "run",
+        "--rm",
+        "-e", "PGHOST=" + "postgis",
+        "-e", "PGUSER=" + os.environ["POSTGRES_USER"],
+        "-e", "PGPASSWORD=" + os.environ["POSTGRES_PASSWORD"],
+        "-e", "PGDATABASE=" + os.environ["POSTGRES_DB"],
+        "db-tools",
+    ]
+    # fmt: on
+
+    shell_command = ["bash"]
+    subprocess.run(tool_runner_command + shell_command)
+
+
+def stop(args):
+    print("🛑  Stopping containers")
+    subprocess.run(docker_compose_invocation + [
+        "-f", "docker-compose.yml", 
+        "-f",
+        "docker-compose-ram-disk.yml" if args.ram_disk else "docker-compose-docker-volume.yml",
+        "stop"])
+
+
+def get_main_parser():
+    parser = argparse.ArgumentParser(prog="vision-zero")
+    # 🪄 generate a autocompletion script for the shell
+    shtab.add_argument_to(parser, ["-s", "--print-completion"])
+    parser.add_argument("-c", "--include-change-log-data", action='store_true')
+    parser.add_argument("-r", "--ram-disk", action='store_true')
+    parser.add_argument(
+        "command",
+        choices=[
+            "build",
+            "db-up",
+            "db-down",
+            "graphql-engine-up",
+            "graphql-engine-down",
+            "vze-up",
+            "vze-down",
+            "vzv-up",
+            "vzv-down",
+            "stop",
+            "psql",
+            "tools-shell",
+            "replicate-db",
+            "remove-snapshots",
+        ],
+    )
+    return parser
+
+
+if __name__ == "__main__":
+    parser = get_main_parser()
+    args = parser.parse_args()
+    docker_compose_invocation = checkDockerComposeAvailability() # global .. 👎
+    doCommand(args)
