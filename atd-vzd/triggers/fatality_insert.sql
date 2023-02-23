@@ -1,4 +1,5 @@
--- This function inserts a new record into the fatality table and is triggered by fatal insertions to the primaryperson or person tables
+-- This function inserts a new record into the fatality table
+-- It is triggered by fatal insertions to the primaryperson or person tables
 CREATE OR REPLACE FUNCTION fatality_insert() 
     RETURNS trigger
     LANGUAGE plpgsql
