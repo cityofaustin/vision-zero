@@ -152,7 +152,8 @@ const CrashesByMode = () => {
       category.hoverBackgroundColor = color;
       category.hoverBorderColor = color;
     });
-    return adjustModeData(modeData);
+    return modeData;
+    // return adjustModeData(modeData);
   };
 
   // Create dataset for each mode type, data property is an array of fatality sums sorted chronologically
