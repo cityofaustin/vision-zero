@@ -7,19 +7,16 @@ AS $function$
     DECLARE
     	year integer;
         location text;
+        in_austin text;
     BEGIN
-    	SELECT TO_CHAR(crash_date,'yyyy')
+        SELECT TO_CHAR(crash_date,'yyyy'), CONCAT_WS(' ', rpt_block_num, rpt_street_pfx, rpt_street_name, '(', rpt_sec_block_num, rpt_sec_street_pfx, rpt_sec_street_name, ')'), austin_full_purpose
+            INTO year, location, in_austin
             FROM atd_txdot_crashes
-            WHERE crash_id = NEW.crash_id
-            INTO year;
-        SELECT CONCAT_WS(' ', rpt_block_num, rpt_street_pfx, rpt_street_name, '(', rpt_sec_block_num, rpt_sec_street_pfx, rpt_sec_street_name, ')')
-            FROM atd_txdot_crashes
-            WHERE crash_id = NEW.crash_id
-            INTO location;
-    	IF (TG_TABLE_NAME = 'atd_txdot_primaryperson') THEN
+            WHERE crash_id = NEW.crash_id;
+    	IF (TG_TABLE_NAME = 'atd_txdot_primaryperson' AND in_austin = 'Y') THEN
     	    INSERT INTO fatalities (crash_id, primaryperson_id, year, location)
     		    VALUES (NEW.crash_id, NEW.primaryperson_id, year, location);
-    	ELSIF (TG_TABLE_NAME = 'atd_txdot_person') THEN
+    	ELSIF (TG_TABLE_NAME = 'atd_txdot_person' AND in_austin = 'Y') THEN
     		INSERT INTO fatalities (crash_id, person_id, year, location)
     		    VALUES (NEW.crash_id, NEW.person_id, year, location);
     	END IF;
