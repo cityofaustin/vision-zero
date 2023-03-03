@@ -15,7 +15,7 @@
     "@fortawesome/free-regular-svg-icons": "^5.14.0",
     "@fortawesome/free-solid-svg-icons": "^5.12.0",
     "@fortawesome/react-fontawesome": "^0.1.8",
-    "@mapbox/mapbox-gl-draw": "^1.1.2",
+    "@mapbox/mapbox-gl-draw": "^1.4.1",
     "@material-ui/core": "^4.7.1",
     "@tippyjs/react": "^4.0.2",
     "@turf/difference": "6.0.1",
