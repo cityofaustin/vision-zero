@@ -96,7 +96,6 @@ const CrashesByMode = () => {
                 ? `${summaryCurrentYearEndDate}T23:59:59`
                 : `${year}-12-31T23:59:59`;
             let url = `${crashEndpointUrl}?$where=${crashType.queryStringCrash} AND crash_date between '${year}-01-01T00:00:00' and '${endDate}'`;
-            console.log(url);
             await axios.get(url).then((res) => {
               newData = { ...newData, ...{ [year]: res.data } };
             });
@@ -135,18 +134,6 @@ const CrashesByMode = () => {
       }, 0);
     });
 
-  const adjustModeData = (modeData) => {
-    // TEMPORARY MEASURE!!
-    // Manually adjust mode data displayed for 2022 pedestrian fatalities to match VZ Team's analysis
-    if (
-      crashType.name === "fatalitiesAndSeriousInjuries" ||
-      crashType.name === "fatalities"
-    ) {
-      modeData[1].data[3] = modeData[1].data[3] + 1;
-    }
-    return modeData;
-  };
-
   // Sort mode order in stack and apply colors by averaging total mode fatalities across all years in chart
   const sortAndColorModeData = (modeData) => {
     modeData.forEach((category, i) => {
@@ -157,7 +144,6 @@ const CrashesByMode = () => {
       category.hoverBorderColor = color;
     });
     return modeData;
-    // return adjustModeData(modeData);
   };
 
   // Create dataset for each mode type, data property is an array of fatality sums sorted chronologically

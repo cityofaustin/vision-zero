@@ -11,15 +11,14 @@ const CrashTypeSelector = ({ setCrashType, componentName }) => {
   const fatalitiesAndSeriousInjuries = {
     name: "fatalitiesAndSeriousInjuries",
     textString: "Fatalities and Serious Injuries",
-    queryStringCrash:
-      "(apd_confirmed_death_count > 0 OR sus_serious_injry_cnt > 0)",
+    queryStringCrash: "(death_cnt > 0 OR sus_serious_injry_cnt > 0)",
     queryStringPerson: "(prsn_injry_sev_id = 4 OR prsn_injry_sev_id = 1)",
   };
 
   const fatalities = {
     name: "fatalities",
     textString: "Fatalities",
-    queryStringCrash: "(apd_confirmed_death_count > 0)",
+    queryStringCrash: "(death_cnt > 0)",
     queryStringPerson: "(prsn_injry_sev_id = 4)",
   };
 
