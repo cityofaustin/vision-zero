@@ -41,6 +41,7 @@ skipped_uploads_and_updates = []
 # Some crash IDs were manually added at the request of the VZ team so
 # CR3s for these crash IDs are not available in the CRIS database.
 # We can skip requesting them.
+# See https://github.com/cityofaustin/atd-data-tech/issues/9786
 known_skips = ["180290542"]
 
 crashes_list_without_skips = []
