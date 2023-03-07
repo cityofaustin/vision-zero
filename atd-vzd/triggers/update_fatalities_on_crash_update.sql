@@ -18,7 +18,7 @@ AS $function$
                 -- if person is not in fatalities table but is in austin then add them
                 IF (NOT EXISTS (SELECT person_id FROM fatalities WHERE person_id = person.person_id) AND ST_CONTAINS((SELECT geometry FROM atd_jurisdictions WHERE atd_jurisdictions.id = 5), NEW.position)) THEN
                     INSERT INTO fatalities (crash_id, person_id, year, location)
-                    VALUES (NEW.crash_id, NEW.person_id, TO_CHAR(NEW.crash_date,'yyyy'), CONCAT_WS(' ', NEW.rpt_block_num, NEW.rpt_street_pfx, NEW.rpt_street_name, '(', NEW.rpt_sec_block_num, NEW.rpt_sec_street_pfx, NEW.rpt_sec_street_name, ')'));
+                    VALUES (NEW.crash_id, person.person_id, TO_CHAR(NEW.crash_date,'yyyy'), CONCAT_WS(' ', NEW.rpt_block_num, NEW.rpt_street_pfx, NEW.rpt_street_name, '(', NEW.rpt_sec_block_num, NEW.rpt_sec_street_pfx, NEW.rpt_sec_street_name, ')'));
                 END IF;
                 -- if person is in fatalities table but not in austin then remove them
                 IF (EXISTS (SELECT person_id FROM fatalities WHERE person_id = person.person_id) AND NOT ST_CONTAINS((SELECT geometry FROM atd_jurisdictions WHERE atd_jurisdictions.id = 5), NEW.position)) THEN
