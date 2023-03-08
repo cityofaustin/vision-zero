@@ -13,7 +13,7 @@ let queryConf = {
       fetchPolicy: "no-cache",
     },
   },
-  table: "fatalities",
+  table: "view_fatalities",
   single_item: "crashes",
   showDateRange: false,
   columns: fatalityGridTableColumns,
