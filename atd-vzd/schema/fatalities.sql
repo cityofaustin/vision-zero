@@ -3,7 +3,7 @@
 --
 
 -- Dumped from database version 14.6 (Debian 14.6-1.pgdg110+1)
--- Dumped by pg_dump version 14.6 (Ubuntu 14.6-0ubuntu0.22.04.1)
+-- Dumped by pg_dump version 14.7 (Ubuntu 14.7-0ubuntu0.22.04.1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -27,18 +27,24 @@ SET default_table_access_method = heap;
 CREATE TABLE public.fatalities (
     id integer NOT NULL,
     crash_id integer,
-    location text,
     victim_name text,
     law_enforcement_num integer,
     ytd_fatal_crash integer,
     ytd_fatality integer,
     person_id integer,
     primaryperson_id integer,
-    year text
+    CONSTRAINT either_primaryperson_or_person CHECK ((((person_id IS NULL) AND (primaryperson_id IS NOT NULL)) OR ((person_id IS NOT NULL) AND (primaryperson_id IS NULL))))
 );
 
 
 ALTER TABLE public.fatalities OWNER TO visionzero;
+
+--
+-- Name: CONSTRAINT either_primaryperson_or_person ON fatalities; Type: COMMENT; Schema: public; Owner: visionzero
+--
+
+COMMENT ON CONSTRAINT either_primaryperson_or_person ON public.fatalities IS 'Each fatality must have either a primary person or person ID but not both';
+
 
 --
 -- Name: fatalities_id_seq; Type: SEQUENCE; Schema: public; Owner: visionzero
