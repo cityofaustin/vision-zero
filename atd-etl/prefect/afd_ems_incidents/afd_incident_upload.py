@@ -41,6 +41,8 @@ AFD_S3_SOURCE_BUCKET = None
 AFD_S3_ARCHIVE_BUCKET = None
 AFD_S3_SOURCE_PREFIX = None
 AFD_S3_ARCHIVE_PREFIX = None
+DB_BASTION_HOST = None
+DB_RDS_HOST = None
 
 # Retrieve the db configuration
 if False:
