@@ -25,12 +25,8 @@ let queryConf = {
 
 const fatalitiesQuery = new gqlAbstract(queryConf);
 
-const minDate = subYears(new Date(), 10);
-
 const Fatalities = () => {
-  return (
-    <GridTable query={fatalitiesQuery} title={"Fatalities"} minDate={minDate} />
-  );
+  return <GridTable query={fatalitiesQuery} title={"Fatalities"} />;
 };
 
 export default withApollo(Fatalities);
