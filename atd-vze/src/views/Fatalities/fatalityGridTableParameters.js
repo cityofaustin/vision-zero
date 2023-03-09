@@ -45,7 +45,7 @@ export const fatalityGridTableColumns = {
   },
   location: {
     searchable: false,
-    sortable: true,
+    sortable: false,
     label_table: "Location",
     type: "String",
   },
