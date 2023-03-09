@@ -146,8 +146,21 @@ def create_and_parse_dataframe(location):
 
 @task
 def upload_data_to_postgres(data, age_cutoff):
+
+    ssh_tunnel = SSHTunnelForwarder(
+        (DB_BASTION_HOST),
+        ssh_username="vz-etl",
+        ssh_private_key= '/root/.ssh/id_rsa', # will switch to ed25519 when we rebuild this for prefect 2
+        remote_bind_address=(DB_RDS_HOST, 5432)
+        )
+    ssh_tunnel.start()   
+
     pg = psycopg2.connect(
-        host=DB_HOSTNAME, user=DB_USERNAME, password=DB_PASSWORD, dbname=DB_DATABASE
+        host='localhost', 
+        port=ssh_tunnel.local_bind_port,
+        user=DB_USERNAME, 
+        password=DB_PASSWORD, 
+        dbname=DB_DATABASE
     )
 
     print(f"Max record age: {age_cutoff}")
