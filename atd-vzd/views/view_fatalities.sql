@@ -1,5 +1,5 @@
 -- view of fatalities in jursidiction ID with crash attributes joined
-CREATE VIEW view_fatalities AS (
+CREATE OR REPLACE VIEW view_fatalities AS (
     WITH fatalities_plus_crash AS (
         SELECT
             f.id,
@@ -23,7 +23,8 @@ CREATE VIEW view_fatalities AS (
                 ')') AS location,
             crashes.position,
             crashes.crash_date,
-            crashes.case_id
+            crashes.case_id,
+            f.is_deleted
         FROM
             fatalities f
         LEFT JOIN atd_txdot_crashes crashes ON f.crash_id = crashes.crash_id
@@ -39,4 +40,6 @@ WHERE
         WHERE
             atd_jurisdictions.id = 5),
         fatalities_plus_crash.position)
+AND 
+    fatalities_plus_crash.is_deleted = false
 );
