@@ -28,11 +28,11 @@ CREATE TABLE public.fatalities (
     id integer NOT NULL,
     crash_id integer,
     victim_name text,
-    law_enforcement_num integer,
     ytd_fatal_crash integer,
     ytd_fatality integer,
     person_id integer,
     primaryperson_id integer,
+    is_deleted boolean DEFAULT false NOT NULL,
     CONSTRAINT either_primaryperson_or_person CHECK ((((person_id IS NULL) AND (primaryperson_id IS NOT NULL)) OR ((person_id IS NOT NULL) AND (primaryperson_id IS NULL))))
 );
 
