@@ -3,7 +3,7 @@
 --
 
 -- Dumped from database version 14.6 (Debian 14.6-1.pgdg110+1)
--- Dumped by pg_dump version 14.6 (Ubuntu 14.6-0ubuntu0.22.04.1)
+-- Dumped by pg_dump version 14.7 (Ubuntu 14.7-0ubuntu0.22.04.1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -218,6 +218,14 @@ CREATE TRIGGER atd_txdot_primaryperson_audit_log BEFORE UPDATE ON public.atd_txd
 --
 
 CREATE TRIGGER atd_txdot_primaryperson_fatal_insert AFTER INSERT ON public.atd_txdot_primaryperson FOR EACH ROW WHEN ((new.prsn_injry_sev_id = 4)) EXECUTE FUNCTION public.fatality_insert();
+
+
+--
+-- Name: atd_txdot_primaryperson atd_txdot_primaryperson_crash_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: visionzero
+--
+
+ALTER TABLE ONLY public.atd_txdot_primaryperson
+    ADD CONSTRAINT atd_txdot_primaryperson_crash_id_fkey FOREIGN KEY (crash_id) REFERENCES public.atd_txdot_crashes(crash_id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
