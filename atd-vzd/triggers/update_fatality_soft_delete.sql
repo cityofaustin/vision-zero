@@ -35,8 +35,8 @@ AS $function$
                     SET is_deleted = false
                     WHERE (f.person_id = NEW.person_id);
                 ELSE
-                    INSERT INTO fatalities (crash_id, primaryperson_id)
-    		        VALUES (NEW.crash_id, NEW.primaryperson_id);
+                    INSERT INTO fatalities (crash_id, person_id)
+    		        VALUES (NEW.crash_id, NEW.person_id);
     		    END IF;
             ELSE
                 UPDATE fatalities f
