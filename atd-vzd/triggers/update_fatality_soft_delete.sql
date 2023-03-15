@@ -11,33 +11,24 @@ AS $function$
     	IF (TG_TABLE_NAME = 'atd_txdot_primaryperson') THEN
             -- if injury is updated to fatal
         	IF (NEW.prsn_injry_sev_id = 4) THEN
-                -- if the fatality already exists then undo the soft-delete
-        	    IF (EXISTS (SELECT FROM fatalities WHERE primaryperson_id = NEW.primaryperson_id)) THEN
-                    UPDATE fatalities f
-                    SET is_deleted = false
-                    WHERE (f.primaryperson_id = NEW.primaryperson_id);
-                -- if the fatality doesnt exist yet add it to the table
-                ELSE
-                    INSERT INTO fatalities (crash_id, primaryperson_id)
-    		        VALUES (NEW.crash_id, NEW.primaryperson_id);
-    		    END IF;
+                -- insert into fatalities if record doesnt exist or update existing record to undo soft-delete
+                INSERT INTO fatalities (crash_id, primaryperson_id)
+                VALUES (NEW.crash_id, NEW.primaryperson_id)
+                ON CONFLICT (primaryperson_id)
+                DO UPDATE SET is_deleted = false;
             -- if injury is updated to non-fatal and record exists in fatalities then soft-delete
             ELSE
                 UPDATE fatalities f
                 SET is_deleted = true
                 WHERE (f.primaryperson_id = NEW.primaryperson_id);
             END IF;
-        -- else if table was person then do the same thing
+        -- else if table was person then do the same thing ^
         ELSIF (TG_TABLE_NAME = 'atd_txdot_person') THEN
             IF (NEW.prsn_injry_sev_id = 4) THEN
-                IF (EXISTS (SELECT FROM fatalities WHERE person_id = NEW.person_id)) THEN
-                    UPDATE fatalities f
-                    SET is_deleted = false
-                    WHERE (f.person_id = NEW.person_id);
-                ELSE
-                    INSERT INTO fatalities (crash_id, person_id)
-    		        VALUES (NEW.crash_id, NEW.person_id);
-    		    END IF;
+                INSERT INTO fatalities (crash_id, person_id)
+                VALUES (NEW.crash_id, NEW.person_id)
+                ON CONFLICT (person_id)
+                DO UPDATE SET is_deleted = false;
             ELSE
                 UPDATE fatalities f
                 SET is_deleted = true
