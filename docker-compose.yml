@@ -14,6 +14,8 @@ services:
       HASURA_GRAPHQL_CONSOLE_ASSETS_DIR: /srv/console-assets
   db-tools:
     container_name: visionzero_download_db_data
+    logging:
+      driver: none
     build: atd-toolbox/download-db-data
     command: tail -f /dev/null
     hostname: db-tools
