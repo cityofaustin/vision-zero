@@ -20,11 +20,17 @@ CREATE OR REPLACE VIEW view_fatalities AS (
         crashes.crash_date,
         crashes.crash_time,
         -- get ytd fatality, partition by year and sort by date/time
-        ROW_NUMBER() OVER (PARTITION BY EXTRACT(year FROM crashes.crash_date) ORDER BY crashes.crash_date ASC, crashes.crash_time ASC) AS ytd_fatality,
-        -- get ytd fatal crash, partition by year and sort by date/time. 
-        -- assumes that fatality records with the same crash date & time combinations
-        -- are from the same crash and thus gives them the same ytd ranking
-        DENSE_RANK() OVER (PARTITION BY EXTRACT(year FROM crashes.crash_date) ORDER BY crashes.crash_date ASC, crashes.crash_time ASC) AS ytd_fatal_crash,
+        ROW_NUMBER() OVER (
+            PARTITION BY EXTRACT(year FROM crashes.crash_date) 
+            ORDER BY crashes.crash_date ASC, crashes.crash_time ASC) 
+            AS ytd_fatality,
+        -- get ytd fatal crash, partition by year and sort by date/time.
+        -- records with the same crash_id will get "tie" rankings thus making
+        -- this column count each crash rather than each fatality
+        DENSE_RANK() OVER (
+            PARTITION BY EXTRACT(year FROM crashes.crash_date) 
+            ORDER BY crashes.crash_date ASC, crashes.crash_time ASC, crashes.crash_id) 
+            AS ytd_fatal_crash,
         crashes.case_id,
         crashes.law_enforcement_num
     FROM
