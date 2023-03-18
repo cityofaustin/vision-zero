@@ -39,10 +39,10 @@ create or replace view locations_with_crash_injury_counts as
   select 
     locations.description,
     locations.location_id,
-    crashes.crash_count,
-    crashes.total_est_comp_cost,
-    crashes.fatalities_count,
-    crashes.serious_injury_count
+    coalesce(crashes.crash_count, 0) as crash_count,
+    coalesce(crashes.total_est_comp_cost, 0) as total_est_comp_cost,
+    coalesce(crashes.fatalities_count, 0) as fatalities_count,
+    coalesce(crashes.serious_injury_count, 0) as serious_injury_count
   from atd_txdot_locations locations
   left join crashes on (locations.location_id = crashes.location_id)
   where true 
