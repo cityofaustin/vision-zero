@@ -38,7 +38,11 @@ create or replace view locations_with_crash_injury_counts as
     )
   select 
     locations.description,
-    crashes.*
+    locations.location_id,
+    crashes.crash_count,
+    crashes.total_est_comp_cost,
+    crashes.fatalities_count,
+    crashes.serious_injury_count
   from atd_txdot_locations locations
   left join crashes on (locations.location_id = crashes.location_id)
   where true 
