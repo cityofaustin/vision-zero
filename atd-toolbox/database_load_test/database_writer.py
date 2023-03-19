@@ -20,6 +20,11 @@ DB_PORT = os.getenv("DB_PORT")
 
 def main():
     check_sanity() # 🫠
+    while True:
+        create_crash_and_related_records()
+        print("")
+
+def create_crash_and_related_records():
     primary = get_primary_connection()
     primary_cursor = primary.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     
@@ -32,17 +37,34 @@ def main():
 
     # unit
     shape = get_table_shape("atd_txdot_units")
-    # print("Shape: ", shape)
+    new_units = []
     for unit_number in range(1, 4):
         insert_sql, values = build_insert_sql("atd_txdot_units", shape, {"crash_id": new_crash["crash_id"], "unit_nbr": unit_number})
-        # print("SQL: ", insert_sql)
-        # print("Values: ", values)
         primary_cursor.execute(insert_sql, values)
         new_unit = primary_cursor.fetchone()
-        print("New unit: ", new_unit["unit_nbr"])
+        new_units.append(new_unit)
+        print("New unit:  ", new_unit["unit_nbr"], " Unit ID: ", new_unit["unit_id"])
 
+    # primaryperson
+    shape = get_table_shape("atd_txdot_primaryperson")
+    for unit in new_units:
+        insert_sql, values = build_insert_sql("atd_txdot_primaryperson", shape, {"crash_id": new_crash["crash_id"], "unit_nbr": unit["unit_nbr"]})
+        primary_cursor.execute(insert_sql, values)
+        new_primaryperson = primary_cursor.fetchone()
+        print("New primaryperson: ", new_primaryperson["primaryperson_id"])
+
+    # primaryperson
+    shape = get_table_shape("atd_txdot_person")
+    # print("Shape: ", shape)
+    for unit in new_units:
+        for person_number in range(1, 3):
+            insert_sql, values = build_insert_sql("atd_txdot_person", shape, {"crash_id": new_crash["crash_id"], "unit_nbr": unit["unit_nbr"]})
+            # print("SQL: ", insert_sql)
+            # print("Values: ", values)
+            primary_cursor.execute(insert_sql, values)
+            new_person = primary_cursor.fetchone()
+            print("New person: ", new_person["person_id"])
     primary.commit()
-
 
 def check_sanity():
     print("Ask yourself: Am I very sure this isn't pointed at a production database?")
@@ -117,6 +139,15 @@ def build_insert_sql(table, shape, overrides={}):
             fields.append(field["column_name"])
             values.append(overrides[field["column_name"]])
             placeholders.append("%s")
+
+        elif field["column_name"] in ["years_of_life_lost", "unit_id", "primaryperson_id", "person_id"]: # generated or sequence driven fields
+            pass
+
+        elif table == "atd_txdot_person" and field["column_name"] == "prsn_injry_sev_id":
+            fields.append(field["column_name"])
+            values.append(random.choice([0,2,3,4,5,1]))
+            placeholders.append("%s")
+
         elif table == "atd_txdot_crashes" and field["column_name"] == "crash_id":
             fields.append(field["column_name"])
             values.append(get_next_crash_id())
