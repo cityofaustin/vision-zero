@@ -6,7 +6,7 @@ import psycopg2.extras
 import random
 from dotenv import load_dotenv
 from faker import Faker
-from faker.providers import lorem, date_time, python
+from faker.providers import lorem, date_time, python, misc
 
 load_dotenv()
 
@@ -196,16 +196,37 @@ def random_text(field):
     return string
 
 def random_boolean(field):
-    pass
+    # print("Field: ", field)
+    fake = Faker()
+    fake.add_provider(python)
+    boolean = fake.pybool()
+    # print("Fake Boolean: ", boolean)
+    return boolean
 
 def random_numeric(field):
-    pass
+    # print("Field: ", field)
+    if not field["numeric_scale"]:
+        field["numeric_scale"] = 2
+    if not field["numeric_precision"]:
+        field["numeric_precision"] = 10
+    precision = field["numeric_precision"] - field["numeric_scale"]
+    fake = Faker()
+    fake.add_provider(python)
+    # these names feel backwards, but this is what it is
+    numeric = fake.pyfloat(left_digits=precision, right_digits=field["numeric_scale"])
+    # print("Fake Numeric: ", numeric)
+    return numeric
 
 def random_json(field):
-    pass
+    # print("Field: ", field)
+    fake = Faker()
+    fake.add_provider(misc)
+    json = fake.json()
+    # print("json: ", json)
+    return json
 
 def random_jsonb(field):
-    pass
+    return random_json(field)
 
 def random_position():
     latitude = 30.274722 + random.uniform(-0.1, 0.1)
