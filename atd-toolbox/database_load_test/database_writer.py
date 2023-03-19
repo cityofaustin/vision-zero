@@ -3,6 +3,7 @@
 import os
 import psycopg2
 import psycopg2.extras
+import random
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -69,12 +70,24 @@ def get_table_shape(table):
     return table_shape
 
 def build_insert_sql(table, shape):
+
     fields = []
     values = []
+    placeholders = []
     for field in shape:
         print("Field: ", field["column_name"])
         print("Type:  ", field["data_type"])
-        if field["data_type"] == 'character varying':
+
+        placeholders.append("%s")
+
+        # 🤖 🦾 Copilot was made for this sort of thing
+        if table == 'atd_txdot_crashes' and field["column_name"] == 'crash_id':
+            fields.append(field["column_name"])
+            values.append(get_next_crash_id())
+        elif table == 'atd_txdot_crashes' and field["column_name"] == 'position':
+            fields.append(field["column_name"])
+            values.append(random_position())
+        elif field["data_type"] == 'character varying':
             fields.append(field["column_name"])
             values.append(random_character_varying())
         elif field["data_type"] == 'integer':
@@ -113,9 +126,6 @@ def build_insert_sql(table, shape):
         elif field["data_type"] == 'jsonb':
             fields.append(field["column_name"])
             values.append(random_jsonb())
-        elif table == 'atd_txdot_crashes' and field["column_name"] == 'position':
-            fields.append(field["column_name"])
-            values.append(random_position())
         else:
             quit()
     print("Done")
@@ -160,7 +170,22 @@ def random_jsonb():
     pass
 
 def random_position():
+    latitude = 30.274722 + random.uniform(-0.1, 0.1)
+    longitude = -97.740556 + random.uniform(-0.1, 0.1)
+    print("Latitude: ", latitude)
+    print("Longitude: ", longitude)
+    position = f"ST_GeomFromEWKT('SRID=4326;POINT({longitude} {latitude})')"
+    print("Position", position)
+    return position
     pass
+
+def get_next_crash_id():
+    primary = get_primary_connection()
+    cursor = primary.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    cursor.execute("SELECT max(crash_id)+1 as next_id FROM atd_txdot_crashes;")
+    next_crash_id = cursor.fetchone()["next_id"]
+    # print("Got Next Crash ID: ", next_crash_id)
+    return next_crash_id
 
 
 if __name__ == "__main__":
