@@ -6,7 +6,7 @@ import psycopg2.extras
 import random
 from dotenv import load_dotenv
 from faker import Faker
-from faker.providers import lorem, date_time
+from faker.providers import lorem, date_time, python
 
 load_dotenv()
 
@@ -155,28 +155,40 @@ def random_date(field):
     return date
 
 def random_timestamp_with_time_zone(field):
-    return random_date(field)
-    print("Field: ", field)
+    # print("Field: ", field)
     fake = Faker()
     fake.add_provider(date_time)
-    date = fake.date_this_year()
-    input("Press Enter to continue...")
-    pass
+    timestamp = fake.date_time_this_year()
+    return timestamp
+    # print("Timestamp: ", timestamp)
 
 def random_timestamp_without_time_zone(field):
-    pass
+    return random_timestamp_with_time_zone(field)
 
 def random_time_with_time_zone(field):
-    pass
+    # print("Field: ", field)
+    fake = Faker()
+    fake.add_provider(date_time)
+    time = fake.time()
+    # print("Time: ", time)
 
 def random_time_without_time_zone(field):
-    pass
+    return random_time_with_time_zone(field)
 
 def random_double_precision(field):
-    pass
+    # print("Field: ", field)
+    fake = Faker()
+    fake.add_provider(python)
+    float = fake.pyfloat()
+    # print("Float: ", float)
 
 def random_text(field):
-    pass
+    # print("Field: ", field)
+    fake = Faker()
+    fake.add_provider(lorem)
+    string = "\n".join(fake.paragraphs(nb=5))
+    # print("Fake text: ", string)
+    return string
 
 def random_boolean(field):
     pass
