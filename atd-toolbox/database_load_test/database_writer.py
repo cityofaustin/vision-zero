@@ -231,38 +231,30 @@ def build_insert_sql(table, shape, overrides={}):
 
 
 def random_character_varying(field):
-    # print("Field: ", field)
     fake = Faker()
     fake.add_provider(lorem)
     string = fake.paragraph()[: field["character_maximum_length"]]
-    # print("Fake Letter: ", string)
     return string
 
 
 def random_integer(field):
-    # print("Field: ", field)
     precision = field["numeric_precision"] - 1
     integer = random.randint(0, 2**precision)
-    # print("Fake Integer: ", integer)
     return integer
 
 
 def random_date(field):
-    # print("Field: ", field)
     fake = Faker()
     fake.add_provider(date_time)
     date = fake.date_this_year()
-    # print("Date: ", date)
     return date
 
 
 def random_timestamp_with_time_zone(field):
-    # print("Field: ", field)
     fake = Faker()
     fake.add_provider(date_time)
     timestamp = fake.date_time_this_year()
     return timestamp
-    # print("Timestamp: ", timestamp)
 
 
 def random_timestamp_without_time_zone(field):
@@ -270,11 +262,9 @@ def random_timestamp_without_time_zone(field):
 
 
 def random_time_with_time_zone(field):
-    # print("Field: ", field)
     fake = Faker()
     fake.add_provider(date_time)
     time = fake.time()
-    # print("Time: ", time)
 
 
 def random_time_without_time_zone(field):
@@ -282,33 +272,26 @@ def random_time_without_time_zone(field):
 
 
 def random_double_precision(field):
-    # print("Field: ", field)
     fake = Faker()
     fake.add_provider(python)
     float = fake.pyfloat()
-    # print("Float: ", float)
 
 
 def random_text(field):
-    # print("Field: ", field)
     fake = Faker()
     fake.add_provider(lorem)
     string = "\n".join(fake.paragraphs(nb=5))
-    # print("Fake text: ", string)
     return string
 
 
 def random_boolean(field):
-    # print("Field: ", field)
     fake = Faker()
     fake.add_provider(python)
     boolean = fake.pybool()
-    # print("Fake Boolean: ", boolean)
     return boolean
 
 
 def random_numeric(field):
-    # print("Field: ", field)
     if not field["numeric_scale"]:
         field["numeric_scale"] = 2
     if not field["numeric_precision"]:
@@ -318,17 +301,13 @@ def random_numeric(field):
     fake.add_provider(python)
     # these names feel backwards, but this is what it is
     numeric = fake.pyfloat(left_digits=precision, right_digits=field["numeric_scale"])
-    # print("Fake Numeric: ", numeric)
-    # input("Press Enter to continue...")
     return numeric
 
 
 def random_json(field):
-    # print("Field: ", field)
     fake = Faker()
     fake.add_provider(misc)
     json = fake.json()
-    # print("json: ", json)
     return json
 
 
@@ -339,10 +318,7 @@ def random_jsonb(field):
 def random_position():
     latitude = 30.274722 + random.uniform(-0.1, 0.1)
     longitude = -97.740556 + random.uniform(-0.1, 0.1)
-    # print("Latitude: ", latitude)
-    # print("Longitude: ", longitude)
     position = f"ST_GeomFromEWKT('SRID=4326;POINT({longitude} {latitude})')"
-    # print("Position", position)
     return position
     pass
 
@@ -352,7 +328,6 @@ def get_next_crash_id():
     cursor = primary.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     cursor.execute("SELECT max(crash_id)+1 as next_id FROM atd_txdot_crashes;")
     next_crash_id = cursor.fetchone()["next_id"]
-    # print("Got Next Crash ID: ", next_crash_id)
     return next_crash_id
 
 
