@@ -5,6 +5,8 @@ import psycopg2
 import psycopg2.extras
 import random
 from dotenv import load_dotenv
+from faker import Faker
+from faker.providers import lorem, date_time
 
 load_dotenv()
 
@@ -78,8 +80,6 @@ def build_insert_sql(table, shape):
         print("Field: ", field["column_name"])
         print("Type:  ", field["data_type"])
 
-        placeholders.append("%s")
-
         # 🤖 🦾 Copilot was made for this sort of thing
         if table == 'atd_txdot_crashes' and field["column_name"] == 'crash_id':
             fields.append(field["column_name"])
@@ -89,84 +89,105 @@ def build_insert_sql(table, shape):
             values.append(random_position())
         elif field["data_type"] == 'character varying':
             fields.append(field["column_name"])
-            values.append(random_character_varying())
+            values.append(random_character_varying(field))
         elif field["data_type"] == 'integer':
             fields.append(field["column_name"])
-            values.append(random_integer())
+            values.append(random_integer(field))
         elif field["data_type"] == 'date':
             fields.append(field["column_name"])
-            values.append(random_date())
+            values.append(random_date(field))
         elif field["data_type"] == 'timestamp with time zone':
             fields.append(field["column_name"])
-            values.append(random_timestamp_with_time_zone())
+            values.append(random_timestamp_with_time_zone(field))
         elif field["data_type"] == 'timestamp without time zone':
             fields.append(field["column_name"])
-            values.append(random_timestamp_without_time_zone())
+            values.append(random_timestamp_without_time_zone(field))
         elif field["data_type"] == 'time with time zone':
             fields.append(field["column_name"])
-            values.append(random_time_with_time_zone())
+            values.append(random_time_with_time_zone(field))
         elif field["data_type"] == 'time without time zone':
             fields.append(field["column_name"])
-            values.append(random_time_without_time_zone())
+            values.append(random_time_without_time_zone(field))
         elif field["data_type"] == 'double precision':
             fields.append(field["column_name"])
-            values.append(random_double_precision())
+            values.append(random_double_precision(field))
         elif field["data_type"] == 'text':
             fields.append(field["column_name"])
-            values.append(random_text())
+            values.append(random_text(field))
         elif field["data_type"] == 'boolean':
             fields.append(field["column_name"])
-            values.append(random_boolean())
+            values.append(random_boolean(field))
         elif field["data_type"] == 'numeric':
             fields.append(field["column_name"])
-            values.append(random_numeric())
+            values.append(random_numeric(field))
         elif field["data_type"] == 'json':
             fields.append(field["column_name"])
-            values.append(random_json())
+            values.append(random_json(field))
         elif field["data_type"] == 'jsonb':
             fields.append(field["column_name"])
-            values.append(random_jsonb())
+            values.append(random_jsonb(field))
         else:
             quit()
+
+        placeholders.append("%s")
     print("Done")
 
-def random_character_varying():
+def random_character_varying(field):
+    # print("Field: ", field)
+    fake = Faker()
+    fake.add_provider(lorem)
+    string = fake.paragraph()[:field["character_maximum_length"]]
+    # print("Fake Letter: ", string)
+    return string
+
+def random_integer(field):
+    # print("Field: ", field)
+    integer = random.randint(0, 2**field["numeric_precision"])
+    # print("Fake Integer: ", integer)
+    return integer
+
+def random_date(field):
+    # print("Field: ", field)
+    fake = Faker()
+    fake.add_provider(date_time)
+    date = fake.date_this_year()
+    # print("Date: ", date)
+    return date
+
+def random_timestamp_with_time_zone(field):
+    return random_date(field)
+    print("Field: ", field)
+    fake = Faker()
+    fake.add_provider(date_time)
+    date = fake.date_this_year()
+    input("Press Enter to continue...")
     pass
 
-def random_integer():
+def random_timestamp_without_time_zone(field):
     pass
 
-def random_date():
+def random_time_with_time_zone(field):
     pass
 
-def random_timestamp_with_time_zone():
+def random_time_without_time_zone(field):
     pass
 
-def random_timestamp_without_time_zone():
+def random_double_precision(field):
     pass
 
-def random_time_with_time_zone():
+def random_text(field):
     pass
 
-def random_time_without_time_zone():
+def random_boolean(field):
     pass
 
-def random_double_precision():
+def random_numeric(field):
     pass
 
-def random_text():
+def random_json(field):
     pass
 
-def random_boolean():
-    pass
-
-def random_numeric():
-    pass
-
-def random_json():
-    pass
-
-def random_jsonb():
+def random_jsonb(field):
     pass
 
 def random_position():
@@ -175,7 +196,7 @@ def random_position():
     print("Latitude: ", latitude)
     print("Longitude: ", longitude)
     position = f"ST_GeomFromEWKT('SRID=4326;POINT({longitude} {latitude})')"
-    print("Position", position)
+    # print("Position", position)
     return position
     pass
 
