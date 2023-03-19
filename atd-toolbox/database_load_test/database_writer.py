@@ -69,7 +69,99 @@ def get_table_shape(table):
     return table_shape
 
 def build_insert_sql(table, shape):
+    fields = []
+    values = []
+    for field in shape:
+        print("Field: ", field["column_name"])
+        print("Type:  ", field["data_type"])
+        if field["data_type"] == 'character varying':
+            fields.append(field["column_name"])
+            values.append(random_character_varying())
+        elif field["data_type"] == 'integer':
+            fields.append(field["column_name"])
+            values.append(random_integer())
+        elif field["data_type"] == 'date':
+            fields.append(field["column_name"])
+            values.append(random_date())
+        elif field["data_type"] == 'timestamp with time zone':
+            fields.append(field["column_name"])
+            values.append(random_timestamp_with_time_zone())
+        elif field["data_type"] == 'timestamp without time zone':
+            fields.append(field["column_name"])
+            values.append(random_timestamp_without_time_zone())
+        elif field["data_type"] == 'time with time zone':
+            fields.append(field["column_name"])
+            values.append(random_time_with_time_zone())
+        elif field["data_type"] == 'time without time zone':
+            fields.append(field["column_name"])
+            values.append(random_time_without_time_zone())
+        elif field["data_type"] == 'double precision':
+            fields.append(field["column_name"])
+            values.append(random_double_precision())
+        elif field["data_type"] == 'text':
+            fields.append(field["column_name"])
+            values.append(random_text())
+        elif field["data_type"] == 'boolean':
+            fields.append(field["column_name"])
+            values.append(random_boolean())
+        elif field["data_type"] == 'numeric':
+            fields.append(field["column_name"])
+            values.append(random_numeric())
+        elif field["data_type"] == 'json':
+            fields.append(field["column_name"])
+            values.append(random_json())
+        elif field["data_type"] == 'jsonb':
+            fields.append(field["column_name"])
+            values.append(random_jsonb())
+        elif table == 'atd_txdot_crashes' and field["column_name"] == 'position':
+            fields.append(field["column_name"])
+            values.append(random_position())
+        else:
+            quit()
+    print("Done")
+
+def random_character_varying():
     pass
+
+def random_integer():
+    pass
+
+def random_date():
+    pass
+
+def random_timestamp_with_time_zone():
+    pass
+
+def random_timestamp_without_time_zone():
+    pass
+
+def random_time_with_time_zone():
+    pass
+
+def random_time_without_time_zone():
+    pass
+
+def random_double_precision():
+    pass
+
+def random_text():
+    pass
+
+def random_boolean():
+    pass
+
+def random_numeric():
+    pass
+
+def random_json():
+    pass
+
+def random_jsonb():
+    pass
+
+def random_position():
+    pass
+
 
 if __name__ == "__main__":
     main()
