@@ -109,61 +109,76 @@ def build_insert_sql(table, shape):
             fields.append(field["column_name"])
             values.append(get_next_crash_id())
             placeholders.append("%s")
+
         elif table == "atd_txdot_crashes" and field["column_name"] == "position":
             fields.append(field["column_name"])
             placeholders.append(random_position())
+
         elif field["data_type"] == "character varying":
             fields.append(field["column_name"])
             values.append(random_character_varying(field))
             placeholders.append("%s")
+
         elif field["data_type"] == "integer":
             fields.append(field["column_name"])
             values.append(random_integer(field))
             placeholders.append("%s")
+
         elif field["data_type"] == "date":
             fields.append(field["column_name"])
             values.append(random_date(field))
             placeholders.append("%s")
+
         elif field["data_type"] == "timestamp with time zone":
             fields.append(field["column_name"])
             values.append(random_timestamp_with_time_zone(field))
             placeholders.append("%s")
+
         elif field["data_type"] == "timestamp without time zone":
             fields.append(field["column_name"])
             values.append(random_timestamp_without_time_zone(field))
             placeholders.append("%s")
+
         elif field["data_type"] == "time with time zone":
             fields.append(field["column_name"])
             values.append(random_time_with_time_zone(field))
             placeholders.append("%s")
+
         elif field["data_type"] == "time without time zone":
             fields.append(field["column_name"])
             values.append(random_time_without_time_zone(field))
             placeholders.append("%s")
+
         elif field["data_type"] == "double precision":
             fields.append(field["column_name"])
             values.append(random_double_precision(field))
             placeholders.append("%s")
+
         elif field["data_type"] == "text":
             fields.append(field["column_name"])
             values.append(random_text(field))
             placeholders.append("%s")
+
         elif field["data_type"] == "boolean":
             fields.append(field["column_name"])
             values.append(random_boolean(field))
             placeholders.append("%s")
+
         elif field["data_type"] == "numeric":
             fields.append(field["column_name"])
             values.append(random_numeric(field))
             placeholders.append("%s")
+
         elif field["data_type"] == "json":
             fields.append(field["column_name"])
             values.append(random_json(field))
             placeholders.append("%s")
+
         elif field["data_type"] == "jsonb":
             fields.append(field["column_name"])
             values.append(random_jsonb(field))
             placeholders.append("%s")
+
         else:
             print("We don't know how to handle this type: ", field["data_type"])
             quit()
