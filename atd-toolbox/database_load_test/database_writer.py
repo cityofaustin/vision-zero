@@ -19,20 +19,28 @@ DB_PORT = os.getenv("DB_PORT")
 
 
 def main():
-    check_sanity()
+    check_sanity() # 🫠
     primary = get_primary_connection()
     primary_cursor = primary.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-    tables = ["atd_txdot_crashes"]
-    for table in tables:
-        print("Table: ", table)
-        shape = get_table_shape(table)
-        # print("Shape: ", shape)
-        insert_sql, values = build_insert_sql(table, shape)
+    
+    # crash
+    shape = get_table_shape("atd_txdot_crashes")
+    insert_sql, values = build_insert_sql("atd_txdot_crashes", shape)
+    primary_cursor.execute(insert_sql, values)
+    new_crash = primary_cursor.fetchone()
+    print("New crash: ", new_crash["crash_id"])
+
+    # unit
+    shape = get_table_shape("atd_txdot_units")
+    # print("Shape: ", shape)
+    for unit_number in range(1, 4):
+        insert_sql, values = build_insert_sql("atd_txdot_units", shape, {"crash_id": new_crash["crash_id"], "unit_nbr": unit_number})
         # print("SQL: ", insert_sql)
         # print("Values: ", values)
         primary_cursor.execute(insert_sql, values)
-        new_crash = primary_cursor.fetchone()
-        print("New crash: ", new_crash["crash_id"])
+        new_unit = primary_cursor.fetchone()
+        print("New unit: ", new_unit["unit_nbr"])
+
     primary.commit()
 
 
@@ -96,7 +104,7 @@ def get_table_shape(table):
     return table_shape
 
 
-def build_insert_sql(table, shape):
+def build_insert_sql(table, shape, overrides={}):
     fields = []
     values = []
     placeholders = []
@@ -105,7 +113,11 @@ def build_insert_sql(table, shape):
         # print("Type:  ", field["data_type"])
 
         # 🤖 🦾 Copilot was made for this sort of thing
-        if table == "atd_txdot_crashes" and field["column_name"] == "crash_id":
+        if field["column_name"] in overrides:
+            fields.append(field["column_name"])
+            values.append(overrides[field["column_name"]])
+            placeholders.append("%s")
+        elif table == "atd_txdot_crashes" and field["column_name"] == "crash_id":
             fields.append(field["column_name"])
             values.append(get_next_crash_id())
             placeholders.append("%s")
