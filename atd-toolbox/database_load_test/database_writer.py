@@ -53,7 +53,7 @@ def create_crash_and_related_records():
         new_primaryperson = primary_cursor.fetchone()
         print("New primaryperson: ", new_primaryperson["primaryperson_id"])
 
-    # primaryperson
+    # person
     shape = get_table_shape("atd_txdot_person")
     # print("Shape: ", shape)
     for unit in new_units:
