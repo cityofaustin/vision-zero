@@ -18,12 +18,17 @@ DB_PASSWORD = os.getenv("DB_PASSWORD")
 DB_PORT = os.getenv("DB_PORT")
 
 def main():
+    # check_sanity()
     tables = ["atd_txdot_crashes"]
     for table in tables:
         print("Table: ", table)
         shape = get_table_shape(table)
         # print("Shape: ", shape)
         insert_sql = build_insert_sql(table, shape)
+
+def check_sanity():
+    print("Ask yourself: Am I very sure this isn't pointed at a production database?")
+    input("Press Enter to continue...")
 
 def get_primary_connection():
     # print("DB_HOST: ", DB_HOST)
