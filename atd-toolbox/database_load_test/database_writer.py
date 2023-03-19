@@ -36,9 +36,12 @@ def main():
 
 def check_sanity():
     print("Ask yourself: Am I very sure this isn't pointed at a production database?")
+    print("This program creates random records in the database.")
     print("DB_HOST: ", DB_HOST)
-    print("DB_RR_HOST: ", DB_RR_HOST)
-    input("Press Enter to continue...")
+    if 'test' not in DB_HOST:
+        print("DB_HOST does not contain the string 'test'.")
+        input("Press Enter to continue...")
+        quit()
 
 def get_primary_connection():
     # print("DB_HOST: ", DB_HOST)
@@ -155,9 +158,9 @@ def build_insert_sql(table, shape):
             values.append(random_jsonb(field))
             placeholders.append("%s")
         else:
+            print("We don't know how to handle this type: ", field["data_type"])
             quit()
 
-    
     insert_sql = f"insert into {table} ({', '.join(fields)}) values ({', '.join(placeholders)}) returning *"
     return (insert_sql, values)
 
