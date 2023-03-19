@@ -18,16 +18,26 @@ DB_PASSWORD = os.getenv("DB_PASSWORD")
 DB_PORT = os.getenv("DB_PORT")
 
 def main():
-    # check_sanity()
+    check_sanity()
+    primary = get_primary_connection()
+    primary_cursor = primary.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     tables = ["atd_txdot_crashes"]
     for table in tables:
         print("Table: ", table)
         shape = get_table_shape(table)
         # print("Shape: ", shape)
-        insert_sql = build_insert_sql(table, shape)
+        insert_sql, values = build_insert_sql(table, shape)
+        # print("SQL: ", insert_sql)
+        # print("Values: ", values)
+        primary_cursor.execute(insert_sql, values)
+        new_crash = primary_cursor.fetchone()
+        print("New crash: ", new_crash["crash_id"])
+    primary.commit()
 
 def check_sanity():
     print("Ask yourself: Am I very sure this isn't pointed at a production database?")
+    print("DB_HOST: ", DB_HOST)
+    print("DB_RR_HOST: ", DB_RR_HOST)
     input("Press Enter to continue...")
 
 def get_primary_connection():
@@ -77,65 +87,79 @@ def get_table_shape(table):
     return table_shape
 
 def build_insert_sql(table, shape):
-
     fields = []
     values = []
     placeholders = []
     for field in shape:
-        print("Field: ", field["column_name"])
-        print("Type:  ", field["data_type"])
+        # print("Field: ", field["column_name"])
+        # print("Type:  ", field["data_type"])
 
         # 🤖 🦾 Copilot was made for this sort of thing
         if table == 'atd_txdot_crashes' and field["column_name"] == 'crash_id':
             fields.append(field["column_name"])
             values.append(get_next_crash_id())
+            placeholders.append("%s")
         elif table == 'atd_txdot_crashes' and field["column_name"] == 'position':
             fields.append(field["column_name"])
-            values.append(random_position())
+            placeholders.append(random_position())
         elif field["data_type"] == 'character varying':
             fields.append(field["column_name"])
             values.append(random_character_varying(field))
+            placeholders.append("%s")
         elif field["data_type"] == 'integer':
             fields.append(field["column_name"])
             values.append(random_integer(field))
+            placeholders.append("%s")
         elif field["data_type"] == 'date':
             fields.append(field["column_name"])
             values.append(random_date(field))
+            placeholders.append("%s")
         elif field["data_type"] == 'timestamp with time zone':
             fields.append(field["column_name"])
             values.append(random_timestamp_with_time_zone(field))
+            placeholders.append("%s")
         elif field["data_type"] == 'timestamp without time zone':
             fields.append(field["column_name"])
             values.append(random_timestamp_without_time_zone(field))
+            placeholders.append("%s")
         elif field["data_type"] == 'time with time zone':
             fields.append(field["column_name"])
             values.append(random_time_with_time_zone(field))
+            placeholders.append("%s")
         elif field["data_type"] == 'time without time zone':
             fields.append(field["column_name"])
             values.append(random_time_without_time_zone(field))
+            placeholders.append("%s")
         elif field["data_type"] == 'double precision':
             fields.append(field["column_name"])
             values.append(random_double_precision(field))
+            placeholders.append("%s")
         elif field["data_type"] == 'text':
             fields.append(field["column_name"])
             values.append(random_text(field))
+            placeholders.append("%s")
         elif field["data_type"] == 'boolean':
             fields.append(field["column_name"])
             values.append(random_boolean(field))
+            placeholders.append("%s")
         elif field["data_type"] == 'numeric':
             fields.append(field["column_name"])
             values.append(random_numeric(field))
+            placeholders.append("%s")
         elif field["data_type"] == 'json':
             fields.append(field["column_name"])
             values.append(random_json(field))
+            placeholders.append("%s")
         elif field["data_type"] == 'jsonb':
             fields.append(field["column_name"])
             values.append(random_jsonb(field))
+            placeholders.append("%s")
         else:
             quit()
 
-        placeholders.append("%s")
-    print("Done")
+    
+    insert_sql = f"insert into {table} ({', '.join(fields)}) values ({', '.join(placeholders)}) returning *"
+    return (insert_sql, values)
 
 def random_character_varying(field):
     # print("Field: ", field)
@@ -147,7 +171,8 @@ def random_character_varying(field):
 
 def random_integer(field):
     # print("Field: ", field)
-    integer = random.randint(0, 2**field["numeric_precision"])
+    precision = field["numeric_precision"] - 1
+    integer = random.randint(0, 2**precision)
     # print("Fake Integer: ", integer)
     return integer
 
@@ -215,6 +240,7 @@ def random_numeric(field):
     # these names feel backwards, but this is what it is
     numeric = fake.pyfloat(left_digits=precision, right_digits=field["numeric_scale"])
     # print("Fake Numeric: ", numeric)
+    # input("Press Enter to continue...")
     return numeric
 
 def random_json(field):
@@ -231,8 +257,8 @@ def random_jsonb(field):
 def random_position():
     latitude = 30.274722 + random.uniform(-0.1, 0.1)
     longitude = -97.740556 + random.uniform(-0.1, 0.1)
-    print("Latitude: ", latitude)
-    print("Longitude: ", longitude)
+    # print("Latitude: ", latitude)
+    # print("Longitude: ", longitude)
     position = f"ST_GeomFromEWKT('SRID=4326;POINT({longitude} {latitude})')"
     # print("Position", position)
     return position
