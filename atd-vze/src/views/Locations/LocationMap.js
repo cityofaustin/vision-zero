@@ -68,17 +68,19 @@ export default class LocationMap extends Component {
     this.polygon = this.props.data.atd_txdot_locations[0];
 
     // Create GeoJSON object from location polygon record for Source component
-    this.locationPolygonGeoJson = {
-      type: "Feature",
-      properties: {
-        renderType: this.polygon.shape.type,
-        id: this.polygon.location_id,
-      },
-      geometry: {
-        coordinates: this.polygon.shape.coordinates,
-        type: this.polygon.shape.type,
-      },
-    };
+    this.locationPolygonGeoJson = this.polygon.shape
+      ? {
+          type: "Feature",
+          properties: {
+            renderType: this.polygon.shape.type,
+            id: this.polygon.location_id,
+          },
+          geometry: {
+            coordinates: this.polygon.shape.coordinates,
+            type: this.polygon.shape.type,
+          },
+        }
+      : null;
   }
 
   _updateViewport = viewport => {
