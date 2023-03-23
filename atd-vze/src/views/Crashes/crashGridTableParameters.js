@@ -244,7 +244,7 @@ export const crashGridTableAdvancedFilters = {
       },
       {
         id: "geo_afd",
-        label: "Remove Austin Full Purpose",
+        label: "Include Outside Of Austin Full Purpose",
         invert_toggle_state: true,
         filter: {
           where: [
