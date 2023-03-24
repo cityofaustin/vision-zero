@@ -219,7 +219,7 @@ export const crashGridTableAdvancedFilters = {
       },
       {
         id: "geo_geocoded",
-        label: "Has been Geocoded",
+        label: "Has Been Geocoded",
         filter: {
           where: [
             {
