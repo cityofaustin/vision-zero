@@ -364,7 +364,7 @@ gqlAbstractTableAggregateName (
   generateFilters(aggregate = false) {
     let output = [];
 
-    // Aggregates do not need limit and offset filters
+    // Aggregates do not need limit, offset, or order_by filters
     if (aggregate === false) {
       if (this.config["limit"]) {
         output.push("limit: " + this.config["limit"]);
@@ -372,6 +372,18 @@ gqlAbstractTableAggregateName (
 
       if (this.config["offset"] !== null) {
         output.push("offset: " + this.config["offset"]);
+      }
+
+      if (this.config["order_by"]) {
+        let order_by = [];
+        for (let [key, value] of this.getEntries("order_by")) {
+          order_by.push(
+            this.isNestedKey(key)
+              ? this.sortifyNestedKey(key, value)
+              : `${key}: ${value}`
+          );
+        }
+        output.push(`order_by: {${order_by.join(", ")}}`);
       }
     }
 
@@ -397,18 +409,6 @@ gqlAbstractTableAggregateName (
       } else {
         output.push(`where: {${where.join(", ")}}`);
       }
-    }
-
-    if (this.config["order_by"]) {
-      let order_by = [];
-      for (let [key, value] of this.getEntries("order_by")) {
-        order_by.push(
-          this.isNestedKey(key)
-            ? this.sortifyNestedKey(key, value)
-            : `${key}: ${value}`
-        );
-      }
-      output.push(`order_by: {${order_by.join(", ")}}`);
     }
 
     return output.join(",\n");

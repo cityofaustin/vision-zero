@@ -53,17 +53,6 @@ const polygonDataLayer = {
 export default class LocationMap extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      viewport: {
-        latitude: this.props.data.atd_txdot_locations[0].latitude || 30.2672,
-        longitude: this.props.data.atd_txdot_locations[0].longitude || -97.7431,
-        zoom: 17,
-        bearing: 0,
-        pitch: 0,
-      },
-      popupInfo: null,
-      aerialTimestamp: "",
-    };
 
     this.polygon = this.props.data.atd_txdot_locations[0];
 
@@ -81,6 +70,18 @@ export default class LocationMap extends Component {
           },
         }
       : null;
+
+    this.state = {
+      viewport: {
+        latitude: this.props.data.atd_txdot_locations[0].latitude || 30.2672,
+        longitude: this.props.data.atd_txdot_locations[0].longitude || -97.7431,
+        zoom: 17,
+        bearing: 0,
+        pitch: 0,
+      },
+      popupInfo: null,
+      aerialTimestamp: "",
+    };
   }
 
   _updateViewport = viewport => {
