@@ -45,7 +45,7 @@ const MapInfoBox = React.memo(
       seriousInjuries: buildSeriousInjuriesOrFatalitiesConfig,
       cityCouncil: (info) => [
         {
-          title: `City Council District ${info.council_district}`,
+          title: `City Council District ${info.COUNCIL_DISTRICT}`,
           content: "",
         },
       ],
