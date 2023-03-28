@@ -53,11 +53,22 @@ const polygonDataLayer = {
 export default class LocationMap extends Component {
   constructor(props) {
     super(props);
-
     this.polygon = this.props.data.atd_txdot_locations[0];
 
+    this.state = {
+      viewport: {
+        latitude: this.polygon?.latitude || 30.2672,
+        longitude: this.polygon?.longitude || -97.7431,
+        zoom: 17,
+        bearing: 0,
+        pitch: 0,
+      },
+      popupInfo: null,
+      aerialTimestamp: "",
+    };
+
     // Create GeoJSON object from location polygon record for Source component
-    this.locationPolygonGeoJson = this.polygon.shape
+    this.locationPolygonGeoJson = this.polygon?.shape
       ? {
           type: "Feature",
           properties: {
@@ -70,18 +81,6 @@ export default class LocationMap extends Component {
           },
         }
       : null;
-
-    this.state = {
-      viewport: {
-        latitude: this.props.data.atd_txdot_locations[0].latitude || 30.2672,
-        longitude: this.props.data.atd_txdot_locations[0].longitude || -97.7431,
-        zoom: 17,
-        bearing: 0,
-        pitch: 0,
-      },
-      popupInfo: null,
-      aerialTimestamp: "",
-    };
   }
 
   _updateViewport = viewport => {
