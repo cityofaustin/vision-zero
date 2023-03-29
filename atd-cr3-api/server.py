@@ -430,6 +430,7 @@ def associate_location():
     # Require matching token
     incoming_token = request.headers.get("HASURA_TRIGGER_API_KEY")
     incoming_event_name = request.headers.get("HASURA_EVENT_NAME", "")
+    environment_for_queue_name = API_ENVIRONMENT.lower()
     hashed_events_api = hashlib.md5()
     hashed_events_api.update(str(HASURA_TRIGGER_API_KEY).encode("utf-8"))
     hashed_incoming_token = hashlib.md5()
@@ -452,6 +453,7 @@ def associate_location():
             HASURA_EVENTS_SQS_URL[0:48]  # This is the length of the url with the account number
             + "/atd-vz-data-events-"     # We're going to add a prefix pattern for our ATD VisionZero queues
             + incoming_event_name        # And append the name of the incoming event
+            + environment_for_queue_name # Append the environment name to target the correct queue
         )
 
         # Send message to SQS queue
