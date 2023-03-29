@@ -8,6 +8,7 @@ import MapGL, {
 import "mapbox-gl/dist/mapbox-gl.css";
 import axios from "axios";
 import { format, parse } from "date-fns";
+import bbox from "@turf/bbox";
 
 import styled from "styled-components";
 import { colors } from "../../styles/colors";
@@ -54,6 +55,7 @@ export default class LocationMap extends Component {
   constructor(props) {
     super(props);
     this.polygon = this.props.data.atd_txdot_locations[0];
+    this.mapRef = React.createRef();
 
     this.state = {
       viewport: {
@@ -115,6 +117,15 @@ export default class LocationMap extends Component {
     this.getAerialTimestamps();
   }
 
+  fitBoundsToLocationPolygon = () => {
+    const { current = {} } = this.mapRef;
+    const map = current.getMap();
+    const polygonBbox = bbox(this.locationPolygonGeoJson);
+    map.fitBounds(polygonBbox, {
+      padding: 100,
+    });
+  };
+
   render() {
     const { viewport } = this.state;
     const isDev = window.location.hostname === "localhost";
@@ -131,6 +142,8 @@ export default class LocationMap extends Component {
         }
         onViewportChange={this._updateViewport}
         mapboxApiAccessToken={TOKEN}
+        ref={this.mapRef}
+        onLoad={this.fitBoundsToLocationPolygon}
       >
         {/* add nearmap raster source and style */}
         {!isDev && (
