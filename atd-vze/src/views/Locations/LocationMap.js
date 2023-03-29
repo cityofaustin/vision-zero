@@ -113,18 +113,21 @@ export default class LocationMap extends Component {
       });
   };
 
-  componentDidMount() {
-    this.getAerialTimestamps();
-  }
-
   fitBoundsToLocationPolygon = () => {
     const { current = {} } = this.mapRef;
     const map = current.getMap();
     const polygonBbox = bbox(this.locationPolygonGeoJson);
+
     map.fitBounds(polygonBbox, {
-      padding: 100,
+      padding: 50,
+      duration: 0,
     });
   };
+
+  componentDidMount() {
+    this.getAerialTimestamps();
+    this.fitBoundsToLocationPolygon();
+  }
 
   render() {
     const { viewport } = this.state;
@@ -143,7 +146,6 @@ export default class LocationMap extends Component {
         onViewportChange={this._updateViewport}
         mapboxApiAccessToken={TOKEN}
         ref={this.mapRef}
-        onLoad={this.fitBoundsToLocationPolygon}
       >
         {/* add nearmap raster source and style */}
         {!isDev && (
