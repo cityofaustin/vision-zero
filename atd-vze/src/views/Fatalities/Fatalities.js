@@ -1,7 +1,6 @@
 import React from "react";
 import { withApollo } from "react-apollo";
 
-import { subYears } from "date-fns";
 import GridTable from "../../Components/GridTable";
 import gqlAbstract from "../../queries/gqlAbstract";
 import { fatalityGridTableColumns } from "./fatalityGridTableParameters";
