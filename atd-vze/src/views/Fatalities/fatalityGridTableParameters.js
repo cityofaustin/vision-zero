@@ -27,13 +27,13 @@ export const fatalityGridTableColumns = {
   },
   ytd_fatal_crash: {
     searchable: false,
-    sortable: true,
+    sortable: false,
     label_table: "YTD Fatal Crashes",
     type: "Int",
   },
   ytd_fatality: {
     searchable: false,
-    sortable: true,
+    sortable: false,
     label_table: "YTD Fatalities",
     type: "Int",
   },
@@ -45,7 +45,7 @@ export const fatalityGridTableColumns = {
   },
   location: {
     searchable: false,
-    sortable: true,
+    sortable: false,
     label_table: "Location",
     type: "String",
   },
