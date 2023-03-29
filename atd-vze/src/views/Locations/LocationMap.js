@@ -148,7 +148,9 @@ export default class LocationMap extends Component {
 
   componentDidMount() {
     this.getAerialTimestamps();
-    this.fitBoundsToLocationPolygon();
+
+    // Zoom to the location polygon if there is one
+    this.polygon?.shape && this.fitBoundsToLocationPolygon();
   }
 
   render() {
