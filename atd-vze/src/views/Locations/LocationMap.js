@@ -5,6 +5,7 @@ import MapGL, {
   Source,
   Layer,
 } from "react-map-gl";
+import { WebMercatorViewport } from "@math.gl/web-mercator";
 import "mapbox-gl/dist/mapbox-gl.css";
 import axios from "axios";
 import { format, parse } from "date-fns";
@@ -64,6 +65,9 @@ export default class LocationMap extends Component {
         zoom: 17,
         bearing: 0,
         pitch: 0,
+        width: 500,
+        height: 500,
+        transitionDuration: 0,
       },
       popupInfo: null,
       aerialTimestamp: "",
@@ -113,14 +117,33 @@ export default class LocationMap extends Component {
       });
   };
 
+  // @see https://github.com/visgl/react-map-gl/blob/5.3-release/docs/advanced/viewport-transition.md#example-transition-viewport-to-a-bounding-box
   fitBoundsToLocationPolygon = () => {
-    const { current = {} } = this.mapRef;
-    const map = current.getMap();
+    // const { current = {} } = this.mapRef;
+    // const map = current.getMap();
     const polygonBbox = bbox(this.locationPolygonGeoJson);
+    console.log(polygonBbox, this.state.viewport);
 
-    map.fitBounds(polygonBbox, {
-      padding: 50,
-      duration: 0,
+    const { longitude, latitude, zoom } = new WebMercatorViewport({
+      ...this.state.viewport,
+      height: 500,
+      width: 500,
+    }).fitBounds(
+      [[polygonBbox[0], polygonBbox[1]], [polygonBbox[2], polygonBbox[3]]],
+      {
+        padding: 100,
+      }
+    );
+
+    this.setState({
+      viewport: {
+        ...this.state.viewport,
+        longitude,
+        latitude,
+        zoom,
+        transitionDuration: 0,
+        width: "100%",
+      },
     });
   };
 
@@ -128,6 +151,12 @@ export default class LocationMap extends Component {
     this.getAerialTimestamps();
     this.fitBoundsToLocationPolygon();
   }
+
+  // componentDidUpdate() {
+  //   console.log(this.mapRef?.current?.getMap()?.getZoom());
+  //   const newZoom = this.mapRef?.current?.getMap().getZoom();
+  //   this.setState({ viewport: { ...this.state?.viewport, zoom: newZoom } });
+  // }
 
   render() {
     const { viewport } = this.state;
@@ -146,6 +175,7 @@ export default class LocationMap extends Component {
         onViewportChange={this._updateViewport}
         mapboxApiAccessToken={TOKEN}
         ref={this.mapRef}
+        // onLoad={this.fitBoundsToLocationPolygon}
       >
         {/* add nearmap raster source and style */}
         {!isDev && (
