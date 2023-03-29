@@ -56,7 +56,6 @@ export default class LocationMap extends Component {
   constructor(props) {
     super(props);
     this.polygon = this.props.data.atd_txdot_locations[0];
-    this.mapRef = React.createRef();
 
     this.state = {
       viewport: {
@@ -119,16 +118,16 @@ export default class LocationMap extends Component {
 
   // @see https://github.com/visgl/react-map-gl/blob/5.3-release/docs/advanced/viewport-transition.md#example-transition-viewport-to-a-bounding-box
   fitBoundsToLocationPolygon = () => {
-    // const { current = {} } = this.mapRef;
-    // const map = current.getMap();
     const polygonBbox = bbox(this.locationPolygonGeoJson);
-    console.log(polygonBbox, this.state.viewport);
 
+    // We use WebMercatorViewport to calculate the new viewport
     const { longitude, latitude, zoom } = new WebMercatorViewport({
       ...this.state.viewport,
-      height: 500,
-      width: 500,
+      height: 500, // WebmercatorViewport requires height and width that are not in %
+      width: 500, // WebmercatorViewport requires height and width that are not in %
     }).fitBounds(
+      // The bounding box of the polygon must be in the form [[minX, minY], [maxX, maxY]]
+      // @see https://docs.mapbox.com/mapbox-gl-js/api/geography/#lnglatboundslike
       [[polygonBbox[0], polygonBbox[1]], [polygonBbox[2], polygonBbox[3]]],
       {
         padding: 100,
@@ -142,7 +141,7 @@ export default class LocationMap extends Component {
         latitude,
         zoom,
         transitionDuration: 0,
-        width: "100%",
+        width: "100%", // Now, we can set a % for width since react-map-gl accepts them
       },
     });
   };
@@ -151,12 +150,6 @@ export default class LocationMap extends Component {
     this.getAerialTimestamps();
     this.fitBoundsToLocationPolygon();
   }
-
-  // componentDidUpdate() {
-  //   console.log(this.mapRef?.current?.getMap()?.getZoom());
-  //   const newZoom = this.mapRef?.current?.getMap().getZoom();
-  //   this.setState({ viewport: { ...this.state?.viewport, zoom: newZoom } });
-  // }
 
   render() {
     const { viewport } = this.state;
@@ -174,8 +167,6 @@ export default class LocationMap extends Component {
         }
         onViewportChange={this._updateViewport}
         mapboxApiAccessToken={TOKEN}
-        ref={this.mapRef}
-        // onLoad={this.fitBoundsToLocationPolygon}
       >
         {/* add nearmap raster source and style */}
         {!isDev && (
