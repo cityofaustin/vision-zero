@@ -45,7 +45,7 @@ AWS_S3_BUCKET = os.getenv("AWS_S3_BUCKET", "")
 # Hasura Config
 HASURA_ADMIN_SECRET = os.getenv("HASURA_ADMIN_SECRET", "")
 HASURA_ENDPOINT = os.getenv("HASURA_ENDPOINT", "")
-HASURA_EVENT_API = os.getenv("HASURA_EVENT_API", "")
+HASURA_TRIGGER_API_KEY = os.getenv("HASURA_TRIGGER_API_KEY", "")
 HASURA_EVENTS_SQS_URL = os.getenv("HASURA_EVENTS_SQS_URL", "")
 
 
@@ -428,10 +428,10 @@ def user_delete_user(id):
 @APP.route("/events/", methods=["PUT", "POST"])
 def associate_location():
     # Require matching token
-    incoming_token = request.headers.get("HASURA_EVENT_API")
+    incoming_token = request.headers.get("HASURA_TRIGGER_API_KEY")
     incoming_event_name = request.headers.get("HASURA_EVENT_NAME", "")
     hashed_events_api = hashlib.md5()
-    hashed_events_api.update(str(HASURA_EVENT_API).encode("utf-8"))
+    hashed_events_api.update(str(HASURA_TRIGGER_API_KEY).encode("utf-8"))
     hashed_incoming_token = hashlib.md5()
     hashed_incoming_token.update(str(incoming_token).encode("utf-8"))
 
