@@ -13,7 +13,7 @@ export const fatalityGridTableColumns = {
     label_table: "Crash ID",
     type: "Int",
   },
-  "atd_txdot_crash { case_id }": {
+  case_id: {
     searchable: false,
     sortable: true,
     label_table: "Case ID",
@@ -27,17 +27,17 @@ export const fatalityGridTableColumns = {
   },
   ytd_fatal_crash: {
     searchable: false,
-    sortable: true,
+    sortable: false,
     label_table: "YTD Fatal Crashes",
     type: "Int",
   },
   ytd_fatality: {
     searchable: false,
-    sortable: true,
+    sortable: false,
     label_table: "YTD Fatalities",
     type: "Int",
   },
-  "atd_txdot_crash { crash_date }": {
+  crash_date: {
     searchable: false,
     sortable: true,
     label_table: "Crash Date",
@@ -45,7 +45,7 @@ export const fatalityGridTableColumns = {
   },
   location: {
     searchable: false,
-    sortable: true,
+    sortable: false,
     label_table: "Location",
     type: "String",
   },
@@ -55,13 +55,13 @@ export const fatalityGridTableColumns = {
     label_table: "Victim Name",
     type: "String",
   },
-  "atd_txdot_crash { recommendation { atd__recommendation_status_lkp { description } } }": {
+  "recommendation { atd__recommendation_status_lkp { description } }": {
     searchable: false,
     sortable: true,
     label_table: "Current FRB Status",
     type: "String",
   },
-  "atd_txdot_crash { recommendation { text } }": {
+  "recommendation { text }": {
     searchable: false,
     sortable: false,
     label_table: "FRB Recommendation",
