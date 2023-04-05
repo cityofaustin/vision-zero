@@ -22,7 +22,7 @@ import CrashDiagram from "./CrashDiagram";
 import CrashNarrative from "./CrashNarrative";
 import DataTable from "../../Components/DataTable";
 import Notes from "../../Components/Notes/Notes";
-import CrashDataMap from "./CrashDataMap";
+import { crashDataMap } from "./crashDataMap";
 import Recommendations from "./Recommendations/Recommendations";
 
 import "./crash.scss";
@@ -75,6 +75,12 @@ function Crash(props) {
 
   const isCrashFatal =
     data?.atd_txdot_crashes?.[0]?.atd_fatality_count > 0 ? true : false;
+
+  // Dont render law enforcement field if crash is not fatal
+  const fieldsToSkip = [];
+  if (!isCrashFatal) {
+    fieldsToSkip.push("law_enforcement_num");
+  }
 
   const shouldShowFatalityRecommendations =
     (isAdmin(roles) || isItSupervisor(roles)) && isCrashFatal;
@@ -323,7 +329,7 @@ function Crash(props) {
       </Row>
       <Row>
         <DataTable
-          dataMap={CrashDataMap(isCrashFatal)}
+          dataMap={crashDataMap}
           dataTable={"atd_txdot_crashes"}
           formData={formData}
           setEditField={setEditField}
@@ -332,6 +338,7 @@ function Crash(props) {
           handleFieldUpdate={handleFieldUpdate}
           handleButtonClick={handleButtonClick}
           data={data}
+          fieldsToSkip={fieldsToSkip}
         />
         <Col md="6">
           <CrashChangeLog data={data} />
