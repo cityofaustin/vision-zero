@@ -1,5 +1,3 @@
-const isFatalCrash = true;
-
 export const crashDataMap = [
   {
     title: "Details",
@@ -151,7 +149,6 @@ export const crashDataMap = [
         label: "Law Enforcement Number",
         editable: true,
         uiType: "text",
-        render: isFatalCrash,
       },
     },
   },
