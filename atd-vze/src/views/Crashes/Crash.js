@@ -22,7 +22,7 @@ import CrashDiagram from "./CrashDiagram";
 import CrashNarrative from "./CrashNarrative";
 import DataTable from "../../Components/DataTable";
 import Notes from "../../Components/Notes/Notes";
-import { crashDataMap } from "./crashDataMap";
+import CrashDataMap from "./CrashDataMap";
 import Recommendations from "./Recommendations/Recommendations";
 
 import "./crash.scss";
@@ -75,6 +75,7 @@ function Crash(props) {
 
   const isCrashFatal =
     data?.atd_txdot_crashes?.[0]?.atd_fatality_count > 0 ? true : false;
+
   const shouldShowFatalityRecommendations =
     (isAdmin(roles) || isItSupervisor(roles)) && isCrashFatal;
 
@@ -322,7 +323,7 @@ function Crash(props) {
       </Row>
       <Row>
         <DataTable
-          dataMap={crashDataMap}
+          dataMap={CrashDataMap(isCrashFatal)}
           dataTable={"atd_txdot_crashes"}
           formData={formData}
           setEditField={setEditField}
