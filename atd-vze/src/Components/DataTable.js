@@ -29,7 +29,6 @@ const DataTable = ({
   handleFieldUpdate,
   handleButtonClick,
   downloadGlobal,
-  fieldsToSkip,
 }) => {
   // Disable edit features if only role is "readonly"
   const { getRoles } = useAuth0();
@@ -71,7 +70,7 @@ const DataTable = ({
                   <tbody>
                     {Object.keys(section.fields)
                       // Dont map through fields that are not supposed to render
-                      .filter(field => !fieldsToSkip.includes(field))
+                      .filter(field => section.fields[field].render != false)
                       .map((field, i) => {
                         const isEditing = field === editField;
                         const fieldConfigObject = section.fields[field];
