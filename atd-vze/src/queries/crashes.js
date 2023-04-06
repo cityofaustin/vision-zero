@@ -47,7 +47,6 @@ export const GET_CRASH = gql`
       latitude
       latitude_primary
       latitude_geocoded
-      law_enforcement_num
       light_cond_id
       longitude
       longitude_primary
@@ -188,7 +187,6 @@ export const UPDATE_CRASH = gql`
         latitude
         latitude_primary
         latitude_geocoded
-        law_enforcement_num
         light_cond_id
         longitude
         longitude_primary
