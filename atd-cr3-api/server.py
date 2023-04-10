@@ -440,9 +440,15 @@ def associate_location():
     if hashed_events_api.hexdigest() != hashed_incoming_token.hexdigest():
         return {"statusCode": 403, "body": json.dumps({"message": "Forbidden Request"})}
 
-    # Check if there is an event name provided, if not provide feedback.
-    if incoming_event_name == "":
-        return {"statusCode": 403, "body": json.dumps({"message": "Forbidden Request: Missing Event Name"})}
+    # Check if there is a valid event name provided, if not reject the request.
+    valid_event_names = [
+        "crash_update_noncr3_location_",
+        "crash_update_jurisdiction_",
+        "crash_update_location_",
+    ]
+    
+    if incoming_event_name not in valid_event_names:
+        return {"statusCode": 403, "body": json.dumps({"message": "Forbidden Request: Invalid Event Name"})}
 
     # We continue the execution
     try:
