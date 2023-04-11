@@ -1,5 +1,5 @@
 {
-  "resource_version": 156,
+  "resource_version": 1,
   "metadata": {
     "version": 3,
     "sources": [
@@ -160,7 +160,10 @@
                     "columns": "*"
                   },
                   "update": {
-                    "columns": ["latitude", "longitude"]
+                    "columns": [
+                      "latitude",
+                      "longitude"
+                    ]
                   }
                 },
                 "retry_conf": {
@@ -172,11 +175,11 @@
                 "headers": [
                   {
                     "name": "HASURA_EVENT_NAME",
-                    "value": "crash_update_noncr3_location_production"
+                    "value": "crash_update_noncr3_location_"
                   },
                   {
-                    "name": "HASURA_EVENT_API",
-                    "value": "K476e3TUEohAxCTMTkuRPYSPqD8464u9"
+                    "name": "HASURA_TRIGGER_API_KEY",
+                    "value_from_env": "HASURA_TRIGGER_API_KEY"
                   }
                 ]
               }
@@ -241,14 +244,20 @@
               {
                 "role": "editor",
                 "permission": {
-                  "columns": ["asmp_level_desc", "asmp_level_id"],
+                  "columns": [
+                    "asmp_level_desc",
+                    "asmp_level_id"
+                  ],
                   "filter": {}
                 }
               },
               {
                 "role": "readonly",
                 "permission": {
-                  "columns": ["asmp_level_desc", "asmp_level_id"],
+                  "columns": [
+                    "asmp_level_desc",
+                    "asmp_level_id"
+                  ],
                   "filter": {}
                 }
               }
@@ -390,14 +399,20 @@
               {
                 "role": "editor",
                 "permission": {
-                  "columns": ["est_comp_cost_amount", "est_comp_cost_id"],
+                  "columns": [
+                    "est_comp_cost_amount",
+                    "est_comp_cost_id"
+                  ],
                   "filter": {}
                 }
               },
               {
                 "role": "readonly",
                 "permission": {
-                  "columns": ["est_comp_cost_amount", "est_comp_cost_id"],
+                  "columns": [
+                    "est_comp_cost_amount",
+                    "est_comp_cost_id"
+                  ],
                   "filter": {}
                 }
               }
@@ -449,7 +464,10 @@
                 "role": "editor",
                 "permission": {
                   "check": {},
-                  "columns": ["ethnicity_desc", "ethnicity_id"]
+                  "columns": [
+                    "ethnicity_desc",
+                    "ethnicity_id"
+                  ]
                 }
               }
             ],
@@ -457,14 +475,20 @@
               {
                 "role": "editor",
                 "permission": {
-                  "columns": ["ethnicity_desc", "ethnicity_id"],
+                  "columns": [
+                    "ethnicity_desc",
+                    "ethnicity_id"
+                  ],
                   "filter": {}
                 }
               },
               {
                 "role": "readonly",
                 "permission": {
-                  "columns": ["ethnicity_desc", "ethnicity_id"],
+                  "columns": [
+                    "ethnicity_desc",
+                    "ethnicity_id"
+                  ],
                   "filter": {}
                 }
               }
@@ -473,7 +497,10 @@
               {
                 "role": "editor",
                 "permission": {
-                  "columns": ["ethnicity_desc", "ethnicity_id"],
+                  "columns": [
+                    "ethnicity_desc",
+                    "ethnicity_id"
+                  ],
                   "filter": {},
                   "check": null
                 }
@@ -498,7 +525,10 @@
                 "role": "editor",
                 "permission": {
                   "check": {},
-                  "columns": ["gndr_desc", "gndr_id"]
+                  "columns": [
+                    "gndr_desc",
+                    "gndr_id"
+                  ]
                 }
               }
             ],
@@ -506,14 +536,20 @@
               {
                 "role": "editor",
                 "permission": {
-                  "columns": ["gndr_desc", "gndr_id"],
+                  "columns": [
+                    "gndr_desc",
+                    "gndr_id"
+                  ],
                   "filter": {}
                 }
               },
               {
                 "role": "readonly",
                 "permission": {
-                  "columns": ["gndr_desc", "gndr_id"],
+                  "columns": [
+                    "gndr_desc",
+                    "gndr_id"
+                  ],
                   "filter": {}
                 }
               }
@@ -522,7 +558,10 @@
               {
                 "role": "editor",
                 "permission": {
-                  "columns": ["gndr_desc", "gndr_id"],
+                  "columns": [
+                    "gndr_desc",
+                    "gndr_id"
+                  ],
                   "filter": {},
                   "check": null
                 }
@@ -586,7 +625,10 @@
               {
                 "role": "readonly",
                 "permission": {
-                  "columns": ["injry_sev_desc", "injry_sev_id"],
+                  "columns": [
+                    "injry_sev_desc",
+                    "injry_sev_id"
+                  ],
                   "filter": {}
                 }
               }
@@ -648,14 +690,20 @@
               {
                 "role": "editor",
                 "permission": {
-                  "columns": ["light_cond_desc", "light_cond_id"],
+                  "columns": [
+                    "light_cond_desc",
+                    "light_cond_id"
+                  ],
                   "filter": {}
                 }
               },
               {
                 "role": "readonly",
                 "permission": {
-                  "columns": ["light_cond_desc", "light_cond_id"],
+                  "columns": [
+                    "light_cond_desc",
+                    "light_cond_id"
+                  ],
                   "filter": {}
                 }
               }
@@ -670,14 +718,20 @@
               {
                 "role": "editor",
                 "permission": {
-                  "columns": ["movement_id", "movement_desc"],
+                  "columns": [
+                    "movement_id",
+                    "movement_desc"
+                  ],
                   "filter": {}
                 }
               },
               {
                 "role": "readonly",
                 "permission": {
-                  "columns": ["movement_id", "movement_desc"],
+                  "columns": [
+                    "movement_id",
+                    "movement_desc"
+                  ],
                   "filter": {}
                 }
               }
@@ -724,14 +778,20 @@
               {
                 "role": "editor",
                 "permission": {
-                  "columns": ["prsn_type_desc", "prsn_type_id"],
+                  "columns": [
+                    "prsn_type_desc",
+                    "prsn_type_id"
+                  ],
                   "filter": {}
                 }
               },
               {
                 "role": "readonly",
                 "permission": {
-                  "columns": ["prsn_type_desc", "prsn_type_id"],
+                  "columns": [
+                    "prsn_type_desc",
+                    "prsn_type_id"
+                  ],
                   "filter": {}
                 }
               }
@@ -1034,7 +1094,10 @@
               {
                 "role": "readonly",
                 "permission": {
-                  "columns": ["veh_unit_desc_desc", "veh_unit_desc_id"],
+                  "columns": [
+                    "veh_unit_desc_desc",
+                    "veh_unit_desc_id"
+                  ],
                   "filter": {}
                 }
               }
@@ -1081,14 +1144,20 @@
               {
                 "role": "editor",
                 "permission": {
-                  "columns": ["y_n_id", "y_n_desc"],
+                  "columns": [
+                    "y_n_id",
+                    "y_n_desc"
+                  ],
                   "filter": {}
                 }
               },
               {
                 "role": "readonly",
                 "permission": {
-                  "columns": ["y_n_id", "y_n_desc"],
+                  "columns": [
+                    "y_n_id",
+                    "y_n_desc"
+                  ],
                   "filter": {}
                 }
               }
@@ -1747,17 +1816,6 @@
                 }
               }
             ],
-            "computed_fields": [
-              {
-                "name": "address",
-                "definition": {
-                  "function": {
-                    "name": "concat_address",
-                    "schema": "public"
-                  }
-                }
-              }
-            ],
             "insert_permissions": [
               {
                 "role": "editor",
@@ -1864,6 +1922,7 @@
                     "latitude",
                     "latitude_geocoded",
                     "latitude_primary",
+                    "law_enforcement_num",
                     "light_cond_id",
                     "local_use",
                     "located_fl",
@@ -2084,6 +2143,7 @@
                     "latitude",
                     "latitude_geocoded",
                     "latitude_primary",
+                    "law_enforcement_num",
                     "light_cond_id",
                     "local_use",
                     "located_fl",
@@ -2303,6 +2363,7 @@
                     "latitude",
                     "latitude_geocoded",
                     "latitude_primary",
+                    "law_enforcement_num",
                     "light_cond_id",
                     "local_use",
                     "located_fl",
@@ -2525,6 +2586,7 @@
                     "latitude",
                     "latitude_geocoded",
                     "latitude_primary",
+                    "law_enforcement_num",
                     "light_cond_id",
                     "local_use",
                     "located_fl",
@@ -2668,11 +2730,11 @@
                 "headers": [
                   {
                     "name": "HASURA_EVENT_NAME",
-                    "value": "crash_update_jurisdiction_production"
+                    "value": "crash_update_jurisdiction_"
                   },
                   {
-                    "name": "HASURA_EVENT_API",
-                    "value": "K476e3TUEohAxCTMTkuRPYSPqD8464u9"
+                    "name": "HASURA_TRIGGER_API_KEY",
+                    "value_from_env": "HASURA_TRIGGER_API_KEY"
                   }
                 ]
               },
@@ -2702,12 +2764,12 @@
                 "webhook": "https://atd-vz-api.austinmobility.io/events",
                 "headers": [
                   {
-                    "name": "HASURA_EVENT_API",
-                    "value": "K476e3TUEohAxCTMTkuRPYSPqD8464u9"
+                    "name": "HASURA_TRIGGER_API_KEY",
+                    "value_from_env": "HASURA_TRIGGER_API_KEY"
                   },
                   {
                     "name": "HASURA_EVENT_NAME",
-                    "value": "crash_update_location_production"
+                    "value": "crash_update_location_"
                   }
                 ]
               }
@@ -2723,7 +2785,11 @@
                 "role": "editor",
                 "permission": {
                   "check": {},
-                  "columns": ["geocoder_id", "description", "name"]
+                  "columns": [
+                    "geocoder_id",
+                    "description",
+                    "name"
+                  ]
                 }
               }
             ],
@@ -2731,14 +2797,22 @@
               {
                 "role": "editor",
                 "permission": {
-                  "columns": ["geocoder_id", "description", "name"],
+                  "columns": [
+                    "geocoder_id",
+                    "description",
+                    "name"
+                  ],
                   "filter": {}
                 }
               },
               {
                 "role": "readonly",
                 "permission": {
-                  "columns": ["geocoder_id", "description", "name"],
+                  "columns": [
+                    "geocoder_id",
+                    "description",
+                    "name"
+                  ],
                   "filter": {}
                 }
               }
@@ -2747,7 +2821,11 @@
               {
                 "role": "editor",
                 "permission": {
-                  "columns": ["geocoder_id", "description", "name"],
+                  "columns": [
+                    "geocoder_id",
+                    "description",
+                    "name"
+                  ],
                   "filter": {},
                   "check": null
                 }
@@ -2962,21 +3040,6 @@
                     "insertion_order": null,
                     "remote_table": {
                       "name": "atd_txdot__ethnicity_lkp",
-                      "schema": "public"
-                    }
-                  }
-                }
-              },
-              {
-                "name": "fatality",
-                "using": {
-                  "manual_configuration": {
-                    "column_mapping": {
-                      "person_id": "person_id"
-                    },
-                    "insertion_order": null,
-                    "remote_table": {
-                      "name": "fatalities",
                       "schema": "public"
                     }
                   }
@@ -3255,21 +3318,6 @@
                     "insertion_order": null,
                     "remote_table": {
                       "name": "atd_txdot__ethnicity_lkp",
-                      "schema": "public"
-                    }
-                  }
-                }
-              },
-              {
-                "name": "fatality",
-                "using": {
-                  "manual_configuration": {
-                    "column_mapping": {
-                      "primaryperson_id": "primaryperson_id"
-                    },
-                    "insertion_order": null,
-                    "remote_table": {
-                      "name": "fatalities",
                       "schema": "public"
                     }
                   }
@@ -4895,27 +4943,7 @@
             "table": {
               "name": "fatalities",
               "schema": "public"
-            },
-            "object_relationships": [
-              {
-                "name": "atd_txdot_crash",
-                "using": {
-                  "foreign_key_constraint_on": "crash_id"
-                }
-              },
-              {
-                "name": "atd_txdot_person",
-                "using": {
-                  "foreign_key_constraint_on": "person_id"
-                }
-              },
-              {
-                "name": "atd_txdot_primaryperson",
-                "using": {
-                  "foreign_key_constraint_on": "primaryperson_id"
-                }
-              }
-            ]
+            }
           },
           {
             "table": {
@@ -5000,6 +5028,44 @@
                 "role": "editor",
                 "permission": {
                   "filter": {}
+                }
+              }
+            ]
+          },
+          {
+            "table": {
+              "name": "locations_with_crash_injury_counts",
+              "schema": "public"
+            },
+            "select_permissions": [
+              {
+                "role": "editor",
+                "permission": {
+                  "columns": [
+                    "description",
+                    "location_id",
+                    "crash_count",
+                    "total_est_comp_cost",
+                    "fatalities_count",
+                    "serious_injury_count"
+                  ],
+                  "filter": {},
+                  "allow_aggregations": true
+                }
+              },
+              {
+                "role": "readonly",
+                "permission": {
+                  "columns": [
+                    "crash_count",
+                    "fatalities_count",
+                    "serious_injury_count",
+                    "total_est_comp_cost",
+                    "description",
+                    "location_id"
+                  ],
+                  "filter": {},
+                  "allow_aggregations": true
                 }
               }
             ]
@@ -5137,7 +5203,11 @@
                 "role": "editor",
                 "permission": {
                   "check": {},
-                  "columns": ["id", "recommendation_id", "partner_id"]
+                  "columns": [
+                    "id",
+                    "recommendation_id",
+                    "partner_id"
+                  ]
                 }
               }
             ],
@@ -5145,14 +5215,22 @@
               {
                 "role": "editor",
                 "permission": {
-                  "columns": ["id", "partner_id", "recommendation_id"],
+                  "columns": [
+                    "id",
+                    "partner_id",
+                    "recommendation_id"
+                  ],
                   "filter": {}
                 }
               },
               {
                 "role": "readonly",
                 "permission": {
-                  "columns": ["id", "partner_id", "recommendation_id"],
+                  "columns": [
+                    "id",
+                    "partner_id",
+                    "recommendation_id"
+                  ],
                   "filter": {}
                 }
               }
@@ -5161,7 +5239,11 @@
               {
                 "role": "editor",
                 "permission": {
-                  "columns": ["id", "partner_id", "recommendation_id"],
+                  "columns": [
+                    "id",
+                    "partner_id",
+                    "recommendation_id"
+                  ],
                   "filter": {},
                   "check": {}
                 }
@@ -5214,14 +5296,22 @@
               {
                 "role": "editor",
                 "permission": {
-                  "columns": ["location_id", "collsn_desc", "count"],
+                  "columns": [
+                    "location_id",
+                    "collsn_desc",
+                    "count"
+                  ],
                   "filter": {}
                 }
               },
               {
                 "role": "readonly",
                 "permission": {
-                  "columns": ["count", "collsn_desc", "location_id"],
+                  "columns": [
+                    "count",
+                    "collsn_desc",
+                    "location_id"
+                  ],
                   "filter": {}
                 }
               }
@@ -5236,14 +5326,22 @@
               {
                 "role": "editor",
                 "permission": {
-                  "columns": ["location_id", "veh_body_styl_desc", "count"],
+                  "columns": [
+                    "location_id",
+                    "veh_body_styl_desc",
+                    "count"
+                  ],
                   "filter": {}
                 }
               },
               {
                 "role": "readonly",
                 "permission": {
-                  "columns": ["count", "location_id", "veh_body_styl_desc"],
+                  "columns": [
+                    "count",
+                    "location_id",
+                    "veh_body_styl_desc"
+                  ],
                   "filter": {}
                 }
               }
