@@ -59,6 +59,8 @@ const Users = () => {
 
   const [userList, setUserList] = useState(null);
 
+  console.log(userList);
+
   useEffect(() => {
     const endpoint = `${process.env.REACT_APP_CR3_API_DOMAIN}/user/list_users`;
     axios

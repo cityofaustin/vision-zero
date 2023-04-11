@@ -335,7 +335,7 @@ def user_test():
 def user_list_users():
     user_dict = current_user._get_current_object()
     if isValidUser(user_dict) and hasUserRole("admin", user_dict):
-        endpoint = f"https://{AUTH0_DOMAIN}/api/v2/users"
+        endpoint = f"https://{AUTH0_DOMAIN}/api/v2/users?page=1&per_page=50"
         headers = {"Authorization": f"Bearer {get_api_token()}"}
         response = requests.get(endpoint, headers=headers).json()
         return jsonify(response)
