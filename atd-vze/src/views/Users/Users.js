@@ -58,8 +58,8 @@ const Users = () => {
   const token = window.localStorage.getItem("id_token");
 
   const [userList, setUserList] = useState(null);
-  const [page, setPage] = useState(0);
 
+  const page = 0;
   const perPage = 100;
 
   useEffect(() => {
@@ -73,7 +73,7 @@ const Users = () => {
       .then(res => {
         setUserList(res.data);
       });
-  }, [token]);
+  }, [token, page, perPage]);
 
   return (
     <Can
