@@ -88,11 +88,17 @@ const RelatedRecordsTable = ({
       <Table responsive>
         <thead>
           <tr>
-            {Object.keys(fieldConfig.fields).map(field => (
-              <th key={`th_${fieldConfig.fields[field].label}`}>
-                {fieldConfig.fields[field].label}
-              </th>
-            ))}
+            {Object.keys(fieldConfig.fields).map(
+              field =>
+                // Dont render columns that should not be rendered (Victim Name if there are no fatalities)
+                ((fieldConfig.fields[field].render &&
+                  fieldConfig.fields[field].render(data)) ||
+                  !fieldConfig.fields[field].render) && (
+                  <th key={`th_${fieldConfig.fields[field].label}`}>
+                    {fieldConfig.fields[field].label}
+                  </th>
+                )
+            )}
           </tr>
         </thead>
         <tbody>
@@ -117,118 +123,129 @@ const RelatedRecordsTable = ({
 
                     const uiType = fieldConfig.fields[field].format;
 
-                    return (
-                      <td key={i}>
-                        {isEditing && (
-                          <form
-                            onSubmit={e => handleSubmit(e, mutationVariable)}
-                          >
-                            {uiType === "text" && (
-                              <Input
-                                type="text"
-                                defaultValue={formatValue(row, field)}
-                                onChange={e =>
-                                  handleInputChange(e, updateFieldKey)
-                                }
-                              />
-                            )}
-                            {uiType === "select" && (
-                              <Input
-                                name={field}
-                                id={field}
-                                onChange={e =>
-                                  handleInputChange(e, updateFieldKey)
-                                }
-                                defaultValue={
-                                  // Check for null values and display as blank
-                                  row[field] &&
-                                  row[field][`${fieldLookupPrefix}_id`] !== null
-                                    ? row[field][`${fieldLookupPrefix}_id`]
+                    // Only render victim name cell for fatalities
+                    if (
+                      field == "fatality" &&
+                      row.injury_severity.injry_sev_desc !== "KILLED"
+                    ) {
+                      return <td></td>;
+                    } else {
+                      return (
+                        <td key={i}>
+                          {isEditing && (
+                            <form
+                              onSubmit={e => handleSubmit(e, mutationVariable)}
+                            >
+                              {uiType === "text" && (
+                                <Input
+                                  type="text"
+                                  defaultValue={formatValue(row, field)}
+                                  onChange={e =>
+                                    handleInputChange(e, updateFieldKey)
+                                  }
+                                />
+                              )}
+                              {uiType === "select" && (
+                                <Input
+                                  name={field}
+                                  id={field}
+                                  onChange={e =>
+                                    handleInputChange(e, updateFieldKey)
+                                  }
+                                  defaultValue={
+                                    // Check for null values and display as blank
+                                    row[field] &&
+                                    row[field][`${fieldLookupPrefix}_id`] !==
+                                      null
+                                      ? row[field][`${fieldLookupPrefix}_id`]
+                                      : ""
+                                  }
+                                  type="select"
+                                >
+                                  {/* Show a NO DATA option only when formatValue is displayed. */}
+                                  {formatValue(row, field) === "NO DATA" && (
+                                    <option value={null}>NO DATA</option>
+                                  )}
+                                  {lookupOptions[
+                                    fieldConfig.fields[field].lookupOptions
+                                  ].map(option => {
+                                    return (
+                                      <option
+                                        value={
+                                          option[`${fieldLookupPrefix}_id`]
+                                        }
+                                        key={option[`${fieldLookupPrefix}_id`]}
+                                      >
+                                        {option[`${fieldLookupPrefix}_desc`]}
+                                      </option>
+                                    );
+                                  })}
+                                </Input>
+                              )}
+                              <div className="d-flex">
+                                <Button
+                                  type="submit"
+                                  block
+                                  color="primary"
+                                  size="sm"
+                                  style={{ minWidth: "50px" }}
+                                  className="btn-pill mt-2 mr-1"
+                                >
+                                  <i className="fa fa-check edit-toggle" />
+                                </Button>
+                                <Button
+                                  type="cancel"
+                                  block
+                                  color="danger"
+                                  size="sm"
+                                  className="btn-pill mt-2"
+                                  style={{ minWidth: "50px" }}
+                                  onClick={e => handleCancelClick(e)}
+                                >
+                                  <i className="fa fa-times edit-toggle"></i>
+                                </Button>
+                              </div>
+                            </form>
+                          )}
+
+                          {!isEditing &&
+                            (fieldConfig.fields[field].badge ? (
+                              <Badge
+                                color={fieldConfig.fields[field].badgeColor(
+                                  formatValue(row, field)
+                                )}
+                              >
+                                {formatValue(row, field)}
+                              </Badge>
+                            ) : (
+                              <span
+                                className={
+                                  formatValue(row, field) === "NO DATA"
+                                    ? "text-muted"
                                     : ""
                                 }
-                                type="select"
                               >
-                                {/* Show a NO DATA option only when formatValue is displayed. */}
-                                {formatValue(row, field) === "NO DATA" && (
-                                  <option value={null}>NO DATA</option>
-                                )}
-                                {lookupOptions[
-                                  fieldConfig.fields[field].lookupOptions
-                                ].map(option => {
-                                  return (
-                                    <option
-                                      value={option[`${fieldLookupPrefix}_id`]}
-                                      key={option[`${fieldLookupPrefix}_id`]}
-                                    >
-                                      {option[`${fieldLookupPrefix}_desc`]}
-                                    </option>
-                                  );
-                                })}
-                              </Input>
-                            )}
-                            <div className="d-flex">
+                                {formatValue(row, field)}
+                              </span>
+                            ))}
+
+                          {fieldConfig.fields[field].editable &&
+                            !isReadOnly(roles) &&
+                            !isEditing && (
                               <Button
-                                type="submit"
                                 block
-                                color="primary"
-                                size="sm"
-                                style={{ minWidth: "50px" }}
-                                className="btn-pill mt-2 mr-1"
-                              >
-                                <i className="fa fa-check edit-toggle" />
-                              </Button>
-                              <Button
-                                type="cancel"
-                                block
-                                color="danger"
+                                color="secondary"
                                 size="sm"
                                 className="btn-pill mt-2"
-                                style={{ minWidth: "50px" }}
-                                onClick={e => handleCancelClick(e)}
+                                style={{ width: "50px" }}
+                                onClick={e => handleEditClick(field, row)}
                               >
-                                <i className="fa fa-times edit-toggle"></i>
+                                <i className="fa fa-pencil edit-toggle" />
                               </Button>
-                            </div>
-                          </form>
-                        )}
-
-                        {!isEditing &&
-                          (fieldConfig.fields[field].badge ? (
-                            <Badge
-                              color={fieldConfig.fields[field].badgeColor(
-                                formatValue(row, field)
-                              )}
-                            >
-                              {formatValue(row, field)}
-                            </Badge>
-                          ) : (
-                            <span
-                              className={
-                                formatValue(row, field) === "NO DATA"
-                                  ? "text-muted"
-                                  : ""
-                              }
-                            >
-                              {formatValue(row, field)}
-                            </span>
-                          ))}
-
-                        {fieldConfig.fields[field].editable &&
-                          !isReadOnly(roles) &&
-                          !isEditing && (
-                            <Button
-                              block
-                              color="secondary"
-                              size="sm"
-                              className="btn-pill mt-2"
-                              style={{ width: "50px" }}
-                              onClick={e => handleEditClick(field, row)}
-                            >
-                              <i className="fa fa-pencil edit-toggle" />
-                            </Button>
-                          )}
-                      </td>
-                    );
+                            )}
+                        </td>
+                      );
+                    }
                   })}
                 </tr>
               );
