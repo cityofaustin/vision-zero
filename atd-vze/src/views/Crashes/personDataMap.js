@@ -1,3 +1,10 @@
+const shouldRender = data => {
+  if (data.find(person => person.injury_severity.injry_sev_desc === "KILLED")) {
+    return true;
+  }
+  return false;
+};
+
 const getInjurySeverityColor = desc => {
   switch (desc) {
     case "UNKNOWN":
@@ -40,6 +47,15 @@ export const primaryPersonDataMap = [
         mutationVariableKey: "personId",
         badge: true,
         badgeColor: getInjurySeverityColor,
+      },
+      fatality: {
+        label: "Victim Name",
+        editable: true,
+        format: "text",
+        lookup_desc: "victim_name",
+        lookupOptions: "fatalities",
+        mutationVariableKey: "personId",
+        render: shouldRender,
       },
       person_type: {
         label: "Type",
@@ -105,6 +121,14 @@ export const personDataMap = [
         mutationVariableKey: "personId",
         badge: true,
         badgeColor: getInjurySeverityColor,
+      },
+      fatality: {
+        label: "Victim Name",
+        editable: true,
+        format: "text",
+        lookup_desc: "victim_name",
+        lookupOptions: "fatalities",
+        mutationVariableKey: "personId",
       },
       person_type: {
         label: "Type",
