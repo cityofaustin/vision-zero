@@ -334,8 +334,10 @@ def user_test():
 @requires_auth
 def user_list_users():
     user_dict = current_user._get_current_object()
+    page = request.args.get("page")
+    per_page = request.arts.get("per_page")
     if isValidUser(user_dict) and hasUserRole("admin", user_dict):
-        endpoint = f"https://{AUTH0_DOMAIN}/api/v2/users?page=1&per_page=50"
+        endpoint = f"https://{AUTH0_DOMAIN}/api/v2/users?page=" + page + "&per_page=" + per_page
         headers = {"Authorization": f"Bearer {get_api_token()}"}
         response = requests.get(endpoint, headers=headers).json()
         return jsonify(response)

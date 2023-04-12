@@ -58,11 +58,14 @@ const Users = () => {
   const token = window.localStorage.getItem("id_token");
 
   const [userList, setUserList] = useState(null);
+  const [page, setPage] = useState(0);
+
+  const perPage = 100;
 
   console.log(userList);
 
   useEffect(() => {
-    const endpoint = `${process.env.REACT_APP_CR3_API_DOMAIN}/user/list_users`;
+    const endpoint = `${process.env.REACT_APP_CR3_API_DOMAIN}/user/list_users?page=${page}&per_page=${perPage}`;
     axios
       .get(endpoint, {
         headers: {
