@@ -24,6 +24,9 @@ export const GET_PEOPLE = gql`
         ethnicity_id
         ethnicity_desc
       }
+      fatality {
+        victim_name
+      }
       unit_nbr
     }
     atd_txdot_person(where: { crash_id: { _eq: $crashId } }) {
@@ -45,6 +48,9 @@ export const GET_PEOPLE = gql`
       ethnicity {
         ethnicity_id
         ethnicity_desc
+      }
+      fatality {
+        victim_name
       }
       unit_nbr
     }
