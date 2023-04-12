@@ -62,8 +62,6 @@ const Users = () => {
 
   const perPage = 100;
 
-  console.log(userList);
-
   useEffect(() => {
     const endpoint = `${process.env.REACT_APP_CR3_API_DOMAIN}/user/list_users?page=${page}&per_page=${perPage}`;
     axios
