@@ -86,6 +86,7 @@ const Users = () => {
   const pageCount = Math.ceil(totalUsers / perPage);
 
   const updatePage = newPageValue => {
+    console.log(userList);
     setUserList(null);
     setPage(newPageValue);
   };
