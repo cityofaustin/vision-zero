@@ -84,7 +84,7 @@ const DefaultHeader = props => {
             </DropdownToggle>
             <DropdownMenu right>
               <DropdownItem header tag="div" className="text-center">
-                <strong>Help</strong>
+                <strong>Support</strong>
               </DropdownItem>
               <DropdownItem
                 href="https://atd.knack.com/dts#new-service-request/?view_249_vars=%7B%22field_398%22%3A%22Bug%20Report%20%E2%80%94%20Something%20is%20not%20working%22%2C%22field_399%22%3A%22Vision%20Zero%20(Editor)%22%7D"
@@ -97,6 +97,12 @@ const DefaultHeader = props => {
                 target="_blank"
               >
                 <i class="fa fa-wrench" /> Request an enhancement&nbsp;&nbsp; <i className="fa fa-external-link" />
+              </DropdownItem>
+              <DropdownItem
+                href="https://ftp.dot.state.tx.us/pub/txdot-info/trf/crash_notifications/cr3_code_sheet.pdf"
+                target="_blank"
+              >
+                <i class="fa fa-briefcase" /> CR3 code sheet&nbsp;&nbsp; <i className="fa fa-external-link" />
               </DropdownItem>
             </DropdownMenu>
         </UncontrolledDropdown>
