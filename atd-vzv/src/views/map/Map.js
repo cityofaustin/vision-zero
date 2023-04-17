@@ -27,12 +27,15 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css"; // Get out-of-the-box icons
 import MapInfoBox from "./InfoBox/MapInfoBox";
 import MapPolygonInfoBox from "./InfoBox/MapPolygonInfoBox";
+import MapGeocoder from "./Geocoder/Geocoder";
 
 export const MAPBOX_TOKEN = `pk.eyJ1Ijoiam9obmNsYXJ5IiwiYSI6ImNrM29wNnB3dDAwcXEzY29zMTU5bWkzOWgifQ.KKvoz6s4NKNHkFVSnGZonw`;
 
 function useMapEventHandler(eventName, callback, mapRef) {
   useEffect(() => {
-    const currentMapRef = mapRef.current;
+    if (!mapRef.current) return;
+
+    const currentMapRef = mapRef.current.getMap();
     const mapDataListener = currentMapRef.on(eventName, function () {
       callback();
     });
@@ -224,11 +227,13 @@ const Map = () => {
       (!!selectedFeature && selectedFeatureLayer === "fatalities") ||
       selectedFeatureLayer === "seriousInjuries"
     ) {
+      const map = mapRef.current.getMap();
+
       selectedFeature = {
         ...selectedFeature,
         properties: {
           ...selectedFeature.properties,
-          pixelCoordinates: mapRef.current.project([
+          pixelCoordinates: map.project([
             parseFloat(selectedFeature.properties.longitude),
             parseFloat(selectedFeature.properties.latitude),
           ]),
@@ -308,11 +313,13 @@ const Map = () => {
 
   // Show/hide type layers based on isMapTypeSet state in Context
   useEffect(() => {
-    const map = mapRef.current;
+    if (!mapRef.current) return;
+
+    const map = mapRef.current.getMap();
 
     const setLayersVisibility = (idArray, visibilityString) => {
       idArray.forEach((id) =>
-        mapRef.current.setLayoutProperty(id, "visibility", visibilityString)
+        map.setLayoutProperty(id, "visibility", visibilityString)
       );
     };
 
@@ -342,7 +349,7 @@ const Map = () => {
       getCursor={_getCursor}
       interactiveLayerIds={interactiveLayerIds}
       onClick={_onSelectCrashPoint}
-      ref={(ref) => (mapRef.current = ref && ref.getMap())}
+      ref={mapRef}
     >
       {/* Provide empty source and layer as target for beforeId params to set order of layers */}
       {baseSourceAndLayer}
@@ -381,6 +388,7 @@ const Map = () => {
       <MapCompassSpinner isSpinning={isMapDataLoading} />
       <MapControls setViewport={setViewport} />
       <MapPolygonFilter setMapPolygon={setMapPolygon} />
+      <MapGeocoder ref={mapRef} handleViewportChange={_onViewportChange} />
     </ReactMapGL>
   );
 };
