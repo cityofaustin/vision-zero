@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { mapRequestFields } from "../summary/queries/socrataQueries";
 
 const convertDateToSocrataFormat = (date, suffix) =>
@@ -61,3 +62,17 @@ export const createMapDataUrl = (
         `${filters.length > 0 ? " AND" : ""} ${whereFilterString || ""}` +
         `${mapTimeWindow}`;
 };
+
+export function useMapEventHandler(eventName, callback, mapRef) {
+  useEffect(() => {
+    if (!mapRef.current) return;
+
+    const currentMapRef = mapRef.current.getMap();
+    const mapDataListener = currentMapRef.on(eventName, function () {
+      callback();
+    });
+    return () => {
+      currentMapRef.off(eventName, mapDataListener);
+    };
+  }, [eventName, callback, mapRef]);
+}

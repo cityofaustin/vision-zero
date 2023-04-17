@@ -4,7 +4,7 @@ import ReactMapGL, { Source, Layer } from "react-map-gl";
 import MapControls from "./MapControls";
 import MapPolygonFilter from "./MapPolygonFilter";
 import MapCompassSpinner from "./MapCompassSpinner";
-import { createMapDataUrl } from "./helpers";
+import { createMapDataUrl, useMapEventHandler } from "./helpers";
 import { mapInit, travisCountyBboxGeoJSON, mapNavBbox } from "./mapData";
 import { crashGeoJSONEndpointUrl } from "../../views/summary/queries/socrataQueries";
 import {
@@ -30,20 +30,6 @@ import MapPolygonInfoBox from "./InfoBox/MapPolygonInfoBox";
 import MapGeocoder from "./Geocoder/Geocoder";
 
 export const MAPBOX_TOKEN = `pk.eyJ1Ijoiam9obmNsYXJ5IiwiYSI6ImNrM29wNnB3dDAwcXEzY29zMTU5bWkzOWgifQ.KKvoz6s4NKNHkFVSnGZonw`;
-
-function useMapEventHandler(eventName, callback, mapRef) {
-  useEffect(() => {
-    if (!mapRef.current) return;
-
-    const currentMapRef = mapRef.current.getMap();
-    const mapDataListener = currentMapRef.on(eventName, function () {
-      callback();
-    });
-    return () => {
-      currentMapRef.off(eventName, mapDataListener);
-    };
-  }, [eventName, callback, mapRef]);
-}
 
 const Map = () => {
   // Set initial map config
