@@ -28,7 +28,7 @@ import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css"; // Get out-of-the-box i
 import MapInfoBox from "./InfoBox/MapInfoBox";
 import MapPolygonInfoBox from "./InfoBox/MapPolygonInfoBox";
 
-const MAPBOX_TOKEN = `pk.eyJ1Ijoiam9obmNsYXJ5IiwiYSI6ImNrM29wNnB3dDAwcXEzY29zMTU5bWkzOWgifQ.KKvoz6s4NKNHkFVSnGZonw`;
+export const MAPBOX_TOKEN = `pk.eyJ1Ijoiam9obmNsYXJ5IiwiYSI6ImNrM29wNnB3dDAwcXEzY29zMTU5bWkzOWgifQ.KKvoz6s4NKNHkFVSnGZonw`;
 
 function useMapEventHandler(eventName, callback, mapRef) {
   useEffect(() => {
@@ -280,9 +280,15 @@ const Map = () => {
 
   const renderSelectedLayer = () => {
     const color = {
-      r: selectedFeature.layer.paint[`${selectedFeature.layer.type}-color`].r * 255,
-      g: selectedFeature.layer.paint[`${selectedFeature.layer.type}-color`].g * 255,
-      b: selectedFeature.layer.paint[`${selectedFeature.layer.type}-color`].b * 255,
+      r:
+        selectedFeature.layer.paint[`${selectedFeature.layer.type}-color`].r *
+        255,
+      g:
+        selectedFeature.layer.paint[`${selectedFeature.layer.type}-color`].g *
+        255,
+      b:
+        selectedFeature.layer.paint[`${selectedFeature.layer.type}-color`].b *
+        255,
       a: selectedFeature.layer.paint[`${selectedFeature.layer.type}-color`].a,
     };
 
