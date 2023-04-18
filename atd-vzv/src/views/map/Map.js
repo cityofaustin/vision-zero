@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { StoreContext } from "../../utils/store";
 import ReactMapGL, { Source, Layer } from "react-map-gl";
 import MapControls from "./MapControls";
@@ -143,10 +143,10 @@ const Map = () => {
     return viewport;
   };
 
-  const _onViewportChange = (viewport) => {
-    viewport = restrictNavAndZoom(viewport);
-    setViewport(viewport);
-  };
+  const _onViewportChange = useCallback((viewport) => {
+    const restrictedViewport = restrictNavAndZoom({ ...viewport });
+    setViewport(restrictedViewport);
+  }, []);
 
   // Change cursor to grab when dragging map and pointer when hovering an interactive layer
   const _getCursor = ({ isHovering, isDragging }) =>

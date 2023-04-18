@@ -2,15 +2,9 @@ import React, { useCallback } from "react";
 import Geocoder from "react-map-gl-geocoder";
 import "react-map-gl-geocoder/dist/mapbox-gl-geocoder.css";
 import { MAPBOX_TOKEN } from "../Map";
-import { mapNavBbox } from "../mapData";
+import { geocoderBbox } from "../mapData";
 
 const MapGeocoder = React.forwardRef(({ handleViewportChange }, ref) => {
-  // Apply the same map navigation bounding box to the geocoder search
-  const { latitude, longitude } = mapNavBbox;
-  const bbox = [longitude.min, latitude.min, longitude.max, latitude.max];
-
-  // linear: true
-
   const handleGeocoderViewportChange = useCallback(
     (viewport) => {
       // Speed up the transition flyTo transition
@@ -29,11 +23,13 @@ const MapGeocoder = React.forwardRef(({ handleViewportChange }, ref) => {
   return (
     <Geocoder
       mapRef={ref}
+      // containerRef={geocoderContainerRef}
       onViewportChange={handleGeocoderViewportChange}
       mapboxApiAccessToken={MAPBOX_TOKEN}
       position="top-left"
+      marker={false}
       // Bounding box for auto-populated results in the search bar
-      bbox={bbox}
+      bbox={geocoderBbox}
     />
   );
 });

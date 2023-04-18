@@ -9,6 +9,17 @@ export const mapNavBbox = {
   latitude: { min: 30.0226, max: 30.6251 },
 };
 
+// Put together the bounding box for the geocoder
+// Do not move this into the geocoder component because it will cause a re-render
+// in of the geocoder component which causes the results dropdown to stay open.
+const { latitude, longitude } = mapNavBbox;
+export const geocoderBbox = [
+  longitude.min,
+  latitude.min,
+  longitude.max,
+  latitude.max,
+];
+
 export const travisCountyBboxGeoJSON = {
   type: "FeatureCollection",
   properties: {
