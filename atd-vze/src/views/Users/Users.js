@@ -86,7 +86,6 @@ const Users = () => {
   const pageCount = Math.ceil(totalUsers / perPage);
 
   const updatePage = newPageValue => {
-    console.log(userList);
     setUserList(null);
     setPage(newPageValue);
   };
@@ -105,52 +104,53 @@ const Users = () => {
                 </CardHeader>
                 <CardBody>
                   <Row className="align-items-center">
-                    <Col xs="12" md="6" className="mb-3">
-                      <Row className="d-flex justify-content-md-start justify-content-center ml-0">
-                        <Link to="/users/add" className="link">
-                          <Button color="primary">
-                            <i className="fa fa-user-plus"></i> Add User
-                          </Button>
-                        </Link>
-                      </Row>
+                    <Col
+                      xs="12"
+                      md="6"
+                      className="d-flex justify-content-md-start justify-content-center ml-0 mb-3"
+                    >
+                      <Link to="/users/add" className="link">
+                        <Button color="primary">
+                          <i className="fa fa-user-plus"></i> Add User
+                        </Button>
+                      </Link>
                     </Col>
-                    <Col xs="12" md="6">
-                      <Row className="d-flex justify-content-md-end justify-content-center mr-0">
-                        <Pagination>
-                          <PaginationItem disabled={page <= 0}>
-                            <PaginationLink
-                              first
-                              onClick={() => updatePage(0)}
-                            />
-                          </PaginationItem>
-                          <PaginationItem disabled={page <= 0}>
-                            <PaginationLink
-                              previous
-                              onClick={() => updatePage(page - 1)}
-                            />
-                          </PaginationItem>
-                          <PaginationItem disabled>
-                            <PaginationLink>
-                              Page {page + 1}/{pageCount}
-                            </PaginationLink>
-                          </PaginationItem>
-                          <PaginationItem disabled>
-                            <PaginationLink>Users: {totalUsers}</PaginationLink>
-                          </PaginationItem>
-                          <PaginationItem disabled={page >= pageCount - 1}>
-                            <PaginationLink
-                              next
-                              onClick={() => updatePage(page + 1)}
-                            />
-                          </PaginationItem>
-                          <PaginationItem disabled={page >= pageCount - 1}>
-                            <PaginationLink
-                              last
-                              onClick={() => updatePage(pageCount - 1)}
-                            />
-                          </PaginationItem>
-                        </Pagination>
-                      </Row>
+                    <Col
+                      xs="12"
+                      md="6"
+                      className="d-flex justify-content-md-end justify-content-center mr-0"
+                    >
+                      <Pagination>
+                        <PaginationItem disabled={page <= 0}>
+                          <PaginationLink first onClick={() => updatePage(0)} />
+                        </PaginationItem>
+                        <PaginationItem disabled={page <= 0}>
+                          <PaginationLink
+                            previous
+                            onClick={() => updatePage(page - 1)}
+                          />
+                        </PaginationItem>
+                        <PaginationItem disabled>
+                          <PaginationLink>
+                            Page {page + 1}/{pageCount}
+                          </PaginationLink>
+                        </PaginationItem>
+                        <PaginationItem disabled>
+                          <PaginationLink>Users: {totalUsers}</PaginationLink>
+                        </PaginationItem>
+                        <PaginationItem disabled={page >= pageCount - 1}>
+                          <PaginationLink
+                            next
+                            onClick={() => updatePage(page + 1)}
+                          />
+                        </PaginationItem>
+                        <PaginationItem disabled={page >= pageCount - 1}>
+                          <PaginationLink
+                            last
+                            onClick={() => updatePage(pageCount - 1)}
+                          />
+                        </PaginationItem>
+                      </Pagination>
                     </Col>
                   </Row>
                   {!!userList ? (
