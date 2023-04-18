@@ -14,7 +14,6 @@ const MapGeocoder = React.forwardRef(({ handleViewportChange }, ref) => {
       mapRef={ref}
       onViewportChange={handleViewportChange}
       mapboxApiAccessToken={MAPBOX_TOKEN}
-      options={{ flyTo: false }}
       position="top-left"
       // Bounding box for auto-populated results in the search bar
       bbox={bbox}
