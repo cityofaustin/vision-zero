@@ -63,6 +63,12 @@ export const createMapDataUrl = (
         `${mapTimeWindow}`;
 };
 
+/**
+ * Listen for a Mapbox map event name, invoke a callback, and clean up
+ * @param {String} eventName - name of Mapbox map event
+ * @param {Function} callback - function to call when event is triggered
+ * @param {Object} mapRef - React ref to Mapbox map
+ */
 export function useMapEventHandler(eventName, callback, mapRef) {
   useEffect(() => {
     if (!mapRef.current) return;
@@ -71,6 +77,7 @@ export function useMapEventHandler(eventName, callback, mapRef) {
     const mapDataListener = currentMapRef.on(eventName, function () {
       callback();
     });
+
     return () => {
       currentMapRef.off(eventName, mapDataListener);
     };
