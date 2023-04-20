@@ -558,11 +558,21 @@ def insert_crash_change_template(new_record_dict, differences, crash_id):
     except:
         print("Failed to convert crash_date")
 
+    if "rpt_sec_speed_limit" in new_record_dict:
+        print("🔥")
+        print(new_record_dict["rpt_sec_speed_limit"])
+        print(type(new_record_dict["rpt_sec_speed_limit"]))
+        #print(isinstance(new_record_dict[key], Decimal))
+
     for key in new_record_dict:
         if isinstance(new_record_dict[key], datetime.date):
             new_record_dict[key] = new_record_dict[key].strftime("%Y-%m-%d")
         if isinstance(new_record_dict[key], datetime.time):
             new_record_dict[key] = new_record_dict[key].strftime("%H:%M:%S")
+
+        # CRIS or the upstream ETL is representing this datum as a float, so cast it back
+        if key == "rpt_sec_speed_limit": 
+            new_record_dict[key] = int(new_record_dict[key])
 
     # Turn the dictionary into a character-escaped json string
     new_record_escaped = json.dumps(json.dumps(new_record_dict), default=str)
