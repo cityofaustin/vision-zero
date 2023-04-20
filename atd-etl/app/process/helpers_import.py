@@ -558,12 +558,6 @@ def insert_crash_change_template(new_record_dict, differences, crash_id):
     except:
         print("Failed to convert crash_date")
 
-    if "rpt_sec_speed_limit" in new_record_dict:
-        print("🔥")
-        print(new_record_dict["rpt_sec_speed_limit"])
-        print(type(new_record_dict["rpt_sec_speed_limit"]))
-        #print(isinstance(new_record_dict[key], Decimal))
-
     for key in new_record_dict:
         if isinstance(new_record_dict[key], datetime.date):
             new_record_dict[key] = new_record_dict[key].strftime("%Y-%m-%d")
