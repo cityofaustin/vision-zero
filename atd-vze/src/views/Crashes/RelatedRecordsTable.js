@@ -11,6 +11,7 @@ const RelatedRecordsTable = ({
   keyField,
   lookupOptions,
   mutation,
+  secondaryMutation,
   refetch,
   ...props
 }) => {
@@ -44,16 +45,16 @@ const RelatedRecordsTable = ({
     setFormData(newFormState);
   };
 
-  const handleSubmit = (e, mutationVariableKey) => {
+  const handleSubmit = (e, mutationVariableKey, updateMutation) => {
     e.preventDefault();
 
     // Append form data state to mutation template
-    mutation.variables.changes = { ...formData };
+    updateMutation.variables.changes = { ...formData };
     // TODO: instead of personId, use a generic key variable
     // and convert it to camelcase for the mutation object
-    mutation.variables[mutationVariableKey] = editRow[keyField];
+    updateMutation.variables[mutationVariableKey] = editRow[keyField];
 
-    props.client.mutate(mutation).then(res => {
+    props.client.mutate(updateMutation).then(res => {
       if (!res.errors) {
         refetch();
       } else {
@@ -88,17 +89,11 @@ const RelatedRecordsTable = ({
       <Table responsive>
         <thead>
           <tr>
-            {Object.keys(fieldConfig.fields).map(
-              field =>
-                // Dont render columns that should not be rendered (Victim Name if there are no fatalities)
-                ((fieldConfig.fields[field].render &&
-                  fieldConfig.fields[field].render(data)) ||
-                  !fieldConfig.fields[field].render) && (
-                  <th key={`th_${fieldConfig.fields[field].label}`}>
-                    {fieldConfig.fields[field].label}
-                  </th>
-                )
-            )}
+            {Object.keys(fieldConfig.fields).map(field => (
+              <th key={`th_${fieldConfig.fields[field].label}`}>
+                {fieldConfig.fields[field].label}
+              </th>
+            ))}
           </tr>
         </thead>
         <tbody>
@@ -125,16 +120,24 @@ const RelatedRecordsTable = ({
 
                     // Only render victim name cell for fatalities
                     if (
-                      field == "fatality" &&
+                      field === "fatality" &&
                       row.injury_severity.injry_sev_desc !== "KILLED"
                     ) {
                       return <td></td>;
                     } else {
+                      const updateMutation =
+                        field === "fatality" ? secondaryMutation : mutation;
                       return (
                         <td key={i}>
                           {isEditing && (
                             <form
-                              onSubmit={e => handleSubmit(e, mutationVariable)}
+                              onSubmit={e =>
+                                handleSubmit(
+                                  e,
+                                  mutationVariable,
+                                  updateMutation
+                                )
+                              }
                             >
                               {uiType === "text" && (
                                 <Input
