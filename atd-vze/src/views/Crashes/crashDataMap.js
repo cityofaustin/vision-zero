@@ -145,6 +145,11 @@ export const crashDataMap = [
         lookupOptions: "atd_txdot__y_n_lkp",
         lookupPrefix: "y_n",
       },
+      law_enforcement_num: {
+        label: "Law Enforcement Number",
+        editable: true,
+        uiType: "text",
+      },
     },
   },
   {

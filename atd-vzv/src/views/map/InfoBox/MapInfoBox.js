@@ -29,7 +29,7 @@ const MapInfoBox = React.memo(
     const buildSeriousInjuriesOrFatalitiesConfig = (info) => [
       {
         title: "Date/Time",
-        content: moment(info.crash_date).format("MM/DD/YYYY HH:MM A"),
+        content: moment(info.crash_date).format("MM/DD/YYYY HH:mm A"),
       },
       { title: "Fatalities", content: info.death_cnt },
       { title: "Serious Injuries", content: info.sus_serious_injry_cnt },

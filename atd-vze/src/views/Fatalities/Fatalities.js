@@ -1,6 +1,7 @@
 import React from "react";
 import { withApollo } from "react-apollo";
 
+import { subYears } from "date-fns";
 import GridTable from "../../Components/GridTable";
 import gqlAbstract from "../../queries/gqlAbstract";
 import { fatalityGridTableColumns } from "./fatalityGridTableParameters";
@@ -14,7 +15,7 @@ let queryConf = {
   },
   table: "view_fatalities",
   single_item: "crashes",
-  showDateRange: false,
+  showDateRange: true,
   columns: fatalityGridTableColumns,
   order_by: {},
   where: {},
@@ -22,10 +23,14 @@ let queryConf = {
   offset: 0,
 };
 
+const minDate = subYears(new Date(), 10);
+
 const fatalitiesQuery = new gqlAbstract(queryConf);
 
 const Fatalities = () => {
-  return <GridTable query={fatalitiesQuery} title={"Fatalities"} />;
+  return (
+    <GridTable query={fatalitiesQuery} title={"Fatalities"} minDate={minDate} />
+  );
 };
 
 export default withApollo(Fatalities);
