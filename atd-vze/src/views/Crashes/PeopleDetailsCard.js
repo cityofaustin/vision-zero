@@ -19,6 +19,7 @@ import {
   UPDATE_PRIMARYPERSON,
   UPDATE_PERSON,
 } from "../../queries/people";
+import { UPDATE_FATALITY } from "../../queries/fatalities";
 
 const PeopleDetailsCard = ({ isExpanded, toggleAccordion, ...props }) => {
   const crashId = props.match.params.id;
@@ -41,6 +42,14 @@ const PeopleDetailsCard = ({ isExpanded, toggleAccordion, ...props }) => {
     mutation: UPDATE_PRIMARYPERSON,
     variables: {
       crashId: crashId,
+      personId: "",
+      changes: {},
+    },
+  };
+
+  const fatalityMutation = {
+    mutation: UPDATE_FATALITY,
+    variables: {
       personId: "",
       changes: {},
     },
@@ -83,6 +92,7 @@ const PeopleDetailsCard = ({ isExpanded, toggleAccordion, ...props }) => {
             keyField={"primaryperson_id"}
             lookupOptions={lookupSelectOptions}
             mutation={primaryPersonMutation}
+            secondaryMutation={fatalityMutation}
             refetch={refetch}
             {...props}
           />
@@ -96,6 +106,7 @@ const PeopleDetailsCard = ({ isExpanded, toggleAccordion, ...props }) => {
               keyField={"person_id"}
               lookupOptions={lookupSelectOptions}
               mutation={personMutation}
+              secondaryMutation={fatalityMutation}
               refetch={refetch}
               {...props}
             />
