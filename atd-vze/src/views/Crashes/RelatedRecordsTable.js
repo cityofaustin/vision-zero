@@ -196,7 +196,7 @@ const RelatedRecordsTable = ({
                           (fieldConfig.fields[field].badge ? (
                             <Badge
                               color={fieldConfig.fields[field].badgeColor(
-                                formatValue(row, field)
+                                row
                               )}
                             >
                               {formatValue(row, field)}
