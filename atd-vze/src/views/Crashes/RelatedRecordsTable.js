@@ -132,11 +132,8 @@ const RelatedRecordsTable = ({
 
                       const uiType = fieldConfig.fields[field].format;
 
-                      // Render blank cell in victim name column if not a fatality
-                      if (
-                        field === "fatality" &&
-                        row.injury_severity.injry_sev_desc !== "KILLED"
-                      ) {
+                      // Render blank cell in victim name column if not a fatal injury
+                      if (field === "fatality" && row.prsn_injry_sev_id !== 4) {
                         return <td></td>;
                       } else {
                         const updateMutation =
