@@ -1,6 +1,7 @@
 // Check if victim name column should render
 const shouldRenderVictimName = data => {
-  if (data.find(person => person.injury_severity.injry_sev_desc === "KILLED")) {
+  console.log(data);
+  if (data.find(person => person.prsn_injry_sev_id === 4)) {
     return true;
   }
   return false;
