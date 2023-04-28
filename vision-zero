@@ -120,6 +120,7 @@ def replicateDb(args):
         "--no-owner",
         "--no-privileges",
         "--if-exists",
+        "--exclude-schema=import*"
         #"--table", "atd_txdot__airbag_lkp",
         #"-t", "atd_txdot_crashes",
     ]
