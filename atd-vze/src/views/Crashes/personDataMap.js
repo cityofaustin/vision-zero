@@ -1,18 +1,16 @@
-const getInjurySeverityColor = desc => {
-  switch (desc) {
-    case "UNKNOWN":
+const getInjurySeverityColor = personRecord => {
+  switch (personRecord["prsn_injry_sev_id"]) {
+    case 0: // UNKNOWN
       return "muted";
-    case "NOT INJURED":
+    case 5: // NOT INJURED
       return "primary";
-    case "SUSPECTED SERIOUS INJURY" || "INCAPACITATING INJURY":
-      // INCAPACITATING INJURY is deprecated terminology but including
-      // a fallback here just in case.
+    case 1: // SUSPECTED INCAPACITATING INJURY
       return "warning";
-    case "NON-INCAPACITATING INJURY":
+    case 2: // SUSPECTED MINOR INJURY
       return "warning";
-    case "POSSIBLE INJURY":
+    case 3: // POSSIBLE INJURY
       return "warning";
-    case "KILLED":
+    case 4: // FATAL INJURY
       return "danger";
     default:
       break;
