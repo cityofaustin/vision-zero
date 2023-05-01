@@ -282,6 +282,10 @@ latitude_primary
 longitude_primary
 crash_speed_limit
 death_cnt
+recommendation { text }
+recommendation { update }
+recommendation { atd__recommendation_status_lkp { description } }
+recommendation { recommendations_partners { atd__coordination_partners_lkp { description }} }
 `;
 
 export const locationCrashesQueryExportFieldsNonCR3 = `
