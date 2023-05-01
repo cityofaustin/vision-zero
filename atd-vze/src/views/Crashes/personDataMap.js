@@ -1,10 +1,6 @@
 // Check if victim name column should render
 const shouldRenderVictimName = data => {
-  console.log(data);
-  if (data.find(person => person.prsn_injry_sev_id === 4)) {
-    return true;
-  }
-  return false;
+  return data.some(person => person.prsn_injry_sev_id === 4);
 };
 
 const getInjurySeverityColor = desc => {
@@ -58,7 +54,7 @@ export const primaryPersonDataMap = [
         updateFieldKey: "victim_name",
         lookupOptions: "fatalities",
         mutationVariableKey: "personId",
-        render: shouldRenderVictimName,
+        shouldRender: shouldRenderVictimName,
       },
       person_type: {
         label: "Type",
@@ -133,7 +129,7 @@ export const personDataMap = [
         updateFieldKey: "victim_name",
         lookupOptions: "fatalities",
         mutationVariableKey: "personId",
-        render: shouldRenderVictimName,
+        shouldRender: shouldRenderVictimName,
       },
       person_type: {
         label: "Type",
