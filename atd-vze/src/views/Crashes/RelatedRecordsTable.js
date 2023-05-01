@@ -92,8 +92,8 @@ const RelatedRecordsTable = ({
             {Object.keys(fieldConfig.fields)
               // Filter out victim name column if there are no fatalities
               .filter(field =>
-                fieldConfig.fields[field].render
-                  ? fieldConfig.fields[field].render(data)
+                fieldConfig.fields[field].shouldRender
+                  ? fieldConfig.fields[field].shouldRender(data)
                   : true
               )
               .map(field => (
@@ -112,8 +112,8 @@ const RelatedRecordsTable = ({
                   {Object.keys(fieldConfig.fields)
                     // Filter out victim name column if there are no fatalities
                     .filter(field =>
-                      fieldConfig.fields[field].render
-                        ? fieldConfig.fields[field].render(data)
+                      fieldConfig.fields[field].shouldRender
+                        ? fieldConfig.fields[field].shouldRender(data)
                         : true
                     )
                     .map((field, i) => {
