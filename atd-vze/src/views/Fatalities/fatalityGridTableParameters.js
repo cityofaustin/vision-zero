@@ -55,13 +55,13 @@ export const fatalityGridTableColumns = {
     label_table: "Victim Name",
     type: "String",
   },
-  "recommendation { atd__recommendation_status_lkp { description } }": {
+  "recommendation { atd__recommendation_status_lkp { rec_status_desc } }": {
     searchable: false,
     sortable: true,
     label_table: "Current FRB Status",
     type: "String",
   },
-  "recommendation { text }": {
+  "recommendation { rec_text }": {
     searchable: false,
     sortable: false,
     label_table: "FRB Recommendation",
