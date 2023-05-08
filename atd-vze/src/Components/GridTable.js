@@ -5,7 +5,6 @@ import { useQuery, useLazyQuery } from "@apollo/react-hooks";
 import { withApollo } from "react-apollo";
 import { format, subYears } from "date-fns";
 
-
 import {
   Card,
   CardBody,
@@ -32,7 +31,7 @@ import GridTableDoughnut from "./GridTableDoughnut";
 import GridTableHorizontalBar from "./GridTableHorizontalBar";
 import GridTableFilterBadges from "./GridTableFilterBadges";
 
-const codeName = 'jester';
+const codeName = "jester";
 
 const GridTable = ({
   title,
