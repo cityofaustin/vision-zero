@@ -48,7 +48,6 @@ const GridExportData = ({ query, columnsToExport, totalRecords }) => {
 
   // Remove admin-only columns from columnsToExport for users without admin/it supervisor permissions
   if (!(isAdmin(roles) || isItSupervisor(roles))) {
-    console.log("not admin");
     adminColumns.forEach(col => {
       columnsToExport = columnsToExport.replace(col, "");
     });
