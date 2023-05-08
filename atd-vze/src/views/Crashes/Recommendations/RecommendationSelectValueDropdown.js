@@ -16,7 +16,6 @@ const RecommendationSelectValueDropdown = ({
 
   const handleOptionClick = e => {
     const { id } = e.target;
-
     // Mutation expect lookup IDs as integers
     const valuesObject = { [field]: parseInt(id) };
     onOptionClick(valuesObject);
@@ -24,7 +23,7 @@ const RecommendationSelectValueDropdown = ({
 
   // Add a null option to enable users to clear out the value
   const makeOptionsWithNullOption = options => [
-    { id: null, description: "None" },
+    { id: null, rec_status_desc: "None" },
     ...options,
   ];
 
@@ -54,7 +53,7 @@ const RecommendationSelectValueDropdown = ({
               onClick={handleOptionClick}
               className="pl-2"
             >
-              {option.description}
+              {option.rec_status_desc}
             </DropdownItem>
           );
         })}
