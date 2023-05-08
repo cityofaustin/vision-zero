@@ -31,7 +31,7 @@ const RecommendationMultipleSelectDropdown = ({
   return (
     <Multiselect
       options={options}
-      displayValue={"description"}
+      displayValue={"coord_partner_desc"}
       showCheckbox
       selectedValues={
         partners
