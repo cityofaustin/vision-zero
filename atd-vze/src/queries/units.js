@@ -20,6 +20,7 @@ export const GET_UNITS = gql`
         movement_id
       }
       unit_description {
+        veh_unit_desc_id
         veh_unit_desc_desc
       }
       make {
@@ -29,6 +30,7 @@ export const GET_UNITS = gql`
         veh_mod_desc
       }
       body_style {
+        veh_body_styl_id
         veh_body_styl_desc
       }
       death_cnt

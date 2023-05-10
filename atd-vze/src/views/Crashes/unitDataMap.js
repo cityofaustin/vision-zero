@@ -9,6 +9,7 @@ export const unitDataMap = [
         editable: false,
       },
       unit_description: {
+        edit_field_name: "unit_desc_id",
         label: "Type",
         editable: true,
         format: "select",
@@ -19,6 +20,7 @@ export const unitDataMap = [
         mutationVariableKey: "unitId",
       },
       body_style: {
+        edit_field_name: "veh_body_styl_id",
         label: "Body Style",
         editable: true,
         format: "select",
