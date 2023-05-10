@@ -3,6 +3,8 @@ import { Table, Badge, Button, Input } from "reactstrap";
 
 import { useAuth0, isReadOnly } from "../../auth/authContext";
 
+import VictimNameRecord from "./VictimNameRecord";
+
 const RelatedRecordsTable = ({
   fieldConfig,
   data,
@@ -93,7 +95,8 @@ const RelatedRecordsTable = ({
               // Filter out victim name column if there are no fatalities
               .filter(field =>
                 fieldConfig.fields[field].shouldRender
-                  ? fieldConfig.fields[field].shouldRender(data)
+                  ? fieldConfig.fields[field].shouldRender(data) &&
+                    field === "victim_name"
                   : true
               )
               .map(field => (
@@ -117,25 +120,36 @@ const RelatedRecordsTable = ({
                         : true
                     )
                     .map((field, i) => {
-                      const isEditing = editField === field && row === editRow;
-
-                      const fieldLookupPrefix =
-                        fieldConfig.fields[field].lookupPrefix;
-
-                      const updateFieldKey = fieldConfig.fields[field]
-                        .updateFieldKey
-                        ? fieldConfig.fields[field].updateFieldKey
-                        : field;
-
-                      const mutationVariable =
-                        fieldConfig.fields[field].mutationVariableKey;
-
-                      const uiType = fieldConfig.fields[field].format;
-
-                      // Render blank cell in victim name column if not a fatal injury
-                      if (field === "fatality" && row.prsn_injry_sev_id !== 4) {
-                        return <td></td>;
+                      if (field === "victim_name") {
+                        return (
+                          <VictimNameRecord
+                            i={i}
+                            data={row}
+                            refetch={refetch}
+                            mutation={mutation}
+                            fields={fieldConfig.fields["victim_name"].subfields}
+                            keyField={keyField}
+                            updateMutation={mutation}
+                            {...props}
+                          ></VictimNameRecord>
+                        );
                       } else {
+                        const isEditing =
+                          editField === field && row === editRow;
+
+                        const fieldLookupPrefix =
+                          fieldConfig.fields[field].lookupPrefix;
+
+                        const updateFieldKey = fieldConfig.fields[field]
+                          .updateFieldKey
+                          ? fieldConfig.fields[field].updateFieldKey
+                          : field;
+
+                        const mutationVariable =
+                          fieldConfig.fields[field].mutationVariableKey;
+
+                        const uiType = fieldConfig.fields[field].format;
+
                         const updateMutation =
                           field === "fatality" ? secondaryMutation : mutation;
                         return (
