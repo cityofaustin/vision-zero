@@ -46,15 +46,23 @@ export const primaryPersonDataMap = [
         badge: true,
         badgeColor: getInjurySeverityColor,
       },
-      fatality: {
+      victim_name: {
         label: "Victim Name",
         editable: true,
         format: "text",
-        lookup_desc: "victim_name",
-        updateFieldKey: "victim_name",
-        lookupOptions: "fatalities",
         mutationVariableKey: "personId",
         shouldRender: shouldRenderVictimName,
+        subfields: {
+          prsn_first_name: {
+            label: "First",
+          },
+          prsn_middle_name: {
+            label: "Middle",
+          },
+          prsn_last_name: {
+            label: "Last",
+          },
+        },
       },
       person_type: {
         label: "Type",
@@ -121,15 +129,22 @@ export const personDataMap = [
         badge: true,
         badgeColor: getInjurySeverityColor,
       },
-      fatality: {
+      victim_name: {
         label: "Victim Name",
         editable: true,
         format: "text",
-        lookup_desc: "victim_name",
-        updateFieldKey: "victim_name",
-        lookupOptions: "fatalities",
-        mutationVariableKey: "personId",
         shouldRender: shouldRenderVictimName,
+        subfields: {
+          prsn_first_name: {
+            label: "First",
+          },
+          prsn_middle_name: {
+            label: "Middle",
+          },
+          prsn_last_name: {
+            label: "Last",
+          },
+        },
       },
       person_type: {
         label: "Type",
