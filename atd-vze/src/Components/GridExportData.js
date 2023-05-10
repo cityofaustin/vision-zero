@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { withApollo } from "react-apollo";
-import { useAuth0, isAdmin, isItSupervisor } from "../auth/authContext";
 import { useLazyQuery } from "@apollo/react-hooks";
 import { formatISO } from "date-fns";
 import { CSVLink } from "react-csv";
@@ -32,23 +31,18 @@ const StyledSaveLink = styled.i`
   }
 `;
 
-const GridExportData = ({ query, columnsToExport, totalRecords }) => {
+const GridExportData = ({
+  query,
+  columnsToExport,
+  totalRecords,
+  roleSpecificColumns,
+  hasSpecificRole,
+}) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const { getRoles } = useAuth0();
-  const roles = getRoles();
-
-  // Columns that can only be exported by admins & it supervisors
-  const adminColumns = [
-    "recommendation { rec_text }",
-    "recommendation { rec_update }",
-    "recommendation { atd__recommendation_status_lkp { rec_status_desc } }",
-    "recommendation { recommendations_partners { atd__coordination_partners_lkp { coord_partner_desc }} }",
-  ];
-
-  // Remove admin-only columns from columnsToExport for users without admin/it supervisor permissions
-  if (!(isAdmin(roles) || isItSupervisor(roles))) {
-    adminColumns.forEach(col => {
+  // Remove role specific columns from export for users without correct roles
+  if (hasSpecificRole != null && !hasSpecificRole) {
+    roleSpecificColumns.forEach(col => {
       columnsToExport = columnsToExport.replace(col, "");
     });
   }
