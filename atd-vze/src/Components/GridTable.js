@@ -43,6 +43,8 @@ const GridTable = ({
   widgetsConfig,
   helperText,
   minDate,
+  roleSpecificColumns,
+  hasSpecificRole,
 }) => {
   // Load table filters from localStorage by title
   const savedFilterState = JSON.parse(
@@ -527,6 +529,8 @@ const GridTable = ({
                       query={query}
                       columnsToExport={columnsToExport}
                       totalRecords={totalRecords}
+                      roleSpecificColumns={roleSpecificColumns}
+                      hasSpecificRole={hasSpecificRole}
                     />
                   )}
                 </ButtonGroup>
