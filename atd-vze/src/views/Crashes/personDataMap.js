@@ -54,7 +54,7 @@ export const primaryPersonDataMap = [
           prsn_first_name: {
             label: "First",
           },
-          prsn_middle_name: {
+          prsn_mid_name: {
             label: "Middle",
           },
           prsn_last_name: {
@@ -132,11 +132,12 @@ export const personDataMap = [
         editable: true,
         format: "text",
         shouldRender: shouldRenderVictimName,
+        mutationVariableKey: "personId",
         subfields: {
           prsn_first_name: {
             label: "First",
           },
-          prsn_middle_name: {
+          prsn_mid_name: {
             label: "Middle",
           },
           prsn_last_name: {
