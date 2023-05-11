@@ -139,6 +139,7 @@ const RelatedRecordsTable = ({
                               }
                               keyField={keyField}
                               mutation={mutation}
+                              {...props}
                             ></VictimNameRecord>
                           );
                         } else {
