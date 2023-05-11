@@ -1,7 +1,12 @@
 import React, { useState } from "react";
 import { Table, Badge, Button, Input } from "reactstrap";
 
-import { useAuth0, isReadOnly } from "../../auth/authContext";
+import {
+  useAuth0,
+  isReadOnly,
+  isAdmin,
+  isItSupervisor,
+} from "../../auth/authContext";
 
 import VictimNameRecord from "./VictimNameRecord";
 
@@ -13,7 +18,6 @@ const RelatedRecordsTable = ({
   keyField,
   lookupOptions,
   mutation,
-  secondaryMutation,
   refetch,
   ...props
 }) => {
@@ -40,23 +44,25 @@ const RelatedRecordsTable = ({
   };
 
   const handleInputChange = (e, updateFieldKey) => {
+    // Change new value to null if it only contains whitespaces
+    const newValue = e.target.value.trim().length === 0 ? null : e.target.value;
     const newFormState = Object.assign(formData, {
-      [updateFieldKey]: e.target.value,
+      [updateFieldKey]: newValue,
       updated_by: localStorage.getItem("hasura_user_email"),
     });
     setFormData(newFormState);
   };
 
-  const handleSubmit = (e, mutationVariableKey, updateMutation) => {
+  const handleSubmit = (e, mutationVariableKey, mutation) => {
     e.preventDefault();
 
     // Append form data state to mutation template
-    updateMutation.variables.changes = { ...formData };
+    mutation.variables.changes = { ...formData };
     // TODO: instead of personId, use a generic key variable
     // and convert it to camelcase for the mutation object
-    updateMutation.variables[mutationVariableKey] = editRow[keyField];
+    mutation.variables[mutationVariableKey] = editRow[keyField];
 
-    props.client.mutate(updateMutation).then(res => {
+    props.client.mutate(mutation).then(res => {
       if (!res.errors) {
         refetch();
       } else {
@@ -92,11 +98,11 @@ const RelatedRecordsTable = ({
         <thead>
           <tr>
             {Object.keys(fieldConfig.fields)
-              // Filter out victim name column if there are no fatalities
+              // Filter out victim name column if there are no fatalities in the table
               .filter(field =>
                 fieldConfig.fields[field].shouldRender
                   ? fieldConfig.fields[field].shouldRender(data) &&
-                    field === "victim_name"
+                    (isItSupervisor(roles) || isAdmin(roles))
                   : true
               )
               .map(field => (
@@ -113,26 +119,32 @@ const RelatedRecordsTable = ({
               return (
                 <tr key={`table-${tableName}-${row[keyField]}`}>
                   {Object.keys(fieldConfig.fields)
-                    // Filter out victim name column if there are no fatalities
+                    // Filter out victim name column if there are no fatalities in the table
                     .filter(field =>
                       fieldConfig.fields[field].shouldRender
-                        ? fieldConfig.fields[field].shouldRender(data)
+                        ? fieldConfig.fields[field].shouldRender(data) &&
+                          (isItSupervisor(roles) || isAdmin(roles))
                         : true
                     )
                     .map((field, i) => {
+                      // Render victim name cell in victim name column if row is a fatality
                       if (field === "victim_name") {
-                        return (
-                          <VictimNameRecord
-                            i={i}
-                            data={row}
-                            refetch={refetch}
-                            mutation={mutation}
-                            fields={fieldConfig.fields["victim_name"].subfields}
-                            keyField={keyField}
-                            updateMutation={mutation}
-                            {...props}
-                          ></VictimNameRecord>
-                        );
+                        if (row.prsn_injry_sev_id === 4) {
+                          return (
+                            <VictimNameRecord
+                              data={row}
+                              refetch={refetch}
+                              nameFieldConfig={
+                                fieldConfig.fields["victim_name"]
+                              }
+                              keyField={keyField}
+                              mutation={mutation}
+                            ></VictimNameRecord>
+                          );
+                        } else {
+                          // Render empty cell in victim name column if row is not a fatality
+                          return <td></td>;
+                        }
                       } else {
                         const isEditing =
                           editField === field && row === editRow;
@@ -150,24 +162,18 @@ const RelatedRecordsTable = ({
 
                         const uiType = fieldConfig.fields[field].format;
 
-                        const updateMutation =
-                          field === "fatality" ? secondaryMutation : mutation;
                         return (
                           <td key={i}>
                             {isEditing && (
                               <form
                                 onSubmit={e =>
-                                  handleSubmit(
-                                    e,
-                                    mutationVariable,
-                                    updateMutation
-                                  )
+                                  handleSubmit(e, mutationVariable, mutation)
                                 }
                               >
                                 {uiType === "text" && (
                                   <Input
                                     type="text"
-                                    defaultValue={formatValue(row, field)}
+                                    defaultValue={row[field]}
                                     onChange={e =>
                                       handleInputChange(e, updateFieldKey)
                                     }
