@@ -18,6 +18,7 @@ services:
       HASURA_GRAPHQL_DATABASE_URL: postgres://visionzero:visionzero@postgis:5432/atd_vz_data
       HASURA_GRAPHQL_ENABLE_CONSOLE: "true"
       HASURA_GRAPHQL_CONSOLE_ASSETS_DIR: /srv/console-assets
+      HASURA_TRIGGER_API_KEY: "thisisasecret"
   db-tools:
     container_name: visionzero_download_db_data
     logging:

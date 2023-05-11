@@ -564,6 +564,10 @@ def insert_crash_change_template(new_record_dict, differences, crash_id):
         if isinstance(new_record_dict[key], datetime.time):
             new_record_dict[key] = new_record_dict[key].strftime("%H:%M:%S")
 
+        # CRIS or the upstream ETL is representing this datum as a float, so cast it back
+        if key == "rpt_sec_speed_limit": 
+            new_record_dict[key] = int(new_record_dict[key])
+
     # Turn the dictionary into a character-escaped json string
     new_record_escaped = json.dumps(json.dumps(new_record_dict), default=str)
     # Build the template and inject required values
