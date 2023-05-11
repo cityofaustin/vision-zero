@@ -1,51 +1,48 @@
 import React, { useState } from "react";
-import { Table, Button, Input } from "reactstrap";
+import { Button, Input, Form, FormGroup, Row, Col, Label } from "reactstrap";
 
 const VictimNameRecord = ({
   i,
   data,
   refetch,
-  fields,
+  nameFieldConfig,
   keyField,
-  updateMutation,
+  mutation,
   ...props
 }) => {
   const [isEditing, setIsEditing] = useState("");
   const [formData, setFormData] = useState("");
-
-  console.log(fields);
-
-  //   console.log(data);
 
   const handleEditClick = () => {
     setIsEditing(true);
   };
 
   const handleCancelClick = e => {
-    e.preventDefault();
-
     // RESET state on cancel
     setFormData({});
+    setIsEditing(false);
   };
 
   const handleInputChange = (e, field) => {
+    // Change new value to null if it only contains whitespaces
+    const newValue = e.target.value.trim().length === 0 ? null : e.target.value;
     const newFormState = Object.assign(formData, {
-      [field]: e.target.value,
+      [field]: newValue,
       updated_by: localStorage.getItem("hasura_user_email"),
     });
     setFormData(newFormState);
   };
 
-  const handleSubmit = (e, mutationVariableKey, updateMutation) => {
+  const handleSubmit = (e, mutationVariableKey, mutation) => {
     e.preventDefault();
 
     // Append form data state to mutation template
-    updateMutation.variables.changes = { ...formData };
+    mutation.variables.changes = { ...formData };
     // TODO: instead of personId, use a generic key variable
     // and convert it to camelcase for the mutation object
-    updateMutation.variables[mutationVariableKey] = data[keyField];
+    mutation.variables[mutationVariableKey] = data[keyField];
 
-    props.client.mutate(updateMutation).then(res => {
+    props.client.mutate(mutation).then(res => {
       if (!res.errors) {
         refetch();
       } else {
@@ -55,72 +52,80 @@ const VictimNameRecord = ({
 
     // RESET state after submit
     setFormData({});
+    setIsEditing(false);
   };
 
-  const formatValue = field => {
-    // console.log(field);
-    // console.log(data[field]);
-    let fieldValue = data[field];
-
-    // Display null values as blanks, but allow 0
-    const isFieldNull = fieldValue === null;
-    const isFieldBlank = fieldValue === "";
-    return isFieldNull || isFieldBlank ? "NO DATA" : fieldValue;
-  };
-
-  const concatenateName = () => {
+  // Format name by concatenating first, middle, last or returning NO DATA
+  const formatName = () => {
     var concatenatedName = "";
-    Object.keys(fields).map(field => (concatenatedName = +field));
+    Object.keys(nameFieldConfig.subfields).map(field => {
+      if (data[field] != null) {
+        concatenatedName = concatenatedName.concat(" ", data[field]);
+      }
+    });
+    const isNameBlank = concatenatedName === "";
+    return isNameBlank ? "NO DATA" : concatenatedName;
   };
 
-  const mutationVariable = fields.mutationVariableKey;
+  const mutationVariable = nameFieldConfig.mutationVariableKey;
 
   return (
     <td key={i}>
       {isEditing && (
-        <form onSubmit={e => handleSubmit(e, mutationVariable, updateMutation)}>
-          {Object.keys(fields).map(field => {
-            return (
-              <Input
-                type="text"
-                defaultValue={formatValue(field)}
-                onChange={e => handleInputChange(e, field)}
-              ></Input>
-            );
-          })}
-          <div className="d-flex">
-            <Button
-              type="submit"
-              block
-              color="primary"
-              size="sm"
-              style={{ minWidth: "50px" }}
-              className="btn-pill mt-2 mr-1"
-            >
-              <i className="fa fa-check edit-toggle" />
-            </Button>
-            <Button
-              type="cancel"
-              block
-              color="danger"
-              size="sm"
-              className="btn-pill mt-2"
-              style={{ minWidth: "50px" }}
-              onClick={e => handleCancelClick(e)}
-            >
-              <i className="fa fa-times edit-toggle"></i>
-            </Button>
-          </div>
-        </form>
+        <Form>
+          <Row>
+            {Object.keys(nameFieldConfig.subfields).map(field => {
+              return (
+                <Col>
+                  <FormGroup>
+                    <Label>{nameFieldConfig.subfields[field].label}</Label>
+                    <Input
+                      defaultValue={data[field]}
+                      onChange={e => handleInputChange(e, field)}
+                    ></Input>
+                  </FormGroup>
+                </Col>
+              );
+            })}
+          </Row>
+          <Row>
+            <Col>
+              <Button
+                type="submit"
+                block
+                color="primary"
+                size="sm"
+                style={{ minWidth: "50px" }}
+                className="btn-pill mt-2 mr-1"
+                onClick={e => handleSubmit(e, mutationVariable, mutation)}
+              >
+                <i className="fa fa-check edit-toggle" />
+              </Button>
+            </Col>
+            <Col>
+              <Button
+                type="cancel"
+                block
+                color="danger"
+                size="sm"
+                className="btn-pill mt-2"
+                style={{ minWidth: "50px" }}
+                onClick={e => handleCancelClick(e)}
+              >
+                <i className="fa fa-times edit-toggle"></i>
+              </Button>
+            </Col>
+          </Row>
+        </Form>
       )}
 
       {!isEditing && (
-        <span className={formatValue() === "NO DATA" ? "text-muted" : ""}>
-          {concatenateName()}
+        <span className={formatName() === "NO DATA" ? "text-muted" : ""}>
+          {formatName()}
         </span>
       )}
 
-      {
+      {!isEditing && (
         <Button
           block
           color="secondary"
@@ -131,7 +136,7 @@ const VictimNameRecord = ({
         >
           <i className="fa fa-pencil edit-toggle" />
         </Button>
-      }
+      )}
     </td>
   );
 };
