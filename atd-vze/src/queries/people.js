@@ -57,6 +57,33 @@ export const GET_PEOPLE = gql`
   }
 `;
 
+export const GET_PERSON_NAMES = gql`
+  query FindNames($crashId: Int, $personId: Int) {
+    atd_txdot_primaryperson(
+      where: {
+        crash_id: { _eq: $crashId }
+        _and: { primaryperson_id: { _eq: $personId } }
+      }
+    ) {
+      primaryperson_id
+      prsn_first_name
+      prsn_mid_name
+      prsn_last_name
+    }
+    atd_txdot_person(
+      where: {
+        crash_id: { _eq: $crashId }
+        _and: { person_id: { _eq: $personId } }
+      }
+    ) {
+      person_id
+      prsn_first_name
+      prsn_mid_name
+      prsn_last_name
+    }
+  }
+`;
+
 export const UPDATE_PRIMARYPERSON = gql`
   mutation UpdatePrimaryPerson(
     $crashId: Int
