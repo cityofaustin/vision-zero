@@ -8,7 +8,7 @@ import {
   isItSupervisor,
 } from "../../auth/authContext";
 
-import VictimNameRecord from "./VictimNameRecord";
+import VictimNameField from "./VictimNameField";
 
 const RelatedRecordsTable = ({
   fieldConfig,
@@ -119,7 +119,7 @@ const RelatedRecordsTable = ({
               return (
                 <tr key={`table-${tableName}-${row[keyField]}`}>
                   {Object.keys(fieldConfig.fields)
-                    // Filter out victim name column if there are no fatalities in the table
+                    // Filter out victim name field if there are no fatalities in the table
                     .filter(field =>
                       fieldConfig.fields[field].shouldRender
                         ? fieldConfig.fields[field].shouldRender(data) &&
@@ -129,27 +129,35 @@ const RelatedRecordsTable = ({
                     .map((field, i) => {
                       // Render victim name cell in victim name column if row is a fatality
                       if (field === "victim_name") {
+                        const personId =
+                          tableName === "atd_txdot_primaryperson"
+                            ? row.primaryperson_id
+                            : row.person_id;
                         if (row.prsn_injry_sev_id === 4) {
                           return (
-                            <VictimNameRecord
-                              data={row}
-                              refetch={refetch}
+                            <VictimNameField
+                              key={`${field}-${i}`}
+                              tableName={tableName}
+                              column={field}
                               nameFieldConfig={
                                 fieldConfig.fields["victim_name"]
                               }
                               keyField={keyField}
                               mutation={mutation}
+                              personId={personId}
+                              crashId={row.crash_id}
+                              handleEditClick={handleEditClick}
+                              isEditingOtherField={setEditField && setEditRow}
                               {...props}
-                            ></VictimNameRecord>
+                            ></VictimNameField>
                           );
                         } else {
                           // Render empty cell in victim name column if row is not a fatality
-                          return <td></td>;
+                          return <td key={`${field}-${i}`} />;
                         }
                       } else {
                         const isEditing =
                           editField === field && row === editRow;
-
                         const fieldLookupPrefix =
                           fieldConfig.fields[field].lookupPrefix;
 
@@ -164,7 +172,7 @@ const RelatedRecordsTable = ({
                         const uiType = fieldConfig.fields[field].format;
 
                         return (
-                          <td key={i}>
+                          <td key={`${field}-${i}`}>
                             {isEditing && (
                               <form
                                 onSubmit={e =>
