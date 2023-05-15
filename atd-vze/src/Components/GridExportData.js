@@ -31,8 +31,21 @@ const StyledSaveLink = styled.i`
   }
 `;
 
-const GridExportData = ({ query, columnsToExport, totalRecords }) => {
+const GridExportData = ({
+  query,
+  columnsToExport,
+  totalRecords,
+  roleSpecificColumns,
+  hasSpecificRole,
+}) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Remove role specific columns from export for users without correct roles
+  if (hasSpecificRole != null && !hasSpecificRole) {
+    roleSpecificColumns.forEach(col => {
+      columnsToExport = columnsToExport.replace(col, "");
+    });
+  }
 
   // Use .queryCSV to insert columnsToExport prop into query
   let [getExport, { loading, data }] = useLazyQuery(

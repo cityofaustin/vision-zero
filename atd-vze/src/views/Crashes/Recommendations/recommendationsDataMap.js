@@ -5,25 +5,25 @@ export const recommendationsDataMap = {
     coordination_partner_id: {
       label: "Coordination Partner:",
       lookupOptions: "atd__coordination_partners_lkp",
-      key: "description",
+      key: "coord_partner_desc",
     },
     recommendation_status_id: {
       label: "Status:",
       lookupOptions: "atd__recommendation_status_lkp",
-      key: "description",
+      key: "rec_status_desc",
     },
-    text: {
+    rec_text: {
       label: "Recommendation",
-      key: "text",
+      key: "rec_text",
     },
-    update: {
+    rec_update: {
       label: "Updates",
-      key: "update",
+      key: "rec_update",
     },
     partner_id: {
       label: "Coordination Partner:",
       lookupOptions: "atd__coordination_partners_lkp",
-      key: "description",
+      key: "coord_partner_desc",
     },
   },
 };
