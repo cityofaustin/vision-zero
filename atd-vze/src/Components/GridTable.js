@@ -5,7 +5,6 @@ import { useQuery, useLazyQuery } from "@apollo/react-hooks";
 import { withApollo } from "react-apollo";
 import { format, subYears } from "date-fns";
 
-
 import {
   Card,
   CardBody,
@@ -32,7 +31,7 @@ import GridTableDoughnut from "./GridTableDoughnut";
 import GridTableHorizontalBar from "./GridTableHorizontalBar";
 import GridTableFilterBadges from "./GridTableFilterBadges";
 
-const codeName = 'jester';
+const codeName = "jester";
 
 const GridTable = ({
   title,
@@ -44,6 +43,8 @@ const GridTable = ({
   widgetsConfig,
   helperText,
   minDate,
+  roleSpecificColumns,
+  hasSpecificRole,
 }) => {
   // Load table filters from localStorage by title
   const savedFilterState = JSON.parse(
@@ -528,6 +529,8 @@ const GridTable = ({
                       query={query}
                       columnsToExport={columnsToExport}
                       totalRecords={totalRecords}
+                      roleSpecificColumns={roleSpecificColumns}
+                      hasSpecificRole={hasSpecificRole}
                     />
                   )}
                 </ButtonGroup>

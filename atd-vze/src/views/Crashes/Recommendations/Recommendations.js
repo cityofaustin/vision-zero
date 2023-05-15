@@ -157,10 +157,10 @@ const Recommendations = ({ crashId }) => {
             <div className="col-12 pr-0">
               <RecommendationTextInput
                 label={"Recommendation"}
-                data={recommendation?.text}
+                data={recommendation?.rec_text}
                 placeholder={"Enter recommendation here..."}
-                existingValue={getFieldValue(fieldConfig.fields.text.key)}
-                field={fieldConfig.fields.text.key}
+                existingValue={getFieldValue(fieldConfig.fields.rec_text.key)}
+                field={fieldConfig.fields.rec_text.key}
                 doesRecommendationRecordExist={doesRecommendationRecordExist}
                 onAdd={onAdd}
                 onEdit={onEdit}
@@ -171,10 +171,10 @@ const Recommendations = ({ crashId }) => {
             <div className="col-12 pr-0">
               <RecommendationTextInput
                 label={"Updates"}
-                data={recommendation?.update}
+                data={recommendation?.rec_update}
                 placeholder={"Enter updates here..."}
-                existingValue={getFieldValue(fieldConfig.fields.update.key)}
-                field={fieldConfig.fields.update.key}
+                existingValue={getFieldValue(fieldConfig.fields.rec_update.key)}
+                field={fieldConfig.fields.rec_update.key}
                 doesRecommendationRecordExist={doesRecommendationRecordExist}
                 onAdd={onAdd}
                 onEdit={onEdit}

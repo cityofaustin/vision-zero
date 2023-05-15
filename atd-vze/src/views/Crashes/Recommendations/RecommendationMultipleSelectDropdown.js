@@ -31,10 +31,12 @@ const RecommendationMultipleSelectDropdown = ({
   return (
     <Multiselect
       options={options}
-      displayValue={"description"}
+      displayValue={"coord_partner_desc"}
       showCheckbox
       selectedValues={
-        partners ? getSelectedValues(fieldConfig.fields.partner_id) : null
+        partners
+          ? getSelectedValues(fieldConfig.fields.coordination_partner_id)
+          : null
       }
       showArrow
       hidePlaceholder
