@@ -101,6 +101,7 @@ const RelatedRecordsTable = ({
           <tr>
             {Object.keys(fieldConfig.fields)
               // Filter out victim name column if there are no fatalities in the table
+              // or if user doesn't have correct permissions
               .filter(field =>
                 fieldConfig.fields[field].shouldRender
                   ? fieldConfig.fields[field].shouldRender(data) &&
@@ -122,6 +123,7 @@ const RelatedRecordsTable = ({
                 <tr key={`table-${tableName}-${row[keyField]}`}>
                   {Object.keys(fieldConfig.fields)
                     // Filter out victim name field if there are no fatalities in the table
+                    // or if user doesn't have correct permissions
                     .filter(field =>
                       fieldConfig.fields[field].shouldRender
                         ? fieldConfig.fields[field].shouldRender(data) &&
@@ -158,6 +160,7 @@ const RelatedRecordsTable = ({
                       } else {
                         const isEditing =
                           editField === field && row === editRow;
+
                         const fieldLookupPrefix =
                           fieldConfig.fields[field].lookupPrefix;
 
