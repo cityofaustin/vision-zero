@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Button, Input, Form, FormGroup, Row, Col, Label } from "reactstrap";
 import { useQuery } from "@apollo/react-hooks";
 
@@ -6,18 +6,24 @@ import { GET_PERSON_NAMES } from "../../queries/people";
 
 const VictimNameField = ({
   tableName,
-  column,
   nameFieldConfig,
-  keyField,
   mutation,
-  personId,
-  isEditingOtherField,
+  handleEditClick,
+  handleCancelClick,
+  handleInputChange,
+  handleSubmit,
+  editField,
+  editRow,
+  row,
+  field,
   ...props
 }) => {
-  const [isEditing, setIsEditing] = useState("");
-  const [formData, setFormData] = useState("");
-
   const crashId = props.match.params.id;
+
+  const personId =
+    tableName === "atd_txdot_primaryperson"
+      ? row.primaryperson_id
+      : row.person_id;
 
   const { data, refetch } = useQuery(GET_PERSON_NAMES, {
     variables: { crashId, personId },
@@ -27,48 +33,6 @@ const VictimNameField = ({
     tableName === "atd_txdot_primaryperson"
       ? data?.atd_txdot_primaryperson?.[0]
       : data?.atd_txdot_person?.[0];
-
-  const handleEditClick = () => {
-    setIsEditing(true);
-  };
-
-  const handleCancelClick = e => {
-    // RESET state on cancel
-    setFormData({});
-    setIsEditing(false);
-  };
-
-  const handleInputChange = (e, field) => {
-    // Change new value to null if it only contains whitespaces
-    // or save value as all uppercase
-    const newValue =
-      e.target.value.trim().length === 0 ? null : e.target.value.toUpperCase();
-    const newFormState = Object.assign(formData, {
-      [field]: newValue,
-      updated_by: localStorage.getItem("hasura_user_email"),
-    });
-    setFormData(newFormState);
-  };
-
-  const handleSubmit = (e, mutationVariableKey, mutation) => {
-    // Append form data state to mutation template
-    mutation.variables.changes = { ...formData };
-    // TODO: instead of personId, use a generic key variable
-    // and convert it to camelcase for the mutation object
-    mutation.variables[mutationVariableKey] = personData?.[keyField];
-
-    props.client.mutate(mutation).then(res => {
-      if (!res.errors) {
-        refetch();
-      } else {
-        console.log(res.errors);
-      }
-    });
-
-    // RESET state after submit
-    setFormData({});
-    setIsEditing(false);
-  };
 
   // Format name by concatenating first, middle, last or returning NO DATA
   const formatName = () => {
@@ -84,6 +48,8 @@ const VictimNameField = ({
 
   const mutationVariable = nameFieldConfig.mutationVariableKey;
 
+  const isEditing = editField === field && row === editRow;
+
   return (
     <td>
       {isEditing && (
@@ -91,7 +57,10 @@ const VictimNameField = ({
           <Row>
             {Object.keys(nameFieldConfig.subfields).map(field => {
               return (
-                <Col key={`${tableName}-field-${field}`} className={"m-1 p-0"}>
+                <Col
+                  key={`${tableName}-field-${field}${personId}`}
+                  className={"m-1 p-0"}
+                >
                   <Label className={"text-muted m-0 p-0"}>
                     {nameFieldConfig.subfields[field].label}
                   </Label>
@@ -114,7 +83,9 @@ const VictimNameField = ({
                 size="sm"
                 style={{ minWidth: "50px" }}
                 className="btn-pill mt-2 mr-1"
-                onClick={e => handleSubmit(e, mutationVariable, mutation)}
+                onClick={e =>
+                  handleSubmit(e, mutationVariable, mutation, refetch)
+                }
               >
                 <i className="fa fa-check edit-toggle" />
               </Button>
@@ -150,7 +121,7 @@ const VictimNameField = ({
           size="sm"
           className="btn-pill mt-2"
           style={{ width: "50px" }}
-          onClick={e => handleEditClick()}
+          onClick={e => handleEditClick(field, row)}
         >
           <i className="fa fa-pencil edit-toggle" />
         </Button>
