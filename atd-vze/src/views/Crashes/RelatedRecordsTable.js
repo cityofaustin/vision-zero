@@ -45,7 +45,9 @@ const RelatedRecordsTable = ({
 
   const handleInputChange = (e, updateFieldKey) => {
     // Change new value to null if it only contains whitespaces
-    const newValue = e.target.value.trim().length === 0 ? null : e.target.value;
+    // or save value as all uppercase
+    const newValue =
+      e.target.value.trim().length === 0 ? null : e.target.value.toUpperCase();
     const newFormState = Object.assign(formData, {
       [updateFieldKey]: newValue,
       updated_by: localStorage.getItem("hasura_user_email"),
@@ -53,7 +55,7 @@ const RelatedRecordsTable = ({
     setFormData(newFormState);
   };
 
-  const handleSubmit = (e, mutationVariableKey, mutation) => {
+  const handleSubmit = (e, mutationVariableKey, mutation, refetchData) => {
     e.preventDefault();
 
     // Append form data state to mutation template
@@ -64,7 +66,7 @@ const RelatedRecordsTable = ({
 
     props.client.mutate(mutation).then(res => {
       if (!res.errors) {
-        refetch();
+        refetchData();
       } else {
         console.log(res.errors);
       }
@@ -129,25 +131,23 @@ const RelatedRecordsTable = ({
                     .map((field, i) => {
                       // Render victim name cell in victim name column if row is a fatality
                       if (field === "victim_name") {
-                        const personId =
-                          tableName === "atd_txdot_primaryperson"
-                            ? row.primaryperson_id
-                            : row.person_id;
                         if (row.prsn_injry_sev_id === 4) {
                           return (
                             <VictimNameField
                               key={`${field}-${i}`}
                               tableName={tableName}
-                              column={field}
                               nameFieldConfig={
                                 fieldConfig.fields["victim_name"]
                               }
-                              keyField={keyField}
                               mutation={mutation}
-                              personId={personId}
-                              crashId={row.crash_id}
                               handleEditClick={handleEditClick}
-                              isEditingOtherField={setEditField && setEditRow}
+                              handleCancelClick={handleCancelClick}
+                              handleInputChange={handleInputChange}
+                              handleSubmit={handleSubmit}
+                              row={row}
+                              field={field}
+                              editField={editField}
+                              editRow={editRow}
                               {...props}
                             ></VictimNameField>
                           );
@@ -176,7 +176,12 @@ const RelatedRecordsTable = ({
                             {isEditing && (
                               <form
                                 onSubmit={e =>
-                                  handleSubmit(e, mutationVariable, mutation)
+                                  handleSubmit(
+                                    e,
+                                    mutationVariable,
+                                    mutation,
+                                    refetch
+                                  )
                                 }
                               >
                                 {uiType === "text" && (
@@ -257,7 +262,7 @@ const RelatedRecordsTable = ({
                               (fieldConfig.fields[field].badge ? (
                                 <Badge
                                   color={fieldConfig.fields[field].badgeColor(
-                                    formatValue(row, field)
+                                    row
                                   )}
                                 >
                                   {formatValue(row, field)}
