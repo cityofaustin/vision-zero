@@ -3,9 +3,9 @@ const shouldRenderVictimName = data => {
   return data.some(person => person.prsn_injry_sev_id === 4);
 };
 
-const getInjurySeverityColor = desc => {
-  switch (desc) {
-    case "UNKNOWN":
+const getInjurySeverityColor = personRecord => {
+  switch (personRecord["prsn_injry_sev_id"]) {
+    case 0: // UNKNOWN
       return "muted";
     case 5: // NOT INJURED
       return "primary";
