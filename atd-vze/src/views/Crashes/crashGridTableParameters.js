@@ -306,22 +306,11 @@ export const crashGridTableAdvancedFilters = {
       },
       {
         id: "scooter_rider",
-        label: "Scooter rider",
+        label: "Scooter Rider",
         filter: {
           where: [
             {
               '_and: [ { units: { unit_desc_id: { _eq: 177 } } }, { units: { veh_body_styl_id: { _eq: 177 } } } ]': null,
-            },
-          ],
-        },
-      },
-      {
-        id: "other",
-        label: "Other",
-        filter: {
-          where: [
-            {
-              '_and: [ { units: { unit_desc_id: { _neq: 1 } } }, { units: { unit_desc_id: { _neq: 3 } } }, { units: { unit_desc_id: { _neq: 4 } } }, { _and: [ { units: { unit_desc_id: { _eq: 177 } } }, { units: { veh_body_styl_id: { _neq: 177 } } } ] } ]': null,
             },
           ],
         },
