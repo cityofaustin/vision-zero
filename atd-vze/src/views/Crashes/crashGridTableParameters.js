@@ -261,56 +261,67 @@ export const crashGridTableAdvancedFilters = {
     label: "Units Involved",
     filters: [
       {
-        id: "pedestrian",
-        label: "Pedestrian Involved",
+        id: "motor_vehicle",
+        label: "Motor Vehicle",
         filter: {
           where: [
             {
-              'units: { unit_description: { veh_unit_desc_desc: { _eq: "PEDESTRIAN" } } } _and: { micromobility_device_flag: { _eq: "N" } }': null,
-            },
-          ],
-        },
-      },
-      {
-        id: "pedacyclist",
-        label: "Cyclist Involved",
-        filter: {
-          where: [
-            {
-              'units: { unit_description: { veh_unit_desc_desc: { _eq: "PEDALCYCLIST" } } } _and: { micromobility_device_flag: { _eq: "N" } }': null,
-            },
-          ],
-        },
-      },
-      {
-        id: "motorized_conveyance",
-        label: "Motorized Conveyance Involved",
-        filter: {
-          where: [
-            {
-              'units: { unit_description: { veh_unit_desc_desc: { _eq: "MOTORIZED CONVEYANCE" } } } _and: { micromobility_device_flag: { _eq: "N" } }': null,
+              "_and: [ { units: { unit_desc_id: { _eq: 1 } } }, { _and: [ { units: { veh_body_styl_id: { _neq: 71 } } }, { units: { veh_body_styl_id: { _neq: 90 } } } ] } ] ": null,
             },
           ],
         },
       },
       {
         id: "motorcycle",
-        label: "Motorcycle Involved",
+        label: "Motorcycle",
         filter: {
           where: [
             {
-              'units: { unit_description: { veh_unit_desc_desc: { _eq: "PEDESTRIAN" } } } _and: { units: { veh_body_styl_id: { _eq: "71" } } _or: { units: { veh_body_styl_id: { _eq: "71" } } } }': null,
+              "_and: [ { units: { unit_desc_id: { _eq: 1 } } }, { _or: [ { units: { veh_body_styl_id: { _eq: 71 } } }, { units: { veh_body_styl_id: { _eq: 90 } } } ] } ] ": null,
+            },
+          ],
+        },
+      },
+      {
+        id: "cyclist",
+        label: "Cyclist",
+        filter: {
+          where: [
+            {
+              'units: { unit_desc_id: { _eq: 3 } }': null,
+            },
+          ],
+        },
+      },
+      {
+        id: "pedestrian",
+        label: "Pedestrian",
+        filter: {
+          where: [
+            {
+              'units: { unit_desc_id: { _eq: 4 } }': null,
             },
           ],
         },
       },
       {
         id: "scooter_rider",
-        label: "Scooter Involved",
+        label: "Scooter rider",
         filter: {
           where: [
             {
-              'micromobility_device_flag: { _eq: "Y" }': null,
+              '_and: [ { units: { unit_desc_id: { _eq: 177 } } }, { units: { veh_body_styl_id: { _eq: 177 } } } ]': null,
+            },
+          ],
+        },
+      },
+      {
+        id: "other",
+        label: "Other",
+        filter: {
+          where: [
+            {
+              '_and: [ { units: { unit_desc_id: { _neq: 1 } } }, { units: { unit_desc_id: { _neq: 3 } } }, { units: { unit_desc_id: { _neq: 4 } } }, { _and: [ { units: { unit_desc_id: { _eq: 177 } } }, { units: { veh_body_styl_id: { _neq: 177 } } } ] } ]': null,
             },
           ],
         },

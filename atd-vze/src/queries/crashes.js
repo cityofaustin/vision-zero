@@ -282,7 +282,6 @@ latitude_primary
 longitude_primary
 crash_speed_limit
 death_cnt
-micromobility_device_flag
 `;
 
 export const locationCrashesQueryExportFieldsNonCR3 = `
