@@ -258,7 +258,7 @@ export const crashGridTableAdvancedFilters = {
   },
   groupUnitTypes: {
     icon: "bicycle",
-    label: "Units Involved",
+    label: "Unit Type",
     filters: [
       {
         id: "motor_vehicle",
