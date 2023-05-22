@@ -5,9 +5,7 @@ function CrashNarrative({ investigatorNarrative }) {
   return (
     <Card>
       <CardHeader>Crash Narrative</CardHeader>
-      <CardBody>
-        {investigatorNarrative}
-      </CardBody>
+      <CardBody>{investigatorNarrative}</CardBody>
     </Card>
   );
 }

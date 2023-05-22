@@ -1,3 +1,13 @@
+import { isAdmin, isItSupervisor } from "../../auth/authContext";
+
+// Return true if person record is a fatality
+const shouldRenderVictimName = (data, roles) => {
+  return (
+    data.some(person => person.prsn_injry_sev_id === 4) &&
+    (isItSupervisor(roles) || isAdmin(roles))
+  );
+};
+
 const getInjurySeverityColor = personRecord => {
   switch (personRecord["prsn_injry_sev_id"]) {
     case 0: // UNKNOWN
@@ -38,6 +48,24 @@ export const primaryPersonDataMap = [
         mutationVariableKey: "personId",
         badge: true,
         badgeColor: getInjurySeverityColor,
+      },
+      victim_name: {
+        label: "Victim Name",
+        editable: true,
+        format: "text",
+        mutationVariableKey: "personId",
+        shouldRender: shouldRenderVictimName,
+        subfields: {
+          prsn_first_name: {
+            label: "First",
+          },
+          prsn_mid_name: {
+            label: "Middle",
+          },
+          prsn_last_name: {
+            label: "Last",
+          },
+        },
       },
       person_type: {
         label: "Type",
@@ -103,6 +131,24 @@ export const personDataMap = [
         mutationVariableKey: "personId",
         badge: true,
         badgeColor: getInjurySeverityColor,
+      },
+      victim_name: {
+        label: "Victim Name",
+        editable: true,
+        format: "text",
+        shouldRender: shouldRenderVictimName,
+        mutationVariableKey: "personId",
+        subfields: {
+          prsn_first_name: {
+            label: "First",
+          },
+          prsn_mid_name: {
+            label: "Middle",
+          },
+          prsn_last_name: {
+            label: "Last",
+          },
+        },
       },
       person_type: {
         label: "Type",
