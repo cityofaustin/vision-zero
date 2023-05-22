@@ -1,6 +1,11 @@
-// Check if victim name column should render
-const shouldRenderVictimName = data => {
-  return data.some(person => person.prsn_injry_sev_id === 4);
+import { isAdmin, isItSupervisor } from "../../auth/authContext";
+
+// Return true if person record is a fatality
+const shouldRenderVictimName = (data, roles) => {
+  return (
+    data.some(person => person.prsn_injry_sev_id === 4) &&
+    (isItSupervisor(roles) || isAdmin(roles))
+  );
 };
 
 const getInjurySeverityColor = personRecord => {
