@@ -1,12 +1,7 @@
 import React, { useState } from "react";
 import { Table, Badge, Button, Input } from "reactstrap";
 
-import {
-  useAuth0,
-  isReadOnly,
-  isAdmin,
-  isItSupervisor,
-} from "../../auth/authContext";
+import { useAuth0, isReadOnly } from "../../auth/authContext";
 
 import VictimNameField from "./VictimNameField";
 
@@ -100,12 +95,10 @@ const RelatedRecordsTable = ({
         <thead>
           <tr>
             {Object.keys(fieldConfig.fields)
-              // Filter out victim name column if there are no fatalities in the table
-              // or if user doesn't have correct permissions
+              // Filter out columns that should not be rendered (such as victim name)
               .filter(field =>
                 fieldConfig.fields[field].shouldRender
-                  ? fieldConfig.fields[field].shouldRender(data) &&
-                    (isItSupervisor(roles) || isAdmin(roles))
+                  ? fieldConfig.fields[field].shouldRender(data, roles)
                   : true
               )
               .map(field => (
@@ -122,12 +115,10 @@ const RelatedRecordsTable = ({
               return (
                 <tr key={`table-${tableName}-${row[keyField]}`}>
                   {Object.keys(fieldConfig.fields)
-                    // Filter out victim name field if there are no fatalities in the table
-                    // or if user doesn't have correct permissions
+                    // Filter out columns that should not be rendered
                     .filter(field =>
                       fieldConfig.fields[field].shouldRender
-                        ? fieldConfig.fields[field].shouldRender(data) &&
-                          (isItSupervisor(roles) || isAdmin(roles))
+                        ? fieldConfig.fields[field].shouldRender(data, roles)
                         : true
                     )
                     .map((field, i) => {
