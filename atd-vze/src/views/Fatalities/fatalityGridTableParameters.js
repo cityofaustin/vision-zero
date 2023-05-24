@@ -68,3 +68,139 @@ export const fatalityGridTableColumns = {
     type: "String",
   },
 };
+
+export const fatalityGridTableAdvancedFilters = {
+  groupStatus: {
+    icon: "map-marker",
+    label: "Status",
+    filters: [
+      {
+        id: "status_open_short_term",
+        label: "Open - Short Term",
+        filter: {
+          where: [
+            {
+              "recommendation: { recommendation_status_id: { _eq: 1 } } ": null,
+            },
+          ],
+        },
+      },
+      {
+        id: "status_open_long_term",
+        label: "Open - Long Term",
+        filter: {
+          where: [
+            {
+              "recommendation: { recommendation_status_id: { _eq: 2 } } ": null,
+            },
+          ],
+        },
+      },
+      {
+        id: "status_closed_no_action_rec",
+        label: "Closed - No Action Recommended",
+        filter: {
+          where: [
+            {
+              "recommendation: { recommendation_status_id: { _eq: 3 } } ": null,
+            },
+          ],
+        },
+      },
+      {
+        id: "status_closed_rec_implemented",
+        label: "Closed - Recommendation Implemented",
+        filter: {
+          where: [
+            {
+              "recommendation: { recommendation_status_id: { _eq: 4 } } ": null,
+            },
+          ],
+        },
+      },
+      {
+        id: "status_closed_no_action_taken",
+        label: "Closed - No Action Taken",
+        filter: {
+          where: [
+            {
+              "recommendation: { recommendation_status_id: { _eq: 5 } } ": null,
+            },
+          ],
+        },
+      },
+      {
+        id: "status_null",
+        label: "Null",
+        filter: {
+          where: [
+            {
+              "_not: { recommendation: {recommendation_status_id: { _is_null: false } } }": null,
+            },
+          ],
+        },
+      },
+    ],
+  },
+  groupUnits: {
+    icon: "bicycle",
+    label: "Unit Type",
+    filters: [
+      {
+        id: "cyclist",
+        label: "Cyclist",
+        filter: {
+          where: [
+            {
+              "_or: [ { person: { unit: { unit_desc_id: { _eq: 3 } } } }, { primaryperson: { unit: { unit_desc_id: { _eq: 3 } } } } ]": null,
+            },
+          ],
+        },
+      },
+      // {
+      //   id: "motorcyclist",
+      //   label: "Motorcyclist",
+      //   filter: {
+      //     where: [
+      //       {
+      //         "_and: []"
+      //       }
+      //     ],
+      //   },
+      // },
+    ],
+  },
+  groupRoad: {
+    icon: "road",
+    label: "Roadway System",
+    filters: [
+      {
+        id: "on_system",
+        label: "On-System",
+        filter: {
+          where: [
+            {
+              'crash: { onsys_fl: { _eq: "Y" } }': null,
+            },
+          ],
+        },
+      },
+      {
+        id: "off_system",
+        label: "Off-System",
+        filter: {
+          where: [
+            {
+              'crash: { onsys_fl: { _eq: "N" } }': null,
+            },
+          ],
+        },
+      },
+    ],
+  },
+  // groupRoad: {
+  //   icon: "",
+  //   label: "Road",
+  //   filters: [],
+  // },
+};
