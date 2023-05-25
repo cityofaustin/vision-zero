@@ -7,6 +7,7 @@ import gqlAbstract from "../../queries/gqlAbstract";
 import {
   fatalityGridTableColumns,
   fatalityGridTableAdvancedFilters,
+  fatalityExportFields,
 } from "./fatalityGridTableParameters";
 
 // Our initial query configuration
@@ -37,6 +38,7 @@ const Fatalities = () => {
       title={"Fatalities"}
       minDate={minDate}
       filters={fatalityGridTableAdvancedFilters}
+      columnsToExport={fatalityExportFields}
     />
   );
 };
