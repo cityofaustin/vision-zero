@@ -14,14 +14,15 @@ export const fatalityGridTableColumns = {
     type: "Int",
   },
   case_id: {
-    searchable: false,
+    searchable: true,
     sortable: true,
+    label_search: "Search by Case ID",
     label_table: "Case ID",
     type: "Int",
   },
   law_enforcement_num: {
     searchable: false,
-    sortable: true,
+    sortable: false,
     label_table: "Law Enforcement Number",
     type: "Int",
   },
@@ -44,14 +45,16 @@ export const fatalityGridTableColumns = {
     type: "Date",
   },
   location: {
-    searchable: false,
+    searchable: true,
     sortable: false,
+    label_search: "Search by Location",
     label_table: "Location",
     type: "String",
   },
   victim_name: {
-    searchable: false,
+    searchable: true,
     sortable: false,
+    label_search: "Search by Victim Name",
     label_table: "Victim Name",
     type: "String",
   },
@@ -70,8 +73,69 @@ export const fatalityGridTableColumns = {
 };
 
 export const fatalityGridTableAdvancedFilters = {
+  groupUnits: {
+    icon: "bicycle",
+    label: "Unit Type",
+    filters: [
+      {
+        id: "motor_vehicle",
+        label: "Motor Vehicle Fatality",
+        filter: {
+          where: [
+            {
+              "_or: [ { _and: [ { person: { unit: { unit_desc_id: { _eq: 1 } } } }, { _and: [ { person: { unit: { veh_body_styl_id: { _neq: 71 } } } }, { person: { unit: { veh_body_styl_id: { _neq: 90 } } } } ] } ] }, { _and: [ { primaryperson: { unit: { unit_desc_id: { _eq: 1 } } } }, { _and: [ { primaryperson: { unit: { veh_body_styl_id: { _neq: 71 } } } }, { primaryperson: { unit: { veh_body_styl_id: { _neq: 90 } } } } ] } ] } ]": null,
+            },
+          ],
+        },
+      },
+      {
+        id: "motorcyclist",
+        label: "Motorcyclist Fatality",
+        filter: {
+          where: [
+            {
+              "_or: [ { _and: [ { person: { unit: { unit_desc_id: { _eq: 1 } } } }, { _or: [ { person: { unit: { veh_body_styl_id: { _eq: 71 } } } } , { person: { unit: { veh_body_styl_id: { _eq: 90 } } } } ] } ] }, { _and: [ { primaryperson: { unit: { unit_desc_id: { _eq: 1 } } } }, { _or: [ { primaryperson: { unit: { veh_body_styl_id: { _eq: 71 } } } } , { primaryperson: { unit: { veh_body_styl_id: { _eq: 90 } } } } ] } ] }]": null,
+            },
+          ],
+        },
+      },
+      {
+        id: "cyclist",
+        label: "Cyclist Fatality",
+        filter: {
+          where: [
+            {
+              "_or: [ { person: { unit: { unit_desc_id: { _eq: 3 } } } }, { primaryperson: { unit: { unit_desc_id: { _eq: 3 } } } } ]": null,
+            },
+          ],
+        },
+      },
+      {
+        id: "pedestrian",
+        label: "Pedestrian Fatality",
+        filter: {
+          where: [
+            {
+              "_or: [ { person: { unit: { unit_desc_id: { _eq: 4 } } } }, { primaryperson: { unit: { unit_desc_id: { _eq: 4 } } } } ]": null,
+            },
+          ],
+        },
+      },
+      {
+        id: "scooter",
+        label: "Scooter-rider Fatality",
+        filter: {
+          where: [
+            {
+              "_or: [ { _and: [ { person: { unit: { unit_desc_id: { _eq: 177 } } } }, { person: { unit: { veh_body_styl_id: { _eq: 177 } } } } ] }, { _and: [ { primaryperson: { unit: { unit_desc_id: { _eq: 177 } } } }, { primaryperson: { unit: { veh_body_styl_id: { _eq: 177 } } } } ] } ]": null,
+            },
+          ],
+        },
+      },
+    ],
+  },
   groupStatus: {
-    icon: "map-marker",
+    icon: "newspaper-o",
     label: "Status",
     filters: [
       {
@@ -142,34 +206,6 @@ export const fatalityGridTableAdvancedFilters = {
       },
     ],
   },
-  groupUnits: {
-    icon: "bicycle",
-    label: "Unit Type",
-    filters: [
-      {
-        id: "cyclist",
-        label: "Cyclist",
-        filter: {
-          where: [
-            {
-              "_or: [ { person: { unit: { unit_desc_id: { _eq: 3 } } } }, { primaryperson: { unit: { unit_desc_id: { _eq: 3 } } } } ]": null,
-            },
-          ],
-        },
-      },
-      // {
-      //   id: "motorcyclist",
-      //   label: "Motorcyclist",
-      //   filter: {
-      //     where: [
-      //       {
-      //         "_and: []"
-      //       }
-      //     ],
-      //   },
-      // },
-    ],
-  },
   groupRoad: {
     icon: "road",
     label: "Roadway System",
@@ -196,11 +232,41 @@ export const fatalityGridTableAdvancedFilters = {
           ],
         },
       },
+      {
+        id: "road_system_null",
+        label: "Null",
+        filter: {
+          where: [
+            {
+              "_not: { crash: { onsys_fl: { _is_null: false } } }": null,
+            },
+          ],
+        },
+      },
     ],
   },
-  // groupRoad: {
-  //   icon: "",
-  //   label: "Road",
-  //   filters: [],
-  // },
 };
+
+export const fatalityExportFields = `
+crash_id
+person_id
+primaryperson_id
+victim_name
+year
+crash_date
+crash_time
+location
+ytd_fatality
+ytd_fatal_crash
+law_enforcement_num
+case_id
+recommendation { rec_text }
+recommendation { rec_update }
+recommendation { atd__recommendation_status_lkp { rec_status_desc } }
+recommendation { recommendations_partners { atd__coordination_partners_lkp { coord_partner_desc }} }
+primaryperson { unit { unit_description { veh_unit_desc_desc } } }
+person { unit { unit_description { veh_unit_desc_desc } } }
+primaryperson { unit { body_style { veh_body_styl_desc } } }
+person { unit { body_style { veh_body_styl_desc } } }
+crash { onsys_fl }
+`;
