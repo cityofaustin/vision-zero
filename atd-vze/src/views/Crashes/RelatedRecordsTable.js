@@ -85,7 +85,9 @@ const RelatedRecordsTable = ({
     const isFieldNull = fieldValue === null;
     const isFieldBlank = fieldValue === "";
 
-    return isFieldNull || isFieldBlank ? "NO DATA" : fieldValue;
+    return isFieldNull || isFieldBlank
+      ? "NO DATA"
+      : fieldValue.toString().toUpperCase();
   };
 
   return (
