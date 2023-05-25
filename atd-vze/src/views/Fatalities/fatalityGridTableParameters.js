@@ -94,7 +94,7 @@ export const fatalityGridTableAdvancedFilters = {
         filter: {
           where: [
             {
-              "_or: [ { _and: [ { person: { unit: { unit_desc_id: { _eq: 1 } } } }, { _or: [ { person: { unit: { veh_body_styl_id: { _eq: 71 } } } } , { person: { unit: { veh_body_styl_id: { _eq: 90 } } } } ] } ] }, { _and: [ { primaryperson: { unit: { unit_desc_id: { _eq: 1 } } } }, { _or: [ { primaryperson: { unit: { veh_body_styl_id: { _eq: 71 } } } } , { primaryperson: { unit: { veh_body_styl_id: { _eq: 90 } } } } ] } ] }]": null,
+              "_or: [ { _and: [ { person: { unit: { unit_desc_id: { _eq: 1 } } } }, { _or: [ { person: { unit: { veh_body_styl_id: { _eq: 71 } } } } , { person: { unit: { veh_body_styl_id: { _eq: 90 } } } } ] } ] }, { _and: [ { primaryperson: { unit: { unit_desc_id: { _eq: 1 } } } }, { _or: [ { primaryperson: { unit: { veh_body_styl_id: { _eq: 71 } } } } , { primaryperson: { unit: { veh_body_styl_id: { _eq: 90 } } } } ] } ] } ]": null,
             },
           ],
         },
@@ -135,7 +135,7 @@ export const fatalityGridTableAdvancedFilters = {
     ],
   },
   groupStatus: {
-    icon: "newspaper-o",
+    icon: "clipboard",
     label: "Status",
     filters: [
       {
@@ -263,7 +263,7 @@ case_id
 recommendation { rec_text }
 recommendation { rec_update }
 recommendation { atd__recommendation_status_lkp { rec_status_desc } }
-recommendation { recommendations_partners { atd__coordination_partners_lkp { coord_partner_desc }} }
+recommendation { recommendations_partners { atd__coordination_partners_lkp { coord_partner_desc } } }
 primaryperson { unit { unit_description { veh_unit_desc_desc } } }
 person { unit { unit_description { veh_unit_desc_desc } } }
 primaryperson { unit { body_style { veh_body_styl_desc } } }
