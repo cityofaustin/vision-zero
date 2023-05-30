@@ -194,8 +194,8 @@ export const fatalityGridTableAdvancedFilters = {
         },
       },
       {
-        id: "status_null",
-        label: "Null",
+        id: "status_none",
+        label: "None",
         filter: {
           where: [
             {
@@ -234,7 +234,7 @@ export const fatalityGridTableAdvancedFilters = {
       },
       {
         id: "road_system_null",
-        label: "Null",
+        label: "Unknown",
         filter: {
           where: [
             {
