@@ -61,9 +61,9 @@ let queryConf = {
     },
   },
   order_by: {
-    total_est_comp_cost: 'desc_nulls_last',
+    total_est_comp_cost: "desc_nulls_last",
   },
-  where: { },
+  where: {},
   limit: 25,
   offset: 0,
 };

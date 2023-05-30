@@ -5,12 +5,12 @@ export const GET_RECOMMENDATIONS = gql`
     recommendations(where: { crash_id: { _eq: $crashId } }) {
       id
       created_at
-      text
+      rec_text
       created_by
       crash_id
-      update
+      rec_update
       atd__recommendation_status_lkp {
-        description
+        rec_status_desc
       }
       recommendations_partners {
         id
@@ -18,17 +18,17 @@ export const GET_RECOMMENDATIONS = gql`
         recommendation_id
         atd__coordination_partners_lkp {
           id
-          description
+          coord_partner_desc
         }
       }
     }
-    atd__coordination_partners_lkp(order_by: { description: asc }) {
+    atd__coordination_partners_lkp(order_by: { coord_partner_desc: asc }) {
       id
-      description
+      coord_partner_desc
     }
     atd__recommendation_status_lkp {
       id
-      description
+      rec_status_desc
     }
   }
 `;
@@ -44,8 +44,8 @@ export const INSERT_RECOMMENDATION = gql`
   ) {
     insert_recommendations(
       objects: {
-        text: $text
-        update: $update
+        rec_text: $text
+        rec_update: $update
         crash_id: $crashId
         created_by: $userEmail
         recommendation_status_id: $recommendation_status_id
@@ -54,8 +54,8 @@ export const INSERT_RECOMMENDATION = gql`
     ) {
       returning {
         crash_id
-        update
-        text
+        rec_update
+        rec_text
         created_at
         created_by
       }
@@ -70,8 +70,8 @@ export const UPDATE_RECOMMENDATION = gql`
   ) {
     update_recommendations_by_pk(pk_columns: { id: $id }, _set: $changes) {
       crash_id
-      text
-      update
+      rec_text
+      rec_update
     }
   }
 `;

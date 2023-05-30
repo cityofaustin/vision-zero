@@ -258,37 +258,59 @@ export const crashGridTableAdvancedFilters = {
   },
   groupUnitTypes: {
     icon: "bicycle",
-    label: "Units Involved",
+    label: "Unit Type",
     filters: [
       {
+        id: "motor_vehicle",
+        label: "Motor Vehicle",
+        filter: {
+          where: [
+            {
+              "_and: [ { units: { unit_desc_id: { _eq: 1 } } }, { _and: [ { units: { veh_body_styl_id: { _neq: 71 } } }, { units: { veh_body_styl_id: { _neq: 90 } } } ] } ] ": null,
+            },
+          ],
+        },
+      },
+      {
+        id: "motorcycle",
+        label: "Motorcycle",
+        filter: {
+          where: [
+            {
+              "_and: [ { units: { unit_desc_id: { _eq: 1 } } }, { _or: [ { units: { veh_body_styl_id: { _eq: 71 } } }, { units: { veh_body_styl_id: { _eq: 90 } } } ] } ] ": null,
+            },
+          ],
+        },
+      },
+      {
+        id: "cyclist",
+        label: "Cyclist",
+        filter: {
+          where: [
+            {
+              'units: { unit_desc_id: { _eq: 3 } }': null,
+            },
+          ],
+        },
+      },
+      {
         id: "pedestrian",
-        label: "Pedestrian Involved",
+        label: "Pedestrian",
         filter: {
           where: [
             {
-              'units: { unit_description: { veh_unit_desc_desc: { _eq: "PEDESTRIAN" } } }': null,
+              'units: { unit_desc_id: { _eq: 4 } }': null,
             },
           ],
         },
       },
       {
-        id: "pedacyclist",
-        label: "Cyclist Involved",
+        id: "scooter_rider",
+        label: "Scooter Rider",
         filter: {
           where: [
             {
-              'units: { unit_description: { veh_unit_desc_desc: { _eq: "PEDALCYCLIST" } } }': null,
-            },
-          ],
-        },
-      },
-      {
-        id: "motorized_conveyance",
-        label: "Motorized Conveyance Involved",
-        filter: {
-          where: [
-            {
-              'units: { unit_description: { veh_unit_desc_desc: { _eq: "MOTORIZED CONVEYANCE" } } }': null,
+              '_and: [ { units: { unit_desc_id: { _eq: 177 } } }, { units: { veh_body_styl_id: { _eq: 177 } } } ]': null,
             },
           ],
         },
