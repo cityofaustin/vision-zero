@@ -45,7 +45,7 @@ const VictimNameField = ({
       }
     });
     const isNameBlank = concatenatedName === "";
-    return isNameBlank ? "NO DATA" : concatenatedName;
+    return isNameBlank ? "NO DATA" : concatenatedName.toUpperCase();
   };
 
   const mutationVariable = nameFieldConfig.mutationVariableKey;
