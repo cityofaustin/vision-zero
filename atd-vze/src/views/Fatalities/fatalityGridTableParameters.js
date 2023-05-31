@@ -83,7 +83,32 @@ export const fatalityGridTableAdvancedFilters = {
         filter: {
           where: [
             {
-              "_or: [ { _and: [ { person: { unit: { unit_desc_id: { _eq: 1 } } } }, { _and: [ { person: { unit: { veh_body_styl_id: { _neq: 71 } } } }, { person: { unit: { veh_body_styl_id: { _neq: 90 } } } } ] } ] }, { _and: [ { primaryperson: { unit: { unit_desc_id: { _eq: 1 } } } }, { _and: [ { primaryperson: { unit: { veh_body_styl_id: { _neq: 71 } } } }, { primaryperson: { unit: { veh_body_styl_id: { _neq: 90 } } } } ] } ] } ]": null,
+              "_or: \
+              [ \
+                { _and: \
+                  [ \
+                    { person: { unit: { unit_desc_id: { _eq: 1 } } } }, \
+                    { _and: \
+                      [ \
+                        { person: { unit: { veh_body_styl_id: { _neq: 71 } } } }, \
+                        { person: { unit: { veh_body_styl_id: { _neq: 90 } } } } \
+                      ] \
+                    } \
+                  ] \
+                }, \
+                { _and: \
+                  [ \
+                    { primaryperson: { unit: { unit_desc_id: { _eq: 1 } } } }, \
+                    { _and: \
+                      [ \
+                        { primaryperson: { unit: { veh_body_styl_id: { _neq: 71 } } } }, \
+                        { primaryperson: { unit: { veh_body_styl_id: { _neq: 90 } } } } \
+                      ] \
+                    } \
+                  ] \
+                } \
+              ] \
+              ": null,
             },
           ],
         },
@@ -94,7 +119,32 @@ export const fatalityGridTableAdvancedFilters = {
         filter: {
           where: [
             {
-              "_or: [ { _and: [ { person: { unit: { unit_desc_id: { _eq: 1 } } } }, { _or: [ { person: { unit: { veh_body_styl_id: { _eq: 71 } } } } , { person: { unit: { veh_body_styl_id: { _eq: 90 } } } } ] } ] }, { _and: [ { primaryperson: { unit: { unit_desc_id: { _eq: 1 } } } }, { _or: [ { primaryperson: { unit: { veh_body_styl_id: { _eq: 71 } } } } , { primaryperson: { unit: { veh_body_styl_id: { _eq: 90 } } } } ] } ] } ]": null,
+              "_or: \
+              [ \
+                { _and: \
+                  [ \
+                    { person: { unit: { unit_desc_id: { _eq: 1 } } } }, \
+                    { _or: \
+                      [ \
+                        { person: { unit: { veh_body_styl_id: { _eq: 71 } } } } , \
+                        { person: { unit: { veh_body_styl_id: { _eq: 90 } } } } \
+                      ] \
+                    } \
+                  ] \
+                }, \
+                { _and: \
+                  [ \
+                    { primaryperson: { unit: { unit_desc_id: { _eq: 1 } } } }, \
+                    { _or: \
+                      [ \
+                        { primaryperson: { unit: { veh_body_styl_id: { _eq: 71 } } } } , \
+                        { primaryperson: { unit: { veh_body_styl_id: { _eq: 90 } } } } \
+                      ] \
+                    } \
+                  ] \
+                } \
+              ] \
+              ": null,
             },
           ],
         },
@@ -127,7 +177,22 @@ export const fatalityGridTableAdvancedFilters = {
         filter: {
           where: [
             {
-              "_or: [ { _and: [ { person: { unit: { unit_desc_id: { _eq: 177 } } } }, { person: { unit: { veh_body_styl_id: { _eq: 177 } } } } ] }, { _and: [ { primaryperson: { unit: { unit_desc_id: { _eq: 177 } } } }, { primaryperson: { unit: { veh_body_styl_id: { _eq: 177 } } } } ] } ]": null,
+              "_or: \
+              [ \
+                { _and: \
+                  [ \
+                    { person: { unit: { unit_desc_id: { _eq: 177 } } } }, \
+                    { person: { unit: { veh_body_styl_id: { _eq: 177 } } } } \
+                  ] \
+                }, \
+                { _and: \
+                  [ \
+                    { primaryperson: { unit: { unit_desc_id: { _eq: 177 } } } }, \
+                    { primaryperson: { unit: { veh_body_styl_id: { _eq: 177 } } } } \
+                  ] \
+                } \
+              ] \
+              ": null,
             },
           ],
         },
