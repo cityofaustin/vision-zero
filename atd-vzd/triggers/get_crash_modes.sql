@@ -21,12 +21,14 @@ BEGIN
                        CASE
                            -- PEDALCYCLIST / BYCICLE
                            WHEN vdesc.veh_unit_desc_id = 3 THEN 5
-                           -- MOTORIZED CONVEYANCE / MICROMOBILITY DEVICE
+                           -- MOTORIZED CONVEYANCE
                            WHEN vdesc.veh_unit_desc_id = 5 THEN 6
                            -- PEDESTRIAN
                            WHEN vdesc.veh_unit_desc_id = 4 THEN 7
                            -- TRAIN
                            WHEN vdesc.veh_unit_desc_id = 2 THEN 8
+                           -- MICROMOBILITY DEVICE / E-SCOOTER
+                           WHEN vdesc.veh_unit_desc_id = 177 THEN 10
                            -- MOTOR VEHICLE
                            WHEN vdesc.veh_unit_desc_id = 1 THEN (
                                CASE
@@ -35,7 +37,7 @@ BEGIN
                                -- LARGE PASSENGER CAR
                                WHEN vbody.veh_body_styl_id IN (30, 69, 103, 106) THEN 2
                                -- MOTORCYCLE
-                               WHEN vbody.veh_body_styl_id = 71 THEN 3
+                               WHEN vbody.veh_body_styl_id = 71 OR vbody.veh_body_styl_id = 90 THEN 3
 
                                ELSE 4 END
                            ) ELSE 9
