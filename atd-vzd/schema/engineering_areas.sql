@@ -12,10 +12,6 @@ CREATE SEQUENCE public.engineering_areas_id_seq
     NO MAXVALUE
     CACHE 1;
 
---
--- Name: fatalities fatalities_pkey; Type: CONSTRAINT; Schema: public; Owner: visionzero
---
-
 ALTER TABLE ONLY public.engineering_areas
     ADD CONSTRAINT engineering_areas_pkey PRIMARY KEY (id);
 
