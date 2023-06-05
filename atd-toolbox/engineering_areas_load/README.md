@@ -1,6 +1,5 @@
 # Load engineering areas into Vision Zero
 
-1.
 1. Install dependencies - requires node v18.x
 
 ```shell
