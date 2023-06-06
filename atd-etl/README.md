@@ -51,7 +51,7 @@ Follow this example:
 ```bash
 $ runetl build
 ```
-Then, for local:
+Then, for local (only supports `process_socrata_export.py` for now):
 ```bash
 $ runetl ~/.ssh/atd-etl/etl.local.env app/process_test_run.py
 ```
