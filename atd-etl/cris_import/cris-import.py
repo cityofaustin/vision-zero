@@ -22,6 +22,17 @@ from lib.helpers_import import insert_crash_change_template as insert_change_tem
 
 from sshtunnel import SSHTunnelForwarder
 
+import onepasswordconnectsdk
+from onepasswordconnectsdk.client import Client, new_client
+
+DEPLOYMENT_ENVIRONMENT = os.environ.get("ENVIRONMENT", 'development')   # our current environment from ['production', 'development']
+ONEPASSWORD_CONNECT_TOKEN = os.getenv("OP_API_TOKEN")                   # our secret to get secrets 🤐
+ONEPASSWORD_CONNECT_HOST = os.getenv("OP_CONNECT")                      # where we get our secrets
+VAULT_ID = os.getenv("OP_VAULT_ID")
+
+print("Vault ID: ", VAULT_ID)
+
+
 SFTP_ENDPOINT = None
 ZIP_PASSWORD = None
 VZ_ETL_LOCATION = None
@@ -42,6 +53,71 @@ DB_SSL_REQUIREMENT = None
 DB_BASTION_HOST_SSH_USERNAME = None
 DB_BASTION_HOST = None
 DB_RDS_HOST = None
+
+
+def get_secrets():
+    REQUIRED_SECRETS = {
+        "SFTP_endpoint": {
+            "opitem": "Vision Zero CRIS Import",
+            "opfield": f"Common.SFTP Endpoint",
+            "opvault": VAULT_ID,
+            },
+        "sftp_endpoint_private_key": {
+            "opitem": "SFTP Endpoint Key",
+            "opfield": ".private key",
+            "opvault": VAULT_ID,
+            },
+        "archive_extract_password": {
+            "opitem": "Vision Zero CRIS Import",
+            "opfield": "Common.CRIS Archive Extract Password",
+            "opvault": VAULT_ID,
+            },
+        "bastion_host": {
+            "opitem": "Vision Zero CRIS Import",
+            "opfield": f"{DEPLOYMENT_ENVIRONMENT}.Database Bastion",
+            "opvault": VAULT_ID,
+            },
+        "bastion_ssh_username": {
+            "opitem": "Vision Zero CRIS Import",
+            "opfield": f"{DEPLOYMENT_ENVIRONMENT}.Bastion ssh Username",
+            "opvault": VAULT_ID,
+            },
+        "database_host": {
+            "opitem": "Vision Zero CRIS Import",
+            "opfield": f"{DEPLOYMENT_ENVIRONMENT}.Database Host",
+            "opvault": VAULT_ID,
+            },
+        "database_username": {
+            "opitem": "Vision Zero CRIS Import",
+            "opfield": f"{DEPLOYMENT_ENVIRONMENT}.Database Username",
+            "opvault": VAULT_ID,
+            },
+        "database_password": {
+            "opitem": "Vision Zero CRIS Import",
+            "opfield": f"{DEPLOYMENT_ENVIRONMENT}.Database Password",
+            "opvault": VAULT_ID,
+            },
+        "database_name": {
+            "opitem": "Vision Zero CRIS Import",
+            "opfield": f"{DEPLOYMENT_ENVIRONMENT}.Database Name",
+            "opvault": VAULT_ID,
+            },
+        "database_ssl_policy": {
+            "opitem": "Vision Zero CRIS Import",
+            "opfield": f"{DEPLOYMENT_ENVIRONMENT}.Database SSL Policy",
+            "opvault": VAULT_ID,
+            },
+    }
+
+    # instantiate a 1Password client
+    client: Client = new_client(ONEPASSWORD_CONNECT_HOST, ONEPASSWORD_CONNECT_TOKEN)
+    # get the requested secrets from 1Password
+    SECRETS = onepasswordconnectsdk.load_dict(client, REQUIRED_SECRETS)
+
+    print("Secrets: " + str(SECRETS))
+
+    return SECRETS
+
 
 def specify_extract_location(file):
     zip_tmpdir = tempfile.mkdtemp()
@@ -606,7 +682,8 @@ def clean_up_import_schema(map_state):
     return map_state
 
 def main():
-    pass
+    secrets = get_secrets()
+    print("Secrets: ", secrets)
 
 
 def old_main():
