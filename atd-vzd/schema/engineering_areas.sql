@@ -1,7 +1,7 @@
 CREATE TABLE public.engineering_areas(
     id integer NOT NULL,
     eng_area_label text,
-    eng_area_geometry geometry,
+    eng_area_geometry geometry
 );
 
 CREATE SEQUENCE public.engineering_areas_id_seq
