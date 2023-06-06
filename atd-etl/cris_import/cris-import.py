@@ -30,29 +30,6 @@ ONEPASSWORD_CONNECT_TOKEN = os.getenv("OP_API_TOKEN")                   # our se
 ONEPASSWORD_CONNECT_HOST = os.getenv("OP_CONNECT")                      # where we get our secrets
 VAULT_ID = os.getenv("OP_VAULT_ID")
 
-print("Vault ID: ", VAULT_ID)
-
-
-SFTP_ENDPOINT = None
-ZIP_PASSWORD = None
-VZ_ETL_LOCATION = None
-
-AWS_DEFAULT_REGION = None
-AWS_ACCESS_KEY_ID = None
-AWS_SECRET_ACCESS_KEY = None
-AWS_CSV_ARCHIVE_BUCKET_NAME = None
-AWS_CSV_ARCHIVE_PATH_PRODUCTION = None
-AWS_CSV_ARCHIVE_PATH_STAGING = None
-
-DB_HOST = None
-DB_USER = None
-DB_PASS = None
-DB_NAME = None
-DB_SSL_REQUIREMENT = None
-
-DB_BASTION_HOST_SSH_USERNAME = None
-DB_BASTION_HOST = None
-DB_RDS_HOST = None
 
 
 def get_secrets():
@@ -107,16 +84,33 @@ def get_secrets():
             "opfield": f"{DEPLOYMENT_ENVIRONMENT}.Database SSL Policy",
             "opvault": VAULT_ID,
             },
+        "aws_access_key": {
+            "opitem": "Vision Zero CRIS Import",
+            "opfield": f"{DEPLOYMENT_ENVIRONMENT}.AWS Access key",
+
+            "opvault": VAULT_ID,
+            },
+        "aws_secret_key": {
+            "opitem": "Vision Zero CRIS Import",
+            "opfield": f"{DEPLOYMENT_ENVIRONMENT}.AWS Secret key",
+            "opvault": VAULT_ID,
+            },
+        "s3_archive_bucket_name": {
+            "opitem": "Vision Zero CRIS Import",
+            "opfield": f"{DEPLOYMENT_ENVIRONMENT}.S3 Archive Bucket Name",
+            "opvault": VAULT_ID,
+            },
+        "s3_archive_path": {
+            "opitem": "Vision Zero CRIS Import",
+            "opfield": f"{DEPLOYMENT_ENVIRONMENT}.S3 Archive Path",
+            "opvault": VAULT_ID,
+            },
     }
 
     # instantiate a 1Password client
     client: Client = new_client(ONEPASSWORD_CONNECT_HOST, ONEPASSWORD_CONNECT_TOKEN)
     # get the requested secrets from 1Password
-    SECRETS = onepasswordconnectsdk.load_dict(client, REQUIRED_SECRETS)
-
-    print("Secrets: " + str(SECRETS))
-
-    return SECRETS
+    return onepasswordconnectsdk.load_dict(client, REQUIRED_SECRETS)
 
 
 def specify_extract_location(file):
@@ -228,7 +222,7 @@ def upload_csv_files_to_s3(extract_directory):
             AWS_CSV_ARCHIVE_PATH_STAGING
             + "/"
             + str(datetime.date.today())
-            # AWS_CSV_ARCHIVE_PATH_PRODUCTION + "/" + str(datetime.date.today())
+            # AWS_CSV_ARCHIVE_PATH + "/" + str(datetime.date.today())
         )
         s3.Bucket(AWS_CSV_ARCHIVE_BUCKET_NAME).upload_file(
             extract_directory + "/" + filename,
@@ -685,6 +679,45 @@ def main():
     secrets = get_secrets()
     print("Secrets: ", secrets)
 
+    global SFTP_ENDPOINT
+    global ZIP_PASSWORD
+
+    global AWS_ACCESS_KEY_ID
+    global AWS_SECRET_ACCESS_KEY
+    global AWS_CSV_ARCHIVE_BUCKET_NAME
+    global AWS_CSV_ARCHIVE_PATH
+
+    global DB_HOST
+    global DB_USER
+    global DB_PASS
+    global DB_NAME
+    global DB_SSL_REQUIREMENT
+
+    global DB_BASTION_HOST_SSH_USERNAME
+    global DB_BASTION_HOST
+    global DB_RDS_HOST
+
+    # python, why can i not define the variable in the global scope and assign them in the same line?
+    SFTP_ENDPOINT = secrets["SFTP_endpoint"]
+    ZIP_PASSWORD = secrets["archive_extract_password"]
+
+    AWS_ACCESS_KEY_ID = secrets["aws_access_key"]
+    AWS_SECRET_ACCESS_KEY = secrets["aws_secret_key"]
+    AWS_CSV_ARCHIVE_BUCKET_NAME = secrets["s3_archive_bucket_name"]
+    AWS_CSV_ARCHIVE_PATH = secrets["s3_archive_path"]
+
+    DB_HOST = secrets["database_host"]
+    DB_USER = secrets["database_username"]
+    DB_PASS = secrets["database_password"]
+    DB_NAME = secrets["database_name"]
+    DB_SSL_REQUIREMENT = secrets["database_ssl_policy"]
+
+    DB_BASTION_HOST_SSH_USERNAME = secrets["bastion_ssh_username"]
+    DB_BASTION_HOST = secrets["bastion_host"]
+    DB_RDS_HOST = secrets["database_host"]
+
+    zip_location = download_extract_archives()
+    extracted_archives = unzip_archives(zip_location) # this returns an array, but is not mapped on
 
 def old_main():
     pass
