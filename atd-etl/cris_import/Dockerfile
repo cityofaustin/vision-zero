@@ -8,7 +8,7 @@ RUN apt-get -y upgrade
 RUN apt-get install -y aptitude magic-wormhole vim black python3-pip
 
 # install zip archive tool & pgloader for CRIS export use
-RUN apt-get install -y p7zip-full pgloader
+RUN apt-get install -y p7zip-full pgloader rsync
 
 COPY requirements.txt /tmp/requirements.txt
 RUN pip install -r /tmp/requirements.txt
