@@ -1,4 +1,4 @@
 #!/bin/bash
 
 /usr/sbin/sshd
-/bin/bash
+/app/cris-import.py
