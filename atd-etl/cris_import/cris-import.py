@@ -1,8 +1,6 @@
 #!/usr/bin/python3
 
-import sys
 import os
-import json
 import shutil
 import re
 import time
@@ -16,13 +14,6 @@ import sysrsync
 
 import psycopg2
 import psycopg2.extras
-
-# Import various prefect packages and helper methods
-import prefect
-from prefect import task, Flow, Parameter
-from prefect.backend import get_key_value
-from prefect.engine.state import Failed, TriggerFailed, Retrying
-from prefect.utilities.notifications import slack_notifier
 
 import lib.mappings as mappings
 import lib.sql as util
@@ -51,51 +42,6 @@ DB_SSL_REQUIREMENT = None
 DB_BASTION_HOST_SSH_USERNAME = None
 DB_BASTION_HOST = None
 DB_RDS_HOST = None
-
-if True:
-    kv_store = get_key_value("Vision Zero Development")
-    kv_dictionary = json.loads(kv_store)
-    SFTP_ENDPOINT = kv_dictionary["SFTP_ENDPOINT"]
-    ZIP_PASSWORD = kv_dictionary["ZIP_PASSWORD"]
-    VZ_ETL_LOCATION = kv_dictionary["VZ_ETL_LOCATION"]
-
-    AWS_DEFAULT_REGION = kv_dictionary["AWS_DEFAULT_REGION"]
-    AWS_ACCESS_KEY_ID = kv_dictionary["AWS_ACCESS_KEY_ID"]
-    AWS_SECRET_ACCESS_KEY = kv_dictionary["AWS_SECRET_ACCESS_KEY"]
-    AWS_CSV_ARCHIVE_BUCKET_NAME = kv_dictionary["AWS_CSV_ARCHIVE_BUCKET_NAME"]
-    AWS_CSV_ARCHIVE_PATH_PRODUCTION = kv_dictionary["AWS_CSV_ARCHIVE_PATH_PRODUCTION"]
-    AWS_CSV_ARCHIVE_PATH_STAGING = kv_dictionary["AWS_CSV_ARCHIVE_PATH_STAGING"]
-
-    DB_HOST = kv_dictionary["DB_HOST"]
-    DB_USER = kv_dictionary["DB_USER"]
-    DB_PASS = kv_dictionary["DB_PASS"]
-    DB_NAME = kv_dictionary["DB_NAME"]
-    DB_SSL_REQUIREMENT = kv_dictionary["DB_SSL_REQUIREMENT"]
-
-    DB_BASTION_HOST_SSH_USERNAME = kv_dictionary["DB_BASTION_HOST_SSH_USERNAME"]
-    DB_BASTION_HOST = kv_dictionary["DB_BASTION_HOST"]
-    DB_RDS_HOST = kv_dictionary["DB_RDS_HOST"]
-else:
-    SFTP_ENDPOINT = os.getenv("SFTP_ENDPOINT")
-    ZIP_PASSWORD = os.getenv("ZIP_PASSWORD")
-    VZ_ETL_LOCATION = os.getenv("VZ_ETL_LOCATION")
-
-    AWS_DEFAULT_REGION = os.getenv("AWS_DEFAULT_REGION")
-    AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
-    AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
-    AWS_CSV_ARCHIVE_BUCKET_NAME = os.getenv("AWS_CSV_ARCHIVE_BUCKET_NAME")
-    AWS_CSV_ARCHIVE_PATH_PRODUCTION = os.getenv("AWS_CSV_ARCHIVE_PATH_PRODUCTION")
-    AWS_CSV_ARCHIVE_PATH_STAGING = os.getenv("AWS_CSV_ARCHIVE_PATH_STAGING")
-
-    DB_HOST = os.getenv("DB_HOST")
-    DB_USER = os.getenv("DB_USER")
-    DB_PASS = os.getenv("DB_PASS")
-    DB_NAME = os.getenv("DB_NAME")
-    DB_SSL_REQUIREMENT = os.getenv("DB_SSL_REQUIREMENT")
-
-    DB_BASTION_HOST_SSH_USERNAME = os.getenv("DB_BASTION_HOST_SSH_USERNAME")
-    DB_BASTION_HOST = os.getenv("DB_BASTION_HOST")
-    DB_RDS_HOST = os.getenv("DB_RDS_HOST")
 
 def specify_extract_location(file):
     zip_tmpdir = tempfile.mkdtemp()
