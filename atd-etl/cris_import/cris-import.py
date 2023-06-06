@@ -57,7 +57,6 @@ def download_extract_archives():
     Returns path of temporary directory as a string
     """
 
-    logger = prefect.context.get("logger")
     zip_tmpdir = tempfile.mkdtemp()
     rsync = sysrsync.run(
         verbose=True,
@@ -67,14 +66,14 @@ def download_extract_archives():
         sync_source_contents=False,
         destination=zip_tmpdir,
     )
-    logger.info("Rsync return code: " + str(rsync.returncode))
+    print("Rsync return code: " + str(rsync.returncode))
     # check for a OS level return code of anything non-zero, which
     # would indicate to us that the child proc we kicked off didn't
     # complete successfully.
     # see: https://www.gnu.org/software/libc/manual/html_node/Exit-Status.html
     if rsync.returncode != 0:
         return False
-    logger.info("Temp Directory: " + zip_tmpdir)
+    print("Temp Directory: " + zip_tmpdir)
     return zip_tmpdir
 
 
@@ -88,13 +87,12 @@ def unzip_archives(archives_directory):
     containing an archive's contents
     """
 
-    logger = prefect.context.get("logger")
     extracted_csv_directories = []
     for filename in os.listdir(archives_directory):
-        logger.info("About to unzip: " + filename + "with the command ...")
+        print("About to unzip: " + filename + "with the command ...")
         extract_tmpdir = tempfile.mkdtemp()
         unzip_command = f'7za -y -p{ZIP_PASSWORD} -o"{extract_tmpdir}" x "{archives_directory}/{filename}"'
-        logger.info(unzip_command)
+        print(unzip_command)
         os.system(unzip_command)
         extracted_csv_directories.append(extract_tmpdir)
     return extracted_csv_directories
@@ -115,8 +113,6 @@ def cleanup_temporary_directories(zip_location, pgloader_command_files, extracte
 
     Returns: None
     """
-
-    logger = prefect.context.get("logger")
 
     shutil.rmtree(zip_location)
 
@@ -142,7 +138,6 @@ def upload_csv_files_to_s3(extract_directory):
         extract_directory: String denoting the full path of a directory containing extracted CSV files
             NB: The in-and-out unchanged data in this function is more about serializing prefect tasks and less about inter-functional communication
     """
-    logger = prefect.context.get("logger")
 
     session = boto3.Session(
         aws_access_key_id=AWS_ACCESS_KEY_ID,
@@ -152,7 +147,7 @@ def upload_csv_files_to_s3(extract_directory):
 
     # for extract_directory in extracts:
     for filename in os.listdir(extract_directory):
-        logger.info("About to upload to s3: " + filename)
+        print("About to upload to s3: " + filename)
         destination_path = (
             AWS_CSV_ARCHIVE_PATH_STAGING
             + "/"
@@ -177,15 +172,14 @@ def remove_archives_from_sftp_endpoint(zip_location, map_state):
     Returns: None
     """
 
-    logger = prefect.context.get("logger")
-    logger.info(zip_location)
+    print(zip_location)
     for archive in os.listdir(zip_location):
-        logger.info(archive)
+        print(archive)
         command = f"ssh {SFTP_ENDPOINT} rm -v /home/txdot/{archive}"
-        logger.info(command)
+        print(command)
         cmd = command.split()
         rm_result = Popen(cmd, stdout=PIPE, stderr=PIPE, stdin=PIPE).stdout.read()
-        logger.info(rm_result)
+        print(rm_result)
 
     return None
 
@@ -369,8 +363,6 @@ def align_records(map_state):
     
     dry_run = map_state["dry_run"]
 
-    logger = prefect.context.get("logger")
-
     # fmt: off
     
     ssh_tunnel = SSHTunnelForwarder(
@@ -431,7 +423,7 @@ def align_records(map_state):
                 # Check if the proposed update would result in a non-op, such as if there are no changes between the import and
                 # target record. If this is the case, continue to the next record. There's no changes needed in this case.
                 if util.check_if_update_is_a_non_op(pg, column_comparisons, output_map, table, linkage_clauses, record_key_sql, map_state["import_schema"]):
-                    #logger.info(f"Skipping update for {output_map[table]} {record_key_sql}")
+                    #print(f"Skipping update for {output_map[table]} {record_key_sql}")
                     continue
 
                 # For future reporting and debugging purposes: Use SQL to query a list of 
@@ -482,7 +474,7 @@ def align_records(map_state):
                     # This execution branch leads to forming an update statement and executing it
                     
                     if len(changed_columns["changed_columns"]) == 0:
-                        logger.info(update_statement)
+                        print(update_statement)
                         raise "No changed columns? Why are we forming an update? This is a bug."
 
                     # Display the before and after values of the columns which are subject to update
@@ -490,7 +482,7 @@ def align_records(map_state):
 
                     # Using all the information we've gathered, form a single SQL update statement to update the target record.
                     update_statement = util.form_update_statement(output_map, table, column_assignments, map_state["import_schema"], record_key_sql, linkage_sql, changed_columns)
-                    logger.info(f"Executing update in {output_map[table]} for where " + record_key_sql)
+                    print(f"Executing update in {output_map[table]} for where " + record_key_sql)
 
                     # Execute the update statement
                     util.try_statement(pg, output_map, table, record_key_sql, update_statement, dry_run)
@@ -501,7 +493,7 @@ def align_records(map_state):
                 # An insert is always just an vanilla insert, as there is not a pair of records to compare.
                 # Produce the SQL which creates a new VZDB record from a query of the imported data
                 insert_statement = util.form_insert_statement(output_map, table, input_column_names, import_key_sql, map_state["import_schema"])
-                logger.info(f"Executing insert in {output_map[table]} for where " + record_key_sql)
+                print(f"Executing insert in {output_map[table]} for where " + record_key_sql)
 
                 # Execute the insert statement
                 util.try_statement(pg, output_map, table, record_key_sql, insert_statement, dry_run)
@@ -614,6 +606,10 @@ def clean_up_import_schema(map_state):
     return map_state
 
 def main():
+    pass
+
+
+def old_main():
     pass
     #dry_run = Parameter("dry_run", default=True, required=True)
 
