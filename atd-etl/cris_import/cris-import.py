@@ -722,3 +722,6 @@ def main():
         #upstream_tasks=[align_records_token],
         #upstream_tasks=[align_records_token, removal_token],
         #)
+
+if __name__ == "__main__":
+    main()
