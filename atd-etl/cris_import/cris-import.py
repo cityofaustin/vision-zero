@@ -101,6 +101,16 @@ def get_secrets():
             "opfield": f"{DEPLOYMENT_ENVIRONMENT}.S3 Archive Path",
             "opvault": VAULT_ID,
         },
+        "graphql_endpoint": {
+            "opitem": "Vision Zero CRIS Import",
+            "opfield": f"{DEPLOYMENT_ENVIRONMENT}.GraphQL Endpoint",
+            "opvault": VAULT_ID,
+        },
+        "graphql_endpoint_key": {
+            "opitem": "Vision Zero CRIS Import",
+            "opfield": f"{DEPLOYMENT_ENVIRONMENT}.GraphQL Endpoint key",
+            "opvault": VAULT_ID,
+        },
     }
 
     # instantiate a 1Password client
@@ -546,7 +556,7 @@ def align_records(map_state):
                     mutation = insert_change_template(new_record_dict=source, differences=all_changed_columns, crash_id=str(source["crash_id"]))
                     if not dry_run:
                         print("Making a mutation for " + str(source["crash_id"]))
-                        graphql.make_hasura_request(query=mutation)
+                        graphql.make_hasura_request(query=mutation, endpoint=GRAPHQL_ENDPOINT, admin_secret=GRAPHQL_ENDPOINT_KEY)
                 else:
                     # This execution branch leads to forming an update statement and executing it
                     
@@ -713,6 +723,9 @@ def main():
     global DB_BASTION_HOST
     global DB_RDS_HOST
 
+    global GRAPHQL_ENDPOINT
+    global GRAPHQL_ENDPOINT_KEY
+
     SFTP_ENDPOINT = secrets["SFTP_endpoint"]
     ZIP_PASSWORD = secrets["archive_extract_password"]
 
@@ -730,6 +743,9 @@ def main():
     DB_BASTION_HOST_SSH_USERNAME = secrets["bastion_ssh_username"]
     DB_BASTION_HOST = secrets["bastion_host"]
     DB_RDS_HOST = secrets["database_host"]
+
+    GRAPHQL_ENDPOINT = secrets["graphql_endpoint"]
+    GRAPHQL_ENDPOINT_KEY = secrets["graphql_endpoint_key"]
 
     zip_location = download_extract_archives()
     extracted_archives = unzip_archives(
