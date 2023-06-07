@@ -54,6 +54,7 @@ def main():
 
     global GRAPHQL_ENDPOINT
     global GRAPHQL_ENDPOINT_KEY
+    global SFTP_ENDPOINT_SSH_PRIVATE_KEY
 
     SFTP_ENDPOINT = secrets["SFTP_endpoint"]
     ZIP_PASSWORD = secrets["archive_extract_password"]
@@ -75,6 +76,7 @@ def main():
 
     GRAPHQL_ENDPOINT = secrets["graphql_endpoint"]
     GRAPHQL_ENDPOINT_KEY = secrets["graphql_endpoint_key"]
+    SFTP_ENDPOINT_SSH_PRIVATE_KEY = secrets["sftp_endpoint_private_key"]
 
     # 🥩 & 🥔
     zip_location = download_extract_archives()
@@ -89,7 +91,7 @@ def main():
             typed_token = align_db_typing(trimmed_token)
             align_records_token = align_records(typed_token)
             clean_up_import_schema(align_records_token)
-    removal_token = remove_archives_from_sftp_endpoint(zip_location)
+    remove_archives_from_sftp_endpoint(zip_location)
     upload_csv_files_to_s3(archive)
 
 
@@ -175,6 +177,11 @@ def get_secrets():
             "opfield": f"{DEPLOYMENT_ENVIRONMENT}.GraphQL Endpoint key",
             "opvault": VAULT_ID,
         },
+        "sftp_endpoint_private_key": {
+            "opitem": "SFTP Endpoint Key",
+            "opfield": ".private key",
+            "opvault": VAULT_ID,
+            },
     }
 
     # instantiate a 1Password client
@@ -197,30 +204,35 @@ def download_extract_archives():
     Returns path of temporary directory as a string
     """
 
-    zip_tmpdir = tempfile.mkdtemp()
-    rsync = None
-    try:
-        rsync = sysrsync.run(
-            verbose=True,
-            options=["-a"],
-            source_ssh=SFTP_ENDPOINT,
-            source="/home/txdot/*zip",
-            sync_source_contents=False,
-            destination=zip_tmpdir,
-        )
-    except:
-        print("No files to copy..")
-        # we're really kinda out of work here, so we're going to bail
-        quit()
-    print("Rsync return code: " + str(rsync.returncode))
-    # check for a OS level return code of anything non-zero, which
-    # would indicate to us that the child proc we kicked off didn't
-    # complete successfully.
-    # see: https://www.gnu.org/software/libc/manual/html_node/Exit-Status.html
-    if rsync.returncode != 0:
-        return False
-    print("Temp Directory: " + zip_tmpdir)
-    return zip_tmpdir
+    with SshKeyTempDir() as key_directory:
+        write_key_to_file(key_directory + "/id_ed25519", SFTP_ENDPOINT_SSH_PRIVATE_KEY + "\n") 
+
+        zip_tmpdir = tempfile.mkdtemp()
+        rsync = None
+        try:
+            rsync = sysrsync.run(
+                verbose=True,
+                options=["-a"],
+                source_ssh=SFTP_ENDPOINT,
+                source="/home/txdot/*zip",
+                sync_source_contents=False,
+                destination=zip_tmpdir,
+                private_key=key_directory + "/id_ed25519",
+                strict_host_key_checking=False,
+            )
+        except:
+            print("No files to copy..")
+            # we're really kinda out of work here, so we're going to bail
+            quit()
+        print("Rsync return code: " + str(rsync.returncode))
+        # check for a OS level return code of anything non-zero, which
+        # would indicate to us that the child proc we kicked off didn't
+        # complete successfully.
+        # see: https://www.gnu.org/software/libc/manual/html_node/Exit-Status.html
+        if rsync.returncode != 0:
+            return False
+        print("Temp Directory: " + zip_tmpdir)
+        return zip_tmpdir
 
 
 def unzip_archives(archives_directory):
@@ -311,15 +323,17 @@ def remove_archives_from_sftp_endpoint(zip_location):
 
     Returns: None
     """
+    with SshKeyTempDir() as key_directory:
+        write_key_to_file(key_directory + "/id_ed25519", SFTP_ENDPOINT_SSH_PRIVATE_KEY + "\n") 
 
-    print(zip_location)
-    for archive in os.listdir(zip_location):
-        print(archive)
-        command = f"ssh {SFTP_ENDPOINT} rm -v /home/txdot/{archive}"
-        print(command)
-        cmd = command.split()
-        rm_result = Popen(cmd, stdout=PIPE, stderr=PIPE, stdin=PIPE).stdout.read()
-        print(rm_result)
+        print(zip_location)
+        for archive in os.listdir(zip_location):
+            print(archive)
+            command = f"ssh -i {key_directory}/id_ed25519 {SFTP_ENDPOINT} rm -v /home/txdot/{archive}"
+            print(command)
+            cmd = command.split()
+            rm_result = Popen(cmd, stdout=PIPE, stderr=PIPE, stdin=PIPE).stdout.read()
+            print(rm_result)
 
     return None
 
@@ -758,6 +772,29 @@ def clean_up_import_schema(map_state):
     pg.close()
 
     return map_state
+
+# these temp directories are used to store ssh keys, because they will
+# automatically clean themselves up when they go out of scope.
+class SshKeyTempDir:
+    def __init__(self):
+        self.path = None
+
+    def __enter__(self):
+        self.path = tempfile.mkdtemp(dir='/tmp')
+        return self.path
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        shutil.rmtree(self.path)
+
+def write_key_to_file(path, content):
+    # Open the file with write permissions and create it if it doesn't exist
+    fd = os.open(path, os.O_WRONLY | os.O_CREAT, 0o600)
+
+    # Write the content to the file
+    os.write(fd, content.encode())
+
+    # Close the file
+    os.close(fd)
 
 
 if __name__ == "__main__":
