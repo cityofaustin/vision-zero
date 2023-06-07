@@ -219,7 +219,7 @@ def upload_csv_files_to_s3(extract_directory):
     for filename in os.listdir(extract_directory):
         print("About to upload to s3: " + filename)
         destination_path = (
-            AWS_CSV_ARCHIVE_PATH_STAGING
+            AWS_CSV_ARCHIVE_PATH
             + "/"
             + str(datetime.date.today())
             # AWS_CSV_ARCHIVE_PATH + "/" + str(datetime.date.today())
@@ -678,6 +678,7 @@ def clean_up_import_schema(map_state):
 def main():
     secrets = get_secrets()
 
+    # 😢 why not `global variable = value`??
     global SFTP_ENDPOINT
     global ZIP_PASSWORD
 
@@ -696,7 +697,6 @@ def main():
     global DB_BASTION_HOST
     global DB_RDS_HOST
 
-    # python, why can i not define the variable in the global scope and assign them in the same line?
     SFTP_ENDPOINT = secrets["SFTP_endpoint"]
     ZIP_PASSWORD = secrets["archive_extract_password"]
 
@@ -731,61 +731,7 @@ def main():
             clean_up_import_schema(align_records_token)
 
     removal_token = remove_archives_from_sftp_endpoint(zip_location)
-def old_main():
-    pass
-    #dry_run = Parameter("dry_run", default=True, required=True)
-
-    # get a location on disk which contains the zips from the sftp endpoint
-    #zip_location = download_extract_archives()
-
-    # OR
-
-    # zip_location = specify_extract_location(
-    # "/root/cris_import/data/apr-19-dual-schema-export.zip",
-    # "/root/cris_import/data/july-2022.zip",
-    # "/root/cris_import/data/nov21-sep22.zip",
-    # )
-
-    # iterate over the zips in that location and unarchive them into
-    # a list of temporary directories containing the files of each
-    #extracted_archives = unzip_archives(zip_location) # this returns an array, but is not mapped on
-
-    #logical_groups_of_csvs = group_csvs_into_logical_groups(extracted_archives[0], dry_run)
-
-    #desired_schema_name = create_import_schema_name.map(logical_groups_of_csvs)
-
-    #schema_name = create_target_import_schema.map(desired_schema_name)
-
-    #pgloader_command_files = pgloader_csvs_into_database(schema_name)
-
-    #trimmed_token = remove_trailing_carriage_returns.map(pgloader_command_files)
-
-    #typed_token = align_db_typing.map(trimmed_token)
-
-    #align_records_token = align_records.map(map_state=typed_token)
-
-    #clean_up_import_schema = clean_up_import_schema.map(align_records_token)
-
-    # remove archives from SFTP endpoint; note this isn't a map'd function, this is reduced
-    #removal_token = remove_archives_from_sftp_endpoint(zip_location, clean_up_import_schema)
-
-    # push up the CSVs to s3 for archival
-    #uploaded_archives_csvs = upload_csv_files_to_s3(extracted_archives[0])
-
-    # i'm punting on this. 👇 This is oddly difficult after the map() refactor.
-
-    # the whole thing won't have state from ETL run to ETL run once we migrate from prefect 1,
-    # so this tidy-up won't matter and will be handled by the docker service as it cleans up stale containers.
-
-    # it also accumulates maybe .5 megs a day, no big deal for time on the scale of months
-
-    #cleanup = cleanup_temporary_directories(
-        #zip_location,
-        #extracted_archives[0],
-        #pgloader_command_files,
-        #upstream_tasks=[align_records_token],
-        #upstream_tasks=[align_records_token, removal_token],
-        #)
+    upload_csv_files_to_s3(archive)
 
 if __name__ == "__main__":
     main()
