@@ -724,6 +724,7 @@ def main():
         for logical_group in logical_groups_of_csvs:
             desired_schema_name = create_import_schema_name(logical_group)
             schema_name = create_target_import_schema(desired_schema_name)
+            pgloader_command_files = pgloader_csvs_into_database(schema_name)
 
 def old_main():
     pass
@@ -750,7 +751,7 @@ def old_main():
 
     #schema_name = create_target_import_schema.map(desired_schema_name)
 
-    #pgloader_command_files = pgloader_csvs_into_database.map(schema_name)
+    #
 
     #trimmed_token = remove_trailing_carriage_returns.map(pgloader_command_files)
 
