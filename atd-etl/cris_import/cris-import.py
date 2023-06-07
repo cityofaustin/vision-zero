@@ -87,7 +87,7 @@ def main():
             pgloader_command_files = pgloader_csvs_into_database(schema_name)
             trimmed_token = remove_trailing_carriage_returns(pgloader_command_files)
             typed_token = align_db_typing(trimmed_token)
-            align_records_token = align_records(map_state=typed_token)
+            align_records_token = align_records(typed_token)
             clean_up_import_schema(align_records_token)
     removal_token = remove_archives_from_sftp_endpoint(zip_location)
     upload_csv_files_to_s3(archive)
