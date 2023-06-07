@@ -25,11 +25,12 @@ from sshtunnel import SSHTunnelForwarder
 import onepasswordconnectsdk
 from onepasswordconnectsdk.client import Client, new_client
 
-DEPLOYMENT_ENVIRONMENT = os.environ.get("ENVIRONMENT", 'development')   # our current environment from ['production', 'development']
-ONEPASSWORD_CONNECT_TOKEN = os.getenv("OP_API_TOKEN")                   # our secret to get secrets 🤐
-ONEPASSWORD_CONNECT_HOST = os.getenv("OP_CONNECT")                      # where we get our secrets
+DEPLOYMENT_ENVIRONMENT = os.environ.get(
+    "ENVIRONMENT", "development"
+)  # our current environment from ['production', 'development']
+ONEPASSWORD_CONNECT_TOKEN = os.getenv("OP_API_TOKEN")  # our secret to get secrets 🤐
+ONEPASSWORD_CONNECT_HOST = os.getenv("OP_CONNECT")  # where we get our secrets
 VAULT_ID = os.getenv("OP_VAULT_ID")
-
 
 
 def get_secrets():
@@ -38,73 +39,72 @@ def get_secrets():
             "opitem": "Vision Zero CRIS Import",
             "opfield": f"Common.SFTP Endpoint",
             "opvault": VAULT_ID,
-            },
+        },
         "sftp_endpoint_private_key": {
             "opitem": "SFTP Endpoint Key",
             "opfield": ".private key",
             "opvault": VAULT_ID,
-            },
+        },
         "archive_extract_password": {
             "opitem": "Vision Zero CRIS Import",
             "opfield": "Common.CRIS Archive Extract Password",
             "opvault": VAULT_ID,
-            },
+        },
         "bastion_host": {
             "opitem": "Vision Zero CRIS Import",
             "opfield": f"{DEPLOYMENT_ENVIRONMENT}.Database Bastion",
             "opvault": VAULT_ID,
-            },
+        },
         "bastion_ssh_username": {
             "opitem": "Vision Zero CRIS Import",
             "opfield": f"{DEPLOYMENT_ENVIRONMENT}.Bastion ssh Username",
             "opvault": VAULT_ID,
-            },
+        },
         "database_host": {
             "opitem": "Vision Zero CRIS Import",
             "opfield": f"{DEPLOYMENT_ENVIRONMENT}.Database Host",
             "opvault": VAULT_ID,
-            },
+        },
         "database_username": {
             "opitem": "Vision Zero CRIS Import",
             "opfield": f"{DEPLOYMENT_ENVIRONMENT}.Database Username",
             "opvault": VAULT_ID,
-            },
+        },
         "database_password": {
             "opitem": "Vision Zero CRIS Import",
             "opfield": f"{DEPLOYMENT_ENVIRONMENT}.Database Password",
             "opvault": VAULT_ID,
-            },
+        },
         "database_name": {
             "opitem": "Vision Zero CRIS Import",
             "opfield": f"{DEPLOYMENT_ENVIRONMENT}.Database Name",
             "opvault": VAULT_ID,
-            },
+        },
         "database_ssl_policy": {
             "opitem": "Vision Zero CRIS Import",
             "opfield": f"{DEPLOYMENT_ENVIRONMENT}.Database SSL Policy",
             "opvault": VAULT_ID,
-            },
+        },
         "aws_access_key": {
             "opitem": "Vision Zero CRIS Import",
             "opfield": f"{DEPLOYMENT_ENVIRONMENT}.AWS Access key",
-
             "opvault": VAULT_ID,
-            },
+        },
         "aws_secret_key": {
             "opitem": "Vision Zero CRIS Import",
             "opfield": f"{DEPLOYMENT_ENVIRONMENT}.AWS Secret key",
             "opvault": VAULT_ID,
-            },
+        },
         "s3_archive_bucket_name": {
             "opitem": "Vision Zero CRIS Import",
             "opfield": f"{DEPLOYMENT_ENVIRONMENT}.S3 Archive Bucket Name",
             "opvault": VAULT_ID,
-            },
+        },
         "s3_archive_path": {
             "opitem": "Vision Zero CRIS Import",
             "opfield": f"{DEPLOYMENT_ENVIRONMENT}.S3 Archive Path",
             "opvault": VAULT_ID,
-            },
+        },
     }
 
     # instantiate a 1Password client
@@ -168,8 +168,9 @@ def unzip_archives(archives_directory):
     return extracted_csv_directories
 
 
-
-def cleanup_temporary_directories(zip_location, pgloader_command_files, extracted_archives):
+def cleanup_temporary_directories(
+    zip_location, pgloader_command_files, extracted_archives
+):
     """
     Remove directories that have accumulated during the flow's execution
 
@@ -194,7 +195,6 @@ def cleanup_temporary_directories(zip_location, pgloader_command_files, extracte
         shutil.rmtree(directory)
 
     return None
-
 
 
 def upload_csv_files_to_s3(extract_directory):
@@ -231,7 +231,6 @@ def upload_csv_files_to_s3(extract_directory):
     return extract_directory
 
 
-
 def remove_archives_from_sftp_endpoint(zip_location):
     """
     Delete the archives which have been processed from the SFTP endpoint
@@ -259,7 +258,9 @@ def pgloader_csvs_into_database(map_state):
     pgloader_command_files_tmpdir = tempfile.mkdtemp()
     for root, dirs, files in os.walk(map_state["working_directory"]):
         for filename in files:
-            if filename.endswith(".csv") and filename.startswith(map_state["csv_prefix"]):
+            if filename.endswith(".csv") and filename.startswith(
+                map_state["csv_prefix"]
+            ):
                 # Extract the table name from the filename. They are named `crash`, `unit`, `person`, `primaryperson`, & `charges`.
                 table = re.search("extract_[\d_]+(.*)_[\d].*\.csv", filename).group(1)
 
@@ -269,25 +270,26 @@ def pgloader_csvs_into_database(map_state):
                     headers_line_with_newline = file.readline()
                 headers_line = headers_line_with_newline.strip()
 
-                headers = headers_line.split(',')
+                headers = headers_line.split(",")
                 command_file = pgloader_command_files_tmpdir + "/" + table + ".load"
-                print(f'Command file: {command_file}')
+                print(f"Command file: {command_file}")
 
                 # we're going to get away with opening up this tunnel here for all pgloader commands
                 # because they get executed before this goes out of scope
                 ssh_tunnel = SSHTunnelForwarder(
                     (DB_BASTION_HOST),
                     ssh_username=DB_BASTION_HOST_SSH_USERNAME,
-                    ssh_private_key= '/root/.ssh/id_rsa', # will switch to ed25519 when we rebuild this for prefect 2
-                    remote_bind_address=(DB_RDS_HOST, 5432)
-                    )
-                ssh_tunnel.start()  
+                    ssh_private_key="/root/.ssh/id_rsa",  # will switch to ed25519 when we rebuild this for prefect 2
+                    remote_bind_address=(DB_RDS_HOST, 5432),
+                )
+                ssh_tunnel.start()
 
                 # See https://github.com/dimitri/pgloader/issues/768#issuecomment-693390290
-                CONNECTION_STRING = f'postgresql://{DB_USER}:{DB_PASS}@localhost:{ssh_tunnel.local_bind_port}/{DB_NAME}?sslmode=allow'
+                CONNECTION_STRING = f"postgresql://{DB_USER}:{DB_PASS}@localhost:{ssh_tunnel.local_bind_port}/{DB_NAME}?sslmode=allow"
 
-                with open(command_file, 'w') as file:
-                    file.write(f"""
+                with open(command_file, "w") as file:
+                    file.write(
+                        f"""
 LOAD CSV
     FROM '{map_state["working_directory"]}/{filename}' ({headers_line})
     INTO  {CONNECTION_STRING}&{map_state["import_schema"]}.{table} ({headers_line})
@@ -295,19 +297,22 @@ LOAD CSV
         skip header = 1
     BEFORE LOAD DO 
     $$ drop table if exists {map_state["import_schema"]}.{table}; $$,
-    $$ create table {map_state["import_schema"]}.{table} (\n""")
+    $$ create table {map_state["import_schema"]}.{table} (\n"""
+                    )
                     fields = []
                     for field in headers:
-                        fields.append(f'       {field} character varying') 
-                    file.write(',\n'.join(fields))
-                    file.write(f"""
+                        fields.append(f"       {field} character varying")
+                    file.write(",\n".join(fields))
+                    file.write(
+                        f"""
     );
-$$;\n""")
-                cmd = f'pgloader {command_file}'
+$$;\n"""
+                    )
+                cmd = f"pgloader {command_file}"
                 if os.system(cmd) != 0:
                     raise Exception("pgloader did not execute successfully")
 
-    return map_state 
+    return map_state
 
 
 def remove_trailing_carriage_returns(map_state):
@@ -315,20 +320,20 @@ def remove_trailing_carriage_returns(map_state):
     ssh_tunnel = SSHTunnelForwarder(
         (DB_BASTION_HOST),
         ssh_username=DB_BASTION_HOST_SSH_USERNAME,
-        ssh_private_key= '/root/.ssh/id_rsa', # will switch to ed25519 when we rebuild this for prefect 2
-        remote_bind_address=(DB_RDS_HOST, 5432)
-        )
-    ssh_tunnel.start()   
+        ssh_private_key="/root/.ssh/id_rsa",  # will switch to ed25519 when we rebuild this for prefect 2
+        remote_bind_address=(DB_RDS_HOST, 5432),
+    )
+    ssh_tunnel.start()
 
     pg = psycopg2.connect(
-        host='localhost', 
+        host="localhost",
         port=ssh_tunnel.local_bind_port,
-        user=DB_USER, 
-        password=DB_PASS, 
-        dbname=DB_NAME, 
-        sslmode=DB_SSL_REQUIREMENT, 
-        sslrootcert="/root/rds-combined-ca-bundle.pem"
-        )
+        user=DB_USER,
+        password=DB_PASS,
+        dbname=DB_NAME,
+        sslmode=DB_SSL_REQUIREMENT,
+        sslrootcert="/root/rds-combined-ca-bundle.pem",
+    )
 
     columns = util.get_input_tables_and_columns(pg, map_state["import_schema"])
     for column in columns:
@@ -411,7 +416,7 @@ def align_db_typing(map_state):
             pg.commit()
 
     # fmt: on
-    return map_state 
+    return map_state
 
 
 def align_records(map_state):
@@ -430,7 +435,7 @@ def align_records(map_state):
 
     Returns: Boolean representing the completion of the import / update
     """
-    
+
     dry_run = map_state["dry_run"]
 
     # fmt: off
@@ -585,19 +590,24 @@ def group_csvs_into_logical_groups(extracted_archives, dry_run):
     print("logical groups: " + str(logical_groups))
     map_safe_state = []
     for group in logical_groups:
-        map_safe_state.append({
-            "logical_group_id": group,
-            "working_directory": str(extracted_archives),
-            "csv_prefix": "extract_" + group + "_",
-            "dry_run": dry_run,
-        })
+        map_safe_state.append(
+            {
+                "logical_group_id": group,
+                "working_directory": str(extracted_archives),
+                "csv_prefix": "extract_" + group + "_",
+                "dry_run": dry_run,
+            }
+        )
     print(map_safe_state)
     return map_safe_state
 
 
 def create_import_schema_name(mapped_state):
     print(mapped_state)
-    schema = 'import_' + hashlib.md5(mapped_state["logical_group_id"].encode()).hexdigest()[:12]
+    schema = (
+        "import_"
+        + hashlib.md5(mapped_state["logical_group_id"].encode()).hexdigest()[:12]
+    )
     mapped_state["import_schema"] = schema
     print("Schema name: ", mapped_state["import_schema"])
     return mapped_state
@@ -607,25 +617,27 @@ def create_target_import_schema(map_state):
     ssh_tunnel = SSHTunnelForwarder(
         (DB_BASTION_HOST),
         ssh_username=DB_BASTION_HOST_SSH_USERNAME,
-        ssh_private_key= '/root/.ssh/id_rsa', # will switch to ed25519 when we rebuild this for prefect 2
-        remote_bind_address=(DB_RDS_HOST, 5432)
-        )
-    ssh_tunnel.start()   
+        ssh_private_key="/root/.ssh/id_rsa",  # will switch to ed25519 when we rebuild this for prefect 2
+        remote_bind_address=(DB_RDS_HOST, 5432),
+    )
+    ssh_tunnel.start()
 
     pg = psycopg2.connect(
-        host='localhost', 
+        host="localhost",
         port=ssh_tunnel.local_bind_port,
-        user=DB_USER, 
-        password=DB_PASS, 
-        dbname=DB_NAME, 
-        sslmode=DB_SSL_REQUIREMENT, 
-        sslrootcert="/root/rds-combined-ca-bundle.pem"
-        )
+        user=DB_USER,
+        password=DB_PASS,
+        dbname=DB_NAME,
+        sslmode=DB_SSL_REQUIREMENT,
+        sslrootcert="/root/rds-combined-ca-bundle.pem",
+    )
 
     cursor = pg.cursor()
-    
+
     # check if the schema exists by querying the pg_namespace system catalog
-    cursor.execute(f"SELECT EXISTS (SELECT 1 FROM pg_namespace WHERE nspname = '{map_state['import_schema']}')")
+    cursor.execute(
+        f"SELECT EXISTS (SELECT 1 FROM pg_namespace WHERE nspname = '{map_state['import_schema']}')"
+    )
 
     schema_exists = cursor.fetchone()[0]
 
@@ -646,24 +658,25 @@ def create_target_import_schema(map_state):
 
     return map_state
 
+
 def clean_up_import_schema(map_state):
     ssh_tunnel = SSHTunnelForwarder(
         (DB_BASTION_HOST),
         ssh_username=DB_BASTION_HOST_SSH_USERNAME,
-        ssh_private_key= '/root/.ssh/id_rsa', # will switch to ed25519 when we rebuild this for prefect 2
-        remote_bind_address=(DB_RDS_HOST, 5432)
-        )
-    ssh_tunnel.start()   
+        ssh_private_key="/root/.ssh/id_rsa",  # will switch to ed25519 when we rebuild this for prefect 2
+        remote_bind_address=(DB_RDS_HOST, 5432),
+    )
+    ssh_tunnel.start()
 
     pg = psycopg2.connect(
-        host='localhost', 
+        host="localhost",
         port=ssh_tunnel.local_bind_port,
-        user=DB_USER, 
-        password=DB_PASS, 
-        dbname=DB_NAME, 
-        sslmode=DB_SSL_REQUIREMENT, 
-        sslrootcert="/root/rds-combined-ca-bundle.pem"
-        )
+        user=DB_USER,
+        password=DB_PASS,
+        dbname=DB_NAME,
+        sslmode=DB_SSL_REQUIREMENT,
+        sslrootcert="/root/rds-combined-ca-bundle.pem",
+    )
 
     cursor = pg.cursor()
     sql = f"DROP SCHEMA IF EXISTS {map_state['import_schema']} CASCADE "
@@ -674,6 +687,7 @@ def clean_up_import_schema(map_state):
     pg.close()
 
     return map_state
+
 
 def main():
     secrets = get_secrets()
@@ -716,7 +730,9 @@ def main():
     DB_RDS_HOST = secrets["database_host"]
 
     zip_location = download_extract_archives()
-    extracted_archives = unzip_archives(zip_location) # this returns an array, but is not mapped on
+    extracted_archives = unzip_archives(
+        zip_location
+    )  # this returns an array, but is not mapped on
     print("Extracted archives: ", extracted_archives)
     # we're going to go ahead here and make this handle multiple archives on the endpoint
     for archive in extracted_archives:
@@ -732,6 +748,7 @@ def main():
 
     removal_token = remove_archives_from_sftp_endpoint(zip_location)
     upload_csv_files_to_s3(archive)
+
 
 if __name__ == "__main__":
     main()
