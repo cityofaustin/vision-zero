@@ -32,7 +32,6 @@ ONEPASSWORD_CONNECT_TOKEN = os.getenv("OP_API_TOKEN")  # our secret to get secre
 ONEPASSWORD_CONNECT_HOST = os.getenv("OP_CONNECT")  # where we get our secrets
 VAULT_ID = os.getenv("OP_VAULT_ID")
 
-
 def get_secrets():
     REQUIRED_SECRETS = {
         "SFTP_endpoint": {
@@ -128,14 +127,20 @@ def download_extract_archives():
     """
 
     zip_tmpdir = tempfile.mkdtemp()
-    rsync = sysrsync.run(
-        verbose=True,
-        options=["-a"],
-        source_ssh=SFTP_ENDPOINT,
-        source="/home/txdot/*zip",
-        sync_source_contents=False,
-        destination=zip_tmpdir,
-    )
+    rsync = None
+    try:
+        rsync = sysrsync.run(
+            verbose=True,
+            options=["-a"],
+            source_ssh=SFTP_ENDPOINT,
+            source="/home/txdot/*zip",
+            sync_source_contents=False,
+            destination=zip_tmpdir,
+        )
+    except:
+        print("No files to copy..")
+        # we're really kinda out of work here, so we're going to bail
+        quit()
     print("Rsync return code: " + str(rsync.returncode))
     # check for a OS level return code of anything non-zero, which
     # would indicate to us that the child proc we kicked off didn't
