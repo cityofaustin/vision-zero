@@ -8,7 +8,7 @@ INSERT_AREAS_MUTATION = `
 mutation InsertEngineeringAreas($payload: [engineering_areas_insert_input!]!) {
   insert_engineering_areas(objects: $payload) {
     returning {
-      id
+      area_id
     }
   }
 }`;
@@ -46,8 +46,9 @@ const getEnv = () => {
 
 const getHasuraPayload = (features) =>
   features.map((feature) => ({
-    eng_area_label: feature.properties.engineering_area,
-    eng_area_geometry: feature.geometry,
+    area_id: feature.properties.area_id,
+    label: feature.properties.engineering_area,
+    geometry: feature.geometry,
   }));
 
 const main = async (env) => {
