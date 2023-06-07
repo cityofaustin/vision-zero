@@ -736,7 +736,7 @@ def main():
     print("Extracted archives: ", extracted_archives)
     # we're going to go ahead here and make this handle multiple archives on the endpoint
     for archive in extracted_archives:
-        logical_groups_of_csvs = group_csvs_into_logical_groups(archive, dry_run=True)
+        logical_groups_of_csvs = group_csvs_into_logical_groups(archive, dry_run=False)
         for logical_group in logical_groups_of_csvs:
             desired_schema_name = create_import_schema_name(logical_group)
             schema_name = create_target_import_schema(desired_schema_name)
