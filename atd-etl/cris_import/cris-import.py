@@ -677,7 +677,6 @@ def clean_up_import_schema(map_state):
 
 def main():
     secrets = get_secrets()
-    print("Secrets: ", secrets)
 
     global SFTP_ENDPOINT
     global ZIP_PASSWORD
@@ -718,6 +717,13 @@ def main():
 
     zip_location = download_extract_archives()
     extracted_archives = unzip_archives(zip_location) # this returns an array, but is not mapped on
+    print("Extracted archives: ", extracted_archives)
+    # we're going to go ahead here and make this handle multiple archives on the endpoint
+    for archive in extracted_archives:
+        logical_groups_of_csvs = group_csvs_into_logical_groups(archive, dry_run=True)
+        for logical_group in logical_groups_of_csvs:
+            desired_schema_name = create_import_schema_name(logical_group)
+            schema_name = create_target_import_schema(desired_schema_name)
 
 def old_main():
     pass
