@@ -1,29 +1,26 @@
 #!/usr/bin/python3
 
 import os
-import shutil
 import re
 import time
+import hashlib
 import datetime
 import tempfile
 from subprocess import Popen, PIPE
-import hashlib
 
+import shutil
 import boto3
 import sysrsync
-
 import psycopg2
 import psycopg2.extras
+import onepasswordconnectsdk
+from sshtunnel import SSHTunnelForwarder
+from onepasswordconnectsdk.client import Client, new_client
 
 import lib.mappings as mappings
 import lib.sql as util
 import lib.graphql as graphql
 from lib.helpers_import import insert_crash_change_template as insert_change_template
-
-from sshtunnel import SSHTunnelForwarder
-
-import onepasswordconnectsdk
-from onepasswordconnectsdk.client import Client, new_client
 
 DEPLOYMENT_ENVIRONMENT = os.environ.get(
     "ENVIRONMENT", "development"
