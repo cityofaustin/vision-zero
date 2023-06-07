@@ -232,7 +232,7 @@ def upload_csv_files_to_s3(extract_directory):
 
 
 
-def remove_archives_from_sftp_endpoint(zip_location, map_state):
+def remove_archives_from_sftp_endpoint(zip_location):
     """
     Delete the archives which have been processed from the SFTP endpoint
 
@@ -725,7 +725,12 @@ def main():
             desired_schema_name = create_import_schema_name(logical_group)
             schema_name = create_target_import_schema(desired_schema_name)
             pgloader_command_files = pgloader_csvs_into_database(schema_name)
+            trimmed_token = remove_trailing_carriage_returns(pgloader_command_files)
+            typed_token = align_db_typing(trimmed_token)
+            align_records_token = align_records(map_state=typed_token)
+            clean_up_import_schema(align_records_token)
 
+    removal_token = remove_archives_from_sftp_endpoint(zip_location)
 def old_main():
     pass
     #dry_run = Parameter("dry_run", default=True, required=True)
@@ -751,7 +756,7 @@ def old_main():
 
     #schema_name = create_target_import_schema.map(desired_schema_name)
 
-    #
+    #pgloader_command_files = pgloader_csvs_into_database(schema_name)
 
     #trimmed_token = remove_trailing_carriage_returns.map(pgloader_command_files)
 
