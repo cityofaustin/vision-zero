@@ -31,5 +31,7 @@ RUN chmod 600 /root/.ssh/id_rsa.pub
 
 COPY entrypoint.sh /entrypoint.sh
 
+COPY . /app
+
 WORKDIR /app
 CMD ["/entrypoint.sh"]
