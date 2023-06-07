@@ -55,6 +55,7 @@ const filterAndFormatProperties = (features) =>
   features.forEach((feature) => {
     feature.properties = {
       engineering_area: feature.properties.ATD_ENGINEER_AREAS,
+      area_id: feature.properties.ENGINEERING_AREA_ID,
     };
   });
 
