@@ -29,6 +29,70 @@ ONEPASSWORD_CONNECT_TOKEN = os.getenv("OP_API_TOKEN")  # our secret to get secre
 ONEPASSWORD_CONNECT_HOST = os.getenv("OP_CONNECT")  # where we get our secrets
 VAULT_ID = os.getenv("OP_VAULT_ID")
 
+
+def main():
+    secrets = get_secrets()
+
+    # 😢 why not `global variable = value`??
+    global SFTP_ENDPOINT
+    global ZIP_PASSWORD
+
+    global AWS_ACCESS_KEY_ID
+    global AWS_SECRET_ACCESS_KEY
+    global AWS_CSV_ARCHIVE_BUCKET_NAME
+    global AWS_CSV_ARCHIVE_PATH
+
+    global DB_HOST
+    global DB_USER
+    global DB_PASS
+    global DB_NAME
+    global DB_SSL_REQUIREMENT
+
+    global DB_BASTION_HOST_SSH_USERNAME
+    global DB_BASTION_HOST
+    global DB_RDS_HOST
+
+    global GRAPHQL_ENDPOINT
+    global GRAPHQL_ENDPOINT_KEY
+
+    SFTP_ENDPOINT = secrets["SFTP_endpoint"]
+    ZIP_PASSWORD = secrets["archive_extract_password"]
+
+    AWS_ACCESS_KEY_ID = secrets["aws_access_key"]
+    AWS_SECRET_ACCESS_KEY = secrets["aws_secret_key"]
+    AWS_CSV_ARCHIVE_BUCKET_NAME = secrets["s3_archive_bucket_name"]
+    AWS_CSV_ARCHIVE_PATH = secrets["s3_archive_path"]
+
+    DB_HOST = secrets["database_host"]
+    DB_USER = secrets["database_username"]
+    DB_PASS = secrets["database_password"]
+    DB_NAME = secrets["database_name"]
+    DB_SSL_REQUIREMENT = secrets["database_ssl_policy"]
+
+    DB_BASTION_HOST_SSH_USERNAME = secrets["bastion_ssh_username"]
+    DB_BASTION_HOST = secrets["bastion_host"]
+    DB_RDS_HOST = secrets["database_host"]
+
+    GRAPHQL_ENDPOINT = secrets["graphql_endpoint"]
+    GRAPHQL_ENDPOINT_KEY = secrets["graphql_endpoint_key"]
+
+    # 🥩 & 🥔
+    zip_location = download_extract_archives()
+    extracted_archives = unzip_archives(zip_location)
+    for archive in extracted_archives:
+        logical_groups_of_csvs = group_csvs_into_logical_groups(archive, dry_run=False)
+        for logical_group in logical_groups_of_csvs:
+            desired_schema_name = create_import_schema_name(logical_group)
+            schema_name = create_target_import_schema(desired_schema_name)
+            pgloader_command_files = pgloader_csvs_into_database(schema_name)
+            trimmed_token = remove_trailing_carriage_returns(pgloader_command_files)
+            typed_token = align_db_typing(trimmed_token)
+            align_records_token = align_records(map_state=typed_token)
+            clean_up_import_schema(align_records_token)
+    removal_token = remove_archives_from_sftp_endpoint(zip_location)
+    upload_csv_files_to_s3(archive)
+
+
 def get_secrets():
     REQUIRED_SECRETS = {
         "SFTP_endpoint": {
@@ -230,12 +294,7 @@ def upload_csv_files_to_s3(extract_directory):
     # for extract_directory in extracts:
     for filename in os.listdir(extract_directory):
         print("About to upload to s3: " + filename)
-        destination_path = (
-            AWS_CSV_ARCHIVE_PATH
-            + "/"
-            + str(datetime.date.today())
-            # AWS_CSV_ARCHIVE_PATH + "/" + str(datetime.date.today())
-        )
+        destination_path = AWS_CSV_ARCHIVE_PATH + "/" + str(datetime.date.today())
         s3.Bucket(AWS_CSV_ARCHIVE_BUCKET_NAME).upload_file(
             extract_directory + "/" + filename,
             destination_path + "/" + filename,
@@ -699,73 +758,6 @@ def clean_up_import_schema(map_state):
     pg.close()
 
     return map_state
-
-
-def main():
-    secrets = get_secrets()
-
-    # 😢 why not `global variable = value`??
-    global SFTP_ENDPOINT
-    global ZIP_PASSWORD
-
-    global AWS_ACCESS_KEY_ID
-    global AWS_SECRET_ACCESS_KEY
-    global AWS_CSV_ARCHIVE_BUCKET_NAME
-    global AWS_CSV_ARCHIVE_PATH
-
-    global DB_HOST
-    global DB_USER
-    global DB_PASS
-    global DB_NAME
-    global DB_SSL_REQUIREMENT
-
-    global DB_BASTION_HOST_SSH_USERNAME
-    global DB_BASTION_HOST
-    global DB_RDS_HOST
-
-    global GRAPHQL_ENDPOINT
-    global GRAPHQL_ENDPOINT_KEY
-
-    SFTP_ENDPOINT = secrets["SFTP_endpoint"]
-    ZIP_PASSWORD = secrets["archive_extract_password"]
-
-    AWS_ACCESS_KEY_ID = secrets["aws_access_key"]
-    AWS_SECRET_ACCESS_KEY = secrets["aws_secret_key"]
-    AWS_CSV_ARCHIVE_BUCKET_NAME = secrets["s3_archive_bucket_name"]
-    AWS_CSV_ARCHIVE_PATH = secrets["s3_archive_path"]
-
-    DB_HOST = secrets["database_host"]
-    DB_USER = secrets["database_username"]
-    DB_PASS = secrets["database_password"]
-    DB_NAME = secrets["database_name"]
-    DB_SSL_REQUIREMENT = secrets["database_ssl_policy"]
-
-    DB_BASTION_HOST_SSH_USERNAME = secrets["bastion_ssh_username"]
-    DB_BASTION_HOST = secrets["bastion_host"]
-    DB_RDS_HOST = secrets["database_host"]
-
-    GRAPHQL_ENDPOINT = secrets["graphql_endpoint"]
-    GRAPHQL_ENDPOINT_KEY = secrets["graphql_endpoint_key"]
-
-    zip_location = download_extract_archives()
-    extracted_archives = unzip_archives(
-        zip_location
-    )  # this returns an array, but is not mapped on
-    print("Extracted archives: ", extracted_archives)
-    # we're going to go ahead here and make this handle multiple archives on the endpoint
-    for archive in extracted_archives:
-        logical_groups_of_csvs = group_csvs_into_logical_groups(archive, dry_run=False)
-        for logical_group in logical_groups_of_csvs:
-            desired_schema_name = create_import_schema_name(logical_group)
-            schema_name = create_target_import_schema(desired_schema_name)
-            pgloader_command_files = pgloader_csvs_into_database(schema_name)
-            trimmed_token = remove_trailing_carriage_returns(pgloader_command_files)
-            typed_token = align_db_typing(trimmed_token)
-            align_records_token = align_records(map_state=typed_token)
-            clean_up_import_schema(align_records_token)
-
-    removal_token = remove_archives_from_sftp_endpoint(zip_location)
-    upload_csv_files_to_s3(archive)
 
 
 if __name__ == "__main__":
