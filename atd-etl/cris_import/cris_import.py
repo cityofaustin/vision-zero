@@ -49,6 +49,7 @@ def main():
     global DB_SSL_REQUIREMENT
 
     global DB_BASTION_HOST_SSH_USERNAME
+    global DB_BASTION_HOST_SSH_PRIVATE_KEY
     global DB_BASTION_HOST
     global DB_RDS_HOST
 
@@ -71,6 +72,7 @@ def main():
     DB_SSL_REQUIREMENT = secrets["database_ssl_policy"]
 
     DB_BASTION_HOST_SSH_USERNAME = secrets["bastion_ssh_username"]
+    DB_BASTION_HOST_SSH_PRIVATE_KEY = secrets["bastion_ssh_private_key"]
     DB_BASTION_HOST = secrets["bastion_host"]
     DB_RDS_HOST = secrets["database_host"]
 
@@ -179,6 +181,11 @@ def get_secrets():
         },
         "sftp_endpoint_private_key": {
             "opitem": "SFTP Endpoint Key",
+            "opfield": ".private key",
+            "opvault": VAULT_ID,
+            },
+        "bastion_ssh_private_key": {
+            "opitem": "RDS Bastion Key",
             "opfield": ".private key",
             "opvault": VAULT_ID,
             },
@@ -359,70 +366,74 @@ def pgloader_csvs_into_database(map_state):
                 command_file = pgloader_command_files_tmpdir + "/" + table + ".load"
                 print(f"Command file: {command_file}")
 
-                # we're going to get away with opening up this tunnel here for all pgloader commands
-                # because they get executed before this goes out of scope
-                ssh_tunnel = SSHTunnelForwarder(
-                    (DB_BASTION_HOST),
-                    ssh_username=DB_BASTION_HOST_SSH_USERNAME,
-                    ssh_private_key="/root/.ssh/id_rsa",  # will switch to ed25519 when we rebuild this for prefect 2
-                    remote_bind_address=(DB_RDS_HOST, 5432),
-                )
-                ssh_tunnel.start()
-
-                # See https://github.com/dimitri/pgloader/issues/768#issuecomment-693390290
-                CONNECTION_STRING = f"postgresql://{DB_USER}:{DB_PASS}@localhost:{ssh_tunnel.local_bind_port}/{DB_NAME}?sslmode=allow"
-
-                with open(command_file, "w") as file:
-                    file.write(
-                        f"""
-LOAD CSV
-    FROM '{map_state["working_directory"]}/{filename}' ({headers_line})
-    INTO  {CONNECTION_STRING}&{map_state["import_schema"]}.{table} ({headers_line})
-    WITH truncate,
-        skip header = 1
-    BEFORE LOAD DO 
-    $$ drop table if exists {map_state["import_schema"]}.{table}; $$,
-    $$ create table {map_state["import_schema"]}.{table} (\n"""
+                with SshKeyTempDir() as key_directory:
+                    write_key_to_file(key_directory + "/id_ed25519", DB_BASTION_HOST_SSH_PRIVATE_KEY + "\n") 
+                    # we're going to get away with opening up this tunnel here for all pgloader commands
+                    # because they get executed before this goes out of scope
+                    ssh_tunnel = SSHTunnelForwarder(
+                        (DB_BASTION_HOST),
+                        ssh_username=DB_BASTION_HOST_SSH_USERNAME,
+                        ssh_private_key=f"{key_directory}/id_ed25519",
+                        remote_bind_address=(DB_RDS_HOST, 5432),
                     )
-                    fields = []
-                    for field in headers:
-                        fields.append(f"       {field} character varying")
-                    file.write(",\n".join(fields))
-                    file.write(
-                        f"""
-    );
-$$;\n"""
-                    )
-                cmd = f"pgloader {command_file}"
-                if os.system(cmd) != 0:
-                    raise Exception("pgloader did not execute successfully")
+                    ssh_tunnel.start()
+
+                    # See https://github.com/dimitri/pgloader/issues/768#issuecomment-693390290
+                    CONNECTION_STRING = f"postgresql://{DB_USER}:{DB_PASS}@localhost:{ssh_tunnel.local_bind_port}/{DB_NAME}?sslmode=allow"
+
+                    with open(command_file, "w") as file:
+                        file.write(
+                            f"""
+    LOAD CSV
+        FROM '{map_state["working_directory"]}/{filename}' ({headers_line})
+        INTO  {CONNECTION_STRING}&{map_state["import_schema"]}.{table} ({headers_line})
+        WITH truncate,
+            skip header = 1
+        BEFORE LOAD DO 
+        $$ drop table if exists {map_state["import_schema"]}.{table}; $$,
+        $$ create table {map_state["import_schema"]}.{table} (\n"""
+                        )
+                        fields = []
+                        for field in headers:
+                            fields.append(f"       {field} character varying")
+                        file.write(",\n".join(fields))
+                        file.write(
+                            f"""
+        );
+    $$;\n"""
+                        )
+                    cmd = f"pgloader {command_file}"
+                    if os.system(cmd) != 0:
+                        raise Exception("pgloader did not execute successfully")
 
     return map_state
 
 
 def remove_trailing_carriage_returns(map_state):
 
-    ssh_tunnel = SSHTunnelForwarder(
-        (DB_BASTION_HOST),
-        ssh_username=DB_BASTION_HOST_SSH_USERNAME,
-        ssh_private_key="/root/.ssh/id_rsa",  # will switch to ed25519 when we rebuild this for prefect 2
-        remote_bind_address=(DB_RDS_HOST, 5432),
-    )
-    ssh_tunnel.start()
+    with SshKeyTempDir() as key_directory:
+        write_key_to_file(key_directory + "/id_ed25519", DB_BASTION_HOST_SSH_PRIVATE_KEY + "\n") 
+        ssh_tunnel = SSHTunnelForwarder(
+            (DB_BASTION_HOST),
+            ssh_username=DB_BASTION_HOST_SSH_USERNAME,
+            ssh_private_key=f"{key_directory}/id_ed25519",
+            remote_bind_address=(DB_RDS_HOST, 5432),
+        )
+        ssh_tunnel.start()
 
-    pg = psycopg2.connect(
-        host="localhost",
-        port=ssh_tunnel.local_bind_port,
-        user=DB_USER,
-        password=DB_PASS,
-        dbname=DB_NAME,
-        sslmode=DB_SSL_REQUIREMENT,
-        sslrootcert="/root/rds-combined-ca-bundle.pem",
-    )
+        pg = psycopg2.connect(
+            host="localhost",
+            port=ssh_tunnel.local_bind_port,
+            user=DB_USER,
+            password=DB_PASS,
+            dbname=DB_NAME,
+            sslmode=DB_SSL_REQUIREMENT,
+            sslrootcert="/root/rds-combined-ca-bundle.pem",
+        )
 
-    columns = util.get_input_tables_and_columns(pg, map_state["import_schema"])
-    for column in columns:
-        util.trim_trailing_carriage_returns(pg, map_state["import_schema"], column)
+        columns = util.get_input_tables_and_columns(pg, map_state["import_schema"])
+        for column in columns:
+            util.trim_trailing_carriage_returns(pg, map_state["import_schema"], column)
 
     return map_state
 
@@ -444,61 +455,63 @@ def align_db_typing(map_state):
     # Note about the above comment. It's used to disable black linting. For this particular task, 
     # I believe it's more readable to not have it wrap long lists of function arguments. 
 
-    ssh_tunnel = SSHTunnelForwarder(
-        (DB_BASTION_HOST),
-        ssh_username=DB_BASTION_HOST_SSH_USERNAME,
-        ssh_private_key= '/root/.ssh/id_rsa', # will switch to ed25519 when we rebuild this for prefect 2
-        remote_bind_address=(DB_RDS_HOST, 5432)
-        )
-    ssh_tunnel.start()   
+    with SshKeyTempDir() as key_directory:
+        write_key_to_file(key_directory + "/id_ed25519", DB_BASTION_HOST_SSH_PRIVATE_KEY + "\n") 
+        ssh_tunnel = SSHTunnelForwarder(
+            (DB_BASTION_HOST),
+            ssh_username=DB_BASTION_HOST_SSH_USERNAME,
+            ssh_private_key=f"{key_directory}/id_ed25519",
+            remote_bind_address=(DB_RDS_HOST, 5432)
+            )
+        ssh_tunnel.start()   
 
-    pg = psycopg2.connect(
-        host='localhost', 
-        port=ssh_tunnel.local_bind_port,
-        user=DB_USER, 
-        password=DB_PASS, 
-        dbname=DB_NAME, 
-        sslmode=DB_SSL_REQUIREMENT, 
-        sslrootcert="/root/rds-combined-ca-bundle.pem"
-        )
+        pg = psycopg2.connect(
+            host='localhost', 
+            port=ssh_tunnel.local_bind_port,
+            user=DB_USER, 
+            password=DB_PASS, 
+            dbname=DB_NAME, 
+            sslmode=DB_SSL_REQUIREMENT, 
+            sslrootcert="/root/rds-combined-ca-bundle.pem"
+            )
 
-    # query list of the tables which were created by the pgloader import process
-    imported_tables = util.get_imported_tables(pg, map_state["import_schema"])
+        # query list of the tables which were created by the pgloader import process
+        imported_tables = util.get_imported_tables(pg, map_state["import_schema"])
 
-    # pull our map which connects the names of imported tables to the target tables in VZDB
-    table_mappings = mappings.get_table_map()
+        # pull our map which connects the names of imported tables to the target tables in VZDB
+        table_mappings = mappings.get_table_map()
 
-    # iterate over table list to make sure we only are operating on the tables we've designated:
-    # crash, unit, person, & primaryperson
-    for input_table in imported_tables:
-        output_table = table_mappings.get(input_table["table_name"])
-        if not output_table:
-            continue
-
-        # Safety check to make sure that all incoming data has each row complete with a value in each of the "key" columns. Key columns are
-        # the columns which are used to uniquely identify the entity being represented by a record in the database. 
-        util.enforce_complete_keying(pg, mappings.get_key_columns(), output_table, map_state["import_schema"], input_table)
-
-        # collect the column types for the target table, to be applied to the imported table
-        output_column_types = util.get_output_column_types(pg, output_table)
-
-        # iterate on each column
-        for column in output_column_types:
-            # for that column, confirm that it is included in the incoming CRIS data
-            input_column_type = util.get_input_column_type(pg, map_state["import_schema"], input_table, column)
-
-            # skip columns which do not appear in the import data, such as the columns we have added ourselves to the VZDB
-            if not input_column_type:
+        # iterate over table list to make sure we only are operating on the tables we've designated:
+        # crash, unit, person, & primaryperson
+        for input_table in imported_tables:
+            output_table = table_mappings.get(input_table["table_name"])
+            if not output_table:
                 continue
 
-            # form an ALTER statement to apply the type to the imported table's column
-            alter_statement = util.form_alter_statement_to_apply_column_typing(map_state["import_schema"], input_table, column)
-            print(f"Aligning types for {map_state['import_schema']}.{input_table['table_name']}.{column['column_name']}.")
+            # Safety check to make sure that all incoming data has each row complete with a value in each of the "key" columns. Key columns are
+            # the columns which are used to uniquely identify the entity being represented by a record in the database. 
+            util.enforce_complete_keying(pg, mappings.get_key_columns(), output_table, map_state["import_schema"], input_table)
 
-            # and execute the statement
-            cursor = pg.cursor()
-            cursor.execute(alter_statement)
-            pg.commit()
+            # collect the column types for the target table, to be applied to the imported table
+            output_column_types = util.get_output_column_types(pg, output_table)
+
+            # iterate on each column
+            for column in output_column_types:
+                # for that column, confirm that it is included in the incoming CRIS data
+                input_column_type = util.get_input_column_type(pg, map_state["import_schema"], input_table, column)
+
+                # skip columns which do not appear in the import data, such as the columns we have added ourselves to the VZDB
+                if not input_column_type:
+                    continue
+
+                # form an ALTER statement to apply the type to the imported table's column
+                alter_statement = util.form_alter_statement_to_apply_column_typing(map_state["import_schema"], input_table, column)
+                print(f"Aligning types for {map_state['import_schema']}.{input_table['table_name']}.{column['column_name']}.")
+
+                # and execute the statement
+                cursor = pg.cursor()
+                cursor.execute(alter_statement)
+                pg.commit()
 
     # fmt: on
     return map_state
@@ -525,138 +538,140 @@ def align_records(map_state):
 
     # fmt: off
     
-    ssh_tunnel = SSHTunnelForwarder(
-        (DB_BASTION_HOST),
-        ssh_username=DB_BASTION_HOST_SSH_USERNAME,
-        ssh_private_key= '/root/.ssh/id_rsa', # will switch to ed25519 when we rebuild this for prefect 2
-        remote_bind_address=(DB_RDS_HOST, 5432)
-        )
-    ssh_tunnel.start()   
+    with SshKeyTempDir() as key_directory:
+        write_key_to_file(key_directory + "/id_ed25519", DB_BASTION_HOST_SSH_PRIVATE_KEY + "\n") 
+        ssh_tunnel = SSHTunnelForwarder(
+            (DB_BASTION_HOST),
+            ssh_username=DB_BASTION_HOST_SSH_USERNAME,
+            ssh_private_key=f"{key_directory}/id_ed25519",
+            remote_bind_address=(DB_RDS_HOST, 5432)
+            )
+        ssh_tunnel.start()   
 
-    pg = psycopg2.connect(
-        host='localhost', 
-        port=ssh_tunnel.local_bind_port,
-        user=DB_USER, 
-        password=DB_PASS, 
-        dbname=DB_NAME, 
-        sslmode=DB_SSL_REQUIREMENT, 
-        sslrootcert="/root/rds-combined-ca-bundle.pem"
-        )
+        pg = psycopg2.connect(
+            host='localhost', 
+            port=ssh_tunnel.local_bind_port,
+            user=DB_USER, 
+            password=DB_PASS, 
+            dbname=DB_NAME, 
+            sslmode=DB_SSL_REQUIREMENT, 
+            sslrootcert="/root/rds-combined-ca-bundle.pem"
+            )
 
-    print("Finding updated records")
+        print("Finding updated records")
 
-    output_map = mappings.get_table_map()
-    table_keys = mappings.get_key_columns()
+        output_map = mappings.get_table_map()
+        table_keys = mappings.get_key_columns()
 
-    for table in output_map.keys():
+        for table in output_map.keys():
 
-        # Query the list of columns in the target table
-        target_columns = util.get_target_columns(pg, output_map, table)
+            # Query the list of columns in the target table
+            target_columns = util.get_target_columns(pg, output_map, table)
 
-        # Get the list of columns which are designated to to be protected from updates
-        no_override_columns = mappings.no_override_columns()[output_map[table]]
+            # Get the list of columns which are designated to to be protected from updates
+            no_override_columns = mappings.no_override_columns()[output_map[table]]
 
-        # Load up the list of imported records to iterate over. 
-        imported_records = util.load_input_data_for_keying(pg, map_state["import_schema"], table)
+            # Load up the list of imported records to iterate over. 
+            imported_records = util.load_input_data_for_keying(pg, map_state["import_schema"], table)
 
-        # Get columns used to uniquely identify a record
-        key_columns = mappings.get_key_columns()[output_map[table]]
+            # Get columns used to uniquely identify a record
+            key_columns = mappings.get_key_columns()[output_map[table]]
 
-        # Build SQL fragment used as a JOIN ON clause to link input and output tables
-        linkage_clauses, linkage_sql = util.get_linkage_constructions(key_columns, output_map, table, map_state["import_schema"])
+            # Build SQL fragment used as a JOIN ON clause to link input and output tables
+            linkage_clauses, linkage_sql = util.get_linkage_constructions(key_columns, output_map, table, map_state["import_schema"])
 
-        # Build list of columns available for import by inspecting the input table
-        input_column_names = util.get_input_column_names(pg, map_state["import_schema"], table, target_columns)
+            # Build list of columns available for import by inspecting the input table
+            input_column_names = util.get_input_column_names(pg, map_state["import_schema"], table, target_columns)
 
-        # iterate over each imported record and determine correct action
-        for source in imported_records:
+            # iterate over each imported record and determine correct action
+            for source in imported_records:
 
-            # generate some record specific SQL fragments to identify the record in larger queries
-            record_key_sql, import_key_sql = util.get_key_clauses(table_keys, output_map, table, source, map_state["import_schema"])
+                # generate some record specific SQL fragments to identify the record in larger queries
+                record_key_sql, import_key_sql = util.get_key_clauses(table_keys, output_map, table, source, map_state["import_schema"])
 
-            # To decide to UPDATE, we need to find a matching target record in the output table.
-            # This function returns that record as a token of existence or false if none is available
-            if util.fetch_target_record(pg, output_map, table, record_key_sql):
-                # Build 2 sets of 3 arrays of SQL fragments, one element per column which can be `join`ed together in subsequent queries.
-                column_assignments, column_comparisons, column_aggregators, important_column_assignments, important_column_comparisons, important_column_aggregators = util.get_column_operators(target_columns, no_override_columns, source, table, output_map, map_state["import_schema"])
+                # To decide to UPDATE, we need to find a matching target record in the output table.
+                # This function returns that record as a token of existence or false if none is available
+                if util.fetch_target_record(pg, output_map, table, record_key_sql):
+                    # Build 2 sets of 3 arrays of SQL fragments, one element per column which can be `join`ed together in subsequent queries.
+                    column_assignments, column_comparisons, column_aggregators, important_column_assignments, important_column_comparisons, important_column_aggregators = util.get_column_operators(target_columns, no_override_columns, source, table, output_map, map_state["import_schema"])
 
-                # Check if the proposed update would result in a non-op, such as if there are no changes between the import and
-                # target record. If this is the case, continue to the next record. There's no changes needed in this case.
-                if util.check_if_update_is_a_non_op(pg, column_comparisons, output_map, table, linkage_clauses, record_key_sql, map_state["import_schema"]):
-                    #print(f"Skipping update for {output_map[table]} {record_key_sql}")
-                    continue
-
-                # For future reporting and debugging purposes: Use SQL to query a list of 
-                # column names which have differing values between the import and target records.
-                # Return these column names as an array and display them in the output.
-                changed_columns = util.get_changed_columns(pg, column_aggregators, output_map, table, linkage_clauses, record_key_sql, map_state["import_schema"])
-                
-                # Do the same thing, but this time using the SQL clauses formed from "important" columns.
-                important_changed_columns = util.get_changed_columns(pg, important_column_aggregators, output_map, table, linkage_clauses, record_key_sql, map_state["import_schema"])
-
-
-                if len(important_changed_columns['changed_columns']) > 0:
-                    # This execution branch leads to the conflict resolution system in VZ
-
-                    if util.is_change_existing(pg, table, source["crash_id"]):
+                    # Check if the proposed update would result in a non-op, such as if there are no changes between the import and
+                    # target record. If this is the case, continue to the next record. There's no changes needed in this case.
+                    if util.check_if_update_is_a_non_op(pg, column_comparisons, output_map, table, linkage_clauses, record_key_sql, map_state["import_schema"]):
+                        #print(f"Skipping update for {output_map[table]} {record_key_sql}")
                         continue
 
-                    print("Important Changed column count: " + str(len(important_changed_columns['changed_columns'])))
-                    print("Important Changed Columns:" + str(important_changed_columns["changed_columns"]))
-
-                    print("Changed column count: " + str(len(changed_columns['changed_columns'])))
-                    print("Changed Columns:" + str(changed_columns["changed_columns"]))
+                    # For future reporting and debugging purposes: Use SQL to query a list of 
+                    # column names which have differing values between the import and target records.
+                    # Return these column names as an array and display them in the output.
+                    changed_columns = util.get_changed_columns(pg, column_aggregators, output_map, table, linkage_clauses, record_key_sql, map_state["import_schema"])
                     
-                    try:
-                        # this seemingly violates the principal of treating each record source equally, however, this is 
-                        # really only a reflection that we create incomplete temporary records consisting only of a crash record
-                        # and not holding place entities for units, persons, etc.
-                        if table == "crash" and util.has_existing_temporary_record(pg, source["case_id"]):
-                            print("\b🛎: " + str(source["crash_id"]) + " has existing temporary record")
-                            time.sleep(5)
-                            util.remove_existing_temporary_record(pg, source["case_id"])
-                    except:
-                        # Trap the case of a missing case_id key error in the RealDictRow object.
-                        # A RealDictRow, returned by the psycopg2 cursor, is a dictionary-like object,
-                        # but lacks has_key() and other methods.
-                        print("Skipping checking on existing temporary record for " + str(source["crash_id"]))
-                        pass
-                    
-                    # build an comma delimited list of changed columns
-                    all_changed_columns = ", ".join(important_changed_columns["changed_columns"] + changed_columns["changed_columns"])
+                    # Do the same thing, but this time using the SQL clauses formed from "important" columns.
+                    important_changed_columns = util.get_changed_columns(pg, important_column_aggregators, output_map, table, linkage_clauses, record_key_sql, map_state["import_schema"])
 
-                    # insert_change_template() is used with minimal changes from previous version of the ETL to better ensure conflict system compatibility
-                    mutation = insert_change_template(new_record_dict=source, differences=all_changed_columns, crash_id=str(source["crash_id"]))
-                    if not dry_run:
-                        print("Making a mutation for " + str(source["crash_id"]))
-                        graphql.make_hasura_request(query=mutation, endpoint=GRAPHQL_ENDPOINT, admin_secret=GRAPHQL_ENDPOINT_KEY)
+
+                    if len(important_changed_columns['changed_columns']) > 0:
+                        # This execution branch leads to the conflict resolution system in VZ
+
+                        if util.is_change_existing(pg, table, source["crash_id"]):
+                            continue
+
+                        print("Important Changed column count: " + str(len(important_changed_columns['changed_columns'])))
+                        print("Important Changed Columns:" + str(important_changed_columns["changed_columns"]))
+
+                        print("Changed column count: " + str(len(changed_columns['changed_columns'])))
+                        print("Changed Columns:" + str(changed_columns["changed_columns"]))
+                        
+                        try:
+                            # this seemingly violates the principal of treating each record source equally, however, this is 
+                            # really only a reflection that we create incomplete temporary records consisting only of a crash record
+                            # and not holding place entities for units, persons, etc.
+                            if table == "crash" and util.has_existing_temporary_record(pg, source["case_id"]):
+                                print("\b🛎: " + str(source["crash_id"]) + " has existing temporary record")
+                                time.sleep(5)
+                                util.remove_existing_temporary_record(pg, source["case_id"])
+                        except:
+                            # Trap the case of a missing case_id key error in the RealDictRow object.
+                            # A RealDictRow, returned by the psycopg2 cursor, is a dictionary-like object,
+                            # but lacks has_key() and other methods.
+                            print("Skipping checking on existing temporary record for " + str(source["crash_id"]))
+                            pass
+                        
+                        # build an comma delimited list of changed columns
+                        all_changed_columns = ", ".join(important_changed_columns["changed_columns"] + changed_columns["changed_columns"])
+
+                        # insert_change_template() is used with minimal changes from previous version of the ETL to better ensure conflict system compatibility
+                        mutation = insert_change_template(new_record_dict=source, differences=all_changed_columns, crash_id=str(source["crash_id"]))
+                        if not dry_run:
+                            print("Making a mutation for " + str(source["crash_id"]))
+                            graphql.make_hasura_request(query=mutation, endpoint=GRAPHQL_ENDPOINT, admin_secret=GRAPHQL_ENDPOINT_KEY)
+                    else:
+                        # This execution branch leads to forming an update statement and executing it
+                        
+                        if len(changed_columns["changed_columns"]) == 0:
+                            print(update_statement)
+                            raise "No changed columns? Why are we forming an update? This is a bug."
+
+                        # Display the before and after values of the columns which are subject to update
+                        util.show_changed_values(pg, changed_columns, output_map, table, linkage_clauses, record_key_sql, map_state["import_schema"])
+
+                        # Using all the information we've gathered, form a single SQL update statement to update the target record.
+                        update_statement = util.form_update_statement(output_map, table, column_assignments, map_state["import_schema"], record_key_sql, linkage_sql, changed_columns)
+                        print(f"Executing update in {output_map[table]} for where " + record_key_sql)
+
+                        # Execute the update statement
+                        util.try_statement(pg, output_map, table, record_key_sql, update_statement, dry_run)
+
+
+                # target does not exist, we're going to insert
                 else:
-                    # This execution branch leads to forming an update statement and executing it
-                    
-                    if len(changed_columns["changed_columns"]) == 0:
-                        print(update_statement)
-                        raise "No changed columns? Why are we forming an update? This is a bug."
+                    # An insert is always just an vanilla insert, as there is not a pair of records to compare.
+                    # Produce the SQL which creates a new VZDB record from a query of the imported data
+                    insert_statement = util.form_insert_statement(output_map, table, input_column_names, import_key_sql, map_state["import_schema"])
+                    print(f"Executing insert in {output_map[table]} for where " + record_key_sql)
 
-                    # Display the before and after values of the columns which are subject to update
-                    util.show_changed_values(pg, changed_columns, output_map, table, linkage_clauses, record_key_sql, map_state["import_schema"])
-
-                    # Using all the information we've gathered, form a single SQL update statement to update the target record.
-                    update_statement = util.form_update_statement(output_map, table, column_assignments, map_state["import_schema"], record_key_sql, linkage_sql, changed_columns)
-                    print(f"Executing update in {output_map[table]} for where " + record_key_sql)
-
-                    # Execute the update statement
-                    util.try_statement(pg, output_map, table, record_key_sql, update_statement, dry_run)
-
-
-            # target does not exist, we're going to insert
-            else:
-                # An insert is always just an vanilla insert, as there is not a pair of records to compare.
-                # Produce the SQL which creates a new VZDB record from a query of the imported data
-                insert_statement = util.form_insert_statement(output_map, table, input_column_names, import_key_sql, map_state["import_schema"])
-                print(f"Executing insert in {output_map[table]} for where " + record_key_sql)
-
-                # Execute the insert statement
-                util.try_statement(pg, output_map, table, record_key_sql, insert_statement, dry_run)
+                    # Execute the insert statement
+                    util.try_statement(pg, output_map, table, record_key_sql, insert_statement, dry_run)
 
     # fmt: on
     return map_state
@@ -699,77 +714,82 @@ def create_import_schema_name(mapped_state):
 
 
 def create_target_import_schema(map_state):
-    ssh_tunnel = SSHTunnelForwarder(
-        (DB_BASTION_HOST),
-        ssh_username=DB_BASTION_HOST_SSH_USERNAME,
-        ssh_private_key="/root/.ssh/id_rsa",  # will switch to ed25519 when we rebuild this for prefect 2
-        remote_bind_address=(DB_RDS_HOST, 5432),
-    )
-    ssh_tunnel.start()
 
-    pg = psycopg2.connect(
-        host="localhost",
-        port=ssh_tunnel.local_bind_port,
-        user=DB_USER,
-        password=DB_PASS,
-        dbname=DB_NAME,
-        sslmode=DB_SSL_REQUIREMENT,
-        sslrootcert="/root/rds-combined-ca-bundle.pem",
-    )
+    with SshKeyTempDir() as key_directory:
+        write_key_to_file(key_directory + "/id_ed25519", DB_BASTION_HOST_SSH_PRIVATE_KEY + "\n") 
+        ssh_tunnel = SSHTunnelForwarder(
+            (DB_BASTION_HOST),
+            ssh_username=DB_BASTION_HOST_SSH_USERNAME,
+            ssh_private_key=f"{key_directory}/id_ed25519",
+            remote_bind_address=(DB_RDS_HOST, 5432),
+        )
+        ssh_tunnel.start()
 
-    cursor = pg.cursor()
+        pg = psycopg2.connect(
+            host="localhost",
+            port=ssh_tunnel.local_bind_port,
+            user=DB_USER,
+            password=DB_PASS,
+            dbname=DB_NAME,
+            sslmode=DB_SSL_REQUIREMENT,
+            sslrootcert="/root/rds-combined-ca-bundle.pem",
+        )
 
-    # check if the schema exists by querying the pg_namespace system catalog
-    cursor.execute(
-        f"SELECT EXISTS (SELECT 1 FROM pg_namespace WHERE nspname = '{map_state['import_schema']}')"
-    )
+        cursor = pg.cursor()
 
-    schema_exists = cursor.fetchone()[0]
+        # check if the schema exists by querying the pg_namespace system catalog
+        cursor.execute(
+            f"SELECT EXISTS (SELECT 1 FROM pg_namespace WHERE nspname = '{map_state['import_schema']}')"
+        )
 
-    # if the schema doesn't exist, create it using a try-except block to handle the case where it already exists
-    if not schema_exists:
-        try:
-            cursor.execute(f"CREATE SCHEMA {map_state['import_schema']}")
-            print("Schema created successfully")
-        except psycopg2.Error as e:
-            print(f"Error creating schema: {e}")
-    else:
-        print("Schema already exists")
+        schema_exists = cursor.fetchone()[0]
 
-    # commit the changes and close the cursor and connection
-    pg.commit()
-    cursor.close()
-    pg.close()
+        # if the schema doesn't exist, create it using a try-except block to handle the case where it already exists
+        if not schema_exists:
+            try:
+                cursor.execute(f"CREATE SCHEMA {map_state['import_schema']}")
+                print("Schema created successfully")
+            except psycopg2.Error as e:
+                print(f"Error creating schema: {e}")
+        else:
+            print("Schema already exists")
+
+        # commit the changes and close the cursor and connection
+        pg.commit()
+        cursor.close()
+        pg.close()
 
     return map_state
 
 
 def clean_up_import_schema(map_state):
-    ssh_tunnel = SSHTunnelForwarder(
-        (DB_BASTION_HOST),
-        ssh_username=DB_BASTION_HOST_SSH_USERNAME,
-        ssh_private_key="/root/.ssh/id_rsa",  # will switch to ed25519 when we rebuild this for prefect 2
-        remote_bind_address=(DB_RDS_HOST, 5432),
-    )
-    ssh_tunnel.start()
+    with SshKeyTempDir() as key_directory:
+        write_key_to_file(key_directory + "/id_ed25519", DB_BASTION_HOST_SSH_PRIVATE_KEY + "\n") 
+        ssh_tunnel = SSHTunnelForwarder(
+            (DB_BASTION_HOST),
+            ssh_username=DB_BASTION_HOST_SSH_USERNAME,
+            ssh_private_key=f"{key_directory}/id_ed25519",
+            remote_bind_address=(DB_RDS_HOST, 5432),
+        )
+        ssh_tunnel.start()
 
-    pg = psycopg2.connect(
-        host="localhost",
-        port=ssh_tunnel.local_bind_port,
-        user=DB_USER,
-        password=DB_PASS,
-        dbname=DB_NAME,
-        sslmode=DB_SSL_REQUIREMENT,
-        sslrootcert="/root/rds-combined-ca-bundle.pem",
-    )
+        pg = psycopg2.connect(
+            host="localhost",
+            port=ssh_tunnel.local_bind_port,
+            user=DB_USER,
+            password=DB_PASS,
+            dbname=DB_NAME,
+            sslmode=DB_SSL_REQUIREMENT,
+            sslrootcert="/root/rds-combined-ca-bundle.pem",
+        )
 
-    cursor = pg.cursor()
-    sql = f"DROP SCHEMA IF EXISTS {map_state['import_schema']} CASCADE "
-    cursor.execute(sql)
+        cursor = pg.cursor()
+        sql = f"DROP SCHEMA IF EXISTS {map_state['import_schema']} CASCADE "
+        cursor.execute(sql)
 
-    pg.commit()
-    cursor.close()
-    pg.close()
+        pg.commit()
+        cursor.close()
+        pg.close()
 
     return map_state
 
