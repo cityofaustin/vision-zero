@@ -39,13 +39,13 @@ const VictimNameField = ({
   // Format name by concatenating first, middle, last or returning NO DATA
   const formatName = () => {
     var concatenatedName = "";
-    Object.keys(nameFieldConfig.subfields).map(field => {
+    Object.keys(nameFieldConfig.subfields).forEach(field => {
       if (personData?.[field] != null) {
         concatenatedName = concatenatedName.concat(" ", personData?.[field]);
       }
     });
     const isNameBlank = concatenatedName === "";
-    return isNameBlank ? "NO DATA" : concatenatedName;
+    return isNameBlank ? "NO DATA" : concatenatedName.toUpperCase();
   };
 
   const mutationVariable = nameFieldConfig.mutationVariableKey;

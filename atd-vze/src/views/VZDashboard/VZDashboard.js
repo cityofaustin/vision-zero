@@ -129,7 +129,7 @@ function VZDashboard() {
             mainText={`Based on Vision Zero polygons`}
             icon="fa fa-map"
             color="primary"
-            link="https://austin.maps.arcgis.com/apps/instant/interactivelegend/index.html?appid=32b276f4e6cd406aa1c2040d2eb26b37"
+            link="https://austin.maps.arcgis.com/apps/mapviewer/index.html?webmap=8427b167da8f4f5da24f6255db075f2b"
             target="_compcostmap"
           />
           <VZLinksWidget

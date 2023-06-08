@@ -3,9 +3,13 @@ CREATE OR REPLACE VIEW view_fatalities AS (
     SELECT
         f.id,
         f.crash_id,
-        f.victim_name,
         f.person_id,
         f.primaryperson_id,
+        -- if record is primary person then concat primary person names else if person then concat person names.
+        -- also nullify empty string values
+        CASE WHEN f.primaryperson_id IS NOT NULL THEN NULLIF(CONCAT_WS(' ', primaryperson.prsn_first_name, primaryperson.prsn_mid_name, primaryperson.prsn_last_name), '')
+        WHEN f.person_id IS NOT NULL THEN NULLIF(CONCAT_WS(' ', person.prsn_first_name, person.prsn_mid_name, person.prsn_last_name), '')
+        END AS victim_name,
         TO_CHAR(crashes.crash_date,
             'yyyy') AS year,
         CONCAT_WS(' ',
@@ -36,6 +40,8 @@ CREATE OR REPLACE VIEW view_fatalities AS (
     FROM
         fatalities f
     INNER JOIN atd_txdot_crashes crashes ON f.crash_id = crashes.crash_id
+    LEFT JOIN atd_txdot_primaryperson primaryperson ON f.primaryperson_id = primaryperson.primaryperson_id
+    LEFT JOIN atd_txdot_person person ON f.person_id = person.person_id
     WHERE
         crashes.austin_full_purpose = 'Y'
     AND 
