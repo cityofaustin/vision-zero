@@ -22,7 +22,7 @@ mode_categories = {
     "motorcycle": [3],
     "bicycle": [5],
     "pedestrian": [7],
-    "micromobility": [10],
+    "micromobility": [10, 11],
     "other": [6, 8, 9],
 }
 
