@@ -276,4 +276,5 @@ person { unit { unit_description { veh_unit_desc_desc } } }
 primaryperson { unit { body_style { veh_body_styl_desc } } }
 person { unit { body_style { veh_body_styl_desc } } }
 crash { onsys_fl }
+engineering_area
 `;
