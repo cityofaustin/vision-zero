@@ -125,27 +125,27 @@ def get_secrets():
             "opvault": VAULT_ID,
         },
         "database_host": {
-            "opitem": "Vision Zero CRIS Import",
+            "opitem": "Vision Zero Database",
             "opfield": f"{DEPLOYMENT_ENVIRONMENT}.Database Host",
             "opvault": VAULT_ID,
         },
         "database_username": {
-            "opitem": "Vision Zero CRIS Import",
+            "opitem": "Vision Zero Database",
             "opfield": f"{DEPLOYMENT_ENVIRONMENT}.Database Username",
             "opvault": VAULT_ID,
         },
         "database_password": {
-            "opitem": "Vision Zero CRIS Import",
+            "opitem": "Vision Zero Database",
             "opfield": f"{DEPLOYMENT_ENVIRONMENT}.Database Password",
             "opvault": VAULT_ID,
         },
         "database_name": {
-            "opitem": "Vision Zero CRIS Import",
+            "opitem": "Vision Zero Database",
             "opfield": f"{DEPLOYMENT_ENVIRONMENT}.Database Name",
             "opvault": VAULT_ID,
         },
         "database_ssl_policy": {
-            "opitem": "Vision Zero CRIS Import",
+            "opitem": "Vision Zero Database",
             "opfield": f"{DEPLOYMENT_ENVIRONMENT}.Database SSL Policy",
             "opvault": VAULT_ID,
         },
