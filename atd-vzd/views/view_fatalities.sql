@@ -36,8 +36,8 @@ CREATE OR REPLACE VIEW view_fatalities AS (
             ORDER BY crashes.crash_date ASC, crashes.crash_time ASC, crashes.crash_id) 
             AS ytd_fatal_crash,
         crashes.case_id,
-        crashes.law_enforcement_num
-        engineering_areas.label as engineering_area,
+        crashes.law_enforcement_num,
+        engineering_areas.label as engineering_area
     FROM
         fatalities f
     INNER JOIN atd_txdot_crashes crashes ON f.crash_id = crashes.crash_id
