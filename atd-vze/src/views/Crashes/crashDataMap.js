@@ -388,7 +388,8 @@ export const crashDataMap = [
       },
       onsys_fl: {
         label: "On TxDOT Highway System Flag",
-        editable: false,
+        editable: true,
+        uiType: "select",
         lookupOptions: "atd_txdot__y_n_lkp",
         lookupPrefix: "y_n",
       },
