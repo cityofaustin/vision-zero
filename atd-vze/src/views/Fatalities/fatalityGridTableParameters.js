@@ -60,7 +60,7 @@ export const fatalityGridTableColumns = {
   },
   "recommendation { atd__recommendation_status_lkp { rec_status_desc } }": {
     searchable: false,
-    sortable: true,
+    sortable: false,
     label_table: "Current FRB Status",
     type: "String",
   },
@@ -69,6 +69,13 @@ export const fatalityGridTableColumns = {
     sortable: false,
     label_table: "FRB Recommendation",
     type: "String",
+  },
+  engineering_area: {
+    searchable: true,
+    sortable: true,
+    label_table: "Engineering Area",
+    type: "String",
+    label_search: "Search by Engineering Area",
   },
 };
 
