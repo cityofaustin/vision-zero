@@ -19,8 +19,6 @@ from onepasswordconnectsdk.client import Client, new_client
 
 import lib.mappings as mappings
 import lib.sql as util
-import lib.graphql as graphql
-from lib.helpers_import import insert_crash_change_template as insert_change_template
 
 DEPLOYMENT_ENVIRONMENT = os.environ.get(
     "ENVIRONMENT", "development"
@@ -53,8 +51,6 @@ def main():
     global DB_BASTION_HOST
     global DB_RDS_HOST
 
-    global GRAPHQL_ENDPOINT
-    global GRAPHQL_ENDPOINT_KEY
     global SFTP_ENDPOINT_SSH_PRIVATE_KEY
 
     SFTP_ENDPOINT = secrets["SFTP_endpoint"]
@@ -76,8 +72,6 @@ def main():
     DB_BASTION_HOST = secrets["bastion_host"]
     DB_RDS_HOST = secrets["database_host"]
 
-    GRAPHQL_ENDPOINT = secrets["graphql_endpoint"]
-    GRAPHQL_ENDPOINT_KEY = secrets["graphql_endpoint_key"]
     SFTP_ENDPOINT_SSH_PRIVATE_KEY = secrets["sftp_endpoint_private_key"]
 
     # 🥩 & 🥔
@@ -167,16 +161,6 @@ def get_secrets():
         "s3_archive_path": {
             "opitem": "Vision Zero CRIS Import",
             "opfield": f"{DEPLOYMENT_ENVIRONMENT}.S3 Archive Path",
-            "opvault": VAULT_ID,
-        },
-        "graphql_endpoint": {
-            "opitem": "Vision Zero CRIS Import",
-            "opfield": f"{DEPLOYMENT_ENVIRONMENT}.GraphQL Endpoint",
-            "opvault": VAULT_ID,
-        },
-        "graphql_endpoint_key": {
-            "opitem": "Vision Zero CRIS Import",
-            "opfield": f"{DEPLOYMENT_ENVIRONMENT}.GraphQL Endpoint key",
             "opvault": VAULT_ID,
         },
         "sftp_endpoint_private_key": {
@@ -641,10 +625,10 @@ def align_records(map_state):
                         all_changed_columns = ", ".join(important_changed_columns["changed_columns"] + changed_columns["changed_columns"])
 
                         # insert_change_template() is used with minimal changes from previous version of the ETL to better ensure conflict system compatibility
-                        mutation = insert_change_template(new_record_dict=source, differences=all_changed_columns, crash_id=str(source["crash_id"]))
-                        if not dry_run:
-                            print("Making a mutation for " + str(source["crash_id"]))
-                            graphql.make_hasura_request(query=mutation, endpoint=GRAPHQL_ENDPOINT, admin_secret=GRAPHQL_ENDPOINT_KEY)
+                        # mutation = insert_change_template(new_record_dict=source, differences=all_changed_columns, crash_id=str(source["crash_id"]))
+                        # if not dry_run:
+                            # print("Making a mutation for " + str(source["crash_id"]))
+                            # graphql.make_hasura_request(query=mutation, endpoint=GRAPHQL_ENDPOINT, admin_secret=GRAPHQL_ENDPOINT_KEY)
                     else:
                         # This execution branch leads to forming an update statement and executing it
                         
