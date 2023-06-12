@@ -238,10 +238,9 @@ def unzip_archives(archives_directory):
 
     extracted_csv_directories = []
     for filename in os.listdir(archives_directory):
-        print("About to unzip: " + filename + "with the command ...")
+        print("About to unzip: " + filename)
         extract_tmpdir = tempfile.mkdtemp()
         unzip_command = f'7za -y -p{ZIP_PASSWORD} -o"{extract_tmpdir}" x "{archives_directory}/{filename}"'
-        print(unzip_command)
         os.system(unzip_command)
         extracted_csv_directories.append(extract_tmpdir)
     return extracted_csv_directories
@@ -682,7 +681,6 @@ def group_csvs_into_logical_groups(extracted_archives, dry_run):
                 "dry_run": dry_run,
             }
         )
-    print(map_safe_state)
     return map_safe_state
 
 
