@@ -43,7 +43,7 @@ CREATE OR REPLACE VIEW view_fatalities AS (
     INNER JOIN atd_txdot_crashes crashes ON f.crash_id = crashes.crash_id
     LEFT JOIN atd_txdot_primaryperson primaryperson ON f.primaryperson_id = primaryperson.primaryperson_id
     LEFT JOIN atd_txdot_person person ON f.person_id = person.person_id
-    LEFT JOIN engineering_areas ON ST_CONTAINS(engineering_areas.geometry, crashes.position)
+    LEFT JOIN engineering_areas ON engineering_areas.geometry && crashes.position AND ST_CONTAINS(engineering_areas.geometry, crashes.position)
     WHERE
         crashes.austin_full_purpose = 'Y'
     AND 
