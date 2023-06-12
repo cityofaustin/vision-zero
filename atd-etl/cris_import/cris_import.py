@@ -75,7 +75,7 @@ def main():
     SFTP_ENDPOINT_SSH_PRIVATE_KEY = secrets["sftp_endpoint_private_key"]
 
     # 🥩 & 🥔
-    zip_location = download_extract_archives()
+    zip_location = download_archives()
     extracted_archives = unzip_archives(zip_location)
     for archive in extracted_archives:
         logical_groups_of_csvs = group_csvs_into_logical_groups(archive, dry_run=False)
@@ -187,7 +187,7 @@ def specify_extract_location(file):
     return zip_tmpdir
 
 
-def download_extract_archives():
+def download_archives():
     """
     Connect to the SFTP endpoint which receives archives from CRIS and
     download them into a temporary directory.
