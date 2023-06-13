@@ -551,9 +551,6 @@ def align_records(map_state):
             # Query the list of columns in the target table
             target_columns = util.get_target_columns(pg, output_map, table)
 
-            # Get the list of columns which are designated to to be protected from updates
-            no_override_columns = mappings.no_override_columns()[output_map[table]]
-
             # Load up the list of imported records to iterate over. 
             imported_records = util.load_input_data_for_keying(pg, map_state["import_schema"], table)
 
