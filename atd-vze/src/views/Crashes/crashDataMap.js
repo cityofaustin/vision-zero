@@ -1,3 +1,7 @@
+const isTempCrash = isTempRecord => {
+  return isTempRecord;
+};
+
 export const crashDataMap = [
   {
     title: "Details",
@@ -388,7 +392,7 @@ export const crashDataMap = [
       },
       onsys_fl: {
         label: "On TxDOT Highway System Flag",
-        editable: true,
+        isEditable: isTempCrash,
         uiType: "select",
         lookupOptions: "atd_txdot__y_n_lkp",
         lookupPrefix: "y_n",
