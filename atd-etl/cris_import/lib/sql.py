@@ -78,7 +78,7 @@ def check_if_update_is_a_non_op(
     DB_IMPORT_SCHEMA,
 ):
     sql = "select (" + " and ".join(column_comparisons) + ") as skip_update\n"
-    sql += f"from public.{output_map[table]}\n"
+    sql += f"from cris.{output_map[table]}\n"
     sql += (
         f"left join {DB_IMPORT_SCHEMA}.{table} on ("
         + " and ".join(linkage_clauses)
@@ -111,7 +111,7 @@ def get_changed_columns(
         + "], null)"
         + "as changed_columns "
     )
-    sql += f"from public.{output_map[table]} "
+    sql += f"from cris.{output_map[table]} "
     sql += (
         f"left join {DB_IMPORT_SCHEMA}.{table} on ("
         + " and ".join(linkage_clauses)
@@ -129,7 +129,7 @@ def get_key_clauses(table_keys, output_map, table, source, DB_IMPORT_SCHEMA):
     public_key_clauses = []
     import_key_clauses = []
     for key in table_keys[output_map[table]]:
-        public_key_clauses.append(f"public.{output_map[table]}.{key} = {source[key]}")
+        public_key_clauses.append(f"cris.{output_map[table]}.{key} = {source[key]}")
         import_key_clauses.append(f"{DB_IMPORT_SCHEMA}.{table}.{key} = {source[key]}")
     public_key_sql = " and ".join(public_key_clauses)
     import_key_sql = " and ".join(import_key_clauses)
@@ -140,7 +140,7 @@ def fetch_target_record(pg, output_map, table, public_key_sql):
     # build and execute a query to find our target record; we're looking for it to exist
     sql = f"""
     select * 
-    from public.{output_map[table]}
+    from cris.{output_map[table]}
     where 
     {public_key_sql}
     """
@@ -159,7 +159,7 @@ def form_update_statement(
     linkage_sql,
     changed_columns,
 ):
-    sql = "update public." + output_map[table] + " set "
+    sql = "update cris." + output_map[table] + " set "
 
     required_assignments = []
     for changed_column in set(changed_columns["changed_columns"]):
@@ -178,7 +178,7 @@ def form_update_statement(
 def form_insert_statement(
     output_map, table, input_column_names, import_key_sql, DB_IMPORT_SCHEMA
 ):
-    sql = f"insert into public.{output_map[table]} "
+    sql = f"insert into cris.{output_map[table]} "
     sql += "(" + ", ".join(input_column_names) + ") "
     sql += "(select "
     sql += ", ".join(input_column_names)
@@ -188,7 +188,7 @@ def form_insert_statement(
 
 
 def is_change_existing(pg, record_type, record_id):
-    #print(f"\b 🛎 is existing? {record_type}, {record_id}")
+    # print(f"\b 🛎 is existing? {record_type}, {record_id}")
 
     sql = f"""
     select count(*) as exists
@@ -203,6 +203,7 @@ def is_change_existing(pg, record_type, record_id):
         return True
     else:
         return False
+
 
 def has_existing_temporary_record(pg, case_id):
     sql = f"""
@@ -228,6 +229,7 @@ def remove_existing_temporary_record(pg, case_id):
     cursor = pg.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     cursor.execute(sql)
     return True
+
 
 def try_statement(pg, output_map, table, public_key_sql, sql, dry_run):
     if dry_run:
@@ -289,7 +291,7 @@ def get_target_columns(pg, output_map, table):
     FROM
         information_schema.columns
     WHERE true
-        AND table_schema = 'public'
+        AND table_schema = 'cris'
         AND table_name = '{output_map[table]}'
     """
 
@@ -312,7 +314,7 @@ def get_linkage_constructions(key_columns, output_map, table, DB_IMPORT_SCHEMA):
     linkage_clauses = []
     for column in key_columns:
         linkage_clauses.append(
-            f"public.{output_map[table]}.{column} = {DB_IMPORT_SCHEMA}.{table}.{column}"
+            f"cris.{output_map[table]}.{column} = {DB_IMPORT_SCHEMA}.{table}.{column}"
         )
     linkage_sql = " AND " + " AND ".join(linkage_clauses)
     return linkage_clauses, linkage_sql
@@ -355,7 +357,7 @@ def get_output_column_types(pg, output_table):
     FROM
         information_schema.columns
     WHERE true
-        AND table_schema = 'public'
+        AND table_schema = 'cris'
         AND table_name = '{output_table}'
     """
 
@@ -385,6 +387,7 @@ def get_input_column_type(pg, DB_IMPORT_SCHEMA, input_table, column):
     input_column_type = cursor.fetchall()
     return input_column_type
 
+
 def get_input_tables_and_columns(pg, DB_IMPORT_SCHEMA):
     sql = f"""
     SELECT
@@ -404,6 +407,7 @@ def get_input_tables_and_columns(pg, DB_IMPORT_SCHEMA):
     input_tables_and_columns = cursor.fetchall()
     return input_tables_and_columns
 
+
 def trim_trailing_carriage_returns(pg, DB_IMPORT_SCHEMA, column):
     cursor = pg.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     sql = f"""
@@ -412,6 +416,7 @@ def trim_trailing_carriage_returns(pg, DB_IMPORT_SCHEMA, column):
     """
     cursor.execute(sql)
     pg.commit()
+
 
 def form_alter_statement_to_apply_column_typing(DB_IMPORT_SCHEMA, input_table, column):
     # the `USING` hackery is due to the reality of the CSV null vs "" confusion
@@ -435,9 +440,10 @@ def show_changed_values(
         print(column)
         linkage_sql = " and ".join(linkage_clauses)
         sql = f"""
-            select {DB_IMPORT_SCHEMA}.{table}.{column}::text as import_{column},
-                public.{output_map[table]}.{column}::text as public_{column}
-            from public.{output_map[table]}
+            select 
+                {DB_IMPORT_SCHEMA}.{table}.{column}::text as import_{column},
+                cris.{output_map[table]}.{column}::text as cris_{column}
+            from cris.{output_map[table]}
             left join {DB_IMPORT_SCHEMA}.{table} on {linkage_sql}
             where {record_key_sql}
             """
@@ -453,4 +459,4 @@ def show_changed_values(
         print(f"Column update for {column} in {table}:")
         print(f"  entity: {record_key_sql}")
         print(f"  import: '{values[f'import_{column}']}'")
-        print(f"  public: '{values[f'public_{column}']}'")
+        print(f"  cris: '{values[f'cris_{column}']}'")
