@@ -589,62 +589,20 @@ def align_records(map_state):
                     # Return these column names as an array and display them in the output.
                     changed_columns = util.get_changed_columns(pg, column_aggregators, output_map, table, linkage_clauses, record_key_sql, map_state["import_schema"])
                     
-                    # Do the same thing, but this time using the SQL clauses formed from "important" columns.
-                    important_changed_columns = util.get_changed_columns(pg, important_column_aggregators, output_map, table, linkage_clauses, record_key_sql, map_state["import_schema"])
+                    # Here we're forming an update statement and executing it
+                    if len(changed_columns["changed_columns"]) == 0:
+                        print(update_statement)
+                        raise "No changed columns? Why are we forming an update? This is a bug."
 
+                    # Display the before and after values of the columns which are subject to update
+                    util.show_changed_values(pg, changed_columns, output_map, table, linkage_clauses, record_key_sql, map_state["import_schema"])
 
-                    if len(important_changed_columns['changed_columns']) > 0:
-                        # This execution branch leads to the conflict resolution system in VZ
+                    # Using all the information we've gathered, form a single SQL update statement to update the target record.
+                    update_statement = util.form_update_statement(output_map, table, column_assignments, map_state["import_schema"], record_key_sql, linkage_sql, changed_columns)
+                    print(f"Executing update in {output_map[table]} for where " + record_key_sql)
 
-                        if util.is_change_existing(pg, table, source["crash_id"]):
-                            continue
-
-                        print("Important Changed column count: " + str(len(important_changed_columns['changed_columns'])))
-                        print("Important Changed Columns:" + str(important_changed_columns["changed_columns"]))
-
-                        print("Changed column count: " + str(len(changed_columns['changed_columns'])))
-                        print("Changed Columns:" + str(changed_columns["changed_columns"]))
-                        
-                        try:
-                            # this seemingly violates the principal of treating each record source equally, however, this is 
-                            # really only a reflection that we create incomplete temporary records consisting only of a crash record
-                            # and not holding place entities for units, persons, etc.
-                            if table == "crash" and util.has_existing_temporary_record(pg, source["case_id"]):
-                                print("\b🛎: " + str(source["crash_id"]) + " has existing temporary record")
-                                time.sleep(5)
-                                util.remove_existing_temporary_record(pg, source["case_id"])
-                        except:
-                            # Trap the case of a missing case_id key error in the RealDictRow object.
-                            # A RealDictRow, returned by the psycopg2 cursor, is a dictionary-like object,
-                            # but lacks has_key() and other methods.
-                            print("Skipping checking on existing temporary record for " + str(source["crash_id"]))
-                            pass
-                        
-                        # build an comma delimited list of changed columns
-                        all_changed_columns = ", ".join(important_changed_columns["changed_columns"] + changed_columns["changed_columns"])
-
-                        # insert_change_template() is used with minimal changes from previous version of the ETL to better ensure conflict system compatibility
-                        # mutation = insert_change_template(new_record_dict=source, differences=all_changed_columns, crash_id=str(source["crash_id"]))
-                        # if not dry_run:
-                            # print("Making a mutation for " + str(source["crash_id"]))
-                            # graphql.make_hasura_request(query=mutation, endpoint=GRAPHQL_ENDPOINT, admin_secret=GRAPHQL_ENDPOINT_KEY)
-                    else:
-                        # This execution branch leads to forming an update statement and executing it
-                        
-                        if len(changed_columns["changed_columns"]) == 0:
-                            print(update_statement)
-                            raise "No changed columns? Why are we forming an update? This is a bug."
-
-                        # Display the before and after values of the columns which are subject to update
-                        util.show_changed_values(pg, changed_columns, output_map, table, linkage_clauses, record_key_sql, map_state["import_schema"])
-
-                        # Using all the information we've gathered, form a single SQL update statement to update the target record.
-                        update_statement = util.form_update_statement(output_map, table, column_assignments, map_state["import_schema"], record_key_sql, linkage_sql, changed_columns)
-                        print(f"Executing update in {output_map[table]} for where " + record_key_sql)
-
-                        # Execute the update statement
-                        util.try_statement(pg, output_map, table, record_key_sql, update_statement, dry_run)
-
+                    # Execute the update statement
+                    util.try_statement(pg, output_map, table, record_key_sql, update_statement, dry_run)
 
                 # target does not exist, we're going to insert
                 else:
