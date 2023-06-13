@@ -331,6 +331,7 @@ function Crash(props) {
           handleFieldUpdate={handleFieldUpdate}
           handleButtonClick={handleButtonClick}
           data={data}
+          isTempRecord={tempRecord}
         />
         <Col md="6">
           <CrashChangeLog data={data} />
