@@ -29,6 +29,7 @@ const DataTable = ({
   handleFieldUpdate,
   handleButtonClick,
   downloadGlobal,
+  isTempRecord,
 }) => {
   // Disable edit features if only role is "readonly"
   const { getRoles } = useAuth0();
@@ -75,8 +76,13 @@ const DataTable = ({
                       const fieldLabel = fieldConfigObject.label;
 
                       // Disable editing if user is only "readonly"
-                      if (fieldConfigObject.editable && isReadOnly(roles)) {
+                      if (
+                        (fieldConfigObject.editable ||
+                          fieldConfigObject.isEditable) &&
+                        isReadOnly(roles)
+                      ) {
                         fieldConfigObject.editable = false;
+                        fieldConfigObject.isEditable = false;
                       }
 
                       // Set data table (alternate if defined in data map)
@@ -166,7 +172,7 @@ const DataTable = ({
                                   <Input
                                     name={field}
                                     id={field}
-                                    onChange={e => handleInputChange(e)}
+                                    onClick={e => handleInputChange(e)}
                                     defaultValue={fieldValue}
                                     type="select"
                                   >
@@ -202,12 +208,15 @@ const DataTable = ({
                             )}
                           </td>
                           <td>
-                            {fieldConfigObject.editable && !isEditing && (
-                              <i
-                                className="fa fa-pencil edit-toggle"
-                                onClick={() => setEditField(field)}
-                              />
-                            )}
+                            {(fieldConfigObject.editable ||
+                              (fieldConfigObject.isEditable &&
+                                fieldConfigObject.isEditable(isTempRecord))) &&
+                              !isEditing && (
+                                <i
+                                  className="fa fa-pencil edit-toggle"
+                                  onClick={() => setEditField(field)}
+                                />
+                              )}
                           </td>
                         </tr>
                       );
