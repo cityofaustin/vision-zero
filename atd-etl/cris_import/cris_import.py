@@ -573,7 +573,7 @@ def align_records(map_state):
                 # This function returns that record as a token of existence or false if none is available
                 if util.fetch_target_record(pg, output_map, table, record_key_sql):
                     # Build 2 sets of 3 arrays of SQL fragments, one element per column which can be `join`ed together in subsequent queries.
-                    column_assignments, column_comparisons, column_aggregators, important_column_assignments, important_column_comparisons, important_column_aggregators = util.get_column_operators(target_columns, no_override_columns, source, table, output_map, map_state["import_schema"])
+                    column_assignments, column_comparisons, column_aggregators, important_column_assignments, important_column_comparisons, important_column_aggregators = util.get_column_operators(target_columns, source, table, output_map, map_state["import_schema"])
 
                     # Check if the proposed update would result in a non-op, such as if there are no changes between the import and
                     # target record. If this is the case, continue to the next record. There's no changes needed in this case.

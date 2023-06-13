@@ -2,6 +2,7 @@ import os
 import psycopg2.extras
 
 import pprint
+
 pp = pprint.PrettyPrinter(indent=4)
 
 # This library is /not/ designed for reuse in other projects. It is designed to increase the
@@ -23,7 +24,7 @@ def get_pgfutter_path():
 
 
 def get_column_operators(
-    target_columns, no_override_columns, source, table, output_map, DB_IMPORT_SCHEMA
+    target_columns, source, table, output_map, DB_IMPORT_SCHEMA
 ):
     column_assignments = {}
     column_comparisons = []
@@ -40,36 +41,31 @@ def get_column_operators(
             
             # there are two normal ways to be equal. Either be of the same value and type or /both/ be undefined.
             comparison_clause = f"""
-                (  (public.{output_map[table]}.{column['column_name']} = {DB_IMPORT_SCHEMA}.{table}.{column['column_name']})
-                OR (public.{output_map[table]}.{column['column_name']} IS NULL AND {DB_IMPORT_SCHEMA}.{table}.{column['column_name']} IS NULL)
+                (  (cris.{output_map[table]}.{column['column_name']} = {DB_IMPORT_SCHEMA}.{table}.{column['column_name']})
+                OR (cris.{output_map[table]}.{column['column_name']} IS NULL AND {DB_IMPORT_SCHEMA}.{table}.{column['column_name']} IS NULL)
                 """
             # And .. and there are two more ways that stem from past typing tech-debt we have on our db
             if column["data_type"] in ('character varying', 'text'):
                 comparison_clause += f"""
-                OR (public.{output_map[table]}.{column['column_name']} IS null and {DB_IMPORT_SCHEMA}.{table}.{column['column_name']} = '')
-                OR (public.{output_map[table]}.{column['column_name']} = '' and {DB_IMPORT_SCHEMA}.{table}.{column['column_name']} IS NULL)  
+                OR (cris.{output_map[table]}.{column['column_name']} IS null and {DB_IMPORT_SCHEMA}.{table}.{column['column_name']} = '')
+                OR (cris.{output_map[table]}.{column['column_name']} = '' and {DB_IMPORT_SCHEMA}.{table}.{column['column_name']} IS NULL)  
                 """
             comparison_clause += ")"
 
             column_aggregator = f"""
                 case when not coalesce(
-                    public.{output_map[table]}.{column['column_name']} = {DB_IMPORT_SCHEMA}.{table}.{column['column_name']}
+                    cris.{output_map[table]}.{column['column_name']} = {DB_IMPORT_SCHEMA}.{table}.{column['column_name']}
                     or
-                    (public.{output_map[table]}.{column['column_name']} is null and {DB_IMPORT_SCHEMA}.{table}.{column['column_name']} is null)
+                    (cris.{output_map[table]}.{column['column_name']} is null and {DB_IMPORT_SCHEMA}.{table}.{column['column_name']} is null)
                 , false) then '{column['column_name']}' else null end
             """
 
-            if column["column_name"] in no_override_columns:
-                important_column_assignments[ column["column_name"] ] = column_assignment
-                important_column_comparisons.append(comparison_clause)
-                important_column_aggregators.append(column_aggregator)
-            else:
-                column_assignments[ column["column_name"] ] = column_assignment
-                column_comparisons.append(comparison_clause)
-                column_aggregators.append(column_aggregator)
+            column_assignments[ column["column_name"] ] = column_assignment
+            column_comparisons.append(comparison_clause)
+            column_aggregators.append(column_aggregator)
 
         # fmt: on
-    return column_assignments, column_comparisons, column_aggregators, important_column_assignments, important_column_comparisons, important_column_aggregators
+    return column_assignments, column_comparisons, column_aggregators
 
 
 def check_if_update_is_a_non_op(
