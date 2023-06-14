@@ -20,13 +20,21 @@ import pandas
 from datetime import datetime, timedelta
 import psycopg2
 import psycopg2.extras
-from prefect.backend import get_key_value
 from sshtunnel import SSHTunnelForwarder
 
 pp = pprint.PrettyPrinter(indent=4)
 
-kv_data = get_key_value(key="Vision Zero Development")
-environment_variables_from_kv_store = json.loads(kv_data)
+
+def main():
+    pass
+    #record_age_maximum = RECORD_AGE_MAXIMUM or 15
+    #timestamp = get_timestamp()
+    #newest_email = get_most_recent_email()
+    #attachment_location = extract_email_attachment(newest_email)
+    #uploaded_token = upload_attachment_to_S3(attachment_location, timestamp)
+    #data = create_and_parse_dataframe(attachment_location)
+    #upload_token = upload_data_to_postgres(data, record_age_maximum)
+    #clean_up_token = clean_up(attachment_location, upstream_tasks=[upload_token])
 
 DB_USERNAME = None
 DB_PASSWORD = None
@@ -82,8 +90,7 @@ def extract_email_attachment(message):
 
     tmpdir = tempfile.mkdtemp()
 
-    logger = prefect.context.get("logger")
-    logger.info(f"Tmpdir: {tmpdir}")
+    print(f"Tmpdir: {tmpdir}")
 
     # Write the attachment to a temp location
     open(f"{tmpdir}/attachment.xlsx", "wb").write(attachment.get_payload(decode=True))
@@ -246,12 +253,7 @@ def clean_up(path):
     shutil.rmtree(path)
 
 
-record_age_maximum = RECORD_AGE_MAXIMUM or 15
-timestamp = get_timestamp()
-newest_email = get_most_recent_email()
-attachment_location = extract_email_attachment(newest_email)
-uploaded_token = upload_attachment_to_S3(attachment_location, timestamp)
-data = create_and_parse_dataframe(attachment_location)
-upload_token = upload_data_to_postgres(data, record_age_maximum)
-clean_up_token = clean_up(attachment_location, upstream_tasks=[upload_token])
 
+
+if __name__ == "__main__":
+    main()
