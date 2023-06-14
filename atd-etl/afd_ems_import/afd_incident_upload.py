@@ -51,6 +51,59 @@ DB_BASTION_HOST = None
 DB_RDS_HOST = None
 RECORD_AGE_MAXIMUM = None
 
+def get_secrets():
+    REQUIRED_SECRETS = {
+        "bastion_host": {
+            "opitem": "RDS Bastion Host",
+            "opfield": f"{DEPLOYMENT_ENVIRONMENT}.Bastion Host",
+            "opvault": VAULT_ID,
+        },
+        "bastion_ssh_username": {
+            "opitem": "RDS Bastion Host",
+            "opfield": f"{DEPLOYMENT_ENVIRONMENT}.ssh Username",
+            "opvault": VAULT_ID,
+        },
+        "database_host": {
+            "opitem": "Vision Zero Database",
+            "opfield": f"{DEPLOYMENT_ENVIRONMENT}.Database Host",
+            "opvault": VAULT_ID,
+        },
+        "database_username": {
+            "opitem": "Vision Zero Database",
+            "opfield": f"{DEPLOYMENT_ENVIRONMENT}.Database Username",
+            "opvault": VAULT_ID,
+        },
+        "database_password": {
+            "opitem": "Vision Zero Database",
+            "opfield": f"{DEPLOYMENT_ENVIRONMENT}.Database Password",
+            "opvault": VAULT_ID,
+        },
+        "database_name": {
+            "opitem": "Vision Zero Database",
+            "opfield": f"{DEPLOYMENT_ENVIRONMENT}.Database Name",
+            "opvault": VAULT_ID,
+        },
+        "database_ssl_policy": {
+            "opitem": "Vision Zero Database",
+            "opfield": f"{DEPLOYMENT_ENVIRONMENT}.Database SSL Policy",
+            "opvault": VAULT_ID,
+        },
+        "aws_access_key": {
+            "opitem": "Vision Zero CRIS Import",
+            "opfield": f"{DEPLOYMENT_ENVIRONMENT}.AWS Access key",
+            "opvault": VAULT_ID,
+        },
+        "aws_secret_key": {
+            "opitem": "Vision Zero CRIS Import",
+            "opfield": f"{DEPLOYMENT_ENVIRONMENT}.AWS Secret key",
+            "opvault": VAULT_ID,
+        },
+        "bastion_ssh_private_key": {
+            "opitem": "RDS Bastion Key",
+            "opfield": ".private key",
+            "opvault": VAULT_ID,
+            },
+    }
 
 def get_timestamp():
     current = datetime.now()
