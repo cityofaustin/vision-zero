@@ -29,7 +29,6 @@ const DataTable = ({
   handleFieldUpdate,
   handleButtonClick,
   downloadGlobal,
-  isTempRecord,
 }) => {
   // Disable edit features if only role is "readonly"
   const { getRoles } = useAuth0();
@@ -76,13 +75,8 @@ const DataTable = ({
                       const fieldLabel = fieldConfigObject.label;
 
                       // Disable editing if user is only "readonly"
-                      if (
-                        (fieldConfigObject.editable ||
-                          fieldConfigObject.isEditable) &&
-                        isReadOnly(roles)
-                      ) {
+                      if (fieldConfigObject.editable && isReadOnly(roles)) {
                         fieldConfigObject.editable = false;
-                        fieldConfigObject.isEditable = false;
                       }
 
                       // Set data table (alternate if defined in data map)
@@ -208,15 +202,12 @@ const DataTable = ({
                             )}
                           </td>
                           <td>
-                            {(fieldConfigObject.editable ||
-                              (fieldConfigObject.isEditable &&
-                                fieldConfigObject.isEditable(isTempRecord))) &&
-                              !isEditing && (
-                                <i
-                                  className="fa fa-pencil edit-toggle"
-                                  onClick={() => setEditField(field)}
-                                />
-                              )}
+                            {fieldConfigObject.editable && !isEditing && (
+                              <i
+                                className="fa fa-pencil edit-toggle"
+                                onClick={() => setEditField(field)}
+                              />
+                            )}
                           </td>
                         </tr>
                       );
