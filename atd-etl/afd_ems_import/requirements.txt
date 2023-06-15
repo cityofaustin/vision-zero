@@ -3,3 +3,4 @@ psycopg2-binary==2.*
 boto3==1.*
 pandas==2.*
 sshtunnel==0.*
+openpyxl==3.
