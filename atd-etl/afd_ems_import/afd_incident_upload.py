@@ -70,7 +70,7 @@ def main():
     DB_BASTION_HOST_SSH_USERNAME = secrets["bastion_ssh_username"]
     DB_BASTION_HOST_SSH_PRIVATE_KEY = secrets["bastion_ssh_private_key"]
     DB_RDS_HOST = secrets["database_host"]
-    RECORD_AGE_MAXIMUM = None # TODO decide if we want to pass this in and how
+    RECORD_AGE_MAXIMUM = None # the default is fine, and we never tune it. 
 
     record_age_maximum = RECORD_AGE_MAXIMUM or 15
     timestamp = get_timestamp()
@@ -79,7 +79,6 @@ def main():
     uploaded_token = upload_attachment_to_S3(attachment_location, timestamp)
     data = create_and_parse_dataframe(attachment_location)
     upload_token = upload_data_to_postgres(data, record_age_maximum)
-    #clean_up_token = clean_up(attachment_location, upstream_tasks=[upload_token])
 
 def get_secrets():
     REQUIRED_SECRETS = {
@@ -357,10 +356,6 @@ def upload_data_to_postgres(data, age_cutoff):
 
     return True
 
-
-def clean_up(path):
-    # Clean up the temp location
-    shutil.rmtree(path)
 
 # these temp directories are used to store ssh keys, because they will
 # automatically clean themselves up when they go out of scope.
