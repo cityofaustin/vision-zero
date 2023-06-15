@@ -1,4 +1,4 @@
-export const crashDataMap = isTempRecord => {
+export const createCrashDataMap = isTempRecord => {
   return [
     {
       title: "Details",
