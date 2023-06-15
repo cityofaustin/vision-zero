@@ -263,7 +263,6 @@ def upload_data_to_postgres(data, age_cutoff):
             ems_numbers = str(row["EMS_IncidentNumber"]).replace("-", "").split(";")
             if len(ems_numbers) > 1:
                 pass
-                # print(f"🛎 Found multiple ems numbers: " + str(row["EMS_IncidentNumber"]))
 
             # Prevent geometry creation error on "-" X/Y value
             longitude = row["X"]
