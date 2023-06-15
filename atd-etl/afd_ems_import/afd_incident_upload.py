@@ -22,11 +22,22 @@ import psycopg2
 import psycopg2.extras
 from sshtunnel import SSHTunnelForwarder
 
+import onepasswordconnectsdk
+from onepasswordconnectsdk.client import Client, new_client
+
 pp = pprint.PrettyPrinter(indent=4)
+
+DEPLOYMENT_ENVIRONMENT = os.environ.get(
+    "ENVIRONMENT", "development"
+)  # our current environment from ['production', 'development']
+ONEPASSWORD_CONNECT_TOKEN = os.getenv("OP_API_TOKEN")  # our secret to get secrets 🤐
+ONEPASSWORD_CONNECT_HOST = os.getenv("OP_CONNECT")  # where we get our secrets
+VAULT_ID = os.getenv("OP_VAULT_ID")
 
 
 def main():
-    pass
+    secrets = get_secrets()
+    print(secrets)
     #record_age_maximum = RECORD_AGE_MAXIMUM or 15
     #timestamp = get_timestamp()
     #newest_email = get_most_recent_email()
@@ -36,6 +47,7 @@ def main():
     #upload_token = upload_data_to_postgres(data, record_age_maximum)
     #clean_up_token = clean_up(attachment_location, upstream_tasks=[upload_token])
 
+DEPLOYMENT_ENVIRONMENT = 'development'
 DB_USERNAME = None
 DB_PASSWORD = None
 DB_HOSTNAME = None
@@ -55,7 +67,7 @@ def get_secrets():
     REQUIRED_SECRETS = {
         "bastion_host": {
             "opitem": "RDS Bastion Host",
-            "opfield": f"{DEPLOYMENT_ENVIRONMENT}.Bastion Host",
+            "opfield": f"{DEPLOYMENT_ENVIRONMENT}.Host",
             "opvault": VAULT_ID,
         },
         "bastion_ssh_username": {
@@ -88,22 +100,27 @@ def get_secrets():
             "opfield": f"{DEPLOYMENT_ENVIRONMENT}.Database SSL Policy",
             "opvault": VAULT_ID,
         },
-        "aws_access_key": {
-            "opitem": "Vision Zero CRIS Import",
-            "opfield": f"{DEPLOYMENT_ENVIRONMENT}.AWS Access key",
-            "opvault": VAULT_ID,
-        },
-        "aws_secret_key": {
-            "opitem": "Vision Zero CRIS Import",
-            "opfield": f"{DEPLOYMENT_ENVIRONMENT}.AWS Secret key",
-            "opvault": VAULT_ID,
-        },
+        #"aws_access_key": {
+            #"opitem": "Vision Zero CRIS Import",
+            #"opfield": f"{DEPLOYMENT_ENVIRONMENT}.AWS Access key",
+            #"opvault": VAULT_ID,
+        #},
+        #"aws_secret_key": {
+            #"opitem": "Vision Zero CRIS Import",
+            #"opfield": f"{DEPLOYMENT_ENVIRONMENT}.AWS Secret key",
+            #"opvault": VAULT_ID,
+        #},
         "bastion_ssh_private_key": {
             "opitem": "RDS Bastion Key",
             "opfield": ".private key",
             "opvault": VAULT_ID,
             },
     }
+
+    # instantiate a 1Password client
+    client: Client = new_client(ONEPASSWORD_CONNECT_HOST, ONEPASSWORD_CONNECT_TOKEN)
+    # get the requested secrets from 1Password
+    return onepasswordconnectsdk.load_dict(client, REQUIRED_SECRETS)
 
 def get_timestamp():
     current = datetime.now()
