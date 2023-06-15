@@ -22,7 +22,7 @@ import CrashDiagram from "./CrashDiagram";
 import CrashNarrative from "./CrashNarrative";
 import DataTable from "../../Components/DataTable";
 import Notes from "../../Components/Notes/Notes";
-import { crashDataMap } from "./crashDataMap";
+import { createCrashDataMap } from "./crashDataMap";
 import Recommendations from "./Recommendations/Recommendations";
 
 import "./crash.scss";
@@ -322,7 +322,7 @@ function Crash(props) {
       </Row>
       <Row>
         <DataTable
-          dataMap={crashDataMap(tempRecord)}
+          dataMap={createCrashDataMap(tempRecord)}
           dataTable={"atd_txdot_crashes"}
           formData={formData}
           setEditField={setEditField}
