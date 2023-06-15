@@ -50,6 +50,8 @@ def main():
     global AFD_S3_SOURCE_PREFIX
     global AFD_S3_ARCHIVE_PREFIX
     global DB_BASTION_HOST
+    global DB_BASTION_HOST_SSH_USERNAME
+    global DB_BASTION_HOST_SSH_PRIVATE_KEY
     global DB_RDS_HOST
     global RECORD_AGE_MAXIMUM
 
@@ -65,16 +67,18 @@ def main():
     AFD_S3_SOURCE_PREFIX = secrets["source_prefix"]
     AFD_S3_ARCHIVE_PREFIX = secrets["archive_prefix"]
     DB_BASTION_HOST = secrets["bastion_host"]
+    DB_BASTION_HOST_SSH_USERNAME = secrets["bastion_ssh_username"]
+    DB_BASTION_HOST_SSH_PRIVATE_KEY = secrets["bastion_ssh_private_key"]
     DB_RDS_HOST = secrets["database_host"]
     RECORD_AGE_MAXIMUM = None # TODO decide if we want to pass this in and how
 
     record_age_maximum = RECORD_AGE_MAXIMUM or 15
     timestamp = get_timestamp()
-    #newest_email = get_most_recent_email()
-    #attachment_location = extract_email_attachment(newest_email)
-    #uploaded_token = upload_attachment_to_S3(attachment_location, timestamp)
-    #data = create_and_parse_dataframe(attachment_location)
-    #upload_token = upload_data_to_postgres(data, record_age_maximum)
+    newest_email = get_most_recent_email()
+    attachment_location = extract_email_attachment(newest_email)
+    uploaded_token = upload_attachment_to_S3(attachment_location, timestamp)
+    data = create_and_parse_dataframe(attachment_location)
+    upload_token = upload_data_to_postgres(data, record_age_maximum)
     #clean_up_token = clean_up(attachment_location, upstream_tasks=[upload_token])
 
 def get_secrets():
@@ -223,131 +227,142 @@ def create_and_parse_dataframe(location):
 
 def upload_data_to_postgres(data, age_cutoff):
 
-    ssh_tunnel = SSHTunnelForwarder(
-        (DB_BASTION_HOST),
-        ssh_username="vz-etl",
-        ssh_private_key= '/root/.ssh/id_rsa', # will switch to ed25519 when we rebuild this for prefect 2
-        remote_bind_address=(DB_RDS_HOST, 5432)
+    #ssh_tunnel = SSHTunnelForwarder(
+        #(DB_BASTION_HOST),
+        #ssh_username="vz-etl",
+        #ssh_private_key= '/root/.ssh/id_rsa', # will switch to ed25519 when we rebuild this for prefect 2
+        #remote_bind_address=(DB_RDS_HOST, 5432)
+        #)
+    #ssh_tunnel.start()   
+
+    with SshKeyTempDir() as key_directory:
+        write_key_to_file(key_directory + "/id_ed25519", DB_BASTION_HOST_SSH_PRIVATE_KEY + "\n") 
+        ssh_tunnel = SSHTunnelForwarder(
+            (DB_BASTION_HOST),
+            ssh_username=DB_BASTION_HOST_SSH_USERNAME,
+            ssh_private_key=f"{key_directory}/id_ed25519",
+            remote_bind_address=(DB_RDS_HOST, 5432),
         )
-    ssh_tunnel.start()   
+        ssh_tunnel.start()
 
-    pg = psycopg2.connect(
-        host='localhost', 
-        port=ssh_tunnel.local_bind_port,
-        user=DB_USERNAME, 
-        password=DB_PASSWORD, 
-        dbname=DB_DATABASE
-    )
 
-    print(f"Max record age: {age_cutoff}")
-    print(f"Input Dataframe shape: {data.shape}")
-    if age_cutoff:
-        data["Inc_Date"] = pandas.to_datetime(data["Inc_Date"], format="%Y-%m-%d")
-        age_threshold = datetime.today() - timedelta(days=age_cutoff)
-        data = data[data["Inc_Date"] > age_threshold]
-    print(f"Trimmed data shape: {data.shape}")
-    print(data)
+        pg = psycopg2.connect(
+            host='localhost', 
+            port=ssh_tunnel.local_bind_port,
+            user=DB_USERNAME, 
+            password=DB_PASSWORD, 
+            dbname=DB_DATABASE
+        )
 
-    # this emits indices in reverse order, very odd, but not a problem
-    for index, row in data.iloc[::-1].iterrows():
-        if not index % 100:
-            print(f"Row {str(index)} of {str(data.shape[0])}")
+        print(f"Max record age: {age_cutoff}")
+        print(f"Input Dataframe shape: {data.shape}")
+        if age_cutoff:
+            data["Inc_Date"] = pandas.to_datetime(data["Inc_Date"], format="%Y-%m-%d")
+            age_threshold = datetime.today() - timedelta(days=age_cutoff)
+            data = data[data["Inc_Date"] > age_threshold]
+        print(f"Trimmed data shape: {data.shape}")
+        print(data)
 
-        ems_numbers = str(row["EMS_IncidentNumber"]).replace("-", "").split(";")
-        if len(ems_numbers) > 1:
-            pass
-            # print(f"🛎 Found multiple ems numbers: " + str(row["EMS_IncidentNumber"]))
+        # this emits indices in reverse order, very odd, but not a problem
+        for index, row in data.iloc[::-1].iterrows():
+            if not index % 100:
+                print(f"Row {str(index)} of {str(data.shape[0])}")
 
-        # Prevent geometry creation error on "-" X/Y value
-        longitude = row["X"]
-        latitude = row["Y"]
-        if row["X"] == "-":
-            longitude = None
-        if row["Y"] == "-":
-            latitude = None
+            ems_numbers = str(row["EMS_IncidentNumber"]).replace("-", "").split(";")
+            if len(ems_numbers) > 1:
+                pass
+                # print(f"🛎 Found multiple ems numbers: " + str(row["EMS_IncidentNumber"]))
 
-        sql = "select count(id) as existing from afd__incidents where incident_number = %s"
+            # Prevent geometry creation error on "-" X/Y value
+            longitude = row["X"]
+            latitude = row["Y"]
+            if row["X"] == "-":
+                longitude = None
+            if row["Y"] == "-":
+                latitude = None
 
-        cursor = pg.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-        cursor.execute(sql, (row["Incident_Number"],))
-        existing = cursor.fetchone()
+            sql = "select count(id) as existing from afd__incidents where incident_number = %s"
 
-        sql = ""
-        values = []
-        if existing["existing"] > 0:
-            # print("Updating existing record")
-            sql = """
-                update afd__incidents set
-                    unparsed_ems_incident_number = %s,
-                    ems_incident_numbers = %s,
-                    call_datetime = %s,
-                    calendar_year = %s,
-                    jurisdiction = %s,
-                    address= %s,
-                    problem = %s,
-                    flagged_incs = %s,
-                    geometry = ST_SetSRID(ST_MakePoint(%s, %s), 4326)
-                where incident_number = %s
-            """
+            cursor = pg.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+            cursor.execute(sql, (row["Incident_Number"],))
+            existing = cursor.fetchone()
 
-            values = [
-                row["EMS_IncidentNumber"],
-                "{" + ", ".join(ems_numbers) + "}",
-                row["Inc_Date"].strftime("%Y-%m-%d")
-                + " "
-                + row["Inc_Time"].strftime("%H:%M:%S"),
-                row["CalendarYear"],
-                row["Jurisdiction"],
-                row["CAD_Address"],
-                row["CAD_Problem"],
-                row["Flagged_Incs"],
-                longitude,
-                latitude,
-                row["Incident_Number"],
-            ]
-        else:
-            # print("Inserting new record")
-            sql = """
-                insert into afd__incidents (
-                    incident_number, 
-                    unparsed_ems_incident_number, 
-                    ems_incident_numbers,
-                    call_datetime, 
-                    calendar_year, 
-                    jurisdiction, 
-                    address, 
-                    problem, 
-                    flagged_incs, 
-                    geometry
-                ) values (%s, %s, %s, %s, %s, %s, %s, %s, %s, ST_SetSRID(ST_Point(%s, %s), 4326))
-                ON CONFLICT DO NOTHING;
-            """
+            sql = ""
+            values = []
+            if existing["existing"] > 0:
+                print("Updating existing record")
+                sql = """
+                    update afd__incidents set
+                        unparsed_ems_incident_number = %s,
+                        ems_incident_numbers = %s,
+                        call_datetime = %s,
+                        calendar_year = %s,
+                        jurisdiction = %s,
+                        address= %s,
+                        problem = %s,
+                        flagged_incs = %s,
+                        geometry = ST_SetSRID(ST_MakePoint(%s, %s), 4326)
+                    where incident_number = %s
+                """
 
-            values = [
-                row["Incident_Number"],
-                row["EMS_IncidentNumber"],
-                "{" + ", ".join(ems_numbers) + "}",
-                row["Inc_Date"].strftime("%Y-%m-%d")
-                + " "
-                + row["Inc_Time"].strftime("%H:%M:%S"),
-                row["CalendarYear"],
-                row["Jurisdiction"],
-                row["CAD_Address"],
-                row["CAD_Problem"],
-                row["Flagged_Incs"],
-                longitude,
-                latitude,
-            ]
+                values = [
+                    row["EMS_IncidentNumber"],
+                    "{" + ", ".join(ems_numbers) + "}",
+                    row["Inc_Date"].strftime("%Y-%m-%d")
+                    + " "
+                    + row["Inc_Time"].strftime("%H:%M:%S"),
+                    row["CalendarYear"],
+                    row["Jurisdiction"],
+                    row["CAD_Address"],
+                    row["CAD_Problem"],
+                    row["Flagged_Incs"],
+                    longitude,
+                    latitude,
+                    row["Incident_Number"],
+                ]
+            else:
+                print("Inserting new record")
+                sql = """
+                    insert into afd__incidents (
+                        incident_number, 
+                        unparsed_ems_incident_number, 
+                        ems_incident_numbers,
+                        call_datetime, 
+                        calendar_year, 
+                        jurisdiction, 
+                        address, 
+                        problem, 
+                        flagged_incs, 
+                        geometry
+                    ) values (%s, %s, %s, %s, %s, %s, %s, %s, %s, ST_SetSRID(ST_Point(%s, %s), 4326))
+                    ON CONFLICT DO NOTHING;
+                """
 
-        try:
-            cursor = pg.cursor()
-            cursor.execute(sql, values)
-            pg.commit()
-        except Exception as error:
-            print(f"Error executing:\n\n{sql}\n")
-            print(f"Values: {values}")
-            print(f"Error: {error}")
-            pg.rollback()
+                values = [
+                    row["Incident_Number"],
+                    row["EMS_IncidentNumber"],
+                    "{" + ", ".join(ems_numbers) + "}",
+                    row["Inc_Date"].strftime("%Y-%m-%d")
+                    + " "
+                    + row["Inc_Time"].strftime("%H:%M:%S"),
+                    row["CalendarYear"],
+                    row["Jurisdiction"],
+                    row["CAD_Address"],
+                    row["CAD_Problem"],
+                    row["Flagged_Incs"],
+                    longitude,
+                    latitude,
+                ]
+
+            try:
+                cursor = pg.cursor()
+                cursor.execute(sql, values)
+                pg.commit()
+            except Exception as error:
+                print(f"Error executing:\n\n{sql}\n")
+                print(f"Values: {values}")
+                print(f"Error: {error}")
+                pg.rollback()
 
     return True
 
@@ -356,8 +371,28 @@ def clean_up(path):
     # Clean up the temp location
     shutil.rmtree(path)
 
+# these temp directories are used to store ssh keys, because they will
+# automatically clean themselves up when they go out of scope.
+class SshKeyTempDir:
+    def __init__(self):
+        self.path = None
 
+    def __enter__(self):
+        self.path = tempfile.mkdtemp(dir='/tmp')
+        return self.path
 
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        shutil.rmtree(self.path)
+
+def write_key_to_file(path, content):
+    # Open the file with write permissions and create it if it doesn't exist
+    fd = os.open(path, os.O_WRONLY | os.O_CREAT, 0o600)
+
+    # Write the content to the file
+    os.write(fd, content.encode())
+
+    # Close the file
+    os.close(fd)
 
 if __name__ == "__main__":
     main()
