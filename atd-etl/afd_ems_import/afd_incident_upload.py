@@ -37,31 +37,45 @@ VAULT_ID = os.getenv("OP_VAULT_ID")
 
 def main():
     secrets = get_secrets()
-    print(secrets)
-    #record_age_maximum = RECORD_AGE_MAXIMUM or 15
-    #timestamp = get_timestamp()
+
+    global DB_USERNAME
+    global DB_PASSWORD
+    global DB_HOSTNAME
+    global DB_PORT
+    global DB_DATABASE
+    global AWS_ACCESS_KEY_ID
+    global AWS_SECRET_ACCESS_KEY
+    global AFD_S3_SOURCE_BUCKET
+    global AFD_S3_ARCHIVE_BUCKET
+    global AFD_S3_SOURCE_PREFIX
+    global AFD_S3_ARCHIVE_PREFIX
+    global DB_BASTION_HOST
+    global DB_RDS_HOST
+    global RECORD_AGE_MAXIMUM
+
+    DB_USERNAME = secrets["database_username"]
+    DB_PASSWORD = secrets["database_password"]
+    DB_HOSTNAME = secrets["database_host"]
+    DB_PORT = 5432
+    DB_DATABASE = secrets["database_name"]
+    AWS_ACCESS_KEY_ID = secrets["aws_access_key"]
+    AWS_SECRET_ACCESS_KEY = secrets["aws_secret_key"]
+    AFD_S3_SOURCE_BUCKET = secrets["source_bucket"]
+    AFD_S3_ARCHIVE_BUCKET = secrets["archive_bucket"]
+    AFD_S3_SOURCE_PREFIX = secrets["source_prefix"]
+    AFD_S3_ARCHIVE_PREFIX = secrets["archive_prefix"]
+    DB_BASTION_HOST = secrets["bastion_host"]
+    DB_RDS_HOST = secrets["database_host"]
+    RECORD_AGE_MAXIMUM = None # TODO decide if we want to pass this in and how
+
+    record_age_maximum = RECORD_AGE_MAXIMUM or 15
+    timestamp = get_timestamp()
     #newest_email = get_most_recent_email()
     #attachment_location = extract_email_attachment(newest_email)
     #uploaded_token = upload_attachment_to_S3(attachment_location, timestamp)
     #data = create_and_parse_dataframe(attachment_location)
     #upload_token = upload_data_to_postgres(data, record_age_maximum)
     #clean_up_token = clean_up(attachment_location, upstream_tasks=[upload_token])
-
-DEPLOYMENT_ENVIRONMENT = 'development'
-DB_USERNAME = None
-DB_PASSWORD = None
-DB_HOSTNAME = None
-DB_PORT = None
-DB_DATABASE = None
-AWS_ACCESS_KEY_ID = None
-AWS_SECRET_ACCESS_KEY = None
-AFD_S3_SOURCE_BUCKET = None
-AFD_S3_ARCHIVE_BUCKET = None
-AFD_S3_SOURCE_PREFIX = None
-AFD_S3_ARCHIVE_PREFIX = None
-DB_BASTION_HOST = None
-DB_RDS_HOST = None
-RECORD_AGE_MAXIMUM = None
 
 def get_secrets():
     REQUIRED_SECRETS = {
@@ -100,16 +114,36 @@ def get_secrets():
             "opfield": f"{DEPLOYMENT_ENVIRONMENT}.Database SSL Policy",
             "opvault": VAULT_ID,
         },
-        #"aws_access_key": {
-            #"opitem": "Vision Zero CRIS Import",
-            #"opfield": f"{DEPLOYMENT_ENVIRONMENT}.AWS Access key",
-            #"opvault": VAULT_ID,
-        #},
-        #"aws_secret_key": {
-            #"opitem": "Vision Zero CRIS Import",
-            #"opfield": f"{DEPLOYMENT_ENVIRONMENT}.AWS Secret key",
-            #"opvault": VAULT_ID,
-        #},
+        "aws_access_key": {
+            "opitem": "Vision Zero AFD and EMS Import",
+            "opfield": f"{DEPLOYMENT_ENVIRONMENT}.AWS Access Key ID",
+            "opvault": VAULT_ID,
+        },
+        "aws_secret_key": {
+            "opitem": "Vision Zero AFD and EMS Import",
+            "opfield": f"{DEPLOYMENT_ENVIRONMENT}.AWS Secret Access Key",
+            "opvault": VAULT_ID,
+        },
+        "source_bucket": {
+            "opitem": "Vision Zero AFD and EMS Import",
+            "opfield": f"{DEPLOYMENT_ENVIRONMENT}.AFD S3 Source Bucket",
+            "opvault": VAULT_ID,
+        },
+        "source_prefix": {
+            "opitem": "Vision Zero AFD and EMS Import",
+            "opfield": f"{DEPLOYMENT_ENVIRONMENT}.AFD S3 Source Prefix",
+            "opvault": VAULT_ID,
+        },
+        "archive_bucket": {
+            "opitem": "Vision Zero AFD and EMS Import",
+            "opfield": f"{DEPLOYMENT_ENVIRONMENT}.AFD S3 Archive Bucket",
+            "opvault": VAULT_ID,
+        },
+        "archive_prefix": {
+            "opitem": "Vision Zero AFD and EMS Import",
+            "opfield": f"{DEPLOYMENT_ENVIRONMENT}.AFD S3 Archive Prefix",
+            "opvault": VAULT_ID,
+        },
         "bastion_ssh_private_key": {
             "opitem": "RDS Bastion Key",
             "opfield": ".private key",
