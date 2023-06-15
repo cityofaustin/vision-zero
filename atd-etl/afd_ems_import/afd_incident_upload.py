@@ -227,14 +227,6 @@ def create_and_parse_dataframe(location):
 
 def upload_data_to_postgres(data, age_cutoff):
 
-    #ssh_tunnel = SSHTunnelForwarder(
-        #(DB_BASTION_HOST),
-        #ssh_username="vz-etl",
-        #ssh_private_key= '/root/.ssh/id_rsa', # will switch to ed25519 when we rebuild this for prefect 2
-        #remote_bind_address=(DB_RDS_HOST, 5432)
-        #)
-    #ssh_tunnel.start()   
-
     with SshKeyTempDir() as key_directory:
         write_key_to_file(key_directory + "/id_ed25519", DB_BASTION_HOST_SSH_PRIVATE_KEY + "\n") 
         ssh_tunnel = SSHTunnelForwarder(
