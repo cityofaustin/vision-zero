@@ -115,13 +115,13 @@ def get_secrets():
             "opvault": VAULT_ID,
         },
         "bastion_host": {
-            "opitem": "Vision Zero CRIS Import",
-            "opfield": f"{DEPLOYMENT_ENVIRONMENT}.Database Bastion",
+            "opitem": "RDS Bastion Host",
+            "opfield": f"{DEPLOYMENT_ENVIRONMENT}.Host",
             "opvault": VAULT_ID,
         },
         "bastion_ssh_username": {
-            "opitem": "Vision Zero CRIS Import",
-            "opfield": f"{DEPLOYMENT_ENVIRONMENT}.Bastion ssh Username",
+            "opitem": "RDS Bastion Host",
+            "opfield": f"{DEPLOYMENT_ENVIRONMENT}.ssh Username",
             "opvault": VAULT_ID,
         },
         "database_host": {
