@@ -26,4 +26,5 @@ COPY entrypoint.sh /entrypoint.sh
 COPY . /app
 
 WORKDIR /app
-CMD ["/entrypoint.sh"]
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["ems"]
