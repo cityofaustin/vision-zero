@@ -166,7 +166,7 @@ const DataTable = ({
                                   <Input
                                     name={field}
                                     id={field}
-                                    onClick={e => handleInputChange(e)}
+                                    onChange={e => handleInputChange(e)}
                                     defaultValue={fieldValue}
                                     type="select"
                                   >
