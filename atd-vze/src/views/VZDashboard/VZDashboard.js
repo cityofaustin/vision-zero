@@ -125,7 +125,7 @@ function VZDashboard() {
         </Col>
         <Col xs="12" sm="6" md="6">
           <VZLinksWidget
-            header={`Comprehensive Costs by Location`}
+            header={`Crash Data by Location`}
             mainText={`Based on Vision Zero polygons`}
             icon="fa fa-map"
             color="primary"
