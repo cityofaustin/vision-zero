@@ -73,9 +73,9 @@ export const fatalityGridTableColumns = {
   engineering_area: {
     searchable: true,
     sortable: true,
-    label_table: "Engineering Area",
+    label_table: "Current Engineering Area",
     type: "String",
-    label_search: "Search by Engineering Area",
+    label_search: "Search by Current Engineering Area",
   },
 };
 
