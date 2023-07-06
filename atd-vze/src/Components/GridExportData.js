@@ -124,12 +124,20 @@ const GridExportData = ({
         "rpt_sec_street_name",
       ];
 
+      const columnsToEscapeDoubleQuotes = ["rec_text", "rec_update"];
+
       columnsToClean.forEach(col => {
         if (item[col]) {
           // remove return carriage and replace with space
           item[col] = item[col].replace(/(\r\n|\n|\r|")/gm, " ");
           // remove double-quotes
           item[col] = item[col].replace(/"/g, "");
+        }
+      });
+
+      columnsToEscapeDoubleQuotes.forEach(col => {
+        if (item[col]) {
+          item[col] = item[col].replace(/"/g, '""');
         }
       });
 
@@ -168,6 +176,8 @@ const GridExportData = ({
       });
       return item;
     });
+
+    console.log("data", cleanedFlattenedAndParsedData);
 
     return cleanedFlattenedAndParsedData;
   };
