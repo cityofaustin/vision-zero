@@ -124,6 +124,8 @@ const GridExportData = ({
         "rpt_sec_street_name",
       ];
 
+      // These columns contain user input which may contain double
+      // quotes that need to be escaped for proper csv formatting
       const columnsToEscapeDoubleQuotes = ["rec_text", "rec_update"];
 
       columnsToClean.forEach(col => {
@@ -137,6 +139,8 @@ const GridExportData = ({
 
       columnsToEscapeDoubleQuotes.forEach(col => {
         if (item[col]) {
+          // Replace all double quotes with two double quotes
+          // This escapes double quotes in a csv file
           item[col] = item[col].replace(/"/g, '""');
         }
       });
@@ -176,8 +180,6 @@ const GridExportData = ({
       });
       return item;
     });
-
-    console.log("data", cleanedFlattenedAndParsedData);
 
     return cleanedFlattenedAndParsedData;
   };
