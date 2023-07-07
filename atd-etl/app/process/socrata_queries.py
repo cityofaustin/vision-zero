@@ -19,20 +19,12 @@ crashes_query_template = Template(
                 offset: $offset,
                 order_by: {crash_id: asc},
                 where: {
-                    crash_date: { _lt: "$date_limit", _gte: "$initial_date_limit" }
+                    crash_date: { _lt: "$date_limit", _gte: "$initial_date_limit" },
                     private_dr_fl: { _eq: "N" },
+                    in_austin_full_purpose: { _eq: true},
                     _and: [
                       { crash_date: { _is_null: false }},
                       { crash_time: { _is_null: false }}
-                    ]
-                    _or: [
-                        {in_austin_full_purpose: {_eq: true}},
-                        {
-                            _and: [
-                                {city_id: {_eq: 22}},
-                                {position: {_is_null: true}}
-                            ]
-                        }
                     ]
                 }
         ) {
@@ -94,15 +86,7 @@ people_query_template = Template(
                 ],
                 _and: {
                     crash: {crash_date: {_lt: "$date_limit", _gte: "$initial_date_limit" }}
-                    _or: [
-                        {crash: {in_austin_full_purpose: {_eq: true}}},
-                        {
-                            _and: [
-                                {crash: {city_id: {_eq: 22}}},
-                                {crash: {position: {_is_null: true}}} 
-                            ]
-                        }
-                    ]
+                    crash: {in_austin_full_purpose: { _eq: true}}
                 }
             }
         ) {
@@ -132,15 +116,7 @@ people_query_template = Template(
                 _or: [{prsn_injry_sev_id: {_eq: 1}}, {prsn_injry_sev_id: {_eq: 4}}],
                 _and: {
                     crash: {crash_date: {_lt: "$date_limit", _gte: "$initial_date_limit"}}
-                    _or: [
-                        {crash: {in_austin_full_purpose: {_eq: true}}}, 
-                        {
-                            _and: [
-                                {crash: {city_id: {_eq: 22}}},
-                                {crash: {position: {_is_null: true}}}
-                            ]
-                        }
-                    ]
+                    crash: {in_austin_full_purpose: { _eq: true}}
                 }
             }
         ) {
