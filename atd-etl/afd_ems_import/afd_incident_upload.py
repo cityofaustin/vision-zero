@@ -2,9 +2,15 @@
 
 """
 Name: AFD Incident Uploads
-Description: This flow uploads AFD Incident Response CSVs
+Description: 
+    This script is used to upload AFD incident data to the Vision Zero Database. It's 
+    parsed from data stored in an S3 bucket that is populated by an automated email from the
+    upstream source of the data.
+
     The data is emailed to atd-afd-incident-data@austinmobility.io daily ~ 6:30AM. From there it
     gets forwarded to a S3 bucket via AWS Simple Email Service.
+Local / development execution:
+    docker compose run -it import afd
 """
 
 import datetime
