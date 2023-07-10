@@ -31,7 +31,6 @@ VAULT_ID = os.getenv("OP_VAULT_ID")
 def main():
     secrets = get_secrets()
 
-    # 😢 why not `global variable = value`??
     global SFTP_ENDPOINT
     global ZIP_PASSWORD
 
@@ -74,21 +73,22 @@ def main():
 
     SFTP_ENDPOINT_SSH_PRIVATE_KEY = secrets["sftp_endpoint_private_key"]
 
-    # 🥩 & 🥔
     zip_location = download_archives()
     extracted_archives = unzip_archives(zip_location)
     for archive in extracted_archives:
         logical_groups_of_csvs = group_csvs_into_logical_groups(archive, dry_run=False)
         for logical_group in logical_groups_of_csvs:
             desired_schema_name = create_import_schema_name(logical_group)
+            print("desired_schema_name", desired_schema_name)
             schema_name = create_target_import_schema(desired_schema_name)
             pgloader_command_files = pgloader_csvs_into_database(schema_name)
             trimmed_token = remove_trailing_carriage_returns(pgloader_command_files)
             typed_token = align_db_typing(trimmed_token)
-            align_records_token = align_records(typed_token)
-            clean_up_import_schema(align_records_token)
-    remove_archives_from_sftp_endpoint(zip_location)
-    upload_csv_files_to_s3(archive)
+            convert_to_ldm_lookup_ids(typed_token)
+            #align_records_token = align_records(typed_token)
+            #clean_up_import_schema(align_records_token)
+    #remove_archives_from_sftp_endpoint(zip_location)
+    #upload_csv_files_to_s3(archive)
 
 
 def get_secrets():
@@ -498,6 +498,46 @@ def align_db_typing(map_state):
 
     # fmt: on
     return map_state
+
+
+def convert_to_ldm_lookup_ids(typed_token):
+    
+    with SshKeyTempDir() as key_directory:
+        write_key_to_file(key_directory + "/id_ed25519", DB_BASTION_HOST_SSH_PRIVATE_KEY + "\n") 
+        ssh_tunnel = SSHTunnelForwarder(
+            (DB_BASTION_HOST),
+            ssh_username=DB_BASTION_HOST_SSH_USERNAME,
+            ssh_private_key=f"{key_directory}/id_ed25519",
+            remote_bind_address=(DB_RDS_HOST, 5432)
+            )
+        ssh_tunnel.start()   
+
+        pg = psycopg2.connect(
+            host='localhost', 
+            port=ssh_tunnel.local_bind_port,
+            user=DB_USER, 
+            password=DB_PASS, 
+            dbname=DB_NAME, 
+            sslmode=DB_SSL_REQUIREMENT, 
+            sslrootcert="/root/rds-combined-ca-bundle.pem"
+            )
+
+    cursor = pg.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+    query_materialized_views = """SELECT matviews.matviewname AS materialized_view_name
+        FROM pg_matviews matviews
+        INNER JOIN pg_namespace namespaces 
+        ON matviews.schemaname = namespaces.nspname
+        WHERE namespaces.nspname = 'lookup';"""
+
+    results = cursor.execute(query_materialized_views)
+    materialized_views = cursor.fetchall()
+    print(materialized_views)
+
+
+    tables = ['crash', 'unit', 'person', 'primaryperson']
+    for table in tables:
+        pass
 
 
 def align_records(map_state):
