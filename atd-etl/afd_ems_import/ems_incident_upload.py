@@ -2,9 +2,17 @@
 
 """
 Name: EMS Incident Uploads
-Description: This flow uploads EMS Incident Response CSVs (EMS Contact: Lynn C). 
+Description:
+    This script is used to upload EMS incident data to the Vision Zero Database. It's 
+    parsed from data stored in an S3 bucket that is populated by an automated email from the
+    upstream source of the data.
+
     The data is emailed to atd-ems-incident-data@austinmobility.io daily ~ 3:30AM. From there it
     gets forwarded to a S3 bucket via AWS Simple Email Service.
+
+    (EMS Contact: Lynn C). 
+Local / development execution:
+    docker compose run -it import ems
 """
 
 import datetime
