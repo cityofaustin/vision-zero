@@ -1,0 +1,24 @@
+name: "Build EMS / AFD Docker Image and push to Docker Hub"
+
+on:
+  push:
+    #branches:
+      #- main # main here, because these will not correlate to releases of the VZ Suite
+    paths:
+      - ".github/workflows/build_ems_afd_docker_image.yml"
+      - "atd-etl/afd_ems_import/**"
+  pull_request:
+    paths:
+      - ".github/workflows/build_ems_afd_docker_image.yml"
+      - "atd-etl/afd_ems_import/**"
+  #workflow_dispatch:
+    #inputs:
+      #description:
+        #default: ""
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-22.04
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v3
