@@ -35,7 +35,8 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v2
         with:
-          platforms: linux/amd64,linux/arm64
+          # Building this for Apple ARM support is really slow. +9 minutes
+          #platforms: linux/amd64,linux/arm64
           context: atd-etl/afd_ems_import
           push: true
           tags: atddocker/vz-afd-ems-import:${{ github.ref == 'refs/heads/production' && 'latest' || 'dev' }}
