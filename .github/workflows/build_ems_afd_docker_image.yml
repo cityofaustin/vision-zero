@@ -20,22 +20,22 @@ jobs:
     name: Build
     runs-on: ubuntu-22.04
     steps:
-      - name: "Checkout"
-        uses: actions/checkout@v3
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
       - name: Login to DockerHub
         uses: docker/login-action@v1 
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_TOKEN }}
 
+      - name: "Checkout"
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
       - name: Build and push
         uses: docker/build-push-action@v2
         with:
           platforms: linux/amd64,linux/arm64
           context: atd-etl/afd_ems_import
-          push: true 
-          tags: atddocker/vz-afd-ems-import:ci-testing
+          push: true
+          tags: atddocker/vz-afd-ems-import:${{ github.ref == 'refs/heads/production' && 'latest' || 'dev' }}
