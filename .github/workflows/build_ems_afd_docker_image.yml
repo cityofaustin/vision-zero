@@ -1,12 +1,12 @@
 name: "Build EMS / AFD Docker Image and push to Docker Hub"
 
 on:
-  push:
+  #push:
     #branches:
       #- main # main here, because these will not correlate to releases of the VZ Suite
-    paths:
-      - ".github/workflows/build_ems_afd_docker_image.yml"
-      - "atd-etl/afd_ems_import/**"
+    #paths:
+      #- ".github/workflows/build_ems_afd_docker_image.yml"
+      #- "atd-etl/afd_ems_import/**"
   pull_request:
     paths:
       - ".github/workflows/build_ems_afd_docker_image.yml"
