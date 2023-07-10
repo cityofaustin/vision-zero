@@ -36,5 +36,5 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: atd-etl/afd_ems_import
-          push: false
+          push: true 
           tags: atddocker/vz-afd-ems-import:ci-testing
