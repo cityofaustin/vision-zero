@@ -4,7 +4,7 @@ on:
   # Triggers the workflow on push or pull request events but only for the main and production branches
   push:
     branches:
-      - main
+      - master
       - production
     paths:
       - ".github/workflows/build_docker_images.yml"
@@ -12,7 +12,7 @@ on:
       - "atd-etl/cris_import/**"
   pull_request:
     branches:
-      - main
+      - master
       - production
     paths:
       - ".github/workflows/build_docker_images.yml"
