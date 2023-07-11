@@ -23,7 +23,7 @@ on:
 
 jobs:
   build:
-    name: Build
+    name: Build docker images
     runs-on: ubuntu-22.04
     steps:
       - name: Login to DockerHub
