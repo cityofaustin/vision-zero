@@ -3,6 +3,7 @@ CREATE OR REPLACE FUNCTION public.atd_txdot_units_create_update()
  LANGUAGE plpgsql
 AS $function$
 BEGIN
+    -- output value (in parentheses) refers to atd__mode_category_lkp table
     NEW.atd_mode_category = (CASE
     -- PEDALCYCLIST / BICYCLE (5)
     WHEN NEW.unit_desc_id = 3 THEN 5
