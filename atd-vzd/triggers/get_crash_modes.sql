@@ -18,6 +18,7 @@ BEGIN
                 vmode.tot_injry_cnt
         FROM (
             SELECT unit_id, (
+                       -- output value (also in parentheses) refers to atd__mode_category_lkp table
                        CASE
                            -- PEDALCYCLIST / BICYCLE (5)
                            WHEN vdesc.veh_unit_desc_id = 3 THEN 5
