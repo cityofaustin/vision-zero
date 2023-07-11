@@ -1,11 +1,25 @@
 name: "Build Docker images and push to DockerHub"
 
 on:
-  pull_request:
+  # Triggers the workflow on push or pull request events but only for the main and production branches
+  push:
+    branches:
+      - main
+      - production
     paths:
       - ".github/workflows/build_docker_images.yml"
       - "atd-etl/afd_ems_import/**"
       - "atd-etl/cris_import/**"
+  pull_request:
+    branches:
+      - main
+      - production
+    paths:
+      - ".github/workflows/build_docker_images.yml"
+      - "atd-etl/afd_ems_import/**"
+      - "atd-etl/cris_import/**"
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
 
 jobs:
   build:
