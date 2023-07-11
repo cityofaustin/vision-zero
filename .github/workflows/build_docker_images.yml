@@ -1,4 +1,4 @@
-name: "Build EMS / AFD Docker Image and push to Docker Hub"
+name: "Build Docker images and push to DockerHub"
 
 on:
   pull_request:
