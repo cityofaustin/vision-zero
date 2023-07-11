@@ -16,12 +16,13 @@ from copy import deepcopy
 from process.config import ATD_ETL_CONFIG
 from datetime import date, timedelta
 
-# Dict to translate canonical modes to broader categories for VZV
+# Dict to translate modes to correlate with atd__mode_category_lkp table
 mode_categories = {
     "motor_vehicle": [1, 2, 4],
     "motorcycle": [3],
     "bicycle": [5],
     "pedestrian": [7],
+    "micromobility": [10, 11],
     "other": [6, 8, 9],
 }
 

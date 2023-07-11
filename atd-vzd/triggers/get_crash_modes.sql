@@ -18,25 +18,34 @@ BEGIN
                 vmode.tot_injry_cnt
         FROM (
             SELECT unit_id, (
+                       -- output value (in parentheses) refers to atd__mode_category_lkp table
                        CASE
-                           -- PEDALCYCLIST / BYCICLE
+                           -- PEDALCYCLIST / BICYCLE (5)
                            WHEN vdesc.veh_unit_desc_id = 3 THEN 5
-                           -- MOTORIZED CONVEYANCE / MICROMOBILITY DEVICE
+                           -- MOTORIZED CONVEYANCE (6)
                            WHEN vdesc.veh_unit_desc_id = 5 THEN 6
-                           -- PEDESTRIAN
+                           -- PEDESTRIAN (7)
                            WHEN vdesc.veh_unit_desc_id = 4 THEN 7
-                           -- TRAIN
+                           -- TRAIN (8)
                            WHEN vdesc.veh_unit_desc_id = 2 THEN 8
-                           -- MOTOR VEHICLE
+                           -- MICROMOBILITY DEVICES
+                           WHEN vdesc.veh_unit_desc_id = 177 THEN (
+                               CASE
+                               -- E-SCOOTER (11)
+                               WHEN vbody.veh_body_styl_id = 177 THEN 11
+                               -- MICROMOBILITY DEVICE (10)
+                               ELSE 10 END
+                           )
+                           -- MOTOR VEHICLES
                            WHEN vdesc.veh_unit_desc_id = 1 THEN (
                                CASE
-                               -- PASSENGER CAR
+                               -- PASSENGER CAR (1)
                                WHEN vbody.veh_body_styl_id IN (100,104) THEN 1
-                               -- LARGE PASSENGER CAR
+                               -- LARGE PASSENGER CAR (2)
                                WHEN vbody.veh_body_styl_id IN (30, 69, 103, 106) THEN 2
-                               -- MOTORCYCLE
-                               WHEN vbody.veh_body_styl_id = 71 THEN 3
-
+                               -- MOTORCYCLE (3)
+                               WHEN vbody.veh_body_styl_id IN (71, 90) THEN 3
+                               -- MOTOR VEHICLE - OTHER (4)
                                ELSE 4 END
                            ) ELSE 9
                        END
