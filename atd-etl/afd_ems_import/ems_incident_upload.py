@@ -34,60 +34,7 @@ from sshtunnel import SSHTunnelForwarder
 import onepasswordconnectsdk
 from onepasswordconnectsdk.client import Client, new_client
 
-pp = pprint.PrettyPrinter(indent=4)
-
-DEPLOYMENT_ENVIRONMENT = os.environ.get(
-    "ENVIRONMENT", "development"
-)  # our current environment from ['production', 'development']
-ONEPASSWORD_CONNECT_TOKEN = os.getenv("OP_API_TOKEN")  # our secret to get secrets 🤐
-ONEPASSWORD_CONNECT_HOST = os.getenv("OP_CONNECT")  # where we get our secrets
-VAULT_ID = os.getenv("OP_VAULT_ID")
-
-def main():
-
-    secrets = get_secrets()
-
-    global DB_USERNAME
-    global DB_PASSWORD
-    global DB_HOSTNAME
-    global DB_PORT
-    global DB_DATABASE
-    global AWS_ACCESS_KEY_ID
-    global AWS_SECRET_ACCESS_KEY
-    global EMS_S3_SOURCE_BUCKET
-    global EMS_S3_ARCHIVE_BUCKET
-    global EMS_S3_SOURCE_PREFIX
-    global EMS_S3_ARCHIVE_PREFIX
-    global DB_BASTION_HOST
-    global DB_BASTION_HOST_SSH_USERNAME
-    global DB_BASTION_HOST_SSH_PRIVATE_KEY
-    global DB_RDS_HOST
-    global RECORD_AGE_MAXIMUM
-
-    DB_USERNAME = secrets["database_username"]
-    DB_PASSWORD = secrets["database_password"]
-    DB_HOSTNAME = secrets["database_host"]
-    DB_PORT = 5432
-    DB_DATABASE = secrets["database_name"]
-    AWS_ACCESS_KEY_ID = secrets["aws_access_key"]
-    AWS_SECRET_ACCESS_KEY = secrets["aws_secret_key"]
-    EMS_S3_SOURCE_BUCKET = secrets["source_bucket"]
-    EMS_S3_ARCHIVE_BUCKET = secrets["archive_bucket"]
-    EMS_S3_SOURCE_PREFIX = secrets["source_prefix"]
-    EMS_S3_ARCHIVE_PREFIX = secrets["archive_prefix"]
-    DB_BASTION_HOST = secrets["bastion_host"]
-    DB_BASTION_HOST_SSH_USERNAME = secrets["bastion_ssh_username"]
-    DB_BASTION_HOST_SSH_PRIVATE_KEY = secrets["bastion_ssh_private_key"]
-    DB_RDS_HOST = secrets["database_host"]
-    RECORD_AGE_MAXIMUM = None # the default is fine, and we never tune it.  
-
-    record_age_maximum = RECORD_AGE_MAXIMUM or 15
-    timestamp = get_timestamp()
-    newest_email = get_most_recent_email()
-    attachment_location = extract_email_attachment(newest_email)
-    uploaded_token = upload_attachment_to_S3(attachment_location, timestamp)
-    data = create_and_parse_dataframe(attachment_location)
-    upload_token = upload_data_to_postgres(data, record_age_maximum)
+# Heads up! Looking for global code? Look just below this get_secrets() function. 
 
 def get_secrets():
     REQUIRED_SECRETS = {
@@ -167,6 +114,46 @@ def get_secrets():
     client: Client = new_client(ONEPASSWORD_CONNECT_HOST, ONEPASSWORD_CONNECT_TOKEN)
     # get the requested secrets from 1Password
     return onepasswordconnectsdk.load_dict(client, REQUIRED_SECRETS)
+
+pp = pprint.PrettyPrinter(indent=4)
+
+DEPLOYMENT_ENVIRONMENT = os.environ.get(
+    "ENVIRONMENT", "development"
+)  # our current environment from ['production', 'development']
+ONEPASSWORD_CONNECT_TOKEN = os.getenv("OP_API_TOKEN")  # our secret to get secrets 🤐
+ONEPASSWORD_CONNECT_HOST = os.getenv("OP_CONNECT")  # where we get our secrets
+VAULT_ID = os.getenv("OP_VAULT_ID")
+
+secrets = get_secrets()
+
+DB_USERNAME = secrets["database_username"]
+DB_PASSWORD = secrets["database_password"]
+DB_HOSTNAME = secrets["database_host"]
+DB_PORT = 5432
+DB_DATABASE = secrets["database_name"]
+AWS_ACCESS_KEY_ID = secrets["aws_access_key"]
+AWS_SECRET_ACCESS_KEY = secrets["aws_secret_key"]
+EMS_S3_SOURCE_BUCKET = secrets["source_bucket"]
+EMS_S3_ARCHIVE_BUCKET = secrets["archive_bucket"]
+EMS_S3_SOURCE_PREFIX = secrets["source_prefix"]
+EMS_S3_ARCHIVE_PREFIX = secrets["archive_prefix"]
+DB_BASTION_HOST = secrets["bastion_host"]
+DB_BASTION_HOST_SSH_USERNAME = secrets["bastion_ssh_username"]
+DB_BASTION_HOST_SSH_PRIVATE_KEY = secrets["bastion_ssh_private_key"]
+DB_RDS_HOST = secrets["database_host"]
+RECORD_AGE_MAXIMUM = None # the default is fine, and we never tune it.  
+
+
+def main():
+    record_age_maximum = RECORD_AGE_MAXIMUM or 15
+    timestamp = get_timestamp()
+    newest_email = get_most_recent_email()
+    attachment_location = extract_email_attachment(newest_email)
+    uploaded_token = upload_attachment_to_S3(attachment_location, timestamp)
+    data = create_and_parse_dataframe(attachment_location)
+    upload_token = upload_data_to_postgres(data, record_age_maximum)
+
+
 
 def get_timestamp():
     current = datetime.now()
