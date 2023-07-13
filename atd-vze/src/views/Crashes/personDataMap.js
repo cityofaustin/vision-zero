@@ -13,21 +13,24 @@ const getInjurySeverityColor = personRecord => {
     case 0: // UNKNOWN: no color
       return "muted";
     case 5: // NOT INJURED: grey
-      return "grey";
+      return "secondary";
     case 1: // SUSPECTED INCAPACITATING INJURY: yellow
       return "warning";
     case 2: // SUSPECTED MINOR INJURY: yellow
       return "warning";
     case 3: // POSSIBLE INJURY: blue
       return "primary";
-    // case 4: // FATAL INJURY: red
-    //   return "danger";
+    case 4: // FATAL INJURY: red
+      return "danger";
     case 6: // NOT SURE??? (need KILLED): red
       return "danger"
     default: // Other cases: Not reported, Reported invalid
-      return "grey";
+      break;
   }
 };
+
+console.log(getInjurySeverityColor({ prsn_injry_sev_id: 1 }));
+
 
 export const primaryPersonDataMap = [
   {
