@@ -112,36 +112,12 @@ const GridExportData = ({
     });
 
     const cleanedAndFlattenedData = flattenedData.map(item => {
-      // Some fields are presenting issues when they are exported as .csv and
-      // imported into MSFT Excel, Acces & Power BI. For now, we're just going to
-      // modify the data for export to solve issues related to returns and double-quotes
-      // In the future, we may choose to clean these values at the database level.
-
-      const columnsToClean = [
-        "rpt_street_name",
-        "rpt_street_desc",
-        "rpt_sec_street_desc",
-        "rpt_sec_street_name",
-      ];
-
-      // These columns contain user input which may contain double
-      // quotes that need to be escaped for proper csv formatting
-      const columnsToEscapeDoubleQuotes = ["rec_text", "rec_update"];
-
-      columnsToClean.forEach(col => {
-        if (item[col]) {
-          // remove return carriage and replace with space
-          item[col] = item[col].replace(/(\r\n|\n|\r|")/gm, " ");
-          // remove double-quotes
-          item[col] = item[col].replace(/"/g, "");
-        }
-      });
-
-      columnsToEscapeDoubleQuotes.forEach(col => {
-        if (item[col]) {
-          // Replace all double quotes with two double quotes
-          // This escapes double quotes in a csv file
-          item[col] = item[col].replace(/"/g, '""');
+      // We want to escape any instances of double quotes by preceding
+      // them with another double quote. This will put us in compliance
+      // with CSV formatting guidelines https://www.rfc-editor.org/rfc/rfc4180
+      Object.keys(item).forEach(key => {
+        if (typeof item[key] === "string" && item[key].includes('"')) {
+          item[key] = item[key].replace(/"/g, '""');
         }
       });
 
