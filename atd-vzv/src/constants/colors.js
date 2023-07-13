@@ -35,6 +35,7 @@ export const colors = {
   primary: "#20a8d8",
   blue: "#08519c",
   danger: "#f86c6b",
+  grey: "#808080",
   warning: "#ffc107",
   success: "#4dbd74",
   mapAsmp1: "#F9AE91",
