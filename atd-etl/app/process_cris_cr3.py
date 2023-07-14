@@ -37,36 +37,32 @@ one_password_client = new_client(ONEPASSWORD_CONNECT_HOST, ONEPASSWORD_CONNECT_T
 # Get required secrets from 1Password
 REQUIRED_SECRETS = {
     "HASURA_ENDPOINT": {
-        "opitem": "",
-        "opfield": f"",
-    },
-    "KNACK_API_KEY": {
-        "opitem": "",
-        "opfield": f"",
+        "opitem": "Vision Zero CRIS Import",
+        "opfield": "production.GraphQL Endpoint",
     },
     "AWS_ACCESS_KEY_ID": {
-        "opitem": "",
-        "opfield": f"",
+        "opitem": "CR3 Download IAM Access Key and Secret",
+        "opfield": "production.accessKeyId",
     },
     "AWS_SECRET_ACCESS_KEY": {
-        "opitem": "",
-        "opfield": f"",
+        "opitem": "CR3 Download IAM Access Key and Secret",
+        "opfield": "production.accessSecret",
     },
     "AWS_DEFAULT_REGION": {
-        "opitem": "",
-        "opfield": f"",
+        "opitem": "CR3 Download IAM Access Key and Secret",
+        "opfield": "production.awsDefaultRegion",
     },
     "ATD_CRIS_CR3_URL": {
-        "opitem": "",
-        "opfield": f"",
+        "opitem": "CRIS CR3 Download",
+        "opfield": "production.ATD_CRIS_CR3_URL",
     },
     "AWS_CRIS_CR3_DOWNLOAD_PATH": {
-        "opitem": "",
-        "opfield": f"",
+        "opitem": "CRIS CR3 Download",
+        "opfield": "production.AWS_CRIS_CR3_DOWNLOAD_PATH",
     },
     "AWS_CRIS_CR3_BUCKET_NAME": {
-        "opitem": "",
-        "opfield": f"",
+        "opitem": "CRIS CR3 Download",
+        "opfield": "production.AWS_CRIS_CR3_BUCKET_NAME",
     },
 }
 
