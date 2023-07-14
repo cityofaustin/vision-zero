@@ -9,10 +9,10 @@ is obtained from Hasura, and it is contingent to records that do not have
 any CR3 files associated.
 """
 
+import os
 import time
 import json
 
-from process.config import ATD_ETL_CONFIG
 from process.helpers_cr3 import *
 
 from onepasswordconnectsdk.client import Client, new_client
@@ -65,10 +65,14 @@ REQUIRED_SECRETS = {
         "opfield": "production.AWS_CRIS_CR3_BUCKET_NAME",
     },
 }
+for value in REQUIRED_SECRETS.values():
+    value["opvault"] = VAULT_ID
 
-env_vars = onepasswordconnectsdk.load_dict(client, REQUIRED_SECRETS)
+env_vars = onepasswordconnectsdk.load_dict(one_password_client, REQUIRED_SECRETS)
 
 # Set enivronment variables for S3 upload with boto3
+for key, value in env_vars.items():
+    os.environ[key] = value
 
 #
 # We now need to request a list of N number of records
@@ -96,7 +100,7 @@ known_skips = [180290542]
 crashes_list_without_skips = []
 
 try:
-    print("Hasura endpoint: '%s' " % ATD_ETL_CONFIG["HASURA_ENDPOINT"])
+    print("Hasura endpoint: '%s' " % os.environ["HASURA_ENDPOINT"])
     # downloads_per_run = ATD_ETL_CONFIG["ATD_CRIS_CR3_DOWNLOADS_PER_RUN"]
     downloads_per_run = 2000
     print("Downloads Per This Run: %s" % str(downloads_per_run))

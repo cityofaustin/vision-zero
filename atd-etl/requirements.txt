@@ -8,3 +8,4 @@ sodapy==2.*
 boto3==1.*
 mail-parser==3.*
 python-magic==0.*
+onepasswordconnectsdk==1.*
