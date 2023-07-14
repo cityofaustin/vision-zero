@@ -60,7 +60,7 @@ export const fatalityGridTableColumns = {
   },
   "recommendation { atd__recommendation_status_lkp { rec_status_desc } }": {
     searchable: false,
-    sortable: true,
+    sortable: false,
     label_table: "Current FRB Status",
     type: "String",
   },
@@ -69,6 +69,13 @@ export const fatalityGridTableColumns = {
     sortable: false,
     label_table: "FRB Recommendation",
     type: "String",
+  },
+  engineering_area: {
+    searchable: true,
+    sortable: true,
+    label_table: "Engineering Area",
+    type: "String",
+    label_search: "Search by Engineering Area",
   },
 };
 
@@ -83,7 +90,33 @@ export const fatalityGridTableAdvancedFilters = {
         filter: {
           where: [
             {
-              "_or: [ { _and: [ { person: { unit: { unit_desc_id: { _eq: 1 } } } }, { _and: [ { person: { unit: { veh_body_styl_id: { _neq: 71 } } } }, { person: { unit: { veh_body_styl_id: { _neq: 90 } } } } ] } ] }, { _and: [ { primaryperson: { unit: { unit_desc_id: { _eq: 1 } } } }, { _and: [ { primaryperson: { unit: { veh_body_styl_id: { _neq: 71 } } } }, { primaryperson: { unit: { veh_body_styl_id: { _neq: 90 } } } } ] } ] } ]": null,
+              // Wrapped in array brackets so that the template literal can function as an object key
+              [`_or:
+                [
+                  { _and:
+                    [
+                      { person: { unit: { unit_desc_id: { _eq: 1 } } } },
+                      { _and:
+                        [
+                          { person: { unit: { veh_body_styl_id: { _neq: 71 } } } },
+                          { person: { unit: { veh_body_styl_id: { _neq: 90 } } } }
+                        ]
+                      }
+                    ]
+                  },
+                  { _and:
+                    [
+                      { primaryperson: { unit: { unit_desc_id: { _eq: 1 } } } },
+                      { _and:
+                        [
+                          { primaryperson: { unit: { veh_body_styl_id: { _neq: 71 } } } },
+                          { primaryperson: { unit: { veh_body_styl_id: { _neq: 90 } } } }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              `]: null,
             },
           ],
         },
@@ -94,7 +127,32 @@ export const fatalityGridTableAdvancedFilters = {
         filter: {
           where: [
             {
-              "_or: [ { _and: [ { person: { unit: { unit_desc_id: { _eq: 1 } } } }, { _or: [ { person: { unit: { veh_body_styl_id: { _eq: 71 } } } } , { person: { unit: { veh_body_styl_id: { _eq: 90 } } } } ] } ] }, { _and: [ { primaryperson: { unit: { unit_desc_id: { _eq: 1 } } } }, { _or: [ { primaryperson: { unit: { veh_body_styl_id: { _eq: 71 } } } } , { primaryperson: { unit: { veh_body_styl_id: { _eq: 90 } } } } ] } ] } ]": null,
+              [`_or:
+                [
+                  { _and:
+                    [
+                      { person: { unit: { unit_desc_id: { _eq: 1 } } } },
+                      { _or:
+                        [
+                          { person: { unit: { veh_body_styl_id: { _eq: 71 } } } } ,
+                          { person: { unit: { veh_body_styl_id: { _eq: 90 } } } } 
+                        ]
+                      }
+                    ]
+                  },
+                  { _and:
+                    [
+                      { primaryperson: { unit: { unit_desc_id: { _eq: 1 } } } },
+                      { _or:
+                        [
+                          { primaryperson: { unit: { veh_body_styl_id: { _eq: 71 } } } } ,
+                          { primaryperson: { unit: { veh_body_styl_id: { _eq: 90 } } } }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              `]: null,
             },
           ],
         },
@@ -127,7 +185,22 @@ export const fatalityGridTableAdvancedFilters = {
         filter: {
           where: [
             {
-              "_or: [ { _and: [ { person: { unit: { unit_desc_id: { _eq: 177 } } } }, { person: { unit: { veh_body_styl_id: { _eq: 177 } } } } ] }, { _and: [ { primaryperson: { unit: { unit_desc_id: { _eq: 177 } } } }, { primaryperson: { unit: { veh_body_styl_id: { _eq: 177 } } } } ] } ]": null,
+              [`_or:
+                [
+                  { _and:
+                    [
+                      { person: { unit: { unit_desc_id: { _eq: 177 } } } },
+                      { person: { unit: { veh_body_styl_id: { _eq: 177 } } } }
+                    ]
+                  },
+                  { _and:
+                    [
+                      { primaryperson: { unit: { unit_desc_id: { _eq: 177 } } } },
+                      { primaryperson: { unit: { veh_body_styl_id: { _eq: 177 } } } }
+                    ]
+                  }
+                ]
+              `]: null,
             },
           ],
         },
@@ -194,8 +267,8 @@ export const fatalityGridTableAdvancedFilters = {
         },
       },
       {
-        id: "status_null",
-        label: "Null",
+        id: "status_none",
+        label: "None",
         filter: {
           where: [
             {
@@ -234,7 +307,7 @@ export const fatalityGridTableAdvancedFilters = {
       },
       {
         id: "road_system_null",
-        label: "Null",
+        label: "Unknown",
         filter: {
           where: [
             {
@@ -269,4 +342,5 @@ person { unit { unit_description { veh_unit_desc_desc } } }
 primaryperson { unit { body_style { veh_body_styl_desc } } }
 person { unit { body_style { veh_body_styl_desc } } }
 crash { onsys_fl }
+engineering_area
 `;
