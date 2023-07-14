@@ -15,6 +15,9 @@ import json
 from process.config import ATD_ETL_CONFIG
 from process.helpers_cr3 import *
 
+from onepasswordconnectsdk.client import Client, new_client
+import onepasswordconnectsdk
+
 ONEPASSWORD_CONNECT_HOST = os.getenv("OP_CONNECT")
 ONEPASSWORD_CONNECT_TOKEN = os.getenv("OP_API_TOKEN")
 VAULT_ID = os.getenv("OP_VAULT_ID")
@@ -30,6 +33,46 @@ start = time.time()
 
 # Setup 1Password server connection
 one_password_client = new_client(ONEPASSWORD_CONNECT_HOST, ONEPASSWORD_CONNECT_TOKEN)
+
+# Get required secrets from 1Password
+REQUIRED_SECRETS = {
+    "HASURA_ENDPOINT": {
+        "opitem": "",
+        "opfield": f"",
+    },
+    "KNACK_API_KEY": {
+        "opitem": "",
+        "opfield": f"",
+    },
+    "AWS_ACCESS_KEY_ID": {
+        "opitem": "",
+        "opfield": f"",
+    },
+    "AWS_SECRET_ACCESS_KEY": {
+        "opitem": "",
+        "opfield": f"",
+    },
+    "AWS_DEFAULT_REGION": {
+        "opitem": "",
+        "opfield": f"",
+    },
+    "ATD_CRIS_CR3_URL": {
+        "opitem": "",
+        "opfield": f"",
+    },
+    "AWS_CRIS_CR3_DOWNLOAD_PATH": {
+        "opitem": "",
+        "opfield": f"",
+    },
+    "AWS_CRIS_CR3_BUCKET_NAME": {
+        "opitem": "",
+        "opfield": f"",
+    },
+}
+
+env_vars = onepasswordconnectsdk.load_dict(client, REQUIRED_SECRETS)
+
+# Set enivronment variables for S3 upload with boto3
 
 #
 # We now need to request a list of N number of records
@@ -58,7 +101,7 @@ crashes_list_without_skips = []
 
 try:
     print("Hasura endpoint: '%s' " % ATD_ETL_CONFIG["HASURA_ENDPOINT"])
-    downloads_per_run = ATD_ETL_CONFIG["ATD_CRIS_CR3_DOWNLOADS_PER_RUN"]
+    # downloads_per_run = ATD_ETL_CONFIG["ATD_CRIS_CR3_DOWNLOADS_PER_RUN"]
     downloads_per_run = 2000
     print("Downloads Per This Run: %s" % str(downloads_per_run))
 
