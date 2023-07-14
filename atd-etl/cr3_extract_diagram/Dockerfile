@@ -11,5 +11,4 @@ COPY . /app/cr3_extract_diagram
 RUN chmod -R 755 /app/*
 
 # Install requirements
-RUN cd /app/cr3_extract_diagram && apt-get update && \
-    pip install -r requirements.txt
+RUN cd /app/cr3_extract_diagram && pip install -r requirements.txt
