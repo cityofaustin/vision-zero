@@ -10,6 +10,7 @@ The application requires the requests library:
     https://pypi.org/project/requests/
 """
 
+import os
 import requests
 import base64
 import subprocess
@@ -18,8 +19,40 @@ from http.cookies import SimpleCookie
 
 import magic
 
-# We need to import our configuration, and the run_query method
-from .request import run_query
+
+def run_query(query):
+    """
+    Runs a GraphQL query against Hasura via an HTTP POST request.
+    :param query: string - The GraphQL query to execute (query, mutation, etc.)
+    :return: object - A Json dictionary directly from Hasura
+    """
+    # Build Header with Admin Secret
+    headers = {"x-hasura-admin-secret": os.environ["HASURA_ADMIN_KEY"]}
+
+    # Try up to n times as defined by max_attempts
+    for current_attempt in range(20):
+        # Try making the request via POST
+        try:
+            return requests.post(
+                os.environ["HASURA_ENDPOINT"], json={"query": query}, headers=headers
+            ).json()
+        except Exception as e:
+            print("Exception, could not insert: " + str(e))
+            print("Query: '%s'" % query)
+            response = {
+                "errors": "Exception, could not insert: " + str(e),
+                "query": query,
+            }
+
+            # If the current attempt is equal to MAX_ATTEMPTS, then exit with failure
+            if current_attempt == 20:
+                return response
+
+            # If less than 5, then wait 5 seconds and try again
+            else:
+                print("Attempt (%s out of %s)" % (current_attempt + 1, 20))
+                print("Trying again in %s seconds..." % 5)
+                time.sleep(5)
 
 
 def wait(int):

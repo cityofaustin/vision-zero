@@ -40,6 +40,10 @@ REQUIRED_SECRETS = {
         "opitem": "Vision Zero CRIS Import",
         "opfield": "production.GraphQL Endpoint",
     },
+    "HASURA_ADMIN_KEY": {
+        "opitem": "Vision Zero CRIS Import",
+        "opfield": "production.GraphQL Endpoint key",
+    },
     "AWS_ACCESS_KEY_ID": {
         "opitem": "CR3 Download IAM Access Key and Secret",
         "opfield": "production.accessKeyId",
@@ -73,6 +77,9 @@ env_vars = onepasswordconnectsdk.load_dict(one_password_client, REQUIRED_SECRETS
 # Set enivronment variables for S3 upload with boto3
 for key, value in env_vars.items():
     os.environ[key] = value
+
+# TODO: Set max attempts and retry wait time as environment variables
+# TODO: Figure out what to do about requests grabbing secrets from ATD_ETL_CONFIG
 
 #
 # We now need to request a list of N number of records
