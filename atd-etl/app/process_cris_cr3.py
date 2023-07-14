@@ -15,6 +15,11 @@ import json
 from process.config import ATD_ETL_CONFIG
 from process.helpers_cr3 import *
 
+ONEPASSWORD_CONNECT_HOST = os.getenv("OP_CONNECT")
+ONEPASSWORD_CONNECT_TOKEN = os.getenv("OP_API_TOKEN")
+VAULT_ID = os.getenv("OP_VAULT_ID")
+
+
 def wait(int):
     print("Should wait: %s" % str(int))
     time.sleep(int)
@@ -23,6 +28,9 @@ def wait(int):
 # Start timer
 start = time.time()
 
+# Setup 1Password server connection
+one_password_client = new_client(ONEPASSWORD_CONNECT_HOST, ONEPASSWORD_CONNECT_TOKEN)
+
 #
 # We now need to request a list of N number of records
 # that do not have a CR3. For each record we must download
@@ -30,7 +38,9 @@ start = time.time()
 #
 
 # ask user for a set of valid cookies for requests to the CRIS website
-CRIS_BROWSER_COOKIES = input('Please login to CRIS and extract the contents of the Cookie: header and please paste it here:')
+CRIS_BROWSER_COOKIES = input(
+    "Please login to CRIS and extract the contents of the Cookie: header and please paste it here:"
+)
 
 print("Preparing download loop.")
 
@@ -55,13 +65,16 @@ try:
     response = get_crash_id_list(downloads_per_run=downloads_per_run)
     print("\nResponse from Hasura: %s" % json.dumps(response))
 
-    crashes_list = response['data']['atd_txdot_crashes']
+    crashes_list = response["data"]["atd_txdot_crashes"]
 
     crashes_list_without_skips = [
         x for x in crashes_list if x["crash_id"] not in known_skips
     ]
-    print("\nList of crashes needing CR3 download: %s" % json.dumps(crashes_list_without_skips))
- 
+    print(
+        "\nList of crashes needing CR3 download: %s"
+        % json.dumps(crashes_list_without_skips)
+    )
+
     print("\nStarting CR3 downloads:")
 except Exception as e:
     crashes_list_without_skips = []
@@ -78,6 +91,6 @@ if skipped_uploads_and_updates:
     print(f"\nUnable to download pdfs for crash IDs: {skipped_downloads}")
 
 end = time.time()
-hours, rem = divmod(end-start, 3600)
+hours, rem = divmod(end - start, 3600)
 minutes, seconds = divmod(rem, 60)
-print("\nFinished in: {:0>2}:{:0>2}:{:05.2f}".format(int(hours),int(minutes),seconds))
+print("\nFinished in: {:0>2}:{:0>2}:{:05.2f}".format(int(hours), int(minutes), seconds))
