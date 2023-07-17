@@ -3,5 +3,5 @@
 CREATE OR REPLACE TRIGGER crashes_position_update_city_id
     BEFORE UPDATE ON atd_txdot_crashes
     FOR EACH ROW
-    WHEN (OLD.position IS DISTINCT FROM NEW.position) AND (NEW.city_id != 22)
+    WHEN (OLD.position IS DISTINCT FROM NEW.position AND NEW.city_id != 22)
     EXECUTE FUNCTION update_crash_city_id();
