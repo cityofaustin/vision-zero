@@ -19,11 +19,11 @@ temprow RECORD;
         )
         LOOP
           IF temprow.id IN (5, 3, 7, 8, 10) THEN
-            NEW.city_id = 22
-            RETURN NEW   
+            NEW.city_id = 22;
+            RETURN NEW;
           END IF;
         END LOOP;
-    RETURN NEW
+    RETURN NEW;
     END
 $function$
 ;
