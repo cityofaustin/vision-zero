@@ -55,16 +55,6 @@ def run_query(query):
                 time.sleep(5)
 
 
-def wait(int):
-    """
-    Waits int number of seconds
-    :param integer int: The number of seconds to wait
-    :return:
-    """
-    print("Should wait: %s" % str(int))
-    time.sleep(int)
-
-
 def run_command(command):
     """
     Runs a command

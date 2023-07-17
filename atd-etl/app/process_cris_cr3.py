@@ -23,11 +23,6 @@ ONEPASSWORD_CONNECT_TOKEN = os.getenv("OP_API_TOKEN")
 VAULT_ID = os.getenv("OP_VAULT_ID")
 
 
-def wait(int):
-    print("Should wait: %s" % str(int))
-    time.sleep(int)
-
-
 # Start timer
 start = time.time()
 
