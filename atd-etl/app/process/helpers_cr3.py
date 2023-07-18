@@ -10,7 +10,6 @@ The application requires the requests library:
     https://pypi.org/project/requests/
 """
 
-import os
 import requests
 import base64
 import subprocess
@@ -19,40 +18,9 @@ from http.cookies import SimpleCookie
 
 import magic
 
-
-def run_query(query):
-    """
-    Runs a GraphQL query against Hasura via an HTTP POST request.
-    :param query: string - The GraphQL query to execute (query, mutation, etc.)
-    :return: object - A Json dictionary directly from Hasura
-    """
-    # Build Header with Admin Secret
-    headers = {"x-hasura-admin-secret": os.environ["HASURA_ADMIN_KEY"]}
-
-    # Try up to n times as defined by max_attempts
-    for current_attempt in range(20):
-        # Try making the request via POST
-        try:
-            return requests.post(
-                os.environ["HASURA_ENDPOINT"], json={"query": query}, headers=headers
-            ).json()
-        except Exception as e:
-            print("Exception, could not insert: " + str(e))
-            print("Query: '%s'" % query)
-            response = {
-                "errors": "Exception, could not insert: " + str(e),
-                "query": query,
-            }
-
-            # If the current attempt is equal to MAX_ATTEMPTS, then exit with failure
-            if current_attempt == 20:
-                return response
-
-            # If less than 5, then wait 5 seconds and try again
-            else:
-                print("Attempt (%s out of %s)" % (current_attempt + 1, 20))
-                print("Trying again in %s seconds..." % 5)
-                time.sleep(5)
+# We need to import our configuration, and the run_query method
+from .config import ATD_ETL_CONFIG
+from .request import run_query
 
 
 def run_command(command):
@@ -81,8 +49,8 @@ def download_cr3(crash_id, cookies):
     crash_id_encoded = base64.b64encode(
         str("CrashId=" + crash_id).encode("utf-8")
     ).decode("utf-8")
-    url = os.environ["ATD_CRIS_CR3_URL"] + crash_id_encoded
-    download_path = os.environ["AWS_CRIS_CR3_DOWNLOAD_PATH"] + "%s.pdf" % crash_id
+    url = ATD_ETL_CONFIG["ATD_CRIS_CR3_URL"] + crash_id_encoded
+    download_path = ATD_ETL_CONFIG["AWS_CRIS_CR3_DOWNLOAD_PATH"] + "%s.pdf" % crash_id
 
     print("Downloading (%s): '%s' from %s" % (crash_id, download_path, url))
     resp = requests.get(url, allow_redirects=True, cookies=baked_cookies)
@@ -98,8 +66,8 @@ def upload_cr3(crash_id):
     """
     file = "/app/tmp/%s.pdf" % crash_id
     destination = "s3://%s/%s/%s.pdf" % (
-        os.environ["AWS_CRIS_CR3_BUCKET_NAME"],
-        os.environ["AWS_CRIS_CR3_BUCKET_PATH"],
+        ATD_ETL_CONFIG["AWS_CRIS_CR3_BUCKET_NAME"],
+        ATD_ETL_CONFIG["AWS_CRIS_CR3_BUCKET_PATH"],
         crash_id,
     )
 

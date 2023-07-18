@@ -9,10 +9,10 @@ is obtained from Hasura, and it is contingent to records that do not have
 any CR3 files associated.
 """
 
-import os
 import time
 import json
 
+from process.config import ATD_ETL_CONFIG
 from process.helpers_cr3 import *
 
 # Start timer
@@ -24,10 +24,6 @@ start = time.time()
 # the CR3 pdf, upload to S3
 #
 
-# ask user for a set of valid cookies for requests to the CRIS website
-CRIS_BROWSER_COOKIES = input(
-    "Please login to CRIS and extract the contents of the Cookie: header and please paste it here:"
-)
 
 print("Preparing download loop.")
 
@@ -44,7 +40,7 @@ known_skips = [180290542]
 crashes_list_without_skips = []
 
 try:
-    print("Hasura endpoint: '%s' " % os.environ["HASURA_ENDPOINT"])
+    print("Hasura endpoint: '%s' " % ATD_ETL_CONFIG["HASURA_ENDPOINT"])
     # downloads_per_run = ATD_ETL_CONFIG["ATD_CRIS_CR3_DOWNLOADS_PER_RUN"]
     downloads_per_run = 2000
     print("Downloads Per This Run: %s" % str(downloads_per_run))
@@ -69,7 +65,11 @@ except Exception as e:
 
 
 for crash_record in crashes_list_without_skips:
-    process_crash_cr3(crash_record, CRIS_BROWSER_COOKIES, skipped_uploads_and_updates)
+    process_crash_cr3(
+        crash_record,
+        ATD_ETL_CONFIG["CRIS_BROWSER_COOKIES"],
+        skipped_uploads_and_updates,
+    )
 
 print("\nProcess done.")
 
