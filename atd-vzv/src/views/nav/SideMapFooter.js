@@ -2,11 +2,9 @@ import React from "react";
 import logo from "./coa_seal_transparent_white.png";
 
 const SideMapFooter = () => {
-  const footerLinks = [
-  {
-    text: "Give feedback on Vision Zero Viewer",
-    url: "mailto:transportation.data@austintexas.gov",
-  },];
+  const handleFeedbackClick = () => {
+    window.location.href = "transportation.data@austintexas.gov";
+  };
 
   const footerStyle = {
     display: "flex",
@@ -31,7 +29,7 @@ const SideMapFooter = () => {
     marginTop: "10px",
     fontSize: "10px",
     fontFamily: "Robot, Helvetica, Arial, sans-serif",
-    color: "white", // Set color to black
+    color: "white",
     cursor: "pointer",
   };
 
@@ -51,17 +49,11 @@ const SideMapFooter = () => {
       </div>
 
       {/* Feedback */}
-      <footer>
-      <StyledFooter>
-        <div className="feedback" style={feedbackStyle}>
-            {footerLinks.map((link, i) => (
-              <Col key={i} xs="12" md="6" className="link">
-                {link.url ? <a href={link.url}>{link.text}</a> : link.text}
-              </Col>
-            ))}
-        </div>
-      </StyledFooter>
-      </footer>
+      <div className="feedback">
+        <a href="mailto:transportation.data@austintexas.gov"  style={feedbackStyle}>
+        Give feedback on Vision Zero Viewer
+        </a>
+      </div>
     </div>
   );
 };
