@@ -12,8 +12,6 @@ const getInjurySeverityColor = personRecord => {
   switch (personRecord["prsn_injry_sev_id"]) {
     case 0: // UNKNOWN: no color
       return "muted";
-    case 5: // NOT INJURED: grey
-      return "secondary";
     case 1: // SUSPECTED INCAPACITATING INJURY: yellow
       return "warning";
     case 2: // SUSPECTED MINOR INJURY: yellow
@@ -22,10 +20,10 @@ const getInjurySeverityColor = personRecord => {
       return "primary";
     case 4: // FATAL INJURY: red
       return "danger";
-    case 6: // NOT SURE??? (need KILLED): red
-      return "danger"
-    default: // Other cases: Not reported, Reported invalid
-      break;
+    case 99: // KILLED: red
+      return "secondary"
+    default: // Other cases: Not reported, Reported invalid, Not injured
+      return "secondary";
   }
 };
 
