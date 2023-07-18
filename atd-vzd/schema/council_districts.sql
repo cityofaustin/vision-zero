@@ -1,5 +1,5 @@
 CREATE TABLE public.council_districts(
-    id integer SERIAL PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     council_district integer NOT NULL unique,
     geometry geometry(MultiPolygon, 4326) NOT NULL
 );
