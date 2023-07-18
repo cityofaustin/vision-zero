@@ -15,66 +15,8 @@ import json
 
 from process.helpers_cr3 import *
 
-from onepasswordconnectsdk.client import Client, new_client
-import onepasswordconnectsdk
-
-ONEPASSWORD_CONNECT_HOST = os.getenv("OP_CONNECT")
-ONEPASSWORD_CONNECT_TOKEN = os.getenv("OP_API_TOKEN")
-VAULT_ID = os.getenv("OP_VAULT_ID")
-
-
 # Start timer
 start = time.time()
-
-# Setup 1Password server connection
-one_password_client = new_client(ONEPASSWORD_CONNECT_HOST, ONEPASSWORD_CONNECT_TOKEN)
-
-# Get required secrets from 1Password
-REQUIRED_SECRETS = {
-    "HASURA_ENDPOINT": {
-        "opitem": "Vision Zero CRIS Import",
-        "opfield": "production.GraphQL Endpoint",
-    },
-    "HASURA_ADMIN_KEY": {
-        "opitem": "Vision Zero CRIS Import",
-        "opfield": "production.GraphQL Endpoint key",
-    },
-    "AWS_ACCESS_KEY_ID": {
-        "opitem": "CR3 Download IAM Access Key and Secret",
-        "opfield": "production.accessKeyId",
-    },
-    "AWS_SECRET_ACCESS_KEY": {
-        "opitem": "CR3 Download IAM Access Key and Secret",
-        "opfield": "production.accessSecret",
-    },
-    "AWS_DEFAULT_REGION": {
-        "opitem": "CR3 Download IAM Access Key and Secret",
-        "opfield": "production.awsDefaultRegion",
-    },
-    "ATD_CRIS_CR3_URL": {
-        "opitem": "CRIS CR3 Download",
-        "opfield": "production.ATD_CRIS_CR3_URL",
-    },
-    "AWS_CRIS_CR3_DOWNLOAD_PATH": {
-        "opitem": "CRIS CR3 Download",
-        "opfield": "production.AWS_CRIS_CR3_DOWNLOAD_PATH",
-    },
-    "AWS_CRIS_CR3_BUCKET_NAME": {
-        "opitem": "CRIS CR3 Download",
-        "opfield": "production.AWS_CRIS_CR3_BUCKET_NAME",
-    },
-}
-for value in REQUIRED_SECRETS.values():
-    value["opvault"] = VAULT_ID
-
-env_vars = onepasswordconnectsdk.load_dict(one_password_client, REQUIRED_SECRETS)
-
-# Set enivronment variables for S3 upload with boto3
-for key, value in env_vars.items():
-    os.environ[key] = value
-
-# TODO: Set max attempts and retry wait time as environment variables
-# TODO: Figure out what to do about requests grabbing secrets from ATD_ETL_CONFIG
 
 #
 # We now need to request a list of N number of records
