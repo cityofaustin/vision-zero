@@ -41,7 +41,7 @@ crashes_list_without_skips = []
 
 try:
     print("Hasura endpoint: '%s' " % ATD_ETL_CONFIG["HASURA_ENDPOINT"])
-    # downloads_per_run = ATD_ETL_CONFIG["ATD_CRIS_CR3_DOWNLOADS_PER_RUN"]
+    downloads_per_run = ATD_ETL_CONFIG["ATD_CRIS_CR3_DOWNLOADS_PER_RUN"]
     downloads_per_run = 2000
     print("Downloads Per This Run: %s" % str(downloads_per_run))
 
@@ -67,7 +67,7 @@ except Exception as e:
 for crash_record in crashes_list_without_skips:
     process_crash_cr3(
         crash_record,
-        ATD_ETL_CONFIG["CRIS_BROWSER_COOKIES"],
+        ATD_ETL_CONFIG["CRIS_CR3_DOWNLOAD_COOKIE"],
         skipped_uploads_and_updates,
     )
 
