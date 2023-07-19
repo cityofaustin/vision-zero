@@ -2,10 +2,6 @@ import React from "react";
 import logo from "./coa_seal_transparent_white.png";
 
 const SideMapFooter = () => {
-  const handleFeedbackClick = () => {
-    window.location.href = "transportation.data@austintexas.gov";
-  };
-
   const footerStyle = {
     display: "flex",
     flexDirection: "column",
@@ -18,7 +14,7 @@ const SideMapFooter = () => {
   };
 
   const nameStyle = {
-    fontSize: "14px",
+    fontSize: "18px",
     fontFamily: "Robot, Helvetica, Arial, sans-serif",
     textAlign: "center",
     marginBottom: "10px",
@@ -27,7 +23,7 @@ const SideMapFooter = () => {
 
   const feedbackStyle = {
     marginTop: "10px",
-    fontSize: "10px",
+    fontSize: "14px",
     fontFamily: "Robot, Helvetica, Arial, sans-serif",
     color: "white",
     cursor: "pointer",
