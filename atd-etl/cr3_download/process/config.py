@@ -26,7 +26,6 @@ ATD_ETL_CONFIG = {
     "CRIS_CR3_DOWNLOAD_COOKIE": os.getenv("CRIS_CR3_DOWNLOAD_COOKIE", ""),
     # CR3
     "ATD_CRIS_CR3_URL": "https://cris.dot.state.tx.us/secure/ImageServices/DisplayImageServlet?target=",
-    "AWS_CRIS_CR3_DOWNLOAD_PATH": os.getenv("AWS_CRIS_CR3_DOWNLOAD_PATH", "/app/tmp"),
     "AWS_CRIS_CR3_BUCKET_NAME": os.getenv("AWS_CRIS_CR3_BUCKET_NAME", ""),
     "AWS_CRIS_CR3_BUCKET_PATH": os.getenv(
         "AWS_CRIS_CR3_BUCKET_PATH", "production/cris-cr3-files-unassigned"

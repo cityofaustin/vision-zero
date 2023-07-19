@@ -50,7 +50,7 @@ def download_cr3(crash_id, cookies):
         str("CrashId=" + crash_id).encode("utf-8")
     ).decode("utf-8")
     url = ATD_ETL_CONFIG["ATD_CRIS_CR3_URL"] + crash_id_encoded
-    download_path = ATD_ETL_CONFIG["AWS_CRIS_CR3_DOWNLOAD_PATH"] + "%s.pdf" % crash_id
+    download_path = "/tmp/" + "%s.pdf" % crash_id
 
     print("Downloading (%s): '%s' from %s" % (crash_id, download_path, url))
     resp = requests.get(url, allow_redirects=True, cookies=baked_cookies)
@@ -64,7 +64,7 @@ def upload_cr3(crash_id):
     Uploads a file to S3 using the awscli command
     :param crash_id: string - The crash id
     """
-    file = "/app/tmp/%s.pdf" % crash_id
+    file = "/tmp/%s.pdf" % crash_id
     destination = "s3://%s/%s/%s.pdf" % (
         ATD_ETL_CONFIG["AWS_CRIS_CR3_BUCKET_NAME"],
         ATD_ETL_CONFIG["AWS_CRIS_CR3_BUCKET_PATH"],
@@ -79,7 +79,7 @@ def delete_cr3s(crash_id):
     Deletes the downloaded CR3 pdf file
     :param crash_id: string - The crash id
     """
-    file = "/app/tmp/%s.pdf" % crash_id
+    file = "/tmp/%s.pdf" % crash_id
     run_command("rm %s" % file)
 
 
