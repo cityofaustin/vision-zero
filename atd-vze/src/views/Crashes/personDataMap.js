@@ -27,8 +27,6 @@ const getInjurySeverityColor = personRecord => {
   }
 };
 
-console.log(getInjurySeverityColor({ prsn_injry_sev_id: 1 }));
-
 
 export const primaryPersonDataMap = [
   {
