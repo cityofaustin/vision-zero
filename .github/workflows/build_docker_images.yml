@@ -12,6 +12,7 @@ on:
       - "atd-etl/afd_ems_import/**"
       - "atd-etl/cris_import/**"
       - "atd-etl/cr3_extract_diagram/**"
+      - "atd-etl/reassociate_missing_locations/**"
   pull_request:
     branches:
       - master
@@ -21,6 +22,7 @@ on:
       - "atd-etl/afd_ems_import/**"
       - "atd-etl/cris_import/**"
       - "atd-etl/cr3_extract_diagram/**"
+      - "atd-etl/reassociate_missing_locations/**"
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
@@ -49,6 +51,8 @@ jobs:
               - 'atd-etl/cris_import/**'
             cr3_extract:
               - 'atd-etl/cr3_extract_diagram/**'
+            reassociate_missing_locations:
+              - 'atd-etl/reassociate_missing_locations/**'
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -60,7 +64,7 @@ jobs:
           platforms: linux/amd64,linux/arm64
           context: atd-etl/afd_ems_import
           push: true
-          tags: atddocker/vz-afd-ems-import:${{ github.ref == 'refs/heads/production' && 'production' || 'latest' }}
+          tags: atddocker/vz-afd-ems-import:${{ github.ref == 'refs/heads/master' && 'production' || 'latest' }}
 
       - name: Build and push CRIS import image
         if: steps.changes.outputs.cris == 'true'
@@ -69,7 +73,7 @@ jobs:
           platforms: linux/amd64,linux/arm64
           context: atd-etl/cris_import
           push: true
-          tags: atddocker/vz-cris-import:${{ github.ref == 'refs/heads/production' && 'production' || 'latest' }}
+          tags: atddocker/vz-cris-import:${{ github.ref == 'refs/heads/master' && 'production' || 'latest' }}
 
       - name: Build and push CR3 extract diagram image
         if: steps.changes.outputs.cr3_extract == 'true'
@@ -79,3 +83,12 @@ jobs:
           context: atd-etl/cr3_extract_diagram
           push: true
           tags: atddocker/atd-vz-cr3-extract:${{ github.ref == 'refs/heads/master' && 'production' || 'latest' }}
+
+      - name: Build and push location association tools
+        if: steps.changes.outputs.reassociate_missing_locations == 'true'
+        uses: docker/build-push-action@v4
+        with:
+          platforms: linux/amd64,linux/arm64
+          context: atd-etl/reassociate_missing_locations
+          push: true
+          tags: atddocker/vz-location-associations:${{ github.ref == 'refs/heads/master' && 'production' || 'latest' }}
