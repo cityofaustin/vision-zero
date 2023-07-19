@@ -70,7 +70,7 @@ start = time.time()
 for config in query_configs:
     print(f'Starting {config["table"]} table...')
     print(f'Truncating {config["table"]} table...')
-    # client.replace(config["dataset_uid"], [])
+    client.replace(config["dataset_uid"], [])
     records = None
     offset = 0
     limit = 1000
@@ -97,14 +97,14 @@ for config in query_configs:
         records = config["formatter"](data, config["formatter_config"])
 
         # Upsert records to Socrata
-        # client.upsert(config["dataset_uid"], records)
-        # total_records += len(records)
+        client.upsert(config["dataset_uid"], records)
+        total_records += len(records)
 
-        # if len(records) == 0:
-        #     print(f'{total_records} {config["table"]} records upserted.')
-        #     print(f'Completed {config["table"]} table.')
-        # elif total_records != 0:
-        #     print(f"{total_records} records upserted")
+        if len(records) == 0:
+            print(f'{total_records} {config["table"]} records upserted.')
+            print(f'Completed {config["table"]} table.')
+        elif total_records != 0:
+            print(f"{total_records} records upserted")
 
 # Terminate Socrata connection
 client.close()
