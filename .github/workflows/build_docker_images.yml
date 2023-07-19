@@ -52,7 +52,7 @@ jobs:
             cr3_extract:
               - 'atd-etl/cr3_extract_diagram/**'
             socrata_export:
-              - 'atd-etl/socrata_export/**''
+              - 'atd-etl/socrata_export/**'
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
