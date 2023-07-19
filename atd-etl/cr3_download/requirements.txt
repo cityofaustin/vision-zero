@@ -1,3 +1,4 @@
+awscli==1.*
 boto3==1.*
-requests==2.*
 python-magic==0.*
+requests==2.*
