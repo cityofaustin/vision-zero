@@ -54,7 +54,7 @@ try:
         x for x in crashes_list if x["crash_id"] not in known_skips
     ]
     print(
-        "\nList of crashes needing CR3 download: %s"
+        f"\nList of {len(crashes_list_without_skips)} crashes needing CR3 download: %s"
         % json.dumps(crashes_list_without_skips)
     )
 
