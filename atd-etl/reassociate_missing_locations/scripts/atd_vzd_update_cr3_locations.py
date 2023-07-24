@@ -37,14 +37,14 @@ def make_update() -> dict:
                                 - should have one, since it is available
                             */
                             SELECT crash_id,
-                                   position,
-                                   location_id
+                                position,
+                                location_id
                             FROM atd_txdot_crashes AS atc
                             WHERE 1 = 1
-                              AND atc.position IS NOT NULL /* With coordinates */
-                              AND atc.location_id IS NULL  /* Without a current location */
-                              /* There is a location for it available */
-                              AND (SELECT location_id FROM find_location_for_cr3_collision(atc.crash_id) LIMIT 1) IS NOT NULL
+                                AND atc.position IS NOT NULL /* With coordinates */
+                                AND atc.location_id IS NULL  /* Without a current location */
+                                /* There is a location for it available */
+                                AND (SELECT location_id FROM find_location_for_cr3_collision(atc.crash_id) LIMIT 1) IS NOT NULL
                         )
                         /* From that short list, determine which are main-lanes and exclude */
                         SELECT 
