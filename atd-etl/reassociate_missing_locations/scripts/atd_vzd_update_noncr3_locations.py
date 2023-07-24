@@ -36,8 +36,8 @@ def make_update() -> dict:
                                 - should have one, since it is available
                             */
                             SELECT case_id,
-                                   position,
-                                   location_id
+                                position,
+                                location_id
                             FROM atd_apd_blueform AS atc
                             WHERE 1 = 1
                               AND atc.position IS NOT NULL /* With coordinates */
