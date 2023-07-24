@@ -30,16 +30,16 @@ def make_update() -> dict:
                         location_id = find_location_id_for_cr3_collision(crash_id),
                         updated_by = 'SYSTEM'
                     WHERE
-                      crash_id IN (
-                        SELECT
-                            DISTINCT (atc.crash_id)
-                        FROM atd_txdot_crashes AS atc
-                            LEFT OUTER JOIN find_location_for_cr3_collision(atc.crash_id) AS loc ON TRUE
-                        WHERE 1=1
-                            AND atc.location_id IS NOT NULL
-                            AND (atc.austin_full_purpose = 'Y' OR (atc.city_id = 22 AND atc.position IS NULL))
-                            AND atc.location_id != loc.location_id
-                     );
+                        crash_id IN (
+                            SELECT
+                                DISTINCT (atc.crash_id)
+                            FROM atd_txdot_crashes AS atc
+                                LEFT OUTER JOIN find_location_for_cr3_collision(atc.crash_id) AS loc ON TRUE
+                            WHERE 1=1
+                                AND atc.location_id IS NOT NULL
+                                AND (atc.austin_full_purpose = 'Y' OR (atc.city_id = 22 AND atc.position IS NULL))
+                                AND atc.location_id != loc.location_id
+                        );
                 """
             }
         }
