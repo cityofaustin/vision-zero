@@ -26,7 +26,7 @@ def make_update() -> dict:
                     */
                     UPDATE atd_txdot_crashes
                     SET location_id = NULL,
-                          updated_by  = 'System'
+                        updated_by  = 'System'
                     WHERE crash_id IN (
                         SELECT atc.crash_id
                         FROM atd_txdot_crashes AS atc
@@ -38,7 +38,7 @@ def make_update() -> dict:
                                         atc.position)
                             )
                         WHERE 1 = 1
-                          AND location_id IS NOT NULL
+                            AND location_id IS NOT NULL
                     );
                 """
             }
