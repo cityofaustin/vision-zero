@@ -13,6 +13,7 @@ import {
   faCar,
   faMotorcycle,
   faEllipsisH,
+  faMobileAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import {
   dataEndDate,
@@ -34,6 +35,8 @@ const CrashesByMode = () => {
   const [crashType, setCrashType] = useState([]);
   const [chartLegend, setChartLegend] = useState(null);
   const [legendColors, setLegendColors] = useState([...chartColors]);
+
+  console.log(chartData);
 
   const chartRef = useRef();
 
@@ -68,6 +71,14 @@ const CrashesByMode = () => {
       fields: {
         fatal: `bicycle_death_count`,
         injury: `bicycle_serious_injury_count`,
+      },
+    },
+    {
+      label: "Micromobility",
+      icon: faMobileAlt,
+      fields: {
+        fatal: `micromobility_death_count`,
+        injury: `micromobility_serious_injury_count`,
       },
     },
     {
