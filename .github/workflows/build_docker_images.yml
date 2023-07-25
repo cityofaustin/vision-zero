@@ -13,6 +13,7 @@ on:
       - "atd-etl/cris_import/**"
       - "atd-etl/cr3_extract_diagram/**"
       - "atd-etl/reassociate_missing_locations/**"
+      - "atd-etl/process_missing_cr3_pdfs/**"
   pull_request:
     branches:
       - master
@@ -23,6 +24,7 @@ on:
       - "atd-etl/cris_import/**"
       - "atd-etl/cr3_extract_diagram/**"
       - "atd-etl/reassociate_missing_locations/**"
+      - "atd-etl/process_missing_cr3_pdfs/**"
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
@@ -53,6 +55,8 @@ jobs:
               - 'atd-etl/cr3_extract_diagram/**'
             reassociate_missing_locations:
               - 'atd-etl/reassociate_missing_locations/**'
+            process_missing_cr3_pdfs:
+              - 'atd-etl/process_missing_cr3_pdfs/**'
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -92,3 +96,12 @@ jobs:
           context: atd-etl/reassociate_missing_locations
           push: true
           tags: atddocker/vz-location-associations:${{ github.ref == 'refs/heads/master' && 'production' || 'latest' }}
+
+      - name: Build and push PDF maintenance image
+        if: steps.changes.outputs.reassociate_missing_locations == 'true'
+        uses: docker/build-push-action@v4
+        with:
+          platforms: linux/amd64,linux/arm64
+          context: atd-etl/process_missing_cr3_pdfs
+          push: true
+          tags: atddocker/process_missing_cr3_pdfs:${{ github.ref == 'refs/heads/master' && 'production' || 'latest' }}
