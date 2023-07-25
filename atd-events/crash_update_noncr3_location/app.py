@@ -19,9 +19,7 @@ HEADERS = {
 
 
 def raise_critical_error(
-        message: str,
-        data: dict = None,
-        exception_type: object = Exception
+    message: str, data: dict = None, exception_type: object = Exception
 ):
     """
     Logs an error in Lambda
@@ -52,7 +50,7 @@ def is_insert(data: dict) -> bool:
         raise_critical_error(
             message="No operation description available, data['op'] key not available.",
             data=data,
-            exception_type=KeyError
+            exception_type=KeyError,
         )
 
 
@@ -75,30 +73,24 @@ def is_crash_mainlane(case_id: int) -> bool:
         }
     """
 
-
     try:
         """
-            We will attempt to find the record through the find_noncr3_mainlane_crash function,
-            if no matches are returned, then it means the crash is not a main-lane.
+        We will attempt to find the record through the find_noncr3_mainlane_crash function,
+        if no matches are returned, then it means the crash is not a main-lane.
         """
         response = requests.post(
             HASURA_ENDPOINT,
             data=json.dumps(
-                {
-                    "query": check_mainlane_query,
-                    "variables": {
-                        "caseId": case_id
-                    }
-                }
+                {"query": check_mainlane_query, "variables": {"caseId": case_id}}
             ),
-            headers=HEADERS
+            headers=HEADERS,
         )
         return len(response.json()["data"]["find_noncr3_mainlane_crash"]) > 0
     except:
         """
-            In case the response is broken or invalid, we need to:
-            - Output the problem for debugging
-            - Default to False, let it be part of a location for now.
+        In case the response is broken or invalid, we need to:
+        - Output the problem for debugging
+        - Default to False, let it be part of a location for now.
         """
         return False
 
@@ -113,8 +105,7 @@ def get_case_id(data: dict) -> int:
         return data["event"]["data"]["new"]["case_id"]
     except (TypeError, KeyError):
         raise_critical_error(
-            message="Unable to parse request body to identify a case_id",
-            data=data
+            message="Unable to parse request body to identify a case_id", data=data
         )
 
 
@@ -147,21 +138,17 @@ def find_crash_location(case_id: int) -> Optional[str]:
         }
     """
 
-
     try:
         response = requests.post(
             HASURA_ENDPOINT,
             data=json.dumps(
-                {
-                    "query": find_location_query,
-                    "variables": {
-                        "caseId": case_id
-                    }
-                }
+                {"query": find_location_query, "variables": {"caseId": case_id}}
             ),
-            headers=HEADERS
+            headers=HEADERS,
         )
-        return response.json()["data"]["find_location_for_noncr3_collision"][0]["location_id"]
+        return response.json()["data"]["find_location_for_noncr3_collision"][0][
+            "location_id"
+        ]
     except:
         return None
 
@@ -178,7 +165,7 @@ def load_data(record: str) -> dict:
         raise_critical_error(
             message=f"Unable to parse event data payload: {str(e)}",
             data={"record": record},
-            exception_type=TypeError
+            exception_type=TypeError,
         )
 
 
@@ -199,15 +186,11 @@ def get_noncr3_location_id(case_id: int) -> Optional[str]:
             }
           }
         """,
-        "variables": {
-            "caseId": case_id
-        }
+        "variables": {"caseId": case_id},
     }
     try:
         response = requests.post(
-            HASURA_ENDPOINT,
-            data=json.dumps(query_get_location_id),
-            headers=HEADERS
+            HASURA_ENDPOINT, data=json.dumps(query_get_location_id), headers=HEADERS
         )
         return response.json()["data"]["atd_apd_blueform"][0]["location_id"]
     except (IndexError, KeyError, TypeError):
@@ -236,27 +219,17 @@ def update_location(case_id: int, new_location_id: str) -> dict:
                 }
             }
         """,
-        "variables": {
-            "caseId": case_id,
-            "locationId": new_location_id
-        },
+        "variables": {"caseId": case_id, "locationId": new_location_id},
     }
     # Execute the mutation
     try:
         mutation_response = requests.post(
-            HASURA_ENDPOINT,
-            data=json.dumps(mutation_json_body),
-            headers=HEADERS
+            HASURA_ENDPOINT, data=json.dumps(mutation_json_body), headers=HEADERS
         )
     except Exception as e:
-        raise_critical_error(
-            message=f"Unable to update case_id location: {str(e)}"
-        )
+        raise_critical_error(message=f"Unable to update case_id location: {str(e)}")
 
-    return {
-        "status": "Mutation Successful",
-        "response": mutation_response.json()
-    }
+    return {"status": "Mutation Successful", "response": mutation_response.json()}
 
 
 def hasura_request(record: str) -> bool:
@@ -287,10 +260,7 @@ def hasura_request(record: str) -> bool:
 
     # There is an update to the location
     else:
-        update_location(
-            case_id=case_id,
-            new_location_id=new_location_id
-        )
+        update_location(case_id=case_id, new_location_id=new_location_id)
         return True
 
 
@@ -314,5 +284,28 @@ def handler(event, context):
                     raise_critical_error(
                         message=f"Could not process record: {str(e)}",
                         data=record,
-                        exception_type=Exception
+                        exception_type=Exception,
                     )
+
+
+# This does:
+# 1. Event fires on insert in or update of atd_apd_blueform table
+# 2. Checks for records in event
+# 3. If there are records, fire off hasura_request and pass the record body
+# 4. hasura_request will:
+#   a. Load the data
+#   b. Get the case_id
+#   c. Get the old_location_id
+#   d. Check if the crash is a main-lane using findMainLaneCrashNonCR3 function in DB
+#   e. If it is, then set the new_location_id to None
+#   f. If it is not, then try to find the location_id with find_location_for_noncr3_collision function in DB
+#   g. If the new_location_id is the same as the old_location_id, then return False
+#   h. If the new_location_id is different from the old_location_id, then update the location_id with update_atd_apd_blueform function in DB
+
+# Trigger template
+# CREATE TRIGGER atd_apd_blueform_update_location
+# AFTER UPDATE ON account_details
+# FOR EACH ROW
+# WHEN (OLD.latitude IS DISTINCT FROM NEW.latitude
+#    OR OLD.longitude IS DISTINCT FROM NEW.longitude)
+# EXECUTE FUNCTION notify_insert_account_details();
