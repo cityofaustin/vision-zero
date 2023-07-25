@@ -6,4 +6,3 @@ awscli==1.*
 web-pdb==1.*
 boto3==1.*
 mail-parser==3.*
-python-magic==0.*

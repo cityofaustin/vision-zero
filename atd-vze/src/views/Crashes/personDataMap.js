@@ -10,22 +10,23 @@ const shouldRenderVictimName = (data, roles) => {
 
 const getInjurySeverityColor = personRecord => {
   switch (personRecord["prsn_injry_sev_id"]) {
-    case 0: // UNKNOWN
+    case 0: // UNKNOWN: no color
       return "muted";
-    case 5: // NOT INJURED
+    case 1: // SUSPECTED INCAPACITATING INJURY: yellow
+      return "warning";
+    case 2: // SUSPECTED MINOR INJURY: yellow
+      return "warning";
+    case 3: // POSSIBLE INJURY: blue
       return "primary";
-    case 1: // SUSPECTED INCAPACITATING INJURY
-      return "warning";
-    case 2: // SUSPECTED MINOR INJURY
-      return "warning";
-    case 3: // POSSIBLE INJURY
-      return "warning";
-    case 4: // FATAL INJURY
+    case 4: // FATAL INJURY: red
       return "danger";
-    default:
-      break;
+    case 99: // KILLED: red
+      return "secondary"
+    default: // Other cases: Not reported, Reported invalid, Not injured
+      return "secondary";
   }
 };
+
 
 export const primaryPersonDataMap = [
   {

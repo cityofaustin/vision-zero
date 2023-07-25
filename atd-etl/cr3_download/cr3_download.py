@@ -15,11 +15,6 @@ import json
 from process.config import ATD_ETL_CONFIG
 from process.helpers_cr3 import *
 
-def wait(int):
-    print("Should wait: %s" % str(int))
-    time.sleep(int)
-
-
 # Start timer
 start = time.time()
 
@@ -29,8 +24,6 @@ start = time.time()
 # the CR3 pdf, upload to S3
 #
 
-# ask user for a set of valid cookies for requests to the CRIS website
-CRIS_BROWSER_COOKIES = input('Please login to CRIS and extract the contents of the Cookie: header and please paste it here:')
 
 print("Preparing download loop.")
 
@@ -55,13 +48,16 @@ try:
     response = get_crash_id_list(downloads_per_run=downloads_per_run)
     print("\nResponse from Hasura: %s" % json.dumps(response))
 
-    crashes_list = response['data']['atd_txdot_crashes']
+    crashes_list = response["data"]["atd_txdot_crashes"]
 
     crashes_list_without_skips = [
         x for x in crashes_list if x["crash_id"] not in known_skips
     ]
-    print("\nList of crashes needing CR3 download: %s" % json.dumps(crashes_list_without_skips))
- 
+    print(
+        f"\nList of {len(crashes_list_without_skips)} crashes needing CR3 download: %s"
+        % json.dumps(crashes_list_without_skips)
+    )
+
     print("\nStarting CR3 downloads:")
 except Exception as e:
     crashes_list_without_skips = []
@@ -69,7 +65,11 @@ except Exception as e:
 
 
 for crash_record in crashes_list_without_skips:
-    process_crash_cr3(crash_record, CRIS_BROWSER_COOKIES, skipped_uploads_and_updates)
+    process_crash_cr3(
+        crash_record,
+        ATD_ETL_CONFIG["CRIS_CR3_DOWNLOAD_COOKIE"],
+        skipped_uploads_and_updates,
+    )
 
 print("\nProcess done.")
 
@@ -78,6 +78,6 @@ if skipped_uploads_and_updates:
     print(f"\nUnable to download pdfs for crash IDs: {skipped_downloads}")
 
 end = time.time()
-hours, rem = divmod(end-start, 3600)
+hours, rem = divmod(end - start, 3600)
 minutes, seconds = divmod(rem, 60)
-print("\nFinished in: {:0>2}:{:0>2}:{:05.2f}".format(int(hours),int(minutes),seconds))
+print("\nFinished in: {:0>2}:{:0>2}:{:05.2f}".format(int(hours), int(minutes), seconds))

@@ -13,6 +13,7 @@ on:
       - "atd-etl/cris_import/**"
       - "atd-etl/cr3_extract_diagram/**"
       - "atd-etl/socrata_export/**"
+      - "atd-etl/cr3_download/**"
   pull_request:
     branches:
       - master
@@ -23,6 +24,7 @@ on:
       - "atd-etl/cris_import/**"
       - "atd-etl/cr3_extract_diagram/**"
       - "atd-etl/socrata_export/**"
+      - "atd-etl/cr3_download/**"
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
@@ -53,6 +55,8 @@ jobs:
               - 'atd-etl/cr3_extract_diagram/**'
             socrata_export:
               - 'atd-etl/socrata_export/**'
+            cr3_download:
+              - 'atd-etl/cr3_download/**'
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -93,3 +97,11 @@ jobs:
           push: true
           tags: atddocker/vz-socrata-export:${{ github.ref == 'refs/heads/master' && 'production' || 'latest' }}
 
+      - name: Build and push CR3 download image
+        if: steps.changes.outputs.cr3_download == 'true'
+        uses: docker/build-push-action@v4
+        with:
+          platforms: linux/amd64,linux/arm64
+          context: atd-etl/cr3_download
+          push: true
+          tags: atddocker/vz-cr3-download:${{ github.ref == 'refs/heads/master' && 'production' || 'latest' }}
