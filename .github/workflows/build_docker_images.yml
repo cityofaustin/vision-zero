@@ -12,6 +12,7 @@ on:
       - "atd-etl/afd_ems_import/**"
       - "atd-etl/cris_import/**"
       - "atd-etl/cr3_extract_diagram/**"
+      - "atd-etl/socrata_export/**"
       - "atd-etl/cr3_download/**"
   pull_request:
     branches:
@@ -22,6 +23,7 @@ on:
       - "atd-etl/afd_ems_import/**"
       - "atd-etl/cris_import/**"
       - "atd-etl/cr3_extract_diagram/**"
+      - "atd-etl/socrata_export/**"
       - "atd-etl/cr3_download/**"
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -51,6 +53,8 @@ jobs:
               - 'atd-etl/cris_import/**'
             cr3_extract:
               - 'atd-etl/cr3_extract_diagram/**'
+            socrata_export:
+              - 'atd-etl/socrata_export/**'
             cr3_download:
               - 'atd-etl/cr3_download/**'
 
@@ -83,6 +87,15 @@ jobs:
           context: atd-etl/cr3_extract_diagram
           push: true
           tags: atddocker/atd-vz-cr3-extract:${{ github.ref == 'refs/heads/master' && 'production' || 'latest' }}
+
+      - name: Build and push Socrata export image
+        if: steps.changes.outputs.socrata_export == 'true'
+        uses: docker/build-push-action@v4
+        with:
+          platforms: linux/amd64,linux/arm64
+          context: atd-etl/socrata_export
+          push: true
+          tags: atddocker/vz-socrata-export:${{ github.ref == 'refs/heads/master' && 'production' || 'latest' }}
 
       - name: Build and push CR3 download image
         if: steps.changes.outputs.cr3_download == 'true'

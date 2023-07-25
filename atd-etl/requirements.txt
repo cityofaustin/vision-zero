@@ -4,6 +4,5 @@ selenium==4.*
 requests==2.*
 awscli==1.*
 web-pdb==1.*
-sodapy==2.*
 boto3==1.*
 mail-parser==3.*
