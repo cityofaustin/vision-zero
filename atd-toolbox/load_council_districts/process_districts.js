@@ -42,7 +42,7 @@ const makeMultiPoly = (features) => {
       feature.geometry.type = "MultiPolygon";
       feature.geometry.coordinates = [feature.geometry.coordinates];
       console.log(
-        `Converted district ${feature.properties.COUNCIL_DISTRICT} to MuliPolygon`
+        `Converted district ${feature.properties.COUNCIL_DISTRICT} to MultiPolygon`
       );
     }
   });
