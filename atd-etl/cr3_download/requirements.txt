@@ -2,3 +2,4 @@ awscli==1.*
 boto3==1.*
 python-magic==0.*
 requests==2.*
+onepasswordconnectsdk==1.*
