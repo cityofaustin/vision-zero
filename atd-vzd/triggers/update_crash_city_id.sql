@@ -11,11 +11,9 @@ temprow RECORD;
         -- update city id to be in Austin (22)
         FOR temprow IN 
         (
-            SELECT jurisdictions.id
-        FROM atd_txdot_crashes AS crashes
-            INNER JOIN atd_jurisdictions jurisdictions
-            ON (jurisdictions.geometry && NEW.position) AND ST_Contains(jurisdictions.geometry, NEW.position)
-        WHERE crashes.crash_id = NEW.crash_id
+            SELECT id
+            FROM atd_jurisdictions
+            WHERE (atd_jurisdictions.geometry && NEW.position) AND ST_Contains(atd_jurisdictions.geometry, NEW.position)
         )
         LOOP
           IF temprow.id IN (5, 3, 7, 8, 10) THEN
