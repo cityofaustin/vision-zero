@@ -58,17 +58,17 @@ REQUIRED_SECRETS = {
         "opvault": VAULT_ID,
     },
     "ATD_CRIS_CR3_URL": {
-        "opitem": "CRIS CR3 Download",
+        "opitem": "Vision Zero CRIS CR3 Download",
         "opfield": "production.ATD_CRIS_CR3_URL",
         "opvault": VAULT_ID,
     },
     "AWS_CRIS_CR3_BUCKET_NAME": {
-        "opitem": "CRIS CR3 Download",
+        "opitem": "Vision Zero CRIS CR3 Download",
         "opfield": "production.AWS_CRIS_CR3_BUCKET_NAME",
         "opvault": VAULT_ID,
     },
     "AWS_CRIS_CR3_BUCKET_PATH": {
-        "opitem": "CRIS CR3 Download",
+        "opitem": "Vision Zero CRIS CR3 Download",
         "opfield": "production.AWS_CRIS_CR3_BUCKET_PATH",
         "opvault": VAULT_ID,
     },
