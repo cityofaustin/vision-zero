@@ -249,7 +249,7 @@ export const crashGridTableAdvancedFilters = {
         filter: {
           where: [
             {
-              austin_full_purpose: '_eq: "Y"',
+              in_austin_full_purpose: "_eq: true",
             },
           ],
         },
@@ -288,7 +288,7 @@ export const crashGridTableAdvancedFilters = {
         filter: {
           where: [
             {
-              'units: { unit_desc_id: { _eq: 3 } }': null,
+              "units: { unit_desc_id: { _eq: 3 } }": null,
             },
           ],
         },
@@ -299,7 +299,7 @@ export const crashGridTableAdvancedFilters = {
         filter: {
           where: [
             {
-              'units: { unit_desc_id: { _eq: 4 } }': null,
+              "units: { unit_desc_id: { _eq: 4 } }": null,
             },
           ],
         },
@@ -310,7 +310,7 @@ export const crashGridTableAdvancedFilters = {
         filter: {
           where: [
             {
-              '_and: [ { units: { unit_desc_id: { _eq: 177 } } }, { units: { veh_body_styl_id: { _eq: 177 } } } ]': null,
+              "_and: [ { units: { unit_desc_id: { _eq: 177 } } }, { units: { veh_body_styl_id: { _eq: 177 } } } ]": null,
             },
           ],
         },

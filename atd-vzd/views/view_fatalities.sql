@@ -45,7 +45,7 @@ CREATE OR REPLACE VIEW view_fatalities AS (
     LEFT JOIN atd_txdot_person person ON f.person_id = person.person_id
     LEFT JOIN engineering_areas ON engineering_areas.geometry && crashes.position AND ST_CONTAINS(engineering_areas.geometry, crashes.position)
     WHERE
-        crashes.austin_full_purpose = 'Y'
+        crashes.in_austin_full_purpose = true
     AND 
         f.is_deleted = false
 );
