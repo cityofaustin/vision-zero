@@ -14,9 +14,9 @@ In short, Docker allows us to have a fully built container with everything alrea
 
 #### 1. Download the environment variable files.
 
-The ETL container depends on two specific files: `etl.production.env` and `etl.staging.env`.
+The ETL container depends on three specific files: `etl.production.env`, `etl.staging.env`, and `etl.local.env`.
 
-The files are located in 1Password and you can find the two files if you type `ETL` in the search bar.
+The files are located in 1Password and you can find the two files if you type `ATD Splinter ETL` in the search bar.
  
 Once you download the files, put them a safe folder of your choice, example:
 
@@ -34,6 +34,7 @@ $ chmod 600 ~/.ssh/atd-etl/*;
 $ ls -lha  ~/.ssh/atd-etl/*;
  -rw-------  1 owner  group   713B Nov 12 13:01 ~/.ssh/atd-etl/etl.production.env
  -rw-------  1 owner  group   718B Nov 10 22:05 ~/.ssh/atd-etl/etl.staging.env
+ -rw-------  1 owner  group   718B Nov 10 22:05 ~/.ssh/atd-etl/etl.local.env
 ```
 
 If the file shows `-rw-------` (read-write access for you only) you did it correctly. 
@@ -49,10 +50,19 @@ Follow this example:
 
 ```bash
 $ runetl build
+```
+Then, for local (only supports `process_socrata_export.py` for now):
+```bash
+$ runetl ~/.ssh/atd-etl/etl.local.env app/process_test_run.py
+```
+For staging:
+```bash
 $ runetl ~/.ssh/atd-etl/etl.staging.env app/process_test_run.py
+```
+For production:
+```bash
 $ runetl ~/.ssh/atd-etl/etl.production.env app/process_test_run.py
 ```
-
 ## Development
 
 You should be able to make changes to the files (without need to re-build the container every time), just save your changes to the python file and then re-run the runetl command as needed.

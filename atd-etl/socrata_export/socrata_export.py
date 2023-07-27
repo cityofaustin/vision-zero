@@ -45,7 +45,7 @@ query_configs = [
                 "atd_fatality_count": "death_cnt",
             },
         },
-        "dataset_uid": ATD_ETL_CONFIG["SOCRATA_DATASET_CRASHES"]
+        "dataset_uid": ATD_ETL_CONFIG["SOCRATA_DATASET_CRASHES"],
     },
     {
         "table": "person",
@@ -54,9 +54,12 @@ query_configs = [
         "formatter_config": {
             "tables": ["atd_txdot_person", "atd_txdot_primaryperson"],
             "columns_to_rename": {"primaryperson_id": "person_id"},
-            "prefixes": {"person_id": "P", "primaryperson_id": "PP",},
+            "prefixes": {
+                "person_id": "P",
+                "primaryperson_id": "PP",
+            },
         },
-        "dataset_uid": ATD_ETL_CONFIG["SOCRATA_DATASET_PERSONS"]
+        "dataset_uid": ATD_ETL_CONFIG["SOCRATA_DATASET_PERSONS"],
     },
 ]
 
@@ -80,7 +83,7 @@ for config in query_configs:
             limit=limit,
             offset=offset,
             date_limit=get_date_limit(),
-            initial_date_limit=get_initial_date_limit()
+            initial_date_limit=get_initial_date_limit(),
         )
         offset += limit
         data = run_hasura_query(query)
