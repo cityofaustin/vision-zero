@@ -296,24 +296,57 @@ def handler(event, context):
 #   a. Load the data
 #   b. Get the case_id
 #   c. Get the old_location_id
-#   d. Check if the crash is a main-lane using findMainLaneCrashNonCR3 function in DB
+#   d. Check if the crash is a main-lane using find_noncr3_mainlane_crash function in DB
 #   e. If it is, then set the new_location_id to None
 #   f. If it is not, then try to find the location_id with find_location_for_noncr3_collision function in DB
 #   g. If the new_location_id is the same as the old_location_id, then return False
 #   h. If the new_location_id is different from the old_location_id, then update the location_id with update_atd_apd_blueform function in DB
 
-# Trigger template
-# CREATE TRIGGER atd_apd_blueform_update_location
-# AFTER UPDATE ON account_details
-# FOR EACH ROW
-# WHEN (OLD.latitude IS DISTINCT FROM NEW.latitude
-#    OR OLD.longitude IS DISTINCT FROM NEW.longitude)
-# EXECUTE FUNCTION notify_insert_account_details();
+# find_noncr3_mainlane_crash
+# CREATE
+# OR REPLACE FUNCTION public.find_noncr3_mainlane_crash(ncr3_case_id integer) RETURNS SETOF atd_apd_blueform LANGUAGE sql STABLE AS $ function $
+# SELECT
+#   atc.*
+# FROM
+#   atd_apd_blueform AS atc
+#   INNER JOIN non_cr3_mainlanes AS ncr3m ON (
+#     atc.position & & ncr3m.geometry
+#     AND ST_Contains(
+#       ST_Transform(
+#         ST_Buffer(
+#           ST_Transform(ncr3m.geometry, 2277),
+#           1,
+#           'endcap=flat join=round'
+#         ),
+#         4326
+#       ),
+#       /* transform into 2277 to buffer by a foot, not a degree */
+#       atc.position
+#     )
+#   )
+# WHERE
+#   atc.case_id = ncr3_case_id $ function $
 
-# Summary for trigger
-# 1. Fire trigger on insert or update of atd_apd_blueform table
-# 2. Check if crash is main-lane using findMainLaneCrashNonCR3 function in DB
-# 3. If it is, then set the location_id to None
-# 4. If it isn't, try to find the location_id with find_location_for_noncr3_collision function in DB
-# 5. If the new_location_id is the same as the old_location_id, then do nothing
-# 6. If the new_location_id is different from the old_location_id, then update the location_id with update_atd_apd_blueform function in DB
+# find_location_for_noncr3_collision
+# CREATE
+# OR REPLACE FUNCTION public.find_location_for_noncr3_collision(id integer) RETURNS SETOF atd_txdot_locations LANGUAGE sql STABLE AS $ function $
+# SELECT
+#   atl.*
+# FROM
+#   atd_apd_blueform AS aab
+#   INNER JOIN atd_txdot_locations AS atl ON (
+#     1 = 1
+#     AND atl.location_group = 1
+#     AND (
+#       atl.shape & & st_setsrid(ST_POINT(aab.longitude, aab.latitude), 4326)
+#     )
+#     AND ST_Contains(
+#       atl.shape,
+#       st_setsrid(ST_POINT(aab.longitude, aab.latitude), 4326)
+#     )
+#   )
+# WHERE
+#   1 = 1
+#   AND aab.case_id = id $ function $
+
+# TODO: Check if the triggers in the code match what is in production DB
