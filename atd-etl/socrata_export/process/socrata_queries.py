@@ -85,8 +85,7 @@ people_query_template = Template(
                     {prsn_injry_sev_id: {_eq: 4}}
                 ],
                 _and: {
-                    crash: {crash_date: {_lt: "$date_limit", _gte: "$initial_date_limit" }}
-                    crash: {in_austin_full_purpose: { _eq: true}}
+                    crash: {crash_date: {_lt: "$date_limit", _gte: "$initial_date_limit" }, in_austin_full_purpose: { _eq: true}}
                 }
             }
         ) {
@@ -115,8 +114,7 @@ people_query_template = Template(
                 crash: { private_dr_fl: { _eq: "N" }},
                 _or: [{prsn_injry_sev_id: {_eq: 1}}, {prsn_injry_sev_id: {_eq: 4}}],
                 _and: {
-                    crash: {crash_date: {_lt: "$date_limit", _gte: "$initial_date_limit"}}
-                    crash: {in_austin_full_purpose: { _eq: true}}
+                    crash: {crash_date: {_lt: "$date_limit", _gte: "$initial_date_limit"}, in_austin_full_purpose: { _eq: true}}
                 }
             }
         ) {
