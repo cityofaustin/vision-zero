@@ -16,12 +16,16 @@ DECLARE
     found_location_id varchar;
 
 BEGIN
-	IF EXISTS find_noncr3_mainlane_crash(NEW.case_id) THEN
-		 UPDATE atd_apd_blueform SET location_id = NULL 
-         WHERE case_id = NEW.case_id;
+    -- Check if crash is main-lane
+	IF EXISTS (SELECT * FROM find_noncr3_mainlane_crash(NEW.case_id)) THEN
+        -- If it is, then set the location_id to None
+		UPDATE atd_apd_blueform SET location_id = NULL 
+        WHERE case_id = NEW.case_id;
     ELSE 
+        -- If it isn't, try to find a location_id for it
         SELECT location_id INTO found_location_id FROM find_location_for_noncr3_collision(NEW.case_id);
 
+        -- If the found_location_id is different from the old_location_id, then update the
         IF found_location_id IS NOT NULL AND found_location_id <> OLD.location_id THEN
             UPDATE atd_apd_blueform SET location_id = found_location_id 
             WHERE case_id = NEW.case_id;
@@ -34,8 +38,12 @@ $$
 
 -- Trigger
 CREATE TRIGGER update_noncr3_location
-AFTER UPDATE ON atd_apd_blueform_update_location
+AFTER UPDATE ON atd_apd_blueform
 FOR EACH ROW
 WHEN (OLD.latitude IS DISTINCT FROM NEW.latitude
 OR OLD.longitude IS DISTINCT FROM NEW.longitude)
 EXECUTE FUNCTION update_noncr3_location();
+
+-- TODO:
+-- 1. Test mainlane crash update location to None ✅
+-- 2. Test non-mainlane crash update location to a new location
