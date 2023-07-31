@@ -10,6 +10,7 @@ The application requires the requests library:
     https://pypi.org/project/requests/
 """
 
+import os
 import requests
 import base64
 import subprocess
@@ -18,19 +19,8 @@ from http.cookies import SimpleCookie
 
 import magic
 
-# We need to import our configuration, and the run_query method
-from .config import ATD_ETL_CONFIG
+# We need the run_query method
 from .request import run_query
-
-
-def wait(int):
-    """
-    Waits int number of seconds
-    :param integer int: The number of seconds to wait
-    :return:
-    """
-    print("Should wait: %s" % str(int))
-    time.sleep(int)
 
 
 def run_command(command):
@@ -56,26 +46,29 @@ def download_cr3(crash_id, cookies):
     for key, morsel in cookie.items():
         baked_cookies[key] = morsel.value
 
-    crash_id_encoded = base64.b64encode(str("CrashId=" + crash_id).encode("utf-8")).decode("utf-8")
-    url = ATD_ETL_CONFIG["ATD_CRIS_CR3_URL"] + crash_id_encoded
-    download_path = ATD_ETL_CONFIG["AWS_CRIS_CR3_DOWNLOAD_PATH"] + "%s.pdf" % crash_id
+    crash_id_encoded = base64.b64encode(
+        str("CrashId=" + crash_id).encode("utf-8")
+    ).decode("utf-8")
+    url = os.getenv("ATD_CRIS_CR3_URL") + crash_id_encoded
+    download_path = "/tmp/" + "%s.pdf" % crash_id
 
     print("Downloading (%s): '%s' from %s" % (crash_id, download_path, url))
     resp = requests.get(url, allow_redirects=True, cookies=baked_cookies)
-    open(download_path, 'wb').write(resp.content)
+    open(download_path, "wb").write(resp.content)
 
     return download_path
+
 
 def upload_cr3(crash_id):
     """
     Uploads a file to S3 using the awscli command
     :param crash_id: string - The crash id
     """
-    file = "/app/tmp/%s.pdf" % crash_id
+    file = "/tmp/%s.pdf" % crash_id
     destination = "s3://%s/%s/%s.pdf" % (
-        ATD_ETL_CONFIG["AWS_CRIS_CR3_BUCKET_NAME"],
-        ATD_ETL_CONFIG["AWS_CRIS_CR3_BUCKET_PATH"],
-        crash_id
+        os.getenv("AWS_CRIS_CR3_BUCKET_NAME"),
+        os.getenv("AWS_CRIS_CR3_BUCKET_PATH"),
+        crash_id,
     )
 
     run_command("aws s3 cp %s %s --no-progress" % (file, destination))
@@ -86,7 +79,7 @@ def delete_cr3s(crash_id):
     Deletes the downloaded CR3 pdf file
     :param crash_id: string - The crash id
     """
-    file = "/app/tmp/%s.pdf" % crash_id
+    file = "/tmp/%s.pdf" % crash_id
     run_command("rm %s" % file)
 
 
@@ -108,7 +101,9 @@ def get_crash_id_list(downloads_per_run="25"):
             crash_id
           }
         }
-    """ % (str(downloads_per_run))
+    """ % (
+        str(downloads_per_run)
+    )
 
     return run_query(query_crashes_cr3)
 
@@ -120,15 +115,19 @@ def update_crash_id(crash_id):
     :return: dict - Response from request.post
     """
 
-    update_record_cr3 = """
+    update_record_cr3 = (
+        """
         mutation CrashesUpdateRecordCR3 {
           update_atd_txdot_crashes(where: {crash_id: {_eq: %s}}, _set: {cr3_stored_flag: "Y", updated_by: "System"}) {
             affected_rows
           }
         }
-    """ % crash_id
+    """
+        % crash_id
+    )
     print(update_record_cr3)
     return run_query(update_record_cr3)
+
 
 def check_if_pdf(file_path):
     """
@@ -162,7 +161,7 @@ def process_crash_cr3(crash_record, cookies, skipped_uploads_and_updates):
         else:
             upload_cr3(crash_id)
             update_crash_id(crash_id)
-            
+
         delete_cr3s(crash_id)
 
     except Exception as e:

@@ -125,11 +125,11 @@ function VZDashboard() {
         </Col>
         <Col xs="12" sm="6" md="6">
           <VZLinksWidget
-            header={`Comprehensive Costs by Location`}
+            header={`Crash Data by Location`}
             mainText={`Based on Vision Zero polygons`}
             icon="fa fa-map"
             color="primary"
-            link="https://austin.maps.arcgis.com/apps/instant/interactivelegend/index.html?appid=32b276f4e6cd406aa1c2040d2eb26b37"
+            link="https://austin.maps.arcgis.com/apps/instant/interactivelegend/index.html?appid=a43e1b1f94514108be4a91eb0f06a856"
             target="_compcostmap"
           />
           <VZLinksWidget
