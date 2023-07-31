@@ -36,7 +36,7 @@ BEGIN
 END;
 $$
 
--- Trigger
+-- Triggers
 CREATE TRIGGER update_noncr3_location
 AFTER UPDATE ON atd_apd_blueform
 FOR EACH ROW
@@ -46,4 +46,5 @@ EXECUTE FUNCTION update_noncr3_location();
 
 -- TODO:
 -- 1. Test mainlane crash update location to None ✅
--- 2. Test non-mainlane crash update location to a new location
+-- 2. Test non-mainlane crash update location to a new location ✅
+-- 3. Test non-mainlane crash update location to None ✅
