@@ -530,14 +530,28 @@ def convert_to_ldm_lookup_ids(typed_token):
         ON matviews.schemaname = namespaces.nspname
         WHERE namespaces.nspname = 'lookup';"""
 
-    results = cursor.execute(query_materialized_views)
+    cursor.execute(query_materialized_views)
     materialized_views = cursor.fetchall()
-    print(materialized_views)
+    view_names = [d["materialized_view_name"] for d in materialized_views]
 
+    print("View names:", view_names)
 
-    tables = ['crash', 'unit', 'person', 'primaryperson']
+    tables = ['crashes', 'unit', 'person', 'primaryperson']
     for table in tables:
-        pass
+        columns_cursor = pg.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        query = f"""
+            SELECT column_name
+            FROM INFORMATION_SCHEMA.COLUMNS
+            WHERE table_name = 'atd_txdot_{table}'
+            """
+        columns_cursor.execute(query)
+        column_results = columns_cursor.fetchall()
+        columns = [d["column_name"] for d in column_results]
+        print("Columns:", columns)
+
+        potential_fk_columns = [item for item in columns if item.endswith('_id')]
+        print("Potential FK columns:", potential_fk_columns)
+
 
 
 def align_records(map_state):
