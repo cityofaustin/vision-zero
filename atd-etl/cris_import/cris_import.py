@@ -534,10 +534,12 @@ def convert_to_ldm_lookup_ids(typed_token):
     materialized_views = cursor.fetchall()
     view_names = [d["materialized_view_name"] for d in materialized_views]
 
-    print("View names:", view_names)
+    #print("View names:", view_names)
 
-    tables = ['crashes', 'unit', 'person', 'primaryperson']
+    tables = ['crashes', 'units', 'person', 'primaryperson']
+    # tables = ['crashes']
     for table in tables:
+        print("\n✨Table:", table)
         columns_cursor = pg.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         query = f"""
             SELECT column_name
@@ -547,11 +549,20 @@ def convert_to_ldm_lookup_ids(typed_token):
         columns_cursor.execute(query)
         column_results = columns_cursor.fetchall()
         columns = [d["column_name"] for d in column_results]
-        print("Columns:", columns)
+        #print("\nColumns:", columns)
 
         potential_fk_columns = [item for item in columns if item.endswith('_id')]
-        print("Potential FK columns:", potential_fk_columns)
+        #print("\nPotential FK columns:", potential_fk_columns)
 
+        potential_column_fk_targets = [element.replace('_id', '') for element in potential_fk_columns]
+
+        # convert both lists to sets
+        columns_set = set(potential_column_fk_targets)
+        lookup_tables_set = set(view_names)
+
+        # find the intersection of the two sets
+        common_elements = columns_set & lookup_tables_set
+        print("\nCommon elements:", common_elements)
 
 
 def align_records(map_state):
