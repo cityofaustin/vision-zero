@@ -12,6 +12,7 @@ on:
       - "atd-etl/afd_ems_import/**"
       - "atd-etl/cris_import/**"
       - "atd-etl/cr3_extract_diagram/**"
+      - "atd-etl/socrata_export/**"
       - "atd-etl/reassociate_missing_locations/**"
       - "atd-etl/process_missing_cr3_pdfs/**"
   pull_request:
@@ -23,6 +24,7 @@ on:
       - "atd-etl/afd_ems_import/**"
       - "atd-etl/cris_import/**"
       - "atd-etl/cr3_extract_diagram/**"
+      - "atd-etl/socrata_export/**"
       - "atd-etl/reassociate_missing_locations/**"
       - "atd-etl/process_missing_cr3_pdfs/**"
   # Allows you to run this workflow manually from the Actions tab
@@ -53,6 +55,8 @@ jobs:
               - 'atd-etl/cris_import/**'
             cr3_extract:
               - 'atd-etl/cr3_extract_diagram/**'
+            socrata_export:
+              - 'atd-etl/socrata_export/**'
             reassociate_missing_locations:
               - 'atd-etl/reassociate_missing_locations/**'
             process_missing_cr3_pdfs:
@@ -87,6 +91,15 @@ jobs:
           context: atd-etl/cr3_extract_diagram
           push: true
           tags: atddocker/atd-vz-cr3-extract:${{ github.ref == 'refs/heads/master' && 'production' || 'latest' }}
+
+      - name: Build and push Socrata export image
+        if: steps.changes.outputs.socrata_export == 'true'
+        uses: docker/build-push-action@v4
+        with:
+          platforms: linux/amd64,linux/arm64
+          context: atd-etl/socrata_export
+          push: true
+          tags: atddocker/vz-socrata-export:${{ github.ref == 'refs/heads/production' && 'production' || 'development' }}
 
       - name: Build and push location association tools
         if: steps.changes.outputs.reassociate_missing_locations == 'true'

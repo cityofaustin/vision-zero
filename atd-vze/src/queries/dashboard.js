@@ -14,7 +14,7 @@ export const GET_CRASHES_YTD = gql`
           { crash_time: { _is_null: false } }
         ]
         _or: [
-          { austin_full_purpose: { _eq: "Y" } }
+          { in_austin_full_purpose: { _eq: true } }
           { _and: [{ city_id: { _eq: 22 } }, { position: { _is_null: true } }] }
         ]
       }
@@ -34,7 +34,7 @@ export const GET_CRASHES_YTD = gql`
           { crash_time: { _is_null: false } }
         ]
         _or: [
-          { austin_full_purpose: { _eq: "Y" } }
+          { in_austin_full_purpose: { _eq: true } }
           { _and: [{ city_id: { _eq: 22 } }, { position: { _is_null: true } }] }
         ]
       }
@@ -52,7 +52,7 @@ export const GET_CRASHES_YTD = gql`
           prsn_injry_sev_id: { _eq: 4 }
           crash: { crash_date: { _lt: $yearEnd, _gte: $yearStart } }
           _or: [
-            { crash: { austin_full_purpose: { _eq: "Y" } } }
+            { crash: { in_austin_full_purpose: { _eq: true } } }
             {
               _and: [
                 { crash: { city_id: { _eq: 22 } } }
@@ -76,7 +76,7 @@ export const GET_CRASHES_YTD = gql`
           prsn_injry_sev_id: { _eq: 4 }
           crash: { crash_date: { _lt: $yearEnd, _gte: $yearStart } }
           _or: [
-            { crash: { austin_full_purpose: { _eq: "Y" } } }
+            { crash: { in_austin_full_purpose: { _eq: true } } }
             {
               _and: [
                 { crash: { city_id: { _eq: 22 } } }

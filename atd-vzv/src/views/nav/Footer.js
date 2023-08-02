@@ -119,7 +119,7 @@ const Footer = () => {
           />
           <Row className="col-12 link-table">
             <Col xs="12" className="link link-title">
-              City of Austin Transportation Department
+              City of Austin Transportation Public Works
             </Col>
             {footerLinks.map((link, i) => (
               <Col key={i} xs="12" md="6" className="link">
