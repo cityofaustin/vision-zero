@@ -6,8 +6,8 @@ import time
 
 def make_update() -> dict:
     """
-    Runs a SQL query against Hasura and tries to assign a
-    location to any Non-CR3s that do not have location yet.
+    Runs a SQL query via graphql-engine and tries to assign a
+    location to any CR3s that do not have location.
     :return dict:
     """
     response = requests.post(
