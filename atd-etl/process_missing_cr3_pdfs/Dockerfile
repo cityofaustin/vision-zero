@@ -1,8 +1,8 @@
 FROM python:3.11-bookworm
 
+# Debian package mgmt update
 RUN apt-get update
 RUN apt-get upgrade -y
-#RUN apt-get install -y poppler-utils tesseract-ocr
 
 # Copy our own application
 WORKDIR /app
