@@ -6,8 +6,9 @@ import time
 
 def make_update() -> dict:
     """
-    Runs a SQL query against Hasura and tries to dissociate the location
-    for any CR3 crashes that fall in the main-lane polygon.
+    Runs a SQL query via `graphql-engine` which is used to
+    check and update the location_id for any CR3 records that
+    are associated with the wrong location_id.
     :return dict:
     """
     response = requests.post(
