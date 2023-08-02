@@ -1,3 +1,4 @@
+-- Checks if a crash is in a non-CR3 crash is main-lane (of concern to TxDOT) or not (of concern to Vision Zero)
 CREATE OR REPLACE FUNCTION find_noncr3_mainlane_crash(ncr3_case_id integer) returns SETOF atd_apd_blueform
     STABLE
     LANGUAGE sql
