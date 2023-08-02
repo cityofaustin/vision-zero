@@ -98,7 +98,7 @@ jobs:
           tags: atddocker/vz-location-associations:${{ github.ref == 'refs/heads/master' && 'production' || 'latest' }}
 
       - name: Build and push PDF maintenance image
-        if: steps.changes.outputs.reassociate_missing_locations == 'true'
+        if: steps.changes.outputs.process_missing_cr3_pdfs == 'true'
         uses: docker/build-push-action@v4
         with:
           platforms: linux/amd64,linux/arm64
