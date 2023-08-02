@@ -500,8 +500,7 @@ def align_db_typing(map_state):
     return map_state
 
 
-def convert_to_ldm_lookup_ids(typed_token):
-    
+def convert_to_ldm_lookup_ids(state):
     with SshKeyTempDir() as key_directory:
         write_key_to_file(key_directory + "/id_ed25519", DB_BASTION_HOST_SSH_PRIVATE_KEY + "\n") 
         ssh_tunnel = SSHTunnelForwarder(
@@ -543,8 +542,9 @@ def convert_to_ldm_lookup_ids(typed_token):
         columns_cursor = pg.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         query = f"""
             SELECT column_name
-            FROM INFORMATION_SCHEMA.COLUMNS
-            WHERE table_name = 'atd_txdot_{table}'
+            FROM information_schema.columns
+            WHERE table_schema = '{state["import_schema"]}' -- replace with your schema
+            AND table_name = '{table}';
             """
         columns_cursor.execute(query)
         column_results = columns_cursor.fetchall()
