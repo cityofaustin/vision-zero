@@ -10,24 +10,25 @@ BEGIN
 	IF EXISTS (SELECT atc.*
                 FROM atd_apd_blueform AS atc
                 INNER JOIN non_cr3_mainlanes AS ncr3m ON (
-                    atc.position && ncr3m.geometry
-                    AND ST_Contains(
-                            ST_Transform(
+                atc.position && ncr3m.geometry
+                AND ST_Contains(
+                        ST_Transform(
                                 ST_Buffer(
-                                        ST_Transform(ncr3m.geometry, 2277),
-                                        1,
-                                        'endcap=flat join=round'
-                                    ), 4326
-                            ),
+                                    ST_Transform(ncr3m.geometry, 2277),
+                                    1,
+                                    'endcap=flat join=round'
+                                ),
+                                4326
+                        ), /* transform into 2277 to buffer by a foot, not a degree */
                         atc.position
                     )
                 )
-                WHERE atc.crash_id = blueform_case_id) THEN
+                WHERE atc.case_id = blueform_case_id) THEN
         -- If it is, then set the location_id to None
 		RETURN NULL;
     ELSE 
         -- If it isn't main-lane and of concern to Vision Zero, try to find a location_id for it
-        RETURN (SELECT location_id FROM atd_apd_blueform AS aab
+        RETURN (SELECT aab.location_id FROM atd_apd_blueform AS aab
                 INNER JOIN atd_txdot_locations AS atl
                 ON ( 1=1
                     AND atl.location_group = 1

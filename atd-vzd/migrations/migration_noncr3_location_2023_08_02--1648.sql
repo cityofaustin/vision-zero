@@ -3,6 +3,8 @@ ALTER TABLE atd_apd_blueform
 ADD COLUMN generated_location_id varchar 
 GENERATED ALWAYS AS (update_noncr3_location(case_id)) STORED;
 
+-- TODO drop DB views that use location_id (replace later with generated location_id)
+
 -- Drop current atd_apd_blueform location_id column
 ALTER TABLE atd_apd_blueform DROP COLUMN location_id;
 
@@ -10,4 +12,4 @@ ALTER TABLE atd_apd_blueform DROP COLUMN location_id;
 ALTER TABLE atd_apd_blueform 
 RENAME COLUMN generated_location_id TO location_id;
 
--- TODO drop functions that were removed
+-- TODO add DB views that use location_id
