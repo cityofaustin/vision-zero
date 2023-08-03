@@ -7,7 +7,22 @@ CREATE OR REPLACE FUNCTION update_noncr3_location(blueform_case_id integer)
 $$
 BEGIN
     -- Check if crash is main-lane and of concern to TxDOT
-	IF EXISTS (SELECT * FROM find_noncr3_mainlane_crash(blueform_case_id)) THEN
+	IF EXISTS (SELECT atc.*
+                FROM atd_apd_blueform AS atc
+                INNER JOIN non_cr3_mainlanes AS ncr3m ON (
+                    atc.position && ncr3m.geometry
+                    AND ST_Contains(
+                            ST_Transform(
+                                ST_Buffer(
+                                        ST_Transform(ncr3m.geometry, 2277),
+                                        1,
+                                        'endcap=flat join=round'
+                                    ), 4326
+                            ),
+                        atc.position
+                    )
+                )
+                WHERE atc.crash_id = blueform_case_id) THEN
         -- If it is, then set the location_id to None
 		RETURN NULL;
     ELSE 
@@ -20,7 +35,7 @@ BEGIN
                     AND ST_Contains(atl.shape, aab.position)
                     )
                 WHERE 1=1
-                AND aab.case_id = id);
+                AND aab.case_id = blueform_case_id);
     END IF;
 END;
 $$

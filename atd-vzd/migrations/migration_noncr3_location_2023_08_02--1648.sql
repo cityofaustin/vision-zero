@@ -9,3 +9,5 @@ ALTER TABLE atd_apd_blueform DROP COLUMN location_id;
 -- Rename generated_location_id to location_id to replace it
 ALTER TABLE atd_apd_blueform 
 RENAME COLUMN generated_location_id TO location_id;
+
+-- TODO drop functions that were removed
