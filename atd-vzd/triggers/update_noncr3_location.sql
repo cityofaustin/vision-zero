@@ -27,16 +27,14 @@ BEGIN
         -- If it is, then set the location_id to None
 		RETURN NULL;
     ELSE 
-        -- If it isn't main-lane and of concern to Vision Zero, try to find a location_id for it
+        -- If it isn't main-lane and is of concern to Vision Zero, try to find a location_id for it
         RETURN (SELECT aab.location_id FROM atd_apd_blueform AS aab
                 INNER JOIN atd_txdot_locations AS atl
-                ON ( 1=1
-                    AND atl.location_group = 1
-                    AND (atl.shape && aab.position)
-                    AND ST_Contains(atl.shape, aab.position)
+                ON ( atl.location_group = 1
+                    AND (atl.geometry && aab.position)
+                    AND ST_Contains(atl.geometry, aab.position)
                     )
-                WHERE 1=1
-                AND aab.case_id = blueform_case_id);
+                WHERE aab.case_id = blueform_case_id);
     END IF;
 END;
 $$
