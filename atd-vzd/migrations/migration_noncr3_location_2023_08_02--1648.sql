@@ -4,29 +4,29 @@ ADD COLUMN generated_location_id varchar
 GENERATED ALWAYS AS (update_noncr3_location(case_id)) STORED;
 
 -- Drop views that use location_id
-DROP VIEW IF EXISTS locations_with_crash_injury_counts; ✅
-DROP VIEW IF EXISTS view_location_crashes_global; ✅
-DROP VIEW IF EXISTS view_location_injry_count_cost_summary; ✅
+DROP VIEW IF EXISTS locations_with_crash_injury_counts;
+DROP VIEW IF EXISTS view_location_crashes_global;
+DROP VIEW IF EXISTS view_location_injry_count_cost_summary;
 
 -- Drop materialized views that use location_id and branch from all_atd_apd_blueform
-DROP MATERIALIZED VIEW IF EXISTS all_crashes_off_mainlane; ✅
-DROP MATERIALIZED VIEW IF EXISTS all_non_cr3_crashes_off_mainlane; ✅
-DROP MATERIALIZED VIEW IF EXISTS all_atd_apd_blueform; ✅
+DROP MATERIALIZED VIEW IF EXISTS all_crashes_off_mainlane;
+DROP MATERIALIZED VIEW IF EXISTS all_non_cr3_crashes_off_mainlane;
+DROP MATERIALIZED VIEW IF EXISTS all_atd_apd_blueform;
 
 -- Drop materialized views that use location_id and branch from five_year_atd_apd_blueform
 DROP MATERIALIZED VIEW IF EXISTS five_year_highway_polygons_with_crash_data;
-DROP MATERIALIZED VIEW IF EXISTS five_year_all_crashes_outside_any_polygons; ✅
+DROP MATERIALIZED VIEW IF EXISTS five_year_all_crashes_outside_any_polygons;
 
-DROP MATERIALIZED VIEW IF EXISTS five_year_all_crashes_outside_surface_polygons; ✅
-DROP MATERIALIZED VIEW IF EXISTS five_year_non_cr3_crashes_outside_surface_polygons; ✅
+DROP MATERIALIZED VIEW IF EXISTS five_year_all_crashes_outside_surface_polygons;
+DROP MATERIALIZED VIEW IF EXISTS five_year_non_cr3_crashes_outside_surface_polygons;
 
-DROP MATERIALIZED VIEW IF EXISTS five_year_surface_polygons_with_crash_data; ✅
-DROP MATERIALIZED VIEW IF EXISTS five_year_all_crashes_off_mainlane_outside_surface_polygons; ✅
+DROP MATERIALIZED VIEW IF EXISTS five_year_surface_polygons_with_crash_data;
+DROP MATERIALIZED VIEW IF EXISTS five_year_all_crashes_off_mainlane_outside_surface_polygons;
 
-DROP MATERIALIZED VIEW IF EXISTS five_year_all_crashes_off_mainlane; ✅
-DROP MATERIALIZED VIEW IF EXISTS five_year_non_cr3_crashes_off_mainlane; ✅
+DROP MATERIALIZED VIEW IF EXISTS five_year_all_crashes_off_mainlane;
+DROP MATERIALIZED VIEW IF EXISTS five_year_non_cr3_crashes_off_mainlane;
 
-DROP MATERIALIZED VIEW IF EXISTS five_year_atd_apd_blueform; ✅
+DROP MATERIALIZED VIEW IF EXISTS five_year_atd_apd_blueform;
 
 -- Then, drop current atd_apd_blueform location_id column
 ALTER TABLE atd_apd_blueform DROP COLUMN location_id;
@@ -37,42 +37,46 @@ RENAME COLUMN generated_location_id TO location_id;
 
 -- Add DB views that use location_id
 CREATE OR REPLACE VIEW locations_with_crash_injury_counts AS
- SELECT 1 AS non_cr3,
-    0 AS cr3,
-    all_non_cr3_crashes_off_mainlane.case_id AS crash_id,
-    all_non_cr3_crashes_off_mainlane.date,
-    all_non_cr3_crashes_off_mainlane.speed_mgmt_points,
-    all_non_cr3_crashes_off_mainlane.est_comp_cost,
-    all_non_cr3_crashes_off_mainlane.est_econ_cost,
-    all_non_cr3_crashes_off_mainlane."position" AS geometry,
-    0 AS sus_serious_injry_cnt,
-    0 AS nonincap_injry_cnt,
-    0 AS poss_injry_cnt,
-    0 AS non_injry_cnt,
-    0 AS unkn_injry_cnt,
-    0 AS tot_injry_cnt,
-    0 AS death_cnt
-   FROM all_non_cr3_crashes_off_mainlane
-UNION
- SELECT 0 AS non_cr3,
-    1 AS cr3,
-    all_cr3_crashes_off_mainlane.crash_id,
-    all_cr3_crashes_off_mainlane.crash_date AS date,
-    all_cr3_crashes_off_mainlane.speed_mgmt_points,
-    all_cr3_crashes_off_mainlane.est_comp_cost,
-    all_cr3_crashes_off_mainlane.est_econ_cost,
-    all_cr3_crashes_off_mainlane."position" AS geometry,
-    all_cr3_crashes_off_mainlane.sus_serious_injry_cnt,
-    all_cr3_crashes_off_mainlane.nonincap_injry_cnt,
-    all_cr3_crashes_off_mainlane.poss_injry_cnt,
-    all_cr3_crashes_off_mainlane.non_injry_cnt,
-    all_cr3_crashes_off_mainlane.unkn_injry_cnt,
-    all_cr3_crashes_off_mainlane.tot_injry_cnt,
-    all_cr3_crashes_off_mainlane.death_cnt
-   FROM all_cr3_crashes_off_mainlane;
+ WITH crashes AS (
+         WITH cris_crashes AS (
+                 SELECT crashes_1.location_id,
+                    count(crashes_1.crash_id) AS crash_count,
+                    COALESCE(sum(crashes_1.est_comp_cost_crash_based), 0::numeric) AS total_est_comp_cost,
+                    COALESCE(sum(crashes_1.death_cnt), 0::bigint) AS fatality_count,
+                    COALESCE(sum(crashes_1.sus_serious_injry_cnt), 0::bigint) AS suspected_serious_injury_count
+                   FROM atd_txdot_crashes crashes_1
+                  WHERE true AND crashes_1.location_id IS NOT NULL AND crashes_1.crash_date > (now() - '5 years'::interval)
+                  GROUP BY crashes_1.location_id
+                ), apd_crashes AS (
+                 SELECT crashes_1.location_id,
+                    count(crashes_1.case_id) AS crash_count,
+                    COALESCE(sum(crashes_1.est_comp_cost), 0::numeric) AS total_est_comp_cost,
+                    0 AS fatality_count,
+                    0 AS suspected_serious_injury_count
+                   FROM atd_apd_blueform crashes_1
+                  WHERE true AND crashes_1.location_id IS NOT NULL AND crashes_1.date > (now() - '5 years'::interval)
+                  GROUP BY crashes_1.location_id
+                )
+         SELECT cris_crashes.location_id,
+            cris_crashes.crash_count + apd_crashes.crash_count AS crash_count,
+            cris_crashes.total_est_comp_cost + (10000 * apd_crashes.crash_count)::numeric AS total_est_comp_cost,
+            cris_crashes.fatality_count + apd_crashes.fatality_count AS fatalities_count,
+            cris_crashes.suspected_serious_injury_count + apd_crashes.suspected_serious_injury_count AS serious_injury_count
+           FROM cris_crashes
+             FULL JOIN apd_crashes ON cris_crashes.location_id::text = apd_crashes.location_id::text
+        )
+ SELECT locations.description,
+    locations.location_id,
+    COALESCE(crashes.crash_count, 0::bigint) AS crash_count,
+    COALESCE(crashes.total_est_comp_cost, 0::numeric) AS total_est_comp_cost,
+    COALESCE(crashes.fatalities_count, 0::bigint) AS fatalities_count,
+    COALESCE(crashes.serious_injury_count, 0::bigint) AS serious_injury_count
+   FROM atd_txdot_locations locations
+     LEFT JOIN crashes ON locations.location_id::text = crashes.location_id::text
+  WHERE true AND locations.council_district > 0 AND locations.location_group = 1;
 
 CREATE OR REPLACE VIEW view_location_crashes_global AS
- SELECT atc.crash_id,
+  SELECT atc.crash_id,
     'CR3'::text AS type,
     atc.location_id,
     atc.case_id,
