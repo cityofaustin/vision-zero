@@ -6,11 +6,11 @@ def process_worksheet(worksheet, lookups):
     """
     Process a worksheet based on title specification and update the lookups dictionary.
     """
-    print("Title: ", worksheet.title.lower())
+    #print("Title: ", worksheet.title.lower())
 
     for row in worksheet.iter_rows(values_only=True, min_row=9):
         if 'lookup' in str(row[10]).lower():
-            print("")
+            #print("")
             match = re.search(r"#'(\w+)_LKP'", row[9])
             lookup_table = match.group(1).lower() if match else None
             field = (str(row[7]).split('.')[1].lower())
@@ -36,7 +36,7 @@ def read_xlsx_to_get_FK_relationships(file_path):
             process_worksheet(worksheet, unit_lookups)
         if worksheet.title.lower() == "person file specification":
             process_worksheet(worksheet, person_lookups)
-        if worksheet.title.lower() == "primaryperson file specification":
+        if worksheet.title.lower() == "primaryperson file spec.":
             process_worksheet(worksheet, primaryperson_lookups)
 
     print(json.dumps(crash_lookups, indent=4))
