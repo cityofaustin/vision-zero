@@ -4,3 +4,4 @@ psycopg2-binary==2.*
 sshtunnel==0.4.*
 requests==2.*
 boto3==1.*
+openpyxl==3.*
