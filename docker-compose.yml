@@ -1,7 +1,7 @@
 version: '3.7'
 services:
   graphql-engine:
-    image: hasura/graphql-engine:v2.20.1  # added to patch critical security vulnerability
+    image: hasura/graphql-engine:v2.31.0  # added to patch critical security vulnerability
 
     # I'm keeping these next two notes around until we're fully up to date with 2.20.1+ in 
     # production, because I feel it will be prudent to re-test when we upgrade to 2.20.1+.
