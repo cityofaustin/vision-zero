@@ -19,7 +19,7 @@ def process_worksheet(worksheet, lookups):
             #print(f"Field: '{field}'")
             lookups[field] = lookup_table
 
-def read_xlsx(file_path):
+def read_xlsx_to_get_FK_relationships(file_path):
     # Load the workbook
     workbook = load_workbook(filename=file_path)
 
@@ -45,7 +45,7 @@ def read_xlsx(file_path):
     print(json.dumps(primaryperson_lookups, indent=4))
 
 def main():
-    read_xlsx("/data/cris_spec.xlsx")
+    read_xlsx_to_get_FK_relationships("/data/cris_spec.xlsx")
 
 if __name__ == "__main__":
     main()
