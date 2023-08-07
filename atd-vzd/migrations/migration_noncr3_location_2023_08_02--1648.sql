@@ -3,41 +3,32 @@ ALTER TABLE atd_apd_blueform
 ADD COLUMN generated_location_id varchar 
 GENERATED ALWAYS AS (update_noncr3_location(case_id)) STORED;
 
--- TODO drop DB views that use location_id (replace later with generated location_id)
--- Query 1 ERROR: ERROR:  cannot drop column location_id of table atd_apd_blueform because other objects depend on it
--- DETAIL:  materialized view all_atd_apd_blueform depends on column location_id of table atd_apd_blueform
---
--- materialized view all_non_cr3_crashes_off_mainlane depends on materialized view all_atd_apd_blueform
--- 
--- materialized view all_crashes_off_mainlane depends on materialized view all_non_cr3_crashes_off_mainlane
--- 
--- materialized view five_year_atd_apd_blueform depends on column location_id of table atd_apd_blueform
--- 
--- materialized view five_year_non_cr3_crashes_off_mainlane depends on materialized view five_year_atd_apd_blueform
--- 
--- materialized view five_year_all_crashes_off_mainlane depends on materialized view five_year_non_cr3_crashes_off_mainlane
--- 
--- materialized view five_year_all_crashes_off_mainlane_outside_surface_polygons depends on materialized view five_year_all_crashes_off_mainlane
--- 
--- materialized view five_year_surface_polygons_with_crash_data depends on materialized view five_year_all_crashes_off_mainlane
--- 
--- materialized view five_year_non_cr3_crashes_outside_surface_polygons depends on materialized view five_year_atd_apd_blueform
--- 
--- materialized view five_year_all_crashes_outside_surface_polygons depends on materialized view five_year_non_cr3_crashes_outside_surface_polygons
--- 
--- materialized view five_year_all_crashes_outside_any_polygons depends on materialized view five_year_all_crashes_outside_surface_polygons
--- 
--- materialized view five_year_highway_polygons_with_crash_data depends on materialized view five_year_all_crashes_outside_surface_polygons
--- 
--- view locations_with_crash_injury_counts depends on column location_id of table atd_apd_blueform
--- 
--- view view_location_crashes_global depends on column location_id of table atd_apd_blueform
--- 
--- view view_location_injry_count_cost_summary depends on column location_id of table atd_apd_blueform
--- 
--- HINT:  Use DROP ... CASCADE to drop the dependent objects too.
+-- Drop views that use location_id (replace later with generated location_id)
+DROP VIEW IF EXISTS locations_with_crash_injury_counts;
+DROP VIEW IF EXISTS view_location_crashes_global;
+DROP VIEW IF EXISTS view_location_injry_count_cost_summary;
 
--- Drop current atd_apd_blueform location_id column
+-- Drop materialized views that use location_id and branch from all_atd_apd_blueform
+DROP MATERIALIZED VIEW IF EXISTS all_crashes_off_mainlane;
+DROP MATERIALIZED VIEW IF EXISTS all_non_cr3_crashes_off_mainlane;
+DROP MATERIALIZED VIEW IF EXISTS all_atd_apd_blueform;
+
+-- Drop materialized views that use location_id and branch from five_year_atd_apd_blueform
+DROP MATERIALIZED VIEW IF EXISTS five_year_highway_polygons_with_crash_data;
+DROP MATERIALIZED VIEW IF EXISTS five_year_all_crashes_outside_any_polygons;
+
+DROP MATERIALIZED VIEW IF EXISTS five_year_all_crashes_outside_surface_polygons;
+DROP MATERIALIZED VIEW IF EXISTS five_year_non_cr3_crashes_outside_surface_polygons;
+
+DROP MATERIALIZED VIEW IF EXISTS five_year_surface_polygons_with_crash_data;
+DROP MATERIALIZED VIEW IF EXISTS five_year_all_crashes_off_mainlane_outside_surface_polygons;
+
+DROP MATERIALIZED VIEW IF EXISTS five_year_all_crashes_off_mainlane;
+DROP MATERIALIZED VIEW IF EXISTS five_year_non_cr3_crashes_off_mainlane;
+
+DROP MATERIALIZED VIEW IF EXISTS five_year_atd_apd_blueform;
+
+-- Then, drop current atd_apd_blueform location_id column
 ALTER TABLE atd_apd_blueform DROP COLUMN location_id;
 
 -- Rename generated_location_id to location_id to replace it
