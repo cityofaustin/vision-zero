@@ -31,7 +31,7 @@ DROP MATERIALIZED VIEW IF EXISTS five_year_atd_apd_blueform;
 -- 5. Then, drop current atd_apd_blueform location_id column
 ALTER TABLE atd_apd_blueform DROP COLUMN location_id;
 
--- 6. Rename generated_location_id to location_id to replace it
+-- 6. Rename generated_location_id to location_id to replace the previous column
 ALTER TABLE atd_apd_blueform 
 RENAME COLUMN generated_location_id TO location_id;
 
