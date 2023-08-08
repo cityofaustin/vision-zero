@@ -76,23 +76,31 @@ def create_cris_lookup_tables(file_path):
             match = re.search(r"(\w+)_LKP", worksheet.title)
             lookup_table = match.group(1).lower() if match else None
             if lookup_table:
+                if not lookup_table == 'veh_mod_year':
+                    pass
+                    #continue
+
                 skip_tables = ("cntl_sect", "inv_notify_meth")
-                skip_tables = ("cas_transp_name", "cas_transp_locat", "ins_co_name", "cntl_sect", "inv_notify_meth") # for dev
+                #skip_tables = ("cas_transp_name", "cas_transp_locat", "ins_co_name", "cntl_sect", "inv_notify_meth") # for dev
                 if lookup_table in skip_tables:
                     continue
+
+                drop = f"drop table if exists cris_lookup.{lookup_table} cascade;"
+                drop_cursor = pg.cursor()
+                print(f"Drop: {drop}")
+                drop_cursor.execute(drop)
+                drop_cursor.close()
+                pg.commit()
+
                 if lookup_table == "state":
                     populate_state_table(worksheet, lookup_table, pg)
+                elif lookup_table == "veh_mod_year":
+                    populate_veh_mod_year_table(worksheet, lookup_table, pg)
                 else:
                     populate_table(worksheet, lookup_table, pg)
 
 def populate_table(worksheet, lookup_table, pg):
     print("Lookup Table: ", lookup_table)
-    drop = f"drop table if exists cris_lookup.{lookup_table} cascade;"
-    drop_cursor = pg.cursor()
-    print(f"Drop: {drop}")
-    drop_cursor.execute(drop)
-    drop_cursor.close()
-    pg.commit()
 
     create = f"""create table cris_lookup.{lookup_table} (
         id serial primary key, 
@@ -123,12 +131,6 @@ def populate_table(worksheet, lookup_table, pg):
 
 def populate_state_table(worksheet, lookup_table, pg):
     print("Lookup Table: ", lookup_table)
-    drop = f"drop table if exists cris_lookup.{lookup_table} cascade;"
-    drop_cursor = pg.cursor()
-    print(f"Drop: {drop}")
-    drop_cursor.execute(drop)
-    drop_cursor.close()
-    pg.commit()
 
     create = f"""create table cris_lookup.{lookup_table} (
         id serial primary key, 
@@ -149,11 +151,39 @@ def populate_state_table(worksheet, lookup_table, pg):
     for row in worksheet.iter_rows(values_only=True, min_row=2):
         print(row)
         insert = f"""insert into cris_lookup.{lookup_table}
-            (upstream_id, description, effective_begin_date, effective_end_date)
-            values (%s, %s, %s, %s);"""
+            (upstream_id, abbreviation, description, effective_begin_date, effective_end_date)
+            values (%s, %s, %s, %s, %s);"""
         insert_cursor = pg.cursor()
         print(f"Insert: {insert}")
         insert_cursor.execute(insert, row[:5])
+        insert_cursor.close()
+        pg.commit()
+
+def populate_veh_mod_year_table(worksheet, lookup_table, pg):
+    print("Lookup Table: ", lookup_table)
+
+
+    create = f"""create table cris_lookup.{lookup_table} (
+        id serial primary key, 
+        upstream_id integer, 
+        description text, 
+        active boolean default true
+        );"""
+
+    create_cursor = pg.cursor()
+    print(f"Create: {create}")
+    create_cursor.execute(create)
+    create_cursor.close()
+    pg.commit()
+
+    for row in worksheet.iter_rows(values_only=True, min_row=2):
+        print(row)
+        insert = f"""insert into cris_lookup.{lookup_table}
+            (upstream_id, description)
+            values (%s, %s);"""
+        insert_cursor = pg.cursor()
+        print(f"Insert: {insert}")
+        insert_cursor.execute(insert, row[:2])
         insert_cursor.close()
         pg.commit()
 
