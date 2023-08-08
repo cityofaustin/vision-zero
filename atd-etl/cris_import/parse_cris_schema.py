@@ -10,9 +10,6 @@ from onepasswordconnectsdk.client import Client, new_client
 import tempfile
 import shutil
 
-import lib.mappings as mappings
-import lib.sql as util
-
 DEPLOYMENT_ENVIRONMENT = os.environ.get(
     "ENVIRONMENT", "development"
 )  # our current environment from ['production', 'development']
