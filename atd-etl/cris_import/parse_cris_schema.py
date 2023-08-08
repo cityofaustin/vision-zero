@@ -31,14 +31,6 @@ def main():
 
     secrets = get_secrets()
 
-    SFTP_ENDPOINT = secrets["SFTP_endpoint"]
-    ZIP_PASSWORD = secrets["archive_extract_password"]
-
-    AWS_ACCESS_KEY_ID = secrets["aws_access_key"]
-    AWS_SECRET_ACCESS_KEY = secrets["aws_secret_key"]
-    AWS_CSV_ARCHIVE_BUCKET_NAME = secrets["s3_archive_bucket_name"]
-    AWS_CSV_ARCHIVE_PATH = secrets["s3_archive_path"]
-
     DB_HOST = secrets["database_host"]
     DB_USER = secrets["database_username"]
     DB_PASS = secrets["database_password"]
