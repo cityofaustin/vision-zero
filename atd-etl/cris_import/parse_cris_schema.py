@@ -76,7 +76,29 @@ def create_cris_lookup_tables(file_path):
             lookup_table = match.group(1).lower() if match else None
             if lookup_table:
                 print("Lookup Table: ", lookup_table)
+                drop = f"drop table if exists cris_lookup.{lookup_table} cascade;"
+                drop_cursor = pg.cursor()
+                print(f"Drop: {drop}")
+                drop_cursor.execute(drop)
+                drop_cursor.close()
+                pg.commit()
 
+                create = f"""create table cris_lookup.{lookup_table} (
+                    id serial primary key, 
+                    upstream_id integer, 
+                    description text, 
+                    effective_begin_date date, 
+                    effective_end_date date,
+                    active boolean default true
+                    );"""
+                create_cursor = pg.cursor()
+                print(f"Create: {create}")
+                create_cursor.execute(create)
+                create_cursor.close()
+                pg.commit()
+
+                for row in worksheet.iter_rows(values_only=True, min_row=1):
+                    print(row)
 
 def process_worksheet(worksheet, lookups):
     """
