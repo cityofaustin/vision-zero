@@ -76,30 +76,87 @@ def create_cris_lookup_tables(file_path):
             match = re.search(r"(\w+)_LKP", worksheet.title)
             lookup_table = match.group(1).lower() if match else None
             if lookup_table:
-                print("Lookup Table: ", lookup_table)
-                drop = f"drop table if exists cris_lookup.{lookup_table} cascade;"
-                drop_cursor = pg.cursor()
-                print(f"Drop: {drop}")
-                drop_cursor.execute(drop)
-                drop_cursor.close()
-                pg.commit()
+                skip_tables = ("cntl_sect", "inv_notify_meth")
+                skip_tables = ("cas_transp_name", "cas_transp_locat", "ins_co_name", "cntl_sect", "inv_notify_meth") # for dev
+                if lookup_table in skip_tables:
+                    continue
+                if lookup_table == "state":
+                    populate_state_table(worksheet, lookup_table, pg)
+                else:
+                    populate_table(worksheet, lookup_table, pg)
 
-                create = f"""create table cris_lookup.{lookup_table} (
-                    id serial primary key, 
-                    upstream_id integer, 
-                    description text, 
-                    effective_begin_date date, 
-                    effective_end_date date,
-                    active boolean default true
-                    );"""
-                create_cursor = pg.cursor()
-                print(f"Create: {create}")
-                create_cursor.execute(create)
-                create_cursor.close()
-                pg.commit()
+def populate_table(worksheet, lookup_table, pg):
+    print("Lookup Table: ", lookup_table)
+    drop = f"drop table if exists cris_lookup.{lookup_table} cascade;"
+    drop_cursor = pg.cursor()
+    print(f"Drop: {drop}")
+    drop_cursor.execute(drop)
+    drop_cursor.close()
+    pg.commit()
 
-                for row in worksheet.iter_rows(values_only=True, min_row=1):
-                    print(row)
+    create = f"""create table cris_lookup.{lookup_table} (
+        id serial primary key, 
+        upstream_id integer, 
+        description text, 
+        effective_begin_date date, 
+        effective_end_date date,
+        active boolean default true
+        );"""
+
+    create_cursor = pg.cursor()
+    print(f"Create: {create}")
+    create_cursor.execute(create)
+    create_cursor.close()
+    pg.commit()
+
+    for row in worksheet.iter_rows(values_only=True, min_row=2):
+        print(row)
+        insert = f"""insert into cris_lookup.{lookup_table}
+            (upstream_id, description, effective_begin_date, effective_end_date)
+            values (%s, %s, %s, %s);"""
+        insert_cursor = pg.cursor()
+        print(f"Insert: {insert}")
+        insert_cursor.execute(insert, row[:4])
+        insert_cursor.close()
+        pg.commit()
+
+
+def populate_state_table(worksheet, lookup_table, pg):
+    print("Lookup Table: ", lookup_table)
+    drop = f"drop table if exists cris_lookup.{lookup_table} cascade;"
+    drop_cursor = pg.cursor()
+    print(f"Drop: {drop}")
+    drop_cursor.execute(drop)
+    drop_cursor.close()
+    pg.commit()
+
+    create = f"""create table cris_lookup.{lookup_table} (
+        id serial primary key, 
+        upstream_id integer, 
+        abbreviation text,
+        description text, 
+        effective_begin_date date, 
+        effective_end_date date,
+        active boolean default true
+        );"""
+
+    create_cursor = pg.cursor()
+    print(f"Create: {create}")
+    create_cursor.execute(create)
+    create_cursor.close()
+    pg.commit()
+
+    for row in worksheet.iter_rows(values_only=True, min_row=2):
+        print(row)
+        insert = f"""insert into cris_lookup.{lookup_table}
+            (upstream_id, description, effective_begin_date, effective_end_date)
+            values (%s, %s, %s, %s);"""
+        insert_cursor = pg.cursor()
+        print(f"Insert: {insert}")
+        insert_cursor.execute(insert, row[:5])
+        insert_cursor.close()
+        pg.commit()
+
 
 def process_worksheet(worksheet, lookups):
     """
@@ -146,21 +203,6 @@ def read_xlsx_to_get_FK_relationships(file_path):
 
 def get_secrets():
     REQUIRED_SECRETS = {
-        "SFTP_endpoint": {
-            "opitem": "Vision Zero CRIS Import",
-            "opfield": f"Common.SFTP Endpoint",
-            "opvault": VAULT_ID,
-        },
-        "sftp_endpoint_private_key": {
-            "opitem": "SFTP Endpoint Key",
-            "opfield": ".private key",
-            "opvault": VAULT_ID,
-        },
-        "archive_extract_password": {
-            "opitem": "Vision Zero CRIS Import",
-            "opfield": "Common.CRIS Archive Extract Password",
-            "opvault": VAULT_ID,
-        },
         "bastion_host": {
             "opitem": "RDS Bastion Host",
             "opfield": f"{DEPLOYMENT_ENVIRONMENT}.Host",
@@ -196,31 +238,6 @@ def get_secrets():
             "opfield": f"{DEPLOYMENT_ENVIRONMENT}.Database SSL Policy",
             "opvault": VAULT_ID,
         },
-        "aws_access_key": {
-            "opitem": "Vision Zero CRIS Import",
-            "opfield": f"{DEPLOYMENT_ENVIRONMENT}.AWS Access key",
-            "opvault": VAULT_ID,
-        },
-        "aws_secret_key": {
-            "opitem": "Vision Zero CRIS Import",
-            "opfield": f"{DEPLOYMENT_ENVIRONMENT}.AWS Secret key",
-            "opvault": VAULT_ID,
-        },
-        "s3_archive_bucket_name": {
-            "opitem": "Vision Zero CRIS Import",
-            "opfield": f"{DEPLOYMENT_ENVIRONMENT}.S3 Archive Bucket Name",
-            "opvault": VAULT_ID,
-        },
-        "s3_archive_path": {
-            "opitem": "Vision Zero CRIS Import",
-            "opfield": f"{DEPLOYMENT_ENVIRONMENT}.S3 Archive Path",
-            "opvault": VAULT_ID,
-        },
-        "sftp_endpoint_private_key": {
-            "opitem": "SFTP Endpoint Key",
-            "opfield": ".private key",
-            "opvault": VAULT_ID,
-            },
         "bastion_ssh_private_key": {
             "opitem": "RDS Bastion Key",
             "opfield": ".private key",
