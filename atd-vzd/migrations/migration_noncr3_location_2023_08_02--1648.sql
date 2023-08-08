@@ -1,19 +1,19 @@
--- Add generated column for non-CR3 crash locations
+-- 1. Add generated column for non-CR3 crash locations
 ALTER TABLE atd_apd_blueform
 ADD COLUMN generated_location_id varchar 
 GENERATED ALWAYS AS (update_noncr3_location(case_id)) STORED;
 
--- Drop views that use location_id
+-- 2. Drop views that use location_id
 DROP VIEW IF EXISTS locations_with_crash_injury_counts;
 DROP VIEW IF EXISTS view_location_crashes_global;
 DROP VIEW IF EXISTS view_location_injry_count_cost_summary;
 
--- Drop materialized views that use location_id and branch from all_atd_apd_blueform
+-- 3. Drop materialized views that use location_id and branch from all_atd_apd_blueform
 DROP MATERIALIZED VIEW IF EXISTS all_crashes_off_mainlane;
 DROP MATERIALIZED VIEW IF EXISTS all_non_cr3_crashes_off_mainlane;
 DROP MATERIALIZED VIEW IF EXISTS all_atd_apd_blueform;
 
--- Drop materialized views that use location_id and branch from five_year_atd_apd_blueform
+-- 4. Drop materialized views that use location_id and branch from five_year_atd_apd_blueform
 DROP MATERIALIZED VIEW IF EXISTS five_year_highway_polygons_with_crash_data;
 DROP MATERIALIZED VIEW IF EXISTS five_year_all_crashes_outside_any_polygons;
 
@@ -28,14 +28,14 @@ DROP MATERIALIZED VIEW IF EXISTS five_year_non_cr3_crashes_off_mainlane;
 
 DROP MATERIALIZED VIEW IF EXISTS five_year_atd_apd_blueform;
 
--- Then, drop current atd_apd_blueform location_id column
+-- 5. Then, drop current atd_apd_blueform location_id column
 ALTER TABLE atd_apd_blueform DROP COLUMN location_id;
 
--- Rename generated_location_id to location_id to replace it
+-- 6. Rename generated_location_id to location_id to replace it
 ALTER TABLE atd_apd_blueform 
 RENAME COLUMN generated_location_id TO location_id;
 
--- Add DB views that use location_id
+-- 7. Add DB views that use location_id (need to be tracked in Hasura console)
 CREATE OR REPLACE VIEW locations_with_crash_injury_counts AS
  WITH crashes AS (
          WITH cris_crashes AS (
@@ -171,7 +171,7 @@ CREATE OR REPLACE VIEW view_location_injry_count_cost_summary AS
           WHERE 1 = 1 AND aab.date > (now() - '5 years'::interval) AND aab.location_id IS NOT NULL AND aab.location_id::text <> 'None'::text
           GROUP BY aab.location_id) blueform_ccs ON blueform_ccs.location_id::text = atcloc.location_id::text;
 
--- Add materialized view that use location_id and branch from all_atd_apd_blueform
+-- 8. Add materialized views that use location_id and branch from all_atd_apd_blueform
 CREATE MATERIALIZED VIEW all_atd_apd_blueform AS
  SELECT c.form_id,
     c.date,
@@ -247,7 +247,7 @@ UNION
     all_cr3_crashes_off_mainlane.death_cnt
    FROM all_cr3_crashes_off_mainlane;
 
--- Add materialized views that use location_id and branch from five_year_atd_apd_blueform
+-- 9. Add materialized views that use location_id and branch from five_year_atd_apd_blueform
 CREATE MATERIALIZED VIEW five_year_atd_apd_blueform AS
  SELECT c.form_id,
     c.date,
@@ -490,6 +490,6 @@ CREATE MATERIALIZED VIEW five_year_highway_polygons_with_crash_data AS
   WHERE p.location_group = 2
   GROUP BY p.location_id;
 
--- Drop functions that were removed and rolled into update_noncr3_location function
+-- 10. Drop functions that were removed and rolled into update_noncr3_location function
 DROP FUNCTION find_noncr3_mainlane_crash;
 DROP FUNCTION find_location_for_noncr3_collision;
