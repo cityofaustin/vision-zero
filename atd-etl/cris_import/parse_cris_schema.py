@@ -71,6 +71,7 @@ def create_cris_lookup_tables(file_path):
 
         workbook = load_workbook(filename=file_path)
         for worksheet in workbook.worksheets:
+            print("")
             print("Title: ", worksheet.title.lower())
             match = re.search(r"(\w+)_LKP", worksheet.title)
             lookup_table = match.group(1).lower() if match else None
