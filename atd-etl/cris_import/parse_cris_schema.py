@@ -42,7 +42,7 @@ def main():
     DB_BASTION_HOST = secrets["bastion_host"]
     DB_RDS_HOST = secrets["database_host"]
 
-    SFTP_ENDPOINT_SSH_PRIVATE_KEY = secrets["sftp_endpoint_private_key"]
+    print("DB_BASTION_HOST: ", DB_BASTION_HOST)
 
     # read_xlsx_to_get_FK_relationships("/data/cris_spec.xlsx")
     create_cris_lookup_tables("/data/cris_spec.xlsx")
