@@ -45,7 +45,7 @@ def main():
     print("DB_BASTION_HOST: ", DB_BASTION_HOST)
 
     # read_xlsx_to_get_FK_relationships("/data/cris_spec.xlsx")
-    create_cris_lookup_tables("/data/cris_spec.xlsx")
+    #create_cris_lookup_tables("/data/cris_spec.xlsx")
 
 
 def create_cris_lookup_tables(file_path):
@@ -76,12 +76,12 @@ def create_cris_lookup_tables(file_path):
             match = re.search(r"(\w+)_LKP", worksheet.title)
             lookup_table = match.group(1).lower() if match else None
             if lookup_table:
-                if not lookup_table == 'cntl_sect':
+                #if not lookup_table == 'inv_notify_meth':
                     #pass
-                    continue
+                    #continue
 
-                #skip_tables = ("cntl_sect", "inv_notify_meth")
-                #skip_tables = ("cas_transp_name", "cas_transp_locat", "ins_co_name", "cntl_sect", "inv_notify_meth") # for dev
+                #skip_tables = ("inv_notify_meth")
+                #skip_tables = ("cas_transp_name", "cas_transp_locat", "ins_co_name", "inv_notify_meth") # for dev
                 #if lookup_table in skip_tables:
                     #continue
 
