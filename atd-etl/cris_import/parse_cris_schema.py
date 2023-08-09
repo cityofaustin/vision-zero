@@ -9,6 +9,7 @@ from sshtunnel import SSHTunnelForwarder
 from onepasswordconnectsdk.client import Client, new_client
 import tempfile
 import shutil
+import time
 
 DEPLOYMENT_ENVIRONMENT = os.environ.get(
     "ENVIRONMENT", "development"
@@ -45,10 +46,10 @@ def main():
     print("DB_BASTION_HOST: ", DB_BASTION_HOST)
 
     # read_xlsx_to_get_FK_relationships("/data/cris_spec.xlsx")
-    #create_cris_lookup_tables("/data/cris_spec.xlsx")
+    process_spreadsheet("/data/cris_spec.xlsx")
 
 
-def create_cris_lookup_tables(file_path):
+def process_spreadsheet(file_path):
     with SshKeyTempDir() as key_directory:
         write_key_to_file(key_directory + "/id_ed25519", DB_BASTION_HOST_SSH_PRIVATE_KEY + "\n") 
         ssh_tunnel = SSHTunnelForwarder(
@@ -69,55 +70,120 @@ def create_cris_lookup_tables(file_path):
             sslrootcert="/root/rds-combined-ca-bundle.pem",
         )
 
-        workbook = load_workbook(filename=file_path)
-        for worksheet in workbook.worksheets:
-            print("")
-            print("Title: ", worksheet.title.lower())
-            match = re.search(r"(\w+)_LKP", worksheet.title)
-            lookup_table = match.group(1).lower() if match else None
-            if lookup_table:
-                #if not lookup_table == 'inv_notify_meth':
-                    #pass
-                    #continue
+        # create_lookup_tables(file_path, pg)
+        create_materialized_views(file_path, pg)
 
-                #skip_tables = ("inv_notify_meth")
-                #skip_tables = ("cas_transp_name", "cas_transp_locat", "ins_co_name", "inv_notify_meth") # for dev
-                #if lookup_table in skip_tables:
-                    #continue
+def create_materialized_views(file_path, pg):
+    workbook = load_workbook(filename=file_path)
+    for worksheet in workbook.worksheets:
+        print("")
+        print("Title: ", worksheet.title.lower())
+        match = re.search(r"(\w+)_LKP", worksheet.title)
+        lookup_table = match.group(1).lower() if match else None
+        if lookup_table:
+            drop = f"drop materialized view if exists lookup.{lookup_table};"
+            drop_cursor = pg.cursor()
+            print(f"Drop: {drop}")
+            drop_cursor.execute(drop)
+            drop_cursor.close()
+            pg.commit()
 
-                drop = f"drop table if exists cris_lookup.{lookup_table} cascade;"
-                drop_cursor = pg.cursor()
-                print(f"Drop: {drop}")
-                drop_cursor.execute(drop)
-                drop_cursor.close()
-                pg.commit()
+            namespace_size = 7
+            materialized_view = f"""
+                CREATE MATERIALIZED VIEW lookup.{lookup_table} AS
+                    SELECT 
+                        ('x'||substring(encode(digest(id::character varying || 'vz', 'sha1'), 'hex') from 1 for {namespace_size}))::varbit::bit({namespace_size * 4})::integer as id,
+                        description
+                    FROM cris_lookup.{lookup_table}
+                    WHERE active IS TRUE
+                    UNION ALL
+                    SELECT 
+                        ('x'||substring(encode(digest(id::character varying || 'cris', 'sha1'), 'hex') from 1 for {namespace_size}))::varbit::bit({namespace_size * 4})::integer as id,
+                        description
+                    FROM vz_lookup.{lookup_table}
+                    WHERE active IS TRUE
+                    """
+            materialized_view_cursor = pg.cursor()
+            print(f"view: {materialized_view}")
+            materialized_view_cursor.execute(materialized_view)
+            materialized_view_cursor.close()
+            pg.commit()
 
-                if lookup_table == "state":
-                    populate_state_table(worksheet, lookup_table, pg)
-                elif lookup_table == "veh_mod_year":
-                    populate_veh_mod_year_table(worksheet, lookup_table, pg)
-                elif lookup_table == "cntl_sect":
-                    populate_cntl_sect_table(worksheet, lookup_table, pg)
-                else:
-                    populate_table(worksheet, lookup_table, pg)
+            check_cursor = pg.cursor()
+            check_cursor.execute(f"""
+                SELECT id
+                FROM lookup.{lookup_table}
+                GROUP BY id
+                HAVING COUNT(id) > 1;
+            """)
+
+            result = check_cursor.fetchall()
+            check_cursor.close()
+            print(f"result: {result}")
+            if result:
+                raise Exception(f"Duplicate IDs found in lookup.{lookup_table}")
+
+def create_lookup_tables(file_path, pg):
+
+    workbook = load_workbook(filename=file_path)
+    for worksheet in workbook.worksheets:
+        print("")
+        print("Title: ", worksheet.title.lower())
+        match = re.search(r"(\w+)_LKP", worksheet.title)
+        lookup_table = match.group(1).lower() if match else None
+        if lookup_table:
+            #if not lookup_table == 'inv_notify_meth':
+                #pass
+                #continue
+
+            #skip_tables = ("inv_notify_meth")
+            #skip_tables = ("cas_transp_name", "cas_transp_locat", "ins_co_name", "inv_notify_meth", "cntl_sect") # for dev
+            #if lookup_table in skip_tables:
+                #continue
+
+            drop = f"drop table if exists cris_lookup.{lookup_table} cascade;"
+            drop_cursor = pg.cursor()
+            print(f"Drop: {drop}")
+            drop_cursor.execute(drop)
+            drop_cursor.close()
+            pg.commit()
+
+            drop = f"drop table if exists vz_lookup.{lookup_table} cascade;"
+            drop_cursor = pg.cursor()
+            print(f"Drop: {drop}")
+            drop_cursor.execute(drop)
+            drop_cursor.close()
+            pg.commit()
+
+            if lookup_table == "state":
+                populate_state_table(worksheet, lookup_table, pg)
+            elif lookup_table == "veh_mod_year":
+                populate_veh_mod_year_table(worksheet, lookup_table, pg)
+            elif lookup_table == "cntl_sect":
+                populate_cntl_sect_table(worksheet, lookup_table, pg)
+            else:
+                populate_table(worksheet, lookup_table, pg)
+
+
 
 def populate_table(worksheet, lookup_table, pg):
     print("Lookup Table: ", lookup_table)
 
-    create = f"""create table cris_lookup.{lookup_table} (
-        id serial primary key, 
-        upstream_id integer, 
-        description text, 
-        effective_begin_date date, 
-        effective_end_date date,
-        active boolean default true
-        );"""
+    for schema in ['vz', 'cris']:
+        create = f"""create table {schema}_lookup.{lookup_table} (
+            id serial primary key, 
+            upstream_id integer, 
+            description text, 
+            effective_begin_date date, 
+            effective_end_date date,
+            active boolean default true
+            );"""
 
-    create_cursor = pg.cursor()
-    print(f"Create: {create}")
-    create_cursor.execute(create)
-    create_cursor.close()
-    pg.commit()
+        create_cursor = pg.cursor()
+        print(f"Create: {create}")
+        create_cursor.execute(create)
+        create_cursor.close()
+        pg.commit()
 
     for row in worksheet.iter_rows(values_only=True, min_row=2):
         print(row)
@@ -134,21 +200,22 @@ def populate_table(worksheet, lookup_table, pg):
 def populate_state_table(worksheet, lookup_table, pg):
     print("Lookup Table: ", lookup_table)
 
-    create = f"""create table cris_lookup.{lookup_table} (
-        id serial primary key, 
-        upstream_id integer, 
-        abbreviation text,
-        description text, 
-        effective_begin_date date, 
-        effective_end_date date,
-        active boolean default true
-        );"""
+    for schema in ['vz', 'cris']:
+        create = f"""create table {schema}_lookup.{lookup_table} (
+            id serial primary key, 
+            upstream_id integer, 
+            abbreviation text,
+            description text, 
+            effective_begin_date date, 
+            effective_end_date date,
+            active boolean default true
+            );"""
 
-    create_cursor = pg.cursor()
-    print(f"Create: {create}")
-    create_cursor.execute(create)
-    create_cursor.close()
-    pg.commit()
+        create_cursor = pg.cursor()
+        print(f"Create: {create}")
+        create_cursor.execute(create)
+        create_cursor.close()
+        pg.commit()
 
     for row in worksheet.iter_rows(values_only=True, min_row=2):
         print(row)
@@ -164,19 +231,19 @@ def populate_state_table(worksheet, lookup_table, pg):
 def populate_veh_mod_year_table(worksheet, lookup_table, pg):
     print("Lookup Table: ", lookup_table)
 
+    for schema in ['vz', 'cris']:
+        create = f"""create table {schema}_lookup.{lookup_table} (
+            id serial primary key, 
+            upstream_id integer, 
+            description text, 
+            active boolean default true
+            );"""
 
-    create = f"""create table cris_lookup.{lookup_table} (
-        id serial primary key, 
-        upstream_id integer, 
-        description text, 
-        active boolean default true
-        );"""
-
-    create_cursor = pg.cursor()
-    print(f"Create: {create}")
-    create_cursor.execute(create)
-    create_cursor.close()
-    pg.commit()
+        create_cursor = pg.cursor()
+        print(f"Create: {create}")
+        create_cursor.execute(create)
+        create_cursor.close()
+        pg.commit()
 
     for row in worksheet.iter_rows(values_only=True, min_row=2):
         print(row)
@@ -193,38 +260,39 @@ def populate_cntl_sect_table(worksheet, lookup_table, pg):
     print("Lookup Table: ", lookup_table)
 
 
-    create = f"""create table cris_lookup.{lookup_table} (
-        id serial primary key, 
-        
-        dps_region_id integer,
-        dps_district_id integer,
-        txdot_district_id integer,
-        cris_cnty_id integer,
-        road_id integer,
-        cntl_sect_id integer,
-        cntl_id integer,
-        section_id integer,
-        cntl_sect_nbr text,
-        rhino_cntl_sect_nbr integer,
-        begin_milepoint numeric(8,3),
-        end_milepoint numeric(8,3),
-        from_dfo numeric(8,3),
-        to_dfo numeric(8,3),
-        create_timestamp timestamp,
-        update_timestamp timestamp,
-        effective_begin_date date, 
-        effective_end_date date, 
-        active boolean default true
-        );"""
+    for schema in ['vz', 'cris']:
+        create = f"""create table {schema}_lookup.{lookup_table} (
+            id serial primary key, 
+            
+            dps_region_id integer,
+            dps_district_id integer,
+            txdot_district_id integer,
+            cris_cnty_id integer,
+            road_id integer,
+            cntl_sect_id integer,
+            cntl_id integer,
+            section_id integer,
+            cntl_sect_nbr text,
+            rhino_cntl_sect_nbr integer,
+            begin_milepoint numeric(8,3),
+            end_milepoint numeric(8,3),
+            from_dfo numeric(8,3),
+            to_dfo numeric(8,3),
+            create_timestamp timestamp,
+            update_timestamp timestamp,
+            effective_begin_date date, 
+            effective_end_date date, 
+            active boolean default true
+            );"""
 
 
-        #upstream_id integer, 
-        #description text, 
-    create_cursor = pg.cursor()
-    print(f"Create: {create}")
-    create_cursor.execute(create)
-    create_cursor.close()
-    pg.commit()
+            #upstream_id integer, 
+            #description text, 
+        create_cursor = pg.cursor()
+        print(f"Create: {create}")
+        create_cursor.execute(create)
+        create_cursor.close()
+        pg.commit()
 
     row_failure_count = 0
     for row in worksheet.iter_rows(values_only=True, min_row=2):
@@ -245,6 +313,8 @@ def populate_cntl_sect_table(worksheet, lookup_table, pg):
         insert_cursor.close()
         pg.commit()
     print(f"Row failure count: {row_failure_count}")
+
+
 
 def replace_null(input_tuple):
     return tuple(None if item == "<null>" else item for item in input_tuple)
