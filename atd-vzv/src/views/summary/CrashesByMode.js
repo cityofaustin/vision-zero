@@ -29,6 +29,7 @@ const CrashesByMode = () => {
     colors.viridis3Of6,
     colors.viridis4Of6,
     colors.viridis5Of6,
+    colors.viridis6Of6Lowest,
   ];
 
   const [chartData, setChartData] = useState(null); // {yearInt: [{record}, {record}, ...]}
