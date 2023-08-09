@@ -13,3 +13,7 @@ ALTER TABLE atd_txdot_crashes
 RENAME COLUMN generated_location_id TO location_id;
 
 -- TODO add DB views that use location_id
+
+DROP FUNCTION find_cr3_mainlane_crash();
+DROP FUNCTION find_location_for_cr3_collision();
+DROP FUNCTION find_location_id_for_cr3_collision();
