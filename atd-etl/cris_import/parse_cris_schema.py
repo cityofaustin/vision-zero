@@ -76,14 +76,14 @@ def create_cris_lookup_tables(file_path):
             match = re.search(r"(\w+)_LKP", worksheet.title)
             lookup_table = match.group(1).lower() if match else None
             if lookup_table:
-                if not lookup_table == 'veh_mod_year':
-                    pass
-                    #continue
-
-                skip_tables = ("cntl_sect", "inv_notify_meth")
-                #skip_tables = ("cas_transp_name", "cas_transp_locat", "ins_co_name", "cntl_sect", "inv_notify_meth") # for dev
-                if lookup_table in skip_tables:
+                if not lookup_table == 'cntl_sect':
+                    #pass
                     continue
+
+                #skip_tables = ("cntl_sect", "inv_notify_meth")
+                #skip_tables = ("cas_transp_name", "cas_transp_locat", "ins_co_name", "cntl_sect", "inv_notify_meth") # for dev
+                #if lookup_table in skip_tables:
+                    #continue
 
                 drop = f"drop table if exists cris_lookup.{lookup_table} cascade;"
                 drop_cursor = pg.cursor()
@@ -96,6 +96,8 @@ def create_cris_lookup_tables(file_path):
                     populate_state_table(worksheet, lookup_table, pg)
                 elif lookup_table == "veh_mod_year":
                     populate_veh_mod_year_table(worksheet, lookup_table, pg)
+                elif lookup_table == "cntl_sect":
+                    populate_cntl_sect_table(worksheet, lookup_table, pg)
                 else:
                     populate_table(worksheet, lookup_table, pg)
 
@@ -186,6 +188,66 @@ def populate_veh_mod_year_table(worksheet, lookup_table, pg):
         insert_cursor.execute(insert, row[:2])
         insert_cursor.close()
         pg.commit()
+
+def populate_cntl_sect_table(worksheet, lookup_table, pg):
+    print("Lookup Table: ", lookup_table)
+
+
+    create = f"""create table cris_lookup.{lookup_table} (
+        id serial primary key, 
+        
+        dps_region_id integer,
+        dps_district_id integer,
+        txdot_district_id integer,
+        cris_cnty_id integer,
+        road_id integer,
+        cntl_sect_id integer,
+        cntl_id integer,
+        section_id integer,
+        cntl_sect_nbr text,
+        rhino_cntl_sect_nbr integer,
+        begin_milepoint numeric(8,3),
+        end_milepoint numeric(8,3),
+        from_dfo numeric(8,3),
+        to_dfo numeric(8,3),
+        create_timestamp timestamp,
+        update_timestamp timestamp,
+        effective_begin_date date, 
+        effective_end_date date, 
+        active boolean default true
+        );"""
+
+
+        #upstream_id integer, 
+        #description text, 
+    create_cursor = pg.cursor()
+    print(f"Create: {create}")
+    create_cursor.execute(create)
+    create_cursor.close()
+    pg.commit()
+
+    row_failure_count = 0
+    for row in worksheet.iter_rows(values_only=True, min_row=2):
+        print("")
+        print(row)
+        insert = f"""insert into cris_lookup.{lookup_table}
+            (dps_region_id, dps_district_id, txdot_district_id, cris_cnty_id, road_id, cntl_sect_id, cntl_id, section_id, cntl_sect_nbr, rhino_cntl_sect_nbr, begin_milepoint, end_milepoint, from_dfo, to_dfo, create_timestamp, update_timestamp, effective_begin_date, effective_end_date)
+            values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"""
+        insert_cursor = pg.cursor()
+        print(f"Insert: {insert}")
+        cleaned_up_row = replace_null(row)
+        try:
+            insert_cursor.execute(insert, cleaned_up_row)
+        except:
+            print('\a') # 🛎️
+            row_failure_count += 1
+            pass
+        insert_cursor.close()
+        pg.commit()
+    print(f"Row failure count: {row_failure_count}")
+
+def replace_null(input_tuple):
+    return tuple(None if item == "<null>" else item for item in input_tuple)
 
 
 def process_worksheet(worksheet, lookups):
