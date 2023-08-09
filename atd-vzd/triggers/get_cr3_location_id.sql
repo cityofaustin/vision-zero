@@ -14,7 +14,7 @@ CREATE OR REPLACE FUNCTION get_cr3_location_id(
                     WHERE location_group = 2 -- level 5 polygons
                     AND (geometry && location)
                     AND ST_Contains(geometry, location)
-                    LIMIT 1
+                    LIMIT 1 --TODO: This should be temporary until we get our polygons in order and there are no overlaps
                 );
             -- Return the location id of the crash by finding which location polygon the crash
             -- geographic position resides in
@@ -25,7 +25,7 @@ CREATE OR REPLACE FUNCTION get_cr3_location_id(
                     WHERE location_group = 1 -- level 1-4 polygons
                     AND (geometry && location)
                     AND ST_Contains(geometry, location)
-                    LIMIT 1
+                    LIMIT 1 --TODO: This should be temporary until we get our polygons in order
                 );
             END IF;
         END;
