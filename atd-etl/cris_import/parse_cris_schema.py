@@ -18,6 +18,8 @@ ONEPASSWORD_CONNECT_TOKEN = os.getenv("OP_API_TOKEN")  # our secret to get secre
 ONEPASSWORD_CONNECT_HOST = os.getenv("OP_CONNECT")  # where we get our secrets
 VAULT_ID = os.getenv("OP_VAULT_ID")
 
+process_tables = ['agency', 'crash_sev']
+
 def main():
     global DB_HOST
     global DB_USER
@@ -45,7 +47,7 @@ def main():
 
     print("DB_BASTION_HOST: ", DB_BASTION_HOST)
 
-    # read_xlsx_to_get_FK_relationships("/data/cris_spec.xlsx")
+    #read_xlsx_to_get_FK_relationships("/data/cris_spec.xlsx")
     process_spreadsheet("/data/cris_spec.xlsx")
 
 
@@ -69,8 +71,7 @@ def process_spreadsheet(file_path):
             sslmode=DB_SSL_REQUIREMENT,
             sslrootcert="/root/rds-combined-ca-bundle.pem",
         )
-
-        # create_lookup_tables(file_path, pg)
+        create_lookup_tables(file_path, pg)
         create_materialized_views(file_path, pg)
 
 def create_materialized_views(file_path, pg):
@@ -81,6 +82,9 @@ def create_materialized_views(file_path, pg):
         match = re.search(r"(\w+)_LKP", worksheet.title)
         lookup_table = match.group(1).lower() if match else None
         if lookup_table:
+            if not lookup_table in process_tables:
+                continue
+
             drop = f"drop materialized view if exists lookup.{lookup_table};"
             drop_cursor = pg.cursor()
             print(f"Drop: {drop}")
@@ -88,17 +92,20 @@ def create_materialized_views(file_path, pg):
             drop_cursor.close()
             pg.commit()
 
-            namespace_size = 7
+            if lookup_table == "cntl_sect":
+                continue
+
+            namespace_size = 8
             materialized_view = f"""
                 CREATE MATERIALIZED VIEW lookup.{lookup_table} AS
                     SELECT 
-                        ('x'||substring(encode(digest(id::character varying || 'vz', 'sha1'), 'hex') from 1 for {namespace_size}))::varbit::bit({namespace_size * 4})::integer as id,
+                        global_id as id,
                         description
                     FROM cris_lookup.{lookup_table}
                     WHERE active IS TRUE
                     UNION ALL
                     SELECT 
-                        ('x'||substring(encode(digest(id::character varying || 'cris', 'sha1'), 'hex') from 1 for {namespace_size}))::varbit::bit({namespace_size * 4})::integer as id,
+                        global_id as id,
                         description
                     FROM vz_lookup.{lookup_table}
                     WHERE active IS TRUE
@@ -132,14 +139,8 @@ def create_lookup_tables(file_path, pg):
         match = re.search(r"(\w+)_LKP", worksheet.title)
         lookup_table = match.group(1).lower() if match else None
         if lookup_table:
-            #if not lookup_table == 'inv_notify_meth':
-                #pass
-                #continue
-
-            #skip_tables = ("inv_notify_meth")
-            #skip_tables = ("cas_transp_name", "cas_transp_locat", "ins_co_name", "inv_notify_meth", "cntl_sect") # for dev
-            #if lookup_table in skip_tables:
-                #continue
+            if not lookup_table in process_tables:
+                continue
 
             drop = f"drop table if exists cris_lookup.{lookup_table} cascade;"
             drop_cursor = pg.cursor()
@@ -153,6 +154,20 @@ def create_lookup_tables(file_path, pg):
             print(f"Drop: {drop}")
             drop_cursor.execute(drop)
             drop_cursor.close()
+            pg.commit()
+
+            drop_sequence = f"DROP SEQUENCE IF EXISTS lookup.{lookup_table}_global_id"
+            drop_sequence_cursor = pg.cursor()
+            print(f"Drop: {drop_sequence}")
+            drop_sequence_cursor.execute(drop_sequence)
+            drop_sequence_cursor.close()
+            pg.commit()
+
+            create_sequence = f"CREATE SEQUENCE lookup.{lookup_table}_global_id"
+            create_sequence_cursor = pg.cursor()
+            print(f"Create Sequence: {create_sequence}")
+            create_sequence_cursor.execute(create_sequence)
+            create_sequence_cursor.close()
             pg.commit()
 
             if lookup_table == "state":
@@ -172,6 +187,7 @@ def populate_table(worksheet, lookup_table, pg):
     for schema in ['vz', 'cris']:
         create = f"""create table {schema}_lookup.{lookup_table} (
             id serial primary key, 
+            global_id integer default nextval('lookup.{lookup_table}_global_id'),
             upstream_id integer, 
             description text, 
             effective_begin_date date, 
