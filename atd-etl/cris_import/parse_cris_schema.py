@@ -18,7 +18,7 @@ ONEPASSWORD_CONNECT_TOKEN = os.getenv("OP_API_TOKEN")  # our secret to get secre
 ONEPASSWORD_CONNECT_HOST = os.getenv("OP_CONNECT")  # where we get our secrets
 VAULT_ID = os.getenv("OP_VAULT_ID")
 
-process_tables = ['agency', 'crash_sev']
+process_tables = ['agency', 'crash_sev', 'surf_cond']
 
 def main():
     global DB_HOST
@@ -97,16 +97,18 @@ def create_materialized_views(file_path, pg):
 
             namespace_size = 8
             materialized_view = f"""
-                CREATE MATERIALIZED VIEW lookup.{lookup_table} AS
+                CREATE VIEW lookup.{lookup_table} AS
                     SELECT 
                         global_id as id,
-                        description
+                        'cris' as source,
+                        UPPER(description) as description
                     FROM cris_lookup.{lookup_table}
                     WHERE active IS TRUE
                     UNION ALL
                     SELECT 
                         global_id as id,
-                        description
+                        'vz' as source,
+                        UPPER(description) as description
                     FROM vz_lookup.{lookup_table}
                     WHERE active IS TRUE
                     """
