@@ -1,40 +1,47 @@
--- Function for atd_apd_blueform generated column called location_id
-CREATE OR REPLACE FUNCTION update_noncr3_location(blueform_case_id integer)
-  RETURNS varchar 
+-- Function for insert and update triggers on atd_apd_blueform
+CREATE OR REPLACE FUNCTION update_noncr3_location()
+  RETURNS TRIGGER 
   LANGUAGE PLPGSQL
-  IMMUTABLE
   AS
 $$
+DECLARE 
+    found_location_id varchar;
+
 BEGIN
-    -- Check if crash is main-lane and of concern to TxDOT
-	IF EXISTS (SELECT atc.*
-                FROM atd_apd_blueform AS atc
-                INNER JOIN non_cr3_mainlanes AS ncr3m ON (
-                atc.position && ncr3m.geometry
-                AND ST_Contains(
-                        ST_Transform(
-                                ST_Buffer(
-                                    ST_Transform(ncr3m.geometry, 2277),
-                                    1,
-                                    'endcap=flat join=round'
-                                ),
-                                4326
-                        ), /* transform into 2277 to buffer by a foot, not a degree */
-                        atc.position
-                    )
-                )
-                WHERE atc.case_id = blueform_case_id) THEN
+    -- Check if crash is on a major road and of concern to TxDOT
+    IF EXISTS (SELECT ncr3m.*
+                FROM non_cr3_mainlanes AS ncr3m WHERE (
+                            st_setsrid(ST_POINT(NEW.longitude, NEW.latitude ), 4326) && ncr3m.geometry
+                            AND ST_Contains(
+                                ST_Transform(
+                                        ST_Buffer(
+                                            ST_Transform(ncr3m.geometry, 2277),
+                                            1,
+                                            'endcap=flat join=round'
+                                        ),
+                                        4326
+                                ), /* transform into 2277 to buffer by a foot, not a degree */
+                                st_setsrid(ST_POINT(NEW.longitude, NEW.latitude ), 4326)
+                            )
+                    )) THEN
         -- If it is, then set the location_id to None
-		RETURN NULL;
+		UPDATE atd_apd_blueform SET location_id = NULL 
+        WHERE case_id = NEW.case_id;
     ELSE 
-        -- If it isn't main-lane and is of concern to Vision Zero, try to find a location_id for it
-        RETURN (SELECT aab.location_id FROM atd_apd_blueform AS aab
-                INNER JOIN atd_txdot_locations AS atl
-                ON ( atl.location_group = 1
-                    AND (atl.geometry && aab.position)
-                    AND ST_Contains(atl.geometry, aab.position)
-                    )
-                WHERE aab.case_id = blueform_case_id);
+        -- If it isn't on a major road and is of concern to Vision Zero, try to find a location_id for it
+        SELECT location_id INTO found_location_id FROM atd_txdot_locations AS atl
+                                 WHERE ( atl.location_group = 1
+                                     AND (atl.shape && st_setsrid(ST_POINT(NEW.longitude, NEW.latitude ), 4326))
+                                     AND ST_Contains(atl.shape, st_setsrid(ST_POINT(NEW.longitude, NEW.latitude ), 4326))
+                                     );
+
+        -- If a location is found, update the record
+        IF found_location_id IS NOT NULL THEN
+            UPDATE atd_apd_blueform SET location_id = found_location_id 
+            WHERE case_id = NEW.case_id;
+        END IF;
     END IF;
+
+	RETURN NEW;
 END;
 $$

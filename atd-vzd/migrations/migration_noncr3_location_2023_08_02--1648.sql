@@ -1,7 +1,16 @@
--- 1. Add generated column for non-CR3 crash locations
-ALTER TABLE atd_apd_blueform
-ADD COLUMN generated_location_id varchar 
-GENERATED ALWAYS AS (update_noncr3_location(case_id)) STORED;
+-- 1. Add triggers to update location_id on insert and update
+CREATE TRIGGER update_noncr3_location_on_insert
+AFTER INSERT ON atd_apd_blueform
+FOR EACH ROW
+WHEN (NEW.latitude IS NOT NULL AND NEW.longitude IS NOT NULL)
+EXECUTE PROCEDURE update_noncr3_location();
+
+CREATE TRIGGER update_noncr3_location_on_update
+AFTER UPDATE ON atd_apd_blueform
+FOR EACH ROW
+WHEN (OLD.latitude IS DISTINCT FROM NEW.latitude
+OR OLD.longitude IS DISTINCT FROM NEW.longitude)
+EXECUTE PROCEDURE update_noncr3_location();
 
 -- 2. Drop views that use location_id
 DROP VIEW IF EXISTS locations_with_crash_injury_counts;
