@@ -241,63 +241,6 @@ def create_materialized_view_generic(pg, lookup_table):
         raise Exception(f"Duplicate IDs found in lookup.{lookup_table}")
 
 
-def create_materialized_views(file_path, pg):
-    workbook = load_workbook(filename=file_path)
-    for worksheet in workbook.worksheets:
-        print("")
-        print("Title: ", worksheet.title.lower())
-        match = re.search(r"(\w+)_LKP", worksheet.title)
-        lookup_table = match.group(1).lower() if match else None
-        if lookup_table:
-            if process_tables and not lookup_table in process_tables:
-                continue
-
-            drop = f"drop materialized view if exists lookup.{lookup_table};"
-            drop_cursor = pg.cursor()
-            print(f"Drop: {drop}")
-            drop_cursor.execute(drop)
-            drop_cursor.close()
-            pg.commit()
-
-            namespace_size = 8
-            materialized_view = f"""
-                CREATE VIEW lookup.{lookup_table} AS
-                    SELECT 
-                        global_id as id,
-                        'cris' as source,
-                        UPPER(description) as description
-                    FROM cris_lookup.{lookup_table}
-                    WHERE active IS TRUE
-                        AND coalesce(effective_begin_date <= now(), true)
-                        AND coalesce(effective_end_date   >= now(), true)
-                    UNION ALL
-                    SELECT 
-                        global_id as id,
-                        'vz' as source,
-                        UPPER(description) as description
-                    FROM vz_lookup.{lookup_table}
-                    WHERE active IS TRUE
-                    """
-            materialized_view_cursor = pg.cursor()
-            print(f"view: {materialized_view}")
-            materialized_view_cursor.execute(materialized_view)
-            materialized_view_cursor.close()
-            pg.commit()
-
-            check_cursor = pg.cursor()
-            check_cursor.execute(f"""
-                SELECT id
-                FROM lookup.{lookup_table}
-                GROUP BY id
-                HAVING COUNT(id) > 1;
-            """)
-
-            result = check_cursor.fetchall()
-            check_cursor.close()
-            print(f"result: {result}")
-            if result:
-                raise Exception(f"Duplicate IDs found in lookup.{lookup_table}")
-
 def populate_state_table(worksheet, lookup_table, pg):
     print("Lookup Table: ", lookup_table)
 
@@ -343,6 +286,54 @@ def populate_state_table(worksheet, lookup_table, pg):
         insert_cursor.execute(insert, row[:5])
         insert_cursor.close()
         pg.commit()
+
+def create_materialized_view_state(pg, lookup_table):
+    drop = f"drop materialized view if exists lookup.{lookup_table};"
+    drop_cursor = pg.cursor()
+    print(f"Drop: {drop}")
+    drop_cursor.execute(drop)
+    drop_cursor.close()
+    pg.commit()
+
+    namespace_size = 8
+    materialized_view = f"""
+        CREATE VIEW lookup.{lookup_table} AS
+            SELECT 
+                global_id as id,
+                'cris' as source,
+                UPPER(abbreviation) as abbreviation,
+                UPPER(description) as description
+            FROM cris_lookup.{lookup_table}
+            WHERE active IS TRUE
+            UNION ALL
+            SELECT 
+                global_id as id,
+                'vz' as source,
+                UPPER(abbreviation) as abbreviation,
+                UPPER(description) as description
+            FROM vz_lookup.{lookup_table}
+            WHERE active IS TRUE
+            """
+    materialized_view_cursor = pg.cursor()
+    print(f"view: {materialized_view}")
+    materialized_view_cursor.execute(materialized_view)
+    materialized_view_cursor.close()
+    pg.commit()
+
+    check_cursor = pg.cursor()
+    check_cursor.execute(f"""
+        SELECT id
+        FROM lookup.{lookup_table}
+        GROUP BY id
+        HAVING COUNT(id) > 1;
+    """)
+
+    result = check_cursor.fetchall()
+    check_cursor.close()
+    print(f"result: {result}")
+    if result:
+        raise Exception(f"Duplicate IDs found in lookup.{lookup_table}")
+
 
 def populate_veh_mod_year_table(worksheet, lookup_table, pg):
     print("Lookup Table: ", lookup_table)
