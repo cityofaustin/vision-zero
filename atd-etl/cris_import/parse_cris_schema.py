@@ -104,8 +104,8 @@ def create_materialized_views(file_path, pg):
                         UPPER(description) as description
                     FROM cris_lookup.{lookup_table}
                     WHERE active IS TRUE
-                        AND effective_begin_date <= now()
-                        AND effective_end_date >= now()
+                        AND coalesce(effective_begin_date <= now(), true)
+                        AND coalesce(effective_end_date   >= now(), true)
                     UNION ALL
                     SELECT 
                         global_id as id,
@@ -188,22 +188,35 @@ def create_lookup_tables(file_path, pg):
 def populate_table(worksheet, lookup_table, pg):
     print("Lookup Table: ", lookup_table)
 
-    for schema in ['vz', 'cris']:
-        create = f"""create table {schema}_lookup.{lookup_table} (
-            id serial primary key, 
-            global_id integer default nextval('lookup.{lookup_table}_global_id'),
-            upstream_id integer, 
-            description text, 
-            effective_begin_date date, 
-            effective_end_date date,
-            active boolean default true
-            );"""
+    create_cris = f"""create table cris_lookup.{lookup_table} (
+        id serial primary key, 
+        global_id integer default nextval('lookup.{lookup_table}_global_id'),
+        upstream_id integer, 
+        description text, 
+        effective_begin_date date, 
+        effective_end_date date,
+        active boolean default true
+        );"""
 
-        create_cursor = pg.cursor()
-        print(f"Create: {create}")
-        create_cursor.execute(create)
-        create_cursor.close()
-        pg.commit()
+    create_cris_cursor = pg.cursor()
+    print(f"Create: {create_cris}")
+    create_cris_cursor.execute(create_cris)
+    create_cris_cursor.close()
+    pg.commit()
+
+    create_vz = f"""create table vz_lookup.{lookup_table} (
+        id serial primary key, 
+        global_id integer default nextval('lookup.{lookup_table}_global_id'),
+        upstream_id integer, 
+        description text, 
+        active boolean default true
+        );"""
+
+    create_vz_cursor = pg.cursor()
+    print(f"Create: {create_vz}")
+    create_vz_cursor.execute(create_vz)
+    create_vz_cursor.close()
+    pg.commit()
 
     for row in worksheet.iter_rows(values_only=True, min_row=2):
         print(row)
