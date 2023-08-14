@@ -104,6 +104,8 @@ def create_materialized_views(file_path, pg):
                         UPPER(description) as description
                     FROM cris_lookup.{lookup_table}
                     WHERE active IS TRUE
+                        AND effective_begin_date <= now()
+                        AND effective_end_date >= now()
                     UNION ALL
                     SELECT 
                         global_id as id,
