@@ -139,15 +139,15 @@ def create_materialized_views(file_path, pg):
 
             if lookup_table == "state":
                 pass
-                #populate_state_table(lookup_table, pg)
+                #populate_state_table(pg, lookup_table)
             elif lookup_table == "veh_mod_year":
                 pass
-                #populate_veh_mod_year_table(lookup_table, pg)
+                #populate_veh_mod_year_table(pg, lookup_table)
             elif lookup_table == "cntl_sect":
-                #populate_cntl_sect_table(lookup_table, pg)
+                #populate_cntl_sect_table(pg, lookup_table)
                 pass
             else:
-                create_materialized_view_generic(lookup_table, pg) 
+                create_materialized_view_generic(pg, lookup_table) 
 
 def populate_table(worksheet, lookup_table, pg):
     print("Lookup Table: ", lookup_table)
