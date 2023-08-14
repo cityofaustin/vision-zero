@@ -18,7 +18,8 @@ ONEPASSWORD_CONNECT_TOKEN = os.getenv("OP_API_TOKEN")  # our secret to get secre
 ONEPASSWORD_CONNECT_HOST = os.getenv("OP_CONNECT")  # where we get our secrets
 VAULT_ID = os.getenv("OP_VAULT_ID")
 
-process_tables = ['agency', 'crash_sev', 'surf_cond']
+process_tables = ['state', 'veh_mod_year', 'cntl_sect']
+process_tables = ['agency']
 
 def main():
     global DB_HOST
@@ -74,66 +75,7 @@ def process_spreadsheet(file_path):
         create_lookup_tables(file_path, pg)
         create_materialized_views(file_path, pg)
 
-def create_materialized_views(file_path, pg):
-    workbook = load_workbook(filename=file_path)
-    for worksheet in workbook.worksheets:
-        print("")
-        print("Title: ", worksheet.title.lower())
-        match = re.search(r"(\w+)_LKP", worksheet.title)
-        lookup_table = match.group(1).lower() if match else None
-        if lookup_table:
-            if not lookup_table in process_tables:
-                #continue
-                pass
 
-            drop = f"drop materialized view if exists lookup.{lookup_table};"
-            drop_cursor = pg.cursor()
-            print(f"Drop: {drop}")
-            drop_cursor.execute(drop)
-            drop_cursor.close()
-            pg.commit()
-
-            #if lookup_table == "cntl_sect":
-                #continue
-
-            namespace_size = 8
-            materialized_view = f"""
-                CREATE VIEW lookup.{lookup_table} AS
-                    SELECT 
-                        global_id as id,
-                        'cris' as source,
-                        UPPER(description) as description
-                    FROM cris_lookup.{lookup_table}
-                    WHERE active IS TRUE
-                        AND coalesce(effective_begin_date <= now(), true)
-                        AND coalesce(effective_end_date   >= now(), true)
-                    UNION ALL
-                    SELECT 
-                        global_id as id,
-                        'vz' as source,
-                        UPPER(description) as description
-                    FROM vz_lookup.{lookup_table}
-                    WHERE active IS TRUE
-                    """
-            materialized_view_cursor = pg.cursor()
-            print(f"view: {materialized_view}")
-            materialized_view_cursor.execute(materialized_view)
-            materialized_view_cursor.close()
-            pg.commit()
-
-            check_cursor = pg.cursor()
-            check_cursor.execute(f"""
-                SELECT id
-                FROM lookup.{lookup_table}
-                GROUP BY id
-                HAVING COUNT(id) > 1;
-            """)
-
-            result = check_cursor.fetchall()
-            check_cursor.close()
-            print(f"result: {result}")
-            if result:
-                raise Exception(f"Duplicate IDs found in lookup.{lookup_table}")
 
 def create_lookup_tables(file_path, pg):
 
@@ -144,9 +86,8 @@ def create_lookup_tables(file_path, pg):
         match = re.search(r"(\w+)_LKP", worksheet.title)
         lookup_table = match.group(1).lower() if match else None
         if lookup_table:
-            if not lookup_table in process_tables:
-                #continue
-                pass
+            if process_tables and not lookup_table in process_tables:
+                continue 
 
             drop = f"drop table if exists cris_lookup.{lookup_table} cascade;"
             drop_cursor = pg.cursor()
@@ -185,7 +126,28 @@ def create_lookup_tables(file_path, pg):
             else:
                 populate_table(worksheet, lookup_table, pg)
 
+def create_materialized_views(file_path, pg):
+    workbook = load_workbook(filename=file_path)
+    for worksheet in workbook.worksheets:
+        print("")
+        print("Title: ", worksheet.title.lower())
+        match = re.search(r"(\w+)_LKP", worksheet.title)
+        lookup_table = match.group(1).lower() if match else None
+        if lookup_table:
+            if process_tables and not lookup_table in process_tables:
+                continue
 
+            if lookup_table == "state":
+                pass
+                #populate_state_table(lookup_table, pg)
+            elif lookup_table == "veh_mod_year":
+                pass
+                #populate_veh_mod_year_table(lookup_table, pg)
+            elif lookup_table == "cntl_sect":
+                #populate_cntl_sect_table(lookup_table, pg)
+                pass
+            else:
+                create_materialized_view_generic(lookup_table, pg) 
 
 def populate_table(worksheet, lookup_table, pg):
     print("Lookup Table: ", lookup_table)
@@ -231,12 +193,117 @@ def populate_table(worksheet, lookup_table, pg):
         insert_cursor.close()
         pg.commit()
 
+def create_materialized_view_generic(pg, lookup_table):
+    drop = f"drop materialized view if exists lookup.{lookup_table};"
+    drop_cursor = pg.cursor()
+    print(f"Drop: {drop}")
+    drop_cursor.execute(drop)
+    drop_cursor.close()
+    pg.commit()
+
+    namespace_size = 8
+    materialized_view = f"""
+        CREATE VIEW lookup.{lookup_table} AS
+            SELECT 
+                global_id as id,
+                'cris' as source,
+                UPPER(description) as description
+            FROM cris_lookup.{lookup_table}
+            WHERE active IS TRUE
+                AND coalesce(effective_begin_date <= now(), true)
+                AND coalesce(effective_end_date   >= now(), true)
+            UNION ALL
+            SELECT 
+                global_id as id,
+                'vz' as source,
+                UPPER(description) as description
+            FROM vz_lookup.{lookup_table}
+            WHERE active IS TRUE
+            """
+    materialized_view_cursor = pg.cursor()
+    print(f"view: {materialized_view}")
+    materialized_view_cursor.execute(materialized_view)
+    materialized_view_cursor.close()
+    pg.commit()
+
+    check_cursor = pg.cursor()
+    check_cursor.execute(f"""
+        SELECT id
+        FROM lookup.{lookup_table}
+        GROUP BY id
+        HAVING COUNT(id) > 1;
+    """)
+
+    result = check_cursor.fetchall()
+    check_cursor.close()
+    print(f"result: {result}")
+    if result:
+        raise Exception(f"Duplicate IDs found in lookup.{lookup_table}")
+
+
+def create_materialized_views(file_path, pg):
+    workbook = load_workbook(filename=file_path)
+    for worksheet in workbook.worksheets:
+        print("")
+        print("Title: ", worksheet.title.lower())
+        match = re.search(r"(\w+)_LKP", worksheet.title)
+        lookup_table = match.group(1).lower() if match else None
+        if lookup_table:
+            if process_tables and not lookup_table in process_tables:
+                continue
+
+            drop = f"drop materialized view if exists lookup.{lookup_table};"
+            drop_cursor = pg.cursor()
+            print(f"Drop: {drop}")
+            drop_cursor.execute(drop)
+            drop_cursor.close()
+            pg.commit()
+
+            namespace_size = 8
+            materialized_view = f"""
+                CREATE VIEW lookup.{lookup_table} AS
+                    SELECT 
+                        global_id as id,
+                        'cris' as source,
+                        UPPER(description) as description
+                    FROM cris_lookup.{lookup_table}
+                    WHERE active IS TRUE
+                        AND coalesce(effective_begin_date <= now(), true)
+                        AND coalesce(effective_end_date   >= now(), true)
+                    UNION ALL
+                    SELECT 
+                        global_id as id,
+                        'vz' as source,
+                        UPPER(description) as description
+                    FROM vz_lookup.{lookup_table}
+                    WHERE active IS TRUE
+                    """
+            materialized_view_cursor = pg.cursor()
+            print(f"view: {materialized_view}")
+            materialized_view_cursor.execute(materialized_view)
+            materialized_view_cursor.close()
+            pg.commit()
+
+            check_cursor = pg.cursor()
+            check_cursor.execute(f"""
+                SELECT id
+                FROM lookup.{lookup_table}
+                GROUP BY id
+                HAVING COUNT(id) > 1;
+            """)
+
+            result = check_cursor.fetchall()
+            check_cursor.close()
+            print(f"result: {result}")
+            if result:
+                raise Exception(f"Duplicate IDs found in lookup.{lookup_table}")
 
 def populate_state_table(worksheet, lookup_table, pg):
     print("Lookup Table: ", lookup_table)
 
     create_cris = f"""create table cris_lookup.{lookup_table} (
         id serial primary key, 
+        global_id integer default nextval('lookup.{lookup_table}_global_id'),
         upstream_id integer, 
         abbreviation text,
         description text, 
@@ -253,6 +320,7 @@ def populate_state_table(worksheet, lookup_table, pg):
 
     create_vz= f"""create table vz_lookup.{lookup_table} (
         id serial primary key, 
+        global_id integer default nextval('lookup.{lookup_table}_global_id'),
         upstream_id integer, 
         abbreviation text,
         description text, 
@@ -281,6 +349,7 @@ def populate_veh_mod_year_table(worksheet, lookup_table, pg):
 
     create_cris = f"""create table cris_lookup.{lookup_table} (
         id serial primary key, 
+        global_id integer default nextval('lookup.{lookup_table}_global_id'),
         upstream_id integer, 
         description text, 
         active boolean default true
@@ -321,6 +390,7 @@ def populate_cntl_sect_table(worksheet, lookup_table, pg):
 
     create_cris = f"""create table cris_lookup.{lookup_table} (
         id serial primary key, 
+        global_id integer default nextval('lookup.{lookup_table}_global_id'),
         dps_region_id integer,
         dps_district_id integer,
         txdot_district_id integer,
@@ -350,6 +420,7 @@ def populate_cntl_sect_table(worksheet, lookup_table, pg):
 
     create_vz = f"""create table vz_lookup.{lookup_table} (
         id serial primary key, 
+        global_id integer default nextval('lookup.{lookup_table}_global_id'),
         dps_region_id integer,
         dps_district_id integer,
         txdot_district_id integer,
