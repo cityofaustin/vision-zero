@@ -226,21 +226,6 @@ def create_materialized_view_generic(pg, lookup_table):
     materialized_view_cursor.close()
     pg.commit()
 
-    check_cursor = pg.cursor()
-    check_cursor.execute(f"""
-        SELECT id
-        FROM lookup.{lookup_table}
-        GROUP BY id
-        HAVING COUNT(id) > 1;
-    """)
-
-    result = check_cursor.fetchall()
-    check_cursor.close()
-    print(f"result: {result}")
-    if result:
-        raise Exception(f"Duplicate IDs found in lookup.{lookup_table}")
-
-
 def populate_state_table(worksheet, lookup_table, pg):
     print("Lookup Table: ", lookup_table)
 
@@ -319,21 +304,6 @@ def create_materialized_view_state(pg, lookup_table):
     materialized_view_cursor.execute(materialized_view)
     materialized_view_cursor.close()
     pg.commit()
-
-    check_cursor = pg.cursor()
-    check_cursor.execute(f"""
-        SELECT id
-        FROM lookup.{lookup_table}
-        GROUP BY id
-        HAVING COUNT(id) > 1;
-    """)
-
-    result = check_cursor.fetchall()
-    check_cursor.close()
-    print(f"result: {result}")
-    if result:
-        raise Exception(f"Duplicate IDs found in lookup.{lookup_table}")
-
 
 def populate_veh_mod_year_table(worksheet, lookup_table, pg):
     print("Lookup Table: ", lookup_table)
