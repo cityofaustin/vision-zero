@@ -18,8 +18,9 @@ ONEPASSWORD_CONNECT_TOKEN = os.getenv("OP_API_TOKEN")  # our secret to get secre
 ONEPASSWORD_CONNECT_HOST = os.getenv("OP_CONNECT")  # where we get our secrets
 VAULT_ID = os.getenv("OP_VAULT_ID")
 
-process_tables = ['state', 'veh_mod_year', 'cntl_sect']
-process_tables = ['agency', 'state', 'veh_mod_year']
+#process_tables = ['state', 'veh_mod_year', 'cntl_sect']
+#process_tables = ['agency', 'state', 'veh_mod_year', 'cntl_sect']
+process_tables = None
 
 def main():
     global DB_HOST
@@ -199,7 +200,6 @@ def create_materialized_view_generic(pg, lookup_table):
     drop_cursor.close()
     pg.commit()
 
-    namespace_size = 8
     materialized_view = f"""
         CREATE VIEW lookup.{lookup_table} AS
             SELECT 
@@ -278,7 +278,6 @@ def create_materialized_view_state(pg, lookup_table):
     drop_cursor.close()
     pg.commit()
 
-    namespace_size = 8
     materialized_view = f"""
         CREATE VIEW lookup.{lookup_table} AS
             SELECT 
@@ -356,7 +355,6 @@ def create_materialized_view_veh_mod_year(pg, lookup_table):
     drop_cursor.close()
     pg.commit()
 
-    namespace_size = 8
     materialized_view = f"""
         CREATE VIEW lookup.{lookup_table} AS
             SELECT 
@@ -460,6 +458,63 @@ def populate_cntl_sect_table(worksheet, lookup_table, pg):
     print(f"Row failure count: {row_failure_count}")
 
 
+def create_materialized_view_cntl_sec(pg, lookup_table):
+    drop = f"drop materialized view if exists lookup.{lookup_table};"
+    drop_cursor = pg.cursor()
+    print(f"Drop: {drop}")
+    drop_cursor.execute(drop)
+    drop_cursor.close()
+    pg.commit()
+
+    materialized_view = f"""
+        CREATE VIEW lookup.{lookup_table} AS
+            SELECT 
+                global_id as id,
+                'cris' as source,
+                dps_region_id,
+                dps_district_id,
+                txdot_district_id,
+                cris_cnty_id,
+                road_id,
+                cntl_sect_id,
+                cntl_id,
+                section_id,
+                cntl_sect_nbr,
+                rhino_cntl_sect_nbr,
+                begin_milepoint,
+                end_milepoint,
+                from_dfo,
+                to_dfo
+            FROM cris_lookup.{lookup_table}
+            WHERE active IS TRUE
+                AND coalesce(effective_begin_date <= now(), true)
+                AND coalesce(effective_end_date   >= now(), true)
+            UNION ALL
+            SELECT 
+                global_id as id,
+                'vz' as source,
+                dps_region_id,
+                dps_district_id,
+                txdot_district_id,
+                cris_cnty_id,
+                road_id,
+                cntl_sect_id,
+                cntl_id,
+                section_id,
+                cntl_sect_nbr,
+                rhino_cntl_sect_nbr,
+                begin_milepoint,
+                end_milepoint,
+                from_dfo,
+                to_dfo
+            FROM vz_lookup.{lookup_table}
+            WHERE active IS TRUE
+            """
+    materialized_view_cursor = pg.cursor()
+    print(f"view: {materialized_view}")
+    materialized_view_cursor.execute(materialized_view)
+    materialized_view_cursor.close()
+    pg.commit()
 
 
 
