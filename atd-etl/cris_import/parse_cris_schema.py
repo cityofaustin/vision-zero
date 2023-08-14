@@ -19,7 +19,7 @@ ONEPASSWORD_CONNECT_HOST = os.getenv("OP_CONNECT")  # where we get our secrets
 VAULT_ID = os.getenv("OP_VAULT_ID")
 
 process_tables = ['state', 'veh_mod_year', 'cntl_sect']
-process_tables = ['agency']
+process_tables = ['agency', 'state', 'veh_mod_year']
 
 def main():
     global DB_HOST
@@ -138,11 +138,9 @@ def create_materialized_views(file_path, pg):
                 continue
 
             if lookup_table == "state":
-                pass
-                #populate_state_table(pg, lookup_table)
+                create_materialized_view_state(pg, lookup_table)
             elif lookup_table == "veh_mod_year":
-                pass
-                #populate_veh_mod_year_table(pg, lookup_table)
+                create_materialized_view_veh_mod_year(pg, lookup_table)
             elif lookup_table == "cntl_sect":
                 #populate_cntl_sect_table(pg, lookup_table)
                 pass
@@ -290,6 +288,8 @@ def create_materialized_view_state(pg, lookup_table):
                 UPPER(description) as description
             FROM cris_lookup.{lookup_table}
             WHERE active IS TRUE
+                AND coalesce(effective_begin_date <= now(), true)
+                AND coalesce(effective_end_date   >= now(), true)
             UNION ALL
             SELECT 
                 global_id as id,
@@ -324,6 +324,7 @@ def populate_veh_mod_year_table(worksheet, lookup_table, pg):
 
     create_vz = f"""create table vz_lookup.{lookup_table} (
         id serial primary key, 
+        global_id integer default nextval('lookup.{lookup_table}_global_id'),
         upstream_id integer, 
         description text, 
         active boolean default true
@@ -345,6 +346,39 @@ def populate_veh_mod_year_table(worksheet, lookup_table, pg):
         insert_cursor.execute(insert, row[:2])
         insert_cursor.close()
         pg.commit()
+
+
+def create_materialized_view_veh_mod_year(pg, lookup_table):
+    drop = f"drop materialized view if exists lookup.{lookup_table};"
+    drop_cursor = pg.cursor()
+    print(f"Drop: {drop}")
+    drop_cursor.execute(drop)
+    drop_cursor.close()
+    pg.commit()
+
+    namespace_size = 8
+    materialized_view = f"""
+        CREATE VIEW lookup.{lookup_table} AS
+            SELECT 
+                global_id as id,
+                'cris' as source,
+                UPPER(description) as description
+            FROM cris_lookup.{lookup_table}
+            WHERE active IS TRUE
+            UNION ALL
+            SELECT 
+                global_id as id,
+                'vz' as source,
+                UPPER(description) as description
+            FROM vz_lookup.{lookup_table}
+            WHERE active IS TRUE
+            """
+    materialized_view_cursor = pg.cursor()
+    print(f"view: {materialized_view}")
+    materialized_view_cursor.execute(materialized_view)
+    materialized_view_cursor.close()
+    pg.commit()
+
 
 def populate_cntl_sect_table(worksheet, lookup_table, pg):
     print("Lookup Table: ", lookup_table)
@@ -424,6 +458,11 @@ def populate_cntl_sect_table(worksheet, lookup_table, pg):
         insert_cursor.close()
         pg.commit()
     print(f"Row failure count: {row_failure_count}")
+
+
+
+
+
 
 
 
