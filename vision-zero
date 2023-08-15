@@ -6,7 +6,7 @@ import subprocess
 import os
 import shtab
 import shutil
-from datetime import date
+from datetime import date, datetime
 import pprint
 from dotenv import load_dotenv
 
@@ -74,6 +74,8 @@ def doCommand(args):
     elif args.command == "replicate-db":
         dbUp(args)
         replicateDb(args)
+    elif args.command == "dump-local-db":
+        dumpLocalDb(args)
     elif args.command == "remove-snapshots":
         removeSnapshots(args)
 
@@ -194,6 +196,35 @@ def replicateDb(args):
 
     graphqlEngineUp(args)
 
+def dumpLocalDb(args):
+    print("️Dumping local database")
+    today = datetime.now().strftime("%Y-%m-%d-%H-%M:%S")
+
+    dump_runner_command = docker_compose_invocation + [
+        "-f", "docker-compose.yml", 
+        "-f",
+        "docker-compose-ram-disk.yml" if args.ram_disk else "docker-compose-docker-volume.yml",
+        "run",
+        "--rm",
+        "-e", "PGHOST=" + 'postgis',
+        "-e", "PGUSER=" + os.environ["POSTGRES_USER"],
+        "-e", "PGPASSWORD=" + os.environ["POSTGRES_PASSWORD"],
+        "-e", "PGDATABASE=" + os.environ["POSTGRES_DB"],
+        "db-tools",
+    ]
+
+    dump_command = [
+        "pg_dump",
+        "--clean",
+        "--create",
+        "--no-owner",
+        "--no-privileges",
+        "--if-exists",
+    ]
+
+    dump = open("atd-vzd/dumps/visionzero_" + today + ".sql", "w")
+    subprocess.run(dump_runner_command + dump_command, stdout=dump)
+    dump.close()
 
 def psql(args):
     # fmt: off
@@ -354,6 +385,7 @@ def get_main_parser():
             "psql",
             "tools-shell",
             "replicate-db",
+            "dump-local-db",
             "remove-snapshots",
         ],
     )
