@@ -97,7 +97,7 @@ export const fatalityGridTableAdvancedFilters = {
                   { person: { unit: { veh_body_styl_id: { _nin: [71, 90] } } } },
                   { primaryperson: { unit: { unit_desc_id: { _eq: 1 } } } },
                   { primaryperson: { unit: { veh_body_styl_id: { _nin: [71, 90] } } } },
-                ]
+                ],
               `]: null,
             },
           ],
@@ -115,7 +115,7 @@ export const fatalityGridTableAdvancedFilters = {
                   { person: { unit: { veh_body_styl_id: { _in: [71, 90] } } } },
                   { primaryperson: { unit: { unit_desc_id: { _eq: 1 } } } },
                   { primaryperson: { unit: { veh_body_styl_id: { _in: [71, 90] } } } },
-                ]
+                ],
               `]: null,
             },
           ],
@@ -155,7 +155,7 @@ export const fatalityGridTableAdvancedFilters = {
                   { person: { unit: { veh_body_styl_id: { _eq: 177 } } } },
                   { primaryperson: { unit: { unit_desc_id: { _eq: 177 } } } },
                   { primaryperson: { unit: { veh_body_styl_id: { _eq: 177 } } } },
-                ]
+                ],
               `]: null,
             },
           ],
