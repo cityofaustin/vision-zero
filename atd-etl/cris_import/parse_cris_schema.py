@@ -49,7 +49,7 @@ def main():
 
     print("DB_BASTION_HOST: ", DB_BASTION_HOST)
 
-    #read_xlsx_to_get_FK_relationships("/data/cris_spec.xlsx")
+    read_xlsx_to_get_FK_relationships("/data/cris_spec.xlsx")
     process_spreadsheet("/data/cris_spec.xlsx")
 
 
@@ -201,7 +201,7 @@ def create_materialized_view_generic(pg, lookup_table):
     pg.commit()
 
     materialized_view = f"""
-        CREATE VIEW lookup.{lookup_table} AS
+        CREATE MATERIALIZED VIEW lookup.{lookup_table} AS
             SELECT 
                 global_id as id,
                 'cris' as source,
@@ -279,7 +279,7 @@ def create_materialized_view_state(pg, lookup_table):
     pg.commit()
 
     materialized_view = f"""
-        CREATE VIEW lookup.{lookup_table} AS
+        CREATE MATERIALIZED VIEW lookup.{lookup_table} AS
             SELECT 
                 global_id as id,
                 'cris' as source,
@@ -356,7 +356,7 @@ def create_materialized_view_veh_mod_year(pg, lookup_table):
     pg.commit()
 
     materialized_view = f"""
-        CREATE VIEW lookup.{lookup_table} AS
+        CREATE MATERIALIZED VIEW lookup.{lookup_table} AS
             SELECT 
                 global_id as id,
                 'cris' as source,
@@ -467,7 +467,7 @@ def create_materialized_view_cntl_sec(pg, lookup_table):
     pg.commit()
 
     materialized_view = f"""
-        CREATE VIEW lookup.{lookup_table} AS
+        CREATE MATERIALIZED VIEW lookup.{lookup_table} AS
             SELECT 
                 global_id as id,
                 'cris' as source,
