@@ -266,8 +266,13 @@ export const crashGridTableAdvancedFilters = {
         filter: {
           where: [
             {
-              "_and: [ { units: { unit_desc_id: { _eq: 1 } } }, { units: { veh_body_styl_id: { _nin: [71, 90] } } } ] ": null,
-            },
+              [`_and: 
+                [ 
+                  { units: { unit_desc_id: { _eq: 1 } } },
+                  { units: { veh_body_styl_id: { _nin: [71, 90] } } },
+                ],
+              `]: null,
+            }
           ],
         },
       },
@@ -277,7 +282,12 @@ export const crashGridTableAdvancedFilters = {
         filter: {
           where: [
             {
-              "_and: [ { units: { unit_desc_id: { _eq: 1 } } }, { units: { veh_body_styl_id: { _in: [71, 90] } } } ] ": null,
+              [`_and: 
+                [ 
+                  { units: { unit_desc_id: { _eq: 1 } } },
+                  { units: { veh_body_styl_id: { _in: [71, 90] } } },
+                ],
+              `]: null,
             },
           ],
         },
@@ -310,7 +320,12 @@ export const crashGridTableAdvancedFilters = {
         filter: {
           where: [
             {
-              "_and: [ { units: { unit_desc_id: { _eq: 177 } } }, { units: { veh_body_styl_id: { _eq: 177 } } } ]": null,
+              [`_and:
+                [ 
+                  { units: { unit_desc_id: { _eq: 177 } } },
+                  { units: { veh_body_styl_id: { _eq: 177 } } },
+                ],
+              `]: null,
             },
           ],
         },
