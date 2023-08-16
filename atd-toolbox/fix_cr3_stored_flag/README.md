@@ -15,3 +15,5 @@ Rename the env_template.py file to env.py. Fill in the values.
 ### Running the script
 
 When you run this script make sure you are in this directory. A txt file will be created in your current directory that contains the file names of CR3 PDFs we have in our S3 bucket. This file is later used to be compared to records in the atd_txdot_crashes table where the cr3_stored_flag = 'Y'.
+
+`python3 fix_cr3_stored_flag --env staging`
