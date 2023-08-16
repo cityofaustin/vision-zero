@@ -38,7 +38,7 @@ def get_s3_cr3_files():
   # Creates a new txt file in the current directory to store output from the following commands
   subprocess.run(["touch", "s3_cr3_file_names.txt"])
   s3_cr3_file_names = open("s3_cr3_file_names.txt", "w")
-  print("Writing names of cr3 pdfs we have in s3 to a new file in this directory called 's3_cr3_file_names.txt'")
+  print("Writing names of cr3 pdfs we have in s3 to a new file in this directory called 's3_cr3_file_names.txt', this can take a few minutes...")
   aws = subprocess.Popen(["aws", "s3", "ls", "s3://atd-vision-zero-editor/production/cris-cr3-files/"], stdout=subprocess.PIPE)
   output = subprocess.Popen(["awk", "{print $4}"], stdin=aws.stdout, stdout=s3_cr3_file_names)
   output.wait()
