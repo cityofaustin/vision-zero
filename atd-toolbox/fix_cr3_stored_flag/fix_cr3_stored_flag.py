@@ -81,7 +81,7 @@ def make_hasura_request(*, query, variables, env):
     Returns:
       dict: Hasura JSON response data
     """
-    # If running for a local env you can commnent out the admin_secret lines
+    # If running for a local env you can comment out the admin_secret lines
     admin_secret = HASURA_AUTH["hasura_graphql_admin_secret"][env]
     endpoint = HASURA_AUTH["hasura_graphql_endpoint"][env]
     headers = {
