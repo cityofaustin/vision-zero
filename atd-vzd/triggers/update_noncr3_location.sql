@@ -9,8 +9,8 @@ DECLARE
 
 BEGIN
     -- Check if crash is on a major road and of concern to TxDOT.
-    -- NEW.position is recalculated in BEFORE trigger to ensure it is up to date
-    -- when this runs AFTER.
+    -- NEW.position is recalculated in a trigger called 
+    -- atd_txdot_blueform_update_position which runs before this trigger.
     IF EXISTS (SELECT ncr3m.*
                 FROM non_cr3_mainlanes AS ncr3m WHERE (
                             (NEW.position && ncr3m.geometry)
@@ -27,8 +27,7 @@ BEGIN
                             )
                     )) THEN
         -- If it is, then set the location_id to None
-		UPDATE atd_apd_blueform SET location_id = NULL 
-        WHERE case_id = NEW.case_id;
+        NEW.location_id = NULL;
     ELSE 
         -- If it isn't on a major road and is of concern to Vision Zero, try to find a location_id for it.
         SELECT location_id INTO found_location_id FROM atd_txdot_locations AS atl
@@ -39,13 +38,10 @@ BEGIN
 
         -- If a location is found, update the record.
         IF found_location_id IS NOT NULL THEN
-            UPDATE atd_apd_blueform SET location_id = found_location_id 
-            WHERE case_id = NEW.case_id;
+            NEW.location_id = found_location_id;
         END IF;
     END IF;
 
 	RETURN NEW;
 END;
 $$
-
-COMMENT ON FUNCTION update_noncr3_location IS 'This function is used to update the location_id on insert and update of a record in atd_apd_blueform.';
