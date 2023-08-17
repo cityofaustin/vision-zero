@@ -91,14 +91,21 @@ export const fatalityGridTableAdvancedFilters = {
           where: [
             {
               // Wrapped in array brackets so that the template literal can function as an object key
-              [`_and:
-                [
-                  { person: { unit: { unit_desc_id: { _eq: 1 } } } },
-                  { person: { unit: { veh_body_styl_id: { _nin: [71, 90] } } } },
-                  { primaryperson: { unit: { unit_desc_id: { _eq: 1 } } } },
-                  { primaryperson: { unit: { veh_body_styl_id: { _nin: [71, 90] } } } },
-                ],
-              `]: null,
+              [`
+              person: { 
+                unit: {
+                  unit_desc_id: { _eq: 1 },
+                  veh_body_styl_id: { _nin: [71, 90],
+                },
+                }
+              },
+              primaryperson: {
+                unit: {
+                  unit_desc_id: { _eq: 1},
+                  veh_body_styl_id: { _nin: [71, 90],
+                }
+              },
+              `]: null
             },
           ],
         },
@@ -109,14 +116,21 @@ export const fatalityGridTableAdvancedFilters = {
         filter: {
           where: [
             {
-              [`_and:
-                [
-                  { person: { unit: { unit_desc_id: { _eq: 1 } } } },
-                  { person: { unit: { veh_body_styl_id: { _in: [71, 90] } } } },
-                  { primaryperson: { unit: { unit_desc_id: { _eq: 1 } } } },
-                  { primaryperson: { unit: { veh_body_styl_id: { _in: [71, 90] } } } },
-                ],
-              `]: null,
+              [`
+              person: { 
+                unit: {
+                  unit_desc_id: { _eq: 1 },
+                  veh_body_styl_id: { _in: [71, 90],
+                },
+                }
+              },
+              primaryperson: {
+                unit: {
+                  unit_desc_id: { _eq: 1},
+                  veh_body_styl_id: { _in: [71, 90],
+                }
+              },
+              `]: null
             },
           ],
         },
@@ -149,14 +163,21 @@ export const fatalityGridTableAdvancedFilters = {
         filter: {
           where: [
             {
-              [`_and:
-                [
-                  { person: { unit: { unit_desc_id: { _eq: 177 } } } },
-                  { person: { unit: { veh_body_styl_id: { _eq: 177 } } } },
-                  { primaryperson: { unit: { unit_desc_id: { _eq: 177 } } } },
-                  { primaryperson: { unit: { veh_body_styl_id: { _eq: 177 } } } },
-                ],
-              `]: null,
+              [`
+              person: { 
+                unit: {
+                  unit_desc_id: { _eq: 177 },
+                  veh_body_styl_id: { _eq: 177 },
+                },
+                }
+              },
+              primaryperson: {
+                unit: {
+                  unit_desc_id: { _eq: 177 },
+                  veh_body_styl_id: { _eq: 177 },
+                }
+              },
+              `]: null
             },
           ],
         },
