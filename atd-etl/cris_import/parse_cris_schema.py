@@ -18,9 +18,9 @@ ONEPASSWORD_CONNECT_TOKEN = os.getenv("OP_API_TOKEN")  # our secret to get secre
 ONEPASSWORD_CONNECT_HOST = os.getenv("OP_CONNECT")  # where we get our secrets
 VAULT_ID = os.getenv("OP_VAULT_ID")
 
-#process_tables = ['state', 'veh_mod_year', 'cntl_sect']
-#process_tables = ['agency', 'state', 'veh_mod_year', 'cntl_sect']
-process_tables = None
+#only_process_these_tables = ['state', 'veh_mod_year', 'cntl_sect']
+#only_process_these_tables = ['agency', 'state', 'veh_mod_year', 'cntl_sect']
+only_process_these_tables = None
 
 def main():
     global DB_HOST
@@ -87,7 +87,7 @@ def create_lookup_tables(file_path, pg):
         match = re.search(r"(\w+)_LKP", worksheet.title)
         lookup_table = match.group(1).lower() if match else None
         if lookup_table:
-            if process_tables and not lookup_table in process_tables:
+            if only_process_these_tables and not lookup_table in only_process_these_tables:
                 continue 
 
             drop = f"drop table if exists cris_lookup.{lookup_table} cascade;"
@@ -135,7 +135,7 @@ def create_materialized_views(file_path, pg):
         match = re.search(r"(\w+)_LKP", worksheet.title)
         lookup_table = match.group(1).lower() if match else None
         if lookup_table:
-            if process_tables and not lookup_table in process_tables:
+            if only_process_these_tables and not lookup_table in only_process_these_tables:
                 continue
 
             if lookup_table == "state":
