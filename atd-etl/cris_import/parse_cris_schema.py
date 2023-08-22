@@ -143,8 +143,8 @@ def create_materialized_views(file_path, pg):
             elif lookup_table == "veh_mod_year":
                 create_materialized_view_veh_mod_year(pg, lookup_table)
             elif lookup_table == "cntl_sect":
-                #populate_cntl_sect_table(pg, lookup_table)
-                pass
+                create_materialized_view_cntl_sec(pg, lookup_table)
+                #pass
             else:
                 create_materialized_view_generic(pg, lookup_table) 
 
@@ -205,6 +205,8 @@ def create_materialized_view_generic(pg, lookup_table):
             SELECT 
                 global_id as id,
                 'cris' as source,
+                upstream_id as cris_id,
+                null as vz_id,
                 UPPER(description) as description
             FROM cris_lookup.{lookup_table}
             WHERE active IS TRUE
@@ -214,6 +216,8 @@ def create_materialized_view_generic(pg, lookup_table):
             SELECT 
                 global_id as id,
                 'vz' as source,
+                null as cris_id,
+                upstream_id as vz_id,
                 UPPER(description) as description
             FROM vz_lookup.{lookup_table}
             WHERE active IS TRUE
@@ -283,6 +287,8 @@ def create_materialized_view_state(pg, lookup_table):
             SELECT 
                 global_id as id,
                 'cris' as source,
+                upstream_id as cris_id,
+                null as vz_id,
                 UPPER(abbreviation) as abbreviation,
                 UPPER(description) as description
             FROM cris_lookup.{lookup_table}
@@ -293,6 +299,8 @@ def create_materialized_view_state(pg, lookup_table):
             SELECT 
                 global_id as id,
                 'vz' as source,
+                null as cris_id,
+                upstream_id as vz_id,
                 UPPER(abbreviation) as abbreviation,
                 UPPER(description) as description
             FROM vz_lookup.{lookup_table}
@@ -360,6 +368,8 @@ def create_materialized_view_veh_mod_year(pg, lookup_table):
             SELECT 
                 global_id as id,
                 'cris' as source,
+                upstream_id as cris_id,
+                null as vz_id,
                 UPPER(description) as description
             FROM cris_lookup.{lookup_table}
             WHERE active IS TRUE
@@ -367,6 +377,8 @@ def create_materialized_view_veh_mod_year(pg, lookup_table):
             SELECT 
                 global_id as id,
                 'vz' as source,
+                null as cris_id,
+                upstream_id as vz_id,
                 UPPER(description) as description
             FROM vz_lookup.{lookup_table}
             WHERE active IS TRUE
