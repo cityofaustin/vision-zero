@@ -105,6 +105,7 @@ export const fatalityGridTableAdvancedFilters = {
                   veh_body_styl_id: { _nin: [71, 90],
                 }
               },
+            }
               `]: null
             },
           ],
