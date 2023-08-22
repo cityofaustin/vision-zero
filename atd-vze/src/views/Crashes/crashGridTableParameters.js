@@ -267,12 +267,14 @@ export const crashGridTableAdvancedFilters = {
         where: [
           {
             [`
-            units: 
-              {
-                unit_desc_id: { _eq: 1 },
-                veh_body_styl_id: { _nin: [71, 90],
+              units: {
+                unit_desc_id: {
+                  _eq: 1
+                },
+                veh_body_styl_id: {
+                  _nin: [71, 90]
+                },
               },
-            }
             `]: null
           },
         ],
@@ -285,12 +287,14 @@ export const crashGridTableAdvancedFilters = {
           where: [
             {
               [`
-              units: 
-                {
-                  unit_desc_id: { _eq: 1 },
-                  veh_body_styl_id: { _in: [71, 90],
+                units: {
+                  unit_desc_id: {
+                    _eq: 1
+                  },
+                  veh_body_styl_id: {
+                    _in: [71, 90]
+                  },
                 },
-              }
               `]: null
             },
           ],
@@ -302,7 +306,13 @@ export const crashGridTableAdvancedFilters = {
         filter: {
           where: [
             {
-              "units: { unit_desc_id: { _eq: 3 } }": null,
+              [`
+                units: {
+                  unit_desc_id: {
+                    _eq: 3 
+                  },
+                },
+              `]: null,
             },
           ],
         },
@@ -313,7 +323,13 @@ export const crashGridTableAdvancedFilters = {
         filter: {
           where: [
             {
-              "units: { unit_desc_id: { _eq: 4 } }": null,
+              [`
+                units: {
+                  unit_desc_id: { 
+                    _eq: 4 
+                  },
+                },
+              `]: null,
             },
           ],
         },
@@ -325,11 +341,14 @@ export const crashGridTableAdvancedFilters = {
           where: [
             {
               [`
-              units: 
-                {
-                  unit_desc_id: { _eq: 177 },
-                  veh_body_styl_id: { _eq: 177 },
-                }
+                units: {
+                  unit_desc_id: { 
+                    _eq: 177
+                  },
+                  veh_body_styl_id: {
+                    _eq: 177
+                  },
+                },
               `]: null
             },
           ],
