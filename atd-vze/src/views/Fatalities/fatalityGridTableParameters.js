@@ -91,6 +91,7 @@ export const fatalityGridTableAdvancedFilters = {
           where: [
             {
               // Wrapped in array brackets so that the template literal can function as an object key
+              // Marker
               [`
               person: { 
                 unit: {
@@ -98,8 +99,8 @@ export const fatalityGridTableAdvancedFilters = {
                   veh_body_styl_id: { _nin: [71, 90],
                 },
                 }
-              },
-              primaryperson: {
+              }},
+              {primaryperson: {
                 unit: {
                   unit_desc_id: { _eq: 1},
                   veh_body_styl_id: { _nin: [71, 90],
