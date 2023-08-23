@@ -1,19 +1,13 @@
--- Create a stored generated column that finds the location id of a crash 
--- using its geographic position and keeps it updated.
-ALTER TABLE atd_txdot_crashes
-ADD COLUMN generated_location_id text GENERATED ALWAYS AS (get_cr3_location_id(position, crash_id, rpt_road_part_id, rpt_hwy_num)) STORED;
+CREATE TRIGGER update_cr3_location_on_insert
+BEFORE INSERT ON atd_txdot_crashes
+FOR EACH ROW
+WHEN (NEW.position IS NOT NULL)
+EXECUTE PROCEDURE update_cr3_location();
 
--- TODO drop DB views that use location_id (replace later with generated location_id)
+CREATE TRIGGER update_cr3_location_on_update
+BEFORE UPDATE ON atd_txdot_crashes
+FOR EACH ROW
+WHEN (OLD.position IS DISTINCT FROM NEW.position)
+EXECUTE PROCEDURE update_cr3_location();
 
--- Drop current atd_txdot_crashes location_id column
-ALTER TABLE atd_txdot_crashes DROP COLUMN location_id;
-
--- Rename generated_location_id to location_id to replace it
-ALTER TABLE atd_txdot_crashes 
-RENAME COLUMN generated_location_id TO location_id;
-
--- TODO add DB views that use location_id
-
-DROP FUNCTION find_cr3_mainlane_crash();
-DROP FUNCTION find_location_for_cr3_collision();
-DROP FUNCTION find_location_id_for_cr3_collision();
+COMMENT ON FUNCTION update_cr3_location IS 'This trigger function is used to update the location_id on insert and update of a record in atd_txdot_crashes.';
