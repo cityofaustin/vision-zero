@@ -1,11 +1,11 @@
 -- Create triggers to update atd_txdot_crashes location_id
-CREATE TRIGGER update_cr3_location_on_insert
+CREATE OR REPLACE TRIGGER update_cr3_location_on_insert
 BEFORE INSERT ON atd_txdot_crashes
 FOR EACH ROW
 WHEN (NEW.position IS NOT NULL)
 EXECUTE PROCEDURE update_cr3_location();
 
-CREATE TRIGGER update_cr3_location_on_update
+CREATE OR REPLACE TRIGGER update_cr3_location_on_update
 BEFORE UPDATE ON atd_txdot_crashes
 FOR EACH ROW
 WHEN (OLD.position IS DISTINCT FROM NEW.position)
