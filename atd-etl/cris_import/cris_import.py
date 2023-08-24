@@ -20,7 +20,7 @@ from onepasswordconnectsdk.client import Client, new_client
 import lib.mappings as mappings
 import lib.sql as util
 
-from lib.lookup_map import *
+from lib.lookup_map import crash_lookup_map, unit_lookup_map, person_lookup_map, primaryperson_lookup_map
 
 DEPLOYMENT_ENVIRONMENT = os.environ.get(
     "ENVIRONMENT", "development"
@@ -523,7 +523,50 @@ def convert_to_ldm_lookup_ids(state):
             sslrootcert="/root/rds-combined-ca-bundle.pem"
             )
 
-    cursor = pg.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+    print("state", state)
+
+
+    tables = [
+        {
+            'imported_table': 'crash',
+            'id_columns': ['crash_id'],
+            'lookup_map': crash_lookup_map
+        },
+        {
+            'imported_table': 'unit',
+            'id_columns': ['crash_id', 'unit_nbr'],
+            'lookup_map': unit_lookup_map
+        },
+        {
+            'imported_table': 'person',
+            'id_columns': ['crash_id', 'unit_nbr', 'prsn_nbr'],
+            'lookup_map': person_lookup_map
+        },
+        {
+            'imported_table': 'primaryperson', 
+            'id_columns': ['crash_id', 'unit_nbr', 'prsn_nbr'],
+            'lookup_map': primaryperson_lookup_map
+        },
+    ]
+
+    for table in tables:
+        print("keys: ", table["lookup_map"].keys())
+        fields = ", ".join(table['lookup_map'].keys())
+        keys = ", ".join(table['id_columns'])
+
+        
+        cursor = pg.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        sql = f"SELECT {keys}, {fields} FROM {state['import_schema']}.{table['imported_table']}"
+        print("SQL: ", sql)
+        cursor.execute(sql)
+        rows = cursor.fetchall()
+
+        for row in rows:
+            print(row)
+
+    # putting this aside in lieu of the map built from the spreadsheet of schema
+    return()
 
     query_materialized_views = """SELECT matviews.matviewname AS materialized_view_name
         FROM pg_matviews matviews
