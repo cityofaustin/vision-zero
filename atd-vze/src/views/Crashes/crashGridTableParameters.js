@@ -354,6 +354,31 @@ export const crashGridTableAdvancedFilters = {
           ],
         },
       },
+      {
+        id: "other",
+        label: "Other",
+        filter: {
+          where: [
+            {
+              [`
+              units: {
+                unit_desc_id: {
+                  _nin: [1, 3, 4]
+                },
+                _not: {
+                  unit_desc_id: {
+                    _eq: 177
+                  },
+                  veh_body_styl_id: {
+                    _eq: 177
+                  },
+                },
+              },
+              `]: null
+            },
+          ],
+        },
+      },
     ],
   },
   groupCase: {
