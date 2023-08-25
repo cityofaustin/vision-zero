@@ -1,0 +1,32 @@
+table:
+  name: atd_txdot_changes_view
+  schema: public
+select_permissions:
+  - role: editor
+    permission:
+      columns:
+        - record_id
+        - change_id
+        - record_json
+        - created_timestamp
+        - status_id
+        - crash_fatal_flag
+        - sus_serious_injury_cnt
+        - status_description
+        - crash_date
+      filter: {}
+      allow_aggregations: true
+  - role: readonly
+    permission:
+      columns:
+        - crash_date
+        - change_id
+        - record_id
+        - status_id
+        - record_json
+        - crash_fatal_flag
+        - sus_serious_injury_cnt
+        - created_timestamp
+        - status_description
+      filter: {}
+      allow_aggregations: true

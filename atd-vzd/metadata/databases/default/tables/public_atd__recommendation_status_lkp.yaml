@@ -1,0 +1,11 @@
+table:
+  name: atd__recommendation_status_lkp
+  schema: public
+array_relationships:
+  - name: recommendations
+    using:
+      foreign_key_constraint_on:
+        column: recommendation_status_id
+        table:
+          name: recommendations
+          schema: public
