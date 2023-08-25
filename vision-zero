@@ -54,6 +54,8 @@ def doCommand(args):
         graphqlEngineUp(args)
     elif args.command == "graphql-engine-down":
         graphqlEngineDown(args)
+    elif args.command == "hasura-console":
+        hasuraConsole(args)
     elif args.command == "vze-up":
         dbUp(args)
         graphqlEngineUp(args)
@@ -249,6 +251,15 @@ def graphqlEngineUp(args):
         "docker-compose-ram-disk.yml" if args.ram_disk else "docker-compose-docker-volume.yml",
         "up", "-d", "graphql-engine"])
     subprocess.run(["docker", "ps"])
+    print("🚀  GraphQL Engine started.")
+    print("You can run './vision-zero hasura-console' to open the console.")
+
+def hasuraConsole(args):
+    print("🚀  Opening Hasura console")
+    try:
+        subprocess.call(["hasura", "console"], cwd="./atd-vzd")
+    except KeyboardInterrupt:
+        print('Exited Hasura console')
 
 
 def graphqlEngineDown(args):
@@ -350,6 +361,7 @@ def get_main_parser():
             "tools-shell",
             "replicate-db",
             "remove-snapshots",
+            "hasura-console"
         ],
     )
     return parser
