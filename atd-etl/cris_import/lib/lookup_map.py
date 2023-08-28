@@ -95,7 +95,7 @@ unit_lookup_map = {
     "e_scooter_id": "e_scooter",
     "autonomous_unit_id": "autonomous_unit",
     "rpt_autonomous_unit_id": "rpt_autonomous_unit",
-    "rpt_autonomous_level_id": "autonomous_level_engaged"
+    "rpt_autonomous_level_engaged_id": "autonomous_level_engaged"
 }
 person_lookup_map = {
     "prsn_type_id": "prsn_type",
