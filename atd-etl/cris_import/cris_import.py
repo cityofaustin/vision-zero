@@ -566,7 +566,11 @@ def convert_to_ldm_lookup_ids(state):
             #print(row)
             for field in table['lookup_map'].keys():
                 print()
-                if row[field] == None or table['lookup_map'][field] == None:
+                if row[field] == None:
+                    print(f"Skipping because incoming CRIS data has a null value for {field}")
+                    continue
+                if table['lookup_map'][field] == None:
+                    print(f"Skipping because there is not a lookup table defined in the map for {field}")
                     continue
                 print("Field:", field, ", Current Value:", row[field])
                 print(table['lookup_map'])
