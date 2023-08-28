@@ -551,19 +551,34 @@ def convert_to_ldm_lookup_ids(state):
     ]
 
     for table in tables:
-        print("keys: ", table["lookup_map"].keys())
+        #print("keys: ", table["lookup_map"].keys())
         fields = ", ".join(table['lookup_map'].keys())
         keys = ", ".join(table['id_columns'])
 
         
         cursor = pg.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         sql = f"SELECT {keys}, {fields} FROM {state['import_schema']}.{table['imported_table']}"
-        print("SQL: ", sql)
+        #print("SQL: ", sql)
         cursor.execute(sql)
         rows = cursor.fetchall()
 
         for row in rows:
-            print(row)
+            #print(row)
+            for field in table['lookup_map'].keys():
+                print()
+                if row[field] == None or table['lookup_map'][field] == None:
+                    continue
+                print("Field:", field, ", Current Value:", row[field])
+                print(table['lookup_map'])
+
+
+                cursor = pg.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+                sql = "select id from lookup." + table['lookup_map'][field] + " where source = 'cris' and cris_id = " + str(row[field])
+                #print("SQL: ", sql)
+                cursor.execute(sql)
+                lookup = cursor.fetchone()
+                print("Lookup:", lookup)
+
 
     # putting this aside in lieu of the map built from the spreadsheet of schema
     return()
