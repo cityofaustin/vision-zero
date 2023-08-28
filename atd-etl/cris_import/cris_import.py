@@ -550,6 +550,34 @@ def convert_to_ldm_lookup_ids(state):
         },
     ]
 
+
+    for table in tables:
+
+        sql = f"update {state['import_schema']}.crash set "
+
+        assignments = []
+        for field in table['lookup_map'].keys():
+            if table['lookup_map'][field] is not None:
+                target_field = field
+                source_table = table['lookup_map'][field]
+            
+                assignments.append(f"""
+                    {target_field} = (
+                        select id
+                        from lookup.{source_table}
+                        where true 
+                            and source = 'cris'
+                            and cris_id = {state['import_schema']}.{table['imported_table']}.{target_field}::integer
+                        )""")
+        sql += ", ".join(assignments) 
+        print(sql)
+
+
+
+
+    return
+
+
     for table in tables:
         #print("keys: ", table["lookup_map"].keys())
         fields = ", ".join(table['lookup_map'].keys())
