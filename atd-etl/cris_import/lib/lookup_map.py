@@ -41,7 +41,7 @@ crash_lookup_map = {
     "shldr_type_right_id": "shldr_type",
     "shldr_use_right_id": "shldr_use",
     "median_type_id": "median_type",
-    "rural_urban_type_id": "rural_urban",
+    "rural_urban_type_id": "rural_urban_type",
     "func_sys_id": "func_sys",
     "curve_type_id": "curve_type",
     "delta_left_right_id": "delta_left_right",
