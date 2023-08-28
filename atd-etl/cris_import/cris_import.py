@@ -550,17 +550,43 @@ def convert_to_ldm_lookup_ids(state):
         },
     ]
 
+    for table in tables:
+        for field in table['lookup_map'].keys():
+            sql = f"update {state['import_schema']}.{table['imported_table']} set "
+            assignments = []
+            if table['lookup_map'][field] is not None:
+                target_field = field
+                source_table = table['lookup_map'][field]
+                assignments.append(f"""
+                    {target_field} = (
+                        select id
+                        from lookup.{source_table}
+                        where true 
+                            and source = 'cris'
+                            and cris_id = {state['import_schema']}.{table['imported_table']}.{target_field}::integer
+                        )""")
+            if len(assignments) > 0:
+                sql += ", ".join(assignments) 
+                sql = remove_newlines_and_collapse_spaces(sql)
+                print(sql)
+
+                cursor = pg.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+                cursor.execute(sql)
+                pg.commit()
+                cursor.close()
+
+            #time.sleep(1)
+
+
+    return
 
     for table in tables:
-
-        sql = f"update {state['import_schema']}.crash set "
-
+        sql = f"update {state['import_schema']}.{table['imported_table']} set "
         assignments = []
         for field in table['lookup_map'].keys():
             if table['lookup_map'][field] is not None:
                 target_field = field
                 source_table = table['lookup_map'][field]
-            
                 assignments.append(f"""
                     {target_field} = (
                         select id
@@ -572,7 +598,10 @@ def convert_to_ldm_lookup_ids(state):
         sql += ", ".join(assignments) 
         print(sql)
 
-
+        cursor = pg.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        cursor.execute(sql)
+        pg.commit()
+        cursor.close()
 
 
     return
@@ -655,6 +684,11 @@ def convert_to_ldm_lookup_ids(state):
         common_elements = columns_set & lookup_tables_set
         print("\nCommon elements:", common_elements)
 
+def remove_newlines_and_collapse_spaces(input_string):
+    # Remove newlines
+    no_newlines = input_string.replace('\n', ' ')
+    # Replace multiple whitespaces with a single space
+    return re.sub(' +', ' ', no_newlines)
 
 def align_records(map_state):
 
