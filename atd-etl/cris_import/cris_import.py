@@ -577,10 +577,10 @@ def convert_to_ldm_lookup_ids(state):
 
                 cursor = pg.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
                 sql = "select id from lookup." + table['lookup_map'][field] + " where source = 'cris' and cris_id = " + str(row[field])
-                print("SQL: ", sql)
+                #print("SQL: ", sql)
                 cursor.execute(sql)
                 lookup = cursor.fetchone()
-                print("Lookup:", lookup)
+                #print("Lookup:", lookup)
 
 
     # putting this aside in lieu of the map built from the spreadsheet of schema
