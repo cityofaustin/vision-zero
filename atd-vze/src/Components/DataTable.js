@@ -167,7 +167,9 @@ const DataTable = ({
                                     name={field}
                                     id={field}
                                     onChange={e => handleInputChange(e)}
-                                    defaultValue={fieldValue}
+                                    defaultValue={
+                                      fieldValue === null ? "" : fieldValue
+                                    }
                                     type="select"
                                   >
                                     {selectOptions.map(option => (
@@ -177,6 +179,7 @@ const DataTable = ({
                                         {option[`${lookupPrefix}_desc`]}
                                       </option>
                                     ))}
+                                    <option value={""}></option>
                                   </Input>
                                 )}
                                 {fieldUiType === "text" && (
