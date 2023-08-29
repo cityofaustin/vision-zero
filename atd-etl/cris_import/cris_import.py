@@ -551,9 +551,9 @@ def convert_to_ldm_lookup_ids(state):
     ]
 
     for table in tables:
+        sql = f"update {state['import_schema']}.{table['imported_table']} set "
+        assignments = []
         for field in table['lookup_map'].keys():
-            sql = f"update {state['import_schema']}.{table['imported_table']} set "
-            assignments = []
             if table['lookup_map'][field] is not None:
                 target_field = field
                 source_table = table['lookup_map'][field]
@@ -565,17 +565,17 @@ def convert_to_ldm_lookup_ids(state):
                             and source = 'cris'
                             and cris_id = {state['import_schema']}.{table['imported_table']}.{target_field}::integer
                         )""")
-            if len(assignments) > 0:
-                sql += ", ".join(assignments) 
-                sql = remove_newlines_and_collapse_spaces(sql)
-                print(sql)
+        if len(assignments) > 0:
+            sql += ", ".join(assignments) 
+            # sql = remove_newlines_and_collapse_spaces(sql)
+            print(sql)
 
-                cursor = pg.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-                cursor.execute(sql)
-                pg.commit()
-                cursor.close()
+            cursor = pg.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+            cursor.execute(sql)
+            pg.commit()
+            cursor.close()
 
-            #time.sleep(1)
+            time.sleep(10)
 
 
     return
@@ -595,7 +595,7 @@ def convert_to_ldm_lookup_ids(state):
                             and source = 'cris'
                             and cris_id = {state['import_schema']}.{table['imported_table']}.{target_field}::integer
                         )""")
-        sql += ", ".join(assignments) 
+        sql += ", ".join(assignments)
         print(sql)
 
         cursor = pg.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
