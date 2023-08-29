@@ -73,7 +73,7 @@ const CrashesByMode = () => {
       },
     },
     {
-      label: "E-Scooter rider",
+      label: "E-Scooter Rider",
       icon: faMobileAlt,
       fields: {
         fatal: `micromobility_death_count`,

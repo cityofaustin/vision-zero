@@ -211,7 +211,7 @@ export const fatalityGridTableAdvancedFilters = {
       },
       {
         id: "scooter",
-        label: "E-Scooter rider Fatality",
+        label: "E-Scooter Rider Fatality",
         filter: {
           where: [
             {
