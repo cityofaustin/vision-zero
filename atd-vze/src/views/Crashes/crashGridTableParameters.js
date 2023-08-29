@@ -260,24 +260,42 @@ export const crashGridTableAdvancedFilters = {
     icon: "bicycle",
     label: "Unit Type",
     filters: [
-      {
-        id: "motor_vehicle",
-        label: "Motor Vehicle",
-        filter: {
-          where: [
-            {
-              "_and: [ { units: { unit_desc_id: { _eq: 1 } } }, { _and: [ { units: { veh_body_styl_id: { _neq: 71 } } }, { units: { veh_body_styl_id: { _neq: 90 } } } ] } ] ": null,
-            },
-          ],
-        },
+    {
+      id: "motor_vehicle",
+      label: "Motor Vehicle",
+      filter: {
+        where: [
+          {
+            [`
+              units: {
+                unit_desc_id: {
+                  _eq: 1
+                },
+                veh_body_styl_id: {
+                  _nin: [71, 90]
+                },
+              },
+            `]: null
+          },
+        ],
       },
+    },
       {
         id: "motorcycle",
         label: "Motorcycle",
         filter: {
           where: [
             {
-              "_and: [ { units: { unit_desc_id: { _eq: 1 } } }, { _or: [ { units: { veh_body_styl_id: { _eq: 71 } } }, { units: { veh_body_styl_id: { _eq: 90 } } } ] } ] ": null,
+              [`
+                units: {
+                  unit_desc_id: {
+                    _eq: 1
+                  },
+                  veh_body_styl_id: {
+                    _in: [71, 90]
+                  },
+                },
+              `]: null
             },
           ],
         },
@@ -288,7 +306,13 @@ export const crashGridTableAdvancedFilters = {
         filter: {
           where: [
             {
-              "units: { unit_desc_id: { _eq: 3 } }": null,
+              [`
+                units: {
+                  unit_desc_id: {
+                    _eq: 3 
+                  },
+                },
+              `]: null,
             },
           ],
         },
@@ -299,7 +323,13 @@ export const crashGridTableAdvancedFilters = {
         filter: {
           where: [
             {
-              "units: { unit_desc_id: { _eq: 4 } }": null,
+              [`
+                units: {
+                  unit_desc_id: { 
+                    _eq: 4 
+                  },
+                },
+              `]: null,
             },
           ],
         },
@@ -310,7 +340,16 @@ export const crashGridTableAdvancedFilters = {
         filter: {
           where: [
             {
-              "_and: [ { units: { unit_desc_id: { _eq: 177 } } }, { units: { veh_body_styl_id: { _eq: 177 } } } ]": null,
+              [`
+                units: {
+                  unit_desc_id: { 
+                    _eq: 177
+                  },
+                  veh_body_styl_id: {
+                    _eq: 177
+                  },
+                },
+              `]: null
             },
           ],
         },
