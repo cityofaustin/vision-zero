@@ -243,6 +243,42 @@ export const fatalityGridTableAdvancedFilters = {
           ],
         },
       },
+      {
+        id: "other",
+        label: "Other",
+        filter: {
+          where: [
+            {
+              [`
+                _or: [
+                  {
+                    primaryperson: {
+                      unit: {
+                        unit_desc_id: {_nin: [1, 3, 4]},
+                        _not: {
+                          unit_desc_id: {_eq: 177},
+                          veh_body_styl_id: {_eq: 177}
+                        },
+                      },
+                    },
+                  },
+                  {
+                    person: {
+                      unit: {
+                        unit_desc_id: {_nin: [1, 3, 4]},
+                        _not: {
+                          unit_desc_id: {_eq: 177},
+                          veh_body_styl_id: {_eq: 177}
+                        },
+                      },
+                    },
+                  },
+                ]
+              `]: null
+            },
+          ],
+        },
+      },
     ],
   },
   groupStatus: {
