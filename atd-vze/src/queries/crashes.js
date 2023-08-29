@@ -286,6 +286,7 @@ recommendation { rec_text }
 recommendation { rec_update }
 recommendation { atd__recommendation_status_lkp { rec_status_desc } }
 recommendation { recommendations_partners { atd__coordination_partners_lkp { coord_partner_desc }} }
+council_district
 `;
 
 export const locationCrashesQueryExportFieldsNonCR3 = `

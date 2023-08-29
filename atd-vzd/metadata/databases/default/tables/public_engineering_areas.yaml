@@ -1,0 +1,3 @@
+table:
+  name: engineering_areas
+  schema: public

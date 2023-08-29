@@ -1,0 +1,11 @@
+table:
+  name: atd__coordination_partners_lkp
+  schema: public
+array_relationships:
+  - name: recommendations_partners
+    using:
+      foreign_key_constraint_on:
+        column: partner_id
+        table:
+          name: recommendations_partners
+          schema: public
