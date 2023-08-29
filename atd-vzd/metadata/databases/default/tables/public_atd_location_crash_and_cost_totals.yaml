@@ -1,0 +1,26 @@
+table:
+  name: atd_location_crash_and_cost_totals
+  schema: public
+select_permissions:
+  - role: editor
+    permission:
+      columns:
+        - cr3_est_comp_cost
+        - cr3_total_crashes
+        - location_id
+        - noncr3_est_comp_cost
+        - noncr3_total_crashes
+        - total_crashes
+        - total_est_comp_cost
+      filter: {}
+  - role: readonly
+    permission:
+      columns:
+        - cr3_est_comp_cost
+        - cr3_total_crashes
+        - location_id
+        - noncr3_est_comp_cost
+        - noncr3_total_crashes
+        - total_crashes
+        - total_est_comp_cost
+      filter: {}

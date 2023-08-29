@@ -4,6 +4,7 @@ import { StoreContext } from "../../utils/store";
 import SideMapControlDateRange from "./SideMapControlDateRange";
 import SideMapTimeOfDayChart from "./SideMapTimeOfDayChart";
 import SideMapControlOverlays from "./SideMapControlOverlays";
+import SideMapFooter from "./SideMapFooter";
 import { trackPageEvent } from "../../constants/nav";
 import InfoPopover from "../../Components/Popover/InfoPopover";
 import { popoverConfig } from "../../Components/Popover/popoverConfig";
@@ -427,6 +428,7 @@ const SideMapControl = ({ type }) => {
         <SideMapTimeOfDayChart filters={mapOtherFilters.timeOfDay} />
       </Card>
       <SideMapControlOverlays />
+      <SideMapFooter />
     </StyledCard>
   );
 };

@@ -1,0 +1,20 @@
+table:
+  name: atd_txdot__rwy_sys_lkp
+  schema: public
+select_permissions:
+  - role: editor
+    permission:
+      columns:
+        - rwy_sys_id
+        - rwy_sys_desc
+        - eff_beg_date
+        - eff_end_date
+      filter: {}
+  - role: readonly
+    permission:
+      columns:
+        - rwy_sys_id
+        - rwy_sys_desc
+        - eff_beg_date
+        - eff_end_date
+      filter: {}

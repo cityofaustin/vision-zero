@@ -1,0 +1,70 @@
+table:
+  name: recommendations
+  schema: public
+object_relationships:
+  - name: atd__recommendation_status_lkp
+    using:
+      foreign_key_constraint_on: recommendation_status_id
+  - name: atd_txdot_crash
+    using:
+      foreign_key_constraint_on: crash_id
+array_relationships:
+  - name: recommendations_partners
+    using:
+      foreign_key_constraint_on:
+        column: recommendation_id
+        table:
+          name: recommendations_partners
+          schema: public
+insert_permissions:
+  - role: editor
+    permission:
+      check: {}
+      columns:
+        - id
+        - created_at
+        - crash_id
+        - recommendation_status_id
+        - rec_text
+        - created_by
+        - rec_update
+select_permissions:
+  - role: editor
+    permission:
+      columns:
+        - crash_id
+        - id
+        - recommendation_status_id
+        - created_by
+        - rec_text
+        - rec_update
+        - created_at
+      filter: {}
+  - role: readonly
+    permission:
+      columns:
+        - crash_id
+        - id
+        - recommendation_status_id
+        - created_by
+        - rec_text
+        - rec_update
+        - created_at
+      filter: {}
+update_permissions:
+  - role: editor
+    permission:
+      columns:
+        - crash_id
+        - id
+        - recommendation_status_id
+        - created_by
+        - rec_text
+        - rec_update
+        - created_at
+      filter: {}
+      check: {}
+delete_permissions:
+  - role: editor
+    permission:
+      filter: {}
