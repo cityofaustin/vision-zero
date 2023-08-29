@@ -37,8 +37,6 @@ const CrashesByMode = () => {
   const [chartLegend, setChartLegend] = useState(null);
   const [legendColors, setLegendColors] = useState([...chartColors]);
 
-  console.log(chartData);
-
   const chartRef = useRef();
 
   const modes = [
@@ -75,7 +73,7 @@ const CrashesByMode = () => {
       },
     },
     {
-      label: "Micromobility",
+      label: "E-Scooter rider",
       icon: faMobileAlt,
       fields: {
         fatal: `micromobility_death_count`,
