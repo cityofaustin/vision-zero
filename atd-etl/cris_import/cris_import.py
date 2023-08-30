@@ -566,9 +566,7 @@ def convert_to_ldm_lookup_ids(state):
             sql += ", ".join(assignments) 
 
             # debugging functionality
-            sql = remove_newlines_and_collapse_spaces(sql)
-
-            print(sql)
+            # sql = remove_newlines_and_collapse_spaces(sql)
 
             cursor = pg.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
             cursor.execute(sql)
