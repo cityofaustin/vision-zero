@@ -131,7 +131,7 @@ def get_key_clauses(table_keys, output_map, table, source, DB_IMPORT_SCHEMA):
     for key in table_keys[output_map[table]]:
         if not source[key]:
             # we're not able to uniquely identify a row to which this record will match & update
-            return False
+            return None, None
         public_key_clauses.append(f"cris.{output_map[table]}.{key} = {source[key]}")
         import_key_clauses.append(f"{DB_IMPORT_SCHEMA}.{table}.{key} = {source[key]}")
     public_key_sql = " and ".join(public_key_clauses)
