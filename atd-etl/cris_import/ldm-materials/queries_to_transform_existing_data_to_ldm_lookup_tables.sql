@@ -1,3 +1,6 @@
+-- this relies on the LDM lookup tables being in place and populated
+
+
 UPDATE cris.atd_txdot_crashes
 SET    rpt_cris_cnty_id =
        (
