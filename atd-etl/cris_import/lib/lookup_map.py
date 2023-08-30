@@ -346,7 +346,7 @@ unit_lookup_map = [
     }, {
         "field_name": "trlr_type_id",
         "lookup_table": "cmv_trlr_type",
-        "crash_schemata": [ 2010, 2015, 2018, 2023, ]
+        "crash_schemata": [ 2015, 2018, 2023, ]
     }, {
         "field_name": "pedestrian_action_id",
         "lookup_table": "pedestrian_action",
@@ -374,11 +374,11 @@ unit_lookup_map = [
     }, {
         "field_name": "rpt_autonomous_unit_id",
         "lookup_table": "rpt_autonomous_unit",
-        "crash_schemata": [ 2010, 2015, 2018, 2023, ]
+        "crash_schemata": [ 2023, ]
     }, {
         "field_name": "rpt_autonomous_level_engaged_id",
         "lookup_table": "autonomous_level_engaged",
-        "crash_schemata": [ 2010, 2015, 2018, 2023, ]
+        "crash_schemata": [ 2023, ]
     }
 ]
 
