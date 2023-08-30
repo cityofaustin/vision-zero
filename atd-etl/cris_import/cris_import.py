@@ -85,10 +85,10 @@ def main():
             schema_name = create_target_import_schema(desired_schema_name)
             pgloader_command_files = pgloader_csvs_into_database(schema_name)
             trimmed_token = remove_trailing_carriage_returns(pgloader_command_files)
-            typed_token = align_db_typing(trimmed_token)
-            convert_to_ldm_lookup_ids(typed_token)
-            #align_records_token = align_records(typed_token)
-            #clean_up_import_schema(align_records_token)
+            typed_token = align_db_typing(trimmed_token) # reminder, these "tokens" are from when this was a prefect script, and they now contain execution context
+            converted_token = convert_to_ldm_lookup_ids(typed_token)
+            align_records_token = align_records(converted_token)
+            clean_up_import_schema(align_records_token)
     #remove_archives_from_sftp_endpoint(zip_location)
     #upload_csv_files_to_s3(archive)
 
@@ -523,11 +523,8 @@ def convert_to_ldm_lookup_ids(state):
             sslrootcert="/root/rds-combined-ca-bundle.pem"
             )
 
-
-    #print("state", state)
-
     cris_schema = int(state["logical_group_id"][:4])
-
+    print("cris_schema", cris_schema)
 
     tables = [
         {
@@ -556,7 +553,6 @@ def convert_to_ldm_lookup_ids(state):
         sql = f"update {state['import_schema']}.{table['imported_table']} set "
         assignments = []
         for field in table['lookup_map']:
-            #print("field:", field)
             if field["lookup_table"] is not None and cris_schema in field["crash_schemata"]:
                 assignments.append(f"""
                     {field["field_name"]} = (
@@ -566,17 +562,20 @@ def convert_to_ldm_lookup_ids(state):
                             and source = 'cris'
                             and cris_id = {state['import_schema']}.{table["imported_table"]}.{field["field_name"]}::integer
                         )""")
-        #print("assignments", assignments)
         if len(assignments) > 0:
             sql += ", ".join(assignments) 
-            # sql = remove_newlines_and_collapse_spaces(sql)
-            #print(sql)
+
+            # debugging functionality
+            sql = remove_newlines_and_collapse_spaces(sql)
+
+            print(sql)
 
             cursor = pg.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
             cursor.execute(sql)
             pg.commit()
             cursor.close()
 
+    return state
 
 
 
