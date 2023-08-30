@@ -652,6 +652,8 @@ def align_records(map_state):
 
                 # generate some record specific SQL fragments to identify the record in larger queries
                 record_key_sql, import_key_sql = util.get_key_clauses(table_keys, output_map, table, source, map_state["import_schema"])
+                if not record_key_sql or not import_key_sql:
+                    continue
 
                 # To decide to UPDATE, we need to find a matching target record in the output table.
                 # This function returns that record as a token of existence or false if none is available
