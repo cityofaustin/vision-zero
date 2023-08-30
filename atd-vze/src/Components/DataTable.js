@@ -127,7 +127,7 @@ const DataTable = ({
                           fieldValue === null ||
                           typeof fieldValue === "undefined"
                         )
-                          return "";
+                          return "NO DATA";
 
                         // make sure there is a lookup object in the config
                         if (!selectOptions || !fieldConfigObject.lookupOptions)
@@ -179,7 +179,7 @@ const DataTable = ({
                                         {option[`${lookupPrefix}_desc`]}
                                       </option>
                                     ))}
-                                    <option value={""}></option>
+                                    <option value={""}>NO DATA</option>
                                   </Input>
                                 )}
                                 {fieldUiType === "text" && (
@@ -201,7 +201,15 @@ const DataTable = ({
                                 </button>
                               </form>
                             ) : (
-                              fieldValueDisplay
+                              <span
+                                className={
+                                  fieldValueDisplay === "NO DATA"
+                                    ? "text-muted"
+                                    : ""
+                                }
+                              >
+                                {fieldValueDisplay}
+                              </span>
                             )}
                           </td>
                           <td>
