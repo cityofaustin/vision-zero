@@ -1,0 +1,63 @@
+table:
+  name: atd_txdot_charges
+  schema: public
+insert_permissions:
+  - role: editor
+    permission:
+      check: {}
+      columns:
+        - is_retired
+        - charge_cat_id
+        - crash_id
+        - prsn_nbr
+        - charge_id
+        - unit_nbr
+        - charge
+        - last_update
+        - citation_nbr
+        - updated_by
+select_permissions:
+  - role: editor
+    permission:
+      columns:
+        - charge_id
+        - crash_id
+        - unit_nbr
+        - prsn_nbr
+        - charge_cat_id
+        - charge
+        - citation_nbr
+        - last_update
+        - updated_by
+        - is_retired
+      filter: {}
+  - role: readonly
+    permission:
+      columns:
+        - is_retired
+        - charge_cat_id
+        - crash_id
+        - prsn_nbr
+        - charge_id
+        - unit_nbr
+        - charge
+        - last_update
+        - citation_nbr
+        - updated_by
+      filter: {}
+update_permissions:
+  - role: editor
+    permission:
+      columns:
+        - is_retired
+        - charge_cat_id
+        - crash_id
+        - prsn_nbr
+        - charge_id
+        - unit_nbr
+        - charge
+        - last_update
+        - citation_nbr
+        - updated_by
+      filter: {}
+      check: null

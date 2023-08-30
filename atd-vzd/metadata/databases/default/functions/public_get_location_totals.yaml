@@ -1,0 +1,3 @@
+function:
+  name: get_location_totals
+  schema: public

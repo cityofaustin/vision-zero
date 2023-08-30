@@ -1,0 +1,16 @@
+table:
+  name: atd_txdot__y_n_lkp
+  schema: public
+select_permissions:
+  - role: editor
+    permission:
+      columns:
+        - y_n_id
+        - y_n_desc
+      filter: {}
+  - role: readonly
+    permission:
+      columns:
+        - y_n_id
+        - y_n_desc
+      filter: {}
