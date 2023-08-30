@@ -13,16 +13,6 @@ pp = pprint.PrettyPrinter(indent=4)
 # in only one place (with one exception) in `cris_import.py`, one may appreciate these functions exist
 # only to improve readability and maintainability -- not reusability.
 
-
-def get_pgfutter_path():
-    uname = os.uname()
-    if uname.machine == "aarch64":
-        return "/root/pgfutter_arm"
-    else:
-        return "/root/pgfutter_x64"
-    return None
-
-
 def get_column_operators(
     target_columns, source, table, output_map, DB_IMPORT_SCHEMA
 ):
