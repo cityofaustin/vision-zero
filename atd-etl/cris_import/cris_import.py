@@ -524,7 +524,7 @@ def convert_to_ldm_lookup_ids(state):
             )
 
 
-    print("state", state)
+    #print("state", state)
 
 
     tables = [
@@ -553,18 +553,18 @@ def convert_to_ldm_lookup_ids(state):
     for table in tables:
         sql = f"update {state['import_schema']}.{table['imported_table']} set "
         assignments = []
-        for field in table['lookup_map'].keys():
-            if table['lookup_map'][field] is not None:
-                target_field = field
-                source_table = table['lookup_map'][field]
+        for field in table['lookup_map']:
+            #print("field:", field)
+            if field["lookup_table"] is not None:
                 assignments.append(f"""
-                    {target_field} = (
+                    {field["field_name"]} = (
                         select id
-                        from lookup.{source_table}
+                        from lookup.{field["lookup_table"]}
                         where true 
                             and source = 'cris'
-                            and cris_id = {state['import_schema']}.{table['imported_table']}.{target_field}::integer
+                            and cris_id = {state['import_schema']}.{table["imported_table"]}.{field["field_name"]}::integer
                         )""")
+        #print("assignments", assignments)
         if len(assignments) > 0:
             sql += ", ".join(assignments) 
             # sql = remove_newlines_and_collapse_spaces(sql)
@@ -575,7 +575,6 @@ def convert_to_ldm_lookup_ids(state):
             pg.commit()
             cursor.close()
 
-            time.sleep(10)
 
 
     return

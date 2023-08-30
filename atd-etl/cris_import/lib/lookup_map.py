@@ -1,136 +1,1012 @@
-crash_lookup_map = {
-    "rpt_cris_cnty_id": "cnty",
-    "rpt_city_id": "city",
-    "rpt_rdwy_sys_id": "rwy_sys",
-    "rpt_road_part_id": "road_part",
-    "rpt_sec_rdwy_sys_id": "rwy_sys",
-    "rpt_sec_road_part_id": "road_part",
-    "wthr_cond_id": "wthr_cond",
-    "light_cond_id": "light_cond",
-    "entr_road_id": "entr_road",
-    "road_type_id": "road_type",
-    "road_algn_id": "road_algn",
-    "surf_cond_id": "surf_cond",
-    "traffic_cntl_id": "traffic_cntl",
-    "investigat_agency_id": "agency",
-    "investigat_area_id": None,
-    "investigat_district_id": None,
-    "investigat_region_id": None,
-    "bridge_detail_id": "bridge_detail",
-    "harm_evnt_id": "harm_evnt",
-    "intrsct_relat_id": "intrsct_relat",
-    "fhe_collsn_id": "collsn",
-    "obj_struck_id": "obj_struck",
-    "othr_factr_id": "othr_factr",
-    "road_cls_id": "road_cls",
-    "road_relat_id": "road_relat",
-    "phys_featr_1_id": "phys_featr",
-    "phys_featr_2_id": "phys_featr",
-    "rpt_cris_cnty_id": "cnty",
-    "city_id": "city",
-    "crash_sev_id": "injry_sev",
-    "pop_group_id": "pop_group",
-    "hwy_dsgn_lane_id": "hwy_dsgn_lane",
-    "hwy_dsgn_hrt_id": "hwy_dsgn_hrt",
-    "base_type_id": "base_type",
-    "surf_type_id": "surf_type",
-    "curb_type_left_id": "curb_type",
-    "curb_type_right_id": "curb_type",
-    "shldr_type_left_id": "shldr_type",
-    "shldr_use_left_id": "shldr_use",
-    "shldr_type_right_id": "shldr_type",
-    "shldr_use_right_id": "shldr_use",
-    "median_type_id": "median_type",
-    "rural_urban_type_id": "rural_urban_type",
-    "func_sys_id": "func_sys",
-    "curve_type_id": "curve_type",
-    "delta_left_right_id": "delta_left_right",
-    "bridge_median_id": "bridge_median",
-    "bridge_loading_type_id": "bridge_loading_type",
-    "bridge_srvc_type_on_id": "bridge_srvc_type_on",
-    "bridge_srvc_type_under_id": "bridge_srvc_type_under",
-    "culvert_type_id": "culvert_type",
-    "bridge_dir_of_traffic_id": "bridge_dir_of_traffic",
-    "bridge_rte_struct_func_id": "bridge_rte_struct_func",
-    "bridge_ir_struct_func_id": "bridge_rte_struct_func",
-    "poscrossing_id": "poscrossing",
-    "wdcode_id": "wdcode"
-}
-unit_lookup_map = {
-    "unit_desc_id": "veh_unit_desc",
-    "veh_lic_state_id": "state",
-    "veh_mod_year": "veh_mod_year",
-    "veh_color_id": "veh_color",
-    "veh_make_id": "veh_make",
-    "veh_mod_id": "veh_mod",
-    "veh_body_styl_id": "veh_body_styl",
-    "ownr_state_id": "state",
-    "veh_damage_description1_id": "veh_damage_description",
-    "veh_damage_severity1_id": "veh_damage_severity",
-    "veh_damage_description2_id": "veh_damage_description",
-    "veh_damage_severity2_id": "veh_damage_severity",
-    "cmv_veh_oper_id": "cmv_veh_oper",
-    "cmv_carrier_id_type_id": "carrier_id_type",
-    "cmv_carrier_state_id": "state",
-    "cmv_veh_type_id": "cmv_veh_type",
-    "cmv_cargo_body_id": "cmv_cargo_body",
-    "cmv_evnt1_id": "cmv_evnt",
-    "cmv_evnt2_id": "cmv_evnt",
-    "cmv_evnt3_id": "cmv_evnt",
-    "cmv_evnt4_id": "cmv_evnt",
-    "contrib_factr_1_id": "contrib_factr",
-    "contrib_factr_2_id": "contrib_factr",
-    "contrib_factr_3_id": "contrib_factr",
-    "veh_dfct_1_id": "unit_dfct",
-    "veh_dfct_2_id": "unit_dfct",
-    "veh_dfct_3_id": "unit_dfct",
-    "veh_trvl_dir_id": "trvl_dir",
-    "first_harm_evt_inv_id": "yes_no_choice",
-    "cmv_bus_type_id": "bus_type",
-    "trlr_type_id": "cmv_trlr_type",
-    "pedestrian_action_id": "pedestrian_action",
-    "pedalcyclist_action_id": "pedalcyclist_action",
-    "pbcat_pedestrian_id": "pbcat_pedestrian",
-    "pbcat_pedalcyclist_id": "pbcat_pedalcyclist",
-    "e_scooter_id": "e_scooter",
-    "autonomous_unit_id": "autonomous_unit",
-    "rpt_autonomous_unit_id": "rpt_autonomous_unit",
-    "rpt_autonomous_level_engaged_id": "autonomous_level_engaged"
-}
-person_lookup_map = {
-    "prsn_type_id": "prsn_type",
-    "prsn_occpnt_pos_id": "occpnt_pos",
-    "prsn_injry_sev_id": "injry_sev",
-    "prsn_ethnicity_id": "drvr_ethncty",
-    "prsn_gndr_id": "gndr",
-    "prsn_ejct_id": "ejct",
-    "prsn_rest_id": "rest",
-    "prsn_airbag_id": "airbag",
-    "prsn_helmet_id": "helmet",
-    "prsn_alc_spec_type_id": "specimen_type",
-    "prsn_alc_rslt_id": "substnc_tst_result",
-    "prsn_drg_spec_type_id": "specimen_type",
-    "prsn_drg_rslt_id": "substnc_tst_result"
-}
-primaryperson_lookup_map = {
-    "prsn_type_id": "prsn_type",
-    "prsn_occpnt_pos_id": "occpnt_pos",
-    "prsn_injry_sev_id": "injry_sev",
-    "prsn_ethnicity_id": "drvr_ethncty",
-    "prsn_gndr_id": "gndr",
-    "prsn_ejct_id": "ejct",
-    "prsn_rest_id": "rest",
-    "prsn_airbag_id": "airbag",
-    "prsn_helmet_id": "helmet",
-    "prsn_alc_spec_type_id": "specimen_type",
-    "prsn_alc_rslt_id": "substnc_tst_result",
-    "prsn_drg_spec_type_id": "specimen_type",
-    "prsn_drg_rslt_id": "substnc_tst_result",
-    "drvr_drg_cat_1_id": "substnc_cat",
-    "drvr_lic_type_id": "drvr_lic_type",
-    "drvr_lic_state_id": "state",
-    "drvr_lic_cls_id": "drvr_lic_cls",
-    #"nsew_dir_short_desc": "nsew_dir",
-    #"street_sfx_short_desc": "street_sfx",
-    "drvr_state_id": "state"
-}
+crash_lookup_map = [
+    {
+        "field_name": "rpt_cris_cnty_id",
+        "lookup_table": "cnty",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "rpt_city_id",
+        "lookup_table": "city",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "rpt_rdwy_sys_id",
+        "lookup_table": "rwy_sys",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "rpt_road_part_id",
+        "lookup_table": "road_part",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "rpt_sec_rdwy_sys_id",
+        "lookup_table": "rwy_sys",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "rpt_sec_road_part_id",
+        "lookup_table": "road_part",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "wthr_cond_id",
+        "lookup_table": "wthr_cond",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "light_cond_id",
+        "lookup_table": "light_cond",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "entr_road_id",
+        "lookup_table": "entr_road",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "road_type_id",
+        "lookup_table": "road_type",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "road_algn_id",
+        "lookup_table": "road_algn",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "surf_cond_id",
+        "lookup_table": "surf_cond",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "traffic_cntl_id",
+        "lookup_table": "traffic_cntl",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "investigat_agency_id",
+        "lookup_table": "agency",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "investigat_area_id",
+        "lookup_table": None,
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "investigat_district_id",
+        "lookup_table": None,
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "investigat_region_id",
+        "lookup_table": None,
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "bridge_detail_id",
+        "lookup_table": "bridge_detail",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "harm_evnt_id",
+        "lookup_table": "harm_evnt",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "intrsct_relat_id",
+        "lookup_table": "intrsct_relat",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "fhe_collsn_id",
+        "lookup_table": "collsn",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "obj_struck_id",
+        "lookup_table": "obj_struck",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "othr_factr_id",
+        "lookup_table": "othr_factr",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "road_cls_id",
+        "lookup_table": "road_cls",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "road_relat_id",
+        "lookup_table": "road_relat",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "phys_featr_1_id",
+        "lookup_table": "phys_featr",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "phys_featr_2_id",
+        "lookup_table": "phys_featr",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "city_id",
+        "lookup_table": "city",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "crash_sev_id",
+        "lookup_table": "injry_sev",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "pop_group_id",
+        "lookup_table": "pop_group",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "hwy_dsgn_lane_id",
+        "lookup_table": "hwy_dsgn_lane",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "hwy_dsgn_hrt_id",
+        "lookup_table": "hwy_dsgn_hrt",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "base_type_id",
+        "lookup_table": "base_type",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "surf_type_id",
+        "lookup_table": "surf_type",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "curb_type_left_id",
+        "lookup_table": "curb_type",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "curb_type_right_id",
+        "lookup_table": "curb_type",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "shldr_type_left_id",
+        "lookup_table": "shldr_type",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "shldr_use_left_id",
+        "lookup_table": "shldr_use",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "shldr_type_right_id",
+        "lookup_table": "shldr_type",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "shldr_use_right_id",
+        "lookup_table": "shldr_use",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "median_type_id",
+        "lookup_table": "median_type",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "rural_urban_type_id",
+        "lookup_table": "rural_urban_type",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "func_sys_id",
+        "lookup_table": "func_sys",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "curve_type_id",
+        "lookup_table": "curve_type",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "delta_left_right_id",
+        "lookup_table": "delta_left_right",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "bridge_median_id",
+        "lookup_table": "bridge_median",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "bridge_loading_type_id",
+        "lookup_table": "bridge_loading_type",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "bridge_srvc_type_on_id",
+        "lookup_table": "bridge_srvc_type_on",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "bridge_srvc_type_under_id",
+        "lookup_table": "bridge_srvc_type_under",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "culvert_type_id",
+        "lookup_table": "culvert_type",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "bridge_dir_of_traffic_id",
+        "lookup_table": "bridge_dir_of_traffic",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "bridge_rte_struct_func_id",
+        "lookup_table": "bridge_rte_struct_func",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "bridge_ir_struct_func_id",
+        "lookup_table": "bridge_rte_struct_func",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "poscrossing_id",
+        "lookup_table": "poscrossing",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "wdcode_id",
+        "lookup_table": "wdcode",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    }
+]
+
+unit_lookup_map = [
+    {
+        "field_name": "unit_desc_id",
+        "lookup_table": "veh_unit_desc",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "veh_lic_state_id",
+        "lookup_table": "state",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "veh_mod_year",
+        "lookup_table": "veh_mod_year",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "veh_color_id",
+        "lookup_table": "veh_color",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "veh_make_id",
+        "lookup_table": "veh_make",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "veh_mod_id",
+        "lookup_table": "veh_mod",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "veh_body_styl_id",
+        "lookup_table": "veh_body_styl",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "ownr_state_id",
+        "lookup_table": "state",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "veh_damage_description1_id",
+        "lookup_table": "veh_damage_description",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "veh_damage_severity1_id",
+        "lookup_table": "veh_damage_severity",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "veh_damage_description2_id",
+        "lookup_table": "veh_damage_description",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "veh_damage_severity2_id",
+        "lookup_table": "veh_damage_severity",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "cmv_veh_oper_id",
+        "lookup_table": "cmv_veh_oper",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "cmv_carrier_id_type_id",
+        "lookup_table": "carrier_id_type",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "cmv_carrier_state_id",
+        "lookup_table": "state",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "cmv_veh_type_id",
+        "lookup_table": "cmv_veh_type",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "cmv_cargo_body_id",
+        "lookup_table": "cmv_cargo_body",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "cmv_evnt1_id",
+        "lookup_table": "cmv_evnt",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "cmv_evnt2_id",
+        "lookup_table": "cmv_evnt",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "cmv_evnt3_id",
+        "lookup_table": "cmv_evnt",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "cmv_evnt4_id",
+        "lookup_table": "cmv_evnt",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "contrib_factr_1_id",
+        "lookup_table": "contrib_factr",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "contrib_factr_2_id",
+        "lookup_table": "contrib_factr",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "contrib_factr_3_id",
+        "lookup_table": "contrib_factr",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "veh_dfct_1_id",
+        "lookup_table": "unit_dfct",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "veh_dfct_2_id",
+        "lookup_table": "unit_dfct",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "veh_dfct_3_id",
+        "lookup_table": "unit_dfct",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "veh_trvl_dir_id",
+        "lookup_table": "trvl_dir",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "first_harm_evt_inv_id",
+        "lookup_table": "yes_no_choice",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "cmv_bus_type_id",
+        "lookup_table": "bus_type",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "trlr_type_id",
+        "lookup_table": "cmv_trlr_type",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "pedestrian_action_id",
+        "lookup_table": "pedestrian_action",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "pedalcyclist_action_id",
+        "lookup_table": "pedalcyclist_action",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "pbcat_pedestrian_id",
+        "lookup_table": "pbcat_pedestrian",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "pbcat_pedalcyclist_id",
+        "lookup_table": "pbcat_pedalcyclist",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "e_scooter_id",
+        "lookup_table": "e_scooter",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "autonomous_unit_id",
+        "lookup_table": "autonomous_unit",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "rpt_autonomous_unit_id",
+        "lookup_table": "rpt_autonomous_unit",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "rpt_autonomous_level_engaged_id",
+        "lookup_table": "autonomous_level_engaged",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    }
+]
+
+
+person_lookup_map = [
+    {
+        "field_name": "prsn_type_id",
+        "lookup_table": "prsn_type",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "prsn_occpnt_pos_id",
+        "lookup_table": "occpnt_pos",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "prsn_injry_sev_id",
+        "lookup_table": "injry_sev",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "prsn_ethnicity_id",
+        "lookup_table": "drvr_ethncty",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "prsn_gndr_id",
+        "lookup_table": "gndr",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "prsn_ejct_id",
+        "lookup_table": "ejct",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "prsn_rest_id",
+        "lookup_table": "rest",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "prsn_airbag_id",
+        "lookup_table": "airbag",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "prsn_helmet_id",
+        "lookup_table": "helmet",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "prsn_alc_spec_type_id",
+        "lookup_table": "specimen_type",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "prsn_alc_rslt_id",
+        "lookup_table": "substnc_tst_result",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "prsn_drg_spec_type_id",
+        "lookup_table": "specimen_type",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "prsn_drg_rslt_id",
+        "lookup_table": "substnc_tst_result",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    }
+]
+
+primaryperson_lookup_map = [
+    {
+        "field_name": "prsn_type_id",
+        "lookup_table": "prsn_type",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "prsn_occpnt_pos_id",
+        "lookup_table": "occpnt_pos",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "prsn_injry_sev_id",
+        "lookup_table": "injry_sev",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "prsn_ethnicity_id",
+        "lookup_table": "drvr_ethncty",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "prsn_gndr_id",
+        "lookup_table": "gndr",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "prsn_ejct_id",
+        "lookup_table": "ejct",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "prsn_rest_id",
+        "lookup_table": "rest",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "prsn_airbag_id",
+        "lookup_table": "airbag",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "prsn_helmet_id",
+        "lookup_table": "helmet",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "prsn_alc_spec_type_id",
+        "lookup_table": "specimen_type",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "prsn_alc_rslt_id",
+        "lookup_table": "substnc_tst_result",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "prsn_drg_spec_type_id",
+        "lookup_table": "specimen_type",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "prsn_drg_rslt_id",
+        "lookup_table": "substnc_tst_result",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "drvr_drg_cat_1_id",
+        "lookup_table": "substnc_cat",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "drvr_lic_type_id",
+        "lookup_table": "drvr_lic_type",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "drvr_lic_state_id",
+        "lookup_table": "state",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "drvr_lic_cls_id",
+        "lookup_table": "drvr_lic_cls",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    },
+    {
+        "field_name": "drvr_state_id",
+        "lookup_table": "state",
+        "crash_schemata": [
+            "2018",
+            "2023"
+        ]
+    }
+]
