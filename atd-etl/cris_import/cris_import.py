@@ -526,6 +526,8 @@ def convert_to_ldm_lookup_ids(state):
 
     #print("state", state)
 
+    cris_schema = int(state["logical_group_id"][:4])
+
 
     tables = [
         {
@@ -555,7 +557,7 @@ def convert_to_ldm_lookup_ids(state):
         assignments = []
         for field in table['lookup_map']:
             #print("field:", field)
-            if field["lookup_table"] is not None:
+            if field["lookup_table"] is not None and cris_schema in field["crash_schemata"]:
                 assignments.append(f"""
                     {field["field_name"]} = (
                         select id
@@ -568,7 +570,7 @@ def convert_to_ldm_lookup_ids(state):
         if len(assignments) > 0:
             sql += ", ".join(assignments) 
             # sql = remove_newlines_and_collapse_spaces(sql)
-            print(sql)
+            #print(sql)
 
             cursor = pg.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
             cursor.execute(sql)
