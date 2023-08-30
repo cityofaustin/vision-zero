@@ -201,7 +201,7 @@ const DataTable = ({
                                 </button>
                               </form>
                             ) : (
-                              <span
+                              <div
                                 className={
                                   fieldValueDisplay === "NO DATA"
                                     ? "text-muted"
@@ -209,7 +209,7 @@ const DataTable = ({
                                 }
                               >
                                 {fieldValueDisplay}
-                              </span>
+                              </div>
                             )}
                           </td>
                           <td>
