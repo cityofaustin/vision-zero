@@ -35,7 +35,7 @@ We use a standard metabase container for business intelligence analytics as well
 
 2. Once you changes have been made, copy the SQL statement that modified the table to our [migrations folder](/migrations) for version control. Example: 
  ```sql
-  ALTER TABLE "public"."atd_txdot_crashes" ADD COLUMN "micromobility_device_flag" varchar(1) NOT NULL DEFAULT 'N';
+  ALTER TABLE "public"."atd_txdot_crashes" ADD COLUMN "private_dr_fl" varchar(1) NOT NULL DEFAULT 'N';
   ```
 3. Execute the same SQL statement on the production database `atd_vz_data`
 
