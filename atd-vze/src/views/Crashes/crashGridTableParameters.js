@@ -336,7 +336,7 @@ export const crashGridTableAdvancedFilters = {
       },
       {
         id: "scooter_rider",
-        label: "Scooter Rider",
+        label: "E-Scooter Rider",
         filter: {
           where: [
             {

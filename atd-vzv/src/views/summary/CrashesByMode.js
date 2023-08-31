@@ -13,6 +13,7 @@ import {
   faCar,
   faMotorcycle,
   faEllipsisH,
+  faMobileAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import {
   dataEndDate,
@@ -28,6 +29,7 @@ const CrashesByMode = () => {
     colors.viridis3Of6,
     colors.viridis4Of6,
     colors.viridis5Of6,
+    colors.viridis6Of6Lowest,
   ];
 
   const [chartData, setChartData] = useState(null); // {yearInt: [{record}, {record}, ...]}
@@ -68,6 +70,14 @@ const CrashesByMode = () => {
       fields: {
         fatal: `bicycle_death_count`,
         injury: `bicycle_serious_injury_count`,
+      },
+    },
+    {
+      label: "E-Scooter Rider",
+      icon: faMobileAlt,
+      fields: {
+        fatal: `micromobility_death_count`,
+        injury: `micromobility_serious_injury_count`,
       },
     },
     {
