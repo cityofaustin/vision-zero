@@ -47,7 +47,7 @@ hasura metadata apply --envfile .env.local
 - Start the local Hasura console and make any changes needed which will then reflect in your project folder
 ### Merging an approved feature branch
 
-We need to check the status of new migrations against staging **before merging** a feature branch so that we can make updates to the migration version order if needed. The version refers to the timestamp in migration folder name.
+We need to check the status of new migrations against staging **before merging a feature branch** so that we can make updates to the migration version order if needed. The version refers to the timestamp in migration folder name.
 
 To check the status from your local project folder, run:
 ```bash
