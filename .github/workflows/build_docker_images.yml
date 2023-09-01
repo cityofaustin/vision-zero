@@ -13,7 +13,8 @@ on:
       - "atd-etl/cris_import/**"
       - "atd-etl/cr3_extract_diagram/**"
       - "atd-etl/socrata_export/**"
-      - "atd-etl/cr3_download/**"
+      - "atd-etl/reassociate_missing_locations/**"
+      - "atd-etl/process_missing_cr3_pdfs/**"
   pull_request:
     branches:
       - master
@@ -24,7 +25,8 @@ on:
       - "atd-etl/cris_import/**"
       - "atd-etl/cr3_extract_diagram/**"
       - "atd-etl/socrata_export/**"
-      - "atd-etl/cr3_download/**"
+      - "atd-etl/reassociate_missing_locations/**"
+      - "atd-etl/process_missing_cr3_pdfs/**"
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
@@ -55,8 +57,10 @@ jobs:
               - 'atd-etl/cr3_extract_diagram/**'
             socrata_export:
               - 'atd-etl/socrata_export/**'
-            cr3_download:
-              - 'atd-etl/cr3_download/**'
+            reassociate_missing_locations:
+              - 'atd-etl/reassociate_missing_locations/**'
+            process_missing_cr3_pdfs:
+              - 'atd-etl/process_missing_cr3_pdfs/**'
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -68,7 +72,7 @@ jobs:
           platforms: linux/amd64,linux/arm64
           context: atd-etl/afd_ems_import
           push: true
-          tags: atddocker/vz-afd-ems-import:${{ github.ref == 'refs/heads/production' && 'production' || 'latest' }}
+          tags: atddocker/vz-afd-ems-import:${{ github.ref == 'refs/heads/master' && 'production' || 'latest' }}
 
       - name: Build and push CRIS import image
         if: steps.changes.outputs.cris == 'true'
@@ -77,7 +81,7 @@ jobs:
           platforms: linux/amd64,linux/arm64
           context: atd-etl/cris_import
           push: true
-          tags: atddocker/vz-cris-import:${{ github.ref == 'refs/heads/production' && 'production' || 'latest' }}
+          tags: atddocker/vz-cris-import:${{ github.ref == 'refs/heads/master' && 'production' || 'latest' }}
 
       - name: Build and push CR3 extract diagram image
         if: steps.changes.outputs.cr3_extract == 'true'
@@ -95,13 +99,22 @@ jobs:
           platforms: linux/amd64,linux/arm64
           context: atd-etl/socrata_export
           push: true
-          tags: atddocker/vz-socrata-export:${{ github.ref == 'refs/heads/master' && 'production' || 'latest' }}
+          tags: atddocker/vz-socrata-export:${{ github.ref == 'refs/heads/production' && 'production' || 'development' }}
 
-      - name: Build and push CR3 download image
-        if: steps.changes.outputs.cr3_download == 'true'
+      - name: Build and push location association tools
+        if: steps.changes.outputs.reassociate_missing_locations == 'true'
         uses: docker/build-push-action@v4
         with:
           platforms: linux/amd64,linux/arm64
-          context: atd-etl/cr3_download
+          context: atd-etl/reassociate_missing_locations
           push: true
-          tags: atddocker/vz-cr3-download:${{ github.ref == 'refs/heads/master' && 'production' || 'latest' }}
+          tags: atddocker/vz-location-associations:${{ github.ref == 'refs/heads/master' && 'production' || 'latest' }}
+
+      - name: Build and push PDF maintenance image
+        if: steps.changes.outputs.process_missing_cr3_pdfs == 'true'
+        uses: docker/build-push-action@v4
+        with:
+          platforms: linux/amd64,linux/arm64
+          context: atd-etl/process_missing_cr3_pdfs
+          push: true
+          tags: atddocker/vz-process-missing-cr3-pdfs:${{ github.ref == 'refs/heads/master' && 'production' || 'latest' }}

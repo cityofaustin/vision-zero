@@ -1,0 +1,3 @@
+table:
+  name: view_vzv_by_month_year
+  schema: public

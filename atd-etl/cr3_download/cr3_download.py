@@ -9,14 +9,76 @@ is obtained from Hasura, and it is contingent to records that do not have
 any CR3 files associated.
 """
 
+import os
 import time
 import json
 
-from process.config import ATD_ETL_CONFIG
 from process.helpers_cr3 import *
+
+from onepasswordconnectsdk.client import Client, new_client
+import onepasswordconnectsdk
 
 # Start timer
 start = time.time()
+
+
+# Get 1Password secrets from environment
+ONEPASSWORD_CONNECT_HOST = os.getenv("OP_CONNECT")
+ONEPASSWORD_CONNECT_TOKEN = os.getenv("OP_API_TOKEN")
+VAULT_ID = os.getenv("OP_VAULT_ID")
+
+# Setup 1Password server connection
+one_password_client = new_client(ONEPASSWORD_CONNECT_HOST, ONEPASSWORD_CONNECT_TOKEN)
+
+# Get secrets from 1Password
+REQUIRED_SECRETS = {
+    "HASURA_ENDPOINT": {
+        "opitem": "Vision Zero graphql-engine Endpoints",
+        "opfield": "production.GraphQL Endpoint",
+        "opvault": VAULT_ID,
+    },
+    "HASURA_ADMIN_KEY": {
+        "opitem": "Vision Zero graphql-engine Endpoints",
+        "opfield": "production.Admin Key",
+        "opvault": VAULT_ID,
+    },
+    "AWS_ACCESS_KEY_ID": {
+        "opitem": "CR3 Download IAM Access Key and Secret",
+        "opfield": "production.accessKeyId",
+        "opvault": VAULT_ID,
+    },
+    "AWS_SECRET_ACCESS_KEY": {
+        "opitem": "CR3 Download IAM Access Key and Secret",
+        "opfield": "production.accessSecret",
+        "opvault": VAULT_ID,
+    },
+    "AWS_DEFAULT_REGION": {
+        "opitem": "CR3 Download IAM Access Key and Secret",
+        "opfield": "production.awsDefaultRegion",
+        "opvault": VAULT_ID,
+    },
+    "ATD_CRIS_CR3_URL": {
+        "opitem": "Vision Zero CRIS CR3 Download",
+        "opfield": "production.ATD_CRIS_CR3_URL",
+        "opvault": VAULT_ID,
+    },
+    "AWS_CRIS_CR3_BUCKET_NAME": {
+        "opitem": "Vision Zero CRIS CR3 Download",
+        "opfield": "production.AWS_CRIS_CR3_BUCKET_NAME",
+        "opvault": VAULT_ID,
+    },
+    "AWS_CRIS_CR3_BUCKET_PATH": {
+        "opitem": "Vision Zero CRIS CR3 Download",
+        "opfield": "production.AWS_CRIS_CR3_BUCKET_PATH",
+        "opvault": VAULT_ID,
+    },
+}
+
+env_vars = onepasswordconnectsdk.load_dict(one_password_client, REQUIRED_SECRETS)
+
+# Set secrets from 1Password in environment
+for key, value in env_vars.items():
+    os.environ[key] = value
 
 #
 # We now need to request a list of N number of records
@@ -24,6 +86,10 @@ start = time.time()
 # the CR3 pdf, upload to S3
 #
 
+# ask user for a set of valid cookies for requests to the CRIS website
+CRIS_BROWSER_COOKIES = input(
+    "Please login to CRIS and extract the contents of the Cookie: header and please paste it here:"
+)
 
 print("Preparing download loop.")
 
@@ -35,13 +101,13 @@ skipped_uploads_and_updates = []
 # CR3s for these crash IDs are not available in the CRIS database.
 # We can skip requesting them.
 # See https://github.com/cityofaustin/atd-data-tech/issues/9786
-known_skips = [180290542]
+known_skips = [180290542, 144720068]
 
 crashes_list_without_skips = []
 
 try:
-    print("Hasura endpoint: '%s' " % ATD_ETL_CONFIG["HASURA_ENDPOINT"])
-    downloads_per_run = ATD_ETL_CONFIG["ATD_CRIS_CR3_DOWNLOADS_PER_RUN"]
+    print("Hasura endpoint: '%s' " % os.getenv("HASURA_ENDPOINT"))
+    downloads_per_run = os.getenv("ATD_CRIS_CR3_DOWNLOADS_PER_RUN")
     downloads_per_run = 2000
     print("Downloads Per This Run: %s" % str(downloads_per_run))
 
@@ -67,7 +133,7 @@ except Exception as e:
 for crash_record in crashes_list_without_skips:
     process_crash_cr3(
         crash_record,
-        ATD_ETL_CONFIG["CRIS_CR3_DOWNLOAD_COOKIE"],
+        CRIS_BROWSER_COOKIES,
         skipped_uploads_and_updates,
     )
 

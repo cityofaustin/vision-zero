@@ -73,9 +73,9 @@ export const fatalityGridTableColumns = {
   engineering_area: {
     searchable: true,
     sortable: true,
-    label_table: "Engineering Area",
+    label_table: "Current Engineering Area",
     type: "String",
-    label_search: "Search by Engineering Area",
+    label_search: "Search by Current Engineering Area",
   },
 };
 
@@ -91,32 +91,30 @@ export const fatalityGridTableAdvancedFilters = {
           where: [
             {
               // Wrapped in array brackets so that the template literal can function as an object key
-              [`_or:
-                [
-                  { _and:
-                    [
-                      { person: { unit: { unit_desc_id: { _eq: 1 } } } },
-                      { _and:
-                        [
-                          { person: { unit: { veh_body_styl_id: { _neq: 71 } } } },
-                          { person: { unit: { veh_body_styl_id: { _neq: 90 } } } }
-                        ]
-                      }
-                    ]
+              [`
+                person: {
+                  unit: {
+                    unit_desc_id: {
+                      _eq: 1 
+                    },
+                    veh_body_styl_id: {
+                      _nin: [71, 90]
+                    },
                   },
-                  { _and:
-                    [
-                      { primaryperson: { unit: { unit_desc_id: { _eq: 1 } } } },
-                      { _and:
-                        [
-                          { primaryperson: { unit: { veh_body_styl_id: { _neq: 71 } } } },
-                          { primaryperson: { unit: { veh_body_styl_id: { _neq: 90 } } } }
-                        ]
-                      }
-                    ]
-                  }
-                ]
-              `]: null,
+                }
+              },
+              {
+                primaryperson: {
+                  unit: {
+                    unit_desc_id: { 
+                      _eq: 1
+                    },
+                    veh_body_styl_id: {
+                      _nin: [71, 90]
+                    },
+                  },
+                },
+              `]: null
             },
           ],
         },
@@ -127,32 +125,30 @@ export const fatalityGridTableAdvancedFilters = {
         filter: {
           where: [
             {
-              [`_or:
-                [
-                  { _and:
-                    [
-                      { person: { unit: { unit_desc_id: { _eq: 1 } } } },
-                      { _or:
-                        [
-                          { person: { unit: { veh_body_styl_id: { _eq: 71 } } } } ,
-                          { person: { unit: { veh_body_styl_id: { _eq: 90 } } } } 
-                        ]
-                      }
-                    ]
+              [`
+                person: { 
+                  unit: {
+                    unit_desc_id: {
+                      _eq: 1
+                    },
+                    veh_body_styl_id: {
+                      _in: [71, 90]
+                    },
                   },
-                  { _and:
-                    [
-                      { primaryperson: { unit: { unit_desc_id: { _eq: 1 } } } },
-                      { _or:
-                        [
-                          { primaryperson: { unit: { veh_body_styl_id: { _eq: 71 } } } } ,
-                          { primaryperson: { unit: { veh_body_styl_id: { _eq: 90 } } } }
-                        ]
-                      }
-                    ]
-                  }
-                ]
-              `]: null,
+                },
+              },
+              {
+                primaryperson: {
+                  unit: {
+                    unit_desc_id: {
+                      _eq: 1
+                    },
+                    veh_body_styl_id: {
+                      _in: [71, 90]
+                    },
+                  },
+                },
+              `]: null
             },
           ],
         },
@@ -163,7 +159,24 @@ export const fatalityGridTableAdvancedFilters = {
         filter: {
           where: [
             {
-              "_or: [ { person: { unit: { unit_desc_id: { _eq: 3 } } } }, { primaryperson: { unit: { unit_desc_id: { _eq: 3 } } } } ]": null,
+              [`
+                person: {
+                  unit: { 
+                    unit_desc_id: {
+                      _eq: 3
+                    },
+                  },
+                },
+              },
+              {
+                primaryperson: {
+                  unit: { 
+                    unit_desc_id: {
+                      _eq: 3
+                    },
+                  },
+                },
+              `]: null,
             },
           ],
         },
@@ -174,33 +187,94 @@ export const fatalityGridTableAdvancedFilters = {
         filter: {
           where: [
             {
-              "_or: [ { person: { unit: { unit_desc_id: { _eq: 4 } } } }, { primaryperson: { unit: { unit_desc_id: { _eq: 4 } } } } ]": null,
+              [`
+                person: {
+                  unit: {
+                    unit_desc_id: {
+                      _eq: 4 
+                    },
+                  },
+                },
+              },
+              {
+                primaryperson: {
+                  unit: {
+                    unit_desc_id: {
+                      _eq: 4
+                    },
+                  },
+                },
+              `]: null,
             },
           ],
         },
       },
       {
         id: "scooter",
-        label: "Scooter-rider Fatality",
+        label: "E-Scooter Rider Fatality",
         filter: {
           where: [
             {
-              [`_or:
-                [
-                  { _and:
-                    [
-                      { person: { unit: { unit_desc_id: { _eq: 177 } } } },
-                      { person: { unit: { veh_body_styl_id: { _eq: 177 } } } }
-                    ]
+              [`
+                person: { 
+                  unit: {
+                    unit_desc_id: {
+                      _eq: 177
+                    },
+                    veh_body_styl_id: {
+                      _eq: 177
+                    },
                   },
-                  { _and:
-                    [
-                      { primaryperson: { unit: { unit_desc_id: { _eq: 177 } } } },
-                      { primaryperson: { unit: { veh_body_styl_id: { _eq: 177 } } } }
-                    ]
-                  }
+                },
+              },
+              {
+                primaryperson: {
+                  unit: {
+                    unit_desc_id: {
+                      _eq: 177
+                    },
+                    veh_body_styl_id: {
+                      _eq: 177 
+                    },
+                  },
+                },
+              `]: null
+            },
+          ],
+        },
+      },
+      {
+        id: "other",
+        label: "Other",
+        filter: {
+          where: [
+            {
+              [`
+                _or: [
+                  {
+                    primaryperson: {
+                      unit: {
+                        unit_desc_id: {_nin: [1, 3, 4]},
+                        _not: {
+                          unit_desc_id: {_eq: 177},
+                          veh_body_styl_id: {_eq: 177}
+                        },
+                      },
+                    },
+                  },
+                  {
+                    person: {
+                      unit: {
+                        unit_desc_id: {_nin: [1, 3, 4]},
+                        _not: {
+                          unit_desc_id: {_eq: 177},
+                          veh_body_styl_id: {_eq: 177}
+                        },
+                      },
+                    },
+                  },
                 ]
-              `]: null,
+              `]: null
             },
           ],
         },
@@ -343,4 +417,5 @@ primaryperson { unit { body_style { veh_body_styl_desc } } }
 person { unit { body_style { veh_body_styl_desc } } }
 crash { onsys_fl }
 engineering_area
+crash { council_district }
 `;

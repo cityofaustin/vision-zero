@@ -111,31 +111,6 @@ const GridExportData = ({
       return flattenedRow;
     });
 
-    const cleanedAndFlattenedData = flattenedData.map(item => {
-      // Some fields are presenting issues when they are exported as .csv and
-      // imported into MSFT Excel, Acces & Power BI. For now, we're just going to
-      // modify the data for export to solve issues related to returns and double-quotes
-      // In the future, we may choose to clean these values at the database level.
-
-      const columnsToClean = [
-        "rpt_street_name",
-        "rpt_street_desc",
-        "rpt_sec_street_desc",
-        "rpt_sec_street_name",
-      ];
-
-      columnsToClean.forEach(col => {
-        if (item[col]) {
-          // remove return carriage and replace with space
-          item[col] = item[col].replace(/(\r\n|\n|\r|")/gm, " ");
-          // remove double-quotes
-          item[col] = item[col].replace(/"/g, "");
-        }
-      });
-
-      return item;
-    });
-
     // Create array of columns that should be displayed in the table
     let columnsToExportParsed = [];
 
@@ -154,7 +129,7 @@ const GridExportData = ({
       }
     });
 
-    const cleanedFlattenedAndParsedData = cleanedAndFlattenedData.map(item => {
+    const flattenedAndParsedData = flattenedData.map(item => {
       // Parse out unnecessary columns before exporting table, rename one column
       Object.keys(item).forEach(col => {
         if (!columnsToExportParsed.includes(col)) {
@@ -166,6 +141,19 @@ const GridExportData = ({
           delete item["death_cnt"];
         }
       });
+      return item;
+    });
+
+    const cleanedFlattenedAndParsedData = flattenedAndParsedData.map(item => {
+      // We want to escape any instances of double quotes by preceding
+      // them with another double quote. This will put us in compliance
+      // with CSV formatting guidelines https://www.rfc-editor.org/rfc/rfc4180
+      Object.keys(item).forEach(key => {
+        if (typeof item[key] === "string" && item[key].includes('"')) {
+          item[key] = item[key].replace(/"/g, '""');
+        }
+      });
+
       return item;
     });
 

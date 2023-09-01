@@ -1,0 +1,3 @@
+function:
+  name: find_cr3_collisions_for_location
+  schema: public

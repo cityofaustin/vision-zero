@@ -10,6 +10,7 @@ The application requires the requests library:
     https://pypi.org/project/requests/
 """
 
+import os
 import requests
 import base64
 import subprocess
@@ -18,8 +19,7 @@ from http.cookies import SimpleCookie
 
 import magic
 
-# We need to import our configuration, and the run_query method
-from .config import ATD_ETL_CONFIG
+# We need the run_query method
 from .request import run_query
 
 
@@ -49,7 +49,7 @@ def download_cr3(crash_id, cookies):
     crash_id_encoded = base64.b64encode(
         str("CrashId=" + crash_id).encode("utf-8")
     ).decode("utf-8")
-    url = ATD_ETL_CONFIG["ATD_CRIS_CR3_URL"] + crash_id_encoded
+    url = os.getenv("ATD_CRIS_CR3_URL") + crash_id_encoded
     download_path = "/tmp/" + "%s.pdf" % crash_id
 
     print("Downloading (%s): '%s' from %s" % (crash_id, download_path, url))
@@ -66,8 +66,8 @@ def upload_cr3(crash_id):
     """
     file = "/tmp/%s.pdf" % crash_id
     destination = "s3://%s/%s/%s.pdf" % (
-        ATD_ETL_CONFIG["AWS_CRIS_CR3_BUCKET_NAME"],
-        ATD_ETL_CONFIG["AWS_CRIS_CR3_BUCKET_PATH"],
+        os.getenv("AWS_CRIS_CR3_BUCKET_NAME"),
+        os.getenv("AWS_CRIS_CR3_BUCKET_PATH"),
         crash_id,
     )
 
