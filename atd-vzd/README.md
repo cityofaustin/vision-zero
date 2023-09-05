@@ -6,7 +6,7 @@ CRIS data can be gathered from the [CRIS website]([https://cris.dot.state.tx.us]
 
 ## Backups
 
-Currently there are two systems making backups, one in RDS and the other in S3 via CRON jobs for 60 days. The backups in S3 are table-based and contain both schema and data for each individual table. 
+Currently there are two systems making backups, one in RDS and the other in S3 via CRON job on the bastion host used with the Vision Zero database. The cron stores daily database dump files in `s3://atd-vision-zero-database/production-database-pg_dump-export` that can be utilized to restore the local database with production data.
 
 ## Hasura
 
