@@ -89,8 +89,8 @@ def main():
             converted_token = convert_to_ldm_lookup_ids(typed_token)
             align_records_token = align_records(converted_token)
             clean_up_import_schema(align_records_token)
-    #remove_archives_from_sftp_endpoint(zip_location)
-    #upload_csv_files_to_s3(archive)
+    remove_archives_from_sftp_endpoint(zip_location)
+    upload_csv_files_to_s3(archive)
 
 
 def get_secrets():
