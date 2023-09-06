@@ -214,7 +214,7 @@ def populate_table(worksheet, lookup_table, pg):
             (upstream_id, description, effective_begin_date, effective_end_date)
             values (%s, %s, %s, %s);"""
         insert_cursor = pg.cursor()
-        print(f"Insert: {insert}")
+        # print(f"Insert: {insert}")
         insert_cursor.execute(insert, row[:4])
         insert_cursor.close()
         pg.commit()
@@ -296,7 +296,7 @@ def populate_state_table(worksheet, lookup_table, pg):
             (upstream_id, abbreviation, description, effective_begin_date, effective_end_date)
             values (%s, %s, %s, %s, %s);"""
         insert_cursor = pg.cursor()
-        print(f"Insert: {insert}")
+        #print(f"Insert: {insert}")
         insert_cursor.execute(insert, row[:5])
         insert_cursor.close()
         pg.commit()
@@ -376,7 +376,7 @@ def populate_veh_mod_year_table(worksheet, lookup_table, pg):
             (upstream_id, description)
             values (%s, %s);"""
         insert_cursor = pg.cursor()
-        print(f"Insert: {insert}")
+        #print(f"Insert: {insert}")
         insert_cursor.execute(insert, row[:2])
         insert_cursor.close()
         pg.commit()
@@ -484,7 +484,7 @@ def populate_cntl_sect_table(worksheet, lookup_table, pg):
             (dps_region_id, dps_district_id, txdot_district_id, cris_cnty_id, road_id, cntl_sect_id, cntl_id, section_id, cntl_sect_nbr, rhino_cntl_sect_nbr, begin_milepoint, end_milepoint, from_dfo, to_dfo, create_timestamp, update_timestamp, effective_begin_date, effective_end_date)
             values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"""
         insert_cursor = pg.cursor()
-        print(f"Insert: {insert}")
+        #print(f"Insert: {insert}")
         cleaned_up_row = replace_null(row)
         try:
             insert_cursor.execute(insert, cleaned_up_row)
