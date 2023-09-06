@@ -20,6 +20,7 @@ VAULT_ID = os.getenv("OP_VAULT_ID")
 
 #only_process_these_tables = ['state', 'veh_mod_year', 'cntl_sect']
 #only_process_these_tables = ['agency', 'state', 'veh_mod_year', 'cntl_sect']
+#only_process_these_tables = ['inv_notify_meth']
 only_process_these_tables = None
 
 def main():
@@ -75,6 +76,7 @@ def process_spreadsheet(file_path):
         )
         create_lookup_tables(file_path, pg)
         create_materialized_views(file_path, pg)
+        check_cris_lookup_values_unicity(file_path, pg)
 
 
 
@@ -126,6 +128,31 @@ def create_lookup_tables(file_path, pg):
                 populate_cntl_sect_table(worksheet, lookup_table, pg)
             else:
                 populate_table(worksheet, lookup_table, pg)
+
+def check_cris_lookup_values_unicity(file_path, pg):
+    workbook = load_workbook(filename=file_path)
+    for worksheet in workbook.worksheets:
+        print("")
+        print("Title: ", worksheet.title.lower())
+        match = re.search(r"(\w+)_LKP", worksheet.title)
+        lookup_table = match.group(1).lower() if match else None
+        if lookup_table == 'cntl_sect':
+            continue
+        if lookup_table:
+            print(lookup_table)
+            sql = f"""select count(id)
+                from lookup.{lookup_table}
+                group by cris_id, source, vz_id
+                having count(id) > 1;
+            """
+            cursor = pg.cursor(cursor_factory=psycopg2.extras.DictCursor)
+            cursor.execute(sql)
+            rows = cursor.fetchall()
+            cursor.close()
+            if len(rows) > 0:
+                print(rows)
+                print("ERROR: Duplicate values in lookup table")
+                exit(1)
 
 def create_materialized_views(file_path, pg):
     workbook = load_workbook(filename=file_path)
@@ -545,7 +572,9 @@ def process_worksheet(worksheet, lookups):
 
     for row in worksheet.iter_rows(values_only=True, min_row=9):
         if "lookup" in str(row[10]).lower():
-            # print("")
+            print("")
+            print(row[9])
+            print(row[10])
             match = re.search(r"#'(\w+)_LKP'", row[9])
             lookup_table = match.group(1).lower() if match else None
             field = str(row[7]).split(".")[1].lower()
