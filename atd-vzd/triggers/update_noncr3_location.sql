@@ -31,4 +31,4 @@ ELSE
 END IF;
 	RETURN NEW;
 END;
-$$;
+$$ LANGUAGE plpgsql;
