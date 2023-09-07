@@ -65,6 +65,7 @@ const Users = () => {
   const token = window.localStorage.getItem("id_token");
 
   const [userList, setUserList] = useState(null);
+  const [allUsers, setAllUsers] = useState([]);
   const [totalUsers, setTotalUsers] = useState(null);
   const [page, setPage] = useState(0);
   const perPage = 50;
@@ -83,12 +84,63 @@ const Users = () => {
       });
   }, [token, page, perPage]);
 
+  const getAllUsers = () => {
+    let page = 0;
+    let users = [];
+    while (page <= pageCount) {
+    const allUsersEndpoint = `${process.env.REACT_APP_CR3_API_DOMAIN}/user/list_users?page=${page}&per_page=${perPage}`;
+    axios
+      .get(allUsersEndpoint, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then(res => {
+        res.data.users.forEach(user => {
+          users.push(user)
+        });
+      });
+      page ++
+    }
+    setAllUsers(users);
+  };
+
+  const getUserEmails = (users) => {
+    console.log(users);
+    let userEmails = "";
+    users.forEach(user => {
+      userEmails += `${user.email}; `
+    });
+    console.log(userEmails);
+    return userEmails;
+  }
+
   const pageCount = Math.ceil(totalUsers / perPage);
 
   const updatePage = newPageValue => {
     setUserList(null);
     setPage(newPageValue);
   };
+
+  // const userEmails = userList.map(user => (
+  //   user.email
+  // ));
+
+  // let userEmails = "";
+
+  // !!userList && userList.forEach(user => {
+  //   userEmails += `${user.email}; `
+  // });
+
+  // console.log(userEmails);
+  // !!allUsers && console.log(allUsers);
+
+  // !!userList && console.log(userList.map(user => (
+  //   user.email
+  // )));
+
+  getAllUsers();
+  // console.log(allUsers);
 
   return (
     <Can
