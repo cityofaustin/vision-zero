@@ -19,7 +19,7 @@ Changes to the schema and database are currently handled by manually applying mi
 
 ### Setting up Hasura CLI to target an environment
 
-To provide the CLI with the credentials needed to reach the local, staging, or production engine, we can use environment files.
+To provide the CLI with the credentials needed to reach the local, staging, or production Hasura engine, we can use environment files.
 
 For example:
 ```bash
@@ -37,9 +37,9 @@ HASURA_GRAPHQL_ADMIN_SECRET=<Found in 1Password entry named 'VZD - Staging - Has
 
 ### Generating migrations and metadata changes
 
-- Pull `master` branch to make sure you have the latest migrations that are applied to staging
+- Merge the latest code from the `master` branch into your feature branch to make sure you have the latest migrations that are applied to the staging database
 - Start up the local database and Hasura engine and replicate using the latest production data dump
-- To make sure your local database is up to date with the current staging changes, run:
+- To make sure your local database is up to date with the current changes in `master` branch, run:
 ```bash
 hasura migrate apply --envfile .env.local
 hasura metadata apply --envfile .env.local
@@ -47,7 +47,7 @@ hasura metadata apply --envfile .env.local
 - Start the local Hasura console and make any changes needed which will then reflect in your project folder
 ### Merging an approved feature branch
 
-We need to check the status of new migrations against staging **before merging a feature branch** so that we can make updates to the migration version order if needed. The version refers to the timestamp in migration folder name.
+We need to check the status of new migrations against the staging Hasura engine **before merging a feature branch** so that we can make updates to the migration version order if needed. The version refers to the timestamp in migration folder name.
 
 To check the status from your local project folder, run:
 ```bash
@@ -62,7 +62,7 @@ If the new migration is not the last migration to apply in the sequence:
 - Update the migration version in your project so it is the newest migration
 - Test locally using the steps in the  [Generating migrations and metadata changes section](#generating-migrations-and-metadata-changes)
 
-Once everything looks good, we can apply the migrations and metadata to staging and merge the feature branch.
+Once everything looks good, we can apply the migrations and metadata to the staging database and merge the feature branch.
 
 ```bash
 hasura migrate apply --envfile .env.staging
