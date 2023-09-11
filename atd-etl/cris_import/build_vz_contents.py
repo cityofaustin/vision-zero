@@ -6,21 +6,13 @@ import json
 import psycopg2
 import psycopg2.extras
 import datetime
+import tempfile
+import shutil
 
 from sshtunnel import SSHTunnelForwarder
 
 import onepasswordconnectsdk
 from onepasswordconnectsdk.client import Client, new_client
-
-#from dotenv import load_dotenv
-
-#load_dotenv("env")
-#
-#DB_HOST = os.getenv("DB_HOST")
-#DB_USER = os.getenv("DB_USER")
-#DB_PASS = os.getenv("DB_PASS")
-#DB_NAME = os.getenv("DB_NAME")
-#DB_SSL_REQUIREMENT = os.getenv("DB_SSL_REQUIREMENT")
 
 DEPLOYMENT_ENVIRONMENT = os.environ.get(
     "ENVIRONMENT", "development"
@@ -73,7 +65,7 @@ def main():
 
     SFTP_ENDPOINT_SSH_PRIVATE_KEY = secrets["sftp_endpoint_private_key"]
 
-    # compute_for_crashes() # this works - save the 80 missing crashes..
+    compute_for_crashes() # this works - save the 80 missing crashes..
     # compute_for_units() # this works - save for the 164 missing units and the one special case
     # compute_for_person() # this works - save for the 85 missing persons
     #compute_for_primaryperson() # this works - save for the 151 missing primary persons
@@ -207,81 +199,100 @@ def get_pg_connection():
 
 
 def compute_for_crashes():
-    pg = get_pg_connection()
-    cris_cursor = pg.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-    public_cursor = pg.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-    vz_cursor = pg.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    with SshKeyTempDir() as key_directory:
+        write_key_to_file(key_directory + "/id_ed25519", DB_BASTION_HOST_SSH_PRIVATE_KEY + "\n") 
+        ssh_tunnel = SSHTunnelForwarder(
+            (DB_BASTION_HOST),
+            ssh_username=DB_BASTION_HOST_SSH_USERNAME,
+            ssh_private_key=f"{key_directory}/id_ed25519",
+            remote_bind_address=(DB_RDS_HOST, 5432),
+        )
+        ssh_tunnel.start()
 
-    vz_cursor.execute('truncate vz.atd_txdot_crashes')
-    pg.commit()
+        pg = psycopg2.connect(
+            host="localhost",
+            port=ssh_tunnel.local_bind_port,
+            user=DB_USER,
+            password=DB_PASS,
+            dbname=DB_NAME,
+            sslmode=DB_SSL_REQUIREMENT,
+            sslrootcert="/root/rds-combined-ca-bundle.pem",
+        )
 
-        # where crash_id > 18793000
-        # where crash_id = 16558169
-    sql = """
-        select * from cris.atd_txdot_crashes 
-        order by crash_id asc
-        """
-    cris_cursor.execute(sql)
-    for cris in cris_cursor:
-        # This is for focusing in on a single record (debugging)
-        #if cris["crash_id"] != 16558169:
-            #continue
+        cris_cursor = pg.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        public_cursor = pg.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        vz_cursor = pg.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
-        # 18793962 This is a real crash in CRIS that is not in the VZDB, see issue #11589
+        vz_cursor.execute('truncate vz.atd_txdot_crashes')
+        pg.commit()
 
-        # this is for skipping a record.
-        if cris["crash_id"] in [18793962, 18793971, 18793991, 18794003, 18797160, 18797724, 18797777,
-                                18797885, 18798007, 18798181, 18798658, 18798663, 18798665, 18798669,
-                                18798674, 18798682, 18798684, 18798686, 18798687, 18798689, 18798722,
-                                18799005, 18799077, 18799692, 18799731, 18799736, 18799744, 18799747,
-                                18799748, 18799786, 18799788, 18799789, 18799792, 18800047, 18800089,
-                                18800099, 18800109, 18800119, 18800163, 18800201, 18800202, 18800203,
-                                18800242, 18800280, 18800417, 18800418, 18800419, 18800420, 18800421,
-                                18800425, 18800426, 18800427, 18800428, 18800432, 18800434, 18800436,
-                                18800438, 18800448, 18800449, 18800452, 18800453, 18800454, 18800457,
-                                18800494, 18800506, 18800580, 18800611, 18800681, 18800801, 18800891,
-                                18800894, 18800895, 18801054, 18801077, 18801115, 18801120, 18801169,
-                                18801170, 18801230, 18801288]:
-            continue
+            # where crash_id > 18793000
+            # where crash_id = 16558169
+        sql = """
+            select * from cris.atd_txdot_crashes 
+            order by crash_id asc
+            """
+        cris_cursor.execute(sql)
+        for cris in cris_cursor:
+            # This is for focusing in on a single record (debugging)
+            #if cris["crash_id"] != 16558169:
+                #continue
 
+            # 18793962 This is a real crash in CRIS that is not in the VZDB, see issue #11589
 
-        print()
-        print("CRIS: ", cris["crash_id"])
-        sql = "select * from public.atd_txdot_crashes where crash_id = %s"
-        public_cursor.execute(sql, (cris["crash_id"],))
-        public = public_cursor.fetchone()
-        # print("public: ", public["crash_id"])
-        keys = ["crash_id"]
-        values = [cris["crash_id"]]
-        for k, v in cris.items():
-            if (k in ('crash_id')): # use to define fields to ignore
+            # this is for skipping a record.
+            if cris["crash_id"] in [18793962, 18793971, 18793991, 18794003, 18797160, 18797724, 18797777,
+                                    18797885, 18798007, 18798181, 18798658, 18798663, 18798665, 18798669,
+                                    18798674, 18798682, 18798684, 18798686, 18798687, 18798689, 18798722,
+                                    18799005, 18799077, 18799692, 18799731, 18799736, 18799744, 18799747,
+                                    18799748, 18799786, 18799788, 18799789, 18799792, 18800047, 18800089,
+                                    18800099, 18800109, 18800119, 18800163, 18800201, 18800202, 18800203,
+                                    18800242, 18800280, 18800417, 18800418, 18800419, 18800420, 18800421,
+                                    18800425, 18800426, 18800427, 18800428, 18800432, 18800434, 18800436,
+                                    18800438, 18800448, 18800449, 18800452, 18800453, 18800454, 18800457,
+                                    18800494, 18800506, 18800580, 18800611, 18800681, 18800801, 18800891,
+                                    18800894, 18800895, 18801054, 18801077, 18801115, 18801120, 18801169,
+                                    18801170, 18801230, 18801288]:
                 continue
-            # if k == 'position':
-                # print ("cris position:   ", v)
-                # print ("public position: ", public[k])
 
-            if v != public[k]:
-                # print("Δ ", k, ": ", public[k], " → ", v)
-                keys.append(k)
-                values.append(public[k])
-        comma_linefeed = ",\n            "
-        sql = f"""
-        insert into vz.atd_txdot_crashes (
-            {comma_linefeed.join(keys)}
-        ) values (
-            {comma_linefeed.join(values_for_sql(values))}
-        );
-        """
-        # print(sql)
-        try:
-            vz_cursor.execute(sql)
-            pg.commit()
-        except:
-            print("keys: ", keys)
-            print("values: ", values)
-            print("ERROR: ", sql)
-        print("Inserted: ", cris["crash_id"])
-        # input("Press Enter to continue...")
+
+            print()
+            print("CRIS: ", cris["crash_id"])
+            sql = "select * from public.atd_txdot_crashes where crash_id = %s"
+            public_cursor.execute(sql, (cris["crash_id"],))
+            public = public_cursor.fetchone()
+            # print("public: ", public["crash_id"])
+            keys = ["crash_id"]
+            values = [cris["crash_id"]]
+            for k, v in cris.items():
+                if (k in ('crash_id')): # use to define fields to ignore
+                    continue
+                # if k == 'position':
+                    # print ("cris position:   ", v)
+                    # print ("public position: ", public[k])
+
+                if v != public[k]:
+                    # print("Δ ", k, ": ", public[k], " → ", v)
+                    keys.append(k)
+                    values.append(public[k])
+            comma_linefeed = ",\n            "
+            sql = f"""
+            insert into vz.atd_txdot_crashes (
+                {comma_linefeed.join(keys)}
+            ) values (
+                {comma_linefeed.join(values_for_sql(values))}
+            );
+            """
+            # print(sql)
+            try:
+                vz_cursor.execute(sql)
+                pg.commit()
+            except:
+                print("keys: ", keys)
+                print("values: ", values)
+                print("ERROR: ", sql)
+            print("Inserted: ", cris["crash_id"])
+            # input("Press Enter to continue...")
 
 
 def compute_for_units():
@@ -512,5 +523,31 @@ def compute_for_primaryperson():
 
 
 
+# these temp directories are used to store ssh keys, because they will
+# automatically clean themselves up when they go out of scope.
+class SshKeyTempDir:
+    def __init__(self):
+        self.path = None
+
+    def __enter__(self):
+        self.path = tempfile.mkdtemp(dir='/tmp')
+        return self.path
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        shutil.rmtree(self.path)
+
+def write_key_to_file(path, content):
+    # Open the file with write permissions and create it if it doesn't exist
+    fd = os.open(path, os.O_WRONLY | os.O_CREAT, 0o600)
+
+    # Write the content to the file
+    os.write(fd, content.encode())
+
+    # Close the file
+    os.close(fd)
+
+
+
 if __name__ == "__main__":
     main()
+
