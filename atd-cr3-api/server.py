@@ -8,13 +8,11 @@ import datetime
 import boto3
 import os
 import requests
-import hashlib
 
 from dotenv import load_dotenv, find_dotenv
 from os import environ as env
 from functools import wraps
 from six.moves.urllib.request import urlopen
-from string import Template
 
 from flask import Flask, request, redirect, jsonify, _request_ctx_stack, abort
 from flask_cors import cross_origin
@@ -33,7 +31,6 @@ AUTH0_DOMAIN = os.getenv("AUTH0_DOMAIN", "")
 CLIENT_ID = os.getenv("CLIENT_ID", "")
 API_CLIENT_ID = os.getenv("API_CLIENT_ID", "")
 API_CLIENT_SECRET = os.getenv("API_CLIENT_SECRET", "")
-API_ENVIRONMENT = os.getenv("API_ENVIRONMENT", "STAGING")
 
 # AWS Configuration
 AWS_DEFALUT_REGION = os.getenv("AWS_DEFALUT_REGION", "us-east-1")
@@ -41,10 +38,6 @@ AWS_S3_KEY = os.getenv("AWS_S3_KEY", "")
 AWS_S3_SECRET = os.getenv("AWS_S3_SECRET", "")
 AWS_S3_CR3_LOCATION = os.getenv("AWS_S3_CR3_LOCATION", "")
 AWS_S3_BUCKET = os.getenv("AWS_S3_BUCKET", "")
-
-# Hasura Config
-HASURA_ADMIN_SECRET = os.getenv("HASURA_ADMIN_SECRET", "")
-HASURA_ENDPOINT = os.getenv("HASURA_ENDPOINT", "")
 
 
 def get_api_token():
