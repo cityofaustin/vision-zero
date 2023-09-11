@@ -535,9 +535,12 @@ def convert_to_ldm_lookup_ids(state):
             sslrootcert="/root/rds-combined-ca-bundle.pem"
             )
 
+    # Figure out what "crash era" or CRIS schema we're dealing with here.
     cris_schema = int(state["logical_group_id"][:4])
     print("cris_schema", cris_schema)
 
+    # Get at the mappings between which columns and for which schemata
+    # we are going to build our transformation query from.
     tables = [
         {
             'imported_table': 'crash',
@@ -561,6 +564,7 @@ def convert_to_ldm_lookup_ids(state):
         },
     ]
 
+    # build up the query and run it
     for table in tables:
         sql = f"update {state['import_schema']}.{table['imported_table']} set "
         assignments = []
@@ -577,9 +581,6 @@ def convert_to_ldm_lookup_ids(state):
         if len(assignments) > 0:
             sql += ", ".join(assignments) 
 
-            # debugging functionality
-            # sql = remove_newlines_and_collapse_spaces(sql)
-
             cursor = pg.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
             cursor.execute(sql)
             pg.commit()
@@ -587,14 +588,6 @@ def convert_to_ldm_lookup_ids(state):
 
     return state
 
-
-
-
-def remove_newlines_and_collapse_spaces(input_string):
-    # Remove newlines
-    no_newlines = input_string.replace('\n', ' ')
-    # Replace multiple whitespaces with a single space
-    return re.sub(' +', ' ', no_newlines)
 
 def align_records(map_state):
 
