@@ -31,22 +31,22 @@ def get_column_operators(
             
             # there are two normal ways to be equal. Either be of the same value and type or /both/ be undefined.
             comparison_clause = f"""
-                (  (cris.{output_map[table]}.{column['column_name']} = {DB_IMPORT_SCHEMA}.{table}.{column['column_name']})
-                OR (cris.{output_map[table]}.{column['column_name']} IS NULL AND {DB_IMPORT_SCHEMA}.{table}.{column['column_name']} IS NULL)
+                (  (cris_fact_tables.{output_map[table]}.{column['column_name']} = {DB_IMPORT_SCHEMA}.{table}.{column['column_name']})
+                OR (cris_fact_tables.{output_map[table]}.{column['column_name']} IS NULL AND {DB_IMPORT_SCHEMA}.{table}.{column['column_name']} IS NULL)
                 """
             # And .. and there are two more ways that stem from past typing tech-debt we have on our db
             if column["data_type"] in ('character varying', 'text'):
                 comparison_clause += f"""
-                OR (cris.{output_map[table]}.{column['column_name']} IS null and {DB_IMPORT_SCHEMA}.{table}.{column['column_name']} = '')
-                OR (cris.{output_map[table]}.{column['column_name']} = '' and {DB_IMPORT_SCHEMA}.{table}.{column['column_name']} IS NULL)  
+                OR (cris_fact_tables.{output_map[table]}.{column['column_name']} IS null and {DB_IMPORT_SCHEMA}.{table}.{column['column_name']} = '')
+                OR (cris_fact_tables.{output_map[table]}.{column['column_name']} = '' and {DB_IMPORT_SCHEMA}.{table}.{column['column_name']} IS NULL)  
                 """
             comparison_clause += ")"
 
             column_aggregator = f"""
                 case when not coalesce(
-                    cris.{output_map[table]}.{column['column_name']} = {DB_IMPORT_SCHEMA}.{table}.{column['column_name']}
+                    cris_fact_tables.{output_map[table]}.{column['column_name']} = {DB_IMPORT_SCHEMA}.{table}.{column['column_name']}
                     or
-                    (cris.{output_map[table]}.{column['column_name']} is null and {DB_IMPORT_SCHEMA}.{table}.{column['column_name']} is null)
+                    (cris_fact_tables.{output_map[table]}.{column['column_name']} is null and {DB_IMPORT_SCHEMA}.{table}.{column['column_name']} is null)
                 , false) then '{column['column_name']}' else null end
             """
 
@@ -68,7 +68,7 @@ def check_if_update_is_a_non_op(
     DB_IMPORT_SCHEMA,
 ):
     sql = "select (" + " and ".join(column_comparisons) + ") as skip_update\n"
-    sql += f"from cris.{output_map[table]}\n"
+    sql += f"from cris_fact_tables.{output_map[table]}\n"
     sql += (
         f"left join {DB_IMPORT_SCHEMA}.{table} on ("
         + " and ".join(linkage_clauses)
@@ -101,7 +101,7 @@ def get_changed_columns(
         + "], null)"
         + "as changed_columns "
     )
-    sql += f"from cris.{output_map[table]} "
+    sql += f"from cris_fact_tables.{output_map[table]} "
     sql += (
         f"left join {DB_IMPORT_SCHEMA}.{table} on ("
         + " and ".join(linkage_clauses)
@@ -122,7 +122,7 @@ def get_key_clauses(table_keys, output_map, table, source, DB_IMPORT_SCHEMA):
         if not source[key]:
             # we're not able to uniquely identify a row to which this record will match & update
             return None, None
-        public_key_clauses.append(f"cris.{output_map[table]}.{key} = {source[key]}")
+        public_key_clauses.append(f"cris_fact_tables.{output_map[table]}.{key} = {source[key]}")
         import_key_clauses.append(f"{DB_IMPORT_SCHEMA}.{table}.{key} = {source[key]}")
     public_key_sql = " and ".join(public_key_clauses)
     import_key_sql = " and ".join(import_key_clauses)
@@ -133,7 +133,7 @@ def fetch_target_record(pg, output_map, table, public_key_sql):
     # build and execute a query to find our target record; we're looking for it to exist
     sql = f"""
     select * 
-    from cris.{output_map[table]}
+    from cris_fact_tables.{output_map[table]}
     where 
     {public_key_sql}
     """
@@ -152,7 +152,7 @@ def form_update_statement(
     linkage_sql,
     changed_columns,
 ):
-    sql = "update cris." + output_map[table] + " set "
+    sql = "update cris_fact_tables." + output_map[table] + " set "
 
     required_assignments = []
     for changed_column in set(changed_columns["changed_columns"]):
@@ -171,7 +171,7 @@ def form_update_statement(
 def form_insert_statement(
     output_map, table, input_column_names, import_key_sql, DB_IMPORT_SCHEMA
 ):
-    sql = f"insert into cris.{output_map[table]} "
+    sql = f"insert into cris_fact_tables.{output_map[table]} "
     sql += "(" + ", ".join(input_column_names) + ") "
     sql += "(select "
     sql += ", ".join(input_column_names)
@@ -284,7 +284,7 @@ def get_target_columns(pg, output_map, table):
     FROM
         information_schema.columns
     WHERE true
-        AND table_schema = 'cris'
+        AND table_schema = 'cris_fact_tables'
         AND table_name = '{output_map[table]}'
     """
 
@@ -307,7 +307,7 @@ def get_linkage_constructions(key_columns, output_map, table, DB_IMPORT_SCHEMA):
     linkage_clauses = []
     for column in key_columns:
         linkage_clauses.append(
-            f"cris.{output_map[table]}.{column} = {DB_IMPORT_SCHEMA}.{table}.{column}"
+            f"cris_fact_tables.{output_map[table]}.{column} = {DB_IMPORT_SCHEMA}.{table}.{column}"
         )
     linkage_sql = " AND " + " AND ".join(linkage_clauses)
     return linkage_clauses, linkage_sql
@@ -340,7 +340,7 @@ def enforce_complete_keying(
 
 def get_output_column_types(pg, output_table):
     # This is a subtle SQL injection attack vector.
-    # Beware the f-string. But I trust CRIS.
+    # Beware the f-string. But I trust cris_fact_tables.
     sql = f"""
     SELECT
         column_name,
@@ -350,7 +350,7 @@ def get_output_column_types(pg, output_table):
     FROM
         information_schema.columns
     WHERE true
-        AND table_schema = 'cris'
+        AND table_schema = 'cris_fact_tables'
         AND table_name = '{output_table}'
     """
 
@@ -435,8 +435,8 @@ def show_changed_values(
         sql = f"""
             select 
                 {DB_IMPORT_SCHEMA}.{table}.{column}::text as import_{column},
-                cris.{output_map[table]}.{column}::text as cris_{column}
-            from cris.{output_map[table]}
+                cris_fact_tables.{output_map[table]}.{column}::text as cris_{column}
+            from cris_fact_tables.{output_map[table]}
             left join {DB_IMPORT_SCHEMA}.{table} on {linkage_sql}
             where {record_key_sql}
             """
