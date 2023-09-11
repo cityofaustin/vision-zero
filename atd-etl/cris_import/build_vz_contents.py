@@ -223,13 +223,13 @@ def compute_for_crashes():
         public_cursor = pg.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         vz_cursor = pg.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
-        vz_cursor.execute('truncate vz.atd_txdot_crashes')
+        vz_cursor.execute('truncate vz_fact_tables.atd_txdot_crashes cascade')
         pg.commit()
 
             # where crash_id > 18793000
             # where crash_id = 16558169
         sql = """
-            select * from cris.atd_txdot_crashes 
+            select * from cris_fact_tables.atd_txdot_crashes 
             order by crash_id asc
             """
         cris_cursor.execute(sql)
@@ -241,31 +241,33 @@ def compute_for_crashes():
             # 18793962 This is a real crash in CRIS that is not in the VZDB, see issue #11589
 
             # this is for skipping a record.
-            if cris["crash_id"] in [18793962, 18793971, 18793991, 18794003, 18797160, 18797724, 18797777,
-                                    18797885, 18798007, 18798181, 18798658, 18798663, 18798665, 18798669,
-                                    18798674, 18798682, 18798684, 18798686, 18798687, 18798689, 18798722,
-                                    18799005, 18799077, 18799692, 18799731, 18799736, 18799744, 18799747,
-                                    18799748, 18799786, 18799788, 18799789, 18799792, 18800047, 18800089,
-                                    18800099, 18800109, 18800119, 18800163, 18800201, 18800202, 18800203,
-                                    18800242, 18800280, 18800417, 18800418, 18800419, 18800420, 18800421,
-                                    18800425, 18800426, 18800427, 18800428, 18800432, 18800434, 18800436,
-                                    18800438, 18800448, 18800449, 18800452, 18800453, 18800454, 18800457,
-                                    18800494, 18800506, 18800580, 18800611, 18800681, 18800801, 18800891,
-                                    18800894, 18800895, 18801054, 18801077, 18801115, 18801120, 18801169,
-                                    18801170, 18801230, 18801288]:
-                continue
+            #if cris["crash_id"] in [18793962, 18793971, 18793991, 18794003, 18797160, 18797724, 18797777,
+                                    #18797885, 18798007, 18798181, 18798658, 18798663, 18798665, 18798669,
+                                    #18798674, 18798682, 18798684, 18798686, 18798687, 18798689, 18798722,
+                                    #18799005, 18799077, 18799692, 18799731, 18799736, 18799744, 18799747,
+                                    #18799748, 18799786, 18799788, 18799789, 18799792, 18800047, 18800089,
+                                    #18800099, 18800109, 18800119, 18800163, 18800201, 18800202, 18800203,
+                                    #18800242, 18800280, 18800417, 18800418, 18800419, 18800420, 18800421,
+                                    #18800425, 18800426, 18800427, 18800428, 18800432, 18800434, 18800436,
+                                    #18800438, 18800448, 18800449, 18800452, 18800453, 18800454, 18800457,
+                                    #18800494, 18800506, 18800580, 18800611, 18800681, 18800801, 18800891,
+                                    #18800894, 18800895, 18801054, 18801077, 18801115, 18801120, 18801169,
+                                    #18801170, 18801230, 18801288]:
+                #continue
 
 
             print()
             print("CRIS: ", cris["crash_id"])
-            sql = "select * from public.atd_txdot_crashes where crash_id = %s"
-            public_cursor.execute(sql, (cris["crash_id"],))
+            # pick up here when we have public or something populated
+            sql = "select * from production_fact_tables.atd_txdot_crashes where crash_id = %s"
+            #public_cursor.execute(sql, (cris["crash_id"],))
+            public_cursor.execute(sql, (int(cris["crash_id"]),))
             public = public_cursor.fetchone()
             # print("public: ", public["crash_id"])
             keys = ["crash_id"]
             values = [cris["crash_id"]]
             for k, v in cris.items():
-                if (k in ('crash_id')): # use to define fields to ignore
+                if (k in ('crash_id', 'council_district')): # use to define fields to ignore
                     continue
                 # if k == 'position':
                     # print ("cris position:   ", v)
@@ -277,7 +279,7 @@ def compute_for_crashes():
                     values.append(public[k])
             comma_linefeed = ",\n            "
             sql = f"""
-            insert into vz.atd_txdot_crashes (
+            insert into vz_fact_tables.atd_txdot_crashes (
                 {comma_linefeed.join(keys)}
             ) values (
                 {comma_linefeed.join(values_for_sql(values))}
