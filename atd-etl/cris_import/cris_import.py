@@ -509,6 +509,11 @@ def align_db_typing(map_state):
     return map_state
 
 
+# The following function is used to change, in place, the foreign key values
+# from those used by CRIS to those used by the LDM.  This function gets the "import"
+# schema name in the argument, and then will use some hard-coded maps between columns 
+# and tables to build a SQL command which updates all the appropriate foreign key values
+# in the import schema's tables.
 def convert_to_ldm_lookup_ids(state):
     with SshKeyTempDir() as key_directory:
         write_key_to_file(key_directory + "/id_ed25519", DB_BASTION_HOST_SSH_PRIVATE_KEY + "\n") 
