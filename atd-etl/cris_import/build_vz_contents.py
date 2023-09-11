@@ -6,21 +6,77 @@ import json
 import psycopg2
 import psycopg2.extras
 import datetime
-from dotenv import load_dotenv
 
-load_dotenv("env")
+from sshtunnel import SSHTunnelForwarder
 
-DB_HOST = os.getenv("DB_HOST")
-DB_USER = os.getenv("DB_USER")
-DB_PASS = os.getenv("DB_PASS")
-DB_NAME = os.getenv("DB_NAME")
-DB_SSL_REQUIREMENT = os.getenv("DB_SSL_REQUIREMENT")
+import onepasswordconnectsdk
+from onepasswordconnectsdk.client import Client, new_client
+
+#from dotenv import load_dotenv
+
+#load_dotenv("env")
+#
+#DB_HOST = os.getenv("DB_HOST")
+#DB_USER = os.getenv("DB_USER")
+#DB_PASS = os.getenv("DB_PASS")
+#DB_NAME = os.getenv("DB_NAME")
+#DB_SSL_REQUIREMENT = os.getenv("DB_SSL_REQUIREMENT")
+
+DEPLOYMENT_ENVIRONMENT = os.environ.get(
+    "ENVIRONMENT", "development"
+)  # our current environment from ['production', 'development']
+ONEPASSWORD_CONNECT_TOKEN = os.getenv("OP_API_TOKEN")  # our secret to get secrets 🤐
+ONEPASSWORD_CONNECT_HOST = os.getenv("OP_CONNECT")  # where we get our secrets
+VAULT_ID = os.getenv("OP_VAULT_ID")
 
 def main():
+    secrets = get_secrets()
+    global SFTP_ENDPOINT
+    global ZIP_PASSWORD
+
+    global AWS_ACCESS_KEY_ID
+    global AWS_SECRET_ACCESS_KEY
+    global AWS_CSV_ARCHIVE_BUCKET_NAME
+    global AWS_CSV_ARCHIVE_PATH
+
+    global DB_HOST
+    global DB_USER
+    global DB_PASS
+    global DB_NAME
+    global DB_SSL_REQUIREMENT
+
+    global DB_BASTION_HOST_SSH_USERNAME
+    global DB_BASTION_HOST_SSH_PRIVATE_KEY
+    global DB_BASTION_HOST
+    global DB_RDS_HOST
+
+    global SFTP_ENDPOINT_SSH_PRIVATE_KEY
+
+    SFTP_ENDPOINT = secrets["SFTP_endpoint"]
+    ZIP_PASSWORD = secrets["archive_extract_password"]
+
+    AWS_ACCESS_KEY_ID = secrets["aws_access_key"]
+    AWS_SECRET_ACCESS_KEY = secrets["aws_secret_key"]
+    AWS_CSV_ARCHIVE_BUCKET_NAME = secrets["s3_archive_bucket_name"]
+    AWS_CSV_ARCHIVE_PATH = secrets["s3_archive_path"]
+
+    DB_HOST = secrets["database_host"]
+    DB_USER = secrets["database_username"]
+    DB_PASS = secrets["database_password"]
+    DB_NAME = secrets["database_name"]
+    DB_SSL_REQUIREMENT = secrets["database_ssl_policy"]
+
+    DB_BASTION_HOST_SSH_USERNAME = secrets["bastion_ssh_username"]
+    DB_BASTION_HOST_SSH_PRIVATE_KEY = secrets["bastion_ssh_private_key"]
+    DB_BASTION_HOST = secrets["bastion_host"]
+    DB_RDS_HOST = secrets["database_host"]
+
+    SFTP_ENDPOINT_SSH_PRIVATE_KEY = secrets["sftp_endpoint_private_key"]
+
     # compute_for_crashes() # this works - save the 80 missing crashes..
     # compute_for_units() # this works - save for the 164 missing units and the one special case
     # compute_for_person() # this works - save for the 85 missing persons
-    compute_for_primaryperson() # this works - save for the 151 missing primary persons
+    #compute_for_primaryperson() # this works - save for the 151 missing primary persons
 
 def values_for_sql(values):
     strings = []
@@ -45,6 +101,96 @@ def values_for_sql(values):
         else:
             strings.append(f"{str(value)}")
     return strings
+
+def get_secrets():
+    REQUIRED_SECRETS = {
+        "SFTP_endpoint": {
+            "opitem": "Vision Zero CRIS Import",
+            "opfield": f"Common.SFTP Endpoint",
+            "opvault": VAULT_ID,
+        },
+        "sftp_endpoint_private_key": {
+            "opitem": "SFTP Endpoint Key",
+            "opfield": ".private key",
+            "opvault": VAULT_ID,
+        },
+        "archive_extract_password": {
+            "opitem": "Vision Zero CRIS Import",
+            "opfield": "Common.CRIS Archive Extract Password",
+            "opvault": VAULT_ID,
+        },
+        "bastion_host": {
+            "opitem": "RDS Bastion Host",
+            "opfield": f"{DEPLOYMENT_ENVIRONMENT}.Host",
+            "opvault": VAULT_ID,
+        },
+        "bastion_ssh_username": {
+            "opitem": "RDS Bastion Host",
+            "opfield": f"{DEPLOYMENT_ENVIRONMENT}.ssh Username",
+            "opvault": VAULT_ID,
+        },
+        "database_host": {
+            "opitem": "Vision Zero Database",
+            "opfield": f"{DEPLOYMENT_ENVIRONMENT}.Database Host",
+            "opvault": VAULT_ID,
+        },
+        "database_username": {
+            "opitem": "Vision Zero Database",
+            "opfield": f"{DEPLOYMENT_ENVIRONMENT}.Database Username",
+            "opvault": VAULT_ID,
+        },
+        "database_password": {
+            "opitem": "Vision Zero Database",
+            "opfield": f"{DEPLOYMENT_ENVIRONMENT}.Database Password",
+            "opvault": VAULT_ID,
+        },
+        "database_name": {
+            "opitem": "Vision Zero Database",
+            "opfield": f"{DEPLOYMENT_ENVIRONMENT}.Database Name",
+            "opvault": VAULT_ID,
+        },
+        "database_ssl_policy": {
+            "opitem": "Vision Zero Database",
+            "opfield": f"{DEPLOYMENT_ENVIRONMENT}.Database SSL Policy",
+            "opvault": VAULT_ID,
+        },
+        "aws_access_key": {
+            "opitem": "Vision Zero CRIS Import",
+            "opfield": f"{DEPLOYMENT_ENVIRONMENT}.AWS Access key",
+            "opvault": VAULT_ID,
+        },
+        "aws_secret_key": {
+            "opitem": "Vision Zero CRIS Import",
+            "opfield": f"{DEPLOYMENT_ENVIRONMENT}.AWS Secret key",
+            "opvault": VAULT_ID,
+        },
+        "s3_archive_bucket_name": {
+            "opitem": "Vision Zero CRIS Import",
+            "opfield": f"{DEPLOYMENT_ENVIRONMENT}.S3 Archive Bucket Name",
+            "opvault": VAULT_ID,
+        },
+        "s3_archive_path": {
+            "opitem": "Vision Zero CRIS Import",
+            "opfield": f"{DEPLOYMENT_ENVIRONMENT}.S3 Archive Path",
+            "opvault": VAULT_ID,
+        },
+        "sftp_endpoint_private_key": {
+            "opitem": "SFTP Endpoint Key",
+            "opfield": ".private key",
+            "opvault": VAULT_ID,
+            },
+        "bastion_ssh_private_key": {
+            "opitem": "RDS Bastion Key",
+            "opfield": ".private key",
+            "opvault": VAULT_ID,
+            },
+    }
+
+    # instantiate a 1Password client
+    client: Client = new_client(ONEPASSWORD_CONNECT_HOST, ONEPASSWORD_CONNECT_TOKEN)
+    # get the requested secrets from 1Password
+    return onepasswordconnectsdk.load_dict(client, REQUIRED_SECRETS)
+
 
 def get_pg_connection():
     """
