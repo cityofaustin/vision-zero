@@ -45,8 +45,6 @@ AWS_S3_BUCKET = os.getenv("AWS_S3_BUCKET", "")
 # Hasura Config
 HASURA_ADMIN_SECRET = os.getenv("HASURA_ADMIN_SECRET", "")
 HASURA_ENDPOINT = os.getenv("HASURA_ENDPOINT", "")
-HASURA_TRIGGER_API_KEY = os.getenv("HASURA_TRIGGER_API_KEY", "")
-HASURA_EVENTS_SQS_URL = os.getenv("HASURA_EVENTS_SQS_URL", "")
 
 
 def get_api_token():
