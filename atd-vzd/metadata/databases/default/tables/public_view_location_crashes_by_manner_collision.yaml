@@ -1,0 +1,18 @@
+table:
+  name: view_location_crashes_by_manner_collision
+  schema: public
+select_permissions:
+  - role: editor
+    permission:
+      columns:
+        - location_id
+        - collsn_desc
+        - count
+      filter: {}
+  - role: readonly
+    permission:
+      columns:
+        - count
+        - collsn_desc
+        - location_id
+      filter: {}

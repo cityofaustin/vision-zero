@@ -68,7 +68,7 @@ const chartConfigs = {
       "26 to 35",
       "36 to 45",
       "46 to 55",
-      "55 to 64",
+      "56 to 64",
       "65 or greater",
       "Unknown",
     ],

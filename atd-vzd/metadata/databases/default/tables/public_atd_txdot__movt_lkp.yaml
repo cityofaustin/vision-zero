@@ -1,0 +1,16 @@
+table:
+  name: atd_txdot__movt_lkp
+  schema: public
+select_permissions:
+  - role: editor
+    permission:
+      columns:
+        - movement_id
+        - movement_desc
+      filter: {}
+  - role: readonly
+    permission:
+      columns:
+        - movement_id
+        - movement_desc
+      filter: {}
