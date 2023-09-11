@@ -258,43 +258,48 @@ def compute_for_crashes():
 
             print()
             print("CRIS: ", cris["crash_id"])
-            # pick up here when we have public or something populated
             sql = "select * from production_fact_tables.atd_txdot_crashes where crash_id = %s"
             #public_cursor.execute(sql, (cris["crash_id"],))
             public_cursor.execute(sql, (int(cris["crash_id"]),))
             public = public_cursor.fetchone()
-            # print("public: ", public["crash_id"])
-            keys = ["crash_id"]
-            values = [cris["crash_id"]]
-            for k, v in cris.items():
-                if (k in ('crash_id', 'council_district')): # use to define fields to ignore
-                    continue
-                # if k == 'position':
-                    # print ("cris position:   ", v)
-                    # print ("public position: ", public[k])
+            print("public: ", public)
+            if public is None:
+                # we have a crash in CRIS that is not in the old VZDB
+                # TODO we need to insert a blank record in the VZ fact table schema
+                pass
+            else:
+                # print("public: ", public["crash_id"])
+                keys = ["crash_id"]
+                values = [cris["crash_id"]]
+                for k, v in cris.items():
+                    if (k in ('crash_id', 'council_district', 'in_austin_full_purpose')): # use to define fields to ignore
+                        continue
+                    # if k == 'position':
+                        # print ("cris position:   ", v)
+                        # print ("public position: ", public[k])
 
-                if v != public[k]:
-                    # print("Δ ", k, ": ", public[k], " → ", v)
-                    keys.append(k)
-                    values.append(public[k])
-            comma_linefeed = ",\n            "
-            sql = f"""
-            insert into vz_fact_tables.atd_txdot_crashes (
-                {comma_linefeed.join(keys)}
-            ) values (
-                {comma_linefeed.join(values_for_sql(values))}
-            );
-            """
-            # print(sql)
-            try:
-                vz_cursor.execute(sql)
-                pg.commit()
-            except:
-                print("keys: ", keys)
-                print("values: ", values)
-                print("ERROR: ", sql)
-            print("Inserted: ", cris["crash_id"])
-            # input("Press Enter to continue...")
+                    if v != public[k]:
+                        # print("Δ ", k, ": ", public[k], " → ", v)
+                        keys.append(k)
+                        values.append(public[k])
+                comma_linefeed = ",\n            "
+                sql = f"""
+                insert into vz_fact_tables.atd_txdot_crashes (
+                    {comma_linefeed.join(keys)}
+                ) values (
+                    {comma_linefeed.join(values_for_sql(values))}
+                );
+                """
+                # print(sql)
+                try:
+                    vz_cursor.execute(sql)
+                    pg.commit()
+                except:
+                    print("keys: ", keys)
+                    print("values: ", values)
+                    print("ERROR: ", sql)
+                print("Inserted: ", cris["crash_id"])
+                # input("Press Enter to continue...")
 
 
 def compute_for_units():
