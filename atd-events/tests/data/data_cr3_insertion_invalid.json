@@ -1,8 +1,0 @@
-{
-  "event": {
-    "session_variables": {
-      "x-hasura-role": "admin"
-    },
-    "op": "UPDATE"
-  }
-}
