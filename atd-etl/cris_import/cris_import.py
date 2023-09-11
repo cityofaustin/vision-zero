@@ -78,7 +78,14 @@ def main():
     zip_location = download_archives()
     extracted_archives = unzip_archives(zip_location)
     for archive in extracted_archives:
+
+        # Each logical groups together will be the crashes that met the export's criteria, 
+        # and there will be one logical group per CRIS crash schema.
+        #
+        # The parameters and state of iteration are passed via a dictionary, created in this function.
+        # see: https://github.com/cityofaustin/atd-vz-data/pull/1282#discussion_r1319160494
         logical_groups_of_csvs = group_csvs_into_logical_groups(archive, dry_run=False)
+
         for logical_group in logical_groups_of_csvs:
             desired_schema_name = create_import_schema_name(logical_group)
             print("desired_schema_name", desired_schema_name)
