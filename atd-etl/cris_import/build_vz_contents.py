@@ -223,13 +223,13 @@ def compute_for_crashes():
         public_cursor = pg.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         vz_cursor = pg.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
-        vz_cursor.execute('truncate vz_fact_tables.atd_txdot_crashes cascade')
+        vz_cursor.execute('truncate vz_facts.atd_txdot_crashes cascade')
         pg.commit()
 
             # where crash_id > 18793000
             # where crash_id = 16558169
         sql = """
-            select * from cris_fact_tables.atd_txdot_crashes 
+            select * from cris_facts.atd_txdot_crashes 
             order by crash_id asc
             """
         cris_cursor.execute(sql)
@@ -268,7 +268,7 @@ def compute_for_crashes():
             values = ()
             if public is None:
                 # we have a crash in CRIS that is not in the old VZDB
-                #sql = "insert into vz_fact_tables.atd_txdot_crashes (crash_id) values (%s)"
+                #sql = "insert into vz_facts.atd_txdot_crashes (crash_id) values (%s)"
                 keys = ["crash_id"]
                 values = [cris["crash_id"]]
                 print("Crash missing from old VZ data: ", cris["crash_id"])
@@ -289,7 +289,7 @@ def compute_for_crashes():
                         values.append(public[k])
             comma_linefeed = ",\n            "
             sql = f"""
-            insert into vz_fact_tables.atd_txdot_crashes (
+            insert into vz_facts.atd_txdot_crashes (
                 {comma_linefeed.join(keys)}
             ) values (
                 {comma_linefeed.join(values_for_sql(values))}
@@ -332,13 +332,13 @@ def compute_for_units():
         public_cursor = pg.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         vz_cursor = pg.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
-        vz_cursor.execute('truncate vz_fact_tables.atd_txdot_units')
+        vz_cursor.execute('truncate vz_facts.atd_txdot_units')
         pg.commit()
 
             # where cris.atd_txdot_units.crash_id > 19102309
         sql = """
             select * 
-            from cris_fact_tables.atd_txdot_units 
+            from cris_facts.atd_txdot_units 
             order by crash_id asc, unit_nbr asc
             """
         cris_cursor.execute(sql)
@@ -382,7 +382,7 @@ def compute_for_units():
             if public is None:
                 print("Public is empty for this unit!")
                 # we have a unit in CRIS that is not in the old VZDB
-                #sql = "insert into vz_fact_tables.atd_txdot_crashes (crash_id) values (%s)"
+                #sql = "insert into vz_facts.atd_txdot_crashes (crash_id) values (%s)"
                 keys = ["crash_id", "unit_nbr"]
                 values = [cris["crash_id"], cris["unit_nbr"]]
                 print(f"Unit {cris['crash_id']}, {cris['unit_nbr']} is missing from old VZ data")
@@ -398,7 +398,7 @@ def compute_for_units():
 
             comma_linefeed = ",\n            "
             sql = f"""
-            insert into vz_fact_tables.atd_txdot_units (
+            insert into vz_facts.atd_txdot_units (
                 {comma_linefeed.join(keys)}
             ) values (
                 {comma_linefeed.join(values_for_sql(values))}
@@ -443,13 +443,13 @@ def compute_for_person():
         public_cursor = pg.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         vz_cursor = pg.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
-        vz_cursor.execute('truncate vz_fact_tables.atd_txdot_person')
+        vz_cursor.execute('truncate vz_facts.atd_txdot_person')
         pg.commit()
 
         # where crash_id > 15352872
         sql = """
             select * 
-            from cris_fact_tables.atd_txdot_person 
+            from cris_facts.atd_txdot_person 
             order by 
                 crash_id asc, 
                 unit_nbr asc, 
@@ -499,7 +499,7 @@ def compute_for_person():
                         values.append(public[k])
             comma_linefeed = ",\n            "
             sql = f"""
-            insert into vz_fact_tables.atd_txdot_person (
+            insert into vz_facts.atd_txdot_person (
                 {comma_linefeed.join(keys)}
             ) values (
                 {comma_linefeed.join(values_for_sql(values))}
@@ -541,13 +541,13 @@ def compute_for_primaryperson():
         public_cursor = pg.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         vz_cursor = pg.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
-        vz_cursor.execute('truncate vz_fact_tables.atd_txdot_primaryperson')
+        vz_cursor.execute('truncate vz_facts.atd_txdot_primaryperson')
         pg.commit()
 
         # where crash_id = 17998493
         sql = """
         select * 
-        from cris_fact_tables.atd_txdot_primaryperson 
+        from cris_facts.atd_txdot_primaryperson 
         order by crash_id asc, unit_nbr asc, prsn_nbr asc, prsn_type_id asc, prsn_occpnt_pos_id asc
         """
         cris_cursor.execute(sql)
