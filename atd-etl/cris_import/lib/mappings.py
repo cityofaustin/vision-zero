@@ -57,7 +57,6 @@ def no_override_columns():
             "address_confirmed_secondary",
             "private_dr_fl",
             "road_constr_zone_fl",
-            "micromobility_device_flag",
         },
         "atd_txdot_units": {
             "crash_id",  # key column
