@@ -170,7 +170,7 @@ def make_crashes_view():
     pg = get_pg_connection()
     db = pg.cursor(cursor_factory=psycopg2.extras.DictCursor)
     
-    db.execute("drop view if exists ldm.atd_txdot_crashes;")
+    db.execute("drop view if exists public.atd_txdot_crashes;")
     pg.commit()
 
     # ldm.atd_txdot_crashes columns we want to compute on the fly
@@ -182,12 +182,12 @@ def make_crashes_view():
     sql = """
     with vz as (
         select
-            'vz' as schema, ordinal_position,
+            'vz_facts' as schema, ordinal_position,
             column_name, data_type, udt_name, character_maximum_length, numeric_precision,
             numeric_precision, numeric_scale, is_generated, generation_expression, is_updatable
         FROM information_schema.columns
         WHERE true
-            AND table_schema = 'vz'
+            AND table_schema = 'vz_facts'
             AND table_name = 'atd_txdot_crashes'
         order by ordinal_position
         ), cris as (
@@ -197,7 +197,7 @@ def make_crashes_view():
             numeric_precision, numeric_scale, is_generated, generation_expression, is_updatable
         FROM information_schema.columns
         WHERE true
-            AND table_schema = 'cris'
+            AND table_schema = 'cris_facts'
             AND table_name = 'atd_txdot_crashes'
         order by ordinal_position
         )
