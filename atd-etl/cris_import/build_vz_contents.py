@@ -66,8 +66,8 @@ def main():
     SFTP_ENDPOINT_SSH_PRIVATE_KEY = secrets["sftp_endpoint_private_key"]
 
     # compute_for_crashes() # this works - save the 80 missing crashes..
-    compute_for_units() # this works - save for the 164 missing units and the one special case
-    # compute_for_person() # this works - save for the 85 missing persons
+    # compute_for_units() # this works - save for the 164 missing units and the one special case
+    compute_for_person() # this works - save for the 85 missing persons
     #compute_for_primaryperson() # this works - save for the 151 missing primary persons
 
 def values_for_sql(values):
@@ -478,7 +478,7 @@ def compute_for_person():
             print()
             print("Crash ID: ", cris["crash_id"], "; Unit Number: ", cris["unit_nbr"], "; Person Number: ", cris["prsn_nbr"], "; Person Type ID: ", cris["prsn_type_id"], "; Person Occupant Position ID: ", cris["prsn_occpnt_pos_id"])
             sql = "select * from production_fact_tables.atd_txdot_person where crash_id = %s and unit_nbr = %s and prsn_nbr = %s and prsn_type_id = %s and prsn_occpnt_pos_id = %s"
-            print(sql)
+            # print(sql)
             public_cursor.execute(sql, (cris["crash_id"], cris["unit_nbr"], cris["prsn_nbr"], cris["prsn_type_id"], cris["prsn_occpnt_pos_id"]))
             public = public_cursor.fetchone()
             keys =  [ "crash_id", "unit_nbr", "prsn_nbr", "prsn_type_id", "prsn_occpnt_pos_id"]
