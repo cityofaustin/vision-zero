@@ -75,23 +75,3 @@ update_permissions:
         - speed_mgmt_points
       filter: {}
       check: null
-event_triggers:
-  - name: blueform_location_from_latlon
-    definition:
-      enable_manual: false
-      insert:
-        columns: '*'
-      update:
-        columns:
-          - latitude
-          - longitude
-    retry_conf:
-      interval_sec: 10
-      num_retries: 0
-      timeout_sec: 60
-    webhook: https://atd-vz-api.austinmobility.io/events
-    headers:
-      - name: HASURA_EVENT_NAME
-        value: crash_update_noncr3_location_
-      - name: HASURA_TRIGGER_API_KEY
-        value_from_env: HASURA_TRIGGER_API_KEY
