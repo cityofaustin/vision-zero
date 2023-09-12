@@ -381,7 +381,11 @@ def compute_for_units():
             values = [cris["crash_id"], cris["unit_nbr"]]
             if public is None:
                 print("Public is empty for this unit!")
-                exit()
+                # we have a crash in CRIS that is not in the old VZDB
+                #sql = "insert into vz_fact_tables.atd_txdot_crashes (crash_id) values (%s)"
+                keys = ["crash_id", "unit_nbr"]
+                values = [cris["crash_id"], cris["unit_nbr"]]
+                print(f"Unit {cris['crash_id']}, {cris['unit_nbr']} is missing from old VZ data")
             else:
                 for k, v in cris.items():
                     if (k in ('crash_id', 'unit_nbr')): # use to define fields to ignore
