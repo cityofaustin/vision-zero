@@ -65,7 +65,6 @@ const Users = () => {
   const token = window.localStorage.getItem("id_token");
 
   const [userList, setUserList] = useState(null);
-  const [allUsers, setAllUsers] = useState([]);
   const [totalUsers, setTotalUsers] = useState(null);
   const [page, setPage] = useState(0);
   const perPage = 50;
@@ -102,7 +101,8 @@ const Users = () => {
       });
       page ++
     }
-    setAllUsers(users);
+    console.log(users);
+    // getUserEmails(users);
   };
 
   const getUserEmails = (users) => {
@@ -139,8 +139,7 @@ const Users = () => {
   //   user.email
   // )));
 
-  getAllUsers();
-  // console.log(allUsers);
+  // getAllUsers();
 
   return (
     <Can
