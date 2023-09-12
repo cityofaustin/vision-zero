@@ -65,8 +65,8 @@ def main():
 
     SFTP_ENDPOINT_SSH_PRIVATE_KEY = secrets["sftp_endpoint_private_key"]
 
-    compute_for_crashes() # this works - save the 80 missing crashes..
-    # compute_for_units() # this works - save for the 164 missing units and the one special case
+    # compute_for_crashes() # this works - save the 80 missing crashes..
+    compute_for_units() # this works - save for the 164 missing units and the one special case
     # compute_for_person() # this works - save for the 85 missing persons
     #compute_for_primaryperson() # this works - save for the 151 missing primary persons
 
@@ -308,84 +308,108 @@ def compute_for_crashes():
 
 
 def compute_for_units():
-    pg = get_pg_connection()
-    cris_cursor = pg.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-    public_cursor = pg.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-    vz_cursor = pg.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    with SshKeyTempDir() as key_directory:
+        write_key_to_file(key_directory + "/id_ed25519", DB_BASTION_HOST_SSH_PRIVATE_KEY + "\n") 
+        ssh_tunnel = SSHTunnelForwarder(
+            (DB_BASTION_HOST),
+            ssh_username=DB_BASTION_HOST_SSH_USERNAME,
+            ssh_private_key=f"{key_directory}/id_ed25519",
+            remote_bind_address=(DB_RDS_HOST, 5432),
+        )
+        ssh_tunnel.start()
 
-    vz_cursor.execute('truncate vz.atd_txdot_units')
-    pg.commit()
+        pg = psycopg2.connect(
+            host="localhost",
+            port=ssh_tunnel.local_bind_port,
+            user=DB_USER,
+            password=DB_PASS,
+            dbname=DB_NAME,
+            sslmode=DB_SSL_REQUIREMENT,
+            sslrootcert="/root/rds-combined-ca-bundle.pem",
+        )
 
-        # where cris.atd_txdot_units.crash_id > 19102309
-    sql = """
-        select * 
-        from cris.atd_txdot_units 
-        order by crash_id asc, unit_nbr asc
-        """
-    cris_cursor.execute(sql)
-    for cris in cris_cursor:
-        if cris["unit_id"] in [
-550786, 606478, 550789, 606911, 570287, 571706, 571472, 604059, 573408, 555937,
-550808, 550809, 571838, 550812, 550813, 559891, 608136, 571792, 559892, 550815,
-555958, 555959, 555946, 555945, 571374, 571891, 571937, 606100, 571913, 571938,
-555904, 571856, 571942, 608388, 571941, 547006, 547007, 570431, 571949, 571951,
-571950, 555963, 555962, 555967, 609681, 571957, 571947, 610638, 550823, 604886,
-550829, 559599, 571980, 555867, 555511, 550822, 571982, 571981, 571983, 546984,
-571984, 571985, 560992, 573628, 571990, 571991, 571971, 571993, 571996, 571997,
-571995, 571998, 561112, 561117, 561113, 561118, 561119, 572003, 572005, 572009,
-572006, 572010, 572014, 555971, 572018, 572019, 572021, 572020, 572022, 572023,
-572024, 572025, 547016, 606913, 572028, 550825, 555964, 561068, 555973, 555974,
-572008, 609061, 572034, 569859, 571463, 570545, 570865, 572037, 572038, 547012,
-572011, 572040, 555943, 550835, 550838, 572002, 550843, 550842, 550847, 550846,
-572030, 550849, 550848, 550851, 555519, 550850, 607526, 550853, 572045, 572046,
-550824, 555977, 555982, 555987, 604061, 573740, 572053, 572054, 568470, 550856,
-572056, 572057, 572059, 555979, 546991, 572060, 572066, 572065, 572068, 555988,
-572069, 608477, 603256, 572072, 605480, 572074, 606369, 610945, 572075, 605808,
-572012, 572076, 550864, 572051]:
-            continue
+        cris_cursor = pg.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        public_cursor = pg.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        vz_cursor = pg.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
-        # if cris["crash_id"] != 18793787:
-            # continue
+        vz_cursor.execute('truncate vz_fact_tables.atd_txdot_units')
+        pg.commit()
 
-        # This is a special case where CRIS reports a third unit where there is none.
-        # It needs to be handled here because we have manually removed that crash from the VZDB.
-        if cris["crash_id"] == 15359065 and cris["unit_nbr"] == 3:
-            continue
+            # where cris.atd_txdot_units.crash_id > 19102309
+        sql = """
+            select * 
+            from cris_fact_tables.atd_txdot_units 
+            order by crash_id asc, unit_nbr asc
+            """
+        cris_cursor.execute(sql)
+        for cris in cris_cursor:
+            #if cris["unit_id"] in [
+    #550786, 606478, 550789, 606911, 570287, 571706, 571472, 604059, 573408, 555937,
+    #550808, 550809, 571838, 550812, 550813, 559891, 608136, 571792, 559892, 550815,
+    #555958, 555959, 555946, 555945, 571374, 571891, 571937, 606100, 571913, 571938,
+    #555904, 571856, 571942, 608388, 571941, 547006, 547007, 570431, 571949, 571951,
+    #571950, 555963, 555962, 555967, 609681, 571957, 571947, 610638, 550823, 604886,
+    #550829, 559599, 571980, 555867, 555511, 550822, 571982, 571981, 571983, 546984,
+    #571984, 571985, 560992, 573628, 571990, 571991, 571971, 571993, 571996, 571997,
+    #571995, 571998, 561112, 561117, 561113, 561118, 561119, 572003, 572005, 572009,
+    #572006, 572010, 572014, 555971, 572018, 572019, 572021, 572020, 572022, 572023,
+    #572024, 572025, 547016, 606913, 572028, 550825, 555964, 561068, 555973, 555974,
+    #572008, 609061, 572034, 569859, 571463, 570545, 570865, 572037, 572038, 547012,
+    #572011, 572040, 555943, 550835, 550838, 572002, 550843, 550842, 550847, 550846,
+    #572030, 550849, 550848, 550851, 555519, 550850, 607526, 550853, 572045, 572046,
+    #550824, 555977, 555982, 555987, 604061, 573740, 572053, 572054, 568470, 550856,
+    #572056, 572057, 572059, 555979, 546991, 572060, 572066, 572065, 572068, 555988,
+    #572069, 608477, 603256, 572072, 605480, 572074, 606369, 610945, 572075, 605808,
+    #572012, 572076, 550864, 572051]:
+                #continue
 
-        print()
-        print("Crash ID: ", cris["crash_id"], "; Unit Number: ", cris["unit_nbr"])
-        sql = "select * from public.atd_txdot_units where crash_id = %s and unit_nbr = %s"
-        public_cursor.execute(sql, (cris["crash_id"], cris["unit_nbr"]))
-        public = public_cursor.fetchone()
-        # print("public: ", public)
-        keys = ["crash_id", "unit_nbr"]
-        values = [cris["crash_id"], cris["unit_nbr"]]
-        for k, v in cris.items():
-            if (k in ('crash_id', 'unit_nbr')): # use to define fields to ignore
+            # if cris["crash_id"] != 18793787:
+                # continue
+
+            # This is a special case where CRIS reports a third unit where there is none.
+            # It needs to be handled here because we have manually removed that crash from the VZDB.
+            if cris["crash_id"] == 15359065 and cris["unit_nbr"] == 3:
                 continue
-            # print(k, v, public[k])
-            if v != public[k]:
-                # print("Δ ", k, ": ", public[k], " → ", v)
-                keys.append(k)
-                values.append(public[k])
-        comma_linefeed = ",\n            "
-        sql = f"""
-        insert into vz.atd_txdot_units (
-            {comma_linefeed.join(keys)}
-        ) values (
-            {comma_linefeed.join(values_for_sql(values))}
-        );
-        """
-        # print(sql)
-        try:
-            vz_cursor.execute(sql)
-            pg.commit()
-        except:
-            print("keys: ", keys)
-            print("values: ", values)
-            print("ERROR: ", sql)
-        print("Inserted: crash_id: ", cris["crash_id"], "; unit_nbr: ", cris["unit_nbr"])
-        # input("Press Enter to continue...")
+
+            print()
+            print("Crash ID: ", cris["crash_id"], "; Unit Number: ", cris["unit_nbr"])
+            sql = "select * from production_fact_tables.atd_txdot_units where crash_id = %s and unit_nbr = %s"
+            public_cursor.execute(sql, (cris["crash_id"], cris["unit_nbr"]))
+            public = public_cursor.fetchone()
+            # print("public: ", public)
+            keys = ["crash_id", "unit_nbr"]
+            values = [cris["crash_id"], cris["unit_nbr"]]
+            if public is None:
+                print("Public is empty for this unit!")
+                exit()
+            else:
+                for k, v in cris.items():
+                    if (k in ('crash_id', 'unit_nbr')): # use to define fields to ignore
+                        continue
+                    # print(k, v, public[k])
+                    if v != public[k]:
+                        # print("Δ ", k, ": ", public[k], " → ", v)
+                        keys.append(k)
+                        values.append(public[k])
+
+            comma_linefeed = ",\n            "
+            sql = f"""
+            insert into vz_fact_tables.atd_txdot_units (
+                {comma_linefeed.join(keys)}
+            ) values (
+                {comma_linefeed.join(values_for_sql(values))}
+            );
+            """
+            # print(sql)
+            try:
+                vz_cursor.execute(sql)
+                pg.commit()
+            except:
+                print("keys: ", keys)
+                print("values: ", values)
+                print("ERROR: ", sql)
+            print("Inserted: crash_id: ", cris["crash_id"], "; unit_nbr: ", cris["unit_nbr"])
+            # input("Press Enter to continue...")
 
 
 def compute_for_person():
