@@ -517,77 +517,104 @@ def compute_for_person():
             # input("Press Enter to continue...")
 
 def compute_for_primaryperson():
-    pg = get_pg_connection()
-    cris_cursor = pg.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-    public_cursor = pg.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-    vz_cursor = pg.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        with SshKeyTempDir() as key_directory:
+        write_key_to_file(key_directory + "/id_ed25519", DB_BASTION_HOST_SSH_PRIVATE_KEY + "\n") 
+        ssh_tunnel = SSHTunnelForwarder(
+            (DB_BASTION_HOST),
+            ssh_username=DB_BASTION_HOST_SSH_USERNAME,
+            ssh_private_key=f"{key_directory}/id_ed25519",
+            remote_bind_address=(DB_RDS_HOST, 5432),
+        )
+        ssh_tunnel.start()
 
-    vz_cursor.execute('truncate vz.atd_txdot_primaryperson')
-    pg.commit()
+        pg = psycopg2.connect(
+            host="localhost",
+            port=ssh_tunnel.local_bind_port,
+            user=DB_USER,
+            password=DB_PASS,
+            dbname=DB_NAME,
+            sslmode=DB_SSL_REQUIREMENT,
+            sslrootcert="/root/rds-combined-ca-bundle.pem",
+        )
 
-    # where crash_id = 17998493
-    sql = """
-    select * 
-    from cris.atd_txdot_primaryperson 
-    order by crash_id asc, unit_nbr asc, prsn_nbr asc, prsn_type_id asc, prsn_occpnt_pos_id asc
-    """
-    cris_cursor.execute(sql)
-    for cris in cris_cursor:
-        # if cris["crash_id"] != 14866997:
-            # continue
-        
-        if cris["primaryperson_id"] in [
-                511631, 512326, 512328, 513047, 513303, 513320, 513325, 514207, 514210, 514461,
-                515409, 515418, 515642, 515645, 516726, 516840, 516841, 516842, 517488, 518064,
-                518067, 518069, 518071, 518072, 518073, 519371, 519372, 519373, 519376, 519558,
-                520475, 520767, 520768, 520771, 520773, 520774, 520775, 520776, 520777, 520778,
-                520779, 522026, 522035, 522036, 523325, 523326, 523328, 523329, 523334, 524413,
-                524415, 525572, 525577, 525578, 526646, 527591, 527778, 529965, 529966, 529967,
-                530718, 530719, 530720, 530721, 531986, 531987, 531990, 531991, 531993, 531994,
-                531995, 532001, 532002, 532010, 532657, 534170, 534171, 534175, 534176, 537659,
-                538573, 538575, 539828, 539829, 539830, 539835, 539836, 539839, 539840, 539841,
-                539842, 539843, 539844, 539852, 540630, 540631, 540632, 540633, 540636, 540637,
-                540846, 541074, 541202, 541203, 552025, 552044, 552061, 552062, 552247, 552248,
-                552249, 552250, 552251, 552261, 552284, 552290, 552291, 552301, 552302, 552303,
-                552304, 552305, 552306, 552307, 552311, 552312, 552313, 552314, 552315, 552316,
-                552317, 552318, 552323, 552324, 552325, 552326, 552327, 552328, 552329, 552333,
-                552335, 552337, 552338, 552339, 552340, 552341, 552342, 552343, 565557, 566525,
-                569618
-                ]:
-            continue
+        cris_cursor = pg.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        public_cursor = pg.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        vz_cursor = pg.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
-        print()
-        print("Crash ID: ", cris["crash_id"], "; Unit Number: ", cris["unit_nbr"], "; Person Number: ", cris["prsn_nbr"], "; Person Type ID: ", cris["prsn_type_id"], "; Person Occupant Position ID: ", cris["prsn_occpnt_pos_id"])
-        sql = "select * from public.atd_txdot_primaryperson where crash_id = %s and unit_nbr = %s and prsn_nbr = %s and prsn_type_id = %s and prsn_occpnt_pos_id = %s"
-        public_cursor.execute(sql, (cris["crash_id"], cris["unit_nbr"], cris["prsn_nbr"], cris["prsn_type_id"], cris["prsn_occpnt_pos_id"] ))
-        public = public_cursor.fetchone()
-        keys = ["crash_id", "unit_nbr", "prsn_nbr", "prsn_type_id", "prsn_occpnt_pos_id"]
-        values = [cris["crash_id"], cris["unit_nbr"], cris["prsn_nbr"], cris["prsn_type_id"], cris["prsn_occpnt_pos_id"]]
-        for k, v in cris.items():
-            if (k in ('crash_id', 'unit_nbr', 'prsn_nbr', 'prsn_type_id', 'prsn_occpnt_pos_id', 'years_of_life_lost')): # use to define fields to ignore
-                continue
-            if v != public[k]:
-                # print("Δ ", k, ": ", public[k], " → ", v)
-                keys.append(k)
-                values.append(public[k])
-        comma_linefeed = ",\n            "
-        sql = f"""
-        insert into vz.atd_txdot_primaryperson (
-            {comma_linefeed.join(keys)}
-        ) values (
-            {comma_linefeed.join(values_for_sql(values))}
-        );
+        vz_cursor.execute('truncate vz_fact_tables.atd_txdot_primaryperson')
+        pg.commit()
+
+        # where crash_id = 17998493
+        sql = """
+        select * 
+        from cris_fact_tables.atd_txdot_primaryperson 
+        order by crash_id asc, unit_nbr asc, prsn_nbr asc, prsn_type_id asc, prsn_occpnt_pos_id asc
         """
-        # print(sql)
-        try:
-            vz_cursor.execute(sql)
-            pg.commit()
-        except:
-            print("keys: ", keys)
-            print("values: ", values)
-            print("ERROR: ", sql)
-        print("Inserted: crash_id: ", cris["crash_id"], "; Unit Number: ", cris["unit_nbr"], "; Person Number: ", cris["prsn_nbr"], "; Person Type ID: ", cris["prsn_type_id"], "; Person Occupant Position ID: ", cris["prsn_occpnt_pos_id"])
-        # input("Press Enter to continue...")
+        cris_cursor.execute(sql)
+        for cris in cris_cursor:
+            # if cris["crash_id"] != 14866997:
+                # continue
+            
+            #if cris["primaryperson_id"] in [
+                    #511631, 512326, 512328, 513047, 513303, 513320, 513325, 514207, 514210, 514461,
+                    #515409, 515418, 515642, 515645, 516726, 516840, 516841, 516842, 517488, 518064,
+                    #518067, 518069, 518071, 518072, 518073, 519371, 519372, 519373, 519376, 519558,
+                    #520475, 520767, 520768, 520771, 520773, 520774, 520775, 520776, 520777, 520778,
+                    #520779, 522026, 522035, 522036, 523325, 523326, 523328, 523329, 523334, 524413,
+                    #524415, 525572, 525577, 525578, 526646, 527591, 527778, 529965, 529966, 529967,
+                    #530718, 530719, 530720, 530721, 531986, 531987, 531990, 531991, 531993, 531994,
+                    #531995, 532001, 532002, 532010, 532657, 534170, 534171, 534175, 534176, 537659,
+                    #538573, 538575, 539828, 539829, 539830, 539835, 539836, 539839, 539840, 539841,
+                    #539842, 539843, 539844, 539852, 540630, 540631, 540632, 540633, 540636, 540637,
+                    #540846, 541074, 541202, 541203, 552025, 552044, 552061, 552062, 552247, 552248,
+                    #552249, 552250, 552251, 552261, 552284, 552290, 552291, 552301, 552302, 552303,
+                    #552304, 552305, 552306, 552307, 552311, 552312, 552313, 552314, 552315, 552316,
+                    #552317, 552318, 552323, 552324, 552325, 552326, 552327, 552328, 552329, 552333,
+                    #552335, 552337, 552338, 552339, 552340, 552341, 552342, 552343, 565557, 566525,
+                    #569618
+                    #]:
+                #continue
+
+            print()
+            print("Crash ID: ", cris["crash_id"], "; Unit Number: ", cris["unit_nbr"], "; Person Number: ", cris["prsn_nbr"], "; Person Type ID: ", cris["prsn_type_id"], "; Person Occupant Position ID: ", cris["prsn_occpnt_pos_id"])
+            sql = "select * from public.atd_txdot_primaryperson where crash_id = %s and unit_nbr = %s and prsn_nbr = %s and prsn_type_id = %s and prsn_occpnt_pos_id = %s"
+            public_cursor.execute(sql, (cris["crash_id"], cris["unit_nbr"], cris["prsn_nbr"], cris["prsn_type_id"], cris["prsn_occpnt_pos_id"] ))
+            public = public_cursor.fetchone()
+            keys = ["crash_id", "unit_nbr", "prsn_nbr", "prsn_type_id", "prsn_occpnt_pos_id"]
+            values = [cris["crash_id"], cris["unit_nbr"], cris["prsn_nbr"], cris["prsn_type_id"], cris["prsn_occpnt_pos_id"]]
+            if public is None:
+                print("Public is empty for this primaryperson!")
+                # we have a primaryperson in CRIS that is not in the old VZDB
+                keys = ["crash_id", "unit_nbr", "prsn_nbr", "prsn_type_id", "prsn_occpnt_pos_id"]
+                values = [cris["crash_id"], cris["unit_nbr"], cris["prsn_nbr"], cris["prsn_type_id"], cris["prsn_occpnt_pos_id"]]
+                print(f"Primaryperson {cris['crash_id']}, {cris['unit_nbr']}, {cris['prsn_nbr']}, {cris['prsn_type_id']}, {cris['prsn_occpnt_pos_id']} is missing from old VZ data")
+
+            else:
+                for k, v in cris.items():
+                    if (k in ('crash_id', 'unit_nbr', 'prsn_nbr', 'prsn_type_id', 'prsn_occpnt_pos_id', 'years_of_life_lost')): # use to define fields to ignore
+                        continue
+                    if v != public[k]:
+                        # print("Δ ", k, ": ", public[k], " → ", v)
+                        keys.append(k)
+                        values.append(public[k])
+            comma_linefeed = ",\n            "
+            sql = f"""
+            insert into vz.atd_txdot_primaryperson (
+                {comma_linefeed.join(keys)}
+            ) values (
+                {comma_linefeed.join(values_for_sql(values))}
+            );
+            """
+            # print(sql)
+            try:
+                vz_cursor.execute(sql)
+                pg.commit()
+            except:
+                print("keys: ", keys)
+                print("values: ", values)
+                print("ERROR: ", sql)
+            print("Inserted: crash_id: ", cris["crash_id"], "; Unit Number: ", cris["unit_nbr"], "; Person Number: ", cris["prsn_nbr"], "; Person Type ID: ", cris["prsn_type_id"], "; Person Occupant Position ID: ", cris["prsn_occpnt_pos_id"])
+            # input("Press Enter to continue...")
 
 
 
