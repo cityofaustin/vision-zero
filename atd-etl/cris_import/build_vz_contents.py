@@ -517,7 +517,7 @@ def compute_for_person():
             # input("Press Enter to continue...")
 
 def compute_for_primaryperson():
-        with SshKeyTempDir() as key_directory:
+    with SshKeyTempDir() as key_directory:
         write_key_to_file(key_directory + "/id_ed25519", DB_BASTION_HOST_SSH_PRIVATE_KEY + "\n") 
         ssh_tunnel = SSHTunnelForwarder(
             (DB_BASTION_HOST),
