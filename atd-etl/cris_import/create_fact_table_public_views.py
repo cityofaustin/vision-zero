@@ -64,10 +64,9 @@ def main():
     DB_RDS_HOST = secrets["database_host"]
 
 
-    # create_schema() # putting our read views in public
-    #make_crashes_view()
-    #make_units_view()
-    #make_person_view()
+    make_crashes_view()
+    make_units_view()
+    make_person_view()
     make_primaryperson_view()
 
 def get_secrets():
@@ -566,19 +565,6 @@ def make_primaryperson_view():
     print(view)
     db.execute(view)
     pg.commit()
-
-def create_schema():
-    pg = get_pg_connection()
-    db = pg.cursor(cursor_factory=psycopg2.extras.DictCursor)
-
-    db.execute("DROP SCHEMA IF EXISTS ldm CASCADE;")
-    pg.commit()
-
-    db.execute("CREATE SCHEMA IF NOT EXISTS ldm;")
-    pg.commit()
-
-    db.close()
-    pg.close()
 
 def get_pg_connection():
     """
