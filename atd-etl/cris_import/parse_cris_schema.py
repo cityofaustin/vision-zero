@@ -182,7 +182,7 @@ def populate_table(worksheet, lookup_table, pg):
 
     create_cris = f"""create table cris_lookup.{lookup_table} (
         id serial primary key, 
-        global_id integer default nextval('lookup.{lookup_table}_global_id'),
+        global_id integer default nextval('public.{lookup_table}_global_id'),
         upstream_id integer, 
         description text, 
         effective_begin_date date, 
@@ -198,7 +198,7 @@ def populate_table(worksheet, lookup_table, pg):
 
     create_vz = f"""create table vz_lookup.{lookup_table} (
         id serial primary key, 
-        global_id integer default nextval('lookup.{lookup_table}_global_id'),
+        global_id integer default nextval('public.{lookup_table}_global_id'),
         upstream_id integer, 
         description text, 
         active boolean default true
@@ -262,7 +262,7 @@ def populate_state_table(worksheet, lookup_table, pg):
 
     create_cris = f"""create table cris_lookup.{lookup_table} (
         id serial primary key, 
-        global_id integer default nextval('lookup.{lookup_table}_global_id'),
+        global_id integer default nextval('public.{lookup_table}_global_id'),
         upstream_id integer, 
         abbreviation text,
         description text, 
@@ -279,7 +279,7 @@ def populate_state_table(worksheet, lookup_table, pg):
 
     create_vz= f"""create table vz_lookup.{lookup_table} (
         id serial primary key, 
-        global_id integer default nextval('lookup.{lookup_table}_global_id'),
+        global_id integer default nextval('public.{lookup_table}_global_id'),
         upstream_id integer, 
         abbreviation text,
         description text, 
@@ -346,7 +346,7 @@ def populate_veh_mod_year_table(worksheet, lookup_table, pg):
 
     create_cris = f"""create table cris_lookup.{lookup_table} (
         id serial primary key, 
-        global_id integer default nextval('lookup.{lookup_table}_global_id'),
+        global_id integer default nextval('public.{lookup_table}_global_id'),
         upstream_id integer, 
         description text, 
         active boolean default true
@@ -360,7 +360,7 @@ def populate_veh_mod_year_table(worksheet, lookup_table, pg):
 
     create_vz = f"""create table vz_lookup.{lookup_table} (
         id serial primary key, 
-        global_id integer default nextval('lookup.{lookup_table}_global_id'),
+        global_id integer default nextval('public.{lookup_table}_global_id'),
         upstream_id integer, 
         description text, 
         active boolean default true
@@ -424,7 +424,7 @@ def populate_cntl_sect_table(worksheet, lookup_table, pg):
 
     create_cris = f"""create table cris_lookup.{lookup_table} (
         id serial primary key, 
-        global_id integer default nextval('lookup.{lookup_table}_global_id'),
+        global_id integer default nextval('public.{lookup_table}_global_id'),
         dps_region_id integer,
         dps_district_id integer,
         txdot_district_id integer,
@@ -454,7 +454,7 @@ def populate_cntl_sect_table(worksheet, lookup_table, pg):
 
     create_vz = f"""create table vz_lookup.{lookup_table} (
         id serial primary key, 
-        global_id integer default nextval('lookup.{lookup_table}_global_id'),
+        global_id integer default nextval('public.{lookup_table}_global_id'),
         dps_region_id integer,
         dps_district_id integer,
         txdot_district_id integer,
