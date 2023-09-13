@@ -63,10 +63,11 @@ const ToolsUploadNonCR3 = React.lazy(() =>
 const CreateCrashRecord = React.lazy(() =>
   import("./views/Tools/CreateCrashRecord")
 );
+const Page404 = React.lazy(() => import("./views/Pages/Page404/Page404"));
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 // Accept roles arg for role-based access to routes
 const routes = roles => [
-  { path: "/", exact: true, name: "Home" },
+  { path: "/", exact: true, name: "Dashboard", component: VZDashboard },
   { path: "/dev/dashboard", name: "Dashboard", component: Dashboard },
   { path: "/dev/theme", exact: true, name: "Theme", component: Colors },
   { path: "/dev/theme/colors", name: "Colors", component: Colors },
@@ -228,6 +229,13 @@ const routes = roles => [
     name: "User Details",
     component: User,
   },
+  {
+    path: "/404",
+    exact: true,
+    name: "404 Page",
+    component: Page404,
+  },
+  { path: "*", name: "404 Page", component: Page404 },
 ];
 
 export default routes;
