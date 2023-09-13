@@ -106,14 +106,14 @@ def create_lookup_tables(file_path, pg):
             drop_cursor.close()
             pg.commit()
 
-            drop_sequence = f"DROP SEQUENCE IF EXISTS lookup.{lookup_table}_global_id"
+            drop_sequence = f"DROP SEQUENCE IF EXISTS public.{lookup_table}_global_id"
             drop_sequence_cursor = pg.cursor()
             print(f"Drop: {drop_sequence}")
             drop_sequence_cursor.execute(drop_sequence)
             drop_sequence_cursor.close()
             pg.commit()
 
-            create_sequence = f"CREATE SEQUENCE lookup.{lookup_table}_global_id"
+            create_sequence = f"CREATE SEQUENCE public.{lookup_table}_global_id"
             create_sequence_cursor = pg.cursor()
             print(f"Create Sequence: {create_sequence}")
             create_sequence_cursor.execute(create_sequence)
@@ -141,7 +141,7 @@ def check_cris_lookup_values_unicity(file_path, pg):
         if lookup_table:
             print(lookup_table)
             sql = f"""select count(id)
-                from lookup.{lookup_table}
+                from public.{lookup_table}
                 group by cris_id, source, vz_id
                 having count(id) > 1;
             """
@@ -220,7 +220,7 @@ def populate_table(worksheet, lookup_table, pg):
         pg.commit()
 
 def create_materialized_view_generic(pg, lookup_table):
-    drop = f"drop materialized view if exists lookup.{lookup_table};"
+    drop = f"drop materialized view if exists public.{lookup_table};"
     drop_cursor = pg.cursor()
     print(f"Drop: {drop}")
     drop_cursor.execute(drop)
@@ -228,7 +228,7 @@ def create_materialized_view_generic(pg, lookup_table):
     pg.commit()
 
     materialized_view = f"""
-        CREATE MATERIALIZED VIEW lookup.{lookup_table} AS
+        CREATE MATERIALIZED VIEW public.{lookup_table} AS
             SELECT 
                 global_id as id,
                 'cris' as source,
@@ -302,7 +302,7 @@ def populate_state_table(worksheet, lookup_table, pg):
         pg.commit()
 
 def create_materialized_view_state(pg, lookup_table):
-    drop = f"drop materialized view if exists lookup.{lookup_table};"
+    drop = f"drop materialized view if exists public.{lookup_table};"
     drop_cursor = pg.cursor()
     print(f"Drop: {drop}")
     drop_cursor.execute(drop)
@@ -310,7 +310,7 @@ def create_materialized_view_state(pg, lookup_table):
     pg.commit()
 
     materialized_view = f"""
-        CREATE MATERIALIZED VIEW lookup.{lookup_table} AS
+        CREATE MATERIALIZED VIEW public.{lookup_table} AS
             SELECT 
                 global_id as id,
                 'cris' as source,
@@ -383,7 +383,7 @@ def populate_veh_mod_year_table(worksheet, lookup_table, pg):
 
 
 def create_materialized_view_veh_mod_year(pg, lookup_table):
-    drop = f"drop materialized view if exists lookup.{lookup_table};"
+    drop = f"drop materialized view if exists public.{lookup_table};"
     drop_cursor = pg.cursor()
     print(f"Drop: {drop}")
     drop_cursor.execute(drop)
@@ -391,7 +391,7 @@ def create_materialized_view_veh_mod_year(pg, lookup_table):
     pg.commit()
 
     materialized_view = f"""
-        CREATE MATERIALIZED VIEW lookup.{lookup_table} AS
+        CREATE MATERIALIZED VIEW public.{lookup_table} AS
             SELECT 
                 global_id as id,
                 'cris' as source,
@@ -498,7 +498,7 @@ def populate_cntl_sect_table(worksheet, lookup_table, pg):
 
 
 def create_materialized_view_cntl_sec(pg, lookup_table):
-    drop = f"drop materialized view if exists lookup.{lookup_table};"
+    drop = f"drop materialized view if exists public.{lookup_table};"
     drop_cursor = pg.cursor()
     print(f"Drop: {drop}")
     drop_cursor.execute(drop)
@@ -506,7 +506,7 @@ def create_materialized_view_cntl_sec(pg, lookup_table):
     pg.commit()
 
     materialized_view = f"""
-        CREATE MATERIALIZED VIEW lookup.{lookup_table} AS
+        CREATE MATERIALIZED VIEW public.{lookup_table} AS
             SELECT 
                 global_id as id,
                 'cris' as source,

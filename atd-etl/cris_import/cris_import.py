@@ -573,7 +573,7 @@ def convert_to_ldm_lookup_ids(state):
                 assignments.append(f"""
                     {field["field_name"]} = (
                         select id
-                        from lookup.{field["lookup_table"]}
+                        from public.{field["lookup_table"]}
                         where true 
                             and source = 'cris'
                             and cris_id = {state['import_schema']}.{table["imported_table"]}.{field["field_name"]}::integer
