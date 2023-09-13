@@ -1,3 +1,5 @@
+#!/bin/env python3
+
 from openpyxl import load_workbook
 import re
 import json
