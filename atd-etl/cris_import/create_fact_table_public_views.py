@@ -20,12 +20,6 @@ ONEPASSWORD_CONNECT_HOST = os.getenv("OP_CONNECT")  # where we get our secrets
 VAULT_ID = os.getenv("OP_VAULT_ID")
 
 
-#DB_USER = os.getenv("DB_USER")
-#DB_PASS = os.getenv("DB_PASS")
-#DB_NAME = os.getenv("DB_NAME")
-#DB_SSL_REQUIREMENT = os.getenv("DB_SSL_REQUIREMENT")
-
-
 def main():
     secrets = get_secrets()
 
@@ -177,8 +171,6 @@ def make_crashes_view():
     # * latitude_primary
     # * longitude_primary
     
-
-
     sql = """
     with vz as (
         select
@@ -218,64 +210,64 @@ def make_crashes_view():
 
 
     view = """
-    create view ldm.atd_txdot_crashes as
+    create view public.atd_txdot_crashes as
         select
-            cris.atd_txdot_crashes.crash_id as crash_id,
+            cris_facts.atd_txdot_crashes.crash_id as crash_id,
         """
     columns = []
     for column in db:
         print("Column: ", column["vz_column_name"])
         if column["vz_column_name"] == "longitude_primary":
-            columns.append("ST_X(COALESCE(vz.atd_txdot_crashes.position, cris.atd_txdot_crashes.position)) as longitude_primary")
+            columns.append("ST_X(COALESCE(vz_facts.atd_txdot_crashes.position, cris_facts.atd_txdot_crashes.position)) as longitude_primary")
         elif column["vz_column_name"] == "latitude_primary":
-            columns.append("ST_Y(COALESCE(vz.atd_txdot_crashes.position, cris.atd_txdot_crashes.position)) as latitude_primary")
+            columns.append("ST_Y(COALESCE(vz_facts.atd_txdot_crashes.position, cris_facts.atd_txdot_crashes.position)) as latitude_primary")
         elif column["vz_column_name"] == "last_update":
             definition = """
             case
                 when 
-                    vz.atd_txdot_crashes.last_update is not null
-                    and cris.atd_txdot_crashes.last_update is not null
-                    and vz.atd_txdot_crashes.last_update > cris.atd_txdot_crashes.last_update 
-                        then vz.atd_txdot_crashes.last_update
+                    vz_facts.atd_txdot_crashes.last_update is not null
+                    and cris_facts.atd_txdot_crashes.last_update is not null
+                    and vz_facts.atd_txdot_crashes.last_update > cris_facts.atd_txdot_crashes.last_update 
+                        then vz_facts.atd_txdot_crashes.last_update
                 when
-                    vz.atd_txdot_crashes.last_update is not null
-                    and cris.atd_txdot_crashes.last_update is not null
-                    and vz.atd_txdot_crashes.last_update < cris.atd_txdot_crashes.last_update 
-                        then cris.atd_txdot_crashes.last_update
+                    vz_facts.atd_txdot_crashes.last_update is not null
+                    and cris_facts.atd_txdot_crashes.last_update is not null
+                    and vz_facts.atd_txdot_crashes.last_update < cris_facts.atd_txdot_crashes.last_update 
+                        then cris_facts.atd_txdot_crashes.last_update
                 else 
-                    coalesce(vz.atd_txdot_crashes.last_update, cris.atd_txdot_crashes.last_update)
+                    coalesce(vz_facts.atd_txdot_crashes.last_update, cris_facts.atd_txdot_crashes.last_update)
             end as last_update
             """ 
         elif column["vz_column_name"] == "last_update":
             definition = """
             case
                 when 
-                    vz.atd_txdot_crashes.last_update is not null
-                    and cris.atd_txdot_crashes.last_update is not null
-                    and vz.atd_txdot_crashes.last_update > cris.atd_txdot_crashes.last_update 
-                        then vz.atd_txdot_crashes.updated_by
+                    vz_facts.atd_txdot_crashes.last_update is not null
+                    and cris_facts.atd_txdot_crashes.last_update is not null
+                    and vz_facts.atd_txdot_crashes.last_update > cris_facts.atd_txdot_crashes.last_update 
+                        then vz_facts.atd_txdot_crashes.updated_by
                 when
-                    vz.atd_txdot_crashes.last_update is not null
-                    and cris.atd_txdot_crashes.last_update is not null
-                    and vz.atd_txdot_crashes.last_update < cris.atd_txdot_crashes.last_update 
-                        then cris.atd_txdot_crashes.updated_by
+                    vz_facts.atd_txdot_crashes.last_update is not null
+                    and cris_facts.atd_txdot_crashes.last_update is not null
+                    and vz_facts.atd_txdot_crashes.last_update < cris_facts.atd_txdot_crashes.last_update 
+                        then cris_facts.atd_txdot_crashes.updated_by
                 else 
-                    coalesce(vz.atd_txdot_crashes.updated_by, cris.atd_txdot_crashes.updated_by)
+                    coalesce(vz_facts.atd_txdot_crashes.updated_by, cris_facts.atd_txdot_crashes.updated_by)
             end as updated_by
             """ 
             columns.append(definition)
         else:
             if column["vz_column_name"] is not None and column["cris_column_name"] is None:
-                columns.append(f'vz.atd_txdot_crashes.{column["column_name"]}')
+                columns.append(f'vz_facts.atd_txdot_crashes.{column["column_name"]}')
             elif column["cris_column_name"] is not None and column["vz_column_name"] is None:
-                columns.append(f'cris.atd_txdot_crashes.{column["column_name"]}')
+                columns.append(f'cris_facts.atd_txdot_crashes.{column["column_name"]}')
             else:
-                columns.append(f'coalesce(vz.atd_txdot_crashes.{column["column_name"]}, cris.atd_txdot_crashes.{column["column_name"]}) as {column["column_name"]}')
+                columns.append(f'coalesce(vz_facts.atd_txdot_crashes.{column["column_name"]}, cris_facts.atd_txdot_crashes.{column["column_name"]}) as {column["column_name"]}')
     view = view + "    " + ", \n            ".join(columns)
     view = view + """
-        from vz.atd_txdot_crashes
-        join cris.atd_txdot_crashes
-            on vz.atd_txdot_crashes.crash_id = cris.atd_txdot_crashes.crash_id
+        from vz_facts.atd_txdot_crashes
+        join cris_facts.atd_txdot_crashes
+            on vz_facts.atd_txdot_crashes.crash_id = cris_facts.atd_txdot_crashes.crash_id
                 """
     print(view)
     db.execute(view)
