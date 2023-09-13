@@ -67,8 +67,8 @@ def main():
     # create_schema() # putting our read views in public
     #make_crashes_view()
     #make_units_view()
-    make_person_view()
-    #make_primaryperson_view()
+    #make_person_view()
+    make_primaryperson_view()
 
 def get_secrets():
     REQUIRED_SECRETS = {
@@ -496,7 +496,7 @@ def make_primaryperson_view():
     pg = get_pg_connection()
     db = pg.cursor(cursor_factory=psycopg2.extras.DictCursor)
     
-    db.execute("drop view if exists ldm.atd_txdot_primaryperson;")
+    db.execute("drop view if exists public.atd_txdot_primaryperson;")
     pg.commit()
 
 
@@ -508,7 +508,7 @@ def make_primaryperson_view():
             numeric_precision, numeric_scale, is_generated, generation_expression, is_updatable
         FROM information_schema.columns
         WHERE true
-            AND table_schema = 'vz'
+            AND table_schema = 'vz_facts'
             AND table_name = 'atd_txdot_primaryperson'
         order by ordinal_position
         ), cris as (
@@ -518,7 +518,7 @@ def make_primaryperson_view():
             numeric_precision, numeric_scale, is_generated, generation_expression, is_updatable
         FROM information_schema.columns
         WHERE true
-            AND table_schema = 'cris'
+            AND table_schema = 'cris_facts'
             AND table_name = 'atd_txdot_primaryperson'
         order by ordinal_position
         )
@@ -539,28 +539,28 @@ def make_primaryperson_view():
 
 
     view = """
-    create view ldm.atd_txdot_primaryperson as
+    create view public.atd_txdot_primaryperson as
         select
-            cris.atd_txdot_primaryperson.crash_id as crash_id,
+            cris_facts.atd_txdot_primaryperson.crash_id as crash_id,
         """
     columns = []
     for column in db:
         if column["vz_column_name"] is not None and column["cris_column_name"] is None:
-            columns.append(f'vz.atd_txdot_primaryperson.{column["column_name"]}')
+            columns.append(f'vz_facts.atd_txdot_primaryperson.{column["column_name"]}')
         elif column["cris_column_name"] is not None and column["vz_column_name"] is None:
-            columns.append(f'cris.atd_txdot_primaryperson.{column["column_name"]}')
+            columns.append(f'cris_facts.atd_txdot_primaryperson.{column["column_name"]}')
         else:
-            columns.append(f'coalesce(vz.atd_txdot_primaryperson.{column["column_name"]}, cris.atd_txdot_primaryperson.{column["column_name"]}) as {column["column_name"]}')
+            columns.append(f'coalesce(vz_facts.atd_txdot_primaryperson.{column["column_name"]}, cris_facts.atd_txdot_primaryperson.{column["column_name"]}) as {column["column_name"]}')
     view = view + "    " + ", \n            ".join(columns)
     view = view + """
-        from vz.atd_txdot_primaryperson
-        join cris.atd_txdot_primaryperson
+        from vz_facts.atd_txdot_primaryperson
+        join cris_facts.atd_txdot_primaryperson
             on  (
-                vz.atd_txdot_primaryperson.crash_id = cris.atd_txdot_primaryperson.crash_id
-                and vz.atd_txdot_primaryperson.unit_nbr = cris.atd_txdot_primaryperson.unit_nbr
-                and vz.atd_txdot_primaryperson.prsn_nbr = cris.atd_txdot_primaryperson.prsn_nbr
-                and vz.atd_txdot_primaryperson.prsn_type_id = cris.atd_txdot_primaryperson.prsn_type_id
-                and vz.atd_txdot_primaryperson.prsn_occpnt_pos_id = cris.atd_txdot_primaryperson.prsn_occpnt_pos_id
+                vz_facts.atd_txdot_primaryperson.crash_id = cris_facts.atd_txdot_primaryperson.crash_id
+                and vz_facts.atd_txdot_primaryperson.unit_nbr = cris_facts.atd_txdot_primaryperson.unit_nbr
+                and vz_facts.atd_txdot_primaryperson.prsn_nbr = cris_facts.atd_txdot_primaryperson.prsn_nbr
+                and vz_facts.atd_txdot_primaryperson.prsn_type_id = cris_facts.atd_txdot_primaryperson.prsn_type_id
+                and vz_facts.atd_txdot_primaryperson.prsn_occpnt_pos_id = cris_facts.atd_txdot_primaryperson.prsn_occpnt_pos_id
                 )
                 """
     print(view)
