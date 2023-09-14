@@ -96,6 +96,9 @@ def main():
         for table in tables:
             for field in table['lookup_map']:
 
+                #if not field["field_name"] == 'hwy_dsgn_lane_id':
+                    #continue
+
                 # 👇 Workaround for `character` as `integer` datatype in VZDB crashes tables
                 if field["field_name"] == 'hwy_dsgn_lane_id':
                     sql = """update production_fact_tables.atd_txdot_crashes set hwy_dsgn_lane_id = null 
@@ -108,6 +111,16 @@ def main():
                     pg.commit()
                     cursor.close()
                 
+                if field["field_name"] == 'hwy_dsgn_hrt_id':
+                    sql = """update production_fact_tables.atd_txdot_crashes set hwy_dsgn_hrt_id = null 
+                            where
+                                    hwy_dsgn_hrt_id = 'null'
+                                or  hwy_dsgn_hrt_id = ''
+                            """
+                    cursor = pg.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+                    cursor.execute(sql)
+                    pg.commit()
+                    cursor.close()
 
                 sql = f"update production_fact_tables.{table['imported_table']} set "
                 assignments = []
