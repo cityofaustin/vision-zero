@@ -176,7 +176,7 @@ function Crash(props) {
     data?.atd_txdot_crashes[0]["location_id"];
   const notEditingCoords = !isEditingCoords && latitude && longitude;
 
-  return !data?.length ? (
+  return !data?.atd_txdot_crashes?.length ? (
     <Page404 />
   ) : (
     <div className="animated fadeIn">
