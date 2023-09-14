@@ -234,12 +234,6 @@ const routes = roles => [
     name: "User Details",
     component: User,
   },
-  {
-    path: "/404",
-    exact: true,
-    name: "404 Page",
-    component: Page404,
-  },
 ];
 
 export default routes;
