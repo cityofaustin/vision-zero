@@ -11,6 +11,8 @@ import tempfile
 import shutil
 import time
 
+from lib.lookup_map import crash_lookup_map, unit_lookup_map, person_lookup_map, primaryperson_lookup_map
+
 DEPLOYMENT_ENVIRONMENT = os.environ.get(
     "ENVIRONMENT", "development"
 )  # our current environment from ['production', 'development']
@@ -65,6 +67,55 @@ def main():
             sslmode=DB_SSL_REQUIREMENT,
             sslrootcert="/root/rds-combined-ca-bundle.pem",
         )
+
+        tables = [
+            {
+                'imported_table': 'atd_txdot_crashes',
+                'id_columns': ['crash_id'],
+                'lookup_map': crash_lookup_map
+            },
+            {
+                'imported_table': 'atd_txdot_units',
+                'id_columns': ['crash_id', 'unit_nbr'],
+                'lookup_map': unit_lookup_map
+            },
+            {
+                'imported_table': 'atd_txdot_person',
+                'id_columns': ['crash_id', 'unit_nbr', 'prsn_nbr'],
+                'lookup_map': person_lookup_map
+            },
+            {
+                'imported_table': 'atd_txdot_primaryperson', 
+                'id_columns': ['crash_id', 'unit_nbr', 'prsn_nbr'],
+                'lookup_map': primaryperson_lookup_map
+            },
+        ]
+
+
+        # build up the query and run it
+        for table in tables:
+            for field in table['lookup_map']:
+                sql = f"update production_fact_tables.{table['imported_table']} set "
+                assignments = []
+                if field["lookup_table"] is not None:
+                    assignments.append(f"""
+                        {field["field_name"]} = (
+                            select id
+                            from public.{field["lookup_table"]}
+                            where true 
+                                and source = 'cris'
+                                and cris_id = production_fact_tables.{table["imported_table"]}.{field["field_name"]}::integer
+                            )""")
+                if len(assignments) > 0:
+                    sql += ", ".join(assignments) 
+
+                    print(sql)
+
+                    cursor = pg.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+                    cursor.execute(sql)
+                    pg.commit()
+                    cursor.close()
+
 
 
 def get_secrets():
