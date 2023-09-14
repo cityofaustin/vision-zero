@@ -107,7 +107,8 @@ def main():
                                 and cris_id = production_fact_tables.{table["imported_table"]}.{field["field_name"]}::integer
                             )""")
                 if len(assignments) > 0:
-                    sql += ", ".join(assignments) 
+                    sql += ", ".join(assignments)  + "\n"
+                    sql += f" where production_fact_tables.{table['imported_table']}.{field['field_name']} is not null"
 
                     print(sql)
 
