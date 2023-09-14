@@ -577,7 +577,7 @@ def compute_for_primaryperson():
 
             print()
             print("Crash ID: ", cris["crash_id"], "; Unit Number: ", cris["unit_nbr"], "; Person Number: ", cris["prsn_nbr"], "; Person Type ID: ", cris["prsn_type_id"], "; Person Occupant Position ID: ", cris["prsn_occpnt_pos_id"])
-            sql = "select * from public.atd_txdot_primaryperson where crash_id = %s and unit_nbr = %s and prsn_nbr = %s and prsn_type_id = %s and prsn_occpnt_pos_id = %s"
+            sql = "select * from production_fact_tables.atd_txdot_primaryperson where crash_id = %s and unit_nbr = %s and prsn_nbr = %s and prsn_type_id = %s and prsn_occpnt_pos_id = %s"
             public_cursor.execute(sql, (cris["crash_id"], cris["unit_nbr"], cris["prsn_nbr"], cris["prsn_type_id"], cris["prsn_occpnt_pos_id"] ))
             public = public_cursor.fetchone()
             keys = ["crash_id", "unit_nbr", "prsn_nbr", "prsn_type_id", "prsn_occpnt_pos_id"]
@@ -599,7 +599,7 @@ def compute_for_primaryperson():
                         values.append(public[k])
             comma_linefeed = ",\n            "
             sql = f"""
-            insert into vz.atd_txdot_primaryperson (
+            insert into vz_facts.atd_txdot_primaryperson (
                 {comma_linefeed.join(keys)}
             ) values (
                 {comma_linefeed.join(values_for_sql(values))}
