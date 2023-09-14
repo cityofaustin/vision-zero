@@ -67,7 +67,7 @@ const Page404 = React.lazy(() => import("./views/Pages/Page404/Page404"));
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 // Accept roles arg for role-based access to routes
 const routes = roles => [
-  { path: "/", exact: true, name: "Dashboard", component: VZDashboard },
+  { path: "/", exact: true, name: "Home" },
   { path: "/dev/dashboard", name: "Dashboard", component: Dashboard },
   { path: "/dev/theme", exact: true, name: "Theme", component: Colors },
   { path: "/dev/theme/colors", name: "Colors", component: Colors },
@@ -148,7 +148,12 @@ const routes = roles => [
   { path: "/dev/widgets", name: "Widgets", component: Widgets },
   { path: "/dev/charts", name: "Charts", component: Charts },
   { path: "/profile", name: "Profile", component: Profile },
-  { path: "/dashboard", name: "Dashboard", component: VZDashboard },
+  {
+    path: "/dashboard",
+    exact: true,
+    name: "Dashboard",
+    component: VZDashboard,
+  },
   { path: "/locations", exact: true, name: "Locations", component: Locations },
   {
     path: "/locations/:id",
@@ -235,7 +240,6 @@ const routes = roles => [
     name: "404 Page",
     component: Page404,
   },
-  { path: "*", name: "404 Page", component: Page404 },
 ];
 
 export default routes;
