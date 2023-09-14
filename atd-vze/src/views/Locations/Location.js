@@ -12,6 +12,7 @@ import LocationCrashes from "./LocationCrashes";
 import LocationNonCR3Crashes from "./LocationNonCR3Crashes";
 import LocationDownloadGlobal from "./LocationDownloadGlobal";
 import Notes from "../../Components/Notes/Notes";
+import Page404 from "../Pages/Page404/Page404";
 
 import { GET_LOCATION, UPDATE_LOCATION } from "../../queries/Locations";
 import {
@@ -76,7 +77,9 @@ function Location(props) {
     </div>
   );
 
-  return (
+  return data && !data?.length ? (
+    <Page404 />
+  ) : (
     <div className="animated fadeIn">
       <Row>
         <Col>
