@@ -1,16 +1,6 @@
 import React from "react";
 import { withApollo } from "react-apollo";
-import {
-  Button,
-  Col,
-  Container,
-  Input,
-  InputGroup,
-  InputGroupAddon,
-  InputGroupText,
-  Row,
-  NavLink,
-} from "reactstrap";
+import { Row, NavLink } from "reactstrap";
 import Icon404 from "../../../assets/img/brand/404.svg";
 
 const Page404 = () => {
