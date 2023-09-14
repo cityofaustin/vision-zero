@@ -77,7 +77,7 @@ function Location(props) {
     </div>
   );
 
-  return data && !data?.length ? (
+  return !data?.length ? (
     <Page404 />
   ) : (
     <div className="animated fadeIn">
