@@ -63,7 +63,6 @@ const ToolsUploadNonCR3 = React.lazy(() =>
 const CreateCrashRecord = React.lazy(() =>
   import("./views/Tools/CreateCrashRecord")
 );
-const Page404 = React.lazy(() => import("./views/Pages/Page404/Page404"));
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 // Accept roles arg for role-based access to routes
 const routes = roles => [
