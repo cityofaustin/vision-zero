@@ -25,10 +25,6 @@ jobs:
       # Get the code first
       - name: "Checkout"
         uses: actions/checkout@v3
-      - name: "Install AWS Cli"
-        run: |
-          sudo apt-get install python3-setuptools 
-          pip3 install awscli boto3 zappa
       # Run the shell commands using the AWS environment variables
       - name: "Build"
         env:
