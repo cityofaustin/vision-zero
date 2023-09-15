@@ -28,7 +28,7 @@ jobs:
       - name: "Install AWS Cli"
         run: |
           sudo apt-get install python3-setuptools 
-          pip3 install awscli boto3
+          pip3 install awscli boto3 zappa
       # Run the shell commands using the AWS environment variables
       - name: "Build"
         env:
