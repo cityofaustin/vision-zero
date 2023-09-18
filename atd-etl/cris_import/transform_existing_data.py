@@ -100,27 +100,45 @@ def main():
                     #continue
 
                 # 👇 Workaround for `character` as `integer` datatype in VZDB crashes tables
-                if field["field_name"] == 'hwy_dsgn_lane_id':
-                    sql = """update production_fact_tables.atd_txdot_crashes set hwy_dsgn_lane_id = null 
-                            where
-                                    hwy_dsgn_lane_id = 'null'
-                                or  hwy_dsgn_lane_id = ''
-                            """
-                    cursor = pg.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-                    cursor.execute(sql)
-                    pg.commit()
-                    cursor.close()
                 
-                if field["field_name"] == 'hwy_dsgn_hrt_id':
-                    sql = """update production_fact_tables.atd_txdot_crashes set hwy_dsgn_hrt_id = null 
+                character_not_integer_fields = ('hwy_dsgn_lane_id', 'hwy_dsgn_hrt_id', 'base_type_id', 'surf_type_id')
+                if field["field_name"] in character_not_integer_fields:
+                    print("Field name:", field["field_name"])
+                    print('Table:', table["imported_table"])
+
+                    sql = f"""update production_fact_tables.{table["imported_table"]} set {field["field_name"]} = null 
                             where
-                                    hwy_dsgn_hrt_id = 'null'
-                                or  hwy_dsgn_hrt_id = ''
+                                    {field["field_name"]} = 'null'
+                                or  {field["field_name"]} = ''
                             """
+
+                    print(sql)
                     cursor = pg.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
                     cursor.execute(sql)
                     pg.commit()
                     cursor.close()
+
+                #if field["field_name"] == 'hwy_dsgn_lane_id':
+                    #sql = """update production_fact_tables.atd_txdot_crashes set hwy_dsgn_lane_id = null 
+                            #where
+                                    #hwy_dsgn_lane_id = 'null'
+                                #or  hwy_dsgn_lane_id = ''
+                            #"""
+                    #cursor = pg.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+                    #cursor.execute(sql)
+                    #pg.commit()
+                    #cursor.close()
+                
+                #if field["field_name"] == 'hwy_dsgn_hrt_id':
+                    #sql = """update production_fact_tables.atd_txdot_crashes set hwy_dsgn_hrt_id = null 
+                            #where
+                                    #hwy_dsgn_hrt_id = 'null'
+                                #or  hwy_dsgn_hrt_id = ''
+                            #"""
+                    #cursor = pg.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+                    #cursor.execute(sql)
+                    #pg.commit()
+                    #cursor.close()
 
                 sql = f"update production_fact_tables.{table['imported_table']} set "
                 assignments = []
