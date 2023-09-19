@@ -98,7 +98,14 @@ def main():
 
                 # 👇 Workaround for `character` as `integer` datatype in VZDB crashes tables
                 character_not_integer_fields = ('hwy_dsgn_lane_id', 'hwy_dsgn_hrt_id', 'base_type_id',
-                    'surf_type_id', 'trlr_type_id', 'trlr1_type_id', 'trlr2_type_id')
+                    'surf_type_id')
+
+                #if field["field_name"] not in character_not_integer_fields:
+                    #continue
+
+                #if 'trlr' not in field["field_name"]:
+                    #continue
+
                 if field["field_name"] in character_not_integer_fields:
                     print("Field name:", field["field_name"])
                     print('Table:', table["imported_table"])
