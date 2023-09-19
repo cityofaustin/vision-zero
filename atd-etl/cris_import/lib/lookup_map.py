@@ -380,8 +380,8 @@ unit_lookup_map = [
         "lookup_table": "autonomous_unit",
         "crash_schemata": [ 2010, 2015, 2018, 2023, ]
     }, {
-        "field_name": "rpt_autonomous_unit_id",
-        "lookup_table": "rpt_autonomous_unit",
+        "field_name": "autonomous_unit_id",
+        "lookup_table": "autonomous_unit",
         "crash_schemata": [ 2023, ]
     }, {
         "field_name": "rpt_autonomous_level_engaged_id",
