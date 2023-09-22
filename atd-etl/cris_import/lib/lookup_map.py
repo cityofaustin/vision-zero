@@ -508,10 +508,10 @@ primaryperson_lookup_map = [
         "field_name": "drvr_lic_type_id",
         "lookup_table": "drvr_lic_type",
         "crash_schemata": [ 2010, 2015, 2018, 2023, ]
-    #}, {
-        #"field_name": "drvr_lic_state_id",
-        #"lookup_table": "state",
-        #"crash_schemata": [ 2010, 2015, 2018, 2023, ]
+    }, {
+        "field_name": "drvr_lic_state_id",
+        "lookup_table": "state",
+        "crash_schemata": [ 2010, 2015, 2018, 2023, ]
     }, {
         "field_name": "drvr_lic_cls_id",
         "lookup_table": "drvr_lic_cls",
