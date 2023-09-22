@@ -88,8 +88,14 @@ const Users = () => {
   }, [token, page, perPage]);
 
   useEffect(() => {
-    // if we have received user metadata, then query all users
-    !!copyUserEmailsClicked && !!totalUsers && getAllUsers();
+    // if the user clicks the copy users button and we have received user metadata,
+    // then query all users
+    !!copyUserEmailsClicked &&
+      !!totalUsers &&
+      // only do this if the user hasn't already fetched data. if they have, skip this step
+      // and copy what is in state to the clipboard
+      allUsers?.length !== totalUsers &&
+      getAllUsers();
     // once we have all users, copy the emails to the clipboard
     !!allUsers.length && !!copyUserEmailsClicked && getUserEmails();
   });
