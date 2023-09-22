@@ -99,6 +99,7 @@ const Users = () => {
   async function getAllUsers() {
     let page = 0;
     let users = [];
+    // query every page of users until we have fetched them all
     while (page <= pageCount) {
       const allUsersEndpoint = `${process.env.REACT_APP_CR3_API_DOMAIN}/user/list_users?page=${page}&per_page=${perPage}`;
       const res = await axios.get(allUsersEndpoint, {
@@ -107,13 +108,14 @@ const Users = () => {
         },
       });
       res.data.users.forEach(user => {
-        // make sure the user is not blocked/inactive
+        // make sure the user is not blocked/inactive, then push to an array
         if (user.status === false || user.status === undefined) {
           users.push(user);
         }
       });
       page++;
     }
+    // once we have fetched all users, update the users array in state
     if (users.length === totalUsers) {
       setAllUsers(users);
     }
@@ -125,7 +127,8 @@ const Users = () => {
       userEmails += `${user.email}; `;
     });
     // timeout determines how long the status popover displays
-    setTimeout(() => setCopyUserEmailsClicked(false), 2000);
+    const popOverTime = 2000;
+    setTimeout(() => setCopyUserEmailsClicked(false), popOverTime);
     return navigator.clipboard.writeText(userEmails);
   };
 
