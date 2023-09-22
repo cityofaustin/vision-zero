@@ -92,7 +92,7 @@ const Users = () => {
     !!copyUserEmailsClicked && !!totalUsers && getAllUsers();
     // once we have all users, copy the emails to the clipboard
     !!allUsers.length && !!copyUserEmailsClicked && getUserEmails();
-  }, [totalUsers, copyUserEmailsClicked, allUsers]);
+  });
 
   const pageCount = Math.ceil(totalUsers / perPage);
 
@@ -108,8 +108,9 @@ const Users = () => {
       });
       res.data.users.forEach(user => {
         // make sure the user is not blocked/inactive
-        user.status === false || user.status === undefined &&
-        users.push(user);
+        if (user.status === false || user.status === undefined) {
+          users.push(user);
+        }
       });
       page++;
     }
