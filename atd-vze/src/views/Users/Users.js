@@ -11,10 +11,12 @@ import {
   Pagination,
   PaginationItem,
   PaginationLink,
+  Popover,
   Row,
   Table,
   Button,
   Spinner,
+  PopoverBody,
 } from "reactstrap";
 import Can from "../../auth/Can";
 import { useAuth0 } from "../../auth/authContext";
@@ -67,6 +69,8 @@ const Users = () => {
   const [userList, setUserList] = useState(null);
   const [totalUsers, setTotalUsers] = useState(null);
   const [page, setPage] = useState(0);
+  const [allUsers, setAllUsers] = useState([]);
+  const [copyUserEmailsClicked, setCopyUserEmailsClicked] = useState(false);
   const perPage = 50;
 
   useEffect(() => {
@@ -83,63 +87,51 @@ const Users = () => {
       });
   }, [token, page, perPage]);
 
-  const getAllUsers = () => {
+  useEffect(() => {
+    // if we have received user metadata, then query all users
+    !!copyUserEmailsClicked && !!totalUsers && getAllUsers();
+    // once we have all users, copy the emails to the clipboard
+    !!allUsers.length && !!copyUserEmailsClicked && getUserEmails();
+  }, [totalUsers, copyUserEmailsClicked, allUsers]);
+
+  const pageCount = Math.ceil(totalUsers / perPage);
+
+  async function getAllUsers() {
     let page = 0;
     let users = [];
     while (page <= pageCount) {
-    const allUsersEndpoint = `${process.env.REACT_APP_CR3_API_DOMAIN}/user/list_users?page=${page}&per_page=${perPage}`;
-    axios
-      .get(allUsersEndpoint, {
+      const allUsersEndpoint = `${process.env.REACT_APP_CR3_API_DOMAIN}/user/list_users?page=${page}&per_page=${perPage}`;
+      const res = await axios.get(allUsersEndpoint, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      })
-      .then(res => {
-        res.data.users.forEach(user => {
-          users.push(user)
-        });
       });
-      page ++
+      res.data.users.forEach(user => {
+        // make sure the user is not blocked/inactive
+        user.status === false || user.status === undefined &&
+        users.push(user);
+      });
+      page++;
     }
-    console.log(users);
-    // getUserEmails(users);
-  };
-
-  const getUserEmails = (users) => {
-    console.log(users);
-    let userEmails = "";
-    users.forEach(user => {
-      userEmails += `${user.email}; `
-    });
-    console.log(userEmails);
-    return userEmails;
+    if (users.length === totalUsers) {
+      setAllUsers(users);
+    }
   }
 
-  const pageCount = Math.ceil(totalUsers / perPage);
+  const getUserEmails = () => {
+    let userEmails = "";
+    allUsers.forEach(user => {
+      userEmails += `${user.email}; `;
+    });
+    // timeout determines how long the status popover displays
+    setTimeout(() => setCopyUserEmailsClicked(false), 2000);
+    return navigator.clipboard.writeText(userEmails);
+  };
 
   const updatePage = newPageValue => {
     setUserList(null);
     setPage(newPageValue);
   };
-
-  // const userEmails = userList.map(user => (
-  //   user.email
-  // ));
-
-  // let userEmails = "";
-
-  // !!userList && userList.forEach(user => {
-  //   userEmails += `${user.email}; `
-  // });
-
-  // console.log(userEmails);
-  // !!allUsers && console.log(allUsers);
-
-  // !!userList && console.log(userList.map(user => (
-  //   user.email
-  // )));
-
-  // getAllUsers();
 
   return (
     <Can
@@ -157,18 +149,18 @@ const Users = () => {
                   <Row className="align-items-center">
                     <Col
                       xs="12"
-                      md="6"
+                      md="4"
                       className="d-flex justify-content-md-start justify-content-center ml-0 mb-3"
                     >
                       <Link to="/users/add" className="link">
-                        <Button color="primary">
+                        <Button id="addUserButton" color="primary">
                           <i className="fa fa-user-plus"></i> Add User
                         </Button>
                       </Link>
                     </Col>
                     <Col
                       xs="12"
-                      md="6"
+                      md="4"
                       className="d-flex justify-content-md-end justify-content-center mr-0"
                     >
                       <Pagination>
@@ -202,6 +194,39 @@ const Users = () => {
                           />
                         </PaginationItem>
                       </Pagination>
+                    </Col>
+                    <Col
+                      xs="12"
+                      md="4"
+                      className="d-flex justify-content-md-end justify-content-center mr-0 mb-3"
+                    >
+                      <div id="copyUserEmailsButton">
+                        {/* render a loading spinner while fetching data after user clicks copy user email button */}
+                        {copyUserEmailsClicked === true &&
+                        allUsers.length !== totalUsers ? (
+                          <Spinner className="mt-2" color="primary" />
+                        ) : (
+                          <div>
+                            <Button
+                              color="primary"
+                              onClick={() => setCopyUserEmailsClicked(true)}
+                            >
+                              <i className="fa fa-copy"></i> Copy user emails
+                            </Button>
+                            {/* briefly render a popover after data is copied to clipboard */}
+                            <Popover
+                              target="copyUserEmailsButton"
+                              placement="top"
+                              isOpen={
+                                !!copyUserEmailsClicked &&
+                                allUsers.length === totalUsers
+                              }
+                            >
+                              <PopoverBody>User emails copied!</PopoverBody>
+                            </Popover>
+                          </div>
+                        )}
+                      </div>
                     </Col>
                   </Row>
                   {!!userList ? (
