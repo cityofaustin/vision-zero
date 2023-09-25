@@ -8,13 +8,11 @@ import datetime
 import boto3
 import os
 import requests
-import hashlib
 
 from dotenv import load_dotenv, find_dotenv
 from os import environ as env
 from functools import wraps
 from six.moves.urllib.request import urlopen
-from string import Template
 
 from flask import Flask, request, redirect, jsonify, _request_ctx_stack, abort
 from flask_cors import cross_origin
@@ -33,7 +31,6 @@ AUTH0_DOMAIN = os.getenv("AUTH0_DOMAIN", "")
 CLIENT_ID = os.getenv("CLIENT_ID", "")
 API_CLIENT_ID = os.getenv("API_CLIENT_ID", "")
 API_CLIENT_SECRET = os.getenv("API_CLIENT_SECRET", "")
-API_ENVIRONMENT = os.getenv("API_ENVIRONMENT", "STAGING")
 
 # AWS Configuration
 AWS_DEFALUT_REGION = os.getenv("AWS_DEFALUT_REGION", "us-east-1")
@@ -41,12 +38,6 @@ AWS_S3_KEY = os.getenv("AWS_S3_KEY", "")
 AWS_S3_SECRET = os.getenv("AWS_S3_SECRET", "")
 AWS_S3_CR3_LOCATION = os.getenv("AWS_S3_CR3_LOCATION", "")
 AWS_S3_BUCKET = os.getenv("AWS_S3_BUCKET", "")
-
-# Hasura Config
-HASURA_ADMIN_SECRET = os.getenv("HASURA_ADMIN_SECRET", "")
-HASURA_ENDPOINT = os.getenv("HASURA_ENDPOINT", "")
-HASURA_TRIGGER_API_KEY = os.getenv("HASURA_TRIGGER_API_KEY", "")
-HASURA_EVENTS_SQS_URL = os.getenv("HASURA_EVENTS_SQS_URL", "")
 
 
 def get_api_token():
@@ -420,70 +411,6 @@ def user_delete_user(id):
         return f"{response.status_code}"
     else:
         abort(403)
-
-
-@APP.route("/events/", methods=["PUT", "POST"])
-def associate_location():
-    # Require matching token
-    incoming_token = request.headers.get("HASURA_TRIGGER_API_KEY")
-    incoming_event_name = request.headers.get("HASURA_EVENT_NAME", "")
-    environment_for_queue_name = API_ENVIRONMENT.lower()
-    hashed_events_api = hashlib.md5()
-    hashed_events_api.update(str(HASURA_TRIGGER_API_KEY).encode("utf-8"))
-    hashed_incoming_token = hashlib.md5()
-    hashed_incoming_token.update(str(incoming_token).encode("utf-8"))
-
-    # Return error if token doesn't match
-    if hashed_events_api.hexdigest() != hashed_incoming_token.hexdigest():
-        return {"statusCode": 403, "body": json.dumps({"message": "Forbidden Request"})}
-
-    # Check if there is a valid event name provided, if not reject the request.
-    valid_event_names = [
-        "crash_update_noncr3_location_",
-        "crash_update_jurisdiction_",
-        "crash_update_location_",
-    ]
-
-    if incoming_event_name not in valid_event_names:
-        return {
-            "statusCode": 403,
-            "body": json.dumps({"message": "Forbidden Request: Invalid Event Name"}),
-        }
-
-    # We continue the execution
-    try:
-        sqs = boto3.client("sqs")
-        queue_url = (
-            # The SQS url is a constant that follows this pattern:
-            # https://sqs.us-east-1.amazonaws.com/{AWS_ACCOUNT_NUMBER}/{THE_QUEUE_NAME}
-            HASURA_EVENTS_SQS_URL[
-                0:48
-            ]  # This is the length of the url with the account number
-            + "/atd-vz-data-events-"  # We're going to add a prefix pattern for our ATD VisionZero queues
-            + incoming_event_name  # And append the name of the incoming event
-            + environment_for_queue_name  # Append the environment name to target the correct queue
-        )
-
-        # Send message to SQS queue
-        response = sqs.send_message(
-            QueueUrl=queue_url,
-            DelaySeconds=10,
-            MessageBody=json.dumps(request.get_json(force=True)),
-        )
-
-        return {
-            "statusCode": 200,
-            "body": json.dumps(
-                {"message": "Update queued: " + str(response["MessageId"])}
-            ),
-        }
-    except Exception as e:
-        return {
-            "statusCode": 503,
-            "body": json.dumps(
-                {"message": "Unable to queue update request: " + str(e)}
-            ),
-        }
 
 
 if __name__ == "__main__":
