@@ -23,6 +23,10 @@ const SideDrawerContent = ({ type }) => {
     }
     .vz-logo {
       height: 30px;
+
+      @media only screen and (max-width: ${responsive.bootstrapMedium}px) {
+        height: 25px;
+      }
     }
   `;
 
