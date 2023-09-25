@@ -66,13 +66,14 @@ const Header = () => {
 
     .vz-logo {
       /* Need to offset height to account for white space above and below logo in svg */
-      height: ${responsive.headerButtonHeight + responsive.headerLogoOffset}px;
+      height: 30px;
 
       @media only screen and (max-width: ${responsive.bootstrapMedium}px) {
         /* Center VZ logo and only show when toggler is present */
         transform: translateX(-50%);
         left: 50%;
         position: absolute;
+        height: 20px;
       }
 
       /* Hide logo in header when SideDrawer is closed and toggle is present (mobile)
@@ -122,7 +123,6 @@ const Header = () => {
                 // Need to adjust location of public folder to account for /viewer/ basepath
                 src={process.env.PUBLIC_URL + "/vz_logo.svg"}
                 alt="Vision Zero Austin Logo"
-                width={300}
               ></img>
             </div>
             <Nav
