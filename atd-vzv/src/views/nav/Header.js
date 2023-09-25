@@ -73,7 +73,6 @@ const Header = () => {
         transform: translateX(-50%);
         left: 50%;
         position: absolute;
-        height: 20px;
       }
 
       /* Hide logo in header when SideDrawer is closed and toggle is present (mobile)
