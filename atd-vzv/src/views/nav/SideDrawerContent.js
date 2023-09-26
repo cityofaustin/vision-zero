@@ -25,7 +25,7 @@ const SideDrawerContent = ({ type }) => {
       height: 40px;
 
       @media only screen and (max-width: ${responsive.bootstrapMedium}px) {
-        height: 25px;
+        height: 30px;
       }
     }
   `;
