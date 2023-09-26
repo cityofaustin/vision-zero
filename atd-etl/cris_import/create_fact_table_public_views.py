@@ -166,10 +166,6 @@ def make_crashes_view():
     db.execute("drop view if exists public.atd_txdot_crashes;")
     pg.commit()
 
-    # ldm.atd_txdot_crashes columns we want to compute on the fly
-    # * latitude_primary
-    # * longitude_primary
-    
     sql = """
     with vz as (
         select
