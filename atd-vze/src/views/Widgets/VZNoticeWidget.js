@@ -63,7 +63,14 @@ class VZNoticeWidget extends Component {
           }
         : { card: "p-0", icon: "p-4 px-5", lead: "pt-3" };
 
-    const card = { style: "clearfix", color: color, icon: icon, raster_icon: raster_icon, raster_icon_alt: raster_icon_alt, classes: "" };
+    const card = {
+      style: "clearfix",
+      color: color,
+      icon: icon,
+      raster_icon: raster_icon,
+      raster_icon_alt: raster_icon_alt,
+      classes: "",
+    };
     card.classes = mapToCssModules(
       classNames(className, card.style, padding.card),
       cssModule
@@ -78,9 +85,13 @@ class VZNoticeWidget extends Component {
         "bg-" + card.color,
         padding.icon,
         raster_icon ? null : "font-2xl",
-         "mr-3 float-left"
+        "mr-3 float-left"
       );
-      return <i className={classes}>{raster_icon ? <img src={raster_icon} alt={raster_icon_alt} /> : null}</i>;
+      return (
+        <i className={classes}>
+          {raster_icon ? <img src={raster_icon} alt={raster_icon_alt} /> : null}
+        </i>
+      );
     };
 
     const cardFooter = function() {
@@ -103,12 +114,8 @@ class VZNoticeWidget extends Component {
       <Card>
         <CardBody className={card.classes} {...attributes}>
           {blockIcon(card.icon, card.raster_icon)}
-          <div className={lead.classes}>
-            {header}
-          </div>
-          <div className="text-muted font-xs">
-            {mainText}
-          </div>
+          <div className={lead.classes}>{header}</div>
+          <div className="text-muted font-xs">{mainText}</div>
         </CardBody>
         {cardFooter()}
       </Card>
