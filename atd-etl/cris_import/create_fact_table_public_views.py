@@ -233,23 +233,6 @@ def make_crashes_view():
                     coalesce(vz_facts.atd_txdot_crashes.last_update, cris_facts.atd_txdot_crashes.last_update)
             end as last_update
             """ 
-        elif column["vz_column_name"] == "last_update":
-            definition = """
-            case
-                when 
-                    vz_facts.atd_txdot_crashes.last_update is not null
-                    and cris_facts.atd_txdot_crashes.last_update is not null
-                    and vz_facts.atd_txdot_crashes.last_update > cris_facts.atd_txdot_crashes.last_update 
-                        then vz_facts.atd_txdot_crashes.updated_by
-                when
-                    vz_facts.atd_txdot_crashes.last_update is not null
-                    and cris_facts.atd_txdot_crashes.last_update is not null
-                    and vz_facts.atd_txdot_crashes.last_update < cris_facts.atd_txdot_crashes.last_update 
-                        then cris_facts.atd_txdot_crashes.updated_by
-                else 
-                    coalesce(vz_facts.atd_txdot_crashes.updated_by, cris_facts.atd_txdot_crashes.updated_by)
-            end as updated_by
-            """ 
             columns.append(definition)
         else:
             if column["vz_column_name"] is not None and column["cris_column_name"] is None:
@@ -337,23 +320,6 @@ def make_units_view():
                 else 
                     coalesce(vz_facts.atd_txdot_units.last_update, cris_facts.atd_txdot_units.last_update)
             end as last_update
-            """ 
-        elif column["vz_column_name"] == "last_update":
-            definition = """
-            case
-                when 
-                    vz_facts.atd_txdot_units.last_update is not null
-                    and cris_facts.atd_txdot_units.last_update is not null
-                    and vz_facts.atd_txdot_units.last_update > cris_facts.atd_txdot_units.last_update 
-                        then vz_facts.atd_txdot_units.updated_by
-                when
-                    vz_facts.atd_txdot_units.last_update is not null
-                    and cris_facts.atd_txdot_units.last_update is not null
-                    and vz_facts.atd_txdot_units.last_update < cris_facts.atd_txdot_units.last_update 
-                        then cris_facts.atd_txdot_units.updated_by
-                else 
-                    coalesce(vz_facts.atd_txdot_units.updated_by, cris_facts.atd_txdot_units.updated_by)
-            end as updated_by
             """ 
             columns.append(definition)
         elif column["vz_column_name"] is not None and column["cris_column_name"] is None:
@@ -446,23 +412,6 @@ def make_person_view():
                     coalesce(vz_facts.atd_txdot_person.last_update, cris_facts.atd_txdot_person.last_update)
             end as last_update
             """ 
-        elif column["vz_column_name"] == "last_update":
-            definition = """
-            case
-                when 
-                    vz_facts.atd_txdot_person.last_update is not null
-                    and cris_facts.atd_txdot_person.last_update is not null
-                    and vz_facts.atd_txdot_person.last_update > cris_facts.atd_txdot_person.last_update 
-                        then vz_facts.atd_txdot_person.updated_by
-                when
-                    vz_facts.atd_txdot_person.last_update is not null
-                    and cris_facts.atd_txdot_person.last_update is not null
-                    and vz_facts.atd_txdot_person.last_update < cris_facts.atd_txdot_person.last_update 
-                        then cris_facts.atd_txdot_person.updated_by
-                else 
-                    coalesce(vz_facts.atd_txdot_person.updated_by, cris_facts.atd_txdot_person.updated_by)
-            end as updated_by
-            """ 
             columns.append(definition)
         elif column["vz_column_name"] is not None and column["cris_column_name"] is None:
             columns.append(f'vz_facts.atd_txdot_person.{column["column_name"]}')
@@ -544,6 +493,24 @@ def make_primaryperson_view():
             columns.append(f'vz_facts.atd_txdot_primaryperson.{column["column_name"]}')
         elif column["cris_column_name"] is not None and column["vz_column_name"] is None:
             columns.append(f'cris_facts.atd_txdot_primaryperson.{column["column_name"]}')
+        elif column["vz_column_name"] == "last_update":
+            definition = """
+            case
+                when 
+                    vz_facts.atd_txdot_primaryperson.last_update is not null
+                    and cris_facts.atd_txdot_primaryperson.last_update is not null
+                    and vz_facts.atd_txdot_primaryperson.last_update > cris_facts.atd_txdot_primaryperson.last_update 
+                        then vz_facts.atd_txdot_primaryperson.last_update
+                when
+                    vz_facts.atd_txdot_primaryperson.last_update is not null
+                    and cris_facts.atd_txdot_primaryperson.last_update is not null
+                    and vz_facts.atd_txdot_primaryperson.last_update < cris_facts.atd_txdot_primaryperson.last_update 
+                        then cris_facts.atd_txdot_primaryperson.last_update
+                else 
+                    coalesce(vz_facts.atd_txdot_primaryperson.last_update, cris_facts.atd_txdot_primaryperson.last_update)
+            end as last_update
+            """ 
+            columns.append(definition)
         else:
             columns.append(f'coalesce(vz_facts.atd_txdot_primaryperson.{column["column_name"]}, cris_facts.atd_txdot_primaryperson.{column["column_name"]}) as {column["column_name"]}')
     view = view + "    " + ", \n            ".join(columns)
