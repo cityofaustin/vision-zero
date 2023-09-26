@@ -21,9 +21,12 @@ const SideDrawerContent = ({ type }) => {
     @media only screen and (max-width: ${responsive.bootstrapMedium}px) {
       display: none;
     }
-
     .vz-logo {
-      height: ${responsive.headerButtonHeight + responsive.headerLogoOffset}px;
+      height: 40px;
+
+      @media only screen and (max-width: ${responsive.bootstrapMedium}px) {
+        height: 30px;
+      }
     }
   `;
 
@@ -33,7 +36,7 @@ const SideDrawerContent = ({ type }) => {
         {/* Need to adjust location of public folder to account for /viewer/ basepath */}
         <img
           className="vz-logo"
-          src={process.env.PUBLIC_URL + "/vz_logo.svg"}
+          src={process.env.PUBLIC_URL + "/vz_logo.png"}
           alt="Vision Zero Austin Logo"
         ></img>
       </StyledDrawerHeader>

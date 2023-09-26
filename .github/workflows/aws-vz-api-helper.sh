@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Determine work branch
-case "${CIRCLE_BRANCH}" in
+case "${BRANCH_NAME}" in
   "production")
     export WORKING_STAGE="production";
   ;;

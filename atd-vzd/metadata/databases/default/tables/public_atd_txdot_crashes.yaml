@@ -242,7 +242,6 @@ select_permissions:
         - median_type_id
         - median_width
         - medical_advisory_fl
-        - micromobility_device_flag
         - milepoint
         - milepoint_2
         - mpo_id
@@ -471,7 +470,6 @@ select_permissions:
         - median_type_id
         - median_width
         - medical_advisory_fl
-        - micromobility_device_flag
         - milepoint
         - milepoint_2
         - mpo_id
@@ -575,27 +573,3 @@ select_permissions:
         - yield
       filter: {}
       allow_aggregations: true
-event_triggers:
-  - name: location_from_latlon
-    definition:
-      enable_manual: false
-      insert:
-        columns: '*'
-      update:
-        columns:
-          - latitude
-          - latitude_geocoded
-          - latitude_primary
-          - longitude
-          - longitude_geocoded
-          - longitude_primary
-    retry_conf:
-      interval_sec: 10
-      num_retries: 0
-      timeout_sec: 60
-    webhook: https://atd-vz-api.austinmobility.io/events
-    headers:
-      - name: HASURA_TRIGGER_API_KEY
-        value_from_env: HASURA_TRIGGER_API_KEY
-      - name: HASURA_EVENT_NAME
-        value: crash_update_location_

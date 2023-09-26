@@ -24,6 +24,7 @@ import DataTable from "../../Components/DataTable";
 import Notes from "../../Components/Notes/Notes";
 import { createCrashDataMap } from "./crashDataMap";
 import Recommendations from "./Recommendations/Recommendations";
+import Page404 from "../Pages/Page404/Page404";
 
 import "./crash.scss";
 
@@ -91,9 +92,9 @@ function Crash(props) {
     ];
     let geocoderAddressString = "";
     geocoderAddressFields.forEach(field => {
-      if (data.atd_txdot_crashes[0][field] !== null) {
+      if (data?.atd_txdot_crashes?.[0]?.[field] !== null) {
         geocoderAddressString = geocoderAddressString.concat(
-          data.atd_txdot_crashes[0][field] + " "
+          data?.atd_txdot_crashes?.[0]?.[field] + " "
         );
       }
     });
@@ -163,7 +164,7 @@ function Crash(props) {
     geocode_method: geocodeMethod,
     cr3_file_metadata: cr3FileMetadata,
     investigator_narrative_ocr: investigatorNarrative,
-  } = data.atd_txdot_crashes[0];
+  } = !!data?.atd_txdot_crashes[0] ? data?.atd_txdot_crashes[0] : {};
 
   const mapGeocoderAddress = createGeocoderAddressString(data);
   const yearsLifeLostCount = calculateYearsLifeLost(
@@ -171,11 +172,13 @@ function Crash(props) {
   );
   const hasLocation =
     data &&
-    data.atd_txdot_crashes.length > 0 &&
-    data.atd_txdot_crashes[0]["location_id"];
+    data?.atd_txdot_crashes.length > 0 &&
+    data?.atd_txdot_crashes[0]["location_id"];
   const notEditingCoords = !isEditingCoords && latitude && longitude;
 
-  return (
+  return !data?.atd_txdot_crashes?.length ? (
+    <Page404 />
+  ) : (
     <div className="animated fadeIn">
       <Row>
         <Col>

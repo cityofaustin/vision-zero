@@ -106,9 +106,14 @@ Stop the stack
 * Create and repopulate the database from the snapshot
 
 Note: the `-c / --include-change-log-data` flag can be used to opt to include the data of past change log events. The schema is created either way.
+Note: the `-f / --filename` flag can be optionally used to point to a specific data dump .sql file to use to restore.
 
 The way the snapshots are dated means that one will only end up downloading
 one copy of the data per-day, both in the with and without change log data.
+
+#### `vision-zero dump-local-db`
+* pg_dump the current local database
+* Stores the file in `./atd-vzd/dumps/visionzero-{date}-{time}.sql
 
 #### `vision-zero remove-snapshots`
 Remove snapshot files. This can be done to save space and clean up old snapshots, but it's also useful to cause a new copy of the day's data to be downloaded if an upstream change is made. 
