@@ -66,7 +66,7 @@ const Header = () => {
 
     .vz-logo {
       /* Need to offset height to account for white space above and below logo in svg */
-      height: 30px;
+      height: 40px;
 
       @media only screen and (max-width: ${responsive.bootstrapMedium}px) {
         /* Center VZ logo and only show when toggler is present */
@@ -121,7 +121,7 @@ const Header = () => {
               <img
                 className="vz-logo"
                 // Need to adjust location of public folder to account for /viewer/ basepath
-                src={process.env.PUBLIC_URL + "/vz_logo.svg"}
+                src={process.env.PUBLIC_URL + "/vz_logo.png"}
                 alt="Vision Zero Austin Logo"
               ></img>
             </div>
