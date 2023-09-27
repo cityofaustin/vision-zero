@@ -1,0 +1,46 @@
+#
+# Applies database migrations to staging (master) and production
+#
+name: "Applies the migrations to the database"
+
+on:
+  push:
+    branches:
+      - main
+      - production
+    paths:
+      - "atd-vzd/**"
+      - ".github/workflows/apply_db_migrations_and_metadata.yml" 
+      - ".github/workflows/migration-helper.sh"
+
+jobs:
+  apply:
+    name: Apply Migrations
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.8"
+          architecture: "x64"
+      # Get the code first
+      - name: "Checkout"
+        uses: actions/checkout@v3
+      # Then install the AWC CLI tools & boto3
+      - name: "Install AWS Cli & Hasura CLI"
+        run: |
+          sudo apt-get install python3-setuptools
+          pip3 install awscli virtualenv
+          curl -L https://github.com/hasura/graphql-engine/raw/stable/cli/get.sh | bash
+
+      # Run the shell commands using the AWS environment variables
+      - name: "Apply"
+        env:
+          ZAPPA_SETTINGS: ${{ secrets.ZAPPA_SETTINGS }}
+        run: |
+          export BRANCH_NAME=${GITHUB_REF##*/}
+          echo "SHA: ${GITHUB_SHA}"
+          echo "ACTION/BRANCH_NAME: ${BRANCH_NAME}"
+          echo "GR: ${GITHUB_REF}"
+          echo "PWD: $(pwd)"
+          source $(pwd)/.github/workflows/migration-helper.sh
+          run_migration_process
