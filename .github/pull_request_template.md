@@ -8,6 +8,6 @@
 
 ---
 #### Ship list
-- [ ] Check migrations to make sure they work with latest in master branch
+- [ ] Check migrations for any conflicts with latest migrations in master branch
 - [ ] Code reviewed
 - [ ] Product manager approved
