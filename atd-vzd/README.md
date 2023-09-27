@@ -15,25 +15,7 @@ We deployed a standard Hasura container to work as an API between Postgres and a
 
 ## Pipeline
 
-Changes to the schema and database are currently handled by manually applying migrations and metadata through the [Hasura CLI](https://hasura.io/docs/latest/hasura-cli/overview/). Run CLI commands from the local `atd-vzd` folder with a feature branch checked out. The CLI will often prompt you to choose which database to inspect (All or default). Default is the only database being tracked so either choice works.
-
-### Setting up Hasura CLI to target an environment
-
-To provide the CLI with the credentials needed to reach the local, staging, or production Hasura engine, we can use environment files.
-
-For example:
-```bash
-hasura migrate status --envfile .env.local
-```
-The `.env.local` is already present in this folder with the local credentials.
-
-The `.env.staging` file should contain:
-```
-HASURA_GRAPHQL_ENDPOINT=https://vzd-staging.austinmobility.io
-HASURA_GRAPHQL_ADMIN_SECRET=<Found in 1Password entry named 'VZD - Staging - Hasura Admin key'>
-```
-
-**The production endpoint and secret should only be used for a release.**
+Changes to the schema and database are handled by CI (GitHub Action workflow) that applies migrations and metadata using the [Hasura CLI](https://hasura.io/docs/latest/hasura-cli/overview/).
 
 ### Generating migrations and metadata changes
 
@@ -62,9 +44,4 @@ If the new migration is not the last migration to apply in the sequence:
 - Update the migration version in your project so it is the newest migration
 - Test locally using the steps in the  [Generating migrations and metadata changes section](#generating-migrations-and-metadata-changes)
 
-Once everything looks good, we can apply the migrations and metadata to the staging database and merge the feature branch.
-
-```bash
-hasura migrate apply --envfile .env.staging
-hasura metadata apply --envfile .env.staging
-``` 
+Once everything looks good, we can merge and the CI will apply the new migrations and metadata to the staging database.
