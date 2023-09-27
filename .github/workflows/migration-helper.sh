@@ -12,6 +12,13 @@ esac
 echo "SOURCE -> BRANCH_NAME: ${BRANCH_NAME}"
 echo "SOURCE -> WORKING_STAGE: ${WORKING_STAGE}"
 
+function export_hasura_env_vars() {
+    # Use jq to get Hasura endpoint and admin secret from ZAPPA_SETTINGS
+    export HASURA_GRAPHQL_ADMIN_SECRET=$(echo ${ZAPPA_SETTINGS} | jq -r ".\"${WORKING_STAGE}\".aws_environment_variables.HASURA_ENDPOINT")
+    # TODO: remove /v1/graphql from the end of the graphql endpoint
+    export HASURA_GRAPHQL_ADMIN_SECRET=$(echo ${ZAPPA_SETTINGS} | jq -r ".\"${WORKING_STAGE}\".aws_environment_variables.HASURA_ADMIN_SECRET")
+}
+
 #
 # Waits until the local hasura server is ready
 #
@@ -32,5 +39,6 @@ function run_migration() {
 function run_migration_process() {
   cd ./atd-vzd;
   echo "Running migration process @ ${PWD}"
+  export_hasura_env_vars;
   run_migration;
 }
