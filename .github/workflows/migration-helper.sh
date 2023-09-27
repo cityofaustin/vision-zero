@@ -14,14 +14,13 @@ echo "SOURCE -> WORKING_STAGE: ${WORKING_STAGE}"
 
 function export_hasura_env_vars() {
     # Use jq to get Hasura endpoint and admin secret from ZAPPA_SETTINGS
-    export HASURA_GRAPHQL_ADMIN_SECRET=$(echo ${ZAPPA_SETTINGS} | jq -r ".\"${WORKING_STAGE}\".aws_environment_variables.HASURA_ENDPOINT")
-    # TODO: remove /v1/graphql from the end of the graphql endpoint
+    export HASURA_ENDPOINT=$(echo ${ZAPPA_SETTINGS} | jq -r ".\"${WORKING_STAGE}\".aws_environment_variables.HASURA_ENDPOINT")
     export HASURA_GRAPHQL_ADMIN_SECRET=$(echo ${ZAPPA_SETTINGS} | jq -r ".\"${WORKING_STAGE}\".aws_environment_variables.HASURA_ADMIN_SECRET")
+    
+    # Remove /v1/graphql from the end of the graphql endpoint for Hasura CLI commands
+    export HASURA_ENDPOINT=$(basename "${HASURA_ENDPOINT%/v1/graphql}")
 }
 
-#
-# Waits until the local hasura server is ready
-#
 # TODO add skip check for default db
 function run_migration() {
   echo "----- MIGRATIONS STARTED -----";
