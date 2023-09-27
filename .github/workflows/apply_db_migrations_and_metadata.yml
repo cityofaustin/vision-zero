@@ -25,10 +25,10 @@ jobs:
       # Get the code first
       - name: "Checkout"
         uses: actions/checkout@v3
-      # Then install the Hasura CLI
+      # Then install the Hasura CLI and jq
       - name: "Install Hasura CLI"
         run: |
-          sudo apt-get install python3-setuptools jq
+          sudo apt-get install jq
           curl -L https://github.com/hasura/graphql-engine/raw/stable/cli/get.sh | bash
       # Use Hasura CLI to apply migrations and then metadata
       - name: "Apply"
@@ -40,4 +40,5 @@ jobs:
           echo "ACTION/BRANCH_NAME: ${BRANCH_NAME}"
           echo "GR: ${GITHUB_REF}"
           echo "PWD: $(pwd)"
+          source $(pwd)/.github/workflows/migration-helper.sh
           run_migration_process
