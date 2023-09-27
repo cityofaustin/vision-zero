@@ -26,7 +26,7 @@ jobs:
       - name: "Checkout"
         uses: actions/checkout@v3
       # Then install the Hasura CLI and jq
-      - name: "Install Hasura CLI"
+      - name: "Install Hasura CLI and jq"
         run: |
           sudo apt-get install jq
           curl -L https://github.com/hasura/graphql-engine/raw/stable/cli/get.sh | bash

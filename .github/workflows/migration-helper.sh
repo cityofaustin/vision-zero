@@ -27,7 +27,9 @@ function export_hasura_env_vars() {
     export HASURA_GRAPHQL_ENDPOINT=$(basename "${HASURA_ENDPOINT%/v1/graphql}")
 }
 
-# TODO add skip check for default db
+#
+# Apply migrations and metadata
+#
 function run_migration() {
   echo "----- MIGRATIONS STARTED -----";
   hasura --skip-update-check version;
