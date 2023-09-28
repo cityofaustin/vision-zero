@@ -373,30 +373,37 @@ def pgloader_csvs_into_database(map_state):
                     # See https://github.com/dimitri/pgloader/issues/768#issuecomment-693390290
                     CONNECTION_STRING = f"postgresql://{DB_USER}:{DB_PASS}@localhost:{ssh_tunnel.local_bind_port}/{DB_NAME}?sslmode=allow"
 
-                    with open(command_file, "w") as file:
-                        file.write(
-                            f"""
-    LOAD CSV
-        FROM '{map_state["working_directory"]}/{filename}' ({headers_line})
-        INTO  {CONNECTION_STRING}&{map_state["import_schema"]}.{table} ({headers_line})
-        WITH truncate,
-            skip header = 1
-        BEFORE LOAD DO 
-        $$ drop table if exists {map_state["import_schema"]}.{table}; $$,
-        $$ create table {map_state["import_schema"]}.{table} (\n"""
-                        )
-                        fields = []
-                        for field in headers:
-                            fields.append(f"       {field} character varying")
-                        file.write(",\n".join(fields))
-                        file.write(
-                            f"""
-        );
-    $$;\n"""
-                        )
-                    cmd = f"pgloader {command_file}"
-                    if os.system(cmd) != 0:
-                        raise Exception("pgloader did not execute successfully")
+                    for attempt in range(5):  # 5 attempts
+                        try:
+                            with open(command_file, "w") as file:
+                                file.write(
+                                    f"""
+            LOAD CSV
+                FROM '{map_state["working_directory"]}/{filename}' ({headers_line})
+                INTO  {CONNECTION_STRING}&{map_state["import_schema"]}.{table} ({headers_line})
+                WITH truncate,
+                    skip header = 1
+                BEFORE LOAD DO 
+                $$ drop table if exists {map_state["import_schema"]}.{table}; $$,
+                $$ create table {map_state["import_schema"]}.{table} (\n"""
+                                )
+                                fields = []
+                                for field in headers:
+                                    fields.append(f"       {field} character varying")
+                                file.write(",\n".join(fields))
+                                file.write(
+                                    f"""
+                );
+            $$;\n"""
+                                )
+                            cmd = f"pgloader {command_file}"
+                            if os.system(cmd) != 0:
+                                raise Exception("pgloader did not execute successfully")
+                            break
+                        except Exception as e:
+                            if attempt == 4:  # This was the fifth attempt
+                                raise  # Re-raise the last exception
+                            print(f"Attempt {attempt + 1} failed, retrying...")
 
     return map_state
 
