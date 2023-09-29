@@ -5,6 +5,7 @@ services:
     build: .
     volumes:
       - .:/app
+      - ./data:/data
     env_file:
       - ./env
     environment:

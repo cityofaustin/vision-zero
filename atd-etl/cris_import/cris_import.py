@@ -19,8 +19,8 @@ from onepasswordconnectsdk.client import Client, new_client
 
 import lib.mappings as mappings
 import lib.sql as util
-import lib.graphql as graphql
-from lib.helpers_import import insert_crash_change_template as insert_change_template
+
+from lib.lookup_map import crash_lookup_map, unit_lookup_map, person_lookup_map, primaryperson_lookup_map
 
 DEPLOYMENT_ENVIRONMENT = os.environ.get(
     "ENVIRONMENT", "development"
@@ -33,7 +33,6 @@ VAULT_ID = os.getenv("OP_VAULT_ID")
 def main():
     secrets = get_secrets()
 
-    # 😢 why not `global variable = value`??
     global SFTP_ENDPOINT
     global ZIP_PASSWORD
 
@@ -53,8 +52,6 @@ def main():
     global DB_BASTION_HOST
     global DB_RDS_HOST
 
-    global GRAPHQL_ENDPOINT
-    global GRAPHQL_ENDPOINT_KEY
     global SFTP_ENDPOINT_SSH_PRIVATE_KEY
 
     SFTP_ENDPOINT = secrets["SFTP_endpoint"]
@@ -76,22 +73,28 @@ def main():
     DB_BASTION_HOST = secrets["bastion_host"]
     DB_RDS_HOST = secrets["database_host"]
 
-    GRAPHQL_ENDPOINT = secrets["graphql_endpoint"]
-    GRAPHQL_ENDPOINT_KEY = secrets["graphql_endpoint_key"]
     SFTP_ENDPOINT_SSH_PRIVATE_KEY = secrets["sftp_endpoint_private_key"]
 
-    # 🥩 & 🥔
-    zip_location = download_extract_archives()
+    zip_location = download_archives()
     extracted_archives = unzip_archives(zip_location)
     for archive in extracted_archives:
+
+        # Each logical groups together will be the crashes that met the export's criteria, 
+        # and there will be one logical group per CRIS crash schema.
+        #
+        # The parameters and state of iteration are passed via a dictionary, created in this function.
+        # see: https://github.com/cityofaustin/atd-vz-data/pull/1282#discussion_r1319160494
         logical_groups_of_csvs = group_csvs_into_logical_groups(archive, dry_run=False)
+
         for logical_group in logical_groups_of_csvs:
             desired_schema_name = create_import_schema_name(logical_group)
+            print("desired_schema_name", desired_schema_name)
             schema_name = create_target_import_schema(desired_schema_name)
             pgloader_command_files = pgloader_csvs_into_database(schema_name)
             trimmed_token = remove_trailing_carriage_returns(pgloader_command_files)
-            typed_token = align_db_typing(trimmed_token)
-            align_records_token = align_records(typed_token)
+            typed_token = align_db_typing(trimmed_token) # reminder, these "tokens" are from when this was a prefect script, and they now contain execution context
+            converted_token = convert_to_ldm_lookup_ids(typed_token)
+            align_records_token = align_records(converted_token)
             clean_up_import_schema(align_records_token)
     remove_archives_from_sftp_endpoint(zip_location)
     upload_csv_files_to_s3(archive)
@@ -169,16 +172,6 @@ def get_secrets():
             "opfield": f"{DEPLOYMENT_ENVIRONMENT}.S3 Archive Path",
             "opvault": VAULT_ID,
         },
-        "graphql_endpoint": {
-            "opitem": "Vision Zero CRIS Import",
-            "opfield": f"{DEPLOYMENT_ENVIRONMENT}.GraphQL Endpoint",
-            "opvault": VAULT_ID,
-        },
-        "graphql_endpoint_key": {
-            "opitem": "Vision Zero CRIS Import",
-            "opfield": f"{DEPLOYMENT_ENVIRONMENT}.GraphQL Endpoint key",
-            "opvault": VAULT_ID,
-        },
         "sftp_endpoint_private_key": {
             "opitem": "SFTP Endpoint Key",
             "opfield": ".private key",
@@ -203,7 +196,7 @@ def specify_extract_location(file):
     return zip_tmpdir
 
 
-def download_extract_archives():
+def download_archives():
     """
     Connect to the SFTP endpoint which receives archives from CRIS and
     download them into a temporary directory.
@@ -254,10 +247,9 @@ def unzip_archives(archives_directory):
 
     extracted_csv_directories = []
     for filename in os.listdir(archives_directory):
-        print("About to unzip: " + filename + "with the command ...")
+        print("About to unzip: " + filename)
         extract_tmpdir = tempfile.mkdtemp()
         unzip_command = f'7za -y -p{ZIP_PASSWORD} -o"{extract_tmpdir}" x "{archives_directory}/{filename}"'
-        print(unzip_command)
         os.system(unzip_command)
         extracted_csv_directories.append(extract_tmpdir)
     return extracted_csv_directories
@@ -517,6 +509,86 @@ def align_db_typing(map_state):
     return map_state
 
 
+# The following function is used to change, in place, the foreign key values
+# from those used by CRIS to those used by the LDM.  This function gets the "import"
+# schema name in the argument, and then will use some hard-coded maps between columns 
+# and tables to build a SQL command which updates all the appropriate foreign key values
+# in the import schema's tables.
+def convert_to_ldm_lookup_ids(state):
+    with SshKeyTempDir() as key_directory:
+        write_key_to_file(key_directory + "/id_ed25519", DB_BASTION_HOST_SSH_PRIVATE_KEY + "\n") 
+        ssh_tunnel = SSHTunnelForwarder(
+            (DB_BASTION_HOST),
+            ssh_username=DB_BASTION_HOST_SSH_USERNAME,
+            ssh_private_key=f"{key_directory}/id_ed25519",
+            remote_bind_address=(DB_RDS_HOST, 5432)
+            )
+        ssh_tunnel.start()   
+
+        pg = psycopg2.connect(
+            host='localhost', 
+            port=ssh_tunnel.local_bind_port,
+            user=DB_USER, 
+            password=DB_PASS, 
+            dbname=DB_NAME, 
+            sslmode=DB_SSL_REQUIREMENT, 
+            sslrootcert="/root/rds-combined-ca-bundle.pem"
+            )
+
+    # Figure out what "crash era" or CRIS schema we're dealing with here.
+    cris_schema = int(state["logical_group_id"][:4])
+    print("cris_schema", cris_schema)
+
+    # Get at the mappings between which columns and for which schemata
+    # we are going to build our transformation query from.
+    tables = [
+        {
+            'imported_table': 'crash',
+            'id_columns': ['crash_id'],
+            'lookup_map': crash_lookup_map
+        },
+        {
+            'imported_table': 'unit',
+            'id_columns': ['crash_id', 'unit_nbr'],
+            'lookup_map': unit_lookup_map
+        },
+        {
+            'imported_table': 'person',
+            'id_columns': ['crash_id', 'unit_nbr', 'prsn_nbr'],
+            'lookup_map': person_lookup_map
+        },
+        {
+            'imported_table': 'primaryperson', 
+            'id_columns': ['crash_id', 'unit_nbr', 'prsn_nbr'],
+            'lookup_map': primaryperson_lookup_map
+        },
+    ]
+
+    # build up the query and run it
+    for table in tables:
+        sql = f"update {state['import_schema']}.{table['imported_table']} set "
+        assignments = []
+        for field in table['lookup_map']:
+            if field["lookup_table"] is not None and cris_schema in field["crash_schemata"]:
+                assignments.append(f"""
+                    {field["field_name"]} = (
+                        select id
+                        from public.{field["lookup_table"]}
+                        where true 
+                            and source = 'cris'
+                            and cris_id = {state['import_schema']}.{table["imported_table"]}.{field["field_name"]}::integer
+                        )""")
+        if len(assignments) > 0:
+            sql += ", ".join(assignments) 
+
+            cursor = pg.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+            cursor.execute(sql)
+            pg.commit()
+            cursor.close()
+
+    return state
+
+
 def align_records(map_state):
 
     """
@@ -568,9 +640,6 @@ def align_records(map_state):
             # Query the list of columns in the target table
             target_columns = util.get_target_columns(pg, output_map, table)
 
-            # Get the list of columns which are designated to to be protected from updates
-            no_override_columns = mappings.no_override_columns()[output_map[table]]
-
             # Load up the list of imported records to iterate over. 
             imported_records = util.load_input_data_for_keying(pg, map_state["import_schema"], table)
 
@@ -588,12 +657,14 @@ def align_records(map_state):
 
                 # generate some record specific SQL fragments to identify the record in larger queries
                 record_key_sql, import_key_sql = util.get_key_clauses(table_keys, output_map, table, source, map_state["import_schema"])
+                if not record_key_sql or not import_key_sql:
+                    continue
 
                 # To decide to UPDATE, we need to find a matching target record in the output table.
                 # This function returns that record as a token of existence or false if none is available
                 if util.fetch_target_record(pg, output_map, table, record_key_sql):
                     # Build 2 sets of 3 arrays of SQL fragments, one element per column which can be `join`ed together in subsequent queries.
-                    column_assignments, column_comparisons, column_aggregators, important_column_assignments, important_column_comparisons, important_column_aggregators = util.get_column_operators(target_columns, no_override_columns, source, table, output_map, map_state["import_schema"])
+                    column_assignments, column_comparisons, column_aggregators = util.get_column_operators(target_columns, source, table, output_map, map_state["import_schema"])
 
                     # Check if the proposed update would result in a non-op, such as if there are no changes between the import and
                     # target record. If this is the case, continue to the next record. There's no changes needed in this case.
@@ -606,62 +677,20 @@ def align_records(map_state):
                     # Return these column names as an array and display them in the output.
                     changed_columns = util.get_changed_columns(pg, column_aggregators, output_map, table, linkage_clauses, record_key_sql, map_state["import_schema"])
                     
-                    # Do the same thing, but this time using the SQL clauses formed from "important" columns.
-                    important_changed_columns = util.get_changed_columns(pg, important_column_aggregators, output_map, table, linkage_clauses, record_key_sql, map_state["import_schema"])
+                    # Here we're forming an update statement and executing it
+                    if len(changed_columns["changed_columns"]) == 0:
+                        print(update_statement)
+                        raise "No changed columns? Why are we forming an update? This is a bug."
 
+                    # Display the before and after values of the columns which are subject to update
+                    util.show_changed_values(pg, changed_columns, output_map, table, linkage_clauses, record_key_sql, map_state["import_schema"])
 
-                    if len(important_changed_columns['changed_columns']) > 0:
-                        # This execution branch leads to the conflict resolution system in VZ
+                    # Using all the information we've gathered, form a single SQL update statement to update the target record.
+                    update_statement = util.form_update_statement(output_map, table, column_assignments, map_state["import_schema"], record_key_sql, linkage_sql, changed_columns)
+                    print(f"Executing update in {output_map[table]} for where " + record_key_sql)
 
-                        if util.is_change_existing(pg, table, source["crash_id"]):
-                            continue
-
-                        print("Important Changed column count: " + str(len(important_changed_columns['changed_columns'])))
-                        print("Important Changed Columns:" + str(important_changed_columns["changed_columns"]))
-
-                        print("Changed column count: " + str(len(changed_columns['changed_columns'])))
-                        print("Changed Columns:" + str(changed_columns["changed_columns"]))
-                        
-                        try:
-                            # this seemingly violates the principal of treating each record source equally, however, this is 
-                            # really only a reflection that we create incomplete temporary records consisting only of a crash record
-                            # and not holding place entities for units, persons, etc.
-                            if table == "crash" and util.has_existing_temporary_record(pg, source["case_id"]):
-                                print("\b🛎: " + str(source["crash_id"]) + " has existing temporary record")
-                                time.sleep(5)
-                                util.remove_existing_temporary_record(pg, source["case_id"])
-                        except:
-                            # Trap the case of a missing case_id key error in the RealDictRow object.
-                            # A RealDictRow, returned by the psycopg2 cursor, is a dictionary-like object,
-                            # but lacks has_key() and other methods.
-                            print("Skipping checking on existing temporary record for " + str(source["crash_id"]))
-                            pass
-                        
-                        # build an comma delimited list of changed columns
-                        all_changed_columns = ", ".join(important_changed_columns["changed_columns"] + changed_columns["changed_columns"])
-
-                        # insert_change_template() is used with minimal changes from previous version of the ETL to better ensure conflict system compatibility
-                        mutation = insert_change_template(new_record_dict=source, differences=all_changed_columns, crash_id=str(source["crash_id"]))
-                        if not dry_run:
-                            print("Making a mutation for " + str(source["crash_id"]))
-                            graphql.make_hasura_request(query=mutation, endpoint=GRAPHQL_ENDPOINT, admin_secret=GRAPHQL_ENDPOINT_KEY)
-                    else:
-                        # This execution branch leads to forming an update statement and executing it
-                        
-                        if len(changed_columns["changed_columns"]) == 0:
-                            print(update_statement)
-                            raise "No changed columns? Why are we forming an update? This is a bug."
-
-                        # Display the before and after values of the columns which are subject to update
-                        util.show_changed_values(pg, changed_columns, output_map, table, linkage_clauses, record_key_sql, map_state["import_schema"])
-
-                        # Using all the information we've gathered, form a single SQL update statement to update the target record.
-                        update_statement = util.form_update_statement(output_map, table, column_assignments, map_state["import_schema"], record_key_sql, linkage_sql, changed_columns)
-                        print(f"Executing update in {output_map[table]} for where " + record_key_sql)
-
-                        # Execute the update statement
-                        util.try_statement(pg, output_map, table, record_key_sql, update_statement, dry_run)
-
+                    # Execute the update statement
+                    util.try_statement(pg, output_map, table, record_key_sql, update_statement, dry_run)
 
                 # target does not exist, we're going to insert
                 else:
@@ -698,7 +727,6 @@ def group_csvs_into_logical_groups(extracted_archives, dry_run):
                 "dry_run": dry_run,
             }
         )
-    print(map_safe_state)
     return map_safe_state
 
 
