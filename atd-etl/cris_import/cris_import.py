@@ -5,6 +5,7 @@ import re
 import time
 import hashlib
 import datetime
+import glob
 import tempfile
 from subprocess import Popen, PIPE
 
@@ -75,7 +76,19 @@ def main():
 
     SFTP_ENDPOINT_SSH_PRIVATE_KEY = secrets["sftp_endpoint_private_key"]
 
-    zip_location = download_archives()
+    local_mode = False
+    if bool(glob.glob('/app/development_extracts/*.zip')):
+        local_mode = True
+
+    zip_location = None
+    if not local_mode: # Production
+        zip_location = download_archives()
+    else: # Development. Put a zip in the development_extracts directory to use it.
+        zip_location = specify_extract_location()
+
+    if not zip_location:
+        return
+
     extracted_archives = unzip_archives(zip_location)
     for archive in extracted_archives:
 
@@ -96,8 +109,9 @@ def main():
             converted_token = convert_to_ldm_lookup_ids(typed_token)
             align_records_token = align_records(converted_token)
             clean_up_import_schema(align_records_token)
-    remove_archives_from_sftp_endpoint(zip_location)
-    upload_csv_files_to_s3(archive)
+    if not local_mode: # We're using a locally provided zip file, so skip these steps
+        remove_archives_from_sftp_endpoint(zip_location)
+        upload_csv_files_to_s3(archive)
 
 
 def get_secrets():
@@ -190,10 +204,18 @@ def get_secrets():
     return onepasswordconnectsdk.load_dict(client, REQUIRED_SECRETS)
 
 
-def specify_extract_location(file):
+def specify_extract_location():
+    zip_files = glob.glob('/app/development_extracts/*.zip')
+    if not zip_files:
+        return False
+
     zip_tmpdir = tempfile.mkdtemp()
-    shutil.copy(file, zip_tmpdir)
+
+    for file_to_copy in zip_files:
+        shutil.copy(file_to_copy, zip_tmpdir)
+
     return zip_tmpdir
+
 
 
 def download_archives():
