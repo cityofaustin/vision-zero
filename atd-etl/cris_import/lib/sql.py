@@ -6,7 +6,7 @@ import pprint
 pp = pprint.PrettyPrinter(indent=4)
 
 # This library is /not/ designed for reuse in other projects. It is designed to increase the
-# readability of the `cris_import.py` prefect flow by pulling logical groups of code out
+# readability of the `cris_import.py` ETL process by pulling logical groups of code out
 # and replacing them with a descriptively named function. The code was reviewed with an
 # eye for getting 100% of the code which forms SQL directly into this file, as code which writes
 # code is universally hard to read and grok. If one considers that each of these functions is called
