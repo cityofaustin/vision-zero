@@ -1,0 +1,16 @@
+global
+  log stdout format raw local0
+
+defaults
+  log global
+  mode tcp
+  timeout connect 5000ms
+  timeout client 50000ms
+  timeout server 50000ms
+
+frontend postgresql_front
+  bind 0.0.0.0:5432
+  default_backend postgresql_back
+
+backend postgresql_back
+  server postgresql_server ${DATABASE_SERVER}:5432

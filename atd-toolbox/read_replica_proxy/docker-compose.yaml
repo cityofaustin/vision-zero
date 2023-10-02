@@ -1,0 +1,11 @@
+version: '3'
+services:
+  haproxy:
+    build: .
+    restart: always
+    ports:
+      - 5432:5432
+    volumes:
+      - ./haproxy.cfg.template:/usr/local/etc/haproxy/haproxy.cfg.template
+    env_file:
+      - env
