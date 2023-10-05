@@ -1,0 +1,3 @@
+table:
+  name: delta_left_right
+  schema: public

@@ -1,0 +1,3 @@
+table:
+  name: cmv_veh_oper
+  schema: public
