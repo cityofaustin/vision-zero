@@ -79,6 +79,7 @@ const Users = () => {
       setUserList(res.data.users);
       setTotalUsers(res.data.total);
     });
+    // eslint-disable-next-line
   }, [token, currentPage, perPage]);
 
   // Handles the copy user emails button click
