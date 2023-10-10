@@ -68,25 +68,20 @@ const Users = () => {
 
   const [userList, setUserList] = useState(null);
   const [totalUsers, setTotalUsers] = useState(null);
-  const [page, setPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(0);
   const [allUsers, setAllUsers] = useState([]);
   const [copyUserEmailsClicked, setCopyUserEmailsClicked] = useState(false);
   const perPage = 50;
 
+  // Sets the user list and the total number of users for the current page
   useEffect(() => {
-    const endpoint = `${process.env.REACT_APP_CR3_API_DOMAIN}/user/list_users?page=${page}&per_page=${perPage}`;
-    axios
-      .get(endpoint, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then(res => {
-        setUserList(res.data.users);
-        setTotalUsers(res.data.total);
-      });
-  }, [token, page, perPage]);
+    getCurrentPageUsers(currentPage, perPage).then(res => {
+      setUserList(res.data.users);
+      setTotalUsers(res.data.total);
+    });
+  }, [token, currentPage, perPage]);
 
+  // Handles the copy user emails button click
   useEffect(() => {
     // if the user clicks the copy users button and we have received user metadata,
     // then query all users
@@ -98,21 +93,28 @@ const Users = () => {
       getAllUsers();
     // once we have all users, copy the emails to the clipboard
     !!allUsers.length && !!copyUserEmailsClicked && getUserEmails();
-  });
+    // eslint-disable-next-line
+  }, [copyUserEmailsClicked, totalUsers, allUsers]);
 
   const pageCount = Math.ceil(totalUsers / perPage);
+
+  // Call the list_users API and return the users for the current page
+  async function getCurrentPageUsers(page, perPage) {
+    const endpoint = `${process.env.REACT_APP_CR3_API_DOMAIN}/user/list_users?page=${page}&per_page=${perPage}`;
+    const res = await axios.get(endpoint, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return res;
+  }
 
   async function getAllUsers() {
     let page = 0;
     let users = [];
     // query every page of users until we have fetched them all
     while (page <= pageCount) {
-      const allUsersEndpoint = `${process.env.REACT_APP_CR3_API_DOMAIN}/user/list_users?page=${page}&per_page=${perPage}`;
-      const res = await axios.get(allUsersEndpoint, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const res = await getCurrentPageUsers(page, perPage);
       res.data.users.forEach(user => {
         // make sure the user is not blocked/inactive, then push to an array
         if (user.status === false || user.status === undefined) {
@@ -140,7 +142,7 @@ const Users = () => {
 
   const updatePage = newPageValue => {
     setUserList(null);
-    setPage(newPageValue);
+    setCurrentPage(newPageValue);
   };
 
   return (
@@ -174,30 +176,30 @@ const Users = () => {
                       className="d-flex justify-content-md-end justify-content-center mr-0"
                     >
                       <Pagination>
-                        <PaginationItem disabled={page <= 0}>
+                        <PaginationItem disabled={currentPage <= 0}>
                           <PaginationLink first onClick={() => updatePage(0)} />
                         </PaginationItem>
-                        <PaginationItem disabled={page <= 0}>
+                        <PaginationItem disabled={currentPage <= 0}>
                           <PaginationLink
                             previous
-                            onClick={() => updatePage(page - 1)}
+                            onClick={() => updatePage(currentPage - 1)}
                           />
                         </PaginationItem>
                         <PaginationItem disabled>
                           <PaginationLink>
-                            Page {page + 1}/{pageCount}
+                            Page {currentPage + 1}/{pageCount}
                           </PaginationLink>
                         </PaginationItem>
                         <PaginationItem disabled>
                           <PaginationLink>Users: {totalUsers}</PaginationLink>
                         </PaginationItem>
-                        <PaginationItem disabled={page >= pageCount - 1}>
+                        <PaginationItem disabled={currentPage >= pageCount - 1}>
                           <PaginationLink
                             next
-                            onClick={() => updatePage(page + 1)}
+                            onClick={() => updatePage(currentPage + 1)}
                           />
                         </PaginationItem>
-                        <PaginationItem disabled={page >= pageCount - 1}>
+                        <PaginationItem disabled={currentPage >= pageCount - 1}>
                           <PaginationLink
                             last
                             onClick={() => updatePage(pageCount - 1)}
