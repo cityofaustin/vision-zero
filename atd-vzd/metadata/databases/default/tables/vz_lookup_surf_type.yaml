@@ -1,0 +1,3 @@
+table:
+  name: surf_type
+  schema: vz_lookup

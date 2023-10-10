@@ -1,0 +1,3 @@
+table:
+  name: pedestrian_action
+  schema: vz_lookup

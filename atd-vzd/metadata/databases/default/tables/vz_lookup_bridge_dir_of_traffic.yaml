@@ -1,0 +1,3 @@
+table:
+  name: bridge_dir_of_traffic
+  schema: vz_lookup

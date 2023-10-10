@@ -1,0 +1,3 @@
+table:
+  name: bridge_loading_type
+  schema: vz_lookup

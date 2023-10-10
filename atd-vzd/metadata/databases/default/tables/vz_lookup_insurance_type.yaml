@@ -1,0 +1,3 @@
+table:
+  name: insurance_type
+  schema: vz_lookup

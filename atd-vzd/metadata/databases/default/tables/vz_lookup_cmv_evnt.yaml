@@ -1,0 +1,3 @@
+table:
+  name: cmv_evnt
+  schema: vz_lookup
