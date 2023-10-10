@@ -1,0 +1,3 @@
+table:
+  name: traffic_cntl
+  schema: cris_lookup
