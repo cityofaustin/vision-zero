@@ -1,0 +1,3 @@
+table:
+  name: road_type
+  schema: vz_lookup

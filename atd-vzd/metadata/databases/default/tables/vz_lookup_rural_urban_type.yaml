@@ -1,0 +1,3 @@
+table:
+  name: rural_urban_type
+  schema: vz_lookup

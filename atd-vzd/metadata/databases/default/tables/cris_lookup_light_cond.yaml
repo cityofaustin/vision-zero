@@ -1,0 +1,3 @@
+table:
+  name: light_cond
+  schema: cris_lookup

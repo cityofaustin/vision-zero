@@ -1,0 +1,3 @@
+table:
+  name: city
+  schema: vz_lookup

@@ -1,0 +1,3 @@
+table:
+  name: street_sfx
+  schema: cris_lookup

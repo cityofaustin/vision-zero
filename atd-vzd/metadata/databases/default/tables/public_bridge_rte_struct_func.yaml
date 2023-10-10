@@ -1,0 +1,3 @@
+table:
+  name: bridge_rte_struct_func
+  schema: public

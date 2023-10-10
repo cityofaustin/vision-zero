@@ -1,0 +1,3 @@
+table:
+  name: curb_type
+  schema: vz_lookup

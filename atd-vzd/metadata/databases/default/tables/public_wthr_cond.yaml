@@ -1,0 +1,3 @@
+table:
+  name: wthr_cond
+  schema: public

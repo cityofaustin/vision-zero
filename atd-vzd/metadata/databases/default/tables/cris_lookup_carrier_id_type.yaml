@@ -1,0 +1,3 @@
+table:
+  name: carrier_id_type
+  schema: cris_lookup

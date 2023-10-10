@@ -1,0 +1,3 @@
+table:
+  name: veh_direction_of_force
+  schema: vz_lookup

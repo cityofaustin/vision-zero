@@ -1,0 +1,3 @@
+table:
+  name: crash_sev
+  schema: cris_lookup
