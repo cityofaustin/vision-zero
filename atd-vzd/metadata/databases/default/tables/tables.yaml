@@ -113,6 +113,7 @@
 - "!include public_airbag.yaml"
 - "!include public_atd_jurisdictions.yaml"
 - "!include public_atd_txdot_crashes.yaml"
+- "!include public_atd_txdot_locations.yaml"
 - "!include public_atd_txdot_person.yaml"
 - "!include public_atd_txdot_primaryperson.yaml"
 - "!include public_atd_txdot_units.yaml"
