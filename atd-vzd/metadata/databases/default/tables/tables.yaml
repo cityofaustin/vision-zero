@@ -179,6 +179,7 @@
 - "!include public_light_cond.yaml"
 - "!include public_median_type.yaml"
 - "!include public_mpo.yaml"
+- "!include public_non_cr3_mainlanes.yaml"
 - "!include public_nsew_dir.yaml"
 - "!include public_obj_struck.yaml"
 - "!include public_occpnt_pos.yaml"
