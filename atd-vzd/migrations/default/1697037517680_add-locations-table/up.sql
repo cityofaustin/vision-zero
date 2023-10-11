@@ -254,22 +254,6 @@ ALTER TABLE public.atd_txdot_locations DISABLE TRIGGER atd_txdot_locations_updat
 
 
 --
--- Name: TABLE atd_txdot_locations; Type: ACL; Schema: public; Owner: vze
---
-
--- GRANT SELECT ON TABLE public.atd_txdot_locations TO herefordf;
--- GRANT SELECT ON TABLE public.atd_txdot_locations TO eichelmannr;
--- GRANT SELECT ON TABLE public.atd_txdot_locations TO henryc;
--- GRANT SELECT ON TABLE public.atd_txdot_locations TO dilleym;
--- GRANT SELECT ON TABLE public.atd_txdot_locations TO apostolx;
--- GRANT SELECT ON TABLE public.atd_txdot_locations TO mcdonnellp;
--- GRANT SELECT ON TABLE public.atd_txdot_locations TO claryj;
--- GRANT SELECT ON TABLE public.atd_txdot_locations TO berryc;
--- GRANT SELECT ON TABLE public.atd_txdot_locations TO whitsont;
--- GRANT SELECT,INSERT,DELETE,UPDATE ON TABLE public.atd_txdot_locations TO staff;
-
-
---
 -- PostgreSQL database dump complete
 --
 
