@@ -111,6 +111,7 @@
 - "!include cris_lookup_yes_no_choice.yaml"
 - "!include public_agency.yaml"
 - "!include public_airbag.yaml"
+- "!include public_atd_apd_blueform.yaml"
 - "!include public_atd_jurisdictions.yaml"
 - "!include public_atd_txdot_crashes.yaml"
 - "!include public_atd_txdot_locations.yaml"
