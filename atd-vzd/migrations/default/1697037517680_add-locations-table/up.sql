@@ -52,7 +52,7 @@ BEGIN
     NEW.last_update = current_timestamp;
     RETURN NEW;
 END;
-$function$
+$function$;
 
 CREATE OR REPLACE FUNCTION public.atd_txdot_locations_updates_crash_locations()
  RETURNS trigger
@@ -65,7 +65,7 @@ BEGIN
 
     RETURN NEW;
 END;
-$function$
+$function$;
 
 --
 -- PostgreSQL database dump
