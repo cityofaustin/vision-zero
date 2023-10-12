@@ -104,18 +104,18 @@ def removeSnapshots(args):
         print ("Removing " + f)
         os.remove("atd-vzd/snapshots/" + f)
 
-# def replicateDb(includeChangeLogData=False):
 def replicateDb(args):
     graphqlEngineDown(args)
 
     # print(tool_runner_command + replicate_command)
     snapshotFilename = ""
+    prefix = "ldm" if args.ldm else "visionzero"
     if(args.filename):
         snapshotFilename = args.filename
     else:
         today = date.today().strftime("%Y-%m-%d")
         snapshotFilename = (
-            "visionzero_" + today + "_" + (
+            prefix + "_" + today + "_" + (
                 "with-change-log" if args.include_change_log_data else "without-change-log") + ".sql"
         )
     
