@@ -109,6 +109,7 @@
 - "!include cris_lookup_wdcode.yaml"
 - "!include cris_lookup_wthr_cond.yaml"
 - "!include cris_lookup_yes_no_choice.yaml"
+- "!include public_afd__incidents.yaml"
 - "!include public_agency.yaml"
 - "!include public_airbag.yaml"
 - "!include public_atd_apd_blueform.yaml"
