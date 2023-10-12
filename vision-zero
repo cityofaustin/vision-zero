@@ -42,10 +42,27 @@ def checkDockerComposeAvailability():
         exit()
 
 def exportEnvVars(args):
+    export_env_var_command = []
+
     if(args.ldm):
         print("ldm")
+        export_env_var_command = [
+            "export",
+            "TARGET_HOSTNAME=" + os.environ["LDM_HOSTNAME"],
+            "TARGET_DATABASE=" + os.environ["LDM_DATABASE"],
+            "TARGET_USERNAME=" + os.environ["LDM_USERNAME"],
+            "TARGET_PASSWORD=" + os.environ["LDM_PASSWORD"],
+        ]
     else:
-        print("not ldm")
+        export_env_var_command = [
+            "export",
+            "TARGET_HOSTNAME=" + os.environ["RR_HOSTNAME"],
+            "TARGET_DATABASE=" + os.environ["RR_DATABASE"],
+            "TARGET_USERNAME=" + os.environ["RR_USERNAME"],
+            "TARGET_PASSWORD=" + os.environ["RR_PASSWORD"],
+        ]
+
+    subprocess.run(export_env_var_command)
 
 
 def doCommand(args):
@@ -121,10 +138,10 @@ def replicateDb(args):
         "docker-compose-ram-disk.yml" if args.ram_disk else "docker-compose-docker-volume.yml",
         "run",
         "--rm",
-        "-e", "PGHOST=" + os.environ["RR_HOSTNAME"],
-        "-e", "PGDATABASE=" + os.environ["RR_DATABASE"],
-        "-e", "PGUSER=" + os.environ["RR_USERNAME"],
-        "-e", "PGPASSWORD=" + os.environ["RR_PASSWORD"],
+        "-e", "PGHOST=" + os.environ["TARGET_HOSTNAME"],
+        "-e", "PGDATABASE=" + os.environ["TARGET_DATABASE"],
+        "-e", "PGUSER=" + os.environ["TARGET_USERNAME"],
+        "-e", "PGPASSWORD=" + os.environ["TARGET_PASSWORD"],
         "db-tools",
     ]
 
