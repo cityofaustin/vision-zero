@@ -41,6 +41,12 @@ def checkDockerComposeAvailability():
         print("Neither `docker-compose` nor `docker compose` is available.")
         exit()
 
+def exportEnvVars(args):
+    if(args.ldm):
+        print("ldm")
+    else:
+        print("not ldm")
+
 
 def doCommand(args):
     if args.command == "build":
@@ -402,11 +408,15 @@ def get_main_parser():
         ],
     )
     parser.add_argument("-f", "--filename", required=False)
+    parser.add_argument("-l", "--ldm", action="store_true")
     return parser
 
 
 if __name__ == "__main__":
     parser = get_main_parser()
     args = parser.parse_args()
-    docker_compose_invocation = checkDockerComposeAvailability() # global .. 👎
-    doCommand(args)
+
+    exportEnvVars(args)
+
+    # docker_compose_invocation = checkDockerComposeAvailability() # global .. 👎
+    # doCommand(args)
