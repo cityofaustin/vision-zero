@@ -42,27 +42,17 @@ def checkDockerComposeAvailability():
         exit()
 
 def exportEnvVars(args):
-    export_env_var_command = []
-
     if(args.ldm):
         print("ldm")
-        export_env_var_command = [
-            "export",
-            "TARGET_HOSTNAME=" + os.environ["LDM_HOSTNAME"],
-            "TARGET_DATABASE=" + os.environ["LDM_DATABASE"],
-            "TARGET_USERNAME=" + os.environ["LDM_USERNAME"],
-            "TARGET_PASSWORD=" + os.environ["LDM_PASSWORD"],
-        ]
+        os.environ["TARGET_HOSTNAME"] = os.environ["LDM_HOSTNAME"]
+        os.environ["TARGET_DATABASE"] = os.environ["LDM_DATABASE"]
+        os.environ["TARGET_USERNAME"] = os.environ["LDM_USERNAME"]
+        os.environ["TARGET_PASSWORD"] = os.environ["LDM_PASSWORD"]
     else:
-        export_env_var_command = [
-            "export",
-            "TARGET_HOSTNAME=" + os.environ["RR_HOSTNAME"],
-            "TARGET_DATABASE=" + os.environ["RR_DATABASE"],
-            "TARGET_USERNAME=" + os.environ["RR_USERNAME"],
-            "TARGET_PASSWORD=" + os.environ["RR_PASSWORD"],
-        ]
-
-    subprocess.run(export_env_var_command)
+        os.environ["TARGET_HOSTNAME"] = os.environ["RR_HOSTNAME"]
+        os.environ["TARGET_DATABASE"] = os.environ["RR_DATABASE"]
+        os.environ["TARGET_USERNAME"] = os.environ["RR_USERNAME"]
+        os.environ["TARGET_PASSWORD"] = os.environ["RR_PASSWORD"]
 
 
 def doCommand(args):
