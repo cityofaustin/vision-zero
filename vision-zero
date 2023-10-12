@@ -41,9 +41,8 @@ def checkDockerComposeAvailability():
         print("Neither `docker-compose` nor `docker compose` is available.")
         exit()
 
-def exportEnvVars(args):
+def setEnvVars(args):
     if(args.ldm):
-        print("ldm")
         os.environ["TARGET_HOSTNAME"] = os.environ["LDM_HOSTNAME"]
         os.environ["TARGET_DATABASE"] = os.environ["LDM_DATABASE"]
         os.environ["TARGET_USERNAME"] = os.environ["LDM_USERNAME"]
@@ -423,7 +422,7 @@ if __name__ == "__main__":
     parser = get_main_parser()
     args = parser.parse_args()
 
-    exportEnvVars(args)
+    setEnvVars(args)
 
-    # docker_compose_invocation = checkDockerComposeAvailability() # global .. 👎
-    # doCommand(args)
+    docker_compose_invocation = checkDockerComposeAvailability() # global .. 👎
+    doCommand(args)
