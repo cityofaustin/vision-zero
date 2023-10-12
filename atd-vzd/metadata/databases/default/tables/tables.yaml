@@ -155,6 +155,7 @@
 - "!include public_drvr_lic_type.yaml"
 - "!include public_e_scooter.yaml"
 - "!include public_ejct.yaml"
+- "!include public_ems__incidents.yaml"
 - "!include public_entr_road.yaml"
 - "!include public_func_sys.yaml"
 - "!include public_geography_columns.yaml"
