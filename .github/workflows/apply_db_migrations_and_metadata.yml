@@ -6,12 +6,16 @@ name: "Applies the migrations to the database"
 on:
   push:
     branches:
-      - main
+      - master
       - production
     paths:
       - "atd-vzd/**"
       - ".github/workflows/apply_db_migrations_and_metadata.yml" 
       - ".github/workflows/migration-helper.sh"
+    workflow_dispatch:
+      inputs:
+        description:
+          default: ""
 
 jobs:
   apply:
