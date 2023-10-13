@@ -19,6 +19,7 @@ import {
   faMotorcycle,
   faHeartbeat,
   faMedkit,
+  faMobileAlt,
   faEllipsisH,
   faCheckSquare,
 } from "@fortawesome/free-solid-svg-icons";
@@ -225,6 +226,15 @@ const SideMapControl = ({ type }) => {
           operator: `OR`,
           default: true,
         },
+        scooter: {
+          text: "E-Scooter Rider",
+          icon: faMobileAlt,
+          fatalSyntax: `micromobility_death_count > 0`,
+          injurySyntax: `micromobility_serious_injury_count > 0`,
+          type: `where`,
+          operator: `OR`,
+          default: true,
+        },
         other: {
           icon: faEllipsisH,
           fatalSyntax: `other_death_count > 0`,
@@ -413,7 +423,7 @@ const SideMapControl = ({ type }) => {
                               color={parameter.iconColor && parameter.iconColor}
                             />
                           )}
-                          {title}
+                          {parameter.text ?? title}
                         </Button>
                       </Col>
                     );
