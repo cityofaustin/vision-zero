@@ -33,8 +33,6 @@ function export_hasura_env_vars() {
 function run_migration() {
   echo "----- MIGRATIONS STARTED -----";
   hasura --skip-update-check version;
-  echo $WORKING_STAGE;
-  echo $HASURA_GRAPHQL_ENDPOINT;
 
   echo "Applying migration";
   hasura migrate apply \
