@@ -24,7 +24,7 @@ function export_hasura_env_vars() {
     jq -r ".\"${WORKING_STAGE}\".aws_environment_variables.HASURA_ADMIN_SECRET")
     
     # Remove /v1/graphql from the end of the graphql endpoint for Hasura CLI commands
-    export HASURA_GRAPHQL_ENDPOINT=$(basename "${HASURA_ENDPOINT%/v1/graphql}")
+    export HASURA_GRAPHQL_ENDPOINT=${HASURA_GRAPHQL_ENDPOINT%/v1/graphql}
 }
 
 #
