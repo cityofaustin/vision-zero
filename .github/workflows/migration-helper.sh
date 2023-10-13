@@ -33,10 +33,17 @@ function export_hasura_env_vars() {
 function run_migration() {
   echo "----- MIGRATIONS STARTED -----";
   hasura --skip-update-check version;
+
   echo "Applying migration";
-  hasura --skip-update-check --disable-interactive --database-name default migrate apply;
+  hasura --skip-update-check --disable-interactive --database-name default migrate apply \
+  --admin-secret $HASURA_GRAPHQL_ADMIN_SECRET \
+  --endpoint $HASURA_GRAPHQL_ENDPOINT;
+  
   echo "Applying metadata";
-  hasura --skip-update-check metadata apply;
+  hasura --skip-update-check metadata apply \
+  --admin-secret $HASURA_GRAPHQL_ADMIN_SECRET \
+  --endpoint $HASURA_GRAPHQL_ENDPOINT;
+  
   echo "----- MIGRATIONS FINISHED -----";
 }
 
