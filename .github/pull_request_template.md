@@ -8,6 +8,6 @@
 
 ---
 #### Ship list
-- [ ] Run migration steps in readme in /atd-vzd/ if needed
+- [ ] Check migrations for any conflicts with latest migrations in master branch
 - [ ] Code reviewed
 - [ ] Product manager approved
