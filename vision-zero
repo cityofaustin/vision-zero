@@ -41,6 +41,18 @@ def checkDockerComposeAvailability():
         print("Neither `docker-compose` nor `docker compose` is available.")
         exit()
 
+def setEnvVars(args):
+    if(args.ldm):
+        os.environ["TARGET_HOSTNAME"] = os.environ["LDM_HOSTNAME"]
+        os.environ["TARGET_DATABASE"] = os.environ["LDM_DATABASE"]
+        os.environ["TARGET_USERNAME"] = os.environ["LDM_USERNAME"]
+        os.environ["TARGET_PASSWORD"] = os.environ["LDM_PASSWORD"]
+    else:
+        os.environ["TARGET_HOSTNAME"] = os.environ["RR_HOSTNAME"]
+        os.environ["TARGET_DATABASE"] = os.environ["RR_DATABASE"]
+        os.environ["TARGET_USERNAME"] = os.environ["RR_USERNAME"]
+        os.environ["TARGET_PASSWORD"] = os.environ["RR_PASSWORD"]
+
 
 def doCommand(args):
     if args.command == "build":
@@ -91,18 +103,18 @@ def removeSnapshots(args):
         print ("Removing " + f)
         os.remove("atd-vzd/snapshots/" + f)
 
-# def replicateDb(includeChangeLogData=False):
 def replicateDb(args):
     graphqlEngineDown(args)
 
     # print(tool_runner_command + replicate_command)
     snapshotFilename = ""
+    prefix = "ldm" if args.ldm else "visionzero"
     if(args.filename):
         snapshotFilename = args.filename
     else:
         today = date.today().strftime("%Y-%m-%d")
         snapshotFilename = (
-            "visionzero_" + today + "_" + (
+            prefix + "_" + today + "_" + (
                 "with-change-log" if args.include_change_log_data else "without-change-log") + ".sql"
         )
     
@@ -115,10 +127,10 @@ def replicateDb(args):
         "docker-compose-ram-disk.yml" if args.ram_disk else "docker-compose-docker-volume.yml",
         "run",
         "--rm",
-        "-e", "PGHOST=" + os.environ["RR_HOSTNAME"],
-        "-e", "PGDATABASE=" + os.environ["RR_DATABASE"],
-        "-e", "PGUSER=" + os.environ["RR_USERNAME"],
-        "-e", "PGPASSWORD=" + os.environ["RR_PASSWORD"],
+        "-e", "PGHOST=" + os.environ["TARGET_HOSTNAME"],
+        "-e", "PGDATABASE=" + os.environ["TARGET_DATABASE"],
+        "-e", "PGUSER=" + os.environ["TARGET_USERNAME"],
+        "-e", "PGPASSWORD=" + os.environ["TARGET_PASSWORD"],
         "db-tools",
     ]
 
@@ -402,11 +414,15 @@ def get_main_parser():
         ],
     )
     parser.add_argument("-f", "--filename", required=False)
+    parser.add_argument("-l", "--ldm", action="store_true")
     return parser
 
 
 if __name__ == "__main__":
     parser = get_main_parser()
     args = parser.parse_args()
+
+    setEnvVars(args)
+
     docker_compose_invocation = checkDockerComposeAvailability() # global .. 👎
     doCommand(args)

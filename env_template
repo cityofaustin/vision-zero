@@ -7,8 +7,14 @@ POSTGRES_DB="atd_vz_data"
 POSTGRES_HOST_AUTH_METHOD="trust"
 PGDATA="/var/lib/postgresql/data/pgdata"
 
-# developer's personal credentials to VZ read reaplica
+# developer's personal credentials to production VZ read reaplica
 RR_USERNAME=""
 RR_PASSWORD=""
 RR_HOSTNAME=""
 RR_DATABASE=""
+
+# credentials to LDM Staging database
+LDM_USERNAME=""
+LDM_PASSWORD=""
+LDM_HOSTNAME=""
+LDM_DATABASE=""
