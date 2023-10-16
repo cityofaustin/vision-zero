@@ -175,6 +175,7 @@
 - "!include public_intrsct_relat.yaml"
 - "!include public_inv_notify_meth.yaml"
 - "!include public_light_cond.yaml"
+- "!include public_location_notes.yaml"
 - "!include public_median_type.yaml"
 - "!include public_mpo.yaml"
 - "!include public_nsew_dir.yaml"
