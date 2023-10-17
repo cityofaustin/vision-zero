@@ -13,7 +13,7 @@ BEGIN
       select locations.location_id
       from ems__incidents incidents
       join atd_txdot_locations locations on (locations.location_group = 1 and incidents.geometry && locations.shape and ST_Contains(locations.shape, incidents.geometry))
-      where incidents.id = new.id),
+      where incidents.id = new.id limit 1),
     latitude = ST_Y(ems__incidents.geometry),
     longitude = ST_X(ems__incidents.geometry),
     apd_incident_number_1 = ems__incidents.apd_incident_numbers[1],
