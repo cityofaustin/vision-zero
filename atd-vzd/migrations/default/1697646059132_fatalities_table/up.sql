@@ -102,16 +102,16 @@ ALTER TABLE ONLY public.fatalities
 -- Name: fatalities fatalities_person_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: vze
 --
 
---ALTER TABLE ONLY public.fatalities
---    ADD CONSTRAINT fatalities_person_id_fkey FOREIGN KEY (person_id) REFERENCES public.atd_txdot_person(person_id) ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE ONLY public.fatalities
+    ADD CONSTRAINT fatalities_person_id_fkey FOREIGN KEY (person_id) REFERENCES vz_facts.atd_txdot_person(person_id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
 -- Name: fatalities fatalities_primaryperson_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: vze
 --
 
---ALTER TABLE ONLY public.fatalities
---    ADD CONSTRAINT fatalities_primaryperson_id_fkey FOREIGN KEY (primaryperson_id) REFERENCES public.atd_txdot_primaryperson(primaryperson_id) ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE ONLY public.fatalities
+    ADD CONSTRAINT fatalities_primaryperson_id_fkey FOREIGN KEY (primaryperson_id) REFERENCES vz_facts.atd_txdot_primaryperson(primaryperson_id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
