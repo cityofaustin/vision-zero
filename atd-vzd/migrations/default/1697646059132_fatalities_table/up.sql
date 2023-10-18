@@ -94,8 +94,8 @@ ALTER TABLE ONLY public.fatalities
 -- Name: fatalities fatalities_crash_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: vze
 --
 
---ALTER TABLE ONLY public.fatalities
---    ADD CONSTRAINT fatalities_crash_id_fkey FOREIGN KEY (crash_id) REFERENCES public.atd_txdot_crashes(crash_id) ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE ONLY public.fatalities
+    ADD CONSTRAINT fatalities_crash_id_fkey FOREIGN KEY (crash_id) REFERENCES vz_facts.atd_txdot_crashes(crash_id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
