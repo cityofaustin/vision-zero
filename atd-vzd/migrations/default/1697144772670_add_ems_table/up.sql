@@ -376,7 +376,7 @@ COMMENT ON COLUMN public.ems__incidents.pcr_patient_acuity_final IS 'Final patie
 -- Name: COLUMN ems__incidents.apd_incident_numbers; Type: COMMENT; Schema: public; Owner: vze
 --
 
-COMMENT ON COLUMN public.ems__incidents.apd_incident_numbers IS 'A comma delimitted list of incident numbers for APD incidents that are linked to the EMS incident. This field can be used to determin if there is an associated APD incident.';
+COMMENT ON COLUMN public.ems__incidents.apd_incident_numbers IS 'A comma delimitted list of incident numbers for APD incidents that are linked to the EMS incident. This field can be used to determine if there is an associated APD incident.';
 
 
 --
