@@ -26,8 +26,8 @@ SET default_table_access_method = heap;
 
 CREATE TABLE public.atd__mode_category_lkp (
     id integer NOT NULL,
-    atd_atd__mode_category_lkp_mode_name character varying(128),
-    atd_atd__mode_category_lkp_desc character varying(128)
+    atd_mode_category_mode_name character varying(128),
+    atd_mode_category_desc character varying(128)
 );
 
 

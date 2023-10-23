@@ -59,12 +59,12 @@ BEGIN
                     unkn_injry_cnt,
                     tot_injry_cnt
 
-                FROM atd_txdot_units AS atu
-                    LEFT JOIN vz_lookup.veh_unit_desc AS vdesc ON vdesc.veh_unit_desc_id = atu.unit_desc_id
-                    LEFT JOIN vz_lookup.veh_body_styl AS vbody ON vbody.veh_body_styl_id = atu.veh_body_styl_id
+                FROM public.atd_txdot_units AS atu
+                    LEFT JOIN public.veh_unit_desc AS vdesc ON vdesc.id = atu.unit_desc_id
+                    LEFT JOIN public.veh_body_styl AS vbody ON vbody.id = atu.veh_body_styl_id
                 WHERE crash_id = input_crash_id
         ) AS vmode
-        LEFT JOIN atd__mode_category_lkp AS mode ON mode.id = vmode.mode_id
+        LEFT JOIN public.atd__mode_category_lkp AS mode ON mode.id = vmode.mode_id
     ) AS result;
     RETURN totals;
 END; $function$
