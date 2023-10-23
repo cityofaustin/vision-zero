@@ -1,0 +1,3 @@
+table:
+  name: bridge_detail
+  schema: vz_lookup

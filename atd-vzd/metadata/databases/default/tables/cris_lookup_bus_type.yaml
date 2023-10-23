@@ -1,0 +1,3 @@
+table:
+  name: bus_type
+  schema: cris_lookup

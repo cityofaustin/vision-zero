@@ -1,0 +1,3 @@
+table:
+  name: pop_group
+  schema: public

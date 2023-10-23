@@ -1,0 +1,3 @@
+table:
+  name: bridge_median
+  schema: vz_lookup

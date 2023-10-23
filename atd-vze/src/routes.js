@@ -147,7 +147,12 @@ const routes = roles => [
   { path: "/dev/widgets", name: "Widgets", component: Widgets },
   { path: "/dev/charts", name: "Charts", component: Charts },
   { path: "/profile", name: "Profile", component: Profile },
-  { path: "/dashboard", name: "Dashboard", component: VZDashboard },
+  {
+    path: "/dashboard",
+    exact: true,
+    name: "Dashboard",
+    component: VZDashboard,
+  },
   { path: "/locations", exact: true, name: "Locations", component: Locations },
   {
     path: "/locations/:id",

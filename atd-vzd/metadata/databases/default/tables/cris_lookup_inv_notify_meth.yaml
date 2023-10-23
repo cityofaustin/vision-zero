@@ -1,0 +1,3 @@
+table:
+  name: inv_notify_meth
+  schema: cris_lookup

@@ -1,0 +1,3 @@
+table:
+  name: rpt_autonomous_unit
+  schema: cris_lookup

@@ -1,0 +1,3 @@
+table:
+  name: insurance_proof
+  schema: public

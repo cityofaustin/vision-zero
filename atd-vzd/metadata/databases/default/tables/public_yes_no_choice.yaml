@@ -1,0 +1,3 @@
+table:
+  name: yes_no_choice
+  schema: public

@@ -1,0 +1,3 @@
+table:
+  name: cmv_road_acc
+  schema: public
