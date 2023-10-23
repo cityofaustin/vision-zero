@@ -10,3 +10,7 @@ BEGIN
     RETURN NEW;
 END;
 $function$;
+
+CREATE TRIGGER units_travel_direction 
+BEFORE INSERT ON vz_facts.atd_txdot_units 
+FOR EACH ROW EXECUTE FUNCTION public.units_travel_direction();

@@ -8,3 +8,8 @@ AS $function$
         RETURN NEW;
     END;
 $function$;
+
+CREATE TRIGGER units_mode_category_metadata 
+AFTER UPDATE ON vz_facts.atd_txdot_units FOR EACH ROW 
+WHEN ((old.atd_mode_category IS DISTINCT FROM new.atd_mode_category)) 
+EXECUTE FUNCTION public.units_mode_category_metadata();

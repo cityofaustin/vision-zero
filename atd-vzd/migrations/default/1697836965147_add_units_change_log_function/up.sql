@@ -9,3 +9,7 @@ BEGIN
    RETURN NEW;
 END;
 $function$;
+
+CREATE TRIGGER units_change_log_insert 
+BEFORE UPDATE ON vz_facts.atd_txdot_units 
+FOR EACH ROW EXECUTE FUNCTION public.units_change_log_insert();

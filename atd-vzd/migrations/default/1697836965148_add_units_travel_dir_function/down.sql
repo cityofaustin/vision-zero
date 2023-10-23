@@ -1,1 +1,3 @@
-DROP FUNCTION IF EXISTS public.units_travel_direction()
+DROP FUNCTION IF EXISTS public.units_travel_direction();
+
+DROP TRIGGER IF EXISTS units_travel_direction ON vz_facts.atd_txdot_units;
