@@ -4,8 +4,8 @@ CREATE OR REPLACE FUNCTION public.units_travel_direction()
 AS $function$
 BEGIN
 
-  NEW.travel_direction = NEW.veh_trvl_dir_id;
- 	NEW.movement_id = 0;
+  NEW.travel_direction = (SELECT veh_trvl_dir_id FROM cris_facts.atd_txdot_units WHERE unit_nbr = NEW.unit_nbr AND crash_id = NEW.crash_id);
+  NEW.movement_id = 0;
 
     RETURN NEW;
 END;
