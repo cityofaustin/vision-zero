@@ -95,7 +95,7 @@ ALTER TABLE ONLY public.fatalities
 --
 
 ALTER TABLE ONLY public.fatalities
-    ADD CONSTRAINT fatalities_crash_id_fkey FOREIGN KEY (crash_id) REFERENCES vz_facts.atd_txdot_crashes(crash_id) ON UPDATE CASCADE ON DELETE CASCADE;
+    ADD CONSTRAINT fatalities_crash_id_fkey FOREIGN KEY (crash_id) REFERENCES cris_facts.atd_txdot_crashes(crash_id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -103,7 +103,7 @@ ALTER TABLE ONLY public.fatalities
 --
 
 ALTER TABLE ONLY public.fatalities
-    ADD CONSTRAINT fatalities_person_id_fkey FOREIGN KEY (person_id) REFERENCES vz_facts.atd_txdot_person(person_id) ON UPDATE CASCADE ON DELETE CASCADE;
+    ADD CONSTRAINT fatalities_person_id_fkey FOREIGN KEY (person_id) REFERENCES cris_facts.atd_txdot_person(person_id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -111,7 +111,7 @@ ALTER TABLE ONLY public.fatalities
 --
 
 ALTER TABLE ONLY public.fatalities
-    ADD CONSTRAINT fatalities_primaryperson_id_fkey FOREIGN KEY (primaryperson_id) REFERENCES vz_facts.atd_txdot_primaryperson(primaryperson_id) ON UPDATE CASCADE ON DELETE CASCADE;
+    ADD CONSTRAINT fatalities_primaryperson_id_fkey FOREIGN KEY (primaryperson_id) REFERENCES cris_facts.atd_txdot_primaryperson(primaryperson_id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
