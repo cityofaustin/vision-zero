@@ -9,6 +9,7 @@ AS $function$
     END;
 $function$;
 
+-- Update the crash mode category metadata when a unit's mode category changes
 CREATE TRIGGER units_mode_category_metadata 
 AFTER UPDATE ON vz_facts.atd_txdot_units FOR EACH ROW 
 WHEN ((old.atd_mode_category IS DISTINCT FROM new.atd_mode_category)) 
