@@ -3,8 +3,12 @@ CREATE OR REPLACE FUNCTION public.units_travel_direction()
  LANGUAGE plpgsql
 AS $function$
 BEGIN
-
-  NEW.travel_direction = (SELECT veh_trvl_dir_id FROM cris_facts.atd_txdot_units WHERE unit_nbr = NEW.unit_nbr AND crash_id = NEW.crash_id);
+  -- Copy travel direction from the value cris_facts table
+  -- See https://github.com/cityofaustin/atd-data-tech/issues/2328
+  NEW.travel_direction = (SELECT veh_trvl_dir_id 
+                         FROM cris_facts.atd_txdot_units 
+                         WHERE unit_nbr = NEW.unit_nbr 
+                         AND crash_id = NEW.crash_id);
   NEW.movement_id = 0;
 
     RETURN NEW;
