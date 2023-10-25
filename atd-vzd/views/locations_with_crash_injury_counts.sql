@@ -33,10 +33,11 @@ create or replace view locations_with_crash_injury_counts as
     -- use the two sets of crashes above to build up a set of locations with crash counts and injury counts.
     select  -- think of this as step 2 of the query
       cris_crashes.location_id,
-      cris_crashes.crash_count + apd_crashes.crash_count as crash_count,
-      cris_crashes.total_est_comp_cost + (10000 * apd_crashes.crash_count) as total_est_comp_cost,
-      cris_crashes.fatality_count + apd_crashes.fatality_count as fatalities_count,
-      cris_crashes.suspected_serious_injury_count + apd_crashes.suspected_serious_injury_count as serious_injury_count
+           SELECT cris_crashes.location_id,
+            coalesce(cris_crashes.crash_count, 0) + coalesce(apd_crashes.crash_count, 0) AS crash_count,
+            coalesce(cris_crashes.total_est_comp_cost, 0) + (10000 * coalesce(apd_crashes.crash_count, 0))::numeric AS total_est_comp_cost,
+            coalesce(cris_crashes.fatality_count, 0) + coalesce(apd_crashes.fatality_count, 0) AS fatalities_count,
+            coalesce(cris_crashes.suspected_serious_injury_count, 0) + coalesce(apd_crashes.suspected_serious_injury_count, 0) AS serious_injury_count
     from cris_crashes
     -- this unions the sets, over location_id, such that a location is represented if it has either/or/and a cris and blueform crash(s).
     full outer join apd_crashes
