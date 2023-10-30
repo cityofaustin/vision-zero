@@ -2,8 +2,6 @@ CREATE OR REPLACE FUNCTION public.fatality_insert()
  RETURNS trigger
  LANGUAGE plpgsql
 AS $function$
---DECLARE
---ldm_person_id INTEGER;
     BEGIN
     	IF (TG_TABLE_NAME = 'atd_txdot_primaryperson') THEN
     	    INSERT INTO fatalities (crash_id, primaryperson_id)
