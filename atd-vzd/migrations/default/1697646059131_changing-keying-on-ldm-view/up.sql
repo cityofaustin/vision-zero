@@ -1,3 +1,5 @@
+drop view if exists public.atd_txdot_person;
+
 CREATE OR REPLACE VIEW public.atd_txdot_person
 AS SELECT cris_atd_txdot_person.crash_id,
     COALESCE(vz_atd_txdot_person.unit_nbr, cris_atd_txdot_person.unit_nbr) AS unit_nbr,
@@ -40,9 +42,11 @@ AS SELECT cris_atd_txdot_person.crash_id,
             ELSE COALESCE(vz_atd_txdot_person.last_update, cris_atd_txdot_person.last_update)
         END AS last_update,
     COALESCE(vz_atd_txdot_person.updated_by, cris_atd_txdot_person.updated_by) AS updated_by,
-    COALESCE(vz_atd_txdot_person.person_id, cris_atd_txdot_person.person_id) AS person_id,
+    --COALESCE(vz_atd_txdot_person.person_id, cris_atd_txdot_person.person_id) AS person_id,
     COALESCE(vz_atd_txdot_person.is_retired, cris_atd_txdot_person.is_retired) AS is_retired,
-    COALESCE(vz_atd_txdot_person.years_of_life_lost, cris_atd_txdot_person.years_of_life_lost) AS years_of_life_lost
+    COALESCE(vz_atd_txdot_person.years_of_life_lost, cris_atd_txdot_person.years_of_life_lost) AS years_of_life_lost,
+    vz_atd_txdot_person.person_id as vz_person_id,
+    cris_atd_txdot_person.person_id as cris_person_id
    FROM vz_facts.atd_txdot_person vz_atd_txdot_person
      JOIN cris_facts.atd_txdot_person cris_atd_txdot_person ON 
        vz_atd_txdot_person.crash_id = cris_atd_txdot_person.crash_id AND 
