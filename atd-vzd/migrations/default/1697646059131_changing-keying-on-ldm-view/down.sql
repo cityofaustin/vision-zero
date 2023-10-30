@@ -1,4 +1,4 @@
--- public.atd_txdot_person source
+drop view if exists public.atd_txdot_person;
 
 CREATE OR REPLACE VIEW public.atd_txdot_person
 AS SELECT atd_txdot_person_1.crash_id,
