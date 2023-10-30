@@ -1,1 +1,1 @@
-DROP TRIGGER atd_txdot_person_audit_log ON public.atd_txdot_person;
+DROP TRIGGER atd_txdot_person_audit_log ON cris_facts.atd_txdot_person;
