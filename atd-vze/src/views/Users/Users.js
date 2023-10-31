@@ -33,6 +33,7 @@ async function getCurrentPageUsers(page, perPage, token) {
   return res;
 }
 
+// Fetch an array of all the users
 async function getAllUsers(pageCount, perPage, totalUsers, setAllUsers, token) {
   let page = 0;
   let users = [];
@@ -50,8 +51,51 @@ async function getAllUsers(pageCount, perPage, totalUsers, setAllUsers, token) {
   // once we have fetched all users, update the users array in state
   if (users.length === totalUsers) {
     setAllUsers(users);
+    return users;
   }
 }
+
+// Handles the copy user emails button click
+async function handleCopyUserEmails(
+  allUsers,
+  totalUsers,
+  pageCount,
+  perPage,
+  setAllUsers,
+  token,
+  setIsFetchingAllUsers
+) {
+  let userArray = [];
+  // Only do this if the user hasn't already fetched data. if they have, skip this step
+  // and copy what is in state to the clipboard
+  if (allUsers?.length !== totalUsers) {
+    setIsFetchingAllUsers(true);
+    userArray = await getAllUsers(
+      pageCount,
+      perPage,
+      totalUsers,
+      setAllUsers,
+      token
+    );
+    // once we have all users, copy the emails to the clipboard using local variable
+    getUserEmails(userArray, setIsFetchingAllUsers);
+  } else {
+    // use state if we already have fetched the data before
+    getUserEmails(allUsers, setIsFetchingAllUsers);
+  }
+}
+
+// Copy all user emails to the clipboard
+const getUserEmails = (userArray, setIsFetchingAllUsers) => {
+  let userEmails = "";
+  userArray.forEach(user => {
+    userEmails += `${user.email}; `;
+  });
+  // timeout determines how long the status popover displays
+  const popOverTime = 2000;
+  setTimeout(() => setIsFetchingAllUsers(false), popOverTime);
+  return navigator.clipboard.writeText(userEmails);
+};
 
 const UserRow = ({ user }) => {
   const userLink = `/users/${user.user_id}`;
@@ -113,30 +157,7 @@ const Users = () => {
     // eslint-disable-next-line
   }, [token, currentPage, perPage]);
 
-  // Handles the copy user emails button click
-  async function handleCopyUserEmails() {
-    // only do this if the user hasn't already fetched data. if they have, skip this step
-    // and copy what is in state to the clipboard
-    if (allUsers?.length !== totalUsers) {
-      setIsFetchingAllUsers(true);
-      await getAllUsers(pageCount, perPage, totalUsers, setAllUsers, token);
-    }
-    // once we have all users, copy the emails to the clipboard
-    !!allUsers.length && !!isFetchingAllUsers && getUserEmails();
-  }
-
   const pageCount = Math.ceil(totalUsers / perPage);
-
-  const getUserEmails = () => {
-    let userEmails = "";
-    allUsers.forEach(user => {
-      userEmails += `${user.email}; `;
-    });
-    // timeout determines how long the status popover displays
-    const popOverTime = 2000;
-    setTimeout(() => setIsFetchingAllUsers(false), popOverTime);
-    return navigator.clipboard.writeText(userEmails);
-  };
 
   const updatePage = newPageValue => {
     setUserList(null);
@@ -220,7 +241,17 @@ const Users = () => {
                             <Button
                               disabled={!totalUsers}
                               color="primary"
-                              onClick={() => handleCopyUserEmails()}
+                              onClick={() =>
+                                handleCopyUserEmails(
+                                  allUsers,
+                                  totalUsers,
+                                  pageCount,
+                                  perPage,
+                                  setAllUsers,
+                                  token,
+                                  setIsFetchingAllUsers
+                                )
+                              }
                             >
                               <i className="fa fa-copy"></i> Copy user emails
                             </Button>
