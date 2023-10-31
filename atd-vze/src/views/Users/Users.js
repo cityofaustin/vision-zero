@@ -22,6 +22,37 @@ import Can from "../../auth/Can";
 import { useAuth0 } from "../../auth/authContext";
 import { rules } from "../../auth/rbac-rules";
 
+// Call the list_users API and return the users for the current page
+async function getCurrentPageUsers(page, perPage, token) {
+  const endpoint = `${process.env.REACT_APP_CR3_API_DOMAIN}/user/list_users?page=${page}&per_page=${perPage}`;
+  const res = await axios.get(endpoint, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return res;
+}
+
+async function getAllUsers(pageCount, perPage, totalUsers, setAllUsers, token) {
+  let page = 0;
+  let users = [];
+  // query every page of users until we have fetched them all
+  while (page <= pageCount) {
+    const res = await getCurrentPageUsers(page, perPage, token);
+    res.data.users.forEach(user => {
+      // make sure the user is not blocked/inactive, then push to an array
+      if (user.status === false || user.status === undefined) {
+        users.push(user);
+      }
+    });
+    page++;
+  }
+  // once we have fetched all users, update the users array in state
+  if (users.length === totalUsers) {
+    setAllUsers(users);
+  }
+}
+
 const UserRow = ({ user }) => {
   const userLink = `/users/${user.user_id}`;
 
@@ -70,12 +101,12 @@ const Users = () => {
   const [totalUsers, setTotalUsers] = useState(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [allUsers, setAllUsers] = useState([]);
-  const [copyUserEmailsClicked, setCopyUserEmailsClicked] = useState(false);
+  const [isFetchingAllUsers, setIsFetchingAllUsers] = useState(false);
   const perPage = 50;
 
-  // Sets the user list and the total number of users for the current page
+  // Sets the user list for the current page and the total number of users for all pages
   useEffect(() => {
-    getCurrentPageUsers(currentPage, perPage).then(res => {
+    getCurrentPageUsers(currentPage, perPage, token).then(res => {
       setUserList(res.data.users);
       setTotalUsers(res.data.total);
     });
@@ -83,52 +114,18 @@ const Users = () => {
   }, [token, currentPage, perPage]);
 
   // Handles the copy user emails button click
-  useEffect(() => {
-    // if the user clicks the copy users button and we have received user metadata,
-    // then query all users
-    !!copyUserEmailsClicked &&
-      !!totalUsers &&
-      // only do this if the user hasn't already fetched data. if they have, skip this step
-      // and copy what is in state to the clipboard
-      allUsers?.length !== totalUsers &&
-      getAllUsers();
+  async function handleCopyUserEmails() {
+    // only do this if the user hasn't already fetched data. if they have, skip this step
+    // and copy what is in state to the clipboard
+    if (allUsers?.length !== totalUsers) {
+      setIsFetchingAllUsers(true);
+      await getAllUsers(pageCount, perPage, totalUsers, setAllUsers, token);
+    }
     // once we have all users, copy the emails to the clipboard
-    !!allUsers.length && !!copyUserEmailsClicked && getUserEmails();
-    // eslint-disable-next-line
-  }, [copyUserEmailsClicked, totalUsers, allUsers]);
+    !!allUsers.length && !!isFetchingAllUsers && getUserEmails();
+  }
 
   const pageCount = Math.ceil(totalUsers / perPage);
-
-  // Call the list_users API and return the users for the current page
-  async function getCurrentPageUsers(page, perPage) {
-    const endpoint = `${process.env.REACT_APP_CR3_API_DOMAIN}/user/list_users?page=${page}&per_page=${perPage}`;
-    const res = await axios.get(endpoint, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    return res;
-  }
-
-  async function getAllUsers() {
-    let page = 0;
-    let users = [];
-    // query every page of users until we have fetched them all
-    while (page <= pageCount) {
-      const res = await getCurrentPageUsers(page, perPage);
-      res.data.users.forEach(user => {
-        // make sure the user is not blocked/inactive, then push to an array
-        if (user.status === false || user.status === undefined) {
-          users.push(user);
-        }
-      });
-      page++;
-    }
-    // once we have fetched all users, update the users array in state
-    if (users.length === totalUsers) {
-      setAllUsers(users);
-    }
-  }
 
   const getUserEmails = () => {
     let userEmails = "";
@@ -137,7 +134,7 @@ const Users = () => {
     });
     // timeout determines how long the status popover displays
     const popOverTime = 2000;
-    setTimeout(() => setCopyUserEmailsClicked(false), popOverTime);
+    setTimeout(() => setIsFetchingAllUsers(false), popOverTime);
     return navigator.clipboard.writeText(userEmails);
   };
 
@@ -215,14 +212,14 @@ const Users = () => {
                     >
                       <div id="copyUserEmailsButton">
                         {/* render a loading spinner while fetching data after user clicks copy user email button */}
-                        {copyUserEmailsClicked === true &&
-                        allUsers.length !== totalUsers ? (
+                        {isFetchingAllUsers === true &&
+                        allUsers?.length !== totalUsers ? (
                           <Spinner className="mt-2" color="primary" />
                         ) : (
                           <div>
                             <Button
                               color="primary"
-                              onClick={() => setCopyUserEmailsClicked(true)}
+                              onClick={() => handleCopyUserEmails()}
                             >
                               <i className="fa fa-copy"></i> Copy user emails
                             </Button>
@@ -231,8 +228,8 @@ const Users = () => {
                               target="copyUserEmailsButton"
                               placement="top"
                               isOpen={
-                                !!copyUserEmailsClicked &&
-                                allUsers.length === totalUsers
+                                !!isFetchingAllUsers &&
+                                allUsers?.length === totalUsers
                               }
                             >
                               <PopoverBody>User emails copied!</PopoverBody>
