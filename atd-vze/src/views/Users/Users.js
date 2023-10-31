@@ -218,6 +218,7 @@ const Users = () => {
                         ) : (
                           <div>
                             <Button
+                              disabled={!totalUsers}
                               color="primary"
                               onClick={() => handleCopyUserEmails()}
                             >
