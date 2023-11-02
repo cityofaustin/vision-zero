@@ -13,7 +13,7 @@ export const popEsts = {
     2016: 881422,
   },
   sourceURL:
-    "https://www.austintexas.gov/sites/default/files/files/Planning/Demographics/austin_forecast_2021_pub.pdf",
+    "https://demographics-austin.hub.arcgis.com/documents/27bd25c8afff4017a66cd4c467893c3f/explore",
   sourceString:
     "City of Austin Full Purpose Population figures. Jeff Engstrom, Senior Planner, Housing & Planning Department, City of Austin. December 2020, based on data from Ryan Robinson, City Demographer, Department of Planning, City of Austin. December 2019.",
 };
