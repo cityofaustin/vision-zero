@@ -55,36 +55,6 @@ async function getAllUsers(pageCount, perPage, totalUsers, setAllUsers, token) {
   }
 }
 
-// Handles the copy user emails button click
-async function handleCopyUserEmails(
-  allUsers,
-  totalUsers,
-  pageCount,
-  perPage,
-  setAllUsers,
-  token,
-  setIsFetchingAllUsers
-) {
-  let userArray = [];
-  // Only do this if the user hasn't already fetched data. if they have, skip this step
-  // and copy what is in state to the clipboard
-  if (allUsers?.length !== totalUsers) {
-    setIsFetchingAllUsers(true);
-    userArray = await getAllUsers(
-      pageCount,
-      perPage,
-      totalUsers,
-      setAllUsers,
-      token
-    );
-    // once we have all users, copy the emails to the clipboard using local variable
-    getUserEmails(userArray, setIsFetchingAllUsers);
-  } else {
-    // use state if we already have fetched the data before
-    getUserEmails(allUsers, setIsFetchingAllUsers);
-  }
-}
-
 // Copy all user emails to the clipboard
 const getUserEmails = (userArray, setIsFetchingAllUsers) => {
   let userEmails = "";
@@ -164,6 +134,28 @@ const Users = () => {
     setCurrentPage(newPageValue);
   };
 
+  // Handles the copy user emails button click
+  async function handleCopyUserEmails() {
+    let userArray = [];
+    // Only do this if the user hasn't already fetched data. if they have, skip this step
+    // and copy what is in state to the clipboard
+    if (allUsers?.length !== totalUsers) {
+      setIsFetchingAllUsers(true);
+      userArray = await getAllUsers(
+        pageCount,
+        perPage,
+        totalUsers,
+        setAllUsers,
+        token
+      );
+      // once we have all users, copy the emails to the clipboard using local variable
+      getUserEmails(userArray, setIsFetchingAllUsers);
+    } else {
+      // use state if we already have fetched the data before
+      getUserEmails(allUsers, setIsFetchingAllUsers);
+    }
+  }
+
   return (
     <Can
       roles={getRoles()}
@@ -241,17 +233,7 @@ const Users = () => {
                             <Button
                               disabled={!totalUsers}
                               color="primary"
-                              onClick={() =>
-                                handleCopyUserEmails(
-                                  allUsers,
-                                  totalUsers,
-                                  pageCount,
-                                  perPage,
-                                  setAllUsers,
-                                  token,
-                                  setIsFetchingAllUsers
-                                )
-                              }
+                              onClick={() => handleCopyUserEmails()}
                             >
                               <i className="fa fa-copy"></i> Copy user emails
                             </Button>
