@@ -56,14 +56,14 @@ async function getAllUsers(pageCount, perPage, totalUsers, setAllUsers, token) {
 }
 
 // Copy all user emails to the clipboard
-const getUserEmails = (userArray, setIsPopoverOpen) => {
+const getUserEmails = (userArray, setCopyUserEmailsClicked) => {
   let userEmails = "";
   userArray.forEach(user => {
     userEmails += `${user.email}; `;
   });
   // timeout determines how long the status popover displays
   const popOverTime = 2000;
-  setTimeout(() => setIsPopoverOpen(false), popOverTime);
+  setTimeout(() => setCopyUserEmailsClicked(false), popOverTime);
   return navigator.clipboard.writeText(userEmails);
 };
 
@@ -116,7 +116,7 @@ const Users = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [allUsers, setAllUsers] = useState([]);
   const [isFetchingAllUsers, setIsFetchingAllUsers] = useState(false);
-  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const [copyUserEmailsClicked, setCopyUserEmailsClicked] = useState(false);
   const perPage = 50;
 
   // Sets the user list for the current page and the total number of users for all pages
@@ -137,7 +137,7 @@ const Users = () => {
 
   // Handles the copy user emails button click
   async function handleCopyUserEmails() {
-    setIsPopoverOpen(true);
+    setCopyUserEmailsClicked(true);
     let userArray = [];
     // Only do this if the user hasn't already fetched data. if they have, skip this step
     // and copy what is in state to the clipboard
@@ -151,11 +151,11 @@ const Users = () => {
         token
       );
       // once we have all users, copy the emails to the clipboard using local variable
-      getUserEmails(userArray, setIsPopoverOpen);
+      getUserEmails(userArray, setCopyUserEmailsClicked);
       setIsFetchingAllUsers(false);
     } else {
       // use state if we already have fetched the data before
-      getUserEmails(allUsers, setIsPopoverOpen);
+      getUserEmails(allUsers, setCopyUserEmailsClicked);
     }
   }
 
@@ -245,7 +245,7 @@ const Users = () => {
                               target="copyUserEmailsButton"
                               placement="top"
                               isOpen={
-                                !!isPopoverOpen &&
+                                !!copyUserEmailsClicked &&
                                 allUsers?.length === totalUsers
                               }
                             >
