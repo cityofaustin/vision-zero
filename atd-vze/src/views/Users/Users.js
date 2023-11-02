@@ -49,6 +49,10 @@ async function getAllUsers(pageCount, perPage, totalUsers, setAllUsers, token) {
   if (users.length === totalUsers) {
     setAllUsers(users);
     return users;
+  } else {
+    console.error(
+      "Problem with fetching, user emails to copy does not match up with total number of users."
+    );
   }
 }
 
@@ -56,10 +60,7 @@ async function getAllUsers(pageCount, perPage, totalUsers, setAllUsers, token) {
 const getUserEmails = (userArray, setCopyUserEmailsClicked) => {
   let userEmails = "";
   userArray.forEach(user => {
-    // make sure the user is not blocked/inactive, then add to userEmails
-    if (user.status === false || user.status === undefined) {
-      userEmails += `${user.email}; `;
-    }
+    userEmails += `${user.email}; `;
   });
   // timeout determines how long the status popover displays
   const popOverTime = 2000;
@@ -151,7 +152,7 @@ const Users = () => {
         token
       );
       // once we have all users, copy the emails to the clipboard using local variable
-      getUserEmails(userArray, setCopyUserEmailsClicked);
+      !!userArray && getUserEmails(userArray, setCopyUserEmailsClicked);
       setIsFetchingAllUsers(false);
     } else {
       // use state if we already have fetched the data before
