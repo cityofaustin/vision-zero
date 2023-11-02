@@ -41,10 +41,7 @@ async function getAllUsers(pageCount, perPage, totalUsers, setAllUsers, token) {
   while (page <= pageCount) {
     const res = await getCurrentPageUsers(page, perPage, token);
     res.data.users.forEach(user => {
-      // make sure the user is not blocked/inactive, then push to an array
-      if (user.status === false || user.status === undefined) {
-        users.push(user);
-      }
+      users.push(user);
     });
     page++;
   }
@@ -59,7 +56,10 @@ async function getAllUsers(pageCount, perPage, totalUsers, setAllUsers, token) {
 const getUserEmails = (userArray, setCopyUserEmailsClicked) => {
   let userEmails = "";
   userArray.forEach(user => {
-    userEmails += `${user.email}; `;
+    // make sure the user is not blocked/inactive, then add to userEmails
+    if (user.status === false || user.status === undefined) {
+      userEmails += `${user.email}; `;
+    }
   });
   // timeout determines how long the status popover displays
   const popOverTime = 2000;
