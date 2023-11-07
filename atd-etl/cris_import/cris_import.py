@@ -97,8 +97,6 @@ def main():
     if not zip_location:
         return
 
-
-
     extracted_archives = unzip_archives(zip_location)
     for archive in extracted_archives:
         logical_groups_of_csvs = group_csvs_into_logical_groups(archive, dry_run=False)
@@ -107,11 +105,13 @@ def main():
             schema_name = create_target_import_schema(desired_schema_name)
             pgloader_command_files = pgloader_csvs_into_database(schema_name)
             trimmed_token = remove_trailing_carriage_returns(pgloader_command_files)
-            typed_token = align_db_typing(trimmed_token)
-            align_records_token = align_records(typed_token)
-            clean_up_import_schema(align_records_token)
-    remove_archives_from_sftp_endpoint(zip_location)
-    upload_csv_files_to_s3(archive)
+            real_typed_token = align_db_typing(trimmed_token)
+            typed_token = mess_with_incoming_records_to_ensure_updates(real_typed_token)
+            #align_records_token = align_records(typed_token)
+            #clean_up_import_schema(align_records_token)
+    if not local_mode: # We're using a locally provided zip file, so skip these steps
+        remove_archives_from_sftp_endpoint(zip_location)
+        upload_csv_files_to_s3(archive)
 
 
 def get_secrets():
@@ -212,6 +212,39 @@ def get_secrets():
     client: Client = new_client(ONEPASSWORD_CONNECT_HOST, ONEPASSWORD_CONNECT_TOKEN)
     # get the requested secrets from 1Password
     return onepasswordconnectsdk.load_dict(client, REQUIRED_SECRETS)
+
+
+def mess_with_incoming_records_to_ensure_updates(map_state):
+    print(map_state)
+    schema = map_state["import_schema"]
+    with SshKeyTempDir() as key_directory:
+        write_key_to_file(key_directory + "/id_ed25519", DB_BASTION_HOST_SSH_PRIVATE_KEY + "\n") 
+        ssh_tunnel = SSHTunnelForwarder(
+            (DB_BASTION_HOST),
+            ssh_username=DB_BASTION_HOST_SSH_USERNAME,
+            ssh_private_key=f"{key_directory}/id_ed25519",
+            remote_bind_address=(DB_RDS_HOST, 5432),
+        )
+        ssh_tunnel.start()
+
+        pg = psycopg2.connect(
+            host="localhost",
+            port=ssh_tunnel.local_bind_port,
+            user=DB_USER,
+            password=DB_PASS,
+            dbname=DB_NAME,
+            sslmode=DB_SSL_REQUIREMENT,
+            sslrootcert="/root/rds-combined-ca-bundle.pem",
+        )
+
+        sql = f"""UPDATE {schema}.crash
+            SET rpt_street_name = rpt_street_name || lpad(to_hex((floor(random() * 16777215)::int)), 6, '0');
+            """
+        print(sql)
+        cursor = pg.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        cursor.execute(sql)
+        pg.commit()
+
 
 
 def specify_extract_location(file):
@@ -662,6 +695,10 @@ def align_records(map_state):
                 # To decide to UPDATE, we need to find a matching target record in the output table.
                 # This function returns that record as a token of existence or false if none is available
                 if util.fetch_target_record(pg, output_map, table, record_key_sql):
+                    
+                    print("Target record exists for " + str(source["crash_id"]) + " and we're going to update.")
+                    time.sleep(2)
+
                     # Build 2 sets of 3 arrays of SQL fragments, one element per column which can be `join`ed together in subsequent queries.
                     column_assignments, column_comparisons, column_aggregators, important_column_assignments, important_column_comparisons, important_column_aggregators = util.get_column_operators(target_columns, no_override_columns, source, table, output_map, map_state["import_schema"])
 
