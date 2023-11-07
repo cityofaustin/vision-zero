@@ -22,7 +22,7 @@ def get_pgfutter_path():
     return None
 
 def invalidate_cr3(pg, crash_id):
-    invalidate_cr3_sql = f"""UPDATE atd_txdot_crashes 
+    invalidate_cr3_sql = f"""UPDATE public.atd_txdot_crashes 
     SET cr3_stored_flag = 'N', cr3_file_metadata = null, cr3_ocr_extraction_date = null
     WHERE crash_id = {crash_id}"""
     cursor = pg.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
