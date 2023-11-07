@@ -5,6 +5,7 @@ import re
 import time
 import hashlib
 import datetime
+import glob
 import tempfile
 from subprocess import Popen, PIPE
 
@@ -81,7 +82,23 @@ def main():
     SFTP_ENDPOINT_SSH_PRIVATE_KEY = secrets["sftp_endpoint_private_key"]
 
     # 🥩 & 🥔
-    zip_location = download_extract_archives()
+    #zip_location = download_extract_archives()
+
+    local_mode = False
+    if bool(glob.glob('/app/development_extracts/*.zip')):
+        local_mode = True
+
+    zip_location = None
+    if not local_mode: # Production
+        zip_location = download_archives()
+    else: # Development. Put a zip in the development_extracts directory to use it.
+        zip_location = specify_extract_location()
+
+    if not zip_location:
+        return
+
+
+
     extracted_archives = unzip_archives(zip_location)
     for archive in extracted_archives:
         logical_groups_of_csvs = group_csvs_into_logical_groups(archive, dry_run=False)
@@ -204,6 +221,59 @@ def specify_extract_location(file):
 
 
 def download_extract_archives():
+    """
+    Connect to the SFTP endpoint which receives archives from CRIS and
+    download them into a temporary directory.
+
+    Returns path of temporary directory as a string
+    """
+
+    with SshKeyTempDir() as key_directory:
+        write_key_to_file(key_directory + "/id_ed25519", SFTP_ENDPOINT_SSH_PRIVATE_KEY + "\n") 
+
+        zip_tmpdir = tempfile.mkdtemp()
+        rsync = None
+        try:
+            rsync = sysrsync.run(
+                verbose=True,
+                options=["-a"],
+                source_ssh=SFTP_ENDPOINT,
+                source="/home/txdot/*zip",
+                sync_source_contents=False,
+                destination=zip_tmpdir,
+                private_key=key_directory + "/id_ed25519",
+                strict_host_key_checking=False,
+            )
+        except:
+            print("No files to copy..")
+            # we're really kinda out of work here, so we're going to bail
+            quit()
+        print("Rsync return code: " + str(rsync.returncode))
+        # check for a OS level return code of anything non-zero, which
+        # would indicate to us that the child proc we kicked off didn't
+        # complete successfully.
+        # see: https://www.gnu.org/software/libc/manual/html_node/Exit-Status.html
+        if rsync.returncode != 0:
+            return False
+        print("Temp Directory: " + zip_tmpdir)
+        return zip_tmpdir
+
+
+def specify_extract_location():
+    zip_files = glob.glob('/app/development_extracts/*.zip')
+    if not zip_files:
+        return False
+
+    zip_tmpdir = tempfile.mkdtemp()
+
+    for file_to_copy in zip_files:
+        shutil.copy(file_to_copy, zip_tmpdir)
+
+    return zip_tmpdir
+
+
+
+def download_archives():
     """
     Connect to the SFTP endpoint which receives archives from CRIS and
     download them into a temporary directory.
