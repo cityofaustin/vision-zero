@@ -238,12 +238,36 @@ def mess_with_incoming_records_to_ensure_updates(map_state):
         )
 
         sql = f"""UPDATE {schema}.crash
-            SET rpt_street_name = rpt_street_name || lpad(to_hex((floor(random() * 16777215)::int)), 6, '0');
+            SET rpt_street_name = rpt_street_name || ' ' || lpad(to_hex((floor(random() * 16777215)::int)), 6, '0');
             """
         print(sql)
         cursor = pg.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         cursor.execute(sql)
+
+        sql = f"""UPDATE {schema}.unit
+            SET vin = vin || ' ' || lpad(to_hex((floor(random() * 16777215)::int)), 6, '0');
+            """
+        print(sql)
+        cursor = pg.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        cursor.execute(sql)
+
+        sql = f"""UPDATE {schema}.person
+            SET prsn_last_name = prsn_last_name || ' ' || lpad(to_hex((floor(random() * 16777215)::int)), 6, '0');
+            """
+        print(sql)
+        cursor = pg.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        cursor.execute(sql)
+
+        sql = f"""UPDATE {schema}.primaryperson
+            SET prsn_last_name = prsn_last_name || ' ' || lpad(to_hex((floor(random() * 16777215)::int)), 6, '0');
+            """
+        print(sql)
+        cursor = pg.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        cursor.execute(sql)
+
         pg.commit()
+
+    return map_state
 
 
 
