@@ -105,8 +105,8 @@ def main():
             schema_name = create_target_import_schema(desired_schema_name)
             pgloader_command_files = pgloader_csvs_into_database(schema_name)
             trimmed_token = remove_trailing_carriage_returns(pgloader_command_files)
-            real_typed_token = align_db_typing(trimmed_token)
-            typed_token = mess_with_incoming_records_to_ensure_updates(real_typed_token)
+            typed_token = align_db_typing(trimmed_token)
+            #typed_token = mess_with_incoming_records_to_ensure_updates(typed_token) # for testing PR 1316
             align_records_token = align_records(typed_token)
             clean_up_import_schema(align_records_token)
     if not local_mode: # We're using a locally provided zip file, so skip these steps
