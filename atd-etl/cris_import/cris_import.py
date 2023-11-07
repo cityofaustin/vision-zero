@@ -720,26 +720,7 @@ def align_records(map_state):
                 # This function returns that record as a token of existence or false if none is available
                 if util.fetch_target_record(pg, output_map, table, record_key_sql):
                     
-                    if (table == 'crash'):
-                        pass
-                        print("Target record exists for " + str(source["crash_id"]) + " and we're going to update.")
-                        #print(map_state)
-                        print(table)
-                    elif (table == 'unit'):
-                        pass
-                        print("Target record exists for " + str(source["crash_id"]) + " and we're going to update.")
-                        #print(map_state)
-                        print(table)
-                    elif (table == 'person'):
-                        pass
-                        print("Target record exists for " + str(source["crash_id"]) + " and we're going to update.")
-                        #print(map_state)
-                        print(table)
-                    elif (table == 'primaryperson'):
-                        print("Target record exists for " + str(source["crash_id"]) + " and we're going to update.")
-                        #print(map_state)
-                        print(table)
-
+                    # Cause the CR3s to be re-downloaded next time that ETL is run
                     util.invalidate_cr3(pg, source["crash_id"])
 
                     # Build 2 sets of 3 arrays of SQL fragments, one element per column which can be `join`ed together in subsequent queries.
