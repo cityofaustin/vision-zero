@@ -107,8 +107,8 @@ def main():
             trimmed_token = remove_trailing_carriage_returns(pgloader_command_files)
             real_typed_token = align_db_typing(trimmed_token)
             typed_token = mess_with_incoming_records_to_ensure_updates(real_typed_token)
-            #align_records_token = align_records(typed_token)
-            #clean_up_import_schema(align_records_token)
+            align_records_token = align_records(typed_token)
+            clean_up_import_schema(align_records_token)
     if not local_mode: # We're using a locally provided zip file, so skip these steps
         remove_archives_from_sftp_endpoint(zip_location)
         upload_csv_files_to_s3(archive)
