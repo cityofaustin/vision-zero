@@ -21,6 +21,14 @@ def get_pgfutter_path():
         return "/root/pgfutter_x64"
     return None
 
+def invalidate_cr3(pg, crash_id):
+    invalidate_cr3_sql = f"""UPDATE atd_txdot_crashes 
+    SET cr3_stored_flag = 'N', cr3_file_metadata = null, cr3_ocr_extraction_date = null
+    WHERE crash_id = {crash_id}"""
+    cursor = pg.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    cursor.execute(invalidate_cr3_sql)
+    pg.commit()
+
 
 def get_column_operators(
     target_columns, no_override_columns, source, table, output_map, DB_IMPORT_SCHEMA
