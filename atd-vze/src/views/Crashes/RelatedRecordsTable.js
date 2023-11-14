@@ -228,6 +228,19 @@ const RelatedRecordsTable = ({
                                     })}
                                   </Input>
                                 )}
+                                {uiType === "boolean" && (
+                                  <Input
+                                    defaultValue={row[field]}
+                                    type="select"
+                                    onChange={e =>
+                                      handleInputChange(e, updateFieldKey)
+                                    }
+                                  >
+                                    <option value={""}>NO DATA</option>
+                                    <option value={true}>TRUE</option>
+                                    <option value={false}>FALSE</option>
+                                  </Input>
+                                )}
                                 <div className="d-flex">
                                   <Button
                                     type="submit"
