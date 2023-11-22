@@ -108,7 +108,7 @@ export const primaryPersonDataMap = [
         editable: false,
       },
       peh_fl: {
-        label: "Experiencing Homelessness",
+        label: "Unhoused",
         editable: true,
         format: "boolean",
         mutationVariableKey: "personId",
@@ -189,7 +189,7 @@ export const personDataMap = [
         mutationVariableKey: "personId",
       },
       peh_fl: {
-        label: "Experiencing Homelessness",
+        label: "Unhoused",
         editable: true,
         format: "boolean",
         mutationVariableKey: "personId",
