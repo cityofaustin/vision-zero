@@ -2,6 +2,7 @@ import os
 import psycopg2.extras
 
 import pprint
+
 pp = pprint.PrettyPrinter(indent=4)
 
 # This library is /not/ designed for reuse in other projects. It is designed to increase the
@@ -20,6 +21,7 @@ def get_pgfutter_path():
     else:
         return "/root/pgfutter_x64"
     return None
+
 
 def invalidate_cr3(pg, crash_id):
     invalidate_cr3_sql = f"""UPDATE public.atd_txdot_crashes 
@@ -77,7 +79,14 @@ def get_column_operators(
                 column_aggregators.append(column_aggregator)
 
         # fmt: on
-    return column_assignments, column_comparisons, column_aggregators, important_column_assignments, important_column_comparisons, important_column_aggregators
+    return (
+        column_assignments,
+        column_comparisons,
+        column_aggregators,
+        important_column_assignments,
+        important_column_comparisons,
+        important_column_aggregators,
+    )
 
 
 def check_if_update_is_a_non_op(
@@ -200,7 +209,7 @@ def form_insert_statement(
 
 
 def is_change_existing(pg, record_type, record_id):
-    #print(f"\b 🛎 is existing? {record_type}, {record_id}")
+    # print(f"\b 🛎 is existing? {record_type}, {record_id}")
 
     sql = f"""
     select count(*) as exists
@@ -215,6 +224,7 @@ def is_change_existing(pg, record_type, record_id):
         return True
     else:
         return False
+
 
 def has_existing_temporary_record(pg, case_id):
     sql = f"""
@@ -231,6 +241,7 @@ def has_existing_temporary_record(pg, case_id):
     else:
         return False
 
+
 def remove_existing_temporary_record(pg, case_id):
     sql = f"""
     delete from atd_txdot_crashes
@@ -240,6 +251,7 @@ def remove_existing_temporary_record(pg, case_id):
     cursor = pg.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     cursor.execute(sql)
     return True
+
 
 def try_statement(pg, output_map, table, public_key_sql, sql, dry_run):
     if dry_run:
@@ -397,6 +409,7 @@ def get_input_column_type(pg, DB_IMPORT_SCHEMA, input_table, column):
     input_column_type = cursor.fetchall()
     return input_column_type
 
+
 def get_input_tables_and_columns(pg, DB_IMPORT_SCHEMA):
     sql = f"""
     SELECT
@@ -416,6 +429,7 @@ def get_input_tables_and_columns(pg, DB_IMPORT_SCHEMA):
     input_tables_and_columns = cursor.fetchall()
     return input_tables_and_columns
 
+
 def trim_trailing_carriage_returns(pg, DB_IMPORT_SCHEMA, column):
     cursor = pg.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     sql = f"""
@@ -424,6 +438,7 @@ def trim_trailing_carriage_returns(pg, DB_IMPORT_SCHEMA, column):
     """
     cursor.execute(sql)
     pg.commit()
+
 
 def form_alter_statement_to_apply_column_typing(DB_IMPORT_SCHEMA, input_table, column):
     # the `USING` hackery is due to the reality of the CSV null vs "" confusion
