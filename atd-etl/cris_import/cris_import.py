@@ -81,9 +81,6 @@ def main():
     GRAPHQL_ENDPOINT_KEY = secrets["graphql_endpoint_key"]
     SFTP_ENDPOINT_SSH_PRIVATE_KEY = secrets["sftp_endpoint_private_key"]
 
-    # 🥩 & 🥔
-    #zip_location = download_extract_archives()
-
     local_mode = False
     if bool(glob.glob('/app/development_extracts/*.zip')):
         local_mode = True
