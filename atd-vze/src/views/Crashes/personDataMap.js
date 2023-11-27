@@ -21,12 +21,12 @@ const getInjurySeverityColor = personRecord => {
     case 4: // FATAL INJURY: red
       return "danger";
     case 99: // KILLED: red
-      return "secondary"
-    default: // Other cases: Not reported, Reported invalid, Not injured
+      return "secondary";
+    default:
+      // Other cases: Not reported, Reported invalid, Not injured
       return "secondary";
   }
 };
-
 
 export const primaryPersonDataMap = [
   {
@@ -107,6 +107,12 @@ export const primaryPersonDataMap = [
         label: "ZIP",
         editable: false,
       },
+      peh_fl: {
+        label: "Unhoused",
+        editable: true,
+        format: "boolean",
+        mutationVariableKey: "personId",
+      },
     },
   },
 ];
@@ -180,6 +186,12 @@ export const personDataMap = [
         lookupOptions: "atd_txdot__ethnicity_lkp",
         lookupPrefix: "ethnicity",
         updateFieldKey: "prsn_ethnicity_id",
+        mutationVariableKey: "personId",
+      },
+      peh_fl: {
+        label: "Unhoused",
+        editable: true,
+        format: "boolean",
         mutationVariableKey: "personId",
       },
     },
