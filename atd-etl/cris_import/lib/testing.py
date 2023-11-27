@@ -3,6 +3,26 @@ from .sshkeytempdir import SshKeyTempDir, write_key_to_file
 import psycopg2
 import psycopg2.extras
 
+# usage: stick the "mess with in coming records" function in cris_import.py like
+# so to make every record in the CRIS zip an update.
+
+            #trimmed_token = remove_trailing_carriage_returns(pgloader_command_files)
+            #typed_token = align_db_typing(trimmed_token)
+            #typed_token = mess_with_incoming_records_to_ensure_updates(
+                #typed_token,
+                #DB_BASTION_HOST_SSH_PRIVATE_KEY,
+                #DB_BASTION_HOST,
+                #DB_BASTION_HOST_SSH_USERNAME,
+                #DB_RDS_HOST,
+                #DB_USER,
+                #DB_PASS,
+                #DB_NAME,
+                #DB_SSL_REQUIREMENT,
+            #)  
+            #align_records_token = align_records(typed_token)
+            #clean_up_import_schema(align_records_token)
+
+
 
 def mess_with_incoming_records_to_ensure_updates(
     map_state,
