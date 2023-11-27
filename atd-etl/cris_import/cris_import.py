@@ -267,52 +267,6 @@ def mess_with_incoming_records_to_ensure_updates(map_state):
     return map_state
 
 
-
-def specify_extract_location(file):
-    zip_tmpdir = tempfile.mkdtemp()
-    shutil.copy(file, zip_tmpdir)
-    return zip_tmpdir
-
-
-def download_extract_archives():
-    """
-    Connect to the SFTP endpoint which receives archives from CRIS and
-    download them into a temporary directory.
-
-    Returns path of temporary directory as a string
-    """
-
-    with SshKeyTempDir() as key_directory:
-        write_key_to_file(key_directory + "/id_ed25519", SFTP_ENDPOINT_SSH_PRIVATE_KEY + "\n") 
-
-        zip_tmpdir = tempfile.mkdtemp()
-        rsync = None
-        try:
-            rsync = sysrsync.run(
-                verbose=True,
-                options=["-a"],
-                source_ssh=SFTP_ENDPOINT,
-                source="/home/txdot/*zip",
-                sync_source_contents=False,
-                destination=zip_tmpdir,
-                private_key=key_directory + "/id_ed25519",
-                strict_host_key_checking=False,
-            )
-        except:
-            print("No files to copy..")
-            # we're really kinda out of work here, so we're going to bail
-            quit()
-        print("Rsync return code: " + str(rsync.returncode))
-        # check for a OS level return code of anything non-zero, which
-        # would indicate to us that the child proc we kicked off didn't
-        # complete successfully.
-        # see: https://www.gnu.org/software/libc/manual/html_node/Exit-Status.html
-        if rsync.returncode != 0:
-            return False
-        print("Temp Directory: " + zip_tmpdir)
-        return zip_tmpdir
-
-
 def specify_extract_location():
     zip_files = glob.glob('/app/development_extracts/*.zip')
     if not zip_files:
