@@ -24,6 +24,7 @@
     "bootstrap": "^4.3.1",
     "chart.js": "^2.9.3",
     "chartjs-plugin-stacked100": "^0.7.1",
+    "date-fns": "^2.30.0",
     "events-polyfill": "^2.1.2",
     "hookrouter": "^1.2.3",
     "lodash.clonedeep": "^4.5.0",
