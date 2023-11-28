@@ -25,6 +25,7 @@ export const GET_PEOPLE = gql`
         ethnicity_desc
       }
       unit_nbr
+      peh_fl
     }
     atd_txdot_person(where: { crash_id: { _eq: $crashId } }) {
       prsn_age
@@ -47,6 +48,7 @@ export const GET_PEOPLE = gql`
         ethnicity_desc
       }
       unit_nbr
+      peh_fl
     }
   }
 `;

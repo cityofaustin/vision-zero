@@ -5,6 +5,7 @@ import re
 import time
 import hashlib
 import datetime
+import glob
 import tempfile
 from subprocess import Popen, PIPE
 
@@ -21,6 +22,8 @@ import lib.mappings as mappings
 import lib.sql as util
 import lib.graphql as graphql
 from lib.helpers_import import insert_crash_change_template as insert_change_template
+from lib.sshkeytempdir import SshKeyTempDir, write_key_to_file
+from lib.testing import mess_with_incoming_records_to_ensure_updates
 
 DEPLOYMENT_ENVIRONMENT = os.environ.get(
     "ENVIRONMENT", "development"
@@ -80,8 +83,19 @@ def main():
     GRAPHQL_ENDPOINT_KEY = secrets["graphql_endpoint_key"]
     SFTP_ENDPOINT_SSH_PRIVATE_KEY = secrets["sftp_endpoint_private_key"]
 
-    # 🥩 & 🥔
-    zip_location = download_extract_archives()
+    local_mode = False
+    if bool(glob.glob("/app/development_extracts/*.zip")):
+        local_mode = True
+
+    zip_location = None
+    if not local_mode:  # Production
+        zip_location = download_archives()
+    else:  # Development. Put a zip in the development_extracts directory to use it.
+        zip_location = specify_extract_location()
+
+    if not zip_location:
+        return
+
     extracted_archives = unzip_archives(zip_location)
     for archive in extracted_archives:
         logical_groups_of_csvs = group_csvs_into_logical_groups(archive, dry_run=False)
@@ -93,8 +107,9 @@ def main():
             typed_token = align_db_typing(trimmed_token)
             align_records_token = align_records(typed_token)
             clean_up_import_schema(align_records_token)
-    remove_archives_from_sftp_endpoint(zip_location)
-    upload_csv_files_to_s3(archive)
+    if not local_mode:  # We're using a locally provided zip file, so skip these steps
+        remove_archives_from_sftp_endpoint(zip_location)
+        upload_csv_files_to_s3(archive)
 
 
 def get_secrets():
@@ -183,12 +198,12 @@ def get_secrets():
             "opitem": "SFTP Endpoint Key",
             "opfield": ".private key",
             "opvault": VAULT_ID,
-            },
+        },
         "bastion_ssh_private_key": {
             "opitem": "RDS Bastion Key",
             "opfield": ".private key",
             "opvault": VAULT_ID,
-            },
+        },
     }
 
     # instantiate a 1Password client
@@ -197,13 +212,20 @@ def get_secrets():
     return onepasswordconnectsdk.load_dict(client, REQUIRED_SECRETS)
 
 
-def specify_extract_location(file):
+def specify_extract_location():
+    zip_files = glob.glob("/app/development_extracts/*.zip")
+    if not zip_files:
+        return False
+
     zip_tmpdir = tempfile.mkdtemp()
-    shutil.copy(file, zip_tmpdir)
+
+    for file_to_copy in zip_files:
+        shutil.copy(file_to_copy, zip_tmpdir)
+
     return zip_tmpdir
 
 
-def download_extract_archives():
+def download_archives():
     """
     Connect to the SFTP endpoint which receives archives from CRIS and
     download them into a temporary directory.
@@ -212,7 +234,9 @@ def download_extract_archives():
     """
 
     with SshKeyTempDir() as key_directory:
-        write_key_to_file(key_directory + "/id_ed25519", SFTP_ENDPOINT_SSH_PRIVATE_KEY + "\n") 
+        write_key_to_file(
+            key_directory + "/id_ed25519", SFTP_ENDPOINT_SSH_PRIVATE_KEY + "\n"
+        )
 
         zip_tmpdir = tempfile.mkdtemp()
         rsync = None
@@ -331,7 +355,9 @@ def remove_archives_from_sftp_endpoint(zip_location):
     Returns: None
     """
     with SshKeyTempDir() as key_directory:
-        write_key_to_file(key_directory + "/id_ed25519", SFTP_ENDPOINT_SSH_PRIVATE_KEY + "\n") 
+        write_key_to_file(
+            key_directory + "/id_ed25519", SFTP_ENDPOINT_SSH_PRIVATE_KEY + "\n"
+        )
 
         print(zip_location)
         for archive in os.listdir(zip_location):
@@ -367,7 +393,10 @@ def pgloader_csvs_into_database(map_state):
                 print(f"Command file: {command_file}")
 
                 with SshKeyTempDir() as key_directory:
-                    write_key_to_file(key_directory + "/id_ed25519", DB_BASTION_HOST_SSH_PRIVATE_KEY + "\n") 
+                    write_key_to_file(
+                        key_directory + "/id_ed25519",
+                        DB_BASTION_HOST_SSH_PRIVATE_KEY + "\n",
+                    )
                     # we're going to get away with opening up this tunnel here for all pgloader commands
                     # because they get executed before this goes out of scope
                     ssh_tunnel = SSHTunnelForwarder(
@@ -410,9 +439,10 @@ def pgloader_csvs_into_database(map_state):
 
 
 def remove_trailing_carriage_returns(map_state):
-
     with SshKeyTempDir() as key_directory:
-        write_key_to_file(key_directory + "/id_ed25519", DB_BASTION_HOST_SSH_PRIVATE_KEY + "\n") 
+        write_key_to_file(
+            key_directory + "/id_ed25519", DB_BASTION_HOST_SSH_PRIVATE_KEY + "\n"
+        )
         ssh_tunnel = SSHTunnelForwarder(
             (DB_BASTION_HOST),
             ssh_username=DB_BASTION_HOST_SSH_USERNAME,
@@ -439,7 +469,6 @@ def remove_trailing_carriage_returns(map_state):
 
 
 def align_db_typing(map_state):
-
     """
     This function compares the target table in the VZDB with the corollary table in the import schema. For each column pair,
     the type of the VZDB table's column is applied to the import table. This acts as a strong typing check for all input data,
@@ -518,7 +547,6 @@ def align_db_typing(map_state):
 
 
 def align_records(map_state):
-
     """
     This function begins by preparing a number of list and string variables containing SQL fragments.
     These fragments are used to create queries which inspect the data differences between a pair of records.
@@ -592,6 +620,10 @@ def align_records(map_state):
                 # To decide to UPDATE, we need to find a matching target record in the output table.
                 # This function returns that record as a token of existence or false if none is available
                 if util.fetch_target_record(pg, output_map, table, record_key_sql):
+                    
+                    # Cause the CR3s to be re-downloaded next time that ETL is run
+                    util.invalidate_cr3(pg, source["crash_id"])
+
                     # Build 2 sets of 3 arrays of SQL fragments, one element per column which can be `join`ed together in subsequent queries.
                     column_assignments, column_comparisons, column_aggregators, important_column_assignments, important_column_comparisons, important_column_aggregators = util.get_column_operators(target_columns, no_override_columns, source, table, output_map, map_state["import_schema"])
 
@@ -714,9 +746,10 @@ def create_import_schema_name(mapped_state):
 
 
 def create_target_import_schema(map_state):
-
     with SshKeyTempDir() as key_directory:
-        write_key_to_file(key_directory + "/id_ed25519", DB_BASTION_HOST_SSH_PRIVATE_KEY + "\n") 
+        write_key_to_file(
+            key_directory + "/id_ed25519", DB_BASTION_HOST_SSH_PRIVATE_KEY + "\n"
+        )
         ssh_tunnel = SSHTunnelForwarder(
             (DB_BASTION_HOST),
             ssh_username=DB_BASTION_HOST_SSH_USERNAME,
@@ -764,7 +797,9 @@ def create_target_import_schema(map_state):
 
 def clean_up_import_schema(map_state):
     with SshKeyTempDir() as key_directory:
-        write_key_to_file(key_directory + "/id_ed25519", DB_BASTION_HOST_SSH_PRIVATE_KEY + "\n") 
+        write_key_to_file(
+            key_directory + "/id_ed25519", DB_BASTION_HOST_SSH_PRIVATE_KEY + "\n"
+        )
         ssh_tunnel = SSHTunnelForwarder(
             (DB_BASTION_HOST),
             ssh_username=DB_BASTION_HOST_SSH_USERNAME,
@@ -792,29 +827,6 @@ def clean_up_import_schema(map_state):
         pg.close()
 
     return map_state
-
-# these temp directories are used to store ssh keys, because they will
-# automatically clean themselves up when they go out of scope.
-class SshKeyTempDir:
-    def __init__(self):
-        self.path = None
-
-    def __enter__(self):
-        self.path = tempfile.mkdtemp(dir='/tmp')
-        return self.path
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        shutil.rmtree(self.path)
-
-def write_key_to_file(path, content):
-    # Open the file with write permissions and create it if it doesn't exist
-    fd = os.open(path, os.O_WRONLY | os.O_CREAT, 0o600)
-
-    # Write the content to the file
-    os.write(fd, content.encode())
-
-    # Close the file
-    os.close(fd)
 
 
 if __name__ == "__main__":

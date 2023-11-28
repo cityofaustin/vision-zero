@@ -8,6 +8,7 @@ because we will no longer need this function when the LDM goes into service.
 import json
 import datetime
 
+
 def insert_crash_change_template(new_record_dict, differences, crash_id):
     """
     Generates a crash insertion graphql query
@@ -18,8 +19,10 @@ def insert_crash_change_template(new_record_dict, differences, crash_id):
     """
 
     new_record_crash_date = None
-    try: 
-        new_record_crash_date = new_record_dict["crash_date"].strftime("%Y-%m-%d")  #convert_date(new_record_dict["crash_date"])
+    try:
+        new_record_crash_date = new_record_dict["crash_date"].strftime(
+            "%Y-%m-%d"
+        )  # convert_date(new_record_dict["crash_date"])
     except:
         print("Failed to convert crash_date")
 
@@ -30,7 +33,7 @@ def insert_crash_change_template(new_record_dict, differences, crash_id):
             new_record_dict[key] = new_record_dict[key].strftime("%H:%M:%S")
 
         # CRIS or the upstream ETL is representing this datum as a float, so cast it back
-        if key == "rpt_sec_speed_limit": 
+        if key == "rpt_sec_speed_limit":
             new_record_dict[key] = int(new_record_dict[key])
 
     # Turn the dictionary into a character-escaped json string
@@ -78,4 +81,3 @@ def insert_crash_change_template(new_record_dict, differences, crash_id):
         )
     )
     return output
-
