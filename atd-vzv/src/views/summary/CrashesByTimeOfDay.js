@@ -36,10 +36,10 @@ const dayOfWeekArray = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 // );
 
 const hourBlockArray = [...Array(24).keys()].map((hour) =>
-  format(new Date().setHours(hour), "ha")
+  format(new Date().setHours(hour), "hha")
 );
 
-// console.log(hourBlockArray);
+console.log(hourBlockArray);
 
 /**
  * Build an array of objs for each hour window that holds totals of each day of the week
@@ -69,12 +69,15 @@ const calculateHourBlockTotals = (records, crashType) => {
 
   records.forEach((record) => {
     // const recordDateTime = moment(record.crash_date);
-    const recordDateTime = record.crash_date;
+    const recordDateTime = parseISO(record.crash_date);
     console.log(recordDateTime, "record date time");
     // const recordHour = recordDateTime.format("hhA");
-    const recordHour = format(recordDateTime, "ha");
+    const recordHour = format(recordDateTime, "hha");
     // const recordDay = recordDateTime.format("ddd");
     const recordDay = format(recordDateTime, "EEEE");
+
+    console.log(recordDay, "record day");
+    console.log(recordHour, "record hour");
 
     const hourData = dataArray.find((hour) => hour.key === recordHour).data;
     const dayToIncrement = hourData.find((day) => day.key === recordDay);
