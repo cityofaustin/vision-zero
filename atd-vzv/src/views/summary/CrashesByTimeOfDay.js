@@ -31,13 +31,13 @@ import { colors } from "../../constants/colors";
 
 // const dayOfWeekArray = moment.weekdaysShort();
 const dayOfWeekArray = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-// const hourBlockArray = [...Array(24).keys()].map((hour) =>
-//   moment({ hour }).format("hhA")
-// );
-
 const hourBlockArray = [...Array(24).keys()].map((hour) =>
-  format(new Date().setHours(hour), "hha")
+  moment({ hour }).format("hhA")
 );
+
+// const hourBlockArray = [...Array(24).keys()].map((hour) =>
+//   format(new Date().setHours(hour), "hha")
+// );
 
 console.log(hourBlockArray);
 
