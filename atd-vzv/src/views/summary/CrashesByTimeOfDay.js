@@ -52,6 +52,8 @@ const buildDataArray = () => {
     .map((day) => ({ key: day, data: null })) // Initialize totals as null to unweight 0 in viz
     .reverse();
 
+  console.log(hourWindowTotalsByDay, "hour window totals");
+
   return hourBlockArray.map((hour) => ({
     key: hour,
     data: clonedeep(hourWindowTotalsByDay),
@@ -124,6 +126,10 @@ const CrashesByTimeOfDay = () => {
   );
   const [maxForLegend, setMaxForLegend] = useState(null);
 
+  console.log(crashType, "crash type");
+
+  console.log(activeTab, "Active tab");
+
   const toggle = (tab) => {
     if (activeTab !== tab) setActiveTab(tab);
   };
@@ -133,6 +139,7 @@ const CrashesByTimeOfDay = () => {
 
     axios.get(getFatalitiesByYearsAgoUrl(activeTab, crashType)).then((res) => {
       const formattedData = calculateHourBlockTotals(res.data, crashType);
+      console.log(formattedData, "formatted data");
       setHeatmapData(formattedData);
     });
   }, [activeTab, crashType]);
