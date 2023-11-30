@@ -12,7 +12,7 @@ const CrashesByYearAverage = ({ avgData, currentYearData }) => {
     const formatChartData = (avgData, currentYearData) => {
       const labels = avgData.map((data) =>
         // moment({ month: parseInt(data.month) - 1 }).format("MMM")
-        format(parse(toString(parseInt(data.month) - 1)), "LLL")
+        format(setMonth(new Date(), parseInt(data.month - 1)), "LLL")
       );
       console.log(labels);
       const avgValues = avgData.map((data) => data.avg);
