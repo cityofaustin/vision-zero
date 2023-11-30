@@ -85,12 +85,14 @@ const SummaryWidget = ({
     return (
       <div className="text-left widget-footer-icon d-flex flex-row align-items-center">
         <FontAwesomeIcon size="2x" icon={icon} color={colors.dark} />
-          <span className="text-muted text-wrap pl-4">
-            {`${text} ${numberWithCommas(lastYearTotal)} this time last year`}
-          </span>
+        <span className="text-muted text-wrap pl-4">
+          {`${text} ${numberWithCommas(lastYearTotal)} this time last year`}
+        </span>
       </div>
     );
   };
+
+  console.log(totalsObject, "totals object");
 
   return (
     <StyledWidgetCard>
@@ -98,18 +100,16 @@ const SummaryWidget = ({
         <Row>
           <Col>
             {/* Show spinner while waiting for data, add thousands separator to total */}
-              {!!totalsObject ? (
-                <h2 className="h1 total">
-                  {numberWithCommas(totalsObject[currentYear])}
-                </h2>
-              ) : (
-                <h2 className="h1 total">
-                  <p className="sr-only">
-                    Data loading
-                  </p>
-                  <ColorSpinner color={backgroundColor} />
-                </h2>
-              )}
+            {!!totalsObject ? (
+              <h2 className="h1 total">
+                {numberWithCommas(totalsObject[currentYear])}
+              </h2>
+            ) : (
+              <h2 className="h1 total">
+                <p className="sr-only">Data loading</p>
+                <ColorSpinner color={backgroundColor} />
+              </h2>
+            )}
           </Col>
         </Row>
         <div className="text-left d-flex flex-row">
