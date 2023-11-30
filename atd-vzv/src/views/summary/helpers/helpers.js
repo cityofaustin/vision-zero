@@ -1,3 +1,5 @@
+import { sub, format } from "date-fns";
+
 import { lifespanYears } from "../../../constants/calc";
 import { dataEndDate } from "../../../constants/time";
 // Helpers to handle Socrata responses for Summary view components
@@ -67,6 +69,10 @@ export const getSummaryYearsOfLifeLost = (data, prevYear, currentYear) => {
   ); // start with a count at 0 years
 };
 
+// export const getYearsAgoLabel = (yearsAgo) => {
+//   return dataEndDate.clone().subtract(yearsAgo, "year").format("YYYY");
+// };
+
 export const getYearsAgoLabel = (yearsAgo) => {
-  return dataEndDate.clone().subtract(yearsAgo, "year").format("YYYY");
+  return format(sub(dataEndDate, { years: yearsAgo }), "yyyy");
 };

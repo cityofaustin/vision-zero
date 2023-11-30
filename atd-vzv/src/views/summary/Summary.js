@@ -1,4 +1,5 @@
 import React from "react";
+import { format } from "date-fns";
 import CrashesByYear from "./CrashesByYear";
 import CrashesByTimeOfDay from "./CrashesByTimeOfDay";
 import PeopleByDemographics from "./PeopleByDemographics";
@@ -47,11 +48,12 @@ const Summary = () => {
     }
   `;
 
-  const lastUpdated = moment(dataEndDate).format("MMMM DD, YYYY");
+  // const lastUpdated = moment(dataEndDate).format("MMMM DD, YYYY");
+  const lastUpdated = format(dataEndDate, "MMMM dd, yyyy");
 
   // Display disclaimer when viewing preview instance
-  const previewDisclaimer = (
-    process.env.REACT_APP_VZV_ENVIRONMENT === "PREVIEW" &&
+  const previewDisclaimer = process.env.REACT_APP_VZV_ENVIRONMENT ===
+    "PREVIEW" && (
     <Row className="summary-child">
       <Alert color="danger" className="col-12 mb-0">
         <div className="mb-2">
@@ -79,11 +81,12 @@ const Summary = () => {
               <Row className="summary-child">
                 <Alert className="col-12 mb-0 banner">
                   <div className="mb-2">
-                    Austin is consistently ranked as one of America's best places
-                    to live, but too many of our fellow Austinites are killed or
-                    seriously injured in traffic crashes each year. To learn more
-                    about the City's transportation safety initiatives, visit
-                    Austin Transportation's Vision Zero Program{" "}
+                    Austin is consistently ranked as one of America's best
+                    places to live, but too many of our fellow Austinites are
+                    killed or seriously injured in traffic crashes each year. To
+                    learn more about the City's transportation safety
+                    initiatives, visit Austin Transportation's Vision Zero
+                    Program{" "}
                     <a
                       href="https://austintexas.gov/page/programs-and-initiatives"
                       target="_blank"
@@ -104,8 +107,8 @@ const Summary = () => {
                   <div>
                     Data through {lastUpdated}. <strong>Crash data</strong>{" "}
                     <InfoPopover config={popoverConfig.map.trafficCrashes} />{" "}
-                    includes crashes within City of Austin geographic boundaries,
-                    inclusive of all public safety jurisdictions.
+                    includes crashes within City of Austin geographic
+                    boundaries, inclusive of all public safety jurisdictions.
                   </div>
                 </Alert>
               </Row>

@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect, useRef } from "react";
 import { StoreContext } from "../../utils/store";
 import axios from "axios";
 import moment from "moment";
+import { format } from "date-fns";
 import { createMapDataUrl } from "../map/helpers";
 import { crashEndpointUrl } from "../summary/queries/socrataQueries";
 
@@ -52,7 +53,8 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
       const crashTimeTotals = crashes.reduce((accumulator, crash) => {
         crashTimeWindows.forEach((timeWindow, i) => {
           const crashDate = crash.crash_date;
-          const crashHour = parseInt(moment(crashDate).format("HH"));
+          // const crashHour = parseInt(moment(crashDate).format("HH"));
+          const crashHour = parseInt(format(crashDate, "H"));
           crashHour >= timeWindow[0] &&
             crashHour <= timeWindow[1] &&
             accumulator[i]++;
