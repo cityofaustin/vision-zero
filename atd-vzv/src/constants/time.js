@@ -25,10 +25,14 @@ export const yearsArray = () => {
 //   .subtract(ROLLING_YEARS_OF_DATA, "year")
 //   .startOf("year");
 
-export const dataStartDate = sub(startOfYear(new Date()), {
-  months: MONTHS_AGO,
-  years: ROLLING_YEARS_OF_DATA,
-});
+export const dataStartDate = startOfYear(
+  sub(new Date(), {
+    months: MONTHS_AGO,
+    years: ROLLING_YEARS_OF_DATA,
+  })
+);
+
+console.log(dataStartDate, "data start date");
 
 // Last date of records that should be referenced in VZV (the last day of the month that is MONTHS_AGO months ago)
 // export const dataEndDate = moment().subtract(14, "day");
@@ -64,7 +68,7 @@ export const summaryLastYearStartDate = format(
 );
 export const summaryLastYearEndDate = format(
   sub(dataEndDate, { years: 1 }),
-  "yyyy-MM-dddd"
+  "yyyy-MM-dd"
 );
 
 export const currentYearString = summaryCurrentYearStartDate.slice(0, 4);
@@ -106,5 +110,3 @@ export const fiveYearAvgEndDateByPop = format(
   endOfYear(sub(add(dataEndDate, { months: 1 }), { years: 1 })),
   "yyyy-MM-dd"
 );
-
-console.log(dataStartDate);
