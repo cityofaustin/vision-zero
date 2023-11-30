@@ -36,7 +36,7 @@ const dayOfWeekArray = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 // );
 
 const hourBlockArray = [...Array(24).keys()].map((hour) =>
-  format(new Date().setHours(hour), "hha")
+  format(new Date().setHours(hour), "ha")
 );
 
 console.log(hourBlockArray);
@@ -72,7 +72,7 @@ const calculateHourBlockTotals = (records, crashType) => {
     const recordDateTime = parseISO(record.crash_date);
     console.log(recordDateTime, "record date time");
     // const recordHour = recordDateTime.format("hhA");
-    const recordHour = format(recordDateTime, "hha");
+    const recordHour = format(recordDateTime, "ha");
     // const recordDay = recordDateTime.format("ddd");
     const recordDay = format(recordDateTime, "EEEE");
 
