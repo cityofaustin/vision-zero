@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import moment from "moment";
-import { format, parse } from "date-fns";
+import { format, setMonth } from "date-fns";
 import { Line } from "react-chartjs-2";
 import { colors } from "../../constants/colors";
 
@@ -11,7 +11,7 @@ const CrashesByYearCumulative = ({ avgData, currentYearData }) => {
     const formatChartData = (avgData, currentYearData) => {
       const labels = avgData.map((data) =>
         // moment({ month: parseInt(data.month) - 1 }).format("MMM")
-        format(parse(toString(parseInt(data.month) - 1)), "LLL")
+        format(setMonth(new Date(), parseInt(data.month - 1)), "LLLL")
       );
 
       const reduceCumulativeTotals = (data, valueKey) =>
