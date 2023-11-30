@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import moment from "moment";
-import { format, parse } from "date-fns";
+import { format, setMonth } from "date-fns";
 import { Bar } from "react-chartjs-2";
 
 import { colors } from "../../constants/colors";
