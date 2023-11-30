@@ -1,7 +1,7 @@
 import React, { useCallback, useState, useEffect } from "react";
 import axios from "axios";
 import moment from "moment";
-import { format } from "date-fns";
+import { format, parseISO, sub, parse } from "date-fns";
 import clonedeep from "lodash.clonedeep";
 
 import CrashTypeSelector from "./Components/CrashTypeSelector";
@@ -29,10 +29,17 @@ import { crashEndpointUrl } from "./queries/socrataQueries";
 import { getYearsAgoLabel } from "./helpers/helpers";
 import { colors } from "../../constants/colors";
 
-const dayOfWeekArray = moment.weekdaysShort();
+// const dayOfWeekArray = moment.weekdaysShort();
+const dayOfWeekArray = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+// const hourBlockArray = [...Array(24).keys()].map((hour) =>
+//   moment({ hour }).format("hhA")
+// );
+
 const hourBlockArray = [...Array(24).keys()].map((hour) =>
-  moment({ hour }).format("hhA")
+  format(new Date().setHours(hour), "ha")
 );
+
+// console.log(hourBlockArray);
 
 /**
  * Build an array of objs for each hour window that holds totals of each day of the week
@@ -61,9 +68,13 @@ const calculateHourBlockTotals = (records, crashType) => {
   const dataArray = buildDataArray();
 
   records.forEach((record) => {
-    const recordDateTime = moment(record.crash_date);
-    const recordHour = recordDateTime.format("hhA");
-    const recordDay = recordDateTime.format("ddd");
+    // const recordDateTime = moment(record.crash_date);
+    const recordDateTime = record.crash_date;
+    console.log(recordDateTime, "record date time");
+    // const recordHour = recordDateTime.format("hhA");
+    const recordHour = format(recordDateTime, "ha");
+    // const recordDay = recordDateTime.format("ddd");
+    const recordDay = format(recordDateTime, "EEEE");
 
     const hourData = dataArray.find((hour) => hour.key === recordHour).data;
     const dayToIncrement = hourData.find((day) => day.key === recordDay);
@@ -92,7 +103,8 @@ const calculateHourBlockTotals = (records, crashType) => {
  * @returns {String} The query url for the Socrata query
  */
 const getFatalitiesByYearsAgoUrl = (activeTab, crashType) => {
-  const yearsAgoDate = moment().subtract(activeTab, "year").format("YYYY");
+  // const yearsAgoDate = moment().subtract(activeTab, "year").format("YYYY");
+  const yearsAgoDate = format(sub(new Date(), { years: activeTab }), "yyyy");
   let queryUrl =
     activeTab === 0
       ? `${crashEndpointUrl}?$where=${crashType.queryStringCrash} AND crash_date between '${summaryCurrentYearStartDate}T00:00:00' and '${summaryCurrentYearEndDate}T23:59:59'`
@@ -126,10 +138,22 @@ const CrashesByTimeOfDay = () => {
   useEffect(() => {
     if (maxForLegend) return;
 
+    // const maxQuery = `
+    // SELECT date_extract_dow(crash_date) as day, date_extract_hh(crash_date) as hour, date_extract_y(crash_date) as year, SUM(death_cnt) as death, SUM(sus_serious_injry_cnt) as serious, serious + death as all
+    // WHERE crash_date BETWEEN '${dataStartDate.format(
+    //   "YYYY-MM-DD"
+    // )}' and '${summaryCurrentYearEndDate}'
+    // GROUP BY day, hour, year
+    // ORDER BY year
+    // |>
+    // SELECT max(death) as fatalities, max(serious) as seriousInjuries, max(all) as fatalitiesAndSeriousInjuries
+    // `;
+
     const maxQuery = `
     SELECT date_extract_dow(crash_date) as day, date_extract_hh(crash_date) as hour, date_extract_y(crash_date) as year, SUM(death_cnt) as death, SUM(sus_serious_injry_cnt) as serious, serious + death as all 
-    WHERE crash_date BETWEEN '${dataStartDate.format(
-      "YYYY-MM-DD"
+    WHERE crash_date BETWEEN '${format(
+      dataStartDate,
+      "yyyy-MM-dd"
     )}' and '${summaryCurrentYearEndDate}' 
     GROUP BY day, hour, year 
     ORDER BY year 
@@ -224,7 +248,7 @@ const CrashesByTimeOfDay = () => {
           <StyledButton>
             {yearsArray() // Calculate years ago for each year in data window
               .map((year) => {
-                const currentYear = parseInt(dataEndDate.format("YYYY"));
+                const currentYear = parseInt(format(dataEndDate, "yyyy"));
                 return currentYear - year;
               })
               .map((yearsAgo) => (
