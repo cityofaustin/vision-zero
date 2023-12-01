@@ -110,8 +110,8 @@ const calculateHourBlockTotals = (records, crashType) => {
  * @returns {String} The query url for the Socrata query
  */
 const getFatalitiesByYearsAgoUrl = (activeTab, crashType) => {
-  // const yearsAgoDate = moment().subtract(activeTab, "year").format("YYYY");
-  const yearsAgoDate = format(sub(new Date(), { years: activeTab }), "yyyy");
+  const yearsAgoDate = moment().subtract(activeTab, "year").format("YYYY");
+  // const yearsAgoDate = format(sub(new Date(), { years: activeTab }), "yyyy");
   console.log(yearsAgoDate, "years ago date");
   let queryUrl =
     activeTab === 0
@@ -143,6 +143,7 @@ const CrashesByTimeOfDay = () => {
     if (!crashType.queryStringCrash) return;
 
     axios.get(getFatalitiesByYearsAgoUrl(activeTab, crashType)).then((res) => {
+      console.log(res.data);
       const formattedData = calculateHourBlockTotals(res.data, crashType);
       console.log(formattedData, "formatted data");
       setHeatmapData(formattedData);
