@@ -31,13 +31,13 @@ import { colors } from "../../constants/colors";
 
 // const dayOfWeekArray = moment.weekdaysShort();
 const dayOfWeekArray = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-const hourBlockArray = [...Array(24).keys()].map((hour) =>
-  moment({ hour }).format("hhA")
-);
-
 // const hourBlockArray = [...Array(24).keys()].map((hour) =>
-//   format(new Date().setHours(hour), "hha")
+//   moment({ hour }).format("hhA")
 // );
+
+const hourBlockArray = [...Array(24).keys()].map((hour) =>
+  format(new Date().setHours(hour), "hha")
+);
 
 console.log(hourBlockArray);
 
@@ -68,6 +68,8 @@ const buildDataArray = () => {
  */
 const calculateHourBlockTotals = (records, crashType) => {
   const dataArray = buildDataArray();
+
+  console.log(records, "records");
 
   records.forEach((record) => {
     // const recordDateTime = moment(record.crash_date);
@@ -110,6 +112,7 @@ const calculateHourBlockTotals = (records, crashType) => {
 const getFatalitiesByYearsAgoUrl = (activeTab, crashType) => {
   // const yearsAgoDate = moment().subtract(activeTab, "year").format("YYYY");
   const yearsAgoDate = format(sub(new Date(), { years: activeTab }), "yyyy");
+  console.log(yearsAgoDate, "years ago date");
   let queryUrl =
     activeTab === 0
       ? `${crashEndpointUrl}?$where=${crashType.queryStringCrash} AND crash_date between '${summaryCurrentYearStartDate}T00:00:00' and '${summaryCurrentYearEndDate}T23:59:59'`
@@ -129,6 +132,8 @@ const CrashesByTimeOfDay = () => {
   console.log(crashType, "crash type");
 
   console.log(activeTab, "Active tab");
+
+  console.log(heatmapData, "heat map data");
 
   const toggle = (tab) => {
     if (activeTab !== tab) setActiveTab(tab);
