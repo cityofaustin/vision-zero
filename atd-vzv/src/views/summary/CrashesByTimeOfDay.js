@@ -29,8 +29,8 @@ import { crashEndpointUrl } from "./queries/socrataQueries";
 import { getYearsAgoLabel } from "./helpers/helpers";
 import { colors } from "../../constants/colors";
 
-// const dayOfWeekArray = moment.weekdaysShort();
-const dayOfWeekArray = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const dayOfWeekArray = moment.weekdaysShort();
+// const dayOfWeekArray = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 // const hourBlockArray = [...Array(24).keys()].map((hour) =>
 //   moment({ hour }).format("hhA")
 // );
@@ -66,9 +66,13 @@ const buildDataArray = () => {
  * @param {Object} crashType - Object containing query and name details (see CrashTypeSelector component)
  * @returns
  */
+
+// bug is here
 const calculateHourBlockTotals = (records, crashType) => {
   const dataArray = buildDataArray();
+  console.log(dataArray, "data array");
 
+  console.log(crashType);
   console.log(records, "records");
 
   records.forEach((record) => {
@@ -84,7 +88,9 @@ const calculateHourBlockTotals = (records, crashType) => {
     console.log(recordHour, "record hour");
 
     const hourData = dataArray.find((hour) => hour.key === recordHour).data;
+    console.log(hourData, "hour data");
     const dayToIncrement = hourData.find((day) => day.key === recordDay);
+    console.log(dayToIncrement, "day to increment");
 
     switch (crashType.name) {
       case "fatalities":
@@ -110,9 +116,8 @@ const calculateHourBlockTotals = (records, crashType) => {
  * @returns {String} The query url for the Socrata query
  */
 const getFatalitiesByYearsAgoUrl = (activeTab, crashType) => {
-  const yearsAgoDate = moment().subtract(activeTab, "year").format("YYYY");
-  // const yearsAgoDate = format(sub(new Date(), { years: activeTab }), "yyyy");
-  console.log(yearsAgoDate, "years ago date");
+  // const yearsAgoDate = moment().subtract(activeTab, "year").format("YYYY");
+  const yearsAgoDate = format(sub(new Date(), { years: activeTab }), "yyyy");
   let queryUrl =
     activeTab === 0
       ? `${crashEndpointUrl}?$where=${crashType.queryStringCrash} AND crash_date between '${summaryCurrentYearStartDate}T00:00:00' and '${summaryCurrentYearEndDate}T23:59:59'`
@@ -129,12 +134,6 @@ const CrashesByTimeOfDay = () => {
   );
   const [maxForLegend, setMaxForLegend] = useState(null);
 
-  console.log(crashType, "crash type");
-
-  console.log(activeTab, "Active tab");
-
-  console.log(heatmapData, "heat map data");
-
   const toggle = (tab) => {
     if (activeTab !== tab) setActiveTab(tab);
   };
@@ -143,12 +142,13 @@ const CrashesByTimeOfDay = () => {
     if (!crashType.queryStringCrash) return;
 
     axios.get(getFatalitiesByYearsAgoUrl(activeTab, crashType)).then((res) => {
-      console.log(res.data);
       const formattedData = calculateHourBlockTotals(res.data, crashType);
       console.log(formattedData, "formatted data");
       setHeatmapData(formattedData);
     });
   }, [activeTab, crashType]);
+
+  console.log(heatmapData, "heat map data");
 
   // Query to find maximum day total per crash type
   useEffect(() => {
