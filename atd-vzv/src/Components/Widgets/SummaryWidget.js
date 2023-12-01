@@ -92,8 +92,6 @@ const SummaryWidget = ({
     );
   };
 
-  console.log(totalsObject, "totals object");
-
   return (
     <StyledWidgetCard>
       <CardBody className="widget-body">
