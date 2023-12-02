@@ -18,7 +18,7 @@ const url = `${personEndpointUrl}?$query=`;
 const dateCondition = `crash_date BETWEEN '${format(
   dataStartDate,
   "yyyy-MM-dd"
-)}T00:00:00' and '${format(dataStartDate, "yyyy-MM-dd")}T23:59:59'`;
+)}T00:00:00' and '${format(dataEndDate, "yyyy-MM-dd")}T23:59:59'`;
 
 const chartColors = [
   colors.viridis1Of6Highest,
