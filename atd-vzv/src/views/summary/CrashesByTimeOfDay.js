@@ -82,7 +82,7 @@ const calculateHourBlockTotals = (records, crashType) => {
     // const recordHour = recordDateTime.format("hhA");
     const recordHour = format(recordDateTime, "hha");
     // const recordDay = recordDateTime.format("ddd");
-    const recordDay = format(recordDateTime, "EEEE");
+    const recordDay = format(recordDateTime, "E");
 
     console.log(recordDay, "record day");
     console.log(recordHour, "record hour");
