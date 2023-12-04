@@ -5,6 +5,7 @@ import aphroditeInterface from "react-with-styles-interface-aphrodite";
 import DefaultTheme from "react-dates/lib/theme/DefaultTheme";
 import styled from "styled-components";
 import { DateRangePicker } from "react-dates";
+import { format } from "date-fns";
 import {
   UncontrolledDropdown,
   DropdownItem,
@@ -166,7 +167,7 @@ const SideMapControlDateRange = ({ type }) => {
     return (
       <StyledMonthYearDropdown>
         <DropdownToggle caret color="dark">
-          {month.format("MMMM YYYY")}
+          {format(month, "MMMM yyyy")}
         </DropdownToggle>
         <DropdownMenu flip={false}>
           <DropdownItem header className="dropdown-header">
@@ -174,12 +175,12 @@ const SideMapControlDateRange = ({ type }) => {
           </DropdownItem>
           {yearArray.map((year) => (
             <DropdownItem
-              key={`${month.format("MMMM")}-${year}`}
+              key={`${format(month, "MMMM")}-${year}`}
               onClick={() => {
                 onYearSelect(month, year);
               }}
             >
-              {month.format("MMMM")} {year}
+              {format(month, "MMMM")} {year}
             </DropdownItem>
           ))}
         </DropdownMenu>
