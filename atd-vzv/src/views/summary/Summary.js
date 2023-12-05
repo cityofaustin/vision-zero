@@ -16,7 +16,6 @@ import { popoverConfig } from "../../Components/Popover/popoverConfig";
 import { Container, Row, Col, Alert } from "reactstrap";
 
 import styled from "styled-components";
-import moment from "moment";
 
 const children = [
   { component: <CrashesByYear /> },
@@ -48,7 +47,6 @@ const Summary = () => {
     }
   `;
 
-  // const lastUpdated = moment(dataEndDate).format("MMMM DD, YYYY");
   const lastUpdated = format(dataEndDate, "MMMM dd, yyyy");
 
   // Display disclaimer when viewing preview instance

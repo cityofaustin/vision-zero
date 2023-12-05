@@ -1,4 +1,3 @@
-import moment from "moment";
 import { sub, startOfYear, format, endOfYear, add } from "date-fns";
 
 // Set the sliding window of data that feeds VZV
@@ -20,11 +19,6 @@ export const yearsArray = () => {
 };
 
 // First date of records that should be referenced in VZV (start of first year in rolling window)
-// export const dataStartDate = moment()
-//   .subtract(MONTHS_AGO, "month")
-//   .subtract(ROLLING_YEARS_OF_DATA, "year")
-//   .startOf("year");
-
 export const dataStartDate = startOfYear(
   sub(new Date(), {
     months: MONTHS_AGO,
@@ -32,35 +26,16 @@ export const dataStartDate = startOfYear(
   })
 );
 
-console.log(dataStartDate, "data start date");
-
 // Last date of records that should be referenced in VZV (the last day of the month that is MONTHS_AGO months ago)
 // export const dataEndDate = moment().subtract(14, "day");
-
 export const dataEndDate = sub(new Date(), { days: 14 });
 
 // Summary time data
-// export const summaryCurrentYearStartDate = dataEndDate
-//   .clone() // Moment objects are mutable
-//   .startOf("year")
-//   .format("YYYY-MM-DD");
-// export const summaryCurrentYearEndDate = dataEndDate.format("YYYY-MM-DD");
-
 export const summaryCurrentYearStartDate = format(
   startOfYear(dataEndDate),
   "yyyy-MM-dd"
 );
 export const summaryCurrentYearEndDate = format(dataEndDate, "yyyy-MM-dd");
-
-// export const summaryLastYearStartDate = dataEndDate
-//   .clone()
-//   .startOf("year")
-//   .subtract(1, "year")
-//   .format("YYYY-MM-DD");
-// export const summaryLastYearEndDate = dataEndDate
-//   .clone()
-//   .subtract(1, "year")
-//   .format("YYYY-MM-DD");
 
 export const summaryLastYearStartDate = format(
   sub(startOfYear(dataEndDate), { years: 1 }),
@@ -80,16 +55,6 @@ export const mapStartDate = dataStartDate;
 export const mapEndDate = dataEndDate;
 
 // Five year average
-// export const fiveYearAvgStartDate = dataEndDate
-//   .clone()
-//   .startOf("year")
-//   .subtract(5, "year")
-//   .format("YYYY-MM-DD");
-// export const fiveYearAvgEndDate = dataEndDate
-//   .clone()
-//   .subtract(1, "year")
-//   .endOf("year")
-//   .format("YYYY-MM-DD");
 export const fiveYearAvgStartDate = format(
   sub(startOfYear(dataEndDate), { years: 5 }),
   "yyyy-MM-dd"
@@ -100,12 +65,6 @@ export const fiveYearAvgEndDate = format(
 );
 // Unique variable for the byPop chart that prevents the edge case
 // where the Feb. 1 query ends a year earlier than intended
-// export const fiveYearAvgEndDateByPop = dataEndDate
-//   .clone()
-//   .add(1, "month")
-//   .subtract(1, "year")
-//   .endOf("year")
-//   .format("YYYY-MM-DD");
 export const fiveYearAvgEndDateByPop = format(
   endOfYear(sub(add(dataEndDate, { months: 1 }), { years: 1 })),
   "yyyy-MM-dd"

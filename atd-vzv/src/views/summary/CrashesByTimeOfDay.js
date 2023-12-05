@@ -1,7 +1,6 @@
 import React, { useCallback, useState, useEffect } from "react";
 import axios from "axios";
-import moment from "moment";
-import { format, parseISO, sub, parse } from "date-fns";
+import { format, parseISO, sub } from "date-fns";
 import clonedeep from "lodash.clonedeep";
 
 import CrashTypeSelector from "./Components/CrashTypeSelector";
@@ -29,17 +28,11 @@ import { crashEndpointUrl } from "./queries/socrataQueries";
 import { getYearsAgoLabel } from "./helpers/helpers";
 import { colors } from "../../constants/colors";
 
-const dayOfWeekArray = moment.weekdaysShort();
-// const dayOfWeekArray = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-// const hourBlockArray = [...Array(24).keys()].map((hour) =>
-//   moment({ hour }).format("hhA")
-// );
+const dayOfWeekArray = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 const hourBlockArray = [...Array(24).keys()].map((hour) =>
   format(new Date().setHours(hour), "hha")
 );
-
-console.log(hourBlockArray);
 
 /**
  * Build an array of objs for each hour window that holds totals of each day of the week
@@ -51,8 +44,6 @@ const buildDataArray = () => {
   const hourWindowTotalsByDay = dayOfWeekArray
     .map((day) => ({ key: day, data: null })) // Initialize totals as null to unweight 0 in viz
     .reverse();
-
-  console.log(hourWindowTotalsByDay, "hour window totals");
 
   return hourBlockArray.map((hour) => ({
     key: hour,
@@ -67,30 +58,16 @@ const buildDataArray = () => {
  * @returns
  */
 
-// bug is here
 const calculateHourBlockTotals = (records, crashType) => {
   const dataArray = buildDataArray();
-  console.log(dataArray, "data array");
-
-  console.log(crashType);
-  console.log(records, "records");
 
   records.forEach((record) => {
-    // const recordDateTime = moment(record.crash_date);
     const recordDateTime = parseISO(record.crash_date);
-    console.log(recordDateTime, "record date time");
-    // const recordHour = recordDateTime.format("hhA");
     const recordHour = format(recordDateTime, "hha");
-    // const recordDay = recordDateTime.format("ddd");
     const recordDay = format(recordDateTime, "E");
 
-    console.log(recordDay, "record day");
-    console.log(recordHour, "record hour");
-
     const hourData = dataArray.find((hour) => hour.key === recordHour).data;
-    console.log(hourData, "hour data");
     const dayToIncrement = hourData.find((day) => day.key === recordDay);
-    console.log(dayToIncrement, "day to increment");
 
     switch (crashType.name) {
       case "fatalities":
@@ -116,7 +93,6 @@ const calculateHourBlockTotals = (records, crashType) => {
  * @returns {String} The query url for the Socrata query
  */
 const getFatalitiesByYearsAgoUrl = (activeTab, crashType) => {
-  // const yearsAgoDate = moment().subtract(activeTab, "year").format("YYYY");
   const yearsAgoDate = format(sub(new Date(), { years: activeTab }), "yyyy");
   let queryUrl =
     activeTab === 0
@@ -142,28 +118,14 @@ const CrashesByTimeOfDay = () => {
     if (!crashType.queryStringCrash) return;
 
     axios.get(getFatalitiesByYearsAgoUrl(activeTab, crashType)).then((res) => {
-      const formattedData = calculateHourBlockTotals(res.data, crashType);
       console.log(formattedData, "formatted data");
       setHeatmapData(formattedData);
     });
   }, [activeTab, crashType]);
 
-  console.log(heatmapData, "heat map data");
-
   // Query to find maximum day total per crash type
   useEffect(() => {
     if (maxForLegend) return;
-
-    // const maxQuery = `
-    // SELECT date_extract_dow(crash_date) as day, date_extract_hh(crash_date) as hour, date_extract_y(crash_date) as year, SUM(death_cnt) as death, SUM(sus_serious_injry_cnt) as serious, serious + death as all
-    // WHERE crash_date BETWEEN '${dataStartDate.format(
-    //   "YYYY-MM-DD"
-    // )}' and '${summaryCurrentYearEndDate}'
-    // GROUP BY day, hour, year
-    // ORDER BY year
-    // |>
-    // SELECT max(death) as fatalities, max(serious) as seriousInjuries, max(all) as fatalitiesAndSeriousInjuries
-    // `;
 
     const maxQuery = `
     SELECT date_extract_dow(crash_date) as day, date_extract_hh(crash_date) as hour, date_extract_y(crash_date) as year, SUM(death_cnt) as death, SUM(sus_serious_injry_cnt) as serious, serious + death as all 
