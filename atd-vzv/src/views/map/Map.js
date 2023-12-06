@@ -29,6 +29,8 @@ import MapInfoBox from "./InfoBox/MapInfoBox";
 import MapPolygonInfoBox from "./InfoBox/MapPolygonInfoBox";
 import MapGeocoder from "./Geocoder/Geocoder";
 
+const { arcgisToGeoJSON } = require("@terraformer/arcgis");
+
 export const MAPBOX_TOKEN = `pk.eyJ1Ijoiam9obmNsYXJ5IiwiYSI6ImNrM29wNnB3dDAwcXEzY29zMTU5bWkzOWgifQ.KKvoz6s4NKNHkFVSnGZonw`;
 
 const Map = () => {
