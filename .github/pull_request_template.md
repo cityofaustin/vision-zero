@@ -9,5 +9,6 @@
 ---
 #### Ship list
 - [ ] Check migrations for any conflicts with latest migrations in master branch
+- [ ] Confirm Hasura role permissions for necessary access
 - [ ] Code reviewed
 - [ ] Product manager approved
