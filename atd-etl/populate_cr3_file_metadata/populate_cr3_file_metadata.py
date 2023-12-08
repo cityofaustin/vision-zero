@@ -138,17 +138,12 @@ def get_file_metadata(crash_id: int) -> dict:
     timestamp = get_timestamp()
     file_size = get_file_size(crash_id)
     mime_attr = get_mime_attributes(crash_id)
-    failed_download = is_failed_cris_download(f"./{crash_id}.pdf")
 
     return {
         "last_update": timestamp,
-        "file_size": file_size if not failed_download else 0,
-        "mime_type": mime_attr.get("mime_type", None)
-        if not failed_download
-        else "text/html",
+        "file_size": file_size,
+        "mime_type": mime_attr.get("mime_type", None),
         "encoding": mime_attr.get("encoding", None)
-        if not failed_download
-        else "us-ascii",
     }
 
 
