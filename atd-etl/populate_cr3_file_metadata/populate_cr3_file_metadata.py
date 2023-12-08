@@ -64,7 +64,8 @@ def download_file(crash_id: int) -> bool:
             return file_exists(crash_id)
         else:
             return False
-    except:
+    except Exception as e:
+        print(f"An error occurred: {e}")
         return False
 
 
