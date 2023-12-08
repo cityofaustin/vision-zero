@@ -13,7 +13,7 @@ on:
       - "atd-etl/cris_import/**"
       - "atd-etl/cr3_extract_diagram/**"
       - "atd-etl/socrata_export/**"
-      - "atd-etl/process_missing_cr3_pdfs/**"
+      - "atd-etl/populate_cr3_file_metadata/**"
   pull_request:
     branches:
       - master
@@ -24,7 +24,7 @@ on:
       - "atd-etl/cris_import/**"
       - "atd-etl/cr3_extract_diagram/**"
       - "atd-etl/socrata_export/**"
-      - "atd-etl/process_missing_cr3_pdfs/**"
+      - "atd-etl/populate_cr3_file_metadata/**"
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
@@ -55,8 +55,8 @@ jobs:
               - 'atd-etl/cr3_extract_diagram/**'
             socrata_export:
               - 'atd-etl/socrata_export/**'
-            process_missing_cr3_pdfs:
-              - 'atd-etl/process_missing_cr3_pdfs/**'
+            populate_cr3_file_metadata:
+              - 'atd-etl/populate_cr3_file_metadata/**'
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -97,11 +97,11 @@ jobs:
           push: true
           tags: atddocker/vz-socrata-export:${{ github.ref == 'refs/heads/production' && 'production' || 'development' }}
 
-      - name: Build and push PDF maintenance image
-        if: steps.changes.outputs.process_missing_cr3_pdfs == 'true'
+      - name: Build and push CR3 PDF metadata image
+        if: steps.changes.outputs.populate_cr3_file_metadata == 'true'
         uses: docker/build-push-action@v4
         with:
           platforms: linux/amd64,linux/arm64
-          context: atd-etl/process_missing_cr3_pdfs
+          context: atd-etl/populate_cr3_file_metadata
           push: true
-          tags: atddocker/vz-process-missing-cr3-pdfs:${{ github.ref == 'refs/heads/master' && 'production' || 'latest' }}
+          tags: atddocker/vz-pdfs:${{ github.ref == 'refs/heads/master' && 'production' || 'latest' }}
