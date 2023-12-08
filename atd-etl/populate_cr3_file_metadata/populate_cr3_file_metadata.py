@@ -160,6 +160,8 @@ def process_record(crash_id: int) -> bool:
         print(f"Invalid crash_id: {crash_id}")
         return False
 
+    print(f"Processing crash_id: {crash_id}")
+
     # 1. Download file to disk
     if not download_file(crash_id):
         print(f"Could not find CR3 file for crash_id: {crash_id}")
@@ -174,6 +176,8 @@ def process_record(crash_id: int) -> bool:
     if not is_valid_metadata(metadata):
         print(f"Invalid metadata for file for crash_id: {crash_id}")
         return False
+
+    print("Metadata: " + json.dumps(metadata))
 
     # 3. Execute GraphQL with new metadata
     update_metadata(crash_id, metadata)
