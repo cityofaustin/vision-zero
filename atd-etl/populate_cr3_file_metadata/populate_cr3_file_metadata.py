@@ -142,7 +142,7 @@ def get_file_metadata(crash_id: int) -> dict:
         "last_update": timestamp,
         "file_size": file_size,
         "mime_type": mime_attr.get("mime_type", None),
-        "encoding": mime_attr.get("encoding", None)
+        "encoding": mime_attr.get("encoding", None),
     }
 
 
