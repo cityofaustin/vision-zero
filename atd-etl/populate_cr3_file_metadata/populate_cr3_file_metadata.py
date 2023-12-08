@@ -11,7 +11,6 @@ AWS_BUCKET_NAME = os.getenv("AWS_BUCKET_NAME", "")
 AWS_BUCKET_ENVIRONMENT = os.getenv("AWS_BUCKET_ENVIRONMENT", "")
 AWS_S3_CLIENT = boto3.client("s3")
 
-quit()
 
 def is_crash_id(crash_id: int) -> bool:
     """
