@@ -104,4 +104,4 @@ jobs:
           platforms: linux/amd64,linux/arm64
           context: atd-etl/populate_cr3_file_metadata
           push: true
-          tags: atddocker/vz-pdfs:${{ github.ref == 'refs/heads/master' && 'production' || 'latest' }}
+          tags: atddocker/vz-cr3-metadata-pdfs:${{ github.ref == 'refs/heads/master' && 'production' || 'latest' }}
