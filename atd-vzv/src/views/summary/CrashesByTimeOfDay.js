@@ -118,7 +118,7 @@ const CrashesByTimeOfDay = () => {
     if (!crashType.queryStringCrash) return;
 
     axios.get(getFatalitiesByYearsAgoUrl(activeTab, crashType)).then((res) => {
-      console.log(formattedData, "formatted data");
+      const formattedData = calculateHourBlockTotals(res.data, crashType);
       setHeatmapData(formattedData);
     });
   }, [activeTab, crashType]);
