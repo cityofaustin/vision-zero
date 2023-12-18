@@ -2,11 +2,8 @@ import { useEffect } from "react";
 import { mapRequestFields } from "../summary/queries/socrataQueries";
 import { format } from "date-fns";
 
-// const convertDateToSocrataFormat = (date, suffix) =>
-//   date.format("YYYY-MM-DD") + suffix;
-
 const convertDateToSocrataFormat = (date, suffix) =>
-  format(date, "yyyy-MM-dd") + suffix;
+  format(new Date(date), "yyyy-MM-dd") + suffix;
 
 const generateWhereFilters = (filters) => {
   // Store filter group query strings
