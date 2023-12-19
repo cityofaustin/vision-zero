@@ -245,8 +245,8 @@ const SideMapControlDateRange = ({ type }) => {
       <DateRangePicker
         startDateId={`start_date_${type}`} // PropTypes.string.isRequired,
         endDateId={`end_date_${type}`} // PropTypes.string.isRequired,
-        startDate={moment(start)} // momentPropTypes.momentObj or null,
-        endDate={moment(end)} // momentPropTypes.momentObj or null,
+        startDate={!!start ? moment(start) : null} // momentPropTypes.momentObj or null,
+        endDate={!!end ? moment(end) : null} // momentPropTypes.momentObj or null,
         onDatesChange={handleDateChange} // PropTypes.func.isRequired,
         focusedInput={focused} // PropTypes.oneOf([START_DATE, END_DATE]) or null,
         onFocusChange={(focusedInput) => {
@@ -254,8 +254,8 @@ const SideMapControlDateRange = ({ type }) => {
           isTablet && document.activeElement.blur(); // Do not prompt the keyboard on mobile/tablet
         }} // PropTypes.func.isRequired,
         keepFocusOnInput
-        minDate={moment(dataStartDate)}
-        maxDate={moment(dataEndDate)}
+        minDate={dataStartDate}
+        maxDate={dataEndDate}
         renderCalendarInfo={() => (isMobile && renderCalendarInfo()) || true} // Render custom close button on mobile
         calendarInfoPosition="top" // Position custom close button
         appendToBody // Allow calendar to pop out over SideDrawer and Map components
