@@ -34,8 +34,8 @@ import {
 
 const SideMapControlDateRange = ({ type }) => {
   const [focused, setFocused] = useState(null);
-  const [start, setStart] = useState(mapStartDate);
-  const [end, setEnd] = useState(mapEndDate);
+  const [start, setStart] = useState(moment(mapStartDate));
+  const [end, setEnd] = useState(moment(mapEndDate));
 
   /**
    * We need to calculate the width differently in windows, by a few pixels.
@@ -122,7 +122,6 @@ const SideMapControlDateRange = ({ type }) => {
   }, [start, end, setMapDate]);
 
   const handleDateChange = (dates) => {
-    console.log("changing date");
     let { startDate, endDate } = dates;
 
     startDate =
@@ -246,8 +245,8 @@ const SideMapControlDateRange = ({ type }) => {
       <DateRangePicker
         startDateId={`start_date_${type}`} // PropTypes.string.isRequired,
         endDateId={`end_date_${type}`} // PropTypes.string.isRequired,
-        startDate={start ? moment(start) : null} // momentPropTypes.momentObj or null,
-        endDate={end ? moment(end) : null} // momentPropTypes.momentObj or null,
+        startDate={start} // momentPropTypes.momentObj or null,
+        endDate={end} // momentPropTypes.momentObj or null,
         onDatesChange={handleDateChange} // PropTypes.func.isRequired,
         focusedInput={focused} // PropTypes.oneOf([START_DATE, END_DATE]) or null,
         onFocusChange={(focusedInput) => {
