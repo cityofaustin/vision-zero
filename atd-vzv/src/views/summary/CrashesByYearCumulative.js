@@ -9,7 +9,7 @@ const CrashesByYearCumulative = ({ avgData, currentYearData }) => {
   useEffect(() => {
     const formatChartData = (avgData, currentYearData) => {
       const labels = avgData.map((data) =>
-        format(setMonth(new Date(), parseInt(data.month - 1)), "LLLL")
+        format(setMonth(new Date(), parseInt(data.month - 1)), "LLL")
       );
 
       const reduceCumulativeTotals = (data, valueKey) =>
