@@ -10,7 +10,7 @@ const CrashesByYearAverage = ({ avgData, currentYearData }) => {
   useEffect(() => {
     const formatChartData = (avgData, currentYearData) => {
       const labels = avgData.map((data) =>
-        format(setMonth(new Date(), parseInt(data.month - 1)), "LLLL")
+        format(setMonth(new Date(), parseInt(data.month - 1)), "LLL")
       );
       const avgValues = avgData.map((data) => data.avg);
       const currentYearValues = currentYearData.map((data) => data.total);
