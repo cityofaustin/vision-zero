@@ -26,14 +26,20 @@ hasura migrate apply --envfile .env.local
 hasura metadata apply --envfile .env.local
 ``` 
 - Start the local Hasura console and make any changes needed which will then reflect in your project folder
+
 ### Merging an approved feature branch
 
-We need to check the order of migrations against those in the `master` **before merging a feature branch** so that we can make updates to the migration version order if needed. The version refers to the timestamp in migration folder name.
+We need to check the order of migrations against those in the `master` branch **before merging a feature branch** so that we can make updates to the migration version order if needed. The version refers to the timestamp in the migration folder name.
 
-To check migrations for any conflicts with latest migrations in the `master`` branch:
+To check migrations for any conflicts with the latest migrations in the `master` branch:
 - Make sure that your branch is up to date with `master`
 - Check to make sure no one else is actively merging their work and coordinate if needed
-- Update the migration version in your project so it is the newest migration
-- Test locally using the steps in the  [Generating migrations and metadata changes section](#generating-migrations-and-metadata-changes)
+- Update the migration versions in your branch so they are the newest migrations if needed
+- Start up the local database and Hasura engine and replicate using the latest production data dump
+- Then, run:
+```bash
+hasura migrate apply --envfile .env.local
+hasura metadata apply --envfile .env.local
+``` 
 
-Once everything looks good, we can merge and the CI will apply the new migrations and metadata to the staging database.
+Once we see that no errors occur when applying the sequence of migrations locally, we can merge and the CI will apply the new migrations and metadata to the staging database.
