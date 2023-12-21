@@ -1,0 +1,3 @@
+table:
+  name: ems__incidents
+  schema: public
