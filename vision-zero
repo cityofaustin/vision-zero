@@ -177,7 +177,7 @@ def replicateDb(args):
 
     drop_database_command = [
         "psql",
-        "--command=DROP DATABASE " + os.environ["POSTGRES_DB"] + "",
+        "--command=DROP DATABASE " + os.environ["POSTGRES_DB"] + " WITH(force)",
     ]
 
     print("️🫳 Dropping the local database")

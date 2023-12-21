@@ -80,6 +80,7 @@ insert_permissions:
         - last_update
         - non_injry_cnt
         - nonincap_injry_cnt
+        - peh_fl
         - person_id
         - poss_injry_cnt
         - prsn_age
@@ -123,6 +124,7 @@ select_permissions:
         - last_update
         - non_injry_cnt
         - nonincap_injry_cnt
+        - peh_fl
         - person_id
         - poss_injry_cnt
         - prsn_age
@@ -163,6 +165,7 @@ select_permissions:
         - last_update
         - non_injry_cnt
         - nonincap_injry_cnt
+        - peh_fl
         - person_id
         - poss_injry_cnt
         - prsn_age
@@ -204,6 +207,7 @@ update_permissions:
         - last_update
         - non_injry_cnt
         - nonincap_injry_cnt
+        - peh_fl
         - person_id
         - poss_injry_cnt
         - prsn_age
