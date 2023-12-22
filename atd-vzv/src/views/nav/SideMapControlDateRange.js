@@ -34,8 +34,8 @@ import {
 
 const SideMapControlDateRange = ({ type }) => {
   const [focused, setFocused] = useState(null);
-  const [start, setStart] = useState(moment(mapStartDate));
-  const [end, setEnd] = useState(moment(mapEndDate));
+  const [start, setStart] = useState(mapStartDate);
+  const [end, setEnd] = useState(mapEndDate);
 
   /**
    * We need to calculate the width differently in windows, by a few pixels.
