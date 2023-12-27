@@ -111,7 +111,7 @@ def get_secrets():
         },
         "record_age_maximum_in_days": {
             "opitem": "Vision Zero AFD and EMS Import",
-            "opfield": f"{DEPLOYMENT_ENVIRONMENT}.Record Age Maximum in Days",
+            "opfield": f"{DEPLOYMENT_ENVIRONMENT}.EMS Record Age Maximum in Days",
             "opvault": VAULT_ID,
         },
     }

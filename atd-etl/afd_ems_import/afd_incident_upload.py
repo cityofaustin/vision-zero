@@ -40,6 +40,7 @@ ONEPASSWORD_CONNECT_TOKEN = os.getenv("OP_API_TOKEN")  # our secret to get secre
 ONEPASSWORD_CONNECT_HOST = os.getenv("OP_CONNECT")  # where we get our secrets
 VAULT_ID = os.getenv("OP_VAULT_ID")
 
+
 def get_secrets():
     REQUIRED_SECRETS = {
         "bastion_host": {
@@ -111,7 +112,12 @@ def get_secrets():
             "opitem": "RDS Bastion Key",
             "opfield": ".private key",
             "opvault": VAULT_ID,
-            },
+        },
+        "record_age_maximum_in_days": {
+            "opitem": "Vision Zero AFD and EMS Import",
+            "opfield": f"{DEPLOYMENT_ENVIRONMENT}.AFD Record Age Maximum in Days",
+            "opvault": VAULT_ID,
+        },
     }
 
     # instantiate a 1Password client
@@ -137,7 +143,7 @@ DB_BASTION_HOST = secrets["bastion_host"]
 DB_BASTION_HOST_SSH_USERNAME = secrets["bastion_ssh_username"]
 DB_BASTION_HOST_SSH_PRIVATE_KEY = secrets["bastion_ssh_private_key"]
 DB_RDS_HOST = secrets["database_host"]
-RECORD_AGE_MAXIMUM = None # the default is fine, and we never tune it. 
+RECORD_AGE_MAXIMUM = secrets["record_age_maximum_in_days"]
 
 
 def main():
@@ -148,7 +154,6 @@ def main():
     uploaded_token = upload_attachment_to_S3(attachment_location, timestamp)
     data = create_and_parse_dataframe(attachment_location)
     upload_token = upload_data_to_postgres(data, record_age_maximum)
-
 
 
 def get_timestamp():
@@ -217,9 +222,10 @@ def create_and_parse_dataframe(location):
 
 
 def upload_data_to_postgres(data, age_cutoff):
-
     with SshKeyTempDir() as key_directory:
-        write_key_to_file(key_directory + "/id_ed25519", DB_BASTION_HOST_SSH_PRIVATE_KEY + "\n") 
+        write_key_to_file(
+            key_directory + "/id_ed25519", DB_BASTION_HOST_SSH_PRIVATE_KEY + "\n"
+        )
         ssh_tunnel = SSHTunnelForwarder(
             (DB_BASTION_HOST),
             ssh_username=DB_BASTION_HOST_SSH_USERNAME,
@@ -228,13 +234,12 @@ def upload_data_to_postgres(data, age_cutoff):
         )
         ssh_tunnel.start()
 
-
         pg = psycopg2.connect(
-            host='localhost', 
+            host="localhost",
             port=ssh_tunnel.local_bind_port,
-            user=DB_USERNAME, 
-            password=DB_PASSWORD, 
-            dbname=DB_DATABASE
+            user=DB_USERNAME,
+            password=DB_PASSWORD,
+            dbname=DB_DATABASE,
         )
 
         print(f"Max record age: {age_cutoff}")
@@ -356,11 +361,12 @@ class SshKeyTempDir:
         self.path = None
 
     def __enter__(self):
-        self.path = tempfile.mkdtemp(dir='/tmp')
+        self.path = tempfile.mkdtemp(dir="/tmp")
         return self.path
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         shutil.rmtree(self.path)
+
 
 def write_key_to_file(path, content):
     # Open the file with write permissions and create it if it doesn't exist
@@ -371,6 +377,7 @@ def write_key_to_file(path, content):
 
     # Close the file
     os.close(fd)
+
 
 if __name__ == "__main__":
     main()
