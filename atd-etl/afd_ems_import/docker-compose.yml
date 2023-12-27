@@ -6,6 +6,6 @@ services:
     volumes:
       - .:/app
     env_file:
-      - ./env
+      - ./.env
     environment:
       - ENVIRONMENT=development
