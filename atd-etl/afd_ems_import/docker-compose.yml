@@ -7,5 +7,3 @@ services:
       - .:/app
     env_file:
       - ./.env
-    environment:
-      - ENVIRONMENT=development
