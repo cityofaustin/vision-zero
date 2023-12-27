@@ -152,7 +152,7 @@ RECORD_AGE_MAXIMUM = secrets["record_age_maximum_in_days"]
 
 
 def main():
-    record_age_maximum = RECORD_AGE_MAXIMUM or 15
+    record_age_maximum = int(RECORD_AGE_MAXIMUM) or 15
     timestamp = get_timestamp()
     newest_email = get_most_recent_email()
     attachment_location = extract_email_attachment(newest_email)
