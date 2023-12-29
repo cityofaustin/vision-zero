@@ -1,7 +1,7 @@
 import React from "react";
 import { Popup } from "react-map-gl";
 import InfoCard from "./InfoCard";
-import moment from "moment";
+import { format } from "date-fns";
 import styled from "styled-components";
 import { StyledMobileInfo, setPopupPosition } from "./infoBoxStyles";
 
@@ -29,7 +29,7 @@ const MapInfoBox = React.memo(
     const buildSeriousInjuriesOrFatalitiesConfig = (info) => [
       {
         title: "Date/Time",
-        content: moment(info.crash_date).format("MM/DD/YYYY HH:mm A"),
+        content: format(new Date(info.crash_date), "MM/dd/yyyy H:m a"),
       },
       { title: "Fatalities", content: info.death_cnt },
       { title: "Serious Injuries", content: info.sus_serious_injry_cnt },

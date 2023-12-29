@@ -3,6 +3,7 @@ import axios from "axios";
 import styled from "styled-components";
 import { Bar } from "react-chartjs-2";
 import { Container, Row, Col } from "reactstrap";
+import { format } from "date-fns";
 
 import CrashTypeSelector from "./Components/CrashTypeSelector";
 import InfoPopover from "../../Components/Popover/InfoPopover";
@@ -19,8 +20,9 @@ const CrashesByPopulation = () => {
   const url = `${crashEndpointUrl}?$query=`;
 
   useEffect(() => {
-    const dateCondition = `crash_date BETWEEN '${dataStartDate.format(
-      "YYYY-MM-DD"
+    const dateCondition = `crash_date BETWEEN '${format(
+      dataStartDate,
+      "yyyy-MM-dd"
     )}T00:00:00' and '${fiveYearAvgEndDateByPop}T23:59:59'`;
     const queryGroupAndOrder = `GROUP BY year ORDER BY year`;
 

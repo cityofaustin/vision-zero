@@ -5,6 +5,8 @@ import aphroditeInterface from "react-with-styles-interface-aphrodite";
 import DefaultTheme from "react-dates/lib/theme/DefaultTheme";
 import styled from "styled-components";
 import { DateRangePicker } from "react-dates";
+import moment from "moment";
+import { format, getYear } from "date-fns";
 import {
   UncontrolledDropdown,
   DropdownItem,
@@ -159,14 +161,14 @@ const SideMapControlDateRange = ({ type }) => {
 
   const renderMonthElement = ({ month, onYearSelect }) => {
     let yearArray = [];
-    for (let i = dataStartDate.year(); i <= dataEndDate.year(); i++) {
+    for (let i = getYear(dataStartDate); i <= getYear(dataEndDate); i++) {
       yearArray.push(i);
     }
 
     return (
       <StyledMonthYearDropdown>
         <DropdownToggle caret color="dark">
-          {month.format("MMMM YYYY")}
+          {format(new Date(month), "MMMM yyyy")}
         </DropdownToggle>
         <DropdownMenu flip={false}>
           <DropdownItem header className="dropdown-header">
@@ -174,12 +176,12 @@ const SideMapControlDateRange = ({ type }) => {
           </DropdownItem>
           {yearArray.map((year) => (
             <DropdownItem
-              key={`${month.format("MMMM")}-${year}`}
+              key={`${format(new Date(month), "MMMM")}-${year}`}
               onClick={() => {
                 onYearSelect(month, year);
               }}
             >
-              {month.format("MMMM")} {year}
+              {format(new Date(month), "MMMM")} {year}
             </DropdownItem>
           ))}
         </DropdownMenu>
@@ -252,8 +254,8 @@ const SideMapControlDateRange = ({ type }) => {
           isTablet && document.activeElement.blur(); // Do not prompt the keyboard on mobile/tablet
         }} // PropTypes.func.isRequired,
         keepFocusOnInput
-        minDate={dataStartDate}
-        maxDate={dataEndDate}
+        minDate={moment(dataStartDate)}
+        maxDate={moment(dataEndDate)}
         renderCalendarInfo={() => (isMobile && renderCalendarInfo()) || true} // Render custom close button on mobile
         calendarInfoPosition="top" // Position custom close button
         appendToBody // Allow calendar to pop out over SideDrawer and Map components
