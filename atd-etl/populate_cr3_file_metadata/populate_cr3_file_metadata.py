@@ -9,7 +9,7 @@ PDF_MAX_RECORDS = os.getenv("PDF_MAX_RECORDS", 100)
 
 AWS_BUCKET_NAME = os.getenv("AWS_BUCKET_NAME", "")
 AWS_BUCKET_ENVIRONMENT = os.getenv("AWS_BUCKET_ENVIRONMENT", "")
-AWS_S3_CLIENT = boto3.client('s3')
+AWS_S3_CLIENT = boto3.client("s3")
 
 
 def is_crash_id(crash_id: int) -> bool:
@@ -22,10 +22,12 @@ def is_crash_id(crash_id: int) -> bool:
 
 
 def is_valid_metadata(metadata: dict) -> bool:
-    if metadata.get("last_update", None) is not None \
-        and metadata.get("file_size", None) is not None \
-        and metadata.get("mime_type", None) is not None \
-        and metadata.get("encoding", None) is not None:
+    if (
+        metadata.get("last_update", None) is not None
+        and metadata.get("file_size", None) is not None
+        and metadata.get("mime_type", None) is not None
+        and metadata.get("encoding", None) is not None
+    ):
         return True
     return False
 
@@ -56,12 +58,13 @@ def download_file(crash_id: int) -> bool:
             AWS_S3_CLIENT.download_file(
                 AWS_BUCKET_NAME,
                 f"{AWS_BUCKET_ENVIRONMENT}/cris-cr3-files/{crash_id}.pdf",
-                f"{crash_id}.pdf"
+                f"{crash_id}.pdf",
             )
             return file_exists(crash_id)
         else:
             return False
-    except:
+    except Exception as e:
+        print(f"An error occurred: {e}")
         return False
 
 
@@ -76,31 +79,6 @@ def delete_file(crash_id: int) -> bool:
         return file_exists(crash_id) is False
     else:
         return False
-
-
-def is_failed_cris_download(filename: str) -> bool:
-    """
-    Attempts to read the data in the file and to read certain keywords.
-    :param filename: The file name to be scanned
-    :return bool: True if the file contains a keyword, False otherwise
-    """
-    try:
-        file_handle = open(filename)
-        contents = file_handle.read()
-
-        keywords = ["TxDOT Login", "CRIS", "Please enter your username and password to continue", "html", "HTML",
-                    "script", "SCRIPT", "<!DOCTYPE html>"]
-        # For every keyword in keywords
-        for kw in keywords:
-            # Check if the keyword can be found in contents
-            if kw in contents:
-                # If so, return true immediately
-                return True
-    except Exception as e:
-        print("isFailedCrisDownload() Exception while reading the file: " + str(e))
-
-    # If we reach this point, the file is valid or an exception has occurred
-    return False
 
 
 def get_mime_attributes(crash_id: int) -> dict:
@@ -118,10 +96,7 @@ def get_mime_attributes(crash_id: int) -> dict:
         mime_attr_str = os.popen(command).read()
         mime_attr = mime_attr_str.replace(" charset=", "").strip().split(";", 2)
 
-        return {
-            "mime_type": mime_attr[0],
-            "encoding": mime_attr[1]
-        }
+        return {"mime_type": mime_attr[0], "encoding": mime_attr[1]}
     except IndexError:
         return {}
 
@@ -162,13 +137,12 @@ def get_file_metadata(crash_id: int) -> dict:
     timestamp = get_timestamp()
     file_size = get_file_size(crash_id)
     mime_attr = get_mime_attributes(crash_id)
-    failed_download = is_failed_cris_download(f"./{crash_id}.pdf")
 
     return {
         "last_update": timestamp,
-        "file_size": file_size if not failed_download else 0,
-        "mime_type": mime_attr.get("mime_type", None) if not failed_download else "text/html",
-        "encoding": mime_attr.get("encoding", None) if not failed_download else "us-ascii"
+        "file_size": file_size,
+        "mime_type": mime_attr.get("mime_type", None),
+        "encoding": mime_attr.get("encoding", None),
     }
 
 
@@ -179,6 +153,8 @@ def process_record(crash_id: int) -> bool:
     if not is_crash_id(crash_id):
         print(f"Invalid crash_id: {crash_id}")
         return False
+
+    print(f"Processing crash_id: {crash_id}")
 
     # 1. Download file to disk
     if not download_file(crash_id):
@@ -194,6 +170,8 @@ def process_record(crash_id: int) -> bool:
     if not is_valid_metadata(metadata):
         print(f"Invalid metadata for file for crash_id: {crash_id}")
         return False
+
+    print("Metadata: " + json.dumps(metadata))
 
     # 3. Execute GraphQL with new metadata
     update_metadata(crash_id, metadata)
@@ -226,14 +204,9 @@ def get_file_metadata_cloud(crash_id: int) -> Optional[dict]:
         headers={
             "Accept": "*/*",
             "content-type": "application/json",
-            "x-hasura-admin-secret": os.getenv("HASURA_ADMIN_KEY")
+            "x-hasura-admin-secret": os.getenv("HASURA_ADMIN_KEY"),
         },
-        json={
-            "query": query_get_record,
-            "variables": {
-                "crash_id": int(crash_id)
-            }
-        }
+        json={"query": query_get_record, "variables": {"crash_id": int(crash_id)}},
     )
     response.encoding = "utf-8"
     try:
@@ -263,14 +236,9 @@ def get_records(limit: int = 100) -> Set[int]:
         headers={
             "Accept": "*/*",
             "content-type": "application/json",
-            "x-hasura-admin-secret": os.getenv("HASURA_ADMIN_KEY")
+            "x-hasura-admin-secret": os.getenv("HASURA_ADMIN_KEY"),
         },
-        json={
-            "query": query_get_records,
-            "variables": {
-                "limit": int(limit)
-            }
-        }
+        json={"query": query_get_records, "variables": {"limit": int(limit)}},
     )
 
     try:
@@ -279,11 +247,7 @@ def get_records(limit: int = 100) -> Set[int]:
 
     except Exception as e:
         print("Error: " + str(e))
-        records = {
-            "data": {
-                "atd_txdot_crashes": []
-            }
-        }
+        records = {"data": {"atd_txdot_crashes": []}}
 
     try:
         return set(map(lambda x: x["crash_id"], records["data"]["atd_txdot_crashes"]))
@@ -297,11 +261,13 @@ def update_metadata(crash_id: int, metadata: dict) -> bool:
     Returns True if it manages to update the metadata for an object.
     :param int crash_id: The crash id to be updated
     :param dict metadata: The metadata to be set
-    :return bool: 
+    :return bool:
     """
-    if not is_crash_id(crash_id) \
-            or not isinstance(metadata, dict) \
-            or not is_valid_metadata(metadata):
+    if (
+        not is_crash_id(crash_id)
+        or not isinstance(metadata, dict)
+        or not is_valid_metadata(metadata)
+    ):
         return False
 
     print(f"Updating crash_id: {crash_id}, with metadata: {json.dumps(metadata)}")
@@ -326,15 +292,12 @@ def update_metadata(crash_id: int, metadata: dict) -> bool:
         headers={
             "Accept": "*/*",
             "content-type": "application/json",
-            "x-hasura-admin-secret": os.getenv("HASURA_ADMIN_KEY")
+            "x-hasura-admin-secret": os.getenv("HASURA_ADMIN_KEY"),
         },
         json={
             "query": mutation_update_crash_cr3_metadata,
-            "variables": {
-                "crash_id": int(crash_id),
-                "metadata": metadata
-            }
-        }
+            "variables": {"crash_id": int(crash_id), "metadata": metadata},
+        },
     )
     response.encoding = "utf-8"
     try:

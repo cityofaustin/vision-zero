@@ -12,7 +12,6 @@ Currently there are two systems making backups, one in RDS and the other in S3 v
 
 We deployed a standard Hasura container to work as an API between Postgres and atd-vze. For more information on how it works, please refer to their [website](https://hasura.io) and documentation. 
 
-
 ## Pipeline
 
 Changes to the schema and database are handled by CI (GitHub Action workflow) that applies migrations and metadata using the [Hasura CLI](https://hasura.io/docs/latest/hasura-cli/overview/).
@@ -27,21 +26,20 @@ hasura migrate apply --envfile .env.local
 hasura metadata apply --envfile .env.local
 ``` 
 - Start the local Hasura console and make any changes needed which will then reflect in your project folder
+
 ### Merging an approved feature branch
 
-We need to check the status of new migrations against the staging Hasura engine **before merging a feature branch** so that we can make updates to the migration version order if needed. The version refers to the timestamp in migration folder name.
+We need to check the order of migrations against those in the `master` branch **before merging a feature branch** so that we can make updates to the migration version order if needed. The version refers to the timestamp in the migration folder name.
 
-To check the status from your local project folder, run:
-```bash
-hasura migrate status --envfile .env.staging
-```
-
-Check that your new migration shows `NOT PRESENT` in the `DATABASE` column and that it is also the last row in the table shown. We need to make sure that migrations are applied in the same order.
-
-If the new migration is not the last migration to apply in the sequence:
+To check migrations for any conflicts with the latest migrations in the `master` branch:
 - Make sure that your branch is up to date with `master`
 - Check to make sure no one else is actively merging their work and coordinate if needed
-- Update the migration version in your project so it is the newest migration
-- Test locally using the steps in the  [Generating migrations and metadata changes section](#generating-migrations-and-metadata-changes)
+- Update the migration versions in your branch so they are the newest migrations if needed
+- Start up the local database and Hasura engine and replicate using the latest production data dump
+- Then, run:
+```bash
+hasura migrate apply --envfile .env.local
+hasura metadata apply --envfile .env.local
+``` 
 
-Once everything looks good, we can merge and the CI will apply the new migrations and metadata to the staging database.
+Once we see that no errors occur when applying the sequence of migrations locally, we can merge and the CI will apply the new migrations and metadata to the staging database.

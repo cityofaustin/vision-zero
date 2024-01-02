@@ -11,6 +11,15 @@ object_relationships:
         remote_table:
           name: atd_txdot_crashes
           schema: public
+  - name: ems_incident
+    using:
+      manual_configuration:
+        column_mapping:
+          ems_id: id
+        insertion_order: null
+        remote_table:
+          name: ems__incidents
+          schema: public
   - name: ethnicity
     using:
       manual_configuration:

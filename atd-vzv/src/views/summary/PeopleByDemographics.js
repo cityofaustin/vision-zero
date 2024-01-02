@@ -4,6 +4,7 @@ import { HorizontalBar } from "react-chartjs-2";
 import "chartjs-plugin-stacked100";
 import ChartTypeSelector from "./Components/ChartTypeSelector";
 import { Container, Row, Col } from "reactstrap";
+import { format } from "date-fns";
 
 import CrashTypeSelector from "./Components/CrashTypeSelector";
 import { colors } from "../../constants/colors";
@@ -14,9 +15,10 @@ import { popoverConfig } from "../../Components/Popover/popoverConfig";
 
 const url = `${personEndpointUrl}?$query=`;
 
-const dateCondition = `crash_date BETWEEN '${dataStartDate.format(
-  "YYYY-MM-DD"
-)}T00:00:00' and '${dataEndDate.format("YYYY-MM-DD")}T23:59:59'`;
+const dateCondition = `crash_date BETWEEN '${format(
+  dataStartDate,
+  "yyyy-MM-dd"
+)}T00:00:00' and '${format(dataEndDate, "yyyy-MM-dd")}T23:59:59'`;
 
 const chartColors = [
   colors.viridis1Of6Highest,

@@ -50,6 +50,7 @@
 - "!include public_atd_txdot_units.yaml"
 - "!include public_council_districts.yaml"
 - "!include public_crash_notes.yaml"
+- "!include public_ems__incidents.yaml"
 - "!include public_engineering_areas.yaml"
 - "!include public_fatalities.yaml"
 - "!include public_grafana_crash_counts.yaml"
