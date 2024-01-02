@@ -34,7 +34,8 @@ from sshtunnel import SSHTunnelForwarder
 import onepasswordconnectsdk
 from onepasswordconnectsdk.client import Client, new_client
 
-# Heads up! Looking for global code? Look just below this get_secrets() function. 
+# Heads up! Looking for global code? Look just below this get_secrets() function.
+
 
 def get_secrets():
     REQUIRED_SECRETS = {
@@ -107,13 +108,19 @@ def get_secrets():
             "opitem": "RDS Bastion Key",
             "opfield": ".private key",
             "opvault": VAULT_ID,
-            },
+        },
+        "record_age_maximum_in_days": {
+            "opitem": "Vision Zero AFD and EMS Import",
+            "opfield": f"{DEPLOYMENT_ENVIRONMENT}.EMS Record Age Maximum in Days",
+            "opvault": VAULT_ID,
+        },
     }
 
     # instantiate a 1Password client
     client: Client = new_client(ONEPASSWORD_CONNECT_HOST, ONEPASSWORD_CONNECT_TOKEN)
     # get the requested secrets from 1Password
     return onepasswordconnectsdk.load_dict(client, REQUIRED_SECRETS)
+
 
 pp = pprint.PrettyPrinter(indent=4)
 
@@ -141,18 +148,17 @@ DB_BASTION_HOST = secrets["bastion_host"]
 DB_BASTION_HOST_SSH_USERNAME = secrets["bastion_ssh_username"]
 DB_BASTION_HOST_SSH_PRIVATE_KEY = secrets["bastion_ssh_private_key"]
 DB_RDS_HOST = secrets["database_host"]
-RECORD_AGE_MAXIMUM = None # the default is fine, and we never tune it.  
+RECORD_AGE_MAXIMUM = secrets["record_age_maximum_in_days"]
 
 
 def main():
-    record_age_maximum = RECORD_AGE_MAXIMUM or 15
+    record_age_maximum = int(RECORD_AGE_MAXIMUM) or 15
     timestamp = get_timestamp()
     newest_email = get_most_recent_email()
     attachment_location = extract_email_attachment(newest_email)
     uploaded_token = upload_attachment_to_S3(attachment_location, timestamp)
     data = create_and_parse_dataframe(attachment_location)
     upload_token = upload_data_to_postgres(data, record_age_maximum)
-
 
 
 def get_timestamp():
@@ -216,14 +222,20 @@ def upload_attachment_to_S3(location, timestamp):
 
 def create_and_parse_dataframe(location):
     # Parse CSV into pandas dataframe
-    data = pandas.read_csv(f"{location}/attachment.csv", header=0, on_bad_lines='skip',  encoding='ISO-8859-1')
+    data = pandas.read_csv(
+        f"{location}/attachment.csv",
+        header=0,
+        on_bad_lines="skip",
+        encoding="ISO-8859-1",
+    )
     return data
 
 
 def upload_data_to_postgres(data, age_cutoff):
-    
     with SshKeyTempDir() as key_directory:
-        write_key_to_file(key_directory + "/id_ed25519", DB_BASTION_HOST_SSH_PRIVATE_KEY + "\n") 
+        write_key_to_file(
+            key_directory + "/id_ed25519", DB_BASTION_HOST_SSH_PRIVATE_KEY + "\n"
+        )
         ssh_tunnel = SSHTunnelForwarder(
             (DB_BASTION_HOST),
             ssh_username=DB_BASTION_HOST_SSH_USERNAME,
@@ -232,19 +244,20 @@ def upload_data_to_postgres(data, age_cutoff):
         )
         ssh_tunnel.start()
 
-
         pg = psycopg2.connect(
-            host='localhost', 
+            host="localhost",
             port=ssh_tunnel.local_bind_port,
             user=DB_USERNAME,
             password=DB_PASSWORD,
-            dbname=DB_DATABASE
+            dbname=DB_DATABASE,
         )
 
         print(f"Max record age: {age_cutoff}")
         print(f"Input Dataframe shape: {data.shape}")
         if age_cutoff > 0:
-            data["Incident_Date_Received"] = pandas.to_datetime(data["Incident_Date_Received"], format="%Y-%m-%d")
+            data["Incident_Date_Received"] = pandas.to_datetime(
+                data["Incident_Date_Received"], format="%Y-%m-%d"
+            )
             age_threshold = datetime.today() - timedelta(days=age_cutoff)
             data = data[data["Incident_Date_Received"] > age_threshold]
         print(f"Trimmed data shape: {data.shape}")
@@ -254,10 +267,17 @@ def upload_data_to_postgres(data, age_cutoff):
         for index, row in data.iloc[::-1].iterrows():
             if not index % 100:
                 print(f"Row {str(index)} of {str(data.shape[0])}")
-            #print(data["Incident_Date_Received"][index])
+            # print(data["Incident_Date_Received"][index])
 
-            apd_incident_numbers = str(row["APD_Incident_Numbers"]).replace("-", "").replace(" ", "").split(",")
-            apd_incident_numbers[:] = (value for value in apd_incident_numbers if not value == 'nan')
+            apd_incident_numbers = (
+                str(row["APD_Incident_Numbers"])
+                .replace("-", "")
+                .replace(" ", "")
+                .split(",")
+            )
+            apd_incident_numbers[:] = (
+                value for value in apd_incident_numbers if not value == "nan"
+            )
             if len(apd_incident_numbers) > 1:
                 pass
                 # print(f"🛎 Found multiple incident numbers: " + str(row["EMS_IncidentNumber"]))
@@ -269,10 +289,10 @@ def upload_data_to_postgres(data, age_cutoff):
             existing = cursor.fetchone()
 
             sql = ""
-            values = []        
+            values = []
 
             if existing["existing"] > 0:
-                #print("Update")
+                # print("Update")
                 sql = """
                     update ems__incidents set
                         incident_date_received = %s,
@@ -368,14 +388,14 @@ def upload_data_to_postgres(data, age_cutoff):
                     row["Incident_Location_Longitude"],
                     row["Incident_Location_Latitude"],
                     "{" + ", ".join(apd_incident_numbers) + "}",
-                    row["PCR_Key"]
+                    row["PCR_Key"],
                 ]
 
                 for i in range(len(values)):
                     if pandas.isna(values[i]):
                         values[i] = None
             else:
-                #print("Insert")
+                # print("Insert")
                 sql = """
                     insert into ems__incidents (
                         pcr_key, 
@@ -498,7 +518,6 @@ def upload_data_to_postgres(data, age_cutoff):
     return True
 
 
-
 # these temp directories are used to store ssh keys, because they will
 # automatically clean themselves up when they go out of scope.
 class SshKeyTempDir:
@@ -506,11 +525,12 @@ class SshKeyTempDir:
         self.path = None
 
     def __enter__(self):
-        self.path = tempfile.mkdtemp(dir='/tmp')
+        self.path = tempfile.mkdtemp(dir="/tmp")
         return self.path
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         shutil.rmtree(self.path)
+
 
 def write_key_to_file(path, content):
     # Open the file with write permissions and create it if it doesn't exist
@@ -521,6 +541,7 @@ def write_key_to_file(path, content):
 
     # Close the file
     os.close(fd)
+
 
 if __name__ == "__main__":
     main()
