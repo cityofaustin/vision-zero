@@ -10,7 +10,7 @@ import MapGL, {
   Layer,
 } from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
-import Geocoder from "react-map-gl-geocoder";
+// import Geocoder from "react-map-gl-geocoder";
 import { CustomGeocoderMapController } from "./customGeocoderMapController";
 import "react-map-gl-geocoder/dist/mapbox-gl-geocoder.css";
 import styled from "styled-components";
@@ -28,7 +28,7 @@ import { LOCATION_MAP_CONFIG } from "../../../helpers/map";
 const TOKEN = process.env.REACT_APP_MAPBOX_TOKEN;
 
 const MapStyleSelector = styled.div`
-  margin-top: 55px;
+  margin-top: 20px;
   margin-right: 10px;
 `;
 
@@ -154,7 +154,7 @@ class CrashEditCoordsMap extends Component {
       pinColor,
       isDragging,
     } = this.state;
-    const geocoderAddress = this.props.mapGeocoderAddress;
+    // const geocoderAddress = this.props.mapGeocoderAddress;
     const isDev = window.location.hostname === "localhost";
 
     return (
@@ -174,7 +174,7 @@ class CrashEditCoordsMap extends Component {
           controller={customGeocoderMapController}
           mapboxApiAccessToken={TOKEN}
         >
-          <Geocoder
+          {/* <Geocoder
             mapRef={this.mapRef}
             onViewportChange={this._handleViewportChange}
             mapboxApiAccessToken={TOKEN}
@@ -182,7 +182,7 @@ class CrashEditCoordsMap extends Component {
             options={{ flyTo: false }}
             // Bounding box for auto-populated results in the search bar
             bbox={[-98.22464, 29.959694, -97.226257, 30.687526]}
-          />
+          /> */}
           <div className="fullscreen" style={fullscreenControlStyle}>
             <FullscreenControl />
           </div>
