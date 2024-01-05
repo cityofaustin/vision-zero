@@ -37,7 +37,7 @@
     "graphql": "^14.4.2",
     "handsontable": "12.1.3",
     "lodash.get": "^4.4.2",
-    "mapbox-gl": "^2.13.0",
+    "mapbox-gl": "^2.15.0",
     "multiselect-react-dropdown": "^2.0.25",
     "nebula.gl": "^0.15.0",
     "prop-types": "^15.7.2",
