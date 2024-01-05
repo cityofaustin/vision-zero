@@ -395,8 +395,8 @@ const GridTable = ({
   let totalRecords = 0;
   let totalPages = 1;
 
-  // If we have data
-  if (data[query.table]) {
+  // If we have data and query.table exists in data
+  if (data && data[query.table]) {
     loading = false;
     totalRecords = data[query.table + "_aggregate"]["aggregate"]["count"];
     totalPages = Math.ceil(totalRecords / limit);
