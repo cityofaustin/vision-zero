@@ -263,7 +263,7 @@ const Notes = ({
                         <i className="fa fa-trash" />
                       </Button>
                       <ConfirmModal
-                        modalHeader={"Delete Note"}
+                        modalHeader={"Delete Confirmation"}
                         modalBody={"Are you sure you want to delete this note?"}
                         confirmClick={() => {
                           handleDeleteClick(row);
