@@ -174,6 +174,17 @@ const CrashesByMode = () => {
     datasets: !!chartData && createTypeDatasets(),
   };
 
+  const yearTotalsArray = data.datasets
+    ? yearsArray().map((year, index) => {
+        let currentYearTotal = 0;
+        data.datasets.forEach((mode) => {
+          currentYearTotal += mode.data[index];
+        });
+        console.log(currentYearTotal, "current year total");
+        return currentYearTotal;
+      })
+    : null;
+
   const StyledDiv = styled.div`
     .year-total-div {
       color: ${colors.dark};
@@ -319,6 +330,19 @@ const CrashesByMode = () => {
                                 </div>
                               );
                             })}
+                            <div>
+                              <hr className="my-0"></hr>
+                              <p className="h6 text-center my-0 py-1">
+                                <FontAwesomeIcon
+                                  aria-hidden="true"
+                                  className="block-icon"
+                                  // icon={dataset.icon}
+                                  // color={legendColors[i]}
+                                />
+                                <span className="sr-only">Total</span>
+                                <span className="mode-label-text"> Total</span>
+                              </p>
+                            </div>
                           </StyledDiv>
                         </Col>
                         {chart.data.labels.map((year, yearIterator) => {
@@ -352,6 +376,10 @@ const CrashesByMode = () => {
                                       );
                                     }
                                   )}
+                                  <hr className="my-0"></hr>
+                                  <p className={`h6 text-center my-1 pb-1`}>
+                                    {yearTotalsArray[yearIterator]}
+                                  </p>
                                 </div>
                               </StyledDiv>
                             </Col>
