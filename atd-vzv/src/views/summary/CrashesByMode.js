@@ -334,10 +334,6 @@ const CrashesByMode = () => {
                             <div>
                               <hr className="my-0"></hr>
                               <p className="h6 text-center my-0 py-1">
-                                <FontAwesomeIcon
-                                  aria-hidden="true"
-                                  className="block-icon"
-                                />
                                 <span className="sr-only">Total</span>
                                 <span className="mode-label-text"> Total</span>
                               </p>
