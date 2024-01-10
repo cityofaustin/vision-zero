@@ -248,7 +248,12 @@ const Notes = ({
                       <ConfirmDeleteButton
                         onConfirmClick={() => handleDeleteClick(row)}
                         modalHeader={"Delete Confirmation"}
-                        modalBody={`Are you sure you want to delete this note?`}
+                        modalBody={
+                          <div>
+                            Are you sure you want to delete this note?
+                            <p className="mt-2 text-truncate">{row.text}</p>
+                          </div>
+                        }
                       />
                     </td>
                   ) : (
