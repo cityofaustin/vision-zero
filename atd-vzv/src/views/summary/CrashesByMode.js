@@ -174,16 +174,17 @@ const CrashesByMode = () => {
     datasets: !!chartData && createTypeDatasets(),
   };
 
-  const yearTotalsArray = data.datasets
-    ? yearsArray().map((year, index) => {
-        let currentYearTotal = 0;
-        data.datasets.forEach((mode) => {
-          currentYearTotal += mode.data[index];
-        });
-        console.log(currentYearTotal, "current year total");
-        return currentYearTotal;
-      })
-    : null;
+  // Get an array of totals for the selected crash type (all, fatal, injury) for each year
+  const getYearTotalsArray = () => {
+    const yearTotalsArray = yearsArray().map((year, index) => {
+      let currentYearTotal = 0;
+      data.datasets.forEach((mode) => {
+        currentYearTotal += mode.data[index];
+      });
+      return currentYearTotal;
+    });
+    return yearTotalsArray;
+  };
 
   const StyledDiv = styled.div`
     .year-total-div {
@@ -336,8 +337,6 @@ const CrashesByMode = () => {
                                 <FontAwesomeIcon
                                   aria-hidden="true"
                                   className="block-icon"
-                                  // icon={dataset.icon}
-                                  // color={legendColors[i]}
                                 />
                                 <span className="sr-only">Total</span>
                                 <span className="mode-label-text"> Total</span>
@@ -377,8 +376,9 @@ const CrashesByMode = () => {
                                     }
                                   )}
                                   <hr className="my-0"></hr>
-                                  <p className={`h6 text-center my-1 pb-1`}>
-                                    {yearTotalsArray[yearIterator]}
+                                  <p className={`h6 text-center my-1`}>
+                                    {data.datasets &&
+                                      getYearTotalsArray()[yearIterator]}
                                   </p>
                                 </div>
                               </StyledDiv>
