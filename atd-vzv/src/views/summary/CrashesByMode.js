@@ -174,7 +174,7 @@ const CrashesByMode = () => {
     datasets: !!chartData && createTypeDatasets(),
   };
 
-  // Get an array of totals for the selected crash type (all, fatal, injury) for each year
+  // Get an array of annual totals for the selected crash type
   const getYearTotalsArray = () => {
     const yearTotalsArray = yearsArray().map((year, index) => {
       let currentYearTotal = 0;
