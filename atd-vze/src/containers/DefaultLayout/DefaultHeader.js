@@ -105,7 +105,7 @@ const DefaultHeader = props => {
                 target="_blank"
                 rel="noreferrer"
               >
-                <i class="fa fa-briefcase" /> CR3 code sheet&nbsp;&nbsp; <i className="fa fa-external-link" />
+                <i className="fa fa-briefcase" /> CR3 code sheet&nbsp;&nbsp; <i className="fa fa-external-link" />
               </DropdownItem>
             </DropdownMenu>
         </UncontrolledDropdown>

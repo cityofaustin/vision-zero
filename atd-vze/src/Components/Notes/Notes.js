@@ -9,7 +9,7 @@ import {
   Input,
   Button,
 } from "reactstrap";
-import ConfirmDeleteButton from "./ConfirmDeleteButton";
+import ConfirmDeleteButton from "../ConfirmDeleteButton.js";
 import { format, parseISO } from "date-fns";
 import { notesDataMap } from "./notesDataMap.js";
 import { useAuth0, isReadOnly } from "../../auth/authContext";
@@ -44,13 +44,6 @@ const Notes = ({
   const [addNote] = useMutation(INSERT_NOTE);
   const [editNote] = useMutation(UPDATE_NOTE);
   const [deleteNote] = useMutation(DELETE_NOTE);
-
-  // Confirm delete modal
-  const [showModal, setShowModal] = useState(false);
-
-  const toggleModal = () => {
-    setShowModal(!showModal);
-  };
 
   if (loading) return "Loading...";
   if (error) return `Error! ${error.message}`;
@@ -254,6 +247,8 @@ const Notes = ({
                     <td style={{ padding: "12px 4px 12px 4px" }}>
                       <ConfirmDeleteButton
                         onConfirmClick={() => handleDeleteClick(row)}
+                        modalHeader={"Delete Confirmation"}
+                        modalBody={`Are you sure you want to delete this note?`}
                       />
                     </td>
                   ) : (

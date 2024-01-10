@@ -1,15 +1,14 @@
 import React, { useState } from "react";
 import { Button } from "reactstrap";
-import ConfirmModal from "../ConfirmModal.js";
+import ConfirmModal from "./ConfirmModal.js";
 
-const ConfirmDeleteButton = ({ onConfirmClick }) => {
+const ConfirmDeleteButton = ({ onConfirmClick, modalHeader, modalBody }) => {
   const [showModal, setShowModal] = useState(false);
 
   const toggleModal = () => {
     setShowModal(!showModal);
   };
 
-  // render notes card and table
   return (
     <>
       <Button
@@ -23,8 +22,8 @@ const ConfirmDeleteButton = ({ onConfirmClick }) => {
         <i className="fa fa-trash" />
       </Button>
       <ConfirmModal
-        modalHeader={"Delete Confirmation"}
-        modalBody={`Are you sure you want to delete this note?`}
+        modalHeader={modalHeader}
+        modalBody={modalBody}
         confirmClick={onConfirmClick}
         toggleModal={toggleModal}
         showModal={showModal}
