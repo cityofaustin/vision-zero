@@ -335,7 +335,7 @@ const CrashesByMode = () => {
                               <hr className="my-0"></hr>
                               <p className="h6 text-center my-0 py-1">
                                 <span className="sr-only">Total</span>
-                                <span className="mode-label-text"> Total</span>
+                                <span className="mode-label-text">Total</span>
                               </p>
                             </div>
                           </StyledDiv>
