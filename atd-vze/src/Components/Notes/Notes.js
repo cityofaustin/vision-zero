@@ -9,7 +9,7 @@ import {
   Input,
   Button,
 } from "reactstrap";
-import ConfirmModal from "../ConfirmModal.js";
+import ConfirmDeleteButton from "./ConfirmDeleteButton";
 import { format, parseISO } from "date-fns";
 import { notesDataMap } from "./notesDataMap.js";
 import { useAuth0, isReadOnly } from "../../auth/authContext";
@@ -252,24 +252,8 @@ const Notes = ({
                   user has edit permissions, and user is not currently editing */}
                   {isUser && !isReadOnly(roles) && !isEditing ? (
                     <td style={{ padding: "12px 4px 12px 4px" }}>
-                      <Button
-                        type="submit"
-                        color="secondary"
-                        className="btn-pill mt-2"
-                        size="sm"
-                        style={{ width: "50px" }}
-                        onClick={() => toggleModal()}
-                      >
-                        <i className="fa fa-trash" />
-                      </Button>
-                      <ConfirmModal
-                        modalHeader={"Delete Confirmation"}
-                        modalBody={"Are you sure you want to delete this note?"}
-                        confirmClick={() => {
-                          handleDeleteClick(row);
-                        }}
-                        toggleModal={toggleModal}
-                        showModal={showModal}
+                      <ConfirmDeleteButton
+                        onConfirmClick={() => handleDeleteClick(row)}
                       />
                     </td>
                   ) : (
