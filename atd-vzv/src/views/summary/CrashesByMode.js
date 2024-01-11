@@ -358,7 +358,7 @@ const CrashesByMode = () => {
                                   {chart.data.datasets.map(
                                     (mode, modeIterator) => {
                                       let paddingBottom =
-                                        modeIterator === 4 ? "pb-1" : "pb-0";
+                                        modeIterator === 4 ? "pb-0" : "pb-0";
                                       return (
                                         <div key={modeIterator}>
                                           <hr className="my-0"></hr>
@@ -372,7 +372,7 @@ const CrashesByMode = () => {
                                     }
                                   )}
                                   <hr className="my-0"></hr>
-                                  <p className={`h6 text-center my-1`}>
+                                  <p className={`h6 text-center my-1 pb-1`}>
                                     {data.datasets &&
                                       getYearTotalsArray()[yearIterator]}
                                   </p>
