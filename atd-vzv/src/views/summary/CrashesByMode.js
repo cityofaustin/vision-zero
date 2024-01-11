@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useMemo } from "react";
 import axios from "axios";
 import { Bar } from "react-chartjs-2";
 import { Container, Row, Col } from "reactstrap";
@@ -175,16 +175,19 @@ const CrashesByMode = () => {
   };
 
   // Get an array of annual totals for the selected crash type
-  const getYearTotalsArray = () => {
+  const getYearTotalsArray = useMemo(() => {
     const yearTotalsArray = yearsArray().map((year, index) => {
       let currentYearTotal = 0;
-      data.datasets.forEach((mode) => {
-        currentYearTotal += mode.data[index];
-      });
+      data.datasets &&
+        data.datasets.forEach((mode) => {
+          currentYearTotal += mode.data[index];
+        });
       return currentYearTotal;
     });
     return yearTotalsArray;
-  };
+  }, [data.datasets]);
+
+  const yearTotalsArray = getYearTotalsArray;
 
   const StyledDiv = styled.div`
     .year-total-div {
@@ -357,14 +360,10 @@ const CrashesByMode = () => {
                                   </div>
                                   {chart.data.datasets.map(
                                     (mode, modeIterator) => {
-                                      let paddingBottom =
-                                        modeIterator === 4 ? "pb-0" : "pb-0";
                                       return (
                                         <div key={modeIterator}>
                                           <hr className="my-0"></hr>
-                                          <p
-                                            className={`h6 text-center my-1 ${paddingBottom}`}
-                                          >
+                                          <p className={`h6 text-center my-1`}>
                                             {mode.data[yearIterator]}
                                           </p>
                                         </div>
@@ -374,7 +373,7 @@ const CrashesByMode = () => {
                                   <hr className="my-0"></hr>
                                   <p className={`h6 text-center my-1 pb-1`}>
                                     {data.datasets &&
-                                      getYearTotalsArray()[yearIterator]}
+                                      yearTotalsArray[yearIterator]}
                                   </p>
                                 </div>
                               </StyledDiv>
