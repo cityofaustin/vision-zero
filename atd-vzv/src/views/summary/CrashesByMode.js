@@ -361,10 +361,7 @@ const CrashesByMode = () => {
                                   {chart.data.datasets.map(
                                     (mode, modeIterator) => {
                                       return (
-                                        <div
-                                          key={modeIterator}
-                                          style={{ height: "28.7px" }}
-                                        >
+                                        <div key={modeIterator}>
                                           <hr className="my-0"></hr>
                                           <p className={`h6 text-center my-1`}>
                                             {mode.data[yearIterator]}
