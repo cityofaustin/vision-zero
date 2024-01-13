@@ -69,10 +69,10 @@ const GridDateRange = ({
    * @returns {string}
    */
   const formatDate = (date, fallbackValue) => {
-    let formattedDate = format(date, "yyyy-MM-dd");
+    let formattedDate = date ? format(date, "yyyy-MM-dd") : "Invalid date";
 
     if (formattedDate === "Invalid date") {
-      formattedDate = format(fallbackValue, "yyyy-MM-dd");
+      formattedDate = format(new Date(fallbackValue), "yyyy-MM-dd");
     }
     return formattedDate;
   };
