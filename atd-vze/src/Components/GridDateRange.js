@@ -114,6 +114,7 @@ const GridDateRange = ({
           // Prevent user from selecting start date after current date
           maxDate={maxDate}
           minDate={minDate}
+          strictParsing={true}
         />
         <span>{" to "}</span>
         <DatePicker
@@ -126,6 +127,7 @@ const GridDateRange = ({
           // Prevent user from selecting date before startDate (chosen in first DatePicker) or after current date
           minDate={startDate}
           maxDate={maxDate}
+          strictParsing={true}
         />
       </StyledDatePicker>
     </>
