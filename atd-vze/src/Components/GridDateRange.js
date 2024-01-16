@@ -64,16 +64,15 @@ const GridDateRange = ({
 
   /**
    * Returns a date in a valid SQL format.
-   * @param {string} date - The string to be transformed
-   * @param {string} fallbackValue - The value to use if the formattedDate is invalid
+   * @param {Date} date - The date object to be formatted
+   * @param {string} fallbackValue - The value to use if date is null
    * @returns {string}
    */
   const formatDate = (date, fallbackValue) => {
-    let formattedDate = date ? format(date, "yyyy-MM-dd") : "Invalid date";
+    const formattedDate = date
+      ? format(date, "yyyy-MM-dd")
+      : format(new Date(fallbackValue), "yyyy-MM-dd");
 
-    if (formattedDate === "Invalid date") {
-      formattedDate = format(new Date(fallbackValue), "yyyy-MM-dd");
-    }
     return formattedDate;
   };
 
