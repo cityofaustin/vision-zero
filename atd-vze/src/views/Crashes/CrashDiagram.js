@@ -8,6 +8,7 @@ import {
   ButtonGroup,
   Col,
   Row,
+  UncontrolledTooltip,
 } from "reactstrap";
 import axios from "axios";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
@@ -84,9 +85,19 @@ const CrashDiagram = props => {
                     </ButtonGroup>
                   </Col>
                   <Col className="d-flex justify-content-end">
-                    <Button color="primary" onClick={resetTransform}>
+                    <Button
+                      id="reset-zoom-button"
+                      color="primary"
+                      onClick={resetTransform}
+                    >
                       <i className="fa fa-repeat"></i>
                     </Button>
+                    <UncontrolledTooltip
+                      placement="top"
+                      target="reset-zoom-button"
+                    >
+                      Reset Zoom
+                    </UncontrolledTooltip>
                   </Col>
                 </Row>
                 <Row className="d-flex align-items-center">
