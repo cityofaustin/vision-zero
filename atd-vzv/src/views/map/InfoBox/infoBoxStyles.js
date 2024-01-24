@@ -13,6 +13,15 @@ export const StyledDesktopInfo = styled.div`
   pointer-events: none;
 `;
 
+export const StyledPoylgonInfo = styled.div`
+  position: absolute;
+  margin: 6px;
+  max-width: ${maxInfoBoxWidth}px;
+  z-index: 9 !important;
+  pointer-events: none;
+  top: 46px;
+`;
+
 export const StyledMobileInfo = styled.div`
   .card {
     background: none;
