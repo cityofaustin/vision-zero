@@ -1,5 +1,5 @@
 import React from "react";
-import { isAdmin, isItSupervisor, isEditor } from "./auth/authContext";
+import { isAdmin, isItSupervisor } from "./auth/authContext";
 
 const Breadcrumbs = React.lazy(() => import("./views/Base/Breadcrumbs"));
 const Cards = React.lazy(() => import("./views/Base/Cards"));
@@ -179,13 +179,13 @@ const routes = roles => [
     name: "Demo UI Components",
     component: Dev,
   },
-  (isEditor(roles) || isAdmin(roles) || isItSupervisor(roles)) && {
+  (isAdmin(roles) || isItSupervisor(roles)) && {
     path: "/changes",
     exact: true,
     name: "Crash Changes",
     component: CrashesChanges,
   },
-  (isEditor(roles) || isAdmin(roles) || isItSupervisor(roles)) && {
+  (isAdmin(roles) || isItSupervisor(roles)) && {
     path: "/changes/:id",
     exact: true,
     name: "Crash Change",
