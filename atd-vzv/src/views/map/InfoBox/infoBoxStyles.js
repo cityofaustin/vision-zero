@@ -10,7 +10,12 @@ export const StyledPoylgonInfo = styled.div`
   max-width: ${maxInfoBoxWidth}px;
   z-index: 9 !important;
   pointer-events: none;
+  // Combining the height of the geocoder box and 10px Mapbox spacing here
   top: 46px;
+  // Combining the mobile height of the geocoder box and 10px Mapbox spacing here
+  @media (max-width: 640px) {
+    top: 60px;
+  }
 `;
 
 export const StyledMobileInfo = styled.div`
