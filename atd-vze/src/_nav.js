@@ -1,4 +1,4 @@
-import { isAdmin, isItSupervisor, isEditor } from "./auth/authContext";
+import { isAdmin, isItSupervisor } from "./auth/authContext";
 
 // Accept roles arg to restrict nav links by role
 export const navigation = roles => {
@@ -36,17 +36,13 @@ export const navigation = roles => {
     ],
   };
 
-  // Editor nav itmes
-  const editorNavItems = [
+  // Admin nav items
+  const adminNavItems = [
     {
       name: "Changes",
       url: "/changes",
       icon: "icon-layers",
     },
-  ];
-
-  // Admin nav items
-  const adminNavItems = [
     {
       title: true,
       name: "Admin",
@@ -92,12 +88,7 @@ export const navigation = roles => {
     },
   ];
 
-  if (isEditor(roles)) {
-    editorNavItems.forEach(item => nav.items.splice(-1, 0, item));
-  }
-
   if (isAdmin(roles) || isItSupervisor(roles)) {
-    editorNavItems.forEach(item => nav.items.splice(-1, 0, item));
     adminNavItems.forEach(item => nav.items.splice(-1, 0, item));
   }
 
