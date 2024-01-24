@@ -4,15 +4,6 @@ import { responsive } from "../../../constants/responsive";
 export const popupMarginsWidth = 20;
 export const maxInfoBoxWidth = responsive.drawerWidth - popupMarginsWidth;
 
-export const StyledDesktopInfo = styled.div`
-  position: absolute;
-  margin: 8px;
-  padding: 2px;
-  max-width: ${maxInfoBoxWidth}px;
-  z-index: 9 !important;
-  pointer-events: none;
-`;
-
 export const StyledPoylgonInfo = styled.div`
   position: absolute;
   margin: 6px;
