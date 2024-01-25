@@ -473,6 +473,8 @@ select_permissions:
         - milepoint_2
         - mpo_id
         - nbr_of_lane
+        - near_trauma_center_distance
+        - near_trauma_center_id
         - non_injry_cnt
         - nonincap_injry_cnt
         - obj_struck_id
@@ -701,6 +703,8 @@ select_permissions:
         - milepoint_2
         - mpo_id
         - nbr_of_lane
+        - near_trauma_center_distance
+        - near_trauma_center_id
         - non_injry_cnt
         - nonincap_injry_cnt
         - obj_struck_id
