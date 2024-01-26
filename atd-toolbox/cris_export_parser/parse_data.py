@@ -2,6 +2,16 @@
 
 import csv
 import argparse
+import psycopg2
+import psycopg2.extras
+
+conn = psycopg2.connect(
+    dbname="atd_vz_data",
+    user="visionzero",
+    password="visionzero",
+    host="localhost",
+    port="5432",
+)
 
 
 def parse_csv(file_path, field_names, substrings):
@@ -9,19 +19,54 @@ def parse_csv(file_path, field_names, substrings):
         reader = csv.DictReader(file)
         for row in reader:
             for field in field_names:
-                if field in row:
+                # Check if field is in row and not None
+                if field in row and row[field] is not None:
+                    fieldValue = row[field]  # Store the field value
                     for substring in substrings:
-                        if substring.lower() in row[field].lower():
-                            print(
-                                {
-                                    "Crash_ID": row.get("Crash_ID", ""),
-                                    "Prsn_Nbr": row.get("Prsn_Nbr", ""),
-                                    "Prsn_Name": f"{row.get('Prsn_First_Name', '')} {row.get('Prsn_Last_Name', '')}",
-                                    "Drvr_City_Name": row.get("Drvr_City_Name", ""),
-                                    "Drvr_Street_Name": row.get("Drvr_Street_Name", ""),
-                                }
-                            )
-                            break
+                        if substring.lower() in fieldValue.lower():
+                            # print(
+                            #     {
+                            #         "Crash_ID": row.get("Crash_ID", ""),
+                            #         "Prsn_Nbr": row.get("Prsn_Nbr", ""),
+                            #         "Prsn_Name": f"{row.get('Prsn_First_Name', '')} {row.get('Prsn_Last_Name', '')}",
+                            #         "Drvr_City_Name": row.get("Drvr_City_Name", ""),
+                            #         "Drvr_Street_Name": row.get("Drvr_Street_Name", ""),
+                            #     }
+                            # )
+                            if not (
+                                row.get("Crash_ID", "")
+                                and row.get("Unit_Nbr", "")
+                                and row.get("Prsn_Nbr", "")
+                            ):
+                                continue
+
+                            with conn.cursor(
+                                cursor_factory=psycopg2.extras.RealDictCursor
+                            ) as cur:
+                                # Use the cursor here
+                                update = f"""
+update atd_txdot_primaryperson
+set peh_fl = true
+where true
+and crash_id = {row.get("Crash_ID", "")} 
+and unit_nbr = {row.get("Unit_Nbr", "")}
+and prsn_nbr = {row.get("Prsn_Nbr", "")};"""
+                                # print(update)
+
+                                count = f"""
+select count(*) as count
+from atd_txdot_primaryperson
+where true
+and crash_id = {row.get("Crash_ID", "")} 
+and unit_nbr = {row.get("Unit_Nbr", "")}
+and prsn_nbr = {row.get("Prsn_Nbr", "")};"""
+
+                                # print(count)
+                                cur.execute(count)
+                                row = cur.fetchone()
+                                print("row count: ", row["count"])
+                                if not row["count"] == 1:
+                                    quit()
 
 
 def main():
