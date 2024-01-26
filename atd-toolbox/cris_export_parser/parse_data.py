@@ -4,6 +4,7 @@ import csv
 import argparse
 import psycopg2
 import psycopg2.extras
+import time
 
 conn = psycopg2.connect(
     dbname="atd_vz_data",
@@ -24,19 +25,10 @@ def parse_csv(file_path, field_names, substrings):
                     fieldValue = row[field]  # Store the field value
                     for substring in substrings:
                         if substring.lower() in fieldValue.lower():
-                            # print(
-                            #     {
-                            #         "Crash_ID": row.get("Crash_ID", ""),
-                            #         "Prsn_Nbr": row.get("Prsn_Nbr", ""),
-                            #         "Prsn_Name": f"{row.get('Prsn_First_Name', '')} {row.get('Prsn_Last_Name', '')}",
-                            #         "Drvr_City_Name": row.get("Drvr_City_Name", ""),
-                            #         "Drvr_Street_Name": row.get("Drvr_Street_Name", ""),
-                            #     }
-                            # )
                             if not (
-                                row.get("Crash_ID", "")
-                                and row.get("Unit_Nbr", "")
-                                and row.get("Prsn_Nbr", "")
+                                "Crash_ID" in row
+                                and "Unit_Nbr" in row
+                                and "Prsn_Nbr" in row
                             ):
                                 continue
 
@@ -44,29 +36,44 @@ def parse_csv(file_path, field_names, substrings):
                                 cursor_factory=psycopg2.extras.RealDictCursor
                             ) as cur:
                                 # Use the cursor here
-                                update = f"""
-update atd_txdot_primaryperson
-set peh_fl = true
-where true
-and crash_id = {row.get("Crash_ID", "")} 
-and unit_nbr = {row.get("Unit_Nbr", "")}
-and prsn_nbr = {row.get("Prsn_Nbr", "")};"""
-                                # print(update)
 
                                 count = f"""
 select count(*) as count
 from atd_txdot_primaryperson
 where true
-and crash_id = {row.get("Crash_ID", "")} 
-and unit_nbr = {row.get("Unit_Nbr", "")}
-and prsn_nbr = {row.get("Prsn_Nbr", "")};"""
+and crash_id = {row.get("Crash_ID")} 
+and unit_nbr = {row.get("Unit_Nbr")}
+and prsn_nbr = {row.get("Prsn_Nbr")};"""
 
-                                # print(count)
                                 cur.execute(count)
-                                row = cur.fetchone()
-                                print("row count: ", row["count"])
-                                if not row["count"] == 1:
-                                    quit()
+                                count_check = cur.fetchone()
+                                print("row count: ", count_check["count"])
+                                if not count_check["count"] == 1:
+                                    print(
+                                        {
+                                            "Crash_ID": row.get("Crash_ID"),
+                                            "Prsn_Nbr": row.get("Unit_Nbr"),
+                                            "Prsn_Name": f"{row.get('Prsn_First_Name')} {row.get('Prsn_Last_Name')}",
+                                            "Drvr_City_Name": row.get("drvr_city_name"),
+                                            "Drvr_Street_Name": row.get(
+                                                "drvr_street_name"
+                                            ),
+                                        }
+                                    )
+                                    continue
+                                print("would update here...")
+
+                                update = f"""
+update atd_txdot_primaryperson
+set peh_fl = true
+where true
+and crash_id = {row.get("Crash_ID")} 
+and unit_nbr = {row.get("Unit_Nbr")}
+and prsn_nbr = {row.get("Prsn_Nbr")};"""
+
+                                print(update)
+                                cur.execute(update)
+                                conn.commit()
 
 
 def main():
