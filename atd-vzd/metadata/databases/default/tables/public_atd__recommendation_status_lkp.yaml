@@ -9,3 +9,18 @@ array_relationships:
         table:
           name: recommendations
           schema: public
+select_permissions:
+  - role: editor
+    permission:
+      columns:
+        - id
+        - rec_status_desc
+      filter: {}
+    comment: ""
+  - role: readonly
+    permission:
+      columns:
+        - id
+        - rec_status_desc
+      filter: {}
+    comment: ""
