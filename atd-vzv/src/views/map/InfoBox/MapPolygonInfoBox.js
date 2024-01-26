@@ -1,6 +1,6 @@
 import React from "react";
 import InfoCard from "./InfoCard";
-import { StyledDesktopInfo } from "./infoBoxStyles";
+import { StyledPoylgonInfo } from "./infoBoxStyles";
 
 const MapPolygonInfoBox = ({ crashCounts, isMapTypeSet }) => {
   const createCrashContent = (crashCounts) => {
@@ -8,12 +8,12 @@ const MapPolygonInfoBox = ({ crashCounts, isMapTypeSet }) => {
     isMapTypeSet.fatal &&
       content.push({
         title: "Fatalities",
-        content: `${crashCounts.fatality || 0}`,
+        content: `${crashCounts?.fatality || 0}`,
       });
     isMapTypeSet.injury &&
       content.push({
         title: "Serious Injuries",
-        content: `${crashCounts.injury || 0}`,
+        content: `${crashCounts?.injury || 0}`,
       });
     return content;
   };
@@ -22,7 +22,7 @@ const MapPolygonInfoBox = ({ crashCounts, isMapTypeSet }) => {
 
   const infoCard = <InfoCard content={content} />;
 
-  return <StyledDesktopInfo>{infoCard}</StyledDesktopInfo>;
+  return <StyledPoylgonInfo>{infoCard}</StyledPoylgonInfo>;
 };
 
 export default MapPolygonInfoBox;
