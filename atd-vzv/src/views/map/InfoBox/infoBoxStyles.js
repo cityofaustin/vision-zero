@@ -4,13 +4,18 @@ import { responsive } from "../../../constants/responsive";
 export const popupMarginsWidth = 20;
 export const maxInfoBoxWidth = responsive.drawerWidth - popupMarginsWidth;
 
-export const StyledDesktopInfo = styled.div`
+export const StyledPoylgonInfo = styled.div`
   position: absolute;
-  margin: 8px;
-  padding: 2px;
+  margin: 6px;
   max-width: ${maxInfoBoxWidth}px;
   z-index: 9 !important;
   pointer-events: none;
+  /* Combine the height of the geocoder box and 10px Mapbox spacing */
+  top: 46px;
+  /* Combine the mobile height of the geocoder box and 10px Mapbox spacing */
+  @media (max-width: 639px) {
+    top: 60px;
+  }
 `;
 
 export const StyledMobileInfo = styled.div`

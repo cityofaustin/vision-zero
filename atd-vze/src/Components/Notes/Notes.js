@@ -9,6 +9,7 @@ import {
   Input,
   Button,
 } from "reactstrap";
+import ConfirmDeleteButton from "../ConfirmDeleteButton.js";
 import { format, parseISO } from "date-fns";
 import { notesDataMap } from "./notesDataMap.js";
 import { useAuth0, isReadOnly } from "../../auth/authContext";
@@ -244,16 +245,16 @@ const Notes = ({
                   user has edit permissions, and user is not currently editing */}
                   {isUser && !isReadOnly(roles) && !isEditing ? (
                     <td style={{ padding: "12px 4px 12px 4px" }}>
-                      <Button
-                        type="submit"
-                        color="secondary"
-                        className="btn-pill mt-2"
-                        size="sm"
-                        style={{ width: "50px" }}
-                        onClick={e => handleDeleteClick(row)}
-                      >
-                        <i className="fa fa-trash" />
-                      </Button>
+                      <ConfirmDeleteButton
+                        onConfirmClick={() => handleDeleteClick(row)}
+                        modalHeader={"Delete Confirmation"}
+                        modalBody={
+                          <div>
+                            Are you sure you want to delete this note?
+                            <p className="mt-2 text-truncate">{row.text}</p>
+                          </div>
+                        }
+                      />
                     </td>
                   ) : (
                     // else if user has edit permissions and is not editing render empty cell
