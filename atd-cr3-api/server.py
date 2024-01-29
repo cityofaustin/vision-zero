@@ -14,7 +14,8 @@ from os import environ as env
 from functools import wraps
 from six.moves.urllib.request import urlopen
 
-from flask import Flask, request, redirect, jsonify, _request_ctx_stack, abort
+from flask import Flask, request, redirect, jsonify, abort, g
+
 from flask_cors import cross_origin
 from werkzeug.local import LocalProxy
 from jose import jwt
@@ -214,7 +215,7 @@ def requires_auth(f):
                     },
                     401,
                 )
-            _request_ctx_stack.top.current_user = payload
+            g.current_user = payload
             return f(*args, **kwargs)
         raise AuthError(
             {"code": "invalid_header", "description": "Unable to find appropriate key"},
@@ -224,7 +225,7 @@ def requires_auth(f):
     return decorated
 
 
-current_user = LocalProxy(lambda: getattr(_request_ctx_stack.top, "current_user", None))
+current_user = LocalProxy(lambda: getattr(g, "current_user", None))
 
 # Controllers API
 
@@ -328,7 +329,13 @@ def user_list_users():
     page = request.args.get("page")
     per_page = request.args.get("per_page")
     if isValidUser(user_dict) and hasUserRole("admin", user_dict):
-        endpoint = f"https://{AUTH0_DOMAIN}/api/v2/users?page=" + page + "&per_page=" + per_page + "&include_totals=true"
+        endpoint = (
+            f"https://{AUTH0_DOMAIN}/api/v2/users?page="
+            + page
+            + "&per_page="
+            + per_page
+            + "&include_totals=true"
+        )
         headers = {"Authorization": f"Bearer {get_api_token()}"}
         response = requests.get(endpoint, headers=headers).json()
         return jsonify(response)
