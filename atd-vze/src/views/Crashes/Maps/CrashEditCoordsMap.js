@@ -15,12 +15,7 @@ import { CustomGeocoderMapController } from "./customGeocoderMapController";
 import "react-map-gl-geocoder/dist/mapbox-gl-geocoder.css";
 import styled from "styled-components";
 
-import { Button, ButtonGroup } from "reactstrap";
-
-// TODO maybe use Control Panel to show address info in Full Screen mode?
-// import ControlPanel from "./control-panel";
 import Pin from "./Pin";
-import { setPinColor } from "../../../styles/mapPinStyles";
 import { CrashEditLatLonForm } from "./CrashEditLatLonForm";
 
 import { LOCATION_MAP_CONFIG } from "../../../helpers/map";
@@ -48,6 +43,10 @@ const navStyle = {
 
 const customGeocoderMapController = new CustomGeocoderMapController();
 
+// TODO: Check that LocationMap still works
+// TODO: Check that CrashMap still works
+// TODO: Check that CrashEditCoordsMap still works
+
 class CrashEditCoordsMap extends Component {
   constructor(props) {
     super(props);
@@ -70,7 +69,6 @@ class CrashEditCoordsMap extends Component {
       markerLatitude: 0,
       markerLongitude: 0,
       mapStyle: "satellite-streets",
-      pinColor: "warning",
       isDragging: false,
     };
   }
@@ -90,13 +88,6 @@ class CrashEditCoordsMap extends Component {
       markerLatitude: viewport.latitude,
       markerLongitude: viewport.longitude,
     });
-  };
-
-  handleMapStyleChange = e => {
-    const style = e.target.id;
-    // Set pin color based on map layer for visibility
-    const pinColor = setPinColor(style);
-    this.setState({ mapStyle: style, pinColor });
   };
 
   getCursor = ({ isDragging }) => {
@@ -151,7 +142,6 @@ class CrashEditCoordsMap extends Component {
       mapStyle,
       markerLatitude,
       markerLongitude,
-      pinColor,
       isDragging,
     } = this.state;
     const geocoderAddress = this.props.mapGeocoderAddress;
@@ -199,30 +189,8 @@ class CrashEditCoordsMap extends Component {
             </>
           )}
           <Marker latitude={markerLatitude} longitude={markerLongitude}>
-            <Pin size={40} color={pinColor} isDragging={isDragging} animated />
+            <Pin size={40} isDragging={isDragging} animated />
           </Marker>
-          <MapStyleSelector>
-            <ButtonGroup className="float-right">
-              <Button
-                active={mapStyle === "satellite-streets"}
-                id="satellite-streets"
-                className="map-style-selector"
-                onClick={this.handleMapStyleChange}
-                color="light"
-              >
-                Satellite
-              </Button>
-              <Button
-                active={mapStyle === "streets"}
-                id="streets"
-                className="map-style-selector"
-                onClick={this.handleMapStyleChange}
-                color="light"
-              >
-                Street
-              </Button>
-            </ButtonGroup>
-          </MapStyleSelector>
         </MapGL>
         <CrashEditLatLonForm
           latitude={markerLatitude}
