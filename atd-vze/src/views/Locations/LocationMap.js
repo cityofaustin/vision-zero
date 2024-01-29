@@ -14,7 +14,10 @@ import bbox from "@turf/bbox";
 import styled from "styled-components";
 import { colors } from "../../styles/colors";
 import { Button } from "reactstrap";
-import { LOCATION_MAP_CONFIG } from "../../helpers/map";
+import {
+  LOCATION_MAP_CONFIG,
+  LabeledAerialSourceAndLayer,
+} from "../../helpers/map";
 
 const TOKEN = process.env.REACT_APP_MAPBOX_TOKEN;
 const NEARMAP_KEY = process.env.REACT_APP_NEARMAP_KEY;
@@ -168,12 +171,7 @@ export default class LocationMap extends Component {
         mapboxApiAccessToken={TOKEN}
       >
         {/* add nearmap raster source and style */}
-        {!isDev && (
-          <>
-            <Source {...LOCATION_MAP_CONFIG.sources.aerials} />
-            <Layer {...LOCATION_MAP_CONFIG.layers.aerials} />
-          </>
-        )}
+        {!isDev && <LabeledAerialSourceAndLayer />}
 
         {/* Show polygon on map */}
         <Source type="geojson" data={this.locationPolygonGeoJson}>

@@ -1,3 +1,6 @@
+import React from "react";
+import { Source, Layer } from "react-map-gl";
+
 // This API key is managed by CTM. Contact help desk for maintenance and troubleshooting.
 const NEARMAP_KEY = process.env.REACT_APP_NEARMAP_KEY;
 
@@ -90,4 +93,15 @@ export const LOCATION_MAP_CONFIG = {
       },
     },
   },
+};
+
+export const LabeledAerialSourceAndLayer = () => {
+  return (
+    <>
+      <Source {...LOCATION_MAP_CONFIG.sources.aerials} />
+      <Layer {...LOCATION_MAP_CONFIG.layers.aerials} />
+      {/* show street labels on top of other layers */}
+      <Layer {...LOCATION_MAP_CONFIG.layers.streetLabels} />
+    </>
+  );
 };

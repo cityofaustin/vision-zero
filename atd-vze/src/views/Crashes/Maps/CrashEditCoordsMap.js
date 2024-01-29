@@ -6,26 +6,21 @@ import MapGL, {
   Marker,
   NavigationControl,
   FullscreenControl,
-  Source,
-  Layer,
 } from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import Geocoder from "react-map-gl-geocoder";
 import { CustomGeocoderMapController } from "./customGeocoderMapController";
 import "react-map-gl-geocoder/dist/mapbox-gl-geocoder.css";
-import styled from "styled-components";
 
 import Pin from "./Pin";
 import { CrashEditLatLonForm } from "./CrashEditLatLonForm";
 
-import { LOCATION_MAP_CONFIG } from "../../../helpers/map";
+import {
+  LOCATION_MAP_CONFIG,
+  LabeledAerialSourceAndLayer,
+} from "../../../helpers/map";
 
 const TOKEN = process.env.REACT_APP_MAPBOX_TOKEN;
-
-const MapStyleSelector = styled.div`
-  margin-top: 55px;
-  margin-right: 10px;
-`;
 
 const fullscreenControlStyle = {
   position: "absolute",
@@ -42,10 +37,6 @@ const navStyle = {
 };
 
 const customGeocoderMapController = new CustomGeocoderMapController();
-
-// TODO: Check that LocationMap still works
-// TODO: Check that CrashMap still works
-// TODO: Check that CrashEditCoordsMap still works
 
 class CrashEditCoordsMap extends Component {
   constructor(props) {
@@ -68,7 +59,6 @@ class CrashEditCoordsMap extends Component {
       popupInfo: null,
       markerLatitude: 0,
       markerLongitude: 0,
-      mapStyle: "satellite-streets",
       isDragging: false,
     };
   }
@@ -139,7 +129,6 @@ class CrashEditCoordsMap extends Component {
   render() {
     const {
       viewport,
-      mapStyle,
       markerLatitude,
       markerLongitude,
       isDragging,
@@ -180,14 +169,7 @@ class CrashEditCoordsMap extends Component {
             <NavigationControl showCompass={false} />
           </div>
           {/* add nearmap raster source and style */}
-          {!isDev && (
-            <>
-              <Source {...LOCATION_MAP_CONFIG.sources.aerials} />
-              <Layer {...LOCATION_MAP_CONFIG.layers.aerials} />
-              {/* show street labels on top of other layers */}
-              <Layer {...LOCATION_MAP_CONFIG.layers.streetLabels} />
-            </>
-          )}
+          {!isDev && <LabeledAerialSourceAndLayer />}
           <Marker latitude={markerLatitude} longitude={markerLongitude}>
             <Pin size={40} isDragging={isDragging} animated />
           </Marker>
