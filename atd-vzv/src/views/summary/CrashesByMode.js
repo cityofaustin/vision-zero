@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useMemo } from "react";
 import axios from "axios";
 import { Bar } from "react-chartjs-2";
 import { Container, Row, Col } from "reactstrap";
@@ -174,6 +174,21 @@ const CrashesByMode = () => {
     datasets: !!chartData && createTypeDatasets(),
   };
 
+  // Get an array of annual totals for the selected crash type
+  const getYearTotalsArray = useMemo(() => {
+    const yearTotalsArray = yearsArray().map((year, index) => {
+      let currentYearTotal = 0;
+      data.datasets &&
+        data.datasets.forEach((mode) => {
+          currentYearTotal += mode.data[index];
+        });
+      return currentYearTotal;
+    });
+    return yearTotalsArray;
+  }, [data.datasets]);
+
+  const yearTotalsArray = getYearTotalsArray;
+
   const StyledDiv = styled.div`
     .year-total-div {
       color: ${colors.dark};
@@ -319,6 +334,13 @@ const CrashesByMode = () => {
                                 </div>
                               );
                             })}
+                            <div>
+                              <hr className="my-0"></hr>
+                              <p className="h6 text-center my-0 py-1">
+                                <span className="sr-only">Total</span>
+                                <span className="mode-label-text">Total</span>
+                              </p>
+                            </div>
                           </StyledDiv>
                         </Col>
                         {chart.data.labels.map((year, yearIterator) => {
@@ -338,20 +360,21 @@ const CrashesByMode = () => {
                                   </div>
                                   {chart.data.datasets.map(
                                     (mode, modeIterator) => {
-                                      let paddingBottom =
-                                        modeIterator === 4 ? "pb-1" : "pb-0";
                                       return (
                                         <div key={modeIterator}>
                                           <hr className="my-0"></hr>
-                                          <p
-                                            className={`h6 text-center my-1 ${paddingBottom}`}
-                                          >
+                                          <p className={`h6 text-center my-1`}>
                                             {mode.data[yearIterator]}
                                           </p>
                                         </div>
                                       );
                                     }
                                   )}
+                                  <hr className="my-0"></hr>
+                                  <p className={`h6 text-center my-1 pb-1`}>
+                                    {data.datasets &&
+                                      yearTotalsArray[yearIterator]}
+                                  </p>
                                 </div>
                               </StyledDiv>
                             </Col>

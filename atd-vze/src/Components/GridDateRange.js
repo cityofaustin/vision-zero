@@ -64,16 +64,15 @@ const GridDateRange = ({
 
   /**
    * Returns a date in a valid SQL format.
-   * @param {string} date - The string to be transformed
-   * @param {string} fallbackValue - The value to use if the formattedDate is invalid
+   * @param {Date} date - The date object to be formatted
+   * @param {string} fallbackValue - The value to use if date is null
    * @returns {string}
    */
   const formatDate = (date, fallbackValue) => {
-    let formattedDate = format(date, "yyyy-MM-dd");
+    const formattedDate = date
+      ? format(date, "yyyy-MM-dd")
+      : format(new Date(fallbackValue), "yyyy-MM-dd");
 
-    if (formattedDate === "Invalid date") {
-      formattedDate = format(fallbackValue, "yyyy-MM-dd");
-    }
     return formattedDate;
   };
 
@@ -114,6 +113,7 @@ const GridDateRange = ({
           // Prevent user from selecting start date after current date
           maxDate={maxDate}
           minDate={minDate}
+          strictParsing={true}
         />
         <span>{" to "}</span>
         <DatePicker
@@ -126,6 +126,7 @@ const GridDateRange = ({
           // Prevent user from selecting date before startDate (chosen in first DatePicker) or after current date
           minDate={startDate}
           maxDate={maxDate}
+          strictParsing={true}
         />
       </StyledDatePicker>
     </>
