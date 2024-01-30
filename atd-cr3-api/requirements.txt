@@ -3,3 +3,4 @@ requests==2.31.*
 python-dotenv==1.0.*
 Flask-Cors==4.0.*
 python-jose==3.3.*
+zappa==0.56.*
