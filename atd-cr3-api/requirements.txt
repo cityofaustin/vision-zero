@@ -1,6 +1,6 @@
-boto3==1.34.*
-requests==2.31.*
-python-dotenv==1.0.*
-Flask-Cors==4.0.*
-python-jose==3.3.*
-zappa==0.56.*
+boto3==1.34.13
+requests==2.31.0
+python-dotenv==1.0.0
+Flask-Cors==4.0.0
+python-jose==3.3.0
+
