@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   Card,
@@ -55,6 +55,16 @@ const calculateYearsLifeLost = people => {
 };
 
 function Crash(props) {
+  const [isCOA, setIsCOA] = useState(false);
+  useEffect(() => {
+    const storedEmail = window.localStorage.getItem("hasura_user_email");
+    if (storedEmail) {
+      if (storedEmail.toLowerCase().endsWith("@austintexas.gov")) {
+        setIsCOA(true);
+      }
+    }
+  }, []);
+
   const crashId = props.match.params.id;
   const { loading, error, data, refetch } = useQuery(GET_CRASH, {
     variables: { crashId },
@@ -283,6 +293,7 @@ function Crash(props) {
         </Col>
         <Col xs="12" md="6" className="mb-4">
           <CrashDiagram
+            isCOA={isCOA}
             crashId={crashId}
             isCr3Stored={cr3StoredFlag === "Y"}
             isTempRecord={tempRecord}
@@ -304,7 +315,7 @@ function Crash(props) {
           <CrashCollapses data={data} props={props} />
         </Col>
       </Row>
-      {shouldShowFatalityRecommendations && (
+      {isCOA && shouldShowFatalityRecommendations && (
         <Row>
           <Col>
             <Recommendations crashId={props.match.params.id} />

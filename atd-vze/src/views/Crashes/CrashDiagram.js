@@ -15,16 +15,6 @@ import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 
 const CrashDiagram = props => {
   const [rotation, setRotation] = useState(0);
-  const [isCOA, setIsCOA] = useState(false);
-
-  useEffect(() => {
-    const storedEmail = window.localStorage.getItem("hasura_user_email");
-    if (storedEmail) {
-      if (storedEmail.toLowerCase().endsWith("@austintexas.gov")) {
-        setIsCOA(true);
-      }
-    }
-  }, []);
 
   // Set S3 folder for diagram depending on environment
   const s3Folder =
@@ -60,7 +50,7 @@ const CrashDiagram = props => {
         <Row className="d-flex align-items-center">
           <Col>Crash Diagram</Col>
           <Col className="d-flex justify-content-end">
-            {isCOA && props.isCr3Stored ? (
+            {props.isCOA && props.isCr3Stored ? (
               <Button color="primary" onClick={requestCR3}>
                 Download CR3 PDF
               </Button>
