@@ -15,13 +15,11 @@ import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 
 const CrashDiagram = props => {
   const [rotation, setRotation] = useState(0);
-  const [email, setEmail] = useState("");
   const [isCOA, setIsCOA] = useState(false);
 
   useEffect(() => {
     const storedEmail = window.localStorage.getItem("hasura_user_email");
     if (storedEmail) {
-      setEmail(storedEmail);
       if (storedEmail.toLowerCase().endsWith("@austintexas.gov")) {
         setIsCOA(true);
       }
