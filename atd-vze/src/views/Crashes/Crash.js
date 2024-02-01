@@ -62,7 +62,7 @@ function Crash(props) {
         setIsCOA(true);
       }
     }
-  }, []);
+  }, [user]);
 
   const crashId = props.match.params.id;
   const { loading, error, data, refetch } = useQuery(GET_CRASH, {
