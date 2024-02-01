@@ -58,7 +58,7 @@ function Crash(props) {
   const { getRoles, user } = useAuth0();
 
   const isCOA =
-    user?.email && user.email.toLowerCase().endsWith("@austintexas.gov");
+    !!user?.email && user.email.toLowerCase().endsWith("@austintexas.gov");
 
   const crashId = props.match.params.id;
   const { loading, error, data, refetch } = useQuery(GET_CRASH, {
