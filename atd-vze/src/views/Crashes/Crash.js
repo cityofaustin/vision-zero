@@ -55,6 +55,7 @@ const calculateYearsLifeLost = people => {
 };
 
 function Crash(props) {
+  const { getRoles, user } = useAuth0();
   const [isCOA, setIsCOA] = useState(false);
   useEffect(() => {
     if (user && user.email) {
@@ -80,7 +81,6 @@ function Crash(props) {
   const [formData, setFormData] = useState({});
   const [isEditingCoords, setIsEditingCoords] = useState(false);
 
-  const { getRoles, user } = useAuth0();
   const roles = getRoles();
 
   const isCrashFatal =
