@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Card,
   CardHeader,
@@ -15,6 +15,18 @@ import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 
 const CrashDiagram = props => {
   const [rotation, setRotation] = useState(0);
+  const [email, setEmail] = useState("");
+  const [isCOA, setIsCOA] = useState(false);
+
+  useEffect(() => {
+    const storedEmail = window.localStorage.getItem("hasura_user_email");
+    if (storedEmail) {
+      setEmail(storedEmail);
+      if (storedEmail.toLowerCase().endsWith("@austintexas.gov")) {
+        setIsCOA(true);
+      }
+    }
+  }, []);
 
   // Set S3 folder for diagram depending on environment
   const s3Folder =
@@ -50,9 +62,9 @@ const CrashDiagram = props => {
         <Row className="d-flex align-items-center">
           <Col>Crash Diagram</Col>
           <Col className="d-flex justify-content-end">
-            {props.isCr3Stored ? (
+            {isCOA && props.isCr3Stored ? (
               <Button color="primary" onClick={requestCR3}>
-                Download CR-3 PDF
+                Download CR3 PDF
               </Button>
             ) : (
               <div></div>
