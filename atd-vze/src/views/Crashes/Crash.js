@@ -57,7 +57,6 @@ const calculateYearsLifeLost = people => {
 function Crash(props) {
   const [isCOA, setIsCOA] = useState(false);
   useEffect(() => {
-    console.log("user: ", user.email);
     if (user && user.email) {
       if (user.email.toLowerCase().endsWith("@austintexas.gov")) {
         setIsCOA(true);
