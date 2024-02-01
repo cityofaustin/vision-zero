@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import {
   Card,
@@ -56,14 +56,9 @@ const calculateYearsLifeLost = people => {
 
 function Crash(props) {
   const { getRoles, user } = useAuth0();
-  const [isCOA, setIsCOA] = useState(false);
-  useEffect(() => {
-    if (user && user.email) {
-      if (user.email.toLowerCase().endsWith("@austintexas.gov")) {
-        setIsCOA(true);
-      }
-    }
-  }, [user]);
+
+  const isCOA =
+    !user?.email && user.email.toLowerCase().endsWith("@austintexas.gov");
 
   const crashId = props.match.params.id;
   const { loading, error, data, refetch } = useQuery(GET_CRASH, {
