@@ -57,9 +57,9 @@ const calculateYearsLifeLost = people => {
 function Crash(props) {
   const [isCOA, setIsCOA] = useState(false);
   useEffect(() => {
-    const storedEmail = window.localStorage.getItem("hasura_user_email");
-    if (storedEmail) {
-      if (storedEmail.toLowerCase().endsWith("@austintexas.gov")) {
+    console.log("user: ", user.email);
+    if (user && user.email) {
+      if (user.email.toLowerCase().endsWith("@austintexas.gov")) {
         setIsCOA(true);
       }
     }
@@ -81,7 +81,7 @@ function Crash(props) {
   const [formData, setFormData] = useState({});
   const [isEditingCoords, setIsEditingCoords] = useState(false);
 
-  const { getRoles } = useAuth0();
+  const { getRoles, user } = useAuth0();
   const roles = getRoles();
 
   const isCrashFatal =
