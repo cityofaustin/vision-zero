@@ -24,8 +24,9 @@ import {
 } from "../../queries/locationNotes";
 
 function Location(props) {
-  // Set initial variables for GET_LOCATION query
   const { isCOA } = useAuth0();
+
+  // Set initial variables for GET_LOCATION query
   const locationId = props.match.params.id;
 
   const fiveYearsAgo = format(subYears(Date.now(), 5), "yyyy-MM-dd");
