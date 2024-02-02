@@ -292,7 +292,7 @@ function Crash(props) {
           />
         </Col>
       </Row>
-      {!!investigatorNarrative ? (
+      {isCOA && !!investigatorNarrative ? (
         <Row>
           <Col>
             <CrashNarrative investigatorNarrative={investigatorNarrative} />
