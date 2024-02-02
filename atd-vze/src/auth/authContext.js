@@ -68,7 +68,7 @@ export const Auth0Provider = ({
           user?.email &&
           user.email.toLowerCase().endsWith("@austintexas.gov")
         ) {
-          // setIsCOA(true);
+          setIsCOA(true);
         }
 
         const claims = await auth0FromHook.getIdTokenClaims();
