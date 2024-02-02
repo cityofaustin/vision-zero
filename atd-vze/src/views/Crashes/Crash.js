@@ -58,7 +58,7 @@ function Crash(props) {
   const { getRoles, user } = useAuth0();
 
   const isCOA =
-    !!user?.email && user.email.toLowerCase().endsWith("@austintexas.gov");
+    !!!user?.email && user.email.toLowerCase().endsWith("@austintexas.gov");
 
   const crashId = props.match.params.id;
   const { loading, error, data, refetch } = useQuery(GET_CRASH, {
@@ -316,18 +316,20 @@ function Crash(props) {
           </Col>
         </Row>
       )}
-      <Row>
-        <Col>
-          <Notes
-            recordId={props.match.params.id}
-            tableName={"crash_notes"}
-            GET_NOTES={GET_NOTES}
-            INSERT_NOTE={INSERT_NOTE}
-            UPDATE_NOTE={UPDATE_NOTE}
-            DELETE_NOTE={DELETE_NOTE}
-          />
-        </Col>
-      </Row>
+      {isCOA && (
+        <Row>
+          <Col>
+            <Notes
+              recordId={props.match.params.id}
+              tableName={"crash_notes"}
+              GET_NOTES={GET_NOTES}
+              INSERT_NOTE={INSERT_NOTE}
+              UPDATE_NOTE={UPDATE_NOTE}
+              DELETE_NOTE={DELETE_NOTE}
+            />
+          </Col>
+        </Row>
+      )}
       <Row>
         <DataTable
           dataMap={createCrashDataMap(tempRecord)}
