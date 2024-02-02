@@ -21,7 +21,7 @@ const RelatedRecordsTable = ({
   const [formData, setFormData] = useState("");
 
   // Disable edit features if only role is "readonly"
-  const { getRoles } = useAuth0();
+  const { getRoles, isCOA } = useAuth0();
   const roles = getRoles();
 
   const handleEditClick = (field, row) => {
@@ -126,7 +126,7 @@ const RelatedRecordsTable = ({
                     .map((field, i) => {
                       // Render victim name cell in victim name column if row is a fatality
                       if (field === "victim_name") {
-                        if (row.prsn_injry_sev_id === 4) {
+                        if (isCOA && row.prsn_injry_sev_id === 4) {
                           return (
                             <VictimNameField
                               key={`${field}-${i}`}
