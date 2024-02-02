@@ -37,6 +37,7 @@ export const Auth0Provider = ({
   const [userClaims, setUserClaims] = useState();
   const [auth0Client, setAuth0] = useState();
   const [loading, setLoading] = useState(true);
+  const [isCOA, setIsCOA] = useState(false);
 
   // Instantiate Auth0, handle auth callback, and set loading and user params
   useEffect(() => {
@@ -63,6 +64,12 @@ export const Auth0Provider = ({
       if (isAuthenticated) {
         const user = await auth0FromHook.getUser();
         setUser(user);
+        if (
+          user?.email &&
+          user.email.toLowerCase().endsWith("@austintexas.gov")
+        ) {
+          // setIsCOA(true);
+        }
 
         const claims = await auth0FromHook.getIdTokenClaims();
         setUserClaims(claims);
@@ -111,6 +118,7 @@ export const Auth0Provider = ({
       value={{
         isAuthenticated,
         user,
+        isCOA,
         loading,
         handleRedirectCallback,
         userClaims,

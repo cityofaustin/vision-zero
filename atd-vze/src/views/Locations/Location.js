@@ -13,6 +13,7 @@ import LocationNonCR3Crashes from "./LocationNonCR3Crashes";
 import LocationDownloadGlobal from "./LocationDownloadGlobal";
 import Notes from "../../Components/Notes/Notes";
 import Page404 from "../Pages/Page404/Page404";
+import { useAuth0 } from "../../auth/authContext";
 
 import { GET_LOCATION, UPDATE_LOCATION } from "../../queries/Locations";
 import {
@@ -24,6 +25,7 @@ import {
 
 function Location(props) {
   // Set initial variables for GET_LOCATION query
+  const { isCOA } = useAuth0();
   const locationId = props.match.params.id;
 
   const fiveYearsAgo = format(subYears(Date.now(), 5), "yyyy-MM-dd");
@@ -109,18 +111,20 @@ function Location(props) {
           downloadGlobal={downloadAllData}
         />
       </Row>
-      <Row>
-        <Col>
-          <Notes
-            recordId={locationId}
-            tableName={"location_notes"}
-            GET_NOTES={GET_LOCATION_NOTES}
-            INSERT_NOTE={INSERT_LOCATION_NOTE}
-            UPDATE_NOTE={UPDATE_LOCATION_NOTE}
-            DELETE_NOTE={DELETE_LOCATION_NOTE}
-          />
-        </Col>
-      </Row>
+      {isCOA && (
+        <Row>
+          <Col>
+            <Notes
+              recordId={locationId}
+              tableName={"location_notes"}
+              GET_NOTES={GET_LOCATION_NOTES}
+              INSERT_NOTE={INSERT_LOCATION_NOTE}
+              UPDATE_NOTE={UPDATE_LOCATION_NOTE}
+              DELETE_NOTE={DELETE_LOCATION_NOTE}
+            />
+          </Col>
+        </Row>
+      )}
       <Row>
         <Col>
           <LocationCrashes locationId={locationId} />
