@@ -1,0 +1,1 @@
+CREATE TABLE "public"."atd_txdot__trauma_center_lkp" ("near_trauma_center_id" integer NOT NULL, "near_trauma_center_desc" text NOT NULL, PRIMARY KEY ("near_trauma_center_id") , UNIQUE ("near_trauma_center_id"));COMMENT ON TABLE "public"."atd_txdot__trauma_center_lkp" IS E'This is a lookup table for the near trauma center id field in the crashes table.';

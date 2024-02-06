@@ -25,6 +25,7 @@
 - "!include public_atd_txdot__rwy_sys_lkp.yaml"
 - "!include public_atd_txdot__street_sfx_lkp.yaml"
 - "!include public_atd_txdot__traffic_cntl_lkp.yaml"
+- "!include public_atd_txdot__trauma_center_lkp.yaml"
 - "!include public_atd_txdot__trvl_dir_lkp.yaml"
 - "!include public_atd_txdot__veh_body_styl_lkp.yaml"
 - "!include public_atd_txdot__veh_make_lkp.yaml"
