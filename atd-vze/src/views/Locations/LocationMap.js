@@ -177,8 +177,6 @@ export default class LocationMap extends Component {
         <Source type="geojson" data={this.locationPolygonGeoJson}>
           <Layer {...polygonDataLayer} />
         </Source>
-        {/* show street labels on top of other layers */}
-        {!isDev && <Layer {...LOCATION_MAP_CONFIG.layers.streetLabels} />}
         <div className="fullscreen" style={fullscreenControlStyle}>
           <FullscreenControl />
         </div>
