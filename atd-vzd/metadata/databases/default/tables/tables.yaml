@@ -18,6 +18,7 @@
 - "!include public_atd_txdot__gndr_lkp.yaml"
 - "!include public_atd_txdot__injry_sev_lkp.yaml"
 - "!include public_atd_txdot__intrsct_relat_lkp.yaml"
+- "!include public_atd_txdot__inv_da_lkp.yaml"
 - "!include public_atd_txdot__light_cond_lkp.yaml"
 - "!include public_atd_txdot__movt_lkp.yaml"
 - "!include public_atd_txdot__obj_struck_lkp.yaml"
