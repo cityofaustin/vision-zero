@@ -101,7 +101,7 @@ def new_table(name):
     """
 
 def main():
-    file_path = ("extract_2023_20240109182457_lookup_20240201_HAYSTRAVISWILLIAMSON.csv")
+    file_path = ("path_to_extract")
     data = read_and_group_csv(file_path)
 
     # Pretty-print the grouped data as JSON
