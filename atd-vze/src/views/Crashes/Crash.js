@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   Card,
@@ -37,22 +37,20 @@ import {
   DELETE_NOTE,
 } from "../../queries/crashNotes";
 
-const calculateYearsLifeLost = people => {
-  // Assume 75 year life expectancy,
-  // Find the difference between person.prsn_age & 75
-  // Sum over the list of ppl with .reduce
-  return people.reduce((accumulator, person) => {
-    let years = 0;
-    if (person.injury_severity.injry_sev_desc === "KILLED") {
-      let yearsLifeLost = 75 - Number(person.prsn_age);
-      // What if the person is older than 75?
-      // For now, so we don't have negative numbers,
-      // Assume years of life lost is 0
-      years = yearsLifeLost < 0 ? 0 : yearsLifeLost;
-    }
-    return accumulator + years;
-  }, 0); // start with a count at 0 years
-};
+const useTotalYearsOfLifeLost = peopleData =>
+  useMemo(() => {
+    if (!peopleData) return 0;
+
+    console.log(peopleData);
+    const primaryPeople = peopleData?.atd_txdot_primaryperson || [];
+    const people = peopleData?.atd_txdot_person || [];
+    const allPeople = [...primaryPeople, ...people];
+
+    return allPeople.reduce((acc, person) => {
+      const yearsOfLifeLost = parseInt(person.years_of_life_lost);
+      return acc + yearsOfLifeLost;
+    }, 0);
+  }, [peopleData]);
 
 function Crash(props) {
   const crashId = props.match.params.id;
@@ -66,6 +64,7 @@ function Crash(props) {
   } = useQuery(GET_PEOPLE, {
     variables: { crashId },
   });
+  const crashYearsOfLifeLostTotal = useTotalYearsOfLifeLost(peopleData);
 
   const [editField, setEditField] = useState("");
   const [formData, setFormData] = useState({});
@@ -167,9 +166,7 @@ function Crash(props) {
   } = !!data?.atd_txdot_crashes[0] ? data?.atd_txdot_crashes[0] : {};
 
   const mapGeocoderAddress = createGeocoderAddressString(data);
-  const yearsLifeLostCount = calculateYearsLifeLost(
-    peopleData.atd_txdot_primaryperson.concat(peopleData.atd_txdot_person)
-  );
+
   const hasLocation =
     data &&
     data?.atd_txdot_crashes.length > 0 &&
@@ -215,7 +212,9 @@ function Crash(props) {
         <Col xs="12" sm="6" md="4">
           <Widget02
             header={`${
-              yearsLifeLostCount === null ? "--" : yearsLifeLostCount
+              crashYearsOfLifeLostTotal === null
+                ? "--"
+                : crashYearsOfLifeLostTotal
             }`}
             mainText="Years of Life Lost"
             icon="fa fa-hourglass-end"
