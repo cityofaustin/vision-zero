@@ -50,7 +50,7 @@ function Crash(props) {
   } = useQuery(GET_PEOPLE, {
     variables: { crashId },
   });
-  const crashYearsOfLifeLostTotal = useTotalYearsOfLifeLost({
+  const totalYearsOfLifeLost = useTotalYearsOfLifeLost({
     primaryPeopleRecords: peopleData?.atd_txdot_primaryperson,
     peopleRecords: peopleData?.atd_txdot_person,
   });
@@ -201,9 +201,7 @@ function Crash(props) {
         <Col xs="12" sm="6" md="4">
           <Widget02
             header={`${
-              crashYearsOfLifeLostTotal === null
-                ? "--"
-                : crashYearsOfLifeLostTotal
+              totalYearsOfLifeLost === null ? "--" : totalYearsOfLifeLost
             }`}
             mainText="Years of Life Lost"
             icon="fa fa-hourglass-end"

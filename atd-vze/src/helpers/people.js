@@ -11,7 +11,6 @@ export const useTotalYearsOfLifeLost = ({
   peopleRecords = [],
 }) =>
   useMemo(() => {
-    console.log("this ran");
     const allPeopleRecords = [...primaryPeopleRecords, ...peopleRecords];
 
     return allPeopleRecords.reduce((acc, person) => {
