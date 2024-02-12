@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import {
   Card,
@@ -36,21 +36,7 @@ import {
   UPDATE_NOTE,
   DELETE_NOTE,
 } from "../../queries/crashNotes";
-
-const useTotalYearsOfLifeLost = peopleData =>
-  useMemo(() => {
-    if (!peopleData) return 0;
-
-    console.log(peopleData);
-    const primaryPeople = peopleData?.atd_txdot_primaryperson || [];
-    const people = peopleData?.atd_txdot_person || [];
-    const allPeople = [...primaryPeople, ...people];
-
-    return allPeople.reduce((acc, person) => {
-      const yearsOfLifeLost = parseInt(person.years_of_life_lost);
-      return acc + yearsOfLifeLost;
-    }, 0);
-  }, [peopleData]);
+import { useTotalYearsOfLifeLost } from "../../helpers/people";
 
 function Crash(props) {
   const crashId = props.match.params.id;
@@ -64,7 +50,10 @@ function Crash(props) {
   } = useQuery(GET_PEOPLE, {
     variables: { crashId },
   });
-  const crashYearsOfLifeLostTotal = useTotalYearsOfLifeLost(peopleData);
+  const crashYearsOfLifeLostTotal = useTotalYearsOfLifeLost({
+    primaryPeopleRecords: peopleData?.atd_txdot_primaryperson,
+    peopleRecords: peopleData?.atd_txdot_person,
+  });
 
   const [editField, setEditField] = useState("");
   const [formData, setFormData] = useState({});
