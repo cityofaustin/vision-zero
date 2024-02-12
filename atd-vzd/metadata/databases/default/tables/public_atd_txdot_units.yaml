@@ -2,24 +2,6 @@ table:
   name: atd_txdot_units
   schema: public
 object_relationships:
-  - name: autonomous_level_engaged
-    using:
-      manual_configuration:
-        column_mapping:
-          rpt_autonomous_level_engaged_id: autonomous_level_engaged_id
-        insertion_order: null
-        remote_table:
-          name: atd_txdot__autonomous_level_engaged_lkp
-          schema: public
-  - name: autonomous_unit
-    using:
-      manual_configuration:
-        column_mapping:
-          autonomous_unit_id: autonomous_unit_id
-        insertion_order: null
-        remote_table:
-          name: atd_txdot__autonomous_unit_lkp
-          schema: public
   - name: body_style
     using:
       manual_configuration:
