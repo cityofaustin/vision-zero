@@ -36,7 +36,6 @@ import {
   UPDATE_NOTE,
   DELETE_NOTE,
 } from "../../queries/crashNotes";
-import { useTotalYearsOfLifeLost } from "../../helpers/people";
 
 function Crash(props) {
   const crashId = props.match.params.id;
@@ -50,10 +49,14 @@ function Crash(props) {
   } = useQuery(GET_PEOPLE, {
     variables: { crashId },
   });
-  const totalYearsOfLifeLost = useTotalYearsOfLifeLost({
-    primaryPeopleRecords: peopleData?.atd_txdot_primaryperson,
-    peopleRecords: peopleData?.atd_txdot_person,
-  });
+  const primaryPersonYearsOfLifeLost =
+    peopleData?.primary_person_years_of_life_lost?.aggregate?.sum
+      ?.years_of_life_lost || 0;
+  const personYearsOfLifeLost =
+    peopleData?.person_years_of_life_lost?.aggregate?.sum?.years_of_life_lost ||
+    0;
+  const totalYearsOfLifeLost =
+    primaryPersonYearsOfLifeLost + personYearsOfLifeLost;
 
   const [editField, setEditField] = useState("");
   const [formData, setFormData] = useState({});
