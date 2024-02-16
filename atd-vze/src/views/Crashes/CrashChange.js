@@ -54,9 +54,9 @@ function CrashChange(props) {
   const [differentFields, setDifferentFields] = useState([]);
   const [showFieldsDiffOnly, setShowFieldsDiffOnly] = useState(true);
   // Modals
-  const [approveAllChanges, setApproveAllChanges] = useState(false);
-  const [discardAllChanges, setDiscardAllChanges] = useState(false);
-  const [clearAllSelections, setClearAllSelections] = useState(false);
+  const [approveAllModalOpen, setApproveAllModalOpen] = useState(false);
+  const [discardAllModalOpen, setDiscardAllModalOpen] = useState(false);
+  const [unselectAllModalOpen, setUnselectAllModalOpen] = useState(false);
   const [savingChanges, setSavingChanges] = useState(false);
   const [errorDialog, setErrorDialog] = useState(false);
   const [saveStatus, setSaveStatus] = useState("");
@@ -84,17 +84,11 @@ function CrashChange(props) {
     `
   );
 
-  const {
-    data,
-    error,
-    refetch,
-  } = useQuery(GET_CRASH_CHANGE, {
+  const { data, error, refetch } = useQuery(GET_CRASH_CHANGE, {
     variables: { crashId },
   });
 
-  const {
-    data: secondaryData
-  } = useQuery(GET_CRASH_SECONDARY_RECORDS, {
+  const { data: secondaryData } = useQuery(GET_CRASH_SECONDARY_RECORDS, {
     variables: { crashId },
   });
 
@@ -354,7 +348,6 @@ function CrashChange(props) {
       } catch {
         redirectToQueueIndex();
       }
-
     }
   }, [recordData]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -398,7 +391,6 @@ function CrashChange(props) {
     } catch {
       redirectToQueueIndex();
     }
-
   }, [importantFieldList, showFieldsDiffOnly, recordData, selectedFields]); // eslint-disable-line react-hooks/exhaustive-deps
 
   /**
@@ -424,16 +416,15 @@ function CrashChange(props) {
     } catch {
       redirectToQueueIndex();
     }
-
   }, [differentFieldsList, showFieldsDiffOnly, recordData, selectedFields]); // eslint-disable-line react-hooks/exhaustive-deps
 
   /**
    * Closes all dialogs
    */
   const hideAllDialogs = () => {
-    setApproveAllChanges(false);
-    setDiscardAllChanges(false);
-    setClearAllSelections(false);
+    setApproveAllModalOpen(false);
+    setDiscardAllModalOpen(false);
+    setUnselectAllModalOpen(false);
     setSavingChanges(false);
   };
 
@@ -441,42 +432,42 @@ function CrashChange(props) {
    * Hides the Save Selected Changes Modal
    */
   const hideSaveSelectedChanges = () => {
-    setApproveAllChanges(false);
+    setApproveAllModalOpen(false);
   };
 
   /**
    * Show the Save Selected Changes Modal
    */
   const showSaveSelectedChanges = () => {
-    setApproveAllChanges(true);
+    setApproveAllModalOpen(true);
   };
 
   /**
    * Hides the Discard New Record Modal
    */
   const hideDiscardNewRecord = () => {
-    setDiscardAllChanges(false);
+    setDiscardAllModalOpen(false);
   };
 
   /**
    * Shows the Discard New Record Modal
    */
   const showDiscardNewRecord = () => {
-    setDiscardAllChanges(true);
+    setDiscardAllModalOpen(true);
   };
 
   /**
    * Hides the Unselect All Changes Modal
    */
-  const hideUnselectAllChanges = () => {
-    setClearAllSelections(false);
+  const hideUnselectAllModal = () => {
+    setUnselectAllModalOpen(false);
   };
 
   /**
    * Shows the Unselect All Changes Modal
    */
-  const showUnselectAllChanges = () => {
-    setClearAllSelections(true);
+  const showUnselectAllModal = () => {
+    setUnselectAllModalOpen(true);
   };
 
   /**
@@ -895,7 +886,7 @@ function CrashChange(props) {
           <Card>
             <CardHeader>
               <span>
-                <strong>Main Options</strong>
+                <strong>Options</strong>
               </span>
               <div className="float-right minidiff--switchrow">
                 <AppSwitch
@@ -936,7 +927,7 @@ function CrashChange(props) {
                 <Col sm xs="12" className="text-center">
                   <Button
                     color="warning"
-                    onClick={() => showUnselectAllChanges()}
+                    onClick={() => showUnselectAllModal()}
                   >
                     <i className="fa fa-window-close"></i>&nbsp;Unselect all
                     changes
@@ -1048,7 +1039,7 @@ function CrashChange(props) {
       </Row>
 
       <Modal
-        isOpen={approveAllChanges}
+        isOpen={approveAllModalOpen}
         toggle={() => hideSaveSelectedChanges()}
         className={"modal-success"}
       >
@@ -1084,11 +1075,11 @@ function CrashChange(props) {
       </Modal>
 
       <Modal
-        isOpen={clearAllSelections}
-        toggle={() => hideUnselectAllChanges()}
+        isOpen={unselectAllModalOpen}
+        toggle={() => hideUnselectAllModal()}
         className={"modal-warning"}
       >
-        <ModalHeader toggle={() => hideUnselectAllChanges()}>
+        <ModalHeader toggle={() => hideUnselectAllModal()}>
           Unselect all?
         </ModalHeader>
         <ModalBody>
@@ -1101,19 +1092,19 @@ function CrashChange(props) {
             color="primary"
             onClick={() => {
               fieldsBatchClear(3);
-              hideUnselectAllChanges();
+              hideUnselectAllModal();
             }}
           >
             Unselect All
           </Button>{" "}
-          <Button color="secondary" onClick={() => hideUnselectAllChanges()}>
+          <Button color="secondary" onClick={() => hideUnselectAllModal()}>
             Cancel
           </Button>
         </ModalFooter>
       </Modal>
 
       <Modal
-        isOpen={discardAllChanges}
+        isOpen={discardAllModalOpen}
         toggle={() => hideDiscardNewRecord()}
         className={"modal-danger"}
       >
