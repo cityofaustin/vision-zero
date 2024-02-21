@@ -96,7 +96,7 @@ const UserRow = ({ user }) => {
           ? format(parseISO(user.last_login), "MM/dd/yyyy")
           : "Never"}
       </td>
-      <td>{rules[user.app_metadata.roles[0]].label}</td>
+      <td>{rules[user.app_metadata.roles[0]]?.label || "Error"}</td>
       <td>
         <Link to={userLink}>
           <Badge color={getBadge(user.blocked)}>
