@@ -34,7 +34,7 @@ const UserForm = ({ type, id = null }) => {
     connection: "Username-Password-Authentication", // Set account type
     verify_email: true, // Send email verification
     app_metadata: {
-      roles: ["readOnly"], // Default to lowest level access
+      roles: ["readonly"], // Default to lowest level access
     },
   };
 
