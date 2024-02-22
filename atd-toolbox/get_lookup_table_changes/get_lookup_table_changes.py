@@ -88,8 +88,10 @@ def read_and_group_csv(file_path):
 
     return grouped_data
 
+
 def escape_single_quotes(input_string):
     return input_string.replace("'", "''")
+
 
 def new_table(name):
     return f"""
@@ -100,8 +102,9 @@ def new_table(name):
     );
     """
 
+
 def main():
-    file_path = ("path_to_extract")
+    file_path = "path_to_extract"
     data = read_and_group_csv(file_path)
 
     # Pretty-print the grouped data as JSON
@@ -179,12 +182,12 @@ def main():
     print("\n🛠️ Here are the changes to be made:\n")
     print("\n".join(changes))
 
-    outfile = open('up_migration.sql', 'w')
-    outfile.write('\n'.join(changes))
+    outfile = open("up_migration.sql", "w")
+    outfile.write("\n".join(changes))
     outfile.close()
 
-    outfile_down = open('down_migration.sql', 'w')
-    outfile_down.write('\n'.join(down_changes))
+    outfile_down = open("down_migration.sql", "w")
+    outfile_down.write("\n".join(down_changes))
     outfile_down.close()
 
 
