@@ -1,6 +1,4 @@
 import { gql } from "apollo-boost";
-
-/// TODO: have we been keeping this up to date with new columns?
 /**
  * A template that is used to gather the original crash record
  * and all records of pending changes.
@@ -235,22 +233,18 @@ export const CRASH_MUTATION_DISCARD = `
  * or Crashes. The function name matches a Hasura insertion method.
  * @type {string}
  */
-
-export const RECORD_MUTATION_UPDATE = `
-        %FUNCTION_NAME%(         
-            objects: [
-                %UPDATE_FIELDS%
-            ],
-            on_conflict: {
-              constraint: %CONSTRAINT_NAME%,
-              update_columns: [
-                updated_by
-                %SELECTED_COLUMNS%
-              ]
-            }
-        ) {
-          affected_rows
-        }
+export const CRASH_MUTATION_UPDATE = gql`
+  mutation updatesCrashes(
+    $crashId: Int!
+    $changes: atd_txdot_crashes_set_input
+  ) {
+    update_atd_txdot_crashes_by_pk(
+      pk_columns: { crash_id: $crashId }
+      _set: $changes
+    ) {
+      crash_id
+    }
+  }
 `;
 
 /**
@@ -262,20 +256,10 @@ export const RECORD_DELETE_CHANGE_RECORDS = `
       delete_atd_txdot_changes (
           where: {
             record_id: { _eq: $crashId }
-            record_type: { _in: ["crash", "unit", "primaryperson", "person"] }
+            record_type: { _in: ["crash", "unit", "primaryperson", "person", "charges"] }
           }
       ) {
         affected_rows
       }
-  }
-`;
-
-/**
- * Dummy GraphQL query
- * @type {string}
- */
-export const UPSERT_MUTATION_DUMMY = `
-  mutation dummyQuery {
-    __typename
   }
 `;
