@@ -2,6 +2,14 @@ table:
   name: atd__mode_category_lkp
   schema: public
 select_permissions:
+  - role: vz-admin
+    permission:
+      columns:
+        - atd_mode_category_desc
+        - atd_mode_category_mode_name
+        - id
+      filter: {}
+    comment: ""
   - role: editor
     permission:
       columns:

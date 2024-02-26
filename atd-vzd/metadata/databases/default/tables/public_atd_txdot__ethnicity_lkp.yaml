@@ -1,14 +1,13 @@
 table:
   name: atd_txdot__ethnicity_lkp
   schema: public
-insert_permissions:
-  - role: editor
+select_permissions:
+  - role: vz-admin
     permission:
-      check: {}
       columns:
         - ethnicity_desc
         - ethnicity_id
-select_permissions:
+      filter: {}
   - role: editor
     permission:
       columns:
@@ -20,16 +19,4 @@ select_permissions:
       columns:
         - ethnicity_desc
         - ethnicity_id
-      filter: {}
-update_permissions:
-  - role: editor
-    permission:
-      columns:
-        - ethnicity_desc
-        - ethnicity_id
-      filter: {}
-      check: null
-delete_permissions:
-  - role: editor
-    permission:
       filter: {}

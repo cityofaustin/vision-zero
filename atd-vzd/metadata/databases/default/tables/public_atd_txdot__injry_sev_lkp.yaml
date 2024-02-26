@@ -9,16 +9,15 @@ array_relationships:
         table:
           name: atd_txdot_person
           schema: public
-insert_permissions:
-  - role: editor
+select_permissions:
+  - role: vz-admin
     permission:
-      check: {}
       columns:
         - injry_sev_id
         - eff_beg_date
         - eff_end_date
         - injry_sev_desc
-select_permissions:
+      filter: {}
   - role: editor
     permission:
       columns:
@@ -33,13 +32,3 @@ select_permissions:
         - injry_sev_desc
         - injry_sev_id
       filter: {}
-update_permissions:
-  - role: editor
-    permission:
-      columns:
-        - injry_sev_id
-        - eff_beg_date
-        - eff_end_date
-        - injry_sev_desc
-      filter: {}
-      check: null

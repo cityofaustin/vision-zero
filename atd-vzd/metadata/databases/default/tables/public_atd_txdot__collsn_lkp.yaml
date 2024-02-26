@@ -1,16 +1,15 @@
 table:
   name: atd_txdot__collsn_lkp
   schema: public
-insert_permissions:
-  - role: editor
+select_permissions:
+  - role: vz-admin
     permission:
-      check: {}
       columns:
         - collsn_id
         - collsn_desc
         - eff_beg_date
         - eff_end_date
-select_permissions:
+      filter: {}
   - role: editor
     permission:
       columns:
@@ -27,13 +26,3 @@ select_permissions:
         - eff_beg_date
         - eff_end_date
       filter: {}
-update_permissions:
-  - role: editor
-    permission:
-      columns:
-        - collsn_id
-        - collsn_desc
-        - eff_beg_date
-        - eff_end_date
-      filter: {}
-      check: null
