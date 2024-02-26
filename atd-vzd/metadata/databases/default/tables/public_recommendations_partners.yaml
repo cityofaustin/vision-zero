@@ -38,13 +38,6 @@ select_permissions:
         - partner_id
         - recommendation_id
       filter: {}
-  - role: readonly
-    permission:
-      columns:
-        - id
-        - partner_id
-        - recommendation_id
-      filter: {}
 update_permissions:
   - role: vz-admin
     permission:

@@ -62,17 +62,6 @@ select_permissions:
         - rec_update
         - created_at
       filter: {}
-  - role: readonly
-    permission:
-      columns:
-        - crash_id
-        - id
-        - recommendation_status_id
-        - created_by
-        - rec_text
-        - rec_update
-        - created_at
-      filter: {}
 update_permissions:
   - role: vz-admin
     permission:
