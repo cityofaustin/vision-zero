@@ -2,6 +2,20 @@ table:
   name: atd_txdot_changes_view
   schema: public
 select_permissions:
+  - role: vz-admin
+    permission:
+      columns:
+        - record_id
+        - change_id
+        - record_json
+        - created_timestamp
+        - status_id
+        - crash_fatal_flag
+        - sus_serious_injury_cnt
+        - status_description
+        - crash_date
+      filter: {}
+      allow_aggregations: true
   - role: editor
     permission:
       columns:

@@ -2,6 +2,14 @@ table:
   name: atd_txdot_crash_locations_ranking
   schema: public
 select_permissions:
+  - role: vz-admin
+    permission:
+      columns:
+        - apd_confirmed_death_count
+        - crashes
+        - serious_injry_cnt
+        - location_id
+      filter: {}
   - role: editor
     permission:
       columns:

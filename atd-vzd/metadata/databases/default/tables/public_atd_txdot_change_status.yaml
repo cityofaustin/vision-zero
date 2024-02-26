@@ -2,6 +2,15 @@ table:
   name: atd_txdot_change_status
   schema: public
 select_permissions:
+  - role: vz-admin
+    permission:
+      columns:
+        - is_retired
+        - last_update
+        - change_status_id
+        - description_long
+        - description
+      filter: {}
   - role: editor
     permission:
       columns:

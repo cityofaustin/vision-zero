@@ -12,6 +12,21 @@ object_relationships:
           name: atd_txdot_change_status
           schema: public
 select_permissions:
+  - role: vz-admin
+    permission:
+      columns:
+        - change_id
+        - record_id
+        - record_type
+        - record_json
+        - update_timestamp
+        - created_timestamp
+        - updated_by
+        - status_id
+        - affected_columns
+        - crash_date
+        - record_uqid
+      filter: {}
   - role: editor
     permission:
       columns:

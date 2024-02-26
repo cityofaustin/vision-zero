@@ -2,6 +2,15 @@ table:
   name: atd_txdot_crash_status
   schema: public
 insert_permissions:
+  - role: vz-admin
+    permission:
+      check: {}
+      columns:
+        - is_retired
+        - last_update
+        - crash_status_id
+        - description_long
+        - description
   - role: editor
     permission:
       check: {}
@@ -12,6 +21,15 @@ insert_permissions:
         - description_long
         - description
 select_permissions:
+  - role: vz-admin
+    permission:
+      columns:
+        - is_retired
+        - last_update
+        - crash_status_id
+        - description_long
+        - description
+      filter: {}
   - role: editor
     permission:
       columns:
@@ -31,6 +49,16 @@ select_permissions:
         - description
       filter: {}
 update_permissions:
+  - role: vz-admin
+    permission:
+      columns:
+        - is_retired
+        - last_update
+        - crash_status_id
+        - description_long
+        - description
+      filter: {}
+      check: null
   - role: editor
     permission:
       columns:
