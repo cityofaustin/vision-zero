@@ -2,6 +2,14 @@ table:
   name: atd_txdot__intrsct_relat_lkp
   schema: public
 select_permissions:
+  - role: vz-admin
+    permission:
+      columns:
+        - intrsct_relat_id
+        - intrsct_relat_desc
+        - eff_beg_date
+        - eff_end_date
+      filter: {}
   - role: editor
     permission:
       columns:

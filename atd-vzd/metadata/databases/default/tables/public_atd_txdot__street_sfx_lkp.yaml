@@ -2,7 +2,23 @@ table:
   name: atd_txdot__street_sfx_lkp
   schema: public
 select_permissions:
+  - role: vz-admin
+    permission:
+      columns:
+        - street_sfx_id
+        - street_sfx_desc
+        - eff_beg_date
+        - eff_end_date
+      filter: {}
   - role: editor
+    permission:
+      columns:
+        - street_sfx_id
+        - street_sfx_desc
+        - eff_beg_date
+        - eff_end_date
+      filter: {}
+  - role: readonly
     permission:
       columns:
         - street_sfx_id
