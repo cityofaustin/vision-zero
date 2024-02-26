@@ -85,6 +85,8 @@ function CrashChange(props) {
    */
   useEffect(() => setRecordData(data), [data]);
 
+  console.log(differentFieldsList, "different fields list");
+
   /**
    * Returns true if fieldName exists within the selectedFields array.
    * @param {string} fieldName - The name of the field
@@ -503,7 +505,6 @@ function CrashChange(props) {
 
   /**
    * Executes graphql query to update the crash record
-   * @returns {Promise<void>}
    */
   const executeUpdateCrashRecord = async () => {
     const record = secondaryData["atd_txdot_changes"][0];
