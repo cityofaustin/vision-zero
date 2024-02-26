@@ -31,7 +31,7 @@ export const itSupervisorRoleName = "itSupervisor";
 
 export const rules = {
   // Changing readonly to camelCase will break Hasura permissions
-  readonly: {
+  [readOnlyRoleName]: {
     label: "Read-only",
     static: readOnlyStaticRules,
   },
@@ -43,7 +43,7 @@ export const rules = {
     label: "Admin",
     static: [...readOnlyStaticRules, ...editorStaticRules, ...adminStaticRules],
   },
-  itSupervisor: {
+  [itSupervisorRoleName]: {
     label: "IT Supervisor",
     static: [
       ...readOnlyStaticRules,
