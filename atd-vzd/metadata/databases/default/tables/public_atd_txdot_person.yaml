@@ -70,6 +70,50 @@ object_relationships:
           name: atd_txdot_units
           schema: public
 insert_permissions:
+  - role: vz-admin
+    permission:
+      check: {}
+      columns:
+        - crash_id
+        - death_cnt
+        - is_retired
+        - last_update
+        - non_injry_cnt
+        - nonincap_injry_cnt
+        - peh_fl
+        - person_id
+        - poss_injry_cnt
+        - prsn_age
+        - prsn_airbag_id
+        - prsn_alc_rslt_id
+        - prsn_alc_spec_type_id
+        - prsn_bac_test_rslt
+        - prsn_death_date
+        - prsn_death_time
+        - prsn_drg_rslt_id
+        - prsn_drg_spec_type_id
+        - prsn_ejct_id
+        - prsn_ethnicity_id
+        - prsn_first_name
+        - prsn_gndr_id
+        - prsn_helmet_id
+        - prsn_injry_sev_id
+        - prsn_last_name
+        - prsn_mid_name
+        - prsn_name_honorific
+        - prsn_name_sfx
+        - prsn_nbr
+        - prsn_occpnt_pos_id
+        - prsn_rest_id
+        - prsn_sol_fl
+        - prsn_taken_by
+        - prsn_taken_to
+        - prsn_type_id
+        - sus_serious_injry_cnt
+        - tot_injry_cnt
+        - unit_nbr
+        - unkn_injry_cnt
+        - updated_by
   - role: editor
     permission:
       check: {}
@@ -115,6 +159,47 @@ insert_permissions:
         - unkn_injry_cnt
         - updated_by
 select_permissions:
+  - role: vz-admin
+    permission:
+      columns:
+        - crash_id
+        - death_cnt
+        - is_retired
+        - last_update
+        - non_injry_cnt
+        - nonincap_injry_cnt
+        - peh_fl
+        - person_id
+        - poss_injry_cnt
+        - prsn_age
+        - prsn_airbag_id
+        - prsn_alc_rslt_id
+        - prsn_alc_spec_type_id
+        - prsn_bac_test_rslt
+        - prsn_death_date
+        - prsn_death_time
+        - prsn_drg_rslt_id
+        - prsn_drg_spec_type_id
+        - prsn_ejct_id
+        - prsn_ethnicity_id
+        - prsn_gndr_id
+        - prsn_helmet_id
+        - prsn_injry_sev_id
+        - prsn_nbr
+        - prsn_occpnt_pos_id
+        - prsn_rest_id
+        - prsn_sol_fl
+        - prsn_taken_by
+        - prsn_taken_to
+        - prsn_type_id
+        - sus_serious_injry_cnt
+        - tot_injry_cnt
+        - unit_nbr
+        - unkn_injry_cnt
+        - updated_by
+        - years_of_life_lost
+      filter: {}
+      allow_aggregations: true
   - role: editor
     permission:
       columns:
@@ -198,6 +283,51 @@ select_permissions:
       filter: {}
       allow_aggregations: true
 update_permissions:
+  - role: vz-admin
+    permission:
+      columns:
+        - crash_id
+        - death_cnt
+        - is_retired
+        - last_update
+        - non_injry_cnt
+        - nonincap_injry_cnt
+        - peh_fl
+        - person_id
+        - poss_injry_cnt
+        - prsn_age
+        - prsn_airbag_id
+        - prsn_alc_rslt_id
+        - prsn_alc_spec_type_id
+        - prsn_bac_test_rslt
+        - prsn_death_date
+        - prsn_death_time
+        - prsn_drg_rslt_id
+        - prsn_drg_spec_type_id
+        - prsn_ejct_id
+        - prsn_ethnicity_id
+        - prsn_first_name
+        - prsn_gndr_id
+        - prsn_helmet_id
+        - prsn_injry_sev_id
+        - prsn_last_name
+        - prsn_mid_name
+        - prsn_name_honorific
+        - prsn_name_sfx
+        - prsn_nbr
+        - prsn_occpnt_pos_id
+        - prsn_rest_id
+        - prsn_sol_fl
+        - prsn_taken_by
+        - prsn_taken_to
+        - prsn_type_id
+        - sus_serious_injry_cnt
+        - tot_injry_cnt
+        - unit_nbr
+        - unkn_injry_cnt
+        - updated_by
+      filter: {}
+      check: null
   - role: editor
     permission:
       columns:

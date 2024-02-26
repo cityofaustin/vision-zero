@@ -6,6 +6,17 @@ object_relationships:
     using:
       foreign_key_constraint_on: crash_id
 insert_permissions:
+  - role: vz-admin
+    permission:
+      check: {}
+      columns:
+        - id
+        - created_at
+        - updated_at
+        - date
+        - text
+        - crash_id
+        - user_email
   - role: editor
     permission:
       check: {}
@@ -17,9 +28,9 @@ insert_permissions:
         - text
         - crash_id
         - user_email
-  - role: readonly
+select_permissions:
+  - role: vz-admin
     permission:
-      check: {}
       columns:
         - crash_id
         - id
@@ -28,7 +39,7 @@ insert_permissions:
         - created_at
         - date
         - updated_at
-select_permissions:
+      filter: {}
   - role: editor
     permission:
       columns:
@@ -52,7 +63,7 @@ select_permissions:
         - updated_at
       filter: {}
 update_permissions:
-  - role: editor
+  - role: vz-admin
     permission:
       columns:
         - crash_id
@@ -64,22 +75,22 @@ update_permissions:
         - updated_at
       filter: {}
       check: null
-  - role: readonly
+  - role: editor
     permission:
       columns:
-        - id
-        - created_at
-        - updated_at
-        - date
-        - text
         - crash_id
+        - id
+        - text
         - user_email
+        - created_at
+        - date
+        - updated_at
       filter: {}
       check: null
 delete_permissions:
-  - role: editor
+  - role: vz-admin
     permission:
       filter: {}
-  - role: readonly
+  - role: editor
     permission:
       filter: {}
