@@ -17,6 +17,17 @@ array_relationships:
           name: recommendations_partners
           schema: public
 insert_permissions:
+  - role: vz-admin
+    permission:
+      check: {}
+      columns:
+        - id
+        - created_at
+        - crash_id
+        - recommendation_status_id
+        - rec_text
+        - created_by
+        - rec_update
   - role: editor
     permission:
       check: {}
@@ -29,6 +40,17 @@ insert_permissions:
         - created_by
         - rec_update
 select_permissions:
+  - role: vz-admin
+    permission:
+      columns:
+        - crash_id
+        - id
+        - recommendation_status_id
+        - created_by
+        - rec_text
+        - rec_update
+        - created_at
+      filter: {}
   - role: editor
     permission:
       columns:
@@ -52,6 +74,18 @@ select_permissions:
         - created_at
       filter: {}
 update_permissions:
+  - role: vz-admin
+    permission:
+      columns:
+        - crash_id
+        - id
+        - recommendation_status_id
+        - created_by
+        - rec_text
+        - rec_update
+        - created_at
+      filter: {}
+      check: {}
   - role: editor
     permission:
       columns:
@@ -65,6 +99,9 @@ update_permissions:
       filter: {}
       check: {}
 delete_permissions:
+  - role: vz-admin
+    permission:
+      filter: {}
   - role: editor
     permission:
       filter: {}
