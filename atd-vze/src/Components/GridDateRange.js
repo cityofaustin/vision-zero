@@ -51,7 +51,6 @@ const GridDateRange = ({
   setDateRangeFilter,
   initStartDate,
   initEndDate,
-  uniqueKey,
   minDate,
 }) => {
   /**
@@ -104,7 +103,6 @@ const GridDateRange = ({
     <>
       <StyledDatePicker>
         <DatePicker
-          id={`start-date-${uniqueKey}`}
           selected={startDate}
           onChange={date => setStartDate(date)}
           selectsStart
@@ -117,7 +115,6 @@ const GridDateRange = ({
         />
         <span>{" to "}</span>
         <DatePicker
-          id={`end-date-${uniqueKey}`}
           selected={endDate}
           onChange={date => setEndDate(date)}
           selectsEnd

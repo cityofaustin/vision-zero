@@ -508,7 +508,6 @@ const GridTable = ({
                       initStartDate={dateRangeFilter.startDate}
                       initEndDate={dateRangeFilter.endDate}
                       minDate={minDate}
-                      uniqueKey={query.table}
                     />
                   </ButtonGroup>
                 )}
