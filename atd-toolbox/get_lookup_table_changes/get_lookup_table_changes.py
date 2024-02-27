@@ -168,7 +168,7 @@ def main(file_path):
                         print("       DB Value: ", db_result["description"])
                         print()
                         update = f"update public.{table_name} set {name_component}_desc = '{escape_single_quotes(record['description'])}' where {name_component}_id = {str(record['id'])};"
-                        if is_first_change == True: 
+                        if is_first_change == True:
                             changes.append(f"\n-- Changes to table {table_name}")
                             down_changes.append(f"\n-- Changes to table {table_name}")
                         changes.append(update)
@@ -182,7 +182,7 @@ def main(file_path):
                     print("      CSV Value: ", record["description"])
                     print()
                     insert = f"insert into public.{table_name} ({name_component}_id, {name_component}_desc) values ({str(record['id'])}, '{escape_single_quotes(record['description'])}');"
-                    if is_first_change == True: 
+                    if is_first_change == True:
                         changes.append(f"\n-- Changes to table {table_name}")
                         down_changes.append(f"\n-- Changes to table {table_name}")
                     changes.append(insert)
@@ -204,7 +204,7 @@ def main(file_path):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--input", help = "extract file path")
+    parser.add_argument("--input", help="extract file path")
     args = parser.parse_args()
     file_path = args.input
 
