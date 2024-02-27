@@ -1,3 +1,4 @@
+-- Changes to table atd_txdot__agency_lkp
 update public.atd_txdot__agency_lkp set agency_desc = 'HOUSTON CHRISTIAN UNIVERSITY POLICE DEPARTMENT' where agency_id = 1478;
 insert into public.atd_txdot__agency_lkp (agency_id, agency_desc) values (3339, 'WALKER COUNTY SHERIFF''S OFFICE');
 insert into public.atd_txdot__agency_lkp (agency_id, agency_desc) values (3340, 'EDGEWOOD POLICE DEPARTMENT');
@@ -17,28 +18,54 @@ insert into public.atd_txdot__agency_lkp (agency_id, agency_desc) values (10221,
 insert into public.atd_txdot__agency_lkp (agency_id, agency_desc) values (10222, 'CITY OF ARLINGTON');
 insert into public.atd_txdot__agency_lkp (agency_id, agency_desc) values (10223, 'TOM GREEN COUNTY');
 insert into public.atd_txdot__agency_lkp (agency_id, agency_desc) values (10224, 'FORT BEND COUNTY DISTRICT ATTORNEY''S OFFICE');
+
+-- Changes to table atd_txdot__autonomous_level_engaged_lkp
 insert into public.atd_txdot__autonomous_level_engaged_lkp (autonomous_level_engaged_id, autonomous_level_engaged_desc) values (3, 'CONDITIONAL AUTOMATION');
 insert into public.atd_txdot__autonomous_level_engaged_lkp (autonomous_level_engaged_id, autonomous_level_engaged_desc) values (4, 'HIGH AUTOMATION');
 insert into public.atd_txdot__autonomous_level_engaged_lkp (autonomous_level_engaged_id, autonomous_level_engaged_desc) values (5, 'FULL AUTOMATION');
 update public.atd_txdot__autonomous_level_engaged_lkp set autonomous_level_engaged_desc = 'AUTOMATION LEVEL UNKNOWN' where autonomous_level_engaged_id = 6;
+
+-- Changes to table atd_txdot__drvr_lic_cls_lkp
 update public.atd_txdot__drvr_lic_cls_lkp set drvr_lic_cls_desc = 'AUTONOMOUS' where drvr_lic_cls_id = 95;
+
+-- Changes to table atd_txdot__drvr_lic_endors_lkp
 update public.atd_txdot__drvr_lic_endors_lkp set drvr_lic_endors_desc = 'AUTONOMOUS' where drvr_lic_endors_id = 95;
+
+-- Changes to table atd_txdot__drvr_lic_restric_lkp
 update public.atd_txdot__drvr_lic_restric_lkp set drvr_lic_restric_desc = 'AUTONOMOUS' where drvr_lic_restric_id = 95;
+
+-- Changes to table atd_txdot__drvr_lic_type_lkp
 update public.atd_txdot__drvr_lic_type_lkp set drvr_lic_type_desc = 'AUTONOMOUS' where drvr_lic_type_id = 95;
+
+-- Changes to table atd_txdot__ethnicity_lkp
 update public.atd_txdot__ethnicity_lkp set ethnicity_desc = 'AUTONOMOUS' where ethnicity_id = 95;
+
+-- Changes to table atd_txdot__gndr_lkp
 update public.atd_txdot__gndr_lkp set gndr_desc = 'AUTONOMOUS' where gndr_id = 95;
+
+-- Changes to table atd_txdot__injry_sev_lkp
 update public.atd_txdot__injry_sev_lkp set injry_sev_desc = 'AUTONOMOUS' where injry_sev_id = 95;
+
+-- Changes to table atd_txdot__inv_da_lkp
 insert into public.atd_txdot__inv_da_lkp (inv_da_id, inv_da_desc) values (1662, 'RU');
 insert into public.atd_txdot__inv_da_lkp (inv_da_id, inv_da_desc) values (1663, 'T-');
 insert into public.atd_txdot__inv_da_lkp (inv_da_id, inv_da_desc) values (1682, 'EO');
 insert into public.atd_txdot__inv_da_lkp (inv_da_id, inv_da_desc) values (1702, 'PP');
 insert into public.atd_txdot__inv_da_lkp (inv_da_id, inv_da_desc) values (1703, 'T_');
+
+-- Changes to table atd_txdot__occpnt_pos_lkp
 update public.atd_txdot__occpnt_pos_lkp set occpnt_pos_desc = 'AUTONOMOUS' where occpnt_pos_id = 95;
+
+-- Changes to table atd_txdot__prsn_type_lkp
 update public.atd_txdot__prsn_type_lkp set prsn_type_desc = 'AUTONOMOUS' where prsn_type_id = 95;
+
+-- Changes to table atd_txdot__rpt_autonomous_level_engaged_lkp
 insert into public.atd_txdot__rpt_autonomous_level_engaged_lkp (rpt_autonomous_level_engaged_id, rpt_autonomous_level_engaged_desc) values (3, 'CONDITIONAL AUTOMATION');
 insert into public.atd_txdot__rpt_autonomous_level_engaged_lkp (rpt_autonomous_level_engaged_id, rpt_autonomous_level_engaged_desc) values (4, 'HIGH AUTOMATION');
 insert into public.atd_txdot__rpt_autonomous_level_engaged_lkp (rpt_autonomous_level_engaged_id, rpt_autonomous_level_engaged_desc) values (5, 'FULL AUTOMATION');
 update public.atd_txdot__rpt_autonomous_level_engaged_lkp set rpt_autonomous_level_engaged_desc = 'AUTOMATION LEVEL UNKNOWN' where rpt_autonomous_level_engaged_id = 6;
+
+-- Adding table atd_txdot__rpt_road_type_lkp
 
     create table public.atd_txdot__rpt_road_type_lkp (
         id serial primary key,
@@ -51,6 +78,8 @@ insert into public.atd_txdot__rpt_road_type_lkp (rpt_road_type_id, rpt_road_type
 insert into public.atd_txdot__rpt_road_type_lkp (rpt_road_type_id, rpt_road_type_desc) values (3, 'TWO-WAY, DIVIDED, PROTECTED MEDIAN');
 insert into public.atd_txdot__rpt_road_type_lkp (rpt_road_type_id, rpt_road_type_desc) values (4, 'ONE WAY');
 insert into public.atd_txdot__rpt_road_type_lkp (rpt_road_type_id, rpt_road_type_desc) values (98, 'OTHER (EXPLAIN IN NARRATIVE)');
+
+-- Adding table atd_txdot__trauma_centers_lkp
 
     create table public.atd_txdot__trauma_centers_lkp (
         id serial primary key,
@@ -351,8 +380,14 @@ insert into public.atd_txdot__trauma_centers_lkp (trauma_centers_id, trauma_cent
 insert into public.atd_txdot__trauma_centers_lkp (trauma_centers_id, trauma_centers_desc) values (291, 'Woodland Heights Medical Center');
 insert into public.atd_txdot__trauma_centers_lkp (trauma_centers_id, trauma_centers_desc) values (292, 'Yoakum Community Hospital');
 insert into public.atd_txdot__trauma_centers_lkp (trauma_centers_id, trauma_centers_desc) values (293, 'Yoakum County Hospital');
+
+-- Changes to table atd_txdot__unit_dfct_lkp
 insert into public.atd_txdot__unit_dfct_lkp (unit_dfct_id, unit_dfct_desc) values (10, 'AUTOMATION FAILURE');
+
+-- Changes to table atd_txdot__veh_body_styl_lkp
 insert into public.atd_txdot__veh_body_styl_lkp (veh_body_styl_id, veh_body_styl_desc) values (109, 'SCHOOL BUS OTHER');
+
+-- Changes to table atd_txdot__veh_make_lkp
 insert into public.atd_txdot__veh_make_lkp (veh_make_id, veh_make_desc) values (794, 'ALEXANDER DENNIS');
 insert into public.atd_txdot__veh_make_lkp (veh_make_id, veh_make_desc) values (795, 'ARCTIC CAT');
 insert into public.atd_txdot__veh_make_lkp (veh_make_id, veh_make_desc) values (796, 'AUTOMOBILI PININFARINA');
@@ -372,6 +407,8 @@ insert into public.atd_txdot__veh_make_lkp (veh_make_id, veh_make_desc) values (
 insert into public.atd_txdot__veh_make_lkp (veh_make_id, veh_make_desc) values (817, 'ROKON');
 insert into public.atd_txdot__veh_make_lkp (veh_make_id, veh_make_desc) values (818, 'TOY');
 insert into public.atd_txdot__veh_make_lkp (veh_make_id, veh_make_desc) values (819, 'VINFAST TRADING AND PRODUCTION LLC');
+
+-- Changes to table atd_txdot__veh_mod_lkp
 insert into public.atd_txdot__veh_mod_lkp (veh_mod_id, veh_mod_desc) values (5795, 'ENVIRO 200');
 insert into public.atd_txdot__veh_mod_lkp (veh_mod_id, veh_mod_desc) values (5796, 'ENVIRO 400');
 insert into public.atd_txdot__veh_mod_lkp (veh_mod_id, veh_mod_desc) values (5797, 'ENVIRO 500');

@@ -1,3 +1,4 @@
+-- Changes to table atd_txdot__agency_lkp
 update public.atd_txdot__agency_lkp set agency_desc = 'HOUSTON BAPTIST UNIVERSITY POLICE DEPARTMENT' where agency_id = 1478;
 delete from public.atd_txdot__agency_lkp where agency_id = 3339;
 delete from public.atd_txdot__agency_lkp where agency_id = 3340;
@@ -17,32 +18,66 @@ delete from public.atd_txdot__agency_lkp where agency_id = 10221;
 delete from public.atd_txdot__agency_lkp where agency_id = 10222;
 delete from public.atd_txdot__agency_lkp where agency_id = 10223;
 delete from public.atd_txdot__agency_lkp where agency_id = 10224;
+
+-- Changes to table atd_txdot__autonomous_level_engaged_lkp
 delete from public.atd_txdot__autonomous_level_engaged_lkp where autonomous_level_engaged_id = 3;
 delete from public.atd_txdot__autonomous_level_engaged_lkp where autonomous_level_engaged_id = 4;
 delete from public.atd_txdot__autonomous_level_engaged_lkp where autonomous_level_engaged_id = 5;
 update public.atd_txdot__autonomous_level_engaged_lkp set autonomous_level_engaged_desc = 'AUTOMATION LEVEL ENGAGED UNKNOWN' where autonomous_level_engaged_id = 6;
+
+-- Changes to table atd_txdot__drvr_lic_cls_lkp
 update public.atd_txdot__drvr_lic_cls_lkp set drvr_lic_cls_desc = 'NOT REPORTED' where drvr_lic_cls_id = 95;
+
+-- Changes to table atd_txdot__drvr_lic_endors_lkp
 update public.atd_txdot__drvr_lic_endors_lkp set drvr_lic_endors_desc = 'NOT REPORTED' where drvr_lic_endors_id = 95;
+
+-- Changes to table atd_txdot__drvr_lic_restric_lkp
 update public.atd_txdot__drvr_lic_restric_lkp set drvr_lic_restric_desc = 'NOT REPORTED' where drvr_lic_restric_id = 95;
+
+-- Changes to table atd_txdot__drvr_lic_type_lkp
 update public.atd_txdot__drvr_lic_type_lkp set drvr_lic_type_desc = 'NOT REPORTED' where drvr_lic_type_id = 95;
+
+-- Changes to table atd_txdot__ethnicity_lkp
 update public.atd_txdot__ethnicity_lkp set ethnicity_desc = 'NOT REPORTED' where ethnicity_id = 95;
+
+-- Changes to table atd_txdot__gndr_lkp
 update public.atd_txdot__gndr_lkp set gndr_desc = 'NOT REPORTED' where gndr_id = 95;
+
+-- Changes to table atd_txdot__injry_sev_lkp
 update public.atd_txdot__injry_sev_lkp set injry_sev_desc = 'NOT REPORTED' where injry_sev_id = 95;
+
+-- Changes to table atd_txdot__inv_da_lkp
 delete from public.atd_txdot__inv_da_lkp where inv_da_id = 1662;
 delete from public.atd_txdot__inv_da_lkp where inv_da_id = 1663;
 delete from public.atd_txdot__inv_da_lkp where inv_da_id = 1682;
 delete from public.atd_txdot__inv_da_lkp where inv_da_id = 1702;
 delete from public.atd_txdot__inv_da_lkp where inv_da_id = 1703;
+
+-- Changes to table atd_txdot__occpnt_pos_lkp
 update public.atd_txdot__occpnt_pos_lkp set occpnt_pos_desc = 'NOT REPORTED' where occpnt_pos_id = 95;
+
+-- Changes to table atd_txdot__prsn_type_lkp
 update public.atd_txdot__prsn_type_lkp set prsn_type_desc = 'NOT REPORTED' where prsn_type_id = 95;
+
+-- Changes to table atd_txdot__rpt_autonomous_level_engaged_lkp
 delete from public.atd_txdot__rpt_autonomous_level_engaged_lkp where rpt_autonomous_level_engaged_id = 3;
 delete from public.atd_txdot__rpt_autonomous_level_engaged_lkp where rpt_autonomous_level_engaged_id = 4;
 delete from public.atd_txdot__rpt_autonomous_level_engaged_lkp where rpt_autonomous_level_engaged_id = 5;
 update public.atd_txdot__rpt_autonomous_level_engaged_lkp set rpt_autonomous_level_engaged_desc = 'AUTOMATION LEVEL ENGAGED UNKNOWN' where rpt_autonomous_level_engaged_id = 6;
+
+-- Dropping table atd_txdot__rpt_road_type_lkp
 drop table if exists public.atd_txdot__rpt_road_type_lkp;
+
+-- Dropping table atd_txdot__trauma_centers_lkp
 drop table if exists public.atd_txdot__trauma_centers_lkp;
+
+-- Changes to table atd_txdot__unit_dfct_lkp
 delete from public.atd_txdot__unit_dfct_lkp where unit_dfct_id = 10;
+
+-- Changes to table atd_txdot__veh_body_styl_lkp
 delete from public.atd_txdot__veh_body_styl_lkp where veh_body_styl_id = 109;
+
+-- Changes to table atd_txdot__veh_make_lkp
 delete from public.atd_txdot__veh_make_lkp where veh_make_id = 794;
 delete from public.atd_txdot__veh_make_lkp where veh_make_id = 795;
 delete from public.atd_txdot__veh_make_lkp where veh_make_id = 796;
@@ -62,6 +97,8 @@ delete from public.atd_txdot__veh_make_lkp where veh_make_id = 815;
 delete from public.atd_txdot__veh_make_lkp where veh_make_id = 817;
 delete from public.atd_txdot__veh_make_lkp where veh_make_id = 818;
 delete from public.atd_txdot__veh_make_lkp where veh_make_id = 819;
+
+-- Changes to table atd_txdot__veh_mod_lkp
 delete from public.atd_txdot__veh_mod_lkp where veh_mod_id = 5795;
 delete from public.atd_txdot__veh_mod_lkp where veh_mod_id = 5796;
 delete from public.atd_txdot__veh_mod_lkp where veh_mod_id = 5797;
