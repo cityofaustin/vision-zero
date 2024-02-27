@@ -27,6 +27,15 @@ export const GET_PEOPLE = gql`
       unit_nbr
       peh_fl
     }
+    primary_person_years_of_life_lost: atd_txdot_primaryperson_aggregate(
+      where: { crash_id: { _eq: $crashId } }
+    ) {
+      aggregate {
+        sum {
+          years_of_life_lost
+        }
+      }
+    }
     atd_txdot_person(where: { crash_id: { _eq: $crashId } }) {
       prsn_age
       prsn_nbr
@@ -49,6 +58,15 @@ export const GET_PEOPLE = gql`
       }
       unit_nbr
       peh_fl
+    }
+    person_years_of_life_lost: atd_txdot_person_aggregate(
+      where: { crash_id: { _eq: $crashId } }
+    ) {
+      aggregate {
+        sum {
+          years_of_life_lost
+        }
+      }
     }
   }
 `;
