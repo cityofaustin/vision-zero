@@ -8,6 +8,7 @@ import os
 import psycopg2
 import psycopg2.extras
 from dotenv import load_dotenv
+import argparse
 
 load_dotenv("env")
 
@@ -103,8 +104,7 @@ def new_table(name):
     """
 
 
-def main():
-    file_path = "path_to_extract"
+def main(file_path):
     data = read_and_group_csv(file_path)
 
     # Pretty-print the grouped data as JSON
@@ -132,7 +132,9 @@ def main():
         exists = table_exists(pg, table_name)
         if not exists:
             print("💥 Missing table: ", table_name)
+            changes.append(f"\n-- Adding table {table_name}")
             changes.append(new_table(name_component))
+            down_changes.append(f"\n-- Dropping table {table_name}")
             new_table_down = f"drop table if exists public.{table_name};"
             down_changes.append(new_table_down)
             for record in data[table]:
@@ -145,6 +147,7 @@ def main():
                 # Dont need down changes here because the down is just deleting the table
 
         else:
+            is_first_change = True
             for record in data[table]:
                 sql = f"""
                 select {name_component}_id as id, {name_component}_desc as description 
@@ -165,9 +168,13 @@ def main():
                         print("       DB Value: ", db_result["description"])
                         print()
                         update = f"update public.{table_name} set {name_component}_desc = '{escape_single_quotes(record['description'])}' where {name_component}_id = {str(record['id'])};"
+                        if is_first_change == True: 
+                            changes.append(f"\n-- Changes to table {table_name}")
+                            down_changes.append(f"\n-- Changes to table {table_name}")
                         changes.append(update)
                         update_down = f"update public.{table_name} set {name_component}_desc = '{db_result['description']}' where {name_component}_id = {str(record['id'])};"
                         down_changes.append(update_down)
+                        is_first_change = False
                 else:
                     # We do not have a record on file with this ID
                     # print(f"Value \"{record['description']}\" with id {str(record['id'])} not found in {table_name}")
@@ -175,21 +182,30 @@ def main():
                     print("      CSV Value: ", record["description"])
                     print()
                     insert = f"insert into public.{table_name} ({name_component}_id, {name_component}_desc) values ({str(record['id'])}, '{escape_single_quotes(record['description'])}');"
+                    if is_first_change == True: 
+                        changes.append(f"\n-- Changes to table {table_name}")
+                        down_changes.append(f"\n-- Changes to table {table_name}")
                     changes.append(insert)
                     insert_down = f"delete from public.{table_name} where {name_component}_id = {str(record['id'])};"
                     down_changes.append(insert_down)
+                    is_first_change = False
 
     print("\n🛠️ Here are the changes to be made:\n")
-    print("\n".join(changes))
+    print("\n".join(changes).strip())
 
     outfile = open("up_migration.sql", "w")
-    outfile.write("\n".join(changes))
+    outfile.write("\n".join(changes).strip())
     outfile.close()
 
     outfile_down = open("down_migration.sql", "w")
-    outfile_down.write("\n".join(down_changes))
+    outfile_down.write("\n".join(down_changes).strip())
     outfile_down.close()
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--input", help = "extract file path")
+    args = parser.parse_args()
+    file_path = args.input
+
+    main(file_path)
