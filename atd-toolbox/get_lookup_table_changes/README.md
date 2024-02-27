@@ -1,5 +1,13 @@
 This folder and the script it contains is for the purpose of getting our lookup tables up to date with the latest lookup export from CRIS. We will probably need to run this after every major CRIS release.
 
+### Install packages
+
+Create or activate your virtual python environment using [venv](https://docs.python.org/3/library/venv.html).
+
+Install packages from the requirements.txt file:
+
+`pip install -r requirements.txt`
+
 ### Env file
 
 Rename the env_template to env
