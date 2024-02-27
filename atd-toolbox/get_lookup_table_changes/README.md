@@ -11,8 +11,13 @@ Install packages from the requirements.txt file:
 ### Env file
 
 Rename the env_template to env
+
 Fill in the values using your credentials for the VZ read replica.
 
 ### Running the script
 
-In order to run this script you need to have a recent CRIS lookup table export csv and then update the file_path in the script. Running get_lookup_table_changes.py can take awhile, so sit tight. Once the script is done, a file will be created in this directory called up_migrations.sql that contains all of the sql commands generated from running the script. The contents of this file can then be used to create a migration in the hasura console so we can track these huge changes. A file called down_migrations.sql is also created in this directory which you can use as the down migration.
+In order to run this script you need to have a recent CRIS lookup table export csv and provide the file path as an argument in the command line like so:
+
+`python3 get_lookup_table_changes.py --input path_to_extract.csv `
+
+Running `get_lookup_table_changes.py` can take awhile, so sit tight. Once the script is done, a file will be created in this directory called `up_migrations.sql` that contains all of the sql commands generated from running the script. The contents of this file can then be used to create a migration in the hasura console so we can track these huge changes. A file called `down_migrations.sql` is also created in this directory which you can use as the down migration.
