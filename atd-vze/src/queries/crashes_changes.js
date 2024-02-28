@@ -228,9 +228,7 @@ export const CRASH_MUTATION_DISCARD = `
 `;
 
 /**
- * This is a GraphQL query template that updates existing records
- * of a specific type. E.g., it expects one or many Units, or Persons
- * or Crashes. The function name matches a Hasura insertion method.
+ * This is a GraphQL query that updates existing crash records.
  * @type {string}
  */
 export const CRASH_MUTATION_UPDATE = gql`
