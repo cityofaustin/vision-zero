@@ -85,8 +85,6 @@ function CrashChange(props) {
    */
   useEffect(() => setRecordData(data), [data]);
 
-  console.log(differentFieldsList, "different fields list");
-
   /**
    * Returns true if fieldName exists within the selectedFields array.
    * @param {string} fieldName - The name of the field
@@ -511,8 +509,6 @@ function CrashChange(props) {
     const recordString = record["record_json"] || "{}";
     const recordObject =
       JSON.parse(recordString)[0] || JSON.parse(recordString) || {};
-
-    const crashId = recordObject["crash_id"];
 
     let changesObject = {};
 
