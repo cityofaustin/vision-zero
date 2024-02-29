@@ -29,16 +29,10 @@ import { AppSwitch } from "@coreui/react";
 import {
   GET_CRASH_CHANGE,
   GET_CRASH_SECONDARY_RECORDS,
-  RECORD_MUTATION_UPDATE,
+  CRASH_MUTATION_UPDATE,
   RECORD_DELETE_CHANGE_RECORDS,
-  UPSERT_MUTATION_DUMMY,
 } from "../../queries/crashes_changes";
-import {
-  importantCrashFields,
-  crashFieldDescription,
-  piiFields,
-  notNullValues,
-} from "./crashFieldDescriptions";
+import { importantCrashFields } from "./crashFieldDescriptions";
 
 function CrashChange(props) {
   const crashId = props.match.params.id;
@@ -54,47 +48,35 @@ function CrashChange(props) {
   const [differentFields, setDifferentFields] = useState([]);
   const [showFieldsDiffOnly, setShowFieldsDiffOnly] = useState(true);
   // Modals
-  const [approveAllChanges, setApproveAllChanges] = useState(false);
-  const [discardAllChanges, setDiscardAllChanges] = useState(false);
-  const [clearAllSelections, setClearAllSelections] = useState(false);
+  const [approveAllModalOpen, setApproveAllModalOpen] = useState(false);
+  const [discardAllModalOpen, setDiscardAllModalOpen] = useState(false);
+  const [unselectAllModalOpen, setUnselectAllModalOpen] = useState(false);
   const [savingChanges, setSavingChanges] = useState(false);
   const [errorDialog, setErrorDialog] = useState(false);
   const [saveStatus, setSaveStatus] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   // CR3 Available
   const [cr3available, setCR3Available] = useState(false);
-  const [upsertRecordQuery, setUpsertRecordQuery] = useState(
-    UPSERT_MUTATION_DUMMY
-  );
 
   const { user } = useAuth0();
 
   /**
    * Mutations
    */
+
+  const [updateCrashRecord] = useMutation(CRASH_MUTATION_UPDATE);
+
   const [deleteFromQueue] = useMutation(
     gql`
       ${RECORD_DELETE_CHANGE_RECORDS}
     `
   );
 
-  const [upsertRecordUpdates] = useMutation(
-    gql`
-      ${upsertRecordQuery}
-    `
-  );
-
-  const {
-    data,
-    error,
-    refetch,
-  } = useQuery(GET_CRASH_CHANGE, {
+  const { data, error, refetch } = useQuery(GET_CRASH_CHANGE, {
     variables: { crashId },
   });
 
-  const {
-    data: secondaryData
-  } = useQuery(GET_CRASH_SECONDARY_RECORDS, {
+  const { data: secondaryData } = useQuery(GET_CRASH_SECONDARY_RECORDS, {
     variables: { crashId },
   });
 
@@ -354,7 +336,6 @@ function CrashChange(props) {
       } catch {
         redirectToQueueIndex();
       }
-
     }
   }, [recordData]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -398,7 +379,6 @@ function CrashChange(props) {
     } catch {
       redirectToQueueIndex();
     }
-
   }, [importantFieldList, showFieldsDiffOnly, recordData, selectedFields]); // eslint-disable-line react-hooks/exhaustive-deps
 
   /**
@@ -424,16 +404,15 @@ function CrashChange(props) {
     } catch {
       redirectToQueueIndex();
     }
-
   }, [differentFieldsList, showFieldsDiffOnly, recordData, selectedFields]); // eslint-disable-line react-hooks/exhaustive-deps
 
   /**
    * Closes all dialogs
    */
   const hideAllDialogs = () => {
-    setApproveAllChanges(false);
-    setDiscardAllChanges(false);
-    setClearAllSelections(false);
+    setApproveAllModalOpen(false);
+    setDiscardAllModalOpen(false);
+    setUnselectAllModalOpen(false);
     setSavingChanges(false);
   };
 
@@ -441,42 +420,42 @@ function CrashChange(props) {
    * Hides the Save Selected Changes Modal
    */
   const hideSaveSelectedChanges = () => {
-    setApproveAllChanges(false);
+    setApproveAllModalOpen(false);
   };
 
   /**
    * Show the Save Selected Changes Modal
    */
   const showSaveSelectedChanges = () => {
-    setApproveAllChanges(true);
+    setApproveAllModalOpen(true);
   };
 
   /**
    * Hides the Discard New Record Modal
    */
   const hideDiscardNewRecord = () => {
-    setDiscardAllChanges(false);
+    setDiscardAllModalOpen(false);
   };
 
   /**
    * Shows the Discard New Record Modal
    */
   const showDiscardNewRecord = () => {
-    setDiscardAllChanges(true);
+    setDiscardAllModalOpen(true);
   };
 
   /**
    * Hides the Unselect All Changes Modal
    */
-  const hideUnselectAllChanges = () => {
-    setClearAllSelections(false);
+  const hideUnselectAllModal = () => {
+    setUnselectAllModalOpen(false);
   };
 
   /**
    * Shows the Unselect All Changes Modal
    */
-  const showUnselectAllChanges = () => {
-    setClearAllSelections(true);
+  const showUnselectAllModal = () => {
+    setUnselectAllModalOpen(true);
   };
 
   /**
@@ -523,19 +502,32 @@ function CrashChange(props) {
   };
 
   /**
-   * Executes graphql queries to update the crash record
-   * @returns {Promise<void>}
+   * Executes graphql query to update the crash record
    */
   const executeUpdateCrashRecord = async () => {
-    const updateQueries = await generateUpdateQuery();
-    setSaveStatus("updating crash record");
-    setUpsertRecordQuery(
-      gql`
-        ${updateQueries}
-      `
-    );
-    await sleep(1000);
-    await upsertRecordUpdates();
+    const record = secondaryData["atd_txdot_changes"][0];
+    const recordString = record["record_json"] || "{}";
+    const recordObject =
+      JSON.parse(recordString)[0] || JSON.parse(recordString) || {};
+
+    let changesObject = {};
+
+    selectedFields.forEach(field => {
+      changesObject[field] = recordObject[field];
+    });
+
+    changesObject["updated_by"] = user.email || "DiffView";
+
+    updateCrashRecord({
+      variables: {
+        crashId: crashId,
+        changes: changesObject,
+      },
+    })
+      .then(() => {
+        refetch();
+      })
+      .catch(error => console.error(error));
   };
 
   /**
@@ -602,241 +594,6 @@ function CrashChange(props) {
   };
 
   /**
-   * Returns true if the current field (key) is PII
-   * @param {string} recordType - The record type
-   * @param {string} key - The name of the field
-   * @returns {boolean}
-   */
-  const isFieldPII = (recordType, key) => {
-    try {
-      return piiFields[recordType].includes(key);
-    } catch {
-      return false;
-    }
-  };
-
-  /**
-   * Returns true if the field in question (key) needs quoting
-   * @param {string} recordType - The record type name
-   * @param {string} key - The field name
-   * @returns {boolean}
-   */
-  const isFieldQuoted = (recordType, key) => {
-    try {
-      return crashFieldDescription[recordType][key]["type"] === "string";
-    } catch {
-      return false;
-    }
-  };
-
-  /**
-   * Attempts to retrieve the default value for a field (key), if found and
-   * the current value is null, then returns the default value.
-   * @param {object} notNullValues - The notNullValues as imported globally
-   * @param {string} recordType - The record type name
-   * @param {string} key - The name of the field
-   * @param {*} value - The current value of the field
-   * @returns {string}
-   */
-  const getDefaultValue = (notNullValues, recordType, key, value) => {
-    try {
-      // Try get the default value if it's currently null.
-      return ["null", ""].includes(value)
-        ? notNullValues[recordType].hasOwnProperty(key)
-          ? notNullValues[recordType][key]
-          : value
-        : value;
-    } catch {
-      // Or return null if the key is not found.
-      return value;
-    }
-  };
-
-  /**
-   * Wraps a value in quotation marks if not numeric or boolean.
-   * @param {*} value - Any given value, of any type.
-   * @returns {string} - The value wrapped in quotation marks or as a string.
-   */
-  const printQuotation = value => {
-    const strValue = String(value);
-    return isNaN(value) ? `"${value}"` : strValue === "" ? "null" : strValue;
-  };
-
-  /**
-   * Generates part of a GraphQL query mutation
-   * @param {object} queryGroup - The query group to transform
-   * @returns {string} - The executable string
-   */
-  const generateQueryFromGroup = queryGroup => {
-    let mutationsList = [];
-    const tabulationMargin = "\n\t\t\t\t";
-    Object.keys(queryGroup).forEach(currentFunctionName => {
-      const currentRecordGroup = queryGroup[currentFunctionName];
-      let formattedObjects = currentRecordGroup["objects"].map(o => {
-        return (
-          tabulationMargin +
-          "{" +
-          tabulationMargin +
-          o +
-          tabulationMargin +
-          'updated_by: "' +
-          currentRecordGroup["current_user"] +
-          '"\n' +
-          tabulationMargin +
-          "}\n"
-        );
-      });
-
-      const currentFunctionGQL = RECORD_MUTATION_UPDATE.replace(
-        "%FUNCTION_NAME%",
-        currentFunctionName
-      )
-        .replace("%CONSTRAINT_NAME%", currentRecordGroup["constraint_name"])
-        .replace(
-          "%UPDATE_FIELDS%",
-          formattedObjects.join(tabulationMargin + ",")
-        )
-        .replace("%SELECTED_COLUMNS%", currentRecordGroup["on_conflict"]);
-      mutationsList.push(currentFunctionGQL);
-    });
-
-    return mutationsList;
-  };
-
-  /**
-   * Generates an executable GraphQL query based on a template and update fields.
-   * @param {object} queryGroup - The group of queries to be updated
-   * @param {object} record - The record being updated
-   */
-  const updateRecordQueryGroup = (queryGroup, record) => {
-    const recordString = record["record_json"] || "{}";
-    const recordType = record["record_type"] || null;
-    const recordObject =
-      JSON.parse(recordString)[0] || JSON.parse(recordString) || {};
-    // We need the entire list of objects minus any count fields
-    const recordObjectKeys = Object.keys(recordObject)
-      .map(key => {
-        // Lower-case all keys for this object
-        return key.toLowerCase();
-      })
-      .filter(key => {
-        // Removes from list if it string ends with '_cnt'
-        return !key.endsWith("_cnt");
-      })
-      .filter(key => {
-        // Removes PII Fields
-        return !isFieldPII(recordType, key);
-      });
-
-    if (recordType === "crash") {
-      recordObject["crash_id"] = record["record_id"];
-    }
-
-    const constraintsList = {
-      charges: "uniq_atd_txdot_charges",
-      person: "atd_txdot_person_unique",
-      primaryperson: "atd_txdot_primaryperson_unique",
-      unit: "atd_txdot_units_unique",
-      crash: "atd_txdot_crashes_pkey",
-    };
-
-    const functionNameList = {
-      charges: "insert_atd_txdot_charges",
-      person: "insert_atd_txdot_person",
-      primaryperson: "insert_atd_txdot_primaryperson",
-      unit: "insert_atd_txdot_units",
-      crash: "insert_atd_txdot_crashes",
-    };
-
-    // We must generate the list of fields & values to be updated
-    const updateFields = Object.keys(recordObject)
-      .filter(key => {
-        // Removes PII Fields
-        return !isFieldPII(recordType, key);
-      })
-      .map(key => {
-        // Attempt to retrieve the default value
-        const value = getDefaultValue(
-          notNullValues,
-          recordType,
-          key,
-          recordObject[key]
-        );
-        // Then return the final line
-        return isFieldQuoted(recordType, key)
-          ? // We have a case_id, we must quote
-            `${key}: "${value}",`
-          : // Not a case_id, then quote if not a number
-            String(key).toLowerCase() + ": " + printQuotation(value) + ",";
-      })
-      .join("\n\t\t\t\t");
-
-    // This variable holds the fields to be updated on_conflict (upsert)
-    const onConflictList =
-      recordType === "crash"
-        ? // If it is a crash, all we need are the selected fields.
-          [...selectedFields]
-        : // If not a crash, then we need a composite list:
-          [
-            // We need the list of all original fields of the record in question
-            ...recordObjectKeys,
-            // And we also need any selected count records
-            ...selectedFields.filter(key => {
-              if (recordType !== "charges") return key.endsWith("_cnt");
-              return false;
-            }),
-          ];
-
-    // If the object does not contain the function name as the key, create it!
-    if (!queryGroup.hasOwnProperty(functionNameList[recordType])) {
-      queryGroup[functionNameList[recordType]] = {
-        objects: [],
-        on_conflict: null,
-      };
-    }
-
-    // Check if we have an array for our object(s), otherwise initialize it
-    if (!Array.isArray(queryGroup[functionNameList[recordType]]["objects"])) {
-      queryGroup[functionNameList[recordType]]["objects"] = [];
-    }
-
-    // Now go ahead and push the record
-    queryGroup[functionNameList[recordType]]["objects"].push(updateFields);
-    queryGroup[functionNameList[recordType]]["current_user"] =
-      user.email || "DiffView";
-    queryGroup[functionNameList[recordType]][
-      "on_conflict"
-    ] = onConflictList.join("\n\t\t\t\t");
-    queryGroup[functionNameList[recordType]]["constraint_name"] =
-      constraintsList[recordType];
-  };
-
-  /**
-   * Generates an update query to update the secondary records
-   * @returns {string} - The GraphQL query
-   */
-  const generateUpdateQuery = () => {
-    let queryGroups = {};
-
-    (secondaryData["atd_txdot_changes"] || []).forEach(record => {
-      updateRecordQueryGroup(queryGroups, record);
-    });
-
-    const mutationsList = generateQueryFromGroup(queryGroups);
-
-    const updateSecondaryRecords = `
-      mutation updateSecondaryRecords {
-        %LIST_OF_RECORD_QUERIES%
-      }
-    `.replace(
-      "%LIST_OF_RECORD_QUERIES%",
-      mutationsList.length === 0 ? "" : mutationsList.join("\n\t\t\t")
-    );
-    // First we need the template
-    return updateSecondaryRecords;
-  };
-
-  /**
    * Render variables
    */
   // List of Selectable Fields
@@ -895,7 +652,7 @@ function CrashChange(props) {
           <Card>
             <CardHeader>
               <span>
-                <strong>Main Options</strong>
+                <strong>Options</strong>
               </span>
               <div className="float-right minidiff--switchrow">
                 <AppSwitch
@@ -936,7 +693,7 @@ function CrashChange(props) {
                 <Col sm xs="12" className="text-center">
                   <Button
                     color="warning"
-                    onClick={() => showUnselectAllChanges()}
+                    onClick={() => showUnselectAllModal()}
                   >
                     <i className="fa fa-window-close"></i>&nbsp;Unselect all
                     changes
@@ -1048,7 +805,7 @@ function CrashChange(props) {
       </Row>
 
       <Modal
-        isOpen={approveAllChanges}
+        isOpen={approveAllModalOpen}
         toggle={() => hideSaveSelectedChanges()}
         className={"modal-success"}
       >
@@ -1084,11 +841,11 @@ function CrashChange(props) {
       </Modal>
 
       <Modal
-        isOpen={clearAllSelections}
-        toggle={() => hideUnselectAllChanges()}
+        isOpen={unselectAllModalOpen}
+        toggle={() => hideUnselectAllModal()}
         className={"modal-warning"}
       >
-        <ModalHeader toggle={() => hideUnselectAllChanges()}>
+        <ModalHeader toggle={() => hideUnselectAllModal()}>
           Unselect all?
         </ModalHeader>
         <ModalBody>
@@ -1101,19 +858,19 @@ function CrashChange(props) {
             color="primary"
             onClick={() => {
               fieldsBatchClear(3);
-              hideUnselectAllChanges();
+              hideUnselectAllModal();
             }}
           >
             Unselect All
           </Button>{" "}
-          <Button color="secondary" onClick={() => hideUnselectAllChanges()}>
+          <Button color="secondary" onClick={() => hideUnselectAllModal()}>
             Cancel
           </Button>
         </ModalFooter>
       </Modal>
 
       <Modal
-        isOpen={discardAllChanges}
+        isOpen={discardAllModalOpen}
         toggle={() => hideDiscardNewRecord()}
         className={"modal-danger"}
       >
