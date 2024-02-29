@@ -6,31 +6,21 @@ import MapGL, {
   Marker,
   NavigationControl,
   FullscreenControl,
-  Source,
-  Layer,
 } from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import Geocoder from "react-map-gl-geocoder";
 import { CustomGeocoderMapController } from "./customGeocoderMapController";
 import "react-map-gl-geocoder/dist/mapbox-gl-geocoder.css";
-import styled from "styled-components";
 
-import { Button, ButtonGroup } from "reactstrap";
-
-// TODO maybe use Control Panel to show address info in Full Screen mode?
-// import ControlPanel from "./control-panel";
 import Pin from "./Pin";
-import { setPinColor } from "../../../styles/mapPinStyles";
 import { CrashEditLatLonForm } from "./CrashEditLatLonForm";
 
-import { LOCATION_MAP_CONFIG } from "../../../helpers/map";
+import {
+  LOCATION_MAP_CONFIG,
+  LabeledAerialSourceAndLayer,
+} from "../../../helpers/map";
 
 const TOKEN = process.env.REACT_APP_MAPBOX_TOKEN;
-
-const MapStyleSelector = styled.div`
-  margin-top: 55px;
-  margin-right: 10px;
-`;
 
 const fullscreenControlStyle = {
   position: "absolute",
@@ -69,8 +59,6 @@ class CrashEditCoordsMap extends Component {
       popupInfo: null,
       markerLatitude: 0,
       markerLongitude: 0,
-      mapStyle: "satellite-streets",
-      pinColor: "warning",
       isDragging: false,
     };
   }
@@ -90,13 +78,6 @@ class CrashEditCoordsMap extends Component {
       markerLatitude: viewport.latitude,
       markerLongitude: viewport.longitude,
     });
-  };
-
-  handleMapStyleChange = e => {
-    const style = e.target.id;
-    // Set pin color based on map layer for visibility
-    const pinColor = setPinColor(style);
-    this.setState({ mapStyle: style, pinColor });
   };
 
   getCursor = ({ isDragging }) => {
@@ -148,10 +129,8 @@ class CrashEditCoordsMap extends Component {
   render() {
     const {
       viewport,
-      mapStyle,
       markerLatitude,
       markerLongitude,
-      pinColor,
       isDragging,
     } = this.state;
     const geocoderAddress = this.props.mapGeocoderAddress;
@@ -190,39 +169,10 @@ class CrashEditCoordsMap extends Component {
             <NavigationControl showCompass={false} />
           </div>
           {/* add nearmap raster source and style */}
-          {!isDev && (
-            <>
-              <Source {...LOCATION_MAP_CONFIG.sources.aerials} />
-              <Layer {...LOCATION_MAP_CONFIG.layers.aerials} />
-              {/* show street labels on top of other layers */}
-              <Layer {...LOCATION_MAP_CONFIG.layers.streetLabels} />
-            </>
-          )}
+          {!isDev && <LabeledAerialSourceAndLayer />}
           <Marker latitude={markerLatitude} longitude={markerLongitude}>
-            <Pin size={40} color={pinColor} isDragging={isDragging} animated />
+            <Pin size={40} isDragging={isDragging} animated />
           </Marker>
-          <MapStyleSelector>
-            <ButtonGroup className="float-right">
-              <Button
-                active={mapStyle === "satellite-streets"}
-                id="satellite-streets"
-                className="map-style-selector"
-                onClick={this.handleMapStyleChange}
-                color="light"
-              >
-                Satellite
-              </Button>
-              <Button
-                active={mapStyle === "streets"}
-                id="streets"
-                className="map-style-selector"
-                onClick={this.handleMapStyleChange}
-                color="light"
-              >
-                Street
-              </Button>
-            </ButtonGroup>
-          </MapStyleSelector>
         </MapGL>
         <CrashEditLatLonForm
           latitude={markerLatitude}

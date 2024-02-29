@@ -3,13 +3,14 @@ import MapGL, {
   Marker,
   NavigationControl,
   FullscreenControl,
-  Source,
-  Layer,
 } from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 
 import Pin from "./Pin";
-import { LOCATION_MAP_CONFIG } from "../../../helpers/map";
+import {
+  LOCATION_MAP_CONFIG,
+  LabeledAerialSourceAndLayer,
+} from "../../../helpers/map";
 
 const TOKEN = process.env.REACT_APP_MAPBOX_TOKEN;
 
@@ -42,7 +43,7 @@ export default class CrashMap extends Component {
     };
   }
 
-  _updateViewport = (viewport) => {
+  _updateViewport = viewport => {
     this.setState({ viewport });
   };
 
@@ -97,14 +98,7 @@ export default class CrashMap extends Component {
           <NavigationControl showCompass={false} />
         </div>
         {/* add nearmap raster source and style */}
-        {!isDev && (
-          <>
-            <Source {...LOCATION_MAP_CONFIG.sources.aerials} />
-            <Layer {...LOCATION_MAP_CONFIG.layers.aerials} />
-            {/* show street labels on top of other layers */}
-            <Layer {...LOCATION_MAP_CONFIG.layers.streetLabels} />
-          </>
-        )}
+        {!isDev && <LabeledAerialSourceAndLayer />}
         <Marker
           latitude={this.props.data.latitude_primary}
           longitude={this.props.data.longitude_primary}
