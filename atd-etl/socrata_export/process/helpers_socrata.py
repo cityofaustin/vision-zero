@@ -9,12 +9,13 @@ The application requires the requests and sodapy libraries:
     https://pypi.org/project/requests/
     https://pypi.org/project/sodapy/
 """
+
 import sys
 import requests
 import json
 from copy import deepcopy
 from process.config import ATD_ETL_CONFIG
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 
 # Dict to translate modes to correlate with atd__mode_category_lkp table
 mode_categories = {
@@ -88,9 +89,9 @@ def flatten_hasura_response(records):
                                     )
                                 else:
                                     # Create key at top-level
-                                    formatted_record[
-                                        third_level_key
-                                    ] = third_level_value
+                                    formatted_record[third_level_key] = (
+                                        third_level_value
+                                    )
                         # Copy non-nested key-values to top-level (if value is not null)
                         # Null records can create unwanted columns at top level of record
                         elif second_level_value is not None:
@@ -315,7 +316,7 @@ def format_person_data(data, formatter_config):
     return formatted_records
 
 
-def get_date_limit():
+def two_weeks_ago():
     """
     Returns a string with the date two weeks ago in iso format: yyyy-mm-dd
     :return str:
@@ -327,13 +328,13 @@ def get_date_limit():
         return (d - timedelta(days=14)).strftime("%Y-%m-%d")
 
 
-def get_initial_date_limit():
+def ten_years_ago():
     """
-    Returns a string with the date ten years ago in iso format: yyyy-mm-dd
+    Returns a string with the date on January 1st, ten years ago in format: yyyy-mm-dd.
     :return str:
     """
-    d = date.today()
-    return d.replace(year=d.year - 10).strftime("%Y-%m-%d")
+    year = datetime.now().year
+    return f"{year - 10}-01-01"
 
 
 def is_no_time_constraint():
