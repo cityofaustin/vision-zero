@@ -9,7 +9,6 @@ The application requires the requests and sodapy libraries:
     https://pypi.org/project/requests/
     https://pypi.org/project/sodapy/
 """
-
 import sys
 import requests
 import json
