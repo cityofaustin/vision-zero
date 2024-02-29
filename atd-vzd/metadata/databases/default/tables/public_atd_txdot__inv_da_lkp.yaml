@@ -1,0 +1,3 @@
+table:
+  name: atd_txdot__inv_da_lkp
+  schema: public
