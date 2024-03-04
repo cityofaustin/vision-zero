@@ -210,6 +210,9 @@ const DataTable = ({
                                         type="text"
                                         defaultValue={fieldValue}
                                         onChange={e => handleInputChange(e)}
+                                        autoComplete="off"
+                                        // disable 1password autofill
+                                        data-1p-ignore
                                       />
                                     )}
                                   </div>
