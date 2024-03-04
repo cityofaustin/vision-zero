@@ -6,6 +6,7 @@ import get from "lodash.get";
 import { formatCostToDollars, formatDateTimeString } from "../helpers/format";
 
 import {
+  Button,
   Card,
   CardHeader,
   CardBody,
@@ -13,7 +14,6 @@ import {
   Col,
   Input,
   Table,
-  Button,
 } from "reactstrap";
 
 import { GET_LOOKUPS } from "../queries/lookups";
@@ -202,18 +202,24 @@ const DataTable = ({
                                       />
                                     )}
                                   </div>
-                                  <div className="my-auto pl-2">
-                                    <button type="submit">
+                                  <div className="my-auto pl-2 d-flex">
+                                    <Button
+                                      type="submit"
+                                      color="primary"
+                                      size="sm"
+                                      className="btn-pill mr-1"
+                                    >
                                       <i className="fa fa-check edit-toggle" />
-                                    </button>
-                                  </div>
-                                  <div className="my-auto">
-                                    <button type="cancel">
-                                      <i
-                                        className="fa fa-times edit-toggle"
-                                        onClick={e => handleCancelClick(e)}
-                                      ></i>
-                                    </button>
+                                    </Button>
+                                    <Button
+                                      type="cancel"
+                                      color="danger"
+                                      size="sm"
+                                      className="btn-pill"
+                                      onClick={e => handleCancelClick(e)}
+                                    >
+                                      <i className="fa fa-times edit-toggle"></i>
+                                    </Button>
                                   </div>
                                 </div>
                               </form>
