@@ -14,7 +14,10 @@ import {
   Input,
   Table,
   Button,
+  Row,
 } from "reactstrap";
+
+import "./dataTable.css";
 
 import { GET_LOOKUPS } from "../queries/lookups";
 
@@ -151,87 +154,90 @@ const DataTable = ({
                       const fieldValueDisplay = renderLookupDescString();
 
                       return (
-                        <tr key={i}>
-                          <td>
+                        <tr
+                          key={i}
+                          className={
+                            fieldConfigObject.editable && !isEditing
+                              ? "data-table-editable"
+                              : ""
+                          }
+                          onClick={() =>
+                            fieldConfigObject.editable &&
+                            !isEditing &&
+                            setEditField(field)
+                          }
+                          style={{
+                            cursor:
+                              fieldConfigObject.editable && !isEditing
+                                ? "pointer"
+                                : "auto",
+                          }}
+                        >
+                          <td className="align-middle">
                             <strong>{fieldLabel}</strong>
                           </td>
-                          <td
-                            style={{
-                              cursor:
-                                fieldConfigObject.editable && !isEditing
-                                  ? "pointer"
-                                  : "auto",
-                            }}
-                            onClick={() =>
-                              fieldConfigObject.editable &&
-                              !isEditing &&
-                              setEditField(field)
-                            }
-                          >
+                          <td colSpan={isEditing ? 2 : 1}>
                             {isEditing ? (
                               <form
                                 onSubmit={e =>
                                   handleFieldUpdate(e, section.fields, field)
                                 }
                               >
-                                {fieldUiType === "select" && (
-                                  <Input
-                                    autoFocus
-                                    name={field}
-                                    id={field}
-                                    onChange={e => handleInputChange(e)}
-                                    defaultValue={fieldValue}
-                                    type="select"
-                                  >
-                                    {selectOptions.map(option => (
-                                      <option
-                                        value={option[`${lookupPrefix}_id`]}
+                                <Row className="m-0 y-0">
+                                  <Col>
+                                    {fieldUiType === "select" && (
+                                      <Input
+                                        autoFocus
+                                        name={field}
+                                        id={field}
+                                        onChange={e => handleInputChange(e)}
+                                        defaultValue={fieldValue}
+                                        type="select"
                                       >
-                                        {option[`${lookupPrefix}_desc`]}
-                                      </option>
-                                    ))}
-                                  </Input>
-                                )}
-                                {fieldUiType === "text" && (
-                                  <input
-                                    autoFocus
-                                    type="text"
-                                    defaultValue={fieldValue}
-                                    onChange={e => handleInputChange(e)}
-                                  />
-                                )}
-
-                                <button type="submit">
-                                  <i className="fa fa-check edit-toggle" />
-                                </button>
-                                <button type="cancel">
-                                  <i
-                                    className="fa fa-times edit-toggle"
-                                    onClick={e => handleCancelClick(e)}
-                                  ></i>
-                                </button>
+                                        {selectOptions.map(option => (
+                                          <option
+                                            value={option[`${lookupPrefix}_id`]}
+                                          >
+                                            {option[`${lookupPrefix}_desc`]}
+                                          </option>
+                                        ))}
+                                      </Input>
+                                    )}
+                                    {fieldUiType === "text" && (
+                                      <Input
+                                        autoFocus
+                                        name={field}
+                                        id={field}
+                                        type="text"
+                                        defaultValue={fieldValue}
+                                        onChange={e => handleInputChange(e)}
+                                      />
+                                    )}
+                                  </Col>
+                                  <Col className="col-sm-auto px-0">
+                                    <button type="submit">
+                                      <i className="fa fa-check edit-toggle" />
+                                    </button>
+                                    <button type="cancel">
+                                      <i
+                                        className="fa fa-times edit-toggle"
+                                        onClick={e => handleCancelClick(e)}
+                                      ></i>
+                                    </button>
+                                  </Col>
+                                </Row>
                               </form>
                             ) : (
                               fieldValueDisplay
                             )}
                           </td>
-                          <td
-                            style={{
-                              cursor:
-                                fieldConfigObject.editable && !isEditing
-                                  ? "pointer"
-                                  : "auto",
-                            }}
-                            onClick={() =>
-                              fieldConfigObject.editable &&
-                              !isEditing &&
-                              setEditField(field)
-                            }
-                          >
-                            {fieldConfigObject.editable && !isEditing && (
-                              <i className="fa fa-pencil edit-toggle" />
-                            )}
-                          </td>
+                          {!isEditing && (
+                            <td style={{ textAlign: "right" }}>
+                              {fieldConfigObject.editable && !isEditing && (
+                                <i className="fa fa-pencil edit-toggle" />
+                              )}
+                            </td>
+                          )}
                         </tr>
                       );
                     })}
