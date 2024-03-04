@@ -155,7 +155,19 @@ const DataTable = ({
                           <td>
                             <strong>{fieldLabel}</strong>
                           </td>
-                          <td>
+                          <td
+                            style={{
+                              cursor:
+                                fieldConfigObject.editable && !isEditing
+                                  ? "pointer"
+                                  : "auto",
+                            }}
+                            onClick={() =>
+                              fieldConfigObject.editable &&
+                              !isEditing &&
+                              setEditField(field)
+                            }
+                          >
                             {isEditing ? (
                               <form
                                 onSubmit={e =>
@@ -164,6 +176,7 @@ const DataTable = ({
                               >
                                 {fieldUiType === "select" && (
                                   <Input
+                                    autoFocus
                                     name={field}
                                     id={field}
                                     onChange={e => handleInputChange(e)}
@@ -181,6 +194,7 @@ const DataTable = ({
                                 )}
                                 {fieldUiType === "text" && (
                                   <input
+                                    autoFocus
                                     type="text"
                                     defaultValue={fieldValue}
                                     onChange={e => handleInputChange(e)}
@@ -201,12 +215,21 @@ const DataTable = ({
                               fieldValueDisplay
                             )}
                           </td>
-                          <td>
+                          <td
+                            style={{
+                              cursor:
+                                fieldConfigObject.editable && !isEditing
+                                  ? "pointer"
+                                  : "auto",
+                            }}
+                            onClick={() =>
+                              fieldConfigObject.editable &&
+                              !isEditing &&
+                              setEditField(field)
+                            }
+                          >
                             {fieldConfigObject.editable && !isEditing && (
-                              <i
-                                className="fa fa-pencil edit-toggle"
-                                onClick={() => setEditField(field)}
-                              />
+                              <i className="fa fa-pencil edit-toggle" />
                             )}
                           </td>
                         </tr>
