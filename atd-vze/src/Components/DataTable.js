@@ -16,8 +16,6 @@ import {
   Button,
 } from "reactstrap";
 
-import "./dataTable.css";
-
 import { GET_LOOKUPS } from "../queries/lookups";
 
 const DataTable = ({
@@ -35,6 +33,7 @@ const DataTable = ({
   // Disable edit features if only role is "readonly"
   const { getRoles } = useAuth0();
   const roles = getRoles();
+  const isReadOnlyUser = isReadOnly(roles);
 
   const [showModal, setShowModal] = useState(false);
 
@@ -75,11 +74,6 @@ const DataTable = ({
                       const fieldConfigObject = section.fields[field];
 
                       const fieldLabel = fieldConfigObject.label;
-
-                      // Disable editing if user is only "readonly"
-                      if (fieldConfigObject.editable && isReadOnly(roles)) {
-                        fieldConfigObject.editable = false;
-                      }
 
                       // Set data table (alternate if defined in data map)
                       const fieldDataTable =
@@ -151,25 +145,17 @@ const DataTable = ({
                       };
 
                       const fieldValueDisplay = renderLookupDescString();
+                      const canClickToEdit =
+                        !isReadOnlyUser &&
+                        fieldConfigObject.editable &&
+                        !isEditing;
 
                       return (
                         <tr
                           key={i}
-                          className={
-                            fieldConfigObject.editable && !isEditing
-                              ? "data-table-editable"
-                              : ""
-                          }
-                          onClick={() =>
-                            fieldConfigObject.editable &&
-                            !isEditing &&
-                            setEditField(field)
-                          }
+                          onClick={() => canClickToEdit && setEditField(field)}
                           style={{
-                            cursor:
-                              fieldConfigObject.editable && !isEditing
-                                ? "pointer"
-                                : "auto",
+                            cursor: canClickToEdit ? "pointer" : "auto",
                           }}
                         >
                           <td className="align-middle">
@@ -237,7 +223,7 @@ const DataTable = ({
                           </td>
                           {!isEditing && (
                             <td style={{ textAlign: "right" }}>
-                              {fieldConfigObject.editable && !isEditing && (
+                              {canClickToEdit && (
                                 <i className="fa fa-pencil edit-toggle" />
                               )}
                             </td>
