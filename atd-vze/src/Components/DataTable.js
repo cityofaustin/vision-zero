@@ -14,7 +14,6 @@ import {
   Input,
   Table,
   Button,
-  Row,
 } from "reactstrap";
 
 import "./dataTable.css";
@@ -183,8 +182,8 @@ const DataTable = ({
                                   handleFieldUpdate(e, section.fields, field)
                                 }
                               >
-                                <Row className="m-0 y-0">
-                                  <Col>
+                                <div className="d-flex">
+                                  <div className="flex-grow-1">
                                     {fieldUiType === "select" && (
                                       <Input
                                         autoFocus
@@ -213,19 +212,21 @@ const DataTable = ({
                                         onChange={e => handleInputChange(e)}
                                       />
                                     )}
-                                  </Col>
-                                  <Col className="col-sm-auto px-0">
+                                  </div>
+                                  <div className="my-auto">
                                     <button type="submit">
                                       <i className="fa fa-check edit-toggle" />
                                     </button>
+                                  </div>
+                                  <div className="my-auto">
                                     <button type="cancel">
                                       <i
                                         className="fa fa-times edit-toggle"
                                         onClick={e => handleCancelClick(e)}
                                       ></i>
                                     </button>
-                                  </Col>
-                                </Row>
+                                  </div>
+                                </div>
                               </form>
                             ) : (
                               fieldValueDisplay
