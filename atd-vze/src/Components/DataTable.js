@@ -202,7 +202,7 @@ const DataTable = ({
                                       />
                                     )}
                                   </div>
-                                  <div className="my-auto">
+                                  <div className="my-auto pl-2">
                                     <button type="submit">
                                       <i className="fa fa-check edit-toggle" />
                                     </button>
