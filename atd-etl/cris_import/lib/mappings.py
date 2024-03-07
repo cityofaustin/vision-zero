@@ -74,6 +74,10 @@ def no_override_columns():
             "prsn_occpnt_pos_id",  # key column (but why?)
             "injury_severity",
             "prsn_age",
+            "prsn_name_honorific",
+            "prsn_last_name",
+            "prsn_first_name",
+            "prsn_mid_name",
         },
         "atd_txdot_primaryperson": {
             "crash_id",  # key column
@@ -83,6 +87,10 @@ def no_override_columns():
             "prsn_occpnt_pos_id",  # key column (but why?)
             "injury_severity",
             "prsn_age",
+            "prsn_name_honorific",
+            "prsn_last_name",
+            "prsn_first_name",
+            "prsn_mid_name",
         },
         "atd_txdot_charges": {
             "crash_id",  # key column
