@@ -641,7 +641,6 @@ def align_records(map_state):
                     # Do the same thing, but this time using the SQL clauses formed from "important" columns.
                     important_changed_columns = util.get_changed_columns(pg, important_column_aggregators, output_map, table, linkage_clauses, record_key_sql, map_state["import_schema"])
 
-
                     if len(important_changed_columns['changed_columns']) > 0:
                         # This execution branch leads to the conflict resolution system in VZ
 
@@ -679,7 +678,6 @@ def align_records(map_state):
                             graphql.make_hasura_request(query=mutation, endpoint=GRAPHQL_ENDPOINT, admin_secret=GRAPHQL_ENDPOINT_KEY)
                     else:
                         # This execution branch leads to forming an update statement and executing it
-                        
                         if len(changed_columns["changed_columns"]) == 0:
                             print(update_statement)
                             raise "No changed columns? Why are we forming an update? This is a bug."
