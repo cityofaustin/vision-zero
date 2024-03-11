@@ -641,11 +641,6 @@ def align_records(map_state):
                     # Do the same thing, but this time using the SQL clauses formed from "important" columns.
                     important_changed_columns = util.get_changed_columns(pg, important_column_aggregators, output_map, table, linkage_clauses, record_key_sql, map_state["import_schema"])
 
-
-                    # print(f"Changed_columns: {changed_columns}")
-                    # print(f"Important_changed_columns: {important_changed_columns}")
-                    # input()
-
                     if len(important_changed_columns['changed_columns']) > 0:
                         # This execution branch leads to the conflict resolution system in VZ
 
@@ -677,16 +672,12 @@ def align_records(map_state):
                         all_changed_columns = ", ".join(important_changed_columns["changed_columns"] + changed_columns["changed_columns"])
 
                         # insert_change_template() is used with minimal changes from previous version of the ETL to better ensure conflict system compatibility
-                        # the line immediately below is actually called `insert_crash_change_template`. 
                         mutation = insert_change_template(new_record_dict=source, differences=all_changed_columns, crash_id=str(source["crash_id"]))
                         if not dry_run:
                             print("Making a mutation for " + str(source["crash_id"]))
                             graphql.make_hasura_request(query=mutation, endpoint=GRAPHQL_ENDPOINT, admin_secret=GRAPHQL_ENDPOINT_KEY)
                     else:
-                        # Thi)
-                            # print(f"Mutation: {mutation}")
-                            # input(s execution branch leads to forming an update statement and executing it
-                        
+                        # This execution branch leads to forming an update statement and executing it
                         if len(changed_columns["changed_columns"]) == 0:
                             print(update_statement)
                             raise "No changed columns? Why are we forming an update? This is a bug."
