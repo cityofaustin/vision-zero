@@ -52,19 +52,24 @@ def no_override_columns():
             "atd_fatality_count",
             "apd_confirmed_death_count",
             "tot_injry_cnt",
-            "atd_txdot_crashes.sus_serious_injry_cnt",
+            "sus_serious_injry_cnt",
             "address_confirmed_primary",
             "address_confirmed_secondary",
             "private_dr_fl",
             "road_constr_zone_fl",
+            "case_id",
+            "sus_serious_injry_cnt",
+            "intrsct_relat_id",
+            "rpt_outside_city_limit_fl",
         },
         "atd_txdot_units": {
             "crash_id",  # key column
             "unit_nbr",  # key column
             "travel_direction",
             "movement_id",
-            "death_cnt",
             "sus_serious_injry_cnt",
+            "unit_desc_id",
+            "veh_body_styl_id",
         },
         "atd_txdot_person": {
             "crash_id",  # key column
@@ -74,6 +79,12 @@ def no_override_columns():
             "prsn_occpnt_pos_id",  # key column (but why?)
             "injury_severity",
             "prsn_age",
+            "prsn_name_honorific",
+            "prsn_last_name",
+            "prsn_first_name",
+            "prsn_mid_name",
+            "prsn_gndr_id",
+            "prsn_ethnicity_id",
         },
         "atd_txdot_primaryperson": {
             "crash_id",  # key column
@@ -83,6 +94,12 @@ def no_override_columns():
             "prsn_occpnt_pos_id",  # key column (but why?)
             "injury_severity",
             "prsn_age",
+            "prsn_name_honorific",
+            "prsn_last_name",
+            "prsn_first_name",
+            "prsn_mid_name",
+            "prsn_gndr_id",
+            "prsn_ethnicity_id",
         },
         "atd_txdot_charges": {
             "crash_id",  # key column
