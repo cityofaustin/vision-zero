@@ -673,6 +673,9 @@ def align_records(map_state):
                         all_changed_columns = ", ".join(important_changed_columns["changed_columns"] + changed_columns["changed_columns"])
 
                         # insert_change_template() is used with minimal changes from previous version of the ETL to better ensure conflict system compatibility
+                        # the line immediately below is actually called `insert_crash_change_template`. As Rose
+                        # observed today, non-crashes are not being handled correctly by the system. I think
+                        # changes to those types of records may be just getting dropped.
                         mutation = insert_change_template(new_record_dict=source, differences=all_changed_columns, crash_id=str(source["crash_id"]))
                         if not dry_run:
                             print("Making a mutation for " + str(source["crash_id"]))
