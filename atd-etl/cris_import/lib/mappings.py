@@ -52,7 +52,7 @@ def no_override_columns():
             "atd_fatality_count",
             "apd_confirmed_death_count",
             "tot_injry_cnt",
-            "atd_txdot_crashes.sus_serious_injry_cnt",
+            "sus_serious_injry_cnt",
             "address_confirmed_primary",
             "address_confirmed_secondary",
             "private_dr_fl",
