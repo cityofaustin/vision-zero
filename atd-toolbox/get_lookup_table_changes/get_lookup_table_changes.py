@@ -18,7 +18,6 @@ DB_PASS = os.getenv("DB_PASS")
 DB_NAME = os.getenv("DB_NAME")
 DB_SSL_REQUIREMENT = os.getenv("DB_SSL_REQUIREMENT")
 
-
 def get_pg_connection():
     """
     Returns a connection to the Postgres database
@@ -32,41 +31,9 @@ def get_pg_connection():
         sslrootcert="/root/rds-combined-ca-bundle.pem",
     )
 
-
-def table_exists(conn, table_name):
+def get_db_lkp_tables(conn):
     """
-    Checks if a table exists in a PostgreSQL database.
-
-    Args:
-    conn (psycopg2.extensions.connection): A connection to the PostgreSQL database.
-    table_name (str): The name of the table to check for existence.
-
-    Returns:
-    bool: True if the table exists, False otherwise.
-    """
-    try:
-        with conn.cursor() as cur:
-            cur.execute(
-                """
-                SELECT EXISTS (
-                    SELECT FROM information_schema.tables
-                    WHERE table_schema = 'public'
-                    AND table_name = %s
-                );
-            """,
-                (table_name,),
-            )
-
-            result = cur.fetchone()
-            return result[0]
-
-    except Exception as e:
-        print(f"Error checking table existence: {e}")
-        return False
-
-def get_current_lkp_tables(conn):
-    """
-    Gets a list of all the lookup tables we have from CRIS in our database.
+    Gets a list of all the lookup tables we have in our database.
 
     Args:
     conn (psycopg2.extensions.connection): A connection to the PostgreSQL database.
@@ -138,12 +105,12 @@ def read_and_group_csv(file_path):
             name = re.search(r"(^.*)_ID$", id_name)
             name_component = name.group(1).lower()
             table_name = "atd_txdot__" + name_component + "_lkp"
-            inner_dict = {"id": int(row[1]), "description": row[2]}
+            # inner_dict = {int(row[1]): row[2]}
 
             if table_name not in grouped_data:
-                grouped_data[table_name] = []
+                grouped_data[table_name] = {}
 
-            grouped_data[table_name].append(inner_dict)
+            grouped_data[table_name][int(row[1])] = row[2]
 
     return grouped_data
 
@@ -162,103 +129,105 @@ def new_table(name):
     """
 
 def main(file_path):
-    data = read_and_group_csv(file_path)
+    extract_data = read_and_group_csv(file_path)
 
     # Pretty-print the grouped data as JSON
     # print(json.dumps(data, indent=4))
 
     pg = get_pg_connection()
     cursor = pg.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-    current_tables = get_current_lkp_tables(pg)
-    tables_to_delete = list(set(current_tables) - set(list(data.keys())))
+    db_tables = get_db_lkp_tables(pg)
+    tables_to_delete = list(set(db_tables) - set(list(extract_data.keys())))
 
-    print(tables_to_delete)
+    # print(tables_to_delete)
 
     changes = []
     down_changes = []
 
     for table in tables_to_delete:
-        print("Lookup table ", table, " found in database and not in export")
+        print("❓Lookup table ", table, " found in database and not in export")
+        print()
         drop_table = f"drop table public.{table};"
         changes.append(f"\n-- Dropping table {table}")
         changes.append(drop_table)
 
-    # for table in current_tables:
-    #     print(table)
-    #     id_col = table.removeprefix("atd_txdot__").replace("lkp", "id")
-    #     desc_col = id_col.removesuffix("id") + "desc"
-    #     lkp_dict[table] = get_lkp_values(pg, table, id_col, desc_col)
-    # print(lkp_dict)
-
-    for table in data:
+    for table in extract_data:
+        if table in ["atd_txdot__state_lkp", "atd_txdot__cnty_lkp"]:
+            continue
         name_component = table.removeprefix("atd_txdot__").removesuffix("_lkp")
+        extract_table_dict = extract_data[table]
 
         print()
         print("👀Looking into table: ", table)
 
-        if table not in current_tables:
+        if table not in db_tables:
             print("💥 Missing table: ", table)
             changes.append(f"\n-- Adding table {table}")
             changes.append(new_table(name_component))
             down_changes.append(f"\n-- Dropping table {table}")
             new_table_down = f"drop table if exists public.{table};"
             down_changes.append(new_table_down)
-            for record in data[table]:
+            for key in extract_table_dict:
                 # We do not have a record on file with this ID
-                print(f"❓ Id {str(record['id'])} not found in {table_name}")
-                print("      CSV Value: ", record["description"])
+                print(f"❓ Id {str(key)} not found in {table}")
+                print("      CSV Value: ", extract_table_dict[key])
                 print()
-                insert = f"insert into public.{table_name} ({name_component}_id, {name_component}_desc) values ({str(record['id'])}, '{escape_single_quotes(record['description'])}');"
+                insert = f"insert into public.{table} ({name_component}_id, {name_component}_desc) values ({str(key)}, '{escape_single_quotes(extract_table_dict[key])}');"
                 changes.append(insert)
                 # Dont need down changes here because the down is just deleting the table
-
         else:
-            # the rest is still a WIP for now
-            lkp_dict = get_lkp_values(pg, table, name_component)
-            print(lkp_dict, "our values")
-            print(data[table], "their values")
+            our_table_dict = get_lkp_values(pg, table, name_component)
             is_first_change = True
-            for key in data[table]:
-                sql = f"""
-                select {name_component}_id as id, {name_component}_desc as description 
-                from {table_name} where {name_component}_id = {str(data[table][key])};
-                """
-                cursor.execute(sql)
-                db_result = cursor.fetchone()
-                if db_result:
+            is_first_deletion = True
+            for key in extract_table_dict:
+                if key in our_table_dict:
                     # We have a record on file with this ID
-                    if db_result["description"] == record["description"]:
-                        # print(f"✅ Value \"{record['description']}\" with id {str(record['id'])} found in {table_name}")
+                    if our_table_dict[key] == extract_table_dict[key]:
+                        # print(f"✅ Value \"{extract_table_dict[key]}\" with id {str(key)} found in {table}")
                         pass
                     else:
                         print(
-                            f"❌ Id {str(record['id'])} found in {table_name} has a description mismatch:"
+                            f"❌ Id {str(key)} found in {table} has a description mismatch:"
                         )
-                        print("      CSV Value: ", record["description"])
-                        print("       DB Value: ", db_result["description"])
+                        print("      CSV Value: ", extract_table_dict[key])
+                        print("       DB Value: ", our_table_dict[key])
                         print()
-                        update = f"update public.{table_name} set {name_component}_desc = '{escape_single_quotes(record['description'])}' where {name_component}_id = {str(record['id'])};"
+                        update = f"update public.{table} set {name_component}_desc = '{escape_single_quotes(extract_table_dict[key])}' where {name_component}_id = {str(key)};"
                         if is_first_change == True:
-                            changes.append(f"\n-- Changes to table {table_name}")
-                            down_changes.append(f"\n-- Changes to table {table_name}")
+                            changes.append(f"\n-- Changes to table {table}")
+                            down_changes.append(f"\n-- Changes to table {table}")
                         changes.append(update)
-                        update_down = f"update public.{table_name} set {name_component}_desc = '{db_result['description']}' where {name_component}_id = {str(record['id'])};"
+                        update_down = f"update public.{table} set {name_component}_desc = '{our_table_dict[key]}' where {name_component}_id = {str(key)};"
                         down_changes.append(update_down)
                         is_first_change = False
                 else:
                     # We do not have a record on file with this ID
-                    # print(f"Value \"{record['description']}\" with id {str(record['id'])} not found in {table_name}")
-                    print(f"❓ Id {str(record['id'])} not found in {table_name}")
-                    print("      CSV Value: ", record["description"])
+                    print(f"Value \"{record['description']}\" with id {str(record['id'])} not found in {table_name}")
+                    print(f"❓ Id {str(key)} not found in {table}")
+                    print("      CSV Value: ", extract_table_dict[key])
                     print()
-                    insert = f"insert into public.{table_name} ({name_component}_id, {name_component}_desc) values ({str(record['id'])}, '{escape_single_quotes(record['description'])}');"
+                    insert = f"insert into public.{table} ({name_component}_id, {name_component}_desc) values ({str(key)}, '{escape_single_quotes(extract_table_dict[key])}');"
                     if is_first_change == True:
-                        changes.append(f"\n-- Changes to table {table_name}")
-                        down_changes.append(f"\n-- Changes to table {table_name}")
+                        changes.append(f"\n-- Changes to table {table}")
+                        down_changes.append(f"\n-- Changes to table {table}")
                     changes.append(insert)
-                    insert_down = f"delete from public.{table_name} where {name_component}_id = {str(record['id'])};"
+                    insert_down = f"delete from public.{table} where {name_component}_id = {str(key)};"
                     down_changes.append(insert_down)
                     is_first_change = False
+            for key in our_table_dict:
+                if key not in extract_table_dict:
+                    print(f"❓ Id {str(key)} in our database table not found in CRIS extract for {table}")
+                    print("      DB Value: ", our_table_dict[key])
+                    print()
+                    delete = f"delete from public.{table} where {name_component}_id = {str(key)};"
+                    if is_first_deletion == True:
+                        changes.append(f"\n-- Deletions from table {table}")
+                        down_changes.append(f"\n-- Undo deletions from table {table}")
+                    changes.append(delete)
+                    delete_down = f"insert into public.{table} ({name_component}_id, {name_component}_desc) values ({str(key)}, '{escape_single_quotes(our_table_dict[key])}');"
+                    down_changes.append(delete_down)
+                    is_first_deletion = False
+
 
     print("\n🛠️ Here are the changes to be made:\n")
     print("\n".join(changes).strip())
