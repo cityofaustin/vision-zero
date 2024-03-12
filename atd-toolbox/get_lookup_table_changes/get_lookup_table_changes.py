@@ -18,6 +18,7 @@ DB_PASS = os.getenv("DB_PASS")
 DB_NAME = os.getenv("DB_NAME")
 DB_SSL_REQUIREMENT = os.getenv("DB_SSL_REQUIREMENT")
 
+
 def get_pg_connection():
     """
     Returns a connection to the Postgres database
@@ -30,6 +31,7 @@ def get_pg_connection():
         sslmode=DB_SSL_REQUIREMENT,
         sslrootcert="/root/rds-combined-ca-bundle.pem",
     )
+
 
 def get_db_lkp_tables(conn):
     """
@@ -59,6 +61,7 @@ def get_db_lkp_tables(conn):
     except Exception as e:
         print(f"Error fetching lookup table names: {e}")
         return False
+
 
 def get_lkp_values(conn, table_name, name_component):
     """
@@ -126,6 +129,7 @@ def new_table(name):
         {name}_desc varchar(255) not null
     );
     """
+
 
 def main(file_path):
     extract_data = read_and_group_csv(file_path)
@@ -195,7 +199,9 @@ def main(file_path):
                         is_first_change = False
                 else:
                     # We do not have a record on file with this ID
-                    print(f"Value \"{record['description']}\" with id {str(record['id'])} not found in {table_name}")
+                    print(
+                        f"Value \"{record['description']}\" with id {str(record['id'])} not found in {table_name}"
+                    )
                     print(f"❓ Id {str(key)} not found in {table}")
                     print("      CSV Value: ", extract_table_dict[key])
                     print()
@@ -209,7 +215,9 @@ def main(file_path):
                     is_first_change = False
             for key in our_table_dict:
                 if key not in extract_table_dict:
-                    print(f"❓ Id {str(key)} in our database table not found in CRIS extract for {table}")
+                    print(
+                        f"❓ Id {str(key)} in our database table not found in CRIS extract for {table}"
+                    )
                     print("      DB Value: ", our_table_dict[key])
                     print()
                     delete = f"delete from public.{table} where {name_component}_id = {str(key)};"
@@ -220,7 +228,6 @@ def main(file_path):
                     delete_down = f"insert into public.{table} ({name_component}_id, {name_component}_desc) values ({str(key)}, '{escape_single_quotes(our_table_dict[key])}');"
                     down_changes.append(delete_down)
                     is_first_deletion = False
-
 
     print("\n🛠️ Here are the changes to be made:\n")
     print("\n".join(changes).strip())
