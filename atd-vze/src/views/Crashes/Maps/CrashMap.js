@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React from "react";
 import MapGL, {
   Marker,
   NavigationControl,
@@ -13,20 +13,6 @@ import {
 } from "../../../helpers/map";
 
 const TOKEN = process.env.REACT_APP_MAPBOX_TOKEN;
-
-const fullscreenControlStyle = {
-  position: "absolute",
-  top: 0,
-  left: 0,
-  padding: "10px",
-};
-
-const navStyle = {
-  position: "absolute",
-  top: 36,
-  left: 0,
-  padding: "10px",
-};
 
 // export default class CrashMap extends Component {
 //   constructor(props) {
@@ -118,9 +104,6 @@ const CrashMap = ({ data }) => {
 
   return (
     <MapGL
-      // {...viewport}
-      // width="100%"
-      // height="100%"
       initialViewState={{
         latitude: latitude_primary,
         longitude: longitude_primary,
@@ -138,23 +121,14 @@ const CrashMap = ({ data }) => {
       maxBounds={[[-99, 29], [-96, 32]]}
       mapboxAccessToken={TOKEN}
       cooperativeGestures={true}
-      // onViewportChange={this._updateViewport}
-      // mapboxApiAccessToken={TOKEN}
     >
-      {/* <div className="fullscreen" style={fullscreenControlStyle}>
-          <FullscreenControl />
-        </div>
-        <div className="nav" style={navStyle}>
-          <NavigationControl showCompass={false} />
-        </div> */}
+      <FullscreenControl position="top-left" />
+      <NavigationControl position="top-left" showCompass={false} />
+      <Marker latitude={latitude_primary} longitude={longitude_primary}>
+        <Pin size={40} color={"warning"} />
+      </Marker>
       {/* add nearmap raster source and style */}
       {/* {!isDev && <LabeledAerialSourceAndLayer />} */}
-      {/* <Marker
-          latitude={this.props.data.latitude_primary}
-          longitude={this.props.data.longitude_primary}
-        >
-          <Pin size={40} color={"warning"} />
-        </Marker> */}
     </MapGL>
   );
 };
