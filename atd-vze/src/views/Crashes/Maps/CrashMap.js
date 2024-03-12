@@ -99,6 +99,7 @@ const TOKEN = process.env.REACT_APP_MAPBOX_TOKEN;
 const CrashMap = ({ data }) => {
   const { latitude_primary, longitude_primary } = data;
   const isDev = window.location.hostname === "localhost";
+  // const isDev = false;
 
   // if no lat/long, return message that there is nothing to show?
 
@@ -128,7 +129,7 @@ const CrashMap = ({ data }) => {
         <Pin size={40} color={"warning"} />
       </Marker>
       {/* add nearmap raster source and style */}
-      {/* {!isDev && <LabeledAerialSourceAndLayer />} */}
+      {!isDev && <LabeledAerialSourceAndLayer />}
     </MapGL>
   );
 };
