@@ -8,8 +8,8 @@ import MapGL, {
   FullscreenControl,
 } from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
-import Geocoder from "react-map-gl-geocoder";
-import { CustomGeocoderMapController } from "./customGeocoderMapController";
+// import Geocoder from "react-map-gl-geocoder";
+// import { CustomGeocoderMapController } from "./customGeocoderMapController";
 import "react-map-gl-geocoder/dist/mapbox-gl-geocoder.css";
 
 import Pin from "./Pin";
@@ -36,7 +36,7 @@ const navStyle = {
   padding: "10px",
 };
 
-const customGeocoderMapController = new CustomGeocoderMapController();
+// const customGeocoderMapController = new CustomGeocoderMapController();
 
 class CrashEditCoordsMap extends Component {
   constructor(props) {
@@ -150,10 +150,10 @@ class CrashEditCoordsMap extends Component {
           }
           onViewportChange={this._updateViewport}
           getCursor={this.getCursor}
-          controller={customGeocoderMapController}
+          // controller={customGeocoderMapController}
           mapboxApiAccessToken={TOKEN}
         >
-          <Geocoder
+          {/* <Geocoder
             mapRef={this.mapRef}
             onViewportChange={this._handleViewportChange}
             mapboxApiAccessToken={TOKEN}
@@ -161,7 +161,7 @@ class CrashEditCoordsMap extends Component {
             options={{ flyTo: false }}
             // Bounding box for auto-populated results in the search bar
             bbox={[-98.22464, 29.959694, -97.226257, 30.687526]}
-          />
+          /> */}
           <div className="fullscreen" style={fullscreenControlStyle}>
             <FullscreenControl />
           </div>

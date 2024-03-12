@@ -92,9 +92,7 @@ function Location(props) {
             <CardHeader>
               <i className="fa fa-map fa-lg"></i> Aerial Map
             </CardHeader>
-            <CardBody>
-              <LocationMap data={data} />
-            </CardBody>
+            <CardBody>{/* <LocationMap data={data} /> */}</CardBody>
           </Card>
         </Col>
         <DataTable

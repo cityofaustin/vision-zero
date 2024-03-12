@@ -263,15 +263,14 @@ function Crash(props) {
               )}
               {notEditingCoords ? (
                 <CrashMap data={data.atd_txdot_crashes[0]} />
-              ) : (
-                <CrashEditCoordsMap
-                  data={data.atd_txdot_crashes[0]}
-                  mapGeocoderAddress={mapGeocoderAddress}
-                  crashId={crashId}
-                  refetchCrashData={refetch}
-                  setIsEditingCoords={setIsEditingCoords}
-                />
-              )}
+              ) : // <CrashEditCoordsMap
+              //   data={data.atd_txdot_crashes[0]}
+              //   mapGeocoderAddress={mapGeocoderAddress}
+              //   crashId={crashId}
+              //   refetchCrashData={refetch}
+              //   setIsEditingCoords={setIsEditingCoords}
+              // />
+              null}
             </CardBody>
           </Card>
         </Col>
