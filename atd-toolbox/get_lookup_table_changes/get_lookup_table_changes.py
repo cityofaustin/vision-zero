@@ -132,20 +132,18 @@ def main(file_path):
     extract_data = read_and_group_csv(file_path)
 
     # Pretty-print the grouped data as JSON
-    # print(json.dumps(data, indent=4))
+    # print(json.dumps(extract_data, indent=4))
 
     pg = get_pg_connection()
     cursor = pg.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     db_tables = get_db_lkp_tables(pg)
     tables_to_delete = list(set(db_tables) - set(list(extract_data.keys())))
 
-    # print(tables_to_delete)
-
     changes = []
     down_changes = []
 
     for table in tables_to_delete:
-        print("❓Lookup table ", table, " found in database and not in export")
+        print("❓Lookup table ", table, " found in database and not in extract")
         print()
         drop_table = f"drop table public.{table};"
         changes.append(f"\n-- Dropping table {table}")
@@ -168,10 +166,6 @@ def main(file_path):
             new_table_down = f"drop table if exists public.{table};"
             down_changes.append(new_table_down)
             for key in extract_table_dict:
-                # We do not have a record on file with this ID
-                print(f"❓ Id {str(key)} not found in {table}")
-                print("      CSV Value: ", extract_table_dict[key])
-                print()
                 insert = f"insert into public.{table} ({name_component}_id, {name_component}_desc) values ({str(key)}, '{escape_single_quotes(extract_table_dict[key])}');"
                 changes.append(insert)
                 # Dont need down changes here because the down is just deleting the table
