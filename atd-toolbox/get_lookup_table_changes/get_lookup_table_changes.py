@@ -161,7 +161,6 @@ def new_table(name):
 
 def main(file_path):
     data = read_and_group_csv(file_path)
-    # print(list(data.keys()))
 
     # Pretty-print the grouped data as JSON
     # print(json.dumps(data, indent=4))
@@ -170,6 +169,8 @@ def main(file_path):
     cursor = pg.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     current_tables = get_current_lkp_tables(pg)
     tables_to_delete = list(set(current_tables) - set(list(data.keys())))
+
+    print(tables_to_delete)
 
     changes = []
     down_changes = []
@@ -181,8 +182,6 @@ def main(file_path):
         changes.append(drop_table)
 
     # for table in current_tables:
-    #     if table in ["atd_txdot__state_lkp", "atd_txdot__cnty_lkp"]:
-    #         continue
     #     print(table)
     #     id_col = table.removeprefix("atd_txdot__").replace("lkp", "id")
     #     desc_col = id_col.removesuffix("id") + "desc"
@@ -192,17 +191,10 @@ def main(file_path):
     for table in data:
         name_component = table.removeprefix("atd_txdot__").removesuffix("_lkp")
 
-        # here are tables which are special cases
-        # The states (as in United States) is non-uniform and does not need inspection.
-        # The counties are equally fixed.
-        if table in ["STATE_ID", "CNTY_ID"]:
-            continue
-
         print()
         print("👀Looking into table: ", table)
 
-        exists = table_exists(pg, table)
-        if not exists:
+        if table not in current_tables:
             print("💥 Missing table: ", table)
             changes.append(f"\n-- Adding table {table}")
             changes.append(new_table(name_component))
@@ -219,62 +211,63 @@ def main(file_path):
                 # Dont need down changes here because the down is just deleting the table
 
         else:
+            # the rest is still a WIP for now
             lkp_dict = get_lkp_values(pg, table, name_component)
             print(lkp_dict, "our values")
             print(data[table], "their values")
-    #         is_first_change = True
-    #         for record in data[table]:
-    #             sql = f"""
-    #             select {name_component}_id as id, {name_component}_desc as description 
-    #             from {table_name} where {name_component}_id = {str(record['id'])};
-    #             """
-    #             cursor.execute(sql)
-    #             db_result = cursor.fetchone()
-    #             if db_result:
-    #                 # We have a record on file with this ID
-    #                 if db_result["description"] == record["description"]:
-    #                     # print(f"✅ Value \"{record['description']}\" with id {str(record['id'])} found in {table_name}")
-    #                     pass
-    #                 else:
-    #                     print(
-    #                         f"❌ Id {str(record['id'])} found in {table_name} has a description mismatch:"
-    #                     )
-    #                     print("      CSV Value: ", record["description"])
-    #                     print("       DB Value: ", db_result["description"])
-    #                     print()
-    #                     update = f"update public.{table_name} set {name_component}_desc = '{escape_single_quotes(record['description'])}' where {name_component}_id = {str(record['id'])};"
-    #                     if is_first_change == True:
-    #                         changes.append(f"\n-- Changes to table {table_name}")
-    #                         down_changes.append(f"\n-- Changes to table {table_name}")
-    #                     changes.append(update)
-    #                     update_down = f"update public.{table_name} set {name_component}_desc = '{db_result['description']}' where {name_component}_id = {str(record['id'])};"
-    #                     down_changes.append(update_down)
-    #                     is_first_change = False
-    #             else:
-    #                 # We do not have a record on file with this ID
-    #                 # print(f"Value \"{record['description']}\" with id {str(record['id'])} not found in {table_name}")
-    #                 print(f"❓ Id {str(record['id'])} not found in {table_name}")
-    #                 print("      CSV Value: ", record["description"])
-    #                 print()
-    #                 insert = f"insert into public.{table_name} ({name_component}_id, {name_component}_desc) values ({str(record['id'])}, '{escape_single_quotes(record['description'])}');"
-    #                 if is_first_change == True:
-    #                     changes.append(f"\n-- Changes to table {table_name}")
-    #                     down_changes.append(f"\n-- Changes to table {table_name}")
-    #                 changes.append(insert)
-    #                 insert_down = f"delete from public.{table_name} where {name_component}_id = {str(record['id'])};"
-    #                 down_changes.append(insert_down)
-    #                 is_first_change = False
+            is_first_change = True
+            for key in data[table]:
+                sql = f"""
+                select {name_component}_id as id, {name_component}_desc as description 
+                from {table_name} where {name_component}_id = {str(data[table][key])};
+                """
+                cursor.execute(sql)
+                db_result = cursor.fetchone()
+                if db_result:
+                    # We have a record on file with this ID
+                    if db_result["description"] == record["description"]:
+                        # print(f"✅ Value \"{record['description']}\" with id {str(record['id'])} found in {table_name}")
+                        pass
+                    else:
+                        print(
+                            f"❌ Id {str(record['id'])} found in {table_name} has a description mismatch:"
+                        )
+                        print("      CSV Value: ", record["description"])
+                        print("       DB Value: ", db_result["description"])
+                        print()
+                        update = f"update public.{table_name} set {name_component}_desc = '{escape_single_quotes(record['description'])}' where {name_component}_id = {str(record['id'])};"
+                        if is_first_change == True:
+                            changes.append(f"\n-- Changes to table {table_name}")
+                            down_changes.append(f"\n-- Changes to table {table_name}")
+                        changes.append(update)
+                        update_down = f"update public.{table_name} set {name_component}_desc = '{db_result['description']}' where {name_component}_id = {str(record['id'])};"
+                        down_changes.append(update_down)
+                        is_first_change = False
+                else:
+                    # We do not have a record on file with this ID
+                    # print(f"Value \"{record['description']}\" with id {str(record['id'])} not found in {table_name}")
+                    print(f"❓ Id {str(record['id'])} not found in {table_name}")
+                    print("      CSV Value: ", record["description"])
+                    print()
+                    insert = f"insert into public.{table_name} ({name_component}_id, {name_component}_desc) values ({str(record['id'])}, '{escape_single_quotes(record['description'])}');"
+                    if is_first_change == True:
+                        changes.append(f"\n-- Changes to table {table_name}")
+                        down_changes.append(f"\n-- Changes to table {table_name}")
+                    changes.append(insert)
+                    insert_down = f"delete from public.{table_name} where {name_component}_id = {str(record['id'])};"
+                    down_changes.append(insert_down)
+                    is_first_change = False
 
-    # print("\n🛠️ Here are the changes to be made:\n")
-    # print("\n".join(changes).strip())
+    print("\n🛠️ Here are the changes to be made:\n")
+    print("\n".join(changes).strip())
 
-    # outfile = open("up_migration.sql", "w")
-    # outfile.write("\n".join(changes).strip())
-    # outfile.close()
+    outfile = open("up_migration.sql", "w")
+    outfile.write("\n".join(changes).strip())
+    outfile.close()
 
-    # outfile_down = open("down_migration.sql", "w")
-    # outfile_down.write("\n".join(down_changes).strip())
-    # outfile_down.close()
+    outfile_down = open("down_migration.sql", "w")
+    outfile_down.write("\n".join(down_changes).strip())
+    outfile_down.close()
 
 
 if __name__ == "__main__":
