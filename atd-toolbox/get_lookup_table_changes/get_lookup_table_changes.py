@@ -62,14 +62,14 @@ def get_db_lkp_tables(conn):
 
 def get_lkp_values(conn, table_name, name_component):
     """
-    Returns a dict where each key is the lookup table name and the value
-    is a dict of all the lookup ids/descs for that lookup table
+    Returns a dict where each key is the lkp id and the value
+    is the lkp desc.
 
     Args:
     conn (psycopg2.extensions.connection): A connection to the PostgreSQL database.
 
     Returns:
-    dict: Containing the lookup table and its values.
+    dict: Containing the lookup id/desc pairs for the provided table.
     """
     try:
         with conn.cursor() as cur:
@@ -83,7 +83,7 @@ def get_lkp_values(conn, table_name, name_component):
             return dict(result)
 
     except Exception as e:
-        print(f"Error fetching dict of {table_name}: {e}")
+        print(f"Error fetching lookup dict of {table_name}: {e}")
         return False
 
 
@@ -105,7 +105,6 @@ def read_and_group_csv(file_path):
             name = re.search(r"(^.*)_ID$", id_name)
             name_component = name.group(1).lower()
             table_name = "atd_txdot__" + name_component + "_lkp"
-            # inner_dict = {int(row[1]): row[2]}
 
             if table_name not in grouped_data:
                 grouped_data[table_name] = {}
