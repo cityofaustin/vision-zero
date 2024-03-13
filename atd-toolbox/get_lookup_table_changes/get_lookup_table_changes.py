@@ -91,8 +91,6 @@ def get_lkp_values(conn, table_name, name_component):
         return False
 
 
-
-
 def read_and_group_csv(file_path):
     """
     Returns a dict where each key is the lookup table name and the value
@@ -222,6 +220,7 @@ def main(file_path):
                     insert_down = f"delete from public.{table} where {name_component}_id = {str(key)};"
                     down_changes.append(insert_down)
                     is_first_change = False
+            # Now check for any values in our lookup tables that aren't in the extract and are possibly crufty
             for key in our_table_dict:
                 if key not in extract_table_dict:
                     print(
