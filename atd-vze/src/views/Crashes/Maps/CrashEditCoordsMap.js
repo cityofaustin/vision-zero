@@ -155,7 +155,20 @@ import {
 
 const CrashEditCoordsMap = ({ data }) => {
   const { latitude_primary = null, longitude_primary = null } = data;
+
   const mapRef = React.useRef();
+  const [isDragging, setIsDragging] = React.useState(false);
+  const [markerCoordinates, setMarkerCoordinates] = React.useState({
+    latitude: latitude_primary,
+    longitude: longitude_primary,
+  });
+
+  const onDrag = e => {
+    const latitude = e.viewState.latitude;
+    const longitude = e.viewState.longitude;
+
+    setMarkerCoordinates({ latitude, longitude });
+  };
 
   return (
     <MapGL
@@ -168,11 +181,15 @@ const CrashEditCoordsMap = ({ data }) => {
       style={{ width: "100%", height: "100%" }}
       {...mapParameters}
       cooperativeGestures={true}
+      draggable
+      onDragStart={() => setIsDragging(true)}
+      onDrag={onDrag}
+      onDragEnd={() => setIsDragging(false)}
     >
       <FullscreenControl position="top-left" />
       <NavigationControl position="top-left" showCompass={false} />
-      <Marker latitude={latitude_primary} longitude={longitude_primary}>
-        <Pin size={40} color={"warning"} />
+      <Marker {...markerCoordinates}>
+        <Pin size={40} color={"warning"} isDragging={isDragging} animated />
       </Marker>
       {/* add nearmap raster source and style */}
       {!isDev && <LabeledAerialSourceAndLayer />}
