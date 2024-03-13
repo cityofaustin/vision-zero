@@ -5,6 +5,12 @@ const TOKEN = process.env.REACT_APP_MAPBOX_TOKEN;
 // This API key is managed by CTM. Contact help desk for maintenance and troubleshooting.
 const NEARMAP_KEY = process.env.REACT_APP_NEARMAP_KEY;
 
+export const defaultInitialState = {
+  latitude: 30.2747,
+  longitude: -97.7406,
+  zoom: 17,
+};
+
 export const mapParameters = {
   touchPitch: false,
   dragRotate: false,
