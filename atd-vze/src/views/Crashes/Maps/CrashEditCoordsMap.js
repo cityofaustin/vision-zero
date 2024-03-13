@@ -20,104 +20,6 @@ import {
   mapParameters,
 } from "../../../helpers/map";
 
-// const customGeocoderMapController = new CustomGeocoderMapController();
-
-// class CrashEditCoordsMap extends Component {
-//   constructor(props) {
-//     super(props);
-
-// Default map center
-// this.initialMapCenter = {
-//   latitude: this.props.data.latitude_primary || 30.26714,
-//   longitude: this.props.data.longitude_primary || -97.743192,
-// };
-
-// this.state = {
-//       markerLatitude: 0,
-//       markerLongitude: 0,
-//       isDragging: false,
-//     };
-//   }
-
-//   _updateViewport = viewport => {
-//     this.setState({
-//       viewport,
-//       markerLatitude: viewport.latitude,
-//       markerLongitude: viewport.longitude,
-//     });
-//   };
-
-//   getCursor = ({ isDragging }) => {
-//     isDragging !== this.state.isDragging && this.setState({ isDragging });
-//   };
-
-//   handleMapFormSubmit = e => {
-//     e.preventDefault();
-
-//     const variables = {
-//       qaStatus: 3, // Lat/Long entered manually to Primary
-//       geocodeProvider: 5, // Manual Q/A
-//       crashId: this.props.crashId,
-//       latitude: this.state.markerLatitude,
-//       longitude: this.state.markerLongitude,
-//       updatedBy: localStorage.getItem("hasura_user_email"),
-//     };
-
-//     this.props.client
-//       .mutate({
-//         mutation: UPDATE_COORDS,
-//         variables: variables,
-//       })
-//       .then(res => {
-//         this.props.refetchCrashData();
-//         this.props.setIsEditingCoords(false);
-//       });
-//   };
-
-//   handleMapFormReset = e => {
-//     e.preventDefault();
-//     const updatedViewport = {
-//       ...this.state.viewport,
-//       latitude: this.initialMapCenter.latitude,
-//       longitude: this.initialMapCenter.longitude,
-//     };
-//     this.setState({
-//       viewport: updatedViewport,
-//       markerLatitude: updatedViewport.latitude,
-//       markerLongitude: updatedViewport.longitude,
-//     });
-//   };
-
-//   handleMapFormCancel = e => {
-//     e.preventDefault();
-//     this.props.setIsEditingCoords(false);
-//   };
-
-//   render() {
-//     const {
-//       viewport,
-//       markerLatitude,
-//       markerLongitude,
-//       isDragging,
-//     } = this.state;
-//     const geocoderAddress = this.props.mapGeocoderAddress;
-//     const isDev = window.location.hostname === "localhost";
-
-//     return (
-//       <div>
-//         <MapGL
-//           {...viewport}
-//           width="100%"
-//           height="350px"
-//           mapStyle={
-//             isDev
-//               ? "mapbox://styles/mapbox/satellite-streets-v11"
-//               : LOCATION_MAP_CONFIG.mapStyle
-//           }
-//           getCursor={this.getCursor}
-//           // controller={customGeocoderMapController}
-//           mapboxApiAccessToken={TOKEN}
-//         >
 //           {/* <Geocoder
 //             mapRef={this.mapRef}
 //             onViewportChange={this._handleViewportChange}
@@ -127,31 +29,6 @@ import {
 //             // Bounding box for auto-populated results in the search bar
 //             bbox={[-98.22464, 29.959694, -97.226257, 30.687526]}
 //           /> */}
-//           <div className="fullscreen" style={fullscreenControlStyle}>
-//             <FullscreenControl />
-//           </div>
-//           <div className="nav" style={navStyle}>
-//             <NavigationControl showCompass={false} />
-//           </div>
-//           {/* add nearmap raster source and style */}
-//           {!isDev && <LabeledAerialSourceAndLayer />}
-//           <Marker latitude={markerLatitude} longitude={markerLongitude}>
-//             <Pin size={40} isDragging={isDragging} animated />
-//           </Marker>
-//         </MapGL>
-//         <CrashEditLatLonForm
-//           latitude={markerLatitude}
-//           longitude={markerLongitude}
-//           handleFormSubmit={this.handleMapFormSubmit}
-//           handleFormReset={this.handleMapFormReset}
-//           handleFormCancel={this.handleMapFormCancel}
-//         />
-//       </div>
-//     );
-//   }
-// }
-
-// export default withApollo(CrashEditCoordsMap);
 
 const CrashEditCoordsMap = ({
   data,
@@ -205,6 +82,7 @@ const CrashEditCoordsMap = ({
       longitude: longitude_primary || defaultInitialState.latitude,
     };
 
+    // TODO: Move map center to original coordinates or default fallback
     setMarkerCoordinates(originalMarkerCoordinates);
   };
 
@@ -215,7 +93,7 @@ const CrashEditCoordsMap = ({
   // TODO: handle initial geocoder value?
 
   return (
-    <div>
+    <>
       <MapGL
         ref={mapRef}
         initialViewState={{
@@ -223,7 +101,7 @@ const CrashEditCoordsMap = ({
           longitude: longitude_primary || defaultInitialState.longitude,
           zoom: defaultInitialState.zoom,
         }}
-        style={{ width: "100%", height: "350px" }}
+        style={{ width: "100%", height: "50vh" }}
         {...mapParameters}
         cooperativeGestures={true}
         draggable
@@ -245,7 +123,7 @@ const CrashEditCoordsMap = ({
         handleFormReset={handleFormReset}
         handleFormCancel={handleFormCancel}
       />
-    </div>
+    </>
   );
 };
 
