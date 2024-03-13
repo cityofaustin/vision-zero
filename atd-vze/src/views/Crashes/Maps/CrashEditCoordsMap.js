@@ -198,6 +198,20 @@ const CrashEditCoordsMap = ({
     });
   };
 
+  const handleFormReset = () => {
+    // Reset marker to original coordinates or default fallback
+    const originalMarkerCoordinates = {
+      latitude: latitude_primary || defaultInitialState.latitude,
+      longitude: longitude_primary || defaultInitialState.latitude,
+    };
+
+    setMarkerCoordinates(originalMarkerCoordinates);
+  };
+
+  const handleFormCancel = () => {
+    setIsEditingCoords(false);
+  };
+
   // TODO: handle initial geocoder value?
 
   return (
@@ -209,7 +223,7 @@ const CrashEditCoordsMap = ({
           longitude: longitude_primary || defaultInitialState.longitude,
           zoom: defaultInitialState.zoom,
         }}
-        style={{ width: "100%", height: "100%" }}
+        style={{ width: "100%", height: "350px" }}
         {...mapParameters}
         cooperativeGestures={true}
         draggable
@@ -228,8 +242,8 @@ const CrashEditCoordsMap = ({
       <CrashEditLatLonForm
         {...markerCoordinates}
         handleFormSubmit={handleFormSubmit}
-        handleFormReset={handleMapFormReset}
-        handleFormCancel={handleMapFormCancel}
+        handleFormReset={handleFormReset}
+        handleFormCancel={handleFormCancel}
       />
     </div>
   );
