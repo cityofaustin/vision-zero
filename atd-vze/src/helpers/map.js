@@ -1,8 +1,20 @@
 import React from "react";
 import { Source, Layer } from "react-map-gl";
 
+const TOKEN = process.env.REACT_APP_MAPBOX_TOKEN;
 // This API key is managed by CTM. Contact help desk for maintenance and troubleshooting.
 const NEARMAP_KEY = process.env.REACT_APP_NEARMAP_KEY;
+
+export const mapParameters = {
+  touchPitch: false,
+  dragRotate: false,
+  boxZoom: false,
+  maxBounds: [[99, 29], [-96, 32]],
+  mapboxAccessToken: TOKEN,
+  mapStyle: "mapbox://styles/mapbox/satellite-streets-v11",
+};
+
+export const isDev = window.location.hostname === "localhost";
 
 export const LOCATION_MAP_CONFIG = {
   mapStyle: "mapbox://styles/mapbox/satellite-streets-v11",
