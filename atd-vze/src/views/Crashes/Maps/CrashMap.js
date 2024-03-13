@@ -11,6 +11,7 @@ import {
   isDev,
   mapParameters,
 } from "../../../helpers/map";
+import "mapbox-gl/dist/mapbox-gl.css";
 
 const CrashMap = ({ data }) => {
   const { latitude_primary = null, longitude_primary = null } = data;
