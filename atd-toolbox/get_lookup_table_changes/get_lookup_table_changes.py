@@ -35,7 +35,8 @@ def get_pg_connection():
 
 def get_db_lkp_tables(conn):
     """
-    Gets a list of all the lookup tables we have in our database.
+    Gets a list of all the lookup tables we have in our database that have the CRIS lkp
+    prefix/suffix pattern.
 
     Args:
     conn (psycopg2.extensions.connection): A connection to the PostgreSQL database.
@@ -90,6 +91,8 @@ def get_lkp_values(conn, table_name, name_component):
         return False
 
 
+
+
 def read_and_group_csv(file_path):
     """
     Returns a dict where each key is the lookup table name and the value
@@ -132,6 +135,7 @@ def new_table(name):
 
 
 def main(file_path):
+    # Group the lkp extract into a dict of dicts
     extract_data = read_and_group_csv(file_path)
 
     # Pretty-print the grouped data as JSON
@@ -139,7 +143,10 @@ def main(file_path):
 
     pg = get_pg_connection()
     cursor = pg.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+    # Get a list of the lkp tables we have in our db
     db_tables = get_db_lkp_tables(pg)
+    # These are lkp tables we have in our db that aren't in the extract and are possibly cruft
     tables_to_delete = list(set(db_tables) - set(list(extract_data.keys())))
 
     changes = []
@@ -153,6 +160,9 @@ def main(file_path):
         changes.append(drop_table)
 
     for table in extract_data:
+        # here are tables which are special cases
+        # The states (as in United States) is non-uniform and does not need inspection.
+        # The counties are equally fixed.
         if table in ["atd_txdot__state_lkp", "atd_txdot__cnty_lkp"]:
             continue
         name_component = table.removeprefix("atd_txdot__").removesuffix("_lkp")
@@ -173,7 +183,9 @@ def main(file_path):
                 changes.append(insert)
                 # Dont need down changes here because the down is just deleting the table
         else:
+            # Get the values we have for this lkp table in our db as a dict of ids/descs
             our_table_dict = get_lkp_values(pg, table, name_component)
+            # These variables just to help with formatting the comments printed to output
             is_first_change = True
             is_first_deletion = True
             for key in extract_table_dict:
@@ -199,9 +211,6 @@ def main(file_path):
                         is_first_change = False
                 else:
                     # We do not have a record on file with this ID
-                    print(
-                        f"Value \"{record['description']}\" with id {str(record['id'])} not found in {table_name}"
-                    )
                     print(f"❓ Id {str(key)} not found in {table}")
                     print("      CSV Value: ", extract_table_dict[key])
                     print()
