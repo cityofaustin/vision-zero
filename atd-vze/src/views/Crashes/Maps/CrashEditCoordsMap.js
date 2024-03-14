@@ -5,12 +5,10 @@ import MapGL, {
   NavigationControl,
   FullscreenControl,
 } from "react-map-gl";
-// import Geocoder from "react-map-gl-geocoder";
-// import { CustomGeocoderMapController } from "./customGeocoderMapController";
-// import "react-map-gl-geocoder/dist/mapbox-gl-geocoder.css";
 
 import Pin from "./Pin";
 import { useMutation } from "react-apollo";
+import { useAuth0 } from "../../../auth/authContext";
 import { UPDATE_COORDS } from "../../../queries/crashes";
 import { CrashEditLatLonForm } from "./CrashEditLatLonForm";
 import {
@@ -20,16 +18,6 @@ import {
   mapParameters,
 } from "../../../helpers/map";
 
-//           {/* <Geocoder
-//             mapRef={this.mapRef}
-//             onViewportChange={this._handleViewportChange}
-//             mapboxApiAccessToken={TOKEN}
-//             inputValue={geocoderAddress}
-//             options={{ flyTo: false }}
-//             // Bounding box for auto-populated results in the search bar
-//             bbox={[-98.22464, 29.959694, -97.226257, 30.687526]}
-//           /> */}
-
 const CrashEditCoordsMap = ({
   data,
   mapGeocoderAddress,
@@ -37,6 +25,8 @@ const CrashEditCoordsMap = ({
   refetchCrashData,
   setIsEditingCoords,
 }) => {
+  const { user } = useAuth0();
+  const { email = null } = user;
   const { latitude_primary = null, longitude_primary = null } = data;
 
   const mapRef = React.useRef();
@@ -62,16 +52,17 @@ const CrashEditCoordsMap = ({
       qaStatus: 3, // Lat/Long entered manually to Primary
       geocodeProvider: 5, // Manual Q/A
       crashId: crashId,
-      // TODO: Get email from context instead
-      updatedBy: localStorage.getItem("hasura_user_email"),
+      updatedBy: email,
       ...markerCoordinates,
     };
 
     updateCrashCoordinates({
       variables: variables,
     }).then(() => {
-      refetchCrashData();
-      setIsEditingCoords(false);
+      // Refetch and then close edit map so CrashMap initializes with updated coordinates
+      refetchCrashData().then(() => {
+        setIsEditingCoords(false);
+      });
     });
   };
 
@@ -82,15 +73,22 @@ const CrashEditCoordsMap = ({
       longitude: longitude_primary || defaultInitialState.latitude,
     };
 
-    // TODO: Move map center to original coordinates or default fallback
+    // Move map center and marks to original coordinates or default fallback
     setMarkerCoordinates(originalMarkerCoordinates);
+    mapRef.current &&
+      mapRef.current.jumpTo({
+        center: [
+          originalMarkerCoordinates.longitude,
+          originalMarkerCoordinates.latitude,
+        ],
+      });
   };
 
   const handleFormCancel = () => {
     setIsEditingCoords(false);
   };
 
-  // TODO: handle initial geocoder value?
+  // TODO: add geocoder and handle initial geocoder value?
 
   return (
     <>
