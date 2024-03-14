@@ -24,3 +24,14 @@ select_permissions:
         - total_crashes
         - total_est_comp_cost
       filter: {}
+  - role: vz-admin
+    permission:
+      columns:
+        - cr3_est_comp_cost
+        - cr3_total_crashes
+        - location_id
+        - noncr3_est_comp_cost
+        - noncr3_total_crashes
+        - total_crashes
+        - total_est_comp_cost
+      filter: {}

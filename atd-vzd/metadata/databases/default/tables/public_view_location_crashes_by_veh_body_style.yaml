@@ -16,3 +16,10 @@ select_permissions:
         - location_id
         - veh_body_styl_desc
       filter: {}
+  - role: vz-admin
+    permission:
+      columns:
+        - location_id
+        - veh_body_styl_desc
+        - count
+      filter: {}

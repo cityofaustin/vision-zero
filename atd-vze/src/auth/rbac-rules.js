@@ -23,21 +23,27 @@ const adminStaticRules = [
 
 const itSupervisorStaticRules = ["user:makeAdmin"];
 
+// Centralize role names used elsewhere in the app
+export const readOnlyRoleName = "readonly";
+export const adminRoleName = "vz-admin";
+export const editorRoleName = "editor";
+export const itSupervisorRoleName = "itSupervisor";
+
 export const rules = {
   // Changing readonly to camelCase will break Hasura permissions
-  readonly: {
+  [readOnlyRoleName]: {
     label: "Read-only",
     static: readOnlyStaticRules,
   },
-  editor: {
+  [editorRoleName]: {
     label: "Editor",
     static: [...readOnlyStaticRules, ...editorStaticRules],
   },
-  admin: {
+  [adminRoleName]: {
     label: "Admin",
     static: [...readOnlyStaticRules, ...editorStaticRules, ...adminStaticRules],
   },
-  itSupervisor: {
+  [itSupervisorRoleName]: {
     label: "IT Supervisor",
     static: [
       ...readOnlyStaticRules,

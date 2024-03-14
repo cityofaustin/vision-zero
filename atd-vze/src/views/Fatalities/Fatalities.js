@@ -12,11 +12,6 @@ import {
 
 // Our initial query configuration
 let queryConf = {
-  options: {
-    useQuery: {
-      fetchPolicy: "no-cache",
-    },
-  },
   table: "view_fatalities",
   single_item: "crashes",
   showDateRange: true,
@@ -25,6 +20,11 @@ let queryConf = {
   where: {},
   limit: 25,
   offset: 0,
+  options: {
+    useQuery: {
+      fetchPolicy: "cache-and-network",
+    },
+  },
 };
 
 const minDate = subYears(new Date(), 10);

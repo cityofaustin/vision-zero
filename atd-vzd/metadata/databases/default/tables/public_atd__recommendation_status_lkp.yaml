@@ -24,3 +24,10 @@ select_permissions:
         - rec_status_desc
       filter: {}
     comment: ""
+  - role: vz-admin
+    permission:
+      columns:
+        - id
+        - rec_status_desc
+      filter: {}
+    comment: ""

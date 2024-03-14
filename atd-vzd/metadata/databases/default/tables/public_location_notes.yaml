@@ -13,6 +13,17 @@ insert_permissions:
         - text
         - id
         - location_id
+  - role: vz-admin
+    permission:
+      check: {}
+      columns:
+        - date
+        - user_email
+        - created_at
+        - updated_at
+        - text
+        - id
+        - location_id
 select_permissions:
   - role: editor
     permission:
@@ -36,6 +47,17 @@ select_permissions:
         - date
         - updated_at
       filter: {}
+  - role: vz-admin
+    permission:
+      columns:
+        - id
+        - location_id
+        - text
+        - user_email
+        - created_at
+        - date
+        - updated_at
+      filter: {}
 update_permissions:
   - role: editor
     permission:
@@ -49,7 +71,22 @@ update_permissions:
         - updated_at
       filter: {}
       check: null
+  - role: vz-admin
+    permission:
+      columns:
+        - id
+        - location_id
+        - text
+        - user_email
+        - created_at
+        - date
+        - updated_at
+      filter: {}
+      check: null
 delete_permissions:
   - role: editor
+    permission:
+      filter: {}
+  - role: vz-admin
     permission:
       filter: {}

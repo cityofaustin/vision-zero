@@ -21,6 +21,11 @@ let queryConf = {
   where: {},
   limit: 25,
   offset: 0,
+  options: {
+    useQuery: {
+      fetchPolicy: "cache-and-network",
+    },
+  },
 };
 
 let crashesQuery = new gqlAbstract(queryConf);

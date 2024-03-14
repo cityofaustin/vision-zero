@@ -30,26 +30,6 @@ array_relationships:
         remote_table:
           name: view_location_crashes_by_veh_body_style
           schema: public
-insert_permissions:
-  - role: editor
-    permission:
-      check: {}
-      columns:
-        - address
-        - description
-        - geometry
-        - is_retired
-        - is_studylocation
-        - last_update
-        - latitude
-        - location_group
-        - location_id
-        - longitude
-        - metadata
-        - priority_level
-        - scale_factor
-        - shape
-        - unique_id
 select_permissions:
   - role: editor
     permission:
@@ -105,18 +85,23 @@ select_permissions:
         - street_level
       filter: {}
       allow_aggregations: true
-update_permissions:
-  - role: editor
+  - role: vz-admin
     permission:
       columns:
         - address
         - asmp_street_level
+        - council_district
         - description
         - geometry
         - is_retired
         - is_studylocation
         - last_update
         - latitude
+        - level_1
+        - level_2
+        - level_3
+        - level_4
+        - level_5
         - location_group
         - location_id
         - longitude
@@ -124,6 +109,6 @@ update_permissions:
         - priority_level
         - scale_factor
         - shape
-        - unique_id
+        - street_level
       filter: {}
-      check: null
+      allow_aggregations: true

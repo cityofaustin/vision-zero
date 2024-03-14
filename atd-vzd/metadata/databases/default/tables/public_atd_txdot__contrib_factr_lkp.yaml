@@ -20,3 +20,12 @@ select_permissions:
         - eff_end_date
         - other
       filter: {}
+  - role: vz-admin
+    permission:
+      columns:
+        - contrib_factr_id
+        - contrib_factr_desc
+        - eff_beg_date
+        - eff_end_date
+        - other
+      filter: {}

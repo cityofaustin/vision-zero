@@ -9,7 +9,7 @@ const check = (rules, roles, action, data) => {
       acc.push(false);
     }
 
-    const staticPermissions = permissions.static;
+    const staticPermissions = permissions?.static;
 
     if (staticPermissions && staticPermissions.includes(action)) {
       // static rule not provided for action

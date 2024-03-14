@@ -18,3 +18,11 @@ select_permissions:
         - eff_beg_date
         - eff_end_date
       filter: {}
+  - role: vz-admin
+    permission:
+      columns:
+        - wthr_cond_id
+        - wthr_cond_desc
+        - eff_beg_date
+        - eff_end_date
+      filter: {}

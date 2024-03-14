@@ -18,3 +18,11 @@ select_permissions:
         - eff_beg_date
         - eff_end_date
       filter: {}
+  - role: vz-admin
+    permission:
+      columns:
+        - road_type_id
+        - road_type_desc
+        - eff_beg_date
+        - eff_end_date
+      filter: {}

@@ -1,5 +1,11 @@
 import React, { useState, useEffect, useContext } from "react";
 import createAuth0Client from "@auth0/auth0-spa-js";
+import {
+  adminRoleName,
+  editorRoleName,
+  itSupervisorRoleName,
+  readOnlyRoleName,
+} from "./rbac-rules";
 
 export const Auth0Context = React.createContext();
 
@@ -14,13 +20,14 @@ export const urlPath =
 
 // Roles helpers for rules-based access
 export const isReadOnly = rolesArray =>
-  rolesArray.includes("readonly") && rolesArray.length === 1;
+  rolesArray.includes(readOnlyRoleName) && rolesArray.length === 1;
 
-export const isEditor = rolesArray => rolesArray.includes("editor");
+export const isEditor = rolesArray => rolesArray.includes(editorRoleName);
 
-export const isAdmin = rolesArray => rolesArray.includes("admin");
+export const isAdmin = rolesArray => rolesArray.includes(adminRoleName);
 
-export const isItSupervisor = rolesArray => rolesArray.includes("itSupervisor");
+export const isItSupervisor = rolesArray =>
+  rolesArray.includes(itSupervisorRoleName);
 
 // Fires after Auth0 handles auth so we can redirect to where user started
 export const onRedirectCallback = appState => {
@@ -102,7 +109,7 @@ export const Auth0Provider = ({
   const getHasuraRole = () => {
     const role = user["https://hasura.io/jwt/claims"]["x-hasura-allowed-roles"];
     // If user has more than one role, they are itSupervisor and need admin role for Hasura to return data
-    return role.length > 1 ? "admin" : role[0];
+    return role.length > 1 ? adminRoleName : role[0];
   };
 
   // Context provider supplies value below at index.js level
