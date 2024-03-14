@@ -7,6 +7,7 @@ export const CrashEditLatLonForm = ({
   handleFormSubmit,
   handleFormReset,
   handleFormCancel,
+  isSubmitting,
 }) => (
   <Form className="form-horizontal mt-3">
     <FormGroup row>
@@ -45,6 +46,7 @@ export const CrashEditLatLonForm = ({
           type="submit"
           size="sm"
           color="primary"
+          disabled={isSubmitting}
         >
           <i className="fa fa-dot-circle-o"></i> Save
         </Button>
@@ -54,6 +56,7 @@ export const CrashEditLatLonForm = ({
           size="sm"
           color="danger"
           className="mr-3"
+          disabled={isSubmitting}
         >
           <i className="fa fa-ban"></i> Reset
         </Button>
@@ -63,6 +66,7 @@ export const CrashEditLatLonForm = ({
           size="sm"
           color="secondary"
           className="mr-3"
+          disabled={isSubmitting}
         >
           <i className="fa fa-times"></i> Cancel
         </Button>

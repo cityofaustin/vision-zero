@@ -35,6 +35,7 @@ const CrashEditCoordsMap = ({
     latitude: latitude_primary,
     longitude: longitude_primary,
   });
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
 
   const [updateCrashCoordinates] = useMutation(UPDATE_COORDS);
 
@@ -47,6 +48,7 @@ const CrashEditCoordsMap = ({
 
   const handleFormSubmit = e => {
     e.preventDefault();
+    setIsSubmitting(true);
 
     const variables = {
       qaStatus: 3, // Lat/Long entered manually to Primary
@@ -61,6 +63,7 @@ const CrashEditCoordsMap = ({
     }).then(() => {
       // Refetch and then close edit map so CrashMap initializes with updated coordinates
       refetchCrashData().then(() => {
+        setIsSubmitting(false);
         setIsEditingCoords(false);
       });
     });
@@ -87,8 +90,6 @@ const CrashEditCoordsMap = ({
   const handleFormCancel = () => {
     setIsEditingCoords(false);
   };
-
-  // TODO: add geocoder and handle initial geocoder value?
 
   return (
     <>
@@ -120,6 +121,7 @@ const CrashEditCoordsMap = ({
         handleFormSubmit={handleFormSubmit}
         handleFormReset={handleFormReset}
         handleFormCancel={handleFormCancel}
+        isSubmitting={isSubmitting}
       />
     </>
   );
