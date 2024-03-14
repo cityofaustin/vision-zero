@@ -5,8 +5,8 @@ defaults
   log global
   mode tcp
   timeout connect 5000ms
-  timeout client 300000ms
-  timeout server 300000ms
+  timeout client 600000ms
+  timeout server 600000ms
 
 frontend postgresql_front
   bind 0.0.0.0:5432
