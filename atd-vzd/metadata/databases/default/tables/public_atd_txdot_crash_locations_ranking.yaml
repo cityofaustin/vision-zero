@@ -18,3 +18,11 @@ select_permissions:
         - serious_injry_cnt
         - location_id
       filter: {}
+  - role: vz-admin
+    permission:
+      columns:
+        - apd_confirmed_death_count
+        - crashes
+        - serious_injry_cnt
+        - location_id
+      filter: {}

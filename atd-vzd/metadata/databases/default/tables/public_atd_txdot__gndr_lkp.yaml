@@ -1,13 +1,6 @@
 table:
   name: atd_txdot__gndr_lkp
   schema: public
-insert_permissions:
-  - role: editor
-    permission:
-      check: {}
-      columns:
-        - gndr_desc
-        - gndr_id
 select_permissions:
   - role: editor
     permission:
@@ -21,15 +14,9 @@ select_permissions:
         - gndr_desc
         - gndr_id
       filter: {}
-update_permissions:
-  - role: editor
+  - role: vz-admin
     permission:
       columns:
         - gndr_desc
         - gndr_id
-      filter: {}
-      check: null
-delete_permissions:
-  - role: editor
-    permission:
       filter: {}

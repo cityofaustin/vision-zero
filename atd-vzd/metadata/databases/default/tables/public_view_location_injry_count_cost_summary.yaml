@@ -20,3 +20,12 @@ select_permissions:
         - est_comp_cost
         - location_id
       filter: {}
+  - role: vz-admin
+    permission:
+      columns:
+        - location_id
+        - total_crashes
+        - total_deaths
+        - total_serious_injuries
+        - est_comp_cost
+      filter: {}

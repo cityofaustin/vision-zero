@@ -17,17 +17,17 @@ insert_permissions:
         - text
         - crash_id
         - user_email
-  - role: readonly
+  - role: vz-admin
     permission:
       check: {}
       columns:
-        - crash_id
         - id
-        - text
-        - user_email
         - created_at
-        - date
         - updated_at
+        - date
+        - text
+        - crash_id
+        - user_email
 select_permissions:
   - role: editor
     permission:
@@ -51,6 +51,17 @@ select_permissions:
         - date
         - updated_at
       filter: {}
+  - role: vz-admin
+    permission:
+      columns:
+        - crash_id
+        - id
+        - text
+        - user_email
+        - created_at
+        - date
+        - updated_at
+      filter: {}
 update_permissions:
   - role: editor
     permission:
@@ -64,22 +75,22 @@ update_permissions:
         - updated_at
       filter: {}
       check: null
-  - role: readonly
+  - role: vz-admin
     permission:
       columns:
-        - id
-        - created_at
-        - updated_at
-        - date
-        - text
         - crash_id
+        - id
+        - text
         - user_email
+        - created_at
+        - date
+        - updated_at
       filter: {}
       check: null
 delete_permissions:
   - role: editor
     permission:
       filter: {}
-  - role: readonly
+  - role: vz-admin
     permission:
       filter: {}

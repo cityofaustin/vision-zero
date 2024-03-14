@@ -14,3 +14,9 @@ select_permissions:
         - est_comp_cost_amount
         - est_comp_cost_id
       filter: {}
+  - role: vz-admin
+    permission:
+      columns:
+        - est_comp_cost_amount
+        - est_comp_cost_id
+      filter: {}

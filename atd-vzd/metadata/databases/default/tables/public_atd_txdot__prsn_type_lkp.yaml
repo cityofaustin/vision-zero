@@ -14,3 +14,9 @@ select_permissions:
         - prsn_type_desc
         - prsn_type_id
       filter: {}
+  - role: vz-admin
+    permission:
+      columns:
+        - prsn_type_desc
+        - prsn_type_id
+      filter: {}
