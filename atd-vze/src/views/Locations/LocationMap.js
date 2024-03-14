@@ -211,8 +211,7 @@ const LocationMap = ({ data }) => {
         },
       }
     : null;
-
-  // TODO: Fit bounds to location GeoJSON
+  const initialBounds = bbox(locationGeoJson);
 
   return (
     <MapGL
@@ -220,6 +219,8 @@ const LocationMap = ({ data }) => {
         latitude: polygon?.latitude || 30.2672 || defaultInitialState.latitude,
         longitude: polygon?.longitude || defaultInitialState.longitude,
         zoom: defaultInitialState.zoom,
+        bounds: initialBounds,
+        fitBoundsOptions: { duration: 0, padding: 100 },
       }}
       style={{ width: "100%", height: "500px" }}
       {...mapParameters}
