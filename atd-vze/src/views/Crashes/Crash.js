@@ -11,7 +11,12 @@ import {
 } from "reactstrap";
 import { withApollo } from "react-apollo";
 import { useQuery } from "@apollo/react-hooks";
-import { useAuth0, isAdmin, isItSupervisor } from "../../auth/authContext";
+import {
+  useAuth0,
+  isAdmin,
+  isItSupervisor,
+  isReadOnly,
+} from "../../auth/authContext";
 
 import CrashCollapses from "./CrashCollapses";
 import CrashMap from "./Maps/CrashMap";
@@ -237,7 +242,7 @@ function Crash(props) {
                     : "No Primary Coordinates"}
                 </Col>
                 <Col>
-                  {!isEditingCoords && (
+                  {!isEditingCoords && !isReadOnly(roles) && (
                     <Button
                       color="primary"
                       style={{ float: "right" }}

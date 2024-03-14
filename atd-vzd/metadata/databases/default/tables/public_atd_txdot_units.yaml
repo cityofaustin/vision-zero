@@ -249,6 +249,7 @@ insert_permissions:
         - ownr_state_id
         - ownr_zip
         - poss_injry_cnt
+        - rpt_autonomous_level_engaged_id
         - sus_serious_injry_cnt
         - tot_injry_cnt
         - travel_direction
@@ -487,6 +488,7 @@ select_permissions:
         - pedalcyclist_action_id
         - pedestrian_action_id
         - poss_injry_cnt
+        - rpt_autonomous_level_engaged_id
         - sus_serious_injry_cnt
         - tot_injry_cnt
         - travel_direction
@@ -596,6 +598,7 @@ select_permissions:
         - ownr_state_id
         - ownr_zip
         - poss_injry_cnt
+        - rpt_autonomous_level_engaged_id
         - sus_serious_injry_cnt
         - tot_injry_cnt
         - travel_direction
@@ -836,6 +839,7 @@ update_permissions:
         - pedalcyclist_action_id
         - pedestrian_action_id
         - poss_injry_cnt
+        - rpt_autonomous_level_engaged_id
         - sus_serious_injry_cnt
         - tot_injry_cnt
         - travel_direction

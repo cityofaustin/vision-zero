@@ -182,6 +182,7 @@ const RelatedRecordsTable = ({
                               >
                                 {uiType === "text" && (
                                   <Input
+                                    autoFocus
                                     type="text"
                                     defaultValue={row[field]}
                                     onChange={e =>
@@ -191,6 +192,7 @@ const RelatedRecordsTable = ({
                                 )}
                                 {uiType === "select" && (
                                   <Input
+                                    autoFocus
                                     name={field}
                                     id={field}
                                     onChange={e =>
@@ -230,6 +232,7 @@ const RelatedRecordsTable = ({
                                 )}
                                 {uiType === "boolean" && (
                                   <Input
+                                    autoFocus
                                     defaultValue={row[field]}
                                     type="select"
                                     onChange={e =>
