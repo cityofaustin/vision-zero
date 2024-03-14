@@ -69,8 +69,7 @@ start = time.time()
 # For each config, get records from Hasura and upsert to Socrata until res is []
 for config in query_configs:
     print(f'Starting {config["table"]} table...')
-    print(f'Truncating {config["table"]} table...')
-    client.replace(config["dataset_uid"], [])
+    is_truncate_complete = False
     records = None
     offset = 0
     limit = 1000
@@ -82,8 +81,8 @@ for config in query_configs:
         query = config["template"].substitute(
             limit=limit,
             offset=offset,
-            date_limit=get_date_limit(),
-            initial_date_limit=get_initial_date_limit(),
+            date_limit=two_weeks_ago(),
+            initial_date_limit=ten_years_ago(),
         )
         offset += limit
         data = run_hasura_query(query)
@@ -95,6 +94,12 @@ for config in query_configs:
 
         # Format records
         records = config["formatter"](data, config["formatter_config"])
+
+        # truncate the existing data set once we have records
+        if records and not is_truncate_complete:
+            print(f'Truncating {config["table"]} table...')
+            client.replace(config["dataset_uid"], [])
+            is_truncate_complete = True
 
         # Upsert records to Socrata
         client.upsert(config["dataset_uid"], records)

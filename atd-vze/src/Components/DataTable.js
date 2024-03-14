@@ -6,6 +6,7 @@ import get from "lodash.get";
 import { formatCostToDollars, formatDateTimeString } from "../helpers/format";
 
 import {
+  Button,
   Card,
   CardHeader,
   CardBody,
@@ -13,7 +14,6 @@ import {
   Col,
   Input,
   Table,
-  Button,
 } from "reactstrap";
 
 import { GET_LOOKUPS } from "../queries/lookups";
@@ -33,6 +33,7 @@ const DataTable = ({
   // Disable edit features if only role is "readonly"
   const { getRoles } = useAuth0();
   const roles = getRoles();
+  const isReadOnlyUser = isReadOnly(roles);
 
   const [showModal, setShowModal] = useState(false);
 
@@ -73,11 +74,6 @@ const DataTable = ({
                       const fieldConfigObject = section.fields[field];
 
                       const fieldLabel = fieldConfigObject.label;
-
-                      // Disable editing if user is only "readonly"
-                      if (fieldConfigObject.editable && isReadOnly(roles)) {
-                        fieldConfigObject.editable = false;
-                      }
 
                       // Set data table (alternate if defined in data map)
                       const fieldDataTable =
@@ -149,66 +145,95 @@ const DataTable = ({
                       };
 
                       const fieldValueDisplay = renderLookupDescString();
+                      const canClickToEdit =
+                        !isReadOnlyUser &&
+                        fieldConfigObject.editable &&
+                        !isEditing;
 
                       return (
-                        <tr key={i}>
-                          <td>
+                        <tr
+                          key={i}
+                          onClick={() => canClickToEdit && setEditField(field)}
+                          style={{
+                            cursor: canClickToEdit ? "pointer" : "auto",
+                          }}
+                        >
+                          <td className="align-middle">
                             <strong>{fieldLabel}</strong>
                           </td>
-                          <td>
+                          <td colSpan={isEditing ? 2 : 1}>
                             {isEditing ? (
                               <form
                                 onSubmit={e =>
                                   handleFieldUpdate(e, section.fields, field)
                                 }
                               >
-                                {fieldUiType === "select" && (
-                                  <Input
-                                    name={field}
-                                    id={field}
-                                    onChange={e => handleInputChange(e)}
-                                    defaultValue={fieldValue}
-                                    type="select"
-                                  >
-                                    {selectOptions.map(option => (
-                                      <option
-                                        value={option[`${lookupPrefix}_id`]}
+                                <div className="d-flex">
+                                  <div className="flex-grow-1">
+                                    {fieldUiType === "select" && (
+                                      <Input
+                                        autoFocus
+                                        name={field}
+                                        id={field}
+                                        onChange={e => handleInputChange(e)}
+                                        defaultValue={fieldValue}
+                                        type="select"
                                       >
-                                        {option[`${lookupPrefix}_desc`]}
-                                      </option>
-                                    ))}
-                                  </Input>
-                                )}
-                                {fieldUiType === "text" && (
-                                  <input
-                                    type="text"
-                                    defaultValue={fieldValue}
-                                    onChange={e => handleInputChange(e)}
-                                  />
-                                )}
-
-                                <button type="submit">
-                                  <i className="fa fa-check edit-toggle" />
-                                </button>
-                                <button type="cancel">
-                                  <i
-                                    className="fa fa-times edit-toggle"
-                                    onClick={e => handleCancelClick(e)}
-                                  ></i>
-                                </button>
+                                        {selectOptions.map(option => (
+                                          <option
+                                            value={option[`${lookupPrefix}_id`]}
+                                          >
+                                            {option[`${lookupPrefix}_desc`]}
+                                          </option>
+                                        ))}
+                                      </Input>
+                                    )}
+                                    {fieldUiType === "text" && (
+                                      <Input
+                                        autoFocus
+                                        name={field}
+                                        id={field}
+                                        type="text"
+                                        defaultValue={fieldValue}
+                                        onChange={e => handleInputChange(e)}
+                                        autoComplete="off"
+                                        // disable 1password autofill
+                                        data-1p-ignore
+                                      />
+                                    )}
+                                  </div>
+                                  <div className="my-auto pl-2 d-flex">
+                                    <Button
+                                      type="submit"
+                                      color="primary"
+                                      size="sm"
+                                      className="btn-pill mr-1"
+                                    >
+                                      <i className="fa fa-check edit-toggle" />
+                                    </Button>
+                                    <Button
+                                      type="cancel"
+                                      color="danger"
+                                      size="sm"
+                                      className="btn-pill"
+                                      onClick={e => handleCancelClick(e)}
+                                    >
+                                      <i className="fa fa-times edit-toggle"></i>
+                                    </Button>
+                                  </div>
+                                </div>
                               </form>
                             ) : (
                               fieldValueDisplay
                             )}
                           </td>
-                          <td>
-                            {fieldConfigObject.editable && !isEditing && (
-                              <i
-                                className="fa fa-pencil edit-toggle"
-                                onClick={() => setEditField(field)}
-                              />
-                            )}
-                          </td>
+                          {!isEditing && (
+                            <td style={{ textAlign: "right" }}>
+                              {canClickToEdit && (
+                                <i className="fa fa-pencil edit-toggle" />
+                              )}
+                            </td>
+                          )}
                         </tr>
                       );
                     })}

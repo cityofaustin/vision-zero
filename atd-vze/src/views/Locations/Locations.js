@@ -66,6 +66,11 @@ let queryConf = {
   where: {},
   limit: 25,
   offset: 0,
+  options: {
+    useQuery: {
+      fetchPolicy: "cache-and-network",
+    },
+  },
 };
 
 const dateRangeStart = format(subYears(new Date(), 5), "MM/dd/yyyy");

@@ -16,6 +16,13 @@ insert_permissions:
         - id
         - recommendation_id
         - partner_id
+  - role: vz-admin
+    permission:
+      check: {}
+      columns:
+        - id
+        - recommendation_id
+        - partner_id
 select_permissions:
   - role: editor
     permission:
@@ -24,7 +31,7 @@ select_permissions:
         - partner_id
         - recommendation_id
       filter: {}
-  - role: readonly
+  - role: vz-admin
     permission:
       columns:
         - id
@@ -40,7 +47,18 @@ update_permissions:
         - recommendation_id
       filter: {}
       check: {}
+  - role: vz-admin
+    permission:
+      columns:
+        - id
+        - partner_id
+        - recommendation_id
+      filter: {}
+      check: {}
 delete_permissions:
   - role: editor
+    permission:
+      filter: {}
+  - role: vz-admin
     permission:
       filter: {}

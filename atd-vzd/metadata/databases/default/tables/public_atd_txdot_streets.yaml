@@ -1,44 +1,6 @@
 table:
   name: atd_txdot_streets
   schema: public
-insert_permissions:
-  - role: editor
-    permission:
-      check: {}
-      columns:
-        - shape
-        - built_status
-        - cad_id
-        - elevation_from
-        - elevation_to
-        - left_block_from
-        - left_block_to
-        - left_from_address
-        - left_to_address
-        - posted_speed_limit
-        - right_block_from
-        - right_block_to
-        - right_from_address
-        - right_to_address
-        - road_class
-        - segment_id
-        - speed_limit
-        - street_place_id
-        - street_id
-        - miles
-        - seconds
-        - shape_length
-        - created_date
-        - full_street_name
-        - modified_date
-        - created_by
-        - modified_by
-        - one_way
-        - prefix_direction
-        - prefix_type
-        - street_name
-        - street_type
-        - suffix_direction
 select_permissions:
   - role: editor
     permission:
@@ -114,42 +76,40 @@ select_permissions:
         - street_type
         - suffix_direction
       filter: {}
-update_permissions:
-  - role: editor
+  - role: vz-admin
     permission:
       columns:
-        - shape
-        - built_status
-        - cad_id
-        - elevation_from
-        - elevation_to
-        - left_block_from
-        - left_block_to
-        - left_from_address
-        - left_to_address
-        - posted_speed_limit
-        - right_block_from
-        - right_block_to
-        - right_from_address
-        - right_to_address
-        - road_class
-        - segment_id
-        - speed_limit
-        - street_place_id
         - street_id
-        - miles
-        - seconds
-        - shape_length
-        - created_date
-        - full_street_name
-        - modified_date
-        - created_by
-        - modified_by
-        - one_way
+        - posted_speed_limit
+        - segment_id
         - prefix_direction
         - prefix_type
         - street_name
         - street_type
         - suffix_direction
+        - left_from_address
+        - left_to_address
+        - right_from_address
+        - right_to_address
+        - left_block_from
+        - left_block_to
+        - right_block_from
+        - right_block_to
+        - full_street_name
+        - road_class
+        - speed_limit
+        - elevation_from
+        - elevation_to
+        - one_way
+        - cad_id
+        - street_place_id
+        - created_date
+        - created_by
+        - modified_by
+        - modified_date
+        - miles
+        - seconds
+        - built_status
+        - shape_length
+        - shape
       filter: {}
-      check: null

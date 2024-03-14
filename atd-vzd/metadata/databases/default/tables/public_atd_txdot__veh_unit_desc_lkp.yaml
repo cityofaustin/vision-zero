@@ -16,3 +16,11 @@ select_permissions:
         - veh_unit_desc_desc
         - veh_unit_desc_id
       filter: {}
+  - role: vz-admin
+    permission:
+      columns:
+        - veh_unit_desc_id
+        - veh_unit_desc_desc
+        - eff_beg_date
+        - eff_end_date
+      filter: {}

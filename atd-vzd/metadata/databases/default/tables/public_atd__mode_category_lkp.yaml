@@ -18,3 +18,11 @@ select_permissions:
         - id
       filter: {}
     comment: ""
+  - role: vz-admin
+    permission:
+      columns:
+        - atd_mode_category_desc
+        - atd_mode_category_mode_name
+        - id
+      filter: {}
+    comment: ""
