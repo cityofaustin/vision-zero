@@ -24,3 +24,14 @@ select_permissions:
         - location_id
       filter: {}
       allow_aggregations: true
+  - role: vz-admin
+    permission:
+      columns:
+        - description
+        - location_id
+        - crash_count
+        - total_est_comp_cost
+        - fatalities_count
+        - serious_injury_count
+      filter: {}
+      allow_aggregations: true

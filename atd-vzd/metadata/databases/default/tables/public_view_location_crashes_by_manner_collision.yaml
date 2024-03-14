@@ -16,3 +16,10 @@ select_permissions:
         - collsn_desc
         - location_id
       filter: {}
+  - role: vz-admin
+    permission:
+      columns:
+        - location_id
+        - collsn_desc
+        - count
+      filter: {}

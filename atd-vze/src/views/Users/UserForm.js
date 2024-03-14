@@ -19,6 +19,7 @@ import {
   Alert,
   Spinner,
 } from "reactstrap";
+import { readOnlyRoleName, itSupervisorRoleName } from "../../auth/rbac-rules";
 
 const UserForm = ({ type, id = null }) => {
   const token = window.localStorage.getItem("id_token");
@@ -34,7 +35,7 @@ const UserForm = ({ type, id = null }) => {
     connection: "Username-Password-Authentication", // Set account type
     verify_email: true, // Send email verification
     app_metadata: {
-      roles: ["readonly"], // Default to lowest level access
+      roles: [readOnlyRoleName], // Default to lowest level access
     },
   };
 
@@ -45,7 +46,7 @@ const UserForm = ({ type, id = null }) => {
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
 
   // Roles that admin is not allowed to set
-  const adminRoleExceptions = ["itSupervisor"];
+  const adminRoleExceptions = [itSupervisorRoleName];
 
   const radioButtonRoles = roles =>
     Object.entries(rules).reduce((acc, [role, roleConfig]) => {
@@ -56,7 +57,7 @@ const UserForm = ({ type, id = null }) => {
         disabled:
           // Non-supervisors cannot edit other supervisor's role
           (!isItSupervisor(roles) &&
-            userFormData.app_metadata.roles.includes("itSupervisor")) ||
+            userFormData.app_metadata.roles.includes(itSupervisorRoleName)) ||
           // Prevent editing own role
           user.email === userFormData.email ||
           // Admin can give all roles except supervisor

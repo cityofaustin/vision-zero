@@ -14,3 +14,9 @@ select_permissions:
         - movement_id
         - movement_desc
       filter: {}
+  - role: vz-admin
+    permission:
+      columns:
+        - movement_id
+        - movement_desc
+      filter: {}

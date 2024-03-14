@@ -14,3 +14,9 @@ select_permissions:
         - y_n_id
         - y_n_desc
       filter: {}
+  - role: vz-admin
+    permission:
+      columns:
+        - y_n_id
+        - y_n_desc
+      filter: {}

@@ -24,3 +24,10 @@ select_permissions:
         - id
       filter: {}
     comment: ""
+  - role: vz-admin
+    permission:
+      columns:
+        - coord_partner_desc
+        - id
+      filter: {}
+    comment: ""

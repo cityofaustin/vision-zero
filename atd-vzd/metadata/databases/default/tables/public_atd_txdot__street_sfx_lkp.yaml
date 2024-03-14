@@ -10,3 +10,19 @@ select_permissions:
         - eff_beg_date
         - eff_end_date
       filter: {}
+  - role: readonly
+    permission:
+      columns:
+        - street_sfx_id
+        - street_sfx_desc
+        - eff_beg_date
+        - eff_end_date
+      filter: {}
+  - role: vz-admin
+    permission:
+      columns:
+        - street_sfx_id
+        - street_sfx_desc
+        - eff_beg_date
+        - eff_end_date
+      filter: {}

@@ -19,6 +19,23 @@ insert_permissions:
         - longitude
         - position
         - speed_mgmt_points
+  - role: vz-admin
+    permission:
+      check: {}
+      columns:
+        - address
+        - case_id
+        - date
+        - est_comp_cost
+        - est_comp_cost_crash_based
+        - est_econ_cost
+        - form_id
+        - hour
+        - latitude
+        - location_id
+        - longitude
+        - position
+        - speed_mgmt_points
 select_permissions:
   - role: editor
     permission:
@@ -56,8 +73,44 @@ select_permissions:
         - speed_mgmt_points
       filter: {}
       allow_aggregations: true
+  - role: vz-admin
+    permission:
+      columns:
+        - address
+        - case_id
+        - date
+        - est_comp_cost
+        - est_comp_cost_crash_based
+        - est_econ_cost
+        - form_id
+        - hour
+        - latitude
+        - location_id
+        - longitude
+        - position
+        - speed_mgmt_points
+      filter: {}
+      allow_aggregations: true
 update_permissions:
   - role: editor
+    permission:
+      columns:
+        - address
+        - case_id
+        - date
+        - est_comp_cost
+        - est_comp_cost_crash_based
+        - est_econ_cost
+        - form_id
+        - hour
+        - latitude
+        - location_id
+        - longitude
+        - position
+        - speed_mgmt_points
+      filter: {}
+      check: null
+  - role: vz-admin
     permission:
       columns:
         - address

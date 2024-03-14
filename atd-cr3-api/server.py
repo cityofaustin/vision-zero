@@ -39,6 +39,8 @@ AWS_S3_SECRET = os.getenv("AWS_S3_SECRET", "")
 AWS_S3_CR3_LOCATION = os.getenv("AWS_S3_CR3_LOCATION", "")
 AWS_S3_BUCKET = os.getenv("AWS_S3_BUCKET", "")
 
+ADMIN_ROLE_NAME = "vz-admin"
+
 
 def get_api_token():
     """
@@ -327,8 +329,14 @@ def user_list_users():
     user_dict = current_user._get_current_object()
     page = request.args.get("page")
     per_page = request.args.get("per_page")
-    if isValidUser(user_dict) and hasUserRole("admin", user_dict):
-        endpoint = f"https://{AUTH0_DOMAIN}/api/v2/users?page=" + page + "&per_page=" + per_page + "&include_totals=true"
+    if isValidUser(user_dict) and hasUserRole(ADMIN_ROLE_NAME, user_dict):
+        endpoint = (
+            f"https://{AUTH0_DOMAIN}/api/v2/users?page="
+            + page
+            + "&per_page="
+            + per_page
+            + "&include_totals=true"
+        )
         headers = {"Authorization": f"Bearer {get_api_token()}"}
         response = requests.get(endpoint, headers=headers).json()
         return jsonify(response)
@@ -342,7 +350,7 @@ def user_list_users():
 @requires_auth
 def user_get_user(id):
     user_dict = current_user._get_current_object()
-    if isValidUser(user_dict) and hasUserRole("admin", user_dict):
+    if isValidUser(user_dict) and hasUserRole(ADMIN_ROLE_NAME, user_dict):
         endpoint = f"https://{AUTH0_DOMAIN}/api/v2/users/" + id
         headers = {"Authorization": f"Bearer {get_api_token()}"}
         response = requests.get(endpoint, headers=headers).json()
@@ -357,7 +365,7 @@ def user_get_user(id):
 @requires_auth
 def user_create_user():
     user_dict = current_user._get_current_object()
-    if isValidUser(user_dict) and hasUserRole("admin", user_dict):
+    if isValidUser(user_dict) and hasUserRole(ADMIN_ROLE_NAME, user_dict):
         json_data = request.json
         endpoint = f"https://{AUTH0_DOMAIN}/api/v2/users"
         headers = {"Authorization": f"Bearer {get_api_token()}"}
@@ -373,7 +381,7 @@ def user_create_user():
 @requires_auth
 def user_update_user(id):
     user_dict = current_user._get_current_object()
-    if isValidUser(user_dict) and hasUserRole("admin", user_dict):
+    if isValidUser(user_dict) and hasUserRole(ADMIN_ROLE_NAME, user_dict):
         json_data = request.json
         endpoint = f"https://{AUTH0_DOMAIN}/api/v2/users/" + id
         headers = {"Authorization": f"Bearer {get_api_token()}"}
@@ -389,7 +397,7 @@ def user_update_user(id):
 @requires_auth
 def user_unblock_user(id):
     user_dict = current_user._get_current_object()
-    if isValidUser(user_dict) and hasUserRole("admin", user_dict):
+    if isValidUser(user_dict) and hasUserRole(ADMIN_ROLE_NAME, user_dict):
         endpoint = f"https://{AUTH0_DOMAIN}/api/v2/user_blocks/" + id
         headers = {"Authorization": f"Bearer {get_api_token()}"}
         response = requests.delete(endpoint, headers=headers)
@@ -404,7 +412,7 @@ def user_unblock_user(id):
 @requires_auth
 def user_delete_user(id):
     user_dict = current_user._get_current_object()
-    if isValidUser(user_dict) and hasUserRole("admin", user_dict):
+    if isValidUser(user_dict) and hasUserRole(ADMIN_ROLE_NAME, user_dict):
         endpoint = f"https://{AUTH0_DOMAIN}/api/v2/users/" + id
         headers = {"Authorization": f"Bearer {get_api_token()}"}
         response = requests.delete(endpoint, headers=headers)

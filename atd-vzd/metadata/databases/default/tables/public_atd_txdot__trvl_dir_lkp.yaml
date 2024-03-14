@@ -18,3 +18,11 @@ select_permissions:
         - eff_end_date
         - trvl_dir_desc
       filter: {}
+  - role: vz-admin
+    permission:
+      columns:
+        - trvl_dir_id
+        - trvl_dir_desc
+        - eff_beg_date
+        - eff_end_date
+      filter: {}

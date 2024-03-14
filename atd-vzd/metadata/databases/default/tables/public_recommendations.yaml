@@ -28,6 +28,17 @@ insert_permissions:
         - rec_text
         - created_by
         - rec_update
+  - role: vz-admin
+    permission:
+      check: {}
+      columns:
+        - id
+        - created_at
+        - crash_id
+        - recommendation_status_id
+        - rec_text
+        - created_by
+        - rec_update
 select_permissions:
   - role: editor
     permission:
@@ -40,7 +51,7 @@ select_permissions:
         - rec_update
         - created_at
       filter: {}
-  - role: readonly
+  - role: vz-admin
     permission:
       columns:
         - crash_id
@@ -64,7 +75,22 @@ update_permissions:
         - created_at
       filter: {}
       check: {}
+  - role: vz-admin
+    permission:
+      columns:
+        - crash_id
+        - id
+        - recommendation_status_id
+        - created_by
+        - rec_text
+        - rec_update
+        - created_at
+      filter: {}
+      check: {}
 delete_permissions:
   - role: editor
+    permission:
+      filter: {}
+  - role: vz-admin
     permission:
       filter: {}

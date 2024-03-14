@@ -14,3 +14,9 @@ select_permissions:
         - asmp_level_desc
         - asmp_level_id
       filter: {}
+  - role: vz-admin
+    permission:
+      columns:
+        - asmp_level_desc
+        - asmp_level_id
+      filter: {}
