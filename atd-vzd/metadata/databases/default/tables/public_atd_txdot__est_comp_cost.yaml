@@ -2,12 +2,6 @@ table:
   name: atd_txdot__est_comp_cost
   schema: public
 select_permissions:
-  - role: vz-admin
-    permission:
-      columns:
-        - est_comp_cost_amount
-        - est_comp_cost_id
-      filter: {}
   - role: editor
     permission:
       columns:
@@ -15,6 +9,12 @@ select_permissions:
         - est_comp_cost_id
       filter: {}
   - role: readonly
+    permission:
+      columns:
+        - est_comp_cost_amount
+        - est_comp_cost_id
+      filter: {}
+  - role: vz-admin
     permission:
       columns:
         - est_comp_cost_amount

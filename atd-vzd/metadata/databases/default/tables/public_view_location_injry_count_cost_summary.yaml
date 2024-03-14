@@ -2,15 +2,6 @@ table:
   name: view_location_injry_count_cost_summary
   schema: public
 select_permissions:
-  - role: vz-admin
-    permission:
-      columns:
-        - location_id
-        - total_crashes
-        - total_deaths
-        - total_serious_injuries
-        - est_comp_cost
-      filter: {}
   - role: editor
     permission:
       columns:
@@ -28,4 +19,13 @@ select_permissions:
         - total_serious_injuries
         - est_comp_cost
         - location_id
+      filter: {}
+  - role: vz-admin
+    permission:
+      columns:
+        - location_id
+        - total_crashes
+        - total_deaths
+        - total_serious_injuries
+        - est_comp_cost
       filter: {}

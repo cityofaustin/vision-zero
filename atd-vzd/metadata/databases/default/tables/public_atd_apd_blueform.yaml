@@ -2,23 +2,6 @@ table:
   name: atd_apd_blueform
   schema: public
 insert_permissions:
-  - role: vz-admin
-    permission:
-      check: {}
-      columns:
-        - address
-        - case_id
-        - date
-        - est_comp_cost
-        - est_comp_cost_crash_based
-        - est_econ_cost
-        - form_id
-        - hour
-        - latitude
-        - location_id
-        - longitude
-        - position
-        - speed_mgmt_points
   - role: editor
     permission:
       check: {}
@@ -36,9 +19,9 @@ insert_permissions:
         - longitude
         - position
         - speed_mgmt_points
-select_permissions:
   - role: vz-admin
     permission:
+      check: {}
       columns:
         - address
         - case_id
@@ -53,8 +36,7 @@ select_permissions:
         - longitude
         - position
         - speed_mgmt_points
-      filter: {}
-      allow_aggregations: true
+select_permissions:
   - role: editor
     permission:
       columns:
@@ -91,7 +73,6 @@ select_permissions:
         - speed_mgmt_points
       filter: {}
       allow_aggregations: true
-update_permissions:
   - role: vz-admin
     permission:
       columns:
@@ -109,8 +90,27 @@ update_permissions:
         - position
         - speed_mgmt_points
       filter: {}
-      check: null
+      allow_aggregations: true
+update_permissions:
   - role: editor
+    permission:
+      columns:
+        - address
+        - case_id
+        - date
+        - est_comp_cost
+        - est_comp_cost_crash_based
+        - est_econ_cost
+        - form_id
+        - hour
+        - latitude
+        - location_id
+        - longitude
+        - position
+        - speed_mgmt_points
+      filter: {}
+      check: null
+  - role: vz-admin
     permission:
       columns:
         - address

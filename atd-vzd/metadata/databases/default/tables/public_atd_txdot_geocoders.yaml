@@ -2,13 +2,6 @@ table:
   name: atd_txdot_geocoders
   schema: public
 select_permissions:
-  - role: vz-admin
-    permission:
-      columns:
-        - geocoder_id
-        - description
-        - name
-      filter: {}
   - role: editor
     permission:
       columns:
@@ -17,6 +10,13 @@ select_permissions:
         - name
       filter: {}
   - role: readonly
+    permission:
+      columns:
+        - geocoder_id
+        - description
+        - name
+      filter: {}
+  - role: vz-admin
     permission:
       columns:
         - geocoder_id

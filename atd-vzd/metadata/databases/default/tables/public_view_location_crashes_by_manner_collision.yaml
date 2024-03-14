@@ -2,13 +2,6 @@ table:
   name: view_location_crashes_by_manner_collision
   schema: public
 select_permissions:
-  - role: vz-admin
-    permission:
-      columns:
-        - location_id
-        - collsn_desc
-        - count
-      filter: {}
   - role: editor
     permission:
       columns:
@@ -22,4 +15,11 @@ select_permissions:
         - count
         - collsn_desc
         - location_id
+      filter: {}
+  - role: vz-admin
+    permission:
+      columns:
+        - location_id
+        - collsn_desc
+        - count
       filter: {}

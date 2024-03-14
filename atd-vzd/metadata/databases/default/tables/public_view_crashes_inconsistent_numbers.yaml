@@ -4,7 +4,7 @@ table:
 select_permissions:
   - role: vz-admin
     permission:
-      columns: 
+      columns:
         - atp_death_cnt
         - atpp_death_cnt
         - atpp_sus_serious_injry_cnt

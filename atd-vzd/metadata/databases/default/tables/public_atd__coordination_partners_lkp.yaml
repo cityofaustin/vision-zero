@@ -10,13 +10,6 @@ array_relationships:
           name: recommendations_partners
           schema: public
 select_permissions:
-  - role: vz-admin
-    permission:
-      columns:
-        - coord_partner_desc
-        - id
-      filter: {}
-    comment: ""
   - role: editor
     permission:
       columns:
@@ -25,6 +18,13 @@ select_permissions:
       filter: {}
     comment: ""
   - role: readonly
+    permission:
+      columns:
+        - coord_partner_desc
+        - id
+      filter: {}
+    comment: ""
+  - role: vz-admin
     permission:
       columns:
         - coord_partner_desc

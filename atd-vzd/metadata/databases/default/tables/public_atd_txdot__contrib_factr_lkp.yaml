@@ -2,15 +2,6 @@ table:
   name: atd_txdot__contrib_factr_lkp
   schema: public
 select_permissions:
-  - role: vz-admin
-    permission:
-      columns:
-        - contrib_factr_id
-        - contrib_factr_desc
-        - eff_beg_date
-        - eff_end_date
-        - other
-      filter: {}
   - role: editor
     permission:
       columns:
@@ -21,6 +12,15 @@ select_permissions:
         - other
       filter: {}
   - role: readonly
+    permission:
+      columns:
+        - contrib_factr_id
+        - contrib_factr_desc
+        - eff_beg_date
+        - eff_end_date
+        - other
+      filter: {}
+  - role: vz-admin
     permission:
       columns:
         - contrib_factr_id

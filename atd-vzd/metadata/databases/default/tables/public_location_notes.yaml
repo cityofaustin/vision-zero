@@ -2,17 +2,6 @@ table:
   name: location_notes
   schema: public
 insert_permissions:
-  - role: vz-admin
-    permission:
-      check: {}
-      columns:
-        - date
-        - user_email
-        - created_at
-        - updated_at
-        - text
-        - id
-        - location_id
   - role: editor
     permission:
       check: {}
@@ -24,18 +13,18 @@ insert_permissions:
         - text
         - id
         - location_id
-select_permissions:
   - role: vz-admin
     permission:
+      check: {}
       columns:
-        - id
-        - location_id
-        - text
+        - date
         - user_email
         - created_at
-        - date
         - updated_at
-      filter: {}
+        - text
+        - id
+        - location_id
+select_permissions:
   - role: editor
     permission:
       columns:
@@ -58,7 +47,6 @@ select_permissions:
         - date
         - updated_at
       filter: {}
-update_permissions:
   - role: vz-admin
     permission:
       columns:
@@ -70,8 +58,20 @@ update_permissions:
         - date
         - updated_at
       filter: {}
-      check: null
+update_permissions:
   - role: editor
+    permission:
+      columns:
+        - id
+        - location_id
+        - text
+        - user_email
+        - created_at
+        - date
+        - updated_at
+      filter: {}
+      check: null
+  - role: vz-admin
     permission:
       columns:
         - id
@@ -84,9 +84,9 @@ update_permissions:
       filter: {}
       check: null
 delete_permissions:
-  - role: vz-admin
+  - role: editor
     permission:
       filter: {}
-  - role: editor
+  - role: vz-admin
     permission:
       filter: {}

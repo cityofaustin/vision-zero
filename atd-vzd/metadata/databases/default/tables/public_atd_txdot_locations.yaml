@@ -31,33 +31,6 @@ array_relationships:
           name: view_location_crashes_by_veh_body_style
           schema: public
 select_permissions:
-  - role: vz-admin
-    permission:
-      columns:
-        - address
-        - asmp_street_level
-        - council_district
-        - description
-        - geometry
-        - is_retired
-        - is_studylocation
-        - last_update
-        - latitude
-        - level_1
-        - level_2
-        - level_3
-        - level_4
-        - level_5
-        - location_group
-        - location_id
-        - longitude
-        - metadata
-        - priority_level
-        - scale_factor
-        - shape
-        - street_level
-      filter: {}
-      allow_aggregations: true
   - role: editor
     permission:
       columns:
@@ -86,6 +59,33 @@ select_permissions:
       filter: {}
       allow_aggregations: true
   - role: readonly
+    permission:
+      columns:
+        - address
+        - asmp_street_level
+        - council_district
+        - description
+        - geometry
+        - is_retired
+        - is_studylocation
+        - last_update
+        - latitude
+        - level_1
+        - level_2
+        - level_3
+        - level_4
+        - level_5
+        - location_group
+        - location_id
+        - longitude
+        - metadata
+        - priority_level
+        - scale_factor
+        - shape
+        - street_level
+      filter: {}
+      allow_aggregations: true
+  - role: vz-admin
     permission:
       columns:
         - address

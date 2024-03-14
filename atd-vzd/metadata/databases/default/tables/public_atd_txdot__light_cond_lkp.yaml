@@ -2,12 +2,6 @@ table:
   name: atd_txdot__light_cond_lkp
   schema: public
 select_permissions:
-  - role: vz-admin
-    permission:
-      columns:
-        - light_cond_desc
-        - light_cond_id
-      filter: {}
   - role: editor
     permission:
       columns:
@@ -15,6 +9,12 @@ select_permissions:
         - light_cond_id
       filter: {}
   - role: readonly
+    permission:
+      columns:
+        - light_cond_desc
+        - light_cond_id
+      filter: {}
+  - role: vz-admin
     permission:
       columns:
         - light_cond_desc

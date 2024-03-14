@@ -2,18 +2,6 @@ table:
   name: atd_txdot_change_log
   schema: public
 select_permissions:
-  - role: vz-admin
-    permission:
-      columns:
-        - change_log_id
-        - id
-        - record_crash_id
-        - record_id
-        - record_json
-        - record_type
-        - update_timestamp
-        - updated_by
-      filter: {}
   - role: editor
     permission:
       columns:
@@ -27,6 +15,18 @@ select_permissions:
         - updated_by
       filter: {}
   - role: readonly
+    permission:
+      columns:
+        - change_log_id
+        - id
+        - record_crash_id
+        - record_id
+        - record_json
+        - record_type
+        - update_timestamp
+        - updated_by
+      filter: {}
+  - role: vz-admin
     permission:
       columns:
         - change_log_id

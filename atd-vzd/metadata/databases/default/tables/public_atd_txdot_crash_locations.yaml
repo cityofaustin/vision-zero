@@ -12,17 +12,6 @@ array_relationships:
           name: atd_txdot_crashes
           schema: public
 insert_permissions:
-  - role: vz-admin
-    permission:
-      check: {}
-      columns:
-        - crash_location_id
-        - crash_id
-        - location_id
-        - metadata
-        - comments
-        - last_update
-        - is_retired
   - role: editor
     permission:
       check: {}
@@ -34,19 +23,18 @@ insert_permissions:
         - comments
         - last_update
         - is_retired
-select_permissions:
   - role: vz-admin
     permission:
+      check: {}
       columns:
-        - comments
+        - crash_location_id
         - crash_id
-        - is_retired
-        - last_update
         - location_id
         - metadata
-        - crash_location_id
-      filter: {}
-      allow_aggregations: true
+        - comments
+        - last_update
+        - is_retired
+select_permissions:
   - role: editor
     permission:
       columns:
@@ -71,8 +59,20 @@ select_permissions:
         - location_id
       filter: {}
       allow_aggregations: true
-update_permissions:
   - role: vz-admin
+    permission:
+      columns:
+        - comments
+        - crash_id
+        - is_retired
+        - last_update
+        - location_id
+        - metadata
+        - crash_location_id
+      filter: {}
+      allow_aggregations: true
+update_permissions:
+  - role: editor
     permission:
       columns:
         - is_retired
@@ -84,7 +84,7 @@ update_permissions:
         - location_id
       filter: {}
       check: null
-  - role: editor
+  - role: vz-admin
     permission:
       columns:
         - is_retired

@@ -2,12 +2,6 @@ table:
   name: atd_txdot__ethnicity_lkp
   schema: public
 select_permissions:
-  - role: vz-admin
-    permission:
-      columns:
-        - ethnicity_desc
-        - ethnicity_id
-      filter: {}
   - role: editor
     permission:
       columns:
@@ -15,6 +9,12 @@ select_permissions:
         - ethnicity_id
       filter: {}
   - role: readonly
+    permission:
+      columns:
+        - ethnicity_desc
+        - ethnicity_id
+      filter: {}
+  - role: vz-admin
     permission:
       columns:
         - ethnicity_desc

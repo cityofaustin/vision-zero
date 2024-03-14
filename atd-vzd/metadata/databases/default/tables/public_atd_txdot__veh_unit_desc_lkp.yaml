@@ -2,14 +2,6 @@ table:
   name: atd_txdot__veh_unit_desc_lkp
   schema: public
 select_permissions:
-  - role: vz-admin
-    permission:
-      columns:
-        - veh_unit_desc_id
-        - veh_unit_desc_desc
-        - eff_beg_date
-        - eff_end_date
-      filter: {}
   - role: editor
     permission:
       columns:
@@ -23,4 +15,12 @@ select_permissions:
       columns:
         - veh_unit_desc_desc
         - veh_unit_desc_id
+      filter: {}
+  - role: vz-admin
+    permission:
+      columns:
+        - veh_unit_desc_id
+        - veh_unit_desc_desc
+        - eff_beg_date
+        - eff_end_date
       filter: {}

@@ -2,12 +2,6 @@ table:
   name: atd_txdot__asmp_level_lkp
   schema: public
 select_permissions:
-  - role: vz-admin
-    permission:
-      columns:
-        - asmp_level_desc
-        - asmp_level_id
-      filter: {}
   - role: editor
     permission:
       columns:
@@ -15,6 +9,12 @@ select_permissions:
         - asmp_level_id
       filter: {}
   - role: readonly
+    permission:
+      columns:
+        - asmp_level_desc
+        - asmp_level_id
+      filter: {}
+  - role: vz-admin
     permission:
       columns:
         - asmp_level_desc

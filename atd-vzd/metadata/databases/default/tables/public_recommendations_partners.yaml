@@ -9,14 +9,14 @@ object_relationships:
     using:
       foreign_key_constraint_on: recommendation_id
 insert_permissions:
-  - role: vz-admin
+  - role: editor
     permission:
       check: {}
       columns:
         - id
         - recommendation_id
         - partner_id
-  - role: editor
+  - role: vz-admin
     permission:
       check: {}
       columns:
@@ -24,14 +24,14 @@ insert_permissions:
         - recommendation_id
         - partner_id
 select_permissions:
-  - role: vz-admin
+  - role: editor
     permission:
       columns:
         - id
         - partner_id
         - recommendation_id
       filter: {}
-  - role: editor
+  - role: vz-admin
     permission:
       columns:
         - id
@@ -39,7 +39,7 @@ select_permissions:
         - recommendation_id
       filter: {}
 update_permissions:
-  - role: vz-admin
+  - role: editor
     permission:
       columns:
         - id
@@ -47,7 +47,7 @@ update_permissions:
         - recommendation_id
       filter: {}
       check: {}
-  - role: editor
+  - role: vz-admin
     permission:
       columns:
         - id
@@ -56,9 +56,9 @@ update_permissions:
       filter: {}
       check: {}
 delete_permissions:
-  - role: vz-admin
+  - role: editor
     permission:
       filter: {}
-  - role: editor
+  - role: vz-admin
     permission:
       filter: {}

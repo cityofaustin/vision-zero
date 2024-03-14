@@ -2,17 +2,6 @@ table:
   name: locations_with_crash_injury_counts
   schema: public
 select_permissions:
-  - role: vz-admin
-    permission:
-      columns:
-        - description
-        - location_id
-        - crash_count
-        - total_est_comp_cost
-        - fatalities_count
-        - serious_injury_count
-      filter: {}
-      allow_aggregations: true
   - role: editor
     permission:
       columns:
@@ -33,5 +22,16 @@ select_permissions:
         - total_est_comp_cost
         - description
         - location_id
+      filter: {}
+      allow_aggregations: true
+  - role: vz-admin
+    permission:
+      columns:
+        - description
+        - location_id
+        - crash_count
+        - total_est_comp_cost
+        - fatalities_count
+        - serious_injury_count
       filter: {}
       allow_aggregations: true

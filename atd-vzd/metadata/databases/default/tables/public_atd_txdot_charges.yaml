@@ -2,20 +2,6 @@ table:
   name: atd_txdot_charges
   schema: public
 insert_permissions:
-  - role: vz-admin
-    permission:
-      check: {}
-      columns:
-        - is_retired
-        - charge_cat_id
-        - crash_id
-        - prsn_nbr
-        - charge_id
-        - unit_nbr
-        - charge
-        - last_update
-        - citation_nbr
-        - updated_by
   - role: editor
     permission:
       check: {}
@@ -30,21 +16,21 @@ insert_permissions:
         - last_update
         - citation_nbr
         - updated_by
-select_permissions:
   - role: vz-admin
     permission:
+      check: {}
       columns:
-        - charge_id
-        - crash_id
-        - unit_nbr
-        - prsn_nbr
-        - charge_cat_id
-        - charge
-        - citation_nbr
-        - last_update
-        - updated_by
         - is_retired
-      filter: {}
+        - charge_cat_id
+        - crash_id
+        - prsn_nbr
+        - charge_id
+        - unit_nbr
+        - charge
+        - last_update
+        - citation_nbr
+        - updated_by
+select_permissions:
   - role: editor
     permission:
       columns:
@@ -73,8 +59,22 @@ select_permissions:
         - citation_nbr
         - updated_by
       filter: {}
-update_permissions:
   - role: vz-admin
+    permission:
+      columns:
+        - charge_id
+        - crash_id
+        - unit_nbr
+        - prsn_nbr
+        - charge_cat_id
+        - charge
+        - citation_nbr
+        - last_update
+        - updated_by
+        - is_retired
+      filter: {}
+update_permissions:
+  - role: editor
     permission:
       columns:
         - is_retired
@@ -89,7 +89,7 @@ update_permissions:
         - updated_by
       filter: {}
       check: null
-  - role: editor
+  - role: vz-admin
     permission:
       columns:
         - is_retired

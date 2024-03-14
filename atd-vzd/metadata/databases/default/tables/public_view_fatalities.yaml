@@ -41,7 +41,7 @@ object_relationships:
 select_permissions:
   - role: vz-admin
     permission:
-      columns: 
+      columns:
         - ytd_fatal_crash
         - ytd_fatality
         - case_id

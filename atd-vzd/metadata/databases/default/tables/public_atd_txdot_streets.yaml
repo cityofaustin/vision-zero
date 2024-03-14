@@ -2,43 +2,6 @@ table:
   name: atd_txdot_streets
   schema: public
 select_permissions:
-  - role: vz-admin
-    permission:
-      columns:
-        - street_id
-        - posted_speed_limit
-        - segment_id
-        - prefix_direction
-        - prefix_type
-        - street_name
-        - street_type
-        - suffix_direction
-        - left_from_address
-        - left_to_address
-        - right_from_address
-        - right_to_address
-        - left_block_from
-        - left_block_to
-        - right_block_from
-        - right_block_to
-        - full_street_name
-        - road_class
-        - speed_limit
-        - elevation_from
-        - elevation_to
-        - one_way
-        - cad_id
-        - street_place_id
-        - created_date
-        - created_by
-        - modified_by
-        - modified_date
-        - miles
-        - seconds
-        - built_status
-        - shape_length
-        - shape
-      filter: {}
   - role: editor
     permission:
       columns:
@@ -112,4 +75,41 @@ select_permissions:
         - street_name
         - street_type
         - suffix_direction
+      filter: {}
+  - role: vz-admin
+    permission:
+      columns:
+        - street_id
+        - posted_speed_limit
+        - segment_id
+        - prefix_direction
+        - prefix_type
+        - street_name
+        - street_type
+        - suffix_direction
+        - left_from_address
+        - left_to_address
+        - right_from_address
+        - right_to_address
+        - left_block_from
+        - left_block_to
+        - right_block_from
+        - right_block_to
+        - full_street_name
+        - road_class
+        - speed_limit
+        - elevation_from
+        - elevation_to
+        - one_way
+        - cad_id
+        - street_place_id
+        - created_date
+        - created_by
+        - modified_by
+        - modified_date
+        - miles
+        - seconds
+        - built_status
+        - shape_length
+        - shape
       filter: {}
