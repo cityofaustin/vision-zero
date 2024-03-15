@@ -23,9 +23,10 @@ const CrashMap = ({ data }) => {
         longitude: longitude_primary || defaultInitialState.longitude,
         zoom: defaultInitialState.zoom,
       }}
-      style={{ width: "100%", height: "100%" }}
       {...mapParameters}
       cooperativeGestures={true}
+      // Resize the map canvas when parent row expands to fit crash diagram
+      onLoad={e => e.target.resize()}
     >
       <FullscreenControl position="top-left" />
       <NavigationControl position="top-left" showCompass={false} />
