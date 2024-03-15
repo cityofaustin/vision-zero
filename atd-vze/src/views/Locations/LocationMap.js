@@ -7,11 +7,11 @@ import MapGL, {
 } from "react-map-gl";
 import bbox from "@turf/bbox";
 import {
-  isDev,
   defaultInitialState,
   LabeledAerialSourceAndLayer,
   mapParameters,
 } from "../../helpers/map";
+import { isDev } from "../../helpers/environment";
 import { colors } from "../../styles/colors";
 import "mapbox-gl/dist/mapbox-gl.css";
 
