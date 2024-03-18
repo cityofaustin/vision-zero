@@ -145,14 +145,14 @@ class CrashChangeLog extends Component {
       }
 
       return (
-        <tr key={`recordHistory-${i}`}>
-          <td>{item.original_record_key}</td>
-          <td>
+        <tr key={`recordHistory-${i}`} className="d-flex">
+          <td className="col-2 text-break">{item.original_record_key}</td>
+          <td className="col-5">
             <Badge color="primary" className="text-wrap text-break">
               {String(item.original_record_value)}
             </Badge>
           </td>
-          <td>
+          <td className="col-5">
             <Badge color="danger" className="text-wrap text-break">
               {String(item.archived_record_value)}
             </Badge>
@@ -165,15 +165,15 @@ class CrashChangeLog extends Component {
     modalBody = (
       <section>
         <h6>Crash ID: {record.record_crash_id}</h6>
-        <h6>Edited Date: {record.update_timestamp}</h6>
+        <h6>Edited Date: {this.timeConverter(record.update_timestamp)}</h6>
         <h6>Updated by: {record.updated_by || "Unavailable"}</h6>
         &nbsp;
         <Table responsive>
           <thead>
-            <tr>
-              <td>Field</td>
-              <td>Current Value</td>
-              <td>Previous Value</td>
+            <tr className="d-flex">
+              <td className="col-2">Field</td>
+              <td className="col-5">Current Value</td>
+              <td className="col-5">Previous Value</td>
               <td></td>
             </tr>
           </thead>
