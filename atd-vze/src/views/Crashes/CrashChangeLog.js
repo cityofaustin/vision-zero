@@ -148,12 +148,12 @@ class CrashChangeLog extends Component {
         <tr key={`recordHistory-${i}`}>
           <td>{item.original_record_key}</td>
           <td>
-            <Badge color="primary" className="text-wrap">
+            <Badge color="primary" className="text-wrap text-break">
               {String(item.original_record_value)}
             </Badge>
           </td>
           <td>
-            <Badge color="danger" className="text-wrap">
+            <Badge color="danger" className="text-wrap text-break">
               {String(item.archived_record_value)}
             </Badge>
           </td>
@@ -197,7 +197,7 @@ class CrashChangeLog extends Component {
       content = <p>No changes found for this record.</p>;
     } else {
       modal = (
-        <Modal isOpen={this.state.modal} className="mw-100">
+        <Modal isOpen={this.state.modal} className="mw-100 mx-5">
           <ModalHeader>Record Differences</ModalHeader>
           <ModalBody>{this.state.modalBody}</ModalBody>
           <ModalFooter>
