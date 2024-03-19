@@ -14,6 +14,7 @@ import {
   ModalBody,
   ModalFooter,
 } from "reactstrap";
+import { formatDateTimeString } from "../../helpers/format";
 
 class CrashChangeLog extends Component {
   constructor(props) {
@@ -26,39 +27,6 @@ class CrashChangeLog extends Component {
       dataTo: null,
       data: this.props.data,
     };
-  }
-
-  /**
-   * Converts a PostgreSQL Timestamp string into a human readable date-time
-   * @param {String} the timestamp as provided by postgres
-   */
-  timeConverter(UNIX_timestamp) {
-    let a = new Date(`${UNIX_timestamp}`.replace(" ", "T"));
-    let months = [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec",
-    ];
-    return (
-      a.getDate() +
-      " " +
-      months[a.getMonth()] +
-      " " +
-      a.getFullYear() +
-      " " +
-      a.getHours() +
-      ":" +
-      a.getMinutes()
-    );
   }
 
   /**
@@ -165,7 +133,7 @@ class CrashChangeLog extends Component {
     modalBody = (
       <section>
         <h6>Crash ID: {record.record_crash_id}</h6>
-        <h6>Edited Date: {this.timeConverter(record.update_timestamp)}</h6>
+        <h6>Edited Date: {formatDateTimeString(record.update_timestamp)}</h6>
         <h6>Updated by: {record.updated_by || "Unavailable"}</h6>
         &nbsp;
         <Table responsive className="overflow-hidden">
@@ -224,7 +192,7 @@ class CrashChangeLog extends Component {
                 <tr key={`changelog-${record.change_log_id}`}>
                   <td>
                     <Badge color="warning">
-                      {this.timeConverter(record.update_timestamp)}
+                      {formatDateTimeString(record.update_timestamp)}
                     </Badge>
                   </td>
                   <td>
