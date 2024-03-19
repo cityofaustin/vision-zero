@@ -123,3 +123,11 @@ export const LabeledAerialSourceAndLayer = () => {
     </>
   );
 };
+
+/**
+ * Shorten a coordinate to 6 decimal places
+ * @param {string|number} coordinate - latitude or longitude
+ * @returns {string} - truncated coordinate
+ */
+export const truncateCoordinate = coordinate =>
+  parseFloat(coordinate).toFixed(6);

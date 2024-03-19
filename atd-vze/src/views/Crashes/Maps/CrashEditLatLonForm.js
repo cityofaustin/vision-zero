@@ -1,5 +1,6 @@
 import React from "react";
 import { Button, Col, Form, FormGroup, Input, Label } from "reactstrap";
+import { truncateCoordinate } from "../../../helpers/map";
 
 export const CrashEditLatLonForm = ({
   latitude,
@@ -20,7 +21,7 @@ export const CrashEditLatLonForm = ({
           id="qa-latitude"
           name="qa-latitude"
           placeholder=""
-          value={latitude}
+          value={truncateCoordinate(latitude)}
           readOnly
         />
       </Col>
@@ -35,7 +36,7 @@ export const CrashEditLatLonForm = ({
           id="qa-longitude"
           name="qa-longitude"
           placeholder=""
-          value={longitude}
+          value={truncateCoordinate(longitude)}
           readOnly
         />
       </Col>
