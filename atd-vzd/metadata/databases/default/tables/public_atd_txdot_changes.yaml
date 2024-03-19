@@ -57,3 +57,7 @@ select_permissions:
         - crash_date
         - record_uqid
       filter: {}
+delete_permissions:
+  - role: vz-admin
+    permission:
+      filter: {}
