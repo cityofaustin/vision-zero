@@ -307,7 +307,7 @@ gqlAbstractTableAggregateName (
         return `${dateValue}`;
       }
       case "currency": {
-        return `$${value.toLocaleString()}`;
+        return `$${parseFloat(value).toLocaleString()}`;
       }
       case "boolean": {
         return value ? "True" : "False";
