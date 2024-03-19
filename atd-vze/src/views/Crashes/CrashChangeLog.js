@@ -168,7 +168,7 @@ class CrashChangeLog extends Component {
         <h6>Edited Date: {this.timeConverter(record.update_timestamp)}</h6>
         <h6>Updated by: {record.updated_by || "Unavailable"}</h6>
         &nbsp;
-        <Table responsive>
+        <Table responsive className="overflow-hidden">
           <thead>
             <tr className="d-flex">
               <td className="col-2">Field</td>
