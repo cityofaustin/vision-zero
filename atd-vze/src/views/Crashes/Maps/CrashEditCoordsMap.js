@@ -102,7 +102,6 @@ const CrashEditCoordsMap = ({
         }}
         style={{ width: "100%", height: "50vh" }}
         {...mapParameters}
-        cooperativeGestures={true}
         draggable
         onDragStart={() => setIsDragging(true)}
         onDrag={onDrag}
