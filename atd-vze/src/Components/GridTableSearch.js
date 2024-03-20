@@ -32,9 +32,7 @@ const GridTableSearch = ({
   const [fieldToSearch, setFieldToSearch] = useState(
     (searchParameters && searchParameters.column) || ""
   );
-  const [isFieldSelected, setIsFieldSelected] = useState(
-    !!searchParameters || false
-  );
+  const isFieldSelected = !!fieldToSearch || false;
 
   const fieldsToSearch = query.searchableFields;
 
@@ -60,7 +58,6 @@ const GridTableSearch = ({
     clearFilters();
     setSearchFieldValue("");
     setFieldToSearch("");
-    setIsFieldSelected(false);
   };
 
   /**
@@ -75,7 +72,6 @@ const GridTableSearch = ({
    * @param {object} e - the event object
    */
   const handleFieldSelect = e => {
-    setIsFieldSelected(true);
     setFieldToSearch(e.target.value);
   };
 
