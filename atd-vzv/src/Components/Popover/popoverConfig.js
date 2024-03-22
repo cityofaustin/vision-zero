@@ -191,6 +191,38 @@ export const popoverConfig = {
         </>
       ),
     },
+    byMode: {
+      title: "By Travel Mode",
+      html: (
+        <>
+          <div>
+            <ul className="pl-3">
+              <li>
+                <strong>Motorist</strong>: Driver or rider of a sedan, coupe,
+                SUV, pickup, semi-trailer, etc.
+              </li>
+              <li>
+                <strong>Pedestrian</strong>: Person on foot
+              </li>
+              <li>
+                <strong>Motorcyclist</strong>: Motorcycle rider or driver
+              </li>
+              <li>
+                <strong>Bicyclist</strong>: Anyone riding a bicycle
+              </li>
+              <li>
+                <strong>E-Scooter Rider</strong>: Anyone riding an electric
+                motorized scooter
+              </li>
+              <li>
+                <strong>Other</strong>: Any modality other than motorist,
+                pedestrian, motorcyclist, bicyclist, or e-scooter rider
+              </li>
+            </ul>
+          </div>
+        </>
+      ),
+    },
   },
   map: {
     trafficCrashes: {
