@@ -1,16 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { format, parseISO } from "date-fns";
 
 import { Col, Row, Badge } from "reactstrap";
 
 const GridTableFilterBadges = ({
   searchParams,
-  dateRangeParams,
   advancedFilterParams,
   advancedFiltersConfig,
 }) => {
   const [searchBadgeText, setSearchBadgeText] = useState(null);
-  const [dateRangeBadgeText, setDateRangeBadgeText] = useState(null);
   const [advancedFilterBadgeText, setAdvancedFilterBadgeText] = useState([]);
 
   // Update search badge text
@@ -21,21 +18,6 @@ const GridTableFilterBadges = ({
 
     setSearchBadgeText(searchText);
   }, [searchParams]);
-
-  // Update date range badge text
-  useEffect(() => {
-    const startDateRangeText = format(
-      parseISO(dateRangeParams.startDate),
-      "MM/dd/yyyy"
-    );
-    const endDateRangeText = format(
-      parseISO(dateRangeParams.endDate),
-      "MM/dd/yyyy"
-    );
-    const formattedDateRangeText = `${startDateRangeText} to ${endDateRangeText}`;
-
-    setDateRangeBadgeText(formattedDateRangeText);
-  }, [dateRangeParams]);
 
   // Update advanced filter badges text
   useEffect(() => {
@@ -73,18 +55,6 @@ const GridTableFilterBadges = ({
     <>
       <Row className="mb-2">
         <Col>
-          <h4>
-            <i className="fa fa-calendar mr-2"></i>
-            {dateRangeBadgeText && (
-              <Badge className="mr-1" color="primary">
-                {dateRangeBadgeText}
-              </Badge>
-            )}
-          </h4>
-        </Col>
-      </Row>
-      <Row className="mb-2">
-        <Col>
           {hasFiltersApplied && (
             <h5>
               <i className="fa fa-lg fa-filter mr-2"></i>
@@ -95,7 +65,7 @@ const GridTableFilterBadges = ({
               )}
               {advancedFilterBadgeText &&
                 advancedFilterBadgeText.map(filter => (
-                  <Badge className="mr-1" color="primary">
+                  <Badge key={filter} className="mr-1" color="primary">
                     {filter}
                   </Badge>
                 ))}
