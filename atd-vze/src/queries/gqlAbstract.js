@@ -1,4 +1,5 @@
 import { gql } from "apollo-boost";
+import { formatCostToDollars } from "../helpers/format";
 
 class gqlAbstract {
   /**
@@ -307,7 +308,7 @@ gqlAbstractTableAggregateName (
         return `${dateValue}`;
       }
       case "currency": {
-        return `$${value.toLocaleString()}`;
+        return formatCostToDollars(parseFloat(value));
       }
       case "boolean": {
         return value ? "True" : "False";
