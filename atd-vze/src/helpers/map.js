@@ -1,8 +1,24 @@
 import React from "react";
 import { Source, Layer } from "react-map-gl";
 
+const TOKEN = process.env.REACT_APP_MAPBOX_TOKEN;
 // This API key is managed by CTM. Contact help desk for maintenance and troubleshooting.
 const NEARMAP_KEY = process.env.REACT_APP_NEARMAP_KEY;
+
+export const defaultInitialState = {
+  latitude: 30.2747,
+  longitude: -97.7406,
+  zoom: 17,
+};
+
+export const mapParameters = {
+  touchPitch: false,
+  dragRotate: false,
+  boxZoom: false,
+  maxBounds: [[-99, 29], [-96, 32]],
+  mapboxAccessToken: TOKEN,
+  mapStyle: "mapbox://styles/mapbox/satellite-streets-v11",
+};
 
 export const LOCATION_MAP_CONFIG = {
   mapStyle: "mapbox://styles/mapbox/satellite-streets-v11",
@@ -105,3 +121,11 @@ export const LabeledAerialSourceAndLayer = () => {
     </>
   );
 };
+
+/**
+ * Shorten a coordinate to 6 decimal places
+ * @param {string|number} coordinate - latitude or longitude
+ * @returns {string} - truncated coordinate
+ */
+export const truncateCoordinate = coordinate =>
+  parseFloat(coordinate).toFixed(6);

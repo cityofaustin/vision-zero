@@ -1,189 +1,129 @@
-import React, { Component } from "react";
-import { withApollo } from "react-apollo";
-import { UPDATE_COORDS } from "../../../queries/crashes";
+import React from "react";
 
 import MapGL, {
   Marker,
   NavigationControl,
   FullscreenControl,
 } from "react-map-gl";
-import "mapbox-gl/dist/mapbox-gl.css";
-import Geocoder from "react-map-gl-geocoder";
-import { CustomGeocoderMapController } from "./customGeocoderMapController";
-import "react-map-gl-geocoder/dist/mapbox-gl-geocoder.css";
 
 import Pin from "./Pin";
+import { useMutation } from "react-apollo";
+import { useAuth0 } from "../../../auth/authContext";
+import { UPDATE_COORDS } from "../../../queries/crashes";
 import { CrashEditLatLonForm } from "./CrashEditLatLonForm";
-
 import {
-  LOCATION_MAP_CONFIG,
+  defaultInitialState,
   LabeledAerialSourceAndLayer,
+  mapParameters,
 } from "../../../helpers/map";
+import { isDev } from "../../../helpers/environment";
 
-const TOKEN = process.env.REACT_APP_MAPBOX_TOKEN;
+const CrashEditCoordsMap = ({
+  data,
+  mapGeocoderAddress,
+  crashId,
+  refetchCrashData,
+  setIsEditingCoords,
+}) => {
+  const { user } = useAuth0();
+  const { email = null } = user;
+  const { latitude_primary = null, longitude_primary = null } = data;
 
-const fullscreenControlStyle = {
-  position: "absolute",
-  top: 0,
-  left: 0,
-  padding: "10px",
-};
+  const mapRef = React.useRef();
+  const [isDragging, setIsDragging] = React.useState(false);
+  const [markerCoordinates, setMarkerCoordinates] = React.useState({
+    latitude: latitude_primary,
+    longitude: longitude_primary,
+  });
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
 
-const navStyle = {
-  position: "absolute",
-  top: 36,
-  left: 0,
-  padding: "10px",
-};
+  const [updateCrashCoordinates] = useMutation(UPDATE_COORDS);
 
-const customGeocoderMapController = new CustomGeocoderMapController();
+  const onDrag = e => {
+    const latitude = e.viewState.latitude;
+    const longitude = e.viewState.longitude;
 
-class CrashEditCoordsMap extends Component {
-  constructor(props) {
-    super(props);
-
-    // Default map center
-    this.initialMapCenter = {
-      latitude: this.props.data.latitude_primary || 30.26714,
-      longitude: this.props.data.longitude_primary || -97.743192,
-    };
-
-    this.state = {
-      viewport: {
-        latitude: this.initialMapCenter.latitude,
-        longitude: this.initialMapCenter.longitude,
-        zoom: 17,
-        bearing: 0,
-        pitch: 0,
-      },
-      popupInfo: null,
-      markerLatitude: 0,
-      markerLongitude: 0,
-      isDragging: false,
-    };
-  }
-
-  // Tie map and geocoder control together
-  mapRef = React.createRef();
-
-  _handleViewportChange = viewport => {
-    this.setState({
-      viewport: { ...this.state.viewport, ...viewport },
-    });
+    setMarkerCoordinates({ latitude, longitude });
   };
 
-  _updateViewport = viewport => {
-    this.setState({
-      viewport,
-      markerLatitude: viewport.latitude,
-      markerLongitude: viewport.longitude,
-    });
-  };
-
-  getCursor = ({ isDragging }) => {
-    isDragging !== this.state.isDragging && this.setState({ isDragging });
-  };
-
-  handleMapFormSubmit = e => {
+  const handleFormSubmit = e => {
     e.preventDefault();
+    setIsSubmitting(true);
 
     const variables = {
       qaStatus: 3, // Lat/Long entered manually to Primary
       geocodeProvider: 5, // Manual Q/A
-      crashId: this.props.crashId,
-      latitude: this.state.markerLatitude,
-      longitude: this.state.markerLongitude,
-      updatedBy: localStorage.getItem("hasura_user_email"),
+      crashId: crashId,
+      updatedBy: email,
+      ...markerCoordinates,
     };
 
-    this.props.client
-      .mutate({
-        mutation: UPDATE_COORDS,
-        variables: variables,
-      })
-      .then(res => {
-        this.props.refetchCrashData();
-        this.props.setIsEditingCoords(false);
+    updateCrashCoordinates({
+      variables: variables,
+    }).then(() => {
+      // Refetch and then close edit map so CrashMap initializes with updated coordinates
+      refetchCrashData().then(() => {
+        setIsSubmitting(false);
+        setIsEditingCoords(false);
       });
-  };
-
-  handleMapFormReset = e => {
-    e.preventDefault();
-    const updatedViewport = {
-      ...this.state.viewport,
-      latitude: this.initialMapCenter.latitude,
-      longitude: this.initialMapCenter.longitude,
-    };
-    this.setState({
-      viewport: updatedViewport,
-      markerLatitude: updatedViewport.latitude,
-      markerLongitude: updatedViewport.longitude,
     });
   };
 
-  handleMapFormCancel = e => {
-    e.preventDefault();
-    this.props.setIsEditingCoords(false);
+  const handleFormReset = () => {
+    // Reset marker to original coordinates or default fallback
+    const originalMarkerCoordinates = {
+      latitude: latitude_primary || defaultInitialState.latitude,
+      longitude: longitude_primary || defaultInitialState.latitude,
+    };
+
+    // Move map center and marks to original coordinates or default fallback
+    setMarkerCoordinates(originalMarkerCoordinates);
+    mapRef.current &&
+      mapRef.current.jumpTo({
+        center: [
+          originalMarkerCoordinates.longitude,
+          originalMarkerCoordinates.latitude,
+        ],
+      });
   };
 
-  render() {
-    const {
-      viewport,
-      markerLatitude,
-      markerLongitude,
-      isDragging,
-    } = this.state;
-    const geocoderAddress = this.props.mapGeocoderAddress;
-    const isDev = window.location.hostname === "localhost";
+  const handleFormCancel = () => {
+    setIsEditingCoords(false);
+  };
 
-    return (
-      <div>
-        <MapGL
-          {...viewport}
-          ref={this.mapRef}
-          width="100%"
-          height="350px"
-          mapStyle={
-            isDev
-              ? "mapbox://styles/mapbox/satellite-streets-v11"
-              : LOCATION_MAP_CONFIG.mapStyle
-          }
-          onViewportChange={this._updateViewport}
-          getCursor={this.getCursor}
-          controller={customGeocoderMapController}
-          mapboxApiAccessToken={TOKEN}
-        >
-          <Geocoder
-            mapRef={this.mapRef}
-            onViewportChange={this._handleViewportChange}
-            mapboxApiAccessToken={TOKEN}
-            inputValue={geocoderAddress}
-            options={{ flyTo: false }}
-            // Bounding box for auto-populated results in the search bar
-            bbox={[-98.22464, 29.959694, -97.226257, 30.687526]}
-          />
-          <div className="fullscreen" style={fullscreenControlStyle}>
-            <FullscreenControl />
-          </div>
-          <div className="nav" style={navStyle}>
-            <NavigationControl showCompass={false} />
-          </div>
-          {/* add nearmap raster source and style */}
-          {!isDev && <LabeledAerialSourceAndLayer />}
-          <Marker latitude={markerLatitude} longitude={markerLongitude}>
-            <Pin size={40} isDragging={isDragging} animated />
-          </Marker>
-        </MapGL>
-        <CrashEditLatLonForm
-          latitude={markerLatitude}
-          longitude={markerLongitude}
-          handleFormSubmit={this.handleMapFormSubmit}
-          handleFormReset={this.handleMapFormReset}
-          handleFormCancel={this.handleMapFormCancel}
-        />
-      </div>
-    );
-  }
-}
+  return (
+    <>
+      <MapGL
+        ref={mapRef}
+        initialViewState={{
+          latitude: latitude_primary || defaultInitialState.latitude,
+          longitude: longitude_primary || defaultInitialState.longitude,
+          zoom: defaultInitialState.zoom,
+        }}
+        style={{ width: "100%", height: "50vh" }}
+        {...mapParameters}
+        draggable
+        onDragStart={() => setIsDragging(true)}
+        onDrag={onDrag}
+        onDragEnd={() => setIsDragging(false)}
+      >
+        <FullscreenControl position="top-left" />
+        <NavigationControl position="top-left" showCompass={false} />
+        <Marker {...markerCoordinates}>
+          <Pin size={40} color={"warning"} isDragging={isDragging} animated />
+        </Marker>
+        {/* add nearmap raster source and style */}
+        {!isDev && <LabeledAerialSourceAndLayer />}
+      </MapGL>
+      <CrashEditLatLonForm
+        {...markerCoordinates}
+        handleFormSubmit={handleFormSubmit}
+        handleFormReset={handleFormReset}
+        handleFormCancel={handleFormCancel}
+        isSubmitting={isSubmitting}
+      />
+    </>
+  );
+};
 
-export default withApollo(CrashEditCoordsMap);
+export default CrashEditCoordsMap;
