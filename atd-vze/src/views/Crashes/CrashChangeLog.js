@@ -14,6 +14,7 @@ import {
   ModalBody,
   ModalFooter,
 } from "reactstrap";
+import { formatDateTimeString } from "../../helpers/format";
 
 class CrashChangeLog extends Component {
   constructor(props) {
@@ -26,39 +27,6 @@ class CrashChangeLog extends Component {
       dataTo: null,
       data: this.props.data,
     };
-  }
-
-  /**
-   * Converts a PostgreSQL Timestamp string into a human readable date-time
-   * @param {String} the timestamp as provided by postgres
-   */
-  timeConverter(UNIX_timestamp) {
-    let a = new Date(`${UNIX_timestamp}`.replace(" ", "T"));
-    let months = [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec",
-    ];
-    return (
-      a.getDate() +
-      " " +
-      months[a.getMonth()] +
-      " " +
-      a.getFullYear() +
-      " " +
-      a.getHours() +
-      ":" +
-      a.getMinutes()
-    );
   }
 
   /**
@@ -118,52 +86,62 @@ class CrashChangeLog extends Component {
     // Define a function to pass to JSON.stringify which will skip over
     // the __typename key in the JS object being stringified.
     const stringifyReplacer = (key, value) => {
-      if (key === '__typename') {
+      if (key === "__typename") {
         return undefined;
       }
       return value;
-    }
+    };
 
     // For each entry created in the diff array, generate an HTML table row.
-    let modalItems = diff.map(item => {
+    let modalItems = diff.map((item, i) => {
       // The following two conditions check if an the current or archived value to
       // to be shown in the crach's changelog are objects, such as found when a jsonb
-      // field is pulled from the database. In this case, they are stringified for 
+      // field is pulled from the database. In this case, they are stringified for
       // human-readble output.
-      if (typeof item.original_record_value === 'object') {
-        item.original_record_value = JSON.stringify(item.original_record_value, stringifyReplacer);
+      if (typeof item.original_record_value === "object") {
+        item.original_record_value = JSON.stringify(
+          item.original_record_value,
+          stringifyReplacer
+        );
       }
 
-      if (typeof item.archived_record_value === 'object') {
-        item.archived_record_value = JSON.stringify(item.archived_record_value, stringifyReplacer);
+      if (typeof item.archived_record_value === "object") {
+        item.archived_record_value = JSON.stringify(
+          item.archived_record_value,
+          stringifyReplacer
+        );
       }
 
       return (
-      <tr key={`recordHistory-${record.id}`}>
-        <td>{item.original_record_key}</td>
-        <td>
-          <Badge color="primary">{String(item.original_record_value)}</Badge>
-        </td>
-        <td>
-          <Badge color="danger">{String(item.archived_record_value)}</Badge>
-        </td>
-      </tr>
-      )
+        <tr key={`recordHistory-${i}`} className="d-flex">
+          <td className="col-2 text-break">{item.original_record_key}</td>
+          <td className="col-5">
+            <Badge color="primary" className="text-wrap text-break">
+              {String(item.original_record_value)}
+            </Badge>
+          </td>
+          <td className="col-5">
+            <Badge color="danger" className="text-wrap text-break">
+              {String(item.archived_record_value)}
+            </Badge>
+          </td>
+        </tr>
+      );
     });
 
     // Generate the body of the modal box
     modalBody = (
       <section>
         <h6>Crash ID: {record.record_crash_id}</h6>
-        <h6>Edited Date: {record.update_timestamp}</h6>
+        <h6>Edited Date: {formatDateTimeString(record.update_timestamp)}</h6>
         <h6>Updated by: {record.updated_by || "Unavailable"}</h6>
         &nbsp;
-        <Table responsive>
+        <Table responsive className="overflow-hidden">
           <thead>
-            <tr>
-              <td>Field</td>
-              <td>Current Value</td>
-              <td>Previous Value</td>
+            <tr className="d-flex">
+              <td className="col-2">Field</td>
+              <td className="col-5">Current Value</td>
+              <td className="col-5">Previous Value</td>
               <td></td>
             </tr>
           </thead>
@@ -187,8 +165,12 @@ class CrashChangeLog extends Component {
       content = <p>No changes found for this record.</p>;
     } else {
       modal = (
-        <Modal isOpen={this.state.modal} className={this.props.className}>
-          <ModalHeader>Record Differences</ModalHeader>
+        <Modal
+          isOpen={this.state.modal}
+          toggle={this.closeModal}
+          className="mw-100 mx-5"
+        >
+          <ModalHeader toggle={this.closeModal}>Record Differences</ModalHeader>
           <ModalBody>{this.state.modalBody}</ModalBody>
           <ModalFooter>
             <Button color="secondary" onClick={this.closeModal}>
@@ -211,10 +193,10 @@ class CrashChangeLog extends Component {
             </thead>
             <tbody>
               {this.props.data.atd_txdot_change_log.map(record => (
-                <tr key={`changelog-${record.id}`}>
+                <tr key={`changelog-${record.change_log_id}`}>
                   <td>
                     <Badge color="warning">
-                      {this.timeConverter(record.update_timestamp)}
+                      {formatDateTimeString(record.update_timestamp)}
                     </Badge>
                   </td>
                   <td>
