@@ -68,7 +68,7 @@ const GridTable = ({
    *      sortColumn {string} - Contains the name of the column being used to sort the data
    *      sortOrder {string} - Contains either 'asc' or 'desc'
    *      searchParameters {object} - Contains the parameters for the text search
-   *      collapseAdvancedFilters {bool} - Contains the filters section status (hidden, display)
+   *      isAdvancedSearchMenuOpen {bool} - Contains the filters section status (hidden, display)
    *      filterOptions {object} - Contains a list of filters and each individual status (enabled, disabled)
    *      dateRangeFilter {object} - Contains the date range (startDate, and endDate)
    */
@@ -84,8 +84,8 @@ const GridTable = ({
   const [searchParameters, setSearchParameters] = useState(
     getSavedState("searchParameters") || {}
   );
-  const [collapseAdvancedFilters, setCollapseAdvancedFilters] = useState(
-    getSavedState("collapseAdvancedFilters") || false
+  const [isAdvancedSearchMenuOpen, setIsAdvancedSearchMenuOpen] = useState(
+    getSavedState("isAdvancedSearchMenuOpen") || false
   );
   const [filterOptions, setFilterOptions] = useState(
     getSavedState("filterOptions") || {}
@@ -103,7 +103,7 @@ const GridTable = ({
       sortColumn,
       sortOrder,
       searchParameters,
-      collapseAdvancedFilters,
+      isAdvancedSearchMenuOpen,
       filterOptions,
       dateRangeFilter,
     };
@@ -162,7 +162,7 @@ const GridTable = ({
    * Shows or hides advanced filters
    */
   const toggleAdvancedFilters = () => {
-    setCollapseAdvancedFilters(!collapseAdvancedFilters);
+    setIsAdvancedSearchMenuOpen(!isAdvancedSearchMenuOpen);
   };
 
   /**
@@ -439,10 +439,9 @@ const GridTable = ({
               <i className="fa fa-car" /> {title}
             </CardHeader>
             <CardBody>
-              {filters && (
+              {filters && !isAdvancedSearchMenuOpen && (
                 <GridTableFilterBadges
                   searchParams={searchParameters}
-                  dateRangeParams={dateRangeFilter}
                   advancedFilterParams={filterOptions}
                   advancedFiltersConfig={filters}
                 />
@@ -493,7 +492,7 @@ const GridTable = ({
                   toggleAdvancedFilters={toggleAdvancedFilters}
                 />
                 <GridFilters
-                  isCollapsed={collapseAdvancedFilters}
+                  isOpen={isAdvancedSearchMenuOpen}
                   filters={filters}
                   filterOptionsState={filterOptions}
                   setFilterOptions={setFilterOptions}
