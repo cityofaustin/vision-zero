@@ -165,8 +165,12 @@ class CrashChangeLog extends Component {
       content = <p>No changes found for this record.</p>;
     } else {
       modal = (
-        <Modal isOpen={this.state.modal} className="mw-100 mx-5">
-          <ModalHeader>Record Differences</ModalHeader>
+        <Modal
+          isOpen={this.state.modal}
+          toggle={this.closeModal}
+          className="mw-100 mx-5"
+        >
+          <ModalHeader toggle={this.closeModal}>Record Differences</ModalHeader>
           <ModalBody>{this.state.modalBody}</ModalBody>
           <ModalFooter>
             <Button color="secondary" onClick={this.closeModal}>
