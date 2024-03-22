@@ -14,9 +14,9 @@ import { CrashEditLatLonForm } from "./CrashEditLatLonForm";
 import {
   defaultInitialState,
   LabeledAerialSourceAndLayer,
-  isDev,
   mapParameters,
 } from "../../../helpers/map";
+import { isDev } from "../../../helpers/environment";
 
 const CrashEditCoordsMap = ({
   data,

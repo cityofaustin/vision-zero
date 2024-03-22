@@ -20,8 +20,6 @@ export const mapParameters = {
   mapStyle: "mapbox://styles/mapbox/satellite-streets-v11",
 };
 
-export const isDev = window.location.hostname === "localhost";
-
 export const LOCATION_MAP_CONFIG = {
   mapStyle: "mapbox://styles/mapbox/satellite-streets-v11",
   sources: {
