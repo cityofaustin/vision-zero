@@ -33,6 +33,7 @@ const GridTableSearch = ({
     (searchParameters && searchParameters.column) || ""
   );
   const isFieldSelected = !!fieldToSearch || false;
+  const isSearchValueEntered = !!searchFieldValue || false;
 
   const fieldsToSearch = query.searchableFields;
 
@@ -121,7 +122,11 @@ const GridTableSearch = ({
               </DropdownMenu>
             </InputGroupButtonDropdown>
             <InputGroupAddon addonType="append">
-              <Button type="submit" color="primary">
+              <Button
+                type="submit"
+                color="primary"
+                disabled={!isFieldSelected || !isSearchValueEntered}
+              >
                 <i className="fa fa-search" /> Search
               </Button>
               <Button
