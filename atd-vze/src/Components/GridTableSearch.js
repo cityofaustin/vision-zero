@@ -88,8 +88,11 @@ const GridTableSearch = ({
   return (
     <Col md={12}>
       <Form className="form-horizontal" onSubmit={handleSearchSubmission}>
-        {!isFieldSelected && searchFieldValue && (
+        {!isFieldSelected && isSearchValueEntered && (
           <Alert color="warning">Please provide a field to search.</Alert>
+        )}
+        {isFieldSelected && !isSearchValueEntered && (
+          <Alert color="warning">Please enter a value to search.</Alert>
         )}
         <FormGroup>
           <InputGroup>
