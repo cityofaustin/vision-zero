@@ -886,3 +886,12 @@ update_permissions:
         - vin
       filter: {}
       check: null
+delete_permissions:
+  - role: editor
+    permission:
+      filter: {}
+    comment: ""
+  - role: vz-admin
+    permission:
+      filter: {}
+    comment: ""
