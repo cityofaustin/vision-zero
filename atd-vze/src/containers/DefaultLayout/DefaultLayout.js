@@ -42,11 +42,12 @@ const DefaultLayout = props => {
   const EnvAlertBanner = () => {
     const env = process.env.NODE_ENV;
     console.log(env);
-    if (env !== "production") {
+    if (env === "production") {
+      return null;
+    } else {
       return (
         <Alert color="primary" className="mb-0">
-          This is a <span style={{ fontWeight: "bold" }}>{env}</span>{" "}
-          environment for testing purposes.
+          This is a development environment for testing purposes.
         </Alert>
       );
     }
