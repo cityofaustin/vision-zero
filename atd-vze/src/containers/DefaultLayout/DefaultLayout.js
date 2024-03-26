@@ -3,6 +3,7 @@ import { Redirect, Route, Switch } from "react-router-dom";
 import * as router from "react-router-dom";
 import { Container } from "reactstrap";
 import { useAuth0 } from "../../auth/authContext";
+import { Alert } from "reactstrap";
 
 import {
   AppAside,
@@ -38,9 +39,23 @@ const DefaultLayout = props => {
     props.history.push("/login");
   };
 
+  const EnvAlertBanner = () => {
+    const env = process.env.NODE_ENV;
+    console.log(env);
+    if (env !== "production") {
+      return (
+        <Alert color="primary" className="mb-0">
+          This is a <span style={{ fontWeight: "bold" }}>{env}</span>{" "}
+          environment for testing purposes.
+        </Alert>
+      );
+    }
+  };
+
   return (
     <div className="app">
-      <AppHeader fixed>
+      <EnvAlertBanner />
+      <AppHeader>
         <Suspense fallback={loading()}>
           <DefaultHeader onLogout={e => signOut(e)} />
         </Suspense>
