@@ -224,7 +224,7 @@ const CrashesByMode = () => {
     <Container className="m-0 p-0">
       <Row>
         <Col>
-          <h2 className="text-left, font-weight-bold">By Travel Mode{" "}
+          <h2 className="text-left font-weight-bold">By Travel Mode{" "}
             <InfoPopover config={popoverConfig.summary.byMode} />
           </h2>
         </Col>
