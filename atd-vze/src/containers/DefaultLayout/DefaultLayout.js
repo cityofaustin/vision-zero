@@ -3,12 +3,10 @@ import { Redirect, Route, Switch } from "react-router-dom";
 import * as router from "react-router-dom";
 import { Container } from "reactstrap";
 import { useAuth0 } from "../../auth/authContext";
-import { Alert } from "reactstrap";
 
 import {
   AppAside,
   AppFooter,
-  AppHeader,
   AppSidebar,
   AppSidebarFooter,
   AppSidebarForm,
@@ -39,28 +37,11 @@ const DefaultLayout = props => {
     props.history.push("/login");
   };
 
-  const EnvAlertBanner = () => {
-    const env = process.env.NODE_ENV;
-    console.log(env);
-    if (env === "production") {
-      return null;
-    } else {
-      return (
-        <Alert color="primary" className="mb-0">
-          This is a development environment for testing purposes.
-        </Alert>
-      );
-    }
-  };
-
   return (
     <div className="app">
-      <EnvAlertBanner />
-      <AppHeader>
-        <Suspense fallback={loading()}>
-          <DefaultHeader onLogout={e => signOut(e)} />
-        </Suspense>
-      </AppHeader>
+      <Suspense fallback={loading()}>
+        <DefaultHeader onLogout={e => signOut(e)} />
+      </Suspense>
       <div className="app-body">
         <AppSidebar fixed display="lg">
           <AppSidebarHeader />
