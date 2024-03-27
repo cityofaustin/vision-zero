@@ -24,13 +24,14 @@ const GridTableSearch = ({
   resetPage,
   filters,
   toggleAdvancedFilters,
+  defaultSearchField = "",
 }) => {
   const [searchFieldValue, setSearchFieldValue] = useState(
     (searchParameters && searchParameters.value) || ""
   );
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [fieldToSearch, setFieldToSearch] = useState(
-    (searchParameters && searchParameters.column) || ""
+    (searchParameters && searchParameters.column) || defaultSearchField
   );
   const isFieldSelected = !!fieldToSearch || false;
   const isSearchValueEntered = !!searchFieldValue || false;
@@ -58,7 +59,7 @@ const GridTableSearch = ({
   const handleClearSearchResults = () => {
     clearFilters();
     setSearchFieldValue("");
-    setFieldToSearch("");
+    setFieldToSearch(defaultSearchField);
   };
 
   /**
@@ -137,7 +138,7 @@ const GridTableSearch = ({
                 color="danger"
                 onClick={handleClearSearchResults}
               >
-                <i className="fa fa-ban" /> Clear
+                <i className="fa fa-ban" /> Reset
               </Button>
               {(filters || null) !== null && (
                 <Button

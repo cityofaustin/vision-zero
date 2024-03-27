@@ -45,6 +45,7 @@ const GridTable = ({
   minDate,
   roleSpecificColumns,
   hasSpecificRole,
+  defaultSearchField,
 }) => {
   // Load table filters from localStorage by title
   const savedFilterState = JSON.parse(
@@ -491,6 +492,7 @@ const GridTable = ({
                   resetPage={resetPageOnSearch}
                   filters={filters}
                   toggleAdvancedFilters={toggleAdvancedFilters}
+                  defaultSearchField={defaultSearchField}
                 />
                 <GridFilters
                   isCollapsed={collapseAdvancedFilters}
