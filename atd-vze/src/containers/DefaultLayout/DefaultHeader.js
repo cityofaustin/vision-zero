@@ -23,13 +23,18 @@ const propTypes = {
 const defaultProps = {};
 
 const EnvAlertBanner = () => {
-  const env = process.env.NODE_ENV;
+  const env = process.env.REACT_APP_HASURA_ENDPOINT.includes("staging")
+    ? "staging"
+    : process.env.NODE_ENV === "production"
+    ? "production"
+    : "local";
   if (env === "production") {
     return null;
   } else {
     return (
       <Alert color="primary" className="mb-0">
-        This is a development environment for testing purposes.
+        This is a <span style={{ fontWeight: "bold" }}>{env}</span> environment
+        for testing purposes.
       </Alert>
     );
   }
