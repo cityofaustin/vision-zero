@@ -136,6 +136,7 @@ const mockPolygonDataLayer = {
  * To test locally, this returns a mock layer to test the layer ordering.
  * Adjust the opacity in the mockPolygonDataLayer paint object for further testing.
  * @param {string} beforeId - layer id to place these layers before
+ * @param {boolean} showMockLayerLocally - show mock layer locally instead of NearMap tile layer
  */
 export const LabeledAerialSourceAndLayer = ({
   beforeId,
