@@ -16,7 +16,6 @@ import {
   LabeledAerialSourceAndLayer,
   mapParameters,
 } from "../../../helpers/map";
-import { isDev } from "../../../helpers/environment";
 
 const CrashEditCoordsMap = ({
   data,

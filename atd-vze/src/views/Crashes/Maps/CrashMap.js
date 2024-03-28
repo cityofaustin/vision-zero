@@ -10,7 +10,6 @@ import {
   LabeledAerialSourceAndLayer,
   mapParameters,
 } from "../../../helpers/map";
-import { isDev } from "../../../helpers/environment";
 import "mapbox-gl/dist/mapbox-gl.css";
 
 const CrashMap = ({ data }) => {
