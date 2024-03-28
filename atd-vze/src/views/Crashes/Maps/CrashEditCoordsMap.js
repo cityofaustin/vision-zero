@@ -113,7 +113,7 @@ const CrashEditCoordsMap = ({
           <Pin size={40} color={"warning"} isDragging={isDragging} animated />
         </Marker>
         {/* add nearmap raster source and style */}
-        {!isDev && <LabeledAerialSourceAndLayer />}
+        <LabeledAerialSourceAndLayer />
       </MapGL>
       <CrashEditLatLonForm
         {...markerCoordinates}

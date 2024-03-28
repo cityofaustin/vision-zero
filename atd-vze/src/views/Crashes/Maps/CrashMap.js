@@ -34,7 +34,7 @@ const CrashMap = ({ data }) => {
         <Pin size={40} color={"warning"} />
       </Marker>
       {/* add nearmap raster source and style */}
-      {!isDev && <LabeledAerialSourceAndLayer />}
+      <LabeledAerialSourceAndLayer />
     </MapGL>
   );
 };

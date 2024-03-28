@@ -137,8 +137,11 @@ const mockPolygonDataLayer = {
  * Adjust the opacity in the mockPolygonDataLayer paint object for further testing.
  * @param {string} beforeId - layer id to place these layers before
  */
-export const LabeledAerialSourceAndLayer = ({ beforeId }) => {
-  return isDev ? (
+export const LabeledAerialSourceAndLayer = ({
+  beforeId,
+  showMockLayerLocally = false,
+}) => {
+  return isDev && showMockLayerLocally ? (
     <>
       <Source type="geojson" data={mockGeoJSON}>
         <Layer beforeId={beforeId} {...mockPolygonDataLayer} />
