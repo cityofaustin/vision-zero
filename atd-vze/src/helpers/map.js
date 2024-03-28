@@ -111,13 +111,16 @@ export const LOCATION_MAP_CONFIG = {
   },
 };
 
-export const LabeledAerialSourceAndLayer = () => {
+/** Source and layer to display NearMap aerials with street labels on top.
+ * @param {string} beforeId - layer id to place these layers before
+ */
+export const LabeledAerialSourceAndLayer = ({ beforeId }) => {
   return (
     <>
       <Source {...LOCATION_MAP_CONFIG.sources.aerials} />
-      <Layer {...LOCATION_MAP_CONFIG.layers.aerials} />
+      <Layer beforeId={beforeId} {...LOCATION_MAP_CONFIG.layers.aerials} />
       {/* show street labels on top of other layers */}
-      <Layer {...LOCATION_MAP_CONFIG.layers.streetLabels} />
+      <Layer beforeId={beforeId} {...LOCATION_MAP_CONFIG.layers.streetLabels} />
     </>
   );
 };

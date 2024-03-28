@@ -17,7 +17,7 @@ import "mapbox-gl/dist/mapbox-gl.css";
 
 // Styles for location polygon overlay
 const polygonDataLayer = {
-  id: "data",
+  id: "location-polygon",
   type: "line",
   paint: {
     "line-color": colors.warning,
@@ -57,11 +57,11 @@ const LocationMap = ({ data }) => {
     >
       <FullscreenControl position="top-left" />
       <NavigationControl position="top-left" showCompass={false} />
-      {/* add nearmap raster source and style */}
-      {!isDev && <LabeledAerialSourceAndLayer />}
       <Source type="geojson" data={locationGeoJson}>
         <Layer {...polygonDataLayer} />
       </Source>
+      {/* add nearmap raster source and style */}
+      {isDev && <LabeledAerialSourceAndLayer beforeId="location-polygon" />}
     </MapGL>
   );
 };
