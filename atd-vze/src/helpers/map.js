@@ -1,5 +1,7 @@
 import React from "react";
 import { Source, Layer } from "react-map-gl";
+import { isDev } from "./environment";
+import { colors } from "../styles/colors";
 
 const TOKEN = process.env.REACT_APP_MAPBOX_TOKEN;
 // This API key is managed by CTM. Contact help desk for maintenance and troubleshooting.
@@ -111,13 +113,47 @@ export const LOCATION_MAP_CONFIG = {
   },
 };
 
-export const LabeledAerialSourceAndLayer = () => {
-  return (
+const mockGeoJSON = {
+  type: "Feature",
+  properties: {},
+  geometry: {
+    type: "Polygon",
+    coordinates: [[[-99, 29], [-96, 29], [-96, 32], [-99, 32], [-99, 29]]],
+  },
+};
+
+const mockPolygonDataLayer = {
+  id: "test-location-polygon",
+  type: "fill",
+  paint: {
+    "fill-color": colors.primary,
+    "fill-opacity": 0.3, // values 0 to 1
+  },
+};
+
+/** Source and layer to display NearMap aerials with street labels on top.
+ * Localhost and deploy preview URLs are not on the NearMap tile API key allow list.
+ * To test locally, this returns a mock layer to test the layer ordering.
+ * Adjust the opacity in the mockPolygonDataLayer paint object for further testing.
+ * @param {string} beforeId - layer id to place these layers before
+ * @param {boolean} showMockLayerLocally - show mock layer locally instead of NearMap tile layer
+ */
+export const LabeledAerialSourceAndLayer = ({
+  beforeId,
+  showMockLayerLocally = false,
+}) => {
+  return isDev && showMockLayerLocally ? (
+    <>
+      <Source type="geojson" data={mockGeoJSON}>
+        <Layer beforeId={beforeId} {...mockPolygonDataLayer} />
+      </Source>
+    </>
+  ) : (
     <>
       <Source {...LOCATION_MAP_CONFIG.sources.aerials} />
-      <Layer {...LOCATION_MAP_CONFIG.layers.aerials} />
+      <Layer beforeId={beforeId} {...LOCATION_MAP_CONFIG.layers.aerials} />
       {/* show street labels on top of other layers */}
-      <Layer {...LOCATION_MAP_CONFIG.layers.streetLabels} />
+      <Layer beforeId={beforeId} {...LOCATION_MAP_CONFIG.layers.streetLabels} />
     </>
   );
 };

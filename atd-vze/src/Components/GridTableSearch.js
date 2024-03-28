@@ -12,7 +12,6 @@ import {
   DropdownToggle,
   DropdownItem,
   DropdownMenu,
-  Alert,
 } from "reactstrap";
 
 // TODO add query operators to each field to better fit data types (_eq, etc.)?

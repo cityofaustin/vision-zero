@@ -10,7 +10,6 @@ import {
   LabeledAerialSourceAndLayer,
   mapParameters,
 } from "../../../helpers/map";
-import { isDev } from "../../../helpers/environment";
 import "mapbox-gl/dist/mapbox-gl.css";
 
 const CrashMap = ({ data }) => {
@@ -34,7 +33,7 @@ const CrashMap = ({ data }) => {
         <Pin size={40} color={"warning"} />
       </Marker>
       {/* add nearmap raster source and style */}
-      {!isDev && <LabeledAerialSourceAndLayer />}
+      <LabeledAerialSourceAndLayer />
     </MapGL>
   );
 };
