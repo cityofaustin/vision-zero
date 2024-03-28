@@ -83,7 +83,7 @@ def delete_cr3s(crash_id):
     run_command("rm %s" % file)
 
 
-def get_crash_id_list(downloads_per_run="25"):
+def get_crash_id_list():
     """
     Downloads a list of crashes that do not have a CR3 associated.
     :return: dict - Response from request.post
@@ -91,7 +91,6 @@ def get_crash_id_list(downloads_per_run="25"):
     query_crashes_cr3 = """
         query CrashesWithoutCR3 {
           atd_txdot_crashes(
-            limit: %s,
             where: {
                 cr3_stored_flag: {_eq: "N"}
                 temp_record: {_eq: false}
@@ -101,9 +100,7 @@ def get_crash_id_list(downloads_per_run="25"):
             crash_id
           }
         }
-    """ % (
-        str(downloads_per_run)
-    )
+    """
 
     return run_query(query_crashes_cr3)
 
@@ -157,6 +154,9 @@ def process_crash_cr3(crash_record, cookies, skipped_uploads_and_updates):
 
         if not is_file_pdf:
             print(f"\nFile {download_path} is not a pdf - skipping upload and update")
+            with open(download_path, "r") as file:
+                print(file.read())
+            time.sleep(10)
             skipped_uploads_and_updates.append(crash_id)
         else:
             upload_cr3(crash_id)
