@@ -11,7 +11,6 @@ import {
   LabeledAerialSourceAndLayer,
   mapParameters,
 } from "../../helpers/map";
-import { isDev } from "../../helpers/environment";
 import { colors } from "../../styles/colors";
 import "mapbox-gl/dist/mapbox-gl.css";
 
@@ -61,7 +60,7 @@ const LocationMap = ({ data }) => {
         <Layer {...polygonDataLayer} />
       </Source>
       {/* add nearmap raster source and style */}
-      {isDev && <LabeledAerialSourceAndLayer beforeId="location-polygon" />}
+      <LabeledAerialSourceAndLayer beforeId="location-polygon" />
     </MapGL>
   );
 };
