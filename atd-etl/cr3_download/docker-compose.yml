@@ -1,5 +1,3 @@
-version: '3'
-
 services:
   cr3_download:
     build: .
@@ -7,3 +5,4 @@ services:
       - .:/app
     env_file:
       - ./.env
+    #entrypoint: /bin/bash
