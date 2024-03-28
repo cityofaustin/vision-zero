@@ -39,6 +39,7 @@ const InfoPopover = ({ config }) => {
         isOpen={modal}
         toggle={toggle}
         zIndex={1305} // Set z-index to supercede SideDrawer and SideMapControlDateRange components
+        fade={false}
         scrollable
         autoFocus
       >

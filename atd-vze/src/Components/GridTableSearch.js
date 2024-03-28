@@ -12,7 +12,6 @@ import {
   DropdownToggle,
   DropdownItem,
   DropdownMenu,
-  Alert,
 } from "reactstrap";
 
 // TODO add query operators to each field to better fit data types (_eq, etc.)?
@@ -24,17 +23,17 @@ const GridTableSearch = ({
   resetPage,
   filters,
   toggleAdvancedFilters,
+  defaultSearchField = "",
 }) => {
   const [searchFieldValue, setSearchFieldValue] = useState(
     (searchParameters && searchParameters.value) || ""
   );
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [fieldToSearch, setFieldToSearch] = useState(
-    (searchParameters && searchParameters.column) || ""
+    (searchParameters && searchParameters.column) || defaultSearchField
   );
-  const [isFieldSelected, setIsFieldSelected] = useState(
-    !!searchParameters || false
-  );
+  const isFieldSelected = !!fieldToSearch || false;
+  const isSearchValueEntered = !!searchFieldValue || false;
 
   const fieldsToSearch = query.searchableFields;
 
@@ -59,8 +58,7 @@ const GridTableSearch = ({
   const handleClearSearchResults = () => {
     clearFilters();
     setSearchFieldValue("");
-    setFieldToSearch("");
-    setIsFieldSelected(false);
+    setFieldToSearch(defaultSearchField);
   };
 
   /**
@@ -75,7 +73,6 @@ const GridTableSearch = ({
    * @param {object} e - the event object
    */
   const handleFieldSelect = e => {
-    setIsFieldSelected(true);
     setFieldToSearch(e.target.value);
   };
 
@@ -91,9 +88,6 @@ const GridTableSearch = ({
   return (
     <Col md={12}>
       <Form className="form-horizontal" onSubmit={handleSearchSubmission}>
-        {!isFieldSelected && searchFieldValue && (
-          <Alert color="warning">Please provide a field to search.</Alert>
-        )}
         <FormGroup>
           <InputGroup>
             <Input
@@ -125,7 +119,11 @@ const GridTableSearch = ({
               </DropdownMenu>
             </InputGroupButtonDropdown>
             <InputGroupAddon addonType="append">
-              <Button type="submit" color="primary">
+              <Button
+                type="submit"
+                color="primary"
+                disabled={!isFieldSelected || !isSearchValueEntered}
+              >
                 <i className="fa fa-search" /> Search
               </Button>
               <Button
@@ -133,7 +131,7 @@ const GridTableSearch = ({
                 color="danger"
                 onClick={handleClearSearchResults}
               >
-                <i className="fa fa-ban" /> Clear
+                <i className="fa fa-ban" /> Reset
               </Button>
               {(filters || null) !== null && (
                 <Button

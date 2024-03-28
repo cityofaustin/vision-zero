@@ -12,13 +12,14 @@ import {
 } from "reactstrap";
 import axios from "axios";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
+import { isDev } from "../../helpers/environment";
 
 const CrashDiagram = props => {
   const [rotation, setRotation] = useState(0);
 
   // Set S3 folder for diagram depending on environment
   const s3Folder =
-    process.env.NODE_ENV === "production" ? "production" : "staging";
+    process.env.NODE_ENV === "production" || isDev ? "production" : "staging";
 
   const requestCR3 = () => {
     const requestUrl = `${process.env.REACT_APP_CR3_API_DOMAIN}/cr3/download/${props.crashId}`;

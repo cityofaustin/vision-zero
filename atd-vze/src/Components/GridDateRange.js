@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Row } from "reactstrap";
 import { withApollo } from "react-apollo";
 import styled from "styled-components";
 import { format, parseISO } from "date-fns";
@@ -100,7 +101,10 @@ const GridDateRange = ({
   }, [initStartDate, initEndDate]);
 
   return (
-    <>
+    <Row>
+      <h3>
+        <i className="fa fa-calendar ml-3 mr-2"></i>
+      </h3>
       <StyledDatePicker>
         <DatePicker
           selected={startDate}
@@ -126,7 +130,7 @@ const GridDateRange = ({
           strictParsing={true}
         />
       </StyledDatePicker>
-    </>
+    </Row>
   );
 };
 

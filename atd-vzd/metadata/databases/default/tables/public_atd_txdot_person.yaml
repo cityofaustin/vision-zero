@@ -370,3 +370,12 @@ update_permissions:
         - updated_by
       filter: {}
       check: null
+delete_permissions:
+  - role: editor
+    permission:
+      filter: {}
+    comment: ""
+  - role: vz-admin
+    permission:
+      filter: {}
+    comment: ""

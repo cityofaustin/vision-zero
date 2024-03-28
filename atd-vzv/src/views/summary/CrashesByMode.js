@@ -6,6 +6,8 @@ import styled from "styled-components";
 import { format } from "date-fns";
 
 import CrashTypeSelector from "./Components/CrashTypeSelector";
+import InfoPopover from "../../Components/Popover/InfoPopover";
+import { popoverConfig } from "../../Components/Popover/popoverConfig";
 import { colors } from "../../constants/colors";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -222,7 +224,9 @@ const CrashesByMode = () => {
     <Container className="m-0 p-0">
       <Row>
         <Col>
-          <h2 className="text-left, font-weight-bold">By Travel Mode</h2>
+          <h2 className="text-left font-weight-bold">By Travel Mode{" "}
+            <InfoPopover config={popoverConfig.summary.byMode} />
+          </h2>
         </Col>
       </Row>
       <Row>

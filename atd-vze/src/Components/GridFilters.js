@@ -12,7 +12,7 @@ import { withApollo } from "react-apollo";
 import { AppSwitch } from "@coreui/react";
 
 const GridFilters = ({
-  isCollapsed,
+  isOpen,
   filters,
   filterOptionsState,
   setFilterOptions,
@@ -95,7 +95,7 @@ const GridFilters = ({
 
     return (
       <Col md="6" id={groupName} key={`groupName--${groupName}`}>
-        <Collapse isOpen={isCollapsed}>
+        <Collapse isOpen={isOpen}>
           <div>
             <Card>
               <CardHeader>
