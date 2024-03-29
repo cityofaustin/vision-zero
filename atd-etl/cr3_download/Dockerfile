@@ -10,4 +10,3 @@ COPY . /app
 
 RUN cd /app && pip install -r requirements.txt
 
-CMD -t 5
