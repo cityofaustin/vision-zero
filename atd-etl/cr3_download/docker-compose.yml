@@ -6,4 +6,4 @@ services:
     env_file:
       - ./.env
     # entrypoint: /bin/bash
-    entrypoint: /app/cr3_download.py
+    entrypoint: /app/cr3_download.py -t 5
