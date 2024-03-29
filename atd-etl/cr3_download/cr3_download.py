@@ -154,14 +154,6 @@ with ThreadPoolExecutor(max_workers=max_workers) as executor:
     for future in futures:
         future.result()
 
-
-# for crash_record in crashes_list_without_skips:
-#     process_crash_cr3(
-#         crash_record,
-#         CRIS_BROWSER_COOKIES,
-#         skipped_uploads_and_updates,
-#     )
-
 print("\nProcess done.")
 
 if skipped_uploads_and_updates:
