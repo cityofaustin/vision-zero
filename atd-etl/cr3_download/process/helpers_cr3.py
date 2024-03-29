@@ -23,17 +23,18 @@ import magic
 from .request import run_query
 
 
-def run_command(command):
+def run_command(command, verbose):
     """
     Runs a command
     :param command: array of strings containing the command and flags
     """
-    print(command)
-    print(subprocess.check_output(command, shell=True).decode("utf-8"))
+    if verbose:
+        print(command)
+        print(subprocess.check_output(command, shell=True).decode("utf-8"))
 
 
 # Now we need to implement our methods.
-def download_cr3(crash_id, cookies):
+def download_cr3(crash_id, cookies, verbose):
     """
     Downloads a CR3 pdf from the CRIS website.
     :param crash_id: string - The crash id
@@ -52,14 +53,15 @@ def download_cr3(crash_id, cookies):
     url = os.getenv("ATD_CRIS_CR3_URL") + crash_id_encoded
     download_path = "/tmp/" + "%s.pdf" % crash_id
 
-    print("Downloading (%s): '%s' from %s" % (crash_id, download_path, url))
+    if verbose:
+        print("Downloading (%s): '%s' from %s" % (crash_id, download_path, url))
     resp = requests.get(url, allow_redirects=True, cookies=baked_cookies)
     open(download_path, "wb").write(resp.content)
 
     return download_path
 
 
-def upload_cr3(crash_id):
+def upload_cr3(crash_id, verbose):
     """
     Uploads a file to S3 using the awscli command
     :param crash_id: string - The crash id
@@ -71,16 +73,25 @@ def upload_cr3(crash_id):
         crash_id,
     )
 
-    run_command("aws s3 cp %s %s --no-progress" % (file, destination))
+    quiet_option = "--quiet" if not verbose else ""
+    run_command(
+        "aws s3 cp %s %s --no-progress %s"
+        % (
+            file,
+            destination,
+            quiet_option,
+        ),
+        verbose,
+    )
 
 
-def delete_cr3s(crash_id):
+def delete_cr3s(crash_id, verbose):
     """
     Deletes the downloaded CR3 pdf file
     :param crash_id: string - The crash id
     """
     file = "/tmp/%s.pdf" % crash_id
-    run_command("rm %s" % file)
+    run_command("rm %s" % file, verbose)
 
 
 def get_crash_id_list():
@@ -105,7 +116,7 @@ def get_crash_id_list():
     return run_query(query_crashes_cr3)
 
 
-def update_crash_id(crash_id):
+def update_crash_id(crash_id, verbose):
     """
     Updates the status of a crash to having an available CR3 pdf in the S3 bucket.
     :param crash_id: string - The Crash ID that needs to be updated
@@ -122,7 +133,8 @@ def update_crash_id(crash_id):
     """
         % crash_id
     )
-    print(update_record_cr3)
+    if verbose:
+        print(f"Marking CR3 status as downloaded for crash_id: {crash_id}")
     return run_query(update_record_cr3)
 
 
@@ -137,7 +149,7 @@ def check_if_pdf(file_path):
     return file_type == "application/pdf"
 
 
-def process_crash_cr3(crash_record, cookies, skipped_uploads_and_updates):
+def process_crash_cr3(crash_record, cookies, skipped_uploads_and_updates, verbose):
     """
     Downloads a CR3 pdf, uploads it to s3, updates the database and deletes the pdf.
     :param crash_record: dict - The individual crash record being processed
@@ -149,7 +161,7 @@ def process_crash_cr3(crash_record, cookies, skipped_uploads_and_updates):
 
         print("Processing Crash: " + crash_id)
 
-        download_path = download_cr3(crash_id, cookies)
+        download_path = download_cr3(crash_id, cookies, verbose)
         is_file_pdf = check_if_pdf(download_path)
 
         if not is_file_pdf:
@@ -159,10 +171,10 @@ def process_crash_cr3(crash_record, cookies, skipped_uploads_and_updates):
             time.sleep(10)
             skipped_uploads_and_updates.append(crash_id)
         else:
-            upload_cr3(crash_id)
-            update_crash_id(crash_id)
+            upload_cr3(crash_id, verbose)
+            update_crash_id(crash_id, verbose)
 
-        delete_cr3s(crash_id)
+        delete_cr3s(crash_id, verbose)
 
     except Exception as e:
         print("Error: %s" % str(e))

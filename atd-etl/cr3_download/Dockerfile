@@ -10,4 +10,4 @@ COPY . /app
 
 RUN cd /app && pip install -r requirements.txt
 
-CMD python /app/cr3_download.py
+CMD -t 5
