@@ -29,6 +29,10 @@ const DefaultLayout = props => {
   const { getRoles } = useAuth0();
   const roles = getRoles();
 
+  // get initial state from local storage
+  const [isAppSideBarOpen, setIsAppSideBarOpen] = React.useState(true);
+  console.log("isAppSideBarOpen", isAppSideBarOpen);
+
   const loading = () => (
     <div className="animated fadeIn pt-1 text-center">Loading...</div>
   );
@@ -37,6 +41,34 @@ const DefaultLayout = props => {
     e.preventDefault();
     props.history.push("/login");
   };
+
+  React.useEffect(() => {
+    const elemToObserve = document.getElementById("body-outside-app");
+
+    let prevClassState = elemToObserve.classList.contains("sidebar-lg-show");
+
+    const observer = new MutationObserver(function(mutations) {
+      mutations.forEach(function(mutation) {
+        if (mutation.attributeName == "class") {
+          const currentClassState = mutation.target.classList.contains(
+            "sidebar-lg-show"
+          );
+          if (prevClassState !== currentClassState) {
+            prevClassState = currentClassState;
+
+            if (currentClassState) {
+              setIsAppSideBarOpen(true);
+            } else {
+              setIsAppSideBarOpen(false);
+            }
+          }
+        }
+      });
+    });
+    observer.observe(elemToObserve, { attributes: true });
+
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <div className="app">
