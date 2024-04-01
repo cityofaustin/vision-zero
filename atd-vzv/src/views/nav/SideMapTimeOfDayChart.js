@@ -10,13 +10,9 @@ import { HorizontalBar } from "react-chartjs-2";
 import { colors } from "../../constants/colors";
 
 const fieldsToRequest = [
-  "point",
   "death_cnt",
   "sus_serious_injry_cnt",
-  "latitude",
-  "longitude",
   "crash_id",
-  "units_involved",
   "crash_date",
 ];
 
@@ -26,7 +22,7 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
   const defaultBarColor = colors.dark;
   const inactiveBarColor = colors.white;
 
-  const [chartData, setChartData] = useState(null);
+  const [crashes, setCrashes] = useState(null);
   const [timeWindowData, setTimeWindowData] = useState([]);
   const [timeWindowPercentages, setTimeWindowPercentages] = useState([]);
   const [barColors, setBarColors] = useState(defaultBarColor);
@@ -37,16 +33,6 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
     mapDateRange: dateRange,
     mapPolygon: [mapPolygon],
   } = React.useContext(StoreContext);
-
-  const apiUrl = useMemo(() => {
-    return createMapDataUrl(
-      crashEndpointUrl,
-      mapFilters,
-      dateRange,
-      mapPolygon,
-      fieldsToRequest
-    );
-  }, [mapFilters, dateRange, mapPolygon]);
 
   // mapFilters with ALL selected and only Other checked
   //   {
@@ -76,39 +62,50 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
   // $select=point,death_cnt,sus_serious_injry_cnt,latitude,longitude,crash_id,units_involved,crash_date
   // &$limit=100000&$where=crash_date between '2020-01-01T00:00:00' and '2024-03-18T23:59:59'
   // AND (other_death_count > 0 OR other_serious_injury_count > 0)
+  // AND
 
   // Get crash data without mapTimeWindow filter to populate chart
   useEffect(() => {
-    console.log(apiUrl);
+    const apiUrl = createMapDataUrl(
+      crashEndpointUrl,
+      mapFilters,
+      dateRange,
+      mapPolygon,
+      fieldsToRequest
+    );
+
     !!apiUrl &&
       axios.get(apiUrl).then((res) => {
-        console.log(res);
-        setChartData(res.data);
+        setCrashes(res.data);
       });
-  }, [apiUrl]);
+  }, [dateRange, mapPolygon, mapFilters]);
 
   useMemo(() => {
-    const crashes = chartData;
     // When chartData is set, accumulate time window data
     if (!!crashes) {
-      const crashTimeWindowAccumulatorArray = Object.keys(filters).map(
-        (filter) => 0
-      );
+      // Fill in time window data with 0s
+      const crashTimeWindowAccumulatorArray = Object.keys(filters).map(() => 0);
       const crashTimeWindows = Object.values(filters).map((filter) => filter);
       const crashTimeTotals = crashes.reduce((accumulator, crash) => {
         crashTimeWindows.forEach((timeWindow, i) => {
           const crashDate = crash.crash_date;
           const crashHour = parseInt(format(new Date(crashDate), "H"));
-          crashHour >= timeWindow[0] &&
-            crashHour <= timeWindow[1] &&
-            accumulator[i]++;
+
+          const crashFatalities = parseInt(crash.death_cnt);
+          const seriousInjuries = parseInt(crash.sus_serious_injry_cnt);
+          const isCrashInTimeWindow =
+            crashHour >= timeWindow[0] && crashHour <= timeWindow[1];
+
+          if (isCrashInTimeWindow) {
+            accumulator[i] = accumulator[i] + crashFatalities + seriousInjuries;
+          }
         });
         return accumulator;
       }, crashTimeWindowAccumulatorArray);
 
       setTimeWindowData(crashTimeTotals);
     }
-  }, [chartData, filters]);
+  }, [crashes, filters]);
 
   useMemo(() => {
     // When timeWindowData is set, calc percentages
