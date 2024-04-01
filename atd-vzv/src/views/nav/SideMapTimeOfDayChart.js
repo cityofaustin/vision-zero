@@ -27,6 +27,36 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
     mapPolygon: [mapPolygon],
   } = React.useContext(StoreContext);
 
+  console.log(mapFilters);
+
+  // mapFilters with ALL selected and only Other checked
+  //   {
+  //     "icon": {
+  //         "prefix": "fas",
+  //         "iconName": "ellipsis-h",
+  //         "icon": [
+  //             512,
+  //             512,
+  //             [],
+  //             "f141",
+  //             "M328 256c0 39.8-32.2 72-72 72s-72-32.2-72-72 32.2-72 72-72 72 32.2 72 72zm104-72c-39.8 0-72 32.2-72 72s32.2 72 72 72 72-32.2 72-72-32.2-72-72-72zm-352 0c-39.8 0-72 32.2-72 72s32.2 72 72 72 72-32.2 72-72-32.2-72-72-72z"
+  //         ]
+  //     },
+  //     "fatalSyntax": "other_death_count > 0",
+  //     "injurySyntax": "other_serious_injury_count > 0",
+  //     "type": "where",
+  //     "operator": "OR",
+  //     "default": true,
+  //     "name": "other",
+  //     "group": "mode",
+  //     "syntax": "other_death_count > 0 OR other_serious_injury_count > 0"
+  // }
+  //
+  // Fires three requests to the crash open dataset (y2wy-tgr5):
+  // https://data.austintexas.gov/resource/y2wy-tgr5.json?$select=point,death_cnt,sus_serious_injry_cnt,latitude,longitude,crash_id,units_involved,crash_date&$limit=100000&$where=crash_date%20between%20%272020-01-01T00:00:00%27%20and%20%272024-03-18T23:59:59%27%20AND%20(other_death_count%20%3E%200%20OR%20other_serious_injury_count%20%3E%200)
+  // https://data.austintexas.gov/resource/y2wy-tgr5.json?$select=point,death_cnt,sus_serious_injry_cnt,latitude,longitude,crash_id,units_involved,crash_date&$limit=100000&$where=crash_date%20between%20%272020-01-01T00:00:00%27%20and%20%272024-03-18T23:59:59%27%20AND%20(other_death_count%20%3E%200%20OR%20other_serious_injury_count%20%3E%200)
+  // https://data.austintexas.gov/resource/y2wy-tgr5.geojson?$select=point,death_cnt,sus_serious_injry_cnt,latitude,longitude,crash_id,units_involved,crash_date&$limit=100000&$where=crash_date%20between%20%272020-01-01T00:00:00%27%20and%20%272024-03-18T23:59:59%27%20AND%20(other_death_count%20%3E%200%20OR%20other_serious_injury_count%20%3E%200)
+
   // Get crash data without mapTimeWindow filter to populate chart
   useEffect(() => {
     const apiUrl = createMapDataUrl(
