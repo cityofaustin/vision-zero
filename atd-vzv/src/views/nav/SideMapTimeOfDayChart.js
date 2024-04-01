@@ -9,6 +9,17 @@ import { Container, Button } from "reactstrap";
 import { HorizontalBar } from "react-chartjs-2";
 import { colors } from "../../constants/colors";
 
+const fieldsToRequest = [
+  "point",
+  "death_cnt",
+  "sus_serious_injry_cnt",
+  "latitude",
+  "longitude",
+  "crash_id",
+  "units_involved",
+  "crash_date",
+];
+
 export const SideMapTimeOfDayChart = ({ filters }) => {
   const chartRef = useRef();
 
@@ -27,7 +38,15 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
     mapPolygon: [mapPolygon],
   } = React.useContext(StoreContext);
 
-  console.log(mapFilters);
+  const apiUrl = useMemo(() => {
+    return createMapDataUrl(
+      crashEndpointUrl,
+      mapFilters,
+      dateRange,
+      mapPolygon,
+      fieldsToRequest
+    );
+  }, [mapFilters, dateRange, mapPolygon]);
 
   // mapFilters with ALL selected and only Other checked
   //   {
@@ -53,23 +72,20 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
   // }
   //
   // Fires three requests to the crash open dataset (y2wy-tgr5):
-  // https://data.austintexas.gov/resource/y2wy-tgr5.json?$select=point,death_cnt,sus_serious_injry_cnt,latitude,longitude,crash_id,units_involved,crash_date&$limit=100000&$where=crash_date%20between%20%272020-01-01T00:00:00%27%20and%20%272024-03-18T23:59:59%27%20AND%20(other_death_count%20%3E%200%20OR%20other_serious_injury_count%20%3E%200)
-  // https://data.austintexas.gov/resource/y2wy-tgr5.json?$select=point,death_cnt,sus_serious_injry_cnt,latitude,longitude,crash_id,units_involved,crash_date&$limit=100000&$where=crash_date%20between%20%272020-01-01T00:00:00%27%20and%20%272024-03-18T23:59:59%27%20AND%20(other_death_count%20%3E%200%20OR%20other_serious_injury_count%20%3E%200)
-  // https://data.austintexas.gov/resource/y2wy-tgr5.geojson?$select=point,death_cnt,sus_serious_injry_cnt,latitude,longitude,crash_id,units_involved,crash_date&$limit=100000&$where=crash_date%20between%20%272020-01-01T00:00:00%27%20and%20%272024-03-18T23:59:59%27%20AND%20(other_death_count%20%3E%200%20OR%20other_serious_injury_count%20%3E%200)
+  // https://data.austintexas.gov/resource/y2wy-tgr5.json?
+  // $select=point,death_cnt,sus_serious_injry_cnt,latitude,longitude,crash_id,units_involved,crash_date
+  // &$limit=100000&$where=crash_date between '2020-01-01T00:00:00' and '2024-03-18T23:59:59'
+  // AND (other_death_count > 0 OR other_serious_injury_count > 0)
 
   // Get crash data without mapTimeWindow filter to populate chart
   useEffect(() => {
-    const apiUrl = createMapDataUrl(
-      crashEndpointUrl,
-      mapFilters,
-      dateRange,
-      mapPolygon
-    );
+    console.log(apiUrl);
     !!apiUrl &&
       axios.get(apiUrl).then((res) => {
+        console.log(res);
         setChartData(res.data);
       });
-  }, [dateRange, mapPolygon, mapFilters]);
+  }, [apiUrl]);
 
   useMemo(() => {
     const crashes = chartData;
