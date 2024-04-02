@@ -202,7 +202,15 @@ export const popoverConfig = {
                 SUV, pickup, semi-trailer, etc.
               </li>
               <li>
-                <strong>Pedestrian</strong>: Person on foot
+                <strong>Pedestrian</strong>: Person on foot or using{" "}
+                <a
+                  href="https://www.transportation.gov/individuals/aviation-consumer-protection/wheelchairs-and-other-assistive-devices"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  assistive devices
+                </a>
+                , such as a wheelchair
               </li>
               <li>
                 <strong>Motorcyclist</strong>: Motorcycle rider or driver
@@ -216,7 +224,8 @@ export const popoverConfig = {
               </li>
               <li>
                 <strong>Other</strong>: Any modality other than motorist,
-                pedestrian, motorcyclist, bicyclist, or e-scooter rider
+                pedestrian, motorcyclist, bicyclist, or e-scooter rider, such as
+                a pedicab
               </li>
             </ul>
           </div>
