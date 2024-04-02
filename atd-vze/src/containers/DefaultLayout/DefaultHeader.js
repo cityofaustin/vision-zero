@@ -22,22 +22,28 @@ const propTypes = {
 
 const defaultProps = {};
 
+const getAlertBannerColor = env => {
+  // show an orange banner on local
+  // show blue on staging
+  switch (env) {
+    case "local":
+      return "warning";
+    default:
+      return "primary";
+  }
+};
+
 const EnvAlertBanner = () => {
-  const env = process.env.REACT_APP_HASURA_ENDPOINT.includes("staging")
-    ? "staging"
-    : process.env.NODE_ENV === "production"
-    ? "production"
-    : "local";
+  const env = process.env.REACT_APP_ENV;
   if (env === "production") {
     return null;
-  } else {
-    return (
-      <Alert color="primary" className="mb-0">
-        This is a <span style={{ fontWeight: "bold" }}>{env}</span> environment
-        for testing purposes.
-      </Alert>
-    );
   }
+  return (
+    <Alert color={getAlertBannerColor(env)} className="mb-0">
+      This is a <span style={{ fontWeight: "bold" }}>{env}</span> environment
+      for testing purposes.
+    </Alert>
+  );
 };
 
 const DefaultHeader = props => {
