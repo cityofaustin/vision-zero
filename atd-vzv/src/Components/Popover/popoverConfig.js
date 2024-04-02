@@ -208,7 +208,7 @@ export const popoverConfig = {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  assistive devices
+                  an assistive device
                 </a>
                 , such as a wheelchair
               </li>
