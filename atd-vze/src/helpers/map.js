@@ -151,9 +151,12 @@ export const LabeledAerialSourceAndLayer = ({
   ) : (
     <>
       <Source {...LOCATION_MAP_CONFIG.sources.aerials} />
-      <Layer beforeId={beforeId} {...LOCATION_MAP_CONFIG.layers.aerials} />
-      {/* show street labels on top of other layers */}
-      <Layer beforeId={beforeId} {...LOCATION_MAP_CONFIG.layers.streetLabels} />
+      <Layer
+        id="street-labels"
+        beforeId={beforeId}
+        {...LOCATION_MAP_CONFIG.layers.streetLabels}
+      />
+      <Layer beforeId="street-labels" {...LOCATION_MAP_CONFIG.layers.aerials} />
     </>
   );
 };

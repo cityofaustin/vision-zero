@@ -60,10 +60,7 @@ const LocationMap = ({ data }) => {
         <Layer {...polygonDataLayer} />
       </Source>
       {/* add nearmap raster source and style */}
-      <LabeledAerialSourceAndLayer
-        beforeId="location-polygon"
-        showMockLayerLocally
-      />
+      <LabeledAerialSourceAndLayer beforeId="location-polygon" />
     </MapGL>
   );
 };
