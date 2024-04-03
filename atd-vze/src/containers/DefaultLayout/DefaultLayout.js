@@ -26,33 +26,17 @@ const DefaultFooter = React.lazy(() => import("./DefaultFooter"));
 const DefaultHeader = React.lazy(() => import("./DefaultHeader"));
 
 const useIsAppSideBarOpen = () => {
-  // TODO: Load isAppSideBarOpen from local storage
+  const [isAppSideBarOpen, setIsAppSideBarOpen] = React.useState(null);
 
-  const elemToObserve = document.getElementById("body-outside-app");
-  const isAppSideBarOpenSetting = localStorage.getItem("isAppSideBarOpen");
+  console.log(isAppSideBarOpen);
 
-  const [isAppSideBarOpen, setIsAppSideBarOpen] = React.useState(
-    isAppSideBarOpenSetting || true
-  );
-
-  console.log(isAppSideBarOpenSetting);
-  // sync state with local storage
+  // Sync state with classes on body-outside-app
   React.useEffect(() => {
-    console.log("this ran", isAppSideBarOpen);
-    if (isAppSideBarOpen === null || isAppSideBarOpen === true) {
-      localStorage.setItem("isAppSideBarOpen", true);
-    } else {
-      localStorage.setItem("isAppSideBarOpen", false);
-    }
-  }, [isAppSideBarOpen]);
-
-  // sync state with classes on body-outside-app
-  React.useEffect(() => {
-    let prevClassState = elemToObserve.classList.contains("sidebar-lg-show");
+    const elemToObserve = document.getElementById("body-outside-app");
 
     const observer = new MutationObserver(function(mutations) {
       mutations.forEach(function(mutation) {
-        if (mutation.attributeName == "class") {
+        if (mutation.attributeName === "class") {
           const currentClassState = mutation.target.classList.contains(
             "sidebar-lg-show"
           );
@@ -66,17 +50,30 @@ const useIsAppSideBarOpen = () => {
     return () => observer.disconnect();
   }, []);
 
-  // sync classes with state
+  // Sync local storage with state
   React.useEffect(() => {
-    if (isAppSideBarOpen) {
-      const isClassAlreadyAdded = elemToObserve.classList.contains(
-        "sidebar-lg-show"
-      );
-      !isClassAlreadyAdded && elemToObserve.classList.add("sidebar-lg-show");
+    const isAppSideBarOpenSetting = localStorage.getItem("isAppSideBarOpen");
+
+    if (isAppSideBarOpenSetting === isAppSideBarOpen) {
+      return;
     } else {
-      elemToObserve.classList.remove("sidebar-lg-show");
+      localStorage.setItem("isAppSideBarOpen", isAppSideBarOpen);
     }
   }, [isAppSideBarOpen]);
+
+  // TODO: Consume isAppSideBarOpen from local storage and add/remove class from body-outside-app
+  // React.useEffect(() => {
+  //   const elemToObserve = document.getElementById("body-outside-app");
+
+  //   if (isAppSideBarOpen) {
+  //     const isClassAlreadyAdded = elemToObserve.classList.contains(
+  //       "sidebar-lg-show"
+  //     );
+  //     !isClassAlreadyAdded && elemToObserve.classList.add("sidebar-lg-show");
+  //   } else {
+  //     elemToObserve.classList.remove("sidebar-lg-show");
+  //   }
+  // }, [isAppSideBarOpen]);
 };
 
 const DefaultLayout = props => {
