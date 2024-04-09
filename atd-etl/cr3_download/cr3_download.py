@@ -150,8 +150,8 @@ def main():
         crashes_list_without_skips = []
         print(f"Error, could not run CR3 processing: {str(e)}")
 
+    print(f"Length of queue: {len(crashes_list_without_skips)}")
     if args.verbose:
-        print(f"Length of queue: {len(crashes_list_without_skips)}")
         print("Starting CR3 downloads:")
 
     max_workers = args.threads
