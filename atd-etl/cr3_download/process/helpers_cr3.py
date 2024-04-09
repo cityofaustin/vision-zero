@@ -31,6 +31,8 @@ def run_command(command, verbose):
     if verbose:
         print(command)
         print(subprocess.check_output(command, shell=True).decode("utf-8"))
+    else:
+        subprocess.check_output(command, shell=True).decode("utf-8")
 
 
 # Now we need to implement our methods.
