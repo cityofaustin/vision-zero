@@ -299,44 +299,46 @@ const PeopleByDemographics = () => {
           <hr />
         </Col>
       </Row>
-      <ChartTypeSelector
-        chartTypes={Object.values(chartConfigs).map((value) => value.label)}
-        chartType={chartType}
-        setChartType={setChartType}
-      />
       {!!chartData.datasets ? (
-        <Row>
-          <Col>
-            <HorizontalBar
-              redraw
-              data={chartData}
-              height={null}
-              width={null}
-              options={{
-                responsive: true,
-                aspectRatio: 1,
-                maintainAspectRatio: false,
-                plugins: {
-                  // Imported to display percentages without calculating them from data
-                  stacked100: { enable: true, replaceTooltipLabel: false },
-                },
-                tooltips: {
-                  callbacks: {
-                    label: (tooltipItem, data) => {
-                      const datasetIndex = tooltipItem.datasetIndex;
-                      const datasetLabel = data.datasets[datasetIndex].label;
-                      const originalValue =
-                        data.originalData[datasetIndex][tooltipItem.index];
-                      const rateValue =
-                        data.calculatedData[datasetIndex][tooltipItem.index];
-                      return `${datasetLabel}: ${originalValue} (${rateValue}%)`;
+        <div>
+          <ChartTypeSelector
+            chartTypes={Object.values(chartConfigs).map((value) => value.label)}
+            chartType={chartType}
+            setChartType={setChartType}
+          />
+          <Row>
+            <Col>
+              <HorizontalBar
+                redraw
+                data={chartData}
+                height={null}
+                width={null}
+                options={{
+                  responsive: true,
+                  aspectRatio: 1,
+                  maintainAspectRatio: false,
+                  plugins: {
+                    // Imported to display percentages without calculating them from data
+                    stacked100: { enable: true, replaceTooltipLabel: false },
+                  },
+                  tooltips: {
+                    callbacks: {
+                      label: (tooltipItem, data) => {
+                        const datasetIndex = tooltipItem.datasetIndex;
+                        const datasetLabel = data.datasets[datasetIndex].label;
+                        const originalValue =
+                          data.originalData[datasetIndex][tooltipItem.index];
+                        const rateValue =
+                          data.calculatedData[datasetIndex][tooltipItem.index];
+                        return `${datasetLabel}: ${originalValue} (${rateValue}%)`;
+                      },
                     },
                   },
-                },
-              }}
-            />
-          </Col>
-        </Row>
+                }}
+              />
+            </Col>
+          </Row>
+        </div>
       ) : (
         <Spinner />
       )}
