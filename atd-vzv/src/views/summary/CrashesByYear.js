@@ -112,15 +112,17 @@ const CrashesByYear = () => {
           <hr />
         </Col>
       </Row>
-      <ChartTypeSelector
-        chartTypes={chartTypes}
-        chartType={chartType}
-        setChartType={setChartType}
-      />
       {avgData.length > 0 && currentYearData.length > 0 ? (
-        <Row className="mt-1">
-          <Col>{renderChartByType(chartType)}</Col>
-        </Row>
+        <div>
+          <ChartTypeSelector
+            chartTypes={chartTypes}
+            chartType={chartType}
+            setChartType={setChartType}
+          />
+          <Row className="mt-1">
+            <Col>{renderChartByType(chartType)}</Col>
+          </Row>
+        </div>
       ) : (
         <Spinner />
       )}
