@@ -239,7 +239,7 @@ const CrashesByMode = () => {
       </Row>
       <Row>
         <Col>
-          <hr className="mb-2" />
+          <hr />
         </Col>
       </Row>
       {!!data.datasets ? (
