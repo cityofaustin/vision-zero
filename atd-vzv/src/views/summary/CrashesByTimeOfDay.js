@@ -4,7 +4,7 @@ import { format, parseISO, sub } from "date-fns";
 import clonedeep from "lodash.clonedeep";
 
 import CrashTypeSelector from "./Components/CrashTypeSelector";
-import { Row, Col, Container, Button } from "reactstrap";
+import { Row, Col, Container, Button, Spinner } from "reactstrap";
 import styled from "styled-components";
 import classnames from "classnames";
 import {
@@ -221,99 +221,105 @@ const CrashesByTimeOfDay = () => {
           <hr />
         </Col>
       </Row>
-      <Row className="text-center">
-        <Col className="pb-2">
-          <StyledButton>
-            {yearsArray() // Calculate years ago for each year in data window
-              .map((year) => {
-                const currentYear = parseInt(format(dataEndDate, "yyyy"));
-                return currentYear - year;
-              })
-              .map((yearsAgo) => (
-                <Button
-                  key={yearsAgo}
-                  className={classnames(
-                    { active: activeTab === yearsAgo },
-                    "year-selector"
-                  )}
-                  onClick={() => {
-                    toggle(yearsAgo);
-                  }}
-                >
-                  {getYearsAgoLabel(yearsAgo)}
-                </Button>
-              ))}
-          </StyledButton>
-        </Col>
-      </Row>
-      <Row className="h-auto">
-        <Col id="demographics-heatmap" className="pl-4">
-          <Heatmap
-            height={267}
-            data={heatmapDataWithPlaceholder}
-            series={
-              <HeatmapSeries
-                colorScheme={[
-                  colors.intensity2Of5,
-                  colors.intensity3Of5,
-                  colors.intensity4Of5,
-                  colors.viridis1Of6Highest,
-                ]}
-                emptyColor={colors.intensity1Of5Lowest}
-                cell={
-                  <HeatmapCell
-                    // This ref is needed to hide placeholder cells
-                    ref={heatmapCellRef}
-                    tooltip={
-                      <ChartTooltip
-                        content={(d) =>
-                          `${d.x} ∙
+      {!!heatmapDataWithPlaceholder ? (
+        <div>
+          <Row className="text-center">
+            <Col className="pb-2">
+              <StyledButton>
+                {yearsArray() // Calculate years ago for each year in data window
+                  .map((year) => {
+                    const currentYear = parseInt(format(dataEndDate, "yyyy"));
+                    return currentYear - year;
+                  })
+                  .map((yearsAgo) => (
+                    <Button
+                      key={yearsAgo}
+                      className={classnames(
+                        { active: activeTab === yearsAgo },
+                        "year-selector"
+                      )}
+                      onClick={() => {
+                        toggle(yearsAgo);
+                      }}
+                    >
+                      {getYearsAgoLabel(yearsAgo)}
+                    </Button>
+                  ))}
+              </StyledButton>
+            </Col>
+          </Row>
+          <Row className="h-auto">
+            <Col id="demographics-heatmap" className="pl-4">
+              <Heatmap
+                height={267}
+                data={heatmapDataWithPlaceholder}
+                series={
+                  <HeatmapSeries
+                    colorScheme={[
+                      colors.intensity2Of5,
+                      colors.intensity3Of5,
+                      colors.intensity4Of5,
+                      colors.viridis1Of6Highest,
+                    ]}
+                    emptyColor={colors.intensity1Of5Lowest}
+                    cell={
+                      <HeatmapCell
+                        // This ref is needed to hide placeholder cells
+                        ref={heatmapCellRef}
+                        tooltip={
+                          <ChartTooltip
+                            content={(d) =>
+                              `${d.x} ∙
                           ${formatValue(d)}`
+                            }
+                          />
+                        }
+                      />
+                    }
+                  />
+                }
+                xAxis={
+                  <LinearXAxis
+                    type="category"
+                    axisLine={null}
+                    tickSeries={
+                      <LinearXAxisTickSeries
+                        line={null}
+                        label={
+                          <LinearXAxisTickLabel
+                            padding={
+                              navigator.userAgent.includes("Firefox") ? 15 : 5
+                            }
+                          />
                         }
                       />
                     }
                   />
                 }
               />
-            }
-            xAxis={
-              <LinearXAxis
-                type="category"
-                axisLine={null}
-                tickSeries={
-                  <LinearXAxisTickSeries
-                    line={null}
-                    label={
-                      <LinearXAxisTickLabel
-                        padding={
-                          navigator.userAgent.includes("Firefox") ? 15 : 5
-                        }
-                      />
-                    }
-                  />
-                }
-              />
-            }
-          />
-        </Col>
-      </Row>
-      <Row>
-        <Col className="py-2">
-          {!!maxForLegend && (
-            <SequentialLegend
-              data={[
-                { key: "Max", data: maxForLegend[crashType.name] },
-                { key: "Min", data: 0 },
-              ]}
-              orientation="horizontal"
-              colorScheme={[
-                colors.intensity1Of5Lowest,
-                colors.viridis1Of6Highest,
-              ]}
-            />
-          )}
-        </Col>
-      </Row>
+            </Col>
+          </Row>
+          <Row>
+            <Col className="py-2">
+              {!!maxForLegend && (
+                <SequentialLegend
+                  data={[
+                    { key: "Max", data: maxForLegend[crashType.name] },
+                    { key: "Min", data: 0 },
+                  ]}
+                  orientation="horizontal"
+                  colorScheme={[
+                    colors.intensity1Of5Lowest,
+                    colors.viridis1Of6Highest,
+                  ]}
+                />
+              )}
+            </Col>
+          </Row>
+        </div>
+      ) : (
+        <Spinner />
+      )}
     </Container>
   );
 };

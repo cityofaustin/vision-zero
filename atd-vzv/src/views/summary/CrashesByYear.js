@@ -3,7 +3,7 @@ import axios from "axios";
 import CrashesByYearCumulative from "./CrashesByYearCumulative";
 import CrashesByYearAverage from "./CrashesByYearAverage";
 import ChartTypeSelector from "./Components/ChartTypeSelector";
-import { Container, Row, Col } from "reactstrap";
+import { Container, Row, Col, Spinner } from "reactstrap";
 
 import CrashTypeSelector from "./Components/CrashTypeSelector";
 import InfoPopover from "../../Components/Popover/InfoPopover";
@@ -101,7 +101,10 @@ const CrashesByYear = () => {
       </Row>
       <Row>
         <Col>
-          <CrashTypeSelector setCrashType={setCrashType} componentName="CrashesByYear"/>
+          <CrashTypeSelector
+            setCrashType={setCrashType}
+            componentName="CrashesByYear"
+          />
         </Col>
       </Row>
       <Row>
@@ -114,9 +117,13 @@ const CrashesByYear = () => {
         chartType={chartType}
         setChartType={setChartType}
       />
-      <Row className="mt-1">
-        <Col>{renderChartByType(chartType)}</Col>
-      </Row>
+      {avgData.length > 0 && currentYearData.length > 0 ? (
+        <Row className="mt-1">
+          <Col>{renderChartByType(chartType)}</Col>
+        </Row>
+      ) : (
+        <Spinner />
+      )}
     </Container>
   );
 };

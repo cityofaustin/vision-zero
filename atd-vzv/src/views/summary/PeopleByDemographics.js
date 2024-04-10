@@ -3,7 +3,7 @@ import axios from "axios";
 import { HorizontalBar } from "react-chartjs-2";
 import "chartjs-plugin-stacked100";
 import ChartTypeSelector from "./Components/ChartTypeSelector";
-import { Container, Row, Col } from "reactstrap";
+import { Container, Row, Col, Spinner } from "reactstrap";
 import { format } from "date-fns";
 
 import CrashTypeSelector from "./Components/CrashTypeSelector";
@@ -304,38 +304,42 @@ const PeopleByDemographics = () => {
         chartType={chartType}
         setChartType={setChartType}
       />
-      <Row>
-        <Col>
-          <HorizontalBar
-            redraw
-            data={chartData}
-            height={null}
-            width={null}
-            options={{
-              responsive: true,
-              aspectRatio: 1,
-              maintainAspectRatio: false,
-              plugins: {
-                // Imported to display percentages without calculating them from data
-                stacked100: { enable: true, replaceTooltipLabel: false },
-              },
-              tooltips: {
-                callbacks: {
-                  label: (tooltipItem, data) => {
-                    const datasetIndex = tooltipItem.datasetIndex;
-                    const datasetLabel = data.datasets[datasetIndex].label;
-                    const originalValue =
-                      data.originalData[datasetIndex][tooltipItem.index];
-                    const rateValue =
-                      data.calculatedData[datasetIndex][tooltipItem.index];
-                    return `${datasetLabel}: ${originalValue} (${rateValue}%)`;
+      {!!chartData.datasets ? (
+        <Row>
+          <Col>
+            <HorizontalBar
+              redraw
+              data={chartData}
+              height={null}
+              width={null}
+              options={{
+                responsive: true,
+                aspectRatio: 1,
+                maintainAspectRatio: false,
+                plugins: {
+                  // Imported to display percentages without calculating them from data
+                  stacked100: { enable: true, replaceTooltipLabel: false },
+                },
+                tooltips: {
+                  callbacks: {
+                    label: (tooltipItem, data) => {
+                      const datasetIndex = tooltipItem.datasetIndex;
+                      const datasetLabel = data.datasets[datasetIndex].label;
+                      const originalValue =
+                        data.originalData[datasetIndex][tooltipItem.index];
+                      const rateValue =
+                        data.calculatedData[datasetIndex][tooltipItem.index];
+                      return `${datasetLabel}: ${originalValue} (${rateValue}%)`;
+                    },
                   },
                 },
-              },
-            }}
-          />
-        </Col>
-      </Row>
+              }}
+            />
+          </Col>
+        </Row>
+      ) : (
+        <Spinner />
+      )}
     </Container>
   );
 };

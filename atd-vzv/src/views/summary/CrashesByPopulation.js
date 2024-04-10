@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import styled from "styled-components";
 import { Bar } from "react-chartjs-2";
-import { Container, Row, Col } from "reactstrap";
+import { Container, Row, Col, Spinner } from "reactstrap";
 import { format } from "date-fns";
 
 import CrashTypeSelector from "./Components/CrashTypeSelector";
@@ -108,68 +108,73 @@ const CrashesByPopulation = () => {
           <hr />
         </Col>
       </Row>
-      <Row className="pb-2">
-        <Col xs={4} s={2} m={2} l={2} xl={2}>
-          <div>
-            <p className="h6 text-center pt-2 my-1">
-              <strong>Year</strong>
-            </p>
-            <hr className="my-1"></hr>
-            <p className="h6 text-center py-1">Ratio</p>
-          </div>
-        </Col>
-        {!!chartData &&
-          chartData.labels &&
-          chartData.labels.map((year, i) => {
-            const yearRatio = chartData.datasets?.[0]?.data?.[i];
+      {!!chartData.datasets ? (
+        <div>
+          <Row className="pb-2">
+            <Col xs={4} s={2} m={2} l={2} xl={2}>
+              <div>
+                <p className="h6 text-center pt-2 my-1">
+                  <strong>Year</strong>
+                </p>
+                <hr className="my-1"></hr>
+                <p className="h6 text-center py-1">Ratio</p>
+              </div>
+            </Col>
+            {chartData.labels &&
+              chartData.labels.map((year, i) => {
+                const yearRatio = chartData.datasets?.[0]?.data?.[i];
 
-            return (
-              <Col xs={4} s={2} m={2} l={2} xl={2} key={i}>
-                <StyledDiv>
-                  <div className="year-total-div">
-                    <p className="text-center pt-2 my-1">
-                      <strong>{year}</strong>
-                    </p>
-                    <hr className="my-1"></hr>
-                    <p className="text-center py-1">
-                      {/* Fallback if we haven't added the population for the year yet in popEsts.js */}
-                      {yearRatio ? yearRatio : "-"}
-                    </p>
-                  </div>
-                </StyledDiv>
-              </Col>
-            );
-          })}
-      </Row>
-      <Row className="mt-1">
-        <Col>
-          <Bar
-            data={chartData}
-            width={null}
-            height={null}
-            options={{
-              responsive: true,
-              aspectRatio: 0.849,
-              maintainAspectRatio: false,
-              tooltips: {
-                mode: "index",
-              },
-              scales: {
-                yAxes: [
-                  {
-                    ticks: {
-                      beginAtZero: true,
-                    },
+                return (
+                  <Col xs={4} s={2} m={2} l={2} xl={2} key={i}>
+                    <StyledDiv>
+                      <div className="year-total-div">
+                        <p className="text-center pt-2 my-1">
+                          <strong>{year}</strong>
+                        </p>
+                        <hr className="my-1"></hr>
+                        <p className="text-center py-1">
+                          {/* Fallback if we haven't added the population for the year yet in popEsts.js */}
+                          {yearRatio ? yearRatio : "-"}
+                        </p>
+                      </div>
+                    </StyledDiv>
+                  </Col>
+                );
+              })}
+          </Row>
+          <Row className="mt-1">
+            <Col>
+              <Bar
+                data={chartData}
+                width={null}
+                height={null}
+                options={{
+                  responsive: true,
+                  aspectRatio: 0.849,
+                  maintainAspectRatio: false,
+                  tooltips: {
+                    mode: "index",
                   },
-                ],
-              },
-              legend: {
-                display: false,
-              },
-            }}
-          />
-        </Col>
-      </Row>
+                  scales: {
+                    yAxes: [
+                      {
+                        ticks: {
+                          beginAtZero: true,
+                        },
+                      },
+                    ],
+                  },
+                  legend: {
+                    display: false,
+                  },
+                }}
+              />
+            </Col>
+          </Row>
+        </div>
+      ) : (
+        <Spinner />
+      )}
     </Container>
   );
 };
