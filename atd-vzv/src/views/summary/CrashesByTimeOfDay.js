@@ -221,7 +221,7 @@ const CrashesByTimeOfDay = () => {
           <hr />
         </Col>
       </Row>
-      {!!heatmapDataWithPlaceholder ? (
+      {!!heatmapDataWithPlaceholder.length > 0 ? (
         <div>
           <Row className="text-center">
             <Col className="pb-2">
