@@ -278,7 +278,7 @@ function Crash(props) {
         <Col xs="12" md="6" className="mb-4">
           <CrashDiagram
             crashId={crashId}
-            isCr3Stored={cr3StoredFlag === "Y"}
+            isCr3Stored={cr3StoredFlag === "Y" && !!cr3FileMetadata}
             isTempRecord={tempRecord}
             cr3FileMetadata={cr3FileMetadata}
           />
