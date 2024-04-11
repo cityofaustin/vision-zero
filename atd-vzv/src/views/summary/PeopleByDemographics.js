@@ -12,6 +12,7 @@ import { dataEndDate, yearsArray, dataStartDate } from "../../constants/time";
 import { personEndpointUrl } from "./queries/socrataQueries";
 import InfoPopover from "../../Components/Popover/InfoPopover";
 import { popoverConfig } from "../../Components/Popover/popoverConfig";
+import ColorSpinner from "../../Components/Spinner/ColorSpinner";
 
 const url = `${personEndpointUrl}?$query=`;
 
@@ -340,7 +341,9 @@ const PeopleByDemographics = () => {
           </Row>
         </div>
       ) : (
-        <Spinner />
+        <h1>
+          <ColorSpinner />
+        </h1>
       )}
     </Container>
   );

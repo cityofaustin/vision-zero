@@ -27,6 +27,7 @@ import {
 import { crashEndpointUrl } from "./queries/socrataQueries";
 import { getYearsAgoLabel } from "./helpers/helpers";
 import { colors } from "../../constants/colors";
+import ColorSpinner from "../../Components/Spinner/ColorSpinner";
 
 const dayOfWeekArray = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -318,7 +319,9 @@ const CrashesByTimeOfDay = () => {
           </Row>
         </div>
       ) : (
-        <Spinner />
+        <h1>
+          <ColorSpinner />
+        </h1>
       )}
     </Container>
   );

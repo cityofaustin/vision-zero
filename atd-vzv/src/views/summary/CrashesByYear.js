@@ -15,6 +15,7 @@ import {
   summaryCurrentYearEndDate,
   summaryCurrentYearStartDate,
 } from "../../constants/time";
+import ColorSpinner from "../../Components/Spinner/ColorSpinner";
 
 const CrashesByYear = () => {
   const chartTypes = ["Monthly", "Cumulative"];
@@ -124,7 +125,9 @@ const CrashesByYear = () => {
           </Row>
         </div>
       ) : (
-        <Spinner />
+        <h1>
+          <ColorSpinner />
+        </h1>
       )}
     </Container>
   );

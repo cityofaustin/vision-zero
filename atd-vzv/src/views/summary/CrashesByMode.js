@@ -24,6 +24,7 @@ import {
   summaryCurrentYearEndDate,
 } from "../../constants/time";
 import { crashEndpointUrl } from "./queries/socrataQueries";
+import ColorSpinner from "../../Components/Spinner/ColorSpinner";
 
 const CrashesByMode = () => {
   const chartColors = [
@@ -399,7 +400,9 @@ const CrashesByMode = () => {
           </Col>
         </Row>
       ) : (
-        <Spinner />
+        <h1>
+          <ColorSpinner />
+        </h1>
       )}
     </Container>
   );

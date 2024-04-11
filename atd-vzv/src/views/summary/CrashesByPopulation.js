@@ -12,6 +12,7 @@ import { crashEndpointUrl } from "./queries/socrataQueries";
 import { dataStartDate, fiveYearAvgEndDateByPop } from "../../constants/time";
 import { popEsts } from "../../constants/popEsts";
 import { colors } from "../../constants/colors";
+import ColorSpinner from "../../Components/Spinner/ColorSpinner";
 
 const CrashesByPopulation = () => {
   const [crashType, setCrashType] = useState(null);
@@ -173,7 +174,9 @@ const CrashesByPopulation = () => {
           </Row>
         </div>
       ) : (
-        <Spinner />
+        <h1>
+          <ColorSpinner />
+        </h1>
       )}
     </Container>
   );
