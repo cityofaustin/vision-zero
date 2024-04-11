@@ -3,6 +3,8 @@
 import os, json, boto3, datetime, requests
 from typing import Optional, Set
 from string import Template
+import argparse
+from concurrent.futures import ThreadPoolExecutor
 
 PDF_MIME_COMMAND = Template("/usr/bin/file -b --mime $PDF_FILE")
 PDF_MAX_RECORDS = os.getenv("PDF_MAX_RECORDS", 100)
