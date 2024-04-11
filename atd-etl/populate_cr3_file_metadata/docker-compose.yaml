@@ -1,0 +1,8 @@
+services:
+  metadata:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+    entrypoint: /bin/bash
