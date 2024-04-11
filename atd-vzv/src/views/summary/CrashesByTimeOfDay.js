@@ -4,7 +4,7 @@ import { format, parseISO, sub } from "date-fns";
 import clonedeep from "lodash.clonedeep";
 
 import CrashTypeSelector from "./Components/CrashTypeSelector";
-import { Row, Col, Container, Button, Spinner } from "reactstrap";
+import { Row, Col, Container, Button } from "reactstrap";
 import styled from "styled-components";
 import classnames from "classnames";
 import {

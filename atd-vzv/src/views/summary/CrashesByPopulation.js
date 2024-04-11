@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import styled from "styled-components";
 import { Bar } from "react-chartjs-2";
-import { Container, Row, Col, Spinner } from "reactstrap";
+import { Container, Row, Col } from "reactstrap";
 import { format } from "date-fns";
 
 import CrashTypeSelector from "./Components/CrashTypeSelector";

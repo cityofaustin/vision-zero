@@ -3,7 +3,7 @@ import axios from "axios";
 import CrashesByYearCumulative from "./CrashesByYearCumulative";
 import CrashesByYearAverage from "./CrashesByYearAverage";
 import ChartTypeSelector from "./Components/ChartTypeSelector";
-import { Container, Row, Col, Spinner } from "reactstrap";
+import { Container, Row, Col } from "reactstrap";
 
 import CrashTypeSelector from "./Components/CrashTypeSelector";
 import InfoPopover from "../../Components/Popover/InfoPopover";

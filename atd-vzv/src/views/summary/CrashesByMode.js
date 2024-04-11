@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef, useMemo } from "react";
 import axios from "axios";
 import { Bar } from "react-chartjs-2";
-import { Container, Row, Col, Spinner } from "reactstrap";
+import { Container, Row, Col } from "reactstrap";
 import styled from "styled-components";
 import { format } from "date-fns";
 

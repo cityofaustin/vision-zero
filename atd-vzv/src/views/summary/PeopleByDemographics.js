@@ -3,7 +3,7 @@ import axios from "axios";
 import { HorizontalBar } from "react-chartjs-2";
 import "chartjs-plugin-stacked100";
 import ChartTypeSelector from "./Components/ChartTypeSelector";
-import { Container, Row, Col, Spinner } from "reactstrap";
+import { Container, Row, Col } from "reactstrap";
 import { format } from "date-fns";
 
 import CrashTypeSelector from "./Components/CrashTypeSelector";
