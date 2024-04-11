@@ -6,3 +6,5 @@ services:
     volumes:
       - .:/app
     entrypoint: /bin/bash
+    env_file:
+      - env
