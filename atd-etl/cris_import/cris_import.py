@@ -612,7 +612,24 @@ def align_records(map_state):
             input_column_names = util.get_input_column_names(pg, map_state["import_schema"], table, target_columns)
 
             # iterate over each imported record and determine correct action
+            should_skip_update = False
+
             for source in imported_records:
+                # Check unique key columns to make sure they all have a value
+                for key_column in key_columns:
+                    key_column_value = source[key_column]
+                    if key_column_value == None:
+
+                        print("\nSkipping because unique key column is missing")    
+                        print(f"Table: {table}")
+                        print(f"Missing key column: {key_column}")
+                        should_skip_update = True
+
+                # If we are missing a column that uniquely identifies the record, we should skip the update
+                if should_skip_update:
+                    for key_column in key_columns:
+                        print(f"{key_column}: {source[key_column]}")
+                    continue
 
                 # generate some record specific SQL fragments to identify the record in larger queries
                 record_key_sql, import_key_sql = util.get_key_clauses(table_keys, output_map, table, source, map_state["import_schema"])
