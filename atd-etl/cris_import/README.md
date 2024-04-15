@@ -17,7 +17,7 @@ The CRIS import usually works by pulling down a zip archive from the SFTP endpoi
 
 Make a copy of `env-template` and name it `env`. Fill in the values using the 1Password Connect Server secrets (see entries titled `Endpoint for 1Password Connect Server API` and `Vault ID of API Accessible Secrets vault`) and your personal access token.
 
-Drop a CRIS extract zip file into your development folder described above, and run the import script:
+Drop a CRIS extract zip file into your development folder as described above, and run the import script:
 ```bash
 docker compose run cris-import
 ```
