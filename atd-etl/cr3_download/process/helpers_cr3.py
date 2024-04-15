@@ -27,6 +27,7 @@ def run_command(command, verbose):
     """
     Runs a command
     :param command: array of strings containing the command and flags
+    :param verbose: boolean, handles level of logging
     """
     if verbose:
         print(command)
@@ -35,12 +36,12 @@ def run_command(command, verbose):
         subprocess.check_output(command, shell=True).decode("utf-8")
 
 
-# Now we need to implement our methods.
 def download_cr3(crash_id, cookies, verbose):
     """
     Downloads a CR3 pdf from the CRIS website.
     :param crash_id: string - The crash id
     :param cookies: dict - A dictionary containing key=value pairs with cookie name and values.
+    :param verbose: boolean, handles level of logging
     """
 
     cookie = SimpleCookie()
@@ -67,6 +68,7 @@ def upload_cr3(crash_id, verbose):
     """
     Uploads a file to S3 using the awscli command
     :param crash_id: string - The crash id
+    :param verbose: boolean, handles level of logging
     """
     file = "/tmp/%s.pdf" % crash_id
     destination = "s3://%s/%s/%s.pdf" % (
@@ -91,6 +93,7 @@ def delete_cr3s(crash_id, verbose):
     """
     Deletes the downloaded CR3 pdf file
     :param crash_id: string - The crash id
+    :param verbose: boolean, handles level of logging
     """
     file = "/tmp/%s.pdf" % crash_id
     run_command("rm %s" % file, verbose)
@@ -122,6 +125,7 @@ def update_crash_id(crash_id, verbose):
     """
     Updates the status of a crash to having an available CR3 pdf in the S3 bucket.
     :param crash_id: string - The Crash ID that needs to be updated
+    :param verbose: boolean, handles level of logging
     :return: dict - Response from request.post
     """
 
@@ -157,6 +161,7 @@ def process_crash_cr3(crash_record, cookies, skipped_uploads_and_updates, verbos
     :param crash_record: dict - The individual crash record being processed
     :param cookies: dict - The cookies taken from the browser object
     :param skipped_uploads_and_updates: list - Crash IDs of unsuccessful pdf downloads
+    :param verbose: boolean, handles level of logging
     """
     try:
         crash_id = str(crash_record["crash_id"])
