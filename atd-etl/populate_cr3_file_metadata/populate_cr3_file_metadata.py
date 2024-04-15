@@ -5,9 +5,48 @@ from typing import Optional, Set
 from string import Template
 import argparse
 from tqdm import tqdm
+import tempfile
 from concurrent.futures import ThreadPoolExecutor
 
+PDF_MIME_COMMAND = Template("/usr/bin/file -b --mime $PDF_FILE")
+AWS_BUCKET_NAME = os.getenv("AWS_BUCKET_NAME", "")
+AWS_BUCKET_ENVIRONMENT = os.getenv("AWS_BUCKET_ENVIRONMENT", "")
+AWS_S3_CLIENT = boto3.client("s3")
 
+def main():
+    """
+    Main Loop
+    """
+    parser = argparse.ArgumentParser(description='Process some CR3s for metadata')
+    parser.add_argument('-t', '--threads', type=int, default=25, help='Number of threads')
+    parser.add_argument('-v', '--verbose', action='store_true', help='Verbose output')
+    parser.add_argument('-s', '--batch-size', type=int, default=os.getenv('PDF_MAX_RECORDS', 100), help='Batch size')
+    parser.add_argument('-a', '--all', action='store_true', help='Process all records')
+
+    args = parser.parse_args()
+
+    if args.threads <= 0:
+        raise argparse.ArgumentTypeError("Number of threads must be a positive integer")
+
+    if args.batch_size < 0:
+        raise argparse.ArgumentTypeError("Batch size must be a non-negative integer")
+
+    PDF_MAX_RECORDS = 0 if args.all else args.batch_size
+
+    todo_count = get_todo_count() if args.all else args.batch_size
+    print(f"\nItems to process: {todo_count}\n")
+
+    with ThreadPoolExecutor(max_workers=args.threads) as executor:
+        futures = []
+        for crash_id in get_records(limit=PDF_MAX_RECORDS):
+            futures.append(executor.submit(process_record, crash_id=crash_id, args=args))
+
+        if not args.verbose:
+            for future in tqdm(futures, total=todo_count):
+                future.result()
+        else: 
+            for future in futures:
+                future.result()
 
 def is_crash_id(crash_id: int) -> bool:
     """
@@ -346,45 +385,6 @@ def update_metadata(crash_id: int, metadata: dict, args) -> bool:
     except (KeyError, TypeError):
         return False
 
-PDF_MIME_COMMAND = Template("/usr/bin/file -b --mime $PDF_FILE")
-AWS_BUCKET_NAME = os.getenv("AWS_BUCKET_NAME", "")
-AWS_BUCKET_ENVIRONMENT = os.getenv("AWS_BUCKET_ENVIRONMENT", "")
-AWS_S3_CLIENT = boto3.client("s3")
-
-def main():
-    """
-    Main Loop
-    """
-    parser = argparse.ArgumentParser(description='Process some CR3s for metadata')
-    parser.add_argument('-t', '--threads', type=int, default=25, help='Number of threads')
-    parser.add_argument('-v', '--verbose', action='store_true', help='Verbose output')
-    parser.add_argument('-s', '--batch-size', type=int, default=os.getenv('PDF_MAX_RECORDS', 100), help='Batch size')
-    parser.add_argument('-a', '--all', action='store_true', help='Process all records')
-
-    args = parser.parse_args()
-
-    if args.threads <= 0:
-        raise argparse.ArgumentTypeError("Number of threads must be a positive integer")
-
-    if args.batch_size < 0:
-        raise argparse.ArgumentTypeError("Batch size must be a non-negative integer")
-
-    PDF_MAX_RECORDS = 0 if args.all else args.batch_size
-
-    todo_count = get_todo_count() if args.all else args.batch_size
-    print(f"\nItems to process: {todo_count}\n")
-
-    with ThreadPoolExecutor(max_workers=args.threads) as executor:
-        futures = []
-        for crash_id in get_records(limit=PDF_MAX_RECORDS):
-            futures.append(executor.submit(process_record, crash_id=crash_id, args=args))
-
-        if not args.verbose:
-            for future in tqdm(futures, total=todo_count):
-                future.result()
-        else: 
-            for future in futures:
-                future.result()
 
 if __name__ == "__main__":
     main()
