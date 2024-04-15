@@ -618,7 +618,7 @@ def align_records(map_state):
                 # Check unique key columns to make sure they all have a value
                 for key_column in key_columns:
                     key_column_value = source[key_column]
-                    if key_column_value == None:
+                    if key_column_value is None:
                         print("\nSkipping because unique key column is missing")    
                         print(f"Table: {table}")
                         print(f"Missing key column: {key_column}")
