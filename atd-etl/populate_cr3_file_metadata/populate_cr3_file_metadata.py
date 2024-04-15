@@ -156,7 +156,7 @@ def process_record(crash_id: int) -> bool:
         print(f"Invalid crash_id: {crash_id}")
         return False
 
-    print(f"Processing crash_id: {crash_id}")
+    print(f"\nProcessing crash_id: {crash_id}")
 
     # 1. Download file to disk
     if not download_file(crash_id):
@@ -313,9 +313,18 @@ def main():
     Main Loop
     """
     # Processes each one of these crashes using process_record function
-    for crash_id in get_records(PDF_MAX_RECORDS):
-        process_record(crash_id)
+    # for crash_id in get_records(PDF_MAX_RECORDS):
+        # process_record(crash_id)
+    
 
+    # max_workers = args.threads
+    with ThreadPoolExecutor(max_workers=25) as executor:
+        futures = []
+        for crash_id in get_records(PDF_MAX_RECORDS):
+            futures.append(executor.submit(process_record, crash_id))
+
+        for future in futures:
+            future.result()
 
 if __name__ == "__main__":
     main()
