@@ -32,6 +32,27 @@ def read_and_group_csv(file_path):
     return grouped_data
 
 
+# Warn the user if we have any typos in the needed tables list or for some reason tables that aren't in the extract at all
+def check_if_needed_tables_in_extract(needed_lkp_tables, extract_data):
+    print(
+        "Checking if all tables in needed tables list can be found in the extract...\n"
+    )
+    tables_not_found_in_extract = []
+    for table in needed_lkp_tables:
+        if table not in list(extract_data.keys()):
+            tables_not_found_in_extract.append(table)
+    if len(tables_not_found_in_extract) > 0:
+        print(
+            "WARNING: The following tables were not found in the extract. Double check the list for mistakes or typos.\n"
+        )
+        print(tables_not_found_in_extract, "\n")
+        if (
+            input("Do you want to continue and generate migration files? [y/n]\n")
+            != "y"
+        ):
+            quit()
+
+
 def escape_single_quotes(input_string):
     return input_string.replace("'", "''")
 
@@ -96,6 +117,8 @@ def main(file_path):
 
     changes = []
     down_changes = []
+
+    check_if_needed_tables_in_extract(needed_lkp_tables, extract_data)
 
     for table in extract_data:
         if table in needed_lkp_tables:
