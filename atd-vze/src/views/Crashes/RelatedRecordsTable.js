@@ -269,7 +269,7 @@ const RelatedRecordsTable = ({
 
                             {!isEditing &&
                               (fieldConfig.fields[field].badge &&
-                              formatValue(row, field) != "NO DATA" ? (
+                              formatValue(row, field) !== "NO DATA" ? (
                                 <Badge
                                   color={fieldConfig.fields[field].badgeColor(
                                     row
