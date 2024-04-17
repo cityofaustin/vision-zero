@@ -5,5 +5,5 @@ services:
       - .:/app
     env_file:
       - ./.env
-    # entrypoint: /bin/bash
+    # entrypoint: /bin/bash #enables a shell
     entrypoint: /app/cr3_download.py -t 5
