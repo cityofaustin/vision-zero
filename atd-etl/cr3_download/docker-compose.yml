@@ -5,5 +5,14 @@ services:
       - .:/app
     env_file:
       - ./.env
-    # entrypoint: /bin/bash #enables a shell
+
+    # For normal operation, the entry point is defined to simply run the script
+    # and then exit.
     entrypoint: /app/cr3_download.py -t 5
+
+    # During development or during CRIS reprocessing, it can be helpful to run
+    # the container interactively, so the the following entrypoint can be used
+    # to drop the user into a shell where they can run the script manually.
+    # This can also be done via the --entrypoint=/bin/bash flag when running.
+
+    # entrypoint: /bin/bash
