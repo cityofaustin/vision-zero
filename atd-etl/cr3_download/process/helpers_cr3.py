@@ -23,20 +23,20 @@ import magic
 from .request import run_query
 
 
-def run_command(command, verbose):
+def run_command(command, verbose, log):
     """
     Runs a command
     :param command: array of strings containing the command and flags
     :param verbose: boolean, handles level of logging
     """
     if verbose:
-        print(command)
-        print(subprocess.check_output(command, shell=True).decode("utf-8"))
+        log.info(command)
+        log.info(subprocess.check_output(command, shell=True).decode("utf-8"))
     else:
         subprocess.check_output(command, shell=True).decode("utf-8")
 
 
-def download_cr3(crash_id, cookies, verbose):
+def download_cr3(crash_id, cookies, verbose, log):
     """
     Downloads a CR3 pdf from the CRIS website.
     :param crash_id: string - The crash id
@@ -56,15 +56,14 @@ def download_cr3(crash_id, cookies, verbose):
     url = os.getenv("ATD_CRIS_CR3_URL") + crash_id_encoded
     download_path = "/tmp/" + "%s.pdf" % crash_id
 
-    if verbose:
-        print("Downloading (%s): '%s' from %s" % (crash_id, download_path, url))
+    log.info("Downloading (%s): '%s' from %s" % (crash_id, download_path, url))
     resp = requests.get(url, allow_redirects=True, cookies=baked_cookies)
     open(download_path, "wb").write(resp.content)
 
     return download_path
 
 
-def upload_cr3(crash_id, verbose):
+def upload_cr3(crash_id, verbose, log):
     """
     Uploads a file to S3 using the awscli command
     :param crash_id: string - The crash id
@@ -86,17 +85,18 @@ def upload_cr3(crash_id, verbose):
             quiet_option,
         ),
         verbose,
+        log,
     )
 
 
-def delete_cr3s(crash_id, verbose):
+def delete_cr3s(crash_id, verbose, log):
     """
     Deletes the downloaded CR3 pdf file
     :param crash_id: string - The crash id
     :param verbose: boolean, handles level of logging
     """
     file = "/tmp/%s.pdf" % crash_id
-    run_command("rm %s" % file, verbose)
+    run_command("rm %s" % file, verbose, log)
 
 
 def get_crash_id_list():
@@ -121,7 +121,7 @@ def get_crash_id_list():
     return run_query(query_crashes_cr3)
 
 
-def update_crash_id(crash_id, verbose):
+def update_crash_id(crash_id, log):
     """
     Updates the status of a crash to having an available CR3 pdf in the S3 bucket.
     :param crash_id: string - The Crash ID that needs to be updated
@@ -139,8 +139,7 @@ def update_crash_id(crash_id, verbose):
     """
         % crash_id
     )
-    if verbose:
-        print(f"Marking CR3 status as downloaded for crash_id: {crash_id}")
+    log.info(f"Marking CR3 status as downloaded for crash_id: {crash_id}")
     return run_query(update_record_cr3)
 
 
@@ -155,7 +154,7 @@ def check_if_pdf(file_path):
     return file_type == "application/pdf"
 
 
-def process_crash_cr3(crash_record, cookies, skipped_uploads_and_updates, verbose):
+def process_crash_cr3(crash_record, cookies, skipped_uploads_and_updates, verbose, log):
     """
     Downloads a CR3 pdf, uploads it to s3, updates the database and deletes the pdf.
     :param crash_record: dict - The individual crash record being processed
@@ -168,21 +167,23 @@ def process_crash_cr3(crash_record, cookies, skipped_uploads_and_updates, verbos
 
         print("Processing Crash: " + crash_id)
 
-        download_path = download_cr3(crash_id, cookies, verbose)
+        download_path = download_cr3(crash_id, cookies, verbose, log)
         is_file_pdf = check_if_pdf(download_path)
 
         if not is_file_pdf:
-            print(f"\nFile {download_path} is not a pdf - skipping upload and update")
+            log.warning(
+                f"\nFile {download_path} is not a pdf - skipping upload and update"
+            )
             with open(download_path, "r") as file:
                 print(file.read())
             time.sleep(10)
             skipped_uploads_and_updates.append(crash_id)
         else:
-            upload_cr3(crash_id, verbose)
-            update_crash_id(crash_id, verbose)
+            upload_cr3(crash_id, verbose, log)
+            update_crash_id(crash_id, log)
 
-        delete_cr3s(crash_id, verbose)
+        delete_cr3s(crash_id, verbose, log)
 
     except Exception as e:
-        print("Error: %s" % str(e))
+        log.error("Error: %s" % str(e))
         return

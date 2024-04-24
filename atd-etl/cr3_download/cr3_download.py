@@ -18,6 +18,9 @@ from process.helpers_cr3 import process_crash_cr3, get_crash_id_list
 from onepasswordconnectsdk.client import new_client
 import onepasswordconnectsdk
 
+import sys
+import logging
+
 
 def load_secrets(one_password_client, vault_id):
     """Load required secrets from 1Password."""
@@ -68,17 +71,20 @@ def load_secrets(one_password_client, vault_id):
 
 
 def process_crash_cr3_threaded(
-    crash_record, cris_browser_cookies, skipped_uploads_and_updates, verbose
+    crash_record, cris_browser_cookies, skipped_uploads_and_updates, verbose, log
 ):
     """Process a crash record in a separate thread."""
     try:
         process_crash_cr3(
-            crash_record, cris_browser_cookies, skipped_uploads_and_updates, verbose
+            crash_record,
+            cris_browser_cookies,
+            skipped_uploads_and_updates,
+            verbose,
+            log,
         )
-        if verbose:
-            print(f"Processed crash ID: {crash_record['crash_id']}")
+        log.info(f"Processed crash ID: {crash_record['crash_id']}")
     except Exception as e:
-        print(f"Error processing crash ID {crash_record['crash_id']}: {str(e)}")
+        log.warning(f"Error processing crash ID {crash_record['crash_id']}: {str(e)}")
         skipped_uploads_and_updates.append(str(crash_record["crash_id"]))
 
 
@@ -90,14 +96,24 @@ def main():
         "--threads",
         type=int,
         default=1,
-        help="Number of concurrent downloaders (default: 1)",
+        help="Number of concurrent downloading threads(default: 1)",
     )
     parser.add_argument(
         "-v", "--verbose", action="store_true", help="Enable verbose logging"
     )
     args = parser.parse_args()
 
-    # Start timer
+    log = logging.getLogger("cr3_download")
+    log.setLevel(logging.DEBUG if args.verbose else logging.INFO)
+
+    # Create a StreamHandler for stdout
+    stdout_handler = logging.StreamHandler(sys.stdout)
+    # Optional: set the level of the stdout handler
+    stdout_handler.setLevel(logging.DEBUG if args.verbose else logging.INFO)
+
+    # Add the handler to the logger
+    log.addHandler(stdout_handler)
+
     start = time.time()
 
     # Get 1Password secrets from environment
@@ -117,12 +133,13 @@ def main():
 
     # Ask user for a set of valid cookies for requests to the CRIS website
     CRIS_BROWSER_COOKIES = input(
-        "Please login to CRIS and extract the contents of the Cookie: header and please paste it here: "
+        "Please login to CRIS and extract the contents of the Cookie: header and please paste it here:\n\n"
     )
 
-    if args.verbose:
-        print("Preparing download loop.")
-        print("Gathering list of crashes.")
+    print("\n")  # pad pasted cookie value with some whitespace for clarity
+
+    log.debug("Preparing download loop.")
+    log.debug("Gathering list of crashes.")
 
     # Track crash IDs that we don't successfully retrieve a pdf file for
     skipped_uploads_and_updates = []
@@ -136,8 +153,7 @@ def main():
     crashes_list_without_skips = []
 
     try:
-        if args.verbose:
-            print(f"Hasura endpoint: '{os.getenv('HASURA_ENDPOINT')}'")
+        log.debug(f"Hasura endpoint: '{os.getenv('HASURA_ENDPOINT')}'")
 
         response = get_crash_id_list()
 
@@ -150,9 +166,8 @@ def main():
         crashes_list_without_skips = []
         print(f"Error, could not run CR3 processing: {str(e)}")
 
-    print(f"Length of queue: {len(crashes_list_without_skips)}")
-    if args.verbose:
-        print("Starting CR3 downloads:")
+    log.info(f"Length of queue: {len(crashes_list_without_skips)}")
+    log.debug("Starting CR3 downloads:")
 
     max_workers = args.threads
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
@@ -164,25 +179,24 @@ def main():
                 CRIS_BROWSER_COOKIES,
                 skipped_uploads_and_updates,
                 args.verbose,
+                log,
             )
             futures.append(future)
 
         for future in futures:
             future.result()
 
-    print("Process done.")
+    log.debug("Process done.")
 
     if skipped_uploads_and_updates:
         skipped_downloads = ", ".join(skipped_uploads_and_updates)
-        print(f"\nUnable to download PDFs for crash IDs: {skipped_downloads}")
+        log.debug(f"\nUnable to download PDFs for crash IDs: {skipped_downloads}")
 
     end = time.time()
     hours, rem = divmod(end - start, 3600)
     minutes, seconds = divmod(rem, 60)
-    print(
-        "\nFinished in: {:0>2}:{:0>2}:{:05.2f}".format(
-            int(hours), int(minutes), seconds
-        )
+    log.info(
+        "Finished in: {:0>2}:{:0>2}:{:05.2f}".format(int(hours), int(minutes), seconds)
     )
 
 
