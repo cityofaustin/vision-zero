@@ -28,6 +28,7 @@ def run_command(command, verbose, log):
     Runs a command
     :param command: array of strings containing the command and flags
     :param verbose: boolean, handles level of logging
+    :param log: logger - The logger object
     """
     if verbose:
         log.info(command)
@@ -42,6 +43,7 @@ def download_cr3(crash_id, cookies, verbose, log):
     :param crash_id: string - The crash id
     :param cookies: dict - A dictionary containing key=value pairs with cookie name and values.
     :param verbose: boolean, handles level of logging
+    :param log: logger - The logger object
     """
 
     cookie = SimpleCookie()
@@ -125,7 +127,7 @@ def update_crash_id(crash_id, log):
     """
     Updates the status of a crash to having an available CR3 pdf in the S3 bucket.
     :param crash_id: string - The Crash ID that needs to be updated
-    :param verbose: boolean, handles level of logging
+    :param log: logger - The logger object
     :return: dict - Response from request.post
     """
 
@@ -161,6 +163,7 @@ def process_crash_cr3(crash_record, cookies, skipped_uploads_and_updates, verbos
     :param cookies: dict - The cookies taken from the browser object
     :param skipped_uploads_and_updates: list - Crash IDs of unsuccessful pdf downloads
     :param verbose: boolean, handles level of logging
+    :param log: logger - The logger object
     """
     try:
         crash_id = str(crash_record["crash_id"])
