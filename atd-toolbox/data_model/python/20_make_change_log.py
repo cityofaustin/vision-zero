@@ -1,0 +1,39 @@
+import csv
+import io
+from pprint import pprint as print
+
+import requests
+
+from utils import make_migration_dir, save_file, save_empty_down_migration
+from settings import SCHEMA_NAME
+
+
+def load_sql_template(name):
+    with open(name, "r") as fin:
+        return fin.read()
+
+
+def main():
+    sql_template = load_sql_template("./sql_templates/change_log_table.sql")
+    sql_strs = []
+    for table_name in ["crashes", "units", "people"]:
+        sql_strs.append(f"""---
+--- {table_name} change log tables
+---""")
+        for table_suffix in ["cris", "edits", "unified"]:
+            if table_name == "charges" and table_suffix != "cris":
+                # charges is a cris-only table
+                continue
+            id_col_name = "crash_id" if table_name == "crashes" else "id"
+            table_name_full = f"{table_name}_{table_suffix}"
+            sql = sql_template.replace("$tableName$", table_name_full).replace("$idColName$", id_col_name)
+            sql_strs.append(sql)
+    
+    # load the triggers
+    sql_template = load_sql_template("./sql_templates/change_log_triggers.sql")
+    sql_strs.append(sql_template)
+    migration_path = make_migration_dir("change_log")
+    save_file(f"{migration_path}/up.sql", "\n\n".join(sql_strs))
+    save_empty_down_migration(migration_path)
+
+main()
