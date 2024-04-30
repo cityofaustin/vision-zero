@@ -53,6 +53,8 @@ def main():
         ]
         # remove dupes, which is a concern for persons tables
         columns_unified = list(set(columns_unified))
+        # sort columns to keep diffs consistent
+        columns_unified.sort()
         pk_column = "crash_id" if table_name == "crashes" else "id"
         sql = patch_template(insert_template, table_name, pk_column, columns_unified)
         stmts.append(sql)
