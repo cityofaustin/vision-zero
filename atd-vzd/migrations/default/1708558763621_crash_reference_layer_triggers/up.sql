@@ -15,6 +15,7 @@ language plpgsql
 as $$
 begin
     if (new.latitude is not null and new.longitude is not null) then
+        -- save lat/lon into geometry col
         new.position = st_setsrid(st_makepoint(new.longitude, new.latitude), 4326);
         --
         -- Get location polygon ID
@@ -48,6 +49,8 @@ begin
         raise notice 'council_district: % compared to previous: %', new.council_district, old.council_district;
         else
             raise notice 'setting location id and council district to null';
+            -- nullify position column
+            new.position = null;
             -- reset location id
             new.location_id = null;
             -- use city ID to determine full purpose jurisdiction
