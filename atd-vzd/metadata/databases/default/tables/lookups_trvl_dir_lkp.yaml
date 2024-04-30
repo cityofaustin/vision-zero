@@ -1,0 +1,25 @@
+table:
+  name: trvl_dir_lkp
+  schema: lookups
+array_relationships:
+  - name: units_cris
+    using:
+      foreign_key_constraint_on:
+        column: veh_trvl_dir_id
+        table:
+          name: units_cris
+          schema: db
+  - name: units_edits
+    using:
+      foreign_key_constraint_on:
+        column: veh_trvl_dir_id
+        table:
+          name: units_edits
+          schema: db
+  - name: units_unifieds
+    using:
+      foreign_key_constraint_on:
+        column: veh_trvl_dir_id
+        table:
+          name: units_unified
+          schema: db

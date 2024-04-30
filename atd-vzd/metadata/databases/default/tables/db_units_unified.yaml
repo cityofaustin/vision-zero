@@ -1,0 +1,22 @@
+table:
+  name: units_unified
+  schema: db
+object_relationships:
+  - name: crashes_unified
+    using:
+      foreign_key_constraint_on: crash_id
+array_relationships:
+  - name: change_log_units_unifieds
+    using:
+      foreign_key_constraint_on:
+        column: record_id
+        table:
+          name: change_log_units_unified
+          schema: db
+  - name: people_unifieds
+    using:
+      foreign_key_constraint_on:
+        column: unit_id
+        table:
+          name: people_unified
+          schema: db

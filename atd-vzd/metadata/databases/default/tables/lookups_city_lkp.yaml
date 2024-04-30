@@ -1,0 +1,25 @@
+table:
+  name: city_lkp
+  schema: lookups
+array_relationships:
+  - name: crashes_cris
+    using:
+      foreign_key_constraint_on:
+        column: rpt_city_id
+        table:
+          name: crashes_cris
+          schema: db
+  - name: crashes_edits
+    using:
+      foreign_key_constraint_on:
+        column: rpt_city_id
+        table:
+          name: crashes_edits
+          schema: db
+  - name: crashes_unifieds
+    using:
+      foreign_key_constraint_on:
+        column: rpt_city_id
+        table:
+          name: crashes_unified
+          schema: db

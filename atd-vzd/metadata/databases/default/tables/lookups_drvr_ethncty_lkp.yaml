@@ -1,0 +1,25 @@
+table:
+  name: drvr_ethncty_lkp
+  schema: lookups
+array_relationships:
+  - name: people_cris
+    using:
+      foreign_key_constraint_on:
+        column: prsn_ethnicity_id
+        table:
+          name: people_cris
+          schema: db
+  - name: people_edits
+    using:
+      foreign_key_constraint_on:
+        column: prsn_ethnicity_id
+        table:
+          name: people_edits
+          schema: db
+  - name: people_unifieds
+    using:
+      foreign_key_constraint_on:
+        column: prsn_ethnicity_id
+        table:
+          name: people_unified
+          schema: db

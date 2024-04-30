@@ -1,0 +1,46 @@
+table:
+  name: rwy_sys_lkp
+  schema: lookups
+array_relationships:
+  - name: crashesCrisByRptSecRdwySysId
+    using:
+      foreign_key_constraint_on:
+        column: rpt_sec_rdwy_sys_id
+        table:
+          name: crashes_cris
+          schema: db
+  - name: crashesEditsByRptSecRdwySysId
+    using:
+      foreign_key_constraint_on:
+        column: rpt_sec_rdwy_sys_id
+        table:
+          name: crashes_edits
+          schema: db
+  - name: crashesUnifiedsByRptSecRdwySysId
+    using:
+      foreign_key_constraint_on:
+        column: rpt_sec_rdwy_sys_id
+        table:
+          name: crashes_unified
+          schema: db
+  - name: crashes_cris
+    using:
+      foreign_key_constraint_on:
+        column: rpt_rdwy_sys_id
+        table:
+          name: crashes_cris
+          schema: db
+  - name: crashes_edits
+    using:
+      foreign_key_constraint_on:
+        column: rpt_rdwy_sys_id
+        table:
+          name: crashes_edits
+          schema: db
+  - name: crashes_unifieds
+    using:
+      foreign_key_constraint_on:
+        column: rpt_rdwy_sys_id
+        table:
+          name: crashes_unified
+          schema: db

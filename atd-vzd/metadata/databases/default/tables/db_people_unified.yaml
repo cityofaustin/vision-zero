@@ -1,0 +1,18 @@
+table:
+  name: people_unified
+  schema: db
+object_relationships:
+  - name: ems__incident
+    using:
+      foreign_key_constraint_on: ems_id
+  - name: units_unified
+    using:
+      foreign_key_constraint_on: unit_id
+array_relationships:
+  - name: change_log_people_unifieds
+    using:
+      foreign_key_constraint_on:
+        column: record_id
+        table:
+          name: change_log_people_unified
+          schema: db
