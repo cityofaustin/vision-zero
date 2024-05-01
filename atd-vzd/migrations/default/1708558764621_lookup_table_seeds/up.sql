@@ -11077,3 +11077,11 @@ alter table lookups.injry_sev_lkp add constraint injry_sev_owner_check check ((i
 insert into lookups.injry_sev_lkp (id, label, source) values (99, 'KILLED (NON-ATD)', 'vz');
 alter table db.people_cris add constraint people_cris_prsn_injry_sev_id_check check (prsn_injry_sev_id < 99);
 
+alter table lookups.unit_desc_lkp add constraint unit_desc_owner_check check ((id < 177 and source = 'cris') or (id >= 177 and source = 'vz'));
+insert into lookups.unit_desc_lkp (id, label, source) values (177, 'MICROMOBILITY DEVICE', 'vz');
+alter table db.units_cris add constraint units_cris_unit_desc_id_check check (unit_desc_id < 177);
+
+alter table lookups.veh_body_styl_lkp add constraint veh_body_styl_lkp_owner_check check ((id < 177 and source = 'cris') or (id >= 177 and source = 'vz'));
+insert into lookups.veh_body_styl_lkp (id, label, source) values (177, 'E-SCOOTER', 'vz');
+alter table db.units_cris add constraint units_cris_veh_body_styl_id_check check (veh_body_styl_id < 177);
+

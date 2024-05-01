@@ -45,6 +45,14 @@ insert into lookups.injry_sev_lkp (id, label, source) values (99, 'KILLED (NON-A
 alter table db.people_cris add constraint people_cris_prsn_injry_sev_id_check check (prsn_injry_sev_id < 99);
 """
 
+unit_desc_lkp_custom_values = """alter table lookups.unit_desc_lkp add constraint unit_desc_owner_check check ((id < 177 and source = 'cris') or (id >= 177 and source = 'vz'));
+insert into lookups.unit_desc_lkp (id, label, source) values (177, 'MICROMOBILITY DEVICE', 'vz');
+alter table db.units_cris add constraint units_cris_unit_desc_id_check check (unit_desc_id < 177);
+"""
+veh_body_styl_lkp_custom_values = """alter table lookups.veh_body_styl_lkp add constraint veh_body_styl_lkp_owner_check check ((id < 177 and source = 'cris') or (id >= 177 and source = 'vz'));
+insert into lookups.veh_body_styl_lkp (id, label, source) values (177, 'E-SCOOTER', 'vz');
+alter table db.units_cris add constraint units_cris_veh_body_styl_id_check check (veh_body_styl_id < 177);
+"""
 
 
 def main():
@@ -63,6 +71,10 @@ def main():
     insert_stmts.append(city_id_patch)
     # add custom injry_sev_lkp values and constraint
     insert_stmts.append(injry_sev_lkp_custom_values)
+    # add custom unit_desc_lkp values and constraint
+    insert_stmts.append(unit_desc_lkp_custom_values)
+    # add custom veh_body_styl_lkp values and constraint
+    insert_stmts.append(veh_body_styl_lkp_custom_values)
     sql = "\n".join(insert_stmts)
     migration_path = make_migration_dir("lookup_table_seeds")
     save_file(f"{migration_path}/up.sql", sql)
