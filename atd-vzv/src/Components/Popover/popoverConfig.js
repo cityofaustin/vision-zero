@@ -250,7 +250,7 @@ export const popoverConfig = {
             worth of property damage or any level of injury. For additional
             reference, see{" "}
             <a
-              href="https://ftp.dot.state.tx.us/pub/txdot-info/trf/crash_notifications/2018/crash-report-100.pdf"
+              href="https://ftp.txdot.gov/pub/txdot-info/trf/crash_notifications/2023/cr100-v27.0.pdf"
               target="_blank"
               rel="noopener noreferrer"
             >
