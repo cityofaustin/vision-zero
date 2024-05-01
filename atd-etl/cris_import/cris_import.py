@@ -12,6 +12,7 @@ from subprocess import Popen, PIPE
 
 import shutil
 import boto3
+import botocore
 import sysrsync
 import psycopg2
 import psycopg2.extras
