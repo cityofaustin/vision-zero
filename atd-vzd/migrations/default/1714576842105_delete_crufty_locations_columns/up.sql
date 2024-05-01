@@ -4,7 +4,6 @@ DROP VIEW atd_txdot_locations_with_centroids;
 -- Removing unused crufty columns
 ALTER TABLE atd_txdot_locations
 DROP COLUMN IF EXISTS asmp_street_level,
-DROP COLUMN IF EXISTS address,
 DROP COLUMN IF EXISTS is_retired,
 DROP COLUMN IF EXISTS bicycle_score,
 DROP COLUMN IF EXISTS broken_out_intersections_union,
