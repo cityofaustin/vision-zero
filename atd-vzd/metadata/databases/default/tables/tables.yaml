@@ -56,6 +56,7 @@
 - "!include public_fatalities.yaml"
 - "!include public_grafana_crash_counts.yaml"
 - "!include public_location_notes.yaml"
+- "!include public_locations_with_crash_injury_counts.yaml"
 - "!include public_recommendations.yaml"
 - "!include public_recommendations_partners.yaml"
 - "!include public_view_crashes_inconsistent_numbers.yaml"
