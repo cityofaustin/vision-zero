@@ -44,7 +44,7 @@ def get_lookup_table_names(data):
 def make_lookup_table_sql(table_names):
     create_table_stmts = []
     for table_name in table_names:
-        sql = f"create table {table_name} (\n    id integer primary key,\n    label text not null\n);"
+        sql = f"create table {table_name} (\n    id integer primary key,\n    label text not null,\n    source text not null default 'cris'\n);"
         create_table_stmts.append(sql)
     return "\n\n".join(create_table_stmts)
 
