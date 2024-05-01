@@ -95,7 +95,7 @@ def main():
 
     zip_location = None
     if not local_mode:  # Production
-        zip_location = download_s3_archive()
+        zip_location, database_location = download_s3_archive()
     else:  # Development. Put a zip in the development_extracts directory to use it.
         zip_location = specify_extract_location()
 
