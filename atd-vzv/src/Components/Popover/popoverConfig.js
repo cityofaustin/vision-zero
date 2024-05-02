@@ -223,9 +223,8 @@ export const popoverConfig = {
                 motorized scooter
               </li>
               <li>
-                <strong>Other</strong>: Any modality other than motorist,
-                pedestrian, motorcyclist, bicyclist, or e-scooter rider, such as
-                a pedicab
+                <strong>Other</strong>: Any other modality, such as
+                a pedicab, or the modality may be unreported or unknown
               </li>
             </ul>
           </div>
