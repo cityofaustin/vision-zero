@@ -33,6 +33,7 @@ create table db.people_cris (
 
 create table db.people_edits (
     id integer primary key references db.people_cris (id) on update cascade on delete cascade,
+    apd_annual_fatality_number integer,
     drvr_city_name text,
     drvr_drg_cat_1_id integer references lookups.substnc_cat_lkp (id) on update cascade on delete cascade,
     drvr_zip text,
@@ -65,6 +66,7 @@ create table db.people_edits (
 
 create table db.people_unified (
     id integer primary key,
+    apd_annual_fatality_number integer,
     drvr_city_name text,
     drvr_drg_cat_1_id integer references lookups.substnc_cat_lkp (id) on update cascade on delete cascade,
     drvr_zip text,
