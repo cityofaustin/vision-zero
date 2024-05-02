@@ -1,0 +1,10 @@
+services:
+  metadata:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+    entrypoint: /bin/bash
+    env_file:
+      - env
