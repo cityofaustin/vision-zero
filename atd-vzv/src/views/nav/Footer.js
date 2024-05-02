@@ -102,7 +102,7 @@ const Footer = () => {
     },
     {
       text: "Powered by Data & Technology Services",
-      url: "https://data.mobility.austin.gov/about/",
+      url: "https://austinmobility.io/",
     },
     { text: <div className="version">v{pckg.version}</div> },
   ];
