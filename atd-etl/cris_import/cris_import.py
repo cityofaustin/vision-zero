@@ -94,6 +94,7 @@ def main():
         local_mode = True
 
     zip_location = None
+    database_location = None
     if not local_mode:  # Production
         zip_location, database_location = download_s3_archive()
     else:  # Development. Put a zip in the development_extracts directory to use it.
@@ -101,25 +102,44 @@ def main():
 
     print("Database Location: " + str(database_location))
 
-    quit()
-
     if not zip_location:
         return
 
     extracted_archives = unzip_archives(zip_location)
     for archive in extracted_archives:
         logical_groups_of_csvs = group_csvs_into_logical_groups(archive, dry_run=False)
-        for logical_group in logical_groups_of_csvs:
-            desired_schema_name = create_import_schema_name(logical_group)
-            schema_name = create_target_import_schema(desired_schema_name)
-            pgloader_command_files = pgloader_csvs_into_database(schema_name)
-            trimmed_token = remove_trailing_carriage_returns(pgloader_command_files)
-            typed_token = align_db_typing(trimmed_token)
-            align_records_token = align_records(typed_token)
-            clean_up_import_schema(align_records_token)
+        # for logical_group in logical_groups_of_csvs:
+        #     desired_schema_name = create_import_schema_name(logical_group)
+        #     schema_name = create_target_import_schema(desired_schema_name)
+        #     pgloader_command_files = pgloader_csvs_into_database(schema_name)
+        #     trimmed_token = remove_trailing_carriage_returns(pgloader_command_files)
+        #     typed_token = align_db_typing(trimmed_token)
+        #     align_records_token = align_records(typed_token)
+        #     clean_up_import_schema(align_records_token)
     if not local_mode:  # We're using a locally provided zip file, so skip these steps
+        upload_sqlite_to_s3(database_location)
         remove_archives_from_sftp_endpoint(zip_location)
         upload_csv_files_to_s3(archive)
+
+
+def upload_sqlite_to_s3(database_location):
+    session = boto3.Session(
+        aws_access_key_id=AWS_ACCESS_KEY_ID,
+        aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+    )
+
+    s3 = session.client("s3")
+    bucket = S3_EXTRACT_BUCKET
+    prefix = f"{DEPLOYMENT_ENVIRONMENT}/database/"
+
+    # Extract the filename from the database location
+    filename = os.path.basename(database_location)
+
+    # Construct the key for the S3 object
+    key = os.path.join(prefix, filename)
+
+    # Upload the SQLite database to S3
+    s3.upload_file(database_location, bucket, key)
 
 
 def get_secrets():
@@ -311,7 +331,7 @@ def download_s3_archive():
     cursor.execute("SELECT * FROM uploads WHERE import_attempted = 0")
     uploads_to_import = cursor.fetchall()
 
-    # # Create a new temporary directory
+    # Create a new temporary directory
     import_dir = tempfile.mkdtemp()
 
     # Download each upload into the new temporary directory
