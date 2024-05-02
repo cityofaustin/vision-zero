@@ -70,7 +70,7 @@ create table db.people_unified (
     drvr_drg_cat_1_id integer references lookups.substnc_cat_lkp (id) on update cascade on delete cascade,
     drvr_zip text,
     ems_id integer references public.ems__incidents (id) on update cascade on delete set null,
-    est_comp_cost_crash_based integer generated always as (case when (prsn_injry_sev_id = 1) then 250000 when (prsn_injry_sev_id = 2) then 3000000 when (prsn_injry_sev_id = 3) then 200000 when (prsn_injry_sev_id = 4 or prsn_injry_sev_id = 99) then 3500000 else 20000 end) stored,
+    est_comp_cost_crash_based integer generated always as (case when (prsn_injry_sev_id = 1) then 250000 when (prsn_injry_sev_id = 2) then 3000000 when (prsn_injry_sev_id = 3) then 200000 when (prsn_injry_sev_id = 4) then 3500000 else 20000 end) stored,
     is_primary_person boolean,
     peh_fl boolean not null default false,
     prsn_age integer,
