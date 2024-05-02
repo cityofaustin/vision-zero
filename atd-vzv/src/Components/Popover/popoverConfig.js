@@ -224,7 +224,7 @@ export const popoverConfig = {
               </li>
               <li>
                 <strong>Other</strong>: Any other modality, such as
-                a pedicab, or the modality may be unreported or unknown
+                a pedicab, or when the modality is unreported or unknown
               </li>
             </ul>
           </div>
