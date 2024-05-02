@@ -1,4 +1,3 @@
-version: '3.7'
 services:
   graphql-engine:
     image: hasura/graphql-engine:v2.38.1

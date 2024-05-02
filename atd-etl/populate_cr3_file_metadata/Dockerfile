@@ -8,7 +8,5 @@ RUN apt-get install -y file
 WORKDIR /app
 COPY . /app
 
-RUN chmod -R 755 /app/*
-
 # Install requirements
 RUN pip install -r requirements.txt
