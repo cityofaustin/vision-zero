@@ -1,38 +1,28 @@
-with atd_fatalities as (
+with injury_severities as (
     select
         id,
-        unit_id
+        unit_id,
+        case
+            when (prsn_injry_sev_id = 1) then 1
+            else 0
+        end as serious_injury,
+        case
+            when (prsn_injry_sev_id = 4) then 1
+            else 0
+        end as fatal_injury
     from
         db.people_unified
-    where
-        prsn_injry_sev_id = 4
 ),
 
-serious_injuries as (
-    select
-        id,
-        unit_id
-    from
-        db.people_unified
-    where
-        prsn_injry_sev_id = 1
-),
-
-crash_injury_counts as (
+injury_counts as (
     select
         crashes.crash_id,
-        count(atd_fatalities.id) as atd_fatality_count,
-        count(serious_injuries.id) as serious_injuries_count,
-        sum(people.est_comp_cost_crash_based) as est_comp_cost_crash_based
+        sum(injury_severities.fatal_injury) as atd_fatality_count,
+        sum(injury_severities.serious_injury) as serious_injury_count
     from
         db.crashes_unified as crashes
     left join db.units_unified as units on crashes.crash_id = units.crash_id
-    left join atd_fatalities on units.id = atd_fatalities.unit_id
-    left join serious_injuries on units.id = serious_injuries.id
-    left join db.people_unified as people on units.id = people.unit_id
-    where
-        crashes.in_austin_full_purpose = true
-        and crashes.private_dr_fl = false
+    left join injury_severities on units.id = injury_severities.unit_id
     group by
         crashes.crash_id
 ),
@@ -57,7 +47,7 @@ geocode_sources as (
                 (latitude is not null or longitude is not null)
                 then 'manual_qa'
             else 'cris'
-        end as source
+        end as geocode_source
     from db.crashes_edits
 )
 
@@ -65,16 +55,20 @@ select
     db.crashes_unified.crash_id,
     db.crashes_unified.case_id,
     db.crashes_unified.crash_date,
-    crash_injury_counts.atd_fatality_count,
-    crash_injury_counts.serious_injuries_count,
+    db.crashes_unified.private_dr_fl,
+    db.crashes_unified.in_austin_full_purpose,
+    db.crashes_unified.location_id,
+    injury_counts.atd_fatality_count,
+    injury_counts.serious_injury_count,
     est_comp_costs.est_comp_cost_crash_based,
     lookups.collsn_lkp.label as collsn_desc,
-    geocode_sources.source
+    geocode_sources.geocode_source
+
 from
     db.crashes_unified
 left join
-    crash_injury_counts
-    on db.crashes_unified.crash_id = crash_injury_counts.crash_id
+    injury_counts
+    on db.crashes_unified.crash_id = injury_counts.crash_id
 left join
     est_comp_costs
     on db.crashes_unified.crash_id = est_comp_costs.crash_id
