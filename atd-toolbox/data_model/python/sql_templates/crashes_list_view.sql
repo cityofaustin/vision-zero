@@ -1,5 +1,3 @@
--- before indexes: 160ms locally
--- after: 150ms locally
 with atd_fatalities as (
     select
         id,
