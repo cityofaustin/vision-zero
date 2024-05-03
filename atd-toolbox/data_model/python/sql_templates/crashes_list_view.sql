@@ -1,4 +1,4 @@
-with injury_severities as (
+create or replace view crashes_list as with injury_severities as (
     select
         id,
         unit_id,
@@ -22,7 +22,9 @@ with injury_severities as (
 injury_counts as (
     select
         crashes.crash_id,
-        sum(injury_severities.non_capacitating_injury) as non_capacitating_injury_count,
+        sum(
+            injury_severities.non_capacitating_injury
+        ) as non_capacitating_injury_count,
         sum(injury_severities.serious_injury) as serious_injury_count,
         sum(injury_severities.fatal_injury) as atd_fatality_count,
         sum(est_comp_cost_crash_based) as est_comp_cost_crash_based
@@ -37,8 +39,10 @@ injury_counts as (
 geocode_sources as (
     select
         cris.crash_id,
-        coalesce ((cris.latitude is null or cris.longitude is null),
-        false) as has_no_cris_coordinates,
+        coalesce(
+            (cris.latitude is null or cris.longitude is null),
+            false
+        ) as has_no_cris_coordinates,
         case
             when
                 (edits.latitude is not null or edits.longitude is not null)
@@ -48,7 +52,6 @@ geocode_sources as (
     from db.crashes_cris as cris
     left join db.crashes_edits as edits on cris.crash_id = edits.crash_id
 )
-
 
 select
     db.crashes_unified.crash_id,
