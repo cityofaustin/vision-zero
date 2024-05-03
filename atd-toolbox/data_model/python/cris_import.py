@@ -51,10 +51,27 @@ mutation UpsertPeople($objects: [db_people_cris_insert_input!]!) {
   }
 }"""
 
+CHARGES_DELETE_MUTATION = """
+mutation DeleteCharges($crash_ids: [Int!]!) {
+  delete_db_charges_cris(where: {crash_id: {_in: $crash_ids}}) {
+    affected_rows
+  }
+}
+"""
+
+CHARGES_INSERT_MUTATION = """
+mutation InsertCharges($objects: [db_charges_cris_insert_input!]!) {
+  insert_db_charges_cris(objects: $objects) {
+    affected_rows
+  }
+}
+"""
+
 mutations = {
     "crashes": CRASH_UPSERT_MUTATION,
     "units": UNIT_UPSERT_MUTATION,
     "persons": PERSON_UPSERT_MUTATION,
+    "charges": CHARGES_INSERT_MUTATION,
 }
 
 
@@ -126,7 +143,7 @@ def get_files_todo():
         schema_year, extract_id, table_name = get_file_meta(filename)
 
         # ignore all tables except these
-        if table_name not in ("crash", "unit", "person", "primaryperson"):
+        if table_name not in ("crash", "unit", "person", "primaryperson", "charges"):
             continue
 
         file = {
@@ -233,8 +250,9 @@ def main():
         )
         schema_years.sort()
         for schema_year in schema_years:
-            for table_name in ["crashes", "units", "persons"]:
+            for table_name in ["crashes", "units", "persons", "charges"]:
                 cris_columns = get_cris_columns(column_metadata, table_name)
+
                 file = next(
                     (
                         f
@@ -247,7 +265,7 @@ def main():
                 )
 
                 if not file:
-                    raise (
+                    raise Exception(
                         f"No {table_name} file found in extract. This should never happen!"
                     )
 
@@ -302,6 +320,22 @@ def main():
                         time_field_name="prsn_death_time",
                         is_am_pm_format=False,
                     )
+
+                if table_name == "charges":
+                    # exclude 'NO CHARGES' records
+                    # records = [record for record in records if record['charge'] != 'NO CHARGES']
+                    delete_charges_batch_size = 500
+                    crash_ids = list(
+                        set([int(record["crash_id"]) for record in records])
+                    )
+                    print(f"Deleting charges for {len(crash_ids)} total crashes...")
+                    for chunk in chunks(crash_ids, delete_charges_batch_size):
+                        print(f"deleting charges for {delete_charges_batch_size} crashes...")
+                        make_hasura_request(
+                            endpoint=HASURA_ENDPOINT,
+                            query=CHARGES_DELETE_MUTATION,
+                            variables={"crash_ids": crash_ids},
+                        )
 
                 upsert_mutation = make_upsert_mutation(table_name, cris_columns)
 
