@@ -17,6 +17,8 @@ begin
     SELECT to_jsonb(crashes_cris) INTO cris_record_jb from db.crashes_cris where db.crashes_cris.crash_id = new.crash_id;
     -- for every key in the vz json object
     for column_name in select jsonb_object_keys(new_edits_jb) loop
+        -- ignore audit fields, except updated_by
+        continue when column_name in ('created_at', 'updated_at', 'created_by');
         --  create a set statement for the column
         if cris_record_jb ? column_name then
             -- if this column exists on the cris table, coalesce vz + cris values
@@ -62,6 +64,8 @@ begin
     SELECT to_jsonb(units_cris) INTO cris_record_jb from db.units_cris where db.units_cris.id = new.id;
     -- for every key in the vz json object
     for column_name in select jsonb_object_keys(new_edits_jb) loop
+        -- ignore audit fields, except updated_by
+        continue when column_name in ('created_at', 'updated_at', 'created_by');
         --  create a set statement for the column
         if cris_record_jb ? column_name then
             -- if this column exists on the cris table, coalesce vz + cris values
@@ -107,6 +111,8 @@ begin
     SELECT to_jsonb(people_cris) INTO cris_record_jb from db.people_cris where db.people_cris.id = new.id;
     -- for every key in the vz json object
     for column_name in select jsonb_object_keys(new_edits_jb) loop
+        -- ignore audit fields, except updated_by
+        continue when column_name in ('created_at', 'updated_at', 'created_by');
         --  create a set statement for the column
         if cris_record_jb ? column_name then
             -- if this column exists on the cris table, coalesce vz + cris values
