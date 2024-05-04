@@ -180,6 +180,12 @@ def handle_empty_strings(rows):
     return rows
 
 
+def set_default_values(records, key_values):
+    for record in records:
+        for key, value in key_values.items():
+            record[key] = value
+
+
 def combine_date_time_fields(
     rows, *, date_field_name, time_field_name, is_am_pm_format
 ):
@@ -240,16 +246,19 @@ def main():
     column_metadata = load_data(COLUMN_ENDPOINT)
 
     files_todo = get_files_todo()
+
     extract_ids = list(set([f["extract_id"] for f in files_todo]))
     # assumes extract ids are sortable oldest > newest by filename. todo: is that right?
     extract_ids.sort()
     for extract_id in extract_ids:
+        print(f"Doing extract id: {extract_id}")
         # get schema years that match this extract ID
         schema_years = list(
             set([f["schema_year"] for f in files_todo if f["extract_id"] == extract_id])
         )
         schema_years.sort()
         for schema_year in schema_years:
+            print(f"Doing schema year: {schema_year}")
             for table_name in ["crashes", "units", "persons", "charges"]:
                 cris_columns = get_cris_columns(column_metadata, table_name)
 
@@ -300,8 +309,7 @@ def main():
                         None,
                     )
 
-                    for p in records:
-                        p["is_primary_person"] = False
+                    set_default_values(records, {"is_primary_person": False})
 
                     pp_records = handle_empty_strings(
                         remove_unsupported_columns(
@@ -309,8 +317,8 @@ def main():
                             cris_columns,
                         )
                     )
-                    for pp in pp_records:
-                        pp["is_primary_person"] = True
+
+                    set_default_values(pp_records, {"is_primary_person": True})
 
                     records = pp_records + records
 
@@ -322,20 +330,27 @@ def main():
                     )
 
                 if table_name == "charges":
-                    # exclude 'NO CHARGES' records
-                    # records = [record for record in records if record['charge'] != 'NO CHARGES']
+                    # set created_by audit field only
+                    set_default_values(records, {"created_by": "cris"})
                     delete_charges_batch_size = 500
                     crash_ids = list(
                         set([int(record["crash_id"]) for record in records])
                     )
                     print(f"Deleting charges for {len(crash_ids)} total crashes...")
                     for chunk in chunks(crash_ids, delete_charges_batch_size):
-                        print(f"deleting charges for {delete_charges_batch_size} crashes...")
+                        print(
+                            f"deleting charges for {delete_charges_batch_size} crashes..."
+                        )
                         make_hasura_request(
                             endpoint=HASURA_ENDPOINT,
                             query=CHARGES_DELETE_MUTATION,
                             variables={"crash_ids": crash_ids},
                         )
+                else:
+                    # set created_by and updated_by audit fields
+                    set_default_values(
+                        records, {"created_by": "cris", "updated_by": "cris"}
+                    )
 
                 upsert_mutation = make_upsert_mutation(table_name, cris_columns)
 

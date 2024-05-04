@@ -17,6 +17,8 @@ begin
     SELECT to_jsonb($tableName$_cris) INTO cris_record_jb from db.$tableName$_cris where db.$tableName$_cris.$pkColumnName$ = new.$pkColumnName$;
     -- for every key in the vz json object
     for column_name in select jsonb_object_keys(new_edits_jb) loop
+        -- ignore audit fields, except updated_by
+        continue when column_name in ('created_at', 'updated_at', 'created_by');
         --  create a set statement for the column
         if cris_record_jb ? column_name then
             -- if this column exists on the cris table, coalesce vz + cris values

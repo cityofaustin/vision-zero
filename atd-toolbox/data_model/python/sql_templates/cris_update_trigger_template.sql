@@ -19,6 +19,8 @@ begin
 
     -- for every key in the cris json object
     for column_name in select jsonb_object_keys(new_cris_jb) loop
+        -- ignore audit fields
+        continue when column_name in ('created_at', 'updated_at', 'created_by', 'updated_by');
         -- if the new value doesn't match the old
         if(new_cris_jb -> column_name <> old_cris_jb -> column_name) then
             -- see if the vz record has a value for this field
@@ -30,6 +32,8 @@ begin
         end if;
     end loop;
     if(array_length(updates_todo, 1) > 0) then
+        -- set audit field updated_by to 'cris'
+        updates_todo := updates_todo || format('%I = %L', 'updated_by', 'cris');
         -- complete the update statement by joining all `set` clauses together
         update_stmt := update_stmt
             || array_to_string(updates_todo, ',')

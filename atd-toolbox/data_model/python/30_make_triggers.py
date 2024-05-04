@@ -37,6 +37,12 @@ def patch_template(template, table_name, pk_column_name, columns_unified):
 def main():
     data = load_columns(COLUMN_ENDPOINT)
 
+    # create audit field columns and triggers
+    audit_field_sql = load_sql_template("sql_templates/audit_fields.sql")
+    migration_path = make_migration_dir("audit_fields")
+    save_file(f"{migration_path}/up.sql", audit_field_sql)
+    save_empty_down_migration(migration_path)
+
     # triggers that fire on CRIS insert
     insert_template = load_sql_template(
         "sql_templates/cris_insert_trigger_template.sql"
@@ -55,6 +61,8 @@ def main():
         columns_unified = list(set(columns_unified))
         # sort columns to keep diffs consistent
         columns_unified.sort()
+        # add audit fields
+        columns_unified.extend(['created_by', 'updated_by'])
         pk_column = "crash_id" if table_name == "crashes" else "id"
         sql = patch_template(insert_template, table_name, pk_column, columns_unified)
         stmts.append(sql)
