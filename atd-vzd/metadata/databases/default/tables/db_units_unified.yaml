@@ -5,6 +5,12 @@ object_relationships:
   - name: crashes_unified
     using:
       foreign_key_constraint_on: crash_id
+  - name: unit_desc_lkp
+    using:
+      foreign_key_constraint_on: unit_desc_id
+  - name: veh_body_styl_lkp
+    using:
+      foreign_key_constraint_on: veh_body_styl_id
 array_relationships:
   - name: change_log_units_unifieds
     using:
