@@ -32,8 +32,8 @@ begin
         end if;
     end loop;
     if(array_length(updates_todo, 1) > 0) then
-        -- set audit field updated_by to 'cris'
-        updates_todo := updates_todo || format('%I = %L', 'updated_by', 'cris');
+        -- set audit field updated_by to match cris record
+        updates_todo := updates_todo || format('%I = $1.%I', 'updated_by', 'updated_by');
         -- complete the update statement by joining all `set` clauses together
         update_stmt := update_stmt
             || array_to_string(updates_todo, ',')
