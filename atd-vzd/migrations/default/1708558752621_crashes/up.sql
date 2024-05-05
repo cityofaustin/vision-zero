@@ -120,6 +120,7 @@ create table db.crashes_unified (
     crash_date timestamp with time zone,
     crash_speed_limit integer,
     crash_time timestamp with time zone,
+    engineering_area integer references public.engineering_areas (area_id) on update cascade on delete set null,
     fhe_collsn_id integer references lookups.collsn_lkp (id) on update cascade on delete cascade,
     in_austin_full_purpose boolean,
     intrsct_relat_id integer references lookups.intrsct_relat_lkp (id) on update cascade on delete cascade,

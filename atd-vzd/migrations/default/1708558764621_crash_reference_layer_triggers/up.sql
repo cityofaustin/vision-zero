@@ -47,6 +47,18 @@ begin
                 st_contains(geometry, new.position)
             limit 1);
         raise notice 'council_district: % compared to previous: %', new.council_district, old.council_district;
+        --
+        -- Get engineering area
+        --
+        new.engineering_area = (
+            select
+                area_id
+            from
+                public.engineering_areas
+            where
+                st_contains(geometry, new.position)
+            limit 1);
+        raise notice 'engineering_area: % compared to previous: %', new.engineering_area, old.engineering_area;
         else
             raise notice 'setting location id and council district to null';
             -- nullify position column
@@ -58,6 +70,8 @@ begin
             raise notice 'setting in_austin_full_purpose based on city id: %', new.in_austin_full_purpose;
             -- reset council district
             new.council_district = null;
+            -- reset engineering area
+            new.engineering_area = null;
     end if;
     RETURN NEW;
 END;
