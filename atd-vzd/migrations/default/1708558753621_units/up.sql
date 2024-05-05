@@ -7,6 +7,7 @@ create table db.units_cris (
     contrib_factr_p1_id integer references lookups.contrib_factr_lkp (id) on update cascade on delete cascade,
     contrib_factr_p2_id integer references lookups.contrib_factr_lkp (id) on update cascade on delete cascade,
     crash_id integer not null references db.crashes_cris (crash_id) on update cascade on delete cascade,
+    cris_schema_version text not null,
     e_scooter_id integer references lookups.e_scooter_lkp (id) on update cascade on delete cascade,
     first_harm_evt_inv_id integer references lookups.harm_evnt_lkp (id) on update cascade on delete cascade,
     pbcat_pedalcyclist_id integer references lookups.pbcat_pedalcyclist_lkp (id) on update cascade on delete cascade,

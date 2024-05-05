@@ -331,7 +331,9 @@ def main():
 
                 if table_name == "charges":
                     # set created_by audit field only
-                    set_default_values(records, {"created_by": "cris"})
+                    set_default_values(
+                        records, {"created_by": "cris", "cris_schema_version": schema_year}
+                    )
                     delete_charges_batch_size = 500
                     crash_ids = list(
                         set([int(record["crash_id"]) for record in records])
@@ -349,7 +351,12 @@ def main():
                 else:
                     # set created_by and updated_by audit fields
                     set_default_values(
-                        records, {"created_by": "cris", "updated_by": "cris"}
+                        records,
+                        {
+                            "created_by": "cris",
+                            "updated_by": "cris",
+                            "cris_schema_version": schema_year,
+                        },
                     )
 
                 upsert_mutation = make_upsert_mutation(table_name, cris_columns)

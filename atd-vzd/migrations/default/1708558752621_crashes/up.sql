@@ -6,6 +6,7 @@ create table db.crashes_cris (
     crash_date timestamp with time zone,
     crash_speed_limit integer,
     crash_time timestamp with time zone,
+    cris_schema_version text not null,
     fhe_collsn_id integer references lookups.collsn_lkp (id) on update cascade on delete cascade,
     intrsct_relat_id integer references lookups.intrsct_relat_lkp (id) on update cascade on delete cascade,
     investigat_agency_id integer references lookups.agency_lkp (id) on update cascade on delete cascade,
