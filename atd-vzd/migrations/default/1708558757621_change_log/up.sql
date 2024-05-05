@@ -137,7 +137,7 @@ begin
     end if;
     record_json = jsonb_build_object('new', to_jsonb(new), 'old', to_jsonb(old));
     update_stmt := format('insert into db.change_log_%I (record_id, operation_type, record_json, created_by) 
-        values (%s, %L, %L, %L)', TG_TABLE_NAME, record_id, TG_OP, record_json, 'unknown');
+        values (%s, %L, %L, $1.%I)', TG_TABLE_NAME, record_id, TG_OP, record_json, 'updated_by');
     execute (update_stmt) using new;
     return null;
 END;
