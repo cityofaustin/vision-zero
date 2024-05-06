@@ -103,8 +103,11 @@ def main():
     if not zip_location:
         return
 
-    extracted_archives = unzip_archives(zip_location)
-    for archive in extracted_archives:
+    extracted_archives = unzip_archives(zip_location, database_location)
+    for archive_data in extracted_archives:
+        archive = archive_data[1]
+        print("Archive: " + archive)
+        continue
         logical_groups_of_csvs = group_csvs_into_logical_groups(archive, dry_run=False)
         for logical_group in logical_groups_of_csvs:
             desired_schema_name = create_import_schema_name(logical_group)
@@ -343,7 +346,7 @@ def download_s3_archive():
     return import_dir, db_file_path
 
 
-def unzip_archives(archives_directory):
+def unzip_archives(archives_directory, db):
     """
     Unzips (and decrypts) archives received from CRIS
 
@@ -360,7 +363,17 @@ def unzip_archives(archives_directory):
         unzip_command = f'7za -y -p{ZIP_PASSWORD} -o"{extract_tmpdir}" x "{archives_directory}/{filename}"'
         print(unzip_command)
         os.system(unzip_command)
-        extracted_csv_directories.append(extract_tmpdir)
+        # Connect to the SQLite database
+        conn = sqlite3.connect(db)
+        cursor = conn.cursor()
+        cursor.execute("select id from uploads where object_name = ?", (filename,))
+        id = cursor.fetchone()[0]
+        extracted_csv_directories.append((id, extract_tmpdir))
+        cursor.execute(
+            "UPDATE uploads SET import_attempted = 1 WHERE object_name = ?", (filename,)
+        )
+        conn.commit()
+        conn.close()
     return extracted_csv_directories
 
 
