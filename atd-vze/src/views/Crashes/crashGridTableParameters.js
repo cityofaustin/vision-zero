@@ -20,14 +20,14 @@ export const crashGridTableColumns = {
     label_table: "Crash Date",
     type: "Date",
   },
-  address_confirmed_primary: {
+  address_primary: {
     searchable: true,
     sortable: true,
     label_search: "Search by Primary Address",
     label_table: "Primary Address",
     type: "String",
   },
-  address_confirmed_secondary: {
+  address_secondary: {
     searchable: true,
     sortable: true,
     label_search: "Search by Secondary Address",
@@ -40,7 +40,7 @@ export const crashGridTableColumns = {
     label_table: "Suspected Serious Injury Count",
     type: "Int",
   },
-  atd_fatality_count: {
+  atd_fatality_cnt: {
     searchable: false,
     sortable: true,
     label_table: "ATD Death Count",
@@ -52,20 +52,20 @@ export const crashGridTableColumns = {
     label_table: "Est Comprehensive Cost",
     type: "Currency",
   },
-  "collision { collsn_desc } ": {
+  "collsn_desc": {
     searchable: false,
     sortable: true,
     label_table: "Collision Description",
     type: "String",
   },
-  "units { unit_description { veh_unit_desc_desc } }": {
+  "units { veh_body_styl_lkp { label } }": {
     searchable: false,
     sortable: false,
     label_table: "Unit Description",
     type: "String",
     hidden: true,
   },
-  "geocode_method { name }": {
+  "geocode_source": {
     searchable: false,
     sortable: true,
     label_table: "Geocode Provider",
@@ -139,7 +139,7 @@ export const crashGridTableAdvancedFilters = {
           where: [
             {
               or: {
-                atd_fatality_count: "_gt: 0",
+                atd_fatality_cnt: "_gt: 0",
               },
             },
           ],
@@ -152,7 +152,7 @@ export const crashGridTableAdvancedFilters = {
           where: [
             {
               or: {
-                death_cnt: "_gt: 0",
+                cris_fatality_cnt: "_gt: 0",
               },
             },
           ],
@@ -160,12 +160,12 @@ export const crashGridTableAdvancedFilters = {
       },
       {
         id: "dni_apd_deaths",
-        label: "APD Confirmed Fatality Crashes",
+        label: "APD Fatality Crashes",
         filter: {
           where: [
             {
               or: {
-                apd_confirmed_death_count: "_gt: 0",
+                apd_fatality_cnt: "_gt: 0",
               },
             },
           ],
@@ -204,26 +204,12 @@ export const crashGridTableAdvancedFilters = {
     label: "Geography",
     filters: [
       {
-        id: "geo_no_coordinates",
-        label: "No Primary Coordinates",
-        filter: {
-          where: [
-            {
-              latitude_primary: "_is_null: true",
-            },
-            {
-              longitude_primary: "_is_null: true",
-            },
-          ],
-        },
-      },
-      {
         id: "geo_geocoded",
         label: "Has Been Geocoded",
         filter: {
           where: [
             {
-              geocoded: '_eq: "Y"',
+                geocode_source: '_eq: "manual_qa"',
             },
           ],
         },
@@ -234,10 +220,7 @@ export const crashGridTableAdvancedFilters = {
         filter: {
           where: [
             {
-              latitude: "_is_null: true",
-            },
-            {
-              longitude: "_is_null: true",
+                has_no_cris_coordinates: "_eq: true",
             },
           ],
         },

@@ -13,7 +13,7 @@ import {
 
 // Our initial query configuration
 let queryConf = {
-  table: "atd_txdot_crashes",
+  table: "crashes_list",
   single_item: "crashes",
   showDateRange: true,
   columns: crashGridTableColumns,

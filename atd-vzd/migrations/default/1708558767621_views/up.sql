@@ -115,14 +115,19 @@ select
     injury_counts.sus_serious_injry_cnt,
     injury_counts.non_injry_cnt,
     injury_counts.atd_fatality_cnt,
-    case
-        when (cris_fatal_injury_counts.cris_fatality_cnt is null) then 0
-    else cris_fatal_injury_counts.cris_fatality_cnt
-    end as cris_fatality_cnt,
     injury_counts.est_comp_cost_crash_based,
     lookups.collsn_lkp.label as collsn_desc,
     geocode_sources.geocode_source,
     geocode_sources.has_no_cris_coordinates,
+    case
+        when (cris_fatal_injury_counts.cris_fatality_cnt is null) then 0
+        else cris_fatal_injury_counts.cris_fatality_cnt
+    end as cris_fatality_cnt,
+    case
+        when (law_enforcement_fatality_num is not null)
+            then cris_fatality_cnt
+        else 0
+    end as apd_fatality_cnt,
     upper(
         to_char(db.crashes_unified.crash_date at time zone 'US/Central', 'dy')
     ) as crash_day_of_week
