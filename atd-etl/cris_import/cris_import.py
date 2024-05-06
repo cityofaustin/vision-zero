@@ -106,8 +106,6 @@ def main():
     extracted_archives = unzip_archives(zip_location, database_location)
     for archive_data in extracted_archives:
         archive = archive_data[1]
-        print("Archive: " + archive)
-        continue
         logical_groups_of_csvs = group_csvs_into_logical_groups(archive, dry_run=False)
         for logical_group in logical_groups_of_csvs:
             desired_schema_name = create_import_schema_name(logical_group)
@@ -117,8 +115,25 @@ def main():
             typed_token = align_db_typing(trimmed_token)
             align_records_token = align_records(typed_token)
             clean_up_import_schema(align_records_token)
+        mark_extract_as_imported(archive_data[0], database_location)
     if not local_mode:  # We're using a locally provided zip file, so skip these steps
         upload_sqlite_to_s3(database_location)
+
+
+def mark_extract_as_imported(id, db):
+    conn = sqlite3.connect(db)
+    cursor = conn.cursor()
+    cursor.execute(
+        """
+        UPDATE uploads
+        SET import_successful = 1, import_time_utc = ?
+        WHERE id = ?
+        """,
+        (datetime.datetime.utcnow(), id),
+    )
+
+    conn.commit()
+    conn.close()
 
 
 def upload_sqlite_to_s3(database_location):
@@ -363,7 +378,7 @@ def unzip_archives(archives_directory, db):
         unzip_command = f'7za -y -p{ZIP_PASSWORD} -o"{extract_tmpdir}" x "{archives_directory}/{filename}"'
         print(unzip_command)
         os.system(unzip_command)
-        # Connect to the SQLite database
+
         conn = sqlite3.connect(db)
         cursor = conn.cursor()
         cursor.execute("select id from uploads where object_name = ?", (filename,))
@@ -768,7 +783,6 @@ def group_csvs_into_logical_groups(extracted_archives, dry_run):
         group_id = match.group(1)
         if group_id not in logical_groups:
             logical_groups.append(group_id)
-    print("logical groups: " + str(logical_groups))
     map_safe_state = []
     for group in logical_groups:
         map_safe_state.append(
