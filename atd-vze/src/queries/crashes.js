@@ -243,27 +243,41 @@ export const crashQueryExportFields = `
 crash_id
 case_id
 crash_date
-crash_time
-day_of_week
+crash_day_of_week
 rpt_block_num
 rpt_street_pfx
 rpt_street_name
 rpt_sec_block_num
 rpt_sec_street_pfx
 rpt_sec_street_name
-est_comp_cost
 est_comp_cost_crash_based
-atd_fatality_count
+atd_fatality_cnt
 sus_serious_injry_cnt
 nonincap_injry_cnt
 poss_injry_cnt
 non_injry_cnt
 unkn_injry_cnt
-collision { collsn_desc }
-units { travel_direction_desc { trvl_dir_desc } }
-units { movement { movement_desc } }
-units { body_style { veh_body_styl_desc } }
-units { unit_description { veh_unit_desc_desc } }
+collsn_desc
+units {
+  trvl_dir_lkp {
+    label
+  }
+}
+units {
+  movt_lkp {
+    label
+  }
+}
+units {
+  veh_body_styl_lkp {
+    label
+  }
+}
+units {
+  unit_desc_lkp {
+    label
+  }
+}
 light_cond_id
 wthr_cond_id
 active_school_zone_fl
@@ -277,14 +291,28 @@ rr_relat_fl
 toll_road_fl
 intrsct_relat_id
 obj_struck_id
-latitude_primary
-longitude_primary
+latitude
+longitude
 crash_speed_limit
-death_cnt
-recommendation { rec_text }
-recommendation { rec_update }
-recommendation { atd__recommendation_status_lkp { rec_status_desc } }
-recommendation { recommendations_partners { atd__coordination_partners_lkp { coord_partner_desc }} }
+cris_fatality_cnt
+recommendation {
+  rec_text
+}
+recommendation {
+  rec_update
+}
+recommendation {
+  atd__recommendation_status_lkp {
+    rec_status_desc
+  }
+}
+recommendation {
+  recommendations_partners {
+    atd__coordination_partners_lkp {
+      coord_partner_desc
+    }
+  }
+}
 council_district
 `;
 

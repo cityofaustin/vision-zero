@@ -115,6 +115,7 @@ select
     injury_counts.sus_serious_injry_cnt,
     injury_counts.non_injry_cnt,
     injury_counts.atd_fatality_cnt,
+    injury_counts.unkn_injry_cnt,
     injury_counts.est_comp_cost_crash_based,
     lookups.collsn_lkp.label as collsn_desc,
     geocode_sources.geocode_source,

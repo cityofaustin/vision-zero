@@ -5,6 +5,12 @@ object_relationships:
   - name: crashes_unified
     using:
       foreign_key_constraint_on: crash_id
+  - name: movt_lkp
+    using:
+      foreign_key_constraint_on: movement_id
+  - name: trvl_dir_lkp
+    using:
+      foreign_key_constraint_on: veh_trvl_dir_id
   - name: unit_desc_lkp
     using:
       foreign_key_constraint_on: unit_desc_id
