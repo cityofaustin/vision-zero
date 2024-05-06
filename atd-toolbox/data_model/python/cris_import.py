@@ -251,14 +251,14 @@ def main():
     # assumes extract ids are sortable oldest > newest by filename. todo: is that right?
     extract_ids.sort()
     for extract_id in extract_ids:
-        print(f"Doing extract id: {extract_id}")
+        print(f"processing extract id: {extract_id}")
         # get schema years that match this extract ID
         schema_years = list(
             set([f["schema_year"] for f in files_todo if f["extract_id"] == extract_id])
         )
         schema_years.sort()
         for schema_year in schema_years:
-            print(f"Doing schema year: {schema_year}")
+            print(f"processing schema year: {schema_year}")
             for table_name in ["crashes", "units", "persons", "charges"]:
                 cris_columns = get_cris_columns(column_metadata, table_name)
 
@@ -370,10 +370,10 @@ def main():
                         query=upsert_mutation,
                         variables={"objects": chunk},
                     )
-                    print(f"Done in {round(time.time() - start_time, 3)} seconds")
+                    print(f"✅ done in {round(time.time() - start_time, 3)} seconds")
 
     print(
-        f"Entire import completed in {round((time.time() - overall_start_tme)/60, 2)} minutes"
+        f"🎉 Entire import completed in {round((time.time() - overall_start_tme)/60, 2)} minutes"
     )
 
 
