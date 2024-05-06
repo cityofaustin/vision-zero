@@ -1,0 +1,11 @@
+CREATE TABLE uploads (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    object_path TEXT NOT NULL,
+    object_name TEXT NOT NULL,
+    cris_schema integer null,
+    first_seen_utc TIMESTAMP NOT NULL DEFAULT (datetime('now', 'utc')),
+    import_attempted INTEGER NOT NULL DEFAULT 0,
+    import_successful INTEGER NOT NULL DEFAULT 0,
+    import_time_utc TIMESTAMP
+);
+
