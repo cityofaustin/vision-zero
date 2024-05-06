@@ -712,7 +712,7 @@ def group_csvs_into_logical_groups(extracted_archives, dry_run):
     files = os.listdir(str(extracted_archives))
     logical_groups = []
     for file in files:
-        if file.endswith(".xml"):
+        if file.endswith(".xml") or file == "crashReports":
             continue
         match = re.search("^extract_(\d+_\d+)_", file)
         group_id = match.group(1)
