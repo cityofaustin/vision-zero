@@ -1,6 +1,16 @@
 table:
   name: crashes_list
   schema: public
+object_relationships:
+  - name: recommendation
+    using:
+      manual_configuration:
+        column_mapping:
+          crash_id: crash_id
+        insertion_order: null
+        remote_table:
+          name: recommendations
+          schema: public
 array_relationships:
   - name: units
     using:
@@ -11,3 +21,145 @@ array_relationships:
         remote_table:
           name: units_unified
           schema: db
+select_permissions:
+  - role: editor
+    permission:
+      columns:
+        - atd_fatality_cnt
+        - cris_fatality_cnt
+        - est_comp_cost_crash_based
+        - nonincap_injry_cnt
+        - non_injry_cnt
+        - poss_injry_cnt
+        - sus_serious_injry_cnt
+        - active_school_zone_fl
+        - at_intrsct_fl
+        - has_no_cris_coordinates
+        - in_austin_full_purpose
+        - onsys_fl
+        - private_dr_fl
+        - road_constr_zone_fl
+        - rr_relat_fl
+        - schl_bus_fl
+        - toll_road_fl
+        - council_district
+        - crash_id
+        - crash_speed_limit
+        - intrsct_relat_id
+        - light_cond_id
+        - obj_struck_id
+        - traffic_cntl_id
+        - wthr_cond_id
+        - latitude
+        - longitude
+        - address_primary
+        - address_secondary
+        - case_id
+        - collsn_desc
+        - crash_day_of_week
+        - geocode_source
+        - location_id
+        - rpt_block_num
+        - rpt_sec_block_num
+        - rpt_sec_street_name
+        - rpt_sec_street_pfx
+        - rpt_street_name
+        - rpt_street_pfx
+        - crash_date
+      filter: {}
+      allow_aggregations: true
+    comment: ""
+  - role: readonly
+    permission:
+      columns:
+        - atd_fatality_cnt
+        - cris_fatality_cnt
+        - est_comp_cost_crash_based
+        - nonincap_injry_cnt
+        - non_injry_cnt
+        - poss_injry_cnt
+        - sus_serious_injry_cnt
+        - active_school_zone_fl
+        - at_intrsct_fl
+        - has_no_cris_coordinates
+        - in_austin_full_purpose
+        - onsys_fl
+        - private_dr_fl
+        - road_constr_zone_fl
+        - rr_relat_fl
+        - schl_bus_fl
+        - toll_road_fl
+        - council_district
+        - crash_id
+        - crash_speed_limit
+        - intrsct_relat_id
+        - light_cond_id
+        - obj_struck_id
+        - traffic_cntl_id
+        - wthr_cond_id
+        - latitude
+        - longitude
+        - address_primary
+        - address_secondary
+        - case_id
+        - collsn_desc
+        - crash_day_of_week
+        - geocode_source
+        - location_id
+        - rpt_block_num
+        - rpt_sec_block_num
+        - rpt_sec_street_name
+        - rpt_sec_street_pfx
+        - rpt_street_name
+        - rpt_street_pfx
+        - crash_date
+      filter: {}
+      allow_aggregations: true
+    comment: ""
+  - role: vz-admin
+    permission:
+      columns:
+        - atd_fatality_cnt
+        - cris_fatality_cnt
+        - est_comp_cost_crash_based
+        - nonincap_injry_cnt
+        - non_injry_cnt
+        - poss_injry_cnt
+        - sus_serious_injry_cnt
+        - active_school_zone_fl
+        - at_intrsct_fl
+        - has_no_cris_coordinates
+        - in_austin_full_purpose
+        - onsys_fl
+        - private_dr_fl
+        - road_constr_zone_fl
+        - rr_relat_fl
+        - schl_bus_fl
+        - toll_road_fl
+        - council_district
+        - crash_id
+        - crash_speed_limit
+        - intrsct_relat_id
+        - light_cond_id
+        - obj_struck_id
+        - traffic_cntl_id
+        - wthr_cond_id
+        - latitude
+        - longitude
+        - address_primary
+        - address_secondary
+        - case_id
+        - collsn_desc
+        - crash_day_of_week
+        - geocode_source
+        - location_id
+        - rpt_block_num
+        - rpt_sec_block_num
+        - rpt_sec_street_name
+        - rpt_sec_street_pfx
+        - rpt_street_name
+        - rpt_street_pfx
+        - crash_date
+      filter: {}
+      allow_aggregations: true
+    comment: ""

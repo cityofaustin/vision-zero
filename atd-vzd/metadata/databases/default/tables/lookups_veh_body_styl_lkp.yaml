@@ -23,3 +23,28 @@ array_relationships:
         table:
           name: units_unified
           schema: db
+select_permissions:
+  - role: editor
+    permission:
+      columns:
+        - id
+        - label
+        - source
+      filter: {}
+    comment: ""
+  - role: readonly
+    permission:
+      columns:
+        - id
+        - label
+        - source
+      filter: {}
+    comment: ""
+  - role: vz-admin
+    permission:
+      columns:
+        - id
+        - label
+        - source
+      filter: {}
+    comment: ""
