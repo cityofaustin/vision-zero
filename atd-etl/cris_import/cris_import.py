@@ -100,26 +100,22 @@ def main():
     else:  # Development. Put a zip in the development_extracts directory to use it.
         zip_location = specify_extract_location()
 
-    print("Database Location: " + str(database_location))
-
     if not zip_location:
         return
 
     extracted_archives = unzip_archives(zip_location)
     for archive in extracted_archives:
         logical_groups_of_csvs = group_csvs_into_logical_groups(archive, dry_run=False)
-        # for logical_group in logical_groups_of_csvs:
-        #     desired_schema_name = create_import_schema_name(logical_group)
-        #     schema_name = create_target_import_schema(desired_schema_name)
-        #     pgloader_command_files = pgloader_csvs_into_database(schema_name)
-        #     trimmed_token = remove_trailing_carriage_returns(pgloader_command_files)
-        #     typed_token = align_db_typing(trimmed_token)
-        #     align_records_token = align_records(typed_token)
-        #     clean_up_import_schema(align_records_token)
+        for logical_group in logical_groups_of_csvs:
+            desired_schema_name = create_import_schema_name(logical_group)
+            schema_name = create_target_import_schema(desired_schema_name)
+            pgloader_command_files = pgloader_csvs_into_database(schema_name)
+            trimmed_token = remove_trailing_carriage_returns(pgloader_command_files)
+            typed_token = align_db_typing(trimmed_token)
+            align_records_token = align_records(typed_token)
+            clean_up_import_schema(align_records_token)
     if not local_mode:  # We're using a locally provided zip file, so skip these steps
         upload_sqlite_to_s3(database_location)
-        remove_archives_from_sftp_endpoint(zip_location)
-        upload_csv_files_to_s3(archive)
 
 
 def upload_sqlite_to_s3(database_location):
@@ -347,47 +343,6 @@ def download_s3_archive():
     return import_dir, db_file_path
 
 
-def download_sftp_archives():
-    """
-    Connect to the SFTP endpoint which receives archives from CRIS and
-    download them into a temporary directory.
-
-    Returns path of temporary directory as a string
-    """
-
-    with SshKeyTempDir() as key_directory:
-        write_key_to_file(
-            key_directory + "/id_ed25519", SFTP_ENDPOINT_SSH_PRIVATE_KEY + "\n"
-        )
-
-        zip_tmpdir = tempfile.mkdtemp()
-        rsync = None
-        try:
-            rsync = sysrsync.run(
-                verbose=True,
-                options=["-a"],
-                source_ssh=SFTP_ENDPOINT,
-                source="/home/txdot/*zip",
-                sync_source_contents=False,
-                destination=zip_tmpdir,
-                private_key=key_directory + "/id_ed25519",
-                strict_host_key_checking=False,
-            )
-        except:
-            print("No files to copy..")
-            # we're really kinda out of work here, so we're going to bail
-            quit()
-        print("Rsync return code: " + str(rsync.returncode))
-        # check for a OS level return code of anything non-zero, which
-        # would indicate to us that the child proc we kicked off didn't
-        # complete successfully.
-        # see: https://www.gnu.org/software/libc/manual/html_node/Exit-Status.html
-        if rsync.returncode != 0:
-            return False
-        print("Temp Directory: " + zip_tmpdir)
-        return zip_tmpdir
-
-
 def unzip_archives(archives_directory):
     """
     Unzips (and decrypts) archives received from CRIS
@@ -434,61 +389,6 @@ def cleanup_temporary_directories(
 
     for directory in extracted_archives:
         shutil.rmtree(directory)
-
-    return None
-
-
-def upload_csv_files_to_s3(extract_directory):
-    """
-    Upload CSV files which came from CRIS exports up to S3 for archival
-
-    Arguments:
-        extract_directory: String denoting the full path of a directory containing extracted CSV files
-
-    Returns:
-        extract_directory: String denoting the full path of a directory containing extracted CSV files
-            NB: The in-and-out unchanged data in this function is more about serializing prefect tasks and less about inter-functional communication
-    """
-
-    session = boto3.Session(
-        aws_access_key_id=AWS_ACCESS_KEY_ID,
-        aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-    )
-    s3 = session.resource("s3")
-
-    # for extract_directory in extracts:
-    for filename in os.listdir(extract_directory):
-        print("About to upload to s3: " + filename)
-        destination_path = AWS_CSV_ARCHIVE_PATH + "/" + str(datetime.date.today())
-        s3.Bucket(AWS_CSV_ARCHIVE_BUCKET_NAME).upload_file(
-            extract_directory + "/" + filename,
-            destination_path + "/" + filename,
-        )
-    return extract_directory
-
-
-def remove_archives_from_sftp_endpoint(zip_location):
-    """
-    Delete the archives which have been processed from the SFTP endpoint
-
-    Arguments:
-        zip_location: Stringing containing path of a directory containing the zip files downloaded from SFTP endpoint
-
-    Returns: None
-    """
-    with SshKeyTempDir() as key_directory:
-        write_key_to_file(
-            key_directory + "/id_ed25519", SFTP_ENDPOINT_SSH_PRIVATE_KEY + "\n"
-        )
-
-        print(zip_location)
-        for archive in os.listdir(zip_location):
-            print(archive)
-            command = f"ssh -i {key_directory}/id_ed25519 {SFTP_ENDPOINT} rm -v /home/txdot/{archive}"
-            print(command)
-            cmd = command.split()
-            rm_result = Popen(cmd, stdout=PIPE, stderr=PIPE, stdin=PIPE).stdout.read()
-            print(rm_result)
 
     return None
 
