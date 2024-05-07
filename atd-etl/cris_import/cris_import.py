@@ -94,7 +94,6 @@ def main():
         local_mode = True
 
     zip_location = None
-    database_location = None
     if not local_mode:  # Production
         zip_location = download_s3_archive()
     else:  # Development. Put a zip in the development_extracts directory to use it.
@@ -103,7 +102,7 @@ def main():
     if not zip_location:
         return
 
-    extracted_archives = unzip_archives(zip_location, database_location)
+    extracted_archives = unzip_archives(zip_location)
     for archive_data in extracted_archives:
         archive = archive_data[1]
         logical_groups_of_csvs = group_csvs_into_logical_groups(archive, dry_run=False)
@@ -364,7 +363,7 @@ def download_s3_archive():
         return import_dir
 
 
-def unzip_archives(archives_directory, db):
+def unzip_archives(archives_directory):
     """
     Unzips (and decrypts) archives received from CRIS
 
@@ -374,25 +373,47 @@ def unzip_archives(archives_directory, db):
     containing an archive's contents
     """
 
-    extracted_csv_directories = []
-    for filename in os.listdir(archives_directory):
-        print("About to unzip: " + filename + "with the command ...")
-        extract_tmpdir = tempfile.mkdtemp()
-        unzip_command = f'7za -y -p{ZIP_PASSWORD} -o"{extract_tmpdir}" x "{archives_directory}/{filename}"'
-        print(unzip_command)
-        os.system(unzip_command)
-
-        conn = sqlite3.connect(db)
-        cursor = conn.cursor()
-        cursor.execute("select id from uploads where object_name = ?", (filename,))
-        id = cursor.fetchone()[0]
-        extracted_csv_directories.append((id, extract_tmpdir))
-        cursor.execute(
-            "UPDATE uploads SET import_attempted = 1 WHERE object_name = ?", (filename,)
+    with SshKeyTempDir() as key_directory:
+        write_key_to_file(
+            key_directory + "/id_ed25519", DB_BASTION_HOST_SSH_PRIVATE_KEY + "\n"
         )
-        conn.commit()
-        conn.close()
-    return extracted_csv_directories
+        ssh_tunnel = SSHTunnelForwarder(
+            (DB_BASTION_HOST),
+            ssh_username=DB_BASTION_HOST_SSH_USERNAME,
+            ssh_private_key=f"{key_directory}/id_ed25519",
+            remote_bind_address=(DB_RDS_HOST, 5432),
+        )
+        ssh_tunnel.start()
+
+        pg = psycopg2.connect(
+            host="localhost",
+            port=ssh_tunnel.local_bind_port,
+            user=DB_USER,
+            password=DB_PASS,
+            dbname=DB_NAME,
+            sslmode=DB_SSL_REQUIREMENT,
+            sslrootcert="/root/rds-combined-ca-bundle.pem",
+        )
+
+        extracted_csv_directories = []
+        for filename in os.listdir(archives_directory):
+            print("About to unzip: " + filename + "with the command ...")
+            extract_tmpdir = tempfile.mkdtemp()
+            unzip_command = f'7za -y -p{ZIP_PASSWORD} -o"{extract_tmpdir}" x "{archives_directory}/{filename}"'
+            print(unzip_command)
+            os.system(unzip_command)
+
+            cursor = pg.cursor()
+            cursor.execute("select id from uploads where object_name = ?", (filename,))
+            id = cursor.fetchone()[0]
+            extracted_csv_directories.append((id, extract_tmpdir))
+            cursor.execute(
+                "UPDATE uploads SET import_attempted = 1 WHERE object_name = ?",
+                (filename,),
+            )
+            pg.commit()
+            pg.close()
+        return extracted_csv_directories
 
 
 def cleanup_temporary_directories(
