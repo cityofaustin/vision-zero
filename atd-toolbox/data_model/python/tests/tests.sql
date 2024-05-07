@@ -2,9 +2,9 @@
 insert into public.crashes_cris (
     crash_id, latitude, longitude, created_by, updated_by, cris_schema_version)
     values (1, 30.2800238, -97.743370, 'cris', 'cris', '2023');
-insert into public.units_cris (unit_nbr, crash_id) values (1, 1);
-insert into public.people_cris (prsn_nbr, unit_nbr, crash_id) values (1, 1, 1);
-insert into public.charges_cris (prsn_nbr, unit_nbr, crash_id, charge) values (1, 1, 1, 'whatever');
+insert into public.units_cris (unit_nbr, crash_id, cris_schema_version) values (1, 1, '2023');
+insert into public.people_cris (prsn_nbr, unit_nbr, crash_id, cris_schema_version) values (1, 1, 1, '2023');
+insert into public.charges_cris (prsn_nbr, unit_nbr, crash_id, charge, cris_schema_version) values (1, 1, 1, 'whatever', '2023');
 
 -- location null, in_austin_full_purpose false, council_district null
 update public.crashes_cris set active_school_zone_fl = TRUE, latitude = null where crash_id = 1;
