@@ -96,7 +96,7 @@ def main():
     zip_location = None
     database_location = None
     if not local_mode:  # Production
-        zip_location, database_location = download_s3_archive()
+        zip_location = download_s3_archive()
     else:  # Development. Put a zip in the development_extracts directory to use it.
         zip_location = specify_extract_location()
 
@@ -305,70 +305,72 @@ def download_s3_archive():
             sslrootcert="/root/rds-combined-ca-bundle.pem",
         )
 
-    uploads_prefix = f"{DEPLOYMENT_ENVIRONMENT}/uploads/"
-    # Get list of all objects in the bucket with the specified prefix
-    objects = s3.list_objects(Bucket=bucket, Prefix=uploads_prefix)
+        uploads_prefix = f"{DEPLOYMENT_ENVIRONMENT}/uploads/"
+        # Get list of all objects in the bucket with the specified prefix
+        objects = s3.list_objects(Bucket=bucket, Prefix=uploads_prefix)
 
-    # Create a temporary directory
-    temp_dir = tempfile.mkdtemp()
+        # Create a temporary directory
+        temp_dir = tempfile.mkdtemp()
 
-    # Download the SQLite DB from S3 to the temporary directory
-    db_file_path = os.path.join(temp_dir, "uploads.sqlite")
-    s3.download_file(bucket, db_key, db_file_path)
+        # Download the SQLite DB from S3 to the temporary directory
+        db_file_path = os.path.join(temp_dir, "uploads.sqlite")
+        s3.download_file(bucket, db_key, db_file_path)
 
-    # Connect to the SQLite database
-    conn = sqlite3.connect(db_file_path)
-    cursor = conn.cursor()
+        # Connect to the SQLite database
+        conn = sqlite3.connect(db_file_path)
+        cursor = conn.cursor()
 
-    for obj in objects["Contents"]:
-        full_object_path = obj["Key"]
-        object_name = os.path.basename(full_object_path)
+        for obj in objects["Contents"]:
+            full_object_path = obj["Key"]
+            object_name = os.path.basename(full_object_path)
 
-        # Skip the "folder" object
-        if full_object_path == uploads_prefix:
-            continue
+            # Skip the "folder" object
+            if full_object_path == uploads_prefix:
+                continue
 
-        # Extract the S3 prefix from the full object path
-        object_path = os.path.dirname(full_object_path)
+            # Extract the S3 prefix from the full object path
+            object_path = os.path.dirname(full_object_path)
 
-        # Extract the schema from the filename
-        schema = int(object_name.split("_")[1])
+            # Extract the schema from the filename
+            schema = int(object_name.split("_")[1])
 
-        # Check if the object already exists in the database
-        cursor.execute(
-            "SELECT * FROM uploads WHERE object_path = ? AND object_name = ?",
-            (object_path, object_name),
-        )
-        result = cursor.fetchone()
-
-        # If the object does not exist, insert a new record
-        if result is None:
+            # Check if the object already exists in the database
             cursor.execute(
-                """
-                INSERT INTO uploads (object_path, object_name, cris_schema, first_seen_utc)
-                VALUES (?, ?, ?, ?)
-                """,
-                (object_path, object_name, schema, datetime.datetime.utcnow()),
+                "SELECT * FROM uploads WHERE object_path = ? AND object_name = ?",
+                (object_path, object_name),
             )
+            result = cursor.fetchone()
 
-    # Query all uploads where import_attempted = 0
-    cursor.execute("SELECT * FROM uploads WHERE import_attempted = 0")
-    uploads_to_import = cursor.fetchall()
+            # If the object does not exist, insert a new record
+            if result is None:
+                cursor.execute(
+                    """
+                    INSERT INTO uploads (object_path, object_name, cris_schema, first_seen_utc)
+                    VALUES (?, ?, ?, ?)
+                    """,
+                    (object_path, object_name, schema, datetime.datetime.utcnow()),
+                )
 
-    # Create a new temporary directory
-    import_dir = tempfile.mkdtemp()
+        # Query all uploads where import_attempted = 0
+        cursor.execute("SELECT * FROM uploads WHERE import_attempted = 0")
+        uploads_to_import = cursor.fetchall()
 
-    # Download each upload into the new temporary directory
-    for upload in uploads_to_import:
-        upload_path = os.path.join(upload[1], upload[2])  # Construct the full S3 path
-        upload_file_path = os.path.join(import_dir, upload[2])
-        s3.download_file(bucket, upload_path, upload_file_path)
+        # Create a new temporary directory
+        import_dir = tempfile.mkdtemp()
 
-    # Commit the changes and close the connection
-    conn.commit()
-    conn.close()
+        # Download each upload into the new temporary directory
+        for upload in uploads_to_import:
+            upload_path = os.path.join(
+                upload[1], upload[2]
+            )  # Construct the full S3 path
+            upload_file_path = os.path.join(import_dir, upload[2])
+            s3.download_file(bucket, upload_path, upload_file_path)
 
-    return import_dir, db_file_path
+        # Commit the changes and close the connection
+        conn.commit()
+        conn.close()
+
+        return import_dir
 
 
 def unzip_archives(archives_directory, db):
