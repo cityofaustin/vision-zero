@@ -282,18 +282,28 @@ def download_s3_archive():
 
     s3 = session.client("s3")
     bucket = S3_EXTRACT_BUCKET
-    prefix = f"{DEPLOYMENT_ENVIRONMENT}/database/"
 
-    # Check if the SQLite DB exists in the specified directory on S3
-    db_key = f"{prefix}uploads.sqlite"
-    try:
-        s3.head_object(Bucket=bucket, Key=db_key)
-    except botocore.exceptions.ClientError as e:
-        # If the DB does not exist, copy it from the default directory on S3
-        if e.response["Error"]["Code"] == "404":
-            default_db_key = "default_database/uploads.sqlite"
-            copy_source = {"Bucket": bucket, "Key": default_db_key}
-            s3.copy(copy_source, bucket, db_key)
+    with SshKeyTempDir() as key_directory:
+        write_key_to_file(
+            key_directory + "/id_ed25519", DB_BASTION_HOST_SSH_PRIVATE_KEY + "\n"
+        )
+        ssh_tunnel = SSHTunnelForwarder(
+            (DB_BASTION_HOST),
+            ssh_username=DB_BASTION_HOST_SSH_USERNAME,
+            ssh_private_key=f"{key_directory}/id_ed25519",
+            remote_bind_address=(DB_RDS_HOST, 5432),
+        )
+        ssh_tunnel.start()
+
+        pg = psycopg2.connect(
+            host="localhost",
+            port=ssh_tunnel.local_bind_port,
+            user=DB_USER,
+            password=DB_PASS,
+            dbname=DB_NAME,
+            sslmode=DB_SSL_REQUIREMENT,
+            sslrootcert="/root/rds-combined-ca-bundle.pem",
+        )
 
     uploads_prefix = f"{DEPLOYMENT_ENVIRONMENT}/uploads/"
     # Get list of all objects in the bucket with the specified prefix
