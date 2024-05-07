@@ -6,6 +6,5 @@ CREATE TABLE cris_import_log (
     first_seen TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     import_attempted BOOLEAN NOT NULL DEFAULT FALSE,
     import_successful BOOLEAN NOT NULL DEFAULT FALSE,
-    import_time TIMESTAMPTZ DEFAULT NULL,
-    outcome_note TEXT DEFAULT NULL
+    import_time TIMESTAMPTZ DEFAULT NULL
 );
