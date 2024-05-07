@@ -1,3 +1,4 @@
+-- Updating the afd_incidents_trigger function to use geometry instead of shape
 DROP TRIGGER afd_incidents_trigger_insert ON afd__incidents;
 
 DROP TRIGGER afd_incidents_trigger_update ON afd__incidents;

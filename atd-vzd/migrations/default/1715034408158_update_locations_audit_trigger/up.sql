@@ -1,3 +1,4 @@
+-- Updating the atd_txdot_locations_updates_audit_log function to use geometry instead of shape
 DROP TRIGGER atd_txdot_location_audit_log on public.atd_txdot_locations;
 
 DROP FUNCTION public.atd_txdot_locations_updates_audit_log();

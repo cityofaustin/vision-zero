@@ -1,3 +1,4 @@
+-- Updating the ems_incidents_trigger function to use geometry instead of shape
 DROP TRIGGER ems_incidents_trigger_insert ON ems__incidents;
 
 DROP TRIGGER ems_incidents_trigger_update ON ems__incidents;
