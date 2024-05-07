@@ -44,9 +44,10 @@ select_permissions:
         - is_intersection
         - location_group
         - description
-        - shape
+        - geometry
       filter: {}
       allow_aggregations: true
+    comment: ""
   - role: readonly
     permission:
       columns:
@@ -60,9 +61,10 @@ select_permissions:
         - is_intersection
         - location_group
         - description
-        - shape
+        - geometry
       filter: {}
       allow_aggregations: true
+    comment: ""
   - role: vz-admin
     permission:
       columns:
@@ -76,6 +78,7 @@ select_permissions:
         - is_intersection
         - location_group
         - description
-        - shape
+        - geometry
       filter: {}
       allow_aggregations: true
+    comment: ""
