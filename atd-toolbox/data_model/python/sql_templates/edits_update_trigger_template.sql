@@ -2,7 +2,7 @@
 -- handle an $tableName$_edits update by updating the
 -- unified $tableName$ record from cris + edit values
 --
-create or replace function db.$tableName$_edits_update()
+create or replace function public.$tableName$_edits_update()
 returns trigger
 language plpgsql
 as $$
@@ -11,10 +11,10 @@ declare
     cris_record_jb jsonb;
     column_name text;
     updates_todo text [] := '{}';
-    update_stmt text := 'update db.$tableName$_unified set ';
+    update_stmt text := 'update public.$tableName$_unified set ';
 begin
     -- get corresponding the cris record as jsonb
-    SELECT to_jsonb($tableName$_cris) INTO cris_record_jb from db.$tableName$_cris where db.$tableName$_cris.$pkColumnName$ = new.$pkColumnName$;
+    SELECT to_jsonb($tableName$_cris) INTO cris_record_jb from public.$tableName$_cris where public.$tableName$_cris.$pkColumnName$ = new.$pkColumnName$;
     -- for every key in the vz json object
     for column_name in select jsonb_object_keys(new_edits_jb) loop
         -- ignore audit fields, except updated_by
@@ -32,8 +32,8 @@ begin
     -- join all `set` clauses together
     update_stmt := update_stmt
         || array_to_string(updates_todo, ',')
-        || format(' from (select * from db.$tableName$_cris where db.$tableName$_cris.$pkColumnName$ = %s) as cris_record', new.$pkColumnName$)
-        || format(' where db.$tableName$_unified.$pkColumnName$ = %s ', new.$pkColumnName$);
+        || format(' from (select * from public.$tableName$_cris where public.$tableName$_cris.$pkColumnName$ = %s) as cris_record', new.$pkColumnName$)
+        || format(' where public.$tableName$_unified.$pkColumnName$ = %s ', new.$pkColumnName$);
     raise notice 'Updating unified $tableName$ record from edit update';
     execute (update_stmt) using new;
     return null;
@@ -41,5 +41,5 @@ end;
 $$;
 
 create trigger update_$tableName$_unified_from_$tableName$_edits_update
-after update on db.$tableName$_edits for each row
-execute procedure db.$tableName$_edits_update();
+after update on public.$tableName$_edits for each row
+execute procedure public.$tableName$_edits_update();

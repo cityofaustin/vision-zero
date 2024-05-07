@@ -8,39 +8,39 @@ array_relationships:
         column: prsn_drg_rslt_id
         table:
           name: people_cris
-          schema: db
+          schema: public
   - name: peopleEditsByPrsnDrgRsltId
     using:
       foreign_key_constraint_on:
         column: prsn_drg_rslt_id
         table:
           name: people_edits
-          schema: db
+          schema: public
   - name: peopleUnifiedsByPrsnDrgRsltId
     using:
       foreign_key_constraint_on:
         column: prsn_drg_rslt_id
         table:
           name: people_unified
-          schema: db
+          schema: public
   - name: people_cris
     using:
       foreign_key_constraint_on:
         column: prsn_alc_rslt_id
         table:
           name: people_cris
-          schema: db
+          schema: public
   - name: people_edits
     using:
       foreign_key_constraint_on:
         column: prsn_alc_rslt_id
         table:
           name: people_edits
-          schema: db
+          schema: public
   - name: people_unifieds
     using:
       foreign_key_constraint_on:
         column: prsn_alc_rslt_id
         table:
           name: people_unified
-          schema: db
+          schema: public

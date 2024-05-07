@@ -14,8 +14,8 @@ HASURA_ENDPOINT = "http://localhost:8084/v1/graphql"
 UPLOAD_BATCH_SIZE = 1000
 
 CRASH_UPSERT_MUTATION = """
-mutation UpsertCrashes($objects: [db_crashes_cris_insert_input!]!) {
-  insert_db_crashes_cris(
+mutation UpsertCrashes($objects: [crashes_cris_insert_input!]!) {
+  insert_crashes_cris(
     objects: $objects, 
     on_conflict: {
         constraint: crashes_cris_pkey,
@@ -27,8 +27,8 @@ mutation UpsertCrashes($objects: [db_crashes_cris_insert_input!]!) {
 """
 
 UNIT_UPSERT_MUTATION = """
-mutation UpsertUnits($objects: [db_units_cris_insert_input!]!) {
-  insert_db_units_cris(
+mutation UpsertUnits($objects: [units_cris_insert_input!]!) {
+  insert_units_cris(
     objects: $objects, 
     on_conflict: {
         constraint: unique_units_cris,
@@ -40,8 +40,8 @@ mutation UpsertUnits($objects: [db_units_cris_insert_input!]!) {
 """
 
 PERSON_UPSERT_MUTATION = """
-mutation UpsertPeople($objects: [db_people_cris_insert_input!]!) {
-  insert_db_people_cris(
+mutation UpsertPeople($objects: [people_cris_insert_input!]!) {
+  insert_people_cris(
     objects: $objects, 
     on_conflict: {
         constraint: unique_people_cris,
@@ -53,15 +53,15 @@ mutation UpsertPeople($objects: [db_people_cris_insert_input!]!) {
 
 CHARGES_DELETE_MUTATION = """
 mutation DeleteCharges($crash_ids: [Int!]!) {
-  delete_db_charges_cris(where: {crash_id: {_in: $crash_ids}}) {
+  delete_charges_cris(where: {crash_id: {_in: $crash_ids}}) {
     affected_rows
   }
 }
 """
 
 CHARGES_INSERT_MUTATION = """
-mutation InsertCharges($objects: [db_charges_cris_insert_input!]!) {
-  insert_db_charges_cris(objects: $objects) {
+mutation InsertCharges($objects: [charges_cris_insert_input!]!) {
+  insert_charges_cris(objects: $objects) {
     affected_rows
   }
 }

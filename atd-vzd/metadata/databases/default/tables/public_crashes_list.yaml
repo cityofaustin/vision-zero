@@ -20,7 +20,7 @@ array_relationships:
         insertion_order: null
         remote_table:
           name: units_unified
-          schema: db
+          schema: public
 select_permissions:
   - role: editor
     permission:

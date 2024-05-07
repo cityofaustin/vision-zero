@@ -1,4 +1,4 @@
-create table db.crashes_cris (
+create table public.crashes_cris (
     crash_id integer primary key,
     active_school_zone_fl boolean,
     at_intrsct_fl boolean,
@@ -52,8 +52,8 @@ create table db.crashes_cris (
     wthr_cond_id integer references lookups.wthr_cond_lkp (id) on update cascade on delete cascade
 );
 
-create table db.crashes_edits (
-    crash_id integer primary key references db.crashes_cris (crash_id) on update cascade on delete cascade,
+create table public.crashes_edits (
+    crash_id integer primary key references public.crashes_cris (crash_id) on update cascade on delete cascade,
     active_school_zone_fl boolean,
     at_intrsct_fl boolean,
     case_id text,
@@ -106,8 +106,8 @@ create table db.crashes_edits (
     wthr_cond_id integer references lookups.wthr_cond_lkp (id) on update cascade on delete cascade
 );
 
-create table db.crashes_unified (
-    crash_id integer primary key references db.crashes_cris (crash_id) on update cascade on delete cascade,
+create table public.crashes_unified (
+    crash_id integer primary key references public.crashes_cris (crash_id) on update cascade on delete cascade,
     active_school_zone_fl boolean,
     address_primary text generated always as (trim(coalesce(rpt_street_pfx, '') || ' ' || coalesce(rpt_block_num, '') || ' ' || coalesce(rpt_street_name, '') || ' ' || coalesce(rpt_street_sfx, ''))) stored,
     address_secondary text generated always as (trim(coalesce(rpt_sec_street_pfx, '') || ' ' || coalesce(rpt_sec_block_num, '') || ' ' || coalesce(rpt_sec_street_name, '') || ' ' || coalesce(rpt_sec_street_sfx, ''))) stored,

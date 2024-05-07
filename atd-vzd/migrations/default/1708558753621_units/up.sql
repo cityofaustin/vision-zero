@@ -1,4 +1,4 @@
-create table db.units_cris (
+create table public.units_cris (
     id serial primary key,
     autonomous_unit_id integer references lookups.autonomous_unit_lkp (id) on update cascade on delete cascade,
     contrib_factr_1_id integer references lookups.contrib_factr_lkp (id) on update cascade on delete cascade,
@@ -6,7 +6,7 @@ create table db.units_cris (
     contrib_factr_3_id integer references lookups.contrib_factr_lkp (id) on update cascade on delete cascade,
     contrib_factr_p1_id integer references lookups.contrib_factr_lkp (id) on update cascade on delete cascade,
     contrib_factr_p2_id integer references lookups.contrib_factr_lkp (id) on update cascade on delete cascade,
-    crash_id integer not null references db.crashes_cris (crash_id) on update cascade on delete cascade,
+    crash_id integer not null references public.crashes_cris (crash_id) on update cascade on delete cascade,
     cris_schema_version text not null,
     e_scooter_id integer references lookups.e_scooter_lkp (id) on update cascade on delete cascade,
     first_harm_evt_inv_id integer references lookups.harm_evnt_lkp (id) on update cascade on delete cascade,
@@ -31,8 +31,8 @@ create table db.units_cris (
     vin text
 );
 
-create table db.units_edits (
-    id integer primary key references db.units_cris (id) on update cascade on delete cascade,
+create table public.units_edits (
+    id integer primary key references public.units_cris (id) on update cascade on delete cascade,
     atd_mode_category integer references lookups.mode_category_lkp (id) on update cascade on delete cascade,
     autonomous_unit_id integer references lookups.autonomous_unit_lkp (id) on update cascade on delete cascade,
     contrib_factr_1_id integer references lookups.contrib_factr_lkp (id) on update cascade on delete cascade,
@@ -40,7 +40,7 @@ create table db.units_edits (
     contrib_factr_3_id integer references lookups.contrib_factr_lkp (id) on update cascade on delete cascade,
     contrib_factr_p1_id integer references lookups.contrib_factr_lkp (id) on update cascade on delete cascade,
     contrib_factr_p2_id integer references lookups.contrib_factr_lkp (id) on update cascade on delete cascade,
-    crash_id integer references db.crashes_cris (crash_id) on update cascade on delete cascade,
+    crash_id integer references public.crashes_cris (crash_id) on update cascade on delete cascade,
     e_scooter_id integer references lookups.e_scooter_lkp (id) on update cascade on delete cascade,
     first_harm_evt_inv_id integer references lookups.harm_evnt_lkp (id) on update cascade on delete cascade,
     movement_id integer references lookups.movt_lkp (id) on update cascade on delete cascade,
@@ -65,7 +65,7 @@ create table db.units_edits (
     vin text
 );
 
-create table db.units_unified (
+create table public.units_unified (
     id integer primary key,
     atd_mode_category integer references lookups.mode_category_lkp (id) on update cascade on delete cascade,
     autonomous_unit_id integer references lookups.autonomous_unit_lkp (id) on update cascade on delete cascade,
@@ -74,7 +74,7 @@ create table db.units_unified (
     contrib_factr_3_id integer references lookups.contrib_factr_lkp (id) on update cascade on delete cascade,
     contrib_factr_p1_id integer references lookups.contrib_factr_lkp (id) on update cascade on delete cascade,
     contrib_factr_p2_id integer references lookups.contrib_factr_lkp (id) on update cascade on delete cascade,
-    crash_id integer not null references db.crashes_unified (crash_id) on update cascade on delete cascade,
+    crash_id integer not null references public.crashes_unified (crash_id) on update cascade on delete cascade,
     e_scooter_id integer references lookups.e_scooter_lkp (id) on update cascade on delete cascade,
     first_harm_evt_inv_id integer references lookups.harm_evnt_lkp (id) on update cascade on delete cascade,
     movement_id integer references lookups.movt_lkp (id) on update cascade on delete cascade,

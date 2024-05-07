@@ -1,6 +1,6 @@
 table:
   name: people_cris
-  schema: db
+  schema: public
 object_relationships:
   - name: crashes_cri
     using:
@@ -11,7 +11,7 @@ object_relationships:
         column: id
         table:
           name: people_edits
-          schema: db
+          schema: public
   - name: units_cri
     using:
       foreign_key_constraint_on: unit_id
@@ -22,11 +22,11 @@ array_relationships:
         column: record_id
         table:
           name: change_log_people_cris
-          schema: db
+          schema: public
   - name: charges_cris
     using:
       foreign_key_constraint_on:
         column: person_id
         table:
           name: charges_cris
-          schema: db
+          schema: public

@@ -1,7 +1,7 @@
 table:
-  name: change_log_people_cris
-  schema: db
+  name: change_log_people_unified
+  schema: public
 object_relationships:
-  - name: people_cri
+  - name: people_unified
     using:
       foreign_key_constraint_on: record_id

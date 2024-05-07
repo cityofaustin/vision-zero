@@ -8,18 +8,18 @@ array_relationships:
         column: drvr_drg_cat_1_id
         table:
           name: people_cris
-          schema: db
+          schema: public
   - name: people_edits
     using:
       foreign_key_constraint_on:
         column: drvr_drg_cat_1_id
         table:
           name: people_edits
-          schema: db
+          schema: public
   - name: people_unifieds
     using:
       foreign_key_constraint_on:
         column: drvr_drg_cat_1_id
         table:
           name: people_unified
-          schema: db
+          schema: public

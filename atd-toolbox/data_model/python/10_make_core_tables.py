@@ -58,7 +58,7 @@ def make_column_sql(columns, full_table_name):
         fk_table_name = col["foreign_table_name"]
         fk_cascade = col["foreign_column_cascade"]
         fk_column_name = col["foreign_column_name"]
-        fk_schema_name = col["foreign_table_schema"] or "db"
+        fk_schema_name = col["foreign_table_schema"] or "public"
         if constraint == "primary key" and not full_table_name.endswith("_cris"):
             # hacky logic to manage id sequences and pks on the _edits and _unified tables
             if data_type == "serial":

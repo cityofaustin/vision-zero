@@ -28,16 +28,16 @@ create or replace view crashes_list as with injury_severities as (
             else 0
         end as non_injry
     from
-        db.people_unified
+        public.people_unified
 ),
 
 cris_fatal_injury_counts as (
     select
         crashes.crash_id,
         count(crashes.crash_id) as cris_fatality_cnt
-    from db.crashes_cris as crashes
-    left join db.units_cris as units on crashes.crash_id = units.crash_id
-    left join db.people_cris as people on units.id = people.unit_id
+    from public.crashes_cris as crashes
+    left join public.units_cris as units on crashes.crash_id = units.crash_id
+    left join public.people_cris as people on units.id = people.unit_id
     where people.prsn_injry_sev_id = 4
     group by crashes.crash_id
 ),
@@ -55,8 +55,8 @@ injury_counts as (
         sum(injury_severities.fatal_injury) as atd_fatality_cnt,
         sum(est_comp_cost_crash_based) as est_comp_cost_crash_based
     from
-        db.crashes_unified as crashes
-    left join db.units_unified as units on crashes.crash_id = units.crash_id
+        public.crashes_unified as crashes
+    left join public.units_unified as units on crashes.crash_id = units.crash_id
     left join injury_severities on units.id = injury_severities.unit_id
     group by
         crashes.crash_id
@@ -75,41 +75,41 @@ geocode_sources as (
                 then 'manual_qa'
             else 'cris'
         end as geocode_source
-    from db.crashes_cris as cris
-    left join db.crashes_edits as edits on cris.crash_id = edits.crash_id
+    from public.crashes_cris as cris
+    left join public.crashes_edits as edits on cris.crash_id = edits.crash_id
 )
 
 select
-    db.crashes_unified.crash_id,
-    db.crashes_unified.case_id,
-    db.crashes_unified.crash_date,
-    db.crashes_unified.address_primary,
-    db.crashes_unified.address_secondary,
-    db.crashes_unified.private_dr_fl,
-    db.crashes_unified.in_austin_full_purpose,
-    db.crashes_unified.location_id,
-    db.crashes_unified.rpt_block_num,
-    db.crashes_unified.rpt_street_pfx,
-    db.crashes_unified.rpt_street_name,
-    db.crashes_unified.rpt_sec_block_num,
-    db.crashes_unified.rpt_sec_street_pfx,
-    db.crashes_unified.rpt_sec_street_name,
-    db.crashes_unified.latitude,
-    db.crashes_unified.longitude,
-    db.crashes_unified.light_cond_id,
-    db.crashes_unified.wthr_cond_id,
-    db.crashes_unified.active_school_zone_fl,
-    db.crashes_unified.schl_bus_fl,
-    db.crashes_unified.at_intrsct_fl,
-    db.crashes_unified.onsys_fl,
-    db.crashes_unified.traffic_cntl_id,
-    db.crashes_unified.road_constr_zone_fl,
-    db.crashes_unified.rr_relat_fl,
-    db.crashes_unified.toll_road_fl,
-    db.crashes_unified.intrsct_relat_id,
-    db.crashes_unified.obj_struck_id,
-    db.crashes_unified.crash_speed_limit,
-    db.crashes_unified.council_district,
+    public.crashes_unified.crash_id,
+    public.crashes_unified.case_id,
+    public.crashes_unified.crash_date,
+    public.crashes_unified.address_primary,
+    public.crashes_unified.address_secondary,
+    public.crashes_unified.private_dr_fl,
+    public.crashes_unified.in_austin_full_purpose,
+    public.crashes_unified.location_id,
+    public.crashes_unified.rpt_block_num,
+    public.crashes_unified.rpt_street_pfx,
+    public.crashes_unified.rpt_street_name,
+    public.crashes_unified.rpt_sec_block_num,
+    public.crashes_unified.rpt_sec_street_pfx,
+    public.crashes_unified.rpt_sec_street_name,
+    public.crashes_unified.latitude,
+    public.crashes_unified.longitude,
+    public.crashes_unified.light_cond_id,
+    public.crashes_unified.wthr_cond_id,
+    public.crashes_unified.active_school_zone_fl,
+    public.crashes_unified.schl_bus_fl,
+    public.crashes_unified.at_intrsct_fl,
+    public.crashes_unified.onsys_fl,
+    public.crashes_unified.traffic_cntl_id,
+    public.crashes_unified.road_constr_zone_fl,
+    public.crashes_unified.rr_relat_fl,
+    public.crashes_unified.toll_road_fl,
+    public.crashes_unified.intrsct_relat_id,
+    public.crashes_unified.obj_struck_id,
+    public.crashes_unified.crash_speed_limit,
+    public.crashes_unified.council_district,
     injury_counts.nonincap_injry_cnt,
     injury_counts.poss_injry_cnt,
     injury_counts.sus_serious_injry_cnt,
@@ -130,20 +130,20 @@ select
         else 0
     end as apd_fatality_cnt,
     upper(
-        to_char(db.crashes_unified.crash_date at time zone 'US/Central', 'dy')
+        to_char(public.crashes_unified.crash_date at time zone 'US/Central', 'dy')
     ) as crash_day_of_week
 from
-    db.crashes_unified
+    public.crashes_unified
 left join
     injury_counts
-    on db.crashes_unified.crash_id = injury_counts.crash_id
+    on public.crashes_unified.crash_id = injury_counts.crash_id
 left join
     cris_fatal_injury_counts
-    on db.crashes_unified.crash_id = cris_fatal_injury_counts.crash_id
+    on public.crashes_unified.crash_id = cris_fatal_injury_counts.crash_id
 left join
     geocode_sources
-    on db.crashes_unified.crash_id = geocode_sources.crash_id
+    on public.crashes_unified.crash_id = geocode_sources.crash_id
 left join
     lookups.collsn_lkp
-    on db.crashes_unified.fhe_collsn_id = lookups.collsn_lkp.id;
+    on public.crashes_unified.fhe_collsn_id = lookups.collsn_lkp.id;
 

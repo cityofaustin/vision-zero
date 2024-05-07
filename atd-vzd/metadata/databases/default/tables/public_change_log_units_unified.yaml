@@ -1,7 +1,7 @@
 table:
-  name: change_log_units_cris
-  schema: db
+  name: change_log_units_unified
+  schema: public
 object_relationships:
-  - name: units_cri
+  - name: units_unified
     using:
       foreign_key_constraint_on: record_id

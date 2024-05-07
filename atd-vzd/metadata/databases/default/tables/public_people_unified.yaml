@@ -1,6 +1,6 @@
 table:
   name: people_unified
-  schema: db
+  schema: public
 object_relationships:
   - name: ems__incident
     using:
@@ -15,4 +15,4 @@ array_relationships:
         column: record_id
         table:
           name: change_log_people_unified
-          schema: db
+          schema: public

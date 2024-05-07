@@ -8,11 +8,11 @@ array_relationships:
         column: atd_mode_category
         table:
           name: units_edits
-          schema: db
+          schema: public
   - name: units_unifieds
     using:
       foreign_key_constraint_on:
         column: atd_mode_category
         table:
           name: units_unified
-          schema: db
+          schema: public

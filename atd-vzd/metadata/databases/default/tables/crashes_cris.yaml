@@ -1,6 +1,6 @@
 table:
   name: crashes_cris
-  schema: db
+  schema: public
 object_relationships:
   - name: crashes_edit
     using:
@@ -8,14 +8,14 @@ object_relationships:
         column: crash_id
         table:
           name: crashes_edits
-          schema: db
+          schema: public
   - name: crashes_unified
     using:
       foreign_key_constraint_on:
         column: crash_id
         table:
           name: crashes_unified
-          schema: db
+          schema: public
 array_relationships:
   - name: change_log_crashes_cris
     using:
@@ -23,32 +23,32 @@ array_relationships:
         column: record_id
         table:
           name: change_log_crashes_cris
-          schema: db
+          schema: public
   - name: charges_cris
     using:
       foreign_key_constraint_on:
         column: crash_id
         table:
           name: charges_cris
-          schema: db
+          schema: public
   - name: people_cris
     using:
       foreign_key_constraint_on:
         column: crash_id
         table:
           name: people_cris
-          schema: db
+          schema: public
   - name: units_cris
     using:
       foreign_key_constraint_on:
         column: crash_id
         table:
           name: units_cris
-          schema: db
+          schema: public
   - name: units_edits
     using:
       foreign_key_constraint_on:
         column: crash_id
         table:
           name: units_edits
-          schema: db
+          schema: public

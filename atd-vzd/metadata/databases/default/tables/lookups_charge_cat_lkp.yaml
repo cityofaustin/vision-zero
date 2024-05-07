@@ -8,4 +8,4 @@ array_relationships:
         column: charge_cat_id
         table:
           name: charges_cris
-          schema: db
+          schema: public

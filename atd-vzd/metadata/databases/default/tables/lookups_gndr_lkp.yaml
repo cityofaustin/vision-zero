@@ -8,18 +8,18 @@ array_relationships:
         column: prsn_gndr_id
         table:
           name: people_cris
-          schema: db
+          schema: public
   - name: people_edits
     using:
       foreign_key_constraint_on:
         column: prsn_gndr_id
         table:
           name: people_edits
-          schema: db
+          schema: public
   - name: people_unifieds
     using:
       foreign_key_constraint_on:
         column: prsn_gndr_id
         table:
           name: people_unified
-          schema: db
+          schema: public

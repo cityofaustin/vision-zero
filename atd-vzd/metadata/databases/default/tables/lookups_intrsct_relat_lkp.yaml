@@ -8,18 +8,18 @@ array_relationships:
         column: intrsct_relat_id
         table:
           name: crashes_cris
-          schema: db
+          schema: public
   - name: crashes_edits
     using:
       foreign_key_constraint_on:
         column: intrsct_relat_id
         table:
           name: crashes_edits
-          schema: db
+          schema: public
   - name: crashes_unifieds
     using:
       foreign_key_constraint_on:
         column: intrsct_relat_id
         table:
           name: crashes_unified
-          schema: db
+          schema: public

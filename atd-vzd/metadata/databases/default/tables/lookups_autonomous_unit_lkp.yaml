@@ -8,18 +8,18 @@ array_relationships:
         column: autonomous_unit_id
         table:
           name: units_cris
-          schema: db
+          schema: public
   - name: units_edits
     using:
       foreign_key_constraint_on:
         column: autonomous_unit_id
         table:
           name: units_edits
-          schema: db
+          schema: public
   - name: units_unifieds
     using:
       foreign_key_constraint_on:
         column: autonomous_unit_id
         table:
           name: units_unified
-          schema: db
+          schema: public

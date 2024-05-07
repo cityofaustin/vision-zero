@@ -2,7 +2,7 @@
 -- handle a cris $tableName$ update by updating the
 -- unified $tableName$ record from cris + vz values
 --
-create or replace function db.$tableName$_cris_update()
+create or replace function public.$tableName$_cris_update()
 returns trigger
 language plpgsql
 as $$
@@ -12,10 +12,10 @@ declare
     edit_record_jb jsonb;
     column_name text;
     updates_todo text [] := '{}';
-    update_stmt text := 'update db.$tableName$_unified set ';
+    update_stmt text := 'update public.$tableName$_unified set ';
 begin
     -- get corresponding the VZ record as jsonb
-    SELECT to_jsonb($tableName$_edits) INTO edit_record_jb from db.$tableName$_edits where db.$tableName$_edits.$pkColumnName$ = new.$pkColumnName$;
+    SELECT to_jsonb($tableName$_edits) INTO edit_record_jb from public.$tableName$_edits where public.$tableName$_edits.$pkColumnName$ = new.$pkColumnName$;
 
     -- for every key in the cris json object
     for column_name in select jsonb_object_keys(new_cris_jb) loop
@@ -37,7 +37,7 @@ begin
         -- complete the update statement by joining all `set` clauses together
         update_stmt := update_stmt
             || array_to_string(updates_todo, ',')
-            || format(' where db.$tableName$_unified.$pkColumnName$ = %s', new.$pkColumnName$);
+            || format(' where public.$tableName$_unified.$pkColumnName$ = %s', new.$pkColumnName$);
         raise notice 'Updating $tableName$_unified record from CRIS update';
         execute (update_stmt) using new;
     else
@@ -48,5 +48,5 @@ end;
 $$;
 
 create trigger update_$tableName$_unified_from_$tableName$_cris_update
-after update on db.$tableName$_cris for each row
-execute procedure db.$tableName$_cris_update();
+after update on public.$tableName$_cris for each row
+execute procedure public.$tableName$_cris_update();

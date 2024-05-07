@@ -1,6 +1,6 @@
 table:
   name: charges_cris
-  schema: db
+  schema: public
 object_relationships:
   - name: crashes_cri
     using:

@@ -1,6 +1,6 @@
 table:
   name: units_unified
-  schema: db
+  schema: public
 object_relationships:
   - name: crashes_unified
     using:
@@ -24,14 +24,14 @@ array_relationships:
         column: record_id
         table:
           name: change_log_units_unified
-          schema: db
+          schema: public
   - name: people_unifieds
     using:
       foreign_key_constraint_on:
         column: unit_id
         table:
           name: people_unified
-          schema: db
+          schema: public
 select_permissions:
   - role: editor
     permission:

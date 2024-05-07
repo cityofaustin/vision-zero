@@ -8,102 +8,102 @@ array_relationships:
         column: contrib_factr_2_id
         table:
           name: units_cris
-          schema: db
+          schema: public
   - name: unitsCrisByContribFactr3Id
     using:
       foreign_key_constraint_on:
         column: contrib_factr_3_id
         table:
           name: units_cris
-          schema: db
+          schema: public
   - name: unitsCrisByContribFactrP1Id
     using:
       foreign_key_constraint_on:
         column: contrib_factr_p1_id
         table:
           name: units_cris
-          schema: db
+          schema: public
   - name: unitsCrisByContribFactrP2Id
     using:
       foreign_key_constraint_on:
         column: contrib_factr_p2_id
         table:
           name: units_cris
-          schema: db
+          schema: public
   - name: unitsEditsByContribFactr2Id
     using:
       foreign_key_constraint_on:
         column: contrib_factr_2_id
         table:
           name: units_edits
-          schema: db
+          schema: public
   - name: unitsEditsByContribFactr3Id
     using:
       foreign_key_constraint_on:
         column: contrib_factr_3_id
         table:
           name: units_edits
-          schema: db
+          schema: public
   - name: unitsEditsByContribFactrP1Id
     using:
       foreign_key_constraint_on:
         column: contrib_factr_p1_id
         table:
           name: units_edits
-          schema: db
+          schema: public
   - name: unitsEditsByContribFactrP2Id
     using:
       foreign_key_constraint_on:
         column: contrib_factr_p2_id
         table:
           name: units_edits
-          schema: db
+          schema: public
   - name: unitsUnifiedsByContribFactr2Id
     using:
       foreign_key_constraint_on:
         column: contrib_factr_2_id
         table:
           name: units_unified
-          schema: db
+          schema: public
   - name: unitsUnifiedsByContribFactr3Id
     using:
       foreign_key_constraint_on:
         column: contrib_factr_3_id
         table:
           name: units_unified
-          schema: db
+          schema: public
   - name: unitsUnifiedsByContribFactrP1Id
     using:
       foreign_key_constraint_on:
         column: contrib_factr_p1_id
         table:
           name: units_unified
-          schema: db
+          schema: public
   - name: unitsUnifiedsByContribFactrP2Id
     using:
       foreign_key_constraint_on:
         column: contrib_factr_p2_id
         table:
           name: units_unified
-          schema: db
+          schema: public
   - name: units_cris
     using:
       foreign_key_constraint_on:
         column: contrib_factr_1_id
         table:
           name: units_cris
-          schema: db
+          schema: public
   - name: units_edits
     using:
       foreign_key_constraint_on:
         column: contrib_factr_1_id
         table:
           name: units_edits
-          schema: db
+          schema: public
   - name: units_unifieds
     using:
       foreign_key_constraint_on:
         column: contrib_factr_1_id
         table:
           name: units_unified
-          schema: db
+          schema: public
