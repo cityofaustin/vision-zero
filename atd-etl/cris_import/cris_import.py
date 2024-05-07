@@ -309,16 +309,7 @@ def download_s3_archive():
         # Get list of all objects in the bucket with the specified prefix
         objects = s3.list_objects(Bucket=bucket, Prefix=uploads_prefix)
 
-        # Create a temporary directory
-        temp_dir = tempfile.mkdtemp()
-
-        # Download the SQLite DB from S3 to the temporary directory
-        db_file_path = os.path.join(temp_dir, "uploads.sqlite")
-        s3.download_file(bucket, db_key, db_file_path)
-
-        # Connect to the SQLite database
-        conn = sqlite3.connect(db_file_path)
-        cursor = conn.cursor()
+        cursor = pg.cursor()
 
         for obj in objects["Contents"]:
             full_object_path = obj["Key"]
@@ -336,7 +327,7 @@ def download_s3_archive():
 
             # Check if the object already exists in the database
             cursor.execute(
-                "SELECT * FROM uploads WHERE object_path = ? AND object_name = ?",
+                "SELECT * FROM cris_import_log WHERE object_path = ? AND object_name = ?",
                 (object_path, object_name),
             )
             result = cursor.fetchone()
@@ -345,7 +336,7 @@ def download_s3_archive():
             if result is None:
                 cursor.execute(
                     """
-                    INSERT INTO uploads (object_path, object_name, cris_schema, first_seen_utc)
+                    INSERT INTO cris_import_log (object_path, object_name, cris_schema, first_seen_utc)
                     VALUES (?, ?, ?, ?)
                     """,
                     (object_path, object_name, schema, datetime.datetime.utcnow()),
@@ -367,8 +358,8 @@ def download_s3_archive():
             s3.download_file(bucket, upload_path, upload_file_path)
 
         # Commit the changes and close the connection
-        conn.commit()
-        conn.close()
+        pg.commit()
+        pg.close()
 
         return import_dir
 
