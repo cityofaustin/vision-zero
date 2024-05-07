@@ -114,25 +114,44 @@ def main():
             typed_token = align_db_typing(trimmed_token)
             align_records_token = align_records(typed_token)
             clean_up_import_schema(align_records_token)
-        mark_extract_as_imported(archive_data[0], database_location)
-    if not local_mode:  # We're using a locally provided zip file, so skip these steps
-        upload_sqlite_to_s3(database_location)
+        mark_extract_as_imported(archive_data[0])
 
 
 def mark_extract_as_imported(id, db):
-    conn = sqlite3.connect(db)
-    cursor = conn.cursor()
-    cursor.execute(
-        """
-        UPDATE uploads
-        SET import_successful = 1, import_time_utc = ?
-        WHERE id = ?
-        """,
-        (datetime.datetime.utcnow(), id),
-    )
+    with SshKeyTempDir() as key_directory:
+        write_key_to_file(
+            key_directory + "/id_ed25519", DB_BASTION_HOST_SSH_PRIVATE_KEY + "\n"
+        )
+        ssh_tunnel = SSHTunnelForwarder(
+            (DB_BASTION_HOST),
+            ssh_username=DB_BASTION_HOST_SSH_USERNAME,
+            ssh_private_key=f"{key_directory}/id_ed25519",
+            remote_bind_address=(DB_RDS_HOST, 5432),
+        )
+        ssh_tunnel.start()
 
-    conn.commit()
-    conn.close()
+        pg = psycopg2.connect(
+            host="localhost",
+            port=ssh_tunnel.local_bind_port,
+            user=DB_USER,
+            password=DB_PASS,
+            dbname=DB_NAME,
+            sslmode=DB_SSL_REQUIREMENT,
+            sslrootcert="/root/rds-combined-ca-bundle.pem",
+        )
+
+        cursor = pg.cursor()
+        cursor.execute(
+            """
+            UPDATE cris_import_log
+            SET import_successful = 1, import_time_utc = ?
+            WHERE id = ?
+            """,
+            (datetime.datetime.utcnow(), id),
+        )
+
+        pg.commit()
+        pg.close()
 
 
 def upload_sqlite_to_s3(database_location):
@@ -342,7 +361,7 @@ def download_s3_archive():
                 )
 
         # Query all uploads where import_attempted = 0
-        cursor.execute("SELECT * FROM uploads WHERE import_attempted = 0")
+        cursor.execute("SELECT * FROM cris_import_log WHERE import_attempted = 0")
         uploads_to_import = cursor.fetchall()
 
         # Create a new temporary directory
@@ -404,11 +423,13 @@ def unzip_archives(archives_directory):
             os.system(unzip_command)
 
             cursor = pg.cursor()
-            cursor.execute("select id from uploads where object_name = ?", (filename,))
+            cursor.execute(
+                "select id from cris_import_log where object_name = ?", (filename,)
+            )
             id = cursor.fetchone()[0]
             extracted_csv_directories.append((id, extract_tmpdir))
             cursor.execute(
-                "UPDATE uploads SET import_attempted = 1 WHERE object_name = ?",
+                "UPDATE cris_import_log SET import_attempted = 1 WHERE object_name = ?",
                 (filename,),
             )
             pg.commit()
