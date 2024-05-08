@@ -303,7 +303,7 @@ def download_s3_archive():
             sslrootcert="/root/rds-combined-ca-bundle.pem",
         )
 
-        uploads_prefix = f"{DEPLOYMENT_ENVIRONMENT}/uploads/"
+        uploads_prefix = f"{DEPLOYMENT_ENVIRONMENT}/inbox/"
         # Get list of all objects in the bucket with the specified prefix
         objects = s3.list_objects(Bucket=bucket, Prefix=uploads_prefix)
 
@@ -357,7 +357,9 @@ def download_s3_archive():
 
             # Define the source and destination paths
             source = {"Bucket": bucket, "Key": upload_path}
-            destination = os.path.join("processed/", upload[2])
+            destination = os.path.join(
+                f"{DEPLOYMENT_ENVIRONMENT}/processed/", upload[2]
+            )
 
             # Copy the file from the source to the destination
             s3.copy(source, bucket, destination)
