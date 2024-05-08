@@ -339,6 +339,10 @@ def download_s3_archive():
         cursor.execute("SELECT * FROM cris_import_log WHERE import_attempted is false")
         uploads_to_import = cursor.fetchall()
 
+        # Check if there are no new files to process
+        if len(uploads_to_import) == 0:
+            raise Exception("No new files to process")
+
         # Create a new temporary directory
         import_dir = tempfile.mkdtemp()
 
