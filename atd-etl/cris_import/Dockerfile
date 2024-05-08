@@ -5,7 +5,7 @@ RUN ln -snf /usr/share/zoneinfo/America/Chicago /etc/localtime && echo America/C
 RUN apt-get update && apt-get install -y tzdata
 
 RUN apt-get -y upgrade
-RUN apt-get install -y aptitude magic-wormhole vim black python3-pip sqlite3 file
+RUN apt-get install -y aptitude magic-wormhole vim black python3-pip
 
 # install zip archive tool & pgloader for CRIS export use
 RUN apt-get install -y p7zip-full pgloader rsync
