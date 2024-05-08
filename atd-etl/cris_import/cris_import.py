@@ -337,17 +337,17 @@ def download_s3_archive():
 
         # Query all uploads where import_attempted = 0
         cursor.execute("SELECT * FROM cris_import_log WHERE import_attempted is false")
-        uploads_to_import = cursor.fetchall()
+        extracts_to_process = cursor.fetchall()
 
         # Check if there are no new files to process
-        if len(uploads_to_import) == 0:
+        if len(extracts_to_process) == 0:
             raise Exception("No new files to process")
 
         # Create a new temporary directory
         import_dir = tempfile.mkdtemp()
 
         # Download each upload into the new temporary directory
-        for upload in uploads_to_import:
+        for upload in extracts_to_process:
             upload_path = os.path.join(
                 upload[1], upload[2]
             )  # Construct the full S3 path
