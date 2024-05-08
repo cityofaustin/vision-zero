@@ -101,6 +101,8 @@ def main():
         return
 
     extracted_archives = unzip_archives(zip_location)
+    print(extracted_archives)
+    quit()
     for archive_data in extracted_archives:
         archive = archive_data[1]
         logical_groups_of_csvs = group_csvs_into_logical_groups(archive, dry_run=False)
@@ -150,6 +152,16 @@ def mark_extract_as_imported(id):
 
         pg.commit()
         pg.close()
+
+        # # Define the source and destination paths
+        # source = {"Bucket": bucket, "Key": upload_path}
+        # destination = os.path.join(f"{DEPLOYMENT_ENVIRONMENT}/processed/", extract[1])
+
+        # # Copy the file from the source to the destination
+        # s3.copy(source, bucket, destination)
+
+        # # Delete the file from the source
+        # s3.delete_object(Bucket=bucket, Key=upload_path)
 
 
 def get_secrets():
@@ -307,6 +319,8 @@ def download_s3_archive():
 
         cursor = pg.cursor()
 
+        extracts_to_process = []
+
         for obj in objects["Contents"]:
             full_object_path = obj["Key"]
             object_name = os.path.basename(full_object_path)
@@ -318,66 +332,41 @@ def download_s3_archive():
             # Extract the S3 prefix from the full object path
             object_path = os.path.dirname(full_object_path)
 
-            # Check if the object already exists in the database
+            extracts_to_process.append((object_path, object_name))
+
             cursor.execute(
-                "SELECT * FROM cris_import_log WHERE object_path = %s AND object_name = %s",
+                """
+                INSERT INTO cris_import_log (object_path, object_name)
+                VALUES (%s, %s)
+                """,
                 (object_path, object_name),
             )
-            result = cursor.fetchone()
 
-            # If the object does not exist, insert a new record
-            if result is None:
-                cursor.execute(
-                    """
-                    INSERT INTO cris_import_log (object_path, object_name, first_seen)
-                    VALUES (%s, %s, %s)
-                    """,
-                    (object_path, object_name, datetime.datetime.utcnow()),
-                )
-
-        # Query all uploads where import_attempted = 0
-        cursor.execute("SELECT * FROM cris_import_log WHERE import_attempted is false")
-        extracts_to_process = cursor.fetchall()
+        # Commit the changes and close the connection
+        pg.commit()
+        pg.close()
 
         # Check if there are no new files to process
         if len(extracts_to_process) == 0:
             raise Exception("No new files to process")
 
         # Create a new temporary directory
-        import_dir = tempfile.mkdtemp()
+        directory_of_extracts = tempfile.mkdtemp()
 
-        for upload in extracts_to_process:
-            upload_path = os.path.join(
-                upload[1], upload[2]
-            )  # Construct the full S3 path
-            upload_file_path = os.path.join(import_dir, upload[2])
-            s3.download_file(bucket, upload_path, upload_file_path)
+        for extract in extracts_to_process:
+            full_s3_path = os.path.join(extract[0], extract[1])
+            local_extract_path = os.path.join(directory_of_extracts, extract[1])
+            s3.download_file(bucket, full_s3_path, local_extract_path)
 
-            # Check if the file has been downloaded
-            if not os.path.exists(upload_file_path):
-                raise Exception(f"File {upload_file_path} was not downloaded")
+            # # Check if the file has been downloaded
+            if not os.path.exists(local_extract_path):
+                raise Exception(f"File {local_extract_path} was not downloaded")
 
-            # Check if the file is a zip file
-            if "Zip" not in magic.from_file(upload_file_path):
-                raise Exception(f"File {upload_file_path} is not a valid zip file")
+            # # Check if the file is a zip file
+            if "Zip" not in magic.from_file(local_extract_path):
+                raise Exception(f"File {local_extract_path} is not a valid zip file")
 
-            # Define the source and destination paths
-            source = {"Bucket": bucket, "Key": upload_path}
-            destination = os.path.join(
-                f"{DEPLOYMENT_ENVIRONMENT}/processed/", upload[2]
-            )
-
-            # Copy the file from the source to the destination
-            s3.copy(source, bucket, destination)
-
-            # Delete the file from the source
-            s3.delete_object(Bucket=bucket, Key=upload_path)
-
-        # Commit the changes and close the connection
-        pg.commit()
-        pg.close()
-
-        return import_dir
+        return directory_of_extracts
 
 
 def unzip_archives(archives_directory):
@@ -422,16 +411,15 @@ def unzip_archives(archives_directory):
 
             cursor = pg.cursor()
             cursor.execute(
-                "select id from cris_import_log where object_name = %s", (filename,)
+                "select id from cris_import_log where object_name = %s order by created_at desc limit 1",
+                (filename,),
             )
             id = cursor.fetchone()[0]
             extracted_csv_directories.append((id, extract_tmpdir))
-            cursor.execute(
-                "UPDATE cris_import_log SET import_attempted = true WHERE object_name = %s",
-                (filename,),
-            )
+
             pg.commit()
             pg.close()
+
         return extracted_csv_directories
 
 
