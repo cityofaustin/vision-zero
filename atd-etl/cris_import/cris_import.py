@@ -7,6 +7,7 @@ import hashlib
 import datetime
 import glob
 import tempfile
+import magic
 from subprocess import Popen, PIPE
 
 import shutil
@@ -345,13 +346,20 @@ def download_s3_archive():
         # Create a new temporary directory
         import_dir = tempfile.mkdtemp()
 
-        # Download each upload into the new temporary directory
         for upload in extracts_to_process:
             upload_path = os.path.join(
                 upload[1], upload[2]
             )  # Construct the full S3 path
             upload_file_path = os.path.join(import_dir, upload[2])
             s3.download_file(bucket, upload_path, upload_file_path)
+
+            # Check if the file has been downloaded
+            if not os.path.exists(upload_file_path):
+                raise Exception(f"File {upload_file_path} was not downloaded")
+
+            # Check if the file is a zip file
+            if "Zip" not in magic.from_file(upload_file_path):
+                raise Exception(f"File {upload_file_path} is not a valid zip file")
 
             # Define the source and destination paths
             source = {"Bucket": bucket, "Key": upload_path}
