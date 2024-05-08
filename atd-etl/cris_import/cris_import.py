@@ -320,9 +320,6 @@ def download_s3_archive():
             # Extract the S3 prefix from the full object path
             object_path = os.path.dirname(full_object_path)
 
-            # Extract the schema from the filename
-            schema = int(object_name.split("_")[1])
-
             # Check if the object already exists in the database
             cursor.execute(
                 "SELECT * FROM cris_import_log WHERE object_path = %s AND object_name = %s",
@@ -334,10 +331,10 @@ def download_s3_archive():
             if result is None:
                 cursor.execute(
                     """
-                    INSERT INTO cris_import_log (object_path, object_name, cris_schema, first_seen)
-                    VALUES (%s, %s, %s, %s)
+                    INSERT INTO cris_import_log (object_path, object_name, first_seen)
+                    VALUES (%s, %s, %s)
                     """,
-                    (object_path, object_name, schema, datetime.datetime.utcnow()),
+                    (object_path, object_name, datetime.datetime.utcnow()),
                 )
 
         # Query all uploads where import_attempted = 0
