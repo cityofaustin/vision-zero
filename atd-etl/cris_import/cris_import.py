@@ -7,7 +7,6 @@ import hashlib
 import datetime
 import glob
 import tempfile
-import sqlite3
 from subprocess import Popen, PIPE
 
 import shutil
