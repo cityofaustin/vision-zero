@@ -117,7 +117,7 @@ def main():
         mark_extract_as_imported(archive_data[0])
 
 
-def mark_extract_as_imported(id, db):
+def mark_extract_as_imported(id):
     with SshKeyTempDir() as key_directory:
         write_key_to_file(
             key_directory + "/id_ed25519", DB_BASTION_HOST_SSH_PRIVATE_KEY + "\n"
@@ -144,34 +144,14 @@ def mark_extract_as_imported(id, db):
         cursor.execute(
             """
             UPDATE cris_import_log
-            SET import_successful = 1, import_time_utc = ?
-            WHERE id = ?
+            SET import_successful = true, import_time = %s
+            WHERE id = %s
             """,
             (datetime.datetime.utcnow(), id),
         )
 
         pg.commit()
         pg.close()
-
-
-def upload_sqlite_to_s3(database_location):
-    session = boto3.Session(
-        aws_access_key_id=AWS_ACCESS_KEY_ID,
-        aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-    )
-
-    s3 = session.client("s3")
-    bucket = S3_EXTRACT_BUCKET
-    prefix = f"{DEPLOYMENT_ENVIRONMENT}/database/"
-
-    # Extract the filename from the database location
-    filename = os.path.basename(database_location)
-
-    # Construct the key for the S3 object
-    key = os.path.join(prefix, filename)
-
-    # Upload the SQLite database to S3
-    s3.upload_file(database_location, bucket, key)
 
 
 def get_secrets():
@@ -345,7 +325,7 @@ def download_s3_archive():
 
             # Check if the object already exists in the database
             cursor.execute(
-                "SELECT * FROM cris_import_log WHERE object_path = ? AND object_name = ?",
+                "SELECT * FROM cris_import_log WHERE object_path = %s AND object_name = %s",
                 (object_path, object_name),
             )
             result = cursor.fetchone()
@@ -354,14 +334,14 @@ def download_s3_archive():
             if result is None:
                 cursor.execute(
                     """
-                    INSERT INTO cris_import_log (object_path, object_name, cris_schema, first_seen_utc)
-                    VALUES (?, ?, ?, ?)
+                    INSERT INTO cris_import_log (object_path, object_name, cris_schema, first_seen)
+                    VALUES (%s, %s, %s, %s)
                     """,
                     (object_path, object_name, schema, datetime.datetime.utcnow()),
                 )
 
         # Query all uploads where import_attempted = 0
-        cursor.execute("SELECT * FROM cris_import_log WHERE import_attempted = 0")
+        cursor.execute("SELECT * FROM cris_import_log WHERE import_attempted is false")
         uploads_to_import = cursor.fetchall()
 
         # Create a new temporary directory
