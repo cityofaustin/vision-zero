@@ -144,7 +144,7 @@ def mark_extract_as_imported(id):
         cursor.execute(
             """
             UPDATE cris_import_log
-            SET import_successful = true, import_time = %s
+            SET completed_at = %s
             WHERE id = %s
             """,
             (datetime.datetime.utcnow(), id),
