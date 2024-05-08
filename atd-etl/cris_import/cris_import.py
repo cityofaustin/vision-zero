@@ -60,7 +60,6 @@ def main():
 
     global GRAPHQL_ENDPOINT
     global GRAPHQL_ENDPOINT_KEY
-    global SFTP_ENDPOINT_SSH_PRIVATE_KEY
 
     global S3_EXTRACT_BUCKET
 
@@ -85,7 +84,6 @@ def main():
 
     GRAPHQL_ENDPOINT = secrets["graphql_endpoint"]
     GRAPHQL_ENDPOINT_KEY = secrets["graphql_endpoint_key"]
-    SFTP_ENDPOINT_SSH_PRIVATE_KEY = secrets["sftp_endpoint_private_key"]
 
     S3_EXTRACT_BUCKET = secrets["s3_extract_bucket"]
 
