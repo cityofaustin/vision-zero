@@ -424,12 +424,12 @@ def unzip_archives(archives_directory):
 
             cursor = pg.cursor()
             cursor.execute(
-                "select id from cris_import_log where object_name = ?", (filename,)
+                "select id from cris_import_log where object_name = %s", (filename,)
             )
             id = cursor.fetchone()[0]
             extracted_csv_directories.append((id, extract_tmpdir))
             cursor.execute(
-                "UPDATE cris_import_log SET import_attempted = 1 WHERE object_name = ?",
+                "UPDATE cris_import_log SET import_attempted = true WHERE object_name = %s",
                 (filename,),
             )
             pg.commit()
