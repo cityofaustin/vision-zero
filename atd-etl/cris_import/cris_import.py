@@ -101,8 +101,6 @@ def main():
         return
 
     extracted_archives = unzip_archives(zip_location)
-    print(extracted_archives)
-    quit()
     for archive_data in extracted_archives:
         archive = archive_data[1]
         logical_groups_of_csvs = group_csvs_into_logical_groups(archive, dry_run=False)
