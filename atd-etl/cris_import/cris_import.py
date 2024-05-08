@@ -375,6 +375,16 @@ def download_s3_archive():
             upload_file_path = os.path.join(import_dir, upload[2])
             s3.download_file(bucket, upload_path, upload_file_path)
 
+            # Define the source and destination paths
+            source = {"Bucket": bucket, "Key": upload_path}
+            destination = os.path.join("processed/", upload[2])
+
+            # Copy the file from the source to the destination
+            s3.copy(source, bucket, destination)
+
+            # Delete the file from the source
+            s3.delete_object(Bucket=bucket, Key=upload_path)
+
         # Commit the changes and close the connection
         pg.commit()
         pg.close()
