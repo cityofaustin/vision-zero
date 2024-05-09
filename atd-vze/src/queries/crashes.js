@@ -251,12 +251,12 @@ rpt_sec_block_num
 rpt_sec_street_pfx
 rpt_sec_street_name
 est_comp_cost_crash_based
-atd_fatality_cnt
-sus_serious_injry_cnt
-nonincap_injry_cnt
-poss_injry_cnt
-non_injry_cnt
-unkn_injry_cnt
+vz_fatality_count
+sus_serious_injry_count
+nonincap_injry_count
+poss_injry_count
+non_injry_count
+unkn_injry_count
 collsn_desc
 units {
   trvl_dir_lkp {
@@ -294,7 +294,7 @@ obj_struck_id
 latitude
 longitude
 crash_speed_limit
-cris_fatality_cnt
+cris_fatality_count
 recommendation {
   rec_text
 }
