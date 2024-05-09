@@ -1,1 +1,5 @@
-select 0;
+drop table public.people_cris cascade;
+
+drop table public.people_edits cascade;
+
+drop table public.people_unified cascade;

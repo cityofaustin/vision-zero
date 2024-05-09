@@ -1,1 +1,3 @@
-select 0;
+drop view public.crashes_list;
+
+

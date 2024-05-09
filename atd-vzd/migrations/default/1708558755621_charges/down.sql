@@ -1,1 +1,1 @@
-select 0;
+drop table public.charges_cris cascade;
