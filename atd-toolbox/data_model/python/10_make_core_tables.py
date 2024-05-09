@@ -113,11 +113,11 @@ def main():
     migration_path = make_migration_dir("create_schema")
     save_file(
         f"{migration_path}/up.sql",
-        f"create schema if not exists {SCHEMA_NAME};\ncreate schema if not exists lookups;",
+        f"create schema if not exists lookups;",
     )
     save_file(
         f"{migration_path}/down.sql",
-        f"drop schema if exists {SCHEMA_NAME} cascade;\ndrop schema if exists lookups cascade;",
+        f"drop schema if exists lookups cascade;",
     )
     # lookup tables
     lookup_table_names = get_lookup_table_names(data)
@@ -127,6 +127,7 @@ def main():
     save_empty_down_migration(migration_path)
     for table_name in ["crashes", "units", "people", "charges"]:
         tables_sql_stmts = []
+        table_sql_down_stmts = []
         for table_suffix in ["cris", "edits", "unified"]:
             if table_name == "charges" and table_suffix != "cris":
                 # charges is a cris-only table
@@ -159,9 +160,12 @@ def main():
             column_sql_str = make_column_sql(columns, full_table_name)
             table_sql_str = f"create table {SCHEMA_NAME}.{full_table_name} (\n    {column_sql_str}\n);"
             tables_sql_stmts.append(table_sql_str)
+            table_sql_down_stmts.append(f"drop table {SCHEMA_NAME}.{full_table_name} cascade;")
         tables_sql_str = "\n\n".join(tables_sql_stmts)
+        table_sql_down_str = "\n\n".join(table_sql_down_stmts)
         migration_path = make_migration_dir(table_name)
         save_file(f"{migration_path}/up.sql", tables_sql_str)
+        save_file(f"{migration_path}/down.sql", table_sql_down_str)
         save_empty_down_migration(migration_path)
 
     table_constraints_sql = load_sql_template("./sql_templates/table_constraints.sql")
