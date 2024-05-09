@@ -101,8 +101,7 @@ def main():
         return
 
     extracted_archives = unzip_archives(zip_location)
-    for archive_data in extracted_archives:
-        archive = archive_data[1]
+    for archive_id, archive, filename_in_s3 in extracted_archives:
         logical_groups_of_csvs = group_csvs_into_logical_groups(archive, dry_run=False)
         for logical_group in logical_groups_of_csvs:
             desired_schema_name = create_import_schema_name(logical_group)
@@ -112,7 +111,8 @@ def main():
             typed_token = align_db_typing(trimmed_token)
             align_records_token = align_records(typed_token)
             clean_up_import_schema(align_records_token)
-        mark_extract_as_imported(archive_data[0])
+        mark_extract_as_imported(archive_id)
+        move_extract_into_processed(filename_in_s3)
 
 
 def mark_extract_as_imported(id):
