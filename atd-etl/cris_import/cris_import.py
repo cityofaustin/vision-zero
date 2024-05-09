@@ -428,7 +428,7 @@ def unzip_archives(archives_directory):
                 (filename,),
             )
             id = cursor.fetchone()[0]
-            extracted_csv_directories.append((id, extract_tmpdir))
+            extracted_csv_directories.append((id, extract_tmpdir, filename))
 
             pg.commit()
             pg.close()
