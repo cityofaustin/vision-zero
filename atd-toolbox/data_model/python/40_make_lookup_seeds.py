@@ -20,14 +20,6 @@ def load_data(endpoint):
     return [row for row in reader]
 
 
-def make_lookup_table_sql(table_names):
-    create_table_stmts = []
-    for table_name in table_names:
-        sql = f"create table {table_name} (\n    id integer primary key,\n    label text not null\n);"
-        create_table_stmts.append(sql)
-    return "\n\n".join(create_table_stmts)
-
-
 def escape_single_quotes(input_string):
     return input_string.replace("'", "''")
 
