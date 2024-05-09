@@ -116,7 +116,7 @@ def main():
 
 
 def move_extract_into_processed(extract):
-    # # Define the source and destination paths
+    # Define the source and destination paths
     source = {
         "Bucket": S3_EXTRACT_BUCKET,
         "Key": f"{DEPLOYMENT_ENVIRONMENT}/inbox/{extract}",
@@ -131,11 +131,11 @@ def move_extract_into_processed(extract):
     s3 = session.client("s3")
     bucket = S3_EXTRACT_BUCKET
 
-    # # Copy the file from the source to the destination
+    # Copy the file from the source to the destination
     s3.copy(source, bucket, destination)
 
-    # # Delete the file from the source
-    s3.delete_object(Bucket=bucket, Key=source)
+    # Delete the file from the source
+    s3.delete_object(Bucket=bucket, Key=source["Key"])
 
     print(f"Moving {extract} into processed")
 
