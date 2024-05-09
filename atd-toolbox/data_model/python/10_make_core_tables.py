@@ -166,7 +166,6 @@ def main():
         migration_path = make_migration_dir(table_name)
         save_file(f"{migration_path}/up.sql", tables_sql_str)
         save_file(f"{migration_path}/down.sql", table_sql_down_str)
-        save_empty_down_migration(migration_path)
 
     table_constraints_sql = load_sql_template("./sql_templates/table_constraints.sql")
     migration_path = make_migration_dir("table_constraints")
