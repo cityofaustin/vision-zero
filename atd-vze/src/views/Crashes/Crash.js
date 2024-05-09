@@ -169,7 +169,6 @@ function Crash(props) {
     data?.atd_txdot_crashes.length > 0 &&
     data?.atd_txdot_crashes[0]["location_id"];
   const hasCoordinates = Boolean(latitude) && Boolean(longitude);
-  const notEditingCoords = !isEditingCoords && hasCoordinates;
 
   return !data?.atd_txdot_crashes?.length ? (
     <Page404 />
@@ -255,14 +254,14 @@ function Crash(props) {
                 </Col>
               </Row>
             </CardHeader>
-            <CardBody style={{ minHeight: "350px" }}>
+            <CardBody className="d-flex flex-column">
               {!hasCoordinates && (
                 <Alert color="danger">
                   Crash record is missing latitude and longitude values required
                   for map display.
                 </Alert>
               )}
-              {notEditingCoords ? (
+              {!isEditingCoords ? (
                 <CrashMap data={data.atd_txdot_crashes[0]} />
               ) : (
                 <CrashEditCoordsMap
