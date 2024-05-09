@@ -430,8 +430,8 @@ def unzip_archives(archives_directory):
             id = cursor.fetchone()[0]
             extracted_csv_directories.append((id, extract_tmpdir, filename))
 
-            pg.commit()
-            pg.close()
+        pg.commit()
+        pg.close()
 
         return extracted_csv_directories
 
