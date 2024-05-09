@@ -46,7 +46,7 @@ def insert_crash_change_template(new_record_dict, differences, crash_id):
             objects: {
               record_id: %NEW_RECORD_ID%,
               record_json: %NEW_RECORD_ESCAPED_JSON%,
-              record_uqid: %NEW_UNIQUE_ID%
+              record_uuid: %NEW_UNIQUE_ID%
               record_type: "crash",
               affected_columns: %AFFECTED_COLUMNS%,
               status_id: 0,
