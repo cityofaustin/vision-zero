@@ -176,16 +176,6 @@ def mark_extract_as_imported(id):
         pg.commit()
         pg.close()
 
-        # # Define the source and destination paths
-        # source = {"Bucket": bucket, "Key": upload_path}
-        # destination = os.path.join(f"{DEPLOYMENT_ENVIRONMENT}/processed/", extract[1])
-
-        # # Copy the file from the source to the destination
-        # s3.copy(source, bucket, destination)
-
-        # # Delete the file from the source
-        # s3.delete_object(Bucket=bucket, Key=upload_path)
-
 
 def get_secrets():
     REQUIRED_SECRETS = {
