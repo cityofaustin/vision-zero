@@ -40,13 +40,14 @@ def insert_crash_change_template(new_record_dict, differences, crash_id):
     new_record_escaped = json.dumps(json.dumps(new_record_dict), default=str)
     # Build the template and inject required values
     output = (
+        # ! fixme: there is a misspelling of uuid in the following mutation & in the DB
         """
         mutation insertCrashChangeMutation {
           insert_atd_txdot_changes(
             objects: {
               record_id: %NEW_RECORD_ID%,
               record_json: %NEW_RECORD_ESCAPED_JSON%,
-              record_uuid: %NEW_UNIQUE_ID%
+              record_uqid: %NEW_UNIQUE_ID%
               record_type: "crash",
               affected_columns: %AFFECTED_COLUMNS%,
               status_id: 0,
