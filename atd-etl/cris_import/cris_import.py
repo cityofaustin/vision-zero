@@ -115,6 +115,31 @@ def main():
         move_extract_into_processed(filename_in_s3)
 
 
+def move_extract_into_processed(extract):
+    # # Define the source and destination paths
+    source = {
+        "Bucket": S3_EXTRACT_BUCKET,
+        "Key": f"{DEPLOYMENT_ENVIRONMENT}/inbox/{extract}",
+    }
+    destination = os.path.join(f"{DEPLOYMENT_ENVIRONMENT}/processed/", extract)
+
+    session = boto3.Session(
+        aws_access_key_id=AWS_ACCESS_KEY_ID,
+        aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+    )
+
+    s3 = session.client("s3")
+    bucket = S3_EXTRACT_BUCKET
+
+    # # Copy the file from the source to the destination
+    s3.copy(source, bucket, destination)
+
+    # # Delete the file from the source
+    s3.delete_object(Bucket=bucket, Key=source)
+
+    print(f"Moving {extract} into processed")
+
+
 def mark_extract_as_imported(id):
     with SshKeyTempDir() as key_directory:
         write_key_to_file(
