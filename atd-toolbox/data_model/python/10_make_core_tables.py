@@ -124,6 +124,7 @@ def main():
     lookup_tables_sql = make_lookup_table_sql(lookup_table_names)
     migration_path = make_migration_dir("lookups")
     save_file(f"{migration_path}/up.sql", lookup_tables_sql)
+    # we don't write down migrations for each lookup table—we drop the whole lookups schema
     save_empty_down_migration(migration_path)
     for table_name in ["crashes", "units", "people", "charges"]:
         tables_sql_stmts = []
