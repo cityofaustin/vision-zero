@@ -254,7 +254,10 @@ function Crash(props) {
                 </Col>
               </Row>
             </CardHeader>
-            <CardBody className="d-flex flex-column">
+            <CardBody
+              className="d-flex flex-column"
+              style={{ minHeight: "400px" }}
+            >
               {!hasCoordinates && (
                 <Alert color="danger">
                   Crash record is missing latitude and longitude values required
