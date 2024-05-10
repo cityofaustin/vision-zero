@@ -72,7 +72,7 @@ const CrashEditCoordsMap = ({
     // Reset marker to original coordinates or default fallback
     const originalMarkerCoordinates = {
       latitude: latitude_primary || defaultInitialState.latitude,
-      longitude: longitude_primary || defaultInitialState.latitude,
+      longitude: longitude_primary || defaultInitialState.longitude,
     };
 
     // Move map center and marks to original coordinates or default fallback
