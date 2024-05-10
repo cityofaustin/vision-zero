@@ -31,8 +31,8 @@ const CrashEditCoordsMap = ({
   const mapRef = React.useRef();
   const [isDragging, setIsDragging] = React.useState(false);
   const [markerCoordinates, setMarkerCoordinates] = React.useState({
-    latitude: latitude_primary || defaultInitialState.latitude,
-    longitude: longitude_primary || defaultInitialState.longitude,
+    latitude: latitude_primary,
+    longitude: longitude_primary,
   });
   const [isSubmitting, setIsSubmitting] = React.useState(false);
 
@@ -108,7 +108,12 @@ const CrashEditCoordsMap = ({
       >
         <FullscreenControl position="top-left" />
         <NavigationControl position="top-left" showCompass={false} />
-        <Marker {...markerCoordinates}>
+        <Marker
+          latitude={markerCoordinates.latitude || defaultInitialState.latitude}
+          longitude={
+            markerCoordinates.longitude || defaultInitialState.longitude
+          }
+        >
           <Pin size={40} color={"warning"} isDragging={isDragging} animated />
         </Marker>
         {/* add nearmap raster source and style */}
