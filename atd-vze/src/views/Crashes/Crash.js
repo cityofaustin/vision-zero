@@ -168,7 +168,7 @@ function Crash(props) {
     data &&
     data?.atd_txdot_crashes.length > 0 &&
     data?.atd_txdot_crashes[0]["location_id"];
-  const hasCoordinates = Boolean(latitude) && Boolean(longitude);
+  const hasCoordinates = !!latitude && !!longitude;
 
   return !data?.atd_txdot_crashes?.length ? (
     <Page404 />
