@@ -35,6 +35,8 @@ select_permissions:
         - crash_date
         - crash_day_of_week
         - crash_id
+        - crash_injry_sev_desc
+        - crash_injry_sev_id
         - crash_speed_limit
         - cris_fatality_count
         - est_comp_cost_crash_based
@@ -85,6 +87,8 @@ select_permissions:
         - crash_date
         - crash_day_of_week
         - crash_id
+        - crash_injry_sev_desc
+        - crash_injry_sev_id
         - crash_speed_limit
         - cris_fatality_count
         - est_comp_cost_crash_based
@@ -135,6 +139,8 @@ select_permissions:
         - crash_date
         - crash_day_of_week
         - crash_id
+        - crash_injry_sev_desc
+        - crash_injry_sev_id
         - crash_speed_limit
         - cris_fatality_count
         - est_comp_cost_crash_based

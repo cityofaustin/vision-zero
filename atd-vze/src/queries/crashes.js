@@ -257,6 +257,7 @@ nonincap_injry_count
 poss_injry_count
 non_injry_count
 unkn_injry_count
+crash_injry_sev_desc
 collsn_desc
 units {
   trvl_dir_lkp {

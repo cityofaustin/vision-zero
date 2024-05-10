@@ -386,7 +386,7 @@ export const crashGridTableAdvancedFilters = {
         filter: {
           where: [
             {
-              private_dr_fl: '_neq: "Y"',
+              private_dr_fl: '_neq: true',
             },
           ],
         },
