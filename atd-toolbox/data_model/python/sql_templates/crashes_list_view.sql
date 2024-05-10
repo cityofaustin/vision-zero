@@ -85,7 +85,7 @@ select
         when (sum(people_injury_severities.unkn_injry) > 0) then 0
         when (sum(people_injury_severities.non_injry) > 0) then 5
         else 0
-    end as max_inj_sev_id,
+    end as crash_injry_sev_id,
     max(est_comp_cost_crash_based) as est_comp_cost_crash_based
 from
     public.crashes_unified as crashes
@@ -152,8 +152,8 @@ select
     crash_injury_counts.fatality_count,
     crash_injury_counts.unkn_injry_count,
     crash_injury_counts.est_comp_cost_crash_based,
-    crash_injury_counts.max_inj_sev_id,
-    lookups.injry_sev_lkp.label as max_crash_severity_desc,
+    crash_injury_counts.crash_injry_sev_id,
+    lookups.injry_sev_lkp.label as crash_injry_sev_desc,
     lookups.collsn_lkp.label as collsn_desc,
     geocode_status.is_manual_geocode,
     geocode_status.has_no_cris_coordinates,
@@ -174,5 +174,5 @@ left join
     lookups.collsn_lkp
     on public.crashes_unified.fhe_collsn_id = lookups.collsn_lkp.id
 left join
-    lookups.injry_sev_lkp on lookups.injry_sev_lkp.id = crash_injury_counts.max_inj_sev_id;
+    lookups.injry_sev_lkp on lookups.injry_sev_lkp.id = crash_injury_counts.crash_injry_sev_id;
 
