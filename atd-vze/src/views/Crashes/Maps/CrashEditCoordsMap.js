@@ -31,8 +31,8 @@ const CrashEditCoordsMap = ({
   const mapRef = React.useRef();
   const [isDragging, setIsDragging] = React.useState(false);
   const [markerCoordinates, setMarkerCoordinates] = React.useState({
-    latitude: latitude_primary,
-    longitude: longitude_primary,
+    latitude: latitude_primary || defaultInitialState.latitude,
+    longitude: longitude_primary || defaultInitialState.longitude,
   });
   const [isSubmitting, setIsSubmitting] = React.useState(false);
 
