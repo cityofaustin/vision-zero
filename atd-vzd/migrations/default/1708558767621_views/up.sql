@@ -31,8 +31,6 @@ create or replace view crash_injury_counts as with people_injury_severities as (
             when
                 (
                     people.prsn_injry_sev_id = 4
-                    and crashes.in_austin_full_purpose = true
-                    and crashes.private_dr_fl = false
                 )
                 then 1
             else 0
@@ -40,8 +38,8 @@ create or replace view crash_injury_counts as with people_injury_severities as (
         case
             when
                 (
-                    people.prsn_injry_sev_id = 4
-                    or people.prsn_injry_sev_id = 99
+                    (people.prsn_injry_sev_id = 4
+                    or people.prsn_injry_sev_id = 99)
                     and crashes.law_enforcement_fatality_num is not null
                 )
                 then 1
@@ -66,18 +64,29 @@ create or replace view crash_injury_counts as with people_injury_severities as (
 
 select
     crashes.crash_id,
-    sum(people_injury_severities.unkn_injry) as unkn_injry_cnt,
+    sum(people_injury_severities.unkn_injry) as unkn_injry_count,
     sum(
         people_injury_severities.nonincap_injry
-    ) as nonincap_injry_cnt,
-    sum(people_injury_severities.poss_injry) as poss_injry_cnt,
-    sum(people_injury_severities.non_injry) as non_injry_cnt,
-    sum(people_injury_severities.sus_serious_injry) as sus_serious_injry_cnt,
-    sum(people_injury_severities.fatal_injury) as fatality_cnt,
-    sum(people_injury_severities.vz_fatal_injury) as vz_fatality_cnt,
-    sum(people_injury_severities.law_enf_fatal_injury) as law_enf_fatality_cnt,
-    sum(people_injury_severities.cris_fatal_injury) as cris_fatality_cnt,
-    sum(est_comp_cost_crash_based) as est_comp_cost_crash_based
+    ) as nonincap_injry_count,
+    sum(people_injury_severities.poss_injry) as poss_injry_count,
+    sum(people_injury_severities.non_injry) as non_injry_count,
+    sum(people_injury_severities.sus_serious_injry) as sus_serious_injry_count,
+    sum(people_injury_severities.fatal_injury) as fatality_count,
+    sum(people_injury_severities.vz_fatal_injury) as vz_fatality_count,
+    sum(
+        people_injury_severities.law_enf_fatal_injury
+    ) as law_enf_fatality_count,
+    sum(people_injury_severities.cris_fatal_injury) as cris_fatality_count,
+    case
+        when (sum(people_injury_severities.fatal_injury) > 0) then 4
+        when (sum(people_injury_severities.nonincap_injry) > 0) then 1
+        when (sum(people_injury_severities.sus_serious_injry) > 0) then 2
+        when (sum(people_injury_severities.poss_injry) > 0) then 3
+        when (sum(people_injury_severities.unkn_injry) > 0) then 0
+        when (sum(people_injury_severities.non_injry) > 0) then 5
+        else 0
+    end as max_inj_sev_id,
+    max(est_comp_cost_crash_based) as est_comp_cost_crash_based
 from
     public.crashes_unified as crashes
 left join
@@ -133,19 +142,21 @@ select
     public.crashes_unified.obj_struck_id,
     public.crashes_unified.crash_speed_limit,
     public.crashes_unified.council_district,
-    crash_injury_counts.nonincap_injry_cnt,
-    crash_injury_counts.poss_injry_cnt,
-    crash_injury_counts.sus_serious_injry_cnt,
-    crash_injury_counts.non_injry_cnt,
-    crash_injury_counts.vz_fatality_cnt,
-    crash_injury_counts.cris_fatality_cnt,
-    crash_injury_counts.law_enf_fatality_cnt,
-    crash_injury_counts.fatality_cnt,
-    crash_injury_counts.unkn_injry_cnt,
+    crash_injury_counts.nonincap_injry_count,
+    crash_injury_counts.poss_injry_count,
+    crash_injury_counts.sus_serious_injry_count,
+    crash_injury_counts.non_injry_count,
+    crash_injury_counts.vz_fatality_count,
+    crash_injury_counts.cris_fatality_count,
+    crash_injury_counts.law_enf_fatality_count,
+    crash_injury_counts.fatality_count,
+    crash_injury_counts.unkn_injry_count,
     crash_injury_counts.est_comp_cost_crash_based,
+    crash_injury_counts.max_inj_sev_id,
+    lookups.injry_sev_lkp.label as max_crash_severity_desc,
     lookups.collsn_lkp.label as collsn_desc,
     geocode_status.is_manual_geocode,
-
+    geocode_status.has_no_cris_coordinates,
     upper(
         to_char(
             public.crashes_unified.crash_date at time zone 'US/Central', 'dy'
@@ -161,5 +172,8 @@ left join
     on public.crashes_unified.crash_id = geocode_status.crash_id
 left join
     lookups.collsn_lkp
-    on public.crashes_unified.fhe_collsn_id = lookups.collsn_lkp.id;
+    on public.crashes_unified.fhe_collsn_id = lookups.collsn_lkp.id
+left join
+    lookups.injry_sev_lkp on lookups.injry_sev_lkp.id = crash_injury_counts.max_inj_sev_id;
+
 
