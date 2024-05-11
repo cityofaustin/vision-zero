@@ -35,7 +35,9 @@ def get_lookup_table_names(data):
         and row["action"].startswith("migr")
         and not row["foreign_table_name"].endswith("_cris")
         and not row["foreign_table_name"].endswith("_edits")
-        and not row["foreign_table_name"].endswith("_unified")
+        and not row["foreign_table_name"] == "crashes"
+        and not row["foreign_table_name"] == "units"
+        and not row["foreign_table_name"] == "people"
         and not row["is_existing_foreign_table"] == "TRUE"
     ]
     return sorted(list(set(lookup_table_names)))
@@ -60,13 +62,13 @@ def make_column_sql(columns, full_table_name):
         fk_column_name = col["foreign_column_name"]
         fk_schema_name = col["foreign_table_schema"] or "public"
         if constraint == "primary key" and not full_table_name.endswith("_cris"):
-            # hacky logic to manage id sequences and pks on the _edits and _unified tables
+            # hacky logic to manage id sequences and pks on the _edits and unified tables
             if data_type == "serial":
                 data_type = "integer"
             if full_table_name.endswith("_edits"):
                 fk_table_name = full_table_name.replace("_edits", "_cris")
-            elif full_table_name.endswith("_unified") and "crashes" in full_table_name:
-                fk_table_name = full_table_name.replace("_unified", "_cris")
+            elif full_table_name == "crashes":
+                fk_table_name = "crashes_cris"
             # column name is always the same as the column name
             fk_column_name = column_name
             fk_cascade = "on update cascade on delete cascade"
@@ -76,16 +78,16 @@ def make_column_sql(columns, full_table_name):
                 constraint = ""
                 # reference units_cris
                 fk_table_name = "crashes_cris"
-            elif full_table_name == "units_unified":
-                fk_table_name = "crashes_unified"
+            elif full_table_name == "units":
+                fk_table_name = "crashes"
         elif column_name == "unit_id":
             if full_table_name == "people_edits":
                 # make nullable
                 constraint = ""
                 # reference units_cris
                 fk_table_name = "units_cris"
-            elif full_table_name == "people_unified":
-                fk_table_name = "units_unified"
+            elif full_table_name == "people":
+                fk_table_name = "units"
             fk_cascade = "on update cascade on delete cascade"
         elif column_name == "people_id":
             if full_table_name == "charges_edits":
@@ -93,8 +95,8 @@ def make_column_sql(columns, full_table_name):
                 # make nullable
                 constraint = ""
                 fk_table_name = "charges_cris"
-            elif full_table_name == "charges_unified":
-                fk_table_name = "people_unified"
+            elif full_table_name == "charges":
+                fk_table_name = "people"
             fk_cascade = "on update cascade on delete cascade"
 
         sql = f"{column_name} {data_type} {constraint}".strip()
@@ -129,12 +131,12 @@ def main():
     for table_name in ["crashes", "units", "people", "charges"]:
         tables_sql_stmts = []
         table_sql_down_stmts = []
-        for table_suffix in ["cris", "edits", "unified"]:
-            if table_name == "charges" and table_suffix != "cris":
+        for table_suffix in ["_cris", "_edits", ""]:
+            if table_name == "charges" and table_suffix != "_cris":
                 # charges is a cris-only table
                 continue
-            column_table_key = f"table_name_new_{table_suffix}"
-            full_table_name = f"{table_name}_{table_suffix}"
+            column_table_key = f"table_name_new{table_suffix or '_unified'}"
+            full_table_name = f"{table_name}{table_suffix}"
             columns = [
                 col
                 for col in data

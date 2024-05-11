@@ -35,8 +35,8 @@ after insert or update on public.crashes_edits
 for each row
 execute procedure public.insert_change_log();
 
-create trigger insert_change_log_crashes_unified
-after insert or update on public.crashes_unified
+create trigger insert_change_log_crashes
+after insert or update on public.crashes
 for each row
 execute procedure public.insert_change_log();
 
@@ -51,8 +51,8 @@ after insert or update on public.units_edits
 for each row
 execute procedure public.insert_change_log();
 
-create trigger insert_change_log_units_unified
-after insert or update on public.units_unified
+create trigger insert_change_log_units
+after insert or update on public.units
 for each row
 execute procedure public.insert_change_log();
 
@@ -67,7 +67,7 @@ after insert or update on public.people_edits
 for each row
 execute procedure public.insert_change_log();
 
-create trigger insert_change_log_people_unified
-after insert or update on public.people_unified
+create trigger insert_change_log_people
+after insert or update on public.people
 for each row
 execute procedure public.insert_change_log();
