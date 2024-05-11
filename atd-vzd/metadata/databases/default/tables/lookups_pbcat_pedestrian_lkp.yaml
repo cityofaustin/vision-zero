@@ -16,10 +16,10 @@ array_relationships:
         table:
           name: units_edits
           schema: public
-  - name: units_unifieds
+  - name: unitss
     using:
       foreign_key_constraint_on:
         column: pbcat_pedestrian_id
         table:
-          name: units_unified
+          name: units
           schema: public

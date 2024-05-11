@@ -106,7 +106,7 @@ create table public.crashes_edits (
     wthr_cond_id integer references lookups.wthr_cond_lkp (id) on update cascade on delete cascade
 );
 
-create table public.crashes_unified (
+create table public.crashes (
     crash_id integer primary key references public.crashes_cris (crash_id) on update cascade on delete cascade,
     active_school_zone_fl boolean,
     address_primary text generated always as (trim(coalesce(rpt_street_pfx, '') || ' ' || coalesce(rpt_block_num, '') || ' ' || coalesce(rpt_street_name, '') || ' ' || coalesce(rpt_street_sfx, ''))) stored,

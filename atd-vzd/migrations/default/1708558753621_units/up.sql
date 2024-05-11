@@ -65,7 +65,7 @@ create table public.units_edits (
     vin text
 );
 
-create table public.units_unified (
+create table public.units (
     id integer primary key,
     atd_mode_category integer references lookups.mode_category_lkp (id) on update cascade on delete cascade,
     autonomous_unit_id integer references lookups.autonomous_unit_lkp (id) on update cascade on delete cascade,
@@ -74,7 +74,7 @@ create table public.units_unified (
     contrib_factr_3_id integer references lookups.contrib_factr_lkp (id) on update cascade on delete cascade,
     contrib_factr_p1_id integer references lookups.contrib_factr_lkp (id) on update cascade on delete cascade,
     contrib_factr_p2_id integer references lookups.contrib_factr_lkp (id) on update cascade on delete cascade,
-    crash_id integer not null references public.crashes_unified (crash_id) on update cascade on delete cascade,
+    crash_id integer not null references public.crashes (crash_id) on update cascade on delete cascade,
     e_scooter_id integer references lookups.e_scooter_lkp (id) on update cascade on delete cascade,
     first_harm_evt_inv_id integer references lookups.harm_evnt_lkp (id) on update cascade on delete cascade,
     movement_id integer references lookups.movt_lkp (id) on update cascade on delete cascade,

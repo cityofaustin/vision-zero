@@ -11,7 +11,7 @@ declare
     cris_record_jb jsonb;
     column_name text;
     updates_todo text [] := '{}';
-    update_stmt text := 'update public.$tableName$_unified set ';
+    update_stmt text := 'update public.$tableName$ set ';
 begin
     -- get corresponding the cris record as jsonb
     SELECT to_jsonb($tableName$_cris) INTO cris_record_jb from public.$tableName$_cris where public.$tableName$_cris.$pkColumnName$ = new.$pkColumnName$;
@@ -33,13 +33,13 @@ begin
     update_stmt := update_stmt
         || array_to_string(updates_todo, ',')
         || format(' from (select * from public.$tableName$_cris where public.$tableName$_cris.$pkColumnName$ = %s) as cris_record', new.$pkColumnName$)
-        || format(' where public.$tableName$_unified.$pkColumnName$ = %s ', new.$pkColumnName$);
+        || format(' where public.$tableName$.$pkColumnName$ = %s ', new.$pkColumnName$);
     raise notice 'Updating unified $tableName$ record from edit update';
     execute (update_stmt) using new;
     return null;
 end;
 $$;
 
-create trigger update_$tableName$_unified_from_$tableName$_edits_update
+create trigger update_$tableName$_from_$tableName$_edits_update
 after update on public.$tableName$_edits for each row
 execute procedure public.$tableName$_edits_update();

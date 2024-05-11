@@ -9,7 +9,7 @@ using gist (geometry);
 -- Handle various spatial attribute associations when 
 -- unified crash record is inserted or updated
 --
-create or replace function public.crashes_unified_set_spatial_attributes()
+create or replace function public.crashes_set_spatial_attributes()
 returns trigger
 language plpgsql
 as $$
@@ -77,16 +77,16 @@ begin
 END;
 $$;
 
-create trigger crashes_unified_set_spatial_attributes_on_insert
-before insert on public.crashes_unified
+create trigger crashes_set_spatial_attributes_on_insert
+before insert on public.crashes
 for each row
-execute procedure public.crashes_unified_set_spatial_attributes();
+execute procedure public.crashes_set_spatial_attributes();
 
-create trigger crashes_unified_set_spatial_attributes_on_update
-before update on public.crashes_unified
+create trigger crashes_set_spatial_attributes_on_update
+before update on public.crashes
 for each row
 when (
     new.latitude is distinct from old.latitude
     or new.longitude is distinct from old.longitude
 )
-execute procedure public.crashes_unified_set_spatial_attributes();
+execute procedure public.crashes_set_spatial_attributes();

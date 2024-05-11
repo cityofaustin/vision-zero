@@ -1,5 +1,5 @@
 table:
-  name: crashes_unified
+  name: crashes
   schema: public
 object_relationships:
   - name: atd_txdot_location
@@ -9,17 +9,17 @@ object_relationships:
     using:
       foreign_key_constraint_on: crash_id
 array_relationships:
-  - name: change_log_crashes_unifieds
+  - name: change_log_crashess
     using:
       foreign_key_constraint_on:
         column: record_id
         table:
-          name: change_log_crashes_unified
+          name: change_log_crashes
           schema: public
-  - name: units_unifieds
+  - name: unitss
     using:
       foreign_key_constraint_on:
         column: crash_id
         table:
-          name: units_unified
+          name: units
           schema: public

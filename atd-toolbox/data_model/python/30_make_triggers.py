@@ -54,7 +54,7 @@ def main():
             col["column_name"]
             for col in data
             if col["table_name_new_cris"] == f"{table_name}_cris"
-            and col["table_name_new_unified"] == f"{table_name}_unified"
+            and col["table_name_new_unified"] == f"{table_name}"
             and col["action"] == "migrate"
         ]
         # remove dupes, which is a concern for persons tables

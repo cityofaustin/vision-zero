@@ -19,7 +19,7 @@ array_relationships:
           crash_id: crash_id
         insertion_order: null
         remote_table:
-          name: units_unified
+          name: units
           schema: public
 select_permissions:
   - role: editor
