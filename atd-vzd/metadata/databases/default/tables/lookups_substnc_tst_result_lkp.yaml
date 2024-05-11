@@ -21,7 +21,7 @@ array_relationships:
       foreign_key_constraint_on:
         column: prsn_drg_rslt_id
         table:
-          name: people_unified
+          name: people
           schema: public
   - name: people_cris
     using:
@@ -37,10 +37,10 @@ array_relationships:
         table:
           name: people_edits
           schema: public
-  - name: people_unifieds
+  - name: peoples
     using:
       foreign_key_constraint_on:
         column: prsn_alc_rslt_id
         table:
-          name: people_unified
+          name: people
           schema: public

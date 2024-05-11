@@ -26,16 +26,16 @@ create table public.change_log_crashes_edits (
 create index on public.change_log_crashes_edits (record_id);
 
 
-create table public.change_log_crashes_unified (
+create table public.change_log_crashes (
     id serial primary key,
-    record_id integer not null references public.crashes_unified (crash_id) on delete cascade on update cascade,
+    record_id integer not null references public.crashes (crash_id) on delete cascade on update cascade,
     operation_type text not null,
     record_json jsonb not null,
     created_at timestamp with time zone default now(),
     created_by text not null
 );
 
-create index on public.change_log_crashes_unified (record_id);
+create index on public.change_log_crashes (record_id);
 
 
 ---
@@ -66,16 +66,16 @@ create table public.change_log_units_edits (
 create index on public.change_log_units_edits (record_id);
 
 
-create table public.change_log_units_unified (
+create table public.change_log_units (
     id serial primary key,
-    record_id integer not null references public.units_unified (id) on delete cascade on update cascade,
+    record_id integer not null references public.units (id) on delete cascade on update cascade,
     operation_type text not null,
     record_json jsonb not null,
     created_at timestamp with time zone default now(),
     created_by text not null
 );
 
-create index on public.change_log_units_unified (record_id);
+create index on public.change_log_units (record_id);
 
 
 ---
@@ -106,16 +106,16 @@ create table public.change_log_people_edits (
 create index on public.change_log_people_edits (record_id);
 
 
-create table public.change_log_people_unified (
+create table public.change_log_people (
     id serial primary key,
-    record_id integer not null references public.people_unified (id) on delete cascade on update cascade,
+    record_id integer not null references public.people (id) on delete cascade on update cascade,
     operation_type text not null,
     record_json jsonb not null,
     created_at timestamp with time zone default now(),
     created_by text not null
 );
 
-create index on public.change_log_people_unified (record_id);
+create index on public.change_log_people (record_id);
 
 
 --
@@ -155,8 +155,8 @@ after insert or update on public.crashes_edits
 for each row
 execute procedure public.insert_change_log();
 
-create trigger insert_change_log_crashes_unified
-after insert or update on public.crashes_unified
+create trigger insert_change_log_crashes
+after insert or update on public.crashes
 for each row
 execute procedure public.insert_change_log();
 
@@ -171,8 +171,8 @@ after insert or update on public.units_edits
 for each row
 execute procedure public.insert_change_log();
 
-create trigger insert_change_log_units_unified
-after insert or update on public.units_unified
+create trigger insert_change_log_units
+after insert or update on public.units
 for each row
 execute procedure public.insert_change_log();
 
@@ -187,8 +187,8 @@ after insert or update on public.people_edits
 for each row
 execute procedure public.insert_change_log();
 
-create trigger insert_change_log_people_unified
-after insert or update on public.people_unified
+create trigger insert_change_log_people
+after insert or update on public.people
 for each row
 execute procedure public.insert_change_log();
 

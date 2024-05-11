@@ -9,10 +9,10 @@ array_relationships:
         table:
           name: units_edits
           schema: public
-  - name: units_unifieds
+  - name: unitss
     using:
       foreign_key_constraint_on:
         column: atd_mode_category
         table:
-          name: units_unified
+          name: units
           schema: public

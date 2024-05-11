@@ -54,11 +54,11 @@ create or replace view crash_injury_counts as with people_injury_severities as (
             else 0
         end as non_injry
     from
-        public.people_unified as people
-    left join public.units_unified as units on people.unit_id = units.id
+        public.people as people
+    left join public.units as units on people.unit_id = units.id
     left join public.people_cris as people_cris on people.id = people_cris.id
     left join
-        public.crashes_unified as crashes
+        public.crashes as crashes
         on units.crash_id = crashes.crash_id
 )
 
@@ -88,7 +88,7 @@ select
     end as crash_injry_sev_id,
     max(est_comp_cost_crash_based) as est_comp_cost_crash_based
 from
-    public.crashes_unified as crashes
+    public.crashes as crashes
 left join
     people_injury_severities
     on crashes.crash_id = people_injury_severities.crash_id
@@ -112,36 +112,36 @@ create or replace view crashes_list as with geocode_status as (
 )
 
 select
-    public.crashes_unified.crash_id,
-    public.crashes_unified.case_id,
-    public.crashes_unified.crash_date,
-    public.crashes_unified.address_primary,
-    public.crashes_unified.address_secondary,
-    public.crashes_unified.private_dr_fl,
-    public.crashes_unified.in_austin_full_purpose,
-    public.crashes_unified.location_id,
-    public.crashes_unified.rpt_block_num,
-    public.crashes_unified.rpt_street_pfx,
-    public.crashes_unified.rpt_street_name,
-    public.crashes_unified.rpt_sec_block_num,
-    public.crashes_unified.rpt_sec_street_pfx,
-    public.crashes_unified.rpt_sec_street_name,
-    public.crashes_unified.latitude,
-    public.crashes_unified.longitude,
-    public.crashes_unified.light_cond_id,
-    public.crashes_unified.wthr_cond_id,
-    public.crashes_unified.active_school_zone_fl,
-    public.crashes_unified.schl_bus_fl,
-    public.crashes_unified.at_intrsct_fl,
-    public.crashes_unified.onsys_fl,
-    public.crashes_unified.traffic_cntl_id,
-    public.crashes_unified.road_constr_zone_fl,
-    public.crashes_unified.rr_relat_fl,
-    public.crashes_unified.toll_road_fl,
-    public.crashes_unified.intrsct_relat_id,
-    public.crashes_unified.obj_struck_id,
-    public.crashes_unified.crash_speed_limit,
-    public.crashes_unified.council_district,
+    public.crashes.crash_id,
+    public.crashes.case_id,
+    public.crashes.crash_date,
+    public.crashes.address_primary,
+    public.crashes.address_secondary,
+    public.crashes.private_dr_fl,
+    public.crashes.in_austin_full_purpose,
+    public.crashes.location_id,
+    public.crashes.rpt_block_num,
+    public.crashes.rpt_street_pfx,
+    public.crashes.rpt_street_name,
+    public.crashes.rpt_sec_block_num,
+    public.crashes.rpt_sec_street_pfx,
+    public.crashes.rpt_sec_street_name,
+    public.crashes.latitude,
+    public.crashes.longitude,
+    public.crashes.light_cond_id,
+    public.crashes.wthr_cond_id,
+    public.crashes.active_school_zone_fl,
+    public.crashes.schl_bus_fl,
+    public.crashes.at_intrsct_fl,
+    public.crashes.onsys_fl,
+    public.crashes.traffic_cntl_id,
+    public.crashes.road_constr_zone_fl,
+    public.crashes.rr_relat_fl,
+    public.crashes.toll_road_fl,
+    public.crashes.intrsct_relat_id,
+    public.crashes.obj_struck_id,
+    public.crashes.crash_speed_limit,
+    public.crashes.council_district,
     crash_injury_counts.nonincap_injry_count,
     crash_injury_counts.poss_injry_count,
     crash_injury_counts.sus_serious_injry_count,
@@ -159,20 +159,20 @@ select
     geocode_status.has_no_cris_coordinates,
     upper(
         to_char(
-            public.crashes_unified.crash_date at time zone 'US/Central', 'dy'
+            public.crashes.crash_date at time zone 'US/Central', 'dy'
         )
     ) as crash_day_of_week
 from
-    public.crashes_unified
+    public.crashes
 left join
     crash_injury_counts
-    on public.crashes_unified.crash_id = crash_injury_counts.crash_id
+    on public.crashes.crash_id = crash_injury_counts.crash_id
 left join
     geocode_status
-    on public.crashes_unified.crash_id = geocode_status.crash_id
+    on public.crashes.crash_id = geocode_status.crash_id
 left join
     lookups.collsn_lkp
-    on public.crashes_unified.fhe_collsn_id = lookups.collsn_lkp.id
+    on public.crashes.fhe_collsn_id = lookups.collsn_lkp.id
 left join
     lookups.injry_sev_lkp on lookups.injry_sev_lkp.id = crash_injury_counts.crash_injry_sev_id;
 
