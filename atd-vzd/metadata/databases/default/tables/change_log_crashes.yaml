@@ -1,7 +1,7 @@
 table:
-  name: change_log_crashes_unified
+  name: change_log_crashes
   schema: public
 object_relationships:
-  - name: crashes_unified
+  - name: crashes
     using:
       foreign_key_constraint_on: record_id

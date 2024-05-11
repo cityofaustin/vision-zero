@@ -9,12 +9,12 @@ object_relationships:
         table:
           name: crashes_edits
           schema: public
-  - name: crashes_unified
+  - name: crashes
     using:
       foreign_key_constraint_on:
         column: crash_id
         table:
-          name: crashes_unified
+          name: crashes
           schema: public
 array_relationships:
   - name: change_log_crashes_cris
