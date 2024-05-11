@@ -38,8 +38,10 @@ create or replace view crash_injury_counts as with people_injury_severities as (
         case
             when
                 (
-                    (people.prsn_injry_sev_id = 4
-                    or people.prsn_injry_sev_id = 99)
+                    (
+                        people.prsn_injry_sev_id = 4
+                        or people.prsn_injry_sev_id = 99
+                    )
                     and crashes.law_enforcement_fatality_num is not null
                 )
                 then 1
@@ -64,19 +66,25 @@ create or replace view crash_injury_counts as with people_injury_severities as (
 
 select
     crashes.crash_id,
-    sum(people_injury_severities.unkn_injry) as unkn_injry_count,
-    sum(
+    coalesce(sum(people_injury_severities.unkn_injry), 0) as unkn_injry_count,
+    coalesce(sum(
         people_injury_severities.nonincap_injry
-    ) as nonincap_injry_count,
-    sum(people_injury_severities.poss_injry) as poss_injry_count,
-    sum(people_injury_severities.non_injry) as non_injry_count,
-    sum(people_injury_severities.sus_serious_injry) as sus_serious_injry_count,
-    sum(people_injury_severities.fatal_injury) as fatality_count,
-    sum(people_injury_severities.vz_fatal_injury) as vz_fatality_count,
-    sum(
+    ), 0) as nonincap_injry_count,
+    coalesce(sum(people_injury_severities.poss_injry), 0) as poss_injry_count,
+    coalesce(sum(people_injury_severities.non_injry), 0) as non_injry_count,
+    coalesce(
+        sum(people_injury_severities.sus_serious_injry), 0
+    ) as sus_serious_injry_count,
+    coalesce(sum(people_injury_severities.fatal_injury), 0) as fatality_count,
+    coalesce(
+        sum(people_injury_severities.vz_fatal_injury), 0
+    ) as vz_fatality_count,
+    coalesce(sum(
         people_injury_severities.law_enf_fatal_injury
-    ) as law_enf_fatality_count,
-    sum(people_injury_severities.cris_fatal_injury) as cris_fatality_count,
+    ), 0) as law_enf_fatality_count,
+    coalesce(
+        sum(people_injury_severities.cris_fatal_injury), 0
+    ) as cris_fatality_count,
     case
         when (sum(people_injury_severities.fatal_injury) > 0) then 4
         when (sum(people_injury_severities.nonincap_injry) > 0) then 1
@@ -174,5 +182,5 @@ left join
     lookups.collsn_lkp
     on public.crashes.fhe_collsn_id = lookups.collsn_lkp.id
 left join
-    lookups.injry_sev_lkp on lookups.injry_sev_lkp.id = crash_injury_counts.crash_injry_sev_id;
-
+    lookups.injry_sev_lkp
+    on lookups.injry_sev_lkp.id = crash_injury_counts.crash_injry_sev_id;
