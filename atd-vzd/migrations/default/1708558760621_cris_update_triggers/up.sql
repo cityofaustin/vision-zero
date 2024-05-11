@@ -12,7 +12,7 @@ declare
     edit_record_jb jsonb;
     column_name text;
     updates_todo text [] := '{}';
-    update_stmt text := 'update public.crashes_unified set ';
+    update_stmt text := 'update public.crashes set ';
 begin
     -- get corresponding the VZ record as jsonb
     SELECT to_jsonb(crashes_edits) INTO edit_record_jb from public.crashes_edits where public.crashes_edits.crash_id = new.crash_id;
@@ -37,8 +37,8 @@ begin
         -- complete the update statement by joining all `set` clauses together
         update_stmt := update_stmt
             || array_to_string(updates_todo, ',')
-            || format(' where public.crashes_unified.crash_id = %s', new.crash_id);
-        raise notice 'Updating crashes_unified record from CRIS update';
+            || format(' where public.crashes.crash_id = %s', new.crash_id);
+        raise notice 'Updating crashes record from CRIS update';
         execute (update_stmt) using new;
     else
         raise notice 'No changes to unified record needed';
@@ -47,7 +47,7 @@ begin
 end;
 $$;
 
-create trigger update_crashes_unified_from_crashes_cris_update
+create trigger update_crashes_from_crashes_cris_update
 after update on public.crashes_cris for each row
 execute procedure public.crashes_cris_update();
 
@@ -66,7 +66,7 @@ declare
     edit_record_jb jsonb;
     column_name text;
     updates_todo text [] := '{}';
-    update_stmt text := 'update public.units_unified set ';
+    update_stmt text := 'update public.units set ';
 begin
     -- get corresponding the VZ record as jsonb
     SELECT to_jsonb(units_edits) INTO edit_record_jb from public.units_edits where public.units_edits.id = new.id;
@@ -91,8 +91,8 @@ begin
         -- complete the update statement by joining all `set` clauses together
         update_stmt := update_stmt
             || array_to_string(updates_todo, ',')
-            || format(' where public.units_unified.id = %s', new.id);
-        raise notice 'Updating units_unified record from CRIS update';
+            || format(' where public.units.id = %s', new.id);
+        raise notice 'Updating units record from CRIS update';
         execute (update_stmt) using new;
     else
         raise notice 'No changes to unified record needed';
@@ -101,7 +101,7 @@ begin
 end;
 $$;
 
-create trigger update_units_unified_from_units_cris_update
+create trigger update_units_from_units_cris_update
 after update on public.units_cris for each row
 execute procedure public.units_cris_update();
 
@@ -120,7 +120,7 @@ declare
     edit_record_jb jsonb;
     column_name text;
     updates_todo text [] := '{}';
-    update_stmt text := 'update public.people_unified set ';
+    update_stmt text := 'update public.people set ';
 begin
     -- get corresponding the VZ record as jsonb
     SELECT to_jsonb(people_edits) INTO edit_record_jb from public.people_edits where public.people_edits.id = new.id;
@@ -145,8 +145,8 @@ begin
         -- complete the update statement by joining all `set` clauses together
         update_stmt := update_stmt
             || array_to_string(updates_todo, ',')
-            || format(' where public.people_unified.id = %s', new.id);
-        raise notice 'Updating people_unified record from CRIS update';
+            || format(' where public.people.id = %s', new.id);
+        raise notice 'Updating people record from CRIS update';
         execute (update_stmt) using new;
     else
         raise notice 'No changes to unified record needed';
@@ -155,7 +155,7 @@ begin
 end;
 $$;
 
-create trigger update_people_unified_from_people_cris_update
+create trigger update_people_from_people_cris_update
 after update on public.people_cris for each row
 execute procedure public.people_cris_update();
 

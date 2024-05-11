@@ -24,18 +24,18 @@ alter table public.people_edits add column created_at timestamptz not null defau
 alter table public.people_edits add column updated_at timestamptz not null default now();
 alter table public.people_edits add column created_by text not null default 'system';
 alter table public.people_edits add column updated_by text not null default 'system';
-alter table public.crashes_unified add column created_at timestamptz not null default now();
-alter table public.crashes_unified add column updated_at timestamptz not null default now();
-alter table public.crashes_unified add column created_by text not null default 'system';
-alter table public.crashes_unified add column updated_by text not null default 'system';
-alter table public.units_unified add column created_at timestamptz not null default now();
-alter table public.units_unified add column updated_at timestamptz not null default now();
-alter table public.units_unified add column created_by text not null default 'system';
-alter table public.units_unified add column updated_by text not null default 'system';
-alter table public.people_unified add column created_at timestamptz not null default now();
-alter table public.people_unified add column updated_at timestamptz not null default now();
-alter table public.people_unified add column created_by text not null default 'system';
-alter table public.people_unified add column updated_by text not null default 'system';
+alter table public.crashes add column created_at timestamptz not null default now();
+alter table public.crashes add column updated_at timestamptz not null default now();
+alter table public.crashes add column created_by text not null default 'system';
+alter table public.crashes add column updated_by text not null default 'system';
+alter table public.units add column created_at timestamptz not null default now();
+alter table public.units add column updated_at timestamptz not null default now();
+alter table public.units add column created_by text not null default 'system';
+alter table public.units add column updated_by text not null default 'system';
+alter table public.people add column created_at timestamptz not null default now();
+alter table public.people add column updated_at timestamptz not null default now();
+alter table public.people add column created_by text not null default 'system';
+alter table public.people add column updated_by text not null default 'system';
 
 create or replace function public.set_updated_at_timestamp()
 returns trigger
@@ -59,8 +59,8 @@ for each row
 execute procedure public.set_updated_at_timestamp();
 
 
-create trigger set_updated_at_timestamp_crashes_unified
-before update on public.crashes_unified
+create trigger set_updated_at_timestamp_crashes
+before update on public.crashes
 for each row
 execute procedure public.set_updated_at_timestamp();
 
@@ -77,8 +77,8 @@ for each row
 execute procedure public.set_updated_at_timestamp();
 
 
-create trigger set_updated_at_timestamp_units_unified
-before update on public.units_unified
+create trigger set_updated_at_timestamp_units
+before update on public.units
 for each row
 execute procedure public.set_updated_at_timestamp();
 
@@ -95,8 +95,8 @@ for each row
 execute procedure public.set_updated_at_timestamp();
 
 
-create trigger set_updated_at_timestamp_people_unified
-before update on public.people_unified
+create trigger set_updated_at_timestamp_people
+before update on public.people
 for each row
 execute procedure public.set_updated_at_timestamp();
 

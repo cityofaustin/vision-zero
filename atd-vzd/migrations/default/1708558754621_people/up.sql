@@ -65,7 +65,7 @@ create table public.people_edits (
     unit_id integer references public.units_cris (id) on update cascade on delete cascade
 );
 
-create table public.people_unified (
+create table public.people (
     id integer primary key,
     drvr_city_name text,
     drvr_drg_cat_1_id integer references lookups.substnc_cat_lkp (id) on update cascade on delete cascade,
@@ -96,6 +96,6 @@ create table public.people_unified (
     prsn_taken_by text,
     prsn_taken_to text,
     prsn_type_id integer references lookups.prsn_type_lkp (id) on update cascade on delete cascade,
-    unit_id integer not null references public.units_unified (id) on update cascade on delete cascade,
+    unit_id integer not null references public.units (id) on update cascade on delete cascade,
     years_of_life_lost integer generated always as (case when prsn_injry_sev_id = 4 then greatest(75 - prsn_age, 0) else 0 end) stored
 );
