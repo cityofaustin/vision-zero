@@ -2,19 +2,19 @@ table:
   name: movt_lkp
   schema: lookups
 array_relationships:
-  - name: units_edits
-    using:
-      foreign_key_constraint_on:
-        column: movement_id
-        table:
-          name: units_edits
-          schema: public
   - name: units
     using:
       foreign_key_constraint_on:
         column: movement_id
         table:
           name: units
+          schema: public
+  - name: units_edits
+    using:
+      foreign_key_constraint_on:
+        column: movement_id
+        table:
+          name: units_edits
           schema: public
 select_permissions:
   - role: editor

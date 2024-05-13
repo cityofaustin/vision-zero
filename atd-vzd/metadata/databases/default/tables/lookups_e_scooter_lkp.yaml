@@ -2,6 +2,13 @@ table:
   name: e_scooter_lkp
   schema: lookups
 array_relationships:
+  - name: units
+    using:
+      foreign_key_constraint_on:
+        column: e_scooter_id
+        table:
+          name: units
+          schema: public
   - name: units_cris
     using:
       foreign_key_constraint_on:
@@ -15,11 +22,4 @@ array_relationships:
         column: e_scooter_id
         table:
           name: units_edits
-          schema: public
-  - name: units
-    using:
-      foreign_key_constraint_on:
-        column: e_scooter_id
-        table:
-          name: units
           schema: public
