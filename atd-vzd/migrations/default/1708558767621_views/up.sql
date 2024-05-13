@@ -1,9 +1,10 @@
-drop view if exists crash_injury_counts cascade;
+drop view if exists crash_injury_metrics cascade;
 
-create or replace view crash_injury_counts as with people_injury_severities as (
+create or replace view crash_injury_metrics as with people_injury_severities as (
     select
         people.id,
         crashes.crash_id,
+        people.years_of_life_lost,
         people.est_comp_cost_crash_based,
         case
             when (people.prsn_injry_sev_id = 0) then 1
@@ -94,6 +95,9 @@ select
         when (sum(people_injury_severities.non_injry) > 0) then 5
         else 0
     end as crash_injry_sev_id,
+    coalesce(
+        sum(people_injury_severities.years_of_life_lost), 0
+    ) as years_of_life_lost,
     max(est_comp_cost_crash_based) as est_comp_cost_crash_based
 from
     public.crashes as crashes
@@ -150,17 +154,18 @@ select
     public.crashes.obj_struck_id,
     public.crashes.crash_speed_limit,
     public.crashes.council_district,
-    crash_injury_counts.nonincap_injry_count,
-    crash_injury_counts.poss_injry_count,
-    crash_injury_counts.sus_serious_injry_count,
-    crash_injury_counts.non_injry_count,
-    crash_injury_counts.vz_fatality_count,
-    crash_injury_counts.cris_fatality_count,
-    crash_injury_counts.law_enf_fatality_count,
-    crash_injury_counts.fatality_count,
-    crash_injury_counts.unkn_injry_count,
-    crash_injury_counts.est_comp_cost_crash_based,
-    crash_injury_counts.crash_injry_sev_id,
+    crash_injury_metrics.nonincap_injry_count,
+    crash_injury_metrics.poss_injry_count,
+    crash_injury_metrics.sus_serious_injry_count,
+    crash_injury_metrics.non_injry_count,
+    crash_injury_metrics.vz_fatality_count,
+    crash_injury_metrics.cris_fatality_count,
+    crash_injury_metrics.law_enf_fatality_count,
+    crash_injury_metrics.fatality_count,
+    crash_injury_metrics.unkn_injry_count,
+    crash_injury_metrics.est_comp_cost_crash_based,
+    crash_injury_metrics.crash_injry_sev_id,
+    crash_injury_metrics.years_of_life_lost,
     lookups.injry_sev_lkp.label as crash_injry_sev_desc,
     lookups.collsn_lkp.label as collsn_desc,
     geocode_status.is_manual_geocode,
@@ -173,8 +178,8 @@ select
 from
     public.crashes
 left join
-    crash_injury_counts
-    on public.crashes.crash_id = crash_injury_counts.crash_id
+    crash_injury_metrics
+    on public.crashes.crash_id = crash_injury_metrics.crash_id
 left join
     geocode_status
     on public.crashes.crash_id = geocode_status.crash_id
@@ -183,5 +188,5 @@ left join
     on public.crashes.fhe_collsn_id = lookups.collsn_lkp.id
 left join
     lookups.injry_sev_lkp
-    on lookups.injry_sev_lkp.id = crash_injury_counts.crash_injry_sev_id;
+    on lookups.injry_sev_lkp.id = crash_injury_metrics.crash_injry_sev_id;
 
