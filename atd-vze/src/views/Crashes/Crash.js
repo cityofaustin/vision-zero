@@ -33,7 +33,7 @@ import Page404 from "../Pages/Page404/Page404";
 
 import "./crash.scss";
 
-import { GET_CRASH, UPDATE_CRASH } from "../../queries/crashes";
+import { GET_CRASH, UPDATE_CRASH, NEW_GET_CRASH } from "../../queries/crashes";
 import { GET_PEOPLE } from "../../queries/people";
 import {
   GET_NOTES,
@@ -53,6 +53,13 @@ function Crash(props) {
     data: peopleData,
   } = useQuery(GET_PEOPLE, {
     variables: { crashId },
+  });
+  const {
+    loading: loadingNewData,
+    error: errorNewData,
+    data: newData,
+  } = useQuery(NEW_GET_CRASH, {
+    variables: { crash_id: crashId },
   });
   const primaryPersonYearsOfLifeLost =
     peopleData?.primary_person_years_of_life_lost?.aggregate?.sum
@@ -329,8 +336,8 @@ function Crash(props) {
           handleButtonClick={handleButtonClick}
           data={data}
         />
-        <Col md="6">
-          <CrashChangeLog data={data} />
+        <Col md="12">
+          <CrashChangeLog data={newData} />
         </Col>
       </Row>
     </div>

@@ -331,3 +331,25 @@ est_comp_cost
 est_comp_cost_crash_based
 est_econ_cost
 `;
+
+export const NEW_GET_CRASH = gql`
+  query CrashDetails($crash_id: Int!) {
+    crashes_by_pk(crash_id: $crash_id) {
+      crash_id
+      address_primary
+      address_secondary
+      crash_injury_metrics {
+        cris_fatality_count
+        sus_serious_injry_count
+        years_of_life_lost
+      }
+      change_log {
+        id
+        created_at
+        created_by
+        operation_type
+        record_json
+      }
+    }
+  }
+`;
