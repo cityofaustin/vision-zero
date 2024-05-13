@@ -1,7 +1,5 @@
-import React, { useMemo } from "react";
-
+import React, { useMemo, useState } from "react";
 import {
-  Badge,
   Button,
   Card,
   CardBody,
@@ -20,8 +18,8 @@ const KEYS_TO_IGNORE = ["updated_at", "updated_by", "position"];
 
 const getDiffArray = (old, new_) => {
   return Object.keys(new_).reduce((diffs, key) => {
-    if (new_[key] !== old[key] && KEYS_TO_IGNORE.indexOf(key) < 0) {
-      diffs.push({ field: key, old: old[key], new: new_[key] });
+    if (new_?.[key] !== old?.[key] && KEYS_TO_IGNORE.indexOf(key) < 0) {
+      diffs.push({ field: key, old: old?.[key], new: new_?.[key] });
     }
     return diffs;
   }, []);
@@ -39,10 +37,6 @@ const useChangeLogData = data =>
       // hold an array of key
       change.diffs = [];
       change.affected_fields = [];
-      if (change.operation_type === "INSERT") {
-        return change;
-      }
-
       change.diffs = getDiffArray(
         change.record_json.old,
         change.record_json.new
@@ -53,6 +47,8 @@ const useChangeLogData = data =>
   }, [data]);
 
 export default function CrashChangeLog({ data }) {
+  const [selectedChange, setSelectedChange] = useState(null);
+
   const changes = useChangeLogData(data);
   if (changes.length === 0) {
     return <p>No change history found</p>;
@@ -70,8 +66,11 @@ export default function CrashChangeLog({ data }) {
           </thead>
           <tbody>
             {changes.map(change => (
-              <tr>
-                <td>{change.record_type}</td>
+              <tr
+                onClick={() => setSelectedChange(change)}
+                style={{ cursor: "pointer" }}
+              >
+                <td className="font-weight-bold">{change.record_type}</td>
                 <td>
                   {change.operation_type === "INSERT"
                     ? "(record created)"
@@ -83,6 +82,51 @@ export default function CrashChangeLog({ data }) {
             ))}
           </tbody>
         </Table>
+        {selectedChange && (
+          <Modal
+            isOpen={!!selectedChange}
+            toggle={() => setSelectedChange(null)}
+            className="mw-100 mx-5"
+            fade={false}
+          >
+            <ModalHeader toggle={() => setSelectedChange(null)}>
+              Record history
+            </ModalHeader>
+            <ModalBody>
+              <Row>
+                <Col>
+                  <p>
+                    {" "}
+                    {`${selectedChange.record_type} edited by ${
+                      selectedChange.created_by
+                    } on ${formatDateTimeString(selectedChange.created_at)}`}
+                  </p>
+                </Col>
+              </Row>
+              <Table responsive striped hover>
+                <thead>
+                  <th>Field</th>
+                  <th>Previous value</th>
+                  <th>New value</th>
+                </thead>
+                <tbody>
+                  {selectedChange.diffs.map(diff => (
+                    <tr>
+                      <td>{diff.field}</td>
+                      <td>{String(diff.old)}</td>
+                      <td>{String(diff.new)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+            </ModalBody>
+            <ModalFooter>
+              <Button color="secondary" onClick={() => setSelectedChange(null)}>
+                Close
+              </Button>
+            </ModalFooter>
+          </Modal>
+        )}
       </CardBody>
     </Card>
   );
