@@ -19,7 +19,7 @@ update public.crashes_edits set
     updated_by = 'vz-user@austintexas.gov'
     where crash_id = 1;
 update public.units_edits set vin = 'hijklmno' where id = 1;
-update public.people_edits set drvr_city_name = 'austin edited', peh_fl = true where id = 1;
+update public.people_edits set drvr_city_name = 'austin edited', prsn_exp_homelessness = true where id = 1;
 
 -- try to use custom lookup value in CRIS schema
 -- this should fail due to people_cris_prsn_injry_sev_id_check

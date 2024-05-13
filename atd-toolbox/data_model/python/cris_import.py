@@ -74,6 +74,26 @@ mutations = {
     "charges": CHARGES_INSERT_MUTATION,
 }
 
+# list of fields to check to determine if a crash victim
+# was experiencing homelessness
+peh_fields = [
+    "drvr_street_nbr",
+    "drvr_street_pfx",
+    "drvr_street_name",
+    "drvr_street_sfx",
+    "drvr_apt_nbr",
+    "drvr_city_name",
+    "drvr_state_id",
+    "drvr_zip",
+]
+
+# remove when crash_sev_id != 4 (fatal)
+name_fields = [
+    "prsn_first_name",
+    "prsn_mid_name",
+    "prsn_last_name",
+]
+
 
 def load_data(endpoint):
     res = requests.get(endpoint)
@@ -239,6 +259,26 @@ def chunks(lst, n):
         yield lst[i : i + n]
 
 
+def set_peh_field(record):
+    """Determine if a person was experiencing homeless based on
+    reportin conventions used by law enforcement crash investigator"""
+    for field in peh_fields:
+        record_val = record[field]
+        for search_term in ["homeless", "unhoused", "transient"]:
+            if record_val and search_term in record_val.lower():
+                record["prsn_exp_homelessness"] = True
+                # no need to continue further
+                return
+
+
+def nullify_name_fields(records):
+    for record in records:
+        if record["prsn_injry_sev_id"] != "4":
+            for field in name_fields:
+                record[field] = None
+    return
+
+
 def main():
     overall_start_tme = time.time()
 
@@ -311,9 +351,14 @@ def main():
 
                     set_default_values(records, {"is_primary_person": False})
 
+                    pp_records = lower_case_keys(load_csv(p_person_file["path"]))
+
+                    for record in pp_records:
+                        set_peh_field(record)
+
                     pp_records = handle_empty_strings(
                         remove_unsupported_columns(
-                            lower_case_keys(load_csv(p_person_file["path"])),
+                            pp_records,
                             cris_columns,
                         )
                     )
@@ -321,6 +366,8 @@ def main():
                     set_default_values(pp_records, {"is_primary_person": True})
 
                     records = pp_records + records
+
+                    nullify_name_fields(records)
 
                     combine_date_time_fields(
                         records,
@@ -332,7 +379,8 @@ def main():
                 if table_name == "charges":
                     # set created_by audit field only
                     set_default_values(
-                        records, {"created_by": "cris", "cris_schema_version": schema_year}
+                        records,
+                        {"created_by": "cris", "cris_schema_version": schema_year},
                     )
                     delete_charges_batch_size = 500
                     crash_ids = list(
@@ -362,7 +410,6 @@ def main():
                 upsert_mutation = make_upsert_mutation(table_name, cris_columns)
 
                 for chunk in chunks(records, UPLOAD_BATCH_SIZE):
-
                     print(f"uploading {len(chunk)} {table_name}...")
                     start_time = time.time()
                     make_hasura_request(
