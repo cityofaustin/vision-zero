@@ -25,7 +25,7 @@ array_relationships:
         table:
           name: change_log_units
           schema: public
-  - name: peoples
+  - name: people
     using:
       foreign_key_constraint_on:
         column: unit_id

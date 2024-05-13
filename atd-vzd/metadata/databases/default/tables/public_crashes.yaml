@@ -18,7 +18,7 @@ object_relationships:
     using:
       foreign_key_constraint_on: crash_id
 array_relationships:
-  - name: change_log_crashess
+  - name: change_log_crashes
     using:
       foreign_key_constraint_on:
         column: record_id
