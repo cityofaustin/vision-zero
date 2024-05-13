@@ -37,7 +37,7 @@ array_relationships:
         table:
           name: units_edits
           schema: public
-  - name: unitss
+  - name: units
     using:
       foreign_key_constraint_on:
         column: veh_damage_severity1_id
