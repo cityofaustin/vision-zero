@@ -343,11 +343,14 @@ export const NEW_GET_CRASH = gql`
         sus_serious_injry_count
         years_of_life_lost
       }
-      change_log {
+      change_logs(order_by: { created_at: desc}) {
         id
+        crash_id
         created_at
         created_by
         operation_type
+        record_id
+        record_type
         record_json
       }
     }

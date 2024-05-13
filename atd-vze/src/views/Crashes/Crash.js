@@ -337,7 +337,7 @@ function Crash(props) {
           data={data}
         />
         <Col md="12">
-          <CrashChangeLog data={newData} />
+          <CrashChangeLog data={newData?.crashes_by_pk?.change_logs} />
         </Col>
       </Row>
     </div>
