@@ -33,7 +33,7 @@ import Page404 from "../Pages/Page404/Page404";
 
 import "./crash.scss";
 
-import { GET_CRASH, UPDATE_CRASH } from "../../queries/crashes";
+import { GET_CRASH_OLD, UPDATE_CRASH, GET_CRASH } from "../../queries/crashes";
 import { GET_PEOPLE } from "../../queries/people";
 import {
   GET_NOTES,
@@ -44,7 +44,15 @@ import {
 
 function Crash(props) {
   const crashId = props.match.params.id;
-  const { loading, error, data, refetch } = useQuery(GET_CRASH, {
+  const { loading, error, data, refetch } = useQuery(GET_CRASH_OLD, {
+    variables: { crashId },
+  });
+  const {
+    loading: crashLoading,
+    error: crashError,
+    data: crashData,
+    refetch: crashRefetch,
+  } = useQuery(GET_CRASH, {
     variables: { crashId },
   });
   const {
@@ -149,18 +157,21 @@ function Crash(props) {
   };
 
   const {
-    atd_fatality_count: deathCount,
-    sus_serious_injry_cnt: seriousInjuryCount,
     latitude_primary: latitude,
     longitude_primary: longitude,
-    address_confirmed_primary: primaryAddress,
-    address_confirmed_secondary: secondaryAddress,
     cr3_stored_flag: cr3StoredFlag,
     temp_record: tempRecord,
     geocode_method: geocodeMethod,
     cr3_file_metadata: cr3FileMetadata,
     investigator_narrative_ocr: investigatorNarrative,
   } = !!data?.atd_txdot_crashes[0] ? data?.atd_txdot_crashes[0] : {};
+
+  const {
+    crash_injury_metrics: { cris_fatality_count: deathCount },
+    crash_injury_metrics: { sus_serious_injry_count: seriousInjuryCount },
+    address_primary: primaryAddress,
+    address_secondary: secondaryAddress,
+  } = crashData?.crashes_by_pk ? crashData?.crashes_by_pk : {};
 
   const mapGeocoderAddress = createGeocoderAddressString(data);
 

@@ -1,6 +1,6 @@
 import { gql } from "apollo-boost";
 
-export const GET_CRASH = gql`
+export const GET_CRASH_OLD = gql`
   query FindCrash($crashId: Int) {
     atd_txdot_crashes(where: { crash_id: { _eq: $crashId } }) {
       active_school_zone_fl
@@ -114,6 +114,21 @@ export const GET_CRASH = gql`
       record_json
       update_timestamp
       updated_by
+    }
+  }
+`;
+
+export const GET_CRASH = gql`
+  query CrashDetails($crashId: Int!) {
+    crashes_by_pk(crash_id: $crashId) {
+      crash_id
+      address_primary
+      address_secondary
+      crash_injury_metrics {
+        cris_fatality_count
+        sus_serious_injry_count
+        years_of_life_lost
+      }
     }
   }
 `;
