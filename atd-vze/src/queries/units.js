@@ -1,6 +1,30 @@
 import { gql } from "apollo-boost";
 
 export const GET_UNITS = gql`
+  query FindUnits($crashId: Int!) {
+    units(where: { crash_id: { _eq: $crashId } }) {
+      unit_nbr
+      veh_mod_year
+      unit_desc_lkp {
+        label
+      }
+      veh_body_styl_lkp {
+        label
+      }
+      veh_make_lkp {
+        label
+      }
+      veh_mod_lkp {
+        label
+      }
+      trvl_dir_lkp {
+        label
+      }
+    }
+  }
+`;
+
+export const GET_UNITS_OLD = gql`
   query FindUnits($crashId: Int) {
     atd_txdot_units(where: { crash_id: { _eq: $crashId } }) {
       unit_desc_id
