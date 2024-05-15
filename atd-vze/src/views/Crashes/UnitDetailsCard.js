@@ -16,15 +16,6 @@ import { unitDataMap } from "./unitDataMap";
 import { GET_UNIT_LOOKUPS } from "../../queries/lookups";
 import { GET_UNITS, UPDATE_UNIT } from "../../queries/units";
 
-// // Quickfix to prioritize the main cardinal directions.
-// if (fieldConfig.format === "select") {
-//   selectOptions.sort((a, b) => (a[`${prefix}_desc`].length > 5 ? 1 : -1));
-
-//   defaultValue = selectOptions.find(opt => opt[`${prefix}_desc`] === value)[
-//     `${prefix}_id`
-//   ];
-// }
-
 const UnitDetailsCard = ({ isExpanded, toggleAccordion, ...props }) => {
   const crashId = props.match.params.id;
 
@@ -45,6 +36,8 @@ const UnitDetailsCard = ({ isExpanded, toggleAccordion, ...props }) => {
   if (loading) return "Loading...";
   if (error) return `Error! ${error.message}`;
 
+  console.log(data);
+
   return loading ? (
     <span>Loading...</span>
   ) : (
@@ -60,9 +53,7 @@ const UnitDetailsCard = ({ isExpanded, toggleAccordion, ...props }) => {
         >
           <h5 className="m-0 p-0">
             <i className="fa fa-car" /> Units
-            <Badge color="secondary float-right">
-              {data.atd_txdot_units.length}
-            </Badge>
+            <Badge color="secondary float-right">{data.units.length}</Badge>
           </h5>
         </Button>
       </CardHeader>
@@ -70,9 +61,9 @@ const UnitDetailsCard = ({ isExpanded, toggleAccordion, ...props }) => {
         <CardBody>
           <RelatedRecordsTable
             fieldConfig={unitDataMap[0]}
-            data={data.atd_txdot_units}
+            data={data.units}
             sortField={"unit_nbr"}
-            tableName={"atd_txdot_units"}
+            tableName={"units"}
             keyField={"unit_nbr"}
             lookupOptions={lookupSelectOptions}
             mutation={unitMutation}
