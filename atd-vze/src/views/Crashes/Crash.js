@@ -83,7 +83,8 @@ function Crash(props) {
   const shouldShowFatalityRecommendations =
     (isAdmin(roles) || isItSupervisor(roles)) && isCrashFatal;
 
-  if (loading || peopleLoading) return "Loading...";
+  if (loading || crashLoading || peopleLoading) return "Loading...";
+  if (crashError) return `Error! ${crashError.message}`;
   if (error) return `Error! ${error.message}`;
   if (peopleError) return `Error! ${peopleError.message}`;
 
