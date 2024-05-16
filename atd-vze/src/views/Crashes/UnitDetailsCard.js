@@ -64,7 +64,7 @@ const UnitDetailsCard = ({ isExpanded, toggleAccordion, ...props }) => {
             data={data.units}
             sortField={"unit_nbr"}
             tableName={"units"}
-            keyField={"unit_nbr"}
+            keyField={"id"}
             lookupOptions={lookupSelectOptions}
             mutation={unitMutation}
             refetch={refetch}
