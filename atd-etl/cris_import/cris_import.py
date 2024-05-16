@@ -763,21 +763,6 @@ def align_records(map_state):
                         print("Changed column count: " + str(len(changed_columns['changed_columns'])))
                         print("Changed Columns:" + str(changed_columns["changed_columns"]))
                         
-                        try:
-                            # this seemingly violates the principal of treating each record source equally, however, this is 
-                            # really only a reflection that we create incomplete temporary records consisting only of a crash record
-                            # and not holding place entities for units, persons, etc.
-                            if table == "crash" and util.has_existing_temporary_record(pg, source["case_id"]):
-                                print("\b🛎: " + str(source["crash_id"]) + " has existing temporary record")
-                                time.sleep(5)
-                                util.remove_existing_temporary_record(pg, source["case_id"])
-                        except:
-                            # Trap the case of a missing case_id key error in the RealDictRow object.
-                            # A RealDictRow, returned by the psycopg2 cursor, is a dictionary-like object,
-                            # but lacks has_key() and other methods.
-                            print("Skipping checking on existing temporary record for " + str(source["crash_id"]))
-                            pass
-                        
                         # build an comma delimited list of changed columns
                         all_changed_columns = ", ".join(important_changed_columns["changed_columns"] + changed_columns["changed_columns"])
 

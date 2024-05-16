@@ -168,7 +168,7 @@ function Crash(props) {
     data &&
     data?.atd_txdot_crashes.length > 0 &&
     data?.atd_txdot_crashes[0]["location_id"];
-  const notEditingCoords = !isEditingCoords && latitude && longitude;
+  const hasCoordinates = !!latitude && !!longitude;
 
   return !data?.atd_txdot_crashes?.length ? (
     <Page404 />
@@ -237,7 +237,7 @@ function Crash(props) {
                   )
                   <br />
                   Geocode Provider:{" "}
-                  {latitude && longitude
+                  {hasCoordinates
                     ? geocodeMethod.name
                     : "No Primary Coordinates"}
                 </Col>
@@ -254,14 +254,17 @@ function Crash(props) {
                 </Col>
               </Row>
             </CardHeader>
-            <CardBody style={{ minHeight: "350px" }}>
-              {(!latitude || !longitude) && (
+            <CardBody
+              className="d-flex flex-column"
+              style={{ minHeight: "400px" }}
+            >
+              {!hasCoordinates && (
                 <Alert color="danger">
                   Crash record is missing latitude and longitude values required
                   for map display.
                 </Alert>
               )}
-              {notEditingCoords ? (
+              {!isEditingCoords ? (
                 <CrashMap data={data.atd_txdot_crashes[0]} />
               ) : (
                 <CrashEditCoordsMap

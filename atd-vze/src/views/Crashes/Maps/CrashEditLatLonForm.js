@@ -21,7 +21,7 @@ export const CrashEditLatLonForm = ({
           id="qa-latitude"
           name="qa-latitude"
           placeholder=""
-          value={truncateCoordinate(latitude)}
+          value={!!latitude ? truncateCoordinate(latitude) : "None"}
           readOnly
         />
       </Col>
@@ -36,7 +36,7 @@ export const CrashEditLatLonForm = ({
           id="qa-longitude"
           name="qa-longitude"
           placeholder=""
-          value={truncateCoordinate(longitude)}
+          value={!!longitude ? truncateCoordinate(longitude) : "None"}
           readOnly
         />
       </Col>

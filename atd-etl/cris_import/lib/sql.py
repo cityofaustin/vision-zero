@@ -226,33 +226,6 @@ def is_change_existing(pg, record_type, record_id):
         return False
 
 
-def has_existing_temporary_record(pg, case_id):
-    sql = f"""
-    select count(*) as exists
-    from atd_txdot_crashes
-    where crash_id < 10000
-    and case_id = '{case_id}'
-    """
-    cursor = pg.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-    cursor.execute(sql)
-    change_request_exists = cursor.fetchone()
-    if change_request_exists["exists"] > 0:
-        return True
-    else:
-        return False
-
-
-def remove_existing_temporary_record(pg, case_id):
-    sql = f"""
-    delete from atd_txdot_crashes
-    where crash_id < 10000
-    and case_id = '{case_id}'
-    """
-    cursor = pg.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-    cursor.execute(sql)
-    return True
-
-
 def try_statement(pg, output_map, table, public_key_sql, sql, dry_run):
     if dry_run:
         print("Dry run; skipping")
