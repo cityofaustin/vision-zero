@@ -36,8 +36,6 @@ const UnitDetailsCard = ({ isExpanded, toggleAccordion, ...props }) => {
   if (loading) return "Loading...";
   if (error) return `Error! ${error.message}`;
 
-  console.log(data);
-
   return loading ? (
     <span>Loading...</span>
   ) : (

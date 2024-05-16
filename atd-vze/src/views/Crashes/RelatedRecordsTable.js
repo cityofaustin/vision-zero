@@ -154,9 +154,6 @@ const RelatedRecordsTable = ({
                         const isEditing =
                           editField === field && row === editRow;
 
-                        const fieldLookupPrefix =
-                          fieldConfig.fields[field].lookupPrefix;
-
                         const updateFieldKey = fieldConfig.fields[field]
                           .updateFieldKey
                           ? fieldConfig.fields[field].updateFieldKey
@@ -200,31 +197,22 @@ const RelatedRecordsTable = ({
                                     }
                                     defaultValue={
                                       // Check for null values and display as blank
-                                      row[field] &&
-                                      row[field][`${fieldLookupPrefix}_id`] !==
-                                        null
-                                        ? row[field][`${fieldLookupPrefix}_id`]
+                                      row[field] && row[field][`id`] !== null
+                                        ? row[field][`id`]
                                         : ""
                                     }
                                     type="select"
                                   >
-                                    {/* Show a NO DATA option only when formatValue is displayed. */}
-                                    {formatValue(row, field) === "NO DATA" && (
-                                      <option value={null}>NO DATA</option>
-                                    )}
+                                    <option value={""}>NO DATA</option>
                                     {lookupOptions[
                                       fieldConfig.fields[field].lookupOptions
                                     ].map(option => {
                                       return (
                                         <option
-                                          value={
-                                            option[`${fieldLookupPrefix}_id`]
-                                          }
-                                          key={
-                                            option[`${fieldLookupPrefix}_id`]
-                                          }
+                                          value={option[`id`]}
+                                          key={option[`id`]}
                                         >
-                                          {option[`${fieldLookupPrefix}_desc`]}
+                                          {option[`label`]}
                                         </option>
                                       );
                                     })}
@@ -271,7 +259,8 @@ const RelatedRecordsTable = ({
                             )}
 
                             {!isEditing &&
-                              (fieldConfig.fields[field].badge ? (
+                              (fieldConfig.fields[field].badge &&
+                              formatValue(row, field) !== "NO DATA" ? (
                                 <Badge
                                   color={fieldConfig.fields[field].badgeColor(
                                     row
