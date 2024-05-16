@@ -204,7 +204,7 @@ function Crash(props) {
         </Col>
         <Col xs="12" sm="6" md="4">
           <Widget02
-            header={`${yearsOfLifeLost === null ? "--" : yearsOfLifeLost}`}
+            header={`${yearsOfLifeLost || 0}`}
             mainText="Years of Life Lost"
             icon="fa fa-hourglass-end"
             color="info"
