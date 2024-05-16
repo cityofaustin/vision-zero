@@ -3,6 +3,7 @@ import { gql } from "apollo-boost";
 export const GET_UNITS = gql`
   query FindUnits($crashId: Int!) {
     units(where: { crash_id: { _eq: $crashId } }) {
+      id
       unit_nbr
       veh_mod_year
       unit_desc_lkp {
@@ -18,6 +19,12 @@ export const GET_UNITS = gql`
         label
       }
       trvl_dir_lkp {
+        label
+      }
+      movt_lkp {
+        label
+      }
+      contrib_factr_lkp {
         label
       }
     }
@@ -63,7 +70,7 @@ export const GET_UNITS_OLD = gql`
   }
 `;
 
-export const UPDATE_UNIT = gql`
+export const UPDATE_UNIT_OLD = gql`
   mutation UpdateUnits(
     $crashId: Int
     $unitId: Int
@@ -85,6 +92,25 @@ export const UPDATE_UNIT = gql`
         death_cnt
         sus_serious_injry_cnt
         travel_direction
+      }
+    }
+  }
+`;
+
+export const UPDATE_UNIT = gql`
+  mutation UpdateUnits(
+    $crashId: Int!
+    $unitId: Int!
+    $changes: units_edits_set_input
+  ) {
+    update_units_edits_by_pk(pk_columns: { id: $unitId }, _set: $changes) {
+      affected_rows
+      returning {
+        crash_id
+        id
+        unit_nbr
+        movement_id
+        veh_trvl_dir_id
       }
     }
   }
