@@ -151,11 +151,11 @@ function Crash(props) {
   } = !!data?.atd_txdot_crashes[0] ? data?.atd_txdot_crashes[0] : {};
 
   const {
-    crash_injury_metrics: { vz_fatality_count: deathCount },
-    crash_injury_metrics: { sus_serious_injry_count: seriousInjuryCount },
+    crash_injury_metrics_view: { vz_fatality_count: deathCount },
+    crash_injury_metrics_view: { sus_serious_injry_count: seriousInjuryCount },
     address_primary: primaryAddress,
     address_secondary: secondaryAddress,
-    crash_injury_metrics: { years_of_life_lost: yearsOfLifeLost },
+    crash_injury_metrics_view: { years_of_life_lost: yearsOfLifeLost },
   } = crashData?.crashes_by_pk ? crashData?.crashes_by_pk : {};
 
   const mapGeocoderAddress = createGeocoderAddressString(data);
