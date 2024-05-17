@@ -124,7 +124,7 @@ export const GET_CRASH = gql`
       crash_id
       address_primary
       address_secondary
-      crash_injury_metrics {
+      crash_injury_metrics_view {
         vz_fatality_count
         sus_serious_injry_count
         years_of_life_lost
