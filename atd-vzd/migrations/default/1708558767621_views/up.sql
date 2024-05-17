@@ -1,8 +1,9 @@
-drop view if exists crash_injury_metrics cascade;
+drop view if exists person_injury_metrics_view cascade;
 
-create or replace view crash_injury_metrics as with people_injury_severities as (
+create or replace view person_injury_metrics_view as (
     select
         people.id,
+        units.id as unit_id,
         crashes.crash_id,
         people.years_of_life_lost,
         people.est_comp_cost_crash_based,
@@ -63,52 +64,102 @@ create or replace view crash_injury_metrics as with people_injury_severities as 
     left join
         public.crashes as crashes
         on units.crash_id = crashes.crash_id
-)
+);
 
-select
-    crashes.crash_id,
-    coalesce(sum(people_injury_severities.unkn_injry), 0) as unkn_injry_count,
-    coalesce(sum(
-        people_injury_severities.nonincap_injry
-    ), 0) as nonincap_injry_count,
-    coalesce(sum(people_injury_severities.poss_injry), 0) as poss_injry_count,
-    coalesce(sum(people_injury_severities.non_injry), 0) as non_injry_count,
-    coalesce(
-        sum(people_injury_severities.sus_serious_injry), 0
-    ) as sus_serious_injry_count,
-    coalesce(sum(people_injury_severities.fatal_injury), 0) as fatality_count,
-    coalesce(
-        sum(people_injury_severities.vz_fatal_injury), 0
-    ) as vz_fatality_count,
-    coalesce(sum(
-        people_injury_severities.law_enf_fatal_injury
-    ), 0) as law_enf_fatality_count,
-    coalesce(
-        sum(people_injury_severities.cris_fatal_injury), 0
-    ) as cris_fatality_count,
-    case
-        when (sum(people_injury_severities.fatal_injury) > 0) then 4
-        when (sum(people_injury_severities.nonincap_injry) > 0) then 1
-        when (sum(people_injury_severities.sus_serious_injry) > 0) then 2
-        when (sum(people_injury_severities.poss_injry) > 0) then 3
-        when (sum(people_injury_severities.unkn_injry) > 0) then 0
-        when (sum(people_injury_severities.non_injry) > 0) then 5
-        else 0
-    end as crash_injry_sev_id,
-    coalesce(
-        sum(people_injury_severities.years_of_life_lost), 0
-    ) as years_of_life_lost,
-    max(est_comp_cost_crash_based) as est_comp_cost_crash_based
-from
-    public.crashes as crashes
-left join
-    people_injury_severities
-    on crashes.crash_id = people_injury_severities.crash_id
-group by
-    crashes.crash_id;
+create or replace view unit_injury_metrics_view as
+(
+    select
+        units.id,
+        coalesce(
+            sum(person_injury_metrics_view.unkn_injry), 0
+        ) as unkn_injry_count,
+        coalesce(sum(
+            person_injury_metrics_view.nonincap_injry
+        ), 0) as nonincap_injry_count,
+        coalesce(
+            sum(person_injury_metrics_view.poss_injry), 0
+        ) as poss_injry_count,
+        coalesce(sum(person_injury_metrics_view.non_injry), 0) as non_injry_count,
+        coalesce(
+            sum(person_injury_metrics_view.sus_serious_injry), 0
+        ) as sus_serious_injry_count,
+        coalesce(
+            sum(person_injury_metrics_view.fatal_injury), 0
+        ) as fatality_count,
+        coalesce(
+            sum(person_injury_metrics_view.vz_fatal_injury), 0
+        ) as vz_fatality_count,
+        coalesce(sum(
+            person_injury_metrics_view.law_enf_fatal_injury
+        ), 0) as law_enf_fatality_count,
+        coalesce(
+            sum(person_injury_metrics_view.cris_fatal_injury), 0
+        ) as cris_fatality_count,
+        coalesce(
+            sum(person_injury_metrics_view.years_of_life_lost), 0
+        ) as years_of_life_lost
+    from
+        public.units
+    left join
+        person_injury_metrics_view
+        on units.id = person_injury_metrics_view.unit_id
+    group by
+        units.id
+);
+
+create or replace view crash_injury_metrics_view as
+(
+    select
+        crashes.crash_id,
+        coalesce(
+            sum(person_injury_metrics_view.unkn_injry), 0
+        ) as unkn_injry_count,
+        coalesce(sum(
+            person_injury_metrics_view.nonincap_injry
+        ), 0) as nonincap_injry_count,
+        coalesce(
+            sum(person_injury_metrics_view.poss_injry), 0
+        ) as poss_injry_count,
+        coalesce(sum(person_injury_metrics_view.non_injry), 0) as non_injry_count,
+        coalesce(
+            sum(person_injury_metrics_view.sus_serious_injry), 0
+        ) as sus_serious_injry_count,
+        coalesce(
+            sum(person_injury_metrics_view.fatal_injury), 0
+        ) as fatality_count,
+        coalesce(
+            sum(person_injury_metrics_view.vz_fatal_injury), 0
+        ) as vz_fatality_count,
+        coalesce(sum(
+            person_injury_metrics_view.law_enf_fatal_injury
+        ), 0) as law_enf_fatality_count,
+        coalesce(
+            sum(person_injury_metrics_view.cris_fatal_injury), 0
+        ) as cris_fatality_count,
+        case
+            when (sum(person_injury_metrics_view.fatal_injury) > 0) then 4
+            when (sum(person_injury_metrics_view.nonincap_injry) > 0) then 1
+            when (sum(person_injury_metrics_view.sus_serious_injry) > 0) then 2
+            when (sum(person_injury_metrics_view.poss_injry) > 0) then 3
+            when (sum(person_injury_metrics_view.unkn_injry) > 0) then 0
+            when (sum(person_injury_metrics_view.non_injry) > 0) then 5
+            else 0
+        end as crash_injry_sev_id,
+        coalesce(
+            sum(person_injury_metrics_view.years_of_life_lost), 0
+        ) as years_of_life_lost,
+        max(est_comp_cost_crash_based) as est_comp_cost_crash_based
+    from
+        public.crashes as crashes
+    left join
+        person_injury_metrics_view
+        on crashes.crash_id = person_injury_metrics_view.crash_id
+    group by
+        crashes.crash_id
+);
 
 
-create or replace view crashes_list as with geocode_status as (
+create or replace view crashes_list_view as with geocode_status as (
     select
         cris.crash_id,
         coalesce(
@@ -154,18 +205,18 @@ select
     public.crashes.obj_struck_id,
     public.crashes.crash_speed_limit,
     public.crashes.council_district,
-    crash_injury_metrics.nonincap_injry_count,
-    crash_injury_metrics.poss_injry_count,
-    crash_injury_metrics.sus_serious_injry_count,
-    crash_injury_metrics.non_injry_count,
-    crash_injury_metrics.vz_fatality_count,
-    crash_injury_metrics.cris_fatality_count,
-    crash_injury_metrics.law_enf_fatality_count,
-    crash_injury_metrics.fatality_count,
-    crash_injury_metrics.unkn_injry_count,
-    crash_injury_metrics.est_comp_cost_crash_based,
-    crash_injury_metrics.crash_injry_sev_id,
-    crash_injury_metrics.years_of_life_lost,
+    crash_injury_metrics_view.nonincap_injry_count,
+    crash_injury_metrics_view.poss_injry_count,
+    crash_injury_metrics_view.sus_serious_injry_count,
+    crash_injury_metrics_view.non_injry_count,
+    crash_injury_metrics_view.vz_fatality_count,
+    crash_injury_metrics_view.cris_fatality_count,
+    crash_injury_metrics_view.law_enf_fatality_count,
+    crash_injury_metrics_view.fatality_count,
+    crash_injury_metrics_view.unkn_injry_count,
+    crash_injury_metrics_view.est_comp_cost_crash_based,
+    crash_injury_metrics_view.crash_injry_sev_id,
+    crash_injury_metrics_view.years_of_life_lost,
     lookups.injry_sev_lkp.label as crash_injry_sev_desc,
     lookups.collsn_lkp.label as collsn_desc,
     geocode_status.is_manual_geocode,
@@ -178,8 +229,8 @@ select
 from
     public.crashes
 left join
-    crash_injury_metrics
-    on public.crashes.crash_id = crash_injury_metrics.crash_id
+    crash_injury_metrics_view
+    on public.crashes.crash_id = crash_injury_metrics_view.crash_id
 left join
     geocode_status
     on public.crashes.crash_id = geocode_status.crash_id
@@ -188,5 +239,5 @@ left join
     on public.crashes.fhe_collsn_id = lookups.collsn_lkp.id
 left join
     lookups.injry_sev_lkp
-    on lookups.injry_sev_lkp.id = crash_injury_metrics.crash_injry_sev_id;
+    on lookups.injry_sev_lkp.id = crash_injury_metrics_view.crash_injry_sev_id;
 
