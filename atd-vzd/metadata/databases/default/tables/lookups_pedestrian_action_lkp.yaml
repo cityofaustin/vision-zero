@@ -2,6 +2,13 @@ table:
   name: pedestrian_action_lkp
   schema: lookups
 array_relationships:
+  - name: units
+    using:
+      foreign_key_constraint_on:
+        column: pedestrian_action_id
+        table:
+          name: units
+          schema: public
   - name: units_cris
     using:
       foreign_key_constraint_on:
@@ -15,11 +22,4 @@ array_relationships:
         column: pedestrian_action_id
         table:
           name: units_edits
-          schema: public
-  - name: unitss
-    using:
-      foreign_key_constraint_on:
-        column: pedestrian_action_id
-        table:
-          name: units
           schema: public

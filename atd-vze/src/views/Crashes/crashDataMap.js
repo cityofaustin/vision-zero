@@ -125,7 +125,7 @@ export const createCrashDataMap = isTempRecord => {
           lookupOptions: "atd_txdot__injry_sev_lkp",
           lookupPrefix: "injry_sev",
         },
-        atd_fatality_count: {
+        vz_fatality_count: {
           label: "ATD Fatality Count",
           editable: true,
           uiType: "text",

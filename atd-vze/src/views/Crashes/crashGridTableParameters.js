@@ -34,16 +34,16 @@ export const crashGridTableColumns = {
     label_table: "Secondary Address",
     type: "String",
   },
-  sus_serious_injry_cnt: {
+  sus_serious_injry_count: {
     searchable: false,
     sortable: true,
     label_table: "Suspected Serious Injury Count",
     type: "Int",
   },
-  atd_fatality_cnt: {
+  vz_fatality_count: {
     searchable: false,
     sortable: true,
-    label_table: "ATD Death Count",
+    label_table: "VZ Death Count",
     type: "Date",
   },
   est_comp_cost_crash_based: {
@@ -65,11 +65,11 @@ export const crashGridTableColumns = {
     type: "String",
     hidden: true,
   },
-  "geocode_source": {
+  "is_manual_geocode": {
     searchable: false,
     sortable: true,
-    label_table: "Geocode Provider",
-    type: "String",
+    label_table: "Manual geocode",
+    type: "Boolean",
   },
 };
 
@@ -134,12 +134,12 @@ export const crashGridTableAdvancedFilters = {
     filters: [
       {
         id: "dni_atd_deaths",
-        label: "ATD Fatality Crashes",
+        label: "VZ Fatality Crashes",
         filter: {
           where: [
             {
               or: {
-                atd_fatality_cnt: "_gt: 0",
+                vz_fatality_count: "_gt: 0",
               },
             },
           ],
@@ -152,7 +152,7 @@ export const crashGridTableAdvancedFilters = {
           where: [
             {
               or: {
-                cris_fatality_cnt: "_gt: 0",
+                cris_fatality_count: "_gt: 0",
               },
             },
           ],
@@ -160,12 +160,12 @@ export const crashGridTableAdvancedFilters = {
       },
       {
         id: "dni_apd_deaths",
-        label: "APD Fatality Crashes",
+        label: "Law Enforcement Fatality Crashes",
         filter: {
           where: [
             {
               or: {
-                apd_fatality_cnt: "_gt: 0",
+                law_enf_fatality_count: "_gt: 0",
               },
             },
           ],
@@ -178,7 +178,7 @@ export const crashGridTableAdvancedFilters = {
           where: [
             {
               or: {
-                sus_serious_injry_cnt: "_gt: 0",
+                sus_serious_injry_count: "_gt: 0",
               },
             },
           ],
@@ -191,7 +191,7 @@ export const crashGridTableAdvancedFilters = {
           where: [
             {
               or: {
-                nonincap_injry_cnt: "_gt: 0",
+                nonincap_injry_count: "_gt: 0",
               },
             },
           ],
@@ -209,7 +209,7 @@ export const crashGridTableAdvancedFilters = {
         filter: {
           where: [
             {
-                geocode_source: '_eq: "manual_qa"',
+                is_manual_geocode: "_eq: true",
             },
           ],
         },
@@ -386,7 +386,7 @@ export const crashGridTableAdvancedFilters = {
         filter: {
           where: [
             {
-              private_dr_fl: '_neq: "Y"',
+              private_dr_fl: '_neq: true',
             },
           ],
         },
