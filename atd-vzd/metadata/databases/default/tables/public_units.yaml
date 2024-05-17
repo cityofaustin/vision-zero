@@ -17,6 +17,15 @@ object_relationships:
   - name: unit_desc_lkp
     using:
       foreign_key_constraint_on: unit_desc_id
+  - name: unit_injury_metrics_view
+    using:
+      manual_configuration:
+        column_mapping:
+          id: id
+        insertion_order: null
+        remote_table:
+          name: unit_injury_metrics_view
+          schema: public
   - name: veh_body_styl_lkp
     using:
       foreign_key_constraint_on: veh_body_styl_id
