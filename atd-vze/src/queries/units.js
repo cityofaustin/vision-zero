@@ -27,6 +27,10 @@ export const GET_UNITS = gql`
       contrib_factr_lkp {
         label
       }
+      unit_injury_metrics_view {
+        vz_fatality_count
+        sus_serious_injry_count
+      }
     }
   }
 `;
