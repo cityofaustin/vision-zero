@@ -6,8 +6,7 @@ create index on public.units_cris (crash_id, unit_nbr); -- people -> unit_id tri
 create index on public.units (crash_id);
 create index on public.people (unit_id);
 create index on public.people (prsn_injry_sev_id);
+create index on public.crashes (location_id);
+create index on public.crashes (crash_date);
 -- more todo
 -- address fields
--- crash location_id
--- crash date
--- X - tested but no improvement: crash_edits: longitude and latitude (for qa status)
