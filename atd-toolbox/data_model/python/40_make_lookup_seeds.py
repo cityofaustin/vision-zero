@@ -41,10 +41,15 @@ unit_desc_lkp_custom_values = """alter table lookups.unit_desc_lkp add constrain
 insert into lookups.unit_desc_lkp (id, label, source) values (177, 'MICROMOBILITY DEVICE', 'vz');
 alter table public.units_cris add constraint units_cris_unit_desc_id_check check (unit_desc_id < 177);
 """
+
 veh_body_styl_lkp_custom_values = """alter table lookups.veh_body_styl_lkp add constraint veh_body_styl_lkp_owner_check check ((id < 177 and source = 'cris') or (id >= 177 and source = 'vz'));
 insert into lookups.veh_body_styl_lkp (id, label, source) values (177, 'E-SCOOTER', 'vz');
 alter table public.units_cris add constraint units_cris_veh_body_styl_id_check check (veh_body_styl_id < 177);
 """
+
+movt_lkp_custom_values = (
+    """insert into lookups.movt_lkp (select *, 'vz' as source from atd_txdot__movt_lkp);"""
+)
 
 
 def main():
@@ -67,6 +72,8 @@ def main():
     insert_stmts.append(unit_desc_lkp_custom_values)
     # add custom veh_body_styl_lkp values and constraint
     insert_stmts.append(veh_body_styl_lkp_custom_values)
+    # add custom movement lookup table values
+    insert_stmts.append(movt_lkp_custom_values)
     sql = "\n".join(insert_stmts)
     migration_path = make_migration_dir("lookup_table_seeds")
     save_file(f"{migration_path}/up.sql", sql)
