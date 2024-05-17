@@ -8,7 +8,7 @@ import { locationQueryExportFields } from "../../queries/Locations";
 
 // Our initial query configuration
 let queryConf = {
-  table: "locations_with_crash_injury_counts",
+  table: "locations_list_view",
   single_item: "locations",
   showDateRange: false,
   columns: {
@@ -35,7 +35,7 @@ let queryConf = {
       default: 0,
       type: "Integer",
     },
-    fatalities_count: {
+    vz_fatality_count: {
       searchable: false,
       sortable: true,
       label_search: null,
@@ -43,7 +43,7 @@ let queryConf = {
       default: 0,
       type: "Integer",
     },
-    serious_injury_count: {
+    sus_serious_injry_count: {
       searchable: false,
       sortable: true,
       label_search: null,
