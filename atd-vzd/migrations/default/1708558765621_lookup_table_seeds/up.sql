@@ -11085,3 +11085,4 @@ alter table lookups.veh_body_styl_lkp add constraint veh_body_styl_lkp_owner_che
 insert into lookups.veh_body_styl_lkp (id, label, source) values (177, 'E-SCOOTER', 'vz');
 alter table public.units_cris add constraint units_cris_veh_body_styl_id_check check (veh_body_styl_id < 177);
 
+insert into lookups.movt_lkp (select *, 'vz' as source from atd_txdot__movt_lkp);
