@@ -71,6 +71,10 @@ export const GET_UNIT_LOOKUPS = gql`
       id
       label
     }
+    lookups_movt_lkp {
+      id
+      label
+    }
   }
 `;
 
