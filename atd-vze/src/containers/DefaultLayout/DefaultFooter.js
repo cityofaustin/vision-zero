@@ -20,8 +20,8 @@ class DefaultFooter extends Component {
         </span>
         <span className="ml-auto">
           Powered by{" "}
-          <a href="https://transportation.austintexas.io/about/">
-            ATD Data & Technology Services
+          <a href="https://austinmobility.io/">
+            TPW Data & Technology Services
           </a>
         </span>
       </React.Fragment>

@@ -12,6 +12,7 @@ import { dataEndDate, yearsArray, dataStartDate } from "../../constants/time";
 import { personEndpointUrl } from "./queries/socrataQueries";
 import InfoPopover from "../../Components/Popover/InfoPopover";
 import { popoverConfig } from "../../Components/Popover/popoverConfig";
+import ColorSpinner from "../../Components/Spinner/ColorSpinner";
 
 const url = `${personEndpointUrl}?$query=`;
 
@@ -299,43 +300,51 @@ const PeopleByDemographics = () => {
           <hr />
         </Col>
       </Row>
-      <ChartTypeSelector
-        chartTypes={Object.values(chartConfigs).map((value) => value.label)}
-        chartType={chartType}
-        setChartType={setChartType}
-      />
-      <Row>
-        <Col>
-          <HorizontalBar
-            redraw
-            data={chartData}
-            height={null}
-            width={null}
-            options={{
-              responsive: true,
-              aspectRatio: 1,
-              maintainAspectRatio: false,
-              plugins: {
-                // Imported to display percentages without calculating them from data
-                stacked100: { enable: true, replaceTooltipLabel: false },
-              },
-              tooltips: {
-                callbacks: {
-                  label: (tooltipItem, data) => {
-                    const datasetIndex = tooltipItem.datasetIndex;
-                    const datasetLabel = data.datasets[datasetIndex].label;
-                    const originalValue =
-                      data.originalData[datasetIndex][tooltipItem.index];
-                    const rateValue =
-                      data.calculatedData[datasetIndex][tooltipItem.index];
-                    return `${datasetLabel}: ${originalValue} (${rateValue}%)`;
-                  },
-                },
-              },
-            }}
+      {!!chartData.datasets ? (
+        <div>
+          <ChartTypeSelector
+            chartTypes={Object.values(chartConfigs).map((value) => value.label)}
+            chartType={chartType}
+            setChartType={setChartType}
           />
-        </Col>
-      </Row>
+          <Row>
+            <Col>
+              <HorizontalBar
+                redraw
+                data={chartData}
+                height={null}
+                width={null}
+                options={{
+                  responsive: true,
+                  aspectRatio: 1,
+                  maintainAspectRatio: false,
+                  plugins: {
+                    // Imported to display percentages without calculating them from data
+                    stacked100: { enable: true, replaceTooltipLabel: false },
+                  },
+                  tooltips: {
+                    callbacks: {
+                      label: (tooltipItem, data) => {
+                        const datasetIndex = tooltipItem.datasetIndex;
+                        const datasetLabel = data.datasets[datasetIndex].label;
+                        const originalValue =
+                          data.originalData[datasetIndex][tooltipItem.index];
+                        const rateValue =
+                          data.calculatedData[datasetIndex][tooltipItem.index];
+                        return `${datasetLabel}: ${originalValue} (${rateValue}%)`;
+                      },
+                    },
+                  },
+                }}
+              />
+            </Col>
+          </Row>
+        </div>
+      ) : (
+        <h1>
+          <ColorSpinner />
+        </h1>
+      )}
     </Container>
   );
 };

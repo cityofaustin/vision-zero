@@ -77,7 +77,7 @@ def no_override_columns():
             "prsn_nbr",  # key column
             "prsn_type_id",  # key column (but why?)
             "prsn_occpnt_pos_id",  # key column (but why?)
-            "injury_severity",
+            "prsn_injry_sev_id",
             "prsn_age",
             "prsn_name_honorific",
             "prsn_last_name",

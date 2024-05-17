@@ -15,29 +15,35 @@ import requests
 import base64
 import subprocess
 import time
+from io import BytesIO
 from http.cookies import SimpleCookie
-
 import magic
 
 # We need the run_query method
 from .request import run_query
 
 
-def run_command(command):
+def run_command(command, verbose, log):
     """
     Runs a command
     :param command: array of strings containing the command and flags
+    :param verbose: boolean, handles level of logging
+    :param log: logger - The logger object
     """
-    print(command)
-    print(subprocess.check_output(command, shell=True).decode("utf-8"))
+    if verbose:
+        log.info(command)
+        log.info(subprocess.check_output(command, shell=True).decode("utf-8"))
+    else:
+        subprocess.check_output(command, shell=True).decode("utf-8")
 
 
-# Now we need to implement our methods.
-def download_cr3(crash_id, cookies):
+def download_cr3(crash_id, cookies, verbose, log):
     """
     Downloads a CR3 pdf from the CRIS website.
     :param crash_id: string - The crash id
     :param cookies: dict - A dictionary containing key=value pairs with cookie name and values.
+    :param verbose: boolean, handles level of logging
+    :param log: logger - The logger object
     """
 
     cookie = SimpleCookie()
@@ -50,40 +56,46 @@ def download_cr3(crash_id, cookies):
         str("CrashId=" + crash_id).encode("utf-8")
     ).decode("utf-8")
     url = os.getenv("ATD_CRIS_CR3_URL") + crash_id_encoded
-    download_path = "/tmp/" + "%s.pdf" % crash_id
 
-    print("Downloading (%s): '%s' from %s" % (crash_id, download_path, url))
+    log.info("Downloading (%s) from %s" % (crash_id, url))
     resp = requests.get(url, allow_redirects=True, cookies=baked_cookies)
-    open(download_path, "wb").write(resp.content)
 
-    return download_path
+    # Create a BytesIO object and write the content to it
+    file_in_memory = BytesIO()
+    file_in_memory.write(resp.content)
+    file_in_memory.seek(0)  # Reset the file pointer to the beginning
+
+    return file_in_memory
 
 
-def upload_cr3(crash_id):
+import boto3
+from botocore.exceptions import NoCredentialsError
+
+
+def upload_cr3(crash_id, cr3: BytesIO, verbose, log):
     """
-    Uploads a file to S3 using the awscli command
+    Uploads a BytesIO object to S3
     :param crash_id: string - The crash id
+    :param cr3: BytesIO - The BytesIO object containing the PDF data
+    :param verbose: boolean, handles level of logging
+    :param log: logger - The logger object
     """
-    file = "/tmp/%s.pdf" % crash_id
-    destination = "s3://%s/%s/%s.pdf" % (
-        os.getenv("AWS_CRIS_CR3_BUCKET_NAME"),
+    s3 = boto3.client("s3")
+
+    destination = "%s/%s.pdf" % (
         os.getenv("AWS_CRIS_CR3_BUCKET_PATH"),
         crash_id,
     )
 
-    run_command("aws s3 cp %s %s --no-progress" % (file, destination))
+    try:
+        s3.upload_fileobj(cr3, os.getenv("AWS_CRIS_CR3_BUCKET_NAME"), destination)
+        if verbose:
+            log.info(f"File uploaded to {destination}")
+    except NoCredentialsError:
+        log.error("No AWS credentials found")
 
 
-def delete_cr3s(crash_id):
-    """
-    Deletes the downloaded CR3 pdf file
-    :param crash_id: string - The crash id
-    """
-    file = "/tmp/%s.pdf" % crash_id
-    run_command("rm %s" % file)
-
-
-def get_crash_id_list(downloads_per_run="25"):
+def get_crash_id_list():
     """
     Downloads a list of crashes that do not have a CR3 associated.
     :return: dict - Response from request.post
@@ -91,7 +103,6 @@ def get_crash_id_list(downloads_per_run="25"):
     query_crashes_cr3 = """
         query CrashesWithoutCR3 {
           atd_txdot_crashes(
-            limit: %s,
             where: {
                 cr3_stored_flag: {_eq: "N"}
                 temp_record: {_eq: false}
@@ -101,17 +112,16 @@ def get_crash_id_list(downloads_per_run="25"):
             crash_id
           }
         }
-    """ % (
-        str(downloads_per_run)
-    )
+    """
 
     return run_query(query_crashes_cr3)
 
 
-def update_crash_id(crash_id):
+def update_crash_id(crash_id, log):
     """
     Updates the status of a crash to having an available CR3 pdf in the S3 bucket.
     :param crash_id: string - The Crash ID that needs to be updated
+    :param log: logger - The logger object
     :return: dict - Response from request.post
     """
 
@@ -125,45 +135,49 @@ def update_crash_id(crash_id):
     """
         % crash_id
     )
-    print(update_record_cr3)
+    log.info(f"Marking CR3 status as downloaded for crash_id: {crash_id}")
     return run_query(update_record_cr3)
 
 
-def check_if_pdf(file_path):
+def check_if_pdf(file_in_memory: BytesIO):
     """
-    Checks if a file is a pdf
-    :param file_path: string - The file path
-    :return: boolean - True if the file is a pdf
+    Checks if a BytesIO object contains a pdf
+    :param file_in_memory: BytesIO - The BytesIO object
+    :return: boolean - True if the BytesIO object contains a pdf
     """
     mime = magic.Magic(mime=True)
-    file_type = mime.from_file(file_path)
+    file_type = mime.from_buffer(file_in_memory.read())
+    file_in_memory.seek(0)  # Reset the file pointer to the beginning
     return file_type == "application/pdf"
 
 
-def process_crash_cr3(crash_record, cookies, skipped_uploads_and_updates):
+def process_crash_cr3(crash_record, cookies, skipped_uploads_and_updates, verbose, log):
     """
     Downloads a CR3 pdf, uploads it to s3, updates the database and deletes the pdf.
     :param crash_record: dict - The individual crash record being processed
     :param cookies: dict - The cookies taken from the browser object
     :param skipped_uploads_and_updates: list - Crash IDs of unsuccessful pdf downloads
+    :param verbose: boolean, handles level of logging
+    :param log: logger - The logger object
     """
     try:
         crash_id = str(crash_record["crash_id"])
 
         print("Processing Crash: " + crash_id)
 
-        download_path = download_cr3(crash_id, cookies)
-        is_file_pdf = check_if_pdf(download_path)
+        cr3 = download_cr3(crash_id, cookies, verbose, log)
+        is_file_pdf = check_if_pdf(cr3)
 
         if not is_file_pdf:
-            print(f"\nFile {download_path} is not a pdf - skipping upload and update")
+            log.warning(
+                f"\nFile for crash ID {crash_id} is not a pdf - skipping upload and update"
+            )
+            time.sleep(10)
             skipped_uploads_and_updates.append(crash_id)
         else:
-            upload_cr3(crash_id)
-            update_crash_id(crash_id)
-
-        delete_cr3s(crash_id)
+            upload_cr3(crash_id, cr3, verbose, log)
+            update_crash_id(crash_id, log)
 
     except Exception as e:
-        print("Error: %s" % str(e))
+        log.error("Error: %s" % str(e))
         return
