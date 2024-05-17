@@ -1,5 +1,5 @@
 table:
-  name: crashes_list
+  name: crashes_list_view
   schema: public
 object_relationships:
   - name: recommendation
