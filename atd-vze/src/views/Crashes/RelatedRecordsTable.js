@@ -76,7 +76,11 @@ const RelatedRecordsTable = ({
   const formatValue = (data, field) => {
     let fieldValue = data[field];
 
-    if (typeof data[field] === "object") {
+    // If the field comes from a hasura relationship then set the fieldValue accordingly
+    if (fieldConfig.fields[field].relationshipName) {
+      fieldValue = data[fieldConfig.fields[field].relationshipName][field];
+      // If the field value is still an object we need to go a layer deeper to get the lookup desc
+    } else if (typeof data[field] === "object") {
       fieldValue =
         data[field] && data[field][fieldConfig.fields[field].lookup_desc];
     }

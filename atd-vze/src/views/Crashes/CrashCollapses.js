@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Card, CardBody, CardHeader, Col, Row } from "reactstrap";
+import { Card, Col, Row } from "reactstrap";
 
 import UnitDetailsCard from "./UnitDetailsCard";
 import PeopleDetailsCard from "./PeopleDetailsCard";
