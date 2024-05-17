@@ -1,1 +1,1 @@
-drop view public.crash_injury_metrics cascade;
+drop view public.person_injury_metrics_view cascade;
