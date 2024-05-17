@@ -66,7 +66,7 @@ begin
             -- reset location id
             new.location_id = null;
             -- use city ID to determine full purpose jurisdiction
-            new.in_austin_full_purpose = (new.rpt_city_id = 22);
+            new.in_austin_full_purpose = coalesce(new.rpt_city_id = 22, false);
             raise notice 'setting in_austin_full_purpose based on city id: %', new.in_austin_full_purpose;
             -- reset council district
             new.council_district = null;
