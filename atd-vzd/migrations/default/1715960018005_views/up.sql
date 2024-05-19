@@ -241,72 +241,70 @@ left join
     lookups.injry_sev_lkp
     on lookups.injry_sev_lkp.id = crash_injury_metrics_view.crash_injry_sev_id;
 
-create or replace view locations_list_view as (
-    with all_crash_counts as(
-    with cr3_crash_counts as (
+
+create materialized view locations_list_view as (
+    with crash_totals as (
+        with unioned_crash_counts as (
+            with cr3_crash_counts as (
+                select
+                    location_id,
+                    sus_serious_injry_count,
+                    vz_fatality_count,
+                    est_comp_cost_crash_based
+                from
+                    crashes_list_view
+                where
+                    crashes_list_view.private_dr_fl = false
+                    and crashes_list_view.location_id is not null
+                    and crashes_list_view.crash_date
+                    > (now() - '5 years'::interval)
+            ),
+
+            non_cr3_crash_counts as (
+                select
+                    location_id,
+                    0 as vz_fatality_count,
+                    0 as sus_serious_injry_count,
+                    est_comp_cost as est_comp_cost_crash_based
+                from atd_apd_blueform as non_cr3_crash_counts
+                where
+                    true
+                    and non_cr3_crash_counts.location_id is not null
+                    and non_cr3_crash_counts.date
+                    > (now() - '5 years'::interval)
+            )
+
+            select * from cr3_crash_counts
+            union all
+            select * from non_cr3_crash_counts
+        )
+
         select
             location_id,
-            count(crash_id) as crash_count,
+            count(unioned_crash_counts.*) as crash_count,
             sum(
-                sus_serious_injry_count
+                unioned_crash_counts.sus_serious_injry_count
             ) as sus_serious_injry_count,
-            sum(vz_fatality_count) as vz_fatality_count,
-            sum(est_comp_cost_crash_based) as total_est_comp_cost
+            sum(unioned_crash_counts.vz_fatality_count) as vz_fatality_count,
+            sum(
+                unioned_crash_counts.est_comp_cost_crash_based
+            ) as total_est_comp_cost
         from
-            crashes_list_view
-        where
-            crashes_list_view.private_dr_fl = false
-            and crashes_list_view.location_id is not null
-            and crashes_list_view.crash_date > (now() - '5 years'::interval)
-        group by
-            location_id
-    ),
-    non_cr3_crash_counts as (
-            select
-                non_cr3_crash_counts.location_id,
-                0 as vz_fatality_count,
-                0 as sus_serious_injry_count,
-                count(non_cr3_crash_counts.case_id) as crash_count,
-                coalesce(
-                    sum(non_cr3_crash_counts.est_comp_cost), 0
-                ) as total_est_comp_cost
-            from atd_apd_blueform as non_cr3_crash_counts
-            where
-                true
-                and non_cr3_crash_counts.location_id is not null
-                and non_cr3_crash_counts.date > (now() - '5 years'::interval)
-            group by non_cr3_crash_counts.location_id
-        )
-    select cr3_crash_counts.location_id,
-        coalesce(cr3_crash_counts.crash_count, 0)
-        + coalesce(non_cr3_crash_counts.crash_count, 0) AS crash_count,
-        coalesce(cr3_crash_counts.total_est_comp_cost, 0)
-        + (
-            10000 * coalesce(non_cr3_crash_counts.crash_count, 0)
-        ) AS total_est_comp_cost,
-        coalesce(cr3_crash_counts.vz_fatality_count, 0)
-        + coalesce(non_cr3_crash_counts.vz_fatality_count, 0) AS vz_fatality_count,
-        coalesce(cr3_crash_counts.sus_serious_injry_count, 0)
-        + coalesce(
-            non_cr3_crash_counts.sus_serious_injry_count, 0
-        ) AS sus_serious_injry_count
-    FROM cr3_crash_counts
-    FULL JOIN
-        non_cr3_crash_counts
-        ON cr3_crash_counts.location_id = non_cr3_crash_counts.location_id
+            unioned_crash_counts
+        group by location_id
     )
+
     select
         locations.location_id,
         locations.description,
-        coalesce(all_crash_counts.crash_count, 0) as crash_count,
+        coalesce(crash_totals.crash_count, 0) as crash_count,
         coalesce(
-            all_crash_counts.sus_serious_injry_count, 0
+            crash_totals.sus_serious_injry_count, 0
         ) as sus_serious_injry_count,
-        coalesce(all_crash_counts.vz_fatality_count, 0) as vz_fatality_count,
-        coalesce(all_crash_counts.total_est_comp_cost, 0) as total_est_comp_cost
-    from
-        atd_txdot_locations as locations
-    left join all_crash_counts on locations.location_id = all_crash_counts.location_id
-    where locations.council_district > 0 AND locations.location_group = 1
+        coalesce(crash_totals.vz_fatality_count, 0) as vz_fatality_count,
+        coalesce(crash_totals.total_est_comp_cost, 0) as total_est_comp_cost
+    from atd_txdot_locations as locations
+    left join crash_totals on locations.location_id = crash_totals.location_id
+    where locations.council_district > 0 and locations.location_group = 1
 );
 
