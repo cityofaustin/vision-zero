@@ -10,6 +10,7 @@ import requests
 from settings import COLUMN_ENDPOINT
 
 FILE_DIR = "cris_csvs"
+# FILE_DIR = "cris_csvs/full_extract/combined"
 HASURA_ENDPOINT = "http://localhost:8084/v1/graphql"
 UPLOAD_BATCH_SIZE = 1000
 
