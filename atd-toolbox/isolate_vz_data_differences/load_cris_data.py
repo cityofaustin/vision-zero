@@ -64,16 +64,41 @@ def process_file(csv_file_path, db_connection_string, output_dir):
                 conn.commit()
 
             with conn.cursor() as cur:
+                rows_to_insert = []
                 for row in csv_reader:
                     row_dict = dict(zip(headers, row))
+                    rows_to_insert.append(row_dict)
 
+                    batch_size = 1000
+
+                    if len(rows_to_insert) >= batch_size:
+                        # Construct the INSERT INTO SQL query
+                        columns = ", ".join(rows_to_insert[0].keys())
+                        placeholders = ", ".join(["%s"] * len(rows_to_insert[0]))
+                        insert_query = f"INSERT INTO data_model.{table_name} ({columns}) VALUES ({placeholders});"
+
+                        # Execute the SQL query
+                        cur.executemany(
+                            insert_query, [list(row.values()) for row in rows_to_insert]
+                        )
+
+                        # Clear rows_to_insert and commit the transaction
+                        rows_to_insert = []
+                        print(f"Inserted {batch_size} rows")
+                        conn.commit()
+
+                # Insert any remaining rows
+                if rows_to_insert:
                     # Construct the INSERT INTO SQL query
-                    columns = ", ".join(row_dict.keys())
-                    placeholders = ", ".join(["%s"] * len(row_dict))
+                    columns = ", ".join(rows_to_insert[0].keys())
+                    placeholders = ", ".join(["%s"] * len(rows_to_insert[0]))
                     insert_query = f"INSERT INTO data_model.{table_name} ({columns}) VALUES ({placeholders});"
 
                     # Execute the SQL query
-                    cur.execute(insert_query, list(row_dict.values()))
+                    print(f"Inserting {len(rows_to_insert)} rows")
+                    cur.executemany(
+                        insert_query, [list(row.values()) for row in rows_to_insert]
+                    )
 
                 conn.commit()
 
