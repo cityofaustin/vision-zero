@@ -17,13 +17,11 @@ def generate_pgloader_command(csv_file_path, db_connection_string, table_name):
   LOAD CSV
   FROM '{csv_file_path}'
   INTO {db_connection_string}&data_model.{table_name}
-  WITH truncate,
-    skip header = 1,
+  WITH skip header = 1,
     fields escaped by double-quote,
     fields optionally enclosed by '"'
   BEFORE LOAD DO 
-  $$ drop table if exists data_model.{table_name}; $$,
-  $$ create table data_model.{table_name} (
+  $$ create table if not exists data_model.{table_name} (
   """
     for header in headers:
         pgloader_command += f"       {header} character varying,\n"
