@@ -6,12 +6,26 @@ import csv
 import psycopg2
 
 
+# Global dictionary to store tables and their columns
+tables_columns = {}
+
+
 def generate_pgloader_command(csv_file_path, db_connection_string, table_name):
     print("CSV file path: ", csv_file_path)
     # Read the first line of the CSV file to get the column names
     with open(csv_file_path, "r") as csv_file:
         csv_reader = csv.reader(csv_file)
         headers = next(csv_reader)
+
+    # Check if there are any new columns
+    new_columns = []
+    if table_name in tables_columns:
+        new_columns = set(headers) - set(tables_columns[table_name])
+        if new_columns:
+            print(f"New columns in {table_name}: {', '.join(new_columns)}")
+            tables_columns[table_name].extend(new_columns)
+    else:
+        tables_columns[table_name] = headers
 
     # Generate the pgloader command file content
     pgloader_command = f"""
@@ -26,12 +40,19 @@ def generate_pgloader_command(csv_file_path, db_connection_string, table_name):
   """
     for header in headers:
         pgloader_command += f"       {header} character varying,\n"
-    pgloader_command = pgloader_command.rstrip(",\n") + "\n    );\n$$;\n"
+    pgloader_command = pgloader_command.rstrip(",\n") + "\n    );\n"
+
+    # Add ALTER TABLE commands for new columns
+    for column in new_columns:
+        pgloader_command += f"$$ ALTER TABLE data_model.{table_name} ADD COLUMN IF NOT EXISTS {column} character varying; $$;\n"
+
+    pgloader_command += "$$;\n"
 
     return pgloader_command
 
 
 def write_and_execute_pgloader_command(csv_file_path, db_connection_string, output_dir):
+    print("\n\n\n")
     # Get the base name of the CSV file to use as the command file name
     base_name = os.path.basename(csv_file_path)
     table_name = base_name.split("_")[
@@ -101,7 +122,7 @@ if __name__ == "__main__":
     drop_tables(db_connection_string)
 
     only_file = None
-    only_file = (
-        "extract_2018_20240516104535_unit_20200101-20201231_HAYSTRAVISWILLIAMSON.csv"
-    )
+    # only_file = (
+    #     "extract_2018_20240516104535_unit_20200101-20201231_HAYSTRAVISWILLIAMSON.csv"
+    # )
     process_directory(root_dir, db_connection_string, output_dir, only_file)
