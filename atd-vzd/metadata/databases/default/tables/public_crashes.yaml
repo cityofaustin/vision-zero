@@ -5,14 +5,14 @@ object_relationships:
   - name: atd_txdot_location
     using:
       foreign_key_constraint_on: location_id
-  - name: crash_injury_metrics
+  - name: crash_injury_metrics_view
     using:
       manual_configuration:
         column_mapping:
           crash_id: crash_id
         insertion_order: null
         remote_table:
-          name: crash_injury_metrics
+          name: crash_injury_metrics_view
           schema: public
   - name: crashes_cri
     using:

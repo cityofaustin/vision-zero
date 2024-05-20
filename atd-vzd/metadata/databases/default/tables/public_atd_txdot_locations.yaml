@@ -34,81 +34,51 @@ select_permissions:
   - role: editor
     permission:
       columns:
-        - address
-        - asmp_street_level
-        - council_district
-        - description
-        - geometry
-        - is_retired
-        - is_studylocation
+        - location_id
+        - street_level
         - last_update
         - latitude
-        - level_1
-        - level_2
-        - level_3
-        - level_4
-        - level_5
-        - location_group
-        - location_id
         - longitude
-        - metadata
-        - priority_level
         - scale_factor
-        - shape
-        - street_level
+        - council_district
+        - is_intersection
+        - location_group
+        - description
+        - geometry
       filter: {}
       allow_aggregations: true
+    comment: ""
   - role: readonly
     permission:
       columns:
-        - address
-        - asmp_street_level
-        - council_district
-        - description
-        - geometry
-        - is_retired
-        - is_studylocation
+        - location_id
+        - street_level
         - last_update
         - latitude
-        - level_1
-        - level_2
-        - level_3
-        - level_4
-        - level_5
-        - location_group
-        - location_id
         - longitude
-        - metadata
-        - priority_level
         - scale_factor
-        - shape
-        - street_level
+        - council_district
+        - is_intersection
+        - location_group
+        - description
+        - geometry
       filter: {}
       allow_aggregations: true
+    comment: ""
   - role: vz-admin
     permission:
       columns:
-        - address
-        - asmp_street_level
-        - council_district
-        - description
-        - geometry
-        - is_retired
-        - is_studylocation
+        - location_id
+        - street_level
         - last_update
         - latitude
-        - level_1
-        - level_2
-        - level_3
-        - level_4
-        - level_5
-        - location_group
-        - location_id
         - longitude
-        - metadata
-        - priority_level
         - scale_factor
-        - shape
-        - street_level
+        - council_district
+        - is_intersection
+        - location_group
+        - description
+        - geometry
       filter: {}
       allow_aggregations: true
+    comment: ""

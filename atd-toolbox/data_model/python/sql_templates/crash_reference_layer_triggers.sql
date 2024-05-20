@@ -27,7 +27,7 @@ begin
                 public.atd_txdot_locations
             where
                 location_group = 1 -- level 1-4 polygons
-                and st_contains(shape, new.position)
+                and st_contains(geometry, new.position)
             limit 1);
         raise notice 'found location: % compared to previous location: %', new.location_id, old.location_id;
         --
@@ -66,7 +66,7 @@ begin
             -- reset location id
             new.location_id = null;
             -- use city ID to determine full purpose jurisdiction
-            new.in_austin_full_purpose = (new.rpt_city_id = 22);
+            new.in_austin_full_purpose = coalesce(new.rpt_city_id = 22, false);
             raise notice 'setting in_austin_full_purpose based on city id: %', new.in_austin_full_purpose;
             -- reset council district
             new.council_district = null;
