@@ -2,39 +2,58 @@
 
 import os
 import subprocess
+import csv
 
 
-def generate_pgloader_command(csv_file_path, db_connection_string):
+def generate_pgloader_command(csv_file_path, db_connection_string, table_name):
+    print("CSV file path: ", csv_file_path)
+    # Read the first line of the CSV file to get the column names
+    with open(csv_file_path, "r") as csv_file:
+        csv_reader = csv.reader(csv_file)
+        headers = next(csv_reader)
+
     # Generate the pgloader command file content
     pgloader_command = f"""
-    LOAD CSV
-    FROM '{csv_file_path}'
-    INTO {db_connection_string}
-    WITH truncate,
-         fields terminated by ',',
-         fields escaped by '\\\\',
-         fields enclosed by '"'
-    SET work_mem to '12MB',
-        maintenance_work_mem to '64MB';
-    """
+  LOAD CSV
+  FROM '{csv_file_path}'
+  INTO {db_connection_string}&data_model.{table_name}
+  WITH truncate,
+    skip header = 1,
+    fields escaped by double-quote,
+    fields optionally enclosed by '"'
+  BEFORE LOAD DO 
+  $$ drop table if exists data_model.{table_name}; $$,
+  $$ create table data_model.{table_name} (
+  """
+    for header in headers:
+        pgloader_command += f"       {header} character varying,\n"
+    pgloader_command = pgloader_command.rstrip(",\n") + "\n    );\n$$;\n"
+
     return pgloader_command
 
 
 def write_and_execute_pgloader_command(csv_file_path, db_connection_string, output_dir):
     # Get the base name of the CSV file to use as the command file name
     base_name = os.path.basename(csv_file_path)
+    table_name = base_name.split("_")[
+        3
+    ].lower()  # Extract the table name from the filename
     command_file_name = f"{base_name}.load"
     command_file_path = os.path.join(output_dir, command_file_name)
 
     # Generate the pgloader command
-    pgloader_command = generate_pgloader_command(csv_file_path, db_connection_string)
+    pgloader_command = generate_pgloader_command(
+        csv_file_path, db_connection_string, table_name
+    )
 
     # Write the command to a file
     with open(command_file_path, "w") as command_file:
         command_file.write(pgloader_command)
 
+    input("Press Enter to continue...")
+
     # Execute the pgloader command
-    # subprocess.run(["pgloader", command_file_path])
+    subprocess.run(["pgloader", command_file_path])
 
 
 def process_directory(root_dir, db_connection_string, output_dir):
@@ -48,8 +67,8 @@ def process_directory(root_dir, db_connection_string, output_dir):
 
 
 if __name__ == "__main__":
-    root_dir = "./extracts"
-    output_dir = "./load_files"
+    root_dir = "/app/extracts"
+    output_dir = "/app/load_files"
 
     # Get the database connection string from the environment variable
     db_connection_string = os.getenv("DATABASE_CONNECTION")
