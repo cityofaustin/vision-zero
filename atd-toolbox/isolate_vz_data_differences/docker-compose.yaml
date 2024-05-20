@@ -1,5 +1,5 @@
 services:
-  ubuntu:
+  import:
     build: .
     volumes:
       - .:/app
