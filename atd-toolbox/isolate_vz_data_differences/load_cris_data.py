@@ -57,11 +57,34 @@ def write_and_execute_pgloader_command(csv_file_path, db_connection_string, outp
 def process_directory(root_dir, db_connection_string, output_dir):
     for subdir, _, files in os.walk(root_dir):
         for file in files:
-            if file.endswith(".csv") and "lookup" not in file:
+            if file.endswith(".csv"):
                 csv_file_path = os.path.join(subdir, file)
                 write_and_execute_pgloader_command(
                     csv_file_path, db_connection_string, output_dir
                 )
+
+
+def drop_tables(db_connection_string):
+    # List of tables to drop
+    tables = [
+        "charges",
+        "crash",
+        "damages",
+        "endorsements",
+        "lookup",
+        "person",
+        "primaryperson",
+        "restrictions",
+        "unit",
+    ]
+
+    # Connect to the database
+    with psycopg2.connect(db_connection_string) as conn:
+        with conn.cursor() as cur:
+            for table in tables:
+                # Execute the SQL command to drop the table
+                cur.execute(f"DROP TABLE IF EXISTS data_model.{table};")
+        conn.commit()
 
 
 if __name__ == "__main__":
@@ -73,5 +96,7 @@ if __name__ == "__main__":
 
     if db_connection_string is None:
         raise EnvironmentError("DATABASE_CONNECTION environment variable is not set")
+
+    drop_tables(db_connection_string)
 
     process_directory(root_dir, db_connection_string, output_dir)
