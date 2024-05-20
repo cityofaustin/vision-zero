@@ -55,10 +55,10 @@ def write_and_execute_pgloader_command(csv_file_path, db_connection_string, outp
     subprocess.run(["pgloader", command_file_path])
 
 
-def process_directory(root_dir, db_connection_string, output_dir):
+def process_directory(root_dir, db_connection_string, output_dir, only_file=None):
     for subdir, _, files in os.walk(root_dir):
         for file in files:
-            if file.endswith(".csv"):
+            if file.endswith(".csv") and (only_file is None or file == only_file):
                 csv_file_path = os.path.join(subdir, file)
                 write_and_execute_pgloader_command(
                     csv_file_path, db_connection_string, output_dir
@@ -100,4 +100,8 @@ if __name__ == "__main__":
 
     drop_tables(db_connection_string)
 
-    process_directory(root_dir, db_connection_string, output_dir)
+    only_file = None
+    only_file = (
+        "extract_2018_20240516104535_unit_20200101-20201231_HAYSTRAVISWILLIAMSON.csv"
+    )
+    process_directory(root_dir, db_connection_string, output_dir, only_file)
