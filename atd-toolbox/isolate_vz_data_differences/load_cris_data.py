@@ -5,86 +5,77 @@ import subprocess
 import csv
 import psycopg2
 
-
 # Global dictionary to store tables and their columns
 tables_columns = {}
 
 
-def generate_pgloader_command(csv_file_path, db_connection_string, table_name):
-    print("CSV file path:", csv_file_path)
-    # Read the first line of the CSV file to get the column names
-    with open(csv_file_path, "r") as csv_file:
-        csv_reader = csv.reader(csv_file)
-        headers = next(csv_reader)
-
-    # Check if there are any new columns
-    new_columns = []
-    if table_name in tables_columns:
-        new_columns = set(headers) - set(tables_columns[table_name])
-        if new_columns:
-            print(f"New columns in {table_name}: {', '.join(new_columns)}")
-            tables_columns[table_name].extend(new_columns)
-    else:
-        tables_columns[table_name] = headers
-
-    # Generate the pgloader command file content
-    pgloader_command = f"""
-LOAD CSV
-FROM '{csv_file_path}'
-INTO {db_connection_string}&data_model.{table_name}
-WITH skip header = 1,
-fields optionally enclosed by '"'
-
-BEFORE LOAD DO
-$$
-CREATE TABLE IF NOT EXISTS data_model.{table_name} (
-"""
-    #  fields escaped by double-quote,
-
-    for header in headers:
-        pgloader_command += f"    {header} character varying,\n"
-    pgloader_command = pgloader_command.rstrip(",\n") + "\n);\n$$"
-
-    # Add ALTER TABLE commands for new columns
-    for column in new_columns:
-        pgloader_command += f", $$\nALTER TABLE data_model.{table_name} ADD COLUMN IF NOT EXISTS {column} character varying;\n$$"
-
-    pgloader_command += ";\n"
-
-    return pgloader_command
-
-
-def write_and_execute_pgloader_command(csv_file_path, db_connection_string, output_dir):
+def process_file(csv_file_path, db_connection_string, output_dir):
     # Get the base name of the CSV file to use as the command file name
     base_name = os.path.basename(csv_file_path)
-    table_name = base_name.split("_")[
-        3
-    ].lower()  # Extract the table name from the filename
+    table_name = base_name.split("_")[3].lower()
     if table_name != "unit":
         return
-    command_file_name = f"{base_name}.load"
-    command_file_path = os.path.join(output_dir, command_file_name)
 
-    print("\n\n\n")
+    with open(csv_file_path, "r") as csv_file:
+        csv_reader = csv.reader(csv_file)
+        headers = [header.lower() for header in next(csv_reader)]
+        # Update the global dictionary if new headers are found
+        if table_name not in tables_columns:
+            tables_columns[table_name] = headers
+        # else:
+        #     for header in headers:
+        #         if header not in tables_columns[table_name]:
+        #             tables_columns[table_name].append(header)
 
-    # Generate the pgloader command
-    pgloader_command = generate_pgloader_command(
-        csv_file_path, db_connection_string, table_name
-    )
+        # Establish a connection to the database
+        with psycopg2.connect(db_connection_string) as conn:
+            # Create a cursor object
+            with conn.cursor() as cur:
+                # Check if the table exists
+                cur.execute(
+                    f"""
+                    SELECT EXISTS (
+                        SELECT FROM information_schema.tables 
+                        WHERE  table_schema = 'data_model' 
+                        AND    table_name   = '{table_name.lower()}'
+                    );
+                    """
+                )
+                table_exists = cur.fetchone()[0]
 
-    # Write the command to a file
-    print("Writing pgloader command to:", command_file_path)
-    with open(command_file_path, "w") as command_file:
-        command_file.write(pgloader_command)
+                if not table_exists:
+                    # This is the first time we're seeing this table, so create it
+                    columns = ", ".join(f'"{header}" VARCHAR' for header in headers)
+                    create_table_query = f"CREATE TABLE IF NOT EXISTS data_model.{table_name} ({columns});"
+                    print("Creating table", table_name)
+                    cur.execute(create_table_query)
+                else:
+                    # We've seen this table before, so check if there are any new columns
+                    new_columns = [
+                        header
+                        for header in headers
+                        if header not in tables_columns[table_name]
+                    ]
+                    for new_column in new_columns:
+                        alter_table_query = f"ALTER TABLE data_model.{table_name} ADD COLUMN {new_column} VARCHAR;"
+                        print(f"Adding column {new_column} to table {table_name}")
+                        tables_columns[table_name].append(new_column)
+                        cur.execute(alter_table_query)
+                conn.commit()
 
-    # input("Press Enter to continue...")
-    try:
-        # Execute the pgloader command
-        subprocess.run(["pgloader", command_file_path], check=True)
-    except subprocess.CalledProcessError as e:
-        raise Exception(
-            "pgloader command failed with exit status: {}".format(e.returncode)
-        )
+            with conn.cursor() as cur:
+                for row in csv_reader:
+                    row_dict = dict(zip(headers, row))
+
+                    # Construct the INSERT INTO SQL query
+                    columns = ", ".join(row_dict.keys())
+                    placeholders = ", ".join(["%s"] * len(row_dict))
+                    insert_query = f"INSERT INTO data_model.{table_name} ({columns}) VALUES ({placeholders});"
+
+                    # Execute the SQL query
+                    cur.execute(insert_query, list(row_dict.values()))
+
+                conn.commit()
 
 
 def process_directory(root_dir, db_connection_string, output_dir, only_file=None):
@@ -92,9 +83,7 @@ def process_directory(root_dir, db_connection_string, output_dir, only_file=None
         for file in files:
             if file.endswith(".csv") and (only_file is None or file == only_file):
                 csv_file_path = os.path.join(subdir, file)
-                write_and_execute_pgloader_command(
-                    csv_file_path, db_connection_string, output_dir
-                )
+                process_file(csv_file_path, db_connection_string, output_dir)
 
 
 def drop_tables(db_connection_string):
@@ -116,6 +105,7 @@ def drop_tables(db_connection_string):
         with conn.cursor() as cur:
             for table in tables:
                 # Execute the SQL command to drop the table
+                print(f"Dropping table data_model.{table}")
                 cur.execute(f"DROP TABLE IF EXISTS data_model.{table};")
         conn.commit()
 
