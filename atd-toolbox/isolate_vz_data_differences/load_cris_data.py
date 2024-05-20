@@ -57,7 +57,7 @@ def write_and_execute_pgloader_command(csv_file_path, db_connection_string, outp
 def process_directory(root_dir, db_connection_string, output_dir):
     for subdir, _, files in os.walk(root_dir):
         for file in files:
-            if file.endswith(".csv"):
+            if file.endswith(".csv") and "lookup" not in file:
                 csv_file_path = os.path.join(subdir, file)
                 write_and_execute_pgloader_command(
                     csv_file_path, db_connection_string, output_dir
