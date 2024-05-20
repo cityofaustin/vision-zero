@@ -7,24 +7,31 @@ export const GET_UNITS = gql`
       unit_nbr
       veh_mod_year
       unit_desc_lkp {
+        id
         label
       }
       veh_body_styl_lkp {
+        id
         label
       }
       veh_make_lkp {
+        id
         label
       }
       veh_mod_lkp {
+        id
         label
       }
       trvl_dir_lkp {
+        id
         label
       }
       movt_lkp {
+        id
         label
       }
       contrib_factr_lkp {
+        id
         label
       }
       unit_injury_metrics_view {
