@@ -14,6 +14,8 @@ def process_file(csv_file_path, db_connection_string, output_dir):
     base_name = os.path.basename(csv_file_path)
     table_name = base_name.split("_")[3].lower()
     print("Starting a new file for table", table_name)
+    if table_name not in ["crash", "unit", "person", "primaryperson"]:
+        return
     # if table_name != "unit":
     # return
 
