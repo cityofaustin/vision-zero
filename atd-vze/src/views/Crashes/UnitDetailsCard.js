@@ -22,7 +22,6 @@ const UnitDetailsCard = ({ isExpanded, toggleAccordion, ...props }) => {
   const unitMutation = {
     mutation: UPDATE_UNIT,
     variables: {
-      crashId: crashId,
       unitId: "",
       changes: {},
     },
