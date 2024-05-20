@@ -11,7 +11,7 @@ tables_columns = {}
 
 
 def generate_pgloader_command(csv_file_path, db_connection_string, table_name):
-    print("CSV file path: ", csv_file_path)
+    print("CSV file path:", csv_file_path)
     # Read the first line of the CSV file to get the column names
     with open(csv_file_path, "r") as csv_file:
         csv_reader = csv.reader(csv_file)
@@ -29,37 +29,43 @@ def generate_pgloader_command(csv_file_path, db_connection_string, table_name):
 
     # Generate the pgloader command file content
     pgloader_command = f"""
-  LOAD CSV
-  FROM '{csv_file_path}'
-  INTO {db_connection_string}&data_model.{table_name}
-  WITH skip header = 1,
-    fields escaped by double-quote,
-    fields optionally enclosed by '"'
-  BEFORE LOAD DO 
-  $$ create table if not exists data_model.{table_name} (
-  """
+LOAD CSV
+FROM '{csv_file_path}'
+INTO {db_connection_string}&data_model.{table_name}
+WITH skip header = 1,
+fields optionally enclosed by '"'
+
+BEFORE LOAD DO
+$$
+CREATE TABLE IF NOT EXISTS data_model.{table_name} (
+"""
+    #  fields escaped by double-quote,
+
     for header in headers:
-        pgloader_command += f"       {header} character varying,\n"
-    pgloader_command = pgloader_command.rstrip(",\n") + "\n    );\n"
+        pgloader_command += f"    {header} character varying,\n"
+    pgloader_command = pgloader_command.rstrip(",\n") + "\n);\n$$"
 
     # Add ALTER TABLE commands for new columns
     for column in new_columns:
-        pgloader_command += f"$$ ALTER TABLE data_model.{table_name} ADD COLUMN IF NOT EXISTS {column} character varying; $$;\n"
+        pgloader_command += f", $$\nALTER TABLE data_model.{table_name} ADD COLUMN IF NOT EXISTS {column} character varying;\n$$"
 
-    pgloader_command += "$$;\n"
+    pgloader_command += ";\n"
 
     return pgloader_command
 
 
 def write_and_execute_pgloader_command(csv_file_path, db_connection_string, output_dir):
-    print("\n\n\n")
     # Get the base name of the CSV file to use as the command file name
     base_name = os.path.basename(csv_file_path)
     table_name = base_name.split("_")[
         3
     ].lower()  # Extract the table name from the filename
+    if table_name != "unit":
+        return
     command_file_name = f"{base_name}.load"
     command_file_path = os.path.join(output_dir, command_file_name)
+
+    print("\n\n\n")
 
     # Generate the pgloader command
     pgloader_command = generate_pgloader_command(
@@ -67,13 +73,18 @@ def write_and_execute_pgloader_command(csv_file_path, db_connection_string, outp
     )
 
     # Write the command to a file
+    print("Writing pgloader command to:", command_file_path)
     with open(command_file_path, "w") as command_file:
         command_file.write(pgloader_command)
 
     # input("Press Enter to continue...")
-
-    # Execute the pgloader command
-    subprocess.run(["pgloader", command_file_path])
+    try:
+        # Execute the pgloader command
+        subprocess.run(["pgloader", command_file_path], check=True)
+    except subprocess.CalledProcessError as e:
+        raise Exception(
+            "pgloader command failed with exit status: {}".format(e.returncode)
+        )
 
 
 def process_directory(root_dir, db_connection_string, output_dir, only_file=None):
