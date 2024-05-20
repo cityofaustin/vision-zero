@@ -15,7 +15,7 @@ const locationDataMap = [
         editable: false,
         format: "datetime",
       },
-      total_crashes: {
+      crash_count: {
         label: "Total Crashes (Previous 5 years)",
         alternateTable: "locationTotals",
         editable: false,

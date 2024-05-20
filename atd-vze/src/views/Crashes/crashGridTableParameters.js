@@ -58,7 +58,7 @@ export const crashGridTableColumns = {
     label_table: "Collision Description",
     type: "String",
   },
-  "units { veh_body_styl_lkp { label } }": {
+  "units { unit_desc_lkp { label } }": {
     searchable: false,
     sortable: false,
     label_table: "Unit Description",

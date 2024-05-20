@@ -263,18 +263,12 @@ units {
   trvl_dir_lkp {
     label
   }
-}
-units {
   movt_lkp {
     label
   }
-}
-units {
   veh_body_styl_lkp {
     label
   }
-}
-units {
   unit_desc_lkp {
     label
   }
