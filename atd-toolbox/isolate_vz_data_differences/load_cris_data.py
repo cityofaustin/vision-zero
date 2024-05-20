@@ -3,6 +3,7 @@
 import os
 import subprocess
 import csv
+import psycopg2
 
 
 def generate_pgloader_command(csv_file_path, db_connection_string, table_name):
@@ -48,7 +49,7 @@ def write_and_execute_pgloader_command(csv_file_path, db_connection_string, outp
     with open(command_file_path, "w") as command_file:
         command_file.write(pgloader_command)
 
-    input("Press Enter to continue...")
+    # input("Press Enter to continue...")
 
     # Execute the pgloader command
     subprocess.run(["pgloader", command_file_path])
