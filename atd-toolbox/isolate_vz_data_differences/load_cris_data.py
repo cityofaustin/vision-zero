@@ -13,8 +13,9 @@ def process_file(csv_file_path, db_connection_string, output_dir):
     # Get the base name of the CSV file to use as the command file name
     base_name = os.path.basename(csv_file_path)
     table_name = base_name.split("_")[3].lower()
-    if table_name != "unit":
-        return
+    print("Starting a new file for table", table_name)
+    # if table_name != "unit":
+    # return
 
     with open(csv_file_path, "r") as csv_file:
         csv_reader = csv.reader(csv_file)
@@ -22,10 +23,6 @@ def process_file(csv_file_path, db_connection_string, output_dir):
         # Update the global dictionary if new headers are found
         if table_name not in tables_columns:
             tables_columns[table_name] = headers
-        # else:
-        #     for header in headers:
-        #         if header not in tables_columns[table_name]:
-        #             tables_columns[table_name].append(header)
 
         # Establish a connection to the database
         with psycopg2.connect(db_connection_string) as conn:
@@ -69,7 +66,7 @@ def process_file(csv_file_path, db_connection_string, output_dir):
                     row_dict = dict(zip(headers, row))
                     rows_to_insert.append(row_dict)
 
-                    batch_size = 1000
+                    batch_size = 10000
 
                     if len(rows_to_insert) >= batch_size:
                         # Construct the INSERT INTO SQL query
@@ -146,9 +143,4 @@ if __name__ == "__main__":
         raise EnvironmentError("DATABASE_CONNECTION environment variable is not set")
 
     drop_tables(db_connection_string)
-
-    only_file = None
-    # only_file = (
-    #     "extract_2018_20240516104535_unit_20200101-20201231_HAYSTRAVISWILLIAMSON.csv"
-    # )
-    process_directory(root_dir, db_connection_string, output_dir, only_file)
+    process_directory(root_dir, db_connection_string, output_dir)
