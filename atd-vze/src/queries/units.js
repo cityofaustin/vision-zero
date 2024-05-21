@@ -1,67 +1,51 @@
 import { gql } from "apollo-boost";
 
 export const GET_UNITS = gql`
-  query FindUnits($crashId: Int) {
-    atd_txdot_units(where: { crash_id: { _eq: $crashId } }) {
-      unit_desc_id
+  query FindUnits($crashId: Int!) {
+    units(where: { crash_id: { _eq: $crashId } }) {
+      id
       unit_nbr
-      contributing_factor_1 {
-        contrib_factr_desc
-      }
-      veh_make_id
-      veh_mod_id
       veh_mod_year
-      travel_direction_desc {
-        trvl_dir_desc
-        trvl_dir_id
+      unit_desc_lkp {
+        id
+        label
       }
-      movement {
-        movement_desc
-        movement_id
+      veh_body_styl_lkp {
+        id
+        label
       }
-      unit_description {
-        veh_unit_desc_id
-        veh_unit_desc_desc
+      veh_make_lkp {
+        id
+        label
       }
-      make {
-        veh_make_desc
+      veh_mod_lkp {
+        id
+        label
       }
-      model {
-        veh_mod_desc
+      trvl_dir_lkp {
+        id
+        label
       }
-      body_style {
-        veh_body_styl_id
-        veh_body_styl_desc
+      movt_lkp {
+        id
+        label
       }
-      death_cnt
-      sus_serious_injry_cnt
+      contrib_factr_lkp {
+        id
+        label
+      }
+      unit_injury_metrics_view {
+        vz_fatality_count
+        sus_serious_injry_count
+      }
     }
   }
 `;
 
 export const UPDATE_UNIT = gql`
-  mutation UpdateUnits(
-    $crashId: Int
-    $unitId: Int
-    $changes: atd_txdot_units_set_input
-  ) {
-    update_atd_txdot_units(
-      where: {
-        crash_id: { _eq: $crashId }
-        _and: { unit_nbr: { _eq: $unitId } }
-      }
-      _set: $changes
-    ) {
-      affected_rows
-      returning {
-        crash_id
-        unit_id
-        unit_nbr
-        movement_id
-        death_cnt
-        sus_serious_injry_cnt
-        travel_direction
-      }
+  mutation UpdateUnits($unitId: Int!, $changes: units_edits_set_input) {
+    update_units_edits_by_pk(pk_columns: { id: $unitId }, _set: $changes) {
+      id
     }
   }
 `;

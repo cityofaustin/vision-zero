@@ -24,9 +24,12 @@ const PeopleDetailsCard = ({ isExpanded, toggleAccordion, ...props }) => {
   const crashId = props.match.params.id;
 
   const { data: lookupSelectOptions } = useQuery(GET_PERSON_LOOKUPS);
-  const { data, refetch } = useQuery(GET_PEOPLE, {
+  const { loading, error, data, refetch } = useQuery(GET_PEOPLE, {
     variables: { crashId },
   });
+
+  if (loading) return "Loading...";
+  if (error) return `Error! ${error.message}`;
 
   const personMutation = {
     mutation: UPDATE_PERSON,

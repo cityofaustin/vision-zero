@@ -76,7 +76,11 @@ const RelatedRecordsTable = ({
   const formatValue = (data, field) => {
     let fieldValue = data[field];
 
-    if (typeof data[field] === "object") {
+    // If the field comes from a hasura relationship then set the fieldValue accordingly
+    if (fieldConfig.fields[field].relationshipName) {
+      fieldValue = data[fieldConfig.fields[field].relationshipName][field];
+      // If the field value is still an object we need to go a layer deeper to get the lookup desc
+    } else if (typeof data[field] === "object") {
       fieldValue =
         data[field] && data[field][fieldConfig.fields[field].lookup_desc];
     }
@@ -154,9 +158,6 @@ const RelatedRecordsTable = ({
                         const isEditing =
                           editField === field && row === editRow;
 
-                        const fieldLookupPrefix =
-                          fieldConfig.fields[field].lookupPrefix;
-
                         const updateFieldKey = fieldConfig.fields[field]
                           .updateFieldKey
                           ? fieldConfig.fields[field].updateFieldKey
@@ -200,10 +201,8 @@ const RelatedRecordsTable = ({
                                     }
                                     defaultValue={
                                       // Check for null values and display as blank
-                                      row[field] &&
-                                      row[field][`${fieldLookupPrefix}_id`] !==
-                                        null
-                                        ? row[field][`${fieldLookupPrefix}_id`]
+                                      row[field] && row[field][`id`] !== null
+                                        ? row[field][`id`]
                                         : ""
                                     }
                                     type="select"
@@ -214,14 +213,10 @@ const RelatedRecordsTable = ({
                                     ].map(option => {
                                       return (
                                         <option
-                                          value={
-                                            option[`${fieldLookupPrefix}_id`]
-                                          }
-                                          key={
-                                            option[`${fieldLookupPrefix}_id`]
-                                          }
+                                          value={option[`id`]}
+                                          key={option[`id`]}
                                         >
-                                          {option[`${fieldLookupPrefix}_desc`]}
+                                          {option[`label`]}
                                         </option>
                                       );
                                     })}

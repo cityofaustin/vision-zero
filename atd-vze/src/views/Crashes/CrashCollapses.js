@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Card, CardBody, CardHeader, Col, Row } from "reactstrap";
+import { Card, Col, Row } from "reactstrap";
 
 import UnitDetailsCard from "./UnitDetailsCard";
 import PeopleDetailsCard from "./PeopleDetailsCard";
@@ -74,28 +74,21 @@ class CrashCollapses extends Component {
         <Row>
           <Col>
             <Card>
-              <CardHeader>
-                <i className="fa fa-align-justify" /> Related Records
-              </CardHeader>
-              <CardBody>
-                <div id="accordion">
-                  <UnitDetailsCard
-                    isExpanded={this.state.accordion[0]}
-                    toggleAccordion={this.toggleAccordion}
-                    {...this.props.props}
-                  />
-                  <PeopleDetailsCard
+              <UnitDetailsCard
+                isExpanded={this.state.accordion[0]}
+                toggleAccordion={this.toggleAccordion}
+                {...this.props.props}
+              />
+              {/* <PeopleDetailsCard
                     isExpanded={this.state.accordion[1]}
                     toggleAccordion={this.toggleAccordion}
                     {...this.props.props}
-                  />
-                  <ChargesDetailsCard
+                  /> */}
+              {/* <ChargesDetailsCard
                     chargesData={this.props.data.atd_txdot_charges}
                     isExpanded={this.state.accordion[2]}
                     toggleAccordion={this.toggleAccordion}
-                  />
-                </div>
-              </CardBody>
+                  /> */}
             </Card>
           </Col>
         </Row>

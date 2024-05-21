@@ -59,21 +59,21 @@ export const GET_LOOKUPS = gql`
 
 export const GET_UNIT_LOOKUPS = gql`
   {
-    atd_txdot__trvl_dir_lkp {
-      trvl_dir_id
-      trvl_dir_desc
+    lookups_trvl_dir_lkp {
+      id
+      label
     }
-    atd_txdot__movt_lkp {
-      movement_id
-      movement_desc
+    lookups_unit_desc_lkp {
+      id
+      label
     }
-    atd_txdot__veh_unit_desc_lkp {
-      veh_unit_desc_id
-      veh_unit_desc_desc
+    lookups_veh_body_styl_lkp {
+      id
+      label
     }
-    atd_txdot__veh_body_styl_lkp {
-      veh_body_styl_id
-      veh_body_styl_desc
+    lookups_movt_lkp {
+      id
+      label
     }
   }
 `;

@@ -33,8 +33,7 @@ import Page404 from "../Pages/Page404/Page404";
 
 import "./crash.scss";
 
-import { GET_CRASH, UPDATE_CRASH, NEW_GET_CRASH } from "../../queries/crashes";
-import { GET_PEOPLE } from "../../queries/people";
+import { GET_CRASH_OLD, UPDATE_CRASH, GET_CRASH } from "../../queries/crashes";
 import {
   GET_NOTES,
   INSERT_NOTE,
@@ -44,31 +43,17 @@ import {
 
 function Crash(props) {
   const crashId = props.match.params.id;
-  const { loading, error, data, refetch } = useQuery(GET_CRASH, {
+  const { loading, error, data, refetch } = useQuery(GET_CRASH_OLD, {
     variables: { crashId },
   });
   const {
-    loading: peopleLoading,
-    error: peopleError,
-    data: peopleData,
-  } = useQuery(GET_PEOPLE, {
+    loading: crashLoading,
+    error: crashError,
+    data: crashData,
+    refetch: crashRefetch,
+  } = useQuery(GET_CRASH, {
     variables: { crashId },
   });
-  const {
-    loading: loadingNewData,
-    error: errorNewData,
-    data: newData,
-  } = useQuery(NEW_GET_CRASH, {
-    variables: { crash_id: crashId },
-  });
-  const primaryPersonYearsOfLifeLost =
-    peopleData?.primary_person_years_of_life_lost?.aggregate?.sum
-      ?.years_of_life_lost || 0;
-  const personYearsOfLifeLost =
-    peopleData?.person_years_of_life_lost?.aggregate?.sum?.years_of_life_lost ||
-    0;
-  const totalYearsOfLifeLost =
-    primaryPersonYearsOfLifeLost + personYearsOfLifeLost;
 
   const [editField, setEditField] = useState("");
   const [formData, setFormData] = useState({});
@@ -82,9 +67,9 @@ function Crash(props) {
   const shouldShowFatalityRecommendations =
     (isAdmin(roles) || isItSupervisor(roles)) && isCrashFatal;
 
-  if (loading || peopleLoading) return "Loading...";
+  if (loading || crashLoading) return "Loading...";
+  if (crashError) return `Error! ${crashError.message}`;
   if (error) return `Error! ${error.message}`;
-  if (peopleError) return `Error! ${peopleError.message}`;
 
   const createGeocoderAddressString = data => {
     const geocoderAddressFields = [
@@ -156,18 +141,22 @@ function Crash(props) {
   };
 
   const {
-    atd_fatality_count: deathCount,
-    sus_serious_injry_cnt: seriousInjuryCount,
     latitude_primary: latitude,
     longitude_primary: longitude,
-    address_confirmed_primary: primaryAddress,
-    address_confirmed_secondary: secondaryAddress,
     cr3_stored_flag: cr3StoredFlag,
     temp_record: tempRecord,
     geocode_method: geocodeMethod,
     cr3_file_metadata: cr3FileMetadata,
     investigator_narrative_ocr: investigatorNarrative,
   } = !!data?.atd_txdot_crashes[0] ? data?.atd_txdot_crashes[0] : {};
+
+  const {
+    crash_injury_metrics_view: { vz_fatality_count: deathCount },
+    crash_injury_metrics_view: { sus_serious_injry_count: seriousInjuryCount },
+    address_primary: primaryAddress,
+    address_secondary: secondaryAddress,
+    crash_injury_metrics_view: { years_of_life_lost: yearsOfLifeLost },
+  } = crashData?.crashes_by_pk ? crashData?.crashes_by_pk : {};
 
   const mapGeocoderAddress = createGeocoderAddressString(data);
 
@@ -215,9 +204,7 @@ function Crash(props) {
         </Col>
         <Col xs="12" sm="6" md="4">
           <Widget02
-            header={`${
-              totalYearsOfLifeLost === null ? "--" : totalYearsOfLifeLost
-            }`}
+            header={`${yearsOfLifeLost || 0}`}
             mainText="Years of Life Lost"
             icon="fa fa-hourglass-end"
             color="info"
