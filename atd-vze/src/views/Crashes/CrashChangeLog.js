@@ -46,6 +46,14 @@ const useChangeLogData = data =>
     });
   }, [data]);
 
+const toTitleCase = str =>
+  str.charAt(0).toUpperCase() + str.substr(1).toLowerCase();
+
+const formatEventName = (recordType, eventType) =>
+  `${toTitleCase(recordType)} ${eventType
+    .toLowerCase()
+    .replace("insert", "create")}`;
+
 export default function CrashChangeLog({ data }) {
   const [selectedChange, setSelectedChange] = useState(null);
 
@@ -59,7 +67,7 @@ export default function CrashChangeLog({ data }) {
       <CardBody>
         <Table responsive striped hover>
           <thead>
-            <th>Record type</th>
+            <th>Event</th>
             <th>Affected fields</th>
             <th>Edited by</th>
             <th>Date</th>
@@ -70,10 +78,12 @@ export default function CrashChangeLog({ data }) {
                 onClick={() => setSelectedChange(change)}
                 style={{ cursor: "pointer" }}
               >
-                <td className="font-weight-bold">{change.record_type}</td>
+                <td className="font-weight-bold">
+                  {formatEventName(change.record_type, change.operation_type)}
+                </td>
                 <td>
                   {change.operation_type === "INSERT"
-                    ? "(record created)"
+                    ? ""
                     : change.affected_fields.join(", ")}
                 </td>
                 <td>{change.created_by}</td>
