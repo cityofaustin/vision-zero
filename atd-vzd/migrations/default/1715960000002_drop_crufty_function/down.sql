@@ -1,15 +1,6 @@
--- This function is intended to be called via Hasura when the AWS lambda function, crash_update_location/app.py, 
--- when a crash is found to be on a main-lane. It will return the location_id of a VZ location which belongs
--- to the closest location that was formed from a service road and has its centroid lie within a cone
--- eminating from the crash location in a direction 90 degrees out of phase of the direction of travel
--- notated in the 'rpt_street_name' field or the 'rpt_sec_street_name' field of the crash.
-create or replace function find_service_road_location_for_centerline_crash(input_crash_id integer)
-returns setof atd_txdot_locations
-language 'sql'
-stable
-as $QUERY$
--- this CTE will setup a in-memory table containing one crash_id, its position, 
--- and the seek direction if and only if the crash supplied lies within a mainlane strip
+CREATE FUNCTION public.find_service_road_location_for_centerline_crash(input_crash_id integer) RETURNS SETOF public.atd_txdot_locations
+    LANGUAGE sql STABLE
+    AS $$
 with crash as (
   WITH cr3_mainlanes AS (
     SELECT st_transform(st_buffer(st_transform(st_union(cr3_mainlanes.geometry), 2277), 1), 4326) AS geometry
@@ -36,8 +27,6 @@ with crash as (
   and c.crash_id = input_crash_id
   limit 1
 )
--- this query joins the crash found in the CTE with the polygon layer to find the closest 
--- polygon centroid in the cone eminating from the crash location in the seek_direction defined in the CTE
 select l.*
 from atd_txdot_locations l
 join crash c on (1 = 1)
@@ -64,4 +53,59 @@ AND st_intersects(st_transform(st_buffer(st_transform(c.position, 2277), 750), 4
 AND l.description ~~* '%SVRD%'
 ORDER BY (st_distance(st_centroid(l.shape), c.position))
 limit 1
-$QUERY$;
+$$;
+
+CREATE FUNCTION public.find_noncr3_collisions_for_location(id character varying) RETURNS SETOF public.atd_apd_blueform
+    LANGUAGE sql STABLE
+    AS $$
+SELECT
+  *
+FROM
+  atd_apd_blueform AS blueform
+WHERE
+	ST_Contains((
+		SELECT
+  atd_loc.shape
+FROM atd_txdot_locations AS atd_loc
+WHERE
+			atd_loc.location_id::VARCHAR=id), ST_SetSRID(ST_MakePoint (blueform.longitude, blueform.latitude), 4326))
+$$;
+
+CREATE FUNCTION public.find_cr3_collisions_for_location(id character varying) RETURNS SETOF public.atd_txdot_crashes
+    LANGUAGE sql STABLE
+    AS $$
+SELECT
+  *
+FROM
+  atd_txdot_crashes AS cr3_crash
+WHERE
+	ST_Contains((
+		SELECT
+  atd_loc.shape
+FROM atd_txdot_locations AS atd_loc
+WHERE
+			atd_loc.location_id::VARCHAR=id), ST_SetSRID(ST_MakePoint(cr3_crash.longitude_primary, cr3_crash.latitude_primary), 4326))
+$$;
+
+CREATE FUNCTION public.search_atd_location_crashes(location_id character varying) RETURNS SETOF public.atd_txdot_crashes
+    LANGUAGE sql STABLE
+    AS $$
+    SELECT atc.* FROM atd_txdot_crashes AS atc
+    JOIN atd_txdot_locations AS atl ON ST_CONTAINS(atl.shape, atc.position)
+    WHERE atl.unique_id = location_id;
+$$;
+
+CREATE FUNCTION public.search_atd_crash_location(crash_id integer) RETURNS SETOF public.atd_txdot_locations
+    LANGUAGE sql STABLE
+    AS $$
+    SELECT * FROM atd_txdot_locations AS atl
+    WHERE ST_Contains(atl.shape, (SELECT atc.position FROM atd_txdot_crashes AS atc WHERE atc.crash_id = crash_id))
+$$;
+
+CREATE FUNCTION public.search_atd_crash_locations(crash_id integer) RETURNS SETOF public.atd_txdot_locations
+    LANGUAGE sql STABLE
+    AS $$
+    SELECT * FROM atd_txdot_locations AS atl
+    WHERE ST_Contains(atl.shape, (SELECT atc.position FROM atd_txdot_crashes AS atc WHERE atc.crash_id = crash_id LIMIT 1))
+    LIMIT 1
+$$;

@@ -7,10 +7,12 @@ import hashlib
 import datetime
 import glob
 import tempfile
+import magic
 from subprocess import Popen, PIPE
 
 import shutil
 import boto3
+import botocore
 import sysrsync
 import psycopg2
 import psycopg2.extras
@@ -58,7 +60,8 @@ def main():
 
     global GRAPHQL_ENDPOINT
     global GRAPHQL_ENDPOINT_KEY
-    global SFTP_ENDPOINT_SSH_PRIVATE_KEY
+
+    global S3_EXTRACT_BUCKET
 
     SFTP_ENDPOINT = secrets["SFTP_endpoint"]
     ZIP_PASSWORD = secrets["archive_extract_password"]
@@ -81,7 +84,8 @@ def main():
 
     GRAPHQL_ENDPOINT = secrets["graphql_endpoint"]
     GRAPHQL_ENDPOINT_KEY = secrets["graphql_endpoint_key"]
-    SFTP_ENDPOINT_SSH_PRIVATE_KEY = secrets["sftp_endpoint_private_key"]
+
+    S3_EXTRACT_BUCKET = secrets["s3_extract_bucket"]
 
     local_mode = False
     if bool(glob.glob("/app/development_extracts/*.zip")):
@@ -89,7 +93,7 @@ def main():
 
     zip_location = None
     if not local_mode:  # Production
-        zip_location = download_archives()
+        zip_location = download_s3_archive()
     else:  # Development. Put a zip in the development_extracts directory to use it.
         zip_location = specify_extract_location()
 
@@ -97,7 +101,7 @@ def main():
         return
 
     extracted_archives = unzip_archives(zip_location)
-    for archive in extracted_archives:
+    for archive_id, archive, filename_in_s3 in extracted_archives:
         logical_groups_of_csvs = group_csvs_into_logical_groups(archive, dry_run=False)
         for logical_group in logical_groups_of_csvs:
             desired_schema_name = create_import_schema_name(logical_group)
@@ -107,9 +111,70 @@ def main():
             typed_token = align_db_typing(trimmed_token)
             align_records_token = align_records(typed_token)
             clean_up_import_schema(align_records_token)
-    if not local_mode:  # We're using a locally provided zip file, so skip these steps
-        remove_archives_from_sftp_endpoint(zip_location)
-        upload_csv_files_to_s3(archive)
+        mark_extract_as_imported(archive_id)
+        move_extract_into_processed(filename_in_s3)
+
+
+def move_extract_into_processed(extract):
+    # Define the source and destination paths
+    source = {
+        "Bucket": S3_EXTRACT_BUCKET,
+        "Key": f"{DEPLOYMENT_ENVIRONMENT}/inbox/{extract}",
+    }
+    destination = os.path.join(f"{DEPLOYMENT_ENVIRONMENT}/processed/", extract)
+
+    session = boto3.Session(
+        aws_access_key_id=AWS_ACCESS_KEY_ID,
+        aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+    )
+
+    s3 = session.client("s3")
+    bucket = S3_EXTRACT_BUCKET
+
+    # Copy the file from the source to the destination
+    s3.copy(source, bucket, destination)
+
+    # Delete the file from the source
+    s3.delete_object(Bucket=bucket, Key=source["Key"])
+
+    print(f"Moving {extract} into processed")
+
+
+def mark_extract_as_imported(id):
+    with SshKeyTempDir() as key_directory:
+        write_key_to_file(
+            key_directory + "/id_ed25519", DB_BASTION_HOST_SSH_PRIVATE_KEY + "\n"
+        )
+        ssh_tunnel = SSHTunnelForwarder(
+            (DB_BASTION_HOST),
+            ssh_username=DB_BASTION_HOST_SSH_USERNAME,
+            ssh_private_key=f"{key_directory}/id_ed25519",
+            remote_bind_address=(DB_RDS_HOST, 5432),
+        )
+        ssh_tunnel.start()
+
+        pg = psycopg2.connect(
+            host="localhost",
+            port=ssh_tunnel.local_bind_port,
+            user=DB_USER,
+            password=DB_PASS,
+            dbname=DB_NAME,
+            sslmode=DB_SSL_REQUIREMENT,
+            sslrootcert="/root/rds-combined-ca-bundle.pem",
+        )
+
+        cursor = pg.cursor()
+        cursor.execute(
+            """
+            UPDATE cris_import_log
+            SET completed_at = %s
+            WHERE id = %s
+            """,
+            (datetime.datetime.utcnow(), id),
+        )
+
+        pg.commit()
+        pg.close()
 
 
 def get_secrets():
@@ -204,6 +269,11 @@ def get_secrets():
             "opfield": ".private key",
             "opvault": VAULT_ID,
         },
+        "s3_extract_bucket": {
+            "opitem": "Vision Zero CRIS Import",
+            "opfield": f"{DEPLOYMENT_ENVIRONMENT}.S3 Extract Bucket",
+            "opvault": VAULT_ID,
+        },
     }
 
     # instantiate a 1Password client
@@ -225,45 +295,91 @@ def specify_extract_location():
     return zip_tmpdir
 
 
-def download_archives():
-    """
-    Connect to the SFTP endpoint which receives archives from CRIS and
-    download them into a temporary directory.
+def download_s3_archive():
+    session = boto3.Session(
+        aws_access_key_id=AWS_ACCESS_KEY_ID,
+        aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+    )
 
-    Returns path of temporary directory as a string
-    """
+    s3 = session.client("s3")
+    bucket = S3_EXTRACT_BUCKET
 
     with SshKeyTempDir() as key_directory:
         write_key_to_file(
-            key_directory + "/id_ed25519", SFTP_ENDPOINT_SSH_PRIVATE_KEY + "\n"
+            key_directory + "/id_ed25519", DB_BASTION_HOST_SSH_PRIVATE_KEY + "\n"
+        )
+        ssh_tunnel = SSHTunnelForwarder(
+            (DB_BASTION_HOST),
+            ssh_username=DB_BASTION_HOST_SSH_USERNAME,
+            ssh_private_key=f"{key_directory}/id_ed25519",
+            remote_bind_address=(DB_RDS_HOST, 5432),
+        )
+        ssh_tunnel.start()
+
+        pg = psycopg2.connect(
+            host="localhost",
+            port=ssh_tunnel.local_bind_port,
+            user=DB_USER,
+            password=DB_PASS,
+            dbname=DB_NAME,
+            sslmode=DB_SSL_REQUIREMENT,
+            sslrootcert="/root/rds-combined-ca-bundle.pem",
         )
 
-        zip_tmpdir = tempfile.mkdtemp()
-        rsync = None
-        try:
-            rsync = sysrsync.run(
-                verbose=True,
-                options=["-a"],
-                source_ssh=SFTP_ENDPOINT,
-                source="/home/txdot/*zip",
-                sync_source_contents=False,
-                destination=zip_tmpdir,
-                private_key=key_directory + "/id_ed25519",
-                strict_host_key_checking=False,
+        uploads_prefix = f"{DEPLOYMENT_ENVIRONMENT}/inbox/"
+        # Get list of all objects in the bucket with the specified prefix
+        objects = s3.list_objects(Bucket=bucket, Prefix=uploads_prefix)
+
+        cursor = pg.cursor()
+
+        extracts_to_process = []
+
+        for obj in objects["Contents"]:
+            full_object_path = obj["Key"]
+            object_name = os.path.basename(full_object_path)
+
+            # Skip the "folder" object
+            if full_object_path == uploads_prefix:
+                continue
+
+            # Extract the S3 prefix from the full object path
+            object_path = os.path.dirname(full_object_path)
+
+            extracts_to_process.append((object_path, object_name))
+
+            cursor.execute(
+                """
+                INSERT INTO cris_import_log (object_path, object_name)
+                VALUES (%s, %s)
+                """,
+                (object_path, object_name),
             )
-        except:
-            print("No files to copy..")
-            # we're really kinda out of work here, so we're going to bail
-            quit()
-        print("Rsync return code: " + str(rsync.returncode))
-        # check for a OS level return code of anything non-zero, which
-        # would indicate to us that the child proc we kicked off didn't
-        # complete successfully.
-        # see: https://www.gnu.org/software/libc/manual/html_node/Exit-Status.html
-        if rsync.returncode != 0:
-            return False
-        print("Temp Directory: " + zip_tmpdir)
-        return zip_tmpdir
+
+        # Commit the changes and close the connection
+        pg.commit()
+        pg.close()
+
+        # Check if there are no new files to process
+        if len(extracts_to_process) == 0:
+            raise Exception("No new files to process")
+
+        # Create a new temporary directory
+        directory_of_extracts = tempfile.mkdtemp()
+
+        for extract in extracts_to_process:
+            full_s3_path = os.path.join(extract[0], extract[1])
+            local_extract_path = os.path.join(directory_of_extracts, extract[1])
+            s3.download_file(bucket, full_s3_path, local_extract_path)
+
+            # # Check if the file has been downloaded
+            if not os.path.exists(local_extract_path):
+                raise Exception(f"File {local_extract_path} was not downloaded")
+
+            # # Check if the file is a zip file
+            if "Zip" not in magic.from_file(local_extract_path):
+                raise Exception(f"File {local_extract_path} is not a valid zip file")
+
+        return directory_of_extracts
 
 
 def unzip_archives(archives_directory):
@@ -276,15 +392,48 @@ def unzip_archives(archives_directory):
     containing an archive's contents
     """
 
-    extracted_csv_directories = []
-    for filename in os.listdir(archives_directory):
-        print("About to unzip: " + filename + "with the command ...")
-        extract_tmpdir = tempfile.mkdtemp()
-        unzip_command = f'7za -y -p{ZIP_PASSWORD} -o"{extract_tmpdir}" x "{archives_directory}/{filename}"'
-        print(unzip_command)
-        os.system(unzip_command)
-        extracted_csv_directories.append(extract_tmpdir)
-    return extracted_csv_directories
+    with SshKeyTempDir() as key_directory:
+        write_key_to_file(
+            key_directory + "/id_ed25519", DB_BASTION_HOST_SSH_PRIVATE_KEY + "\n"
+        )
+        ssh_tunnel = SSHTunnelForwarder(
+            (DB_BASTION_HOST),
+            ssh_username=DB_BASTION_HOST_SSH_USERNAME,
+            ssh_private_key=f"{key_directory}/id_ed25519",
+            remote_bind_address=(DB_RDS_HOST, 5432),
+        )
+        ssh_tunnel.start()
+
+        pg = psycopg2.connect(
+            host="localhost",
+            port=ssh_tunnel.local_bind_port,
+            user=DB_USER,
+            password=DB_PASS,
+            dbname=DB_NAME,
+            sslmode=DB_SSL_REQUIREMENT,
+            sslrootcert="/root/rds-combined-ca-bundle.pem",
+        )
+
+        extracted_csv_directories = []
+        for filename in os.listdir(archives_directory):
+            print("About to unzip: " + filename + "with the command ...")
+            extract_tmpdir = tempfile.mkdtemp()
+            unzip_command = f'7za -y -p{ZIP_PASSWORD} -o"{extract_tmpdir}" x "{archives_directory}/{filename}"'
+            print(unzip_command)
+            os.system(unzip_command)
+
+            cursor = pg.cursor()
+            cursor.execute(
+                "select id from cris_import_log where object_name = %s order by created_at desc limit 1",
+                (filename,),
+            )
+            id = cursor.fetchone()[0]
+            extracted_csv_directories.append((id, extract_tmpdir, filename))
+
+        pg.commit()
+        pg.close()
+
+        return extracted_csv_directories
 
 
 def cleanup_temporary_directories(
@@ -312,61 +461,6 @@ def cleanup_temporary_directories(
 
     for directory in extracted_archives:
         shutil.rmtree(directory)
-
-    return None
-
-
-def upload_csv_files_to_s3(extract_directory):
-    """
-    Upload CSV files which came from CRIS exports up to S3 for archival
-
-    Arguments:
-        extract_directory: String denoting the full path of a directory containing extracted CSV files
-
-    Returns:
-        extract_directory: String denoting the full path of a directory containing extracted CSV files
-            NB: The in-and-out unchanged data in this function is more about serializing prefect tasks and less about inter-functional communication
-    """
-
-    session = boto3.Session(
-        aws_access_key_id=AWS_ACCESS_KEY_ID,
-        aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-    )
-    s3 = session.resource("s3")
-
-    # for extract_directory in extracts:
-    for filename in os.listdir(extract_directory):
-        print("About to upload to s3: " + filename)
-        destination_path = AWS_CSV_ARCHIVE_PATH + "/" + str(datetime.date.today())
-        s3.Bucket(AWS_CSV_ARCHIVE_BUCKET_NAME).upload_file(
-            extract_directory + "/" + filename,
-            destination_path + "/" + filename,
-        )
-    return extract_directory
-
-
-def remove_archives_from_sftp_endpoint(zip_location):
-    """
-    Delete the archives which have been processed from the SFTP endpoint
-
-    Arguments:
-        zip_location: Stringing containing path of a directory containing the zip files downloaded from SFTP endpoint
-
-    Returns: None
-    """
-    with SshKeyTempDir() as key_directory:
-        write_key_to_file(
-            key_directory + "/id_ed25519", SFTP_ENDPOINT_SSH_PRIVATE_KEY + "\n"
-        )
-
-        print(zip_location)
-        for archive in os.listdir(zip_location):
-            print(archive)
-            command = f"ssh -i {key_directory}/id_ed25519 {SFTP_ENDPOINT} rm -v /home/txdot/{archive}"
-            print(command)
-            cmd = command.split()
-            rm_result = Popen(cmd, stdout=PIPE, stderr=PIPE, stdin=PIPE).stdout.read()
-            print(rm_result)
 
     return None
 
@@ -612,7 +706,23 @@ def align_records(map_state):
             input_column_names = util.get_input_column_names(pg, map_state["import_schema"], table, target_columns)
 
             # iterate over each imported record and determine correct action
+            should_skip_update = False
+
             for source in imported_records:
+                # Check unique key columns to make sure they all have a value
+                for key_column in key_columns:
+                    key_column_value = source[key_column]
+                    if key_column_value is None:
+                        print("\nSkipping because unique key column is missing")    
+                        print(f"Table: {table}")
+                        print(f"Missing key column: {key_column}")
+                        should_skip_update = True
+
+                # If we are missing a column that uniquely identifies the record, we should skip the update
+                if should_skip_update:
+                    for key_column in key_columns:
+                        print(f"{key_column}: {source[key_column]}")
+                    continue
 
                 # generate some record specific SQL fragments to identify the record in larger queries
                 record_key_sql, import_key_sql = util.get_key_clauses(table_keys, output_map, table, source, map_state["import_schema"])
@@ -652,21 +762,6 @@ def align_records(map_state):
 
                         print("Changed column count: " + str(len(changed_columns['changed_columns'])))
                         print("Changed Columns:" + str(changed_columns["changed_columns"]))
-                        
-                        try:
-                            # this seemingly violates the principal of treating each record source equally, however, this is 
-                            # really only a reflection that we create incomplete temporary records consisting only of a crash record
-                            # and not holding place entities for units, persons, etc.
-                            if table == "crash" and util.has_existing_temporary_record(pg, source["case_id"]):
-                                print("\b🛎: " + str(source["crash_id"]) + " has existing temporary record")
-                                time.sleep(5)
-                                util.remove_existing_temporary_record(pg, source["case_id"])
-                        except:
-                            # Trap the case of a missing case_id key error in the RealDictRow object.
-                            # A RealDictRow, returned by the psycopg2 cursor, is a dictionary-like object,
-                            # but lacks has_key() and other methods.
-                            print("Skipping checking on existing temporary record for " + str(source["crash_id"]))
-                            pass
                         
                         # build an comma delimited list of changed columns
                         all_changed_columns = ", ".join(important_changed_columns["changed_columns"] + changed_columns["changed_columns"])
@@ -711,13 +806,12 @@ def group_csvs_into_logical_groups(extracted_archives, dry_run):
     files = os.listdir(str(extracted_archives))
     logical_groups = []
     for file in files:
-        if file.endswith(".xml"):
+        if file.endswith(".xml") or file == "crashReports":
             continue
         match = re.search("^extract_(\d+_\d+)_", file)
         group_id = match.group(1)
         if group_id not in logical_groups:
             logical_groups.append(group_id)
-    print("logical groups: " + str(logical_groups))
     map_safe_state = []
     for group in logical_groups:
         map_safe_state.append(

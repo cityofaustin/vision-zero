@@ -88,7 +88,6 @@
 - "!include public_atd_txdot_crashes.yaml"
 - "!include public_atd_txdot_geocoders.yaml"
 - "!include public_atd_txdot_locations.yaml"
-- "!include public_atd_txdot_locations_with_centroids.yaml"
 - "!include public_atd_txdot_person.yaml"
 - "!include public_atd_txdot_primaryperson.yaml"
 - "!include public_atd_txdot_streets.yaml"
