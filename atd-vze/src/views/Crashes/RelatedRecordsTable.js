@@ -208,10 +208,7 @@ const RelatedRecordsTable = ({
                                     }
                                     type="select"
                                   >
-                                    {/* Show a NO DATA option only when formatValue is displayed. */}
-                                    {formatValue(row, field) === "NO DATA" && (
-                                      <option value={null}>NO DATA</option>
-                                    )}
+                                    <option value={""}>NO DATA</option>
                                     {lookupOptions[
                                       fieldConfig.fields[field].lookupOptions
                                     ].map(option => {
@@ -271,7 +268,8 @@ const RelatedRecordsTable = ({
                             )}
 
                             {!isEditing &&
-                              (fieldConfig.fields[field].badge ? (
+                              (fieldConfig.fields[field].badge &&
+                              formatValue(row, field) !== "NO DATA" ? (
                                 <Badge
                                   color={fieldConfig.fields[field].badgeColor(
                                     row

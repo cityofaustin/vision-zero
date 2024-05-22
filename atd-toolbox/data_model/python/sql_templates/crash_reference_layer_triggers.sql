@@ -27,7 +27,7 @@ begin
                 public.atd_txdot_locations
             where
                 location_group = 1 -- level 1-4 polygons
-                and st_contains(shape, new.position)
+                and st_contains(geometry, new.position)
             limit 1);
         raise notice 'found location: % compared to previous location: %', new.location_id, old.location_id;
         --

@@ -30,12 +30,12 @@ const LocationMap = ({ data }) => {
     ? {
         type: "Feature",
         properties: {
-          renderType: polygon.shape.type,
+          renderType: polygon.geometry.type,
           id: polygon.location_id,
         },
         geometry: {
-          coordinates: polygon.shape.coordinates,
-          type: polygon.shape.type,
+          coordinates: polygon.geometry.coordinates,
+          type: polygon.geometry.type,
         },
       }
     : null;

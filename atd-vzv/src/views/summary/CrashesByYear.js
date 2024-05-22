@@ -15,6 +15,7 @@ import {
   summaryCurrentYearEndDate,
   summaryCurrentYearStartDate,
 } from "../../constants/time";
+import ColorSpinner from "../../Components/Spinner/ColorSpinner";
 
 const CrashesByYear = () => {
   const chartTypes = ["Monthly", "Cumulative"];
@@ -101,7 +102,10 @@ const CrashesByYear = () => {
       </Row>
       <Row>
         <Col>
-          <CrashTypeSelector setCrashType={setCrashType} componentName="CrashesByYear"/>
+          <CrashTypeSelector
+            setCrashType={setCrashType}
+            componentName="CrashesByYear"
+          />
         </Col>
       </Row>
       <Row>
@@ -109,14 +113,22 @@ const CrashesByYear = () => {
           <hr />
         </Col>
       </Row>
-      <ChartTypeSelector
-        chartTypes={chartTypes}
-        chartType={chartType}
-        setChartType={setChartType}
-      />
-      <Row className="mt-1">
-        <Col>{renderChartByType(chartType)}</Col>
-      </Row>
+      {avgData.length > 0 && currentYearData.length > 0 ? (
+        <div>
+          <ChartTypeSelector
+            chartTypes={chartTypes}
+            chartType={chartType}
+            setChartType={setChartType}
+          />
+          <Row className="mt-1">
+            <Col>{renderChartByType(chartType)}</Col>
+          </Row>
+        </div>
+      ) : (
+        <h1>
+          <ColorSpinner />
+        </h1>
+      )}
     </Container>
   );
 };
