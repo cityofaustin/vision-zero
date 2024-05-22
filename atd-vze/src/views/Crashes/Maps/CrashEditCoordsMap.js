@@ -72,7 +72,7 @@ const CrashEditCoordsMap = ({
     // Reset marker to original coordinates or default fallback
     const originalMarkerCoordinates = {
       latitude: latitude_primary || defaultInitialState.latitude,
-      longitude: longitude_primary || defaultInitialState.latitude,
+      longitude: longitude_primary || defaultInitialState.longitude,
     };
 
     // Move map center and marks to original coordinates or default fallback
@@ -108,7 +108,12 @@ const CrashEditCoordsMap = ({
       >
         <FullscreenControl position="top-left" />
         <NavigationControl position="top-left" showCompass={false} />
-        <Marker {...markerCoordinates}>
+        <Marker
+          latitude={markerCoordinates.latitude || defaultInitialState.latitude}
+          longitude={
+            markerCoordinates.longitude || defaultInitialState.longitude
+          }
+        >
           <Pin size={40} color={"warning"} isDragging={isDragging} animated />
         </Marker>
         {/* add nearmap raster source and style */}

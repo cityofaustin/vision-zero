@@ -4,15 +4,12 @@ export const GET_LOCATION = gql`
   query GetLocation($id: String, $yearsAgoDate: date) {
     atd_txdot_locations(where: { location_id: { _eq: $id } }) {
       location_id
-      address
       street_level
       description
-      shape
+      geometry
       latitude
       longitude
-      metadata
       last_update
-      is_retired
       crashes_by_manner_collision(order_by: { count: desc }, limit: 5) {
         collsn_desc
         count
@@ -51,10 +48,10 @@ export const UPDATE_LOCATION_POLYGON = gql`
   mutation UpdateLocation($locationId: String, $updatedPolygon: geometry!) {
     update_atd_txdot_locations(
       where: { location_id: { _eq: $locationId } }
-      _set: { shape: $updatedPolygon }
+      _set: { geometry: $updatedPolygon }
     ) {
       returning {
-        shape
+        geometry
       }
     }
   }
