@@ -86,7 +86,7 @@ def find_differences_write_update_log(db_connection_string, matching_columns):
             sql = "select * from public.atd_txdot_crashes order by crash_date desc"
             old_data.execute(sql)
 
-            with tqdm(total=total_crashes, desc="Processing crashes") as pbar:
+            with tqdm(total=total_crashes, desc="Processing crashes") as progress_bar:
                 for vz_crash in old_data:
                     updates = []
                     with conn.cursor(
@@ -94,9 +94,7 @@ def find_differences_write_update_log(db_connection_string, matching_columns):
                     ) as cris_data:
                         sql = "select * from data_model.crash where crash_id = %s"
                         cris_data.execute(sql, (vz_crash["crash_id"],))
-                        cris_crash = (
-                            cris_data.fetchone()
-                        )  # Changed from old_data to cris_data
+                        cris_crash = cris_data.fetchone()
                         if cris_crash is not None:
                             for column, public_type in matching_columns:
                                 if column in columns_to_skip:
@@ -124,7 +122,7 @@ def find_differences_write_update_log(db_connection_string, matching_columns):
                             conn.commit()
 
                     # Update tqdm progress bar
-                    pbar.update(1)
+                    progress_bar.update(1)
 
 
 if __name__ == "__main__":
