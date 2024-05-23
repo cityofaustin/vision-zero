@@ -64,8 +64,6 @@ def align_types(db_connection_string):
 
 def find_differences_write_update_log(db_connection_string, matching_columns):
     columns_to_skip = ["crash_date", "crash_time"]
-    with open("crash_updates.sql", "w") as f:  # Truncate the file at the start
-        pass
 
     with psycopg2.connect(db_connection_string) as conn:
         with conn.cursor() as cur:
@@ -83,6 +81,7 @@ def find_differences_write_update_log(db_connection_string, matching_columns):
             sql = "select * from public.atd_txdot_crashes order by crash_date desc"
             old_data.execute(sql)
             for vz_crash in old_data:
+                updates = []
                 with conn.cursor(
                     cursor_factory=psycopg2.extras.DictCursor
                 ) as cris_data:
@@ -97,23 +96,25 @@ def find_differences_write_update_log(db_connection_string, matching_columns):
                                 column in crashes_edits_columns
                                 and vz_crash[column] != cris_crash[column]
                             ):
-                                print(
-                                    f"Column {column} mismatch: vz_crash - {vz_crash[column]}, cris_crash - {cris_crash[column]}"
-                                )
-                                update_sql = f"update public.crashes_edits set {column} = %s where crash_id = %s;"
-                                formatted_sql = update_sql % (
-                                    vz_crash[column],
-                                    vz_crash["crash_id"],
-                                )
-                                print(formatted_sql)
-                                with open(
-                                    "crash_updates.sql", "a"
-                                ) as f:  # Append each update statement
-                                    f.write(formatted_sql + "\n")
-                                cris_data.execute(
-                                    update_sql, (vz_crash[column], vz_crash["crash_id"])
-                                )
-                                conn.commit()
+                                # print(
+                                #     f"Column {column} mismatch: vz_crash - {vz_crash[column]}, cris_crash - {cris_crash[column]}"
+                                # )
+                                updates.append((column, vz_crash[column]))
+
+                if updates:
+                    print(f"Crash {vz_crash['crash_id']}: {len(updates)} changes")
+                    update_sql = (
+                        "update public.crashes_edits set "
+                        + ", ".join(f"{column} = %s" for column, _ in updates)
+                        + " where crash_id = %s"
+                    )
+                    params = tuple(value for _, value in updates) + (
+                        vz_crash["crash_id"],
+                    )
+                    # print(update_sql % params)
+                    with conn.cursor() as cur:
+                        cur.execute(update_sql, params)
+                        conn.commit()
 
 
 if __name__ == "__main__":
