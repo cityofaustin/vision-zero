@@ -14,11 +14,7 @@ import RelatedRecordsTable from "./RelatedRecordsTable";
 
 import { primaryPersonDataMap, personDataMap } from "./peopleDataMap";
 import { GET_PERSON_LOOKUPS } from "../../queries/lookups";
-import {
-  GET_PEOPLE,
-  UPDATE_PRIMARYPERSON,
-  UPDATE_PERSON,
-} from "../../queries/people";
+import { GET_PEOPLE, UPDATE_PERSON } from "../../queries/people";
 
 const PeopleDetailsCard = ({ isExpanded, toggleAccordion, ...props }) => {
   const crashId = props.match.params.id;
@@ -31,19 +27,17 @@ const PeopleDetailsCard = ({ isExpanded, toggleAccordion, ...props }) => {
   if (loading) return "Loading...";
   if (error) return `Error! ${error.message}`;
 
+  const primaryPersonData = data.people_list_view.filter(
+    person => person.is_primary_person === true
+  );
+
+  const personData = data.people_list_view.filter(
+    person => person.is_primary_person === false
+  );
+
   const personMutation = {
     mutation: UPDATE_PERSON,
     variables: {
-      crashId: crashId,
-      personId: "",
-      changes: {},
-    },
-  };
-
-  const primaryPersonMutation = {
-    mutation: UPDATE_PRIMARYPERSON,
-    variables: {
-      crashId: crashId,
       personId: "",
       changes: {},
     },
@@ -77,29 +71,29 @@ const PeopleDetailsCard = ({ isExpanded, toggleAccordion, ...props }) => {
         <CardBody>
           <RelatedRecordsTable
             fieldConfig={primaryPersonDataMap[0]}
-            data={data.people_list_view}
+            data={primaryPersonData}
             sortField={"unit_nbr"}
             tableName={"people_list_view"}
             keyField={"id"}
             lookupOptions={lookupSelectOptions}
-            mutation={primaryPersonMutation}
+            mutation={personMutation}
             refetch={refetch}
             {...props}
           />
-          {/* 
-          {data.atd_txdot_person.length > 0 && (
+
+          {personData.length > 0 && (
             <RelatedRecordsTable
               fieldConfig={personDataMap[0]}
-              data={data.atd_txdot_person}
-              sortField={"person_id"}
+              data={personData}
+              sortField={"unit_nbr"}
               tableName={"people_list_view"}
-              keyField={"person_id"}
+              keyField={"id"}
               lookupOptions={lookupSelectOptions}
               mutation={personMutation}
               refetch={refetch}
               {...props}
             />
-          )} */}
+          )}
         </CardBody>
       </Collapse>
     </Card>
