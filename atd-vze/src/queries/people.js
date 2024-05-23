@@ -1,6 +1,6 @@
 import { gql } from "apollo-boost";
 
-export const GET_PEOPLE = gql`
+export const GET_PEOPLE_OLD = gql`
   query FindPeople($crashId: Int) {
     atd_txdot_primaryperson(where: { crash_id: { _eq: $crashId } }) {
       prsn_age
@@ -66,6 +66,37 @@ export const GET_PEOPLE = gql`
         sum {
           years_of_life_lost
         }
+      }
+    }
+  }
+`;
+
+export const GET_PEOPLE = gql`
+  query FindPeople($crashId: Int!) {
+    people_list_view(where: { crash_id: { _eq: $crashId } }) {
+      crash_id
+      id
+      unit_nbr
+      is_primary_person
+      prsn_age
+      drvr_city_name
+      drvr_zip
+      prsn_exp_homelessness
+      injry_sev_lkp {
+        id
+        label
+      }
+      prsn_type_lkp {
+        id
+        label
+      }
+      gndr_lkp {
+        id
+        label
+      }
+      drvr_ethncty_lkp {
+        id
+        label
       }
     }
   }
