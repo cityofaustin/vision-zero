@@ -12,7 +12,7 @@ import {
 
 import RelatedRecordsTable from "./RelatedRecordsTable";
 
-import { primaryPersonDataMap, personDataMap } from "./personDataMap";
+import { primaryPersonDataMap, personDataMap } from "./peopleDataMap";
 import { GET_PERSON_LOOKUPS } from "../../queries/lookups";
 import {
   GET_PEOPLE,
@@ -63,10 +63,7 @@ const PeopleDetailsCard = ({ isExpanded, toggleAccordion, ...props }) => {
           <h5 className="m-0 p-0">
             <i className="fa fa-group" /> People{" "}
             <Badge color="secondary float-right">
-              {
-                data.atd_txdot_primaryperson.concat(data.atd_txdot_person)
-                  .length
-              }
+              {data.people_list_view.length}
             </Badge>
           </h5>
         </Button>
@@ -80,29 +77,29 @@ const PeopleDetailsCard = ({ isExpanded, toggleAccordion, ...props }) => {
         <CardBody>
           <RelatedRecordsTable
             fieldConfig={primaryPersonDataMap[0]}
-            data={data.atd_txdot_primaryperson}
+            data={data.people_list_view}
             sortField={"unit_nbr"}
-            tableName={"atd_txdot_primaryperson"}
-            keyField={"primaryperson_id"}
+            tableName={"people_list_view"}
+            keyField={"id"}
             lookupOptions={lookupSelectOptions}
             mutation={primaryPersonMutation}
             refetch={refetch}
             {...props}
           />
-
+          {/* 
           {data.atd_txdot_person.length > 0 && (
             <RelatedRecordsTable
               fieldConfig={personDataMap[0]}
               data={data.atd_txdot_person}
               sortField={"person_id"}
-              tableName={"atd_txdot_person"}
+              tableName={"people_list_view"}
               keyField={"person_id"}
               lookupOptions={lookupSelectOptions}
               mutation={personMutation}
               refetch={refetch}
               {...props}
             />
-          )}
+          )} */}
         </CardBody>
       </Collapse>
     </Card>

@@ -34,71 +34,68 @@ export const primaryPersonDataMap = [
     mutationVariableKey: "personId",
 
     fields: {
-      // unit_nbr: {
-      //   label: "Unit",
-      //   editable: false,
-      // },
-      // injury_severity: {
-      //   label: "Injury Severity",
-      //   editable: true,
-      //   format: "select",
-      //   lookup_desc: "injry_sev_desc",
-      //   lookupOptions: "atd_txdot__injry_sev_lkp",
-      //   lookupPrefix: "injry_sev",
-      //   updateFieldKey: "prsn_injry_sev_id",
-      //   mutationVariableKey: "personId",
-      //   badge: true,
-      //   badgeColor: getInjurySeverityColor,
-      // },
-      // victim_name: {
-      //   label: "Victim Name",
-      //   editable: true,
-      //   format: "text",
-      //   mutationVariableKey: "personId",
-      //   shouldRender: shouldRenderVictimName,
-      //   subfields: {
-      //     prsn_first_name: {
-      //       label: "First",
-      //     },
-      //     prsn_mid_name: {
-      //       label: "Middle",
-      //     },
-      //     prsn_last_name: {
-      //       label: "Last",
-      //     },
-      //   },
-      // },
-      // person_type: {
-      //   label: "Type",
-      //   editable: false,
-      //   lookup_desc: "prsn_type_desc",
-      // },
+      unit_nbr: {
+        label: "Unit",
+        editable: false,
+      },
+      injry_sev_lkp: {
+        label: "Injury Severity",
+        editable: true,
+        format: "select",
+        lookup_desc: "label",
+        lookupOptions: "lookups_injry_sev_lkp",
+        updateFieldKey: "prsn_injry_sev_id",
+        mutationVariableKey: "personId",
+        badge: true,
+        badgeColor: getInjurySeverityColor,
+      },
+      victim_name: {
+        label: "Victim Name",
+        editable: true,
+        format: "text",
+        mutationVariableKey: "personId",
+        shouldRender: shouldRenderVictimName,
+        subfields: {
+          prsn_first_name: {
+            label: "First",
+          },
+          prsn_mid_name: {
+            label: "Middle",
+          },
+          prsn_last_name: {
+            label: "Last",
+          },
+        },
+      },
+      prsn_type_lkp: {
+        label: "Type",
+        editable: false,
+        lookup_desc: "label",
+      },
       prsn_age: {
         label: "Age",
         editable: true,
         format: "text",
         mutationVariableKey: "personId",
       },
-      // gender: {
-      //   label: "Sex",
-      //   editable: true,
-      //   lookup_desc: "gndr_desc",
-      //   format: "select",
-      //   lookupOptions: "atd_txdot__gndr_lkp",
-      //   lookupPrefix: "gndr",
-      //   updateFieldKey: "prsn_gndr_id",
-      //   mutationVariableKey: "personId",
-      // },
-      // ethnicity: {
-      //   label: "Race/Ethnicity",
-      //   editable: true,
-      //   lookup_desc: "ethnicity_desc",
-      //   format: "select",
-      //   lookupOptions: "atd_txdot__ethnicity_lkp",
-      //   lookupPrefix: "ethnicity",
-      //   updateFieldKey: "prsn_ethnicity_id",
-      //   mutationVariableKey: "personId",
-      // },
+      gndr_lkp: {
+        label: "Sex",
+        editable: true,
+        lookup_desc: "label",
+        format: "select",
+        lookupOptions: "lookups_gndr_lkp",
+        updateFieldKey: "prsn_gndr_id",
+        mutationVariableKey: "personId",
+      },
+      drvr_ethncty_lkp: {
+        label: "Race/Ethnicity",
+        editable: true,
+        lookup_desc: "label",
+        format: "select",
+        lookupOptions: "lookups_drvr_ethncty_lkp",
+        updateFieldKey: "prsn_ethnicity_id",
+        mutationVariableKey: "personId",
+      },
       drvr_city_name: {
         label: "City",
         editable: false,
@@ -107,12 +104,12 @@ export const primaryPersonDataMap = [
         label: "ZIP",
         editable: false,
       },
-      // peh_fl: {
-      //   label: "Suspected Unhoused",
-      //   editable: true,
-      //   format: "boolean",
-      //   mutationVariableKey: "personId",
-      // },
+      prsn_exp_homelessness: {
+        label: "Suspected Unhoused",
+        editable: true,
+        format: "boolean",
+        mutationVariableKey: "personId",
+      },
     },
   },
 ];

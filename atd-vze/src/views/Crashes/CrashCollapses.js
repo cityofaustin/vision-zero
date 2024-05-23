@@ -79,11 +79,11 @@ class CrashCollapses extends Component {
                 toggleAccordion={this.toggleAccordion}
                 {...this.props.props}
               />
-              {/* <PeopleDetailsCard
-                    isExpanded={this.state.accordion[1]}
-                    toggleAccordion={this.toggleAccordion}
-                    {...this.props.props}
-                  /> */}
+              <PeopleDetailsCard
+                isExpanded={this.state.accordion[1]}
+                toggleAccordion={this.toggleAccordion}
+                {...this.props.props}
+              />
               {/* <ChargesDetailsCard
                     chargesData={this.props.data.atd_txdot_charges}
                     isExpanded={this.state.accordion[2]}
