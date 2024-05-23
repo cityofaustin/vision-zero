@@ -6,6 +6,7 @@ create or replace view people_list_view as (
         crashes.crash_id,
         crashes.crash_date,
         injry_sev_lkp.label as prsn_injry_sev_desc,
+        units.unit_nbr,
         units.unit_desc_id,
         mode_category_lkp.label as mode_desc
     from public.people
