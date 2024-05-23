@@ -3,6 +3,7 @@
 import os
 import psycopg2
 import psycopg2.extras
+from tqdm import tqdm
 
 
 def main():
@@ -73,48 +74,57 @@ def find_differences_write_update_log(db_connection_string, matching_columns):
                 FROM information_schema.columns 
                 WHERE table_schema = 'public' 
                 AND table_name   = 'crashes_edits'
-            """
+                """
             )
             crashes_edits_columns = [row[0] for row in cur.fetchall()]
+
+            # Get the total count of records in the table
+            cur.execute("SELECT COUNT(*) FROM public.atd_txdot_crashes")
+            total_crashes = cur.fetchone()[0]
 
         with conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as old_data:
             sql = "select * from public.atd_txdot_crashes order by crash_date desc"
             old_data.execute(sql)
-            for vz_crash in old_data:
-                updates = []
-                with conn.cursor(
-                    cursor_factory=psycopg2.extras.DictCursor
-                ) as cris_data:
-                    sql = "select * from data_model.crash where crash_id = %s"
-                    cris_data.execute(sql, (vz_crash["crash_id"],))
-                    cris_crash = old_data.fetchone()
-                    if cris_crash is not None:
-                        for column, public_type in matching_columns:
-                            if column in columns_to_skip:
-                                continue
-                            if (
-                                column in crashes_edits_columns
-                                and vz_crash[column] != cris_crash[column]
-                            ):
-                                # print(
-                                #     f"Column {column} mismatch: vz_crash - {vz_crash[column]}, cris_crash - {cris_crash[column]}"
-                                # )
-                                updates.append((column, vz_crash[column]))
 
-                if updates:
-                    print(f"Crash {vz_crash['crash_id']}: {len(updates)} changes")
-                    update_sql = (
-                        "update public.crashes_edits set "
-                        + ", ".join(f"{column} = %s" for column, _ in updates)
-                        + " where crash_id = %s"
-                    )
-                    params = tuple(value for _, value in updates) + (
-                        vz_crash["crash_id"],
-                    )
-                    # print(update_sql % params)
-                    with conn.cursor() as cur:
-                        cur.execute(update_sql, params)
-                        conn.commit()
+            with tqdm(total=total_crashes, desc="Processing crashes") as pbar:
+                for vz_crash in old_data:
+                    updates = []
+                    with conn.cursor(
+                        cursor_factory=psycopg2.extras.DictCursor
+                    ) as cris_data:
+                        sql = "select * from data_model.crash where crash_id = %s"
+                        cris_data.execute(sql, (vz_crash["crash_id"],))
+                        cris_crash = (
+                            cris_data.fetchone()
+                        )  # Changed from old_data to cris_data
+                        if cris_crash is not None:
+                            for column, public_type in matching_columns:
+                                if column in columns_to_skip:
+                                    continue
+                                if (
+                                    column in crashes_edits_columns
+                                    and vz_crash[column] != cris_crash[column]
+                                ):
+                                    updates.append((column, vz_crash[column]))
+
+                    if updates:
+                        tqdm.write(
+                            f"Crash {vz_crash['crash_id']}: {len(updates)} changes"
+                        )
+                        update_sql = (
+                            "update public.crashes_edits set "
+                            + ", ".join(f"{column} = %s" for column, _ in updates)
+                            + " where crash_id = %s"
+                        )
+                        params = tuple(value for _, value in updates) + (
+                            vz_crash["crash_id"],
+                        )
+                        with conn.cursor() as cur:
+                            cur.execute(update_sql, params)
+                            conn.commit()
+
+                    # Update tqdm progress bar
+                    pbar.update(1)
 
 
 if __name__ == "__main__":
