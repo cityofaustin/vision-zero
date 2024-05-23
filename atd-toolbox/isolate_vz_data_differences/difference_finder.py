@@ -13,8 +13,8 @@ def main():
         raise EnvironmentError("DATABASE_CONNECTION environment variable is not set")
 
     table_sets = [
-        # ("atd_txdot_crashes", "crash", "crashes_edits"),
-        ("atd_txdot_units", "unit", "units_edits"),
+        ("atd_txdot_crashes", "crash", "crashes_edits"),
+        # ("atd_txdot_units", "unit", "units_edits"),
         # ("atd_txdot_persons", "person", "persons_edits"),
         # ("atd_txdot_primarypersons", "primaryperson", "primarypersons_edits"),
     ]
