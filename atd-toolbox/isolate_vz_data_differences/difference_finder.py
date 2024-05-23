@@ -5,6 +5,16 @@ import psycopg2
 import psycopg2.extras
 
 
+def main():
+    db_connection_string = os.getenv("DATABASE_CONNECTION")
+
+    if db_connection_string is None:
+        raise EnvironmentError("DATABASE_CONNECTION environment variable is not set")
+
+    matching_columns = align_types(db_connection_string)
+    find_differences_write_update_log(db_connection_string, matching_columns)
+
+
 def align_types(db_connection_string):
     with psycopg2.connect(db_connection_string) as conn:
         with conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
@@ -42,25 +52,66 @@ def align_types(db_connection_string):
                 else:
                     print(f"Column {column} types match: {public_type}")
 
+            # Compare column types
+            common_columns = []
+            for column, public_type in public_columns.items():
+                data_model_type = data_model_columns.get(column)
+                if data_model_type is not None:
+                    common_columns.append((column, public_type))
 
-def find_differences(db_connection_string):
+            return common_columns
+
+
+def find_differences_write_update_log(db_connection_string, matching_columns):
+    with open("crash_updates.sql", "w") as f:  # Truncate the file at the start
+        pass
+
     with psycopg2.connect(db_connection_string) as conn:
-        with conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                SELECT column_name 
+                FROM information_schema.columns 
+                WHERE table_schema = 'public' 
+                AND table_name   = 'crashes_edits'
+            """
+            )
+            crashes_edits_columns = [row[0] for row in cur.fetchall()]
+
+        with conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as old_data:
             sql = "select * from public.atd_txdot_crashes order by crash_date desc"
-            cur.execute(sql)
-            for vz_crash in cur:
-                print(vz_crash["crash_id"])
-                sql = "select * from data_model.crash where crash_id = %s"
-                cur.execute(sql, (vz_crash["crash_id"],))
-                cris_crash = cur.fetchone()
-                print(cris_crash)
+            old_data.execute(sql)
+            for vz_crash in old_data:
+                with conn.cursor(
+                    cursor_factory=psycopg2.extras.DictCursor
+                ) as cris_data:
+                    sql = "select * from data_model.crash where crash_id = %s"
+                    cris_data.execute(sql, (vz_crash["crash_id"],))
+                    cris_crash = old_data.fetchone()
+                    if cris_crash is not None:
+                        for column, public_type in matching_columns:
+                            if (
+                                column in crashes_edits_columns
+                                and vz_crash[column] != cris_crash[column]
+                            ):
+                                print(
+                                    f"Column {column} mismatch: vz_crash - {vz_crash[column]}, cris_crash - {cris_crash[column]}"
+                                )
+                                update_sql = f"update public.crashes_edits set {column} = %s where crash_id = %s;"
+                                formatted_sql = update_sql % (
+                                    vz_crash[column],
+                                    vz_crash["crash_id"],
+                                )
+                                print(formatted_sql)
+                                with open(
+                                    "crash_updates.sql", "a"
+                                ) as f:  # Append each update statement
+                                    f.write(formatted_sql + "\n")
+                                cris_data.execute(
+                                    update_sql, (vz_crash[column], vz_crash["crash_id"])
+                                )
+                                conn.commit()
 
 
 if __name__ == "__main__":
-    db_connection_string = os.getenv("DATABASE_CONNECTION")
-
-    if db_connection_string is None:
-        raise EnvironmentError("DATABASE_CONNECTION environment variable is not set")
-
-    # find_differences(db_connection_string)
-    align_types(db_connection_string)
+    main()
