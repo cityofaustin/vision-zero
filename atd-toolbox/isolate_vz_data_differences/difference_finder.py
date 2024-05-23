@@ -10,21 +10,21 @@ def align_types(db_connection_string):
         with conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
             # Fetch column types from public.atd_txdot_crashes
             sql_public = """
-      SELECT column_name, data_type 
-      FROM information_schema.columns 
-      WHERE table_schema = 'public' 
-      AND table_name   = 'atd_txdot_crashes'
-      """
+                SELECT column_name, data_type 
+                FROM information_schema.columns 
+                WHERE table_schema = 'public' 
+                AND table_name   = 'atd_txdot_crashes'
+                """
             cur.execute(sql_public)
             public_columns = {row["column_name"]: row["data_type"] for row in cur}
 
             # Fetch column types from data_model.crashes
             sql_data_model = """
-      SELECT column_name, data_type 
-      FROM information_schema.columns 
-      WHERE table_schema = 'data_model' 
-      AND table_name   = 'crash'
-      """
+                SELECT column_name, data_type 
+                FROM information_schema.columns 
+                WHERE table_schema = 'data_model' 
+                AND table_name   = 'crash'
+                """
             cur.execute(sql_data_model)
             data_model_columns = {row["column_name"]: row["data_type"] for row in cur}
 
