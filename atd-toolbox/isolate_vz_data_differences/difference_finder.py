@@ -63,6 +63,7 @@ def align_types(db_connection_string):
 
 
 def find_differences_write_update_log(db_connection_string, matching_columns):
+    columns_to_skip = ["crash_date", "crash_time"]
     with open("crash_updates.sql", "w") as f:  # Truncate the file at the start
         pass
 
@@ -90,6 +91,8 @@ def find_differences_write_update_log(db_connection_string, matching_columns):
                     cris_crash = old_data.fetchone()
                     if cris_crash is not None:
                         for column, public_type in matching_columns:
+                            if column in columns_to_skip:
+                                continue
                             if (
                                 column in crashes_edits_columns
                                 and vz_crash[column] != cris_crash[column]
