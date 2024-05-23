@@ -14,7 +14,7 @@ def process_file(csv_file_path, db_connection_string, output_dir):
     base_name = os.path.basename(csv_file_path)
     table_name = base_name.split("_")[3].lower()
     print("Starting a new file for table", table_name)
-    if table_name not in ["crash", "unit", "person", "primaryperson"]:
+    if table_name not in ["crash", "unit", "person", "primaryperson", "charges"]:
         return
     # if table_name != "unit":
     # return
@@ -134,6 +134,16 @@ def drop_tables(db_connection_string):
         conn.commit()
 
 
+def create_schema(db_connection_string):
+    # Connect to the database
+    with psycopg2.connect(db_connection_string) as conn:
+        with conn.cursor() as cur:
+            # Execute the SQL command to create the schema
+            print("Creating schema data_model if it does not exist")
+            cur.execute("CREATE SCHEMA IF NOT EXISTS data_model;")
+        conn.commit()
+
+
 if __name__ == "__main__":
     root_dir = "/app/extracts"
     output_dir = "/app/load_files"
@@ -144,5 +154,6 @@ if __name__ == "__main__":
     if db_connection_string is None:
         raise EnvironmentError("DATABASE_CONNECTION environment variable is not set")
 
+    create_schema(db_connection_string)
     drop_tables(db_connection_string)
     process_directory(root_dir, db_connection_string, output_dir)
