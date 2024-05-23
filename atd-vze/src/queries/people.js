@@ -1,76 +1,5 @@
 import { gql } from "apollo-boost";
 
-export const GET_PEOPLE_OLD = gql`
-  query FindPeople($crashId: Int) {
-    atd_txdot_primaryperson(where: { crash_id: { _eq: $crashId } }) {
-      prsn_age
-      prsn_nbr
-      primaryperson_id
-      prsn_injry_sev_id
-      drvr_zip
-      drvr_city_name
-      injury_severity {
-        injry_sev_desc
-        injry_sev_id
-      }
-      person_type {
-        prsn_type_desc
-      }
-      gender {
-        gndr_id
-        gndr_desc
-      }
-      ethnicity {
-        ethnicity_id
-        ethnicity_desc
-      }
-      unit_nbr
-      peh_fl
-    }
-    primary_person_years_of_life_lost: atd_txdot_primaryperson_aggregate(
-      where: { crash_id: { _eq: $crashId } }
-    ) {
-      aggregate {
-        sum {
-          years_of_life_lost
-        }
-      }
-    }
-    atd_txdot_person(where: { crash_id: { _eq: $crashId } }) {
-      prsn_age
-      prsn_nbr
-      person_id
-      prsn_injry_sev_id
-      injury_severity {
-        injry_sev_desc
-        injry_sev_id
-      }
-      person_type {
-        prsn_type_desc
-      }
-      gender {
-        gndr_id
-        gndr_desc
-      }
-      ethnicity {
-        ethnicity_id
-        ethnicity_desc
-      }
-      unit_nbr
-      peh_fl
-    }
-    person_years_of_life_lost: atd_txdot_person_aggregate(
-      where: { crash_id: { _eq: $crashId } }
-    ) {
-      aggregate {
-        sum {
-          years_of_life_lost
-        }
-      }
-    }
-  }
-`;
-
 export const GET_PEOPLE = gql`
   query FindPeople($crashId: Int!) {
     people_list_view(where: { crash_id: { _eq: $crashId } }) {
@@ -153,24 +82,9 @@ export const UPDATE_PRIMARYPERSON = gql`
 `;
 
 export const UPDATE_PERSON = gql`
-  mutation UpdatePerson(
-    $crashId: Int
-    $personId: Int
-    $changes: atd_txdot_person_set_input
-  ) {
-    update_atd_txdot_person(
-      where: {
-        crash_id: { _eq: $crashId }
-        _and: { person_id: { _eq: $personId } }
-      }
-      _set: $changes
-    ) {
-      affected_rows
-      returning {
-        person_id
-        crash_id
-        unit_nbr
-      }
+  mutation UpdatePerson($personId: Int!, $changes: people_edits_set_input) {
+    update_people_edits_by_pk(pk_columns: { id: $personId }, _set: $changes) {
+      id
     }
   }
 `;
