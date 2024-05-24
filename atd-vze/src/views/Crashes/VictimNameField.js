@@ -18,30 +18,19 @@ const VictimNameField = ({
   editRow,
   row,
   field,
+  refetch,
   ...props
 }) => {
-  const crashId = props.match.params.id;
+  console.log(row, "row");
 
-  const personId =
-    tableName === "atd_txdot_primaryperson"
-      ? row.primaryperson_id
-      : row.person_id;
-
-  const { data, refetch } = useQuery(GET_PERSON_NAMES, {
-    variables: { crashId, personId },
-  });
-
-  const personData =
-    tableName === "atd_txdot_primaryperson"
-      ? data?.atd_txdot_primaryperson?.[0]
-      : data?.atd_txdot_person?.[0];
+  const personId = row.id;
 
   // Format name by concatenating first, middle, last or returning NO DATA
   const formatName = () => {
     var concatenatedName = "";
     Object.keys(nameFieldConfig.subfields).forEach(field => {
-      if (personData?.[field] != null) {
-        concatenatedName = concatenatedName.concat(" ", personData?.[field]);
+      if (row?.[field] != null) {
+        concatenatedName = concatenatedName.concat(" ", row?.[field]);
       }
     });
     const isNameBlank = concatenatedName === "";
@@ -59,15 +48,12 @@ const VictimNameField = ({
           <Row>
             {Object.keys(nameFieldConfig.subfields).map(field => {
               return (
-                <Col
-                  key={`${tableName}-field-${field}${personId}`}
-                  className={"m-1 p-0"}
-                >
+                <Col key={`$field-${field}${personId}`} className={"m-1 p-0"}>
                   <Label className={"text-muted m-0 p-0"}>
                     {nameFieldConfig.subfields[field].label}
                   </Label>
                   <Input
-                    defaultValue={personData[field]}
+                    defaultValue={row[field]}
                     onChange={e => handleInputChange(e, field)}
                     // Make input render in uppercase
                     style={{ textTransform: "uppercase" }}
