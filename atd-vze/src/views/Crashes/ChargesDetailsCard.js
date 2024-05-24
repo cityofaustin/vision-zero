@@ -38,6 +38,8 @@ const ChargesDetailsCard = ({ chargesData, isExpanded, toggleAccordion }) => {
           <Table responsive>
             <thead>
               <tr>
+                <th>Unit</th>
+                <th>Person</th>
                 <th>Charge</th>
                 <th>Charge Category</th>
               </tr>
@@ -47,6 +49,8 @@ const ChargesDetailsCard = ({ chargesData, isExpanded, toggleAccordion }) => {
                 (charge, i) =>
                   charge.charge !== "NO CHARGES" && (
                     <tr key={`charges-${i}`}>
+                      <td>{charge.unit_nbr}</td>
+                      <td>{charge.prsn_nbr}</td>
                       <td>{charge.charge}</td>
                       <td>{charge.charge_cat_id}</td>
                     </tr>
