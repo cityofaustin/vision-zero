@@ -11,6 +11,9 @@ export const GET_PEOPLE = gql`
       drvr_city_name
       drvr_zip
       prsn_exp_homelessness
+      prsn_first_name
+      prsn_mid_name
+      prsn_last_name
       injry_sev_lkp {
         id
         label
@@ -32,7 +35,7 @@ export const GET_PEOPLE = gql`
 `;
 
 export const GET_PERSON_NAMES = gql`
-  query FindNames($crashId: Int, $personId: Int) {
+  query FindNames($personId: Int!) {
     atd_txdot_primaryperson(
       where: {
         crash_id: { _eq: $crashId }
@@ -54,29 +57,6 @@ export const GET_PERSON_NAMES = gql`
       prsn_first_name
       prsn_mid_name
       prsn_last_name
-    }
-  }
-`;
-
-export const UPDATE_PRIMARYPERSON = gql`
-  mutation UpdatePrimaryPerson(
-    $crashId: Int
-    $personId: Int
-    $changes: atd_txdot_primaryperson_set_input
-  ) {
-    update_atd_txdot_primaryperson(
-      where: {
-        crash_id: { _eq: $crashId }
-        _and: { primaryperson_id: { _eq: $personId } }
-      }
-      _set: $changes
-    ) {
-      affected_rows
-      returning {
-        primaryperson_id
-        crash_id
-        unit_nbr
-      }
     }
   }
 `;
