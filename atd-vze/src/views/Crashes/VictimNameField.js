@@ -1,8 +1,5 @@
 import React from "react";
 import { Button, Input, Form, Row, Col, Label } from "reactstrap";
-import { useQuery } from "@apollo/react-hooks";
-
-import { GET_PERSON_NAMES } from "../../queries/people";
 
 // This component should be role-restricted to users with Admin or IT Supervisor permissions
 // Role check currently happens in the shouldRenderVictimName function of personDataMap
@@ -21,8 +18,6 @@ const VictimNameField = ({
   refetch,
   ...props
 }) => {
-  console.log(row, "row");
-
   const personId = row.id;
 
   // Format name by concatenating first, middle, last or returning NO DATA
