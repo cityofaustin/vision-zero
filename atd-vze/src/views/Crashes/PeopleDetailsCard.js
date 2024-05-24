@@ -16,24 +16,25 @@ import { primaryPersonDataMap, personDataMap } from "./peopleDataMap";
 import { GET_PERSON_LOOKUPS } from "../../queries/lookups";
 import { GET_PEOPLE, UPDATE_PERSON } from "../../queries/people";
 
-const PeopleDetailsCard = ({ isExpanded, toggleAccordion, ...props }) => {
-  const crashId = props.match.params.id;
-
+const PeopleDetailsCard = ({
+  data,
+  isExpanded,
+  toggleAccordion,
+  refetch,
+  error,
+  loading,
+  ...props
+}) => {
   const { data: lookupSelectOptions } = useQuery(GET_PERSON_LOOKUPS);
-  const { loading, error, data, refetch } = useQuery(GET_PEOPLE, {
-    variables: { crashId },
-  });
 
   if (loading) return "Loading...";
   if (error) return `Error! ${error.message}`;
 
-  const primaryPersonData = data.people_list_view.filter(
+  const primaryPersonData = data.filter(
     person => person.is_primary_person === true
   );
 
-  const personData = data.people_list_view.filter(
-    person => person.is_primary_person === false
-  );
+  const personData = data.filter(person => person.is_primary_person === false);
 
   const personMutation = {
     mutation: UPDATE_PERSON,
@@ -56,9 +57,7 @@ const PeopleDetailsCard = ({ isExpanded, toggleAccordion, ...props }) => {
         >
           <h5 className="m-0 p-0">
             <i className="fa fa-group" /> People{" "}
-            <Badge color="secondary float-right">
-              {data.people_list_view.length}
-            </Badge>
+            <Badge color="secondary float-right">{data.length}</Badge>
           </h5>
         </Button>
       </CardHeader>

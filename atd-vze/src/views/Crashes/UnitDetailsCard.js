@@ -14,11 +14,17 @@ import RelatedRecordsTable from "./RelatedRecordsTable";
 
 import { unitDataMap } from "./unitDataMap";
 import { GET_UNIT_LOOKUPS } from "../../queries/lookups";
-import { GET_UNITS, UPDATE_UNIT } from "../../queries/units";
+import { UPDATE_UNIT } from "../../queries/units";
 
-const UnitDetailsCard = ({ isExpanded, toggleAccordion, ...props }) => {
-  const crashId = props.match.params.id;
-
+const UnitDetailsCard = ({
+  data,
+  isExpanded,
+  toggleAccordion,
+  refetch,
+  error,
+  loading,
+  ...props
+}) => {
   const unitMutation = {
     mutation: UPDATE_UNIT,
     variables: {
@@ -27,9 +33,6 @@ const UnitDetailsCard = ({ isExpanded, toggleAccordion, ...props }) => {
     },
   };
 
-  const { loading, error, data, refetch } = useQuery(GET_UNITS, {
-    variables: { crashId },
-  });
   const { data: lookupSelectOptions } = useQuery(GET_UNIT_LOOKUPS);
 
   if (loading) return "Loading...";
@@ -50,7 +53,7 @@ const UnitDetailsCard = ({ isExpanded, toggleAccordion, ...props }) => {
         >
           <h5 className="m-0 p-0">
             <i className="fa fa-car" /> Units
-            <Badge color="secondary float-right">{data.units.length}</Badge>
+            <Badge color="secondary float-right">{data.length}</Badge>
           </h5>
         </Button>
       </CardHeader>
@@ -58,7 +61,7 @@ const UnitDetailsCard = ({ isExpanded, toggleAccordion, ...props }) => {
         <CardBody>
           <RelatedRecordsTable
             fieldConfig={unitDataMap[0]}
-            data={data.units}
+            data={data}
             sortField={"unit_nbr"}
             tableName={"units"}
             keyField={"id"}
