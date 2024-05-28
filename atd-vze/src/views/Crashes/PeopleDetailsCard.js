@@ -14,7 +14,7 @@ import RelatedRecordsTable from "./RelatedRecordsTable";
 
 import { primaryPersonDataMap, personDataMap } from "./peopleDataMap";
 import { GET_PERSON_LOOKUPS } from "../../queries/lookups";
-import { GET_PEOPLE, UPDATE_PERSON } from "../../queries/people";
+import { UPDATE_PERSON } from "../../queries/people";
 
 const PeopleDetailsCard = ({
   data,
