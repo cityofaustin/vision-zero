@@ -294,7 +294,7 @@ function Crash(props) {
         <Col>
           <CrashCollapses
             data={crashData.crashes_by_pk}
-            refetch={refetch}
+            refetch={crashRefetch}
             loading={loading}
             error={error}
             props={props}
