@@ -18,9 +18,9 @@ def main():
 
     table_sets = [
         ("atd_txdot_crashes", "crash", "crashes_edits"),
-        ("atd_txdot_units", "unit", "units_edits"),
-        ("atd_txdot_persons", "person", "persons_edits"),
-        ("atd_txdot_primarypersons", "primaryperson", "primarypersons_edits"),
+        # ("atd_txdot_units", "unit", "units_edits"),
+        # ("atd_txdot_persons", "person", "persons_edits"),
+        # ("atd_txdot_primarypersons", "primaryperson", "primarypersons_edits"),
     ]
 
     for public_table, data_model_table, edits_table in table_sets:
