@@ -86,73 +86,96 @@ def align_types(db_connection_string, public_table, data_model_table):
             return common_columns
 
 
+def retrieve_columns(conn, table_name):
+    with conn.cursor() as cur:
+        cur.execute(
+            f"""
+            SELECT column_name 
+            FROM information_schema.columns 
+            WHERE table_schema = 'public' 
+            AND table_name   = '{table_name}'
+            """
+        )
+        return [row[0] for row in cur.fetchall()]
+
+
+def get_total_records(conn, table_name):
+    with conn.cursor() as cur:
+        cur.execute(f"SELECT COUNT(*) FROM public.{table_name}")
+        return cur.fetchone()[0]
+
+
+def fetch_old_data(conn, table_name):
+    with conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
+        cur.execute(f"SELECT * FROM public.{table_name}")
+        return cur.fetchall()
+
+
+def fetch_corresponding_data(conn, table_name, crash_id):
+    with conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
+        cur.execute(
+            f"SELECT * FROM data_model.{table_name} WHERE crash_id = %s", (crash_id,)
+        )
+        return cur.fetchone()
+
+
+def compare_records(
+    vz_record, cris_record, columns_to_skip, matching_columns, edits_columns
+):
+    updates = []
+    for column, public_type in matching_columns:
+        if column in columns_to_skip:
+            continue
+        if column in edits_columns and vz_record[column] != cris_record[column]:
+            updates.append((column, vz_record[column]))
+    return updates
+
+
+def update_records(conn, edits_table, updates, crash_id):
+    update_sql = (
+        f"UPDATE public.{edits_table} SET "
+        + ", ".join(f"{column} = %s" for column, _ in updates)
+        + " WHERE crash_id = %s"
+    )
+    params = tuple(value for _, value in updates) + (crash_id,)
+    with conn.cursor() as cur:
+        cur.execute(update_sql, params)
+        conn.commit()
+
+
 def find_differences(
     db_connection_string, public_table, data_model_table, edits_table, matching_columns
 ):
-    columns_to_skip = [
-        "crash_date",
-        "crash_time",
-    ]  # these are only in the crashes table so no harm in "skipping" them in the other tables
+    columns_to_skip = ["crash_date", "crash_time"]
 
     with psycopg2.connect(db_connection_string) as conn:
-        with conn.cursor() as cur:
-            cur.execute(
-                f"""
-                SELECT column_name 
-                FROM information_schema.columns 
-                WHERE table_schema = 'public' 
-                AND table_name   = '{edits_table}'
-                """
-            )
-            edits_columns = [row[0] for row in cur.fetchall()]
+        edits_columns = retrieve_columns(conn, edits_table)
+        total_records = get_total_records(conn, public_table)
+        old_data = fetch_old_data(conn, public_table)
 
-            # Get the total count of records in the table
-            cur.execute(f"SELECT COUNT(*) FROM public.{public_table}")
-            total_records = cur.fetchone()[0]
-
-        with conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as old_data:
-            sql = f"SELECT * FROM public.{public_table}"
-            old_data.execute(sql)
-
-            with tqdm(
-                total=total_records, desc=f"Processing {public_table}"
-            ) as progress_bar:
-                for vz_record in old_data:
-                    updates = []
-                    with conn.cursor(
-                        cursor_factory=psycopg2.extras.DictCursor
-                    ) as cris_data:
-                        sql = f"SELECT * FROM data_model.{data_model_table} WHERE crash_id = %s"
-                        cris_data.execute(sql, (vz_record["crash_id"],))
-                        cris_record = cris_data.fetchone()
-                        if cris_record is not None:
-                            for column, public_type in matching_columns:
-                                if column in columns_to_skip:
-                                    continue
-                                if (
-                                    column in edits_columns
-                                    and vz_record[column] != cris_record[column]
-                                ):
-                                    updates.append((column, vz_record[column]))
-
+        with tqdm(
+            total=total_records, desc=f"Processing {public_table}"
+        ) as progress_bar:
+            for vz_record in old_data:
+                cris_record = fetch_corresponding_data(
+                    conn, data_model_table, vz_record["crash_id"]
+                )
+                if cris_record is not None:
+                    updates = compare_records(
+                        vz_record,
+                        cris_record,
+                        columns_to_skip,
+                        matching_columns,
+                        edits_columns,
+                    )
                     if updates:
                         tqdm.write(
                             f"Record {vz_record['crash_id']}: {len(updates)} changes"
                         )
-                        update_sql = (
-                            f"UPDATE public.{edits_table} SET "
-                            + ", ".join(f"{column} = %s" for column, _ in updates)
-                            + " WHERE crash_id = %s"
+                        update_records(
+                            conn, edits_table, updates, vz_record["crash_id"]
                         )
-                        params = tuple(value for _, value in updates) + (
-                            vz_record["crash_id"],
-                        )
-                        with conn.cursor() as cur:
-                            cur.execute(update_sql, params)
-                            conn.commit()
-
-                    # Update tqdm progress bar
-                    progress_bar.update(1)
+                progress_bar.update(1)
 
 
 if __name__ == "__main__":
