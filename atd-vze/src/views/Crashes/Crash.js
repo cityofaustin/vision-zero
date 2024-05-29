@@ -292,7 +292,13 @@ function Crash(props) {
       )}
       <Row>
         <Col>
-          <CrashCollapses data={data} props={props} />
+          <CrashCollapses
+            data={crashData.crashes_by_pk}
+            refetch={crashRefetch}
+            loading={loading}
+            error={error}
+            props={props}
+          />
         </Col>
       </Row>
       {shouldShowFatalityRecommendations && (

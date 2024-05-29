@@ -130,7 +130,7 @@ const RelatedRecordsTable = ({
                     .map((field, i) => {
                       // Render victim name cell in victim name column if row is a fatality
                       if (field === "victim_name") {
-                        if (row.prsn_injry_sev_id === 4) {
+                        if (row.injry_sev_lkp.id === 4) {
                           return (
                             <VictimNameField
                               key={`${field}-${i}`}
@@ -147,6 +147,8 @@ const RelatedRecordsTable = ({
                               field={field}
                               editField={editField}
                               editRow={editRow}
+                              refetch={refetch}
+                              isReadOnly={isReadOnly(roles)}
                               {...props}
                             ></VictimNameField>
                           );
@@ -231,7 +233,6 @@ const RelatedRecordsTable = ({
                                       handleInputChange(e, updateFieldKey)
                                     }
                                   >
-                                    <option value={""}>NO DATA</option>
                                     <option value={true}>TRUE</option>
                                     <option value={false}>FALSE</option>
                                   </Input>

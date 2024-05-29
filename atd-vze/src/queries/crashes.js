@@ -129,6 +129,78 @@ export const GET_CRASH = gql`
         sus_serious_injry_count
         years_of_life_lost
       }
+      units {
+        id
+        unit_nbr
+        veh_mod_year
+        unit_desc_lkp {
+          id
+          label
+        }
+        veh_body_styl_lkp {
+          id
+          label
+        }
+        veh_make_lkp {
+          id
+          label
+        }
+        veh_mod_lkp {
+          id
+          label
+        }
+        trvl_dir_lkp {
+          id
+          label
+        }
+        movt_lkp {
+          id
+          label
+        }
+        contrib_factr_lkp {
+          id
+          label
+        }
+        unit_injury_metrics_view {
+          vz_fatality_count
+          sus_serious_injry_count
+        }
+      }
+      people_list_view {
+        crash_id
+        id
+        unit_nbr
+        is_primary_person
+        prsn_age
+        drvr_city_name
+        drvr_zip
+        prsn_exp_homelessness
+        prsn_first_name
+        prsn_mid_name
+        prsn_last_name
+        injry_sev_lkp {
+          id
+          label
+        }
+        prsn_type_lkp {
+          id
+          label
+        }
+        gndr_lkp {
+          id
+          label
+        }
+        drvr_ethncty_lkp {
+          id
+          label
+        }
+      }
+      charges_cris {
+        unit_nbr
+        prsn_nbr
+        citation_nbr
+        charge
+      }
       change_logs(order_by: { created_at: desc }) {
         id
         crash_id

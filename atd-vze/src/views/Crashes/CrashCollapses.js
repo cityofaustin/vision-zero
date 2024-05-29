@@ -75,20 +75,31 @@ class CrashCollapses extends Component {
           <Col>
             <Card>
               <UnitDetailsCard
+                data={this.props.data.units}
                 isExpanded={this.state.accordion[0]}
                 toggleAccordion={this.toggleAccordion}
+                refetch={this.props.refetch}
+                error={this.props.error}
+                loading={this.props.loading}
                 {...this.props.props}
               />
-              {/* <PeopleDetailsCard
-                    isExpanded={this.state.accordion[1]}
-                    toggleAccordion={this.toggleAccordion}
-                    {...this.props.props}
-                  /> */}
-              {/* <ChargesDetailsCard
-                    chargesData={this.props.data.atd_txdot_charges}
-                    isExpanded={this.state.accordion[2]}
-                    toggleAccordion={this.toggleAccordion}
-                  /> */}
+              <PeopleDetailsCard
+                data={this.props.data.people_list_view}
+                isExpanded={this.state.accordion[1]}
+                toggleAccordion={this.toggleAccordion}
+                refetch={this.props.refetch}
+                error={this.props.error}
+                loading={this.props.loading}
+                {...this.props.props}
+              />
+              <ChargesDetailsCard
+                chargesData={this.props.data.charges_cris}
+                isExpanded={this.state.accordion[2]}
+                toggleAccordion={this.toggleAccordion}
+                refetch={this.props.refetch}
+                error={this.props.error}
+                loading={this.props.loading}
+              />
             </Card>
           </Col>
         </Row>

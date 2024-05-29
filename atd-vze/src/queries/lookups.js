@@ -80,17 +80,17 @@ export const GET_UNIT_LOOKUPS = gql`
 
 export const GET_PERSON_LOOKUPS = gql`
   {
-    atd_txdot__injry_sev_lkp {
-      injry_sev_id
-      injry_sev_desc
+    lookups_injry_sev_lkp {
+      id
+      label
     }
-    atd_txdot__ethnicity_lkp {
-      ethnicity_id
-      ethnicity_desc
+    lookups_drvr_ethncty_lkp {
+      id
+      label
     }
-    atd_txdot__gndr_lkp {
-      gndr_id
-      gndr_desc
+    lookups_gndr_lkp {
+      id
+      label
     }
   }
 `;
