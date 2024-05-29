@@ -148,6 +148,7 @@ const RelatedRecordsTable = ({
                               editField={editField}
                               editRow={editRow}
                               refetch={refetch}
+                              isReadOnly={isReadOnly(roles)}
                               {...props}
                             ></VictimNameField>
                           );
@@ -232,7 +233,6 @@ const RelatedRecordsTable = ({
                                       handleInputChange(e, updateFieldKey)
                                     }
                                   >
-                                    <option value={""}>NO DATA</option>
                                     <option value={true}>TRUE</option>
                                     <option value={false}>FALSE</option>
                                   </Input>

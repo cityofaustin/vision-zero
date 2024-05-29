@@ -1,11 +1,6 @@
-import { isAdmin, isItSupervisor } from "../../auth/authContext";
-
 // Return true if person record is a fatality
-const shouldRenderVictimName = (data, roles) => {
-  return (
-    data.some(person => person.injry_sev_lkp.id === 4) &&
-    (isItSupervisor(roles) || isAdmin(roles))
-  );
+const shouldRenderVictimName = data => {
+  return data.some(person => person.injry_sev_lkp.id === 4);
 };
 
 const getInjurySeverityColor = personRecord => {
