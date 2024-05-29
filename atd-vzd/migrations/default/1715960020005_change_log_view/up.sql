@@ -26,3 +26,4 @@ create view crashes_change_log_view as (
     left join units on people.unit_id = units.id
     left join crashes on units.crash_id = crashes.crash_id
 );
+
