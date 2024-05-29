@@ -12,14 +12,11 @@ else
 fi
 
 # Path to the backup file
-BACKUP_FILE="${DATABASE}_backup.backup"
+BACKUP_FILE="${DATABASE}_backup.sql"
 
 # Drop the existing database and create a new one
 PGPASSWORD=$PASSWORD psql -U $USERNAME -h $HOST -p $PORT -c "DROP DATABASE IF EXISTS $DATABASE WITH (FORCE);" postgres
 PGPASSWORD=$PASSWORD psql -U $USERNAME -h $HOST -p $PORT -c "CREATE DATABASE $DATABASE;" postgres
+PGPASSWORD=$PASSWORD psql -U $USERNAME -h $HOST -p $PORT -c "CREATE EXTENSION postgis;" $DATABASE
 
-# Restore the schema first, excluding the 'SET search_path' command
-PGPASSWORD=$PASSWORD pg_restore -U $USERNAME -h $HOST -p $PORT -d $DATABASE --schema-only -v $BACKUP_FILE | sed '/SELECT pg_catalog.set_config('\'search_path\'', '\'''', false);/d' | PGPASSWORD=$PASSWORD psql -U $USERNAME -h $HOST -p $PORT -d $DATABASE
-
-# Restore the data
-PGPASSWORD=$PASSWORD pg_restore -U $USERNAME -h $HOST -p $PORT -d $DATABASE --data-only -v $BACKUP_FILE
+PGPASSWORD=$PASSWORD psql -U $USERNAME -h $HOST -p $PORT -d $DATABASE -v ON_ERROR_STOP=1 -f $BACKUP_FILE
