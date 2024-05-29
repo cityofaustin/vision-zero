@@ -101,7 +101,9 @@ def retrieve_columns(conn, table_name):
 
 def get_total_records(conn, table_name):
     with conn.cursor() as cur:
-        cur.execute(f"SELECT COUNT(*) FROM public.{table_name}")
+        sql = f"SELECT COUNT(*) FROM public.{table_name}"
+        # print(sql)
+        cur.execute(sql)
         return cur.fetchone()[0]
 
 
@@ -150,7 +152,13 @@ def find_differences(
 
     with psycopg2.connect(db_connection_string) as conn:
         edits_columns = retrieve_columns(conn, edits_table)
+
+        # print(f"Editing {len(edits_columns)} columns")
+        # print(edits_columns)
+
         total_records = get_total_records(conn, public_table)
+        print("Total records:", total_records)
+
         old_data = fetch_old_data(conn, public_table)
 
         with tqdm(
@@ -160,21 +168,21 @@ def find_differences(
                 cris_record = fetch_corresponding_data(
                     conn, data_model_table, vz_record["crash_id"]
                 )
-                if cris_record is not None:
-                    updates = compare_records(
-                        vz_record,
-                        cris_record,
-                        columns_to_skip,
-                        matching_columns,
-                        edits_columns,
-                    )
-                    if updates:
-                        tqdm.write(
-                            f"Record {vz_record['crash_id']}: {len(updates)} changes"
-                        )
-                        update_records(
-                            conn, edits_table, updates, vz_record["crash_id"]
-                        )
+                # if cris_record is not None:
+                #     updates = compare_records(
+                #         vz_record,
+                #         cris_record,
+                #         columns_to_skip,
+                #         matching_columns,
+                #         edits_columns,
+                #     )
+                #     if updates:
+                #         tqdm.write(
+                #             f"Record {vz_record['crash_id']}: {len(updates)} changes"
+                #         )
+                #         update_records(
+                #             conn, edits_table, updates, vz_record["crash_id"]
+                #         )
                 progress_bar.update(1)
 
 
