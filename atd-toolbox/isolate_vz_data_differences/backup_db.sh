@@ -13,4 +13,5 @@ else
 fi
 
 # Execute the pg_dump command using the extracted components
-PGPASSWORD=$PASSWORD pg_dump -U $USERNAME -h $HOST -p $PORT -F c -b -v -f ${DATABASE}_backup.backup $DATABASE
+PGPASSWORD=$PASSWORD pg_dump -U $USERNAME -h $HOST -p $PORT -F p -b -v $DATABASE | \
+sed "/SELECT pg_catalog.set_config('search_path', '', false);/ s/^/-- /" > ${DATABASE}_backup.sql
