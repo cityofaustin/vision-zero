@@ -17,14 +17,13 @@ def main():
         raise EnvironmentError("DATABASE_CONNECTION environment variable is not set")
 
     table_sets = [
-        ("atd_txdot_crashes", "crash", "crashes_edits"),
-        # ("atd_txdot_units", "unit", "units_edits"),
-        # ("atd_txdot_persons", "person", "persons_edits"),
-        # ("atd_txdot_primarypersons", "primaryperson", "primarypersons_edits"),
+        # ("atd_txdot_crashes", "crash", "crashes_edits", "crash_id"),
+        ("atd_txdot_units", "unit", "units_edits", "id"),
+        # ("atd_txdot_persons", "person", "persons_edits", "id"),
+        # ("atd_txdot_primarypersons", "primaryperson", "primarypersons_edits", "id"),
     ]
 
-    for public_table, data_model_table, edits_table in table_sets:
-        # print(f"Processing {public_table}, {data_model_table}, {edits_table}")
+    for public_table, data_model_table, edits_table, id_column in table_sets:
         matching_columns = align_types(
             db_connection_string, public_table, data_model_table
         )
@@ -34,6 +33,7 @@ def main():
             data_model_table,
             edits_table,
             matching_columns,
+            id_column,
         )
 
 
@@ -106,9 +106,9 @@ def get_total_records(conn, table_name):
         return cur.fetchone()[0]
 
 
-def fetch_old_data(conn, table_name):
+def fetch_old_data(conn, table_name, id_column):
     with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
-        cur.execute(f"SELECT * FROM public.{table_name} order by crash_id desc")
+        cur.execute(f"SELECT * FROM public.{table_name} ORDER BY {id_column} DESC")
         rows = cur.fetchall()
         for row in rows:
             # Replace empty strings with None
@@ -118,7 +118,7 @@ def fetch_old_data(conn, table_name):
         return rows
 
 
-def fetch_corresponding_data(conn, table_name):
+def fetch_corresponding_data(conn, table_name, id_column):
     data_dict = {}
     with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
         cur.execute(f"SELECT * FROM data_model.{table_name}")
@@ -128,7 +128,7 @@ def fetch_corresponding_data(conn, table_name):
             for key, value in row.items():
                 if value == "":
                     row[key] = None
-            data_dict[row["crash_id"]] = row
+            data_dict[row[id_column]] = row
     return data_dict
 
 
@@ -152,20 +152,25 @@ def compare_records(
     return updates
 
 
-def update_records(conn, edits_table, updates, crash_id):
+def update_records(conn, edits_table, updates, id_value, id_column):
     update_sql = (
         f"UPDATE public.{edits_table} SET "
         + ", ".join(f"{column} = %s" for column, _ in updates)
-        + " WHERE crash_id = %s"
+        + f" WHERE {id_column} = %s"
     )
-    params = tuple(value for _, value in updates) + (crash_id,)
+    params = tuple(value for _, value in updates) + (id_value,)
     with conn.cursor() as cur:
         cur.execute(update_sql, params)
         conn.commit()
 
 
 def find_differences(
-    db_connection_string, public_table, data_model_table, edits_table, matching_columns
+    db_connection_string,
+    public_table,
+    data_model_table,
+    edits_table,
+    matching_columns,
+    id_column,
 ):
     columns_to_skip = ["crash_date", "crash_time"]
 
@@ -175,15 +180,15 @@ def find_differences(
         total_records = get_total_records(conn, public_table)
         print("Total records:", total_records)
 
-        old_vz_data = fetch_old_data(conn, public_table)
-        cris_data = fetch_corresponding_data(conn, data_model_table)
+        old_vz_data = fetch_old_data(conn, public_table, id_column)
+        cris_data = fetch_corresponding_data(conn, data_model_table, id_column)
 
         with tqdm(
             total=total_records, desc=f"Processing {public_table}"
         ) as progress_bar:
             for vz_record in old_vz_data:
-                crash_id = vz_record["crash_id"]
-                cris_record = cris_data.get(crash_id)
+                id_value = vz_record[id_column]
+                cris_record = cris_data.get(id_value)
 
                 if cris_record is not None:
                     updates = compare_records(
@@ -194,13 +199,9 @@ def find_differences(
                         edits_columns,
                     )
                     if updates:
-                        tqdm.write(
-                            f"Record {vz_record['crash_id']}: {len(updates)} changes"
-                        )
-                        # tqdm.write(str(updates))
-                        # update_records(
-                        #     conn, edits_table, updates, vz_record["crash_id"]
-                        # )
+                        tqdm.write(f"Record {id_value}: {len(updates)} changes")
+                        # Uncomment below line to enable updates
+                        # update_records(conn, edits_table, updates, id_value, id_column)
                 progress_bar.update(1)
 
 
