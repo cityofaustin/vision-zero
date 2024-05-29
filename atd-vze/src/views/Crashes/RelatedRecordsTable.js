@@ -148,6 +148,7 @@ const RelatedRecordsTable = ({
                               editField={editField}
                               editRow={editRow}
                               refetch={refetch}
+                              isReadOnly={isReadOnly(roles)}
                               {...props}
                             ></VictimNameField>
                           );

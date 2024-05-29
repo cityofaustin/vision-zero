@@ -16,6 +16,7 @@ const VictimNameField = ({
   row,
   field,
   refetch,
+  isReadOnly,
   ...props
 }) => {
   const personId = row.id;
@@ -97,7 +98,7 @@ const VictimNameField = ({
         </span>
       )}
 
-      {!isEditing && (
+      {!isEditing && !isReadOnly && (
         <Button
           block
           color="secondary"
