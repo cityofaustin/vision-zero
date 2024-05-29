@@ -113,12 +113,14 @@ def fetch_old_data(conn, table_name):
         return cur.fetchall()
 
 
-def fetch_corresponding_data(conn, table_name, crash_id):
+def fetch_corresponding_data(conn, table_name):
+    data_dict = {}
     with conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
-        cur.execute(
-            f"SELECT * FROM data_model.{table_name} WHERE crash_id = %s", (crash_id,)
-        )
-        return cur.fetchone()
+        cur.execute(f"SELECT * FROM data_model.{table_name}")
+        rows = cur.fetchall()
+        for row in rows:
+            data_dict[row["crash_id"]] = row
+    return data_dict
 
 
 def compare_records(
@@ -159,30 +161,31 @@ def find_differences(
         total_records = get_total_records(conn, public_table)
         print("Total records:", total_records)
 
-        old_data = fetch_old_data(conn, public_table)
+        old_vz_data = fetch_old_data(conn, public_table)
+        cris_data_dict = fetch_corresponding_data(conn, data_model_table)
 
         with tqdm(
             total=total_records, desc=f"Processing {public_table}"
         ) as progress_bar:
-            for vz_record in old_data:
-                cris_record = fetch_corresponding_data(
-                    conn, data_model_table, vz_record["crash_id"]
-                )
-                # if cris_record is not None:
-                #     updates = compare_records(
-                #         vz_record,
-                #         cris_record,
-                #         columns_to_skip,
-                #         matching_columns,
-                #         edits_columns,
-                #     )
-                #     if updates:
-                #         tqdm.write(
-                #             f"Record {vz_record['crash_id']}: {len(updates)} changes"
-                #         )
-                #         update_records(
-                #             conn, edits_table, updates, vz_record["crash_id"]
-                #         )
+            for vz_record in old_vz_data:
+                crash_id = vz_record["crash_id"]
+                cris_record = cris_data_dict.get(crash_id)
+
+                if cris_record is not None:
+                    updates = compare_records(
+                        vz_record,
+                        cris_record,
+                        columns_to_skip,
+                        matching_columns,
+                        edits_columns,
+                    )
+                    if updates:
+                        tqdm.write(
+                            f"Record {vz_record['crash_id']}: {len(updates)} changes"
+                        )
+                        update_records(
+                            conn, edits_table, updates, vz_record["crash_id"]
+                        )
                 progress_bar.update(1)
 
 
