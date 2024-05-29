@@ -199,7 +199,6 @@ export const GET_CRASH = gql`
         unit_nbr
         prsn_nbr
         citation_nbr
-        charge_cat_id
         charge
       }
     }

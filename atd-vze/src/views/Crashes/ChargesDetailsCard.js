@@ -41,7 +41,6 @@ const ChargesDetailsCard = ({ chargesData, isExpanded, toggleAccordion }) => {
                 <th>Unit</th>
                 <th>Person</th>
                 <th>Charge</th>
-                <th>Charge Category</th>
               </tr>
             </thead>
             <tbody>
@@ -52,7 +51,6 @@ const ChargesDetailsCard = ({ chargesData, isExpanded, toggleAccordion }) => {
                       <td>{charge.unit_nbr}</td>
                       <td>{charge.prsn_nbr}</td>
                       <td>{charge.charge}</td>
-                      <td>{charge.charge_cat_id}</td>
                     </tr>
                   )
               )}
