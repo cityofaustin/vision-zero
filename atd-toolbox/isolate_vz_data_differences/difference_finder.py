@@ -18,7 +18,14 @@ def main():
 
     table_sets = [
         # ("atd_txdot_crashes", "crash", "crashes_edits", "crash_id", ("crash_id",)),
-        ("atd_txdot_units", "unit", "units_edits", "id", ("crash_id", "unit_nbr")),
+        (
+            "atd_txdot_units",
+            "unit",
+            "units_cris",
+            "units_edits",
+            "id",
+            ("crash_id", "unit_nbr"),
+        ),
         # ("atd_txdot_persons", "person", "persons_edits", "id"),
         # ("atd_txdot_primarypersons", "primaryperson", "primarypersons_edits", "id"),
     ]
@@ -26,6 +33,7 @@ def main():
     for (
         public_table,
         data_model_table,
+        cris_table,
         edits_table,
         id_column,
         unique_identifiers,
@@ -37,6 +45,7 @@ def main():
             db_connection_string,
             public_table,
             data_model_table,
+            cris_table,
             edits_table,
             matching_columns,
             id_column,
@@ -161,15 +170,25 @@ def compare_records(
     return updates
 
 
-def update_records(conn, edits_table, updates, id_value, id_column):
+def update_records(
+    conn, edits_table, cris_table, updates, unique_identifiers, unique_values
+):
+    subquery = f"SELECT id FROM public.{cris_table} WHERE " + " AND ".join(
+        f"{id_column} = %s" for id_column in unique_identifiers
+    )
     update_sql = (
         f"UPDATE public.{edits_table} SET "
         + ", ".join(f"{column} = %s" for column, _ in updates)
-        + f" WHERE {id_column} = %s"
+        + f" WHERE id = ({subquery})"
     )
-    params = tuple(value for _, value in updates) + (id_value,)
+    params = tuple(value for _, value in updates) + unique_values
     with conn.cursor() as cur:
         cur.execute(update_sql, params)
+        updated_rows = cur.rowcount
+        if updated_rows != 1:
+            raise Exception(
+                f"Expected to update 1 row, but updated {updated_rows} rows."
+            )
         conn.commit()
 
 
@@ -177,6 +196,7 @@ def find_differences(
     db_connection_string,
     public_table,
     data_model_table,
+    cris_table,
     edits_table,
     matching_columns,
     id_column,
@@ -197,15 +217,11 @@ def find_differences(
             total=total_records, desc=f"Processing {public_table}"
         ) as progress_bar:
             for vz_record in old_vz_data:
-                print(vz_record)
                 # Generate a tuple of values for the unique identifiers
                 unique_values = tuple(
                     vz_record[id_column] for id_column in unique_identifiers
                 )
                 cris_record = cris_data.get(unique_values)
-                print(cris_record)
-                input()
-                continue
 
                 if cris_record is not None:
                     updates = compare_records(
@@ -216,13 +232,28 @@ def find_differences(
                         edits_columns,
                     )
                     if updates:
+                        unique_values_str = ", ".join(
+                            str(vz_record[id_column])
+                            for id_column in unique_identifiers
+                        )
                         tqdm.write(
-                            f"Record {vz_record['crash_id']}: {len(updates)} changes"
+                            f"Record ({unique_values_str}) change count: {len(updates)} "
                         )
                         # tqdm.write(str(updates))
-                        # update_records(
-                        #     conn, edits_table, updates, vz_record["crash_id"]
-                        # )
+                        # for field, vz_value in updates:
+                        #     cris_value = cris_record.get(field)
+                        #     tqdm.write(f"Field: {field}")
+                        #     tqdm.write(f"VZ value: {vz_value}")
+                        #     tqdm.write(f"CRIS value: {cris_value}")
+                        # input()
+                        update_records(
+                            conn,
+                            edits_table,
+                            cris_table,
+                            updates,
+                            unique_identifiers,
+                            unique_values,
+                        )
                 progress_bar.update(1)
 
 
