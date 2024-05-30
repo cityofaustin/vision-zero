@@ -4,6 +4,7 @@ import os
 import psycopg2
 import psycopg2.extras
 from tqdm import tqdm
+import json
 
 # TODO: Fix the ID'ing of columns among the sets
 # TODO: Combine Primary and Normal Persons in the output table
@@ -17,7 +18,14 @@ def main():
         raise EnvironmentError("DATABASE_CONNECTION environment variable is not set")
 
     table_sets = [
-        # ("atd_txdot_crashes", "crash", "crashes_edits", "crash_id", ("crash_id",)),
+        # (
+        #     "atd_txdot_crashes",
+        #     "crash",
+        #     "crashes_cris",
+        #     "crashes_edits",
+        #     "crash_id",
+        #     ("crash_id",),
+        # ),
         (
             "atd_txdot_units",
             "unit",
@@ -160,13 +168,18 @@ def compare_records(
         if column in columns_to_skip:
             continue
 
-        if column in edits_columns and vz_record[column] != cris_record[column]:
-            # print(f"Column: {column}")
-            # print(f"CRIS value: {cris_record[column]}")
-            # print(f"VZ value: {vz_record[column]}")
+        if (
+            column in edits_columns
+            and vz_record[column] != cris_record[column]
+            # the following condition would result in a field being set to /null/ in the vz table which is a non-op
+            # but the condition is included here for clarity in how fields which are added in more recent schemata are handled.
+            and not (
+                column == "rpt_autonomous_level_engaged_id"
+                and vz_record[column] is None
+            )
+        ):
             updates.append((column, vz_record[column]))
-    if len(updates) > 0:
-        pass
+
     return updates
 
 
@@ -247,7 +260,10 @@ def find_differences(
                         tqdm.write(
                             f"Record ({unique_values_str}) change count: {len(updates)} "
                         )
-                        # tqdm.write(str(updates))
+                        updates_dict = dict(updates)
+                        updates_json = json.dumps(updates_dict, indent=4)
+                        tqdm.write(updates_json)
+
                         # for field, vz_value in updates:
                         #     cris_value = cris_record.get(field)
                         #     tqdm.write(f"Field: {field}")
