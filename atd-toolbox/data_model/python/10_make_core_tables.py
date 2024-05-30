@@ -80,6 +80,9 @@ def make_column_sql(columns, full_table_name):
                 fk_table_name = "crashes_cris"
             elif full_table_name == "units":
                 fk_table_name = "crashes"
+        elif column_name == "cris_crash_id":
+            if full_table_name == "units":
+                fk_table_name = "crashes"
         elif column_name == "unit_id":
             if full_table_name == "people_edits":
                 # make nullable

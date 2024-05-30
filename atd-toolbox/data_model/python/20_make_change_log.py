@@ -27,7 +27,7 @@ def main():
             if table_name == "charges" and table_suffix != "cris":
                 # charges is a cris-only table
                 continue
-            id_col_name = "crash_id" if table_name == "crashes" else "id"
+            id_col_name = "id"
             table_name_full = f"{table_name}{table_suffix}"
             sql_up = sql_template.replace("$tableName$", table_name_full).replace(
                 "$idColName$", id_col_name
