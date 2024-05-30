@@ -114,7 +114,7 @@ function Crash(props) {
           changes: { ...formData, ...secondaryFormData },
         },
       })
-      .then(res => refetch());
+      .then(res => crashRefetch());
 
     setEditField("");
   };
