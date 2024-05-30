@@ -82,21 +82,18 @@ const DataTable = ({
                       // If data is nested in data object, define path in dataMap
                       const nestedData =
                         fieldConfigObject.dataPath &&
-                        get(
-                          data[fieldDataTable][0],
-                          fieldConfigObject.dataPath
-                        );
+                        get(data[fieldDataTable], fieldConfigObject.dataPath);
 
                       const formattedDollarValue =
                         fieldConfigObject.format === "dollars" &&
                         formatCostToDollars(
-                          nestedData || data[fieldDataTable][0][field]
+                          nestedData || data[fieldDataTable][field]
                         );
 
                       const formatDateTimeValue =
                         fieldConfigObject.format === "datetime" &&
                         formatDateTimeString(
-                          nestedData || data[fieldDataTable][0][field]
+                          nestedData || data[fieldDataTable][field]
                         );
 
                       const fieldValue =
@@ -104,7 +101,7 @@ const DataTable = ({
                         formatDateTimeValue ||
                         nestedData ||
                         (formData && formData[field.data]) ||
-                        data[fieldDataTable][0][field];
+                        data[fieldDataTable][field];
 
                       const fieldUiType = fieldConfigObject.uiType;
 
@@ -127,7 +124,7 @@ const DataTable = ({
 
                         // make sure there is a lookup object in the config
                         if (!selectOptions || !fieldConfigObject.lookupOptions)
-                          return fieldValue;
+                          return fieldValue.toString().toUpperCase();
 
                         // make sure the config lookup object matches with lookup queries
                         const matchingLookupObject = selectOptions.find(
@@ -200,6 +197,17 @@ const DataTable = ({
                                         // disable 1password autofill
                                         data-1p-ignore
                                       />
+                                    )}
+                                    {fieldUiType === "boolean" && (
+                                      <Input
+                                        autoFocus
+                                        defaultValue={fieldValue}
+                                        type="select"
+                                        onChange={e => handleInputChange(e)}
+                                      >
+                                        <option value={true}>TRUE</option>
+                                        <option value={false}>FALSE</option>
+                                      </Input>
                                     )}
                                   </div>
                                   <div className="my-auto pl-2 d-flex">
