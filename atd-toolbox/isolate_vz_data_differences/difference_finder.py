@@ -180,15 +180,15 @@ def find_differences(
         total_records = get_total_records(conn, public_table)
         print("Total records:", total_records)
 
-        old_vz_data = fetch_old_data(conn, public_table, id_column)
-        cris_data = fetch_corresponding_data(conn, data_model_table, id_column)
+        old_vz_data = fetch_old_data(conn, public_table)
+        cris_data = fetch_corresponding_data(conn, data_model_table)
 
         with tqdm(
             total=total_records, desc=f"Processing {public_table}"
         ) as progress_bar:
             for vz_record in old_vz_data:
-                id_value = vz_record[id_column]
-                cris_record = cris_data.get(id_value)
+                crash_id = vz_record["crash_id"]
+                cris_record = cris_data.get(crash_id)
 
                 if cris_record is not None:
                     updates = compare_records(
@@ -199,9 +199,13 @@ def find_differences(
                         edits_columns,
                     )
                     if updates:
-                        tqdm.write(f"Record {id_value}: {len(updates)} changes")
-                        # Uncomment below line to enable updates
-                        # update_records(conn, edits_table, updates, id_value, id_column)
+                        tqdm.write(
+                            f"Record {vz_record['crash_id']}: {len(updates)} changes"
+                        )
+                        # tqdm.write(str(updates))
+                        # update_records(
+                        #     conn, edits_table, updates, vz_record["crash_id"]
+                        # )
                 progress_bar.update(1)
 
 
