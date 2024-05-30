@@ -173,21 +173,29 @@ def compare_records(
 def update_records(
     conn, edits_table, cris_table, updates, unique_identifiers, unique_values
 ):
-    subquery = f"SELECT id FROM public.{cris_table} WHERE " + " AND ".join(
+    id_column = "crash_id" if cris_table == "crashes_cris" else "id"
+    subquery = f"SELECT {id_column} FROM public.{cris_table} WHERE " + " AND ".join(
         f"{id_column} = %s" for id_column in unique_identifiers
     )
     update_sql = (
         f"UPDATE public.{edits_table} SET "
         + ", ".join(f"{column} = %s" for column, _ in updates)
-        + f" WHERE id = ({subquery})"
+        + f" WHERE {id_column} = ({subquery})"
     )
     params = tuple(value for _, value in updates) + unique_values
     with conn.cursor() as cur:
-        cur.execute(update_sql, params)
-        updated_rows = cur.rowcount
-        if updated_rows != 1:
+        try:
+            cur.execute(update_sql, params)
+            updated_rows = cur.rowcount
+            if updated_rows != 1:
+                raise Exception()
+        except Exception:
+            interpolated_query = cur.mogrify(update_sql, params).decode()
+            updates_str = ", ".join(f"{column} = {value}" for column, value in updates)
             raise Exception(
-                f"Expected to update 1 row, but updated {updated_rows} rows."
+                f"Expected to update 1 row, but updated another number of rows.\n"
+                f"Query: {interpolated_query}\n"
+                f"Updates: {updates_str}"
             )
         conn.commit()
 
