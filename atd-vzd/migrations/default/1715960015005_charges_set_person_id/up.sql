@@ -27,3 +27,4 @@ create trigger set_charges_cris_person_id_and_crash_id
 before insert on public.charges_cris
 for each row
 execute procedure public.charges_cris_set_person_id();
+

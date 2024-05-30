@@ -62,8 +62,8 @@ def main():
         # sort columns to keep diffs consistent
         columns_unified.sort()
         # add audit fields
-        columns_unified.extend(['created_by', 'updated_by'])
-        pk_column = "crash_id" if table_name == "crashes" else "id"
+        columns_unified.extend(["created_by", "updated_by"])
+        pk_column = "id"
         sql = patch_template(insert_template, table_name, pk_column, columns_unified)
         stmts.append(sql)
 
@@ -78,7 +78,7 @@ def main():
 
     stmts = []
     for table_name in ["crashes", "units", "people"]:
-        pk_column = "crash_id" if table_name == "crashes" else "id"
+        pk_column = "id"
         sql = patch_template(update_template, table_name, pk_column, [])
         stmts.append(sql)
 
@@ -99,6 +99,12 @@ def main():
 
     migration_path = make_migration_dir("edits_update_triggers")
     save_file(f"{migration_path}/up.sql", "\n\n".join(stmts))
+    save_empty_down_migration(migration_path)
+
+    # trigger that assigns crash ID to unit records
+    units_set_crash_id_sql = load_sql_template("sql_templates/unit_set_crash_id.sql")
+    migration_path = make_migration_dir("units_set_crash_id")
+    save_file(f"{migration_path}/up.sql", units_set_crash_id_sql)
     save_empty_down_migration(migration_path)
 
     # trigger that assigns unit ID to person records
