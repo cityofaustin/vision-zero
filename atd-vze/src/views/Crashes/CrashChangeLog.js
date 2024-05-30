@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from "react";
 import {
+  Badge,
   Button,
   Card,
   CardBody,
@@ -46,13 +47,25 @@ const useChangeLogData = data =>
     });
   }, [data]);
 
-const toTitleCase = str =>
-  str.charAt(0).toUpperCase() + str.substr(1).toLowerCase();
+const formatRecordType = recordType =>
+  recordType === "people" ? "person" : recordType;
 
-const formatEventName = (recordType, eventType) =>
-  `${toTitleCase(recordType)} ${eventType
-    .toLowerCase()
-    .replace("insert", "create")}`;
+const formatEventType = eventType =>
+  eventType === "INSERT" ? "create" : "update";
+
+const formatChangeSummary = selectedChange => {
+  return (
+    <>
+      {`${formatRecordType(selectedChange.record_type)}`} ID{" "}
+      <span className="font-monospace">{selectedChange.record_id}</span> edited
+      by {selectedChange.created_by}
+      {" - "}
+      {formatDateTimeString(selectedChange.created_at)}
+    </>
+  );
+};
+
+const isNewRecordEvent = change => change.operation_type === "INSERT";
 
 export default function CrashChangeLog({ data }) {
   const [selectedChange, setSelectedChange] = useState(null);
@@ -61,28 +74,29 @@ export default function CrashChangeLog({ data }) {
   if (changes.length === 0) {
     return <p>No change history found</p>;
   }
+
   return (
     <Card>
       <CardHeader>Record history</CardHeader>
       <CardBody>
         <Table responsive striped hover>
           <thead>
+            <th>Record type</th>
             <th>Event</th>
             <th>Affected fields</th>
             <th>Edited by</th>
             <th>Date</th>
           </thead>
-          <tbody>
+          <tbody className="text-monospace">
             {changes.map(change => (
               <tr
                 onClick={() => setSelectedChange(change)}
                 style={{ cursor: "pointer" }}
               >
-                <td className="font-weight-bold">
-                  {formatEventName(change.record_type, change.operation_type)}
-                </td>
+                <td>{formatRecordType(change.record_type)}</td>
+                <td>{formatEventType(change.operation_type)}</td>
                 <td>
-                  {change.operation_type === "INSERT"
+                  {isNewRecordEvent(change)
                     ? ""
                     : change.affected_fields.join(", ")}
                 </td>
@@ -100,31 +114,25 @@ export default function CrashChangeLog({ data }) {
             fade={false}
           >
             <ModalHeader toggle={() => setSelectedChange(null)}>
-              Record history
+              {formatChangeSummary(selectedChange)}
             </ModalHeader>
             <ModalBody>
-              <Row>
-                <Col>
-                  <p>
-                    {" "}
-                    {`${selectedChange.record_type} edited by ${
-                      selectedChange.created_by
-                    } on ${formatDateTimeString(selectedChange.created_at)}`}
-                  </p>
-                </Col>
-              </Row>
               <Table responsive striped hover>
                 <thead>
                   <th>Field</th>
-                  <th>Previous value</th>
+                  {selectedChange.operation_type !== "INSERT" && (
+                    <th>Previous value</th>
+                  )}
                   <th>New value</th>
                 </thead>
-                <tbody>
+                <tbody className="text-monospace">
                   {selectedChange.diffs.map(diff => (
                     <tr>
-                      <td>{diff.field}</td>
-                      <td>{String(diff.old)}</td>
-                      <td>{String(diff.new)}</td>
+                      <td className="text-monospace">{diff.field}</td>
+                      {selectedChange.operation_type !== "INSERT" && (
+                        <td className="text-monospace">{String(diff.old)}</td>
+                      )}
+                      <td className="text-monospace">{String(diff.new)}</td>
                     </tr>
                   ))}
                 </tbody>
