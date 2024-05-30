@@ -122,8 +122,43 @@ export const GET_CRASH = gql`
   query CrashDetails($crashId: Int!) {
     crashes_by_pk(crash_id: $crashId) {
       crash_id
+      updated_at
+      case_id
+      crash_date
+      fhe_collsn_id
+      rpt_city_id
+      light_cond_id
+      wthr_cond_id
+      obj_struck_id
+      crash_speed_limit
+      traffic_cntl_id
       address_primary
+      rpt_block_num
+      rpt_street_name
+      rpt_street_desc
+      rpt_road_part_id
+      rpt_rdwy_sys_id
+      rpt_hwy_num
+      rpt_street_pfx
+      rpt_street_name
+      rpt_street_sfx
       address_secondary
+      rpt_sec_block_num
+      rpt_sec_street_name
+      rpt_sec_street_desc
+      rpt_sec_road_part_id
+      rpt_sec_rdwy_sys_id
+      rpt_sec_hwy_num
+      rpt_sec_street_pfx
+      rpt_sec_street_sfx
+      active_school_zone_fl
+      at_intrsct_fl
+      onsys_fl
+      private_dr_fl
+      road_constr_zone_fl
+      rr_relat_fl
+      schl_bus_fl
+      toll_road_fl
       crash_injury_metrics_view {
         vz_fatality_count
         sus_serious_injry_count
@@ -199,6 +234,7 @@ export const GET_CRASH = gql`
         unit_nbr
         prsn_nbr
         citation_nbr
+        charge_cat_id
         charge
       }
     }
