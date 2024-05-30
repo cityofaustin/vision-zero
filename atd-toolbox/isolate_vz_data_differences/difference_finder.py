@@ -17,13 +17,19 @@ def main():
         raise EnvironmentError("DATABASE_CONNECTION environment variable is not set")
 
     table_sets = [
-        # ("atd_txdot_crashes", "crash", "crashes_edits", "crash_id"),
-        ("atd_txdot_units", "unit", "units_edits", "id"),
+        # ("atd_txdot_crashes", "crash", "crashes_edits", "crash_id", ("crash_id",)),
+        ("atd_txdot_units", "unit", "units_edits", "id", ("crash_id", "unit_nbr")),
         # ("atd_txdot_persons", "person", "persons_edits", "id"),
         # ("atd_txdot_primarypersons", "primaryperson", "primarypersons_edits", "id"),
     ]
 
-    for public_table, data_model_table, edits_table, id_column in table_sets:
+    for (
+        public_table,
+        data_model_table,
+        edits_table,
+        id_column,
+        unique_identifiers,
+    ) in table_sets:
         matching_columns = align_types(
             db_connection_string, public_table, data_model_table
         )
@@ -34,6 +40,7 @@ def main():
             edits_table,
             matching_columns,
             id_column,
+            unique_identifiers,
         )
 
 
@@ -106,9 +113,9 @@ def get_total_records(conn, table_name):
         return cur.fetchone()[0]
 
 
-def fetch_old_data(conn, table_name, id_column):
+def fetch_old_data(conn, table_name):
     with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
-        cur.execute(f"SELECT * FROM public.{table_name} ORDER BY {id_column} DESC")
+        cur.execute(f"SELECT * FROM public.{table_name}")
         rows = cur.fetchall()
         for row in rows:
             # Replace empty strings with None
@@ -118,7 +125,7 @@ def fetch_old_data(conn, table_name, id_column):
         return rows
 
 
-def fetch_corresponding_data(conn, table_name, id_column):
+def fetch_corresponding_data(conn, table_name, unique_identifiers):
     data_dict = {}
     with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
         cur.execute(f"SELECT * FROM data_model.{table_name}")
@@ -128,7 +135,9 @@ def fetch_corresponding_data(conn, table_name, id_column):
             for key, value in row.items():
                 if value == "":
                     row[key] = None
-            data_dict[row[id_column]] = row
+            # Generate a tuple of values for the unique identifiers
+            unique_values = tuple(row[id_column] for id_column in unique_identifiers)
+            data_dict[unique_values] = row
     return data_dict
 
 
@@ -171,6 +180,7 @@ def find_differences(
     edits_table,
     matching_columns,
     id_column,
+    unique_identifiers,
 ):
     columns_to_skip = ["crash_date", "crash_time"]
 
@@ -181,14 +191,21 @@ def find_differences(
         print("Total records:", total_records)
 
         old_vz_data = fetch_old_data(conn, public_table)
-        cris_data = fetch_corresponding_data(conn, data_model_table)
+        cris_data = fetch_corresponding_data(conn, data_model_table, unique_identifiers)
 
         with tqdm(
             total=total_records, desc=f"Processing {public_table}"
         ) as progress_bar:
             for vz_record in old_vz_data:
-                crash_id = vz_record["crash_id"]
-                cris_record = cris_data.get(crash_id)
+                print(vz_record)
+                # Generate a tuple of values for the unique identifiers
+                unique_values = tuple(
+                    vz_record[id_column] for id_column in unique_identifiers
+                )
+                cris_record = cris_data.get(unique_values)
+                print(cris_record)
+                input()
+                continue
 
                 if cris_record is not None:
                     updates = compare_records(
