@@ -323,14 +323,14 @@ function Crash(props) {
       <Row>
         <DataTable
           dataMap={createCrashDataMap(tempRecord)}
-          dataTable={"atd_txdot_crashes"}
+          dataTable={"crashes_by_pk"}
           formData={formData}
           setEditField={setEditField}
           editField={editField}
           handleInputChange={handleInputChange}
           handleFieldUpdate={handleFieldUpdate}
           handleButtonClick={handleButtonClick}
-          data={data}
+          data={crashData}
         />
         <Col md="6">
           <CrashChangeLog data={data} />
