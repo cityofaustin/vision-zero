@@ -128,7 +128,6 @@ const RelatedRecordsTable = ({
                         : true
                     )
                     .map((field, i) => {
-                      console.log(field, row[field]);
                       // Render victim name cell in victim name column if row is a fatality
                       if (field === "victim_name") {
                         if (row.injry_sev_lkp.id === 4) {
