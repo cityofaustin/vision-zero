@@ -159,6 +159,7 @@ export const GET_CRASH = gql`
       rr_relat_fl
       schl_bus_fl
       toll_road_fl
+      law_enforcement_fatality_num
       crash_injury_metrics_view {
         vz_fatality_count
         sus_serious_injry_count
@@ -170,7 +171,6 @@ export const GET_CRASH = gql`
         poss_injry_count
         sus_serious_injry_count
         unkn_injry_count
-        law_enf_fatality_count
         cris_fatality_count
       }
       units {
