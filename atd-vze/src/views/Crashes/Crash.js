@@ -119,27 +119,6 @@ function Crash(props) {
     setEditField("");
   };
 
-  const handleButtonClick = (e, buttonParams, data) => {
-    e.preventDefault();
-
-    // Expose the field to mutate defined in crashDataMap
-    // and the value from data using the dataPath, then mutate
-    const fieldToUpdate = buttonParams.field;
-    const fieldValue =
-      data[buttonParams.dataTableName][0][buttonParams.dataPath];
-    const buttonFormData = { [fieldToUpdate]: fieldValue };
-
-    props.client
-      .mutate({
-        mutation: UPDATE_CRASH,
-        variables: {
-          crashId: crashId,
-          changes: { ...formData, ...buttonFormData },
-        },
-      })
-      .then(res => refetch());
-  };
-
   const {
     latitude_primary: latitude,
     longitude_primary: longitude,
@@ -329,7 +308,6 @@ function Crash(props) {
           editField={editField}
           handleInputChange={handleInputChange}
           handleFieldUpdate={handleFieldUpdate}
-          handleButtonClick={handleButtonClick}
           data={crashData}
         />
         <Col md="6">
