@@ -79,12 +79,6 @@ export const createCrashDataMap = isTempRecord => {
           // TODO: Validate for integers
           uiType: "text",
         },
-        // road_type_id: {
-        //   label: "Roadway Type",
-        //   editable: true,
-        //   uiType: "select",
-        //   lookupOptions: "atd_txdot__road_type_lkp",
-        // },
         traffic_cntl_id: {
           label: "Traffic Control",
           editable: true,
@@ -146,15 +140,8 @@ export const createCrashDataMap = isTempRecord => {
           relationshipName: "crash_injury_metrics_view",
           editable: false,
         },
-        // apd_confirmed_death_count: {
-        //   label: "APD Death Count",
-        //   relationshipName: "crash_injury_metrics_view",
-        //   editable: false,
-        //   uiType: "text",
-        //   secondaryFieldUpdate: { apd_human_update: "Y" },
-        // },
         law_enforcement_fatality_num: {
-          label: "Law Enforcement Number",
+          label: "Law Enforcement Fatality Count",
           editable: true,
           uiType: "text",
         },
