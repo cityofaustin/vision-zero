@@ -20,15 +20,17 @@ export const createCrashDataMap = isTempRecord => {
           label: "Crash Date",
           editable: false,
         },
-        // day_of_week: {
-        //   label: "Day of Week",
-        //   editable: false,
-        // },
-        // est_comp_cost_crash_based: {
-        //   label: "Est. Comprehensive Cost",
-        //   editable: false,
-        //   format: "dollars",
-        // },
+        crash_day_of_week: {
+          label: "Day of Week",
+          relationshipName: "crashes_list_view",
+          editable: false,
+        },
+        est_comp_cost_crash_based: {
+          label: "Est. Comprehensive Cost",
+          relationshipName: "crash_injury_metrics_view",
+          editable: false,
+          format: "dollars",
+        },
         // est_econ_cost: {
         //   label: "Est. Economic Cost",
         //   editable: false,
@@ -91,84 +93,74 @@ export const createCrashDataMap = isTempRecord => {
         },
       },
     },
-    // {
-    //   title: "Injuries",
-    //   button: {
-    //     buttonText: "Reset to CRIS Data",
-    //     // Define conditions for when button should appear
-    //     buttonCondition: {
-    //       dataTableName: "atd_txdot_crashes",
-    //       dataPath: "apd_human_update",
-    //       value: "Y",
-    //     },
-    //     buttonFieldUpdate: {
-    //       field: "apd_confirmed_death_count",
-    //       dataTableName: "atd_txdot_crashes",
-    //       dataPath: "death_cnt",
-    //     },
-    //     buttonConfirm: {
-    //       confirmHeader: "Are you sure?",
-    //       confirmBody:
-    //         "Are you sure you want to revert to the original value from the CRIS database?",
-    //     },
-    //     secondaryFieldUpdate: { apd_human_update: "N" },
-    //   },
-    //   fields: {
-    //     crash_sev_id: {
-    //       label: "Crash Severity",
-    //       editable: false,
-    //       uiType: "select",
-    //       lookupOptions: "atd_txdot__injry_sev_lkp",
-    //       lookupPrefix: "injry_sev",
-    //     },
-    //     non_injry_cnt: {
-    //       label: "Not Injured Count",
-    //       editable: false,
-    //     },
-    //     nonincap_injry_cnt: {
-    //       label: "Non-incapacitating Injury Count",
-    //       editable: false,
-    //     },
-    //     poss_injry_cnt: {
-    //       label: "Possible Injury Count",
-    //       editable: false,
-    //     },
-    //     sus_serious_injry_cnt: {
-    //       label: "Suspected Serious Injury Count",
-    //       editable: false,
-    //       uiType: "text",
-    //     },
-    //     tot_injry_cnt: {
-    //       label: "Total Injury Count",
-    //       editable: false,
-    //       uiType: "text",
-    //     },
-    //     unkn_injry_cnt: {
-    //       label: "Unknown Injury Count",
-    //       editable: false,
-    //     },
-    //     vz_fatality_count: {
-    //       label: "ATD Fatality Count",
-    //       editable: false,
-    //       uiType: "text",
-    //     },
-    //     death_cnt: {
-    //       label: "CRIS Death Count",
-    //       editable: false,
-    //     },
-    //     apd_confirmed_death_count: {
-    //       label: "APD Death Count",
-    //       editable: false,
-    //       uiType: "text",
-    //       secondaryFieldUpdate: { apd_human_update: "Y" },
-    //     },
-    //     law_enforcement_num: {
-    //       label: "Law Enforcement Number",
-    //       editable: true,
-    //       uiType: "text",
-    //     },
-    //   },
-    // },
+    {
+      title: "Injuries",
+      fields: {
+        crash_injry_sev_id: {
+          label: "Crash Severity",
+          relationshipName: "crash_injury_metrics_view",
+          editable: false,
+          uiType: "select",
+          lookupOptions: "injry_sev_lkp",
+        },
+        non_injry_count: {
+          label: "Not Injured Count",
+          relationshipName: "crash_injury_metrics_view",
+          editable: false,
+        },
+        nonincap_injry_count: {
+          label: "Non-incapacitating Injury Count",
+          relationshipName: "crash_injury_metrics_view",
+          editable: false,
+        },
+        poss_injry_count: {
+          label: "Possible Injury Count",
+          relationshipName: "crash_injury_metrics_view",
+          editable: false,
+        },
+        sus_serious_injry_count: {
+          label: "Suspected Serious Injury Count",
+          relationshipName: "crash_injury_metrics_view",
+          editable: false,
+          uiType: "text",
+        },
+        // tot_injry_cnt: {
+        //   label: "Total Injury Count",
+        //   relationshipName: "crash_injury_metrics_view",
+        //   editable: false,
+        //   uiType: "text",
+        // },
+        unkn_injry_count: {
+          label: "Unknown Injury Count",
+          relationshipName: "crash_injury_metrics_view",
+          editable: false,
+        },
+        vz_fatality_count: {
+          label: "ATD Fatality Count",
+          relationshipName: "crash_injury_metrics_view",
+          editable: false,
+          uiType: "text",
+        },
+        cris_fatality_count: {
+          label: "CRIS Death Count",
+          relationshipName: "crash_injury_metrics_view",
+          editable: false,
+        },
+        // apd_confirmed_death_count: {
+        //   label: "APD Death Count",
+        //   relationshipName: "crash_injury_metrics_view",
+        //   editable: false,
+        //   uiType: "text",
+        //   secondaryFieldUpdate: { apd_human_update: "Y" },
+        // },
+        law_enf_fatality_count: {
+          label: "Law Enforcement Number",
+          relationshipName: "crash_injury_metrics_view",
+          editable: true,
+          uiType: "text",
+        },
+      },
+    },
     {
       title: "Primary Street Information",
       fields: {
