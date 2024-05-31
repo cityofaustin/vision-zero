@@ -17,6 +17,15 @@ object_relationships:
   - name: crashes_cri
     using:
       foreign_key_constraint_on: crash_id
+  - name: crashes_list_view
+    using:
+      manual_configuration:
+        column_mapping:
+          crash_id: crash_id
+        insertion_order: null
+        remote_table:
+          name: crashes_list_view
+          schema: public
 array_relationships:
   - name: change_log
     using:
