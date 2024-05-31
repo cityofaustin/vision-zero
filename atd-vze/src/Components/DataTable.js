@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useQuery } from "@apollo/react-hooks";
 import { useAuth0, isReadOnly } from "../auth/authContext";
 import ConfirmModal from "./ConfirmModal";
-import get from "lodash.get";
 import { formatCostToDollars, formatDateTimeString } from "../helpers/format";
 
 import {
