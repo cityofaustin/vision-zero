@@ -79,10 +79,12 @@ const DataTable = ({
                       const fieldDataTable =
                         fieldConfigObject.alternateTable || dataTable;
 
-                      // If data is nested in data object, define path in dataMap
+                      // If data is nested in hasura relationship, define relationship name in dataMap
                       const nestedData =
-                        fieldConfigObject.dataPath &&
-                        get(data[fieldDataTable], fieldConfigObject.dataPath);
+                        fieldConfigObject.relationshipName &&
+                        data[fieldDataTable][
+                          fieldConfigObject.relationshipName
+                        ][field];
 
                       const formattedDollarValue =
                         fieldConfigObject.format === "dollars" &&
