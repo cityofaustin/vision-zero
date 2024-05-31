@@ -153,9 +153,8 @@ export const createCrashDataMap = isTempRecord => {
         //   uiType: "text",
         //   secondaryFieldUpdate: { apd_human_update: "Y" },
         // },
-        law_enf_fatality_count: {
+        law_enforcement_fatality_num: {
           label: "Law Enforcement Number",
-          relationshipName: "crash_injury_metrics_view",
           editable: true,
           uiType: "text",
         },
