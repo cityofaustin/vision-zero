@@ -166,11 +166,8 @@ export const GET_CRASH = gql`
         years_of_life_lost
         est_comp_cost_crash_based
         crash_injry_sev_id
-        non_injry_count
         nonincap_injry_count
-        poss_injry_count
         sus_serious_injry_count
-        unkn_injry_count
         cris_fatality_count
       }
       units {
