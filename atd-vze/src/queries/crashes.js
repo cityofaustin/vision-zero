@@ -163,6 +163,15 @@ export const GET_CRASH = gql`
         vz_fatality_count
         sus_serious_injry_count
         years_of_life_lost
+        est_comp_cost_crash_based
+        crash_injry_sev_id
+        non_injry_count
+        nonincap_injry_count
+        poss_injry_count
+        sus_serious_injry_count
+        unkn_injry_count
+        law_enf_fatality_count
+        cris_fatality_count
       }
       units {
         id
@@ -236,6 +245,9 @@ export const GET_CRASH = gql`
         citation_nbr
         charge_cat_id
         charge
+      }
+      crashes_list_view {
+        crash_day_of_week
       }
     }
   }
