@@ -93,7 +93,7 @@ def main():
 
     stmts = []
     for table_name in ["crashes", "units", "people"]:
-        pk_column = "crash_id" if table_name == "crashes" else "id"
+        pk_column = "id"
         sql = patch_template(update_template, table_name, pk_column, [])
         stmts.append(sql)
 
