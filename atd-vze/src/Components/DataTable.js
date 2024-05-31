@@ -1,7 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
 import { useQuery } from "@apollo/react-hooks";
 import { useAuth0, isReadOnly } from "../auth/authContext";
-import ConfirmModal from "./ConfirmModal";
 import { formatCostToDollars, formatDateTimeString } from "../helpers/format";
 
 import {
@@ -23,18 +22,14 @@ const DataTable = ({
   setEditField,
   editField,
   data,
-  formData,
   handleInputChange,
   handleFieldUpdate,
-  handleButtonClick,
   downloadGlobal,
 }) => {
   // Disable edit features if only role is "readonly"
   const { getRoles } = useAuth0();
   const roles = getRoles();
   const isReadOnlyUser = isReadOnly(roles);
-
-  const [showModal, setShowModal] = useState(false);
 
   // Import Lookup tables and aggregate an object of uiType= "select" options
   const { data: lookupSelectOptions } = useQuery(GET_LOOKUPS);
@@ -45,22 +40,9 @@ const DataTable = ({
     setEditField("");
   };
 
-  const onButtonClick = (e, section) => {
-    handleFieldUpdate && handleFieldUpdate(e, section, "button");
-    handleButtonClick &&
-      handleButtonClick(e, section.button.buttonFieldUpdate, data);
-  };
-
-  const toggleModal = () => {
-    setShowModal(!showModal);
-  };
-
   return (
     <>
       {dataMap.map((section, i) => {
-        const buttonCondition =
-          section.button && section.button.buttonCondition;
-
         return (
           <Col key={i} md="6">
             <Card key={section.title}>
@@ -78,37 +60,21 @@ const DataTable = ({
                       const fieldDataTable =
                         fieldConfigObject.alternateTable || dataTable;
 
-                      // If data is nested in hasura relationship, define relationship name in dataMap
-                      const nestedData =
-                        fieldConfigObject.relationshipName &&
-                        data[fieldDataTable][
-                          fieldConfigObject.relationshipName
-                        ][field];
+                      // Handle field value that is nested in relationship if necessary
+                      let fieldValue = fieldConfigObject.relationshipName
+                        ? data[fieldDataTable][
+                            fieldConfigObject.relationshipName
+                          ][field]
+                        : data[fieldDataTable][field];
 
-                      const formattedDollarValue =
-                        fieldConfigObject.format === "dollars" &&
-                        formatCostToDollars(
-                          nestedData || data[fieldDataTable][field]
-                        );
-
-                      const formatDateTimeValue =
-                        fieldConfigObject.format === "datetime" &&
-                        formatDateTimeString(
-                          nestedData || data[fieldDataTable][field]
-                        );
-
-                      const fieldValue =
-                        formattedDollarValue ||
-                        formatDateTimeValue ||
-                        nestedData ||
-                        (formData && formData[field.data]) ||
-                        data[fieldDataTable][field];
+                      // Handle formatting the field value
+                      if (fieldConfigObject.format === "dollars") {
+                        fieldValue = formatCostToDollars(fieldValue);
+                      } else if (fieldConfigObject.format === "datetime") {
+                        fieldValue = formatDateTimeString(fieldValue);
+                      }
 
                       const fieldUiType = fieldConfigObject.uiType;
-
-                      const lookupPrefix = fieldConfigObject.lookupPrefix
-                        ? fieldConfigObject.lookupPrefix
-                        : field.split("_id")[0];
 
                       // If there is no lookup options, we can assume the field value can be displayed as is.
                       // If there is a lookup option, then the value is an ID to be referenced in a lookup table.
@@ -122,6 +88,11 @@ const DataTable = ({
                           typeof fieldValue === "undefined"
                         )
                           return "";
+                        else if (fieldValue === true) {
+                          return "YES";
+                        } else if (fieldValue === false) {
+                          return "NO";
+                        }
 
                         // make sure there is a lookup object in the config
                         if (!selectOptions || !fieldConfigObject.lookupOptions)
@@ -129,7 +100,7 @@ const DataTable = ({
 
                         // make sure the config lookup object matches with lookup queries
                         const matchingLookupObject = selectOptions.find(
-                          item => item[`${lookupPrefix}_id`] === fieldValue
+                          item => item[`id`] === fieldValue
                         );
 
                         if (!matchingLookupObject) {
@@ -138,7 +109,7 @@ const DataTable = ({
                           );
                           return `ID: ${fieldValue}`;
                         } else {
-                          return matchingLookupObject[`${lookupPrefix}_desc`];
+                          return matchingLookupObject[`label`];
                         }
                       };
 
@@ -178,10 +149,8 @@ const DataTable = ({
                                         type="select"
                                       >
                                         {selectOptions.map(option => (
-                                          <option
-                                            value={option[`${lookupPrefix}_id`]}
-                                          >
-                                            {option[`${lookupPrefix}_desc`]}
+                                          <option value={option[`id`]}>
+                                            {option[`label`]}
                                           </option>
                                         ))}
                                       </Input>
@@ -206,8 +175,8 @@ const DataTable = ({
                                         type="select"
                                         onChange={e => handleInputChange(e)}
                                       >
-                                        <option value={true}>TRUE</option>
-                                        <option value={false}>FALSE</option>
+                                        <option value={true}>YES</option>
+                                        <option value={false}>NO</option>
                                       </Input>
                                     )}
                                   </div>
@@ -248,42 +217,6 @@ const DataTable = ({
                     })}
                   </tbody>
                 </Table>
-                {/* If button parameters are set and the defined condition is met, show button */}
-                {section.button &&
-                  !section.button.buttonConfirm &&
-                  data[buttonCondition.dataTableName][0][
-                    buttonCondition.dataPath
-                  ] === buttonCondition.value && (
-                    <Button
-                      color="danger"
-                      onClick={e => onButtonClick(e, section)}
-                    >
-                      {section.button.buttonText}
-                    </Button>
-                  )}
-                {/* If button confirm parameters are set, show button and confirm modal */}
-                {section.button &&
-                  section.button.buttonConfirm &&
-                  data[buttonCondition.dataTableName][0][
-                    buttonCondition.dataPath
-                  ] === buttonCondition.value && (
-                    <>
-                      <Button color="danger" onClick={toggleModal}>
-                        {section.button.buttonText}
-                      </Button>
-                      {section.button.buttonConfirm && showModal && (
-                        <ConfirmModal
-                          modalHeader={
-                            section.button.buttonConfirm.confirmHeader
-                          }
-                          modalBody={section.button.buttonConfirm.confirmBody}
-                          confirmClick={e => onButtonClick(e, section)}
-                          toggleModal={toggleModal}
-                          showModal={showModal}
-                        />
-                      )}
-                    </>
-                  )}
               </CardBody>
               <CardFooter>{downloadGlobal}</CardFooter>
             </Card>
