@@ -11,6 +11,22 @@ add constraint unit_desc_owner_check check (
     )
 );
 
+
+alter table lookups.injry_sev_lkp
+drop constraint injry_sev_owner_check,
+add constraint injry_sev_owner_check check (
+    (
+        (id < 99 and source = 'cris')
+        or (id >= 99 and source = 'vz')
+        or (id = 94 and source = 'vz')
+    )
+);
+
+
 insert into lookups.unit_desc_lkp (id, label, source) values (
+    94, 'REPORTED INVALID', 'vz'
+);
+
+insert into lookups.injry_sev_lkp (id, label, source) values (
     94, 'REPORTED INVALID', 'vz'
 );
