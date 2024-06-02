@@ -2,13 +2,12 @@ import csv
 import io
 from pprint import pprint as print
 
-import requests
-
-from settings import LOOKUP_SEEDS_ENDPOINT, SCHEMA_NAME
+from settings import SCHEMA_NAME
 from utils import (
     make_migration_dir,
     save_file,
     save_empty_down_migration,
+    load_lookups_metadata,
 )
 
 
@@ -47,15 +46,13 @@ insert into lookups.veh_body_styl_lkp (id, label, source) values (177, 'E-SCOOTE
 alter table public.units_cris add constraint units_cris_veh_body_styl_id_check check (veh_body_styl_id < 177);
 """
 
-movt_lkp_custom_values = (
-    """insert into lookups.movt_lkp (select *, 'vz' as source from atd_txdot__movt_lkp);"""
-)
+movt_lkp_custom_values = """insert into lookups.movt_lkp (select *, 'vz' as source from atd_txdot__movt_lkp);"""
 
 
 def main():
     print("downloading metadata from google sheet...")
     schema_name = "lookups"
-    data = load_data(LOOKUP_SEEDS_ENDPOINT)
+    data = load_lookups_metadata()
     insert_stmts = []
     for row in data:
         stmt = f"insert into {schema_name}.{row['table_name']} (id, label, source) values ({row['id']}, '{escape_single_quotes(row['label'])}', '{row['source']}');"

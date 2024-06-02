@@ -1,3 +1,4 @@
+import json
 from os import listdir, makedirs
 from os.path import isfile, join
 import shutil
@@ -38,3 +39,13 @@ def delete_all_migrations():
 
 def save_empty_down_migration(migration_path):
     save_file(f"{migration_path}/down.sql", "select 0;")
+
+
+def load_column_metadata(path="column_metadata.json"):
+    with open(path, "r") as fin:
+        return json.load(fin)
+
+
+def load_lookups_metadata(path="lookup_table_metadata.json"):
+    with open(path, "r") as fin:
+        return json.load(fin)

@@ -2,23 +2,16 @@ import csv
 import io
 from pprint import pprint as print
 
-import requests
 
-from settings import COLUMN_ENDPOINT, SCHEMA_NAME
+from settings import SCHEMA_NAME
+
 from utils import (
     make_migration_dir,
     delete_all_migrations,
     save_file,
     save_empty_down_migration,
+    load_column_metadata,
 )
-
-
-def load_columns(endpoint):
-    res = requests.get(endpoint)
-    res.raise_for_status()
-    fin = io.StringIO(res.text)
-    reader = csv.DictReader(fin)
-    return [row for row in reader]
 
 
 def load_sql_template(name):
@@ -26,19 +19,18 @@ def load_sql_template(name):
         return fin.read()
 
 
-def get_lookup_table_names(data):
+def get_lookup_table_names(columns):
     """Extract lookup table names from column data"""
     lookup_table_names = [
-        f"{row['foreign_table_schema']}.{row['foreign_table_name']}"
-        for row in data
-        if row["foreign_table_name"]
-        and row["action"].startswith("migr")
-        and not row["foreign_table_name"].endswith("_cris")
-        and not row["foreign_table_name"].endswith("_edits")
-        and not row["foreign_table_name"] == "crashes"
-        and not row["foreign_table_name"] == "units"
-        and not row["foreign_table_name"] == "people"
-        and not row["is_existing_foreign_table"] == "TRUE"
+        f"{col['foreign_table_schema']}.{col['foreign_table_name']}"
+        for col in columns
+        if col["foreign_table_name"]
+        and not col["foreign_table_name"].endswith("_cris")
+        and not col["foreign_table_name"].endswith("_edits")
+        and not col["foreign_table_name"] == "crashes"
+        and not col["foreign_table_name"] == "units"
+        and not col["foreign_table_name"] == "people"
+        and not col["is_existing_foreign_table"]
     ]
     return sorted(list(set(lookup_table_names)))
 
@@ -55,7 +47,7 @@ def make_column_sql(columns, full_table_name):
     sql_parts = []
     for col in columns:
         column_name = col["column_name"]
-        data_type = col["data_type_new"]
+        data_type = col["data_type"]
         constraint = col["data_type_constraint"]
         fk_table_name = col["foreign_table_name"]
         fk_cascade = col["foreign_column_cascade"]
@@ -111,9 +103,7 @@ def make_column_sql(columns, full_table_name):
 
 def main():
     delete_all_migrations()
-    print("downloading metadata from google sheet...")
-    data = load_columns(COLUMN_ENDPOINT)
-    print("doing everything else...")
+    all_columns = load_column_metadata()
     # init the schema
     migration_path = make_migration_dir("create_schema")
     save_file(
@@ -125,7 +115,7 @@ def main():
         f"drop schema if exists lookups cascade;",
     )
     # lookup tables
-    lookup_table_names = get_lookup_table_names(data)
+    lookup_table_names = get_lookup_table_names(all_columns)
     lookup_tables_sql = make_lookup_table_sql(lookup_table_names)
     migration_path = make_migration_dir("lookups")
     save_file(f"{migration_path}/up.sql", lookup_tables_sql)
@@ -138,35 +128,37 @@ def main():
             if table_name == "charges" and table_suffix != "_cris":
                 # charges is a cris-only table
                 continue
-            column_table_key = f"table_name_new{table_suffix or '_unified'}"
+            column_table_key = f"is{table_suffix or '_unified'}_column"
             full_table_name = f"{table_name}{table_suffix}"
-            columns = [
+            this_table_columns = [
                 col
-                for col in data
-                if col[column_table_key] == full_table_name
-                and col["action"] == "migrate"
+                for col in all_columns
+                if col[column_table_key]
+                and col["record_type"] == table_name
             ]
             # sort primary key first, then by column name
-            columns = sorted(
-                columns,
+            this_table_columns = sorted(
+                this_table_columns,
                 key=lambda col: (
-                    "a" if "primary" in col["data_type_constraint"] else "b",
+                    "a" if col["is_primary_key"] else "b",
                     col["column_name"],
                 ),
             )
             unique_cols = set()
             # dedupe columns, which is only needed for primary/person tables
-            columns = [
+            this_table_columns = [
                 c
-                for c in columns
+                for c in this_table_columns
                 if not (
                     c["column_name"] in unique_cols or unique_cols.add(c["column_name"])
                 )
             ]
-            column_sql_str = make_column_sql(columns, full_table_name)
+            column_sql_str = make_column_sql(this_table_columns, full_table_name)
             table_sql_str = f"create table {SCHEMA_NAME}.{full_table_name} (\n    {column_sql_str}\n);"
             tables_sql_stmts.append(table_sql_str)
-            table_sql_down_stmts.append(f"drop table {SCHEMA_NAME}.{full_table_name} cascade;")
+            table_sql_down_stmts.append(
+                f"drop table {SCHEMA_NAME}.{full_table_name} cascade;"
+            )
         tables_sql_str = "\n\n".join(tables_sql_stmts)
         table_sql_down_str = "\n\n".join(table_sql_down_stmts)
         migration_path = make_migration_dir(table_name)
@@ -177,5 +169,6 @@ def main():
     migration_path = make_migration_dir("table_constraints")
     save_file(f"{migration_path}/up.sql", table_constraints_sql)
     save_empty_down_migration(migration_path)
+
 
 main()
