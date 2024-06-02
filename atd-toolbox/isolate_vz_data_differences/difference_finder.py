@@ -26,16 +26,23 @@ def main():
         #     "id",
         #     ("crash_id",),
         # ),
+        # (
+        #     "atd_txdot_units",
+        #     "unit",
+        #     "units_cris",
+        #     "units_edits",
+        #     "id",
+        #     ("crash_id", "unit_nbr"),
+        # ),
         (
-            "atd_txdot_units",
-            "unit",
-            "units_cris",
-            "units_edits",
+            "atd_txdot_primaryperson",
+            "primaryperson",
+            "people_cris",
+            "people_edits",
             "id",
-            ("crash_id", "unit_nbr"),
+            ("crash_id", "unit_nbr", "prsn_nbr"),
         ),
         # ("atd_txdot_persons", "person", "persons_edits", "id"),
-        # ("atd_txdot_primarypersons", "primaryperson", "primarypersons_edits", "id"),
     ]
 
     for (
@@ -170,16 +177,20 @@ def compare_records(
         if column in columns_to_skip:
             continue
 
+        # columns_to_check = [
+        #     "rpt_autonomous_level_engaged_id",
+        #     "investigator_narrative",
+        #     "prsn_first_name",
+        #     "prsn_mid_name",
+        #     "prsn_last_name",
+        # ]
         if (
             column in edits_columns
             and vz_record[column] != cris_record[column]
-            # the following conditions would result in a field being set to /null/ in the vz table which is a non-op
+            # the following condition would result in the fields just above being set to /null/ in the vz table which is a non-op
             # but the condition is included here for clarity in how fields which are added in more recent schemata are handled.
-            and not (
-                column == "rpt_autonomous_level_engaged_id"
-                and vz_record[column] is None
-            )
-            and not (column == "investigator_narrative" and vz_record[column] is None)
+            # and not (column in columns_to_check and vz_record[column] is None)
+            and not (vz_record[column] is None)
         ):
             updates.append((column, vz_record[column]))
 
@@ -194,7 +205,7 @@ def update_records(
     subquery = f"SELECT {id_column} FROM public.{cris_table} WHERE " + " AND ".join(
         (
             f"cris_crash_id = %s"
-            if cris_table == "units_cris" and id_column == "crash_id"
+            if cris_table in ["units_cris", "people_cris"] and id_column == "crash_id"
             else f"{id_column} = %s"
         )
         for id_column in unique_identifiers
@@ -220,7 +231,7 @@ def update_records(
             raise Exception(
                 f"Expected to update 1 row, but updated another number of rows.\n"
                 f"Query: {interpolated_query}\n"
-                f"Updates: {updates_str}"
+                # f"Updates: {updates_str}"
             )
         conn.commit()
 
@@ -235,7 +246,8 @@ def find_differences(
     id_column,
     unique_identifiers,
 ):
-    columns_to_skip = ["crash_date", "crash_time"]
+    # FIXME - handle these columns
+    columns_to_skip = ["crash_date", "crash_time", "prsn_death_date", "prsn_death_time"]
 
     with psycopg2.connect(db_connection_string) as conn:
         edits_columns = retrieve_columns(conn, edits_table)
@@ -281,7 +293,8 @@ def find_differences(
 
                         # this is a nice way to see the changes being written out
                         updates_dict = dict(updates)
-                        updates_json = json.dumps(updates_dict, indent=4)
+                        tqdm.write(str(updates))
+                        # updates_json = json.dumps(updates_dict, indent=4)
                         # tqdm.write(updates_json)
 
                         update_records(
