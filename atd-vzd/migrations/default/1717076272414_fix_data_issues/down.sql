@@ -1,3 +1,9 @@
+--ugly down migration here, but this record is the only one that bore a 94 
+-- in this column going in
+update atd_txdot_primaryperson set prsn_ethnicity_id = 94
+where crash_id = 18790889 and unit_nbr = 2 and prsn_nbr = 1;
+
+
 -- Reverse the update on public.atd_txdot_crashes
 update public.atd_txdot_crashes set surf_type_id = 'null'
 where surf_type_id = 99;

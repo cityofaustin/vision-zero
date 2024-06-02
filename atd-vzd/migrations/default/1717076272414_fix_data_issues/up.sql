@@ -30,3 +30,7 @@ insert into lookups.unit_desc_lkp (id, label, source) values (
 insert into lookups.injry_sev_lkp (id, label, source) values (
     94, 'REPORTED INVALID', 'vz'
 );
+
+-- fix a dangling primary person FK reference
+update atd_txdot_primaryperson set prsn_ethnicity_id = 0
+where prsn_ethnicity_id = 94;
