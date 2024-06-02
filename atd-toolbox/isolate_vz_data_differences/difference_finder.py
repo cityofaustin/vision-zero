@@ -18,22 +18,22 @@ def main():
         raise EnvironmentError("DATABASE_CONNECTION environment variable is not set")
 
     table_sets = [
-        # (
-        #     "atd_txdot_crashes",
-        #     "crash",
-        #     "crashes_cris",
-        #     "crashes_edits",
-        #     "crash_id",
-        #     ("crash_id",),
-        # ),
         (
-            "atd_txdot_units",
-            "unit",
-            "units_cris",
-            "units_edits",
+            "atd_txdot_crashes",
+            "crash",
+            "crashes_cris",
+            "crashes_edits",
             "id",
-            ("crash_id", "unit_nbr"),
+            ("crash_id",),
         ),
+        # (
+        #     "atd_txdot_units",
+        #     "unit",
+        #     "units_cris",
+        #     "units_edits",
+        #     "id",
+        #     ("crash_id", "unit_nbr"),
+        # ),
         # ("atd_txdot_persons", "person", "persons_edits", "id"),
         # ("atd_txdot_primarypersons", "primaryperson", "primarypersons_edits", "id"),
     ]
@@ -171,12 +171,13 @@ def compare_records(
         if (
             column in edits_columns
             and vz_record[column] != cris_record[column]
-            # the following condition would result in a field being set to /null/ in the vz table which is a non-op
+            # the following conditions would result in a field being set to /null/ in the vz table which is a non-op
             # but the condition is included here for clarity in how fields which are added in more recent schemata are handled.
             and not (
                 column == "rpt_autonomous_level_engaged_id"
                 and vz_record[column] is None
             )
+            and not (column == "investigator_narrative" and vz_record[column] is None)
         ):
             updates.append((column, vz_record[column]))
 
@@ -186,7 +187,7 @@ def compare_records(
 def update_records(
     conn, edits_table, cris_table, updates, unique_identifiers, unique_values
 ):
-    id_column = "crash_id" if cris_table == "crashes_cris" else "id"
+    id_column = "id"
     subquery = f"SELECT {id_column} FROM public.{cris_table} WHERE " + " AND ".join(
         f"{id_column} = %s" for id_column in unique_identifiers
     )
@@ -242,7 +243,13 @@ def find_differences(
                 unique_values = tuple(
                     vz_record[id_column] for id_column in unique_identifiers
                 )
+
+                # print(f"Unique values: {unique_values}")
+
                 cris_record = cris_data.get(unique_values)
+
+                # print(f"CRIS record: {cris_record}")
+                # print(f"VZ record: {vz_record}")
 
                 if cris_record is not None:
                     updates = compare_records(
@@ -260,16 +267,12 @@ def find_differences(
                         tqdm.write(
                             f"Record ({unique_values_str}) change count: {len(updates)} "
                         )
-                        updates_dict = dict(updates)
-                        updates_json = json.dumps(updates_dict, indent=4)
-                        tqdm.write(updates_json)
 
-                        # for field, vz_value in updates:
-                        #     cris_value = cris_record.get(field)
-                        #     tqdm.write(f"Field: {field}")
-                        #     tqdm.write(f"VZ value: {vz_value}")
-                        #     tqdm.write(f"CRIS value: {cris_value}")
-                        # input()
+                        # this is a nice way to see the changes being written out
+                        # updates_dict = dict(updates)
+                        # updates_json = json.dumps(updates_dict, indent=4)
+                        # tqdm.write(updates_json)
+
                         update_records(
                             conn,
                             edits_table,
