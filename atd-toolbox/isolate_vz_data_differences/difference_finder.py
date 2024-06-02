@@ -171,15 +171,12 @@ def fetch_corresponding_data(conn, table_name, unique_identifiers):
     return data_dict
 
 
-def compare_records(
-    vz_record, cris_record, columns_to_skip, matching_columns, edits_columns
-):
+def compare_records(vz_record, cris_record, matching_columns, edits_columns):
     updates = []
     # Sort matching_columns in alphabetical order
     matching_columns.sort(key=lambda x: x[0])
     for column, public_type in matching_columns:
-        if column in columns_to_skip:
-            continue
+        # columns_to_skip = ["crash_date", "crash_time", "prsn_death_date", "prsn_death_time"]
 
         # [ # these columns, in particular, generate tons of "setting to null" in the edits table
         #     "rpt_autonomous_level_engaged_id",
@@ -249,8 +246,6 @@ def find_differences(
     id_column,
     unique_identifiers,
 ):
-    # FIXME - handle these columns
-    columns_to_skip = ["crash_date", "crash_time", "prsn_death_date", "prsn_death_time"]
 
     with psycopg2.connect(db_connection_string) as conn:
         edits_columns = retrieve_columns(conn, edits_table)
@@ -276,7 +271,6 @@ def find_differences(
                     updates = compare_records(
                         vz_record,
                         cris_record,
-                        columns_to_skip,
                         matching_columns,
                         edits_columns,
                     )
@@ -290,8 +284,8 @@ def find_differences(
                         )
 
                         # this is a nice way to see the changes being written out
-                        updates_dict = dict(updates)
-                        updates_json = json.dumps(updates_dict, indent=4)
+                        # updates_dict = dict(updates)
+                        # updates_json = json.dumps(updates_dict, indent=4)
                         # tqdm.write(updates_json)
 
                         update_records(
