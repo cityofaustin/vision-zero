@@ -18,22 +18,22 @@ def main():
         raise EnvironmentError("DATABASE_CONNECTION environment variable is not set")
 
     table_sets = [
-        (
-            "atd_txdot_crashes",
-            "crash",
-            "crashes_cris",
-            "crashes_edits",
-            "id",
-            ("crash_id",),
-        ),
         # (
-        #     "atd_txdot_units",
-        #     "unit",
-        #     "units_cris",
-        #     "units_edits",
+        #     "atd_txdot_crashes",
+        #     "crash",
+        #     "crashes_cris",
+        #     "crashes_edits",
         #     "id",
-        #     ("crash_id", "unit_nbr"),
+        #     ("crash_id",),
         # ),
+        (
+            "atd_txdot_units",
+            "unit",
+            "units_cris",
+            "units_edits",
+            "id",
+            ("crash_id", "unit_nbr"),
+        ),
         # ("atd_txdot_persons", "person", "persons_edits", "id"),
         # ("atd_txdot_primarypersons", "primaryperson", "primarypersons_edits", "id"),
     ]
@@ -153,6 +153,8 @@ def fetch_corresponding_data(conn, table_name, unique_identifiers):
                 if value == "":
                     row[key] = None
             # Generate a tuple of values for the unique identifiers
+            # print(f"Row: {row}")
+            # input()
             unique_values = tuple(row[id_column] for id_column in unique_identifiers)
             data_dict[unique_values] = row
     return data_dict
@@ -188,15 +190,24 @@ def update_records(
     conn, edits_table, cris_table, updates, unique_identifiers, unique_values
 ):
     id_column = "id"
+
     subquery = f"SELECT {id_column} FROM public.{cris_table} WHERE " + " AND ".join(
-        f"{id_column} = %s" for id_column in unique_identifiers
+        (
+            f"cris_crash_id = %s"
+            if cris_table == "units_cris" and id_column == "crash_id"
+            else f"{id_column} = %s"
+        )
+        for id_column in unique_identifiers
     )
+
     update_sql = (
         f"UPDATE public.{edits_table} SET "
         + ", ".join(f"{column} = %s" for column, _ in updates)
         + f" WHERE {id_column} = ({subquery})"
     )
+
     params = tuple(value for _, value in updates) + unique_values
+
     with conn.cursor() as cur:
         try:
             cur.execute(update_sql, params)
@@ -269,8 +280,8 @@ def find_differences(
                         )
 
                         # this is a nice way to see the changes being written out
-                        # updates_dict = dict(updates)
-                        # updates_json = json.dumps(updates_dict, indent=4)
+                        updates_dict = dict(updates)
+                        updates_json = json.dumps(updates_dict, indent=4)
                         # tqdm.write(updates_json)
 
                         update_records(
