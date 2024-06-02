@@ -5,8 +5,7 @@ import psycopg2
 import psycopg2.extras
 from tqdm import tqdm
 import json
-
-# TODO: Combine the crash date and time into a unified column
+from datetime import datetime
 
 
 def main():
@@ -16,22 +15,22 @@ def main():
         raise EnvironmentError("DATABASE_CONNECTION environment variable is not set")
 
     table_sets = [
-        (
-            "atd_txdot_crashes",
-            "crash",
-            "crashes_cris",
-            "crashes_edits",
-            "id",
-            ("crash_id",),
-        ),
-        (
-            "atd_txdot_units",
-            "unit",
-            "units_cris",
-            "units_edits",
-            "id",
-            ("crash_id", "unit_nbr"),
-        ),
+        # (
+        #     "atd_txdot_crashes",
+        #     "crash",
+        #     "crashes_cris",
+        #     "crashes_edits",
+        #     "id",
+        #     ("crash_id",),
+        # ),
+        # (
+        #     "atd_txdot_units",
+        #     "unit",
+        #     "units_cris",
+        #     "units_edits",
+        #     "id",
+        #     ("crash_id", "unit_nbr"),
+        # ),
         (
             "atd_txdot_primaryperson",
             "primaryperson",
@@ -171,26 +170,68 @@ def fetch_corresponding_data(conn, table_name, unique_identifiers):
     return data_dict
 
 
+# these columns, in particular, generate tons of "setting to null" in the edits table,
+# and these are handled by
+# [
+#     "rpt_autonomous_level_engaged_id",
+#     "investigator_narrative",
+#     "prsn_first_name",
+#     "prsn_mid_name",
+#     "prsn_last_name",
+# ]
 def compare_records(vz_record, cris_record, matching_columns, edits_columns):
     updates = []
     # Sort matching_columns in alphabetical order
     matching_columns.sort(key=lambda x: x[0])
     for column, public_type in matching_columns:
-        # columns_to_skip = ["crash_date", "crash_time", "prsn_death_date", "prsn_death_time"]
+        columns_to_special_handle = [
+            "crash_date",
+            "crash_time",
+            "prsn_death_date",
+            "prsn_death_time",
+        ]
 
-        # [ # these columns, in particular, generate tons of "setting to null" in the edits table
-        #     "rpt_autonomous_level_engaged_id",
-        #     "investigator_narrative",
-        #     "prsn_first_name",
-        #     "prsn_mid_name",
-        #     "prsn_last_name",
-        # ]
-        if (
-            column in edits_columns
+        if column == "crash_date":
+            vz_crash_datetime = datetime.combine(
+                vz_record["crash_date"], vz_record["crash_time"]
+            )
+            cris_crash_datetime = datetime.combine(
+                cris_record["crash_date"], cris_record["crash_time"]
+            )
+            if vz_crash_datetime != cris_crash_datetime:
+                updates.append(("crash_time", vz_crash_datetime.isoformat()))
+        elif column == "crash_time":
+            pass
+
+        elif (
+            column == "prsn_death_date"
+            and vz_record["prsn_death_date"] is not None
+            and vz_record["prsn_death_time"] is not None
+            and cris_record["prsn_death_date"] is not None
+            and cris_record["prsn_death_time"] is not None
+        ):
+            vz_death_datetime = datetime.combine(
+                vz_record["prsn_death_date"], vz_record["prsn_death_time"]
+            )
+            cris_death_datetime = datetime.combine(
+                cris_record["prsn_death_date"], cris_record["prsn_death_time"]
+            )
+            if vz_death_datetime != cris_death_datetime:
+                updates.append(("prsn_death_date", vz_death_datetime.isoformat()))
+                updates.append(("prsn_death_time", vz_death_datetime.isoformat()))
+        elif (
+            column == "prsn_death_date"
+        ):  # if we don't get to special handle it above, we don't want to try to handle them normally either
+            pass
+        elif column == "prsn_death_time":
+            pass
+
+        elif (
+            column not in columns_to_special_handle
+            and column in edits_columns
             and vz_record[column] != cris_record[column]
-            and not (
-                vz_record[column] is None
-            )  # prevent a update to set a vz value to null, as they are already null in the edits table
+            # prevent a update to set a vz value to null, as they are already null in the edits table
+            and not vz_record[column] is None
         ):
             updates.append((column, vz_record[column]))
 
