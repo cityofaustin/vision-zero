@@ -6,8 +6,6 @@ import psycopg2.extras
 from tqdm import tqdm
 import json
 
-# TODO: Fix the ID'ing of columns among the sets
-# TODO: Combine Primary and Normal Persons in the output table
 # TODO: Combine the crash date and time into a unified column
 
 
@@ -18,22 +16,22 @@ def main():
         raise EnvironmentError("DATABASE_CONNECTION environment variable is not set")
 
     table_sets = [
-        # (
-        #     "atd_txdot_crashes",
-        #     "crash",
-        #     "crashes_cris",
-        #     "crashes_edits",
-        #     "id",
-        #     ("crash_id",),
-        # ),
-        # (
-        #     "atd_txdot_units",
-        #     "unit",
-        #     "units_cris",
-        #     "units_edits",
-        #     "id",
-        #     ("crash_id", "unit_nbr"),
-        # ),
+        (
+            "atd_txdot_crashes",
+            "crash",
+            "crashes_cris",
+            "crashes_edits",
+            "id",
+            ("crash_id",),
+        ),
+        (
+            "atd_txdot_units",
+            "unit",
+            "units_cris",
+            "units_edits",
+            "id",
+            ("crash_id", "unit_nbr"),
+        ),
         (
             "atd_txdot_primaryperson",
             "primaryperson",
@@ -42,7 +40,14 @@ def main():
             "id",
             ("crash_id", "unit_nbr", "prsn_nbr"),
         ),
-        # ("atd_txdot_persons", "person", "persons_edits", "id"),
+        (
+            "atd_txdot_person",
+            "person",
+            "people_cris",
+            "people_edits",
+            "id",
+            ("crash_id", "unit_nbr", "prsn_nbr"),
+        ),
     ]
 
     for (
@@ -160,8 +165,7 @@ def fetch_corresponding_data(conn, table_name, unique_identifiers):
                 if value == "":
                     row[key] = None
             # Generate a tuple of values for the unique identifiers
-            # print(f"Row: {row}")
-            # input()
+
             unique_values = tuple(row[id_column] for id_column in unique_identifiers)
             data_dict[unique_values] = row
     return data_dict
@@ -177,7 +181,7 @@ def compare_records(
         if column in columns_to_skip:
             continue
 
-        # columns_to_check = [
+        # [ # these columns, in particular, generate tons of "setting to null" in the edits table
         #     "rpt_autonomous_level_engaged_id",
         #     "investigator_narrative",
         #     "prsn_first_name",
@@ -187,10 +191,9 @@ def compare_records(
         if (
             column in edits_columns
             and vz_record[column] != cris_record[column]
-            # the following condition would result in the fields just above being set to /null/ in the vz table which is a non-op
-            # but the condition is included here for clarity in how fields which are added in more recent schemata are handled.
-            # and not (column in columns_to_check and vz_record[column] is None)
-            and not (vz_record[column] is None)
+            and not (
+                vz_record[column] is None
+            )  # prevent a update to set a vz value to null, as they are already null in the edits table
         ):
             updates.append((column, vz_record[column]))
 
@@ -267,12 +270,7 @@ def find_differences(
                     vz_record[id_column] for id_column in unique_identifiers
                 )
 
-                # print(f"Unique values: {unique_values}")
-
                 cris_record = cris_data.get(unique_values)
-
-                # print(f"CRIS record: {cris_record}")
-                # print(f"VZ record: {vz_record}")
 
                 if cris_record is not None:
                     updates = compare_records(
@@ -293,9 +291,8 @@ def find_differences(
 
                         # this is a nice way to see the changes being written out
                         updates_dict = dict(updates)
-                        tqdm.write(str(updates))
-                        # updates_json = json.dumps(updates_dict, indent=4)
-                        # tqdm.write(updates_json)
+                        updates_json = json.dumps(updates_dict, indent=4)
+                        tqdm.write(updates_json)
 
                         update_records(
                             conn,
