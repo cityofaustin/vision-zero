@@ -227,7 +227,7 @@ def update_records(
             cur.execute(update_sql, params)
             updated_rows = cur.rowcount
             if updated_rows != 1:
-                raise Exception()
+                raise Exception()  # we have may have to relax this exception when run in production
         except Exception:
             interpolated_query = cur.mogrify(update_sql, params).decode()
             updates_str = ", ".join(f"{column} = {value}" for column, value in updates)
@@ -292,7 +292,7 @@ def find_differences(
                         # this is a nice way to see the changes being written out
                         updates_dict = dict(updates)
                         updates_json = json.dumps(updates_dict, indent=4)
-                        tqdm.write(updates_json)
+                        # tqdm.write(updates_json)
 
                         update_records(
                             conn,
