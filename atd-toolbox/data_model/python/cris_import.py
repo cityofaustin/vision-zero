@@ -1,13 +1,12 @@
 import csv
 from datetime import datetime
-import io
 import os
 import time
 from zoneinfo import ZoneInfo
 
 import requests
 
-from settings import COLUMN_ENDPOINT
+from utils import load_column_metadata
 
 FILE_DIR = "cris_csvs"
 HASURA_ENDPOINT = "http://localhost:8084/v1/graphql"
@@ -99,13 +98,6 @@ class HasuraAPIError(Exception):
     pass
 
 
-def load_data(endpoint):
-    res = requests.get(endpoint)
-    res.raise_for_status()
-    fin = io.StringIO(res.text)
-    reader = csv.DictReader(fin)
-    return [row for row in reader]
-
 
 def get_cris_columns(column_metadata, table_name):
     """
@@ -120,9 +112,9 @@ def get_cris_columns(column_metadata, table_name):
     cris_columns = [
         row["column_name"]
         for row in column_metadata
-        if row["source"] == "cris"
-        and table_key in row["table_name_new_cris"]
-        and row["action"] == "migrate"
+        if row["record_type"] == table_key
+        and row["source"] == "cris"
+        and row["is_cris_column"]
     ]
     # remove dupes, which is an artefact of our sheet having dupe person and primaryperson rows
     return list(set(cris_columns))
@@ -289,7 +281,7 @@ def main():
     overall_start_tme = time.time()
 
     print("downloading column metadata...")
-    column_metadata = load_data(COLUMN_ENDPOINT)
+    column_metadata = load_column_metadata()
 
     files_todo = get_files_todo()
 
