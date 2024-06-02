@@ -1,7 +1,4 @@
-import csv
-import io
 from pprint import pprint as print
-
 
 from settings import SCHEMA_NAME
 
@@ -133,8 +130,7 @@ def main():
             this_table_columns = [
                 col
                 for col in all_columns
-                if col[column_table_key]
-                and col["record_type"] == table_name
+                if col[column_table_key] and col["record_type"] == table_name
             ]
             # sort primary key first, then by column name
             this_table_columns = sorted(

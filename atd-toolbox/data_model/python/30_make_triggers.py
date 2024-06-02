@@ -1,6 +1,3 @@
-import csv
-import io
-
 from utils import (
     save_file,
     make_migration_dir,

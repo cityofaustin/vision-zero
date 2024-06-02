@@ -1,22 +1,11 @@
-import csv
-import io
 from pprint import pprint as print
 
-from settings import SCHEMA_NAME
 from utils import (
     make_migration_dir,
     save_file,
     save_empty_down_migration,
     load_lookups_metadata,
 )
-
-
-def load_data(endpoint):
-    res = requests.get(endpoint)
-    res.raise_for_status()
-    fin = io.StringIO(res.text)
-    reader = csv.DictReader(fin)
-    return [row for row in reader]
 
 
 def escape_single_quotes(input_string):
