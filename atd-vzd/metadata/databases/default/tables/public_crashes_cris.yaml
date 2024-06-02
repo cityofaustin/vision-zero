@@ -5,14 +5,14 @@ object_relationships:
   - name: crashes
     using:
       foreign_key_constraint_on:
-        column: crash_id
+        column: id
         table:
           name: crashes
           schema: public
   - name: crashes_edit
     using:
       foreign_key_constraint_on:
-        column: crash_id
+        column: id
         table:
           name: crashes_edits
           schema: public
@@ -34,7 +34,7 @@ array_relationships:
   - name: people_cris
     using:
       foreign_key_constraint_on:
-        column: crash_id
+        column: cris_crash_id
         table:
           name: people_cris
           schema: public
