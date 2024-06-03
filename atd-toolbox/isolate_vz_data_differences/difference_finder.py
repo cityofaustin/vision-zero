@@ -15,22 +15,22 @@ def main():
         raise EnvironmentError("DATABASE_CONNECTION environment variable is not set")
 
     table_sets = [
-        # (
-        #     "atd_txdot_crashes",
-        #     "crash",
-        #     "crashes_cris",
-        #     "crashes_edits",
-        #     "id",
-        #     ("crash_id",),
-        # ),
-        # (
-        #     "atd_txdot_units",
-        #     "unit",
-        #     "units_cris",
-        #     "units_edits",
-        #     "id",
-        #     ("crash_id", "unit_nbr"),
-        # ),
+        (
+            "atd_txdot_crashes",
+            "crash",
+            "crashes_cris",
+            "crashes_edits",
+            "id",
+            ("crash_id",),
+        ),
+        (
+            "atd_txdot_units",
+            "unit",
+            "units_cris",
+            "units_edits",
+            "id",
+            ("crash_id", "unit_nbr"),
+        ),
         (
             "atd_txdot_primaryperson",
             "primaryperson",
