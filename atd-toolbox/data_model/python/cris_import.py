@@ -279,10 +279,7 @@ def rename_crash_id(records):
 
 def main():
     overall_start_tme = time.time()
-
-    print("downloading column metadata...")
     column_metadata = load_column_metadata()
-
     files_todo = get_files_todo()
 
     extract_ids = list(set([f["extract_id"] for f in files_todo]))
