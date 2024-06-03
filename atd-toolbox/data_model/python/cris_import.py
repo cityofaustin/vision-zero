@@ -6,11 +6,19 @@ from zoneinfo import ZoneInfo
 
 import requests
 
-from utils import load_column_metadata
 
 FILE_DIR = "cris_csvs"
 HASURA_ENDPOINT = "http://localhost:8084/v1/graphql"
 UPLOAD_BATCH_SIZE = 1000
+
+COLUMN_METADATA_QUERY = """
+query ColumnMetadata {
+  _column_metadata(where: {is_imported_from_cris: {_eq: true}}) {
+    column_name
+    record_type
+  }
+}
+"""
 
 CRASH_UPSERT_MUTATION = """
 mutation UpsertCrashes($objects: [crashes_cris_insert_input!]!) {
@@ -98,26 +106,17 @@ class HasuraAPIError(Exception):
     pass
 
 
-
 def get_cris_columns(column_metadata, table_name):
     """
-    Given the column data from G drive, return an array of strings
-    which is the column names for every column we want to handle from the
+    return an array of strings which is the column names for every column we want to handle from the
     CRIS import and the given table name
     """
     table_key = table_name
     if "person" in table_key:
         table_key = "people"
-
-    cris_columns = [
-        row["column_name"]
-        for row in column_metadata
-        if row["record_type"] == table_key
-        and row["source"] == "cris"
-        and row["is_cris_column"]
+    return [
+        col["column_name"] for col in column_metadata if col["record_type"] == table_key
     ]
-    # remove dupes, which is an artefact of our sheet having dupe person and primaryperson rows
-    return list(set(cris_columns))
 
 
 def make_upsert_mutation(table_name, cris_columns):
@@ -279,7 +278,12 @@ def rename_crash_id(records):
 
 def main():
     overall_start_tme = time.time()
-    column_metadata = load_column_metadata()
+
+    print("Fetching column metadata...")
+    column_metadata = make_hasura_request(
+        endpoint=HASURA_ENDPOINT, query=COLUMN_METADATA_QUERY
+    )["_column_metadata"]
+
     files_todo = get_files_todo()
 
     extract_ids = list(set([f["extract_id"] for f in files_todo]))
