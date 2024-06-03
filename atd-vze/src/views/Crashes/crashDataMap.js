@@ -112,6 +112,7 @@ export const createCrashDataMap = isTempRecord => {
         law_enforcement_fatality_num: {
           label: "Law Enforcement YTD Fatal Crash",
           editable: true,
+          uiType: "text",
         },
       },
     },
