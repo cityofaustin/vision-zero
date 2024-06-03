@@ -16,8 +16,6 @@ def process_file(csv_file_path, db_connection_string, output_dir):
     print("Starting a new file for table", table_name)
     if table_name not in ["crash", "unit", "person", "primaryperson", "charges"]:
         return
-    # if table_name != "unit":
-    # return
 
     with open(csv_file_path, "r") as csv_file:
         csv_reader = csv.reader(csv_file)
@@ -26,7 +24,6 @@ def process_file(csv_file_path, db_connection_string, output_dir):
         if table_name not in tables_columns:
             tables_columns[table_name] = headers
 
-        # Establish a connection to the database
         with psycopg2.connect(db_connection_string) as conn:
             # Create a cursor object
             with conn.cursor() as cur:
@@ -124,18 +121,15 @@ def drop_tables(db_connection_string):
         "unit",
     ]
 
-    # Connect to the database
     with psycopg2.connect(db_connection_string) as conn:
         with conn.cursor() as cur:
             for table in tables:
-                # Execute the SQL command to drop the table
                 print(f"Dropping table data_model.{table}")
                 cur.execute(f"DROP TABLE IF EXISTS data_model.{table};")
         conn.commit()
 
 
 def create_schema(db_connection_string):
-    # Connect to the database
     with psycopg2.connect(db_connection_string) as conn:
         with conn.cursor() as cur:
             # Execute the SQL command to create the schema
@@ -148,7 +142,6 @@ if __name__ == "__main__":
     root_dir = "/app/extracts"
     output_dir = "/app/load_files"
 
-    # Get the database connection string from the environment variable
     db_connection_string = os.getenv("DATABASE_CONNECTION")
 
     if db_connection_string is None:
