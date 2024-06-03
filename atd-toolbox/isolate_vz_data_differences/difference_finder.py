@@ -170,15 +170,6 @@ def fetch_corresponding_data(conn, table_name, unique_identifiers):
     return data_dict
 
 
-# these columns, in particular, generate tons of "setting to null" in the edits table,
-# and these are handled by
-# [
-#     "rpt_autonomous_level_engaged_id",
-#     "investigator_narrative",
-#     "prsn_first_name",
-#     "prsn_mid_name",
-#     "prsn_last_name",
-# ]
 def compare_records(vz_record, cris_record, matching_columns, edits_columns):
     updates = []
     # Sort matching_columns in alphabetical order
