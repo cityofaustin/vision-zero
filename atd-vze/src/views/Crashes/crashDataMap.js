@@ -82,7 +82,6 @@ export const createCrashDataMap = isTempRecord => {
           label: "Crash Severity",
           relationshipName: "crash_injury_metrics_view",
           editable: false,
-          uiType: "select",
           lookupOptions: "lookups_injry_sev_lkp",
         },
         nonincap_injry_count: {
@@ -94,23 +93,25 @@ export const createCrashDataMap = isTempRecord => {
           label: "Suspected Serious Injury Count",
           relationshipName: "crash_injury_metrics_view",
           editable: false,
-          uiType: "text",
         },
         vz_fatality_count: {
           label: "ATD Fatality Count",
           relationshipName: "crash_injury_metrics_view",
           editable: false,
-          uiType: "text",
         },
         cris_fatality_count: {
-          label: "CRIS Death Count",
+          label: "CRIS Fatality Count",
+          relationshipName: "crash_injury_metrics_view",
+          editable: false,
+        },
+        law_enf_fatality_count: {
+          label: "Law Enforcement Fatality Count",
           relationshipName: "crash_injury_metrics_view",
           editable: false,
         },
         law_enforcement_fatality_num: {
-          label: "Law Enforcement Fatality Count",
+          label: "Law Enforcement YTD Fatal Crash",
           editable: true,
-          uiType: "text",
         },
       },
     },

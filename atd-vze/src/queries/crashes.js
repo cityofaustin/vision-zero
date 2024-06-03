@@ -169,6 +169,7 @@ export const GET_CRASH = gql`
         nonincap_injry_count
         sus_serious_injry_count
         cris_fatality_count
+        law_enf_fatality_count
       }
       units {
         id
