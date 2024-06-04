@@ -47,16 +47,10 @@ const useChangeLogData = data =>
     });
   }, [data]);
 
-const formatRecordType = recordType =>
-  recordType === "people" ? "person" : recordType;
-
-const formatEventType = eventType =>
-  eventType === "INSERT" ? "create" : "update";
-
 const formatChangeSummary = selectedChange => {
   return (
     <>
-      {`${formatRecordType(selectedChange.record_type)}`} ID{" "}
+      {`${selectedChange.record_type}`} ID{" "}
       <span className="font-monospace">{selectedChange.record_id}</span> edited
       by {selectedChange.created_by}
       {" - "}
@@ -65,7 +59,7 @@ const formatChangeSummary = selectedChange => {
   );
 };
 
-const isNewRecordEvent = change => change.operation_type === "INSERT";
+const isNewRecordEvent = change => change.operation_type === "create";
 
 export default function CrashChangeLog({ data }) {
   const [selectedChange, setSelectedChange] = useState(null);
@@ -93,8 +87,8 @@ export default function CrashChangeLog({ data }) {
                 onClick={() => setSelectedChange(change)}
                 style={{ cursor: "pointer" }}
               >
-                <td>{formatRecordType(change.record_type)}</td>
-                <td>{formatEventType(change.operation_type)}</td>
+                <td>{change.record_type}</td>
+                <td>{change.operation_type}</td>
                 <td>
                   {isNewRecordEvent(change)
                     ? ""
@@ -120,16 +114,14 @@ export default function CrashChangeLog({ data }) {
               <Table responsive striped hover>
                 <thead>
                   <th>Field</th>
-                  {selectedChange.operation_type !== "INSERT" && (
-                    <th>Previous value</th>
-                  )}
+                  {!isNewRecordEvent(selectedChange) && <th>Previous value</th>}
                   <th>New value</th>
                 </thead>
                 <tbody className="text-monospace">
                   {selectedChange.diffs.map(diff => (
                     <tr>
                       <td className="text-monospace">{diff.field}</td>
-                      {selectedChange.operation_type !== "INSERT" && (
+                      {!isNewRecordEvent(selectedChange) && (
                         <td className="text-monospace">{String(diff.old)}</td>
                       )}
                       <td className="text-monospace">{String(diff.new)}</td>
