@@ -83,6 +83,10 @@ const RelatedRecordsTable = ({
     } else if (typeof data[field] === "object") {
       fieldValue =
         data[field] && data[field][fieldConfig.fields[field].lookup_desc];
+    } else if (data[field] === true) {
+      fieldValue = "YES";
+    } else if (data[field] === false) {
+      fieldValue = "NO";
     }
 
     // Display null values as blanks, but allow 0
@@ -233,8 +237,8 @@ const RelatedRecordsTable = ({
                                       handleInputChange(e, updateFieldKey)
                                     }
                                   >
-                                    <option value={true}>TRUE</option>
-                                    <option value={false}>FALSE</option>
+                                    <option value={true}>YES</option>
+                                    <option value={false}>NO</option>
                                   </Input>
                                 )}
                                 <div className="d-flex">

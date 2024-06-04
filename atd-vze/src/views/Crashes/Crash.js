@@ -114,30 +114,9 @@ function Crash(props) {
           changes: { ...formData, ...secondaryFormData },
         },
       })
-      .then(res => refetch());
+      .then(res => crashRefetch());
 
     setEditField("");
-  };
-
-  const handleButtonClick = (e, buttonParams, data) => {
-    e.preventDefault();
-
-    // Expose the field to mutate defined in crashDataMap
-    // and the value from data using the dataPath, then mutate
-    const fieldToUpdate = buttonParams.field;
-    const fieldValue =
-      data[buttonParams.dataTableName][0][buttonParams.dataPath];
-    const buttonFormData = { [fieldToUpdate]: fieldValue };
-
-    props.client
-      .mutate({
-        mutation: UPDATE_CRASH,
-        variables: {
-          crashId: crashId,
-          changes: { ...formData, ...buttonFormData },
-        },
-      })
-      .then(res => refetch());
   };
 
   const {
@@ -323,14 +302,13 @@ function Crash(props) {
       <Row>
         <DataTable
           dataMap={createCrashDataMap(tempRecord)}
-          dataTable={"atd_txdot_crashes"}
+          dataTable={"crashes_by_pk"}
           formData={formData}
           setEditField={setEditField}
           editField={editField}
           handleInputChange={handleInputChange}
           handleFieldUpdate={handleFieldUpdate}
-          handleButtonClick={handleButtonClick}
-          data={data}
+          data={crashData}
         />
         <Col md="12">
           <CrashChangeLog data={crashData?.crashes_by_pk?.change_logs} />
