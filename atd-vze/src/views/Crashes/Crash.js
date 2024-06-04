@@ -277,12 +277,12 @@ function Crash(props) {
             <UnitDetailsCard
               data={crashData.crashes_by_pk.units}
               refetch={crashRefetch}
-              props={props}
+              {...props}
             />
             <PeopleDetailsCard
               data={crashData.crashes_by_pk.people_list_view}
               refetch={crashRefetch}
-              props={props}
+              {...props}
             />
             <ChargesDetailsCard data={crashData.crashes_by_pk.charges_cris} />
           </Card>

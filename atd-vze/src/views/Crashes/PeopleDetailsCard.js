@@ -61,6 +61,7 @@ const PeopleDetailsCard = ({ data, refetch, ...props }) => {
             lookupOptions={lookupSelectOptions}
             mutation={personMutation}
             refetch={refetch}
+            {...props}
           />
 
           {personData.length > 0 && (
