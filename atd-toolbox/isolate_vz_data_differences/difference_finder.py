@@ -24,30 +24,30 @@ def main():
             "id",
             ("crash_id",),
         ),
-        (
-            "atd_txdot_units",
-            "unit",
-            "units_cris",
-            "units_edits",
-            "id",
-            ("crash_id", "unit_nbr"),
-        ),
-        (
-            "atd_txdot_primaryperson",
-            "primaryperson",
-            "people_cris",
-            "people_edits",
-            "id",
-            ("crash_id", "unit_nbr", "prsn_nbr"),
-        ),
-        (
-            "atd_txdot_person",
-            "person",
-            "people_cris",
-            "people_edits",
-            "id",
-            ("crash_id", "unit_nbr", "prsn_nbr"),
-        ),
+        # (
+        #     "atd_txdot_units",
+        #     "unit",
+        #     "units_cris",
+        #     "units_edits",
+        #     "id",
+        #     ("crash_id", "unit_nbr"),
+        # ),
+        # (
+        #     "atd_txdot_primaryperson",
+        #     "primaryperson",
+        #     "people_cris",
+        #     "people_edits",
+        #     "id",
+        #     ("crash_id", "unit_nbr", "prsn_nbr"),
+        # ),
+        # (
+        #     "atd_txdot_person",
+        #     "person",
+        #     "people_cris",
+        #     "people_edits",
+        #     "id",
+        #     ("crash_id", "unit_nbr", "prsn_nbr"),
+        # ),
     ]
 
     for (
@@ -188,14 +188,34 @@ def compare_records(
         if item["target column name"] != "-"
         and item["old column name"] != item["target column name"]
     }
-    print(changed_columns_from_spreadsheet)
 
-    # matching_column_names = [item[0] for item in matching_columns]
+    matching_column_names = [item[0] for item in matching_columns]
+    matching_column_names.sort(key=lambda x: x[0])  # alphabetical order
+    matching_column_names = [  # remove columns that are changed as found in spreadsheet
+        item
+        for item in matching_column_names
+        if item not in changed_columns_from_spreadsheet.values()
+    ]
+
+    print(changed_columns_from_spreadsheet)
+    # print(matching_column_names)
 
     updates = []
-    # Sort matching_columns in alphabetical order
-    matching_columns.sort(key=lambda x: x[0])
-    for column, public_type in matching_columns:
+
+    for old_column_name in changed_columns_from_spreadsheet:
+        print(old_column_name)
+        updates.append(
+            (
+                changed_columns_from_spreadsheet[old_column_name],
+                vz_record[old_column_name],
+            )
+        )
+
+    # print(updates)
+    # quit()
+
+    # handle all the pairs of columns where the names match
+    for column in matching_column_names:
         columns_to_special_handle = [
             "crash_date",
             "crash_time",
@@ -314,6 +334,7 @@ def find_differences(
                         cris_record,
                         matching_columns,
                         edits_columns,
+                        public_table,
                     )
                     if updates:
                         unique_values_str = ", ".join(
