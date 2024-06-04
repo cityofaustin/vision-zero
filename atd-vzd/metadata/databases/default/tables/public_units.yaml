@@ -2,6 +2,9 @@ table:
   name: units
   schema: public
 object_relationships:
+  - name: contrib_factr_lkp
+    using:
+      foreign_key_constraint_on: contrib_factr_1_id
   - name: crashes
     using:
       foreign_key_constraint_on: crash_id
@@ -14,9 +17,24 @@ object_relationships:
   - name: unit_desc_lkp
     using:
       foreign_key_constraint_on: unit_desc_id
+  - name: unit_injury_metrics_view
+    using:
+      manual_configuration:
+        column_mapping:
+          id: id
+        insertion_order: null
+        remote_table:
+          name: unit_injury_metrics_view
+          schema: public
   - name: veh_body_styl_lkp
     using:
       foreign_key_constraint_on: veh_body_styl_id
+  - name: veh_make_lkp
+    using:
+      foreign_key_constraint_on: veh_make_id
+  - name: veh_mod_lkp
+    using:
+      foreign_key_constraint_on: veh_mod_id
 array_relationships:
   - name: change_log
     using:
