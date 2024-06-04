@@ -29,6 +29,6 @@ def main():
     crashes_change_log_sql = load_sql_template("sql_templates/crashes_change_log_view.sql")
     migration_path = make_migration_dir("change_log_view")
     save_file(f"{migration_path}/up.sql", crashes_change_log_sql)
-    save_file(f"{migration_path}/down.sql", "drop view public.crashes_change_log_view cascade;")
+    save_file(f"{migration_path}/down.sql", "drop view if exists public.crashes_change_log_view cascade;")
 
 main()

@@ -1,1 +1,1 @@
-drop view public.crashes_change_log_view cascade;
+drop view if exists public.crashes_change_log_view cascade;
