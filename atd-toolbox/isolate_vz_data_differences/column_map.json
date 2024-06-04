@@ -13,7 +13,7 @@
     {
       "old column name": "latitude_primary",
       "target table name": "crashes_edits",
-      "target column name": "longitude"
+      "target column name": "latitude"
     },
     {
       "old column name": "city_id",
