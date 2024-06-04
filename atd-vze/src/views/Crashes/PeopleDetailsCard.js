@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useQuery } from "@apollo/react-hooks";
 
 import {
@@ -16,19 +16,10 @@ import { primaryPersonDataMap, personDataMap } from "./peopleDataMap";
 import { GET_PERSON_LOOKUPS } from "../../queries/lookups";
 import { UPDATE_PERSON } from "../../queries/people";
 
-const PeopleDetailsCard = ({
-  data,
-  isExpanded,
-  toggleAccordion,
-  refetch,
-  error,
-  loading,
-  ...props
-}) => {
-  const { data: lookupSelectOptions } = useQuery(GET_PERSON_LOOKUPS);
+const PeopleDetailsCard = ({ data, refetch, ...props }) => {
+  const [isOpen, setIsOpen] = useState(true);
 
-  if (loading) return "Loading...";
-  if (error) return `Error! ${error.message}`;
+  const { data: lookupSelectOptions } = useQuery(GET_PERSON_LOOKUPS);
 
   const primaryPersonData = data.filter(
     person => person.is_primary_person === true
@@ -51,22 +42,15 @@ const PeopleDetailsCard = ({
           block
           color="link"
           className="text-left m-0 p-0"
-          onClick={() => toggleAccordion(1)}
-          aria-expanded={isExpanded}
-          aria-controls="collapseOne"
+          onClick={() => setIsOpen(!isOpen)}
         >
           <h5 className="m-0 p-0">
-            <i className="fa fa-group" /> People{" "}
+            <i className="fa fa-group" /> People
             <Badge color="secondary float-right">{data.length}</Badge>
           </h5>
         </Button>
       </CardHeader>
-      <Collapse
-        isOpen={isExpanded}
-        data-parent="#accordion"
-        id="collapseOne"
-        aria-labelledby="headingOne"
-      >
+      <Collapse isOpen={isOpen}>
         <CardBody>
           <RelatedRecordsTable
             fieldConfig={primaryPersonDataMap[0]}
@@ -77,7 +61,6 @@ const PeopleDetailsCard = ({
             lookupOptions={lookupSelectOptions}
             mutation={personMutation}
             refetch={refetch}
-            {...props}
           />
 
           {personData.length > 0 && (
