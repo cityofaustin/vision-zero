@@ -1,13 +1,10 @@
 import React, { useMemo, useState } from "react";
 import {
-  Badge,
   Button,
   Card,
   CardBody,
   CardHeader,
-  Col,
   Table,
-  Row,
   Modal,
   ModalHeader,
   ModalBody,
@@ -17,17 +14,33 @@ import { formatDateTimeString } from "../../helpers/format";
 
 const KEYS_TO_IGNORE = ["updated_at", "updated_by", "position"];
 
+/**
+ * Return an array of values that are different between the `old` object and `new` object
+ * Each object in the array takes the format
+ * { field: <property name>, old: <old value>, new: <new value> }
+ */
 const getDiffArray = (old, new_) => {
-  return Object.keys(new_).reduce((diffs, key) => {
+  const diffArray = Object.keys(new_).reduce((diffs, key) => {
     if (new_?.[key] !== old?.[key] && KEYS_TO_IGNORE.indexOf(key) < 0) {
       diffs.push({ field: key, old: old?.[key], new: new_?.[key] });
     }
     return diffs;
   }, []);
+  // sort array of entries by field name
+  diffArray.sort((a, b) => {
+    if (a.field < b.field) {
+      return -1;
+    }
+    if (a.field > b.field) {
+      return 1;
+    }
+    return 0;
+  });
+  return diffArray;
 };
 
 /**
- * Hook that identifies differences between new and old records
+ * Hook that identifies that returns an array differences between new and old records
  */
 const useChangeLogData = data =>
   useMemo(() => {
@@ -47,7 +60,10 @@ const useChangeLogData = data =>
     });
   }, [data]);
 
-const formatChangeSummary = selectedChange => {
+/**
+ * Header component of the change details table
+ */
+const ChangeSummary = ({ selectedChange }) => {
   return (
     <>
       {`${selectedChange.record_type}`} ID{" "}
@@ -84,6 +100,7 @@ export default function CrashChangeLog({ data }) {
           <tbody className="text-monospace">
             {changes.map(change => (
               <tr
+                key={change.id}
                 onClick={() => setSelectedChange(change)}
                 style={{ cursor: "pointer" }}
               >
@@ -100,6 +117,7 @@ export default function CrashChangeLog({ data }) {
             ))}
           </tbody>
         </Table>
+        {/* Modal with change details table */}
         {selectedChange && (
           <Modal
             isOpen={!!selectedChange}
@@ -108,7 +126,7 @@ export default function CrashChangeLog({ data }) {
             fade={false}
           >
             <ModalHeader toggle={() => setSelectedChange(null)}>
-              {formatChangeSummary(selectedChange)}
+              <ChangeSummary selectedChange={selectedChange} />
             </ModalHeader>
             <ModalBody>
               <Table responsive striped hover>
