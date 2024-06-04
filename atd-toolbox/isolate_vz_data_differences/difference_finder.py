@@ -218,13 +218,9 @@ def compare_records(vz_record, cris_record, matching_columns, edits_columns):
             if vz_death_datetime != cris_death_datetime:
                 updates.append(("prsn_death_date", vz_death_datetime.isoformat()))
                 updates.append(("prsn_death_time", vz_death_datetime.isoformat()))
-        elif (
-            column == "prsn_death_date"
-        ):  # if we don't get to special handle it above, we don't want to try to handle them normally either
+        elif column in ["prsn_death_date", "prsn_death_time"]:
+            # if we don't get to special handle it above, we don't want to try to handle them normally either
             pass
-        elif column == "prsn_death_time":
-            pass
-
         elif (
             column not in columns_to_special_handle
             and column in edits_columns
