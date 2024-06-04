@@ -122,12 +122,130 @@ export const GET_CRASH = gql`
   query CrashDetails($crashId: Int!) {
     crashes_by_pk(crash_id: $crashId) {
       crash_id
+      updated_at
+      case_id
+      crash_date
+      fhe_collsn_id
+      rpt_city_id
+      light_cond_id
+      wthr_cond_id
+      obj_struck_id
+      crash_speed_limit
+      traffic_cntl_id
       address_primary
+      rpt_block_num
+      rpt_street_name
+      rpt_street_desc
+      rpt_road_part_id
+      rpt_rdwy_sys_id
+      rpt_hwy_num
+      rpt_street_pfx
+      rpt_street_name
+      rpt_street_sfx
       address_secondary
+      rpt_sec_block_num
+      rpt_sec_street_name
+      rpt_sec_street_desc
+      rpt_sec_road_part_id
+      rpt_sec_rdwy_sys_id
+      rpt_sec_hwy_num
+      rpt_sec_street_pfx
+      rpt_sec_street_sfx
+      active_school_zone_fl
+      at_intrsct_fl
+      onsys_fl
+      private_dr_fl
+      road_constr_zone_fl
+      rr_relat_fl
+      schl_bus_fl
+      toll_road_fl
+      law_enforcement_fatality_num
       crash_injury_metrics_view {
         vz_fatality_count
         sus_serious_injry_count
         years_of_life_lost
+        est_comp_cost_crash_based
+        crash_injry_sev_id
+        nonincap_injry_count
+        sus_serious_injry_count
+        cris_fatality_count
+        law_enf_fatality_count
+      }
+      units {
+        id
+        unit_nbr
+        veh_mod_year
+        unit_desc_lkp {
+          id
+          label
+        }
+        veh_body_styl_lkp {
+          id
+          label
+        }
+        veh_make_lkp {
+          id
+          label
+        }
+        veh_mod_lkp {
+          id
+          label
+        }
+        trvl_dir_lkp {
+          id
+          label
+        }
+        movt_lkp {
+          id
+          label
+        }
+        contrib_factr_lkp {
+          id
+          label
+        }
+        unit_injury_metrics_view {
+          vz_fatality_count
+          sus_serious_injry_count
+        }
+      }
+      people_list_view {
+        crash_id
+        id
+        unit_nbr
+        is_primary_person
+        prsn_age
+        drvr_city_name
+        drvr_zip
+        prsn_exp_homelessness
+        prsn_first_name
+        prsn_mid_name
+        prsn_last_name
+        injry_sev_lkp {
+          id
+          label
+        }
+        prsn_type_lkp {
+          id
+          label
+        }
+        gndr_lkp {
+          id
+          label
+        }
+        drvr_ethncty_lkp {
+          id
+          label
+        }
+      }
+      charges_cris {
+        unit_nbr
+        prsn_nbr
+        citation_nbr
+        charge_cat_id
+        charge
+      }
+      crashes_list_view {
+        crash_day_of_week
       }
     }
   }
@@ -160,95 +278,17 @@ export const UPDATE_COORDS = gql`
 `;
 
 export const UPDATE_CRASH = gql`
-  mutation update_atd_txdot_crashes(
-    $crashId: Int
-    $changes: atd_txdot_crashes_set_input
+  mutation update_crashes_edits(
+    $crashId: Int!
+    $changes: crashes_edits_set_input
   ) {
-    update_atd_txdot_crashes(
+    update_crashes_edits(
       where: { crash_id: { _eq: $crashId } }
       _set: $changes
     ) {
       affected_rows
       returning {
-        active_school_zone_fl
-        approval_date
-        approved_by
-        apd_confirmed_fatality
-        apd_confirmed_death_count
-        at_intrsct_fl
-        atd_fatality_count
-        case_id
-        city_id
-        crash_date
-        crash_fatal_fl
         crash_id
-        crash_sev_id
-        crash_speed_limit
-        crash_time
-        day_of_week
-        fhe_collsn_id
-        geocode_date
-        geocode_provider
-        geocode_status
-        geocoded
-        hwy_nbr
-        hwy_sfx
-        hwy_sys
-        hwy_sys_2
-        intrsct_relat_id
-        investigator_narrative
-        is_retired
-        last_update
-        latitude
-        latitude_primary
-        latitude_geocoded
-        law_enforcement_num
-        light_cond_id
-        longitude
-        longitude_primary
-        longitude_geocoded
-        non_injry_cnt
-        nonincap_injry_cnt
-        obj_struck_id
-        onsys_fl
-        poss_injry_cnt
-        private_dr_fl
-        qa_status
-        road_constr_zone_fl
-        road_type_id
-        rpt_block_num
-        rpt_hwy_num
-        rpt_latitude
-        rpt_longitude
-        rpt_outside_city_limit_fl
-        rpt_rdwy_sys_id
-        rpt_road_part_id
-        rpt_sec_block_num
-        rpt_sec_hwy_num
-        rpt_sec_hwy_sfx
-        rpt_sec_rdwy_sys_id
-        rpt_sec_road_part_id
-        rpt_sec_street_desc
-        rpt_sec_street_name
-        rpt_sec_street_pfx
-        rpt_sec_street_sfx
-        rpt_street_desc
-        rpt_street_name
-        rpt_street_pfx
-        rpt_street_sfx
-        rr_relat_fl
-        schl_bus_fl
-        street_name
-        street_name_2
-        street_nbr
-        street_nbr_2
-        sus_serious_injry_cnt
-        toll_road_fl
-        tot_injry_cnt
-        traffic_cntl_id
-        unkn_injry_cnt
-        wthr_cond_id
-        updated_by
       }
     }
   }
