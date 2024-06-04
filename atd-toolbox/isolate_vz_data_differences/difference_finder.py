@@ -197,17 +197,31 @@ def compare_records(
         if item not in changed_columns_from_spreadsheet.values()
     ]
 
-    # print(changed_columns_from_spreadsheet)
-    # print(matching_column_names)
+    columns_to_ignore_entirely = ["law_enforcement_num", "movement_id"]
 
     updates = []
 
     # handle the columns which change names
     for old_column_name in changed_columns_from_spreadsheet:
-        if (
+        if old_column_name in columns_to_ignore_entirely:
+            continue
+        if old_column_name in ["latitude_primary", "longitude_primary"]:
+            if (
+                cris_record[
+                    changed_columns_from_spreadsheet[old_column_name]
+                ]  # cris record under new column name
+                != vz_record[old_column_name]
+            ):
+                updates.append(
+                    (
+                        changed_columns_from_spreadsheet[
+                            old_column_name
+                        ],  # new column name
+                        vz_record[old_column_name],
+                    )
+                )
+        elif (
             True
-            # if column is not in cris_record, it was a VZ derived and belongs in the VZ table
-            and old_column_name in cris_record
             and vz_record[old_column_name] != cris_record[old_column_name]
             and vz_record[old_column_name]
         ):
@@ -222,6 +236,8 @@ def compare_records(
 
     # handle all the pairs of columns where the names match
     for column in matching_column_names:
+        if old_column_name in columns_to_ignore_entirely:
+            continue
         columns_to_special_handle = [
             "crash_date",
             "crash_time",
