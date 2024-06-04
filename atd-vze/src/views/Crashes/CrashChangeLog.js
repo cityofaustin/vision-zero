@@ -40,7 +40,11 @@ const getDiffArray = (old, new_) => {
 };
 
 /**
- * Hook that identifies that returns an array differences between new and old records
+ * Hook that identifies that returns an array with one entry per row in the 
+ * the change log view for the given crash. Each object in the returned
+ * array has two properties:
+ * - diffs: an array of old/new values for each field that has changed
+ * - affected_fields: an array of the field names that have changed
  */
 const useChangeLogData = data =>
   useMemo(() => {
@@ -48,9 +52,6 @@ const useChangeLogData = data =>
       return [];
     }
     return data.map(change => {
-      // hold an array of key
-      change.diffs = [];
-      change.affected_fields = [];
       change.diffs = getDiffArray(
         change.record_json.old,
         change.record_json.new
