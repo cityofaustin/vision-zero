@@ -18,7 +18,7 @@
     {
       "old column name": "city_id",
       "target table name": "crashes_edits",
-      "target column name": "longitude"
+      "target column name": "city_id"
     },
     {
       "old column name": "crash_speed_limit",
