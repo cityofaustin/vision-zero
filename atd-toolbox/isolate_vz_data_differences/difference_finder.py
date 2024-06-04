@@ -9,6 +9,8 @@ from datetime import datetime
 
 
 def main():
+    column_map = read_json_file("column_map.json")
+
     db_connection_string = os.getenv("DATABASE_CONNECTION")
 
     if db_connection_string is None:
@@ -70,6 +72,12 @@ def main():
             id_column,
             unique_identifiers,
         )
+
+
+def read_json_file(file_path):
+    with open(file_path, "r") as json_file:
+        data = json.load(json_file)
+    return data
 
 
 def align_types(db_connection_string, public_table, data_model_table):
