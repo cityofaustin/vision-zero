@@ -40,7 +40,7 @@ const getDiffArray = (old, new_) => {
 };
 
 /**
- * Hook that identifies that returns an array with one entry per row in the 
+ * Hook that identifies that returns an array with one entry per row in the
  * the change log view for the given crash. Each object in the returned
  * array has two properties:
  * - diffs: an array of old/new values for each field that has changed
@@ -61,6 +61,8 @@ const useChangeLogData = data =>
     });
   }, [data]);
 
+const isNewRecordEvent = change => change.operation_type === "create";
+
 /**
  * Header component of the change details table
  */
@@ -76,8 +78,52 @@ const ChangeSummary = ({ selectedChange }) => {
   );
 };
 
-const isNewRecordEvent = change => change.operation_type === "create";
+/**
+ * Modal which renders change details when a change log entry is clicked
+ */
+const ChangeDetailsModal = ({ selectedChange, setSelectedChange }) => {
+  return (
+    <Modal
+      isOpen={!!selectedChange}
+      toggle={() => setSelectedChange(null)}
+      className="mw-100 mx-5"
+      fade={false}
+    >
+      <ModalHeader toggle={() => setSelectedChange(null)}>
+        <ChangeSummary selectedChange={selectedChange} />
+      </ModalHeader>
+      <ModalBody>
+        <Table responsive striped hover>
+          <thead>
+            <th>Field</th>
+            {!isNewRecordEvent(selectedChange) && <th>Previous value</th>}
+            <th>New value</th>
+          </thead>
+          <tbody className="text-monospace">
+            {selectedChange.diffs.map(diff => (
+              <tr>
+                <td className="text-monospace">{diff.field}</td>
+                {!isNewRecordEvent(selectedChange) && (
+                  <td className="text-monospace">{String(diff.old)}</td>
+                )}
+                <td className="text-monospace">{String(diff.new)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      </ModalBody>
+      <ModalFooter>
+        <Button color="secondary" onClick={() => setSelectedChange(null)}>
+          Close
+        </Button>
+      </ModalFooter>
+    </Modal>
+  );
+};
 
+/**
+ * The primary UI component which renders the change log with clickable rows
+ */
 export default function CrashChangeLog({ data }) {
   const [selectedChange, setSelectedChange] = useState(null);
 
@@ -120,41 +166,10 @@ export default function CrashChangeLog({ data }) {
         </Table>
         {/* Modal with change details table */}
         {selectedChange && (
-          <Modal
-            isOpen={!!selectedChange}
-            toggle={() => setSelectedChange(null)}
-            className="mw-100 mx-5"
-            fade={false}
-          >
-            <ModalHeader toggle={() => setSelectedChange(null)}>
-              <ChangeSummary selectedChange={selectedChange} />
-            </ModalHeader>
-            <ModalBody>
-              <Table responsive striped hover>
-                <thead>
-                  <th>Field</th>
-                  {!isNewRecordEvent(selectedChange) && <th>Previous value</th>}
-                  <th>New value</th>
-                </thead>
-                <tbody className="text-monospace">
-                  {selectedChange.diffs.map(diff => (
-                    <tr>
-                      <td className="text-monospace">{diff.field}</td>
-                      {!isNewRecordEvent(selectedChange) && (
-                        <td className="text-monospace">{String(diff.old)}</td>
-                      )}
-                      <td className="text-monospace">{String(diff.new)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </Table>
-            </ModalBody>
-            <ModalFooter>
-              <Button color="secondary" onClick={() => setSelectedChange(null)}>
-                Close
-              </Button>
-            </ModalFooter>
-          </Modal>
+          <ChangeDetailsModal
+            selectedChange={selectedChange}
+            setSelectedChange={setSelectedChange}
+          />
         )}
       </CardBody>
     </Card>
