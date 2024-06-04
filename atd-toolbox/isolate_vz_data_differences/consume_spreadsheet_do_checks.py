@@ -24,10 +24,20 @@ def main():
             rows = cur.fetchall()
             crashes_cris = {(row["crash_id"],): dict(row) for row in rows}
 
-        print(crashes_cris[(20006607,)])
+        sql = "select * from atd_txdot_crashes"
+        with conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
+            cur.execute(sql)
+            rows = cur.fetchall()
+            crashes_vz = {(row["crash_id"],): dict(row) for row in rows}
 
         columns = filter_by_old_table_name(job, "atd_txdot_crashes")
-        # print(columns)
+
+        for crash in crashes_cris:
+            for column in columns:
+                if column["target column name"] != "-":
+                    # print(f"{column["old column name"]} => {column["target column name"]}")
+                    print(f"{column["old column name"]} => {crashes_cris[(crash["crash_id"],)][column["old column name"]]}")
+
 
 
 def filter_by_old_table_name(data, table_name):
