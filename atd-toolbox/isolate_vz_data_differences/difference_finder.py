@@ -267,11 +267,9 @@ def update_records(
                 raise Exception()  # we have may have to relax this exception when run in production
         except Exception:
             interpolated_query = cur.mogrify(update_sql, params).decode()
-            updates_str = ", ".join(f"{column} = {value}" for column, value in updates)
             raise Exception(
                 f"Expected to update 1 row, but updated another number of rows.\n"
                 f"Query: {interpolated_query}\n"
-                # f"Updates: {updates_str}"
             )
         conn.commit()
 
