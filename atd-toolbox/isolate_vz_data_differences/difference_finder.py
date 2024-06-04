@@ -197,22 +197,28 @@ def compare_records(
         if item not in changed_columns_from_spreadsheet.values()
     ]
 
-    print(changed_columns_from_spreadsheet)
+    # print(changed_columns_from_spreadsheet)
     # print(matching_column_names)
 
     updates = []
 
+    # handle the columns which change names
     for old_column_name in changed_columns_from_spreadsheet:
-        print(old_column_name)
-        updates.append(
-            (
-                changed_columns_from_spreadsheet[old_column_name],
-                vz_record[old_column_name],
+        if (
+            True
+            # if column is not in cris_record, it was a VZ derived and belongs in the VZ table
+            and old_column_name in cris_record
+            and vz_record[old_column_name] != cris_record[old_column_name]
+            and vz_record[old_column_name]
+        ):
+            updates.append(
+                (
+                    changed_columns_from_spreadsheet[
+                        old_column_name
+                    ],  # new column name
+                    vz_record[old_column_name],
+                )
             )
-        )
-
-    # print(updates)
-    # quit()
 
     # handle all the pairs of columns where the names match
     for column in matching_column_names:
@@ -233,7 +239,8 @@ def compare_records(
             if vz_crash_datetime != cris_crash_datetime:
                 updates.append(("crash_time", vz_crash_datetime.isoformat()))
         elif (
-            column == "prsn_death_date"
+            True
+            and column == "prsn_death_date"
             and vz_record["prsn_death_date"] is not None
             and vz_record["prsn_death_time"] is not None
             and cris_record["prsn_death_date"] is not None
@@ -249,13 +256,18 @@ def compare_records(
                 updates.append(("prsn_death_date", vz_death_datetime.isoformat()))
                 updates.append(("prsn_death_time", vz_death_datetime.isoformat()))
         elif (
-            column not in columns_to_special_handle
+            True
+            and column not in columns_to_special_handle
             and column in edits_columns
             and vz_record[column] != cris_record[column]
             # prevent a update to set a vz value to null, as they are already null in the edits table
             and not vz_record[column] is None
         ):
             updates.append((column, vz_record[column]))
+
+    # print(updates)
+    # print(json.dumps(updates, indent=4))
+    # quit()
 
     return updates
 
