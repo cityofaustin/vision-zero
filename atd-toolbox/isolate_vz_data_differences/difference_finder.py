@@ -177,8 +177,18 @@ def fetch_corresponding_data(conn, table_name, unique_identifiers):
     return data_dict
 
 
-def compare_records(vz_record, cris_record, matching_columns, edits_columns):
-    column_map = read_json_file("column_map.json")
+def compare_records(
+    vz_record, cris_record, matching_columns, edits_columns, public_table
+):
+    all_column_map = read_json_file("column_map.json")
+    column_map = all_column_map[public_table]
+    changed_columns_from_spreadsheet = {
+        item["old column name"]: item["target column name"]
+        for item in column_map
+        if item["target column name"] != "-"
+        and item["old column name"] != item["target column name"]
+    }
+    print(changed_columns_from_spreadsheet)
     updates = []
     # Sort matching_columns in alphabetical order
     matching_columns.sort(key=lambda x: x[0])
