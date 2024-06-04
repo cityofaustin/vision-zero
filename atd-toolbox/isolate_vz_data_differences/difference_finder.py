@@ -189,6 +189,9 @@ def compare_records(
         and item["old column name"] != item["target column name"]
     }
     print(changed_columns_from_spreadsheet)
+
+    # matching_column_names = [item[0] for item in matching_columns]
+
     updates = []
     # Sort matching_columns in alphabetical order
     matching_columns.sort(key=lambda x: x[0])
@@ -209,9 +212,6 @@ def compare_records(
             )
             if vz_crash_datetime != cris_crash_datetime:
                 updates.append(("crash_time", vz_crash_datetime.isoformat()))
-        elif column == "crash_time":
-            pass
-
         elif (
             column == "prsn_death_date"
             and vz_record["prsn_death_date"] is not None
@@ -228,9 +228,6 @@ def compare_records(
             if vz_death_datetime != cris_death_datetime:
                 updates.append(("prsn_death_date", vz_death_datetime.isoformat()))
                 updates.append(("prsn_death_time", vz_death_datetime.isoformat()))
-        elif column in ["prsn_death_date", "prsn_death_time"]:
-            # if we don't get to special handle it above, we don't want to try to handle them normally either
-            pass
         elif (
             column not in columns_to_special_handle
             and column in edits_columns
