@@ -9,7 +9,6 @@ from datetime import datetime
 
 
 def main():
-    column_map = read_json_file("column_map.json")
 
     db_connection_string = os.getenv("DATABASE_CONNECTION")
 
@@ -179,6 +178,7 @@ def fetch_corresponding_data(conn, table_name, unique_identifiers):
 
 
 def compare_records(vz_record, cris_record, matching_columns, edits_columns):
+    column_map = read_json_file("column_map.json")
     updates = []
     # Sort matching_columns in alphabetical order
     matching_columns.sort(key=lambda x: x[0])
