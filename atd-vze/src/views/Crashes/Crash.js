@@ -18,7 +18,6 @@ import {
   isReadOnly,
 } from "../../auth/authContext";
 
-import CrashCollapses from "./CrashCollapses";
 import CrashMap from "./Maps/CrashMap";
 import CrashEditCoordsMap from "./Maps/CrashEditCoordsMap";
 import Widget02 from "../Widgets/Widget02";
@@ -30,6 +29,9 @@ import Notes from "../../Components/Notes/Notes";
 import { createCrashDataMap } from "./crashDataMap";
 import Recommendations from "./Recommendations/Recommendations";
 import Page404 from "../Pages/Page404/Page404";
+import UnitDetailsCard from "./UnitDetailsCard";
+import PeopleDetailsCard from "./PeopleDetailsCard";
+import ChargesDetailsCard from "./ChargesDetailsCard";
 
 import "./crash.scss";
 
@@ -273,13 +275,19 @@ function Crash(props) {
       )}
       <Row>
         <Col>
-          <CrashCollapses
-            data={crashRecord}
-            refetch={crashRefetch}
-            loading={loading}
-            error={error}
-            props={props}
-          />
+          <Card>
+            <UnitDetailsCard
+              data={crashData.crashes_by_pk.units}
+              refetch={crashRefetch}
+              {...props}
+            />
+            <PeopleDetailsCard
+              data={crashData.crashes_by_pk.people_list_view}
+              refetch={crashRefetch}
+              {...props}
+            />
+            <ChargesDetailsCard data={crashData.crashes_by_pk.charges_cris} />
+          </Card>
         </Col>
       </Row>
       {shouldShowFatalityRecommendations && (

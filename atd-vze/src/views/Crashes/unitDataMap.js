@@ -1,6 +1,5 @@
 export const unitDataMap = [
   {
-    title: "Unit",
     mutationVariableKey: "unitId",
 
     fields: {
