@@ -129,13 +129,15 @@ function Crash(props) {
     investigator_narrative_ocr: investigatorNarrative,
   } = !!data?.atd_txdot_crashes[0] ? data?.atd_txdot_crashes[0] : {};
 
+  const crashRecord = { crash: crashData?.crashes?.[0] || {} };
+
   const {
     crash_injury_metrics_view: { vz_fatality_count: deathCount },
     crash_injury_metrics_view: { sus_serious_injry_count: seriousInjuryCount },
     address_primary: primaryAddress,
     address_secondary: secondaryAddress,
     crash_injury_metrics_view: { years_of_life_lost: yearsOfLifeLost },
-  } = crashData?.crashes_by_pk ? crashData?.crashes_by_pk : {};
+  } = crashRecord.crash;
 
   const mapGeocoderAddress = createGeocoderAddressString(data);
 
@@ -272,7 +274,7 @@ function Crash(props) {
       <Row>
         <Col>
           <CrashCollapses
-            data={crashData.crashes_by_pk}
+            data={crashRecord}
             refetch={crashRefetch}
             loading={loading}
             error={error}
@@ -302,13 +304,13 @@ function Crash(props) {
       <Row>
         <DataTable
           dataMap={createCrashDataMap(tempRecord)}
-          dataTable={"crashes_by_pk"}
+          dataTable="crash"
           formData={formData}
           setEditField={setEditField}
           editField={editField}
           handleInputChange={handleInputChange}
           handleFieldUpdate={handleFieldUpdate}
-          data={crashData}
+          data={crashRecord}
         />
         <Col md="6">
           <CrashChangeLog data={data} />

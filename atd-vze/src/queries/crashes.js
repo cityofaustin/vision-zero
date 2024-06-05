@@ -120,7 +120,7 @@ export const GET_CRASH_OLD = gql`
 
 export const GET_CRASH = gql`
   query CrashDetails($crashId: Int!) {
-    crashes_by_pk(crash_id: $crashId) {
+    crashes(where: { crash_id: { _eq: $crashId } }) {
       crash_id
       updated_at
       case_id
