@@ -346,7 +346,7 @@ def crashes(db_connection_string, job):
                     if column["target column name"] in crashes_cris[crash_key]:
                         if (crashes_classic_vz[crash_key][column["old column name"]] != crashes_cris[crash_key][column["target column name"]]):
                             logging.debug(f"❌ {column['old column name']}: {crashes_classic_vz[crash_key][column['old column name']]} != {crashes_cris[crash_key][column['target column name']]}")
-                            sql = f"update crashes_edits set {column['target column name']} = %s where crash_id = %s"
+                            sql = f"update crashes_edits set {column['target column name']} = %s where id = (select id from crashes_cris where crash_id = %s)"
                             parameters = (crashes_classic_vz[crash_key][column["old column name"]], crash_key[0])
                             updates.append((sql, parameters))
                         else:
@@ -354,7 +354,7 @@ def crashes(db_connection_string, job):
                     else:
                         if crashes_classic_vz[crash_key][column['old column name']]:
                             logging.debug(f"✨ VZ only column: No {column['target column name']} in crashes_cris, so {crashes_classic_vz[crash_key][column['old column name']]} going into crashes_edits")
-                            sql = f"update crashes_edits set {column['target column name']} = %s where crash_id = %s"
+                            sql = f"update crashes_edits set {column['target column name']} = %s where id = (select id from crashes_cris where crash_id = %s)"
                             parameters = (crashes_classic_vz[crash_key][column["old column name"]], crash_key[0])
                             updates.append((sql, parameters))
                         else:
