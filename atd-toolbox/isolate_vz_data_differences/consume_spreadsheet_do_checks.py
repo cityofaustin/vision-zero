@@ -6,6 +6,7 @@ import psycopg2.extras
 from tqdm import tqdm
 import json
 from datetime import datetime
+import decimal
 
 
 def main():
@@ -40,6 +41,16 @@ def main():
                         crash_data[key] = True
                     elif value == 'N':
                         crash_data[key] = False
+
+        # cast floats into decimals
+        for crash_id, crash_data in crashes_classic_vz.items():
+            for key, value in list(crash_data.items()):  # We use list to create a copy of items for iteration
+                if 'latitude' in key or 'longitude' in key and value is not None:
+                    try:
+                        crash_data[key] = decimal.Decimal(str(value))
+                    except decimal.InvalidOperation:
+                        # unparsable value, like a 'None', no big.
+                        pass
 
         # print(crashes_classic_vz[(20006607,)])
 
