@@ -12,7 +12,7 @@ import random
 
 
 logging.basicConfig(
-    level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(message)s"
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
 
@@ -56,11 +56,9 @@ def persons(db_connection_string, job):
                 for row in tqdm(rows, desc="Building dictionary of atd_txdot_person")
             }
 
-        random_key = random.choice(list(persons_classic_vz.keys()))
-        print("Key:", random_key)
-        print("Value:", persons_classic_vz[random_key])
-
-        input()
+        # random_key = random.choice(list(persons_classic_vz.keys()))
+        # print("Key:", random_key)
+        # print("Value:", persons_classic_vz[random_key])
 
         # cast the char Y/Ns to booleans
         for _, person_data in tqdm(
@@ -82,6 +80,7 @@ def persons(db_connection_string, job):
         # fmt: off
         updates = []
         for person_key in tqdm(people_cris, desc="Comparing values"):
+            # print(persons_classic_vz[person_key])
             for column in columns:
                 if column["target column name"] != "-":
                     if column["target column name"] in people_cris[person_key]:
@@ -99,8 +98,7 @@ def persons(db_connection_string, job):
                             parameters = (persons_classic_vz[person_key][column["old column name"]], person_key[0], person_key[1], person_key[2])
                             updates.append((sql, parameters))
                         else:
-                            logging.debug(f"🤷 VZ only column, but no {column['old column name']} in classic VZ data, so no value in people_edits's {column['target column name']}")
-            break
+                            logging.debug(f"🤷 VZ only column, but no {column['old column name']} value in classic VZ data, so no value in people_edits's {column['target column name']}")
         # fmt: on
 
         # Mogrify and print the queries (for debugging)
