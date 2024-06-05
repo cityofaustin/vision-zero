@@ -24,20 +24,41 @@ def main():
             rows = cur.fetchall()
             crashes_cris = {(row["crash_id"],): dict(row) for row in rows}
 
+        # print(crashes_cris[(20006607,)])
+
         sql = "select * from atd_txdot_crashes"
         with conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
             cur.execute(sql)
             rows = cur.fetchall()
-            crashes_vz = {(row["crash_id"],): dict(row) for row in rows}
+            crashes_classic_vz = {(row["crash_id"],): dict(row) for row in rows}
+
+        # print(crashes_classic_vz[(20006607,)])
 
         columns = filter_by_old_table_name(job, "atd_txdot_crashes")
 
-        for crash in crashes_cris:
+        # fmt: off
+        updates = []
+        for crash_key in crashes_cris:
             for column in columns:
                 if column["target column name"] != "-":
-                    # print(f"{column["old column name"]} => {column["target column name"]}")
-                    print(f"{column["old column name"]} => {crashes_cris[(crash["crash_id"],)][column["old column name"]]}")
-
+                    if column["target column name"] in crashes_cris[crash_key]:
+                        if (crashes_classic_vz[crash_key][column["old column name"]] != crashes_cris[crash_key][column["target column name"]]):
+                            print(f"{column["old column name"]}: {crashes_classic_vz[crash_key][column["old column name"]]} != {crashes_cris[crash_key][column["target column name"]]}")
+                            sql = f"update crashes_edits set {column['target column name']} = %s where crash_id = %s"
+                            parameters = (crashes_classic_vz[crash_key][column["old column name"]], crash_key[0])
+                            updates.append((sql, parameters))
+                        else:
+                            print(f"{column["old column name"]}: {crashes_classic_vz[crash_key][column["old column name"]]} == {crashes_cris[crash_key][column["target column name"]]}")
+                    else:
+                        if crashes_classic_vz[crash_key][column['old column name']]:
+                            print(f"VZ only column: No {column['target column name']} in classic VZ data, so {crashes_classic_vz[crash_key][column['old column name']]} going into crashes_edits")
+                            sql = f"update crashes_edits set {column['target column name']} = %s where crash_id = %s"
+                            parameters = (crashes_classic_vz[crash_key][column["old column name"]], crash_key[0])
+                            updates.append((sql, parameters))
+                        else:
+                            print(f"VZ only column: No {column['target column name']} in classic VZ data, and no value in crashes_edits")
+            break
+        # fmt: on
 
 
 def filter_by_old_table_name(data, table_name):
