@@ -32,6 +32,15 @@ def main():
             rows = cur.fetchall()
             crashes_classic_vz = {(row["crash_id"],): dict(row) for row in rows}
 
+        # cast the char Y/Ns to booleans
+        for crash_id, crash_data in crashes_classic_vz.items():
+            for key, value in list(crash_data.items()):  # We use list to create a copy of items for iteration
+                if key.endswith('_fl'):
+                    if value == 'Y':
+                        crash_data[key] = True
+                    elif value == 'N':
+                        crash_data[key] = False
+
         # print(crashes_classic_vz[(20006607,)])
 
         columns = filter_by_old_table_name(job, "atd_txdot_crashes")
