@@ -29,7 +29,7 @@ const ChargesDetailsCard = ({ data }) => {
           </h5>
         </Button>
       </CardHeader>
-      <Collapse isOpen={isOpen} data-parent="#accordion" id="collapseOne">
+      <Collapse isOpen={isOpen}>
         <CardBody>
           <Table responsive>
             <thead>
