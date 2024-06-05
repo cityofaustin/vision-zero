@@ -41,10 +41,6 @@ def units(db_connection_string, job):
                 for row in tqdm(rows, desc="Building dictionary of units_cris")
             }
 
-            # random_key = random.choice(list(units_cris.keys()))
-            # print("Key:", random_key)
-            # print("Value:", units_cris[random_key])
-
         # another big dictionary of the whole table
         sql = "select * from atd_txdot_units"
         with conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
@@ -93,11 +89,11 @@ def units(db_connection_string, job):
                             logging.debug(f"🤷 VZ only column, but no {column['old column name']} in classic VZ data, so no value in units_edits's {column['target column name']}")
         # fmt: on
 
-        # Mogrify and print the queries
-        for update in tqdm(updates, desc="Mogrifying Queries"):
-            with conn.cursor() as cur:
-                mogrified_query = cur.mogrify(update[0], update[1]).decode()
-                logging.debug(mogrified_query)
+        # Mogrify and print the queries (for debugging)
+        # for update in tqdm(updates, desc="Mogrifying Queries"):
+        #     with conn.cursor() as cur:
+        #         mogrified_query = cur.mogrify(update[0], update[1]).decode()
+        #         logging.debug(mogrified_query)
 
         # Execute the queries
         with conn.cursor() as cur:
@@ -116,8 +112,6 @@ def crashes(db_connection_string, job):
                 (row["crash_id"],): dict(row)
                 for row in tqdm(rows, desc="Building dictionary of crashes_cris")
             }
-
-        # print(crashes_cris[(20006607,)])
 
         # another big dictionary of the whole table
         sql = "select * from atd_txdot_crashes"
@@ -157,8 +151,6 @@ def crashes(db_connection_string, job):
                         # unparsable value, like a 'None', no big.
                         pass
 
-        # print(crashes_classic_vz[(20006607,)])
-
         columns = filter_by_old_table_name(job, "atd_txdot_crashes")
 
         # fmt: off
@@ -184,11 +176,11 @@ def crashes(db_connection_string, job):
                             logging.debug(f"🤷 VZ only column, but no {column['old column name']} in classic VZ data, so no value in crashes_edits's {column['target column name']}")
         # fmt: on
 
-        # Mogrify and print the queries
-        for update in tqdm(updates, desc="Mogrifying Queries"):
-            with conn.cursor() as cur:
-                mogrified_query = cur.mogrify(update[0], update[1]).decode()
-                logging.debug(mogrified_query)
+        # Mogrify and print the queries (for debugging)
+        # for update in tqdm(updates, desc="Mogrifying Queries"):
+        #     with conn.cursor() as cur:
+        #         mogrified_query = cur.mogrify(update[0], update[1]).decode()
+        #         logging.debug(mogrified_query)
 
         # Execute the queries
         with conn.cursor() as cur:
