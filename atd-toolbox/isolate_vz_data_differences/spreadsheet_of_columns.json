@@ -150,15 +150,15 @@
     "old table name": "atd_txdot_units",
     "old column name": "crash_id",
     "target table name": "units_edits",
-    "target column name": "crash_id",
-    "note": "primary key (with unit_nbr)"
+    "target column name": "cris_crash_id",
+    "note": "classic primary key (with unit_nbr)"
   },
   {
     "old table name": "atd_txdot_units",
     "old column name": "unit_nbr",
     "target table name": "units_edits",
     "target column name": "unit_nbr",
-    "note": "primary key (with crash_id)"
+    "note": "primary key (with cris_crash_id)"
   },
   {
     "old table name": "atd_txdot_units",
