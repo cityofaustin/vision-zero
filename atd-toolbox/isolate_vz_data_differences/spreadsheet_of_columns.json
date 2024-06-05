@@ -199,7 +199,7 @@
     "old table name": "atd_txdot_person",
     "old column name": "crash_id",
     "target table name": "people_edits",
-    "target column name": "crash_id",
+    "target column name": "cris_crash_id",
     "note": "primary key (with unit_nbr and prsn_nbr)"
   },
   {
