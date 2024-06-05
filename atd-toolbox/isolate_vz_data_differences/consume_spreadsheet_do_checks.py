@@ -24,6 +24,10 @@ def main():
 
     job = read_json_file("spreadsheet_of_columns.json")
 
+    crashes(db_connection_string, job)
+
+
+def crashes(db_connection_string, job):
     with psycopg2.connect(db_connection_string) as conn:
         # build up a mondo dictionary of the whole table keyed on a tuple of the primary key(s)
         sql = "select * from crashes_cris"
