@@ -7,6 +7,11 @@ from tqdm import tqdm
 import json
 from datetime import datetime
 import decimal
+import logging
+
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
 
 
 def main():
@@ -65,22 +70,36 @@ def main():
                 if column["target column name"] != "-":
                     if column["target column name"] in crashes_cris[crash_key]:
                         if (crashes_classic_vz[crash_key][column["old column name"]] != crashes_cris[crash_key][column["target column name"]]):
-                            print(f"❌ {column["old column name"]}: {crashes_classic_vz[crash_key][column["old column name"]]} != {crashes_cris[crash_key][column["target column name"]]}")
+                            logging.debug(f"❌ {column["old column name"]}: {crashes_classic_vz[crash_key][column["old column name"]]} != {crashes_cris[crash_key][column["target column name"]]}")
                             sql = f"update crashes_edits set {column['target column name']} = %s where crash_id = %s"
                             parameters = (crashes_classic_vz[crash_key][column["old column name"]], crash_key[0])
                             updates.append((sql, parameters))
                         else:
-                            print(f"✅ {column["old column name"]}: {crashes_classic_vz[crash_key][column["old column name"]]} == {crashes_cris[crash_key][column["target column name"]]}")
+                            logging.debug(f"✅ {column["old column name"]}: {crashes_classic_vz[crash_key][column["old column name"]]} == {crashes_cris[crash_key][column["target column name"]]}")
                     else:
                         if crashes_classic_vz[crash_key][column['old column name']]:
-                            print(f"✨ VZ only column: No {column['target column name']} in crashes_cris, so {crashes_classic_vz[crash_key][column['old column name']]} going into crashes_edits")
+                            logging.debug(f"✨ VZ only column: No {column['target column name']} in crashes_cris, so {crashes_classic_vz[crash_key][column['old column name']]} going into crashes_edits")
                             sql = f"update crashes_edits set {column['target column name']} = %s where crash_id = %s"
                             parameters = (crashes_classic_vz[crash_key][column["old column name"]], crash_key[0])
                             updates.append((sql, parameters))
                         else:
-                            print(f"🤷 VZ only column, but no {column['old column name']} in classic VZ data, so no value in crashes_edits's {column['target column name']}")
-            break
+                            logging.debug(f"🤷 VZ only column, but no {column['old column name']} in classic VZ data, so no value in crashes_edits's {column['target column name']}")
         # fmt: on
+        
+        mogrified_queries = []
+
+        # Mogrify and print the queries
+        for update in updates:
+            with conn.cursor() as cur:
+                mogrified_query = cur.mogrify(update[0], update[1]).decode()
+                logging.debug(mogrified_query)
+                mogrified_queries.append((update[0], update[1]))
+
+        # Execute the queries
+        with conn.cursor() as cur:
+            for query, params in mogrified_queries:
+                cur.execute(query, params)
+
 
 
 def filter_by_old_table_name(data, table_name):
