@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Card, CardBody, CardHeader, Col, Row } from "reactstrap";
+import { Card, Col, Row } from "reactstrap";
 
 import UnitDetailsCard from "./UnitDetailsCard";
 import PeopleDetailsCard from "./PeopleDetailsCard";
@@ -74,28 +74,32 @@ class CrashCollapses extends Component {
         <Row>
           <Col>
             <Card>
-              <CardHeader>
-                <i className="fa fa-align-justify" /> Related Records
-              </CardHeader>
-              <CardBody>
-                <div id="accordion">
-                  <UnitDetailsCard
-                    isExpanded={this.state.accordion[0]}
-                    toggleAccordion={this.toggleAccordion}
-                    {...this.props.props}
-                  />
-                  <PeopleDetailsCard
-                    isExpanded={this.state.accordion[1]}
-                    toggleAccordion={this.toggleAccordion}
-                    {...this.props.props}
-                  />
-                  <ChargesDetailsCard
-                    chargesData={this.props.data.atd_txdot_charges}
-                    isExpanded={this.state.accordion[2]}
-                    toggleAccordion={this.toggleAccordion}
-                  />
-                </div>
-              </CardBody>
+              <UnitDetailsCard
+                data={this.props.data.units}
+                isExpanded={this.state.accordion[0]}
+                toggleAccordion={this.toggleAccordion}
+                refetch={this.props.refetch}
+                error={this.props.error}
+                loading={this.props.loading}
+                {...this.props.props}
+              />
+              <PeopleDetailsCard
+                data={this.props.data.people_list_view}
+                isExpanded={this.state.accordion[1]}
+                toggleAccordion={this.toggleAccordion}
+                refetch={this.props.refetch}
+                error={this.props.error}
+                loading={this.props.loading}
+                {...this.props.props}
+              />
+              <ChargesDetailsCard
+                chargesData={this.props.data.charges_cris}
+                isExpanded={this.state.accordion[2]}
+                toggleAccordion={this.toggleAccordion}
+                refetch={this.props.refetch}
+                error={this.props.error}
+                loading={this.props.loading}
+              />
             </Card>
           </Col>
         </Row>

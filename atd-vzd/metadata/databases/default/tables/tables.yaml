@@ -118,6 +118,7 @@
 - "!include public_people.yaml"
 - "!include public_people_cris.yaml"
 - "!include public_people_edits.yaml"
+- "!include public_people_list_view.yaml"
 - "!include public_person_injury_metrics_view.yaml"
 - "!include public_recommendations.yaml"
 - "!include public_recommendations_partners.yaml"

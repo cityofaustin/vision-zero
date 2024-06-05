@@ -17,6 +17,15 @@ object_relationships:
   - name: crashes_cri
     using:
       foreign_key_constraint_on: id
+  - name: crashes_list_view
+    using:
+      manual_configuration:
+        column_mapping:
+          crash_id: crash_id
+        insertion_order: null
+        remote_table:
+          name: crashes_list_view
+          schema: public
 array_relationships:
   - name: change_log
     using:
@@ -24,6 +33,24 @@ array_relationships:
         column: record_id
         table:
           name: change_log_crashes
+          schema: public
+  - name: charges_cris
+    using:
+      manual_configuration:
+        column_mapping:
+          crash_id: crash_id
+        insertion_order: null
+        remote_table:
+          name: charges_cris
+          schema: public
+  - name: people_list_view
+    using:
+      manual_configuration:
+        column_mapping:
+          crash_id: crash_id
+        insertion_order: null
+        remote_table:
+          name: people_list_view
           schema: public
   - name: units
     using:
