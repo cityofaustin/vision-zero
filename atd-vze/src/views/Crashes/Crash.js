@@ -112,7 +112,7 @@ function Crash(props) {
       .mutate({
         mutation: UPDATE_CRASH,
         variables: {
-          crashId: crashId,
+          id: crashPk,
           changes: { ...formData, ...secondaryFormData },
         },
       })
@@ -132,6 +132,7 @@ function Crash(props) {
   } = !!data?.atd_txdot_crashes[0] ? data?.atd_txdot_crashes[0] : {};
 
   const crashRecord = { crash: crashData?.crashes?.[0] || {} };
+  const crashPk = crashRecord?.crash?.id;
 
   const {
     crash_injury_metrics_view: { vz_fatality_count: deathCount },
@@ -277,16 +278,16 @@ function Crash(props) {
         <Col>
           <Card>
             <UnitDetailsCard
-              data={crashData.crashes_by_pk.units}
+              data={crashRecord.crash.units}
               refetch={crashRefetch}
               {...props}
             />
             <PeopleDetailsCard
-              data={crashData.crashes_by_pk.people_list_view}
+              data={crashRecord.crash.people_list_view}
               refetch={crashRefetch}
               {...props}
             />
-            <ChargesDetailsCard data={crashData.crashes_by_pk.charges_cris} />
+            <ChargesDetailsCard data={crashRecord.crash.charges_cris} />
           </Card>
         </Col>
       </Row>
