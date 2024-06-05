@@ -17,15 +17,15 @@
     "old table name": "atd_txdot_crashes",
     "old column name": "latitude_primary",
     "target table name": "crashes_edits",
-    "target column name": "longitude",
+    "target column name": "latitude",
     "note": null
   },
   {
     "old table name": "atd_txdot_crashes",
     "old column name": "city_id",
     "target table name": "crashes_edits",
-    "target column name": "longitude",
-    "note": null
+    "target column name": "rpt_city_id",
+    "note": "use rpt_city_id instead. need to migrate city_id to that field. we can populate all city ids into the rpt city id if they are different"
   },
   {
     "old table name": "atd_txdot_crashes",
