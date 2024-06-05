@@ -65,8 +65,6 @@ def main():
                 if column["target column name"] != "-":
                     if column["target column name"] in crashes_cris[crash_key]:
                         if (crashes_classic_vz[crash_key][column["old column name"]] != crashes_cris[crash_key][column["target column name"]]):
-                            print(f"Type of crashes_classic_vz[crash_key][column['old column name']]: {type(crashes_classic_vz[crash_key][column['old column name']])}")
-                            print(f"Type of crashes_cris[crash_key][column['target column name']]: {type(crashes_cris[crash_key][column['target column name']])}")
                             print(f"❌ {column["old column name"]}: {crashes_classic_vz[crash_key][column["old column name"]]} != {crashes_cris[crash_key][column["target column name"]]}")
                             sql = f"update crashes_edits set {column['target column name']} = %s where crash_id = %s"
                             parameters = (crashes_classic_vz[crash_key][column["old column name"]], crash_key[0])
