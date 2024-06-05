@@ -164,7 +164,7 @@ query find_cr3s($limit: Int) {
   atd_txdot_crashes(where: {
       cr3_ocr_extraction_date: {_is_null: true},
       crash_id: {_gt: 10000}
-      crash_date: {_gte: "2015-01-01"}
+      crash_date: {_gte: "2019-12-31"}
       cr3_file_metadata:{_is_null: false}
   },
   order_by: {crash_date: desc},
