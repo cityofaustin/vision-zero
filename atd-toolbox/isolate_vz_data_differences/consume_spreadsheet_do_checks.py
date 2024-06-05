@@ -19,6 +19,7 @@ def main():
     job = read_json_file("spreadsheet_of_columns.json")
 
     with psycopg2.connect(db_connection_string) as conn:
+        # build up a mondo dictionary of the whole table keyed on a tuple of the primary key(s)
         sql = "select * from crashes_cris"
         with conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
             cur.execute(sql)
@@ -27,6 +28,7 @@ def main():
 
         # print(crashes_cris[(20006607,)])
 
+        # another big dictionary of the whole table
         sql = "select * from atd_txdot_crashes"
         with conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
             cur.execute(sql)
