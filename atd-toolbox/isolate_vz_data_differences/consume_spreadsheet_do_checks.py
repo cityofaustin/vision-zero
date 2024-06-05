@@ -12,7 +12,7 @@ import random
 
 
 logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+    level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
 
@@ -56,9 +56,11 @@ def persons(db_connection_string, job):
                 for row in tqdm(rows, desc="Building dictionary of atd_txdot_person")
             }
 
-        # random_key = random.choice(list(persons_classic_vz.keys()))
-        # print("Key:", random_key)
-        # print("Value:", persons_classic_vz[random_key])
+        random_key = random.choice(list(persons_classic_vz.keys()))
+        print("Key:", random_key)
+        print("Value:", persons_classic_vz[random_key])
+
+        input()
 
         # cast the char Y/Ns to booleans
         for _, person_data in tqdm(
@@ -67,11 +69,13 @@ def persons(db_connection_string, job):
             for key, value in list(
                 person_data.items()
             ):  # We use list to create a copy of items for iteration
-                if key.endswith("_fl"):
+                if key.endswith("_fl") and not key == "peh_fl":
                     if value == "Y":
                         person_data[key] = True
                     elif value == "N":
                         person_data[key] = False
+                if key == "peh_fl" and not value:
+                    person_data[key] = False
 
         columns = filter_by_old_table_name(job, "atd_txdot_person")
 
@@ -96,6 +100,7 @@ def persons(db_connection_string, job):
                             updates.append((sql, parameters))
                         else:
                             logging.debug(f"🤷 VZ only column, but no {column['old column name']} in classic VZ data, so no value in people_edits's {column['target column name']}")
+            break
         # fmt: on
 
         # Mogrify and print the queries (for debugging)
@@ -107,7 +112,14 @@ def persons(db_connection_string, job):
         # Execute the queries
         with conn.cursor() as cur:
             for query, params in tqdm(updates, desc="Executing Queries"):
-                cur.execute(query, params)
+                try:
+                    cur.execute(query, params)
+                except Exception as e:
+                    mogrified_query = cur.mogrify(query, params).decode()
+                    print("An error occurred while executing the following query:")
+                    print(mogrified_query)
+                    print("Error:", str(e))
+                    break  # Stop executing further queries after an error
 
 
 def units(db_connection_string, job):
