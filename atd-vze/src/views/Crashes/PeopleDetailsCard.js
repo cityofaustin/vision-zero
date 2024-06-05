@@ -19,7 +19,9 @@ import { UPDATE_PERSON } from "../../queries/people";
 const PeopleDetailsCard = ({ data, refetch, ...props }) => {
   const [isOpen, setIsOpen] = useState(true);
 
-  const { data: lookupSelectOptions } = useQuery(GET_PERSON_LOOKUPS);
+  const { data: lookupSelectOptions, loading, error } = useQuery(
+    GET_PERSON_LOOKUPS
+  );
 
   const primaryPersonData = data.filter(
     person => person.is_primary_person === true
@@ -34,6 +36,9 @@ const PeopleDetailsCard = ({ data, refetch, ...props }) => {
       changes: {},
     },
   };
+
+  if (loading) return "Loading...";
+  if (error) return `Error! ${error.message}`;
 
   return (
     <Card className="mb-0">

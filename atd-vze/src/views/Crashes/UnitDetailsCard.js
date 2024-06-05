@@ -27,7 +27,12 @@ const UnitDetailsCard = ({ data, refetch, ...props }) => {
     },
   };
 
-  const { data: lookupSelectOptions } = useQuery(GET_UNIT_LOOKUPS);
+  const { data: lookupSelectOptions, loading, error } = useQuery(
+    GET_UNIT_LOOKUPS
+  );
+
+  if (loading) return "Loading...";
+  if (error) return `Error! ${error.message}`;
 
   return (
     <Card className="mb-0">
