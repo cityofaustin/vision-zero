@@ -10,6 +10,7 @@ import decimal
 import logging
 import random
 
+from lazy_dictionary import LazyDictionary
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
@@ -25,10 +26,14 @@ def main():
 
     job = read_json_file("spreadsheet_of_columns.json")
 
-    crashes(db_connection_string, job)
-    units(db_connection_string, job)
-    persons(db_connection_string, job)
-    primary_persons(db_connection_string, job)
+    # crashes(db_connection_string, job)
+    # units(db_connection_string, job)
+    # persons(db_connection_string, job)
+    # primary_persons(db_connection_string, job)
+
+    test = LazyDictionary(db_connection_string)
+
+    print(test["test"])
 
 
 def primary_persons(db_connection_string, job):
