@@ -40,6 +40,12 @@ const getDiffArray = (old, new_) => {
 };
 
 /**
+ * Prettify the user name if it is `cris`
+ */
+const formatUserName = userName =>
+  userName === "cris" ? "TxDOT CRIS" : userName;
+
+/**
  * Hook that identifies that returns an array with one entry per row in the
  * the change log view for the given crash. Each object in the returned
  * array has two properties:
@@ -57,6 +63,7 @@ const useChangeLogData = data =>
         change.record_json.new
       );
       change.affected_fields = change.diffs.map(diff => diff.field);
+      change.created_by = formatUserName(change.created_by);
       return change;
     });
   }, [data]);
@@ -70,10 +77,10 @@ const ChangeSummary = ({ selectedChange }) => {
   return (
     <>
       {`${selectedChange.record_type}`} ID{" "}
-      <span className="font-monospace">{selectedChange.record_id}</span> edited
-      by {selectedChange.created_by}
+      <span>{selectedChange.record_id}</span> edited by{" "}
+      {selectedChange.created_by}
       {" - "}
-      {formatDateTimeString(selectedChange.created_at)}
+      {selectedChange.created_at}
     </>
   );
 };
@@ -102,11 +109,11 @@ const ChangeDetailsModal = ({ selectedChange, setSelectedChange }) => {
           <tbody className="text-monospace">
             {selectedChange.diffs.map(diff => (
               <tr>
-                <td className="text-monospace">{diff.field}</td>
+                <td>{diff.field}</td>
                 {!isNewRecordEvent(selectedChange) && (
-                  <td className="text-monospace">{String(diff.old)}</td>
+                  <td>{String(diff.old)}</td>
                 )}
-                <td className="text-monospace">{String(diff.new)}</td>
+                <td>{String(diff.new)}</td>
               </tr>
             ))}
           </tbody>
