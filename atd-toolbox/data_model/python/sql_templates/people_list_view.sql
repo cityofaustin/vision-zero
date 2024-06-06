@@ -14,7 +14,7 @@ create or replace view people_list_view as (
     left join public.people_cris as people_cris on people.id = people_cris.id
     left join
         public.crashes as crashes
-        on units.crash_id = crashes.crash_id
+        on units.crash_id = crashes.id
     left join
         lookups.injry_sev_lkp
         on lookups.injry_sev_lkp.id = people.prsn_injry_sev_id

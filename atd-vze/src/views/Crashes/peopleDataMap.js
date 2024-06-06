@@ -1,15 +1,10 @@
-import { isAdmin, isItSupervisor } from "../../auth/authContext";
-
 // Return true if person record is a fatality
-const shouldRenderVictimName = (data, roles) => {
-  return (
-    data.some(person => person.prsn_injry_sev_id === 4) &&
-    (isItSupervisor(roles) || isAdmin(roles))
-  );
+const shouldRenderVictimName = data => {
+  return data.some(person => person.injry_sev_lkp.id === 4);
 };
 
 const getInjurySeverityColor = personRecord => {
-  switch (personRecord["prsn_injry_sev_id"]) {
+  switch (personRecord.injry_sev_lkp.id) {
     case 0: // UNKNOWN: no color
       return "muted";
     case 1: // SUSPECTED INCAPACITATING INJURY: yellow
@@ -38,13 +33,12 @@ export const primaryPersonDataMap = [
         label: "Unit",
         editable: false,
       },
-      injury_severity: {
+      injry_sev_lkp: {
         label: "Injury Severity",
         editable: true,
         format: "select",
-        lookup_desc: "injry_sev_desc",
-        lookupOptions: "atd_txdot__injry_sev_lkp",
-        lookupPrefix: "injry_sev",
+        lookup_desc: "label",
+        lookupOptions: "lookups_injry_sev_lkp",
         updateFieldKey: "prsn_injry_sev_id",
         mutationVariableKey: "personId",
         badge: true,
@@ -68,10 +62,10 @@ export const primaryPersonDataMap = [
           },
         },
       },
-      person_type: {
+      prsn_type_lkp: {
         label: "Type",
         editable: false,
-        lookup_desc: "prsn_type_desc",
+        lookup_desc: "label",
       },
       prsn_age: {
         label: "Age",
@@ -79,23 +73,21 @@ export const primaryPersonDataMap = [
         format: "text",
         mutationVariableKey: "personId",
       },
-      gender: {
+      gndr_lkp: {
         label: "Sex",
         editable: true,
-        lookup_desc: "gndr_desc",
+        lookup_desc: "label",
         format: "select",
-        lookupOptions: "atd_txdot__gndr_lkp",
-        lookupPrefix: "gndr",
+        lookupOptions: "lookups_gndr_lkp",
         updateFieldKey: "prsn_gndr_id",
         mutationVariableKey: "personId",
       },
-      ethnicity: {
+      drvr_ethncty_lkp: {
         label: "Race/Ethnicity",
         editable: true,
-        lookup_desc: "ethnicity_desc",
+        lookup_desc: "label",
         format: "select",
-        lookupOptions: "atd_txdot__ethnicity_lkp",
-        lookupPrefix: "ethnicity",
+        lookupOptions: "lookups_drvr_ethncty_lkp",
         updateFieldKey: "prsn_ethnicity_id",
         mutationVariableKey: "personId",
       },
@@ -107,7 +99,7 @@ export const primaryPersonDataMap = [
         label: "ZIP",
         editable: false,
       },
-      peh_fl: {
+      prsn_exp_homelessness: {
         label: "Suspected Unhoused",
         editable: true,
         format: "boolean",
@@ -127,13 +119,12 @@ export const personDataMap = [
         label: "Unit",
         editable: false,
       },
-      injury_severity: {
+      injry_sev_lkp: {
         label: "Injury Severity",
         editable: true,
         format: "select",
-        lookup_desc: "injry_sev_desc",
-        lookupOptions: "atd_txdot__injry_sev_lkp",
-        lookupPrefix: "injry_sev",
+        lookup_desc: "label",
+        lookupOptions: "lookups_injry_sev_lkp",
         updateFieldKey: "prsn_injry_sev_id",
         mutationVariableKey: "personId",
         badge: true,
@@ -143,8 +134,8 @@ export const personDataMap = [
         label: "Victim Name",
         editable: true,
         format: "text",
-        shouldRender: shouldRenderVictimName,
         mutationVariableKey: "personId",
+        shouldRender: shouldRenderVictimName,
         subfields: {
           prsn_first_name: {
             label: "First",
@@ -157,10 +148,10 @@ export const personDataMap = [
           },
         },
       },
-      person_type: {
+      prsn_type_lkp: {
         label: "Type",
         editable: false,
-        lookup_desc: "prsn_type_desc",
+        lookup_desc: "label",
       },
       prsn_age: {
         label: "Age",
@@ -168,27 +159,25 @@ export const personDataMap = [
         format: "text",
         mutationVariableKey: "personId",
       },
-      gender: {
+      gndr_lkp: {
         label: "Sex",
         editable: true,
-        lookup_desc: "gndr_desc",
+        lookup_desc: "label",
         format: "select",
-        lookupOptions: "atd_txdot__gndr_lkp",
-        lookupPrefix: "gndr",
+        lookupOptions: "lookups_gndr_lkp",
         updateFieldKey: "prsn_gndr_id",
         mutationVariableKey: "personId",
       },
-      ethnicity: {
+      drvr_ethncty_lkp: {
         label: "Race/Ethnicity",
         editable: true,
-        lookup_desc: "ethnicity_desc",
+        lookup_desc: "label",
         format: "select",
-        lookupOptions: "atd_txdot__ethnicity_lkp",
-        lookupPrefix: "ethnicity",
+        lookupOptions: "lookups_drvr_ethncty_lkp",
         updateFieldKey: "prsn_ethnicity_id",
         mutationVariableKey: "personId",
       },
-      peh_fl: {
+      prsn_exp_homelessness: {
         label: "Suspected Unhoused",
         editable: true,
         format: "boolean",
