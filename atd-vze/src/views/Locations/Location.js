@@ -44,6 +44,8 @@ function Location(props) {
   if (loading) return "Loading...";
   if (error) return `Error! ${error.message}`;
 
+  const location = data.atd_txdot_locations_by_pk;
+
   const handleInputChange = e => {
     const newFormState = Object.assign(formData, {
       [editField]: e.target.value,
@@ -73,13 +75,14 @@ function Location(props) {
     </div>
   );
 
-  return !data?.atd_txdot_locations?.length ? (
+  console.log9("OK, the reason the locaitonttotals aren't working in the data card is because we changed teh shape of data expected by the datatables to expect objects, not arrays. so we need to build up a hooked object here that we pass to the data table in the shape it expects. not a big deal")
+  return !location ? (
     <Page404 />
   ) : (
     <div className="animated fadeIn">
       <Row>
         <Col>
-          <h2 className="h2 mb-3">{data.atd_txdot_locations[0].description}</h2>
+          <h2 className="h2 mb-3">{location.description}</h2>
         </Col>
       </Row>
       <Row>
@@ -89,13 +92,13 @@ function Location(props) {
               <i className="fa fa-map fa-lg"></i> Aerial Map
             </CardHeader>
             <CardBody>
-              <LocationMap data={data} />
+              <LocationMap location={location} />
             </CardBody>
           </Card>
         </Col>
         <DataTable
           dataMap={locationDataMap}
-          dataTable={"atd_txdot_locations"}
+          dataTable={"atd_txdot_locations_by_pk"}
           formData={formData}
           setEditField={setEditField}
           editField={editField}

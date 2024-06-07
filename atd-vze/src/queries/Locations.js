@@ -1,8 +1,8 @@
 import { gql } from "apollo-boost";
 
 export const GET_LOCATION = gql`
-  query GetLocation($id: String) {
-    atd_txdot_locations(where: { location_id: { _eq: $id } }) {
+  query GetLocation($id: String!) {
+    atd_txdot_locations_by_pk(location_id:$id) {
       location_id
       street_level
       description
