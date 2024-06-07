@@ -4,4 +4,4 @@ export const formatCostToDollars = cost =>
   !!cost ? `$${cost.toLocaleString()}` : "--";
 
 export const formatDateTimeString = datetime =>
-  format(parseISO(datetime), "yyyy-MM-dd hh:mm:ss a");
+  format(parseISO(datetime), "yyyy-MM-dd h:mm:ss a");
