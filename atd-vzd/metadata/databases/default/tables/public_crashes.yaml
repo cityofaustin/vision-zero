@@ -40,7 +40,7 @@ array_relationships:
     using:
       manual_configuration:
         column_mapping:
-          crash_id: crash_id
+          id: crash_id
         insertion_order: null
         remote_table:
           name: charges_cris
@@ -49,7 +49,7 @@ array_relationships:
     using:
       manual_configuration:
         column_mapping:
-          crash_id: crash_id
+          id: crash_id
         insertion_order: null
         remote_table:
           name: people_list_view
