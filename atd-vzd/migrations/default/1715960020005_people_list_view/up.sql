@@ -3,7 +3,8 @@ drop view if exists people_list_view cascade;
 create or replace view people_list_view as (
     select
         people.*,
-        crashes.crash_id,
+        crashes.id as crash_id,
+        crashes.crash_id as cris_crash_id,
         crashes.crash_date,
         injry_sev_lkp.label as prsn_injry_sev_desc,
         units.unit_nbr,
