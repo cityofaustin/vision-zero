@@ -77,14 +77,14 @@ function Crash(props) {
     const geocoderAddressFields = [
       "rpt_block_num",
       "rpt_street_pfx",
-      "street_name",
-      "rpt_street_pfx",
+      "rpt_street_name",
+      "rpt_street_sfx",
     ];
     let geocoderAddressString = "";
     geocoderAddressFields.forEach(field => {
-      if (data?.atd_txdot_crashes?.[0]?.[field] !== null) {
+      if (!!crashData?.crashes_by_pk?.[field]) {
         geocoderAddressString = geocoderAddressString.concat(
-          data?.atd_txdot_crashes?.[0]?.[field] + " "
+          crashData?.crashes_by_pk?.[field] + " "
         );
       }
     });
@@ -121,12 +121,10 @@ function Crash(props) {
     setEditField("");
   };
 
-  const {
-    latitude_primary: latitude,
-    longitude_primary: longitude,
-    temp_record: tempRecord,
-    geocode_method: geocodeMethod,
-  } = !!data?.atd_txdot_crashes[0] ? data?.atd_txdot_crashes[0] : {};
+  const { temp_record: tempRecord, geocode_method: geocodeMethod } = !!data
+    ?.atd_txdot_crashes[0]
+    ? data?.atd_txdot_crashes[0]
+    : {};
 
   const {
     crash_injury_metrics_view: { vz_fatality_count: deathCount },
@@ -137,17 +135,17 @@ function Crash(props) {
     investigator_narrative: investigatorNarrative,
     cr3_stored_flag: cr3StoredFlag,
     cr3_file_metadata: cr3FileMetadata,
+    latitude: latitude,
+    longitude: longitude,
+    location_id: locationId,
   } = crashData?.crashes_by_pk ? crashData?.crashes_by_pk : {};
 
-  const mapGeocoderAddress = createGeocoderAddressString(data);
+  const mapGeocoderAddress = createGeocoderAddressString(crashData);
 
-  const hasLocation =
-    data &&
-    data?.atd_txdot_crashes.length > 0 &&
-    data?.atd_txdot_crashes[0]["location_id"];
+  const hasLocation = !!crashData?.crashes_by_pk["location_id"];
   const hasCoordinates = !!latitude && !!longitude;
 
-  return !data?.atd_txdot_crashes?.length ? (
+  return !crashData ? (
     <Page404 />
   ) : (
     <div className="animated fadeIn">
@@ -200,13 +198,7 @@ function Crash(props) {
                 <Col>
                   Crash Location (ID:{" "}
                   {(hasLocation && (
-                    <Link
-                      to={`/locations/${
-                        data.atd_txdot_crashes[0]["location_id"]
-                      }`}
-                    >
-                      {data.atd_txdot_crashes[0]["location_id"]}
-                    </Link>
+                    <Link to={`/locations/${locationId}`}>{locationId}</Link>
                   )) ||
                     "unassigned"}
                   )
@@ -240,10 +232,10 @@ function Crash(props) {
                 </Alert>
               )}
               {!isEditingCoords ? (
-                <CrashMap data={data.atd_txdot_crashes[0]} />
+                <CrashMap data={crashData?.crashes_by_pk} />
               ) : (
                 <CrashEditCoordsMap
-                  data={data.atd_txdot_crashes[0]}
+                  data={crashData?.crashes_by_pk}
                   mapGeocoderAddress={mapGeocoderAddress}
                   crashId={crashId}
                   refetchCrashData={refetch}
