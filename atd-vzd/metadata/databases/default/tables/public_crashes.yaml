@@ -31,7 +31,7 @@ array_relationships:
     using:
       manual_configuration:
         column_mapping:
-          crash_id: crash_id
+          id: crash_id
         insertion_order: null
         remote_table:
           name: crashes_change_log_view

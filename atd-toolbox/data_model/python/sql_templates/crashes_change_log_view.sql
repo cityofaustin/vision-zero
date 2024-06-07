@@ -35,7 +35,7 @@ create view crashes_change_log_view as (
     select
         concat('people_', change_log_people.id) as id,
         'person' as record_type,
-        crashes.crash_id as crash_id,
+        crashes.id as crash_id,
         record_id,
         case
             when (operation_type = 'INSERT') then 'create' else
