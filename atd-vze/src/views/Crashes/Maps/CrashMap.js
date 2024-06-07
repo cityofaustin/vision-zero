@@ -13,13 +13,13 @@ import {
 import "mapbox-gl/dist/mapbox-gl.css";
 
 const CrashMap = ({ data }) => {
-  const { latitude_primary = null, longitude_primary = null } = data;
+  const { latitude = null, longitude = null } = data;
 
   return (
     <MapGL
       initialViewState={{
-        latitude: latitude_primary || defaultInitialState.latitude,
-        longitude: longitude_primary || defaultInitialState.longitude,
+        latitude: latitude || defaultInitialState.latitude,
+        longitude: longitude || defaultInitialState.longitude,
         zoom: defaultInitialState.zoom,
       }}
       {...mapParameters}
@@ -29,7 +29,7 @@ const CrashMap = ({ data }) => {
     >
       <FullscreenControl position="top-left" />
       <NavigationControl position="top-left" showCompass={false} />
-      <Marker latitude={latitude_primary} longitude={longitude_primary}>
+      <Marker latitude={latitude} longitude={longitude}>
         <Pin size={40} color={"warning"} />
       </Marker>
       {/* add nearmap raster source and style */}
