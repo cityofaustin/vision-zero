@@ -1,25 +1,32 @@
 import csv
 from datetime import datetime
-import io
 import os
 import time
 from zoneinfo import ZoneInfo
 
 import requests
 
-from settings import COLUMN_ENDPOINT
 
 FILE_DIR = "cris_csvs"
 # FILE_DIR = "cris_csvs/full_extract/combined"
 HASURA_ENDPOINT = "http://localhost:8084/v1/graphql"
 UPLOAD_BATCH_SIZE = 1000
 
+COLUMN_METADATA_QUERY = """
+query ColumnMetadata {
+  _column_metadata(where: {is_imported_from_cris: {_eq: true}}) {
+    column_name
+    record_type
+  }
+}
+"""
+
 CRASH_UPSERT_MUTATION = """
 mutation UpsertCrashes($objects: [crashes_cris_insert_input!]!) {
   insert_crashes_cris(
     objects: $objects, 
     on_conflict: {
-        constraint: crashes_cris_pkey,
+        constraint: crashes_cris_crash_id_key,
         update_columns: [$updateColumns]
     }) {
     affected_rows
@@ -54,7 +61,7 @@ mutation UpsertPeople($objects: [people_cris_insert_input!]!) {
 
 CHARGES_DELETE_MUTATION = """
 mutation DeleteCharges($crash_ids: [Int!]!) {
-  delete_charges_cris(where: {crash_id: {_in: $crash_ids}}) {
+  delete_charges_cris(where: {cris_crash_id: {_in: $crash_ids}}) {
     affected_rows
   }
 }
@@ -96,43 +103,27 @@ name_fields = [
 ]
 
 
-def load_data(endpoint):
-    res = requests.get(endpoint)
-    res.raise_for_status()
-    fin = io.StringIO(res.text)
-    reader = csv.DictReader(fin)
-    return [row for row in reader]
+class HasuraAPIError(Exception):
+    pass
 
 
 def get_cris_columns(column_metadata, table_name):
     """
-    Given the column data from G drive, return an array of strings
-    which is the column names for every column we want to handle from the
+    return an array of strings which is the column names for every column we want to handle from the
     CRIS import and the given table name
     """
     table_key = table_name
     if "person" in table_key:
         table_key = "people"
-
-    cris_columns = [
-        row["column_name"]
-        for row in column_metadata
-        if row["source"] == "cris"
-        and table_key in row["table_name_new_cris"]
-        and row["action"] == "migrate"
+    return [
+        col["column_name"] for col in column_metadata if col["record_type"] == table_key
     ]
-    # remove dupes, which is an artefact of our sheet having dupe person and primaryperson rows
-    return list(set(cris_columns))
 
 
 def make_upsert_mutation(table_name, cris_columns):
     """Sets the column names in the upsert on conflict array"""
     upsert_mutation = mutations[table_name]
-    # this is a disgusting hack until we have column data formatted in a better way
-    # we don't want to include crash_id in the on-conflict columns
     update_columns = cris_columns.copy()
-    if table_name == "crashes":
-        update_columns.remove("crash_id")
     return upsert_mutation.replace("$updateColumns", ", ".join(update_columns))
 
 
@@ -143,8 +134,8 @@ def make_hasura_request(*, query, endpoint, variables=None):
     data = res.json()
     try:
         return data["data"]
-    except KeyError:
-        raise ValueError(data)
+    except KeyError as err:
+        raise HasuraAPIError(data) from err
 
 
 def get_file_meta(filename):
@@ -280,11 +271,19 @@ def nullify_name_fields(records):
     return
 
 
+def rename_crash_id(records):
+    """rename cris's crash_id column to cris_crash_id"""
+    for record in records:
+        record["cris_crash_id"] = record.pop("Crash_ID")
+
+
 def main():
     overall_start_tme = time.time()
 
-    print("downloading column metadata...")
-    column_metadata = load_data(COLUMN_ENDPOINT)
+    print("Fetching column metadata...")
+    column_metadata = make_hasura_request(
+        endpoint=HASURA_ENDPOINT, query=COLUMN_METADATA_QUERY
+    )["_column_metadata"]
 
     files_todo = get_files_todo()
 
@@ -321,9 +320,15 @@ def main():
 
                 print(f"processing {table_name}")
 
+                records = load_csv(file["path"])
+
+                # rename Crash_ID to cris_crash_id for all tables except crashes
+                if table_name != "crashes":
+                    rename_crash_id(records)
+
                 records = handle_empty_strings(
                     remove_unsupported_columns(
-                        lower_case_keys(load_csv(file["path"])),
+                        lower_case_keys(records),
                         cris_columns,
                     )
                 )
@@ -351,8 +356,9 @@ def main():
                     )
 
                     set_default_values(records, {"is_primary_person": False})
-
-                    pp_records = lower_case_keys(load_csv(p_person_file["path"]))
+                    pp_records = load_csv(p_person_file["path"])
+                    rename_crash_id(pp_records)
+                    pp_records = lower_case_keys(pp_records)
 
                     for record in pp_records:
                         set_peh_field(record)
@@ -385,7 +391,7 @@ def main():
                     )
                     delete_charges_batch_size = 500
                     crash_ids = list(
-                        set([int(record["crash_id"]) for record in records])
+                        set([int(record["cris_crash_id"]) for record in records])
                     )
                     print(f"Deleting charges for {len(crash_ids)} total crashes...")
                     for chunk in chunks(crash_ids, delete_charges_batch_size):

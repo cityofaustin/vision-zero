@@ -16,14 +16,43 @@ object_relationships:
           schema: public
   - name: crashes_cri
     using:
-      foreign_key_constraint_on: crash_id
-array_relationships:
-  - name: change_log
+      foreign_key_constraint_on: id
+  - name: crashes_list_view
     using:
-      foreign_key_constraint_on:
-        column: record_id
-        table:
-          name: change_log_crashes
+      manual_configuration:
+        column_mapping:
+          crash_id: crash_id
+        insertion_order: null
+        remote_table:
+          name: crashes_list_view
+          schema: public
+array_relationships:
+  - name: change_logs
+    using:
+      manual_configuration:
+        column_mapping:
+          id: crash_id
+        insertion_order: null
+        remote_table:
+          name: crashes_change_log_view
+          schema: public
+  - name: charges_cris
+    using:
+      manual_configuration:
+        column_mapping:
+          id: crash_id
+        insertion_order: null
+        remote_table:
+          name: charges_cris
+          schema: public
+  - name: people_list_view
+    using:
+      manual_configuration:
+        column_mapping:
+          id: crash_id
+        insertion_order: null
+        remote_table:
+          name: people_list_view
           schema: public
   - name: units
     using:
@@ -37,56 +66,53 @@ select_permissions:
     permission:
       columns:
         - active_school_zone_fl
+        - address_primary
+        - address_secondary
         - at_intrsct_fl
+        - case_id
+        - council_district
+        - cr3_file_metadata
+        - cr3_ocr_extraction_date
         - cr3_stored_flag
+        - crash_date
+        - crash_id
+        - crash_speed_limit
+        - crash_time
+        - created_at
+        - created_by
+        - engineering_area
+        - fhe_collsn_id
+        - id
         - in_austin_full_purpose
+        - intrsct_relat_id
+        - investigat_agency_id
+        - investigator_narrative
+        - investigator_narrative_ocr
+        - latitude
+        - law_enforcement_fatality_num
+        - light_cond_id
+        - location_id
+        - longitude
         - medical_advisory_fl
+        - obj_struck_id
         - onsys_fl
+        - position
         - private_dr_fl
         - road_constr_zone_fl
         - road_constr_zone_wrkr_fl
-        - rr_relat_fl
-        - schl_bus_fl
-        - thousand_damage_fl
-        - toll_road_fl
-        - txdot_rptable_fl
-        - council_district
-        - crash_id
-        - crash_speed_limit
-        - engineering_area
-        - fhe_collsn_id
-        - intrsct_relat_id
-        - investigat_agency_id
-        - light_cond_id
-        - obj_struck_id
+        - rpt_block_num
         - rpt_city_id
         - rpt_cris_cnty_id
-        - rpt_rdwy_sys_id
-        - rpt_road_part_id
-        - rpt_sec_rdwy_sys_id
-        - rpt_sec_road_part_id
-        - surf_cond_id
-        - surf_type_id
-        - traffic_cntl_id
-        - wthr_cond_id
-        - cr3_file_metadata
-        - latitude
-        - longitude
-        - rpt_ref_mark_offset_amt
-        - address_primary
-        - address_secondary
-        - case_id
-        - created_by
-        - investigator_narrative
-        - investigator_narrative_ocr
-        - law_enforcement_fatality_num
-        - location_id
-        - rpt_block_num
         - rpt_hwy_num
+        - rpt_rdwy_sys_id
         - rpt_ref_mark_dir
         - rpt_ref_mark_dist_uom
+        - rpt_ref_mark_offset_amt
+        - rpt_road_part_id
         - rpt_sec_block_num
         - rpt_sec_hwy_num
+        - rpt_sec_rdwy_sys_id
+        - rpt_sec_road_part_id
         - rpt_sec_street_desc
         - rpt_sec_street_name
         - rpt_sec_street_pfx
@@ -95,69 +121,70 @@ select_permissions:
         - rpt_street_name
         - rpt_street_pfx
         - rpt_street_sfx
-        - updated_by
-        - cr3_ocr_extraction_date
-        - crash_date
-        - crash_time
-        - created_at
+        - rr_relat_fl
+        - schl_bus_fl
+        - surf_cond_id
+        - surf_type_id
+        - thousand_damage_fl
+        - toll_road_fl
+        - traffic_cntl_id
+        - txdot_rptable_fl
         - updated_at
-        - position
+        - updated_by
+        - wthr_cond_id
       filter: {}
     comment: ""
   - role: readonly
     permission:
       columns:
         - active_school_zone_fl
+        - address_primary
+        - address_secondary
         - at_intrsct_fl
+        - case_id
+        - council_district
+        - cr3_file_metadata
+        - cr3_ocr_extraction_date
         - cr3_stored_flag
+        - crash_date
+        - crash_id
+        - crash_speed_limit
+        - crash_time
+        - created_at
+        - created_by
+        - engineering_area
+        - fhe_collsn_id
+        - id
         - in_austin_full_purpose
+        - intrsct_relat_id
+        - investigat_agency_id
+        - investigator_narrative
+        - investigator_narrative_ocr
+        - latitude
+        - law_enforcement_fatality_num
+        - light_cond_id
+        - location_id
+        - longitude
         - medical_advisory_fl
+        - obj_struck_id
         - onsys_fl
+        - position
         - private_dr_fl
         - road_constr_zone_fl
         - road_constr_zone_wrkr_fl
-        - rr_relat_fl
-        - schl_bus_fl
-        - thousand_damage_fl
-        - toll_road_fl
-        - txdot_rptable_fl
-        - council_district
-        - crash_id
-        - crash_speed_limit
-        - engineering_area
-        - fhe_collsn_id
-        - intrsct_relat_id
-        - investigat_agency_id
-        - light_cond_id
-        - obj_struck_id
+        - rpt_block_num
         - rpt_city_id
         - rpt_cris_cnty_id
-        - rpt_rdwy_sys_id
-        - rpt_road_part_id
-        - rpt_sec_rdwy_sys_id
-        - rpt_sec_road_part_id
-        - surf_cond_id
-        - surf_type_id
-        - traffic_cntl_id
-        - wthr_cond_id
-        - cr3_file_metadata
-        - latitude
-        - longitude
-        - rpt_ref_mark_offset_amt
-        - address_primary
-        - address_secondary
-        - case_id
-        - created_by
-        - investigator_narrative
-        - investigator_narrative_ocr
-        - law_enforcement_fatality_num
-        - location_id
-        - rpt_block_num
         - rpt_hwy_num
+        - rpt_rdwy_sys_id
         - rpt_ref_mark_dir
         - rpt_ref_mark_dist_uom
+        - rpt_ref_mark_offset_amt
+        - rpt_road_part_id
         - rpt_sec_block_num
         - rpt_sec_hwy_num
+        - rpt_sec_rdwy_sys_id
+        - rpt_sec_road_part_id
         - rpt_sec_street_desc
         - rpt_sec_street_name
         - rpt_sec_street_pfx
@@ -166,69 +193,70 @@ select_permissions:
         - rpt_street_name
         - rpt_street_pfx
         - rpt_street_sfx
-        - updated_by
-        - cr3_ocr_extraction_date
-        - crash_date
-        - crash_time
-        - created_at
+        - rr_relat_fl
+        - schl_bus_fl
+        - surf_cond_id
+        - surf_type_id
+        - thousand_damage_fl
+        - toll_road_fl
+        - traffic_cntl_id
+        - txdot_rptable_fl
         - updated_at
-        - position
+        - updated_by
+        - wthr_cond_id
       filter: {}
     comment: ""
   - role: vz-admin
     permission:
       columns:
         - active_school_zone_fl
+        - address_primary
+        - address_secondary
         - at_intrsct_fl
+        - case_id
+        - council_district
+        - cr3_file_metadata
+        - cr3_ocr_extraction_date
         - cr3_stored_flag
+        - crash_date
+        - crash_id
+        - crash_speed_limit
+        - crash_time
+        - created_at
+        - created_by
+        - engineering_area
+        - fhe_collsn_id
+        - id
         - in_austin_full_purpose
+        - intrsct_relat_id
+        - investigat_agency_id
+        - investigator_narrative
+        - investigator_narrative_ocr
+        - latitude
+        - law_enforcement_fatality_num
+        - light_cond_id
+        - location_id
+        - longitude
         - medical_advisory_fl
+        - obj_struck_id
         - onsys_fl
+        - position
         - private_dr_fl
         - road_constr_zone_fl
         - road_constr_zone_wrkr_fl
-        - rr_relat_fl
-        - schl_bus_fl
-        - thousand_damage_fl
-        - toll_road_fl
-        - txdot_rptable_fl
-        - council_district
-        - crash_id
-        - crash_speed_limit
-        - engineering_area
-        - fhe_collsn_id
-        - intrsct_relat_id
-        - investigat_agency_id
-        - light_cond_id
-        - obj_struck_id
+        - rpt_block_num
         - rpt_city_id
         - rpt_cris_cnty_id
-        - rpt_rdwy_sys_id
-        - rpt_road_part_id
-        - rpt_sec_rdwy_sys_id
-        - rpt_sec_road_part_id
-        - surf_cond_id
-        - surf_type_id
-        - traffic_cntl_id
-        - wthr_cond_id
-        - cr3_file_metadata
-        - latitude
-        - longitude
-        - rpt_ref_mark_offset_amt
-        - address_primary
-        - address_secondary
-        - case_id
-        - created_by
-        - investigator_narrative
-        - investigator_narrative_ocr
-        - law_enforcement_fatality_num
-        - location_id
-        - rpt_block_num
         - rpt_hwy_num
+        - rpt_rdwy_sys_id
         - rpt_ref_mark_dir
         - rpt_ref_mark_dist_uom
+        - rpt_ref_mark_offset_amt
+        - rpt_road_part_id
         - rpt_sec_block_num
         - rpt_sec_hwy_num
+        - rpt_sec_rdwy_sys_id
+        - rpt_sec_road_part_id
         - rpt_sec_street_desc
         - rpt_sec_street_name
         - rpt_sec_street_pfx
@@ -237,12 +265,16 @@ select_permissions:
         - rpt_street_name
         - rpt_street_pfx
         - rpt_street_sfx
-        - updated_by
-        - cr3_ocr_extraction_date
-        - crash_date
-        - crash_time
-        - created_at
+        - rr_relat_fl
+        - schl_bus_fl
+        - surf_cond_id
+        - surf_type_id
+        - thousand_damage_fl
+        - toll_road_fl
+        - traffic_cntl_id
+        - txdot_rptable_fl
         - updated_at
-        - position
+        - updated_by
+        - wthr_cond_id
       filter: {}
     comment: ""

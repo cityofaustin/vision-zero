@@ -1,9 +1,10 @@
 create table public.crashes_cris (
-    crash_id integer primary key,
+    id serial primary key,
     active_school_zone_fl boolean,
     at_intrsct_fl boolean,
     case_id text,
     crash_date timestamp with time zone,
+    crash_id integer unique,
     crash_speed_limit integer,
     crash_time timestamp with time zone,
     cris_schema_version text not null,
@@ -53,11 +54,12 @@ create table public.crashes_cris (
 );
 
 create table public.crashes_edits (
-    crash_id integer primary key references public.crashes_cris (crash_id) on update cascade on delete cascade,
+    id integer primary key references public.crashes_cris (id) on update cascade on delete cascade,
     active_school_zone_fl boolean,
     at_intrsct_fl boolean,
     case_id text,
     crash_date timestamp with time zone,
+    crash_id integer unique,
     crash_speed_limit integer,
     crash_time timestamp with time zone,
     fhe_collsn_id integer references lookups.collsn_lkp (id) on update cascade on delete cascade,
@@ -107,7 +109,7 @@ create table public.crashes_edits (
 );
 
 create table public.crashes (
-    crash_id integer primary key references public.crashes_cris (crash_id) on update cascade on delete cascade,
+    id integer primary key references public.crashes_cris (id) on update cascade on delete cascade,
     active_school_zone_fl boolean,
     address_primary text generated always as (trim(coalesce(rpt_street_pfx, '') || ' ' || coalesce(rpt_block_num, '') || ' ' || coalesce(rpt_street_name, '') || ' ' || coalesce(rpt_street_sfx, ''))) stored,
     address_secondary text generated always as (trim(coalesce(rpt_sec_street_pfx, '') || ' ' || coalesce(rpt_sec_block_num, '') || ' ' || coalesce(rpt_sec_street_name, '') || ' ' || coalesce(rpt_sec_street_sfx, ''))) stored,
@@ -118,6 +120,7 @@ create table public.crashes (
     cr3_ocr_extraction_date timestamp with time zone,
     cr3_stored_flag boolean,
     crash_date timestamp with time zone,
+    crash_id integer unique,
     crash_speed_limit integer,
     crash_time timestamp with time zone,
     engineering_area integer references public.engineering_areas (area_id) on update cascade on delete set null,
