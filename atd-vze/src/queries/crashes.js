@@ -163,6 +163,9 @@ export const GET_CRASH = gql`
       investigator_narrative
       cr3_stored_flag
       cr3_file_metadata
+      latitude
+      longitude
+      location_id
       crash_injury_metrics_view {
         vz_fatality_count
         sus_serious_injry_count
