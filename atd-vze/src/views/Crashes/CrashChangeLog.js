@@ -102,9 +102,9 @@ const ChangeDetailsModal = ({ selectedChange, setSelectedChange }) => {
       <ModalBody>
         <Table responsive striped hover>
           <thead>
-            <th>Field</th>
-            {!isNewRecordEvent(selectedChange) && <th>Previous value</th>}
-            <th>New value</th>
+            <td>Field</td>
+            {!isNewRecordEvent(selectedChange) && <td>Previous value</td>}
+            <td>New value</td>
           </thead>
           <tbody className="text-monospace">
             {selectedChange.diffs.map(diff => (
