@@ -45,6 +45,7 @@ select_permissions:
         - is_primary_person
         - prsn_exp_homelessness
         - crash_id
+        - cris_crash_id
         - drvr_drg_cat_1_id
         - ems_id
         - est_comp_cost_crash_based
@@ -92,6 +93,7 @@ select_permissions:
         - is_primary_person
         - prsn_exp_homelessness
         - crash_id
+        - cris_crash_id
         - drvr_drg_cat_1_id
         - ems_id
         - est_comp_cost_crash_based
@@ -139,6 +141,7 @@ select_permissions:
         - is_primary_person
         - prsn_exp_homelessness
         - crash_id
+        - cris_crash_id
         - drvr_drg_cat_1_id
         - ems_id
         - est_comp_cost_crash_based
