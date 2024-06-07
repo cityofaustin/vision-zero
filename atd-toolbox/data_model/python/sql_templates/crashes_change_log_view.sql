@@ -44,10 +44,9 @@ create view crashes_change_log_view as (
         record_json,
         change_log_people.created_at,
         change_log_people.created_by
-
     from
         change_log_people
     left join people on change_log_people.record_id = people.id
     left join units on people.unit_id = units.id
-    left join crashes on units.crash_id = crashes.crash_id
+    left join crashes on units.crash_id = crashes.id
 );
