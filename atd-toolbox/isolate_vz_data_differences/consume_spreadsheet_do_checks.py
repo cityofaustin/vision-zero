@@ -35,10 +35,10 @@ def main():
 
     job = read_json_file("spreadsheet_of_columns.json")
 
-    # crashes(db_connection_string, job)
-    # units(db_connection_string, job)
+    crashes(db_connection_string, job)
+    units(db_connection_string, job)
     persons(db_connection_string, job)
-    # primary_persons(db_connection_string, job)
+    primary_persons(db_connection_string, job)
 
 
 def primary_persons(db_connection_string, job):
