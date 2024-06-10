@@ -2,6 +2,7 @@
 
 import time
 import os
+import glob
 import psycopg2
 import psycopg2.extras
 from tqdm import tqdm
@@ -24,16 +25,19 @@ def main():
     if db_connection_string is None:
         raise EnvironmentError("DATABASE_CONNECTION environment variable is not set")
 
+    db_files = glob.glob("./*.db")
+    for db_file in db_files:
+        try:
+            os.remove(db_file)
+        except OSError as e:
+            print("Error: %s : %s" % (db_file, e.strerror))
+
     job = read_json_file("spreadsheet_of_columns.json")
 
-    # crashes(db_connection_string, job)
+    crashes(db_connection_string, job)
     # units(db_connection_string, job)
     # persons(db_connection_string, job)
     # primary_persons(db_connection_string, job)
-
-    test = LazyDictionary(db_connection_string)
-
-    print(test["test"])
 
 
 def primary_persons(db_connection_string, job):
@@ -298,7 +302,6 @@ def crashes(db_connection_string, job):
 
     with psycopg2.connect(db_connection_string) as conn:
         # build up a mondo dictionary of the whole table keyed on a tuple of the primary key(s)
-
         with conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
             # Get the total count of records
             cur.execute("SELECT COUNT(id) as count FROM crashes_cris")
@@ -323,14 +326,33 @@ def crashes(db_connection_string, job):
         # another big dictionary of the whole table
         sql = "select * from atd_txdot_crashes"
         with conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
-            cur.execute(sql)
-            rows = cur.fetchall()
+            cur.execute("SELECT COUNT(crash_id) as count FROM atd_txdot_crashes")
+            total_count = cur.fetchone()["count"]
+
+            # Execute the main query
+            cur.execute("SELECT * FROM atd_txdot_crashes")
+
+            # Initialize the progress bar
+            progress_bar = tqdm(
+                total=total_count, desc="Building dictionary of atd_txdot_crashes"
+            )
+
+            row = cur.fetchone()
+            while row is not None:
+                crashes_classic_vz[str((row["crash_id"],))] = dict(row)
+                row = cur.fetchone()
+                progress_bar.update()  # Update the progress bar
+
+            progress_bar.close()  # Close the progress bar when done
+
+            # cur.execute(sql)
+            # rows = cur.fetchall()
             # crashes_classic_vz = {
             #     (row["crash_id"],): dict(row)
             #     for row in tqdm(rows, desc="Building dictionary of atd_txdot_crashes")
             # }
-            for row in tqdm(rows, desc="Building dictionary of atd_txdot_crashes"):
-                crashes_classic_vz[str((row["crash_id"],))] = dict(row)
+            # for row in tqdm(rows, desc="Building dictionary of atd_txdot_crashes"):
+            #     crashes_classic_vz[str((row["crash_id"],))] = dict(row)
 
         # cast the char Y/Ns to booleans
         for _, crash_data in tqdm(
