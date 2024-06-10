@@ -44,6 +44,17 @@ class LazyDictionary:
 
         return fetch_from_db
 
+    def __iter__(self):
+        with self.db_connection.cursor(
+            cursor_factory=psycopg2.extras.DictCursor
+        ) as cur:
+            cur.execute(f"SELECT * FROM {self.table}")
+            while True:
+                record = cur.fetchone()
+                if record is None:
+                    break
+                yield record
+
     def _exists_in_db(self, key):
 
         if isinstance(key, tuple):
