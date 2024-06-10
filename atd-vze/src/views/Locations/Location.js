@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import DataTable from "../../Components/DataTable";
 import LocationMap from "./LocationMap";
 import { Card, CardBody, CardHeader, Col, Row } from "reactstrap";
