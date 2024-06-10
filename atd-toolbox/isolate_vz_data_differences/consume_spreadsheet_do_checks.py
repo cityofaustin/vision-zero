@@ -35,10 +35,10 @@ def main():
 
     job = read_json_file("spreadsheet_of_columns.json")
 
-    crashes(db_connection_string, job)
-    units(db_connection_string, job)
+    # crashes(db_connection_string, job)
+    # units(db_connection_string, job)
     persons(db_connection_string, job)
-    primary_persons(db_connection_string, job)
+    # primary_persons(db_connection_string, job)
 
 
 def primary_persons(db_connection_string, job):
@@ -90,19 +90,20 @@ def primary_persons(db_connection_string, job):
         # print("Value:", primarypersons_classic_vz[random_key])
 
         # cast the char Y/Ns to booleans
-        for _, person_data in tqdm(
+        for row_key, person_data in tqdm(
             primarypersons_classic_vz.items(), desc="Casting Y/N into booleans"
         ):
-            for key, value in list(
+            for column_key, value in list(
                 person_data.items()
             ):  # We use list to create a copy of items for iteration
-                if key.endswith("_fl") and not key == "peh_fl":
+                if column_key.endswith("_fl") and not column_key == "peh_fl":
                     if value == "Y":
-                        person_data[key] = True
+                        person_data[column_key] = True
                     elif value == "N":
-                        person_data[key] = False
-                if key == "peh_fl" and not value:
-                    person_data[key] = False
+                        person_data[column_key] = False
+                if column_key == "peh_fl" and not value:
+                    person_data[column_key] = False
+                primarypersons_classic_vz[row_key] = person_data
 
         columns = filter_by_old_table_name(job, "atd_txdot_primaryperson")
 
@@ -201,19 +202,20 @@ def persons(db_connection_string, job):
         # print("Value:", persons_classic_vz[random_key])
 
         # cast the char Y/Ns to booleans
-        for _, person_data in tqdm(
+        for row_key, person_data in tqdm(
             persons_classic_vz.items(), desc="Casting Y/N into booleans"
         ):
-            for key, value in list(
+            for column_key, value in list(
                 person_data.items()
             ):  # We use list to create a copy of items for iteration
-                if key.endswith("_fl") and not key == "peh_fl":
+                if column_key.endswith("_fl") and not column_key == "peh_fl":
                     if value == "Y":
-                        person_data[key] = True
+                        person_data[column_key] = True
                     elif value == "N":
-                        person_data[key] = False
-                if key == "peh_fl" and not value:
-                    person_data[key] = False
+                        person_data[column_key] = False
+                if column_key == "peh_fl" and not value:
+                    person_data[column_key] = False
+                persons_classic_vz[row_key] = person_data
 
         columns = filter_by_old_table_name(job, "atd_txdot_person")
 
@@ -305,17 +307,18 @@ def units(db_connection_string, job):
             progress_bar.close()
 
         # cast the char Y/Ns to booleans
-        for _, unit_data in tqdm(
+        for row_key, unit_data in tqdm(
             units_classic_vz.items(), desc="Casting Y/N into booleans"
         ):
-            for key, value in list(
+            for column_key, value in list(
                 unit_data.items()
             ):  # We use list to create a copy of items for iteration
-                if key.endswith("_fl"):
+                if column_key.endswith("_fl"):
                     if value == "Y":
-                        unit_data[key] = True
+                        unit_data[column_key] = True
                     elif value == "N":
-                        unit_data[key] = False
+                        unit_data[column_key] = False
+                units_classic_vz[row_key] = unit_data
 
         columns = filter_by_old_table_name(job, "atd_txdot_units")
 
@@ -403,32 +406,38 @@ def crashes(db_connection_string, job):
             progress_bar.close()
 
         # cast the char Y/Ns to booleans
-        for _, crash_data in tqdm(
+        for row_key, crash_data in tqdm(
             crashes_classic_vz.items(), desc="Casting Y/N into booleans"
         ):
-            for key, value in list(
+            for column_key, value in list(
                 crash_data.items()
             ):  # We use list to create a copy of items for iteration
-                if key.endswith("_fl"):
+                if column_key.endswith("_fl"):
                     if value == "Y":
-                        crash_data[key] = True
+                        crash_data[column_key] = True
                     elif value == "N":
-                        crash_data[key] = False
+                        crash_data[column_key] = False
+                crashes_classic_vz[row_key] = crash_data
 
         # cast floats into decimals
-        for crash_id, crash_data in tqdm(
+        for row_key, crash_data in tqdm(
             crashes_classic_vz.items(),
             desc="Casting geographic coordinates into fixed precision",
         ):
-            for key, value in list(
+            for column_key, value in list(
                 crash_data.items()
             ):  # We use list to create a copy of items for iteration
-                if "latitude" in key or "longitude" in key and value is not None:
+                if (
+                    "latitude" in column_key
+                    or "longitude" in column_key
+                    and value is not None
+                ):
                     try:
-                        crash_data[key] = decimal.Decimal(str(value))
+                        crash_data[column_key] = decimal.Decimal(str(value))
                     except decimal.InvalidOperation:
                         # unparsable value, like a 'None', no big.
                         pass
+                crashes_classic_vz[row_key] = crash_data
 
         columns = filter_by_old_table_name(job, "atd_txdot_crashes")
 
