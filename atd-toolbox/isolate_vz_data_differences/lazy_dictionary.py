@@ -40,8 +40,7 @@ class LazyDictionary:
                     record = cur.fetchone()
                     return record
             else:
-                print("Key is not a tuple")
-                return None
+                raise TypeError("Key is not a tuple")
 
         return fetch_from_db
 
@@ -64,8 +63,7 @@ class LazyDictionary:
                 record = cur.fetchone()
                 return record
         else:
-            print("Key is not a tuple")
-            return None
+            raise TypeError("Key is not a tuple")
 
     def _store_in_db(self, key, value):
         # we don't want any of this
