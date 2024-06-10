@@ -7,3 +7,7 @@ services:
     tty: true
     env_file:
       - env
+    deploy:
+      resources:
+        limits:
+          memory: 4G

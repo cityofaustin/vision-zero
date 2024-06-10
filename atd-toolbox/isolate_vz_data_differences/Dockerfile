@@ -2,7 +2,7 @@
 FROM ubuntu:latest
 
 # Install Python to use the requirements file
-RUN apt-get update && apt-get install -y python3-pip aptitude pgloader postgresql postgresql-client vim
+RUN apt-get update && apt-get install -y python3-pip aptitude pgloader postgresql postgresql-client vim htop
 
 # Set the working directory in the container
 WORKDIR /app
