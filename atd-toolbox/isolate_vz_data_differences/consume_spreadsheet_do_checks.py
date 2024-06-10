@@ -314,7 +314,9 @@ def crashes(db_connection_string, job):
 
             row = cur.fetchone()
             while row is not None:
-                crashes_cris[str(row)] = row
+                crashes_cris[str((row["crash_id"],))] = (
+                    row  # casting to str because no .encode() on tuple
+                )
                 row = cur.fetchone()
                 progress_bar.update()
 
