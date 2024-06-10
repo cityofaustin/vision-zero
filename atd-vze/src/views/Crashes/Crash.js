@@ -121,14 +121,14 @@ function Crash(props) {
     setEditField("");
   };
 
-  const { temp_record: tempRecord, geocode_method: geocodeMethod } = !!data
-    ?.atd_txdot_crashes[0]
+  const { temp_record: tempRecord } = !!data?.atd_txdot_crashes[0]
     ? data?.atd_txdot_crashes[0]
     : {};
 
   const {
     crash_injury_metrics_view: { vz_fatality_count: deathCount },
     crash_injury_metrics_view: { sus_serious_injry_count: seriousInjuryCount },
+    crashes_list_view: { is_manual_geocode: isManualGeocode },
     address_primary: primaryAddress,
     address_secondary: secondaryAddress,
     crash_injury_metrics_view: { years_of_life_lost: yearsOfLifeLost },
@@ -205,7 +205,9 @@ function Crash(props) {
                   <br />
                   Geocode Provider:{" "}
                   {hasCoordinates
-                    ? geocodeMethod.name
+                    ? isManualGeocode
+                      ? "Manual Q/A"
+                      : "TxDOT CRIS"
                     : "No Primary Coordinates"}
                 </Col>
                 <Col>
@@ -238,7 +240,7 @@ function Crash(props) {
                   data={crashData?.crashes_by_pk}
                   mapGeocoderAddress={mapGeocoderAddress}
                   crashId={crashId}
-                  refetchCrashData={refetch}
+                  refetchCrashData={crashRefetch}
                   setIsEditingCoords={setIsEditingCoords}
                 />
               )}
