@@ -292,28 +292,45 @@ def units(db_connection_string, job):
 
 
 def crashes(db_connection_string, job):
+
+    crashes_cris = shelve.open("crashes_cris")
+    crashes_classic_vz = shelve.open("crashes_classic_vz")
+
     with psycopg2.connect(db_connection_string) as conn:
         # build up a mondo dictionary of the whole table keyed on a tuple of the primary key(s)
-        sql = "select * from crashes_cris"
-        with conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
-        # rows = cur.fetchall()
-        # for row in tqdm(rows, desc="Building dictionary of crashes_cris"):
-        #     crashes_cris[str((row["crash_id"],))] = dict(row)
 
-        # crashes_cris = {
-        #     (row["crash_id"],): dict(row)
-        #     for row in tqdm(rows, desc="Building dictionary of crashes_cris")
-        # }
+        with conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
+            # Get the total count of records
+            cur.execute("SELECT COUNT(id) as count FROM crashes_cris")
+            total_count = cur.fetchone()["count"]
+
+            # Execute the main query
+            cur.execute("SELECT * FROM crashes_cris")
+
+            # Initialize the progress bar
+            progress_bar = tqdm(
+                total=total_count, desc="Building dictionary of crashes_cris"
+            )
+
+            row = cur.fetchone()
+            while row is not None:
+                crashes_cris[str(row)] = row
+                row = cur.fetchone()
+                progress_bar.update()  # Update the progress bar
+
+            progress_bar.close()  # Close the progress bar when done
 
         # another big dictionary of the whole table
         sql = "select * from atd_txdot_crashes"
         with conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
             cur.execute(sql)
             rows = cur.fetchall()
-            crashes_classic_vz = {
-                (row["crash_id"],): dict(row)
-                for row in tqdm(rows, desc="Building dictionary of atd_txdot_crashes")
-            }
+            # crashes_classic_vz = {
+            #     (row["crash_id"],): dict(row)
+            #     for row in tqdm(rows, desc="Building dictionary of atd_txdot_crashes")
+            # }
+            for row in tqdm(rows, desc="Building dictionary of atd_txdot_crashes"):
+                crashes_classic_vz[str((row["crash_id"],))] = dict(row)
 
         # cast the char Y/Ns to booleans
         for _, crash_data in tqdm(
