@@ -11,7 +11,23 @@ object_relationships:
         remote_table:
           name: view_location_injry_count_cost_summary
           schema: public
+  - name: locations_list_view
+    using:
+      manual_configuration:
+        column_mapping:
+          location_id: location_id
+        insertion_order: null
+        remote_table:
+          name: locations_list_view
+          schema: public
 array_relationships:
+  - name: crashes
+    using:
+      foreign_key_constraint_on:
+        column: location_id
+        table:
+          name: crashes
+          schema: public
   - name: crashes_by_manner_collision
     using:
       manual_configuration:
