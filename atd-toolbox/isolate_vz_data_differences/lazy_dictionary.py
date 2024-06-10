@@ -7,11 +7,9 @@ class LazyDictionary:
     def __init__(
         self,
         db_connection_string,
-        data_model="new",
         table="crashes_cris",
         cache_size=100,
     ):
-        self.data_model = data_model
         self.table = table
         self.db_connection = psycopg2.connect(db_connection_string)
         self._fetch_from_db = self._lru_cache_fetch_from_db(cache_size)
@@ -31,12 +29,20 @@ class LazyDictionary:
         def fetch_from_db(key):
             # Check if the key is a tuple and print its length
             if isinstance(key, tuple):
-                if len(key) == 3:
-                    sql = "select * from people_cris where cris_crash_id = %s and unit_nbr = %s and prsn_nbr = %s"
-                elif len(key) == 2:
-                    sql = "select * from units_cris where cris_crash_id = %s and unit_nbr = %s"
-                elif len(key) == 1:
+                if self.table == "crashes_cris":
                     sql = "select * from crashes_cris where crash_id = %s"
+                elif self.table == "units_cris":
+                    sql = "select * from units_cris where cris_crash_id = %s and unit_nbr = %s"
+                elif self.table == "people_cris":
+                    sql = "select * from people_cris where cris_crash_id = %s and unit_nbr = %s and prsn_nbr = %s"
+                elif self.table == "atd_txdot_crashes":
+                    sql = "select * from atd_txdot_crashes where crash_id = %s"
+                elif self.table == "atd_txdot_units":
+                    sql = "select * from atd_txdot_units where crash_id = %s and unit_nbr = %s"
+                elif self.table == "atd_txdot_primaryperson":
+                    sql = "select * from atd_txdot_primaryperson where crash_id = %s and unit_nbr = %s and prsn_nbr = %s"
+                elif self.table == "atd_txdot_person":
+                    sql = "select * from atd_txdot_person where crash_id = %s and unit_nbr = %s and prsn_nbr = %s"
                 else:
                     return None
 
@@ -62,15 +68,49 @@ class LazyDictionary:
                     break
                 yield record
 
+    def items(self):
+        with self.db_connection.cursor(
+            cursor_factory=psycopg2.extras.DictCursor
+        ) as cur:
+            cur.execute(f"SELECT * FROM {self.table}")
+            for record in cur:
+                if self.table == "crashes_cris":
+                    key = (record["crash_id"],)
+                elif self.table in ["units_cris", "atd_txdot_units"]:
+                    key = (record["cris_crash_id"], record["unit_nbr"])
+                elif self.table in [
+                    "people_cris",
+                    "atd_txdot_primaryperson",
+                    "atd_txdot_person",
+                ]:
+                    key = (
+                        record["cris_crash_id"],
+                        record["unit_nbr"],
+                        record["prsn_nbr"],
+                    )
+                elif self.table == "atd_txdot_crashes":
+                    key = (record["crash_id"],)
+                else:
+                    continue
+                yield key, dict(record)
+
     def _exists_in_db(self, key):
 
         if isinstance(key, tuple):
-            if len(key) == 3:
-                sql = "select 1 from people_cris where cris_crash_id = %s and unit_nbr = %s and prsn_nbr = %s"
-            elif len(key) == 2:
-                sql = "select 1 from units_cris where cris_crash_id = %s and unit_nbr = %s"
-            elif len(key) == 1:
-                sql = "select 1 from crashes_cris where crash_id = %s"
+            if self.table == "crashes_cris":
+                sql = "select * from crashes_cris where crash_id = %s"
+            elif self.table == "units_cris":
+                sql = "select * from units_cris where cris_crash_id = %s and unit_nbr = %s"
+            elif self.table == "people_cris":
+                sql = "select * from people_cris where cris_crash_id = %s and unit_nbr = %s and prsn_nbr = %s"
+            elif self.table == "atd_txdot_crashes":
+                sql = "select * from atd_txdot_crashes where crash_id = %s"
+            elif self.table == "atd_txdot_units":
+                sql = "select * from atd_txdot_units where crash_id = %s and unit_nbr = %s"
+            elif self.table == "atd_txdot_primaryperson":
+                sql = "select * from atd_txdot_primaryperson where crash_id = %s and unit_nbr = %s and prsn_nbr = %s"
+            elif self.table == "atd_txdot_person":
+                sql = "select * from atd_txdot_person where crash_id = %s and unit_nbr = %s and prsn_nbr = %s"
             else:
                 return None
 
