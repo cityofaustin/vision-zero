@@ -1,16 +1,7 @@
 import React, { useMemo, useState } from "react";
-import {
-  Button,
-  Card,
-  CardBody,
-  CardHeader,
-  Table,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-} from "reactstrap";
+import { Card, CardBody, CardHeader, Table } from "reactstrap";
 import { formatDateTimeString } from "../../helpers/format";
+import ChangeDetailsModal from "./CrashChangeLogDetails";
 
 const KEYS_TO_IGNORE = ["updated_at", "updated_by", "position"];
 
@@ -46,9 +37,9 @@ const formatUserName = userName =>
   userName === "cris" ? "TxDOT CRIS" : userName;
 
 /**
- * Hook that identifies that returns an array with one entry per row in the
- * the change log view for the given crash. Each object in the returned
- * array has two properties:
+ * Hook that returns an array with one entry per row in the
+ * the change log view for the given crash. It adds two properties to the data
+ * returned from the change log view:
  * - diffs: an array of old/new values for each field that has changed
  * - affected_fields: an array of the field names that have changed
  */
@@ -69,64 +60,6 @@ const useChangeLogData = data =>
   }, [data]);
 
 const isNewRecordEvent = change => change.operation_type === "create";
-
-/**
- * Header component of the change details table
- */
-const ChangeSummary = ({ selectedChange }) => {
-  return (
-    <>
-      {`${selectedChange.record_type}`} ID{" "}
-      <span>{selectedChange.record_id}</span> edited by{" "}
-      {selectedChange.created_by}
-      {" - "}
-      {selectedChange.created_at}
-    </>
-  );
-};
-
-/**
- * Modal which renders change details when a change log entry is clicked
- */
-const ChangeDetailsModal = ({ selectedChange, setSelectedChange }) => {
-  return (
-    <Modal
-      isOpen={!!selectedChange}
-      toggle={() => setSelectedChange(null)}
-      className="mw-100 mx-5"
-      fade={false}
-    >
-      <ModalHeader toggle={() => setSelectedChange(null)}>
-        <ChangeSummary selectedChange={selectedChange} />
-      </ModalHeader>
-      <ModalBody>
-        <Table responsive striped hover>
-          <thead>
-            <td>Field</td>
-            {!isNewRecordEvent(selectedChange) && <td>Previous value</td>}
-            <td>New value</td>
-          </thead>
-          <tbody className="text-monospace">
-            {selectedChange.diffs.map(diff => (
-              <tr>
-                <td>{diff.field}</td>
-                {!isNewRecordEvent(selectedChange) && (
-                  <td>{String(diff.old)}</td>
-                )}
-                <td>{String(diff.new)}</td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
-      </ModalBody>
-      <ModalFooter>
-        <Button color="secondary" onClick={() => setSelectedChange(null)}>
-          Close
-        </Button>
-      </ModalFooter>
-    </Modal>
-  );
-};
 
 /**
  * The primary UI component which renders the change log with clickable rows
