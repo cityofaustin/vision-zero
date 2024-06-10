@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import time
 import os
 import psycopg2
 import psycopg2.extras
@@ -9,8 +10,7 @@ from datetime import datetime
 import decimal
 import logging
 import random
-
-from lazy_dictionary import LazyDictionary
+import shelve
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
