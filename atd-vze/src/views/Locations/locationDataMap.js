@@ -17,12 +17,12 @@ const locationDataMap = [
       },
       crash_count: {
         label: "Total Crashes (Previous 5 years)",
-        alternateTable: "locationTotals",
+        relationshipName: "locationTotals",
         editable: false,
       },
       total_est_comp_cost: {
         label: "Total Estimated Comprehensive Cost (Previous 5 years)",
-        alternateTable: "locationTotals",
+        relationshipName: "locationTotals",
         editable: false,
         format: "dollars",
       },

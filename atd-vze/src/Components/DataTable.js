@@ -66,7 +66,7 @@ const DataTable = ({
                             fieldConfigObject.relationshipName
                           ][field]
                         : data[fieldDataTable][field];
-                      debugger;
+
                       // Handle formatting the field value
                       if (fieldConfigObject.format === "dollars") {
                         fieldValue = formatCostToDollars(fieldValue);

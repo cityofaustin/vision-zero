@@ -2,7 +2,7 @@ import { gql } from "apollo-boost";
 
 export const GET_LOCATION = gql`
   query GetLocation($id: String!) {
-    atd_txdot_locations_by_pk(location_id:$id) {
+    location: atd_txdot_locations_by_pk(location_id: $id) {
       location_id
       street_level
       description
@@ -14,10 +14,10 @@ export const GET_LOCATION = gql`
         collsn_desc
         count
       }
-    }
-    locationTotals: locations_list_view(where: { location_id: { _eq: $id } }) {
-      crash_count
-      total_est_comp_cost
+      locationTotals: locations_list_view {
+        crash_count
+        total_est_comp_cost
+      }
     }
   }
 `;
