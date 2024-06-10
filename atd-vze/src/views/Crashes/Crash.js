@@ -73,24 +73,6 @@ function Crash(props) {
   if (crashError) return `Error! ${crashError.message}`;
   if (error) return `Error! ${error.message}`;
 
-  const createGeocoderAddressString = data => {
-    const geocoderAddressFields = [
-      "rpt_block_num",
-      "rpt_street_pfx",
-      "rpt_street_name",
-      "rpt_street_sfx",
-    ];
-    let geocoderAddressString = "";
-    geocoderAddressFields.forEach(field => {
-      if (!!crashData?.crashes_by_pk?.[field]) {
-        geocoderAddressString = geocoderAddressString.concat(
-          crashData?.crashes_by_pk?.[field] + " "
-        );
-      }
-    });
-    return geocoderAddressString;
-  };
-
   const handleInputChange = e => {
     const newFormState = Object.assign(formData, {
       [editField]: e.target.value,
@@ -139,8 +121,6 @@ function Crash(props) {
     longitude: longitude,
     location_id: locationId,
   } = crashData?.crashes_by_pk ? crashData?.crashes_by_pk : {};
-
-  const mapGeocoderAddress = createGeocoderAddressString(crashData);
 
   const hasLocation = !!crashData?.crashes_by_pk["location_id"];
   const hasCoordinates = !!latitude && !!longitude;
@@ -238,7 +218,6 @@ function Crash(props) {
               ) : (
                 <CrashEditCoordsMap
                   data={crashData?.crashes_by_pk}
-                  mapGeocoderAddress={mapGeocoderAddress}
                   crashId={crashId}
                   refetchCrashData={crashRefetch}
                   setIsEditingCoords={setIsEditingCoords}
