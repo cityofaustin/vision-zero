@@ -296,12 +296,14 @@ def crashes(db_connection_string, job):
         # build up a mondo dictionary of the whole table keyed on a tuple of the primary key(s)
         sql = "select * from crashes_cris"
         with conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
-            cur.execute(sql)
-            rows = cur.fetchall()
-            crashes_cris = {
-                (row["crash_id"],): dict(row)
-                for row in tqdm(rows, desc="Building dictionary of crashes_cris")
-            }
+        # rows = cur.fetchall()
+        # for row in tqdm(rows, desc="Building dictionary of crashes_cris"):
+        #     crashes_cris[str((row["crash_id"],))] = dict(row)
+
+        # crashes_cris = {
+        #     (row["crash_id"],): dict(row)
+        #     for row in tqdm(rows, desc="Building dictionary of crashes_cris")
+        # }
 
         # another big dictionary of the whole table
         sql = "select * from atd_txdot_crashes"
