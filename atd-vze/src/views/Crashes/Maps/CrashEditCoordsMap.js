@@ -8,8 +8,7 @@ import MapGL, {
 
 import Pin from "./Pin";
 import { useMutation } from "react-apollo";
-import { useAuth0 } from "../../../auth/authContext";
-import { UPDATE_COORDS } from "../../../queries/crashes";
+import { UPDATE_CRASH } from "../../../queries/crashes";
 import { CrashEditLatLonForm } from "./CrashEditLatLonForm";
 import {
   defaultInitialState,
@@ -19,24 +18,21 @@ import {
 
 const CrashEditCoordsMap = ({
   data,
-  mapGeocoderAddress,
   crashId,
   refetchCrashData,
   setIsEditingCoords,
 }) => {
-  const { user } = useAuth0();
-  const { email = null } = user;
-  const { latitude_primary = null, longitude_primary = null } = data;
+  const { latitude = null, longitude = null } = data;
 
   const mapRef = React.useRef();
   const [isDragging, setIsDragging] = React.useState(false);
   const [markerCoordinates, setMarkerCoordinates] = React.useState({
-    latitude: latitude_primary,
-    longitude: longitude_primary,
+    latitude: latitude,
+    longitude: longitude,
   });
   const [isSubmitting, setIsSubmitting] = React.useState(false);
 
-  const [updateCrashCoordinates] = useMutation(UPDATE_COORDS);
+  const [updateCrashCoordinates] = useMutation(UPDATE_CRASH);
 
   const onDrag = e => {
     const latitude = e.viewState.latitude;
@@ -50,11 +46,11 @@ const CrashEditCoordsMap = ({
     setIsSubmitting(true);
 
     const variables = {
-      qaStatus: 3, // Lat/Long entered manually to Primary
-      geocodeProvider: 5, // Manual Q/A
       crashId: crashId,
-      updatedBy: email,
-      ...markerCoordinates,
+      changes: {
+        ...markerCoordinates,
+        updated_by: localStorage.getItem("hasura_user_email"),
+      },
     };
 
     updateCrashCoordinates({
@@ -71,8 +67,8 @@ const CrashEditCoordsMap = ({
   const handleFormReset = () => {
     // Reset marker to original coordinates or default fallback
     const originalMarkerCoordinates = {
-      latitude: latitude_primary || defaultInitialState.latitude,
-      longitude: longitude_primary || defaultInitialState.longitude,
+      latitude: latitude || defaultInitialState.latitude,
+      longitude: longitude || defaultInitialState.longitude,
     };
 
     // Move map center and marks to original coordinates or default fallback
@@ -95,8 +91,8 @@ const CrashEditCoordsMap = ({
       <MapGL
         ref={mapRef}
         initialViewState={{
-          latitude: latitude_primary || defaultInitialState.latitude,
-          longitude: longitude_primary || defaultInitialState.longitude,
+          latitude: latitude || defaultInitialState.latitude,
+          longitude: longitude || defaultInitialState.longitude,
           zoom: defaultInitialState.zoom,
         }}
         style={{ width: "100%", height: "50vh" }}
