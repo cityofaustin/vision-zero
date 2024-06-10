@@ -4,7 +4,7 @@ import { format, subYears } from "date-fns";
 
 import GridTable from "../../Components/GridTable";
 import gqlAbstract from "../../queries/gqlAbstract";
-import { locationQueryExportFields } from "../../queries/Locations";
+import { locationQueryExportFields } from "../../queries/locations";
 
 // Our initial query configuration
 let queryConf = {
