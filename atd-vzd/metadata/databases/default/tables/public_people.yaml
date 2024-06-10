@@ -8,14 +8,6 @@ object_relationships:
   - name: units
     using:
       foreign_key_constraint_on: unit_id
-array_relationships:
-  - name: change_log
-    using:
-      foreign_key_constraint_on:
-        column: record_id
-        table:
-          name: change_log_people
-          schema: public
 select_permissions:
   - role: editor
     permission:
