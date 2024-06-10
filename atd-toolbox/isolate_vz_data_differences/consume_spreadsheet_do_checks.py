@@ -12,6 +12,7 @@ import decimal
 import logging
 import random
 import shelve
+import ast
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
@@ -374,7 +375,8 @@ def crashes(db_connection_string, job):
 
         # fmt: off
         updates = []
-        for crash_key in tqdm(crashes_cris, desc="Comparing values"):
+        for crash_key_str in tqdm(crashes_cris, desc="Comparing values"):
+            crash_key = ast.literal_eval(crash_key_str)
             for column in columns:
                 if column["target column name"] != "-":
                     if column["target column name"] in crashes_cris[crash_key]:
