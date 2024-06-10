@@ -42,33 +42,49 @@ def main():
 
 
 def primary_persons(db_connection_string, job):
+    people_cris = shelve.open("people_cris")
+    primarypersons_classic_vz = shelve.open("primarypersons_classic_vz")
+
     with psycopg2.connect(db_connection_string) as conn:
-        # build up a mondo dictionary of the whole table keyed on a tuple of the primary key(s)
-        sql = "select * from people_cris where is_primary_person is True"
+        # build up a dictionary of the whole table keyed on a tuple of the primary key(s)
+        sql = "SELECT * FROM people_cris WHERE is_primary_person is True"
         with conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
             cur.execute(sql)
-            rows = cur.fetchall()
-            people_cris = {
-                (row["cris_crash_id"], row["unit_nbr"], row["prsn_nbr"]): dict(row)
-                for row in tqdm(rows, desc="Building dictionary of people_cris")
-            }
 
-        # random_key = random.choice(list(people_cris.keys()))
-        # print("Key:", random_key)
-        # print("Value:", people_cris[random_key])
+            total_count = cur.rowcount
+            progress_bar = tqdm(
+                total=total_count, desc="Building dictionary of people_cris"
+            )
 
-        # another big dictionary of the whole table
-        sql = "select * from atd_txdot_primaryperson"
+            row = cur.fetchone()
+            while row is not None:
+                people_cris[
+                    str((row["cris_crash_id"], row["unit_nbr"], row["prsn_nbr"]))
+                ] = dict(row)
+                row = cur.fetchone()
+                progress_bar.update()
+
+            progress_bar.close()
+
+        # another dictionary of the whole table
+        sql = "SELECT * FROM atd_txdot_primaryperson"
         with conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
             cur.execute(sql)
-            rows = cur.fetchall()
-            primarypersons_classic_vz = {
-                (row["crash_id"], row["unit_nbr"], row["prsn_nbr"]): dict(row)
-                for row in tqdm(
-                    rows, desc="Building dictionary of atd_txdot_primaryperson"
-                )
-            }
 
+            total_count = cur.rowcount
+            progress_bar = tqdm(
+                total=total_count, desc="Building dictionary of atd_txdot_primaryperson"
+            )
+
+            row = cur.fetchone()
+            while row is not None:
+                primarypersons_classic_vz[
+                    str((row["crash_id"], row["unit_nbr"], row["prsn_nbr"]))
+                ] = dict(row)
+                row = cur.fetchone()
+                progress_bar.update()
+
+            progress_bar.close()
         # random_key = random.choice(list(primarypersons_classic_vz.keys()))
         # print("Key:", random_key)
         # print("Value:", primarypersons_classic_vz[random_key])
@@ -93,6 +109,7 @@ def primary_persons(db_connection_string, job):
         # fmt: off
         updates = []
         for person_key in tqdm(people_cris, desc="Comparing values"):
+            person_key_tuple = ast.literal_eval(person_key)
             if person_key == (13683940, 1, 1): # missing primaryperson in classic data
                 continue
             for column in columns:
@@ -101,7 +118,7 @@ def primary_persons(db_connection_string, job):
                         if (primarypersons_classic_vz[person_key][column["old column name"]] != people_cris[person_key][column["target column name"]]):
                             logging.debug(f"❌ {column['old column name']}: {primarypersons_classic_vz[person_key][column['old column name']]} != {people_cris[person_key][column['target column name']]}")
                             sql = f"update people_edits set {column['target column name']} = %s where id = (select id from people_cris where cris_crash_id = %s and unit_nbr = %s and prsn_nbr = %s)"
-                            parameters = (primarypersons_classic_vz[person_key][column["old column name"]], person_key[0], person_key[1], person_key[2])
+                            parameters = (primarypersons_classic_vz[person_key][column["old column name"]], person_key_tuple[0], person_key_tuple[1], person_key_tuple[2])
                             updates.append((sql, parameters))
                         else:
                             logging.debug(f"✅ {column['old column name']}: {primarypersons_classic_vz[person_key][column['old column name']]} == {people_cris[person_key][column['target column name']]}")
@@ -109,7 +126,7 @@ def primary_persons(db_connection_string, job):
                         if primarypersons_classic_vz[person_key][column['old column name']]:
                             logging.debug(f"✨ VZ only column: No {column['target column name']} in people_cris, so {primarypersons_classic_vz[person_key][column['old column name']]} going into people_edits")
                             sql = f"update people_edits set {column['target column name']} = %s where id = (select id from people_cris where cris_crash_id = %s and unit_nbr = %s and prsn_nbr = %s)"
-                            parameters = (primarypersons_classic_vz[person_key][column["old column name"]], person_key[0], person_key[1], person_key[2])
+                            parameters = (primarypersons_classic_vz[person_key][column["old column name"]], person_key_tuple[0], person_key_tuple[1], person_key_tuple[2])
                             updates.append((sql, parameters))
                         else:
                             logging.debug(f"🤷 VZ only column, but no {column['old column name']} value in classic VZ data, so no value in people_edits's {column['target column name']}")
@@ -135,30 +152,49 @@ def primary_persons(db_connection_string, job):
 
 
 def persons(db_connection_string, job):
+    people_cris = shelve.open("people_cris")
+    persons_classic_vz = shelve.open("persons_classic_vz")
+
     with psycopg2.connect(db_connection_string) as conn:
-        # build up a mondo dictionary of the whole table keyed on a tuple of the primary key(s)
-        sql = "select * from people_cris where is_primary_person is False"
+        # build up a dictionary of the whole table keyed on a tuple of the primary key(s)
+        sql = "SELECT * FROM people_cris WHERE is_primary_person is False"
         with conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
             cur.execute(sql)
-            rows = cur.fetchall()
-            people_cris = {
-                (row["cris_crash_id"], row["unit_nbr"], row["prsn_nbr"]): dict(row)
-                for row in tqdm(rows, desc="Building dictionary of people_cris")
-            }
 
-        # random_key = random.choice(list(people_cris.keys()))
-        # print("Key:", random_key)
-        # print("Value:", people_cris[random_key])
+            total_count = cur.rowcount
+            progress_bar = tqdm(
+                total=total_count, desc="Building dictionary of people_cris"
+            )
 
-        # another big dictionary of the whole table
-        sql = "select * from atd_txdot_person"
+            row = cur.fetchone()
+            while row is not None:
+                people_cris[
+                    str((row["cris_crash_id"], row["unit_nbr"], row["prsn_nbr"]))
+                ] = dict(row)
+                row = cur.fetchone()
+                progress_bar.update()
+
+            progress_bar.close()
+
+        # another dictionary of the whole table
+        sql = "SELECT * FROM atd_txdot_person"
         with conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
             cur.execute(sql)
-            rows = cur.fetchall()
-            persons_classic_vz = {
-                (row["crash_id"], row["unit_nbr"], row["prsn_nbr"]): dict(row)
-                for row in tqdm(rows, desc="Building dictionary of atd_txdot_person")
-            }
+
+            total_count = cur.rowcount
+            progress_bar = tqdm(
+                total=total_count, desc="Building dictionary of atd_txdot_person"
+            )
+
+            row = cur.fetchone()
+            while row is not None:
+                persons_classic_vz[
+                    str((row["crash_id"], row["unit_nbr"], row["prsn_nbr"]))
+                ] = dict(row)
+                row = cur.fetchone()
+                progress_bar.update()
+
+            progress_bar.close()
 
         # random_key = random.choice(list(persons_classic_vz.keys()))
         # print("Key:", random_key)
@@ -184,6 +220,7 @@ def persons(db_connection_string, job):
         # fmt: off
         updates = []
         for person_key in tqdm(people_cris, desc="Comparing values"):
+            person_key_tuple = ast.literal_eval(person_key)
             # print(persons_classic_vz[person_key])
             for column in columns:
                 if column["target column name"] != "-":
@@ -191,7 +228,7 @@ def persons(db_connection_string, job):
                         if (persons_classic_vz[person_key][column["old column name"]] != people_cris[person_key][column["target column name"]]):
                             logging.debug(f"❌ {column['old column name']}: {persons_classic_vz[person_key][column['old column name']]} != {people_cris[person_key][column['target column name']]}")
                             sql = f"update people_edits set {column['target column name']} = %s where id = (select id from people_cris where cris_crash_id = %s and unit_nbr = %s and prsn_nbr = %s)"
-                            parameters = (persons_classic_vz[person_key][column["old column name"]], person_key[0], person_key[1], person_key[2])
+                            parameters = (persons_classic_vz[person_key][column["old column name"]], person_key_tuple[0], person_key_tuple[1], person_key_tuple[2])
                             updates.append((sql, parameters))
                         else:
                             logging.debug(f"✅ {column['old column name']}: {persons_classic_vz[person_key][column['old column name']]} == {people_cris[person_key][column['target column name']]}")
@@ -199,7 +236,7 @@ def persons(db_connection_string, job):
                         if persons_classic_vz[person_key][column['old column name']]:
                             logging.debug(f"✨ VZ only column: No {column['target column name']} in people_cris, so {persons_classic_vz[person_key][column['old column name']]} going into people_edits")
                             sql = f"update people_edits set {column['target column name']} = %s where id = (select id from people_cris where cris_crash_id = %s and unit_nbr = %s and prsn_nbr = %s)"
-                            parameters = (persons_classic_vz[person_key][column["old column name"]], person_key[0], person_key[1], person_key[2])
+                            parameters = (persons_classic_vz[person_key][column["old column name"]], person_key_tuple[0], person_key_tuple[1], person_key_tuple[2])
                             updates.append((sql, parameters))
                         else:
                             logging.debug(f"🤷 VZ only column, but no {column['old column name']} value in classic VZ data, so no value in people_edits's {column['target column name']}")
@@ -225,26 +262,47 @@ def persons(db_connection_string, job):
 
 
 def units(db_connection_string, job):
-    with psycopg2.connect(db_connection_string) as conn:
-        # build up a mondo dictionary of the whole table keyed on a tuple of the primary key(s)
-        sql = "select * from units_cris"
-        with conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
-            cur.execute(sql)
-            rows = cur.fetchall()
-            units_cris = {
-                (row["cris_crash_id"], row["unit_nbr"]): dict(row)
-                for row in tqdm(rows, desc="Building dictionary of units_cris")
-            }
+    units_cris = shelve.open("units_cris")
+    units_classic_vz = shelve.open("units_classic_vz")
 
-        # another big dictionary of the whole table
-        sql = "select * from atd_txdot_units"
+    with psycopg2.connect(db_connection_string) as conn:
+        # build up a dictionary of the whole table keyed on a tuple of the primary key(s)
         with conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
-            cur.execute(sql)
-            rows = cur.fetchall()
-            units_classic_vz = {
-                (row["crash_id"], row["unit_nbr"]): dict(row)
-                for row in tqdm(rows, desc="Building dictionary of atd_txdot_units")
-            }
+            cur.execute("SELECT COUNT(*) as count FROM units_cris")
+            total_count = cur.fetchone()["count"]
+
+            cur.execute("SELECT * FROM units_cris")
+
+            progress_bar = tqdm(
+                total=total_count, desc="Building dictionary of units_cris"
+            )
+
+            row = cur.fetchone()
+            while row is not None:
+                units_cris[str((row["cris_crash_id"], row["unit_nbr"]))] = dict(row)
+                row = cur.fetchone()
+                progress_bar.update()
+
+            progress_bar.close()
+
+        # another dictionary of the whole table
+        with conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
+            cur.execute("SELECT COUNT(*) as count FROM atd_txdot_units")
+            total_count = cur.fetchone()["count"]
+
+            cur.execute("SELECT * FROM atd_txdot_units")
+
+            progress_bar = tqdm(
+                total=total_count, desc="Building dictionary of atd_txdot_units"
+            )
+
+            row = cur.fetchone()
+            while row is not None:
+                units_classic_vz[str((row["crash_id"], row["unit_nbr"]))] = dict(row)
+                row = cur.fetchone()
+                progress_bar.update()
+
+            progress_bar.close()
 
         # cast the char Y/Ns to booleans
         for _, unit_data in tqdm(
@@ -264,13 +322,14 @@ def units(db_connection_string, job):
         # fmt: off
         updates = []
         for unit_key in tqdm(units_cris, desc="Comparing values"):
+            unit_key_tuple = ast.literal_eval(unit_key)
             for column in columns:
                 if column["target column name"] != "-":
                     if column["target column name"] in units_cris[unit_key]:
                         if (units_classic_vz[unit_key][column["old column name"]] != units_cris[unit_key][column["target column name"]]):
                             logging.debug(f"❌ {column['old column name']}: {units_classic_vz[unit_key][column['old column name']]} != {units_cris[unit_key][column['target column name']]}")
                             sql = f"update units_edits set {column['target column name']} = %s where id = (select id from units_cris where cris_crash_id = %s and unit_nbr = %s)"
-                            parameters = (units_classic_vz[unit_key][column["old column name"]], unit_key[0], unit_key[1])
+                            parameters = (units_classic_vz[unit_key][column["old column name"]], unit_key_tuple[0], unit_key_tuple[1])
                             updates.append((sql, parameters))
                         else:
                             logging.debug(f"✅ {column['old column name']}: {units_classic_vz[unit_key][column['old column name']]} == {units_cris[unit_key][column['target column name']]}")
@@ -278,7 +337,7 @@ def units(db_connection_string, job):
                         if units_classic_vz[unit_key][column['old column name']]:
                             logging.debug(f"✨ VZ only column: No {column['target column name']} in units_cris, so {units_classic_vz[unit_key][column['old column name']]} going into units_edits")
                             sql = f"update units_edits set {column['target column name']} = %s where id = (select id from units_cris where cris_crash_id = %s and unit_nbr = %s)"
-                            parameters = (units_classic_vz[unit_key][column["old column name"]], unit_key[0], unit_key[1])
+                            parameters = (units_classic_vz[unit_key][column["old column name"]], unit_key_tuple[0], unit_key_tuple[1])
                             updates.append((sql, parameters))
                         else:
                             logging.debug(f"🤷 VZ only column, but no {column['old column name']} in classic VZ data, so no value in units_edits's {column['target column name']}")
@@ -375,15 +434,15 @@ def crashes(db_connection_string, job):
 
         # fmt: off
         updates = []
-        for crash_key_str in tqdm(crashes_cris, desc="Comparing values"):
-            crash_key = ast.literal_eval(crash_key_str)
+        for crash_key in tqdm(crashes_cris, desc="Comparing values"):
+            crash_key_tuple = ast.literal_eval(crash_key)
             for column in columns:
                 if column["target column name"] != "-":
                     if column["target column name"] in crashes_cris[crash_key]:
                         if (crashes_classic_vz[crash_key][column["old column name"]] != crashes_cris[crash_key][column["target column name"]]):
                             logging.debug(f"❌ {column['old column name']}: {crashes_classic_vz[crash_key][column['old column name']]} != {crashes_cris[crash_key][column['target column name']]}")
                             sql = f"update crashes_edits set {column['target column name']} = %s where id = (select id from crashes_cris where crash_id = %s)"
-                            parameters = (crashes_classic_vz[crash_key][column["old column name"]], crash_key[0])
+                            parameters = (crashes_classic_vz[crash_key][column["old column name"]], crash_key_tuple[0])
                             updates.append((sql, parameters))
                         else:
                             logging.debug(f"✅ {column['old column name']}: {crashes_classic_vz[crash_key][column['old column name']]} == {crashes_cris[crash_key][column['target column name']]}")
@@ -391,7 +450,7 @@ def crashes(db_connection_string, job):
                         if crashes_classic_vz[crash_key][column['old column name']]:
                             logging.debug(f"✨ VZ only column: No {column['target column name']} in crashes_cris, so {crashes_classic_vz[crash_key][column['old column name']]} going into crashes_edits")
                             sql = f"update crashes_edits set {column['target column name']} = %s where id = (select id from crashes_cris where crash_id = %s)"
-                            parameters = (crashes_classic_vz[crash_key][column["old column name"]], crash_key[0])
+                            parameters = (crashes_classic_vz[crash_key][column["old column name"]], crash_key_tuple[0])
                             updates.append((sql, parameters))
                         else:
                             logging.debug(f"🤷 VZ only column, but no {column['old column name']} in classic VZ data, so no value in crashes_edits's {column['target column name']}")
