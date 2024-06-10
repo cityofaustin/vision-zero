@@ -4,8 +4,15 @@ import time
 
 
 class LazyDictionary:
-    def __init__(self, db_connection_string, cache_size=100):
-        # self.db_connection = db_connection
+    def __init__(
+        self,
+        db_connection_string,
+        data_model="new",
+        table="crashes_cris",
+        cache_size=100,
+    ):
+        self.data_model = data_model
+        self.table = table
         self.db_connection = psycopg2.connect(db_connection_string)
         self._fetch_from_db = self._lru_cache_fetch_from_db(cache_size)
 
