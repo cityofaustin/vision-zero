@@ -111,7 +111,7 @@ def primary_persons(db_connection_string, job):
         updates = []
         for person_key in tqdm(people_cris, desc="Comparing values"):
             person_key_tuple = ast.literal_eval(person_key)
-            if person_key == (13683940, 1, 1): # missing primaryperson in classic data
+            if person_key == "(13683940, 1, 1)": # missing primaryperson in classic data
                 continue
             for column in columns:
                 if column["target column name"] != "-":
