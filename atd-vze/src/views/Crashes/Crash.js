@@ -131,7 +131,9 @@ function Crash(props) {
     investigator_narrative_ocr: investigatorNarrative,
   } = !!data?.atd_txdot_crashes[0] ? data?.atd_txdot_crashes[0] : {};
 
-  const crashRecord = { crash: crashData?.crashes?.[0] || {} };
+  const crashRecord = {
+    crash: crashData?.crashes?.[0] || { crash_injury_metrics_view: {} },
+  };
   const crashPk = crashRecord?.crash?.id;
 
   const {
@@ -276,19 +278,17 @@ function Crash(props) {
       )}
       <Row>
         <Col>
-          <Card>
-            <UnitDetailsCard
-              data={crashRecord.crash.units}
-              refetch={crashRefetch}
-              {...props}
-            />
-            <PeopleDetailsCard
-              data={crashRecord.crash.people_list_view}
-              refetch={crashRefetch}
-              {...props}
-            />
-            <ChargesDetailsCard data={crashRecord.crash.charges_cris} />
-          </Card>
+          <UnitDetailsCard
+            data={crashRecord.crash.units}
+            refetch={crashRefetch}
+            {...props}
+          />
+          <PeopleDetailsCard
+            data={crashRecord.crash.people_list_view}
+            refetch={crashRefetch}
+            {...props}
+          />
+          <ChargesDetailsCard data={crashRecord.crash.charges_cris} />
         </Col>
       </Row>
       {shouldShowFatalityRecommendations && (
