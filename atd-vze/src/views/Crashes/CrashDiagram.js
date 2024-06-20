@@ -50,6 +50,7 @@ const CrashDiagram = ({
     setRotation(0);
   };
 
+  console.log("cr3FileMetadata", cr3FileMetadata, isCr3Stored)
   return (
     <Card className="h-100 my-auto">
       <CardHeader>
@@ -67,7 +68,7 @@ const CrashDiagram = ({
         </Row>
       </CardHeader>
       <CardBody className="py-0">
-        {!!cr3FileMetadata && cr3FileMetadata.diagram_s3_file ? (
+        {cr3FileMetadata?.diagram_s3_file ? (
           <TransformWrapper
             defaultScale={1}
             options={{

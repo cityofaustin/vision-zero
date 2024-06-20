@@ -112,7 +112,7 @@ function Crash(props) {
       .mutate({
         mutation: UPDATE_CRASH,
         variables: {
-          crashId: crashId,
+          id: crashPk,
           changes: { ...formData, ...secondaryFormData },
         },
       })
@@ -128,6 +128,11 @@ function Crash(props) {
     geocode_method: geocodeMethod,
   } = !!data?.atd_txdot_crashes[0] ? data?.atd_txdot_crashes[0] : {};
 
+  const crashRecord = {
+    crash: crashData?.crashes?.[0] || { crash_injury_metrics_view: {} },
+  };
+  const crashPk = crashRecord?.crash?.id;
+
   const {
     crash_injury_metrics_view: { vz_fatality_count: deathCount },
     crash_injury_metrics_view: { sus_serious_injry_count: seriousInjuryCount },
@@ -137,7 +142,7 @@ function Crash(props) {
     investigator_narrative: investigatorNarrative,
     cr3_stored_flag: cr3StoredFlag,
     cr3_file_metadata: cr3FileMetadata,
-  } = crashData?.crashes_by_pk ? crashData?.crashes_by_pk : {};
+  } = crashRecord.crash;
 
   const mapGeocoderAddress = createGeocoderAddressString(data);
 
@@ -273,19 +278,17 @@ function Crash(props) {
       )}
       <Row>
         <Col>
-          <Card>
-            <UnitDetailsCard
-              data={crashData.crashes_by_pk.units}
-              refetch={crashRefetch}
-              {...props}
-            />
-            <PeopleDetailsCard
-              data={crashData.crashes_by_pk.people_list_view}
-              refetch={crashRefetch}
-              {...props}
-            />
-            <ChargesDetailsCard data={crashData.crashes_by_pk.charges_cris} />
-          </Card>
+          <UnitDetailsCard
+            data={crashRecord.crash.units}
+            refetch={crashRefetch}
+            {...props}
+          />
+          <PeopleDetailsCard
+            data={crashRecord.crash.people_list_view}
+            refetch={crashRefetch}
+            {...props}
+          />
+          <ChargesDetailsCard data={crashRecord.crash.charges_cris} />
         </Col>
       </Row>
       {shouldShowFatalityRecommendations && (
@@ -310,16 +313,16 @@ function Crash(props) {
       <Row>
         <DataTable
           dataMap={createCrashDataMap(tempRecord)}
-          dataTable={"crashes_by_pk"}
+          dataTable="crash"
           formData={formData}
           setEditField={setEditField}
           editField={editField}
           handleInputChange={handleInputChange}
           handleFieldUpdate={handleFieldUpdate}
-          data={crashData}
+          data={crashRecord}
         />
         <Col md="12">
-          <CrashChangeLog data={crashData?.crashes_by_pk?.change_logs} />
+          <CrashChangeLog data={crashRecord?.crash?.change_logs} />
         </Col>
       </Row>
     </div>

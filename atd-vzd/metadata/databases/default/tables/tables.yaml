@@ -41,6 +41,7 @@
 - "!include lookups_veh_make_lkp.yaml"
 - "!include lookups_veh_mod_lkp.yaml"
 - "!include lookups_wthr_cond_lkp.yaml"
+- "!include public__column_metadata.yaml"
 - "!include public_atd__coordination_partners_lkp.yaml"
 - "!include public_atd__mode_category_lkp.yaml"
 - "!include public_atd__recommendation_status_lkp.yaml"

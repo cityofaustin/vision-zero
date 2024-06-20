@@ -4,7 +4,7 @@
 
 create table public.change_log_crashes_cris (
     id serial primary key,
-    record_id integer not null references public.crashes_cris (crash_id) on delete cascade on update cascade,
+    record_id integer not null references public.crashes_cris (id) on delete cascade on update cascade,
     operation_type text not null,
     record_json jsonb not null,
     created_at timestamp with time zone default now(),
@@ -16,7 +16,7 @@ create index on public.change_log_crashes_cris (record_id);
 
 create table public.change_log_crashes_edits (
     id serial primary key,
-    record_id integer not null references public.crashes_edits (crash_id) on delete cascade on update cascade,
+    record_id integer not null references public.crashes_edits (id) on delete cascade on update cascade,
     operation_type text not null,
     record_json jsonb not null,
     created_at timestamp with time zone default now(),
@@ -28,7 +28,7 @@ create index on public.change_log_crashes_edits (record_id);
 
 create table public.change_log_crashes (
     id serial primary key,
-    record_id integer not null references public.crashes (crash_id) on delete cascade on update cascade,
+    record_id integer not null references public.crashes (id) on delete cascade on update cascade,
     operation_type text not null,
     record_json jsonb not null,
     created_at timestamp with time zone default now(),
@@ -126,18 +126,12 @@ returns trigger
 language plpgsql
 as $$
 declare
-    record_id int;
     update_stmt text := 'insert into public.';
     record_json jsonb;
 begin
-    if TG_TABLE_NAME like 'crashes%' then
-        record_id = new.crash_id;
-    else
-        record_id = new.id;
-    end if;
     record_json = jsonb_build_object('new', to_jsonb(new), 'old', to_jsonb(old));
     update_stmt := format('insert into public.change_log_%I (record_id, operation_type, record_json, created_by) 
-        values (%s, %L, %L, $1.%I)', TG_TABLE_NAME, record_id, TG_OP, record_json, 'updated_by');
+        values (%s, %L, %L, $1.%I)', TG_TABLE_NAME, new.id, TG_OP, record_json, 'updated_by');
     execute (update_stmt) using new;
     return null;
 END;

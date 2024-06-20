@@ -1,4 +1,4 @@
-from utils import save_file, make_migration_dir, save_empty_down_migration
+from utils import save_file, make_migration_dir
 from settings import SCHEMA_NAME
 
 

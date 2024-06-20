@@ -10,7 +10,7 @@ DECLARE
    unit_record record;
 BEGIN
     SELECT INTO unit_record *
-        FROM public.units_cris where crash_id = new.crash_id and unit_nbr = new.unit_nbr;
+        FROM public.units_cris where cris_crash_id = new.cris_crash_id and unit_nbr = new.unit_nbr;
     new.unit_id = unit_record.id;
     RETURN new;
 END;

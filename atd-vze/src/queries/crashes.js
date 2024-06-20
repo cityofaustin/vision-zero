@@ -120,7 +120,8 @@ export const GET_CRASH_OLD = gql`
 
 export const GET_CRASH = gql`
   query CrashDetails($crashId: Int!) {
-    crashes_by_pk(crash_id: $crashId) {
+    crashes(where: { crash_id: { _eq: $crashId } }) {
+      id
       crash_id
       updated_at
       case_id
@@ -291,14 +292,8 @@ export const UPDATE_COORDS = gql`
 `;
 
 export const UPDATE_CRASH = gql`
-  mutation update_crashes_edits(
-    $crashId: Int!
-    $changes: crashes_edits_set_input
-  ) {
-    update_crashes_edits(
-      where: { crash_id: { _eq: $crashId } }
-      _set: $changes
-    ) {
+  mutation update_crashes_edits($id: Int!, $changes: crashes_edits_set_input) {
+    update_crashes_edits(where: { id: { _eq: $id } }, _set: $changes) {
       affected_rows
       returning {
         crash_id
