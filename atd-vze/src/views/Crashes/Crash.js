@@ -64,14 +64,14 @@ function Crash(props) {
   const { getRoles } = useAuth0();
   const roles = getRoles();
 
+  if (loading || crashLoading) return "Loading...";
+  if (crashError) return `Error! ${crashError.message}`;
+  if (error) return `Error! ${error.message}`;
+
   const isCrashFatal =
     data?.atd_txdot_crashes?.[0]?.atd_fatality_count > 0 ? true : false;
   const shouldShowFatalityRecommendations =
     (isAdmin(roles) || isItSupervisor(roles)) && isCrashFatal;
-
-  if (loading || crashLoading) return "Loading...";
-  if (crashError) return `Error! ${crashError.message}`;
-  if (error) return `Error! ${error.message}`;
 
   const createGeocoderAddressString = data => {
     const geocoderAddressFields = [
@@ -321,8 +321,8 @@ function Crash(props) {
           handleFieldUpdate={handleFieldUpdate}
           data={crashRecord}
         />
-        <Col md="6">
-          <CrashChangeLog data={data} />
+        <Col md="12">
+          <CrashChangeLog data={crashRecord?.crash?.change_logs} />
         </Col>
       </Row>
     </div>

@@ -248,6 +248,16 @@ export const GET_CRASH = gql`
       crashes_list_view {
         crash_day_of_week
       }
+      change_logs(order_by: { created_at: desc }) {
+        id
+        crash_id
+        created_at
+        created_by
+        operation_type
+        record_id
+        record_type
+        record_json
+      }
     }
   }
 `;
