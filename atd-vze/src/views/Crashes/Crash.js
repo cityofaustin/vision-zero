@@ -124,14 +124,13 @@ function Crash(props) {
   const {
     latitude_primary: latitude,
     longitude_primary: longitude,
-    cr3_stored_flag: cr3StoredFlag,
     temp_record: tempRecord,
     geocode_method: geocodeMethod,
-    cr3_file_metadata: cr3FileMetadata,
-    investigator_narrative_ocr: investigatorNarrative,
   } = !!data?.atd_txdot_crashes[0] ? data?.atd_txdot_crashes[0] : {};
 
-  const crashRecord = { crash: crashData?.crashes?.[0] || {} };
+  const crashRecord = {
+    crash: crashData?.crashes?.[0] || { crash_injury_metrics_view: {} },
+  };
   const crashPk = crashRecord?.crash?.id;
 
   const {
@@ -140,6 +139,9 @@ function Crash(props) {
     address_primary: primaryAddress,
     address_secondary: secondaryAddress,
     crash_injury_metrics_view: { years_of_life_lost: yearsOfLifeLost },
+    investigator_narrative: investigatorNarrative,
+    cr3_stored_flag: cr3StoredFlag,
+    cr3_file_metadata: cr3FileMetadata,
   } = crashRecord.crash;
 
   const mapGeocoderAddress = createGeocoderAddressString(data);
@@ -259,7 +261,7 @@ function Crash(props) {
         <Col xs="12" md="6" className="mb-4">
           <CrashDiagram
             crashId={crashId}
-            isCr3Stored={cr3StoredFlag === "Y"}
+            isCr3Stored={cr3StoredFlag}
             isTempRecord={tempRecord}
             cr3FileMetadata={cr3FileMetadata}
           />
@@ -276,19 +278,17 @@ function Crash(props) {
       )}
       <Row>
         <Col>
-          <Card>
-            <UnitDetailsCard
-              data={crashRecord.crash.units}
-              refetch={crashRefetch}
-              {...props}
-            />
-            <PeopleDetailsCard
-              data={crashRecord.crash.people_list_view}
-              refetch={crashRefetch}
-              {...props}
-            />
-            <ChargesDetailsCard data={crashRecord.crash.charges_cris} />
-          </Card>
+          <UnitDetailsCard
+            data={crashRecord.crash.units}
+            refetch={crashRefetch}
+            {...props}
+          />
+          <PeopleDetailsCard
+            data={crashRecord.crash.people_list_view}
+            refetch={crashRefetch}
+            {...props}
+          />
+          <ChargesDetailsCard data={crashRecord.crash.charges_cris} />
         </Col>
       </Row>
       {shouldShowFatalityRecommendations && (
