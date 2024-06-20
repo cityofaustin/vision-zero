@@ -20,7 +20,7 @@ export const GET_LOCATION = gql`
       }
     }
   }
-`;
+`; 
 
 export const UPDATE_LOCATION = gql`
   mutation update_atd_txdot_locations(
