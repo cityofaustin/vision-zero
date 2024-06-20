@@ -50,7 +50,6 @@ const CrashDiagram = ({
     setRotation(0);
   };
 
-  console.log("cr3FileMetadata", cr3FileMetadata, isCr3Stored)
   return (
     <Card className="h-100 my-auto">
       <CardHeader>

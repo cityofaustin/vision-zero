@@ -78,11 +78,13 @@ export default function CrashChangeLog({ data }) {
       <CardBody>
         <Table responsive striped hover>
           <thead>
-            <th>Record type</th>
-            <th>Event</th>
-            <th>Affected fields</th>
-            <th>Edited by</th>
-            <th>Date</th>
+            <tr>
+              <th>Record type</th>
+              <th>Event</th>
+              <th>Affected fields</th>
+              <th>Edited by</th>
+              <th>Date</th>
+            </tr>
           </thead>
           <tbody className="text-monospace">
             {changes.map(change => (
