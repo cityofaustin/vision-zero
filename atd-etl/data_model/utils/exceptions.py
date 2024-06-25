@@ -1,0 +1,2 @@
+class HasuraAPIError(Exception):
+    pass
