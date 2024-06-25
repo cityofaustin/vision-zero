@@ -1,4 +1,4 @@
-# docker run -it --rm -v $PWD:/app data-model-dev /bin/bash
+# docker run -it --rm --env-file .env  -v $PWD:/app data-model-dev bash
 # TODO:
 # - configure local file storage
 # - integrate hasura
