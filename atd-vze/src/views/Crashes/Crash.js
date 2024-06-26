@@ -94,7 +94,7 @@ function Crash(props) {
       .mutate({
         mutation: UPDATE_CRASH,
         variables: {
-          crashId: crashId,
+          id: crashPk,
           changes: { ...formData, ...secondaryFormData },
         },
       })
@@ -106,6 +106,11 @@ function Crash(props) {
   const { temp_record: tempRecord } = !!data?.atd_txdot_crashes[0]
     ? data?.atd_txdot_crashes[0]
     : {};
+
+  const crashRecord = {
+    crash: crashData?.crashes?.[0] || { crash_injury_metrics_view: {} },
+  };
+  const crashPk = crashRecord?.crash?.id;
 
   const {
     crash_injury_metrics_view: { vz_fatality_count: deathCount },
@@ -120,9 +125,9 @@ function Crash(props) {
     latitude: latitude,
     longitude: longitude,
     location_id: locationId,
-  } = crashData?.crashes_by_pk ? crashData?.crashes_by_pk : {};
+  } = crashRecord.crash;
 
-  const hasLocation = !!crashData?.crashes_by_pk["location_id"];
+  const hasLocation = crashRecord.crash["location_id"];
   const hasCoordinates = !!latitude && !!longitude;
 
   return !crashData ? (
@@ -214,11 +219,11 @@ function Crash(props) {
                 </Alert>
               )}
               {!isEditingCoords ? (
-                <CrashMap data={crashData?.crashes_by_pk} />
+                <CrashMap data={crashRecord.crash} />
               ) : (
                 <CrashEditCoordsMap
-                  data={crashData?.crashes_by_pk}
-                  crashId={crashId}
+                  data={crashRecord.crash}
+                  crashPk={crashPk}
                   refetchCrashData={crashRefetch}
                   setIsEditingCoords={setIsEditingCoords}
                 />
@@ -248,16 +253,16 @@ function Crash(props) {
         <Col>
           <Card>
             <UnitDetailsCard
-              data={crashData.crashes_by_pk.units}
+              data={crashRecord.crash.units}
               refetch={crashRefetch}
               {...props}
             />
             <PeopleDetailsCard
-              data={crashData.crashes_by_pk.people_list_view}
+              data={crashRecord.crash.people_list_view}
               refetch={crashRefetch}
               {...props}
             />
-            <ChargesDetailsCard data={crashData.crashes_by_pk.charges_cris} />
+            <ChargesDetailsCard data={crashRecord.crash.charges_cris} />
           </Card>
         </Col>
       </Row>
@@ -283,16 +288,16 @@ function Crash(props) {
       <Row>
         <DataTable
           dataMap={createCrashDataMap(tempRecord)}
-          dataTable={"crashes_by_pk"}
+          dataTable={"crash"}
           formData={formData}
           setEditField={setEditField}
           editField={editField}
           handleInputChange={handleInputChange}
           handleFieldUpdate={handleFieldUpdate}
-          data={crashData}
+          data={crashRecord}
         />
-        <Col md="6">
-          <CrashChangeLog data={data} />
+        <Col md="12">
+          <CrashChangeLog data={crashRecord?.crash?.change_logs} />
         </Col>
       </Row>
     </div>
