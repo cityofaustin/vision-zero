@@ -67,7 +67,7 @@ const CrashDiagram = ({
         </Row>
       </CardHeader>
       <CardBody className="py-0">
-        {!!cr3FileMetadata && cr3FileMetadata.diagram_s3_file ? (
+        {cr3FileMetadata?.diagram_s3_file ? (
           <TransformWrapper
             defaultScale={1}
             options={{

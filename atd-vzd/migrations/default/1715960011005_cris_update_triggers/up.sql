@@ -15,7 +15,7 @@ declare
     update_stmt text := 'update public.crashes set ';
 begin
     -- get corresponding the VZ record as jsonb
-    SELECT to_jsonb(crashes_edits) INTO edit_record_jb from public.crashes_edits where public.crashes_edits.crash_id = new.crash_id;
+    SELECT to_jsonb(crashes_edits) INTO edit_record_jb from public.crashes_edits where public.crashes_edits.id = new.id;
 
     -- for every key in the cris json object
     for column_name in select jsonb_object_keys(new_cris_jb) loop
@@ -37,7 +37,7 @@ begin
         -- complete the update statement by joining all `set` clauses together
         update_stmt := update_stmt
             || array_to_string(updates_todo, ',')
-            || format(' where public.crashes.crash_id = %s', new.crash_id);
+            || format(' where public.crashes.id = %s', new.id);
         raise notice 'Updating crashes record from CRIS update';
         execute (update_stmt) using new;
     else

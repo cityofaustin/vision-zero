@@ -13,7 +13,7 @@ import {
 const ChargesDetailsCard = ({ data }) => {
   const [isOpen, setIsOpen] = useState(true);
   return (
-    <Card className="mb-0">
+    <Card>
       <CardHeader id="headingThree">
         <Button
           block

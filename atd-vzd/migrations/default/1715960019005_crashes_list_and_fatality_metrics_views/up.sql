@@ -4,7 +4,7 @@ create or replace view person_injury_metrics_view as (
     select
         people.id,
         units.id as unit_id,
-        crashes.crash_id,
+        crashes.crash_id as cris_crash_id,
         people.years_of_life_lost,
         people.est_comp_cost_crash_based,
         case
@@ -63,7 +63,7 @@ create or replace view person_injury_metrics_view as (
     left join public.people_cris as people_cris on people.id = people_cris.id
     left join
         public.crashes as crashes
-        on units.crash_id = crashes.crash_id
+        on units.crash_id = crashes.id
 );
 
 create or replace view unit_injury_metrics_view as
@@ -153,7 +153,7 @@ create or replace view crash_injury_metrics_view as
         public.crashes as crashes
     left join
         person_injury_metrics_view
-        on crashes.crash_id = person_injury_metrics_view.crash_id
+        on crashes.crash_id = person_injury_metrics_view.cris_crash_id
     group by
         crashes.crash_id
 );
@@ -171,10 +171,11 @@ create or replace view crashes_list_view as with geocode_status as (
             false
         ) as is_manual_geocode
     from public.crashes_cris as cris
-    left join public.crashes_edits as edits on cris.crash_id = edits.crash_id
+    left join public.crashes_edits as edits on cris.id = edits.id
 )
 
 select
+    public.crashes.id,
     public.crashes.crash_id,
     public.crashes.case_id,
     public.crashes.crash_date,

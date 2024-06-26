@@ -1,18 +1,9 @@
-import csv
-import io
-
-import requests
-
-from settings import SCHEMA_NAME, COLUMN_ENDPOINT
-from utils import save_file, make_migration_dir, save_empty_down_migration
-
-
-def load_columns(endpoint):
-    res = requests.get(endpoint)
-    res.raise_for_status()
-    fin = io.StringIO(res.text)
-    reader = csv.DictReader(fin)
-    return [row for row in reader]
+from utils import (
+    save_file,
+    make_migration_dir,
+    save_empty_down_migration,
+    load_column_metadata,
+)
 
 
 def load_sql_template(name):
@@ -35,7 +26,7 @@ def patch_template(template, table_name, pk_column_name, columns_unified):
 
 
 def main():
-    data = load_columns(COLUMN_ENDPOINT)
+    all_columns = load_column_metadata()
 
     # create audit field columns and triggers
     audit_field_sql = load_sql_template("sql_templates/audit_fields.sql")
@@ -52,18 +43,18 @@ def main():
     for table_name in ["crashes", "units", "people"]:
         columns_unified = [
             col["column_name"]
-            for col in data
-            if col["table_name_new_cris"] == f"{table_name}_cris"
-            and col["table_name_new_unified"] == f"{table_name}"
-            and col["action"] == "migrate"
+            for col in all_columns
+            if col["is_cris_column"]
+            and col["is_unified_column"]
+            and col["record_type"] == table_name
         ]
         # remove dupes, which is a concern for persons tables
         columns_unified = list(set(columns_unified))
         # sort columns to keep diffs consistent
         columns_unified.sort()
         # add audit fields
-        columns_unified.extend(['created_by', 'updated_by'])
-        pk_column = "crash_id" if table_name == "crashes" else "id"
+        columns_unified.extend(["created_by", "updated_by"])
+        pk_column = "id"
         sql = patch_template(insert_template, table_name, pk_column, columns_unified)
         stmts.append(sql)
 
@@ -78,7 +69,7 @@ def main():
 
     stmts = []
     for table_name in ["crashes", "units", "people"]:
-        pk_column = "crash_id" if table_name == "crashes" else "id"
+        pk_column = "id"
         sql = patch_template(update_template, table_name, pk_column, [])
         stmts.append(sql)
 
@@ -93,12 +84,18 @@ def main():
 
     stmts = []
     for table_name in ["crashes", "units", "people"]:
-        pk_column = "crash_id" if table_name == "crashes" else "id"
+        pk_column = "id"
         sql = patch_template(update_template, table_name, pk_column, [])
         stmts.append(sql)
 
     migration_path = make_migration_dir("edits_update_triggers")
     save_file(f"{migration_path}/up.sql", "\n\n".join(stmts))
+    save_empty_down_migration(migration_path)
+
+    # trigger that assigns crash ID to unit records
+    units_set_crash_id_sql = load_sql_template("sql_templates/unit_set_crash_id.sql")
+    migration_path = make_migration_dir("units_set_crash_id")
+    save_file(f"{migration_path}/up.sql", units_set_crash_id_sql)
     save_empty_down_migration(migration_path)
 
     # trigger that assigns unit ID to person records

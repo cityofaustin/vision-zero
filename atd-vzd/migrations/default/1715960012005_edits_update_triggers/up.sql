@@ -14,7 +14,7 @@ declare
     update_stmt text := 'update public.crashes set ';
 begin
     -- get corresponding the cris record as jsonb
-    SELECT to_jsonb(crashes_cris) INTO cris_record_jb from public.crashes_cris where public.crashes_cris.crash_id = new.crash_id;
+    SELECT to_jsonb(crashes_cris) INTO cris_record_jb from public.crashes_cris where public.crashes_cris.id = new.id;
     -- for every key in the vz json object
     for column_name in select jsonb_object_keys(new_edits_jb) loop
         -- ignore audit fields, except updated_by
@@ -32,8 +32,8 @@ begin
     -- join all `set` clauses together
     update_stmt := update_stmt
         || array_to_string(updates_todo, ',')
-        || format(' from (select * from public.crashes_cris where public.crashes_cris.crash_id = %s) as cris_record', new.crash_id)
-        || format(' where public.crashes.crash_id = %s ', new.crash_id);
+        || format(' from (select * from public.crashes_cris where public.crashes_cris.id = %s) as cris_record', new.id)
+        || format(' where public.crashes.id = %s ', new.id);
     raise notice 'Updating unified crashes record from edit update';
     execute (update_stmt) using new;
     return null;
