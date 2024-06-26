@@ -1,3 +1,5 @@
+LOCAL_EXTRACTS_DIR = "extracts"
+
 DIAGRAM_BBOX_PIXELS = {
     "old": (2589, 3531, 5001, 6048),
     "new": (2496, 3036, 4836, 5464),

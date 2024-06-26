@@ -18,7 +18,7 @@ const CrashDiagram = ({
   crashId,
   isCr3Stored,
   isTempRecord,
-  cr3FileMetadata,
+  diagramFilename,
 }) => {
   const [rotation, setRotation] = useState(0);
 
@@ -67,7 +67,7 @@ const CrashDiagram = ({
         </Row>
       </CardHeader>
       <CardBody className="py-0">
-        {cr3FileMetadata?.diagram_s3_file ? (
+        {diagramFilename ? (
           <TransformWrapper
             defaultScale={1}
             options={{
@@ -115,7 +115,7 @@ const CrashDiagram = ({
                           maxWidth: "100%",
                           transform: `rotate(${rotation}deg)`,
                         }}
-                        src={`https://atd-vision-zero-website.s3.amazonaws.com/cr3_crash_diagrams/${s3Folder}/${cr3FileMetadata.diagram_s3_file}`}
+                        src={`https://atd-vision-zero-website.s3.amazonaws.com/cr3_crash_diagrams/${s3Folder}/${diagramFilename}`}
                         alt="crash diagram"
                       />
                     </TransformComponent>
@@ -144,7 +144,7 @@ const CrashDiagram = ({
           </div>
         )}
       </CardBody>
-      {!!cr3FileMetadata && cr3FileMetadata.diagram_s3_file ? (
+      {!!diagramFilename && diagramFilename ? (
         <CardFooter className="py-0">
           <form>
             <Row className="form-group d-flex align-items-center mb-0">

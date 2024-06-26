@@ -8,7 +8,7 @@ from tempfile import TemporaryDirectory
 import boto3
 
 from utils.utils import (
-    get_extracts_todo,
+    get_extracts_todo_from_s3,
 )
 
 BUCKET_NAME = os.environ["BUCKET_NAME"]
@@ -18,7 +18,7 @@ def main():
     s3_client = boto3.client("s3")
     s3_resource = boto3.resource("s3")
 
-    extracts = get_extracts_todo(s3_client, "archive")
+    extracts = get_extracts_todo_from_s3(s3_client, "archive")
 
     print(f"{len(extracts)} extracts to restore")
 

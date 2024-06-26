@@ -1,8 +1,12 @@
-import requests
+import argparse
 import os
 import subprocess
+from tempfile import TemporaryDirectory
 
-from exceptions import HasuraAPIError
+import requests
+
+from utils.exceptions import HasuraAPIError
+from utils.settings import LOCAL_EXTRACTS_DIR
 
 ENV = os.environ["ENV"]
 BUCKET_NAME = os.environ["BUCKET_NAME"]
@@ -13,11 +17,70 @@ def format_megabytes(bytes):
     return f"{round(bytes/1000000)}mb"
 
 
-def get_extracts_todo(s3_client, current_stage):
-    """
-    Fetch a list CRIS extract zips that are in the specified stage: new or pdfs_todo.
+# def are_unzipped_csvs_available(local_extracts_dir):
+#     """Check if there are unzippzed extract files available"""
+#     extract_subdirs = []
+#     for subdirname in os.listdir(local_extracts_dir):
+#         if os.path.isdir(os.path.join(local_extracts_dir, subdirname)):
+#             csvs = [
+#                 f
+#                 for f in os.listdir(os.path.join(local_extracts_dir, subdirname))
+#                 if f.endswith(".csv")
+#             ]
+#             print("found some!")
+#             breakpoint()
 
-    Returns a sorted list of s3 object metadata as { key, size }
+
+def get_extact_name_from_file_name(file_key):
+    return os.path.basename(file_key).replace(".zip", "")
+
+
+def get_unzipped_extracts_local(local_extracts_dir):
+    unzipped_extracts = []
+    for extract_name in os.listdir(local_extracts_dir):
+        extract_subdir_full_path = os.path.join(local_extracts_dir, extract_name)
+        if os.path.isdir(extract_subdir_full_path):
+            csvs = [
+                f for f in os.listdir(extract_subdir_full_path) if f.endswith(".csv")
+            ]
+            if csvs:
+                unzipped_extracts.append(
+                    {
+                        "extract_name": extract_name,
+                        "extract_dest_dir": extract_subdir_full_path,
+                    }
+                )
+    return sorted(unzipped_extracts, key=lambda d: d["extract_name"])
+
+
+def get_extract_zips_todo_local(local_extracts_dir):
+    """
+    Get a list of zips in <local_extracts_dir>
+
+    Returns a sorted list of dicts as { s3_file_key, local_zip_file_path, file_size, extract_name }
+    """
+    extracts = []
+    for fname in os.listdir(local_extracts_dir):
+        if fname.endswith(".zip"):
+            zip_extract_local_path = os.path.join(local_extracts_dir, fname)
+            zip_size = os.path.getsize(zip_extract_local_path)
+            # we're matching the structure of the dict returned from get_extract_zips_to_download_s3
+            extracts.append(
+                {
+                    "s3_file_key": None,
+                    "local_zip_file_path": zip_extract_local_path,
+                    "file_size": zip_size,
+                    "extract_name": get_extact_name_from_file_name(fname),
+                }
+            )
+    return sorted(extracts, key=lambda d: d["extract_name"])
+
+
+def get_extract_zips_to_download_s3(s3_client, current_stage, local_extracts_dir):
+    """
+    Fetch a list of CRIS extract zips that are in the specified stage: new or pdfs_todo.
+
+    Returns a sorted list of dicts as { s3_file_key, local_zip_file_path, file_size, extract_name }
     """
     prefix = f"{ENV}/cris_extracts/{current_stage}"
     print(f"Getting list of extracts in {prefix}")
@@ -25,27 +88,39 @@ def get_extracts_todo(s3_client, current_stage):
         Bucket=BUCKET_NAME,
         Prefix=prefix,
     )
-    todos = []
+    extracts = []
     for item in response.get("Contents", []):
         key = item.get("Key")
         if key.endswith(".zip"):
-            todos.append({"file_key": key, "file_size": item.get("Size")})
+            extracts.append(
+                {
+                    "s3_file_key": key,
+                    "local_zip_file_path": os.path.join(
+                        local_extracts_dir, os.path.basename(key)
+                    ),
+                    "file_size": item.get("Size"),
+                    "extract_name": get_extact_name_from_file_name(key),
+                }
+            )
     # assumes extract ids are sortable news -> oldest - todo: confirm
-    return sorted(todos, key=lambda d: d["file_key"])
+    return sorted(extracts, key=lambda d: d["extract_name"])
 
 
-def download_and_unzip_extract(s3_client, temp_dir_name, file_key, file_size):
+def download_extract_from_s3(s3_client, s3_file_key, file_size, local_zip_file_path):
     """
-    Download zip file and extract into the temp directory
+    Download zip file from s3 and return local path to the file
     """
-    extract_filename = os.path.basename(file_key)
-    zip_extract_local_path = os.path.join(temp_dir_name, extract_filename)
-    print(f"Downloading {file_key} ({format_megabytes(file_size)})")
-    s3_client.download_file(BUCKET_NAME, file_key, zip_extract_local_path)
-    print(f"Unzipping {zip_extract_local_path}")
-    unzip_command = (
-        f'7za -y -p{EXTRACT_PASSWORD} -o{temp_dir_name} x "{zip_extract_local_path}"'
-    )
+    print(f"Downloading {s3_file_key} ({format_megabytes(file_size)})")
+    s3_client.download_file(BUCKET_NAME, s3_file_key, local_zip_file_path)
+
+
+def unzip_extract(file_path, out_dir_name, file_filter=None):
+    """
+    Unzip a cris extract
+    """
+    print(f"Unzipping {file_path} to {out_dir_name}")
+    file_filter_arg = f"-i{file_filter}" if file_filter else ""
+    unzip_command = f'7za -y -p{EXTRACT_PASSWORD} -o{out_dir_name} {file_filter_arg} x "{file_path}"'
     subprocess.run(unzip_command, check=True, shell=True, stdout=subprocess.DEVNULL)
 
 
@@ -74,3 +149,33 @@ def make_hasura_request(*, query, endpoint, variables=None):
         return data["data"]
     except KeyError as err:
         raise HasuraAPIError(data) from err
+
+
+def get_cli_args():
+    parser = argparse.ArgumentParser(
+        description="Process CRIS extact zip files, including CSV data and CR3 crash reports",
+        usage="main.py -l -u"
+    )
+    parser.add_argument(
+        f"--local-only",
+        "-l",
+        action="store_true",
+        help="Only process zips that are in the local directory. Do not interact with S3 in any way.",
+    )
+    parser.add_argument(
+        f"--unzipped-only",
+        "-u",
+        action="store_true",
+        help="Only process files that are already unzipped in the local directory. Also do not interact with S3 in any way.",
+    )
+    parser.add_argument(
+        f"--pdf",
+        action="store_true",
+        help="Only process CR3 pdfs",
+    )
+    parser.add_argument(
+        f"--csv",
+        action="store_true",
+        help="Only process CSV files",
+    )
+    return parser.parse_args()

@@ -140,8 +140,8 @@ function Crash(props) {
     address_secondary: secondaryAddress,
     crash_injury_metrics_view: { years_of_life_lost: yearsOfLifeLost },
     investigator_narrative: investigatorNarrative,
-    cr3_stored_flag: cr3StoredFlag,
-    cr3_file_metadata: cr3FileMetadata,
+    cr3_stored_fl: cr3StoredFlag,
+    cr3_diagram_filename: diagramFilename,
   } = crashRecord.crash;
 
   const mapGeocoderAddress = createGeocoderAddressString(data);
@@ -263,7 +263,7 @@ function Crash(props) {
             crashId={crashId}
             isCr3Stored={cr3StoredFlag}
             isTempRecord={tempRecord}
-            cr3FileMetadata={cr3FileMetadata}
+            diagramFilename={diagramFilename}
           />
         </Col>
       </Row>
