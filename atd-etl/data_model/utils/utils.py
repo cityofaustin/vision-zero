@@ -1,7 +1,5 @@
-import argparse
 import os
 import subprocess
-from tempfile import TemporaryDirectory
 
 import requests
 
@@ -149,32 +147,3 @@ def make_hasura_request(*, query, endpoint, variables=None):
         return data["data"]
     except KeyError as err:
         raise HasuraAPIError(data) from err
-
-
-def get_cli_args():
-    parser = argparse.ArgumentParser(
-        description="Process CRIS extact zip files, including CSV data and CR3 crash reports",
-        usage="main.py -l -u"
-    )
-    parser.add_argument(
-        f"--s3",
-        action="store_true",
-        help="Process zip extracts in S3 bucket and also upload processed CR3 PDFs to S3",
-    )
-    parser.add_argument(
-        f"--unzipped-only",
-        "-u",
-        action="store_true",
-        help="Only process files that are already unzipped in the local directory",
-    )
-    parser.add_argument(
-        f"--pdf",
-        action="store_true",
-        help="Only process CR3 pdfs",
-    )
-    parser.add_argument(
-        f"--csv",
-        action="store_true",
-        help="Only process CSV files",
-    )
-    return parser.parse_args()

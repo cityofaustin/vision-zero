@@ -6,12 +6,13 @@ Todo:
 - s3 operations for pdfs
 - interact with db import logging table
 - use a flag to optionally use s3?
-
+- logging
 """
 import os
 
 import boto3
 
+from utils.cli import get_cli_args
 from utils.process_csvs import process_csvs
 from utils.process_pdfs import process_pdfs
 from utils.utils import (
@@ -21,7 +22,6 @@ from utils.utils import (
     download_extract_from_s3,
     unzip_extract,
     move_zip_to_next_stage,
-    get_cli_args,
 )
 from utils.settings import LOCAL_EXTRACTS_DIR
 
