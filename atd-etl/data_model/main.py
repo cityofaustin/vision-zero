@@ -1,5 +1,13 @@
 #!/usr/bin/env python
 # docker run -it --rm --env-file .env --net host -v $PWD:/app data-model-dev bash
+"""
+Todo:
+- populate cr3 fields in hasura
+- s3 operations for pdfs
+- interact with db import logging table
+- use a flag to optionally use s3?
+
+"""
 import os
 
 import boto3
@@ -18,8 +26,8 @@ from utils.utils import (
 from utils.settings import LOCAL_EXTRACTS_DIR
 
 
-def download_and_unzip_extract_if_needed(s3_client, local_only, unzipped_only, extract):
-    if not local_only and extract.get("s3_file_key"):
+def download_and_unzip_extract_if_needed(s3_client, s3, unzipped_only, extract):
+    if s3 and extract.get("s3_file_key"):
         download_extract_from_s3(
             s3_client,
             extract["s3_file_key"],
@@ -38,17 +46,21 @@ def download_and_unzip_extract_if_needed(s3_client, local_only, unzipped_only, e
 
 def main(cli_args):
     current_stage = "new"
-    s3_client = boto3.client("s3")
-    s3_resource = boto3.resource("s3")
+    s3_client = None
+    s3_resource = None
 
-    if cli_args.local_only and cli_args.unzipped_only:
+    if cli_args.s3:
+        s3_client = boto3.client("s3")
+        s3_resource = boto3.resource("s3")
+
+    if cli_args.unzipped_only:
         extracts_todo = get_unzipped_extracts_local(LOCAL_EXTRACTS_DIR)
-    elif cli_args.local_only:
-        extracts_todo = get_extract_zips_todo_local(LOCAL_EXTRACTS_DIR)
-    else:
+    elif cli_args.s3:
         extracts_todo = get_extract_zips_to_download_s3(
             s3_client, current_stage, LOCAL_EXTRACTS_DIR
         )
+    else:
+        extracts_todo = get_extract_zips_todo_local(LOCAL_EXTRACTS_DIR)
 
     print(f"{len(extracts_todo)} extract(s) to process")
 
@@ -58,7 +70,7 @@ def main(cli_args):
     for extract in extracts_todo:
         """Each extract is unzipped into its own directory as ./<extracts-dir>/<extract-name>/"""
         extract_dir = download_and_unzip_extract_if_needed(
-            s3_client, cli_args.local_only, cli_args.unzipped_only, extract
+            s3_client, cli_args.s3, cli_args.unzipped_only, extract
         )
         if cli_args.csv or (not cli_args.pdf and not cli_args.csv):
             process_csvs(extract_dir)

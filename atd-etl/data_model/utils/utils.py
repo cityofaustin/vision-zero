@@ -157,16 +157,15 @@ def get_cli_args():
         usage="main.py -l -u"
     )
     parser.add_argument(
-        f"--local-only",
-        "-l",
+        f"--s3",
         action="store_true",
-        help="Only process zips that are in the local directory. Do not interact with S3 in any way.",
+        help="Process zip extracts in S3 bucket and also upload processed CR3 PDFs to S3",
     )
     parser.add_argument(
         f"--unzipped-only",
         "-u",
         action="store_true",
-        help="Only process files that are already unzipped in the local directory. Also do not interact with S3 in any way.",
+        help="Only process files that are already unzipped in the local directory",
     )
     parser.add_argument(
         f"--pdf",
