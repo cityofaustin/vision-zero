@@ -6,6 +6,9 @@ from zoneinfo import ZoneInfo
 
 import requests
 
+from utils.logging import get_logger
+
+logger = get_logger()
 
 FILE_DIR = "cris_csvs"
 HASURA_ENDPOINT = "http://localhost:8084/v1/graphql"
@@ -283,7 +286,7 @@ def process_csvs(extract_dir):
     total_crash_count = 0
     overall_start_tme = time.time()
 
-    print("Fetching column metadata...")
+    logger.debug("Fetching column metadata")
     column_metadata = make_hasura_request(
         endpoint=HASURA_ENDPOINT, query=COLUMN_METADATA_QUERY
     )["_column_metadata"]
@@ -294,7 +297,7 @@ def process_csvs(extract_dir):
     # assumes extract ids are sortable oldest > newest by filename. todo: is that right?
     extract_ids.sort()
     for extract_id in extract_ids:
-        print(f"processing extract id: {extract_id}")
+        logger.info(f"Processing CSVs for extract ID: {extract_id}")
         # get schema years that match this extract ID
         schema_years = list(
             set(
@@ -307,7 +310,7 @@ def process_csvs(extract_dir):
         )
         schema_years.sort()
         for schema_year in schema_years:
-            print(f"processing schema year: {schema_year}")
+            logger.debug(f"Processing schema year: {schema_year}")
             for table_name in ["crashes", "units", "persons", "charges"]:
                 cris_columns = get_cris_columns(column_metadata, table_name)
 
@@ -327,7 +330,7 @@ def process_csvs(extract_dir):
                         f"No {table_name} file found in extract. This should never happen!"
                     )
 
-                print(f"processing {table_name}")
+                logger.debug(f"processing {table_name}")
 
                 records = load_csv(file["path"])
 
@@ -393,11 +396,11 @@ def process_csvs(extract_dir):
                     crash_ids = list(
                         set([int(record["cris_crash_id"]) for record in records])
                     )
-                    print(f"Deleting charges for {len(crash_ids)} total crashes...")
+                    logger.debug(
+                        f"Deleting charges in batches for {len(crash_ids)} total crashes"
+                    )
                     for chunk in chunks(crash_ids, delete_charges_batch_size):
-                        print(
-                            f"deleting charges for {delete_charges_batch_size} crashes..."
-                        )
+                        logger.debug(f"Deleting {delete_charges_batch_size} crashes")
                         make_hasura_request(
                             endpoint=HASURA_ENDPOINT,
                             query=CHARGES_DELETE_MUTATION,
@@ -424,15 +427,17 @@ def process_csvs(extract_dir):
                 upsert_mutation = make_upsert_mutation(table_name, cris_columns)
 
                 for chunk in chunks(records, UPLOAD_BATCH_SIZE):
-                    print(f"uploading {len(chunk)} {table_name}...")
+                    logger.info(f"Uploading {len(chunk)} {table_name}")
                     start_time = time.time()
                     make_hasura_request(
                         endpoint=HASURA_ENDPOINT,
                         query=upsert_mutation,
                         variables={"objects": chunk},
                     )
-                    print(f"✅ done in {round(time.time() - start_time, 3)} seconds")
+                    logger.debug(
+                        f"✅ done in {round(time.time() - start_time, 3)} seconds"
+                    )
 
-    print(
-        f"🎉 {total_crash_count} crashes imported in {round((time.time() - overall_start_tme)/60, 2)} minutes"
+    logger.info(
+        f"✅ {total_crash_count} crashes imported in {round((time.time() - overall_start_tme)/60, 2)} minutes"
     )

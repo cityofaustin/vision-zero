@@ -4,12 +4,14 @@ import subprocess
 import requests
 
 from utils.exceptions import HasuraAPIError
+from utils.logging import get_logger
 from utils.settings import LOCAL_EXTRACTS_DIR
 
 ENV = os.environ["ENV"]
 BUCKET_NAME = os.environ["BUCKET_NAME"]
 EXTRACT_PASSWORD = os.environ["EXTRACT_PASSWORD"]
 
+logger = get_logger()
 
 def format_megabytes(bytes):
     return f"{round(bytes/1000000)}mb"
@@ -81,7 +83,7 @@ def get_extract_zips_to_download_s3(s3_client, current_stage, local_extracts_dir
     Returns a sorted list of dicts as { s3_file_key, local_zip_file_path, file_size, extract_name }
     """
     prefix = f"{ENV}/cris_extracts/{current_stage}"
-    print(f"Getting list of extracts in {prefix}")
+    logger.info(f"Getting list of extracts in {prefix}")
     response = s3_client.list_objects(
         Bucket=BUCKET_NAME,
         Prefix=prefix,
@@ -108,7 +110,7 @@ def download_extract_from_s3(s3_client, s3_file_key, file_size, local_zip_file_p
     """
     Download zip file from s3 and return local path to the file
     """
-    print(f"Downloading {s3_file_key} ({format_megabytes(file_size)})")
+    logger.info(f"Downloading {s3_file_key} ({format_megabytes(file_size)})")
     s3_client.download_file(BUCKET_NAME, s3_file_key, local_zip_file_path)
 
 
@@ -116,7 +118,7 @@ def unzip_extract(file_path, out_dir_name, file_filter=None):
     """
     Unzip a cris extract
     """
-    print(f"Unzipping {file_path} to {out_dir_name}")
+    logger.debug(f"Unzipping {file_path} to {out_dir_name}")
     file_filter_arg = f"-i{file_filter}" if file_filter else ""
     unzip_command = f'7za -y -p{EXTRACT_PASSWORD} -o{out_dir_name} {file_filter_arg} x "{file_path}"'
     subprocess.run(unzip_command, check=True, shell=True, stdout=subprocess.DEVNULL)
@@ -130,11 +132,11 @@ def move_zip_to_next_stage(s3_client, s3_resource, file_key, current_stage):
     """
     next_stage = "pdfs_todo" if current_stage == "new" else "archive"
     new_key = file_key.replace(current_stage, next_stage)
-    print(f"Copying zip to {BUCKET_NAME}/{new_key}")
+    logger.info(f"Copying zip to {BUCKET_NAME}/{new_key}")
     s3_resource.meta.client.copy(
         {"Bucket": BUCKET_NAME, "Key": file_key}, BUCKET_NAME, new_key
     )
-    print(f"Deleting zip from {BUCKET_NAME}/{file_key}")
+    logger.info(f"Deleting zip from {BUCKET_NAME}/{file_key}")
     s3_client.delete_object(Bucket=BUCKET_NAME, Key=file_key)
 
 

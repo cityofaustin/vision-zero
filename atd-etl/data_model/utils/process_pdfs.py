@@ -3,10 +3,13 @@ import time
 
 from pdf2image import convert_from_path
 
+from utils.logging import get_logger
 from utils.utils import (
     move_zip_to_next_stage,
 )
 from utils.settings import DIAGRAM_BBOX_PIXELS, NEW_CR3_FORM_TEST_PIXELS
+
+logger = get_logger()
 
 
 def is_new_cr3_form(page):
@@ -38,13 +41,13 @@ def process_pdfs(extract_dir):
         for filename in os.listdir(os.path.join(extract_dir, "crashReports"))
         if filename.endswith(".pdf")
     ]
-    print(f"Found {len(pdfs)} crash report PDfs to process")
+    pdf_count = len(pdfs)
 
-    for filename in pdfs:
-        print(f"Processing {filename}")
+    for i, filename in enumerate(pdfs):
+        logger.info(f"Processing {filename} ({i+1}/{pdf_count})")
         crash_id = int(filename.replace(".pdf", ""))
         path = os.path.join(extract_dir, "crashReports", filename)
-        print("Converting PDF to image...")
+        logger.debug("Converting PDF to image...")
         page = convert_from_path(
             path,
             # output_folder="stuff",
@@ -55,9 +58,9 @@ def process_pdfs(extract_dir):
             last_page=2,
             dpi=150,
         )[0]
-        print("Cropping crash diagram...")
+        logger.debug("Cropping crash diagram...")
         crop_and_save_diagram(page, crash_id, is_new_cr3_form(page), extract_dir)
 
-    print(
-        f"🎉 {len(pdfs)} CR3s processed in {round((time.time() - overall_start_tme)/60, 2)} minutes"
+    logger.info(
+        f"✅ {pdf_count} CR3s processed in {round((time.time() - overall_start_tme)/60, 2)} minutes"
     )

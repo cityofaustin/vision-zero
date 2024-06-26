@@ -13,6 +13,7 @@ import os
 import boto3
 
 from utils.cli import get_cli_args
+from utils.logging import init_logger
 from utils.process_csvs import process_csvs
 from utils.process_pdfs import process_pdfs
 from utils.utils import (
@@ -62,7 +63,7 @@ def main(cli_args):
     else:
         extracts_todo = get_extract_zips_todo_local(LOCAL_EXTRACTS_DIR)
 
-    print(f"{len(extracts_todo)} extract(s) to process")
+    logger.info(f"{len(extracts_todo)} extract(s) to process")
 
     if not extracts_todo:
         return
@@ -84,4 +85,5 @@ def main(cli_args):
 
 if __name__ == "__main__":
     cli_args = get_cli_args()
+    logger = init_logger(debug=cli_args.verbose)
     main(cli_args)
