@@ -18,7 +18,7 @@ import {
 
 const CrashEditCoordsMap = ({
   data,
-  crashId,
+  crashPk,
   refetchCrashData,
   setIsEditingCoords,
 }) => {
@@ -46,7 +46,7 @@ const CrashEditCoordsMap = ({
     setIsSubmitting(true);
 
     const variables = {
-      crashId: crashId,
+      id: crashPk,
       changes: {
         ...markerCoordinates,
         updated_by: localStorage.getItem("hasura_user_email"),
