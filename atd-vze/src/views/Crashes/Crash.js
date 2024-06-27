@@ -287,7 +287,7 @@ function Crash(props) {
       <Row>
         <DataTable
           dataMap={createCrashDataMap(tempRecord)}
-          dataTable={"crash"}
+          dataTable="crash"
           formData={formData}
           setEditField={setEditField}
           editField={editField}
