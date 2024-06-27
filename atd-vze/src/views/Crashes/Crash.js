@@ -252,19 +252,17 @@ function Crash(props) {
       )}
       <Row>
         <Col>
-          <Card>
-            <UnitDetailsCard
-              data={crashRecord.crash.units}
-              refetch={crashRefetch}
-              {...props}
-            />
-            <PeopleDetailsCard
-              data={crashRecord.crash.people_list_view}
-              refetch={crashRefetch}
-              {...props}
-            />
-            <ChargesDetailsCard data={crashRecord.crash.charges_cris} />
-          </Card>
+          <UnitDetailsCard
+            data={crashRecord.crash.units}
+            refetch={crashRefetch}
+            {...props}
+          />
+          <PeopleDetailsCard
+            data={crashRecord.crash.people_list_view}
+            refetch={crashRefetch}
+            {...props}
+          />
+          <ChargesDetailsCard data={crashRecord.crash.charges_cris} />
         </Col>
       </Row>
       {shouldShowFatalityRecommendations && (
