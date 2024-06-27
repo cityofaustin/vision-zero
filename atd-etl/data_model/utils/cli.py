@@ -1,6 +1,11 @@
 import argparse
 
 def get_cli_args():
+    """Define the CLI parse the current args
+
+    Returns:
+        argparse.Namespace: The CLI namespace
+    """
     parser = argparse.ArgumentParser(
         description="Process CRIS extact zip files, including CSV data and CR3 crash reports",
         usage="main.py --csv --verbose"
