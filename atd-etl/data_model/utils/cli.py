@@ -21,8 +21,8 @@ def get_cli_args():
         help="Process zip extracts in S3 bucket and also upload processed CR3 PDFs to S3",
     )
     parser.add_argument(
-        f"--unzipped-only",
-        "-u",
+        f"--skip-unzip",
+        "-s",
         action="store_true",
         help="Only process files that are already unzipped in the local directory",
     )

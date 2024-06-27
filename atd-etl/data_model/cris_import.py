@@ -27,7 +27,7 @@ from utils.utils import (
 from utils.settings import LOCAL_EXTRACTS_DIR
 
 
-def download_and_unzip_extract_if_needed(s3_client, s3, unzipped_only, extract):
+def download_and_unzip_extract_if_needed(s3_client, s3, skip_unzip, extract):
     if s3 and extract.get("s3_file_key"):
         download_extract_from_s3(
             s3_client,
@@ -37,7 +37,7 @@ def download_and_unzip_extract_if_needed(s3_client, s3, unzipped_only, extract):
         )
     extract_dir = os.path.join(LOCAL_EXTRACTS_DIR, extract["extract_name"])
     # unzip the zip into <local-dir>/<extract-name
-    if not unzipped_only:
+    if not skip_unzip:
         # it's possible to unzip only specific files, e.g. csvs, but i don't think there's a good reason to
         # use this functionality
         # unzip_extract(extract["local_zip_file_path"], extract_dir, file_filter=f"!*.csv")
@@ -54,7 +54,7 @@ def main(cli_args):
         s3_client = boto3.client("s3")
         s3_resource = boto3.resource("s3")
 
-    if cli_args.unzipped_only:
+    if cli_args.skip_unzip:
         extracts_todo = get_unzipped_extracts_local(LOCAL_EXTRACTS_DIR)
     elif cli_args.s3:
         extracts_todo = get_extract_zips_to_download_s3(
@@ -71,7 +71,7 @@ def main(cli_args):
     for extract in extracts_todo:
         """Each extract is unzipped into its own directory as ./<extracts-dir>/<extract-name>/"""
         extract_dir = download_and_unzip_extract_if_needed(
-            s3_client, cli_args.s3, cli_args.unzipped_only, extract
+            s3_client, cli_args.s3, cli_args.skip_unzip, extract
         )
         if cli_args.csv or (not cli_args.pdf and not cli_args.csv):
             process_csvs(extract_dir)
