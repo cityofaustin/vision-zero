@@ -13,6 +13,7 @@ EXTRACT_PASSWORD = os.environ["EXTRACT_PASSWORD"]
 
 logger = get_logger()
 
+
 def format_megabytes(bytes):
     return f"{round(bytes/1000000)}mb"
 
@@ -138,14 +139,3 @@ def move_zip_to_next_stage(s3_client, s3_resource, file_key, current_stage):
     )
     logger.info(f"Deleting zip from {BUCKET_NAME}/{file_key}")
     s3_client.delete_object(Bucket=BUCKET_NAME, Key=file_key)
-
-
-def make_hasura_request(*, query, endpoint, variables=None):
-    payload = {"query": query, "variables": variables}
-    res = requests.post(endpoint, json=payload)
-    res.raise_for_status()
-    data = res.json()
-    try:
-        return data["data"]
-    except KeyError as err:
-        raise HasuraAPIError(data) from err

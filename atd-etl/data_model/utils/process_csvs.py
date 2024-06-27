@@ -4,85 +4,17 @@ import os
 import time
 from zoneinfo import ZoneInfo
 
-import requests
-
+from utils.graphql import (
+    make_hasura_request,
+    mutations,
+    COLUMN_METADATA_QUERY,
+    CHARGES_DELETE_MUTATION,
+)
 from utils.logging import get_logger
+from utils.settings import CSV_UPLOAD_BATCH_SIZE
 
 logger = get_logger()
 
-FILE_DIR = "cris_csvs"
-HASURA_ENDPOINT = "http://localhost:8084/v1/graphql"
-UPLOAD_BATCH_SIZE = 1000
-
-COLUMN_METADATA_QUERY = """
-query ColumnMetadata {
-  _column_metadata(where: {is_imported_from_cris: {_eq: true}}) {
-    column_name
-    record_type
-  }
-}
-"""
-
-CRASH_UPSERT_MUTATION = """
-mutation UpsertCrashes($objects: [crashes_cris_insert_input!]!) {
-  insert_crashes_cris(
-    objects: $objects, 
-    on_conflict: {
-        constraint: crashes_cris_crash_id_key,
-        update_columns: [$updateColumns]
-    }) {
-    affected_rows
-  }
-}
-"""
-
-UNIT_UPSERT_MUTATION = """
-mutation UpsertUnits($objects: [units_cris_insert_input!]!) {
-  insert_units_cris(
-    objects: $objects, 
-    on_conflict: {
-        constraint: unique_units_cris,
-        update_columns: [$updateColumns]
-    }) {
-    affected_rows
-  }
-}
-"""
-
-PERSON_UPSERT_MUTATION = """
-mutation UpsertPeople($objects: [people_cris_insert_input!]!) {
-  insert_people_cris(
-    objects: $objects, 
-    on_conflict: {
-        constraint: unique_people_cris,
-        update_columns: [$updateColumns]
-    }) {
-    affected_rows
-  }
-}"""
-
-CHARGES_DELETE_MUTATION = """
-mutation DeleteCharges($crash_ids: [Int!]!) {
-  delete_charges_cris(where: {cris_crash_id: {_in: $crash_ids}}) {
-    affected_rows
-  }
-}
-"""
-
-CHARGES_INSERT_MUTATION = """
-mutation InsertCharges($objects: [charges_cris_insert_input!]!) {
-  insert_charges_cris(objects: $objects) {
-    affected_rows
-  }
-}
-"""
-
-mutations = {
-    "crashes": CRASH_UPSERT_MUTATION,
-    "units": UNIT_UPSERT_MUTATION,
-    "persons": PERSON_UPSERT_MUTATION,
-    "charges": CHARGES_INSERT_MUTATION,
-}
 
 # list of fields to check to determine if a crash victim
 # was experiencing homelessness
@@ -105,10 +37,6 @@ name_fields = [
 ]
 
 
-class HasuraAPIError(Exception):
-    pass
-
-
 def get_cris_columns(column_metadata, table_name):
     """
     return an array of strings which is the column names for every column we want to handle from the
@@ -127,17 +55,6 @@ def make_upsert_mutation(table_name, cris_columns):
     upsert_mutation = mutations[table_name]
     update_columns = cris_columns.copy()
     return upsert_mutation.replace("$updateColumns", ", ".join(update_columns))
-
-
-def make_hasura_request(*, query, endpoint, variables=None):
-    payload = {"query": query, "variables": variables}
-    res = requests.post(endpoint, json=payload)
-    res.raise_for_status()
-    data = res.json()
-    try:
-        return data["data"]
-    except KeyError as err:
-        raise HasuraAPIError(data) from err
 
 
 def get_file_meta(filename):
@@ -287,9 +204,9 @@ def process_csvs(extract_dir):
     overall_start_tme = time.time()
 
     logger.debug("Fetching column metadata")
-    column_metadata = make_hasura_request(
-        endpoint=HASURA_ENDPOINT, query=COLUMN_METADATA_QUERY
-    )["_column_metadata"]
+    column_metadata = make_hasura_request(query=COLUMN_METADATA_QUERY)[
+        "_column_metadata"
+    ]
 
     csvs_to_import = get_csvs_todo(extract_dir)
 
@@ -402,7 +319,6 @@ def process_csvs(extract_dir):
                     for chunk in chunks(crash_ids, delete_charges_batch_size):
                         logger.debug(f"Deleting {delete_charges_batch_size} crashes")
                         make_hasura_request(
-                            endpoint=HASURA_ENDPOINT,
                             query=CHARGES_DELETE_MUTATION,
                             variables={"crash_ids": crash_ids},
                         )
@@ -426,11 +342,10 @@ def process_csvs(extract_dir):
 
                 upsert_mutation = make_upsert_mutation(table_name, cris_columns)
 
-                for chunk in chunks(records, UPLOAD_BATCH_SIZE):
+                for chunk in chunks(records, CSV_UPLOAD_BATCH_SIZE):
                     logger.info(f"Uploading {len(chunk)} {table_name}")
                     start_time = time.time()
                     make_hasura_request(
-                        endpoint=HASURA_ENDPOINT,
                         query=upsert_mutation,
                         variables={"objects": chunk},
                     )
