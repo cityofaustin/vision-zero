@@ -45,7 +45,7 @@ import {
 
 function Crash(props) {
   const crashId = props.match.params.id;
-  const { loading, error, data, refetch } = useQuery(GET_CRASH_OLD, {
+  const { loading, error, data } = useQuery(GET_CRASH_OLD, {
     variables: { crashId },
   });
   const {
@@ -122,8 +122,8 @@ function Crash(props) {
     investigator_narrative: investigatorNarrative,
     cr3_stored_flag: cr3StoredFlag,
     cr3_file_metadata: cr3FileMetadata,
-    latitude: latitude,
-    longitude: longitude,
+    latitude,
+    longitude,
     location_id: locationId,
   } = crashRecord.crash;
 
@@ -222,7 +222,8 @@ function Crash(props) {
                 <CrashMap data={crashRecord.crash} />
               ) : (
                 <CrashEditCoordsMap
-                  data={crashRecord.crash}
+                  latitude={latitude}
+                  longitude={longitude}
                   crashPk={crashPk}
                   refetchCrashData={crashRefetch}
                   setIsEditingCoords={setIsEditingCoords}
