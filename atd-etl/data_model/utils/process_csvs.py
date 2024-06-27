@@ -75,19 +75,22 @@ def make_upsert_mutation(table_name, cris_columns):
 
 
 def get_file_meta(filename):
-    """
+    """Parse file metadata out of the CRIS CSV filename.
+
+    If CRIS changes this naming convention it causes headaches.
+
     Returns:
-        schema_year, extract_id, table_name
+         list: [<schema_year:str>, <extract_id:str>, <table_name:str>]
+            - schema_year: the CRIS schema year of the records
+            - table_name: the record type (crash, unit, person, priamryperson, charges)
+            - extract_id: the unique extract ID of the file
     """
     filename_parts = filename.split("_")
     return filename_parts[1], filename_parts[2], filename_parts[3]
 
 
 def get_csvs_todo(extract_dir):
-    """Construct a list of CSV files which need to be processed in the given directory.
-
-    This function parses important record metadta out of the CRIS CSV filename. If this
-    naming convention were to change it causes headaches.
+    """Construct a list of CSV file metadata for each CSV in the given directory
 
     Args:
         extract_dir (str): The full path to the directory which contains the CSV files
@@ -133,7 +136,7 @@ def load_csv(filename):
 
 
 def lower_case_keys(records):
-    """Copy of list of record dicts by making each key lower case"""
+    """Copy a list of record dicts by making each key lower case"""
     return [{key.lower(): value for key, value in record.items()} for record in records]
 
 
