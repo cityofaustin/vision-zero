@@ -1,5 +1,6 @@
 import argparse
 
+
 def get_cli_args():
     """Define the CLI parse the current args
 
@@ -8,7 +9,7 @@ def get_cli_args():
     """
     parser = argparse.ArgumentParser(
         description="Process CRIS extact zip files, including CSV data and CR3 crash reports",
-        usage="main.py --csv --verbose"
+        usage="main.py --csv --verbose",
     )
     parser.add_argument(
         f"--csv",
@@ -23,11 +24,10 @@ def get_cli_args():
     parser.add_argument(
         f"--s3",
         action="store_true",
-        help="Process zip extracts in S3 bucket and also upload processed CR3 PDFs to S3",
+        help="Source zip extracts from S3 bucket and also upload processed CR3 PDFs to S3",
     )
     parser.add_argument(
         f"--skip-unzip",
-        "-s",
         action="store_true",
         help="Only process files that are already unzipped in the local directory",
     )
@@ -36,5 +36,10 @@ def get_cli_args():
         "-v",
         action="store_true",
         help="Sets logging level to DEBUG mode",
+    )
+    parser.add_argument(
+        f"--skip-s3-archive",
+        action="store_true",
+        help="If using --s3, do not move the processed extracts to the archive directory",
     )
     return parser.parse_args()

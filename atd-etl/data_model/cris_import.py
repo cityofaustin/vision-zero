@@ -18,29 +18,9 @@ from utils.utils import (
     get_unzipped_extracts_local,
     get_extract_zips_todo_local,
     get_extract_zips_to_download_s3,
-    download_extract_from_s3,
-    unzip_extract,
+    download_and_unzip_extract_if_needed,
     archive_extract_zip,
 )
-from utils.settings import LOCAL_EXTRACTS_DIR
-
-
-def download_and_unzip_extract_if_needed(s3_client, s3, skip_unzip, extract):
-    if s3 and extract.get("s3_file_key"):
-        download_extract_from_s3(
-            s3_client,
-            extract["s3_file_key"],
-            extract["file_size"],
-            extract["local_zip_file_path"],
-        )
-    extract_dir = os.path.join(LOCAL_EXTRACTS_DIR, extract["extract_name"])
-    # unzip the zip into <local-dir>/<extract-name
-    if not skip_unzip:
-        # it's possible to unzip only specific files, e.g. csvs, but i don't think there's a good reason to
-        # use this functionality
-        # unzip_extract(extract["local_zip_file_path"], extract_dir, file_filter=f"!*.csv")
-        unzip_extract(extract["local_zip_file_path"], extract_dir)
-    return extract_dir
 
 
 def main(cli_args):
@@ -52,11 +32,11 @@ def main(cli_args):
         s3_resource = boto3.resource("s3")
 
     if cli_args.skip_unzip:
-        extracts_todo = get_unzipped_extracts_local(LOCAL_EXTRACTS_DIR)
+        extracts_todo = get_unzipped_extracts_local()
     elif cli_args.s3:
-        extracts_todo = get_extract_zips_to_download_s3(s3_client, LOCAL_EXTRACTS_DIR)
+        extracts_todo = get_extract_zips_to_download_s3(s3_client)
     else:
-        extracts_todo = get_extract_zips_todo_local(LOCAL_EXTRACTS_DIR)
+        extracts_todo = get_extract_zips_todo_local()
 
     logger.info(f"{len(extracts_todo)} extract(s) to process")
 
@@ -72,13 +52,16 @@ def main(cli_args):
             process_csvs(extract_dir)
         if cli_args.pdf or (not cli_args.pdf and not cli_args.csv):
             process_pdfs(extract_dir)
-        # if not local_only:
-        #     archive_extract_zip(
-        #         s3_client, s3_resource, extract["file_key"]
-        #     )
+        if cli_args.s3 and not cli_args.skip_s3_archive and not cli_args.skip_unzip:
+            archive_extract_zip(s3_client, s3_resource, extract["s3_file_key"])
+        breakpoint()
 
 
 if __name__ == "__main__":
     cli_args = get_cli_args()
     logger = init_logger(debug=cli_args.verbose)
+    if cli_args.skip_s3_archive and not cli_args.s3:
+        logger.warning("--skip-s3-archive has no effect without --s3")
+    if cli_args.skip_unzip and cli_args.s3:
+        raise ValueError("Cannot use --s3 in combination with --skip-unzip")
     main(cli_args)
