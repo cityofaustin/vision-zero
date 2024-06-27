@@ -45,7 +45,7 @@ import {
 
 function Crash(props) {
   const crashId = props.match.params.id;
-  const { loading, error, data, refetch } = useQuery(GET_CRASH_OLD, {
+  const { loading, error, data } = useQuery(GET_CRASH_OLD, {
     variables: { crashId },
   });
   const {
@@ -64,32 +64,14 @@ function Crash(props) {
   const { getRoles } = useAuth0();
   const roles = getRoles();
 
-  if (loading || crashLoading) return "Loading...";
-  if (crashError) return `Error! ${crashError.message}`;
-  if (error) return `Error! ${error.message}`;
-
   const isCrashFatal =
     data?.atd_txdot_crashes?.[0]?.atd_fatality_count > 0 ? true : false;
   const shouldShowFatalityRecommendations =
     (isAdmin(roles) || isItSupervisor(roles)) && isCrashFatal;
 
-  const createGeocoderAddressString = data => {
-    const geocoderAddressFields = [
-      "rpt_block_num",
-      "rpt_street_pfx",
-      "street_name",
-      "rpt_street_pfx",
-    ];
-    let geocoderAddressString = "";
-    geocoderAddressFields.forEach(field => {
-      if (data?.atd_txdot_crashes?.[0]?.[field] !== null) {
-        geocoderAddressString = geocoderAddressString.concat(
-          data?.atd_txdot_crashes?.[0]?.[field] + " "
-        );
-      }
-    });
-    return geocoderAddressString;
-  };
+  if (loading || crashLoading) return "Loading...";
+  if (crashError) return `Error! ${crashError.message}`;
+  if (error) return `Error! ${error.message}`;
 
   const handleInputChange = e => {
     const newFormState = Object.assign(formData, {
@@ -121,12 +103,9 @@ function Crash(props) {
     setEditField("");
   };
 
-  const {
-    latitude_primary: latitude,
-    longitude_primary: longitude,
-    temp_record: tempRecord,
-    geocode_method: geocodeMethod,
-  } = !!data?.atd_txdot_crashes[0] ? data?.atd_txdot_crashes[0] : {};
+  const { temp_record: tempRecord } = !!data?.atd_txdot_crashes[0]
+    ? data?.atd_txdot_crashes[0]
+    : {};
 
   const crashRecord = {
     crash: crashData?.crashes?.[0] || { crash_injury_metrics_view: {} },
@@ -136,23 +115,22 @@ function Crash(props) {
   const {
     crash_injury_metrics_view: { vz_fatality_count: deathCount },
     crash_injury_metrics_view: { sus_serious_injry_count: seriousInjuryCount },
+    crashes_list_view: { is_manual_geocode: isManualGeocode },
     address_primary: primaryAddress,
     address_secondary: secondaryAddress,
     crash_injury_metrics_view: { years_of_life_lost: yearsOfLifeLost },
     investigator_narrative: investigatorNarrative,
     cr3_stored_flag: cr3StoredFlag,
     cr3_file_metadata: cr3FileMetadata,
+    latitude,
+    longitude,
+    location_id: locationId,
   } = crashRecord.crash;
 
-  const mapGeocoderAddress = createGeocoderAddressString(data);
-
-  const hasLocation =
-    data &&
-    data?.atd_txdot_crashes.length > 0 &&
-    data?.atd_txdot_crashes[0]["location_id"];
+  const hasLocation = crashRecord.crash["location_id"];
   const hasCoordinates = !!latitude && !!longitude;
 
-  return !data?.atd_txdot_crashes?.length ? (
+  return !crashData ? (
     <Page404 />
   ) : (
     <div className="animated fadeIn">
@@ -205,20 +183,16 @@ function Crash(props) {
                 <Col>
                   Crash Location (ID:{" "}
                   {(hasLocation && (
-                    <Link
-                      to={`/locations/${
-                        data.atd_txdot_crashes[0]["location_id"]
-                      }`}
-                    >
-                      {data.atd_txdot_crashes[0]["location_id"]}
-                    </Link>
+                    <Link to={`/locations/${locationId}`}>{locationId}</Link>
                   )) ||
                     "unassigned"}
                   )
                   <br />
                   Geocode Provider:{" "}
                   {hasCoordinates
-                    ? geocodeMethod.name
+                    ? isManualGeocode
+                      ? "Manual Q/A"
+                      : "TxDOT CRIS"
                     : "No Primary Coordinates"}
                 </Col>
                 <Col>
@@ -245,13 +219,13 @@ function Crash(props) {
                 </Alert>
               )}
               {!isEditingCoords ? (
-                <CrashMap data={data.atd_txdot_crashes[0]} />
+                <CrashMap latitude={latitude} longitude={longitude} />
               ) : (
                 <CrashEditCoordsMap
-                  data={data.atd_txdot_crashes[0]}
-                  mapGeocoderAddress={mapGeocoderAddress}
-                  crashId={crashId}
-                  refetchCrashData={refetch}
+                  latitude={latitude}
+                  longitude={longitude}
+                  crashPk={crashPk}
+                  refetchCrashData={crashRefetch}
                   setIsEditingCoords={setIsEditingCoords}
                 />
               )}

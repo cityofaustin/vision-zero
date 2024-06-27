@@ -164,6 +164,9 @@ export const GET_CRASH = gql`
       investigator_narrative
       cr3_stored_flag
       cr3_file_metadata
+      latitude
+      longitude
+      location_id
       crash_injury_metrics_view {
         vz_fatality_count
         sus_serious_injry_count
@@ -250,6 +253,7 @@ export const GET_CRASH = gql`
       }
       crashes_list_view {
         crash_day_of_week
+        is_manual_geocode
       }
       change_logs(order_by: { created_at: desc }) {
         id
@@ -260,32 +264,6 @@ export const GET_CRASH = gql`
         record_id
         record_type
         record_json
-      }
-    }
-  }
-`;
-
-export const UPDATE_COORDS = gql`
-  mutation update_atd_txdot_crashes(
-    $crashId: Int
-    $qaStatus: Int
-    $geocodeProvider: Int
-    $latitude: float8
-    $longitude: float8
-    $updatedBy: String
-  ) {
-    update_atd_txdot_crashes(
-      where: { crash_id: { _eq: $crashId } }
-      _set: {
-        qa_status: $qaStatus
-        geocode_provider: $geocodeProvider
-        latitude_primary: $latitude
-        longitude_primary: $longitude
-        updated_by: $updatedBy
-      }
-    ) {
-      returning {
-        crash_id
       }
     }
   }
