@@ -17,13 +17,12 @@ import {
 } from "../../../helpers/map";
 
 const CrashEditCoordsMap = ({
-  data,
+  latitude,
+  longitude,
   crashPk,
   refetchCrashData,
   setIsEditingCoords,
 }) => {
-  const { latitude = null, longitude = null } = data;
-
   const mapRef = React.useRef();
   const [isDragging, setIsDragging] = React.useState(false);
   const [markerCoordinates, setMarkerCoordinates] = React.useState({
