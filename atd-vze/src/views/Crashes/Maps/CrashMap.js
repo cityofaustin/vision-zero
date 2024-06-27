@@ -12,9 +12,7 @@ import {
 } from "../../../helpers/map";
 import "mapbox-gl/dist/mapbox-gl.css";
 
-const CrashMap = ({ data }) => {
-  const { latitude = null, longitude = null } = data;
-
+const CrashMap = ({ latitude, longitude }) => {
   return (
     <MapGL
       initialViewState={{

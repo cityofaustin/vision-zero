@@ -219,7 +219,7 @@ function Crash(props) {
                 </Alert>
               )}
               {!isEditingCoords ? (
-                <CrashMap data={crashRecord.crash} />
+                <CrashMap latitude={latitude} longitude={longitude} />
               ) : (
                 <CrashEditCoordsMap
                   latitude={latitude}
