@@ -1,11 +1,7 @@
 import os
 import subprocess
 
-import requests
-
-from utils.exceptions import HasuraAPIError
 from utils.logging import get_logger
-from utils.settings import LOCAL_EXTRACTS_DIR
 
 ENV = os.environ["ENV"]
 BUCKET_NAME = os.environ["BUCKET_NAME"]
@@ -15,48 +11,36 @@ logger = get_logger()
 
 
 def format_megabytes(bytes):
+    """Format an integer as megabytes"""
     return f"{round(bytes/1000000)}mb"
 
 
-# def are_unzipped_csvs_available(local_extracts_dir):
-#     """Check if there are unzippzed extract files available"""
-#     extract_subdirs = []
-#     for subdirname in os.listdir(local_extracts_dir):
-#         if os.path.isdir(os.path.join(local_extracts_dir, subdirname)):
-#             csvs = [
-#                 f
-#                 for f in os.listdir(os.path.join(local_extracts_dir, subdirname))
-#                 if f.endswith(".csv")
-#             ]
-#             print("found some!")
-#             breakpoint()
-
-
-def get_extact_name_from_file_name(file_key):
+def get_extract_name_from_file_name(file_key):
+    """Parse the full extract name from the file name"""
     return os.path.basename(file_key).replace(".zip", "")
 
 
 def get_unzipped_extracts_local(local_extracts_dir):
+    """Gets a list of sudirectories in the <local_extracts_dir>, making the assumption that any subdirectory
+    is an unzipped CRIS extract.
+
+    Returns a sorted list of dicts as { extract_name, extract_dest_dir }
+    """
     unzipped_extracts = []
     for extract_name in os.listdir(local_extracts_dir):
         extract_subdir_full_path = os.path.join(local_extracts_dir, extract_name)
         if os.path.isdir(extract_subdir_full_path):
-            csvs = [
-                f for f in os.listdir(extract_subdir_full_path) if f.endswith(".csv")
-            ]
-            if csvs:
-                unzipped_extracts.append(
-                    {
-                        "extract_name": extract_name,
-                        "extract_dest_dir": extract_subdir_full_path,
-                    }
-                )
+            unzipped_extracts.append(
+                {
+                    "extract_name": extract_name,
+                    "extract_dest_dir": extract_subdir_full_path,
+                }
+            )
     return sorted(unzipped_extracts, key=lambda d: d["extract_name"])
 
 
 def get_extract_zips_todo_local(local_extracts_dir):
-    """
-    Get a list of zips in <local_extracts_dir>
+    """Get a list of extract zips in <local_extracts_dir>
 
     Returns a sorted list of dicts as { s3_file_key, local_zip_file_path, file_size, extract_name }
     """
@@ -71,19 +55,18 @@ def get_extract_zips_todo_local(local_extracts_dir):
                     "s3_file_key": None,
                     "local_zip_file_path": zip_extract_local_path,
                     "file_size": zip_size,
-                    "extract_name": get_extact_name_from_file_name(fname),
+                    "extract_name": get_extract_name_from_file_name(fname),
                 }
             )
     return sorted(extracts, key=lambda d: d["extract_name"])
 
 
-def get_extract_zips_to_download_s3(s3_client, current_stage, local_extracts_dir):
-    """
-    Fetch a list of CRIS extract zips that are in the specified stage: new or pdfs_todo.
+def get_extract_zips_to_download_s3(s3_client, local_extracts_dir):
+    """Fetch a list of CRIS extract zips that are in `new` subdirectory in the S3 bucket.
 
     Returns a sorted list of dicts as { s3_file_key, local_zip_file_path, file_size, extract_name }
     """
-    prefix = f"{ENV}/cris_extracts/{current_stage}"
+    prefix = f"{ENV}/cris_extracts/new"
     logger.info(f"Getting list of extracts in {prefix}")
     response = s3_client.list_objects(
         Bucket=BUCKET_NAME,
@@ -100,7 +83,7 @@ def get_extract_zips_to_download_s3(s3_client, current_stage, local_extracts_dir
                         local_extracts_dir, os.path.basename(key)
                     ),
                     "file_size": item.get("Size"),
-                    "extract_name": get_extact_name_from_file_name(key),
+                    "extract_name": get_extract_name_from_file_name(key),
                 }
             )
     # assumes extract ids are sortable news -> oldest - todo: confirm
@@ -108,34 +91,41 @@ def get_extract_zips_to_download_s3(s3_client, current_stage, local_extracts_dir
 
 
 def download_extract_from_s3(s3_client, s3_file_key, file_size, local_zip_file_path):
-    """
-    Download zip file from s3 and return local path to the file
-    """
+    """Download zip file from s3 into the provided <local_zip_file_path>"""
     logger.info(f"Downloading {s3_file_key} ({format_megabytes(file_size)})")
     s3_client.download_file(BUCKET_NAME, s3_file_key, local_zip_file_path)
 
 
-def unzip_extract(file_path, out_dir_name, file_filter=None):
+def unzip_extract(file_path, out_dir_path, file_filter=None):
+    """Unzip a cris extract
+
+    Args:
+        file_path (str): the full path to the extract zip
+        out_dir_path (str): the full path to the directory where extracted files will be saved
+        file_filter (_type_, optional): Optional filter pattern to define which files to extract.
+            Not currently in use but enables the possiblity of only extract, e.g, CSV files or PDFs
     """
-    Unzip a cris extract
-    """
-    logger.debug(f"Unzipping {file_path} to {out_dir_name}")
+    logger.info(f"Unzipping {file_path} to {out_dir_path}")
     file_filter_arg = f"-i{file_filter}" if file_filter else ""
-    unzip_command = f'7za -y -p{EXTRACT_PASSWORD} -o{out_dir_name} {file_filter_arg} x "{file_path}"'
+    unzip_command = f'7za -y -p{EXTRACT_PASSWORD} -o{out_dir_path} {file_filter_arg} x "{file_path}"'
     subprocess.run(unzip_command, check=True, shell=True, stdout=subprocess.DEVNULL)
 
 
-def move_zip_to_next_stage(s3_client, s3_resource, file_key, current_stage):
-    """Move an extract zip from the current subdirectory 'stage' to the next
+def archive_extract_zip(s3_client, s3_resource, file_key, should_delete=True):
+    """Move an extract zip from ./new to ./archive
 
-    If the zip was in `new`, move to `pdfs_todo`. If the zip was in `pdfs_todo`,
-    move to `archive`.
+    Args:
+        s3_client (botocore.client.S3): the s3 client instance
+        s3_resource (boto3.resources.factory.s3.ServiceResource): the lower-level S3 "resource" instance
+        file_key (str): the s3 object file key of the zip file to be archved
+        should_delete (bool, optional): If false, the zip file will merely be copied and not deleted
+        from the ./new directory. Defaults to True.
     """
-    next_stage = "pdfs_todo" if current_stage == "new" else "archive"
-    new_key = file_key.replace(current_stage, next_stage)
+    new_key = file_key.replace("new", "archive")
     logger.info(f"Copying zip to {BUCKET_NAME}/{new_key}")
     s3_resource.meta.client.copy(
         {"Bucket": BUCKET_NAME, "Key": file_key}, BUCKET_NAME, new_key
     )
-    logger.info(f"Deleting zip from {BUCKET_NAME}/{file_key}")
-    s3_client.delete_object(Bucket=BUCKET_NAME, Key=file_key)
+    if should_delete:
+        logger.info(f"Deleting zip from {BUCKET_NAME}/{file_key}")
+        s3_client.delete_object(Bucket=BUCKET_NAME, Key=file_key)

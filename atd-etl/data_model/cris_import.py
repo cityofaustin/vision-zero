@@ -20,7 +20,7 @@ from utils.utils import (
     get_extract_zips_to_download_s3,
     download_extract_from_s3,
     unzip_extract,
-    move_zip_to_next_stage,
+    archive_extract_zip,
 )
 from utils.settings import LOCAL_EXTRACTS_DIR
 
@@ -44,7 +44,6 @@ def download_and_unzip_extract_if_needed(s3_client, s3, skip_unzip, extract):
 
 
 def main(cli_args):
-    current_stage = "new"
     s3_client = None
     s3_resource = None
 
@@ -55,9 +54,7 @@ def main(cli_args):
     if cli_args.skip_unzip:
         extracts_todo = get_unzipped_extracts_local(LOCAL_EXTRACTS_DIR)
     elif cli_args.s3:
-        extracts_todo = get_extract_zips_to_download_s3(
-            s3_client, current_stage, LOCAL_EXTRACTS_DIR
-        )
+        extracts_todo = get_extract_zips_to_download_s3(s3_client, LOCAL_EXTRACTS_DIR)
     else:
         extracts_todo = get_extract_zips_todo_local(LOCAL_EXTRACTS_DIR)
 
@@ -76,8 +73,8 @@ def main(cli_args):
         if cli_args.pdf or (not cli_args.pdf and not cli_args.csv):
             process_pdfs(extract_dir)
         # if not local_only:
-        #     move_zip_to_next_stage(
-        #         s3_client, s3_resource, extract["file_key"], current_stage
+        #     archive_extract_zip(
+        #         s3_client, s3_resource, extract["file_key"]
         #     )
 
 

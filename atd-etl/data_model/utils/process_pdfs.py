@@ -5,7 +5,7 @@ from pdf2image import convert_from_path
 
 from utils.logging import get_logger
 from utils.utils import (
-    move_zip_to_next_stage,
+    archive_extract_zip,
 )
 from utils.settings import DIAGRAM_BBOX_PIXELS, NEW_CR3_FORM_TEST_PIXELS
 
