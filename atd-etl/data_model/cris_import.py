@@ -5,8 +5,6 @@ Todo:
 - populate cr3 fields in hasura
 - s3 operations for pdfs
 - interact with db import logging table
-- use a flag to optionally use s3?
-- logging
 """
 import os
 
