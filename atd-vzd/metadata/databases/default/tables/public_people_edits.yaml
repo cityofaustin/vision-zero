@@ -35,8 +35,7 @@ select_permissions:
         - prsn_alc_rslt_id
         - prsn_alc_spec_type_id
         - prsn_bac_test_rslt
-        - prsn_death_date
-        - prsn_death_time
+        - prsn_death_timestamp
         - prsn_drg_rslt_id
         - prsn_drg_spec_type_id
         - prsn_ethnicity_id
@@ -93,8 +92,7 @@ select_permissions:
         - prsn_taken_to
         - updated_by
         - created_at
-        - prsn_death_date
-        - prsn_death_time
+        - prsn_death_timestamp
         - updated_at
       filter: {}
     comment: ""
@@ -132,8 +130,7 @@ select_permissions:
         - prsn_taken_to
         - updated_by
         - created_at
-        - prsn_death_date
-        - prsn_death_time
+        - prsn_death_timestamp
         - updated_at
       filter: {}
     comment: ""
@@ -151,8 +148,7 @@ update_permissions:
         - prsn_alc_rslt_id
         - prsn_alc_spec_type_id
         - prsn_bac_test_rslt
-        - prsn_death_date
-        - prsn_death_time
+        - prsn_death_timestamp
         - prsn_drg_rslt_id
         - prsn_drg_spec_type_id
         - prsn_ethnicity_id
@@ -188,8 +184,7 @@ update_permissions:
         - prsn_alc_rslt_id
         - prsn_alc_spec_type_id
         - prsn_bac_test_rslt
-        - prsn_death_date
-        - prsn_death_time
+        - prsn_death_timestamp
         - prsn_drg_rslt_id
         - prsn_drg_spec_type_id
         - prsn_ethnicity_id

@@ -80,10 +80,9 @@ select_permissions:
         - prsn_taken_by
         - prsn_taken_to
         - updated_by
-        - crash_date
+        - crash_timestamp
         - created_at
-        - prsn_death_date
-        - prsn_death_time
+        - prsn_death_timestamp
         - updated_at
       filter: {}
     comment: ""
@@ -128,10 +127,9 @@ select_permissions:
         - prsn_taken_by
         - prsn_taken_to
         - updated_by
-        - crash_date
+        - crash_timestamp
         - created_at
-        - prsn_death_date
-        - prsn_death_time
+        - prsn_death_timestamp
         - updated_at
       filter: {}
     comment: ""
@@ -176,10 +174,9 @@ select_permissions:
         - prsn_taken_by
         - prsn_taken_to
         - updated_by
-        - crash_date
+        - crash_timestamp
         - created_at
-        - prsn_death_date
-        - prsn_death_time
+        - prsn_death_timestamp
         - updated_at
       filter: {}
     comment: ""

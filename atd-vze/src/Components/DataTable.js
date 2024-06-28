@@ -70,7 +70,10 @@ const DataTable = ({
                       // Handle formatting the field value
                       if (fieldConfigObject.format === "dollars") {
                         fieldValue = formatCostToDollars(fieldValue);
-                      } else if (fieldConfigObject.format === "datetime") {
+                      } else if (
+                        fieldConfigObject.format === "datetime" &&
+                        fieldValue
+                      ) {
                         fieldValue = formatDateTimeString(fieldValue);
                       }
 

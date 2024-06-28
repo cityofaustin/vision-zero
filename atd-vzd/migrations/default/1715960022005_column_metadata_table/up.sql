@@ -18,7 +18,7 @@ insert into _column_metadata (column_name, column_label, record_type, is_importe
 insert into _column_metadata (column_name, column_label, record_type, is_imported_from_cris)
         values ('prsn_nbr', 'prsn_nbr', 'charges', true);
 insert into _column_metadata (column_name, column_label, record_type, is_imported_from_cris)
-        values ('cris_schema_version', 'cris_schema_version', 'charges', false);
+        values ('cris_schema_version', 'cris_schema_version', 'charges', true);
 insert into _column_metadata (column_name, column_label, record_type, is_imported_from_cris)
         values ('unit_nbr', 'unit_nbr', 'charges', true);
 insert into _column_metadata (column_name, column_label, record_type, is_imported_from_cris)
@@ -32,7 +32,7 @@ insert into _column_metadata (column_name, column_label, record_type, is_importe
 insert into _column_metadata (column_name, column_label, record_type, is_imported_from_cris)
         values ('crash_id', 'crash_id', 'crashes', true);
 insert into _column_metadata (column_name, column_label, record_type, is_imported_from_cris)
-        values ('cris_schema_version', 'cris_schema_version', 'crashes', false);
+        values ('cris_schema_version', 'cris_schema_version', 'crashes', true);
 insert into _column_metadata (column_name, column_label, record_type, is_imported_from_cris)
         values ('rpt_city_id', 'rpt_city_id', 'crashes', true);
 insert into _column_metadata (column_name, column_label, record_type, is_imported_from_cris)
@@ -74,9 +74,7 @@ insert into _column_metadata (column_name, column_label, record_type, is_importe
 insert into _column_metadata (column_name, column_label, record_type, is_imported_from_cris)
         values ('wthr_cond_id', 'wthr_cond_id', 'crashes', true);
 insert into _column_metadata (column_name, column_label, record_type, is_imported_from_cris)
-        values ('crash_date', 'crash_date', 'crashes', true);
-insert into _column_metadata (column_name, column_label, record_type, is_imported_from_cris)
-        values ('crash_time', 'crash_time', 'crashes', true);
+        values ('crash_timestamp', 'crash_timestamp', 'crashes', true);
 insert into _column_metadata (column_name, column_label, record_type, is_imported_from_cris)
         values ('rpt_sec_street_pfx', 'rpt_sec_street_pfx', 'crashes', true);
 insert into _column_metadata (column_name, column_label, record_type, is_imported_from_cris)
@@ -166,7 +164,7 @@ insert into _column_metadata (column_name, column_label, record_type, is_importe
 insert into _column_metadata (column_name, column_label, record_type, is_imported_from_cris)
         values ('prsn_exp_homelessness', 'prsn_exp_homelessness', 'people', true);
 insert into _column_metadata (column_name, column_label, record_type, is_imported_from_cris)
-        values ('cris_schema_version', 'cris_schema_version', 'people', false);
+        values ('cris_schema_version', 'cris_schema_version', 'people', true);
 insert into _column_metadata (column_name, column_label, record_type, is_imported_from_cris)
         values ('unit_id', 'unit_id', 'people', false);
 insert into _column_metadata (column_name, column_label, record_type, is_imported_from_cris)
@@ -182,7 +180,7 @@ insert into _column_metadata (column_name, column_label, record_type, is_importe
 insert into _column_metadata (column_name, column_label, record_type, is_imported_from_cris)
         values ('investigator_narrative_ocr', 'investigator_narrative_ocr', 'crashes', false);
 insert into _column_metadata (column_name, column_label, record_type, is_imported_from_cris)
-        values ('is_primary_person', 'is_primary_person', 'people', false);
+        values ('is_primary_person', 'is_primary_person', 'people', true);
 insert into _column_metadata (column_name, column_label, record_type, is_imported_from_cris)
         values ('prsn_age', 'prsn_age', 'people', true);
 insert into _column_metadata (column_name, column_label, record_type, is_imported_from_cris)
@@ -200,13 +198,7 @@ insert into _column_metadata (column_name, column_label, record_type, is_importe
 insert into _column_metadata (column_name, column_label, record_type, is_imported_from_cris)
         values ('prsn_bac_test_rslt', 'prsn_bac_test_rslt', 'people', true);
 insert into _column_metadata (column_name, column_label, record_type, is_imported_from_cris)
-        values ('prsn_death_date', 'prsn_death_date', 'people', true);
-insert into _column_metadata (column_name, column_label, record_type, is_imported_from_cris)
-        values ('prsn_death_date', 'prsn_death_date', 'people', true);
-insert into _column_metadata (column_name, column_label, record_type, is_imported_from_cris)
-        values ('prsn_death_time', 'prsn_death_time', 'people', true);
-insert into _column_metadata (column_name, column_label, record_type, is_imported_from_cris)
-        values ('prsn_death_time', 'prsn_death_time', 'people', true);
+        values ('prsn_death_timestamp', 'prsn_death_timestamp', 'people', true);
 insert into _column_metadata (column_name, column_label, record_type, is_imported_from_cris)
         values ('prsn_drg_rslt_id', 'prsn_drg_rslt_id', 'people', true);
 insert into _column_metadata (column_name, column_label, record_type, is_imported_from_cris)
@@ -280,7 +272,7 @@ insert into _column_metadata (column_name, column_label, record_type, is_importe
 insert into _column_metadata (column_name, column_label, record_type, is_imported_from_cris)
         values ('id', 'id', 'units', false);
 insert into _column_metadata (column_name, column_label, record_type, is_imported_from_cris)
-        values ('cris_schema_version', 'cris_schema_version', 'units', false);
+        values ('cris_schema_version', 'cris_schema_version', 'units', true);
 insert into _column_metadata (column_name, column_label, record_type, is_imported_from_cris)
         values ('crash_id', 'crash_id', 'units', true);
 insert into _column_metadata (column_name, column_label, record_type, is_imported_from_cris)

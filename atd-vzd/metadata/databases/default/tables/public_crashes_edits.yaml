@@ -20,10 +20,9 @@ select_permissions:
         - active_school_zone_fl
         - at_intrsct_fl
         - case_id
-        - crash_date
+        - crash_timestamp
         - crash_id
         - crash_speed_limit
-        - crash_time
         - created_at
         - created_by
         - fhe_collsn_id
@@ -81,10 +80,9 @@ select_permissions:
         - active_school_zone_fl
         - at_intrsct_fl
         - case_id
-        - crash_date
+        - crash_timestamp
         - crash_id
         - crash_speed_limit
-        - crash_time
         - created_at
         - created_by
         - fhe_collsn_id
@@ -142,10 +140,9 @@ select_permissions:
         - active_school_zone_fl
         - at_intrsct_fl
         - case_id
-        - crash_date
+        - crash_timestamp
         - crash_id
         - crash_speed_limit
-        - crash_time
         - created_at
         - created_by
         - fhe_collsn_id
@@ -204,10 +201,9 @@ update_permissions:
         - active_school_zone_fl
         - at_intrsct_fl
         - case_id
-        - crash_date
+        - crash_timestamp
         - crash_id
         - crash_speed_limit
-        - crash_time
         - fhe_collsn_id
         - intrsct_relat_id
         - investigat_agency_id
@@ -262,10 +258,9 @@ update_permissions:
         - active_school_zone_fl
         - at_intrsct_fl
         - case_id
-        - crash_date
+        - crash_timestamp
         - crash_id
         - crash_speed_limit
-        - crash_time
         - fhe_collsn_id
         - intrsct_relat_id
         - investigat_agency_id

@@ -79,7 +79,9 @@ create or replace view unit_injury_metrics_view as
         coalesce(
             sum(person_injury_metrics_view.poss_injry), 0
         ) as poss_injry_count,
-        coalesce(sum(person_injury_metrics_view.non_injry), 0) as non_injry_count,
+        coalesce(
+            sum(person_injury_metrics_view.non_injry), 0
+        ) as non_injry_count,
         coalesce(
             sum(person_injury_metrics_view.sus_serious_injry), 0
         ) as sus_serious_injry_count,
@@ -120,7 +122,9 @@ create or replace view crash_injury_metrics_view as
         coalesce(
             sum(person_injury_metrics_view.poss_injry), 0
         ) as poss_injry_count,
-        coalesce(sum(person_injury_metrics_view.non_injry), 0) as non_injry_count,
+        coalesce(
+            sum(person_injury_metrics_view.non_injry), 0
+        ) as non_injry_count,
         coalesce(
             sum(person_injury_metrics_view.sus_serious_injry), 0
         ) as sus_serious_injry_count,
@@ -148,7 +152,7 @@ create or replace view crash_injury_metrics_view as
         coalesce(
             sum(person_injury_metrics_view.years_of_life_lost), 0
         ) as years_of_life_lost,
-        max(est_comp_cost_crash_based) as est_comp_cost_crash_based
+        coalesce(max(est_comp_cost_crash_based), 0) as est_comp_cost_crash_based
     from
         public.crashes as crashes
     left join
@@ -162,14 +166,10 @@ create or replace view crash_injury_metrics_view as
 create or replace view crashes_list_view as with geocode_status as (
     select
         cris.crash_id,
-        coalesce(
-            (cris.latitude is null or cris.longitude is null),
-            false
-        ) as has_no_cris_coordinates,
-        coalesce(
-            (edits.latitude is not null and edits.longitude is not null),
-            false
-        ) as is_manual_geocode
+        cris.latitude is null or cris.longitude is null
+        as has_no_cris_coordinates,
+        edits.latitude is not null and edits.longitude is not null
+        as is_manual_geocode
     from public.crashes_cris as cris
     left join public.crashes_edits as edits on cris.id = edits.id
 )
@@ -178,7 +178,18 @@ select
     public.crashes.id,
     public.crashes.crash_id,
     public.crashes.case_id,
-    public.crashes.crash_date,
+    public.crashes.crash_timestamp,
+    to_char(
+        public.crashes.crash_timestamp at time zone 'US/Central', 'YYY:MM:DD'
+    ) as crash_date_ct,
+    to_char(
+        public.crashes.crash_timestamp at time zone 'US/Central', 'HH24:MI:SS'
+    ) as crash_time_ct,
+    upper(
+        to_char(
+            public.crashes.crash_timestamp at time zone 'US/Central', 'dy'
+        )
+    ) as crash_day_of_week,
     public.crashes.address_primary,
     public.crashes.address_secondary,
     public.crashes.private_dr_fl,
@@ -221,12 +232,7 @@ select
     lookups.injry_sev_lkp.label as crash_injry_sev_desc,
     lookups.collsn_lkp.label as collsn_desc,
     geocode_status.is_manual_geocode,
-    geocode_status.has_no_cris_coordinates,
-    upper(
-        to_char(
-            public.crashes.crash_date at time zone 'US/Central', 'dy'
-        )
-    ) as crash_day_of_week
+    geocode_status.has_no_cris_coordinates
 from
     public.crashes
 left join
@@ -241,3 +247,70 @@ left join
 left join
     lookups.injry_sev_lkp
     on lookups.injry_sev_lkp.id = crash_injury_metrics_view.crash_injry_sev_id;
+
+
+create view locations_list_view as (
+    with crash_totals as (
+        with unioned_crash_counts as (
+            with cr3_crash_counts as (
+                select
+                    location_id,
+                    sus_serious_injry_count,
+                    vz_fatality_count,
+                    est_comp_cost_crash_based
+                from
+                    crashes_list_view
+                where
+                    crashes_list_view.private_dr_fl = false
+                    and crashes_list_view.location_id is not null
+                    and crashes_list_view.crash_timestamp
+                    > (now() - '5 years'::interval)
+            ),
+
+            non_cr3_crash_counts as (
+                select
+                    location_id,
+                    0 as vz_fatality_count,
+                    0 as sus_serious_injry_count,
+                    est_comp_cost as est_comp_cost_crash_based
+                from atd_apd_blueform as non_cr3_crash_counts
+                where
+                    true
+                    and non_cr3_crash_counts.location_id is not null
+                    and non_cr3_crash_counts.date
+                    > (now() - '5 years'::interval)
+            )
+
+            select * from cr3_crash_counts
+            union all
+            select * from non_cr3_crash_counts
+        )
+
+        select
+            location_id,
+            count(unioned_crash_counts.*) as crash_count,
+            sum(
+                unioned_crash_counts.sus_serious_injry_count
+            ) as sus_serious_injry_count,
+            sum(unioned_crash_counts.vz_fatality_count) as vz_fatality_count,
+            sum(
+                unioned_crash_counts.est_comp_cost_crash_based
+            ) as total_est_comp_cost
+        from
+            unioned_crash_counts
+        group by location_id
+    )
+
+    select
+        locations.location_id,
+        locations.description,
+        coalesce(crash_totals.crash_count, 0) as crash_count,
+        coalesce(
+            crash_totals.sus_serious_injry_count, 0
+        ) as sus_serious_injry_count,
+        coalesce(crash_totals.vz_fatality_count, 0) as vz_fatality_count,
+        coalesce(crash_totals.total_est_comp_cost, 0) as total_est_comp_cost
+    from atd_txdot_locations as locations
+    left join crash_totals on locations.location_id = crash_totals.location_id
+    where locations.council_district > 0 and locations.location_group = 1
+);

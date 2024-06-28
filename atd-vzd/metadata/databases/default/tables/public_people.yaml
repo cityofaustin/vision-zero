@@ -45,8 +45,7 @@ select_permissions:
         - prsn_taken_to
         - updated_by
         - created_at
-        - prsn_death_date
-        - prsn_death_time
+        - prsn_death_timestamp
         - updated_at
       filter: {}
     comment: ""
@@ -86,8 +85,7 @@ select_permissions:
         - prsn_taken_to
         - updated_by
         - created_at
-        - prsn_death_date
-        - prsn_death_time
+        - prsn_death_timestamp
         - updated_at
       filter: {}
     comment: ""
@@ -127,8 +125,7 @@ select_permissions:
         - prsn_taken_to
         - updated_by
         - created_at
-        - prsn_death_date
-        - prsn_death_time
+        - prsn_death_timestamp
         - updated_at
       filter: {}
     comment: ""

@@ -14,11 +14,11 @@ export const crashGridTableColumns = {
     label_table: "Case ID",
     type: "String",
   },
-  crash_date: {
+  crash_timestamp: {
     searchable: false,
     sortable: true,
     label_table: "Crash Date",
-    type: "Date",
+    type: "date_iso",
   },
   address_primary: {
     searchable: true,
@@ -58,7 +58,7 @@ export const crashGridTableColumns = {
     label_table: "Collision Description",
     type: "String",
   },
-  "units { veh_body_styl_lkp { label } }": {
+  "units { unit_desc_lkp { label } }": {
     searchable: false,
     sortable: false,
     label_table: "Unit Description",
