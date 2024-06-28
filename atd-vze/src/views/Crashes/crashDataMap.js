@@ -16,9 +16,10 @@ export const createCrashDataMap = isTempRecord => {
           label: "Case ID",
           editable: false,
         },
-        crash_date: {
+        crash_timestamp: {
           label: "Crash Date",
           editable: false,
+          format: "datetime",
         },
         crash_day_of_week: {
           label: "Day of Week",

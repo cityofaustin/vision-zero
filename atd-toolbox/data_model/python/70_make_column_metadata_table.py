@@ -12,7 +12,10 @@ def main():
     column_inserts = []
     for col in columns:
         is_imported_from_cris = (
-            True if col["source"] == "cris" and col["is_cris_column"] else False
+            True
+            if (col["source"] == "cris" or col["source"] == "etl")
+            and col["is_cris_column"]
+            else False
         )
         col_insert_sql = f"""insert into _column_metadata (column_name, column_label, record_type, is_imported_from_cris)
         values ('{col['column_name']}', '{col['column_name']}', '{col['record_type']}', {str(is_imported_from_cris).lower()})"""

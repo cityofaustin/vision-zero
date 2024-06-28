@@ -72,7 +72,9 @@ select_permissions:
         - rpt_sec_street_pfx
         - rpt_street_name
         - rpt_street_pfx
-        - crash_date
+        - crash_timestamp
+        - crash_date_ct
+        - crash_time_ct
       filter: {}
       allow_aggregations: true
     comment: ""
@@ -126,7 +128,9 @@ select_permissions:
         - rpt_sec_street_pfx
         - rpt_street_name
         - rpt_street_pfx
-        - crash_date
+        - crash_timestamp
+        - crash_date_ct
+        - crash_time_ct
       filter: {}
       allow_aggregations: true
     comment: ""
@@ -180,7 +184,9 @@ select_permissions:
         - rpt_sec_street_pfx
         - rpt_street_name
         - rpt_street_pfx
-        - crash_date
+        - crash_timestamp
+        - crash_date_ct
+        - crash_time_ct
       filter: {}
       allow_aggregations: true
     comment: ""

@@ -74,10 +74,9 @@ select_permissions:
         - cr3_file_metadata
         - cr3_ocr_extraction_date
         - cr3_stored_flag
-        - crash_date
+        - crash_timestamp
         - crash_id
         - crash_speed_limit
-        - crash_time
         - created_at
         - created_by
         - engineering_area
@@ -146,10 +145,9 @@ select_permissions:
         - cr3_file_metadata
         - cr3_ocr_extraction_date
         - cr3_stored_flag
-        - crash_date
+        - crash_timestamp
         - crash_id
         - crash_speed_limit
-        - crash_time
         - created_at
         - created_by
         - engineering_area
@@ -218,10 +216,9 @@ select_permissions:
         - cr3_file_metadata
         - cr3_ocr_extraction_date
         - cr3_stored_flag
-        - crash_date
+        - crash_timestamp
         - crash_id
         - crash_speed_limit
-        - crash_time
         - created_at
         - created_by
         - engineering_area

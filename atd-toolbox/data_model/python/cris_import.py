@@ -198,10 +198,10 @@ def set_default_values(records, key_values):
 
 
 def combine_date_time_fields(
-    rows, *, date_field_name, time_field_name, is_am_pm_format
+    rows, *, date_field_name, time_field_name, output_field_name, is_am_pm_format
 ):
-    """Combine a date and time field and format as ISO string. The same ISO
-    string is stored in both input field names.
+    """Combine a date and time field and format as ISO string. The new ISO
+    string is stored in the output_field_name.
     """
     tzinfo = ZoneInfo("America/Chicago")
     for row in rows:
@@ -240,8 +240,7 @@ def combine_date_time_fields(
         )
         # save the ISO string with tz offset
         crash_date_iso = dt.isoformat()
-        row[date_field_name] = crash_date_iso
-        row[time_field_name] = crash_date_iso
+        row[output_field_name] = crash_date_iso
 
 
 def chunks(lst, n):
@@ -325,18 +324,14 @@ def main():
                 if table_name != "crashes":
                     rename_crash_id(records)
 
-                records = handle_empty_strings(
-                    remove_unsupported_columns(
-                        lower_case_keys(records),
-                        cris_columns,
-                    )
-                )
+                records = lower_case_keys(records)
 
                 if table_name == "crashes":
                     combine_date_time_fields(
                         records,
                         date_field_name="crash_date",
                         time_field_name="crash_time",
+                        output_field_name="crash_timestamp",
                         is_am_pm_format=True,
                     )
 
@@ -362,13 +357,6 @@ def main():
                     for record in pp_records:
                         set_peh_field(record)
 
-                    pp_records = handle_empty_strings(
-                        remove_unsupported_columns(
-                            pp_records,
-                            cris_columns,
-                        )
-                    )
-
                     set_default_values(pp_records, {"is_primary_person": True})
 
                     records = pp_records + records
@@ -379,6 +367,7 @@ def main():
                         records,
                         date_field_name="prsn_death_date",
                         time_field_name="prsn_death_time",
+                        output_field_name="prsn_death_timestamp",
                         is_am_pm_format=False,
                     )
 
@@ -412,6 +401,13 @@ def main():
                             "cris_schema_version": schema_year,
                         },
                     )
+
+                records = handle_empty_strings(
+                    remove_unsupported_columns(
+                        records,
+                        cris_columns,
+                    )
+                )
 
                 upsert_mutation = make_upsert_mutation(table_name, cris_columns)
 

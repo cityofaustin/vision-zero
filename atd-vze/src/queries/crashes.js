@@ -125,7 +125,7 @@ export const GET_CRASH = gql`
       crash_id
       updated_at
       case_id
-      crash_date
+      crash_timestamp
       fhe_collsn_id
       rpt_city_id
       light_cond_id
@@ -305,7 +305,7 @@ export const UPDATE_CRASH = gql`
 export const crashQueryExportFields = `
 crash_id
 case_id
-crash_date
+crash_timestamp
 crash_day_of_week
 rpt_block_num
 rpt_street_pfx

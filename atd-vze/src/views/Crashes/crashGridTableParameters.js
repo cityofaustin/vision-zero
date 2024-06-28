@@ -14,11 +14,11 @@ export const crashGridTableColumns = {
     label_table: "Case ID",
     type: "String",
   },
-  crash_date: {
+  crash_timestamp: {
     searchable: false,
     sortable: true,
     label_table: "Crash Date",
-    type: "Date",
+    type: "date_iso",
   },
   address_primary: {
     searchable: true,
