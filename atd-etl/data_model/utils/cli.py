@@ -22,9 +22,14 @@ def get_cli_args():
         help="Only process CR3 pdfs",
     )
     parser.add_argument(
-        f"--s3",
+        f"--s3-download",
         action="store_true",
-        help="Source zip extracts from S3 bucket and also upload processed CR3 PDFs to S3",
+        help="Source zip extracts from S3 bucket",
+    )
+    parser.add_argument(
+        f"--s3-upload",
+        action="store_true",
+        help="Upload cr3 pdfs and digrams to S3 bucket",
     )
     parser.add_argument(
         f"--skip-unzip",
@@ -40,6 +45,6 @@ def get_cli_args():
     parser.add_argument(
         f"--skip-s3-archive",
         action="store_true",
-        help="If using --s3, do not move the processed extracts to the archive directory",
+        help="If using --s3-download, do not move the processed extracts to the archive directory",
     )
     return parser.parse_args()

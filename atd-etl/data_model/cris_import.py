@@ -27,7 +27,7 @@ def main(cli_args):
 
     if cli_args.skip_unzip:
         extracts_todo = get_unzipped_extracts_local()
-    elif cli_args.s3:
+    elif cli_args.s3_download:
         extracts_todo = get_extract_zips_to_download_s3()
     else:
         extracts_todo = get_extract_zips_todo_local()
@@ -40,21 +40,21 @@ def main(cli_args):
     for extract in extracts_todo:
         """Each extract is unzipped into its own directory as ./<extracts-dir>/<extract-name>/"""
         extract_dir = download_and_unzip_extract_if_needed(
-            cli_args.s3, cli_args.skip_unzip, extract
+            cli_args.s3_download, cli_args.skip_unzip, extract
         )
         if cli_args.csv or (not cli_args.pdf and not cli_args.csv):
             process_csvs(extract_dir)
         if cli_args.pdf or (not cli_args.pdf and not cli_args.csv):
-            process_pdfs(extract_dir)
-        if cli_args.s3 and not cli_args.skip_s3_archive and not cli_args.skip_unzip:
+            process_pdfs(extract_dir, cli_args.s3_upload)
+        if cli_args.s3_download and not cli_args.skip_s3_archive and not cli_args.skip_unzip:
             archive_extract_zip(extract["s3_file_key"])
 
 
 if __name__ == "__main__":
     cli_args = get_cli_args()
     logger = init_logger(debug=cli_args.verbose)
-    if cli_args.skip_s3_archive and not cli_args.s3:
-        logger.warning("--skip-s3-archive has no effect without --s3")
-    if cli_args.skip_unzip and cli_args.s3:
-        raise ValueError("Cannot use --s3 in combination with --skip-unzip")
+    if cli_args.skip_s3_archive and not cli_args.s3_download:
+        raise ValueError("--skip-s3-archive has no effect without --s3-download")
+    if cli_args.skip_unzip and cli_args.s3_download:
+        raise ValueError("Cannot use --s3-download in combination with --skip-unzip")
     main(cli_args)

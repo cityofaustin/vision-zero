@@ -134,8 +134,8 @@ def archive_extract_zip(file_key):
     s3_client.delete_object(Bucket=BUCKET_NAME, Key=file_key)
 
 
-def download_and_unzip_extract_if_needed(use_s3, skip_unzip, extract):
-    if use_s3 and extract.get("s3_file_key"):
+def download_and_unzip_extract_if_needed(s3_download, skip_unzip, extract):
+    if s3_download and extract.get("s3_file_key"):
         download_extract_from_s3(
             s3_client,
             extract["s3_file_key"],
@@ -150,3 +150,7 @@ def download_and_unzip_extract_if_needed(use_s3, skip_unzip, extract):
         # unzip_extract(extract["local_zip_file_path"], extract_dir, file_filter=f"!*.csv")
         unzip_extract(extract["local_zip_file_path"], extract_dir)
     return extract_dir
+
+
+def upload_file_to_s3(file_path, object_key):
+    s3_client.upload_file(file_path, BUCKET_NAME, object_key)
