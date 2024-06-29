@@ -92,6 +92,10 @@ def get_extract_zips_to_download_s3(subdir="new"):
                     "extract_name": get_extract_name_from_file_name(key),
                 }
             )
+
+    if not (len(extracts)) and ENV != "dev":
+        raise IOError("No extract zips found in S3 bucket")
+
     # assumes extract ids are sortable news -> oldest - todo: confirm
     return sorted(extracts, key=lambda d: d["extract_name"])
 
