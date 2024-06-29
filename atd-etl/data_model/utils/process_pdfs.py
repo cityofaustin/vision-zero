@@ -26,9 +26,10 @@ def crop_and_save_diagram(page, crash_id, is_new_cr3_form, extract_dir):
     bbox = DIAGRAM_BBOX_PIXELS["new"] if is_new_cr3_form else DIAGRAM_BBOX_PIXELS["old"]
     diagram_image = page.crop(bbox)
     # todo: is it ok to swith to JPEG (as is done here) and save 75% disk space?
-    diagram_path = f"{crash_id}.jpeg"
-    diagram_image.save(os.path.join(extract_dir, diagram_path))
-    return diagram_path
+    diagram_filename = f"{crash_id}.jpeg"
+    diagram_full_path = os.path.join(extract_dir, diagram_filename)
+    diagram_image.save(diagram_full_path)
+    return diagram_full_path, diagram_filename
 
 
 def get_cr3_object_key(filename, kind):
@@ -60,7 +61,7 @@ def process_pdfs(extract_dir, s3_upload):
             dpi=150,
         )[0]
         logger.debug("Cropping crash diagram...")
-        diagram_path = crop_and_save_diagram(
+        diagram_full_path, diagram_filename = crop_and_save_diagram(
             page, crash_id, is_new_cr3_form(page), extract_dir
         )
 
@@ -69,8 +70,9 @@ def process_pdfs(extract_dir, s3_upload):
             logger.info(f"Uploading CR3 pdf to {s3_object_key_pdf}")
             upload_file_to_s3(pdf_path, s3_object_key_pdf)
 
-            s3_object_key_diagram = get_cr3_object_key(diagram_path, "crash_diagrams")
+            s3_object_key_diagram = get_cr3_object_key(diagram_filename, "crash_diagrams")
             logger.info(f"Uploading crash diagram to {s3_object_key_diagram}")
+            upload_file_to_s3(diagram_full_path, s3_object_key_diagram)
 
     logger.info(
         f"✅ {pdf_count} CR3s processed in {round((time.time() - overall_start_tme)/60, 2)} minutes"
