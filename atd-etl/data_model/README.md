@@ -4,6 +4,8 @@ These scripts manage the processing and importing of TxDOT CRIS data into the Vi
 
 ## Local development / testing
 
+
+### 
 1. Start your local Vision Zero cluster (database + Hasura).
 
 2. Get at least one CRIS extract ZIP file and move it to the `./extracts` directory. 
@@ -17,7 +19,7 @@ $ docker compose build
 $ docker compose run cris_import
 ```
 
-5. Run the main script. This will unzip the extract, load the CSV crash records into teh database, and process CR3s (but upload them nowhere)
+5. Run the main script. This will unzip the extract, load the CSV crash records into the database, and process CR3s (but upload them nowhere)
 
 ```shell
 # from the cris_import container's shell

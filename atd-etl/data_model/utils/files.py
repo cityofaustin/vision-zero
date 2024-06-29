@@ -1,6 +1,8 @@
 import os
 import subprocess
 
+from boto3 import client, resource
+
 from utils.logging import get_logger
 
 from utils.settings import LOCAL_EXTRACTS_DIR
@@ -10,6 +12,8 @@ BUCKET_NAME = os.environ["BUCKET_NAME"]
 EXTRACT_PASSWORD = os.environ["EXTRACT_PASSWORD"]
 
 logger = get_logger()
+s3_client = client("s3")
+s3_resource = resource("s3")
 
 
 def format_megabytes(bytes):
@@ -63,7 +67,7 @@ def get_extract_zips_todo_local():
     return sorted(extracts, key=lambda d: d["extract_name"])
 
 
-def get_extract_zips_to_download_s3(s3_client, subdir="new"):
+def get_extract_zips_to_download_s3(subdir="new"):
     """Fetch a list of CRIS extract zips that are in `new` subdirectory in the S3 bucket.
 
     Returns a sorted list of dicts as { s3_file_key, local_zip_file_path, file_size, extract_name }
@@ -92,7 +96,7 @@ def get_extract_zips_to_download_s3(s3_client, subdir="new"):
     return sorted(extracts, key=lambda d: d["extract_name"])
 
 
-def download_extract_from_s3(s3_client, s3_file_key, file_size, local_zip_file_path):
+def download_extract_from_s3(s3_file_key, file_size, local_zip_file_path):
     """Download zip file from s3 into the provided <local_zip_file_path>"""
     logger.info(f"Downloading {s3_file_key} ({format_megabytes(file_size)})")
     s3_client.download_file(BUCKET_NAME, s3_file_key, local_zip_file_path)
@@ -113,7 +117,7 @@ def unzip_extract(file_path, out_dir_path, file_filter=None):
     subprocess.run(unzip_command, check=True, shell=True, stdout=subprocess.DEVNULL)
 
 
-def archive_extract_zip(s3_client, s3_resource, file_key):
+def archive_extract_zip(file_key):
     """Move an extract zip from ./new to ./archive
 
     Args:
@@ -130,8 +134,8 @@ def archive_extract_zip(s3_client, s3_resource, file_key):
     s3_client.delete_object(Bucket=BUCKET_NAME, Key=file_key)
 
 
-def download_and_unzip_extract_if_needed(s3_client, s3, skip_unzip, extract):
-    if s3 and extract.get("s3_file_key"):
+def download_and_unzip_extract_if_needed(use_s3, skip_unzip, extract):
+    if use_s3 and extract.get("s3_file_key"):
         download_extract_from_s3(
             s3_client,
             extract["s3_file_key"],

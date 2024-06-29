@@ -8,7 +8,7 @@ from tempfile import TemporaryDirectory
 import boto3
 
 
-from utils.utils import (
+from utils.files import (
     get_extract_zips_to_download_s3,
 )
 
