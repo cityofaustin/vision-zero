@@ -13,6 +13,7 @@ from utils.files import (
 )
 
 BUCKET_NAME = os.environ["BUCKET_NAME"]
+ENV = os.environ["ENV"]
 
 
 def main():
@@ -26,7 +27,7 @@ def main():
         return
 
     ok_to_proceed = input(
-        f"About to copy {len(extracts)} extracts into the './inbox' bucket subdirectory. Type 'y' to continue: "
+        f"About to copy {len(extracts)} extracts into the './inbox' bucket subdirectory in the **{ENV}** environment. Type 'y' to continue: "
     )
 
     if ok_to_proceed != "y":
