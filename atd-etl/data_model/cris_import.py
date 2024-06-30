@@ -46,15 +46,15 @@ def main(cli_args):
             process_csvs(extract_dir)
         if cli_args.pdf or (not cli_args.pdf and not cli_args.csv):
             process_pdfs(extract_dir, cli_args.s3_upload)
-        if cli_args.s3_download and not cli_args.skip_s3_archive and not cli_args.skip_unzip:
+        if cli_args.s3_download and cli_args.s3_archive and not cli_args.skip_unzip:
             archive_extract_zip(extract["s3_file_key"])
 
 
 if __name__ == "__main__":
     cli_args = get_cli_args()
     logger = init_logger(debug=cli_args.verbose)
-    if cli_args.skip_s3_archive and not cli_args.s3_download:
-        raise ValueError("--skip-s3-archive has no effect without --s3-download")
+    if cli_args.s3_archive and not cli_args.s3_download:
+        raise ValueError("--s3-archive has no effect without --s3-download")
     if cli_args.skip_unzip and cli_args.s3_download:
         raise ValueError("Cannot use --s3-download in combination with --skip-unzip")
     main(cli_args)

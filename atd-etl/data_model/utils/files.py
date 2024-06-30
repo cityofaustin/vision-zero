@@ -67,8 +67,8 @@ def get_extract_zips_todo_local():
     return sorted(extracts, key=lambda d: d["extract_name"])
 
 
-def get_extract_zips_to_download_s3(subdir="new"):
-    """Fetch a list of CRIS extract zips that are in `new` subdirectory in the S3 bucket.
+def get_extract_zips_to_download_s3(subdir="inbox"):
+    """Fetch a list of CRIS extract zips that are in `inbox` subdirectory in the S3 bucket.
 
     Returns a sorted list of dicts as { s3_file_key, local_zip_file_path, file_size, extract_name }
     """
@@ -122,7 +122,7 @@ def unzip_extract(file_path, out_dir_path, file_filter=None):
 
 
 def archive_extract_zip(file_key):
-    """Move an extract zip from ./new to ./archive
+    """Move an extract zip from ./inbox to ./archive
 
     Args:
         s3_client (botocore.client.S3): the s3 client instance
@@ -130,7 +130,7 @@ def archive_extract_zip(file_key):
         file_key (str): the s3 object file key of the zip file to be archved
 
     """
-    new_key = file_key.replace("new", "archive")
+    new_key = file_key.replace("inbox", "archive")
     logger.info(f"Archiving {file_key}")
     s3_resource.meta.client.copy(
         {"Bucket": BUCKET_NAME, "Key": file_key}, BUCKET_NAME, new_key
@@ -141,7 +141,6 @@ def archive_extract_zip(file_key):
 def download_and_unzip_extract_if_needed(s3_download, skip_unzip, extract):
     if s3_download and extract.get("s3_file_key"):
         download_extract_from_s3(
-            s3_client,
             extract["s3_file_key"],
             extract["file_size"],
             extract["local_zip_file_path"],

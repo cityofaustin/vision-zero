@@ -1,5 +1,5 @@
 """
-Move all zip files in the bucket from ./archive to ./new
+Move all zip files in the bucket from ./archive to ./inbox
 """
 
 import os
@@ -16,10 +16,9 @@ BUCKET_NAME = os.environ["BUCKET_NAME"]
 
 
 def main():
-    s3_client = boto3.client("s3")
     s3_resource = boto3.resource("s3")
 
-    extracts = get_extract_zips_to_download_s3(s3_client, subdir="archive")
+    extracts = get_extract_zips_to_download_s3(subdir="archive")
 
     print(f"{len(extracts)} extracts to restore")
 
@@ -27,7 +26,7 @@ def main():
         return
 
     ok_to_proceed = input(
-        f"About to copy {len(extracts)} extracts into the  './new' bucket subdirectory. Type 'y' to continue: "
+        f"About to copy {len(extracts)} extracts into the './inbox' bucket subdirectory. Type 'y' to continue: "
     )
 
     if ok_to_proceed != "y":
@@ -36,7 +35,7 @@ def main():
 
     for extract in extracts:
         file_key = extract["s3_file_key"]
-        new_key = file_key.replace("archive", "new")
+        new_key = file_key.replace("archive", "inbox")
         print(f"Copying zip to {BUCKET_NAME}/{new_key}")
         s3_resource.meta.client.copy(
             {"Bucket": BUCKET_NAME, "Key": file_key}, BUCKET_NAME, new_key

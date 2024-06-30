@@ -2,6 +2,12 @@
 
 These scripts manage the processing and importing of TxDOT CRIS data into the Vision Zero database.
 
+## How it works
+
+There is one primary script, `cris_import.py`, which is designed to handle the processing of TxDOT CRIS "extract" files, which includes CSVs of crash records as well as CR3 crash report PDF documents. 
+
+The script uses CLI args to enable a variety of different workflows, such as AWS S3-based workflow, as well as 
+
 
 ## Getting started
 
@@ -30,25 +36,28 @@ The only script that should be run directly is `cris_import.py`. It supports the
   --s3-upload        Upload cr3 pdfs and digrams to S3 bucket
   --skip-unzip       Only process files that are already unzipped in the local directory
   --verbose, -v      Sets logging level to DEBUG mode
-  --skip-s3-archive  If using --s3-download, do not move the processed extracts to the archive directory
+  --s3-archive       If using --s3-download, move the processed extracts from the ./inbox to ./archive subdirectory
 ```
 
 ## Local development / testing
+
 
 1. Start your local Vision Zero cluster (database + Hasura).
 
 2. Save a copy of the `env_template` file as `.env`, and fill in the details. 
 
-3. Use `docker compose` to build and run the docker image. This will drop you into the docker image's shell:
+3. Build and run the docker image. This will drop you into the docker image's shell:
 
 ```shell
 $ docker compose build
 $ docker compose run cris_import
 ```
 
-4. Run the main script. This will download an extrat from S3, load the CSV crash records into the database, and process CR3s (but upload them nowhere)
+4. Run the CRIS import script. This will download any extracts available in S3, load the CSV crash records into the database, crop crash diagrams out of the CR3 PDFs, and upload the CR3 pdfs and crash diagrams to the s3 bucket.
 
 ```shell
 # from the cris_import container's shell
-$ ./cris_import.py --download-s3 --skip-s3-archive
+$ ./cris_import.py --download-s3 --upload-s3
 ```
+
+****

@@ -43,8 +43,8 @@ def get_cli_args():
         help="Sets logging level to DEBUG mode",
     )
     parser.add_argument(
-        f"--skip-s3-archive",
+        f"--s3-archive",
         action="store_true",
-        help="If using --s3-download, do not move the processed extracts to the archive directory",
+        help="If using --s3-download, move the processed extracts from the ./inbox to ./archive subdirectory",
     )
     return parser.parse_args()
