@@ -3,14 +3,10 @@
 """
 Todo:
 - populate cr3 fields in hasura
-- s3 operations for pdfs
 - interact with db import logging table
 """
-import os
-
-import boto3
-
 from utils.cli import get_cli_args
+from utils.graphql import create_log_entry, set_log_entry_complete
 from utils.logging import init_logger
 from utils.process_csvs import process_csvs
 from utils.process_pdfs import process_pdfs
@@ -38,7 +34,7 @@ def main(cli_args):
         return
 
     for extract in extracts_todo:
-        """Each extract is unzipped into its own directory as ./<extracts-dir>/<extract-name>/"""
+        log_entry_id = create_log_entry(**extract)
         extract_dir = download_and_unzip_extract_if_needed(
             cli_args.s3_download, cli_args.skip_unzip, extract
         )
@@ -48,6 +44,7 @@ def main(cli_args):
             process_pdfs(extract_dir, cli_args.s3_upload)
         if cli_args.s3_download and cli_args.s3_archive and not cli_args.skip_unzip:
             archive_extract_zip(extract["s3_file_key"])
+        set_log_entry_complete(log_entry_id=log_entry_id)
 
 
 if __name__ == "__main__":

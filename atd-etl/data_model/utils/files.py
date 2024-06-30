@@ -38,6 +38,7 @@ def get_unzipped_extracts_local():
         if os.path.isdir(extract_subdir_full_path):
             unzipped_extracts.append(
                 {
+                    "s3_file_key": None,
                     "extract_name": extract_name,
                     "extract_dest_dir": extract_subdir_full_path,
                 }
@@ -139,6 +140,7 @@ def archive_extract_zip(file_key):
 
 
 def download_and_unzip_extract_if_needed(s3_download, skip_unzip, extract):
+    """Each extract is unzipped into its own directory as ./<extracts-dir>/<extract-name>/"""
     if s3_download and extract.get("s3_file_key"):
         download_extract_from_s3(
             extract["s3_file_key"],
