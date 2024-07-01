@@ -163,7 +163,6 @@ export const GET_CRASH = gql`
       law_enforcement_fatality_num
       investigator_narrative
       cr3_stored_fl
-      cr3_diagram_filename
       crash_injury_metrics_view {
         vz_fatality_count
         sus_serious_injry_count
