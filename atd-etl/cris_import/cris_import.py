@@ -38,7 +38,6 @@ VAULT_ID = os.getenv("OP_VAULT_ID")
 def main():
     secrets = get_secrets()
 
-    # 😢 why not `global variable = value`??
     global ZIP_PASSWORD
 
     global AWS_ACCESS_KEY_ID
