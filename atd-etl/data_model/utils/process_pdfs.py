@@ -1,8 +1,10 @@
+from datetime import datetime, timezone
 import os
 import time
 
 from pdf2image import convert_from_path
 
+from utils.graphql import UPDATE_CRASH_CR3_FIELDS, make_hasura_request
 from utils.logging import get_logger
 from utils.files import upload_file_to_s3
 from utils.settings import DIAGRAM_BBOX_PIXELS, NEW_CR3_FORM_TEST_PIXELS
@@ -70,9 +72,23 @@ def process_pdfs(extract_dir, s3_upload):
             logger.info(f"Uploading CR3 pdf to {s3_object_key_pdf}")
             upload_file_to_s3(pdf_path, s3_object_key_pdf)
 
-            s3_object_key_diagram = get_cr3_object_key(diagram_filename, "crash_diagrams")
+            s3_object_key_diagram = get_cr3_object_key(
+                diagram_filename, "crash_diagrams"
+            )
             logger.info(f"Uploading crash diagram to {s3_object_key_diagram}")
             upload_file_to_s3(diagram_full_path, s3_object_key_diagram)
+
+            logger.info(f"Updating crash CR3 metadata")
+            make_hasura_request(
+                query=UPDATE_CRASH_CR3_FIELDS,
+                variables={
+                    "crash_id": crash_id,
+                    "data": {
+                        "cr3_processed_at": datetime.now(timezone.utc).isoformat(),
+                        "cr3_stored_fl": True,
+                    },
+                },
+            )
 
     logger.info(
         f"✅ {pdf_count} CR3s processed in {round((time.time() - overall_start_tme)/60, 2)} minutes"
