@@ -123,8 +123,6 @@ def process_pdfs(extract_dir, s3_upload):
                     },
                 },
             )
-            # raise ("We need to remove the default value of cr3_stored_fl and other bools in the _edits table")
-
 
     logger.info(
         f"✅ {pdf_count} CR3s processed in {round((time.time() - overall_start_tme)/60, 2)} minutes"
