@@ -71,7 +71,6 @@ select_permissions:
         - at_intrsct_fl
         - case_id
         - council_district
-        - cr3_diagram_filename
         - cr3_stored_fl
         - crash_timestamp
         - crash_id
@@ -140,7 +139,6 @@ select_permissions:
         - at_intrsct_fl
         - case_id
         - council_district
-        - cr3_diagram_filename
         - cr3_stored_fl
         - crash_timestamp
         - crash_id
@@ -209,7 +207,6 @@ select_permissions:
         - at_intrsct_fl
         - case_id
         - council_district
-        - cr3_diagram_filename
         - cr3_stored_fl
         - crash_timestamp
         - crash_id

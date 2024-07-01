@@ -833,23 +833,6 @@
     "source": "etl"
   },
   {
-    "column_name": "cr3_diagram_filename",
-    "data_type": "text",
-    "data_type_constraint": "",
-    "foreign_column_cascade": "",
-    "foreign_column_name": "",
-    "foreign_table_name": "",
-    "foreign_table_schema": "",
-    "is_cris_column": false,
-    "is_edits_column": true,
-    "is_existing_foreign_table": false,
-    "is_primary_key": false,
-    "is_unified_column": true,
-    "note": "new column",
-    "record_type": "crashes",
-    "source": "etl"
-  },
-  {
     "column_name": "investigator_narrative",
     "data_type": "text",
     "data_type_constraint": "",
