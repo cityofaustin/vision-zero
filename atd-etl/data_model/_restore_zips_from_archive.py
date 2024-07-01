@@ -3,7 +3,6 @@ Move all zip files in the bucket from ./archive to ./inbox
 """
 
 import os
-from tempfile import TemporaryDirectory
 
 import boto3
 

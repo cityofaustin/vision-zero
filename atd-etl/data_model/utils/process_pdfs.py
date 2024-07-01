@@ -1,5 +1,7 @@
 from datetime import datetime, timezone
 import os
+from pathlib import Path
+
 import time
 
 from pdf2image import convert_from_path
@@ -14,7 +16,16 @@ logger = get_logger()
 
 
 def is_new_cr3_form(page):
-    """Slightly modifiy these from the old version"""
+    """Determine of the CR3 is following the older or newer format.
+
+    The check is conducted by sampling if various pixels are black.
+
+    Args:
+        page (PIL image): the pdf page as an image
+
+    Returns:
+        bool: true if the provided page passes the sampling tests
+    """
     new_cr3_form = True
     for pixel in NEW_CR3_FORM_TEST_PIXELS:
         rgb_pixel = page.getpixel(pixel)
@@ -25,21 +36,45 @@ def is_new_cr3_form(page):
 
 
 def crop_and_save_diagram(page, crash_id, is_new_cr3_form, extract_dir):
+    """Crop out the crash diagram and save it to the local directory.
+
+    The diagram is saved to <extract_dir>/crash_diagrams/<crash_id>.jpeg
+
+    Args:
+        page (PIL image): the CR3 pdf page as an image
+        crash_id (int): the CRIS crash ID
+        is_new_cr3_form (bool): if the CR3 is in the 'new' format
+        extract_dir (str): the local directory in which to save the file
+
+    Returns:
+        str: diagram_full_path - the full path to the saved diagram, including it's name
+        str: diagram_filename - the name of diagram file, .e.g 12345678.jpeg
+    """
     bbox = DIAGRAM_BBOX_PIXELS["new"] if is_new_cr3_form else DIAGRAM_BBOX_PIXELS["old"]
     diagram_image = page.crop(bbox)
     # todo: is it ok to swith to JPEG (as is done here) and save 75% disk space?
     diagram_filename = f"{crash_id}.jpeg"
-    diagram_full_path = os.path.join(extract_dir, diagram_filename)
+    diagram_full_path = os.path.join(extract_dir, "crash_diagrams", diagram_filename)
     diagram_image.save(diagram_full_path)
     return diagram_full_path, diagram_filename
 
 
 def get_cr3_object_key(filename, kind):
+    """Format the S3 object to which the CR3 PDF or diagram saved"""
     return f"{ENV}/cr3s/{kind}/{filename}"
 
 
 def process_pdfs(extract_dir, s3_upload):
+    """Main loop for extract crash diagrams from  CR3 PDFs
+
+    Args:
+        extract_dir (str): the local path to the current extract
+        s3_upload (bool): if the diagram and PDF should be uploaded to the S3 bucket
+    """
     overall_start_tme = time.time()
+    # make the crash_diagram extract directory
+    Path(os.path.join(extract_dir, "crash_diagrams")).mkdir(parents=True, exist_ok=True)
+
     pdfs = [
         filename
         for filename in os.listdir(os.path.join(extract_dir, "crashReports"))
@@ -54,8 +89,6 @@ def process_pdfs(extract_dir, s3_upload):
         logger.debug("Converting PDF to image...")
         page = convert_from_path(
             pdf_path,
-            # output_folder="stuff",
-            # output_file=f"{crash_id}.jpeg",
             # jpeg is much faster than the default ppm fmt
             fmt="jpeg",
             first_page=2,
