@@ -3,6 +3,8 @@ create table public.crashes_cris (
     active_school_zone_fl boolean,
     at_intrsct_fl boolean,
     case_id text,
+    cr3_processed_at timestamp with time zone,
+    cr3_stored_fl boolean default false,
     crash_id integer unique,
     crash_speed_limit integer,
     crash_timestamp timestamp with time zone,

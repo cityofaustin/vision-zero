@@ -102,9 +102,9 @@ insert into _column_metadata (column_name, column_label, record_type, is_importe
 insert into _column_metadata (column_name, column_label, record_type, is_imported_from_cris)
         values ('law_enforcement_fatality_num', 'law_enforcement_fatality_num', 'crashes', false);
 insert into _column_metadata (column_name, column_label, record_type, is_imported_from_cris)
-        values ('cr3_processed_at', 'cr3_processed_at', 'crashes', false);
+        values ('cr3_processed_at', 'cr3_processed_at', 'crashes', true);
 insert into _column_metadata (column_name, column_label, record_type, is_imported_from_cris)
-        values ('cr3_stored_fl', 'cr3_stored_fl', 'crashes', false);
+        values ('cr3_stored_fl', 'cr3_stored_fl', 'crashes', true);
 insert into _column_metadata (column_name, column_label, record_type, is_imported_from_cris)
         values ('investigator_narrative', 'investigator_narrative', 'crashes', true);
 insert into _column_metadata (column_name, column_label, record_type, is_imported_from_cris)

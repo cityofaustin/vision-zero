@@ -112,7 +112,8 @@ def process_pdfs(extract_dir, s3_upload):
             upload_file_to_s3(diagram_full_path, s3_object_key_diagram)
 
             logger.info(f"Updating crash CR3 metadata")
-            make_hasura_request(
+            # todo: raise error if crash_id doesn't exist in db?
+            res = make_hasura_request(
                 query=UPDATE_CRASH_CR3_FIELDS,
                 variables={
                     "crash_id": crash_id,
@@ -122,6 +123,8 @@ def process_pdfs(extract_dir, s3_upload):
                     },
                 },
             )
+            # raise ("We need to remove the default value of cr3_stored_fl and other bools in the _edits table")
+
 
     logger.info(
         f"✅ {pdf_count} CR3s processed in {round((time.time() - overall_start_tme)/60, 2)} minutes"
