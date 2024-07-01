@@ -818,7 +818,7 @@
   {
     "column_name": "cr3_stored_fl",
     "data_type": "boolean",
-    "data_type_constraint": "default false",
+    "data_type_constraint": "not null default false",
     "foreign_column_cascade": "",
     "foreign_column_name": "",
     "foreign_table_name": "",
