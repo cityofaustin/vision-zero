@@ -39,7 +39,6 @@ def main():
     secrets = get_secrets()
 
     # 😢 why not `global variable = value`??
-    global SFTP_ENDPOINT
     global ZIP_PASSWORD
 
     global AWS_ACCESS_KEY_ID
@@ -63,7 +62,6 @@ def main():
 
     global S3_EXTRACT_BUCKET
 
-    SFTP_ENDPOINT = secrets["SFTP_endpoint"]
     ZIP_PASSWORD = secrets["archive_extract_password"]
 
     AWS_ACCESS_KEY_ID = secrets["aws_access_key"]
@@ -179,11 +177,6 @@ def mark_extract_as_imported(id):
 
 def get_secrets():
     REQUIRED_SECRETS = {
-        "SFTP_endpoint": {
-            "opitem": "Vision Zero CRIS Import",
-            "opfield": f"Common.SFTP Endpoint",
-            "opvault": VAULT_ID,
-        },
         "sftp_endpoint_private_key": {
             "opitem": "SFTP Endpoint Key",
             "opfield": ".private key",
