@@ -33,7 +33,7 @@ Create your environment by saving a copy of the `env_template` file as `.env`. T
 ```
 ENV=dev
 HASURA_GRAPHQL_ENDPOINT="http://localhost:8084/v1/graphql"
-AWS_ACCESS_KEY_ID=  `#
+AWS_ACCESS_KEY_ID= 
 AWS_SECRET_ACCESS_KEY=
 BUCKET_NAME=
 EXTRACT_PASSWORD=
