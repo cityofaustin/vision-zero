@@ -6,7 +6,7 @@ import requests
 from utils.exceptions import HasuraAPIError
 
 ENDPOINT = os.getenv("HASURA_GRAPHQL_ENDPOINT")
-
+ADMIN_SECRET = os.getenv("HASURA_GRAPQL_ADMIN_SECRET")
 
 COLUMN_METADATA_QUERY = """
 query ColumnMetadata {
@@ -87,7 +87,16 @@ mutation UpdateImportLog($data: cris_import_log_set_input!, $id: Int!) {
 }
 """
 
-UPDATE_CRASH_CR3_FIELDS
+UPDATE_CRASH_CR3_FIELDS = """
+mutation update_crashes_edits($id: Int!, $data: crashes_edits_set_input!) {
+    update_crashes_edits(where: { id: { _eq: $id } }, _set: $data) {
+        affected_rows
+        returning {
+        crash_id
+        }
+    }
+}
+"""
 
 UPSERT_RECORD_MUTATIONS = {
     "crashes": CRASH_UPSERT_MUTATION,
@@ -113,7 +122,9 @@ def make_hasura_request(*, query, variables=None):
     if not ENDPOINT:
         raise OSError("HASURA_GRAPHQL_ENDPOINT env var is missing/None")
     payload = {"query": query, "variables": variables}
-    res = requests.post(ENDPOINT, json=payload)
+    res = requests.post(
+        ENDPOINT, json=payload, headers={"x-hasura-admin-secret": ADMIN_SECRET}
+    )
     res.raise_for_status()
     data = res.json()
     try:
