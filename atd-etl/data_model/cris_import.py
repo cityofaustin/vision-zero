@@ -1,10 +1,4 @@
 #!/usr/bin/env python
-# docker run -it --rm --env-file .env --net host -v $PWD:/app data-model-dev bash
-"""
-Todo:
-- populate cr3 fields in hasura
-- interact with db import logging table
-"""
 from utils.cli import get_cli_args
 from utils.graphql import create_log_entry, set_log_entry_complete
 from utils.logging import init_logger

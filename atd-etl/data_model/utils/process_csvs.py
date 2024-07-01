@@ -6,7 +6,7 @@ from zoneinfo import ZoneInfo
 
 from utils.graphql import (
     make_hasura_request,
-    mutations,
+    UPSERT_RECORD_MUTATIONS,
     COLUMN_METADATA_QUERY,
     CHARGES_DELETE_MUTATION,
 )
@@ -69,7 +69,7 @@ def make_upsert_mutation(table_name, cris_columns):
     Returns:
         str: the graphql query string
     """
-    upsert_mutation = mutations[table_name]
+    upsert_mutation = UPSERT_RECORD_MUTATIONS[table_name]
     update_columns = cris_columns.copy()
     return upsert_mutation.replace("$updateColumns", ", ".join(update_columns))
 

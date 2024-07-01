@@ -87,7 +87,9 @@ mutation UpdateImportLog($data: cris_import_log_set_input!, $id: Int!) {
 }
 """
 
-mutations = {
+UPDATE_CRASH_CR3_FIELDS
+
+UPSERT_RECORD_MUTATIONS = {
     "crashes": CRASH_UPSERT_MUTATION,
     "units": UNIT_UPSERT_MUTATION,
     "persons": PERSON_UPSERT_MUTATION,
