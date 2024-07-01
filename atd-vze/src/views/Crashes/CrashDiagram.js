@@ -49,13 +49,13 @@ const CrashDiagram = ({ crashId, isCr3Stored, isTempRecord }) => {
         <Row className="d-flex align-items-center">
           <Col>Crash Diagram</Col>
           <Col className="d-flex justify-content-end">
-            {isCr3Stored ? (
-              <Button color="primary" onClick={requestCR3}>
-                Download CR-3 PDF
-              </Button>
-            ) : (
-              <div></div>
-            )}
+            <Button
+              color="primary"
+              onClick={requestCR3}
+              disabled={!isCr3Stored}
+            >
+              Download CR-3 PDF
+            </Button>
           </Col>
         </Row>
       </CardHeader>
