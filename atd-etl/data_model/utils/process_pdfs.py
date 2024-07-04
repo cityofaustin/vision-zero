@@ -1,4 +1,5 @@
 from datetime import datetime, timezone
+from concurrent.futures import ProcessPoolExecutor
 import os
 from pathlib import Path
 
@@ -9,7 +10,12 @@ from pdf2image import convert_from_path
 from utils.graphql import UPDATE_CRASH_CR3_FIELDS, make_hasura_request
 from utils.logging import get_logger
 from utils.files import upload_file_to_s3
-from utils.settings import DIAGRAM_BBOX_PIXELS, NEW_CR3_FORM_TEST_PIXELS
+from utils.settings import (
+    DIAGRAM_BBOX_PIXELS,
+    NEW_CR3_FORM_TEST_PIXELS,
+    MULTIPROCESSING_PDF_MAX_WORKERS,
+    MULTIPROCESSING_PDF_MAX_ERRORS,
+)
 
 ENV = os.getenv("ENV")
 logger = get_logger()
@@ -64,12 +70,62 @@ def get_cr3_object_key(filename, kind):
     return f"{ENV}/cr3s/{kind}/{filename}"
 
 
+def process_pdf(extract_dir, filename, s3_upload, index):
+    """Handles processing of one CR3 PDF document.
+
+    Args:
+        extract_dir (str): the local path to the current extract
+        filename (str): the filename of the CR3 PDF process, e.g. 123456.pdf
+        s3_upload (bool): if the diagram and PDF should be uploaded to the S3 bucket
+        index (int): the index ID of this pdf among all PDFs being processed
+    """
+    logger.info(f"Processing {filename} ({index})")
+    crash_id = int(filename.replace(".pdf", ""))
+    pdf_path = os.path.join(extract_dir, "crashReports", filename)
+    logger.debug("Converting PDF to image...")
+    page = convert_from_path(
+        pdf_path,
+        fmt="jpeg",  # jpeg is much faster than the default ppm fmt
+        first_page=2,  # page 2 has the crash diagram
+        last_page=2,
+        dpi=150,
+    )[0]
+
+    logger.debug("Cropping crash diagram...")
+    diagram_full_path, diagram_filename = crop_and_save_diagram(
+        page, crash_id, is_new_cr3_form(page), extract_dir
+    )
+
+    if s3_upload:
+        s3_object_key_pdf = get_cr3_object_key(filename, "pdfs")
+        logger.info(f"Uploading CR3 pdf to {s3_object_key_pdf}")
+        upload_file_to_s3(pdf_path, s3_object_key_pdf)
+
+        s3_object_key_diagram = get_cr3_object_key(diagram_filename, "crash_diagrams")
+        logger.info(f"Uploading crash diagram to {s3_object_key_diagram}")
+        upload_file_to_s3(diagram_full_path, s3_object_key_diagram)
+
+        logger.info(f"Updating crash CR3 metadata")
+        # todo: raise error if crash_id doesn't exist in db?
+        res = make_hasura_request(
+            query=UPDATE_CRASH_CR3_FIELDS,
+            variables={
+                "crash_id": crash_id,
+                "data": {
+                    "cr3_processed_at": datetime.now(timezone.utc).isoformat(),
+                    "cr3_stored_fl": True,
+                },
+            },
+        )
+
+
 def process_pdfs(extract_dir, s3_upload):
     """Main loop for extract crash diagrams from  CR3 PDFs
 
     Args:
         extract_dir (str): the local path to the current extract
         s3_upload (bool): if the diagram and PDF should be uploaded to the S3 bucket
+
     """
     overall_start_tme = time.time()
     # make the crash_diagram extract directory
@@ -82,47 +138,31 @@ def process_pdfs(extract_dir, s3_upload):
     ]
     pdf_count = len(pdfs)
 
-    for i, filename in enumerate(pdfs):
-        logger.info(f"Processing {filename} ({i+1}/{pdf_count})")
-        crash_id = int(filename.replace(".pdf", ""))
-        pdf_path = os.path.join(extract_dir, "crashReports", filename)
-        logger.debug("Converting PDF to image...")
-        page = convert_from_path(
-            pdf_path,
-            # jpeg is much faster than the default ppm fmt
-            fmt="jpeg",
-            first_page=2,
-            last_page=2,
-            dpi=150,
-        )[0]
-        logger.debug("Cropping crash diagram...")
-        diagram_full_path, diagram_filename = crop_and_save_diagram(
-            page, crash_id, is_new_cr3_form(page), extract_dir
+    logger.info(f"Found {pdf_count} PDFs to process")
+
+    errors = []
+
+    with ProcessPoolExecutor(max_workers=MULTIPROCESSING_PDF_MAX_WORKERS) as executor:
+        for index, filename in enumerate(pdfs):
+            future = executor.submit(
+                process_pdf, extract_dir, filename, s3_upload, index
+            )
+            try:
+                future.result()
+            except Exception as e:
+                logger.error(f"Failed to process {filename}: {str(e)}")
+                errors.append([filename, e])
+                if len(errors) > MULTIPROCESSING_PDF_MAX_ERRORS:
+                    logger.info("Max error limit execeeded. Stopping executor")
+                    executor.shutdown(
+                        wait=False,
+                    )
+
+    if errors:
+        logger.info(
+            f"Encountered {len(errors)} error(s) - raising first exception found:"
         )
-
-        if s3_upload:
-            s3_object_key_pdf = get_cr3_object_key(filename, "pdfs")
-            logger.info(f"Uploading CR3 pdf to {s3_object_key_pdf}")
-            upload_file_to_s3(pdf_path, s3_object_key_pdf)
-
-            s3_object_key_diagram = get_cr3_object_key(
-                diagram_filename, "crash_diagrams"
-            )
-            logger.info(f"Uploading crash diagram to {s3_object_key_diagram}")
-            upload_file_to_s3(diagram_full_path, s3_object_key_diagram)
-
-            logger.info(f"Updating crash CR3 metadata")
-            # todo: raise error if crash_id doesn't exist in db?
-            res = make_hasura_request(
-                query=UPDATE_CRASH_CR3_FIELDS,
-                variables={
-                    "crash_id": crash_id,
-                    "data": {
-                        "cr3_processed_at": datetime.now(timezone.utc).isoformat(),
-                        "cr3_stored_fl": True,
-                    },
-                },
-            )
+        raise errors[0][1]
 
     logger.info(
         f"✅ {pdf_count} CR3s processed in {round((time.time() - overall_start_tme)/60, 2)} minutes"

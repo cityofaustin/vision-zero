@@ -15,3 +15,8 @@ NEW_CR3_FORM_TEST_PIXELS = [
 ]
 
 CSV_UPLOAD_BATCH_SIZE = 1000
+
+# max number of CPU cores to utilize when processing PDFs concurrently
+MULTIPROCESSING_PDF_MAX_WORKERS = 4
+# max number of errors to encounter before shutting down the PDF process executor
+MULTIPROCESSING_PDF_MAX_ERRORS = 10
