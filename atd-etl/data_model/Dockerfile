@@ -1,4 +1,3 @@
-#  docker build -t data-model-dev .
 FROM python:3.11-slim
 
 WORKDIR /app
