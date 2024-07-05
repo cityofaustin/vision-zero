@@ -2,7 +2,7 @@ import argparse
 
 
 def get_cli_args():
-    """Define the CLI parse the current args
+    """Create the CLI and parse args
 
     Returns:
         argparse.Namespace: The CLI namespace
