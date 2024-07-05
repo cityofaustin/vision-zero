@@ -5,16 +5,17 @@ from utils.logging import init_logger
 from utils.process_csvs import process_csvs
 from utils.process_pdfs import process_pdfs
 from utils.files import (
+    get_extract_dir,
     get_unzipped_extracts_local,
     get_extract_zips_todo_local,
     get_extract_zips_to_download_s3,
-    download_and_unzip_extract_if_needed,
+    download_extract_from_s3,
+    unzip_extract,
     archive_extract_zip,
 )
 
 
 def main(cli_args):
-
     if cli_args.skip_unzip:
         extracts_todo = get_unzipped_extracts_local()
     elif cli_args.s3_download:
@@ -29,9 +30,15 @@ def main(cli_args):
 
     for extract in extracts_todo:
         log_entry_id = create_log_entry(**extract)
-        extract_dir = download_and_unzip_extract_if_needed(
-            cli_args.s3_download, cli_args.skip_unzip, extract
-        )
+        extract_dir = get_extract_dir(extract["extract_name"])
+        if cli_args.s3_download:
+            download_extract_from_s3(
+                extract["s3_file_key"],
+                extract["file_size"],
+                extract["local_zip_file_path"],
+            )
+        if not cli_args.skip_unzip:
+            unzip_extract(extract["local_zip_file_path"], extract_dir)
         if cli_args.csv or (not cli_args.pdf and not cli_args.csv):
             process_csvs(extract_dir)
         if cli_args.pdf or (not cli_args.pdf and not cli_args.csv):

@@ -97,28 +97,27 @@ def get_extract_zips_to_download_s3(subdir="inbox"):
     if not (len(extracts)) and ENV != "dev":
         raise IOError("No extract zips found in S3 bucket")
 
-    # assumes extract ids are sortable news -> oldest - todo: confirm
+    # assumes extract ids are sortable newsest -> oldest
     return sorted(extracts, key=lambda d: d["extract_name"])
 
 
-def download_extract_from_s3(s3_file_key, file_size, local_zip_file_path):
+def download_extract_from_s3(*, s3_file_key, file_size, local_zip_file_path):
     """Download zip file from s3 into the provided <local_zip_file_path>"""
     logger.info(f"Downloading {s3_file_key} ({format_megabytes(file_size)})")
     s3_client.download_file(BUCKET_NAME, s3_file_key, local_zip_file_path)
 
 
-def unzip_extract(file_path, out_dir_path, file_filter=None):
+def unzip_extract(local_zip_file_path, out_dir_path):
     """Unzip a cris extract
 
     Args:
         file_path (str): the full path to the extract zip
         out_dir_path (str): the full path to the directory where extracted files will be saved
-        file_filter (_type_, optional): Optional filter pattern to define which files to extract.
-            Not currently in use but enables the possiblity of only extract, e.g, CSV files or PDFs
     """
-    logger.info(f"Unzipping {file_path} to {out_dir_path}")
-    file_filter_arg = f"-i{file_filter}" if file_filter else ""
-    unzip_command = f'7za -y -p{EXTRACT_PASSWORD} -o{out_dir_path} {file_filter_arg} x "{file_path}"'
+    logger.info(f"Unzipping {local_zip_file_path} to {out_dir_path}")
+    unzip_command = (
+        f'7za -y -p{EXTRACT_PASSWORD} -o{out_dir_path} x "{local_zip_file_path}"'
+    )
     subprocess.run(unzip_command, check=True, shell=True, stdout=subprocess.DEVNULL)
 
 
@@ -129,7 +128,6 @@ def archive_extract_zip(file_key):
         s3_client (botocore.client.S3): the s3 client instance
         s3_resource (boto3.resources.factory.s3.ServiceResource): the lower-level S3 "resource" instance
         file_key (str): the s3 object file key of the zip file to be archved
-
     """
     new_key = file_key.replace("inbox", "archive")
     logger.info(f"Archiving {file_key}")
@@ -139,25 +137,10 @@ def archive_extract_zip(file_key):
     s3_client.delete_object(Bucket=BUCKET_NAME, Key=file_key)
 
 
-def download_and_unzip_extract_if_needed(s3_download, skip_unzip, extract):
-    """Each extract is unzipped into its own directory as ./<extracts-dir>/<extract-name>/"""
-    if s3_download and extract.get("s3_file_key"):
-        download_extract_from_s3(
-            extract["s3_file_key"],
-            extract["file_size"],
-            extract["local_zip_file_path"],
-        )
-    extract_dir = os.path.join(LOCAL_EXTRACTS_DIR, extract["extract_name"])
-    # unzip the zip into <local-dir>/<extract-name
-    if not skip_unzip:
-        # it's possible to unzip only specific files, e.g. csvs, but i don't think there's a good reason to
-        # use this functionality
-        # unzip_extract(extract["local_zip_file_path"], extract_dir, file_filter=f"!*.csv")
-        unzip_extract(extract["local_zip_file_path"], extract_dir)
-    return extract_dir
+def get_extract_dir(extract_name):
+    """Construct the full path to an unzipped extract"""
+    return os.path.join(LOCAL_EXTRACTS_DIR, extract_name)
 
 
 def upload_file_to_s3(file_path, object_key):
     s3_client.upload_file(file_path, BUCKET_NAME, object_key)
-
-
