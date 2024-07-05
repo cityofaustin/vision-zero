@@ -22,7 +22,7 @@ logger = get_logger()
 
 
 def is_new_cr3_form(page):
-    """Determine of the CR3 is following the older or newer format.
+    """Determine if the CR3 is following the older or newer format.
 
     The check is conducted by sampling if various pixels are black.
 
@@ -106,7 +106,6 @@ def process_pdf(extract_dir, filename, s3_upload, index):
         upload_file_to_s3(diagram_full_path, s3_object_key_diagram)
 
         logger.info(f"Updating crash CR3 metadata")
-        # todo: raise error if crash_id doesn't exist in db?
         res = make_hasura_request(
             query=UPDATE_CRASH_CR3_FIELDS,
             variables={
@@ -117,6 +116,12 @@ def process_pdf(extract_dir, filename, s3_upload, index):
                 },
             },
         )
+        # check to make sure that we actually updated a crash record
+        affected_rows = res["update_crashes_cris"]["affected_rows"]
+        if not affected_rows:
+            raise ValueError(
+                f"Crash ID: {crash_id} - CR3 PDF has no matching crash record in the DB. This should never happen."
+            )
 
 
 def process_pdfs(extract_dir, s3_upload):
@@ -140,29 +145,21 @@ def process_pdfs(extract_dir, s3_upload):
 
     logger.info(f"Found {pdf_count} PDFs to process")
 
-    errors = []
-
     with ProcessPoolExecutor(max_workers=MULTIPROCESSING_PDF_MAX_WORKERS) as executor:
+        futures = []
         for index, filename in enumerate(pdfs):
             future = executor.submit(
                 process_pdf, extract_dir, filename, s3_upload, index
             )
-            try:
-                future.result()
-            except Exception as e:
-                logger.error(f"Failed to process {filename}: {str(e)}")
-                errors.append([filename, e])
-                if len(errors) > MULTIPROCESSING_PDF_MAX_ERRORS:
-                    logger.info("Max error limit execeeded. Stopping executor")
-                    executor.shutdown(
-                        wait=False,
-                    )
-
-    if errors:
-        logger.info(
-            f"Encountered {len(errors)} error(s) - raising first exception found:"
-        )
-        raise errors[0][1]
+            futures.append(future)
+    # inspect results for exceptions—this must be done after execution of all futures because
+    # future.result() is blocking
+    for future in futures:
+        try:
+            future.result()
+        except Exception as e:
+            logger.error(f"Failed to process {filename}: {str(e)}")
+            raise e
 
     logger.info(
         f"✅ {pdf_count} CR3s processed in {round((time.time() - overall_start_tme)/60, 2)} minutes"
