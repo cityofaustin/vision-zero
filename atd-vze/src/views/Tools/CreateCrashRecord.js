@@ -28,32 +28,28 @@ const CreateCrashRecord = ({ client }) => {
   const { user } = useAuth0();
 
   const unitsInitialState = [
-    { unit_desc_id: 1, atd_fatality_count: 0, sus_serious_injry_cnt: 0 },
+    { unit_desc_id: 1, fatality_count: 0, sus_serious_injry_cnt: 0 },
   ];
 
   const formInitialState = {
-    tempId: 1000,
     caseId: "",
-    crashTime: format(new Date(), "HH:mm:ss"),
-    crashDate: format(new Date(), "yyyy-MM-dd"),
-    primaryAddress: "",
-    secondayAddress: "",
-    units: [
-      { unit_desc_id: 1, atd_fatality_count: 0, sus_serious_injry_cnt: 0 },
-    ],
+    crashTimestamp: format(new Date(), "yyyy-MM-dd"),
+    primaryStreetName: "",
+    secondaryStreetName: "",
+    units: [{ unit_desc_id: 1, fatality_count: 0, sus_serious_injry_cnt: 0 }],
   };
 
-  const [tempId, setTempId] = useState(formInitialState.tempId);
   const [caseId, setCaseId] = useState(formInitialState.caseId);
   const [successfulNewRecordId, setSuccessfulNewRecordId] = useState(null);
-  const [crashTime, setCrashTime] = useState(formInitialState.crashTime);
-  const [crashDate, setCrashDate] = useState(formInitialState.crashDate);
-  const [feedback, setFeedback] = useState(false);
-  const [primaryAddress, setPrimaryAddress] = useState(
-    formInitialState.primaryAddress
+  const [crashTimestamp, setCrashTimestamp] = useState(
+    formInitialState.crashTimestamp
   );
-  const [secondayAddress, setSecondaryAddress] = useState(
-    formInitialState.secondayAddress
+  const [feedback, setFeedback] = useState(false);
+  const [primaryStreetName, setPrimaryStreetName] = useState(
+    formInitialState.primaryStreetName
+  );
+  const [secondaryStreetName, setSecondaryStreetName] = useState(
+    formInitialState.secondaryStreetname
   );
 
   function unitsReducer(state, action) {
@@ -83,43 +79,38 @@ const CreateCrashRecord = ({ client }) => {
     return !data;
   }
 
-  useEffect(() => {
-    const GET_HIGHEST_TEMP_RECORD_ID = gql`
-      {
-        atd_txdot_crashes(
-          where: { temp_record: { _eq: true } }
-          limit: 1
-          order_by: { crash_id: desc }
-        ) {
-          crash_id
-        }
-      }
-    `;
+  // useEffect(() => {
+  //   const GET_HIGHEST_TEMP_RECORD_ID = gql`
+  //     {
+  //       crashes(limit: 1, order_by: { crash_id: desc }) {
+  //         crash_id
+  //       }
+  //     }
+  //   `;
 
-    client
-      .mutate({
-        mutation: GET_HIGHEST_TEMP_RECORD_ID,
-      })
-      .then(res => {
-        // Find the highest existing temp crash record ID value.
-        // If there aren't and temp crash records,
-        // default to 1000.
-        const highestCurrentTempId = res.data.atd_txdot_crashes[0]
-          ? res.data.atd_txdot_crashes[0].crash_id
-          : 1000;
-        setTempId(highestCurrentTempId + 1);
-      })
-      .catch(error => {
-        setFeedback({ title: "Error", message: String(error) });
-      });
-  }, [client]);
+  //   client
+  //     .mutate({
+  //       mutation: GET_HIGHEST_TEMP_RECORD_ID,
+  //     })
+  //     .then(res => {
+  //       // Find the highest existing temp crash record ID value.
+  //       // If there aren't and temp crash records,
+  //       // default to 1000.
+  //       const highestCurrentTempId = res.data.crashes[0]
+  //         ? res.data.crashes[0].crash_id
+  //         : 1000;
+  //       setTempId(highestCurrentTempId + 1);
+  //     })
+  //     .catch(error => {
+  //       setFeedback({ title: "Error", message: String(error) });
+  //     });
+  // }, [client]);
 
   const resetForm = () => {
     setCaseId(formInitialState.caseId);
-    setCrashTime(formInitialState.crashTime);
-    setCrashDate(formInitialState.crashDate);
-    setPrimaryAddress(formInitialState.primaryAddress);
-    setSecondaryAddress(formInitialState.secondayAddress);
+    setCrashTimestamp(formInitialState.crashTimestamp);
+    setPrimaryStreetName(formInitialState.primaryStreetName);
+    setSecondaryStreetName(formInitialState.secondaryStreetName);
     unitFormDispatch({ type: "reset" });
   };
 
@@ -131,14 +122,14 @@ const CreateCrashRecord = ({ client }) => {
       .query({
         query: gql`
           {
-            atd_txdot_crashes(where: {case_id: {_eq: "${caseId}"}}) {
+            crashes(where: {case_id: {_eq: "${caseId}"}}) {
               case_id
             }
           }
         `,
       })
       .then(res => {
-        if (res.data.atd_txdot_crashes.length > 0) {
+        if (res.data.crashes.length > 0) {
           setFeedback({ title: "Error", message: "Case ID must be unique." });
         } else {
           if (isFieldInvalid(caseId)) {
@@ -161,19 +152,12 @@ const CreateCrashRecord = ({ client }) => {
               `{
           crash_id: $crash_id,
           unit_nbr: ${unitNumber},
-          death_cnt: ${Number(unit.atd_fatality_count)},
-          sus_serious_injry_cnt: ${Number(unit.sus_serious_injry_cnt)},
           unit_desc_id: ${Number(unit.unit_desc_id)}
         }`
             );
 
-            for (
-              let index = 0;
-              index < Number(unit.atd_fatality_count);
-              index++
-            ) {
+            for (let index = 0; index < Number(unit.fatality_count); index++) {
               personObjects = personObjects.concat(`{
-        crash_id: ${tempId},
         unit_nbr: ${unitNumber},
         prsn_injry_sev_id: 4,
       }`);
@@ -185,7 +169,6 @@ const CreateCrashRecord = ({ client }) => {
               index++
             ) {
               personObjects = personObjects.concat(`{
-        crash_id: ${tempId},
         unit_nbr: ${unitNumber},
         prsn_injry_sev_id: 1,
       }`);
@@ -197,30 +180,21 @@ const CreateCrashRecord = ({ client }) => {
 
           const INSERT_BULK = gql`
       mutation bulkInsert(
-        $address_confirmed_primary: String
-        $address_confirmed_secondary: String
-        $atd_fatality_count: Int
+        $rpt_street_name: String
+        $rpt_sec_street_name: String
         $case_id: String
-        $crash_date: date
-        $crash_fatal_fl: String
+        $crash_timestamp: timestamp
         $crash_id: Int
-        $crash_time: time,
-        $sus_serious_injry_cnt: Int,
         $updated_by: String
       ) {
-        insert_atd_txdot_crashes(
+        insert_crashes_cris(
           objects: [
             {
-              address_confirmed_primary: $address_confirmed_primary
-              address_confirmed_secondary: $address_confirmed_secondary
-              atd_fatality_count: $atd_fatality_count
+              rpt_street_name: $rpt_street_name
+              rpt_sec_street_name: $rpt_sec_street_name
               case_id: $case_id
               city_id: 22
-              crash_date: $crash_date
-              crash_fatal_fl: $crash_fatal_fl
-              crash_id: $crash_id
-              crash_time: $crash_time
-              sus_serious_injry_cnt: $sus_serious_injry_cnt
+              crash_timestamp: $crash_timestamp
               updated_by: $updated_by 
               temp_record: true
             }
@@ -228,23 +202,23 @@ const CreateCrashRecord = ({ client }) => {
         ) {
           affected_rows
           returning {
-            crash_id
+            id
           }
         }
 
-        insert_atd_txdot_units(
+        insert_units_cris(
           objects: ${unitObjects}
         ) {
           affected_rows
         }
 
-        insert_atd_txdot_primaryperson(objects: ${personObjects}) {
+        insert_people_cris(objects: ${personObjects}) {
           affected_rows
         }
       }
     `;
           const fatalityCountSum = unitFormState.reduce(
-            (a, b) => a + Number(b.atd_fatality_count),
+            (a, b) => a + Number(b.fatality_count),
             0
           );
           const susSeriousInjuryCountSum = unitFormState.reduce(
@@ -253,15 +227,11 @@ const CreateCrashRecord = ({ client }) => {
           );
 
           const crashVariables = {
-            atd_fatality_count: fatalityCountSum,
-            address_confirmed_primary: primaryAddress,
-            address_confirmed_secondary: secondayAddress,
+            rpt_street_name: primaryStreetName,
+            rpt_sec_street_name: secondaryStreetName,
             case_id: caseId,
-            crash_date: crashDate,
+            crash_timestamp: crashTimestamp,
             crash_fatal_fl: fatalityCountSum > 0 ? "Y" : "N",
-            crash_id: tempId,
-            crash_time: crashTime,
-            sus_serious_injry_cnt: susSeriousInjuryCountSum,
             updated_by: user.email,
           };
 
@@ -271,10 +241,8 @@ const CreateCrashRecord = ({ client }) => {
               variables: crashVariables,
             })
             .then(res => {
-              // Increment the temp ID so the user can resuse the form.
-              setTempId(tempId + 1);
               setSuccessfulNewRecordId(
-                res.data.insert_atd_txdot_crashes.returning[0].crash_id
+                res.data.insert_crashes_cris.returning[0].id
               );
               resetForm();
               // unitFormDispatch({ type: "reset" });
@@ -344,28 +312,28 @@ const CreateCrashRecord = ({ client }) => {
           </FormGroup>
           <FormGroup row>
             <Col md="3">
-              <Label htmlFor="date-input">Crash Time</Label>
+              <Label htmlFor="date-input">Crash Timestamp</Label>
             </Col>
             <Col xs="12" md="9">
               <Input
-                type="time"
-                id="time-input"
-                name="time-input"
-                placeholder="time"
-                value={crashTime}
-                invalid={isFieldInvalid(crashTime)}
-                onChange={e => setCrashTime(e.target.value)}
+                type="datetime-local"
+                id="timestamp-input"
+                name="timestamp-input"
+                placeholder="timestamp"
+                value={crashTimestamp}
+                invalid={isFieldInvalid(crashTimestamp)}
+                onChange={e => setCrashTimestamp(e.target.value)}
               />
-              {isFieldInvalid(crashTime) ? (
-                <FormFeedback>Crash Time can't be blank.</FormFeedback>
+              {isFieldInvalid(crashTimestamp) ? (
+                <FormFeedback>Crash Timestamp can't be blank.</FormFeedback>
               ) : (
                 <FormText className="help-block">
-                  Please enter the Crash Time
+                  Please enter the Crash Timestamp
                 </FormText>
               )}
             </Col>
           </FormGroup>
-          <FormGroup row>
+          {/* <FormGroup row>
             <Col md="3">
               <Label htmlFor="date-input">Crash Date</Label>
             </Col>
@@ -387,7 +355,7 @@ const CreateCrashRecord = ({ client }) => {
                 </FormText>
               )}
             </Col>
-          </FormGroup>
+          </FormGroup> */}
           <FormGroup row>
             <Col md="3">
               <Label htmlFor="date-input">Primary Address</Label>
@@ -398,8 +366,8 @@ const CreateCrashRecord = ({ client }) => {
                 id="primary-address-input"
                 name="primary-address-input"
                 placeholder="ex: S 900 AUSTIN AVE"
-                value={primaryAddress}
-                onChange={e => setPrimaryAddress(e.target.value)}
+                value={primaryStreetName}
+                onChange={e => setPrimaryStreetName(e.target.value)}
               />
               <FormText className="help-block">
                 Please enter the Primary Address
@@ -416,8 +384,8 @@ const CreateCrashRecord = ({ client }) => {
                 id="secondary-address-input"
                 name="secondary-address-input"
                 placeholder="ex: N MOPAC BLVD"
-                value={secondayAddress}
-                onChange={e => setSecondaryAddress(e.target.value)}
+                value={secondaryStreetName}
+                onChange={e => setSecondaryStreetName(e.target.value)}
               />
               <FormText className="help-block">
                 Please enter the Secondary Address
