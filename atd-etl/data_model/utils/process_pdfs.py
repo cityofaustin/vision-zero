@@ -141,24 +141,33 @@ def process_pdfs(extract_dir, s3_upload):
         if filename.endswith(".pdf")
     ]
     pdf_count = len(pdfs)
-
     logger.info(f"Found {pdf_count} PDFs to process")
 
+    futures = []
     with ProcessPoolExecutor(max_workers=MULTIPROCESSING_PDF_MAX_WORKERS) as executor:
-        futures = []
         for index, filename in enumerate(pdfs):
             future = executor.submit(
                 process_pdf, extract_dir, filename, s3_upload, index
             )
             futures.append(future)
-    # inspect results for exceptions—this must be done after execution of all futures because
-    # future.result() is blocking
-    for future in futures:
+    # inspect results and collect all errors—this must be done after all pdfs have
+    # processed because future.result() is blocking
+    errors = []
+    for index, future in enumerate(futures):
         try:
             future.result()
         except Exception as e:
-            logger.error(f"Failed to process {filename}: {str(e)}")
-            raise e
+            # grab the filename from the pdf list
+            filename = pdfs[index]
+            errors.append([filename, e])
+
+    if errors:
+        logger.error(
+            f"Encountered {len(errors)} error(s) processing PDFs. Logging up to 10 errors and raising the first..."
+        )
+        for filename, e in errors[0:10]:
+            logger.info(f"Error processing {filename}: {e}")
+        raise errors[0][1]
 
     logger.info(
         f"✅ {pdf_count} CR3s processed in {round((time.time() - overall_start_tme)/60, 2)} minutes"
