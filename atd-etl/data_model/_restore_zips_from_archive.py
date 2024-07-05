@@ -1,5 +1,6 @@
 """
-Move all zip files in the bucket from ./archive to ./inbox
+Move all zip files in the bucket from ./archive to ./inbox. This is intended to be used
+as a helper script for local development.
 """
 
 import os
