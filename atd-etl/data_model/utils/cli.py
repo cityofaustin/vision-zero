@@ -1,5 +1,7 @@
 import argparse
 
+from utils.settings import MULTIPROCESSING_PDF_MAX_WORKERS
+
 
 def get_cli_args():
     """Create the CLI and parse args
@@ -12,39 +14,45 @@ def get_cli_args():
         usage="main.py --csv --verbose",
     )
     parser.add_argument(
-        f"--csv",
+        "--csv",
         action="store_true",
         help="Only process CSV files",
     )
     parser.add_argument(
-        f"--pdf",
+        "--pdf",
         action="store_true",
         help="Only process CR3 pdfs",
     )
     parser.add_argument(
-        f"--s3-download",
+        "--s3-download",
         action="store_true",
         help="Source zip extracts from S3 bucket",
     )
     parser.add_argument(
-        f"--s3-upload",
+        "--s3-upload",
         action="store_true",
         help="Upload cr3 pdfs and digrams to S3 bucket",
     )
     parser.add_argument(
-        f"--skip-unzip",
+        "--s3-archive",
+        action="store_true",
+        help="If using --s3-download, move the processed extracts from the ./inbox to ./archive subdirectory",
+    )
+    parser.add_argument(
+        "--skip-unzip",
         action="store_true",
         help="Only process files that are already unzipped in the local directory",
     )
     parser.add_argument(
-        f"--verbose",
+        "--verbose",
         "-v",
         action="store_true",
         help="Sets logging level to DEBUG mode",
     )
     parser.add_argument(
-        f"--s3-archive",
-        action="store_true",
-        help="If using --s3-download, move the processed extracts from the ./inbox to ./archive subdirectory",
+        "--workers",
+        type=int,
+        default=MULTIPROCESSING_PDF_MAX_WORKERS,
+        help=f"The number of concurrent workers to use when processing PDFs. Default {MULTIPROCESSING_PDF_MAX_WORKERS}.",
     )
     return parser.parse_args()

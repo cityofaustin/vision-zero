@@ -13,7 +13,6 @@ from utils.files import upload_file_to_s3
 from utils.settings import (
     DIAGRAM_BBOX_PIXELS,
     NEW_CR3_FORM_TEST_PIXELS,
-    MULTIPROCESSING_PDF_MAX_WORKERS,
 )
 
 ENV = os.getenv("ENV")
@@ -123,13 +122,14 @@ def process_pdf(extract_dir, filename, s3_upload, index):
             )
 
 
-def process_pdfs(extract_dir, s3_upload):
+def process_pdfs(extract_dir, s3_upload, max_workers):
     """Main loop for extract crash diagrams from  CR3 PDFs
 
     Args:
         extract_dir (str): the local path to the current extract
         s3_upload (bool): if the diagram and PDF should be uploaded to the S3 bucket
-
+        max_workers (int): the maximum number of workers to assign to the
+            multiprocressing pool
     """
     overall_start_tme = time.time()
     # make the crash_diagram extract directory
@@ -144,7 +144,7 @@ def process_pdfs(extract_dir, s3_upload):
     logger.info(f"Found {pdf_count} PDFs to process")
 
     futures = []
-    with ProcessPoolExecutor(max_workers=MULTIPROCESSING_PDF_MAX_WORKERS) as executor:
+    with ProcessPoolExecutor(max_workers=max_workers) as executor:
         for index, filename in enumerate(pdfs):
             future = executor.submit(
                 process_pdf, extract_dir, filename, s3_upload, index

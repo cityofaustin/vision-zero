@@ -42,7 +42,7 @@ def main(cli_args):
         if cli_args.csv or (not cli_args.pdf and not cli_args.csv):
             process_csvs(extract_dir)
         if cli_args.pdf or (not cli_args.pdf and not cli_args.csv):
-            process_pdfs(extract_dir, cli_args.s3_upload)
+            process_pdfs(extract_dir, cli_args.s3_upload, cli_args.workers)
         if cli_args.s3_download and cli_args.s3_archive and not cli_args.skip_unzip:
             archive_extract_zip(extract["s3_file_key"])
         set_log_entry_complete(log_entry_id=log_entry_id)
