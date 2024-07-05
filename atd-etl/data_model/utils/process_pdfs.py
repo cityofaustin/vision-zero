@@ -14,7 +14,6 @@ from utils.settings import (
     DIAGRAM_BBOX_PIXELS,
     NEW_CR3_FORM_TEST_PIXELS,
     MULTIPROCESSING_PDF_MAX_WORKERS,
-    MULTIPROCESSING_PDF_MAX_ERRORS,
 )
 
 ENV = os.getenv("ENV")
