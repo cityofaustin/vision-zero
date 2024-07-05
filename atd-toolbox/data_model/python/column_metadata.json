@@ -813,7 +813,7 @@
     "is_unified_column": true,
     "note": "new column",
     "record_type": "crashes",
-    "source": "etl"
+    "source": "etl-other"
   },
   {
     "column_name": "cr3_stored_fl",
@@ -830,7 +830,7 @@
     "is_unified_column": true,
     "note": "renamed from cr3_stored-Flag",
     "record_type": "crashes",
-    "source": "etl"
+    "source": "etl-other"
   },
   {
     "column_name": "investigator_narrative",
