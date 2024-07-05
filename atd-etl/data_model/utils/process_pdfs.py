@@ -97,14 +97,14 @@ def process_pdf(extract_dir, filename, s3_upload, index):
 
     if s3_upload:
         s3_object_key_pdf = get_cr3_object_key(filename, "pdfs")
-        logger.info(f"Uploading CR3 pdf to {s3_object_key_pdf}")
+        logger.debug(f"Uploading CR3 pdf to {s3_object_key_pdf}")
         upload_file_to_s3(pdf_path, s3_object_key_pdf)
 
         s3_object_key_diagram = get_cr3_object_key(diagram_filename, "crash_diagrams")
-        logger.info(f"Uploading crash diagram to {s3_object_key_diagram}")
+        logger.debug(f"Uploading crash diagram to {s3_object_key_diagram}")
         upload_file_to_s3(diagram_full_path, s3_object_key_diagram)
 
-        logger.info(f"Updating crash CR3 metadata")
+        logger.debug(f"Updating crash CR3 metadata")
         res = make_hasura_request(
             query=UPDATE_CRASH_CR3_FIELDS,
             variables={
