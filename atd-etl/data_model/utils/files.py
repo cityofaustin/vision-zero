@@ -101,7 +101,7 @@ def get_extract_zips_to_download_s3(subdir="inbox"):
     return sorted(extracts, key=lambda d: d["extract_name"])
 
 
-def download_extract_from_s3(*, s3_file_key, file_size, local_zip_file_path):
+def download_extract_from_s3(s3_file_key, file_size, local_zip_file_path):
     """Download zip file from s3 into the provided <local_zip_file_path>"""
     logger.info(f"Downloading {s3_file_key} ({format_megabytes(file_size)})")
     s3_client.download_file(BUCKET_NAME, s3_file_key, local_zip_file_path)
