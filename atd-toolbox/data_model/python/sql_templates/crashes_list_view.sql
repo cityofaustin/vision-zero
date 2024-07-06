@@ -249,7 +249,7 @@ left join
     on lookups.injry_sev_lkp.id = crash_injury_metrics_view.crash_injry_sev_id;
 
 
-create materialized view locations_list_view as (
+create view locations_list_view as (
     with crash_totals as (
         with unioned_crash_counts as (
             with cr3_crash_counts as (
