@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from utils import save_file, make_migration_dir
 
 def load_sql_template(name):
