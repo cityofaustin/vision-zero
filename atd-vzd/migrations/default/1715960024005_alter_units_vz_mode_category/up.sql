@@ -27,7 +27,7 @@ restrict on delete restrict generated always as (
                             then
                                 11
                         else
-                            10
+                            6
                     end
                 )
         when unit_desc_id = 1
