@@ -274,7 +274,7 @@ insert into _column_metadata (column_name, column_label, record_type, is_importe
 insert into _column_metadata (column_name, column_label, record_type, is_imported_from_cris)
         values ('cris_crash_id', 'cris_crash_id', 'units', true);
 insert into _column_metadata (column_name, column_label, record_type, is_imported_from_cris)
-        values ('atd_mode_category', 'atd_mode_category', 'units', false);
+        values ('vz_mode_category', 'vz_mode_category', 'units', false);
 insert into _column_metadata (column_name, column_label, record_type, is_imported_from_cris)
         values ('movement_id', 'movement_id', 'units', false);
 insert into _column_metadata (column_name, column_label, record_type, is_imported_from_cris)

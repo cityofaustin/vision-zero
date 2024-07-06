@@ -34,7 +34,6 @@ create table public.units_cris (
 
 create table public.units_edits (
     id integer primary key references public.units_cris (id) on update cascade on delete cascade,
-    atd_mode_category integer references lookups.mode_category_lkp (id) on update cascade on delete cascade,
     autonomous_unit_id integer references lookups.autonomous_unit_lkp (id) on update cascade on delete cascade,
     contrib_factr_1_id integer references lookups.contrib_factr_lkp (id) on update cascade on delete cascade,
     contrib_factr_2_id integer references lookups.contrib_factr_lkp (id) on update cascade on delete cascade,
@@ -69,7 +68,6 @@ create table public.units_edits (
 
 create table public.units (
     id integer primary key,
-    atd_mode_category integer references lookups.mode_category_lkp (id) on update cascade on delete cascade,
     autonomous_unit_id integer references lookups.autonomous_unit_lkp (id) on update cascade on delete cascade,
     contrib_factr_1_id integer references lookups.contrib_factr_lkp (id) on update cascade on delete cascade,
     contrib_factr_2_id integer references lookups.contrib_factr_lkp (id) on update cascade on delete cascade,
@@ -99,5 +97,6 @@ create table public.units (
     veh_mod_id integer references lookups.veh_mod_lkp (id) on update cascade on delete cascade,
     veh_mod_year integer,
     veh_trvl_dir_id integer references lookups.trvl_dir_lkp (id) on update cascade on delete cascade,
-    vin text
+    vin text,
+    vz_mode_category integer references lookups.mode_category_lkp (id) on update cascade on delete cascade
 );
