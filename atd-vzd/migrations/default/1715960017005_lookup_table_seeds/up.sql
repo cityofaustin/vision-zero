@@ -11070,8 +11070,8 @@ insert into lookups.veh_mod_lkp (id, label, source) values (9997, 'UNKNOWN', 'cr
 insert into lookups.veh_mod_lkp (id, label, source) values (9998, 'OTHER (EXPLAIN IN NARRATIVE)', 'cris');
 insert into lookups.veh_direction_of_force_lkp (id, label)
     select veh_direction_of_force_id, veh_direction_of_force_desc from atd_txdot__veh_direction_of_force_lkp;
-insert into lookups.mode_category_lkp (id, label)
-    select  id, atd_mode_category_mode_name from atd__mode_category_lkp;
+insert into lookups.mode_category_lkp (id, label, source)
+    select  id, atd_mode_category_mode_name, 'vz' from atd__mode_category_lkp where id != 10;
 insert into lookups.city_lkp (id, label) values (9999, 'UNKNOWN');
 alter table lookups.injry_sev_lkp add constraint injry_sev_owner_check check ((id < 99 and source = 'cris') or (id >= 99 and source = 'vz'));
 insert into lookups.injry_sev_lkp (id, label, source) values (99, 'KILLED (NON-ATD)', 'vz');
