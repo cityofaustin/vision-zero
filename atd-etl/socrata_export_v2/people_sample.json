@@ -1,0 +1,122 @@
+[
+  {
+    "person_id": "P617308",
+    "prsn_injry_sev_id": "1",
+    "prsn_age": "31",
+    "prsn_gndr_id": "1",
+    "prsn_ethnicity_id": "5",
+    "crash_id": "13384630",
+    "crash_date": "2013-07-21T10:12:00.000",
+    "crash_time": "10:12:00",
+    "mode_desc": "Large passenger vehicle",
+    "mode_id": "2"
+  },
+  {
+    "person_id": "P618036",
+    "prsn_injry_sev_id": "1",
+    "prsn_age": "52",
+    "prsn_gndr_id": "2",
+    "prsn_ethnicity_id": "2",
+    "crash_id": "13394161",
+    "crash_date": "2013-07-28T12:50:00.000",
+    "crash_time": "12:50:00",
+    "mode_desc": "Passenger car",
+    "mode_id": "1"
+  },
+  {
+    "person_id": "P618176",
+    "prsn_injry_sev_id": "1",
+    "prsn_age": "40",
+    "prsn_gndr_id": "1",
+    "prsn_ethnicity_id": "2",
+    "crash_id": "13401734",
+    "crash_date": "2013-08-05T14:50:00.000",
+    "crash_time": "14:50:00",
+    "mode_desc": "Passenger car",
+    "mode_id": "1"
+  },
+  {
+    "person_id": "P618195",
+    "prsn_injry_sev_id": "1",
+    "prsn_age": "53",
+    "prsn_gndr_id": "2",
+    "prsn_ethnicity_id": "1",
+    "crash_id": "13401773",
+    "crash_date": "2013-08-02T18:03:00.000",
+    "crash_time": "18:03:00",
+    "mode_desc": "Passenger car",
+    "mode_id": "1"
+  },
+  {
+    "person_id": "P618502",
+    "prsn_injry_sev_id": "1",
+    "prsn_age": "25",
+    "prsn_gndr_id": "1",
+    "prsn_ethnicity_id": "3",
+    "crash_id": "13408548",
+    "crash_date": "2013-08-13T16:21:00.000",
+    "crash_time": "16:21:00",
+    "mode_desc": "Large passenger vehicle",
+    "mode_id": "2"
+  },
+  {
+    "person_id": "P618680",
+    "prsn_injry_sev_id": "1",
+    "prsn_age": "18",
+    "prsn_gndr_id": "1",
+    "prsn_ethnicity_id": "2",
+    "crash_id": "13409813",
+    "crash_date": "2013-08-08T11:29:00.000",
+    "crash_time": "11:29:00",
+    "mode_desc": "Large passenger vehicle",
+    "mode_id": "2"
+  },
+  {
+    "person_id": "P618886",
+    "prsn_injry_sev_id": "1",
+    "prsn_age": "78",
+    "prsn_gndr_id": "1",
+    "prsn_ethnicity_id": "3",
+    "crash_id": "13416969",
+    "crash_date": "2013-07-24T19:55:00.000",
+    "crash_time": "19:55:00",
+    "mode_desc": "Passenger car",
+    "mode_id": "1"
+  },
+  {
+    "person_id": "P619293",
+    "prsn_injry_sev_id": "1",
+    "prsn_age": "44",
+    "prsn_gndr_id": "1",
+    "prsn_ethnicity_id": "3",
+    "crash_id": "13425821",
+    "crash_date": "2013-07-26T17:08:00.000",
+    "crash_time": "17:08:00",
+    "mode_desc": "Large passenger vehicle",
+    "mode_id": "2"
+  },
+  {
+    "person_id": "P619320",
+    "prsn_injry_sev_id": "1",
+    "prsn_age": "24",
+    "prsn_gndr_id": "2",
+    "prsn_ethnicity_id": "1",
+    "crash_id": "13425860",
+    "crash_date": "2013-08-03T20:55:00.000",
+    "crash_time": "20:55:00",
+    "mode_desc": "Motorcycle",
+    "mode_id": "3"
+  },
+  {
+    "person_id": "P619888",
+    "prsn_injry_sev_id": "1",
+    "prsn_age": "19",
+    "prsn_gndr_id": "2",
+    "prsn_ethnicity_id": "3",
+    "crash_id": "13439331",
+    "crash_date": "2013-08-31T02:33:00.000",
+    "crash_time": "02:33:00",
+    "mode_desc": "Passenger car",
+    "mode_id": "1"
+  }
+]
