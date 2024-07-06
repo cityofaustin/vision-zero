@@ -47,7 +47,7 @@ select_permissions:
   - role: editor
     permission:
       columns:
-        - atd_mode_category
+        - vz_mode_category
         - autonomous_unit_id
         - contrib_factr_1_id
         - contrib_factr_2_id
@@ -87,7 +87,7 @@ select_permissions:
   - role: readonly
     permission:
       columns:
-        - atd_mode_category
+        - vz_mode_category
         - autonomous_unit_id
         - contrib_factr_1_id
         - contrib_factr_2_id
@@ -127,7 +127,7 @@ select_permissions:
   - role: vz-admin
     permission:
       columns:
-        - atd_mode_category
+        - vz_mode_category
         - autonomous_unit_id
         - contrib_factr_1_id
         - contrib_factr_2_id

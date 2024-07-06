@@ -17,3 +17,4 @@ set -e
 ./60_make_views.py
 ./70_make_column_metadata_table.py
 ./80_update_notes_and_recs.py
+./90_alter_units_vz_mode_category.py
