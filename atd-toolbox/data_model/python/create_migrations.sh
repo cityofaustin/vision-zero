@@ -8,7 +8,6 @@
 # ------------
 set -e
 
-# the first migration deletes all migrations in the 
 ./10_make_core_tables.py
 ./20_make_change_log.py
 ./30_make_triggers.py
