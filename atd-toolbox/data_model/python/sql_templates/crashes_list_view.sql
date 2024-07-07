@@ -248,6 +248,42 @@ create or replace view crash_injury_metrics_view as
         coalesce(
             sum(person_injury_metrics_view.cris_fatal_injury), 0
         ) as cris_fatality_count,
+        coalesce(sum(
+            person_injury_metrics_view.motor_vehicle_fatal_injry
+        ), 0) as motor_vehicle_fatality_count,
+        coalesce(sum(
+            person_injury_metrics_view.motor_vehicle_sus_serious_injry
+        ), 0) as motor_vehicle_sus_serious_injry_count,
+        coalesce(sum(
+            person_injury_metrics_view.motorycle_fatal_injry
+        ), 0) as motorycle_fatality_count,
+        coalesce(sum(
+            person_injury_metrics_view.motorycle_sus_serious_injry
+        ), 0) as motorycle_sus_serious_count,
+        coalesce(sum(
+            person_injury_metrics_view.bicycle_fatal_injry
+        ), 0) as bicycle_fatality_count,
+        coalesce(sum(
+            person_injury_metrics_view.bicycle_sus_serious_injry
+        ), 0) as bicycle_sus_serious_injry_count,
+        coalesce(sum(
+            person_injury_metrics_view.pedestrian_fatal_injry
+        ), 0) as pedestrian_fatality_count,
+        coalesce(sum(
+            person_injury_metrics_view.pedestrian_sus_serious_injry
+        ), 0) as pedestrian_sus_serious_injry_count,
+        coalesce(sum(
+            person_injury_metrics_view.micromobility_fatal_injry
+        ), 0) as micromobility_fatality_count,
+        coalesce(sum(
+            person_injury_metrics_view.micromobility_sus_serious_injry
+        ), 0) as micromobility_sus_serious_injry_count,
+        coalesce(sum(
+            person_injury_metrics_view.other_fatal_injry
+        ), 0) as other_fatality_count,
+        coalesce(sum(
+            person_injury_metrics_view.other_sus_serious_injry
+        ), 0) as other_sus_serious_injry_count,
         case
             when (sum(person_injury_metrics_view.fatal_injury) > 0) then 4
             when (sum(person_injury_metrics_view.nonincap_injry) > 0) then 1
@@ -326,6 +362,17 @@ select
     crash_injury_metrics_view.est_comp_cost_crash_based,
     crash_injury_metrics_view.crash_injry_sev_id,
     crash_injury_metrics_view.years_of_life_lost,
+    crash_injury_metrics_view.motor_vehicle_sus_serious_injry_count,
+    crash_injury_metrics_view.motorycle_fatality_count,
+    crash_injury_metrics_view.motorycle_sus_serious_count,
+    crash_injury_metrics_view.bicycle_fatality_count,
+    crash_injury_metrics_view.bicycle_sus_serious_injry_count,
+    crash_injury_metrics_view.pedestrian_fatality_count,
+    crash_injury_metrics_view.pedestrian_sus_serious_injry_count,
+    crash_injury_metrics_view.micromobility_fatality_count,
+    crash_injury_metrics_view.micromobility_sus_serious_injry_count,
+    crash_injury_metrics_view.other_fatality_count,
+    crash_injury_metrics_view.other_sus_serious_injry_count,
     lookups.injry_sev_lkp.label as crash_injry_sev_desc,
     lookups.collsn_lkp.label as collsn_desc,
     geocode_status.is_manual_geocode,
