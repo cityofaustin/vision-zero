@@ -44,28 +44,30 @@ create or replace view socrata_export_crashes_view as (
         coalesce(clv.crash_injry_sev_id = 4, false) as crash_fatal_fl,
         clv.law_enf_fatality_count > 0 as apd_confirmed_fatality
     from crashes_list_view as clv
+    where clv.in_austin_full_purpose = true and clv.private_dr_fl = false
 );
 
 
 create or replace view socrata_export_people_view as (
     select
         people.id as person_id,
-        people.unit_id as unit_id,
-        crashes.crash_id,
+        people.unit_id as unit_id, --new column
+        clv.crash_id,
+        people.is_primary_person as is_drive, --new column
         people.prsn_age,
         people.prsn_gndr_id as prsn_sex_id, --rename from prsn_gndr_id
         lookups.gndr_lkp.label as prsn_sex, -- new column
         people.prsn_ethnicity_id,
         lookups.drvr_ethncty_lkp.label as prsn_ethnicity_label, --new column
         people.prsn_injry_sev_id,
-        crashes.crash_timestamp,
-        crashes.crash_date_ct,
-        crashes.crash_time_ct,
+        clv.crash_timestamp, --new column
+        clv.crash_date_ct, --rename column
+        clv.crash_time_ct, --rename column
         units.vz_mode_category_id as mode_id,
         mode_categories.label as mode_desc
     from people
     left join public.units as units on people.unit_id = units.id
-    left join public.crashes_list_view as crashes on units.crash_id = crashes.id
+    left join public.crashes_list_view as clv on units.crash_id = clv.id
     left join
         lookups.mode_category_lkp as mode_categories
         on units.vz_mode_category_id = mode_categories.id
@@ -75,4 +77,5 @@ create or replace view socrata_export_people_view as (
     left join
         lookups.gndr_lkp
         on people.prsn_gndr_id = lookups.gndr_lkp.id
+    where clv.in_austin_full_purpose = true and clv.private_dr_fl = false
 );
