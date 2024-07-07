@@ -34,6 +34,6 @@ def main():
     socrata_export_crashes_sql = load_sql_template("sql_templates/socrata_export_views.sql")
     migration_path = make_migration_dir("socrata_export_views")
     save_file(f"{migration_path}/up.sql", socrata_export_crashes_sql)
-    save_file(f"{migration_path}/down.sql", "drop view if exists public.socrata_export_crashes_view cascade;")
+    save_file(f"{migration_path}/down.sql", "drop view if exists public.socrata_export_crashes_view cascade; drop view if exists public.socrata_export_people_view cascade")
     
 main()

@@ -1,8 +1,9 @@
 create or replace view socrata_export_crashes_view as (
     select
         clv.crash_id,
-        clv.crash_date_ct,
-        clv.crash_time_ct,
+        clv.crash_timestamp, -- new column
+        clv.crash_date_ct, -- renamed column
+        clv.crash_time_ct, -- renamed column
         clv.case_id,
         clv.address_primary, --new column need to add to dataset
         clv.address_secondary, --new column need to add to dataset
@@ -22,11 +23,11 @@ create or replace view socrata_export_crashes_view as (
         clv.law_enf_fatality_count as apd_confirmed_death_count,
         -- clv.tot_injry_count,
         clv.fatality_count,
-        clv.vz_fatality_count, -- new field / need to address naming consistencies wrt to fatality_count, vz_fatality_count, death_count. i think we should use vz_fatality_count in the public dataset
+        clv.vz_fatality_count, -- new field / need to address naming inconsistencies wrt to fatality_count, vz_fatality_count, death_count. i think we should use vz_fatality_count in the public dataset
         clv.onsys_fl,
         clv.private_dr_fl,
         clv.units_involved,
-        clv.atd_mode_category_metadata,
+        clv.atd_mode_category_metadata, -- i don't like this! we should use a separate units dataset. note that death_count was renamed to vz_death_count
         -- clv.motor_vehicle_fl,
         clv.motor_vehicle_fatality_count as motor_vehicle_death_count,
         clv.motor_vehicle_sus_serious_injry_count as motor_vehicle_serious_injury_count,
@@ -43,5 +44,36 @@ create or replace view socrata_export_crashes_view as (
         coalesce(clv.crash_injry_sev_id = 4, false) as crash_fatal_fl,
         clv.law_enf_fatality_count > 0 as apd_confirmed_fatality
     from crashes_list_view as clv
+);
+
+
+create or replace view socrata_export_people_view as (
+    select
+        people.id as person_id,
+        people.unit_id as unit_id,
+        crashes.crash_id,
+        people.prsn_age,
+        people.prsn_gndr_id as prsn_sex_id, --rename from prsn_gndr_id
+        lookups.gndr_lkp.label as prsn_sex, -- new column
+        people.prsn_ethnicity_id,
+        lookups.drvr_ethncty_lkp.label as prsn_ethnicity_label, --new column
+        people.prsn_injry_sev_id,
+        crashes.crash_timestamp,
+        crashes.crash_date_ct,
+        crashes.crash_time_ct,
+        units.vz_mode_category_id as mode_id,
+        mode_categories.label as mode_desc
+    from people
+    left join public.units as units on people.unit_id = units.id
+    left join public.crashes_list_view as crashes on units.crash_id = crashes.id
+    left join
+        lookups.mode_category_lkp as mode_categories
+        on units.vz_mode_category_id = mode_categories.id
+    left join
+        lookups.drvr_ethncty_lkp
+        on people.prsn_ethnicity_id = lookups.drvr_ethncty_lkp.id
+    left join
+        lookups.gndr_lkp
+        on people.prsn_gndr_id = lookups.gndr_lkp.id
 );
 
