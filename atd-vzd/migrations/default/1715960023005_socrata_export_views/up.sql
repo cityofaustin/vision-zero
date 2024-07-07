@@ -1,7 +1,7 @@
 create or replace view socrata_export_crashes_view as (
     select
         clv.crash_id,
-        clv.crash_timestamp, -- new column
+        to_char(clv.crash_timestamp, 'YYYY-MM-DD"T"HH24:MI:SS') as crash_timestamp, --new column
         clv.crash_date_ct, -- renamed column
         clv.crash_time_ct, -- renamed column
         clv.case_id,
@@ -62,7 +62,7 @@ create or replace view socrata_export_people_view as (
         people.prsn_ethnicity_id,
         lookups.drvr_ethncty_lkp.label as prsn_ethnicity_label, --new column
         people.prsn_injry_sev_id,
-        clv.crash_timestamp, --new column
+        to_char(clv.crash_timestamp, 'YYYY-MM-DD"T"HH24:MI:SS') as crash_timestamp, --new column
         clv.crash_date_ct, --rename column
         clv.crash_time_ct, --rename column
         units.vz_mode_category_id as mode_id,

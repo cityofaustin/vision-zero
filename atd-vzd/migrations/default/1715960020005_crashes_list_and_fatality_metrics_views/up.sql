@@ -422,7 +422,7 @@ select
     geocode_status.is_manual_geocode,
     geocode_status.has_no_cris_coordinates,
     to_char(
-        public.crashes.crash_timestamp at time zone 'US/Central', 'YYY:MM:DD'
+        public.crashes.crash_timestamp at time zone 'US/Central', 'YYYY-MM-DD'
     ) as crash_date_ct,
     to_char(
         public.crashes.crash_timestamp at time zone 'US/Central', 'HH24:MI:SS'
