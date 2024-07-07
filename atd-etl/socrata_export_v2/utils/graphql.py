@@ -5,7 +5,6 @@ import requests
 ENDPOINT = os.getenv("HASURA_GRAPHQL_ENDPOINT")
 ADMIN_SECRET = os.getenv("HASURA_GRAPQL_ADMIN_SECRET")
 
-
 class HasuraAPIError(Exception):
     """Indicates an error when interacting with the Hasura graphQL API"""
 

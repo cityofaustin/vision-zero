@@ -1,5 +1,5 @@
 services:
-  cris_import:
+  socrata_export:
     build: .
     volumes:
       - .:/app
