@@ -25,11 +25,24 @@ select_permissions:
   - role: editor
     permission:
       columns:
+        - atd_mode_category_metadata
+        - bicycle_fatality_count
+        - bicycle_sus_serious_injry_count
         - cris_fatality_count
         - fatality_count
         - law_enf_fatality_count
+        - micromobility_fatality_count
+        - micromobility_sus_serious_injry_count
+        - motorcycle_fatality_count
+        - motorcycle_sus_serious_count
+        - motor_vehicle_fatality_count
+        - motor_vehicle_sus_serious_injry_count
         - nonincap_injry_count
         - non_injry_count
+        - other_fatality_count
+        - other_sus_serious_injry_count
+        - pedestrian_fatality_count
+        - pedestrian_sus_serious_injry_count
         - poss_injry_count
         - sus_serious_injry_count
         - unkn_injry_count
@@ -63,29 +76,45 @@ select_permissions:
         - address_secondary
         - case_id
         - collsn_desc
+        - crash_date_ct
         - crash_day_of_week
         - crash_injry_sev_desc
+        - crash_time_ct
         - location_id
         - rpt_block_num
         - rpt_sec_block_num
         - rpt_sec_street_name
         - rpt_sec_street_pfx
+        - rpt_sec_street_sfx
         - rpt_street_name
         - rpt_street_pfx
+        - rpt_street_sfx
+        - units_involved
         - crash_timestamp
-        - crash_date_ct
-        - crash_time_ct
       filter: {}
       allow_aggregations: true
     comment: ""
   - role: readonly
     permission:
       columns:
+        - atd_mode_category_metadata
+        - bicycle_fatality_count
+        - bicycle_sus_serious_injry_count
         - cris_fatality_count
         - fatality_count
         - law_enf_fatality_count
+        - micromobility_fatality_count
+        - micromobility_sus_serious_injry_count
+        - motorcycle_fatality_count
+        - motorcycle_sus_serious_count
+        - motor_vehicle_fatality_count
+        - motor_vehicle_sus_serious_injry_count
         - nonincap_injry_count
         - non_injry_count
+        - other_fatality_count
+        - other_sus_serious_injry_count
+        - pedestrian_fatality_count
+        - pedestrian_sus_serious_injry_count
         - poss_injry_count
         - sus_serious_injry_count
         - unkn_injry_count
@@ -119,29 +148,45 @@ select_permissions:
         - address_secondary
         - case_id
         - collsn_desc
+        - crash_date_ct
         - crash_day_of_week
         - crash_injry_sev_desc
+        - crash_time_ct
         - location_id
         - rpt_block_num
         - rpt_sec_block_num
         - rpt_sec_street_name
         - rpt_sec_street_pfx
+        - rpt_sec_street_sfx
         - rpt_street_name
         - rpt_street_pfx
+        - rpt_street_sfx
+        - units_involved
         - crash_timestamp
-        - crash_date_ct
-        - crash_time_ct
       filter: {}
       allow_aggregations: true
     comment: ""
   - role: vz-admin
     permission:
       columns:
+        - atd_mode_category_metadata
+        - bicycle_fatality_count
+        - bicycle_sus_serious_injry_count
         - cris_fatality_count
         - fatality_count
         - law_enf_fatality_count
+        - micromobility_fatality_count
+        - micromobility_sus_serious_injry_count
+        - motorcycle_fatality_count
+        - motorcycle_sus_serious_count
+        - motor_vehicle_fatality_count
+        - motor_vehicle_sus_serious_injry_count
         - nonincap_injry_count
         - non_injry_count
+        - other_fatality_count
+        - other_sus_serious_injry_count
+        - pedestrian_fatality_count
+        - pedestrian_sus_serious_injry_count
         - poss_injry_count
         - sus_serious_injry_count
         - unkn_injry_count
@@ -175,18 +220,21 @@ select_permissions:
         - address_secondary
         - case_id
         - collsn_desc
+        - crash_date_ct
         - crash_day_of_week
         - crash_injry_sev_desc
+        - crash_time_ct
         - location_id
         - rpt_block_num
         - rpt_sec_block_num
         - rpt_sec_street_name
         - rpt_sec_street_pfx
+        - rpt_sec_street_sfx
         - rpt_street_name
         - rpt_street_pfx
+        - rpt_street_sfx
+        - units_involved
         - crash_timestamp
-        - crash_date_ct
-        - crash_time_ct
       filter: {}
       allow_aggregations: true
     comment: ""
