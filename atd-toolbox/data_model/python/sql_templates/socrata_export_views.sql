@@ -44,7 +44,9 @@ create or replace view socrata_export_crashes_view as (
         coalesce(clv.crash_injry_sev_id = 4, false) as crash_fatal_fl,
         clv.law_enf_fatality_count > 0 as apd_confirmed_fatality
     from crashes_list_view as clv
-    where clv.in_austin_full_purpose = true and clv.private_dr_fl = false
+    where
+        clv.in_austin_full_purpose = true and clv.private_dr_fl = false
+        and clv.crash_timestamp < now() - INTERVAL '14 days'
 );
 
 
@@ -77,5 +79,7 @@ create or replace view socrata_export_people_view as (
     left join
         lookups.gndr_lkp
         on people.prsn_gndr_id = lookups.gndr_lkp.id
-    where clv.in_austin_full_purpose = true and clv.private_dr_fl = false
+    where
+        clv.in_austin_full_purpose = true and clv.private_dr_fl = false
+        and clv.crash_timestamp < now() - INTERVAL '14 days'
 );
