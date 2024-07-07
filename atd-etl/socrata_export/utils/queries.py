@@ -43,6 +43,18 @@ query SocrataExportCrashes($limit: Int! ,$offset: Int!) {
 }
 """
 
+# CRASHES_QUERY = """
+# query SocrataExportCrashes($limit: Int! ,$offset: Int!) {
+#   socrata_export_crashes_view(order_by: {crash_id: asc}, limit: $limit, offset: $offset) {
+#     crash_timestamp
+#     case_id
+#     crash_date_ct
+#     crash_fatal_fl
+#     crash_id
+#   }
+# }
+# """
+
 PEOPLE_QUERY = """
 query SocrataExportPeople($limit: Int!, $offset: Int!) {
   socrata_export_people_view(order_by: {person_id: asc}, limit: $limit, offset: $offset) {

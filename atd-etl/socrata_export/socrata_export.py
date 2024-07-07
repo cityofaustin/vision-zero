@@ -6,13 +6,15 @@ from utils.logging import init_logger
 from utils.queries import QUERIES
 from utils.socrata import get_socrata_client
 
-SOCRATA_DATASET_CRASHES = os.getenv("SOCRATA_DATASET_CRASHES")  # staging: 3aut-fhzp
-SOCRATA_DATASET_PEOPLE = os.getenv("SOCRATA_DATASET_PEOPLE")  # staging: v3x4-fjgm
+from requests.exceptions import HTTPError
+
+SOCRATA_DATASET_CRASHES = os.getenv("SOCRATA_DATASET_CRASHES")
+SOCRATA_DATASET_PEOPLE = os.getenv("SOCRATA_DATASET_PEOPLE")
 
 # number of records to download from Hasura and upload to Socrata
 RECORD_BATCH_SIZE = 100
 # number of times to try a single socrata upload
-MAX_UPLOAD_RETRIES = 3
+MAX_UPLOAD_RETRIES = 1
 
 datasets = [
     {
@@ -28,10 +30,6 @@ datasets = [
         "query": QUERIES["people"],
     },
 ]
-
-# staging
-# https://datahub.austintexas.gov/resource/3aut-fhzp.json?$limit=10
-# https://datahub.austintexas.gov/resource/v3x4-fjgm.json?$limit=10
 
 
 def main():
@@ -56,7 +54,7 @@ def main():
                     )
                 # we have some records, so it's safe to truncate the Socrata dataset
                 logger.info(f"Truncating dataset {dataset['dataset_id']}")
-                # socrata_client.replace(dataset["dastaset_id"], [])
+                socrata_client.replace(dataset["dataset_id"], [])
 
             logger.info(f"Upserting {len(records)} records")
 
@@ -64,8 +62,8 @@ def main():
             while True:
                 # try to upload to socrata until max retries is exceeded - then raise an erro
                 try:
-                    # socrata_client.upsert(dataset["dataset_id"], records)
-                    print("hey")
+                    socrata_client.upsert(dataset["dataset_id"], records)
+                    breakpoint()
                 except Exception as e:
                     upload_error_count += 1
                     if upload_error_count < MAX_UPLOAD_RETRIES:

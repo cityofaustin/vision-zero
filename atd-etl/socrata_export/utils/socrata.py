@@ -11,7 +11,7 @@ def get_socrata_client():
     return Socrata(
         "datahub.austintexas.gov",
         SOCRATA_APP_TOKEN,
-        username="SOCRATA_KEY_ID",
-        password="SOCRATA_KEY_SECRET",
+        username=SOCRATA_KEY_ID,
+        password=SOCRATA_KEY_SECRET,
         timeout=30,
     )
