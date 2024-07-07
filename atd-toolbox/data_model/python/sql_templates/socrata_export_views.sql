@@ -22,10 +22,11 @@ create or replace view socrata_export_crashes_view as (
         clv.law_enf_fatality_count as apd_confirmed_death_count,
         -- clv.tot_injry_count,
         clv.fatality_count,
+        clv.vz_fatality_count, -- new field / need to address naming consistencies wrt to fatality_count, vz_fatality_count, death_count. i think we should use vz_fatality_count in the public dataset
         clv.onsys_fl,
         clv.private_dr_fl,
-        -- clv.units_involved,
-        -- clv.atd_mode_category_metadata,
+        clv.units_involved,
+        clv.atd_mode_category_metadata,
         -- clv.motor_vehicle_fl,
         clv.motor_vehicle_fatality_count as motor_vehicle_death_count,
         clv.motor_vehicle_sus_serious_injry_count as motor_vehicle_serious_injury_count,
