@@ -25,11 +25,15 @@ def main():
         f"{migration_path}/down.sql",
         "drop view public.people_list_view cascade;",
     )
-
     # crashes unified change log
     crashes_change_log_sql = load_sql_template("sql_templates/crashes_change_log_view.sql")
     migration_path = make_migration_dir("change_log_view")
     save_file(f"{migration_path}/up.sql", crashes_change_log_sql)
     save_file(f"{migration_path}/down.sql", "drop view if exists public.crashes_change_log_view cascade;")
-
+    # socrata export view(s)
+    socrata_export_crashes_sql = load_sql_template("sql_templates/socrata_export_views.sql")
+    migration_path = make_migration_dir("socrata_export_views")
+    save_file(f"{migration_path}/up.sql", socrata_export_crashes_sql)
+    save_file(f"{migration_path}/down.sql", "drop view if exists public.socrata_export_crashes_view cascade;")
+    
 main()
