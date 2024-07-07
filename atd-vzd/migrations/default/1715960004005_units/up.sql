@@ -98,5 +98,5 @@ create table public.units (
     veh_mod_year integer,
     veh_trvl_dir_id integer references lookups.trvl_dir_lkp (id) on update cascade on delete cascade,
     vin text,
-    vz_mode_category integer references lookups.mode_category_lkp (id) on update cascade on delete cascade
+    vz_mode_category_id integer references lookups.mode_category_lkp (id) on update cascade on delete cascade
 );

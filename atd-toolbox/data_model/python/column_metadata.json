@@ -2262,7 +2262,7 @@
     "source": "cris"
   },
   {
-    "column_name": "vz_mode_category",
+    "column_name": "vz_mode_category_id",
     "data_type": "integer",
     "data_type_constraint": "",
     "foreign_column_cascade": "on update cascade on delete cascade",
