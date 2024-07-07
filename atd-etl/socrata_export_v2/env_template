@@ -1,3 +1,0 @@
-ENV=dev
-HASURA_GRAPHQL_ENDPOINT="http://localhost:8084/v1/graphql"
-HASURA_GRAPQL_ADMIN_SECRET=hasurapassword
