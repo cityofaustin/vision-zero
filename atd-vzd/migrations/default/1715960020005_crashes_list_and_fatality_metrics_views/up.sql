@@ -83,7 +83,7 @@ create or replace view person_injury_metrics_view as (
                 )
                 then 1
             else 0
-        end as motorycle_fatal_injry,
+        end as motorcycle_fatal_injry,
         case
             when
                 (
@@ -255,11 +255,11 @@ create or replace view crash_injury_metrics_view as
             person_injury_metrics_view.motor_vehicle_sus_serious_injry
         ), 0) as motor_vehicle_sus_serious_injry_count,
         coalesce(sum(
-            person_injury_metrics_view.motorycle_fatal_injry
-        ), 0) as motorycle_fatality_count,
+            person_injury_metrics_view.motorcycle_fatal_injry
+        ), 0) as motorcycle_fatality_count,
         coalesce(sum(
             person_injury_metrics_view.motorycle_sus_serious_injry
-        ), 0) as motorycle_sus_serious_count,
+        ), 0) as motorcycle_sus_serious_count,
         coalesce(sum(
             person_injury_metrics_view.bicycle_fatal_injry
         ), 0) as bicycle_fatality_count,
@@ -330,9 +330,11 @@ select
     public.crashes.location_id,
     public.crashes.rpt_block_num,
     public.crashes.rpt_street_pfx,
+    public.crashes.rpt_street_sfx,
     public.crashes.rpt_street_name,
     public.crashes.rpt_sec_block_num,
     public.crashes.rpt_sec_street_pfx,
+    public.crashes.rpt_sec_street_sfx,
     public.crashes.rpt_sec_street_name,
     public.crashes.latitude,
     public.crashes.longitude,
@@ -362,9 +364,10 @@ select
     crash_injury_metrics_view.est_comp_cost_crash_based,
     crash_injury_metrics_view.crash_injry_sev_id,
     crash_injury_metrics_view.years_of_life_lost,
+    crash_injury_metrics_view.motor_vehicle_fatality_count,
     crash_injury_metrics_view.motor_vehicle_sus_serious_injry_count,
-    crash_injury_metrics_view.motorycle_fatality_count,
-    crash_injury_metrics_view.motorycle_sus_serious_count,
+    crash_injury_metrics_view.motorcycle_fatality_count,
+    crash_injury_metrics_view.motorcycle_sus_serious_count,
     crash_injury_metrics_view.bicycle_fatality_count,
     crash_injury_metrics_view.bicycle_sus_serious_injry_count,
     crash_injury_metrics_view.pedestrian_fatality_count,
