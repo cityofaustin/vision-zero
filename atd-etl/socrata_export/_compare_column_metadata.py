@@ -22,10 +22,10 @@ def compare_col_arrays(list_a, list_b, a_list_name, b_list_name, primary_list="a
             )
         except StopIteration:
             if (primary_list == "a"):
-                todo = f"create column {key} type {col['dataTypeName']} in the {b_list_name} dataset"
+                todo = f"- create column `{key}` type `{col['dataTypeName']}` in the {b_list_name} dataset"
                 todos.append(todo)
             else:
-                todo = f"delete column {key} from the {b_list_name} dataset"
+                todo = f"- delete column `{key}` from the {b_list_name} dataset"
                 todos.append(todo)
             continue
         # see if the column type is the same
@@ -33,7 +33,7 @@ def compare_col_arrays(list_a, list_b, a_list_name, b_list_name, primary_list="a
         b_col_type = matching_col["dataTypeName"]
         if a_col_type != b_col_type:
             if primary_list == "a":
-                todo = f"change {key} from type {b_col_type} to {a_col_type} in the {b_list_name} dataset"
+                todo = f"- change `{key}` from type `{b_col_type}` to `{a_col_type}` in the {b_list_name} dataset"
                 todos.append(todo)
             else:
                 # we don't need to print these type mismatches
@@ -46,7 +46,7 @@ def compare_col_arrays(list_a, list_b, a_list_name, b_list_name, primary_list="a
 def main():
     socrata_client = get_socrata_client()
     for dataset in datasets:
-        print(f"\n\n**** {dataset['name']} dataset changes ****")
+        print(f"\n**** {dataset['name']} dataset changes ****\n")
         cols_staging = socrata_client.get_metadata(dataset["staging"])["columns"]
         cols_prod = socrata_client.get_metadata(dataset["prod"])["columns"]
         todos = compare_col_arrays(cols_staging, cols_prod, "staging", "prod", primary_list="a")
