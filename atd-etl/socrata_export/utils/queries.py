@@ -13,6 +13,9 @@ query SocrataExportCrashes($limit: Int! ,$offset: Int!) {
     crash_sev_id
     crash_speed_limit
     death_cnt
+    latitude
+    longitude
+    point
     law_enf_fatality_count
     micromobility_death_count
     micromobility_serious_injury_count
@@ -44,10 +47,10 @@ query SocrataExportCrashes($limit: Int! ,$offset: Int!) {
 PEOPLE_QUERY = """
 query SocrataExportPeople($limit: Int!, $offset: Int!) {
   socrata_export_people_view(order_by: {person_id: asc}, limit: $limit, offset: $offset) {
-    crash_date_ct
     crash_id
-    crash_time_ct
     crash_timestamp
+    crash_timestamp_ct
+    is_primary_person
     mode_desc
     mode_id
     person_id
@@ -55,10 +58,10 @@ query SocrataExportPeople($limit: Int!, $offset: Int!) {
     prsn_ethnicity_id
     prsn_ethnicity_label
     prsn_injry_sev_id
-    prsn_sex
+    prsn_sex_label
     prsn_sex_id
     unit_id
-  } 
+  }
 }
 """
 
