@@ -3,7 +3,6 @@ import { isAdmin, isItSupervisor } from "./auth/authContext";
 
 const VZDashboard = React.lazy(() => import("./views/VZDashboard"));
 
-const Widgets = React.lazy(() => import("./views/Widgets/Widgets"));
 const Crashes = React.lazy(() => import("./views/Crashes/Crashes"));
 const CrashesChanges = React.lazy(() =>
   import("./views/Crashes/CrashesChanges")
