@@ -12,7 +12,7 @@ SOCRATA_DATASET_CRASHES = os.getenv("SOCRATA_DATASET_CRASHES")
 SOCRATA_DATASET_PEOPLE = os.getenv("SOCRATA_DATASET_PEOPLE")
 
 # number of records to download from Hasura and upload to Socrata
-RECORD_BATCH_SIZE = 100
+RECORD_BATCH_SIZE = 1000
 # number of times to try a single socrata upload
 MAX_UPLOAD_RETRIES = 1
 
@@ -60,10 +60,9 @@ def main():
 
             upload_error_count = 0
             while True:
-                # try to upload to socrata until max retries is exceeded - then raise an erro
+                # try to upload to socrata until max retries is exceeded - then raise an error
                 try:
                     socrata_client.upsert(dataset["dataset_id"], records)
-                    breakpoint()
                 except Exception as e:
                     upload_error_count += 1
                     if upload_error_count < MAX_UPLOAD_RETRIES:
