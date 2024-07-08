@@ -1,34 +1,31 @@
 create or replace view socrata_export_crashes_view as (
     select
         clv.crash_id,
-        to_char(clv.crash_timestamp, 'YYYY-MM-DD"T"HH24:MI:SS') as crash_timestamp, --new column
-        clv.crash_date_ct, -- renamed column
-        clv.crash_time_ct, -- renamed column
+        to_char(clv.crash_timestamp, 'YYYY-MM-DD"T"HH24:MI:SS') as crash_timestamp,
+        to_char(clv.crash_timestamp at time zone 'US/Central', 'YYYY-MM-DD"T"HH24:MI:SS') as crash_timestamp_ct,
         clv.case_id,
-        clv.address_primary, --new column need to add to dataset
-        clv.address_secondary, --new column need to add to dataset
+        clv.address_primary,
+        clv.address_secondary,
         clv.rpt_block_num,
         clv.rpt_street_name,
         clv.rpt_street_sfx,
         clv.crash_speed_limit,
         clv.road_constr_zone_fl,
-        -- clv.street_name,
-        -- clv.street_name_2,
         clv.crash_injry_sev_id as crash_sev_id,
-        clv.sus_serious_injry_count,
-        clv.nonincap_injry_count,
-        clv.poss_injry_count,
-        clv.non_injry_count,
-        clv.unkn_injry_count,
-        clv.law_enf_fatality_count as apd_confirmed_death_count,
-        -- clv.tot_injry_count,
-        clv.fatality_count,
+        clv.sus_serious_injry_count as sus_serious_injry_cnt,
+        clv.nonincap_injry_count as nonincap_injry_cnt,
+        clv.poss_injry_count as poss_injry_cnt,
+        clv.non_injry_count as non_injry_cnt,
+        clv.unkn_injry_count as unkn_injry_cnt,
+        clv.law_enf_fatality_count,
+        -- clv.tot_injry_count, ## not sure this is used anywhere
+        -- clv.motor_vehicle_fl, ## i don't like these mode flags and i don't think they're used anywhere
+        clv.fatality_count as death_cnt,
         clv.vz_fatality_count, -- new field / need to address naming inconsistencies wrt to fatality_count, vz_fatality_count, death_count. i think we should use vz_fatality_count in the public dataset
         clv.onsys_fl,
         clv.private_dr_fl,
         clv.units_involved,
         clv.atd_mode_category_metadata, -- i don't like this! we should use a separate units dataset. note that death_count was renamed to vz_death_count
-        -- clv.motor_vehicle_fl,
         clv.motor_vehicle_fatality_count as motor_vehicle_death_count,
         clv.motor_vehicle_sus_serious_injry_count as motor_vehicle_serious_injury_count,
         clv.bicycle_fatality_count as bicycle_death_count,
@@ -41,8 +38,7 @@ create or replace view socrata_export_crashes_view as (
         clv.micromobility_sus_serious_injry_count as micromobility_serious_injury_count,
         clv.other_fatality_count as other_death_count,
         clv.other_sus_serious_injry_count as other_serious_injury_count,
-        coalesce(clv.crash_injry_sev_id = 4, false) as crash_fatal_fl,
-        clv.law_enf_fatality_count > 0 as apd_confirmed_fatality
+        coalesce(clv.crash_injry_sev_id = 4, false) as crash_fatal_fl
     from crashes_list_view as clv
     where
         clv.in_austin_full_purpose = true and clv.private_dr_fl = false
