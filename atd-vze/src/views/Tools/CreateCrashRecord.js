@@ -150,7 +150,6 @@ const CreateCrashRecord = ({ client }) => {
 
             unitObjects = unitObjects.concat(
               `{
-          crash_id: $crash_id,
           unit_nbr: ${unitNumber},
           unit_desc_id: ${Number(unit.unit_desc_id)}
         }`
@@ -184,7 +183,6 @@ const CreateCrashRecord = ({ client }) => {
         $rpt_sec_street_name: String
         $case_id: String
         $crash_timestamp: timestamp
-        $crash_id: Int
         $updated_by: String
       ) {
         insert_crashes_cris(
@@ -196,24 +194,28 @@ const CreateCrashRecord = ({ client }) => {
               city_id: 22
               crash_timestamp: $crash_timestamp
               updated_by: $updated_by 
-              temp_record: true
+              temp_record: true,
+              units_cris: {
+                data: ${unitObjects}
+              },
+              people_cris: {
+                data: ${personObjects}
+              }
             }
           ]
         ) {
           affected_rows
           returning {
             id
+            units_cris {
+              id
+              crash_id
+            }
+            people_cris {
+              id
+              crash_id
+            }
           }
-        }
-
-        insert_units_cris(
-          objects: ${unitObjects}
-        ) {
-          affected_rows
-        }
-
-        insert_people_cris(objects: ${personObjects}) {
-          affected_rows
         }
       }
     `;
