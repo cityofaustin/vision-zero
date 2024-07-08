@@ -1,16 +1,9 @@
 import React from "react";
 import { isAdmin, isItSupervisor } from "./auth/authContext";
 
-const Dashboard = React.lazy(() => import("./views/Dashboard"));
 const VZDashboard = React.lazy(() => import("./views/VZDashboard"));
 
-const Alerts = React.lazy(() => import("./views/Notifications/Alerts"));
-const Badges = React.lazy(() => import("./views/Notifications/Badges"));
-const Modals = React.lazy(() => import("./views/Notifications/Modals"));
-const Colors = React.lazy(() => import("./views/Theme/Colors"));
-const Typography = React.lazy(() => import("./views/Theme/Typography"));
 const Widgets = React.lazy(() => import("./views/Widgets/Widgets"));
-const Dev = React.lazy(() => import("./views/Dev/Dev"));
 const Crashes = React.lazy(() => import("./views/Crashes/Crashes"));
 const CrashesChanges = React.lazy(() =>
   import("./views/Crashes/CrashesChanges")
@@ -38,20 +31,7 @@ const CreateCrashRecord = React.lazy(() =>
 // Accept roles arg for role-based access to routes
 const routes = roles => [
   { path: "/", exact: true, name: "Home" },
-  { path: "/dev/dashboard", name: "Dashboard", component: Dashboard },
-  { path: "/dev/theme", exact: true, name: "Theme", component: Colors },
-  { path: "/dev/theme/colors", name: "Colors", component: Colors },
-  { path: "/dev/theme/typography", name: "Typography", component: Typography },
-  {
-    path: "/dev/notifications",
-    exact: true,
-    name: "Notifications",
-    component: Alerts,
-  },
-  { path: "/dev/notifications/alerts", name: "Alerts", component: Alerts },
-  { path: "/dev/notifications/badges", name: "Badges", component: Badges },
-  { path: "/dev/notifications/modals", name: "Modals", component: Modals },
-  { path: "/dev/widgets", name: "Widgets", component: Widgets },
+
   { path: "/profile", name: "Profile", component: Profile },
   {
     path: "/dashboard",
@@ -78,12 +58,6 @@ const routes = roles => [
     exact: true,
     name: "Fatalities",
     component: Fatalities,
-  },
-  {
-    path: "/dev",
-    exact: true,
-    name: "Demo UI Components",
-    component: Dev,
   },
   (isAdmin(roles) || isItSupervisor(roles)) && {
     path: "/changes",
