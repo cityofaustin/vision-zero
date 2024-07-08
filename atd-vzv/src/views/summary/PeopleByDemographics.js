@@ -93,14 +93,14 @@ const chartConfigs = {
   },
   sexData: {
     label: "Sex",
-    categoryKey: "prsn_gndr_id",
+    categoryKey: "prsn_sex_id",
     categoryType: "target",
     socrataCategories: ["1", "2", "0"],
     labelCategories: ["Male", "Female", "Unknown"],
     exceptionCategory: "Unknown",
-    query: `SELECT date_extract_y(crash_timestamp_ct) as year, COUNT(*) as total, prsn_gndr_id, prsn_injry_sev_id
+    query: `SELECT date_extract_y(crash_timestamp_ct) as year, COUNT(*) as total, prsn_sex_id, prsn_injry_sev_id
               WHERE ${dateCondition}
-              GROUP BY year, prsn_gndr_id, prsn_injry_sev_id
+              GROUP BY year, prsn_sex_id, prsn_injry_sev_id
               ORDER BY year`,
     colors: chartColors,
   },
