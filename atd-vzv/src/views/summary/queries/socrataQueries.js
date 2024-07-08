@@ -1,4 +1,5 @@
-const crashDatasetID = "y2wy-tgr5";
+// const crashDatasetID = "y2wy-tgr5";
+const crashDatasetID = "3aut-fhzp"; // staging
 const personDatasetID = "xecs-rpy9";
 
 export const crashEndpointUrl = `https://data.austintexas.gov/resource/${crashDatasetID}.json`;
@@ -13,5 +14,5 @@ export const mapRequestFields = [
   "longitude",
   "crash_id",
   "units_involved",
-  "crash_date",
+  "crash_timestamp_ct",
 ];
