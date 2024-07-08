@@ -12,19 +12,10 @@ import {
 } from "reactstrap";
 import { useQuery } from "@apollo/react-hooks";
 import { withApollo } from "react-apollo";
-import { gql } from "apollo-boost";
-
-const GET_VEHICLE_DESC_LKP = gql`
-  {
-    atd_txdot__veh_unit_desc_lkp {
-      veh_unit_desc_id
-      veh_unit_desc_desc
-    }
-  }
-`;
+import { GET_UNIT_LOOKUPS } from "../../queries/lookups";
 
 const UnitsForm = ({ units, handleUnitFormChange, client }) => {
-  const { data: lookupValues, loading } = useQuery(GET_VEHICLE_DESC_LKP);
+  const { data: lookupValues, loading } = useQuery(GET_UNIT_LOOKUPS);
 
   return (
     <>
@@ -54,13 +45,10 @@ const UnitsForm = ({ units, handleUnitFormChange, client }) => {
                   >
                     <option value={0}>Select the unit type...</option>
                     {!loading &&
-                      lookupValues.atd_txdot__veh_unit_desc_lkp.map(item => {
+                      lookupValues.lookups_unit_desc_lkp.map(item => {
                         return (
-                          <option
-                            value={item.veh_unit_desc_id}
-                            key={`option-${item.veh_unit_desc_id}`}
-                          >
-                            {item.veh_unit_desc_desc}
+                          <option value={item.id} key={`option-${item.id}`}>
+                            {item.label}
                           </option>
                         );
                       })}
