@@ -151,7 +151,8 @@ const CreateCrashRecord = ({ client }) => {
             unitObjects = unitObjects.concat(
               `{
           unit_nbr: ${unitNumber},
-          unit_desc_id: ${Number(unit.unit_desc_id)}
+          unit_desc_id: ${Number(unit.unit_desc_id)},
+          cris_schema_version: "2023",
         }`
             );
 
@@ -159,6 +160,7 @@ const CreateCrashRecord = ({ client }) => {
               personObjects = personObjects.concat(`{
         unit_nbr: ${unitNumber},
         prsn_injry_sev_id: 4,
+        cris_schema_version: "2023",
       }`);
             }
 
@@ -182,7 +184,7 @@ const CreateCrashRecord = ({ client }) => {
         $rpt_street_name: String
         $rpt_sec_street_name: String
         $case_id: String
-        $crash_timestamp: timestamp
+        $crash_timestamp: timestamptz
         $updated_by: String
       ) {
         insert_crashes_cris(
@@ -191,31 +193,20 @@ const CreateCrashRecord = ({ client }) => {
               rpt_street_name: $rpt_street_name
               rpt_sec_street_name: $rpt_sec_street_name
               case_id: $case_id
-              city_id: 22
+              rpt_city_id: 22
               crash_timestamp: $crash_timestamp
               updated_by: $updated_by 
-              temp_record: true,
+              cris_schema_version: "2023"
               units_cris: {
                 data: ${unitObjects}
-              },
-              people_cris: {
-                data: ${personObjects}
+                people_cris: {
+                  data: ${personObjects}
+                }
               }
             }
           ]
         ) {
           affected_rows
-          returning {
-            id
-            units_cris {
-              id
-              crash_id
-            }
-            people_cris {
-              id
-              crash_id
-            }
-          }
         }
       }
     `;
@@ -233,7 +224,6 @@ const CreateCrashRecord = ({ client }) => {
             rpt_sec_street_name: secondaryStreetName,
             case_id: caseId,
             crash_timestamp: crashTimestamp,
-            crash_fatal_fl: fatalityCountSum > 0 ? "Y" : "N",
             updated_by: user.email,
           };
 
