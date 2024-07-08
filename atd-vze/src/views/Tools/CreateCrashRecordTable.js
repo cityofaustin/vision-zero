@@ -13,8 +13,12 @@ import {
   CardHeader,
   FormGroup,
   Input,
-  Label, Modal, ModalBody, ModalFooter, ModalHeader,
-  Table
+  Label,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+  Table,
 } from "reactstrap";
 
 const GET_TEMP_RECORDS = gql`
@@ -48,13 +52,14 @@ const DELETE_TEMP_RECORD = gql`
 `;
 
 const CreateCrashRecordTable = () => {
-
   const [crashesData, setCrashesData] = useState(null);
   const [crashSearch, setCrashSearch] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
   const [feedback, setFeedback] = useState(null);
-  const { loading, error, data } = useQuery(GET_TEMP_RECORDS, {fetchPolicy: 'no-cache'});
+  const { loading, error, data } = useQuery(GET_TEMP_RECORDS, {
+    fetchPolicy: "no-cache",
+  });
   const [deleteRecord] = useMutation(DELETE_TEMP_RECORD);
 
   useEffect(() => {
@@ -74,35 +79,37 @@ const CreateCrashRecordTable = () => {
    */
   const handleDelete = () => {
     setFeedback(null);
-    deleteRecord({ variables: { crashId: deleteId } }).then(() => {
-      const newData = crashesData["atd_txdot_crashes"].filter((item) => {
-        return item.crash_id !== deleteId;
+    deleteRecord({ variables: { crashId: deleteId } })
+      .then(() => {
+        const newData = crashesData["atd_txdot_crashes"].filter(item => {
+          return item.crash_id !== deleteId;
+        });
+        setDeleteId(null);
+        setFeedback(`Crash ID ${deleteId} has been deleted.`);
+        setCrashesData({ atd_txdot_crashes: newData });
+        toggleModalDelete();
+      })
+      .catch(err => {
+        setFeedback(String(err));
+        setDeleteId(null);
       });
-      setDeleteId(null);
-      setFeedback(`Crash ID ${deleteId} has been deleted.`);
-      setCrashesData({"atd_txdot_crashes": newData});
-      toggleModalDelete();
-    }).catch(err => {
-      setFeedback(String(err));
-      setDeleteId(null);
-    });
-  }
+  };
 
   /**
    * Opens/Closes the delete modal
    */
   const toggleModalDelete = () => {
     setModalOpen(!modalOpen);
-  }
+  };
 
   /**
    * Commits the crash_id to be deleted to state, and prompts for deletion.
    * @param {int} crashId - The crash id to be deleted.
    */
-  const openModalDelete = (crashId) => {
+  const openModalDelete = crashId => {
     setDeleteId(crashId);
     toggleModalDelete();
-  }
+  };
 
   return (
     <>
@@ -190,7 +197,10 @@ const CreateCrashRecordTable = () => {
         <ModalHeader toggle={toggleModalDelete}>
           Delete this record?
         </ModalHeader>
-        <ModalBody>Are you sure you want to delete crash id <strong>{deleteId}</strong>? This cannot be undone.</ModalBody>
+        <ModalBody>
+          Are you sure you want to delete crash id <strong>{deleteId}</strong>?
+          This cannot be undone.
+        </ModalBody>
         <ModalFooter>
           <Button color="danger" onClick={handleDelete}>
             Ok
