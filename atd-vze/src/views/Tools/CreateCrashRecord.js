@@ -27,6 +27,8 @@ import { useAuth0 } from "../../auth/authContext";
 const CreateCrashRecord = ({ client }) => {
   const { user } = useAuth0();
 
+  const userEmail = user.email;
+
   const unitsInitialState = [
     { unit_desc_id: 1, fatality_count: 0, sus_serious_injry_cnt: 0 },
   ];
@@ -79,33 +81,6 @@ const CreateCrashRecord = ({ client }) => {
     return !data;
   }
 
-  // useEffect(() => {
-  //   const GET_HIGHEST_TEMP_RECORD_ID = gql`
-  //     {
-  //       crashes(limit: 1, order_by: { crash_id: desc }) {
-  //         crash_id
-  //       }
-  //     }
-  //   `;
-
-  //   client
-  //     .mutate({
-  //       mutation: GET_HIGHEST_TEMP_RECORD_ID,
-  //     })
-  //     .then(res => {
-  //       // Find the highest existing temp crash record ID value.
-  //       // If there aren't and temp crash records,
-  //       // default to 1000.
-  //       const highestCurrentTempId = res.data.crashes[0]
-  //         ? res.data.crashes[0].crash_id
-  //         : 1000;
-  //       setTempId(highestCurrentTempId + 1);
-  //     })
-  //     .catch(error => {
-  //       setFeedback({ title: "Error", message: String(error) });
-  //     });
-  // }, [client]);
-
   const resetForm = () => {
     setCaseId(formInitialState.caseId);
     setCrashTimestamp(formInitialState.crashTimestamp);
@@ -153,8 +128,8 @@ const CreateCrashRecord = ({ client }) => {
           unit_nbr: ${unitNumber},
           unit_desc_id: ${Number(unit.unit_desc_id)},
           cris_schema_version: "2023",
-          updated_by: ${user.email},
-          created_by: ${user.email},
+          updated_by: "${userEmail}",
+          created_by: "${userEmail}"
         }`
             );
 
@@ -163,8 +138,8 @@ const CreateCrashRecord = ({ client }) => {
         unit_nbr: ${unitNumber},
         prsn_injry_sev_id: 4,
         cris_schema_version: "2023",
-        updated_by: ${user.email},
-        created_by: ${user.email},
+        updated_by: "${userEmail}",
+        created_by: "${userEmail}"
       }`);
             }
 
@@ -176,8 +151,8 @@ const CreateCrashRecord = ({ client }) => {
               personObjects = personObjects.concat(`{
         unit_nbr: ${unitNumber},
         prsn_injry_sev_id: 1,
-        updated_by: ${user.email},
-        created_by: ${user.email},
+        updated_by: "${userEmail}",
+        created_by: "${userEmail}"
       }`);
             }
           });
@@ -231,8 +206,8 @@ const CreateCrashRecord = ({ client }) => {
             rpt_sec_street_name: secondaryStreetName,
             case_id: caseId,
             crash_timestamp: crashTimestamp,
-            updated_by: user.email,
-            created_by: user.email,
+            updated_by: userEmail,
+            created_by: userEmail,
           };
 
           client
@@ -333,29 +308,6 @@ const CreateCrashRecord = ({ client }) => {
               )}
             </Col>
           </FormGroup>
-          {/* <FormGroup row>
-            <Col md="3">
-              <Label htmlFor="date-input">Crash Date</Label>
-            </Col>
-            <Col xs="12" md="9">
-              <Input
-                type="date"
-                id="date-input"
-                name="date-input"
-                placeholder="date"
-                value={crashDate}
-                invalid={isFieldInvalid(crashDate)}
-                onChange={e => setCrashDate(e.target.value)}
-              />
-              {isFieldInvalid(crashDate) ? (
-                <FormFeedback>Crash Date can't be blank.</FormFeedback>
-              ) : (
-                <FormText className="help-block">
-                  Please enter the Crash Date.
-                </FormText>
-              )}
-            </Col>
-          </FormGroup> */}
           <FormGroup row>
             <Col md="3">
               <Label htmlFor="date-input">Primary Address</Label>
