@@ -6,7 +6,7 @@ import requests
 from utils.exceptions import HasuraAPIError
 
 ENDPOINT = os.getenv("HASURA_GRAPHQL_ENDPOINT")
-ADMIN_SECRET = os.getenv("HASURA_GRAPQL_ADMIN_SECRET")
+ADMIN_SECRET = os.getenv("HASURA_GRAPHQL_ADMIN_SECRET")
 
 COLUMN_METADATA_QUERY = """
 query ColumnMetadata {
