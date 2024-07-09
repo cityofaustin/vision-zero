@@ -153,6 +153,8 @@ const CreateCrashRecord = ({ client }) => {
           unit_nbr: ${unitNumber},
           unit_desc_id: ${Number(unit.unit_desc_id)},
           cris_schema_version: "2023",
+          updated_by: ${user.email},
+          created_by: ${user.email},
         }`
             );
 
@@ -161,6 +163,8 @@ const CreateCrashRecord = ({ client }) => {
         unit_nbr: ${unitNumber},
         prsn_injry_sev_id: 4,
         cris_schema_version: "2023",
+        updated_by: ${user.email},
+        created_by: ${user.email},
       }`);
             }
 
@@ -172,6 +176,8 @@ const CreateCrashRecord = ({ client }) => {
               personObjects = personObjects.concat(`{
         unit_nbr: ${unitNumber},
         prsn_injry_sev_id: 1,
+        updated_by: ${user.email},
+        created_by: ${user.email},
       }`);
             }
           });
@@ -186,6 +192,7 @@ const CreateCrashRecord = ({ client }) => {
         $case_id: String
         $crash_timestamp: timestamptz
         $updated_by: String
+        $created_by: String
       ) {
         insert_crashes_cris(
           objects: [
@@ -195,18 +202,18 @@ const CreateCrashRecord = ({ client }) => {
               case_id: $case_id
               rpt_city_id: 22
               crash_timestamp: $crash_timestamp
-              updated_by: $updated_by 
+              updated_by: $updated_by
+              created_by: $created_by
               cris_schema_version: "2023"
               units_cris: {
                 data: ${unitObjects}
-                people_cris: {
-                  data: ${personObjects}
-                }
               }
             }
           ]
         ) {
-          affected_rows
+          returning {
+            id
+          }
         }
       }
     `;
@@ -225,6 +232,7 @@ const CreateCrashRecord = ({ client }) => {
             case_id: caseId,
             crash_timestamp: crashTimestamp,
             updated_by: user.email,
+            created_by: user.email,
           };
 
           client
