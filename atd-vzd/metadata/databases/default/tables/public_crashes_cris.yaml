@@ -170,37 +170,47 @@ select_permissions:
       columns:
         - active_school_zone_fl
         - at_intrsct_fl
-        - case_id
-        - crash_id
-        - crash_speed_limit
-        - crash_timestamp
-        - cris_schema_version
-        - fhe_collsn_id
-        - intrsct_relat_id
-        - investigat_agency_id
-        - investigator_narrative
-        - latitude
-        - light_cond_id
-        - longitude
         - medical_advisory_fl
-        - obj_struck_id
         - onsys_fl
         - private_dr_fl
         - road_constr_zone_fl
         - road_constr_zone_wrkr_fl
-        - rpt_block_num
+        - rr_relat_fl
+        - schl_bus_fl
+        - thousand_damage_fl
+        - toll_road_fl
+        - txdot_rptable_fl
+        - crash_id
+        - crash_speed_limit
+        - fhe_collsn_id
+        - id
+        - intrsct_relat_id
+        - investigat_agency_id
+        - light_cond_id
+        - obj_struck_id
         - rpt_city_id
         - rpt_cris_cnty_id
-        - rpt_hwy_num
         - rpt_rdwy_sys_id
-        - rpt_ref_mark_dir
-        - rpt_ref_mark_dist_uom
-        - rpt_ref_mark_offset_amt
         - rpt_road_part_id
-        - rpt_sec_block_num
-        - rpt_sec_hwy_num
         - rpt_sec_rdwy_sys_id
         - rpt_sec_road_part_id
+        - surf_cond_id
+        - surf_type_id
+        - traffic_cntl_id
+        - wthr_cond_id
+        - latitude
+        - longitude
+        - rpt_ref_mark_offset_amt
+        - case_id
+        - created_by
+        - cris_schema_version
+        - investigator_narrative
+        - rpt_block_num
+        - rpt_hwy_num
+        - rpt_ref_mark_dir
+        - rpt_ref_mark_dist_uom
+        - rpt_sec_block_num
+        - rpt_sec_hwy_num
         - rpt_sec_street_desc
         - rpt_sec_street_name
         - rpt_sec_street_pfx
@@ -209,16 +219,10 @@ select_permissions:
         - rpt_street_name
         - rpt_street_pfx
         - rpt_street_sfx
-        - rr_relat_fl
-        - schl_bus_fl
-        - surf_cond_id
-        - surf_type_id
-        - thousand_damage_fl
-        - toll_road_fl
-        - traffic_cntl_id
-        - txdot_rptable_fl
         - updated_by
-        - wthr_cond_id
+        - crash_timestamp
+        - created_at
+        - updated_at
       filter: {}
     comment: ""
   - role: vz-admin
@@ -226,37 +230,47 @@ select_permissions:
       columns:
         - active_school_zone_fl
         - at_intrsct_fl
-        - case_id
-        - crash_id
-        - crash_speed_limit
-        - crash_timestamp
-        - cris_schema_version
-        - fhe_collsn_id
-        - intrsct_relat_id
-        - investigat_agency_id
-        - investigator_narrative
-        - latitude
-        - light_cond_id
-        - longitude
         - medical_advisory_fl
-        - obj_struck_id
         - onsys_fl
         - private_dr_fl
         - road_constr_zone_fl
         - road_constr_zone_wrkr_fl
-        - rpt_block_num
+        - rr_relat_fl
+        - schl_bus_fl
+        - thousand_damage_fl
+        - toll_road_fl
+        - txdot_rptable_fl
+        - crash_id
+        - crash_speed_limit
+        - fhe_collsn_id
+        - id
+        - intrsct_relat_id
+        - investigat_agency_id
+        - light_cond_id
+        - obj_struck_id
         - rpt_city_id
         - rpt_cris_cnty_id
-        - rpt_hwy_num
         - rpt_rdwy_sys_id
-        - rpt_ref_mark_dir
-        - rpt_ref_mark_dist_uom
-        - rpt_ref_mark_offset_amt
         - rpt_road_part_id
-        - rpt_sec_block_num
-        - rpt_sec_hwy_num
         - rpt_sec_rdwy_sys_id
         - rpt_sec_road_part_id
+        - surf_cond_id
+        - surf_type_id
+        - traffic_cntl_id
+        - wthr_cond_id
+        - latitude
+        - longitude
+        - rpt_ref_mark_offset_amt
+        - case_id
+        - created_by
+        - cris_schema_version
+        - investigator_narrative
+        - rpt_block_num
+        - rpt_hwy_num
+        - rpt_ref_mark_dir
+        - rpt_ref_mark_dist_uom
+        - rpt_sec_block_num
+        - rpt_sec_hwy_num
         - rpt_sec_street_desc
         - rpt_sec_street_name
         - rpt_sec_street_pfx
@@ -265,15 +279,9 @@ select_permissions:
         - rpt_street_name
         - rpt_street_pfx
         - rpt_street_sfx
-        - rr_relat_fl
-        - schl_bus_fl
-        - surf_cond_id
-        - surf_type_id
-        - thousand_damage_fl
-        - toll_road_fl
-        - traffic_cntl_id
-        - txdot_rptable_fl
         - updated_by
-        - wthr_cond_id
+        - crash_timestamp
+        - created_at
+        - updated_at
       filter: {}
     comment: ""
