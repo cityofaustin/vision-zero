@@ -62,6 +62,7 @@ insert_permissions:
         - case_id
         - crash_speed_limit
         - crash_timestamp
+        - created_by
         - cris_schema_version
         - fhe_collsn_id
         - intrsct_relat_id

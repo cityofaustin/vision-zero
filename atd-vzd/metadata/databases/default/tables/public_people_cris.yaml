@@ -35,6 +35,7 @@ insert_permissions:
     permission:
       check: {}
       columns:
+        - created_by
         - cris_crash_id
         - cris_schema_version
         - drvr_city_name
@@ -71,6 +72,7 @@ insert_permissions:
     permission:
       check: {}
       columns:
+        - created_by
         - cris_crash_id
         - cris_schema_version
         - drvr_city_name
