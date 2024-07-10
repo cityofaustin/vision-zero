@@ -192,18 +192,7 @@ BEGIN
             prsn_ethnicity_id = pd.prsn_ethnicity_id,
             prsn_exp_homelessness = pd.prsn_exp_homelessness
         FROM (
-            SELECT id,
-                   prsn_type_id,
-                   prsn_occpnt_pos_id,
-                   prsn_injry_sev_id,
-                   prsn_age,
-                   prsn_last_name,
-                   prsn_first_name,
-                   prsn_mid_name,
-                   prsn_gndr_id,
-                   prsn_ethnicity_id,
-                   prsn_exp_homelessness
-            FROM people_diffs
+            SELECT * FROM people_diffs
             OFFSET current_offset
             LIMIT batch_size
         ) AS pd
