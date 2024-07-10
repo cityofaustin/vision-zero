@@ -11,21 +11,21 @@ create or replace view crashes_diffs as with joined_crashes as (
         crash_edit.case_id as case_id_edit,
         crash_edit.intrsct_relat_id as intrsct_relat_id_edit,
         crash_edit.law_enforcement_num as law_enforcement_fatality_num_edit,
-        crash_cris.longitude as longitude_cris,
-        crash_cris.latitude as latitude_cris,
-        crash_cris.rpt_city_id as rpt_city_id_cris,
-        crash_cris.crash_speed_limit as crash_speed_limit_cris,
-        crash_cris.traffic_cntl_id as traffic_cntl_id_cris,
-        crash_cris.private_dr_fl as private_dr_fl_cris,
-        crash_cris.road_constr_zone_fl as road_constr_zone_fl_cris,
-        crash_cris.case_id as case_id_cris,
-        crash_cris.intrsct_relat_id as intrsct_relat_id_cris,
-        null as law_enforcement_fatality_num_cris,
-        crash_cris.id
-    from crashes_cris as crash_cris
+        crash_unified.longitude as longitude_unified,
+        crash_unified.latitude as latitude_unified,
+        crash_unified.rpt_city_id as rpt_city_id_unified,
+        crash_unified.crash_speed_limit as crash_speed_limit_unified,
+        crash_unified.traffic_cntl_id as traffic_cntl_id_unified,
+        crash_unified.private_dr_fl as private_dr_fl_unified,
+        crash_unified.road_constr_zone_fl as road_constr_zone_fl_unified,
+        crash_unified.case_id as case_id_unified,
+        crash_unified.intrsct_relat_id as intrsct_relat_id_unified,
+        null as law_enforcement_fatality_num_unified,
+        crash_unified.id
+    from crashes as crash_unified
     left join
         atd_txdot_crashes as crash_edit
-        on crash_cris.crash_id = crash_edit.crash_id
+        on crash_unified.crash_id = crash_edit.crash_id
 ),
 
 computed_diffs as (
@@ -34,62 +34,62 @@ computed_diffs as (
         crash.crash_id,
         case
             when
-                crash.longitude_edit != crash.longitude_cris
+                crash.longitude_edit != crash.longitude_unified
                 and longitude_edit is not null
                 then crash.longitude_edit
         end as longitude,
         case
             when
-                crash.latitude_edit != crash.latitude_cris
+                crash.latitude_edit != crash.latitude_unified
                 and latitude_edit is not null
                 then crash.latitude_edit
         end as latitude,
         case
             when
-                crash.rpt_city_id_edit != crash.rpt_city_id_cris
+                crash.rpt_city_id_edit != crash.rpt_city_id_unified
                 and rpt_city_id_edit is not null
                 then crash.rpt_city_id_edit
         end as rpt_city_id,
         case
             when
-                crash.crash_speed_limit_edit != crash.crash_speed_limit_cris
+                crash.crash_speed_limit_edit != crash.crash_speed_limit_unified
                 and crash_speed_limit_edit is not null
                 then crash.crash_speed_limit_edit
         end as crash_speed_limit,
         case
             when
-                crash.traffic_cntl_id_edit != crash.traffic_cntl_id_cris
+                crash.traffic_cntl_id_edit != crash.traffic_cntl_id_unified
                 and traffic_cntl_id_edit is not null
                 then crash.traffic_cntl_id_edit
         end as traffic_cntl_id,
         case
             when
-                crash.private_dr_fl_edit != crash.private_dr_fl_cris
+                crash.private_dr_fl_edit != crash.private_dr_fl_unified
                 and private_dr_fl_edit is not null
                 then crash.private_dr_fl_edit
         end as private_dr_fl,
         case
             when
-                crash.road_constr_zone_fl_edit != crash.road_constr_zone_fl_cris
+                crash.road_constr_zone_fl_edit != crash.road_constr_zone_fl_unified
                 and road_constr_zone_fl_edit is not null
                 then crash.road_constr_zone_fl_edit
         end as road_constr_zone_fl,
         case
             when
-                crash.case_id_edit != crash.case_id_cris
+                crash.case_id_edit != crash.case_id_unified
                 and case_id_edit is not null
                 then crash.case_id_edit
         end as case_id,
         case
             when
-                crash.intrsct_relat_id_edit != crash.intrsct_relat_id_cris
+                crash.intrsct_relat_id_edit != crash.intrsct_relat_id_unified
                 and intrsct_relat_id_edit is not null
                 then crash.intrsct_relat_id_edit
         end as intrsct_relat_id,
         case
             when
                 crash.law_enforcement_fatality_num_edit
-                != crash.law_enforcement_fatality_num_cris
+                != crash.law_enforcement_fatality_num_unified
                 and law_enforcement_fatality_num_edit is not null
                 then crash.law_enforcement_fatality_num_edit
         end as law_enforcement_fatality_num

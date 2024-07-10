@@ -39,10 +39,10 @@ create or replace view people_diffs as with unioned_people_edits as (
 --
 joined_people as (
     select
-        people_cris.id,
+        people_unified.id,
         people_edit.crash_id,
-        people_cris.unit_nbr,
-        people_cris.prsn_nbr,
+        units.unit_nbr,
+        people_unified.prsn_nbr,
         people_edit.prsn_type_id as prsn_type_id_edit,
         people_edit.prsn_occpnt_pos_id as prsn_occpnt_pos_id_edit,
         people_edit.prsn_injry_sev_id as prsn_injry_sev_id_edit,
@@ -53,23 +53,26 @@ joined_people as (
         people_edit.prsn_gndr_id as prsn_gndr_id_edit,
         people_edit.prsn_ethnicity_id as prsn_ethnicity_id_edit,
         people_edit.prsn_exp_homelessness as prsn_exp_homelessness_edit,
-        people_cris.prsn_type_id as prsn_type_id_cris,
-        people_cris.prsn_occpnt_pos_id as prsn_occpnt_pos_id_cris,
-        people_cris.prsn_injry_sev_id as prsn_injry_sev_id_cris,
-        people_cris.prsn_age as prsn_age_cris,
-        people_cris.prsn_last_name as prsn_last_name_cris,
-        people_cris.prsn_first_name as prsn_first_name_cris,
-        people_cris.prsn_mid_name as prsn_mid_name_cris,
-        people_cris.prsn_gndr_id as prsn_gndr_id_cris,
-        people_cris.prsn_ethnicity_id as prsn_ethnicity_id_cris,
-        people_cris.prsn_exp_homelessness as prsn_exp_homelessness_cris
-    from people_cris
+        people_unified.prsn_type_id as prsn_type_id_unified,
+        people_unified.prsn_occpnt_pos_id as prsn_occpnt_pos_id_unified,
+        people_unified.prsn_injry_sev_id as prsn_injry_sev_id_unified,
+        people_unified.prsn_age as prsn_age_unified,
+        people_unified.prsn_last_name as prsn_last_name_unified,
+        people_unified.prsn_first_name as prsn_first_name_unified,
+        people_unified.prsn_mid_name as prsn_mid_name_unified,
+        people_unified.prsn_gndr_id as prsn_gndr_id_unified,
+        people_unified.prsn_ethnicity_id as prsn_ethnicity_id_unified,
+        people_unified.prsn_exp_homelessness as prsn_exp_homelessness_unified
+    from people as people_unified
+    left join
+        units on people_unified.unit_id = units.id
+    left join crashes on crashes.id = units.crash_id
     left join
         unioned_people_edits as people_edit
         on
-            people_cris.cris_crash_id = people_edit.crash_id
-            and people_cris.unit_nbr = people_edit.unit_nbr
-            and people_cris.prsn_nbr = people_edit.prsn_nbr
+            crashes.crash_id = people_edit.crash_id
+            and units.unit_nbr = people_edit.unit_nbr
+            and people_unified.prsn_nbr = people_edit.prsn_nbr
 ),
 
 --
@@ -85,62 +88,61 @@ computed_diffs as (
         case
             when
                 prsn_type_id_edit is not null
-                and prsn_type_id_edit != prsn_type_id_cris
+                and prsn_type_id_edit != prsn_type_id_unified
                 then prsn_type_id_edit
         end as prsn_type_id,
         case
             when
                 prsn_occpnt_pos_id_edit is not null
-                and prsn_occpnt_pos_id_edit != prsn_occpnt_pos_id_cris
+                and prsn_occpnt_pos_id_edit != prsn_occpnt_pos_id_unified
                 then prsn_occpnt_pos_id_edit
         end as prsn_occpnt_pos_id,
         case
             when
                 prsn_injry_sev_id_edit is not null
-                and prsn_injry_sev_id_edit != prsn_injry_sev_id_cris
+                and prsn_injry_sev_id_edit != prsn_injry_sev_id_unified
                 then prsn_injry_sev_id_edit
         end as prsn_injry_sev_id,
         case
             when
-                prsn_age_edit is not null and prsn_age_edit != prsn_age_cris
+                prsn_age_edit is not null and prsn_age_edit != prsn_age_unified
                 then prsn_age_edit
         end as prsn_age,
         case
             when
                 prsn_last_name_edit is not null
-                and prsn_last_name_edit != prsn_last_name_cris
+                and prsn_last_name_edit != prsn_last_name_unified
                 then prsn_last_name_edit
         end as prsn_last_name,
         case
             when
                 prsn_first_name_edit is not null
-                and prsn_first_name_edit != prsn_first_name_cris
+                and prsn_first_name_edit != prsn_first_name_unified
                 then prsn_first_name_edit
         end as prsn_first_name,
         case
             when
                 prsn_mid_name_edit is not null
-                and prsn_mid_name_edit != prsn_mid_name_cris
+                and prsn_mid_name_edit != prsn_mid_name_unified
                 then prsn_mid_name_edit
         end as prsn_mid_name,
         case
             when
                 prsn_gndr_id_edit is not null
-                and prsn_gndr_id_edit != prsn_gndr_id_cris
+                and prsn_gndr_id_edit != prsn_gndr_id_unified
                 then prsn_gndr_id_edit
         end as prsn_gndr_id,
         case
             when
                 prsn_ethnicity_id_edit is not null
-                and prsn_ethnicity_id_edit != prsn_ethnicity_id_cris
+                and prsn_ethnicity_id_edit != prsn_ethnicity_id_unified
                 then prsn_ethnicity_id_edit
         end as prsn_ethnicity_id,
         case
             when
                 prsn_exp_homelessness_edit is not null
-                and prsn_exp_homelessness_edit != prsn_exp_homelessness_cris
+                and prsn_exp_homelessness_edit != prsn_exp_homelessness_unified
                 then prsn_exp_homelessness_edit
-            else false
         end as prsn_exp_homelessness
     from joined_people
 )
@@ -156,7 +158,7 @@ where
     or prsn_mid_name is not null
     or prsn_gndr_id is not null
     or prsn_ethnicity_id is not null
-    or prsn_exp_homelessness is true
+    or prsn_exp_homelessness is not null
 order by id asc;
 
 
@@ -217,7 +219,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-select update_people_edits_in_batches(1000); -- Specify batch size if needed
+select update_people_edits_in_batches(1000);
 
 -- tear down
 drop function update_people_edits_in_batches;

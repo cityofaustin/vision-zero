@@ -1,22 +1,23 @@
 create or replace view units_diffs as
 with joined_units as (
     select
-        unit_cris.id,
-        unit_cris.unit_nbr as unit_nbr,
-        unit_cris.crash_id as crash_id,
+        unit_unified.id,
+        unit_unified.unit_nbr as unit_nbr,
+        unit_unified.crash_id as crash_id,
         unit_edit.travel_direction as veh_trvl_dir_id_edit,
         unit_edit.movement_id as movement_id_edit,
         unit_edit.unit_desc_id as unit_desc_id_edit,
         unit_edit.veh_body_styl_id as veh_body_styl_id_edit,
-        unit_cris.veh_trvl_dir_id as veh_trvl_dir_id_cris,
-        unit_cris.unit_desc_id as unit_desc_id_cris,
-        unit_cris.veh_body_styl_id as veh_body_styl_id_cris
-    from units_cris as unit_cris
+        unit_unified.veh_trvl_dir_id as veh_trvl_dir_id_unified,
+        unit_unified.movement_id as movement_id_unified,
+        unit_unified.unit_desc_id as unit_desc_id_unified,
+        unit_unified.veh_body_styl_id as veh_body_styl_id_unified
+    from units as unit_unified
     left join
         atd_txdot_units as unit_edit
         on
-            unit_cris.cris_crash_id = unit_edit.crash_id
-            and unit_cris.unit_nbr = unit_edit.unit_nbr
+            unit_unified.cris_crash_id = unit_edit.crash_id
+            and unit_unified.unit_nbr = unit_edit.unit_nbr
 ),
 
 computed_diffs as (
@@ -26,24 +27,25 @@ computed_diffs as (
         crash_id,
         case
             when
-                veh_trvl_dir_id_edit != veh_trvl_dir_id_cris
+                veh_trvl_dir_id_edit != veh_trvl_dir_id_unified
                 and veh_trvl_dir_id_edit is not null
                 then veh_trvl_dir_id_edit
         end as veh_trvl_dir_id,
         case
             when
-                movement_id_edit != 0
+                movement_id_edit != movement_id_unified
+                and movement_id_edit is not null
                 then movement_id_edit
         end as movement_id,
         case
             when
-                unit_desc_id_edit != unit_desc_id_cris
+                unit_desc_id_edit != unit_desc_id_unified
                 and unit_desc_id_edit is not null
                 then unit_desc_id_edit
         end as unit_desc_id,
         case
             when
-                veh_body_styl_id_edit != veh_body_styl_id_cris
+                veh_body_styl_id_edit != veh_body_styl_id_unified
                 and veh_body_styl_id_edit is not null
                 then veh_body_styl_id_edit
         end as veh_body_styl_id
