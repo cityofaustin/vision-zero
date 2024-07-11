@@ -37,7 +37,6 @@ import "./crash.scss";
 
 import { GET_CRASH_OLD, UPDATE_CRASH, GET_CRASH } from "../../queries/crashes";
 import {
-  GET_NOTES,
   INSERT_NOTE,
   UPDATE_NOTE,
   DELETE_NOTE,
@@ -64,12 +63,7 @@ function Crash(props) {
   const { getRoles } = useAuth0();
   const roles = getRoles();
 
-  const isCrashFatal =
-    data?.atd_txdot_crashes?.[0]?.atd_fatality_count > 0 ? true : false;
-  const shouldShowFatalityRecommendations =
-    (isAdmin(roles) || isItSupervisor(roles)) && isCrashFatal;
-
-  if (crashLoading) return "Loading...";
+  if (loading || crashLoading) return "Loading...";
   if (crashError) return `Error! ${crashError.message}`;
 
   const handleInputChange = e => {
@@ -124,9 +118,13 @@ function Crash(props) {
     latitude,
     longitude,
     location_id: locationId,
-  } = crashRecord.crash;
+  } = crashRecord?.crash;
 
-  const hasLocation = crashRecord.crash["location_id"];
+  const isCrashFatal = deathCount > 0 ? true : false;
+  const shouldShowFatalityRecommendations =
+    (isAdmin(roles) || isItSupervisor(roles)) && isCrashFatal;
+
+  const hasLocation = crashRecord?.crash["location_id"];
   const hasCoordinates = !!latitude && !!longitude;
 
   return !crashData ? (
@@ -252,34 +250,39 @@ function Crash(props) {
       <Row>
         <Col>
           <UnitDetailsCard
-            data={crashRecord.crash.units}
+            data={crashRecord?.crash?.units}
             refetch={crashRefetch}
             {...props}
           />
           <PeopleDetailsCard
-            data={crashRecord.crash.people_list_view}
+            data={crashRecord?.crash?.people_list_view}
             refetch={crashRefetch}
             {...props}
           />
-          <ChargesDetailsCard data={crashRecord.crash.charges_cris} />
+          <ChargesDetailsCard data={crashRecord?.crash?.charges_cris} />
         </Col>
       </Row>
       {shouldShowFatalityRecommendations && (
         <Row>
           <Col>
-            <Recommendations crashId={props.match.params.id} />
+            <Recommendations
+              crashPk={crashPk}
+              recommendation={crashRecord?.crash?.recommendation}
+              refetch={crashRefetch}
+            />
           </Col>
         </Row>
       )}
       <Row>
         <Col>
           <Notes
-            recordId={props.match.params.id}
+            crashPk={crashPk}
             tableName={"crash_notes"}
-            GET_NOTES={GET_NOTES}
+            notes={crashRecord?.crash?.crash_notes}
             INSERT_NOTE={INSERT_NOTE}
             UPDATE_NOTE={UPDATE_NOTE}
             DELETE_NOTE={DELETE_NOTE}
+            refetch={crashRefetch}
           />
         </Col>
       </Row>
