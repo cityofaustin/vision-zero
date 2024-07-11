@@ -1343,6 +1343,26 @@
     "source": "cris"
   },
   {
+    "column_name": "record_locator",
+    "data_type": "text",
+    "data_type_constraint": "unique not null generated always as (case when is_temp_record = true then 'T' || id::text  else crash_id::text end) stored",
+    "foreign_column_cascade": "",
+    "foreign_column_name": "",
+    "foreign_table_name": "",
+    "foreign_table_schema": "",
+    "is_cris_column": false,
+    "is_edits_column": false,
+    "is_existing_foreign_table": false,
+    "is_primary_key": false,
+    "is_unified_column": true,
+    "note": "",
+    "record_type": "crashes",
+    "source": "cris"
+  },
+
+
+
+  {
     "column_name": "id",
     "data_type": "serial",
     "data_type_constraint": "primary key",

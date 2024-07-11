@@ -177,6 +177,7 @@ create or replace view crashes_list_view as with geocode_status as (
 select
     public.crashes.id,
     public.crashes.crash_id,
+    public.crashes.record_locator,
     public.crashes.case_id,
     public.crashes.crash_timestamp,
     to_char(

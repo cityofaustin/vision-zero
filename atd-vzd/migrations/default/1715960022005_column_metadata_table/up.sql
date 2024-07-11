@@ -166,6 +166,8 @@ insert into _column_metadata (column_name, column_label, record_type, is_importe
 insert into _column_metadata (column_name, column_label, record_type, is_imported_from_cris)
         values ('txdot_rptable_fl', 'txdot_rptable_fl', 'crashes', true);
 insert into _column_metadata (column_name, column_label, record_type, is_imported_from_cris)
+        values ('record_locator', 'record_locator', 'crashes', false);
+insert into _column_metadata (column_name, column_label, record_type, is_imported_from_cris)
         values ('id', 'id', 'people', false);
 insert into _column_metadata (column_name, column_label, record_type, is_imported_from_cris)
         values ('prsn_exp_homelessness', 'prsn_exp_homelessness', 'people', true);
