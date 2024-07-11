@@ -76,7 +76,6 @@ select_permissions:
         - rpt_street_name
         - rpt_street_pfx
         - rpt_street_sfx
-        - units_involved
         - crash_timestamp
       filter: {}
       allow_aggregations: true
@@ -135,7 +134,6 @@ select_permissions:
         - rpt_street_name
         - rpt_street_pfx
         - rpt_street_sfx
-        - units_involved
         - crash_timestamp
       filter: {}
       allow_aggregations: true
@@ -194,7 +192,6 @@ select_permissions:
         - rpt_street_name
         - rpt_street_pfx
         - rpt_street_sfx
-        - units_involved
         - crash_timestamp
       filter: {}
       allow_aggregations: true
