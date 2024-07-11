@@ -119,10 +119,10 @@ export const GET_CRASH_OLD = gql`
 `;
 
 export const GET_CRASH = gql`
-  query CrashDetails($crashId: Int!) {
-    crashes(where: { crash_id: { _eq: $crashId } }) {
+  query CrashDetails($crashId: String!) {
+    crashes(where: { record_locator: { _eq: $crashId } }) {
       id
-      crash_id
+      record_locator
       updated_at
       case_id
       crash_timestamp
