@@ -112,6 +112,7 @@ create or replace view unit_injury_metrics_view as
 create or replace view crash_injury_metrics_view as
 (
     select
+        crashes.id,
         crashes.crash_id,
         coalesce(
             sum(person_injury_metrics_view.unkn_injry), 0
@@ -159,7 +160,7 @@ create or replace view crash_injury_metrics_view as
         person_injury_metrics_view
         on crashes.crash_id = person_injury_metrics_view.cris_crash_id
     group by
-        crashes.crash_id
+        crashes.id
 );
 
 
@@ -238,7 +239,7 @@ from
     public.crashes
 left join
     crash_injury_metrics_view
-    on public.crashes.crash_id = crash_injury_metrics_view.crash_id
+    on public.crashes.id = crash_injury_metrics_view.id
 left join
     geocode_status
     on public.crashes.crash_id = geocode_status.crash_id
