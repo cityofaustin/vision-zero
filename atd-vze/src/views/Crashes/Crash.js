@@ -69,9 +69,8 @@ function Crash(props) {
   const shouldShowFatalityRecommendations =
     (isAdmin(roles) || isItSupervisor(roles)) && isCrashFatal;
 
-  if (loading || crashLoading) return "Loading...";
+  if (crashLoading) return "Loading...";
   if (crashError) return `Error! ${crashError.message}`;
-  if (error) return `Error! ${error.message}`;
 
   const handleInputChange = e => {
     const newFormState = Object.assign(formData, {
