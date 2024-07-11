@@ -190,7 +190,8 @@ BEGIN
             prsn_mid_name = pd.prsn_mid_name,
             prsn_gndr_id = pd.prsn_gndr_id,
             prsn_ethnicity_id = pd.prsn_ethnicity_id,
-            prsn_exp_homelessness = pd.prsn_exp_homelessness
+            prsn_exp_homelessness = pd.prsn_exp_homelessness,
+            updated_by = 'legacy-vz-user'
         FROM (
             SELECT * FROM people_diffs
             OFFSET current_offset

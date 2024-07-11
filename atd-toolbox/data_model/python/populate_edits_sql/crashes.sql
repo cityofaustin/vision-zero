@@ -138,7 +138,8 @@ BEGIN
             road_constr_zone_fl = crash_updates.road_constr_zone_fl,
             case_id = crash_updates.case_id,
             intrsct_relat_id = crash_updates.intrsct_relat_id,
-            law_enforcement_fatality_num = crash_updates.law_enforcement_fatality_num
+            law_enforcement_fatality_num = crash_updates.law_enforcement_fatality_num,
+            updated_by = 'legacy-vz-user'
         from (
             select * from crashes_diffs
               OFFSET current_offset

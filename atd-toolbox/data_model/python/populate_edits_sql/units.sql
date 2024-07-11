@@ -81,7 +81,8 @@ BEGIN
             veh_trvl_dir_id = unit_updates.veh_trvl_dir_id,
             movement_id = unit_updates.movement_id,
             unit_desc_id = unit_updates.unit_desc_id,
-            veh_body_styl_id = unit_updates.veh_body_styl_id
+            veh_body_styl_id = unit_updates.veh_body_styl_id,
+            updated_by = 'legacy-vz-user'
         from (
             select * from units_diffs
                 OFFSET current_offset
