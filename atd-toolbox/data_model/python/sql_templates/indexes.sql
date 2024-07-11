@@ -7,6 +7,7 @@ create index on public.units (crash_id);
 create index on public.people (unit_id);
 create index on public.people (prsn_injry_sev_id);
 create index on public.crashes (location_id);
+create index on public.crashes (crash_id);
 create index on public.crashes (crash_timestamp);
 create index on public.atd_txdot_locations (council_district);
 -- more todo

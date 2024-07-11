@@ -4,6 +4,7 @@ create or replace view person_injury_metrics_view as (
     select
         people.id,
         units.id as unit_id,
+        crashes.id as crash_id,
         crashes.crash_id as cris_crash_id,
         people.years_of_life_lost,
         people.est_comp_cost_crash_based,
@@ -303,7 +304,7 @@ create or replace view crash_injury_metrics_view as
         public.crashes as crashes
     left join
         person_injury_metrics_view
-        on crashes.crash_id = person_injury_metrics_view.cris_crash_id
+        on crashes.id = person_injury_metrics_view.crash_id
     group by
         crashes.id,
         crashes.crash_id
@@ -312,7 +313,7 @@ create or replace view crash_injury_metrics_view as
 
 create or replace view crashes_list_view as with geocode_status as (
     select
-        cris.crash_id,
+        cris.id,
         cris.latitude is null or cris.longitude is null
         as has_no_cris_coordinates,
         edits.latitude is not null and edits.longitude is not null
@@ -386,10 +387,10 @@ from
     public.crashes
 left join
     crash_injury_metrics_view
-    on public.crashes.crash_id = crash_injury_metrics_view.crash_id
+    on public.crashes.id = crash_injury_metrics_view.id
 left join
     geocode_status
-    on public.crashes.crash_id = geocode_status.crash_id
+    on public.crashes.id = geocode_status.id
 left join
     lookups.collsn_lkp
     on public.crashes.fhe_collsn_id = lookups.collsn_lkp.id
