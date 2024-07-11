@@ -43,7 +43,6 @@ def main():
     global AWS_ACCESS_KEY_ID
     global AWS_SECRET_ACCESS_KEY
 
-    global DB_HOST
     global DB_USER
     global DB_PASS
     global DB_NAME
@@ -64,7 +63,6 @@ def main():
     AWS_ACCESS_KEY_ID = secrets["aws_access_key"]
     AWS_SECRET_ACCESS_KEY = secrets["aws_secret_key"]
 
-    DB_HOST = secrets["database_host"]
     DB_USER = secrets["database_username"]
     DB_PASS = secrets["database_password"]
     DB_NAME = secrets["database_name"]
@@ -190,11 +188,6 @@ def get_secrets():
         "bastion_ssh_username": {
             "opitem": "RDS Bastion Host",
             "opfield": f"{DEPLOYMENT_ENVIRONMENT}.ssh Username",
-            "opvault": VAULT_ID,
-        },
-        "database_host": {
-            "opitem": "Vision Zero Database",
-            "opfield": f"{DEPLOYMENT_ENVIRONMENT}.Database Host",
             "opvault": VAULT_ID,
         },
         "database_username": {
