@@ -23,13 +23,12 @@ import {
 
 const GET_TEMP_RECORDS = gql`
   query getTempRecords {
-    atd_txdot_crashes(where: { temp_record: { _eq: true } }) {
-      crash_id
+    crashes(where: { is_temp_record: { _eq: true } }) {
+      record_locator
       case_id
-      crash_date
-      crash_time
+      crash_timestamp
       updated_by
-      last_update
+      updated_at
     }
   }
 `;
@@ -81,7 +80,7 @@ const CreateCrashRecordTable = () => {
     setFeedback(null);
     deleteRecord({ variables: { crashId: deleteId } })
       .then(() => {
-        const newData = crashesData["atd_txdot_crashes"].filter(item => {
+        const newData = crashesData["crashes"].filter(item => {
           return item.crash_id !== deleteId;
         });
         setDeleteId(null);
@@ -145,38 +144,36 @@ const CreateCrashRecordTable = () => {
                 <tr>
                   <th>Crash ID</th>
                   <th>Case ID</th>
-                  <th>Crash Date</th>
-                  <th>Crash Time</th>
+                  <th>Crash Timestamp</th>
                   <th>Updated By</th>
-                  <th>Last Update</th>
+                  <th>Updated At</th>
                   <th>Action</th>
                 </tr>
               </thead>
               <tbody>
                 {crashesData &&
-                  crashesData["atd_txdot_crashes"] &&
-                  crashesData.atd_txdot_crashes.map((item, index) => {
+                  crashesData["crashes"] &&
+                  crashesData.crashes.map((item, index) => {
                     if (crashSearch !== "" && item.case_id !== crashSearch)
                       return null;
 
                     return (
                       <tr key={index}>
                         <td>
-                          <Link to={`/crashes/${item.crash_id}`}>
-                            {item.crash_id}
+                          <Link to={`/crashes/${item.record_locator}`}>
+                            {item.record_locator}
                           </Link>
                         </td>
                         <td>{item.case_id}</td>
-                        <td>{item.crash_date}</td>
-                        <td>{item.crash_time}</td>
+                        <td>{item.crash_timestamp}</td>
                         <td>{item.updated_by}</td>
-                        <td>{item.last_update}</td>
+                        <td>{item.updated_at}</td>
                         <td>
                           <Button
                             color="danger"
                             className="btn-pill"
                             size={"sm"}
-                            onClick={() => openModalDelete(item.crash_id)}
+                            onClick={() => openModalDelete(item.record_locator)}
                           >
                             <i className="fa fa-remove"></i>&nbsp;Delete
                           </Button>
