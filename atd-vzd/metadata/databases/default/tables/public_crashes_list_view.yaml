@@ -63,9 +63,12 @@ select_permissions:
         - address_secondary
         - case_id
         - collsn_desc
+        - crash_date_ct
         - crash_day_of_week
         - crash_injry_sev_desc
+        - crash_time_ct
         - location_id
+        - record_locator
         - rpt_block_num
         - rpt_sec_block_num
         - rpt_sec_street_name
@@ -73,8 +76,6 @@ select_permissions:
         - rpt_street_name
         - rpt_street_pfx
         - crash_timestamp
-        - crash_date_ct
-        - crash_time_ct
       filter: {}
       allow_aggregations: true
     comment: ""
@@ -119,9 +120,12 @@ select_permissions:
         - address_secondary
         - case_id
         - collsn_desc
+        - crash_date_ct
         - crash_day_of_week
         - crash_injry_sev_desc
+        - crash_time_ct
         - location_id
+        - record_locator
         - rpt_block_num
         - rpt_sec_block_num
         - rpt_sec_street_name
@@ -129,8 +133,6 @@ select_permissions:
         - rpt_street_name
         - rpt_street_pfx
         - crash_timestamp
-        - crash_date_ct
-        - crash_time_ct
       filter: {}
       allow_aggregations: true
     comment: ""
@@ -175,9 +177,12 @@ select_permissions:
         - address_secondary
         - case_id
         - collsn_desc
+        - crash_date_ct
         - crash_day_of_week
         - crash_injry_sev_desc
+        - crash_time_ct
         - location_id
+        - record_locator
         - rpt_block_num
         - rpt_sec_block_num
         - rpt_sec_street_name
@@ -185,8 +190,6 @@ select_permissions:
         - rpt_street_name
         - rpt_street_pfx
         - crash_timestamp
-        - crash_date_ct
-        - crash_time_ct
       filter: {}
       allow_aggregations: true
     comment: ""
