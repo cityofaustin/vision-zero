@@ -42,7 +42,6 @@ def main():
 
     global AWS_ACCESS_KEY_ID
     global AWS_SECRET_ACCESS_KEY
-    global AWS_CSV_ARCHIVE_PATH
 
     global DB_HOST
     global DB_USER
@@ -64,7 +63,6 @@ def main():
 
     AWS_ACCESS_KEY_ID = secrets["aws_access_key"]
     AWS_SECRET_ACCESS_KEY = secrets["aws_secret_key"]
-    AWS_CSV_ARCHIVE_PATH = secrets["s3_archive_path"]
 
     DB_HOST = secrets["database_host"]
     DB_USER = secrets["database_username"]
@@ -227,11 +225,6 @@ def get_secrets():
         "aws_secret_key": {
             "opitem": "Vision Zero CRIS Import",
             "opfield": f"{DEPLOYMENT_ENVIRONMENT}.AWS Secret key",
-            "opvault": VAULT_ID,
-        },
-        "s3_archive_path": {
-            "opitem": "Vision Zero CRIS Import",
-            "opfield": f"{DEPLOYMENT_ENVIRONMENT}.S3 Archive Path",
             "opvault": VAULT_ID,
         },
         "graphql_endpoint": {
