@@ -70,10 +70,10 @@ const UnitsForm = ({ units, handleUnitFormChange, client }) => {
                     id={`fatality-count-${i + 1}`}
                     name={`fatality-count-${i + 1}`}
                     placeholder="Enter Fatality Count..."
-                    value={unit.atd_fatality_count}
+                    value={unit.fatality_count}
                     onChange={e =>
                       handleUnitFormChange({
-                        type: "atd_fatality_count",
+                        type: "fatality_count",
                         payload: e.target.value,
                         unitIndex: i,
                       })
