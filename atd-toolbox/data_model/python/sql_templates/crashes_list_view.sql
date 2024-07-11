@@ -221,6 +221,7 @@ create or replace view unit_injury_metrics_view as
 create or replace view crash_injury_metrics_view as
 (
     select
+        crashes.id,
         crashes.crash_id,
         coalesce(
             sum(person_injury_metrics_view.unkn_injry), 0
@@ -304,6 +305,7 @@ create or replace view crash_injury_metrics_view as
         person_injury_metrics_view
         on crashes.crash_id = person_injury_metrics_view.cris_crash_id
     group by
+        crashes.id,
         crashes.crash_id
 );
 
@@ -317,44 +319,6 @@ create or replace view crashes_list_view as with geocode_status as (
         as is_manual_geocode
     from public.crashes_cris as cris
     left join public.crashes_edits as edits on cris.id = edits.id
-),
-
-crash_unit_aggregates as (
-    select
-        crashes.id as id,
-        string_agg(distinct mode_categories.label, ' & ') as units_involved,
-        array_agg(
-            json_build_object(
-                'unit_id',
-                units.id,
-                'mode_id',
-                units.vz_mode_category_id,
-                'mode_desc',
-                mode_categories.label,
-                'nonincap_injry_cnt',
-                uiv.nonincap_injry_count,
-                'sus_serious_injry_cnt',
-                uiv.sus_serious_injry_count,
-                'vz_fatality_count',
-                uiv.vz_fatality_count,
-                'poss_injry_cnt',
-                poss_injry_count,
-                'non_injry_cnt',
-                non_injry_count,
-                'unkn_injry_cnt',
-                unkn_injry_count
-            )
-        ) as atd_mode_category_metadata
-    from crashes
-    left join units
-        on crashes.id = units.crash_id
-    left join
-        unit_injury_metrics_view
-        as uiv on crashes.id = uiv.crash_id
-    left join
-        lookups.mode_category_lkp as mode_categories
-        on units.vz_mode_category_id = mode_categories.id
-    group by crashes.id
 )
 
 select
@@ -391,8 +355,6 @@ select
     public.crashes.obj_struck_id,
     public.crashes.crash_speed_limit,
     public.crashes.council_district,
-    crash_unit_aggregates.units_involved,
-    crash_unit_aggregates.atd_mode_category_metadata,
     crash_injury_metrics_view.nonincap_injry_count,
     crash_injury_metrics_view.poss_injry_count,
     crash_injury_metrics_view.sus_serious_injry_count,
@@ -405,18 +367,6 @@ select
     crash_injury_metrics_view.est_comp_cost_crash_based,
     crash_injury_metrics_view.crash_injry_sev_id,
     crash_injury_metrics_view.years_of_life_lost,
-    crash_injury_metrics_view.motor_vehicle_fatality_count,
-    crash_injury_metrics_view.motor_vehicle_sus_serious_injry_count,
-    crash_injury_metrics_view.motorcycle_fatality_count,
-    crash_injury_metrics_view.motorcycle_sus_serious_count,
-    crash_injury_metrics_view.bicycle_fatality_count,
-    crash_injury_metrics_view.bicycle_sus_serious_injry_count,
-    crash_injury_metrics_view.pedestrian_fatality_count,
-    crash_injury_metrics_view.pedestrian_sus_serious_injry_count,
-    crash_injury_metrics_view.micromobility_fatality_count,
-    crash_injury_metrics_view.micromobility_sus_serious_injry_count,
-    crash_injury_metrics_view.other_fatality_count,
-    crash_injury_metrics_view.other_sus_serious_injry_count,
     lookups.injry_sev_lkp.label as crash_injry_sev_desc,
     lookups.collsn_lkp.label as collsn_desc,
     geocode_status.is_manual_geocode,
@@ -445,10 +395,7 @@ left join
     on public.crashes.fhe_collsn_id = lookups.collsn_lkp.id
 left join
     lookups.injry_sev_lkp
-    on lookups.injry_sev_lkp.id = crash_injury_metrics_view.crash_injry_sev_id
-left join crash_unit_aggregates on crashes.id = crash_unit_aggregates.id;
-
-
+    on lookups.injry_sev_lkp.id = crash_injury_metrics_view.crash_injry_sev_id;
 
 create view locations_list_view as (
     with crash_totals as (

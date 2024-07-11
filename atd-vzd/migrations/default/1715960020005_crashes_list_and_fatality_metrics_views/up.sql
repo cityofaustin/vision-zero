@@ -221,6 +221,7 @@ create or replace view unit_injury_metrics_view as
 create or replace view crash_injury_metrics_view as
 (
     select
+        crashes.id,
         crashes.crash_id,
         coalesce(
             sum(person_injury_metrics_view.unkn_injry), 0
@@ -304,6 +305,7 @@ create or replace view crash_injury_metrics_view as
         person_injury_metrics_view
         on crashes.crash_id = person_injury_metrics_view.cris_crash_id
     group by
+        crashes.id,
         crashes.crash_id
 );
 
@@ -405,18 +407,6 @@ select
     crash_injury_metrics_view.est_comp_cost_crash_based,
     crash_injury_metrics_view.crash_injry_sev_id,
     crash_injury_metrics_view.years_of_life_lost,
-    crash_injury_metrics_view.motor_vehicle_fatality_count,
-    crash_injury_metrics_view.motor_vehicle_sus_serious_injry_count,
-    crash_injury_metrics_view.motorcycle_fatality_count,
-    crash_injury_metrics_view.motorcycle_sus_serious_count,
-    crash_injury_metrics_view.bicycle_fatality_count,
-    crash_injury_metrics_view.bicycle_sus_serious_injry_count,
-    crash_injury_metrics_view.pedestrian_fatality_count,
-    crash_injury_metrics_view.pedestrian_sus_serious_injry_count,
-    crash_injury_metrics_view.micromobility_fatality_count,
-    crash_injury_metrics_view.micromobility_sus_serious_injry_count,
-    crash_injury_metrics_view.other_fatality_count,
-    crash_injury_metrics_view.other_sus_serious_injry_count,
     lookups.injry_sev_lkp.label as crash_injry_sev_desc,
     lookups.collsn_lkp.label as collsn_desc,
     geocode_status.is_manual_geocode,

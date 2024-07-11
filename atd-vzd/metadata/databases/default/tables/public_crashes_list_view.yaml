@@ -25,24 +25,11 @@ select_permissions:
   - role: editor
     permission:
       columns:
-        - atd_mode_category_metadata
-        - bicycle_fatality_count
-        - bicycle_sus_serious_injry_count
         - cris_fatality_count
         - fatality_count
         - law_enf_fatality_count
-        - micromobility_fatality_count
-        - micromobility_sus_serious_injry_count
-        - motorcycle_fatality_count
-        - motorcycle_sus_serious_count
-        - motor_vehicle_fatality_count
-        - motor_vehicle_sus_serious_injry_count
         - nonincap_injry_count
         - non_injry_count
-        - other_fatality_count
-        - other_sus_serious_injry_count
-        - pedestrian_fatality_count
-        - pedestrian_sus_serious_injry_count
         - poss_injry_count
         - sus_serious_injry_count
         - unkn_injry_count
@@ -97,24 +84,11 @@ select_permissions:
   - role: readonly
     permission:
       columns:
-        - atd_mode_category_metadata
-        - bicycle_fatality_count
-        - bicycle_sus_serious_injry_count
         - cris_fatality_count
         - fatality_count
         - law_enf_fatality_count
-        - micromobility_fatality_count
-        - micromobility_sus_serious_injry_count
-        - motorcycle_fatality_count
-        - motorcycle_sus_serious_count
-        - motor_vehicle_fatality_count
-        - motor_vehicle_sus_serious_injry_count
         - nonincap_injry_count
         - non_injry_count
-        - other_fatality_count
-        - other_sus_serious_injry_count
-        - pedestrian_fatality_count
-        - pedestrian_sus_serious_injry_count
         - poss_injry_count
         - sus_serious_injry_count
         - unkn_injry_count
@@ -169,24 +143,11 @@ select_permissions:
   - role: vz-admin
     permission:
       columns:
-        - atd_mode_category_metadata
-        - bicycle_fatality_count
-        - bicycle_sus_serious_injry_count
         - cris_fatality_count
         - fatality_count
         - law_enf_fatality_count
-        - micromobility_fatality_count
-        - micromobility_sus_serious_injry_count
-        - motorcycle_fatality_count
-        - motorcycle_sus_serious_count
-        - motor_vehicle_fatality_count
-        - motor_vehicle_sus_serious_injry_count
         - nonincap_injry_count
         - non_injry_count
-        - other_fatality_count
-        - other_sus_serious_injry_count
-        - pedestrian_fatality_count
-        - pedestrian_sus_serious_injry_count
         - poss_injry_count
         - sus_serious_injry_count
         - unkn_injry_count
