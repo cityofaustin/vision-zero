@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useReducer } from "react";
+import React, { useState, useReducer } from "react";
 import { Link } from "react-router-dom";
 
 import {
@@ -129,6 +129,7 @@ const CreateCrashRecord = ({ client }) => {
         unit_nbr: ${unitNumber},
         prsn_injry_sev_id: 4,
         cris_schema_version: "2023",
+        is_primary_person: true,
         updated_by: "${userEmail}",
         created_by: "${userEmail}"
       }`);
@@ -142,6 +143,8 @@ const CreateCrashRecord = ({ client }) => {
               personObjects = personObjects.concat(`{
         unit_nbr: ${unitNumber},
         prsn_injry_sev_id: 1,
+        cris_schema_version: "2023",
+        is_primary_person: true,
         updated_by: "${userEmail}",
         created_by: "${userEmail}"
       }`);
@@ -202,8 +205,8 @@ const CreateCrashRecord = ({ client }) => {
           );
 
           const crashVariables = {
-            rpt_street_name: primaryStreetName,
-            rpt_sec_street_name: secondaryStreetName,
+            rpt_street_name: primaryStreetName.toUpperCase(),
+            rpt_sec_street_name: secondaryStreetName.toUpperCase(),
             case_id: caseId,
             crash_timestamp: crashTimestamp,
             updated_by: userEmail,
@@ -246,10 +249,10 @@ const CreateCrashRecord = ({ client }) => {
             {/*eslint-disable-next-line*/}
             Crash record creation successful.{" "}
             <Link
-              to={`/crashes/${successfulNewRecordId}`}
+              to={`/crashes/t${successfulNewRecordId}`}
               className="alert-link"
             >
-              Open new Crash ID #{successfulNewRecordId} details page
+              Open new Crash ID #t{successfulNewRecordId} details page
             </Link>
             .
           </Alert>
@@ -318,7 +321,7 @@ const CreateCrashRecord = ({ client }) => {
                 id="primary-address-input"
                 name="primary-address-input"
                 placeholder="ex: S 900 AUSTIN AVE"
-                value={primaryStreetName}
+                value={primaryStreetName?.toUpperCase()}
                 onChange={e => setPrimaryStreetName(e.target.value)}
               />
               <FormText className="help-block">
@@ -336,7 +339,7 @@ const CreateCrashRecord = ({ client }) => {
                 id="secondary-address-input"
                 name="secondary-address-input"
                 placeholder="ex: N MOPAC BLVD"
-                value={secondaryStreetName}
+                value={secondaryStreetName?.toUpperCase()}
                 onChange={e => setSecondaryStreetName(e.target.value)}
               />
               <FormText className="help-block">
