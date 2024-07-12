@@ -21,7 +21,7 @@ object_relationships:
     using:
       manual_configuration:
         column_mapping:
-          crash_id: crash_id
+          id: id
         insertion_order: null
         remote_table:
           name: crashes_list_view
