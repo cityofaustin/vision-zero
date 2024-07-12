@@ -143,7 +143,7 @@ create table public.crashes (
     onsys_fl boolean,
     position geometry(Point, 4326),
     private_dr_fl boolean,
-    record_locator text unique not null generated always as (case when is_temp_record = true then 't' || id::text  else crash_id::text end) stored,
+    record_locator text unique not null generated always as (case when is_temp_record = true then 'T' || id::text  else crash_id::text end) stored,
     road_constr_zone_fl boolean,
     road_constr_zone_wrkr_fl boolean,
     rpt_block_num text,

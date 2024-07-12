@@ -249,10 +249,10 @@ const CreateCrashRecord = ({ client }) => {
             {/*eslint-disable-next-line*/}
             Crash record creation successful.{" "}
             <Link
-              to={`/crashes/t${successfulNewRecordId}`}
+              to={`/crashes/T${successfulNewRecordId}`}
               className="alert-link"
             >
-              Open new Crash ID #t{successfulNewRecordId} details page
+              Open new Crash ID #T{successfulNewRecordId} details page
             </Link>
             .
           </Alert>

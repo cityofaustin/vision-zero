@@ -43,7 +43,7 @@ import {
 } from "../../queries/crashNotes";
 
 function Crash(props) {
-  const crashId = props.match.params.id;
+  const crashId = props.match.params.id.toUpperCase();
   const {
     loading: crashLoading,
     error: crashError,

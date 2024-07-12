@@ -1345,7 +1345,7 @@
   {
     "column_name": "record_locator",
     "data_type": "text",
-    "data_type_constraint": "unique not null generated always as (case when is_temp_record = true then 't' || id::text  else crash_id::text end) stored",
+    "data_type_constraint": "unique not null generated always as (case when is_temp_record = true then 'T' || id::text  else crash_id::text end) stored",
     "foreign_column_cascade": "",
     "foreign_column_name": "",
     "foreign_table_name": "",
@@ -1359,8 +1359,6 @@
     "record_type": "crashes",
     "source": "cris"
   },
-
-
 
   {
     "column_name": "id",
