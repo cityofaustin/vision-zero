@@ -4,7 +4,7 @@ create or replace view person_injury_metrics_view as (
     select
         people.id,
         units.id as unit_id,
-        crashes.crash_id as cris_crash_id,
+        crashes.id as crash_id,
         people.years_of_life_lost,
         people.est_comp_cost_crash_based,
         case
@@ -158,7 +158,7 @@ create or replace view crash_injury_metrics_view as
         public.crashes as crashes
     left join
         person_injury_metrics_view
-        on crashes.crash_id = person_injury_metrics_view.cris_crash_id
+        on crashes.id = person_injury_metrics_view.crash_id
     group by
         crashes.id
 );
