@@ -32,43 +32,43 @@ computed_diffs as (
     select
         crash.id,
         crash.crash_id,
-        case when crash.longitude_edit != crash.longitude_unified
+        case when crash.longitude_edit is distinct from crash.longitude_unified
             and longitude_edit is not null then
             crash.longitude_edit
         end as longitude,
-        case when crash.latitude_edit != crash.latitude_unified
+        case when crash.latitude_edit is distinct from crash.latitude_unified
             and latitude_edit is not null then
             crash.latitude_edit
         end as latitude,
-        case when crash.rpt_city_id_edit != crash.rpt_city_id_unified
+        case when crash.rpt_city_id_edit is distinct from crash.rpt_city_id_unified
             and rpt_city_id_edit is not null then
             crash.rpt_city_id_edit
         end as rpt_city_id,
-        case when crash.crash_speed_limit_edit != crash.crash_speed_limit_unified
+        case when crash.crash_speed_limit_edit is distinct from crash.crash_speed_limit_unified
             and crash_speed_limit_edit is not null then
             crash.crash_speed_limit_edit
         end as crash_speed_limit,
-        case when crash.traffic_cntl_id_edit != crash.traffic_cntl_id_unified
+        case when crash.traffic_cntl_id_edit is distinct from crash.traffic_cntl_id_unified
             and traffic_cntl_id_edit is not null then
             crash.traffic_cntl_id_edit
         end as traffic_cntl_id,
-        case when crash.private_dr_fl_edit != crash.private_dr_fl_unified
+        case when crash.private_dr_fl_edit is distinct from crash.private_dr_fl_unified
             and private_dr_fl_edit is not null then
             crash.private_dr_fl_edit
         end as private_dr_fl,
-        case when crash.road_constr_zone_fl_edit != crash.road_constr_zone_fl_unified
+        case when crash.road_constr_zone_fl_edit is distinct from crash.road_constr_zone_fl_unified
             and road_constr_zone_fl_edit is not null then
             crash.road_constr_zone_fl_edit
         end as road_constr_zone_fl,
-        case when crash.case_id_edit != crash.case_id_unified
+        case when crash.case_id_edit is distinct from crash.case_id_unified
             and case_id_edit is not null then
             crash.case_id_edit
         end as case_id,
-        case when crash.intrsct_relat_id_edit != crash.intrsct_relat_id_unified
+        case when crash.intrsct_relat_id_edit is distinct from crash.intrsct_relat_id_unified
             and intrsct_relat_id_edit is not null then
             crash.intrsct_relat_id_edit
         end as intrsct_relat_id,
-        case when crash.law_enforcement_fatality_num_edit != crash.law_enforcement_fatality_num_unified
+        case when crash.law_enforcement_fatality_num_edit is distinct from crash.law_enforcement_fatality_num_unified
             and law_enforcement_fatality_num_edit is not null then
             crash.law_enforcement_fatality_num_edit
         end as law_enforcement_fatality_num

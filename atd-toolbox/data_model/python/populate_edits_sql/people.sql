@@ -91,43 +91,43 @@ computed_diffs as (
         unit_nbr,
         prsn_nbr,
         case when prsn_type_id_edit is not null
-            and prsn_type_id_edit != prsn_type_id_unified then
+            and prsn_type_id_edit is distinct from prsn_type_id_unified then
             prsn_type_id_edit
         end as prsn_type_id,
         case when prsn_occpnt_pos_id_edit is not null
-            and prsn_occpnt_pos_id_edit != prsn_occpnt_pos_id_unified then
+            and prsn_occpnt_pos_id_edit is distinct from prsn_occpnt_pos_id_unified then
             prsn_occpnt_pos_id_edit
         end as prsn_occpnt_pos_id,
         case when prsn_injry_sev_id_edit is not null
-            and prsn_injry_sev_id_edit != prsn_injry_sev_id_unified then
+            and prsn_injry_sev_id_edit is distinct from prsn_injry_sev_id_unified then
             prsn_injry_sev_id_edit
         end as prsn_injry_sev_id,
         case when prsn_age_edit is not null
-            and prsn_age_edit != prsn_age_unified then
+            and prsn_age_edit is distinct from prsn_age_unified then
             prsn_age_edit
         end as prsn_age,
         case when prsn_last_name_edit is not null
-            and prsn_last_name_edit != prsn_last_name_unified then
+            and prsn_last_name_edit is distinct from prsn_last_name_unified then
             prsn_last_name_edit
         end as prsn_last_name,
         case when prsn_first_name_edit is not null
-            and prsn_first_name_edit != prsn_first_name_unified then
+            and prsn_first_name_edit is distinct from prsn_first_name_unified then
             prsn_first_name_edit
         end as prsn_first_name,
         case when prsn_mid_name_edit is not null
-            and prsn_mid_name_edit != prsn_mid_name_unified then
+            and prsn_mid_name_edit is distinct from prsn_mid_name_unified then
             prsn_mid_name_edit
         end as prsn_mid_name,
         case when prsn_gndr_id_edit is not null
-            and prsn_gndr_id_edit != prsn_gndr_id_unified then
+            and prsn_gndr_id_edit is distinct from prsn_gndr_id_unified then
             prsn_gndr_id_edit
         end as prsn_gndr_id,
         case when prsn_ethnicity_id_edit is not null
-            and prsn_ethnicity_id_edit != prsn_ethnicity_id_unified then
+            and prsn_ethnicity_id_edit is distinct from prsn_ethnicity_id_unified then
             prsn_ethnicity_id_edit
         end as prsn_ethnicity_id,
         case when prsn_exp_homelessness_edit is not null
-            and prsn_exp_homelessness_edit != prsn_exp_homelessness_unified then
+            and prsn_exp_homelessness_edit is distinct from prsn_exp_homelessness_unified then
             prsn_exp_homelessness_edit
         end as prsn_exp_homelessness
     from

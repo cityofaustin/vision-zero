@@ -31,28 +31,29 @@ computed_diffs as (
         crash_id,
         case
             when
-                veh_trvl_dir_id_edit != veh_trvl_dir_id_unified
+                veh_trvl_dir_id_edit is distinct from veh_trvl_dir_id_unified
                 and veh_trvl_dir_id_edit is not null
                 then
                     veh_trvl_dir_id_edit
         end as veh_trvl_dir_id,
         case
             when
-                movement_id_edit != movement_id_unified
+                movement_id_edit is distinct from movement_id_unified
                 and movement_id_edit is not null
+                and movement_id_edit != 0
                 then
                     movement_id_edit
         end as movement_id,
         case
             when
-                unit_desc_id_edit != unit_desc_id_unified
+                unit_desc_id_edit is distinct from unit_desc_id_unified
                 and unit_desc_id_edit is not null
                 then
                     unit_desc_id_edit
         end as unit_desc_id,
         case
             when
-                veh_body_styl_id_edit != veh_body_styl_id_unified
+                veh_body_styl_id_edit is distinct from veh_body_styl_id_unified
                 and veh_body_styl_id_edit is not null
                 then
                     veh_body_styl_id_edit
