@@ -120,7 +120,7 @@ create or replace view socrata_export_people_view as (
     select
         people.id as person_id,
         people.unit_id as unit_id, --new column
-        clv.crash_id,
+        crashes.crash_id,
         people.is_primary_person, --new column
         people.prsn_age,
         people.prsn_gndr_id as prsn_sex_id, --rename from prsn_gndr_id
@@ -131,15 +131,15 @@ create or replace view socrata_export_people_view as (
         units.vz_mode_category_id as mode_id,
         mode_categories.label as mode_desc,
         to_char(
-            clv.crash_timestamp, 'YYYY-MM-DD"T"HH24:MI:SS'
+            crashes.crash_timestamp, 'YYYY-MM-DD"T"HH24:MI:SS'
         ) as crash_timestamp,
         to_char(
-            clv.crash_timestamp at time zone 'US/Central',
+            crashes.crash_timestamp at time zone 'US/Central',
             'YYYY-MM-DD"T"HH24:MI:SS'
         ) as crash_timestamp_ct
     from people
     left join public.units as units on people.unit_id = units.id
-    left join public.crashes_list_view as clv on units.crash_id = clv.id
+    left join public.crashes as crashes on units.crash_id = crashes.id
     left join
         lookups.mode_category_lkp as mode_categories
         on units.vz_mode_category_id = mode_categories.id
@@ -150,6 +150,7 @@ create or replace view socrata_export_people_view as (
         lookups.gndr_lkp
         on people.prsn_gndr_id = lookups.gndr_lkp.id
     where
-        clv.in_austin_full_purpose = true and clv.private_dr_fl = false
-        and clv.crash_timestamp < now() - interval '14 days'
+        crashes.in_austin_full_purpose = true and crashes.private_dr_fl = false
+        and crashes.crash_timestamp < now() - interval '14 days'
+        and (people.prsn_injry_sev_id = 1 or people.prsn_injry_sev_id = 4)
 );
