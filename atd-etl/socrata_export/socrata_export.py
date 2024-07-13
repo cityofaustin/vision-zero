@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import os
 
+from utils.cli import get_cli_args
 from utils.graphql import make_hasura_request
 from utils.logging import init_logger
 from utils.queries import QUERIES
@@ -32,11 +33,25 @@ datasets = [
 ]
 
 
-def main():
+def should_process_dataset(args, dataset_name):
+    """Determine to see if the given dataset should be processed based on CLI args"""
+    if (not args.crashes and not args.people) or (args.crashes and args.people):
+        # no dataset or both dataset names were included in cli args
+        return True
+    # check to see if the dataset name in the CLI args
+    args_dict = vars(args)
+    return args_dict.get(dataset_name)
+
+
+def main(args):
     socrata_client = get_socrata_client()
 
     for dataset in datasets:
-        logger.info(f"Processing {dataset['name']}")
+        dataset_name = dataset["name"]
+        if not should_process_dataset(args, dataset_name):
+            continue
+
+        logger.info(f"Processing {dataset_name}")
         offset = 0
         records_processed = 0
         while True:
@@ -77,7 +92,7 @@ def main():
             records_processed += len(records)
 
             if len(records) < RECORD_BATCH_SIZE:
-                logger.info(f"{records_processed} {dataset['name']} records processed")
+                logger.info(f"{records_processed} {dataset_name} records processed")
                 break
 
             offset += RECORD_BATCH_SIZE
@@ -86,5 +101,6 @@ def main():
 
 
 if __name__ == "__main__":
+    args = get_cli_args()
     logger = init_logger()
-    main()
+    main(args)
