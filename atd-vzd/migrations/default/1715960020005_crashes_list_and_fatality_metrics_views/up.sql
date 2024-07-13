@@ -385,9 +385,14 @@ select
     ) as crash_day_of_week
 from
     public.crashes
-left join
-    crash_injury_metrics_view
-    on public.crashes.id = crash_injury_metrics_view.id
+left join lateral (
+    select *
+    from
+        public.crash_injury_metrics_view
+    where
+        crashes.id = id
+    limit 1
+) as crash_injury_metrics_view on true
 left join
     geocode_status
     on public.crashes.id = geocode_status.id
