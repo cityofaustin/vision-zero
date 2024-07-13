@@ -95,8 +95,22 @@ select
     end as point,
     coalesce(cimv.crash_injry_sev_id = 4, false) as crash_fatal_fl
 from crashes
-left join crash_injury_metrics_view as cimv on crashes.id = cimv.id
-left join unit_aggregates on crashes.id = unit_aggregates.id
+left join lateral (
+    select *
+    from
+        public.crash_injury_metrics_view
+    where
+        crashes.id = id
+    limit 1
+) as cimv on true
+left join lateral (
+    select *
+    from
+        unit_aggregates
+    where
+        crashes.id = unit_aggregates.id
+    limit 1
+) as unit_aggregates on true
 where
     crashes.in_austin_full_purpose = true and crashes.private_dr_fl = false
     and crashes.crash_timestamp < now() - interval '14 days';
