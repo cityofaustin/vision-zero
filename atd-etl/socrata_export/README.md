@@ -1,4 +1,4 @@
-# Socrata Open Data Portal Export
+# Open Data Portal (Socrata) Export
 
 This ETL downloads crash and people records from the VZ database and publishes them to the Open Data Portal, formerly known as Socrata. 
 
