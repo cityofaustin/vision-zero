@@ -103,7 +103,8 @@ def main():
             align_records_token = align_records(typed_token)
             clean_up_import_schema(align_records_token)
         mark_extract_as_imported(archive_id)
-        move_extract_into_processed(filename_in_s3)
+        if not local_mode:
+            move_extract_into_processed(filename_in_s3)
 
 
 def move_extract_into_processed(extract):
