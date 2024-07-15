@@ -93,39 +93,25 @@ const CreateCrashRecord = ({ client }) => {
     e.preventDefault();
     setFeedback(false);
 
-    client
-      .query({
-        query: gql`
-          {
-            crashes(where: {case_id: {_eq: "${caseId}"}}) {
-              case_id
-            }
-          }
-        `,
-      })
-      .then(res => {
-        if (res.data.crashes.length > 0) {
-          setFeedback({ title: "Error", message: "Case ID must be unique." });
-        } else {
-          if (isFieldInvalid(caseId)) {
-            setFeedback({
-              title: "Error",
-              message: "Must have a valid Case ID.",
-            });
-            return false;
-          }
+    if (isFieldInvalid(caseId)) {
+      setFeedback({
+        title: "Error",
+        message: "Must have a valid Case ID.",
+      });
+      return false;
+    }
 
-          // Build an array of persons objects formated as a string
-          // so the String can be interpolated into the gql tag syntax.
-          let unitObjects = "";
+    // Build an array of persons objects formated as a string
+    // so the String can be interpolated into the gql tag syntax.
+    let unitObjects = "";
 
-          unitFormState.forEach((unit, i) => {
-            let unitNumber = i + 1;
+    unitFormState.forEach((unit, i) => {
+      let unitNumber = i + 1;
 
-            let personObjects = "";
+      let personObjects = "";
 
-            for (let index = 0; index < Number(unit.fatality_count); index++) {
-              personObjects = personObjects.concat(`{
+      for (let index = 0; index < Number(unit.fatality_count); index++) {
+        personObjects = personObjects.concat(`{
         unit_nbr: ${unitNumber},
         prsn_injry_sev_id: 4,
         cris_schema_version: "2023",
@@ -133,14 +119,10 @@ const CreateCrashRecord = ({ client }) => {
         updated_by: "${userEmail}",
         created_by: "${userEmail}"
       }`);
-            }
+      }
 
-            for (
-              let index = 0;
-              index < Number(unit.sus_serious_injry_cnt);
-              index++
-            ) {
-              personObjects = personObjects.concat(`{
+      for (let index = 0; index < Number(unit.sus_serious_injry_cnt); index++) {
+        personObjects = personObjects.concat(`{
         unit_nbr: ${unitNumber},
         prsn_injry_sev_id: 1,
         cris_schema_version: "2023",
@@ -148,9 +130,9 @@ const CreateCrashRecord = ({ client }) => {
         updated_by: "${userEmail}",
         created_by: "${userEmail}"
       }`);
-            }
+      }
 
-            unitObjects = unitObjects.concat(`{
+      unitObjects = unitObjects.concat(`{
               unit_nbr: ${unitNumber},
             unit_desc_id: ${Number(unit.unit_desc_id)},
             cris_schema_version: "2023",
@@ -162,9 +144,9 @@ const CreateCrashRecord = ({ client }) => {
               ]
             }
           }`);
-          });
+    });
 
-          const INSERT_BULK = gql`
+    const INSERT_BULK = gql`
             mutation bulkInsert(
               $rpt_street_name: String
               $rpt_sec_street_name: String
@@ -196,31 +178,27 @@ const CreateCrashRecord = ({ client }) => {
             }
           `;
 
-          const crashVariables = {
-            rpt_street_name: primaryStreetName?.toUpperCase(),
-            rpt_sec_street_name: secondaryStreetName?.toUpperCase(),
-            case_id: caseId,
-            crash_timestamp: new Date(crashTimestamp).toISOString(),
-            updated_by: userEmail,
-            created_by: userEmail,
-          };
+    const crashVariables = {
+      rpt_street_name: primaryStreetName?.toUpperCase(),
+      rpt_sec_street_name: secondaryStreetName?.toUpperCase(),
+      case_id: caseId,
+      crash_timestamp: new Date(crashTimestamp).toISOString(),
+      updated_by: userEmail,
+      created_by: userEmail,
+    };
 
-          client
-            .mutate({
-              mutation: INSERT_BULK,
-              variables: crashVariables,
-            })
-            .then(res => {
-              setSuccessfulNewRecordId(
-                res.data.insert_crashes_cris.returning[0].id
-              );
-              resetForm();
-              // unitFormDispatch({ type: "reset" });
-            })
-            .catch(error => {
-              setFeedback({ title: "Error", message: String(error) });
-            });
-        }
+    client
+      .mutate({
+        mutation: INSERT_BULK,
+        variables: crashVariables,
+      })
+      .then(res => {
+        setSuccessfulNewRecordId(res.data.insert_crashes_cris.returning[0].id);
+        resetForm();
+        // unitFormDispatch({ type: "reset" });
+      })
+      .catch(error => {
+        setFeedback({ title: "Error", message: String(error) });
       });
   };
 
