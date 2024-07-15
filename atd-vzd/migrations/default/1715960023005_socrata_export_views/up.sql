@@ -2,7 +2,7 @@ create or replace view socrata_export_crashes_view as with
 unit_aggregates as (
     select
         crashes.id as id,
-        string_agg(distinct mode_categories.label, ' & ') as units_involved,
+        string_agg(distinct mode_categories.label, ' & ') as units_involved
     from crashes
     left join units
         on crashes.id = units.crash_id
