@@ -35,7 +35,7 @@ const CreateCrashRecord = ({ client }) => {
 
   const formInitialState = {
     caseId: "",
-    crashTimestamp: format(new Date(), "yyyy-MM-dd'T'hh:mm"),
+    crashTimestamp: format(new Date(), "yyyy-MM-dd'T'HH:mm"),
     primaryStreetName: "",
     secondaryStreetName: "",
     units: [{ unit_desc_id: 1, fatality_count: 0, sus_serious_injry_cnt: 0 }],
