@@ -240,6 +240,16 @@ create or replace view crash_injury_metrics_view as
             sum(person_injury_metrics_view.sus_serious_injry), 0
         ) as sus_serious_injry_count,
         coalesce(
+            sum(person_injury_metrics_view.nonincap_injry), 0
+        )
+        + coalesce(
+            sum(person_injury_metrics_view.poss_injry), 0
+        )
+        + coalesce(
+            sum(person_injury_metrics_view.sus_serious_injry), 0
+        )
+        as tot_injry_count,
+        coalesce(
             sum(person_injury_metrics_view.fatal_injury), 0
         ) as fatality_count,
         coalesce(
@@ -360,6 +370,7 @@ select
     crash_injury_metrics_view.poss_injry_count,
     crash_injury_metrics_view.sus_serious_injry_count,
     crash_injury_metrics_view.non_injry_count,
+    crash_injury_metrics_view.tot_injry_count,
     crash_injury_metrics_view.vz_fatality_count,
     crash_injury_metrics_view.cris_fatality_count,
     crash_injury_metrics_view.law_enf_fatality_count,
