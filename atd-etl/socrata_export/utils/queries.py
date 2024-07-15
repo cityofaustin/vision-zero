@@ -1,6 +1,6 @@
 CRASHES_QUERY = """
 query SocrataExportCrashes($limit: Int! ,$offset: Int!) {
-  socrata_export_crashes_view(order_by: {crash_id: asc}, limit: $limit, offset: $offset) {
+  socrata_export_crashes_view(limit: $limit, offset: $offset) {
     address_primary
     address_secondary
     bicycle_death_count
