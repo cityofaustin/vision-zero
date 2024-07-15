@@ -13,6 +13,7 @@ unit_aggregates as (
 )
 
 select
+    crashes.id,
     crashes.crash_id,
     crashes.case_id,
     crashes.address_primary,
@@ -30,7 +31,7 @@ select
     cimv.poss_injry_count as poss_injry_cnt,
     cimv.non_injry_count as non_injry_cnt,
     cimv.unkn_injry_count as unkn_injry_cnt,
-    cimv.tot_injry_count as tot_injry_count,
+    cimv.tot_injry_count as tot_injry_cnt,
     cimv.law_enf_fatality_count,
     cimv.vz_fatality_count as death_cnt,
     crashes.onsys_fl,
