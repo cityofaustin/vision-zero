@@ -190,6 +190,11 @@ def get_secrets():
             "opfield": f"{DEPLOYMENT_ENVIRONMENT}.ssh Username",
             "opvault": VAULT_ID,
         },
+        "database_host": {
+            "opitem": "Vision Zero Database",
+            "opfield": f"{DEPLOYMENT_ENVIRONMENT}.Database Host",
+            "opvault": VAULT_ID,
+        },
         "database_username": {
             "opitem": "Vision Zero Database",
             "opfield": f"{DEPLOYMENT_ENVIRONMENT}.Database Username",
