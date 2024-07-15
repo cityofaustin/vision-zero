@@ -412,7 +412,8 @@ left join
     on public.crashes.fhe_collsn_id = lookups.collsn_lkp.id
 left join
     lookups.injry_sev_lkp
-    on lookups.injry_sev_lkp.id = crash_injury_metrics_view.crash_injry_sev_id;
+    on lookups.injry_sev_lkp.id = crash_injury_metrics_view.crash_injry_sev_id
+order by id asc;
 
 create view locations_list_view as (
     with crash_totals as (

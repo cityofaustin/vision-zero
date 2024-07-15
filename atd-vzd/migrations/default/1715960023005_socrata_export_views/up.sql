@@ -86,7 +86,7 @@ left join lateral (
 ) as unit_aggregates on true
 where
     crashes.in_austin_full_purpose = true and crashes.private_dr_fl = false
-    and crashes.crash_timestamp < now() - interval '14 days';
+    and crashes.crash_timestamp < now() - interval '14 days' order by id asc;
 
 
 create or replace view socrata_export_people_view as (
