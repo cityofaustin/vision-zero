@@ -266,7 +266,40 @@ def specify_extract_location():
     zip_tmpdir = tempfile.mkdtemp()
 
     for file_to_copy in zip_files:
+        filename_no_path = os.path.basename(file_to_copy)
         shutil.copy(file_to_copy, zip_tmpdir)
+
+    with SshKeyTempDir() as key_directory:
+        write_key_to_file(
+            key_directory + "/id_ed25519", DB_BASTION_HOST_SSH_PRIVATE_KEY + "\n"
+        )
+        ssh_tunnel = SSHTunnelForwarder(
+            (DB_BASTION_HOST),
+            ssh_username=DB_BASTION_HOST_SSH_USERNAME,
+            ssh_private_key=f"{key_directory}/id_ed25519",
+            remote_bind_address=(DB_RDS_HOST, 5432),
+        )
+        ssh_tunnel.start()
+
+        pg = psycopg2.connect(
+            host="localhost",
+            port=ssh_tunnel.local_bind_port,
+            user=DB_USER,
+            password=DB_PASS,
+            dbname=DB_NAME,
+            sslmode=DB_SSL_REQUIREMENT,
+            sslrootcert="/root/rds-combined-ca-bundle.pem",
+        )
+        cursor = pg.cursor()
+        cursor.execute(
+            """
+                INSERT INTO cris_import_log (object_path, object_name)
+                VALUES (%s, %s)
+                """,
+            ("local/development", filename_no_path),
+        )
+        pg.commit()
+        pg.close()
 
     return zip_tmpdir
 
