@@ -37,9 +37,9 @@ query SocrataExportCrashes($limit: Int! ,$offset: Int!) {
     rpt_street_name
     rpt_street_sfx
     sus_serious_injry_cnt
+    tot_injry_cnt
     units_involved
     unkn_injry_cnt
-    vz_fatality_count
   }
 }
 """

@@ -3,34 +3,9 @@ unit_aggregates as (
     select
         crashes.id as id,
         string_agg(distinct mode_categories.label, ' & ') as units_involved,
-        array_agg(
-            json_build_object(
-                'unit_id',
-                units.id,
-                'mode_id',
-                units.vz_mode_category_id,
-                'mode_desc',
-                mode_categories.label,
-                'nonincap_injry_cnt',
-                uiv.nonincap_injry_count,
-                'sus_serious_injry_cnt',
-                uiv.sus_serious_injry_count,
-                'vz_fatality_count',
-                uiv.vz_fatality_count,
-                'poss_injry_cnt',
-                poss_injry_count,
-                'non_injry_cnt',
-                non_injry_count,
-                'unkn_injry_cnt',
-                unkn_injry_count
-            )
-        ) as atd_mode_category_metadata
     from crashes
     left join units
         on crashes.id = units.crash_id
-    left join
-        unit_injury_metrics_view
-        as uiv on crashes.id = uiv.crash_id
     left join
         lookups.mode_category_lkp as mode_categories
         on units.vz_mode_category_id = mode_categories.id
@@ -55,15 +30,12 @@ select
     cimv.poss_injry_count as poss_injry_cnt,
     cimv.non_injry_count as non_injry_cnt,
     cimv.unkn_injry_count as unkn_injry_cnt,
+    cimv.tot_injry_count as tot_injry_count,
     cimv.law_enf_fatality_count,
-    cimv.fatality_count as death_cnt,
-    cimv.vz_fatality_count,
+    cimv.vz_fatality_count as death_cnt,
     crashes.onsys_fl,
-    -- tot_injry_count, ## not sure this is used anywhere
-    -- motor_vehicle_fl, ## i don't like these mode flags and i don't think they're used anywhere
     crashes.private_dr_fl,
-    unit_aggregates.units_involved, -- new field / need to address naming inconsistencies wrt to fatality_count, vz_fatality_count, death_count. i think we should use vz_fatality_count in the public dataset
-    unit_aggregates.atd_mode_category_metadata,  -- i don't like this! we should use a separate units dataset. note that death_count was renamed to vz_death_count
+    unit_aggregates.units_involved,
     cimv.motor_vehicle_fatality_count as motor_vehicle_death_count,
     cimv.motor_vehicle_sus_serious_injry_count as motor_vehicle_serious_injury_count,
     cimv.bicycle_fatality_count as bicycle_death_count,
@@ -119,14 +91,14 @@ where
 create or replace view socrata_export_people_view as (
     select
         people.id as person_id,
-        people.unit_id as unit_id, --new column
+        people.unit_id as unit_id,
         crashes.crash_id,
-        people.is_primary_person, --new column
+        people.is_primary_person,
         people.prsn_age,
-        people.prsn_gndr_id as prsn_sex_id, --rename from prsn_gndr_id
-        lookups.gndr_lkp.label as prsn_sex_label, -- new column
+        people.prsn_gndr_id as prsn_sex_id,
+        lookups.gndr_lkp.label as prsn_sex_label,
         people.prsn_ethnicity_id,
-        lookups.drvr_ethncty_lkp.label as prsn_ethnicity_label, --new column
+        lookups.drvr_ethncty_lkp.label as prsn_ethnicity_label,
         people.prsn_injry_sev_id,
         units.vz_mode_category_id as mode_id,
         mode_categories.label as mode_desc,
