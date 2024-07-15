@@ -100,6 +100,20 @@ const CreateCrashRecord = ({ client }) => {
       });
       return false;
     }
+    if (isFieldInvalid(crashTimestamp)) {
+      setFeedback({
+        title: "Error",
+        message: "Must have a valid Crash Timestamp.",
+      });
+      return false;
+    }
+    if (isFieldInvalid(primaryStreetName)) {
+      setFeedback({
+        title: "Error",
+        message: "Must have a valid Primary Address.",
+      });
+      return false;
+    }
 
     // Build an array of persons objects formated as a string
     // so the String can be interpolated into the gql tag syntax.
