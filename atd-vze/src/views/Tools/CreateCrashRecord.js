@@ -24,22 +24,22 @@ import UnitsForm from "./UnitsForm";
 import CreateCrashRecordTable from "./CreateCrashRecordTable";
 import { useAuth0 } from "../../auth/authContext";
 
+const unitsInitialState = [
+  { unit_desc_id: 1, fatality_count: 0, sus_serious_injry_cnt: 0 },
+];
+
+const formInitialState = {
+  caseId: "",
+  crashTimestamp: format(new Date(), "yyyy-MM-dd'T'HH:mm"),
+  primaryStreetName: "",
+  secondaryStreetName: "",
+  units: [{ unit_desc_id: 1, fatality_count: 0, sus_serious_injry_cnt: 0 }],
+};
+
 const CreateCrashRecord = ({ client }) => {
   const { user } = useAuth0();
 
   const userEmail = user.email;
-
-  const unitsInitialState = [
-    { unit_desc_id: 1, fatality_count: 0, sus_serious_injry_cnt: 0 },
-  ];
-
-  const formInitialState = {
-    caseId: "",
-    crashTimestamp: format(new Date(), "yyyy-MM-dd'T'HH:mm"),
-    primaryStreetName: "",
-    secondaryStreetName: "",
-    units: [{ unit_desc_id: 1, fatality_count: 0, sus_serious_injry_cnt: 0 }],
-  };
 
   const [caseId, setCaseId] = useState(formInitialState.caseId);
   const [successfulNewRecordId, setSuccessfulNewRecordId] = useState(null);
