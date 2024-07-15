@@ -35,7 +35,7 @@ const CreateCrashRecord = ({ client }) => {
 
   const formInitialState = {
     caseId: "",
-    crashTimestamp: format(new Date(), "yyyy-MM-dd"),
+    crashTimestamp: format(new Date(), "yyyy-MM-dd'T'hh:mm"),
     primaryStreetName: "",
     secondaryStreetName: "",
     units: [{ unit_desc_id: 1, fatality_count: 0, sus_serious_injry_cnt: 0 }],
@@ -195,20 +195,12 @@ const CreateCrashRecord = ({ client }) => {
               }
             }
           `;
-          const fatalityCountSum = unitFormState.reduce(
-            (a, b) => a + Number(b.fatality_count),
-            0
-          );
-          const susSeriousInjuryCountSum = unitFormState.reduce(
-            (a, b) => a + Number(b.sus_serious_injry_cnt),
-            0
-          );
 
           const crashVariables = {
-            rpt_street_name: primaryStreetName.toUpperCase(),
-            rpt_sec_street_name: secondaryStreetName.toUpperCase(),
+            rpt_street_name: primaryStreetName?.toUpperCase(),
+            rpt_sec_street_name: secondaryStreetName?.toUpperCase(),
             case_id: caseId,
-            crash_timestamp: crashTimestamp,
+            crash_timestamp: new Date(crashTimestamp).toISOString(),
             updated_by: userEmail,
             created_by: userEmail,
           };
@@ -321,7 +313,7 @@ const CreateCrashRecord = ({ client }) => {
                 id="primary-address-input"
                 name="primary-address-input"
                 placeholder="ex: S 900 AUSTIN AVE"
-                value={primaryStreetName?.toUpperCase()}
+                value={primaryStreetName?.toUpperCase() || ""}
                 onChange={e => setPrimaryStreetName(e.target.value)}
               />
               <FormText className="help-block">
@@ -339,7 +331,7 @@ const CreateCrashRecord = ({ client }) => {
                 id="secondary-address-input"
                 name="secondary-address-input"
                 placeholder="ex: N MOPAC BLVD"
-                value={secondaryStreetName?.toUpperCase()}
+                value={secondaryStreetName?.toUpperCase() || ""}
                 onChange={e => setSecondaryStreetName(e.target.value)}
               />
               <FormText className="help-block">
