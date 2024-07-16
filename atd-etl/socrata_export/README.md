@@ -24,15 +24,15 @@ $ docker compose run socrata_export
 
 ```shell
 # from the socrata_export container's shell
-$ ./socrata_export.py
+$ ./socrata_export.py --crashes --people
 ```
 
 ## CLI
 
-Two CLI args are available, `--crashes` and `--people`, which can be used to process just one dataset instead of both.
+The CLI args `--crashes` and `--people` control which dataset(s) will be processed. At least one must be specified.
 
 ```shell
-$ ./socrata_export.py --crashes
+$ ./socrata_export.py --people
 ```
 
 ## Column metadata helper
