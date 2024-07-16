@@ -7,8 +7,6 @@ from utils.logging import init_logger
 from utils.queries import QUERIES
 from utils.socrata import get_socrata_client
 
-from requests.exceptions import HTTPError
-
 SOCRATA_DATASET_CRASHES = os.getenv("SOCRATA_DATASET_CRASHES")
 SOCRATA_DATASET_PEOPLE = os.getenv("SOCRATA_DATASET_PEOPLE")
 
@@ -33,36 +31,26 @@ datasets = [
 ]
 
 
-def should_process_dataset(args, dataset_name):
-    """Determine to see if the given dataset should be processed based on CLI args"""
-    if (not args.crashes and not args.people) or (args.crashes and args.people):
-        # no dataset or both dataset names were included in cli args
-        return True
-    # check to see if the dataset name in the CLI args
-    args_dict = vars(args)
-    return args_dict.get(dataset_name)
-
-
-def main(args):
+def main(args_dict):
     socrata_client = get_socrata_client()
 
     for dataset in datasets:
         dataset_name = dataset["name"]
-        if not should_process_dataset(args, dataset_name):
+        if not args_dict.get(dataset_name):
             continue
 
         logger.info(f"Processing {dataset_name}")
-        offset = 0
+
+        min_id = 0
         records_processed = 0
         while True:
-            variables = {"limit": RECORD_BATCH_SIZE, "offset": offset}
-
-            logger.info(f"Fetching up to {RECORD_BATCH_SIZE} records - offset={offset}")
+            logger.info(f"Fetching up to {RECORD_BATCH_SIZE} records")
+            variables = {"limit": RECORD_BATCH_SIZE, "minId": min_id}
             records = make_hasura_request(query=dataset["query"], variables=variables)[
                 dataset["typename"]
             ]
 
-            if offset == 0:
+            if min_id == 0:
                 if not records:
                     raise Exception(
                         "No records returned from Hasura. This should never happen"
@@ -70,8 +58,13 @@ def main(args):
                 # we have some records, so it's safe to truncate the Socrata dataset
                 logger.info(f"Truncating dataset {dataset['dataset_id']}")
                 socrata_client.replace(dataset["dataset_id"], [])
+            elif not records:
+                logger.info(f"{records_processed} {dataset_name} records processed")
+                break
 
-            logger.info(f"Upserting {len(records)} records")
+            logger.info(
+                f"Upserting {len(records)} records IDs: {records[0]['id']} - {records[-1]['id']} (total records: {records_processed})"
+            )
 
             upload_error_count = 0
             while True:
@@ -88,19 +81,15 @@ def main(args):
                         raise e
                 # success - break loop
                 break
-
             records_processed += len(records)
-
-            if len(records) < RECORD_BATCH_SIZE:
-                logger.info(f"{records_processed} {dataset_name} records processed")
-                break
-
-            offset += RECORD_BATCH_SIZE
-
+            min_id = records[-1]["id"] + 1
     return
 
 
 if __name__ == "__main__":
     args = get_cli_args()
     logger = init_logger()
-    main(args)
+    if not args.crashes and not args.people:
+        raise ValueError("No dataset(s) specify. At least one of '--crashes' or '--people' is required")
+    args_dict = vars(args)
+    main(args_dict)

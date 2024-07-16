@@ -9,16 +9,16 @@ def get_cli_args():
     """
     parser = argparse.ArgumentParser(
         description="Export crash and people records to the Socrata Open Data Portal",
-        usage="socrata_export.py",
+        usage="socrata_export.py --crashes --people",
     )
     parser.add_argument(
         "--people",
         action="store_true",
-        help="Only export the people dataset",
+        help="Export the people dataset",
     )
     parser.add_argument(
         "--crashes",
         action="store_true",
-        help="Only export the crashes",
+        help="Export the crashes",
     )
     return parser.parse_args()

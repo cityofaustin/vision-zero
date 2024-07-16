@@ -1,6 +1,7 @@
 CRASHES_QUERY = """
-query SocrataExportCrashes($limit: Int! ,$offset: Int!) {
-  socrata_export_crashes_view(limit: $limit, offset: $offset) {
+query SocrataExportCrashes($limit: Int!, $minId: Int!) {
+  socrata_export_crashes_view(limit: $limit, where: {id: {_gte: $minId}}) {
+    id
     address_primary
     address_secondary
     bicycle_death_count
@@ -45,8 +46,9 @@ query SocrataExportCrashes($limit: Int! ,$offset: Int!) {
 """
 
 PEOPLE_QUERY = """
-query SocrataExportPeople($limit: Int!, $offset: Int!) {
-  socrata_export_people_view(order_by: {person_id: asc}, limit: $limit, offset: $offset) {
+query SocrataExportPeople($limit: Int!, $minId: Int!) {
+  socrata_export_people_view(order_by: {person_id: asc}, limit: $limit, where: {person_id: {_gte: $minId}}) {
+    id
     crash_id
     crash_timestamp
     crash_timestamp_ct
@@ -65,4 +67,7 @@ query SocrataExportPeople($limit: Int!, $offset: Int!) {
 }
 """
 
-QUERIES = {"people": PEOPLE_QUERY, "crashes": CRASHES_QUERY}
+QUERIES = {
+    "people": PEOPLE_QUERY,
+    "crashes": CRASHES_QUERY,
+}
