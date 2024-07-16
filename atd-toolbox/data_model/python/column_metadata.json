@@ -119,23 +119,6 @@
     "source": "cris"
   },
   {
-    "column_name": "charge_cat_id",
-    "data_type": "integer",
-    "data_type_constraint": "",
-    "foreign_column_cascade": "on update cascade on delete cascade",
-    "foreign_column_name": "id",
-    "foreign_table_name": "charge_cat_lkp",
-    "foreign_table_schema": "lookups",
-    "is_cris_column": true,
-    "is_edits_column": true,
-    "is_existing_foreign_table": false,
-    "is_primary_key": false,
-    "is_unified_column": true,
-    "note": "",
-    "record_type": "charges",
-    "source": "cris"
-  },
-  {
     "column_name": "charge",
     "data_type": "text",
     "data_type_constraint": "",

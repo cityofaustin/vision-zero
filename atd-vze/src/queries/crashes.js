@@ -101,7 +101,6 @@ export const GET_CRASH_OLD = gql`
     }
     atd_txdot_charges(where: { crash_id: { _eq: $crashId } }) {
       citation_nbr
-      charge_cat_id
       charge
     }
     atd_txdot_change_log(
@@ -247,7 +246,6 @@ export const GET_CRASH = gql`
         unit_nbr
         prsn_nbr
         citation_nbr
-        charge_cat_id
         charge
       }
       crashes_list_view {

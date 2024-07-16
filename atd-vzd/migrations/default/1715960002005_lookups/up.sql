@@ -16,12 +16,6 @@ create table lookups.autonomous_unit_lkp (
     source text not null default 'cris'
 );
 
-create table lookups.charge_cat_lkp (
-    id integer primary key,
-    label text not null,
-    source text not null default 'cris'
-);
-
 create table lookups.city_lkp (
     id integer primary key,
     label text not null,

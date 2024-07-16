@@ -1,7 +1,6 @@
 - "!include lookups_agency_lkp.yaml"
 - "!include lookups_autonomous_level_engaged_lkp.yaml"
 - "!include lookups_autonomous_unit_lkp.yaml"
-- "!include lookups_charge_cat_lkp.yaml"
 - "!include lookups_city_lkp.yaml"
 - "!include lookups_cnty_lkp.yaml"
 - "!include lookups_collsn_lkp.yaml"

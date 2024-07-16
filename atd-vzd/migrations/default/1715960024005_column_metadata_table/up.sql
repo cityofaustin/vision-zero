@@ -27,8 +27,6 @@ insert into _column_metadata (column_name, record_type, is_imported_from_cris)
 insert into _column_metadata (column_name, record_type, is_imported_from_cris)
         values ('unit_nbr', 'charges', true);
 insert into _column_metadata (column_name, record_type, is_imported_from_cris)
-        values ('charge_cat_id', 'charges', true);
-insert into _column_metadata (column_name, record_type, is_imported_from_cris)
         values ('charge', 'charges', true);
 insert into _column_metadata (column_name, record_type, is_imported_from_cris)
         values ('citation_nbr', 'charges', true);
