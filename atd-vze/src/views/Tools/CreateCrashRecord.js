@@ -81,48 +81,14 @@ const CreateCrashRecord = ({ client }) => {
     return !data;
   }
 
-  const resetForm = () => {
-    setCaseId(formInitialState.caseId);
-    setCrashTimestamp(formInitialState.crashTimestamp);
-    setPrimaryStreetName(formInitialState.primaryStreetName);
-    setSecondaryStreetName(formInitialState.secondaryStreetName);
-    unitFormDispatch({ type: "reset" });
-  };
-
-  const handleFormSubmit = e => {
-    e.preventDefault();
-    setFeedback(false);
-
-    if (isFieldInvalid(caseId)) {
-      setFeedback({
-        title: "Error",
-        message: "Must have a valid Case ID.",
-      });
-      return false;
-    }
-    if (isFieldInvalid(crashTimestamp)) {
-      setFeedback({
-        title: "Error",
-        message: "Must have a valid Crash Timestamp.",
-      });
-      return false;
-    }
-    if (isFieldInvalid(primaryStreetName)) {
-      setFeedback({
-        title: "Error",
-        message: "Must have a valid Primary Address.",
-      });
-      return false;
-    }
-
-    // Build an array of persons objects formated as a string
-    // so the String can be interpolated into the gql tag syntax.
-    let unitObjects = [];
+  // Builds an array of units objects with nested arrays of person objects within them
+  function buildNestedObjects() {
+    const unitObjects = [];
 
     unitFormState.forEach((unit, i) => {
-      let unitNumber = i + 1;
+      const unitNumber = i + 1;
 
-      let personObjects = [];
+      const personObjects = [];
 
       for (let index = 0; index < Number(unit.fatality_count); index++) {
         personObjects.push({
@@ -157,6 +123,44 @@ const CreateCrashRecord = ({ client }) => {
         },
       });
     });
+    return unitObjects;
+  }
+
+  const resetForm = () => {
+    setCaseId(formInitialState.caseId);
+    setCrashTimestamp(formInitialState.crashTimestamp);
+    setPrimaryStreetName(formInitialState.primaryStreetName);
+    setSecondaryStreetName(formInitialState.secondaryStreetName);
+    unitFormDispatch({ type: "reset" });
+  };
+
+  const handleFormSubmit = e => {
+    e.preventDefault();
+    setFeedback(false);
+
+    if (isFieldInvalid(caseId)) {
+      setFeedback({
+        title: "Error",
+        message: "Must have a valid Case ID.",
+      });
+      return false;
+    }
+    if (isFieldInvalid(crashTimestamp)) {
+      setFeedback({
+        title: "Error",
+        message: "Must have a valid Crash Timestamp.",
+      });
+      return false;
+    }
+    if (isFieldInvalid(primaryStreetName)) {
+      setFeedback({
+        title: "Error",
+        message: "Must have a valid Primary Address.",
+      });
+      return false;
+    }
+
+    const unitObjects = buildNestedObjects();
 
     const INSERT_BULK = gql`
       mutation bulkInsert($crash_data: crashes_cris_insert_input!) {
