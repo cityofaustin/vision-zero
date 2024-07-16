@@ -91,7 +91,8 @@ where
 
 create or replace view socrata_export_people_view as (
     select
-        people.id as person_id,
+        people.id as id,
+        people.id as person_id, --legacy support
         people.unit_id as unit_id,
         crashes.crash_id,
         people.is_primary_person,
