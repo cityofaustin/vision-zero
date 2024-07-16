@@ -103,7 +103,7 @@ insert into _column_metadata (column_name, record_type, is_imported_from_cris)
 insert into _column_metadata (column_name, record_type, is_imported_from_cris)
         values ('crash_speed_limit', 'crashes', true);
 insert into _column_metadata (column_name, record_type, is_imported_from_cris)
-        values ('law_enforcement_fatality_num', 'crashes', false);
+        values ('law_enforcement_ytd_fatality_num', 'crashes', false);
 insert into _column_metadata (column_name, record_type, is_imported_from_cris)
         values ('cr3_processed_at', 'crashes', false);
 insert into _column_metadata (column_name, record_type, is_imported_from_cris)

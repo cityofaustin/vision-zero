@@ -160,7 +160,7 @@ export const GET_CRASH = gql`
       rr_relat_fl
       schl_bus_fl
       toll_road_fl
-      law_enforcement_fatality_num
+      law_enforcement_ytd_fatality_num
       investigator_narrative
       cr3_stored_fl
       latitude

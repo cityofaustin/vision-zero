@@ -45,7 +45,7 @@ create or replace view person_injury_metrics_view as (
                         people.prsn_injry_sev_id = 4
                         or people.prsn_injry_sev_id = 99
                     )
-                    and crashes.law_enforcement_fatality_num is not null
+                    and crashes.law_enforcement_ytd_fatality_num is not null
                 )
                 then 1
             else 0

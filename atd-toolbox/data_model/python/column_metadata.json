@@ -765,7 +765,7 @@
     "source": "cris"
   },
   {
-    "column_name": "law_enforcement_fatality_num",
+    "column_name": "law_enforcement_ytd_fatality_num",
     "data_type": "text",
     "data_type_constraint": "",
     "foreign_column_cascade": "",

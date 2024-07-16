@@ -33,7 +33,7 @@ select_permissions:
         - investigat_agency_id
         - investigator_narrative
         - latitude
-        - law_enforcement_fatality_num
+        - law_enforcement_ytd_fatality_num
         - light_cond_id
         - longitude
         - medical_advisory_fl
@@ -95,7 +95,7 @@ select_permissions:
         - investigat_agency_id
         - investigator_narrative
         - latitude
-        - law_enforcement_fatality_num
+        - law_enforcement_ytd_fatality_num
         - light_cond_id
         - longitude
         - medical_advisory_fl
@@ -157,7 +157,7 @@ select_permissions:
         - investigat_agency_id
         - investigator_narrative
         - latitude
-        - law_enforcement_fatality_num
+        - law_enforcement_ytd_fatality_num
         - light_cond_id
         - longitude
         - medical_advisory_fl
@@ -215,7 +215,7 @@ update_permissions:
         - investigat_agency_id
         - investigator_narrative
         - latitude
-        - law_enforcement_fatality_num
+        - law_enforcement_ytd_fatality_num
         - light_cond_id
         - longitude
         - medical_advisory_fl
@@ -272,7 +272,7 @@ update_permissions:
         - investigat_agency_id
         - investigator_narrative
         - latitude
-        - law_enforcement_fatality_num
+        - law_enforcement_ytd_fatality_num
         - light_cond_id
         - longitude
         - medical_advisory_fl
