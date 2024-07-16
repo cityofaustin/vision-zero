@@ -117,94 +117,76 @@ const CreateCrashRecord = ({ client }) => {
 
     // Build an array of persons objects formated as a string
     // so the String can be interpolated into the gql tag syntax.
-    let unitObjects = "";
+    let unitObjects = [];
 
     unitFormState.forEach((unit, i) => {
       let unitNumber = i + 1;
 
-      let personObjects = "";
+      let personObjects = [];
 
       for (let index = 0; index < Number(unit.fatality_count); index++) {
-        personObjects = personObjects.concat(`{
-        unit_nbr: ${unitNumber},
-        prsn_injry_sev_id: 4,
-        cris_schema_version: "2023",
-        is_primary_person: true,
-        updated_by: "${userEmail}",
-        created_by: "${userEmail}"
-      }`);
+        personObjects.push({
+          unit_nbr: unitNumber,
+          prsn_injry_sev_id: 4,
+          cris_schema_version: "2023",
+          is_primary_person: true,
+          updated_by: userEmail,
+          created_by: userEmail,
+        });
       }
 
       for (let index = 0; index < Number(unit.sus_serious_injry_cnt); index++) {
-        personObjects = personObjects.concat(`{
-        unit_nbr: ${unitNumber},
-        prsn_injry_sev_id: 1,
-        cris_schema_version: "2023",
-        is_primary_person: true,
-        updated_by: "${userEmail}",
-        created_by: "${userEmail}"
-      }`);
+        personObjects.push({
+          unit_nbr: unitNumber,
+          prsn_injry_sev_id: 1,
+          cris_schema_version: "2023",
+          is_primary_person: true,
+          updated_by: userEmail,
+          created_by: userEmail,
+        });
       }
 
-      unitObjects = unitObjects.concat(`{
-              unit_nbr: ${unitNumber},
-            unit_desc_id: ${Number(unit.unit_desc_id)},
-            cris_schema_version: "2023",
-            updated_by: "${userEmail}",
-            created_by: "${userEmail}",
-            people_cris: {
-              data: [
-                ${personObjects}
-              ]
-            }
-          }`);
+      unitObjects.push({
+        unit_nbr: unitNumber,
+        unit_desc_id: Number(unit.unit_desc_id),
+        cris_schema_version: "2023",
+        updated_by: userEmail,
+        created_by: userEmail,
+        people_cris: {
+          data: personObjects,
+        },
+      });
     });
 
     const INSERT_BULK = gql`
-            mutation bulkInsert(
-              $rpt_street_name: String
-              $rpt_sec_street_name: String
-              $case_id: String
-              $crash_timestamp: timestamptz
-              $updated_by: String
-              $created_by: String
-            ) {
-              insert_crashes_cris(
-                objects: [
-                  {
-                    rpt_street_name: $rpt_street_name
-                    rpt_sec_street_name: $rpt_sec_street_name
-                    case_id: $case_id
-                    rpt_city_id: 22
-                    crash_timestamp: $crash_timestamp
-                    updated_by: $updated_by
-                    created_by: $created_by
-                    cris_schema_version: "2023"
-                    is_temp_record: true
-                    units_cris: { data: [${unitObjects}] }
-                  }
-                ]
-              ) {
-                returning {
-                  id
-                }
-              }
-            }
-          `;
-
-    const crashVariables = {
-      rpt_street_name: primaryStreetName?.toUpperCase(),
-      rpt_sec_street_name: secondaryStreetName?.toUpperCase(),
-      case_id: caseId,
-      crash_timestamp: new Date(crashTimestamp).toISOString(),
-      updated_by: userEmail,
-      created_by: userEmail,
-    };
+      mutation bulkInsert($crash_data: crashes_cris_insert_input!) {
+        insert_crashes_cris(objects: [$crash_data]) {
+          returning {
+            id
+          }
+        }
+      }
+    `;
 
     client
       .mutate({
         mutation: INSERT_BULK,
-        variables: crashVariables,
+        variables: {
+          crash_data: {
+            rpt_street_name: primaryStreetName?.toUpperCase(),
+            rpt_sec_street_name: secondaryStreetName?.toUpperCase(),
+            case_id: caseId,
+            rpt_city_id: 22,
+            crash_timestamp: new Date(crashTimestamp).toISOString(),
+            updated_by: userEmail,
+            created_by: userEmail,
+            cris_schema_version: "2023",
+            is_temp_record: true,
+            units_cris: {
+              data: unitObjects,
+            },
+          },
+        },
       })
       .then(res => {
         setSuccessfulNewRecordId(res.data.insert_crashes_cris.returning[0].id);
