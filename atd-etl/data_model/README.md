@@ -6,6 +6,8 @@ All data processing is managed by a single script, `cris_import.py` which proces
 
 ## Quick start
 
+Follow these steps to run the ETL locally. All interactions with AWS S3 occur with against a single bucket which has subdirectores for the `dev` and `prod` environments. If you set your `ENV` to `dev` you can safely run this ETL's S3 operations.
+
 1. Start your local Vision Zero cluster (database + Hasura + editor).
 
 2. Save a copy of the `env_template` file as `.env`, and fill in the details.
@@ -32,6 +34,8 @@ $ ./cris_import.py --s3-download --s3-upload --csv --pdf
 
 Create your environment by saving a copy of the `env_template` file as `.env`. The template includes default values for local development. See the password store for more details.
 
+All interactions with AWS S3 occur with against a single bucket which has subdirectores for the `dev` and `prod` environments. If you set your `ENV` to `dev` you can safely run this ETL's S3 operations.
+
 ```
 ENV=dev
 HASURA_GRAPHQL_ENDPOINT="http://localhost:8084/v1/graphql"
@@ -56,7 +60,7 @@ The only script that should be run directly is `cris_import.py`. It supports the
   --workers <int>    The number of concurrent workers to use when processing PDFs
 ```
 
-### Producton run
+### Production run
 
 This is the expected invocation during a production deployment. It will download any extracts available in S3, load the CSV crash records into the database, crop crash diagrams out of the CR3 PDFs, upload the CR3 pdfs and crash diagrams to the s3 bucket. 
 
