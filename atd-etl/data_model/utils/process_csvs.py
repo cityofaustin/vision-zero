@@ -61,9 +61,9 @@ def make_upsert_mutation(table_name, cris_columns):
 
     Args:
         table_name (str): `crashes`, `units`, `charges`, or `people`
-        cris_columns (list): a list of column names that should updated if a given record
-            already exists. Essentially this is a list of all columns except the table's
-            primary key. It enables upserting.
+        cris_columns (list): a list of column names that should be updated if a given
+        record already exists. Essentially this is a list of all columns except the
+            table's primary key. It enables upserting.
             See: https://hasura.io/docs/latest/mutations/postgres/upsert/
 
     Returns:
@@ -419,7 +419,7 @@ def process_csvs(extract_dir):
 
                 records = remove_unsupported_columns(
                     records,
-                    cris_columns,
+                    cris_columns + ["created_by", "updated_by"],
                 )
 
                 records = set_empty_strings_to_none(records)
