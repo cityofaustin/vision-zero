@@ -26,10 +26,6 @@ $ docker compose run cris_import
 $ ./cris_import.py --s3-download --s3-upload --csv --pdf
 ```
 
-## How it works
-
-## Getting started
-
 ## Environment
 
 Create your environment by saving a copy of the `env_template` file as `.env`. The template includes default values for local development. See the password store for more details.
@@ -62,7 +58,7 @@ The only script that should be run directly is `cris_import.py`. It supports the
 
 ### Production run
 
-This is the expected invocation during a production deployment. It will download any extracts available in S3, load the CSV crash records into the database, crop crash diagrams out of the CR3 PDFs, upload the CR3 pdfs and crash diagrams to the s3 bucket. 
+This is the expected invocation during a production deployment. It will download any extracts available in S3, load the CSV crash records into the database, crop crash diagrams out of the CR3 PDFs, upload the CR3 pdfs and crash diagrams to the s3 bucket.
 
 This invocation also "archives" the extract zips by moving them from `./inbox` to `./archive` subdirectory of the S3 bucket.
 
@@ -81,7 +77,7 @@ $ ./cris_import.py --csv --pdf
 
 ### Un-archive
 
-During local devleopment, you may want to restore testore the zips to the `./inbox` after archiving them. Use the helper script for that. It will prompt you for confirmation before executing this step, since the production bucket archive may contain hundreds of extacts. 
+During local devleopment, you may want to restore testore the zips to the `./inbox` after archiving them. Use the helper script for that. It will prompt you for confirmation before executing this step, since the production bucket archive may contain hundreds of extacts.
 
 ```shell
 $ python _restore_zips_from_archive.py
