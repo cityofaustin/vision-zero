@@ -21,11 +21,11 @@ $ docker compose run cris_import
 
 ```shell
 # from the cris_import container's shell
-$ ./cris_import.py --s3-download --s3-upload
+$ ./cris_import.py --s3-download --s3-upload --csv --pdf
 ```
 
-
 ## How it works
+
 ## Getting started
 
 ## Environment
@@ -35,23 +35,60 @@ Create your environment by saving a copy of the `env_template` file as `.env`. T
 ```
 ENV=dev
 HASURA_GRAPHQL_ENDPOINT="http://localhost:8084/v1/graphql"
-AWS_ACCESS_KEY_ID= 
+AWS_ACCESS_KEY_ID=
 AWS_SECRET_ACCESS_KEY=
 BUCKET_NAME=
 EXTRACT_PASSWORD=
 ```
 
-## Usage
+## Usage examples
 
 The only script that should be run directly is `cris_import.py`. It supports the following CLI args:
 
 ```shell
-  --csv              Only process CSV files
-  --pdf              Only process CR3 pdfs
+  --csv              Process CSV files. At least one of --csv or --pdf is required.
+  --pdf              Process CR3 pdfs. At least one of --csv or --pdf is required.
   --s3-download      Source zip extracts from S3 bucket
   --s3-upload        Upload cr3 pdfs and digrams to S3 bucket
   --s3-archive       If using --s3-download, move the processed extracts from ./inbox to ./archive when done
   --skip-unzip       Only process files that are already unzipped in the local directory
   --verbose, -v      Sets logging level to DEBUG mode
   --workers <int>    The number of concurrent workers to use when processing PDFs
+```
+
+### Producton run
+
+This is the expected invocation during a production deployment. It will download any extracts available in S3, load the CSV crash records into the database, crop crash diagrams out of the CR3 PDFs, upload the CR3 pdfs and crash diagrams to the s3 bucket. 
+
+This invocation also "archives" the extract zips by moving them from `./inbox` to `./archive` subdirectory of the S3 bucket.
+
+```shell
+# from the cris_import container's shell
+$ ./cris_import.py --s3-download --s3-upload --s3-archive --csv --pdf
+```
+
+### Local import
+
+Process any extract zips in your local `./extracts` directory. CSVs will be loaded ino the db, and crash diagrams will be extracted but not uploaded to S3.
+
+```shell
+$ ./cris_import.py --csv --pdf
+```
+
+### Un-archive
+
+During local devleopment, you may want to restore testore the zips to the `./inbox` after archiving them. Use the helper script for that. It will prompt you for confirmation before executing this step, since the production bucket archive may contain hundreds of extacts. 
+
+```shell
+$ python _restore_zips_from_archive.py
+```
+
+### Other flags
+
+```shell
+# process any unzipped extract CSVs you have in your `./extracts` directory
+$ ./cris_import.py --skip-unzip --csv
+
+# process pdfs with more workers and in debug mode
+$ ./cris_import.py --pdf --skip-unzip --s3-upload --workers 8 --verbose
 ```
