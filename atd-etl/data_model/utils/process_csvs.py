@@ -394,8 +394,6 @@ def process_csvs(extract_dir):
                     )
 
                 if table_name == "charges":
-                    records = remove_non_charges(records)
-
                     # set created_by audit field only
                     set_default_values(
                         records,
@@ -414,6 +412,9 @@ def process_csvs(extract_dir):
                             query=CHARGES_DELETE_MUTATION,
                             variables={"crash_ids": crash_ids},
                         )
+                    # now that we've deleted all charges we can purge the non-charge records
+                    # from our import
+                    records = remove_non_charges(records)
                 else:
                     # set created_by and updated_by audit fields
                     set_default_values(
