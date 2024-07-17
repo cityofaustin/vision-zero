@@ -16,7 +16,7 @@ function LocationCrashes(props) {
   // Our initial query configuration
   let queryConf = {
     table: "crashes_list_view",
-    dateField: "crash_timestamp",
+    dateField: "crash_date_ct",
     single_item: "crashes",
     showDateRange: true,
     columns: crashGridTableColumns,
