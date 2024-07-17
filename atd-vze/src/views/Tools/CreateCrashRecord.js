@@ -14,6 +14,7 @@ import {
   FormGroup,
   FormText,
   FormFeedback,
+  Row,
 } from "reactstrap";
 import { format } from "date-fns";
 import { withApollo } from "react-apollo";
@@ -202,140 +203,156 @@ const CreateCrashRecord = ({ client }) => {
   };
 
   return (
-    <Form
-      onSubmit={e => handleFormSubmit(e)}
-      onReset={e => resetForm(e)}
-      className="form-horizontal"
-    >
-      <Card>
-        <CardHeader>Create New Crash Record Set</CardHeader>
-        <CardBody>
-          <Alert
-            color="danger"
-            isOpen={!!feedback}
-            toggle={e => setFeedback(false)}
+    <>
+      <Row>
+        <Col md={6} className="p-0">
+          <Form
+            onSubmit={e => handleFormSubmit(e)}
+            onReset={e => resetForm(e)}
+            className="form-horizontal"
           >
-            {feedback.title}: {feedback.message}
-          </Alert>
+            <Card md={1}>
+              <CardHeader>Create New Crash Record Set</CardHeader>
+              <CardBody>
+                <Alert
+                  color="danger"
+                  isOpen={!!feedback}
+                  toggle={e => setFeedback(false)}
+                >
+                  {feedback.title}: {feedback.message}
+                </Alert>
+                <FormGroup row>
+                  <Col md="4">
+                    <Label htmlFor="hf-email">Case ID</Label>
+                  </Col>
+                  <Col xs="12" md="8">
+                    <Input
+                      type="number"
+                      id="hf-case-id"
+                      name="hf-case-id"
+                      placeholder="Enter Case ID..."
+                      value={caseId}
+                      onChange={e => setCaseId(e.target.value)}
+                    />
+                    {isFieldInvalid(caseId) ? (
+                      <FormFeedback>
+                        Case ID must be unique and can't be blank.
+                      </FormFeedback>
+                    ) : (
+                      <FormText className="help-block">
+                        Please enter the Case ID
+                      </FormText>
+                    )}
+                  </Col>
+                </FormGroup>
+                <FormGroup row>
+                  <Col md="4">
+                    <Label htmlFor="date-input">Crash Timestamp</Label>
+                  </Col>
+                  <Col xs="12" md="8">
+                    <Input
+                      type="datetime-local"
+                      id="timestamp-input"
+                      name="timestamp-input"
+                      placeholder="timestamp"
+                      value={crashTimestamp}
+                      invalid={isFieldInvalid(crashTimestamp)}
+                      onChange={e => setCrashTimestamp(e.target.value)}
+                    />
+                    {isFieldInvalid(crashTimestamp) ? (
+                      <FormFeedback>
+                        Crash Timestamp can't be blank.
+                      </FormFeedback>
+                    ) : (
+                      <FormText className="help-block">
+                        Please enter the Crash Timestamp
+                      </FormText>
+                    )}
+                  </Col>
+                </FormGroup>
+                <FormGroup row>
+                  <Col md="4">
+                    <Label htmlFor="date-input">Primary Address</Label>
+                  </Col>
+                  <Col xs="12" md="8">
+                    <Input
+                      type="text"
+                      id="primary-address-input"
+                      name="primary-address-input"
+                      placeholder="ex: S 900 AUSTIN AVE"
+                      value={primaryStreetName?.toUpperCase() || ""}
+                      onChange={e => setPrimaryStreetName(e.target.value)}
+                    />
+                    <FormText className="help-block">
+                      Please enter the Primary Address
+                    </FormText>
+                  </Col>
+                </FormGroup>
+                <FormGroup row>
+                  <Col md="4">
+                    <Label htmlFor="date-input">Secondary Address</Label>
+                  </Col>
+                  <Col xs="12" md="8">
+                    <Input
+                      type="text"
+                      id="secondary-address-input"
+                      name="secondary-address-input"
+                      placeholder="ex: N MOPAC BLVD"
+                      value={secondaryStreetName?.toUpperCase() || ""}
+                      onChange={e => setSecondaryStreetName(e.target.value)}
+                    />
+                    <FormText className="help-block">
+                      Please enter the Secondary Address
+                    </FormText>
+                  </Col>
+                </FormGroup>
 
-          <FormGroup row>
-            <Col md="3">
-              <Label htmlFor="hf-email">Case ID</Label>
-            </Col>
-            <Col xs="12" md="9">
-              <Input
-                type="number"
-                id="hf-case-id"
-                name="hf-case-id"
-                placeholder="Enter Case ID..."
-                value={caseId}
-                onChange={e => setCaseId(e.target.value)}
-              />
-              {isFieldInvalid(caseId) ? (
-                <FormFeedback>
-                  Case ID must be unique and can't be blank.
-                </FormFeedback>
-              ) : (
-                <FormText className="help-block">
-                  Please enter the Case ID
-                </FormText>
-              )}
-            </Col>
-          </FormGroup>
-          <FormGroup row>
-            <Col md="3">
-              <Label htmlFor="date-input">Crash Timestamp</Label>
-            </Col>
-            <Col xs="12" md="9">
-              <Input
-                type="datetime-local"
-                id="timestamp-input"
-                name="timestamp-input"
-                placeholder="timestamp"
-                value={crashTimestamp}
-                invalid={isFieldInvalid(crashTimestamp)}
-                onChange={e => setCrashTimestamp(e.target.value)}
-              />
-              {isFieldInvalid(crashTimestamp) ? (
-                <FormFeedback>Crash Timestamp can't be blank.</FormFeedback>
-              ) : (
-                <FormText className="help-block">
-                  Please enter the Crash Timestamp
-                </FormText>
-              )}
-            </Col>
-          </FormGroup>
-          <FormGroup row>
-            <Col md="3">
-              <Label htmlFor="date-input">Primary Address</Label>
-            </Col>
-            <Col xs="12" md="9">
-              <Input
-                type="text"
-                id="primary-address-input"
-                name="primary-address-input"
-                placeholder="ex: S 900 AUSTIN AVE"
-                value={primaryStreetName?.toUpperCase() || ""}
-                onChange={e => setPrimaryStreetName(e.target.value)}
-              />
-              <FormText className="help-block">
-                Please enter the Primary Address
-              </FormText>
-            </Col>
-          </FormGroup>
-          <FormGroup row>
-            <Col md="3">
-              <Label htmlFor="date-input">Secondary Address</Label>
-            </Col>
-            <Col xs="12" md="9">
-              <Input
-                type="text"
-                id="secondary-address-input"
-                name="secondary-address-input"
-                placeholder="ex: N MOPAC BLVD"
-                value={secondaryStreetName?.toUpperCase() || ""}
-                onChange={e => setSecondaryStreetName(e.target.value)}
-              />
-              <FormText className="help-block">
-                Please enter the Secondary Address
-              </FormText>
-            </Col>
-          </FormGroup>
+                <UnitsForm
+                  units={unitFormState}
+                  handleUnitFormChange={unitFormDispatch}
+                  client={client}
+                />
 
-          <UnitsForm
-            units={unitFormState}
-            handleUnitFormChange={unitFormDispatch}
-            client={client}
-          />
-
-          <div className="d-flex flex-row-reverse">
-            <Button
-              color="primary"
-              size="sm"
-              onClick={e => {
-                unitFormDispatch({
-                  type: "addNewUnit",
-                  payload: unitsInitialState[0],
-                });
-              }}
-            >
-              <i className="fa fa-plus"></i>&nbsp;Add Unit
-            </Button>
-          </div>
-        </CardBody>
-        <CardFooter>
-          <div className="d-flex flex-row-reverse">
-            <Button type="submit" size="lg" color="primary">
-              <i className="fa fa-dot-circle-o"></i> Submit
-            </Button>
-            <Button type="reset" size="lg" color="danger" className="mr-3">
-              <i className="fa fa-ban"></i> Reset
-            </Button>
-          </div>
-        </CardFooter>
-      </Card>
-      <CreateCrashRecordTable />
-    </Form>
+                <div className="d-flex flex-row-reverse">
+                  <Button
+                    color="primary"
+                    size="sm"
+                    onClick={e => {
+                      unitFormDispatch({
+                        type: "addNewUnit",
+                        payload: unitsInitialState[0],
+                      });
+                    }}
+                  >
+                    <i className="fa fa-plus"></i>&nbsp;Add Unit
+                  </Button>
+                </div>
+              </CardBody>
+              <CardFooter>
+                <div className="d-flex flex-row-reverse">
+                  <Button type="submit" size="lg" color="primary">
+                    <i className="fa fa-dot-circle-o"></i> Submit
+                  </Button>
+                  <Button
+                    type="reset"
+                    size="lg"
+                    color="danger"
+                    className="mr-3"
+                  >
+                    <i className="fa fa-ban"></i> Reset
+                  </Button>
+                </div>
+              </CardFooter>
+            </Card>
+          </Form>
+        </Col>
+        <Row>
+          <Col>
+            <CreateCrashRecordTable />
+          </Col>
+        </Row>
+      </Row>
+    </>
   );
 };
 
