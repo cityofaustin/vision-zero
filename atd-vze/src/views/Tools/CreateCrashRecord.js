@@ -1,4 +1,5 @@
 import React, { useState, useReducer } from "react";
+import { Link } from "react-router-dom";
 
 import {
   Alert,
@@ -87,6 +88,7 @@ const CreateCrashRecord = ({ client }) => {
   };
 
   const [caseId, setCaseId] = useState(formInitialState.caseId);
+  const [successfulNewRecordId, setSuccessfulNewRecordId] = useState(null);
   const [crashTimestamp, setCrashTimestamp] = useState(
     formInitialState.crashTimestamp
   );
@@ -140,21 +142,21 @@ const CreateCrashRecord = ({ client }) => {
     if (isFieldInvalid(caseId)) {
       setFeedback({
         title: "Error",
-        message: "Must have a valid Case ID.",
+        message: "Case ID is required",
       });
       return false;
     }
     if (isFieldInvalid(crashTimestamp)) {
       setFeedback({
         title: "Error",
-        message: "Must have a valid Crash Timestamp.",
+        message: "Crash timestamp is required",
       });
       return false;
     }
     if (isFieldInvalid(primaryStreetName)) {
       setFeedback({
         title: "Error",
-        message: "Must have a valid Primary Address.",
+        message: "Primary address is required",
       });
       return false;
     }
@@ -193,9 +195,7 @@ const CreateCrashRecord = ({ client }) => {
       })
       .then(res => {
         // Re-route to the crash details page for the new temp record on successful creation
-        const successfulNewRecordId =
-          res.data.insert_crashes_cris.returning[0].id;
-        window.location.href = `#/crashes/T${successfulNewRecordId}`;
+        setSuccessfulNewRecordId(res.data.insert_crashes_cris.returning[0].id);
       })
       .catch(error => {
         setFeedback({ title: "Error", message: String(error) });
@@ -214,13 +214,6 @@ const CreateCrashRecord = ({ client }) => {
             <Card md={1}>
               <CardHeader>Create New Crash Record Set</CardHeader>
               <CardBody>
-                <Alert
-                  color="danger"
-                  isOpen={!!feedback}
-                  toggle={e => setFeedback(false)}
-                >
-                  {feedback.title}: {feedback.message}
-                </Alert>
                 <FormGroup row>
                   <Col md="4">
                     <Label htmlFor="hf-email">Case ID</Label>
@@ -342,15 +335,44 @@ const CreateCrashRecord = ({ client }) => {
                     <i className="fa fa-ban"></i> Reset
                   </Button>
                 </div>
+                <div className="py-2">
+                  <Alert
+                    color="success"
+                    className="text-center"
+                    isOpen={!!successfulNewRecordId}
+                    toggle={e => setSuccessfulNewRecordId(false)}
+                    fade={false}
+                  >
+                    {/*eslint-disable-next-line*/}
+                    <i className="fa fa-check-circle" /> Successfsully
+                    created crash{" "}
+                    <Link
+                      to={`/crashes/T${successfulNewRecordId}`}
+                      className="alert-link"
+                    >
+                      #{successfulNewRecordId}
+                    </Link>
+                  </Alert>
+                  <Alert
+                    color="danger"
+                    className="text-center"
+                    isOpen={!!feedback}
+                    toggle={e => setFeedback(false)}
+                    fade={false}
+                  >
+                    <i className="fa fa-exclamation-triangle" />{" "}
+                    {feedback.title}: {feedback.message}
+                  </Alert>
+                </div>
               </CardFooter>
             </Card>
           </Form>
         </Col>
-        <Row>
-          <Col>
-            <CreateCrashRecordTable />
-          </Col>
-        </Row>
+      </Row>
+      <Row>
+        <Col>
+          <CreateCrashRecordTable />
+        </Col>
       </Row>
     </>
   );
