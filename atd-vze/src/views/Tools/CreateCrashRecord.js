@@ -224,6 +224,7 @@ const CreateCrashRecord = ({ client }) => {
                       id="hf-case-id"
                       name="hf-case-id"
                       placeholder="Enter Case ID..."
+                      autocomplete="off"
                       value={caseId}
                       onChange={e => setCaseId(e.target.value)}
                     />
@@ -273,6 +274,7 @@ const CreateCrashRecord = ({ client }) => {
                       id="primary-address-input"
                       name="primary-address-input"
                       placeholder="ex: S 900 AUSTIN AVE"
+                      autocomplete="off"
                       value={primaryStreetName?.toUpperCase() || ""}
                       onChange={e => setPrimaryStreetName(e.target.value)}
                     />
@@ -290,6 +292,7 @@ const CreateCrashRecord = ({ client }) => {
                       type="text"
                       id="secondary-address-input"
                       name="secondary-address-input"
+                      autocomplete="off"
                       placeholder="ex: N MOPAC BLVD"
                       value={secondaryStreetName?.toUpperCase() || ""}
                       onChange={e => setSecondaryStreetName(e.target.value)}
