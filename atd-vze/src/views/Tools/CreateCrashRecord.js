@@ -1,5 +1,4 @@
 import React, { useState, useReducer } from "react";
-import { Link } from "react-router-dom";
 
 import {
   Alert,
@@ -24,6 +23,51 @@ import UnitsForm from "./UnitsForm";
 import CreateCrashRecordTable from "./CreateCrashRecordTable";
 import { useAuth0 } from "../../auth/authContext";
 
+// Builds an array of units objects with nested arrays of person objects within them
+function buildNestedObjects(unitFormState, userEmail) {
+  const unitObjects = [];
+
+  unitFormState.forEach((unit, i) => {
+    const unitNumber = i + 1;
+
+    const personObjects = [];
+
+    for (let index = 0; index < Number(unit.fatality_count); index++) {
+      personObjects.push({
+        unit_nbr: unitNumber,
+        prsn_injry_sev_id: 4,
+        cris_schema_version: "2023",
+        is_primary_person: true,
+        updated_by: userEmail,
+        created_by: userEmail,
+      });
+    }
+
+    for (let index = 0; index < Number(unit.sus_serious_injry_cnt); index++) {
+      personObjects.push({
+        unit_nbr: unitNumber,
+        prsn_injry_sev_id: 1,
+        cris_schema_version: "2023",
+        is_primary_person: true,
+        updated_by: userEmail,
+        created_by: userEmail,
+      });
+    }
+
+    unitObjects.push({
+      unit_nbr: unitNumber,
+      unit_desc_id: Number(unit.unit_desc_id),
+      cris_schema_version: "2023",
+      updated_by: userEmail,
+      created_by: userEmail,
+      people_cris: {
+        data: personObjects,
+      },
+    });
+  });
+  return unitObjects;
+}
+
 const CreateCrashRecord = ({ client }) => {
   const { user } = useAuth0();
 
@@ -42,7 +86,6 @@ const CreateCrashRecord = ({ client }) => {
   };
 
   const [caseId, setCaseId] = useState(formInitialState.caseId);
-  const [successfulNewRecordId, setSuccessfulNewRecordId] = useState(null);
   const [crashTimestamp, setCrashTimestamp] = useState(
     formInitialState.crashTimestamp
   );
@@ -81,51 +124,6 @@ const CreateCrashRecord = ({ client }) => {
     return !data;
   }
 
-  // Builds an array of units objects with nested arrays of person objects within them
-  function buildNestedObjects() {
-    const unitObjects = [];
-
-    unitFormState.forEach((unit, i) => {
-      const unitNumber = i + 1;
-
-      const personObjects = [];
-
-      for (let index = 0; index < Number(unit.fatality_count); index++) {
-        personObjects.push({
-          unit_nbr: unitNumber,
-          prsn_injry_sev_id: 4,
-          cris_schema_version: "2023",
-          is_primary_person: true,
-          updated_by: userEmail,
-          created_by: userEmail,
-        });
-      }
-
-      for (let index = 0; index < Number(unit.sus_serious_injry_cnt); index++) {
-        personObjects.push({
-          unit_nbr: unitNumber,
-          prsn_injry_sev_id: 1,
-          cris_schema_version: "2023",
-          is_primary_person: true,
-          updated_by: userEmail,
-          created_by: userEmail,
-        });
-      }
-
-      unitObjects.push({
-        unit_nbr: unitNumber,
-        unit_desc_id: Number(unit.unit_desc_id),
-        cris_schema_version: "2023",
-        updated_by: userEmail,
-        created_by: userEmail,
-        people_cris: {
-          data: personObjects,
-        },
-      });
-    });
-    return unitObjects;
-  }
-
   const resetForm = () => {
     setCaseId(formInitialState.caseId);
     setCrashTimestamp(formInitialState.crashTimestamp);
@@ -160,7 +158,7 @@ const CreateCrashRecord = ({ client }) => {
       return false;
     }
 
-    const unitObjects = buildNestedObjects();
+    const unitObjects = buildNestedObjects(unitFormState, userEmail);
 
     const INSERT_BULK = gql`
       mutation bulkInsert($crash_data: crashes_cris_insert_input!) {
@@ -193,9 +191,10 @@ const CreateCrashRecord = ({ client }) => {
         },
       })
       .then(res => {
-        setSuccessfulNewRecordId(res.data.insert_crashes_cris.returning[0].id);
-        resetForm();
-        // unitFormDispatch({ type: "reset" });
+        // Re-route to the crash details page for the new temp record on successful creation
+        const successfulNewRecordId =
+          res.data.insert_crashes_cris.returning[0].id;
+        window.location.href = `#/crashes/T${successfulNewRecordId}`;
       })
       .catch(error => {
         setFeedback({ title: "Error", message: String(error) });
@@ -211,21 +210,6 @@ const CreateCrashRecord = ({ client }) => {
       <Card>
         <CardHeader>Create New Crash Record Set</CardHeader>
         <CardBody>
-          <Alert
-            color="success"
-            isOpen={!!successfulNewRecordId}
-            toggle={e => setSuccessfulNewRecordId(false)}
-          >
-            {/*eslint-disable-next-line*/}
-            Crash record creation successful.{" "}
-            <Link
-              to={`/crashes/T${successfulNewRecordId}`}
-              className="alert-link"
-            >
-              Open new Crash ID #T{successfulNewRecordId} details page
-            </Link>
-            .
-          </Alert>
           <Alert
             color="danger"
             isOpen={!!feedback}
