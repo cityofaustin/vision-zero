@@ -18,25 +18,40 @@ begin
         -- save lat/lon into geometry col
         new.position = st_setsrid(st_makepoint(new.longitude, new.latitude), 4326);
         --
-        -- Get location polygon ID
+        -- get location polygon id
         --
-        new.location_id = (
-            select
-                location_id
-            from
-                public.atd_txdot_locations
-            where
-                location_group = 1 -- level 1-4 polygons
-                and st_contains(geometry, new.position)
-            limit 1);
+        if (new.rpt_road_part_id != 2 and upper(ltrim(new.rpt_hwy_num)) in ('35', '183','183a','1','290','71','360','620','45','130')) then
+            -- use level 5 polygon
+            new.location_id = (
+                select
+                    location_id
+                from
+                    public.atd_txdot_locations
+                where
+                    location_group = 2 -- level 5
+                    and st_contains(geometry, new.position)
+                limit 1);
+        else
+            -- use the other polygons
+            new.location_id = (
+                select
+                    location_id
+                from
+                    public.atd_txdot_locations
+                where
+                    location_group = 1 -- not level 5
+                    and st_contains(geometry, new.position)
+                limit 1);
+        end if;
+
         raise notice 'found location: % compared to previous location: %', new.location_id, old.location_id;
         --
-        -- Check if in austin full purpose jurisdiction
+        -- check if in austin full purpose jurisdiction
         --
         new.in_austin_full_purpose =  st_contains((select geometry from atd_jurisdictions where id = 5), new.position);
         raise notice 'in austin full purpose: % compared to previous: %', new.in_austin_full_purpose, old.in_austin_full_purpose;
         --
-        -- Get Council District
+        -- get council district
         --
         new.council_district = (
             select
@@ -48,7 +63,7 @@ begin
             limit 1);
         raise notice 'council_district: % compared to previous: %', new.council_district, old.council_district;
         --
-        -- Get engineering area
+        -- get engineering area
         --
         new.engineering_area = (
             select
@@ -65,7 +80,7 @@ begin
             new.position = null;
             -- reset location id
             new.location_id = null;
-            -- use city ID to determine full purpose jurisdiction
+            -- use city id to determine full purpose jurisdiction
             new.in_austin_full_purpose = coalesce(new.rpt_city_id = 22, false);
             raise notice 'setting in_austin_full_purpose based on city id: %', new.in_austin_full_purpose;
             -- reset council district
@@ -73,9 +88,10 @@ begin
             -- reset engineering area
             new.engineering_area = null;
     end if;
-    RETURN NEW;
-END;
+    return new;
+end;
 $$;
+
 
 create trigger crashes_set_spatial_attributes_on_insert
 before insert on public.crashes
