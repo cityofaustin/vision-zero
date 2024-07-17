@@ -1,5 +1,12 @@
 set client_min_messages to warning;
 
+-- remove all names from old people tables for non-fatalities
+-- this can take more than a minute per table
+update atd_txdot_person set prsn_last_name = null, prsn_first_name = null, prsn_mid_name = null
+where prsn_injry_sev_id != 4;
+update atd_txdot_primaryperson set prsn_last_name = null, prsn_first_name = null, prsn_mid_name = null
+where prsn_injry_sev_id != 4;
+
 -- double check if cris has the right data for this person records
 update atd_txdot_primaryperson set prsn_injry_sev_id = 0 where prsn_injry_sev_id = 94;
 update atd_txdot_person set prsn_injry_sev_id = 0 where prsn_injry_sev_id = 94;
@@ -142,9 +149,9 @@ where
     or prsn_occpnt_pos_id is not null
     or prsn_injry_sev_id is not null
     or prsn_age is not null
-    -- or prsn_last_name is not null
-    -- or prsn_first_name is not null
-    -- or prsn_mid_name is not null
+    or prsn_last_name is not null
+    or prsn_first_name is not null
+    or prsn_mid_name is not null
     or prsn_gndr_id is not null
     or prsn_ethnicity_id is not null
     or prsn_exp_homelessness is not null
@@ -159,9 +166,9 @@ set
     prsn_occpnt_pos_id = pd.prsn_occpnt_pos_id,
     prsn_injry_sev_id = pd.prsn_injry_sev_id,
     prsn_age = pd.prsn_age,
-    -- prsn_last_name = pd.prsn_last_name,
-    -- prsn_first_name = pd.prsn_first_name,
-    -- prsn_mid_name = pd.prsn_mid_name,
+    prsn_last_name = pd.prsn_last_name,
+    prsn_first_name = pd.prsn_first_name,
+    prsn_mid_name = pd.prsn_mid_name,
     prsn_gndr_id = pd.prsn_gndr_id,
     prsn_ethnicity_id = pd.prsn_ethnicity_id,
     prsn_exp_homelessness = pd.prsn_exp_homelessness,
