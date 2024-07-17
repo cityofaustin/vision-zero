@@ -25,10 +25,10 @@ const UnitsForm = ({ units, handleUnitFormChange, client }) => {
             <CardHeader>Unit #{i + 1}</CardHeader>
             <CardBody>
               <FormGroup row>
-                <Col md="3">
+                <Col md="4">
                   <Label htmlFor="unit-type">Unit Type</Label>
                 </Col>
-                <Col xs="12" md="9">
+                <Col xs="12" md="8">
                   <Input
                     type="select"
                     id="unit-type"
@@ -59,12 +59,12 @@ const UnitsForm = ({ units, handleUnitFormChange, client }) => {
                 </Col>
               </FormGroup>
               <FormGroup row>
-                <Col md="3">
+                <Col md="4">
                   <Label htmlFor={`fatality-count-${i + 1}`}>
                     Fatality Count
                   </Label>
                 </Col>
-                <Col xs="12" md="9">
+                <Col xs="12" md="8">
                   <Input
                     type="number"
                     id={`fatality-count-${i + 1}`}
@@ -85,12 +85,12 @@ const UnitsForm = ({ units, handleUnitFormChange, client }) => {
                 </Col>
               </FormGroup>
               <FormGroup row>
-                <Col md="3">
+                <Col md="4">
                   <Label htmlFor={`sus-injury-cnt-${i + 1}`}>
                     Suspected Serious Injury Count
                   </Label>
                 </Col>
-                <Col xs="12" md="9">
+                <Col xs="12" md="8">
                   <Input
                     type="number"
                     id={`sus-injury-cnt-${i + 1}`}
