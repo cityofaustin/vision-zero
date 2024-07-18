@@ -1,3 +1,5 @@
+drop table fatalities cascade;
+
 drop view if exists fatalities_view cascade;
 
 create or replace view fatalities_view AS
