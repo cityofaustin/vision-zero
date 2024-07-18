@@ -17,3 +17,10 @@ add constraint notes_crashes_id_fkey foreign key (
     crash_id
 ) references crashes (id),
 alter column atd_txdot_crashes_crash_id drop not null;
+
+-- squeezing this migration in here 
+alter table location_notes
+add constraint fk_location_note_location foreign key (
+    location_id
+) references atd_txdot_locations (location_id),
+alter column location_id set not null;
