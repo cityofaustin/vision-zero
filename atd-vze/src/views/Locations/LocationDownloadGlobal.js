@@ -76,7 +76,7 @@ const LocationDownloadGlobal = props => {
             totalRecords={
               data.view_location_crashes_global_aggregate.aggregate.count
             }
-            label={"Export Global Data"}
+            label={"Download crashes"}
           />
         )}
     </>
