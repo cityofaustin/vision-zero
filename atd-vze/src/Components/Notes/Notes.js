@@ -39,8 +39,6 @@ const Notes = ({
   const [addNote] = useMutation(INSERT_NOTE);
   const [editNote] = useMutation(UPDATE_NOTE);
   const [deleteNote] = useMutation(DELETE_NOTE);
-
-  const keyField = "id";
   const fieldConfig = notesDataMap[0];
 
   // function to handle add button click
