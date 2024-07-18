@@ -1,9 +1,9 @@
 import { gql } from "apollo-boost";
 
 export const INSERT_NOTE = gql`
-  mutation InsertNote($note: String!, $crashPk: Int!, $userEmail: String) {
+  mutation InsertNote($note: String!, $parentRecordId: Int!, $userEmail: String) {
     insert_crash_notes(
-      objects: { text: $note, crash_id: $crashPk, user_email: $userEmail }
+      objects: { text: $note, crash_id: $parentRecordId, user_email: $userEmail }
     ) {
       returning {
         crash_id

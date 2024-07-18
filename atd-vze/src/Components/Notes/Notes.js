@@ -16,8 +16,7 @@ import { useAuth0, isReadOnly } from "../../auth/authContext";
 
 // declare a notes component
 const Notes = ({
-  crashPk,
-  tableName,
+  parentRecordId,
   notes,
   INSERT_NOTE,
   UPDATE_NOTE,
@@ -49,7 +48,7 @@ const Notes = ({
     addNote({
       variables: {
         note: newNote,
-        crashPk: crashPk,
+        parentRecordId: parentRecordId,
         userEmail: userEmail,
       },
     })
@@ -196,7 +195,7 @@ const Notes = ({
                 const isEditing = editRow === row;
                 const isUser = row.user_email === userEmail;
                 return (
-                  <tr key={`table-${tableName}-${row[keyField]}`}>
+                  <tr key={row.id}>
                     {/* iterate through each field in the row and render its value */}
                     {Object.keys(fieldConfig.fields).map((field, i) => {
                       return (
