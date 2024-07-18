@@ -309,7 +309,8 @@ create or replace view crash_injury_metrics_view as
         coalesce(
             sum(person_injury_metrics_view.years_of_life_lost), 0
         ) as years_of_life_lost,
-        coalesce(max(est_comp_cost_crash_based), 0) as est_comp_cost_crash_based
+        coalesce(max(est_comp_cost_crash_based), 0) as est_comp_cost_crash_based,
+        coalesce(sum(est_comp_cost_crash_based), 0) as est_total_person_comp_cost
     from
         public.crashes as crashes
     left join
