@@ -20,7 +20,7 @@ begin
         --
         -- get location polygon id
         --
-        if (new.rpt_road_part_id != 2 and upper(ltrim(new.rpt_hwy_num)) in ('35', '183','183a','1','290','71','360','620','45','130')) then
+        if (new.rpt_road_part_id != 2 and upper(ltrim(new.rpt_hwy_num)) in ('35', '183','183A','1','290','71','360','620','45','130')) then
             -- use level 5 polygon
             new.location_id = (
                 select
