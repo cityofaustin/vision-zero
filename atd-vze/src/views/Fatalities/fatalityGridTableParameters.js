@@ -5,7 +5,7 @@ export const fatalityGridTableColumns = {
     label_table: "Year",
     type: "Int",
   },
-  crash_id: {
+  cris_crash_id: {
     primary_key: true,
     searchable: true,
     sortable: true,
@@ -20,7 +20,7 @@ export const fatalityGridTableColumns = {
     label_table: "Case ID",
     type: "Int",
   },
-  law_enforcement_num: {
+  law_enforcement_fatality_num: {
     searchable: false,
     sortable: false,
     label_table: "Law Enforcement Number",
@@ -38,7 +38,7 @@ export const fatalityGridTableColumns = {
     label_table: "YTD Fatalities",
     type: "Int",
   },
-  crash_date: {
+  crash_date_ct: {
     searchable: false,
     sortable: true,
     label_table: "Crash Date",
@@ -114,7 +114,7 @@ export const fatalityGridTableAdvancedFilters = {
                     },
                   },
                 },
-              `]: null
+              `]: null,
             },
           ],
         },
@@ -148,7 +148,7 @@ export const fatalityGridTableAdvancedFilters = {
                     },
                   },
                 },
-              `]: null
+              `]: null,
             },
           ],
         },
@@ -238,7 +238,7 @@ export const fatalityGridTableAdvancedFilters = {
                     },
                   },
                 },
-              `]: null
+              `]: null,
             },
           ],
         },
@@ -274,7 +274,7 @@ export const fatalityGridTableAdvancedFilters = {
                     },
                   },
                 ]
-              `]: null
+              `]: null,
             },
           ],
         },
