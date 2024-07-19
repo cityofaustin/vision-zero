@@ -7,6 +7,7 @@ select
 people.id as person_id,
 crashes.id as crash_id,
 crashes.crash_id as cris_crash_id,
+units.id as unit_id,
 CONCAT_WS(' ', people.prsn_first_name, people.prsn_mid_name, people.prsn_last_name) as victim_name,
 TO_CHAR(crashes.crash_timestamp at time zone 'US/Central', 'yyyy') AS year,
 CONCAT_WS(' ',
