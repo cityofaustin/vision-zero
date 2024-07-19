@@ -92,7 +92,7 @@ where
 create or replace view socrata_export_people_view as (
     select
         people.id as id,
-        people.id as person_id, --legacy support
+        people.id as person_id, --this column exists for backwards compatibility
         people.unit_id as unit_id,
         crashes.crash_id,
         people.is_primary_person,
