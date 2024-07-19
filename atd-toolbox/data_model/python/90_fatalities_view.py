@@ -8,9 +8,9 @@ def load_sql_template(name):
 
 
 def main():
-    indexes_sql = load_sql_template("sql_templates/fatalities_view.sql")
-    migration_path = make_migration_dir("indexes")
-    save_file(f"{migration_path}/up.sql", indexes_sql)
+    fatalities_view_sql = load_sql_template("sql_templates/fatalities_view.sql")
+    migration_path = make_migration_dir("fatalities_view")
+    save_file(f"{migration_path}/up.sql", fatalities_view_sql)
     save_empty_down_migration(migration_path)
 
 
