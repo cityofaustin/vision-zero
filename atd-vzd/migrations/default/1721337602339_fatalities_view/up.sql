@@ -39,10 +39,9 @@ DENSE_RANK() OVER (
     AS ytd_fatal_crash,
 crashes.case_id,
 crashes.law_enforcement_fatality_num,
-engineering_areas.label as engineering_area
+crashes.engineering_area
   from 
     people 
   left join units on people.unit_id = units.id
   left join crashes on units.crash_id = crashes.id
-  left join engineering_areas ON engineering_areas.geometry && crashes.position AND ST_CONTAINS(engineering_areas.geometry, crashes.position)
  where crashes.in_austin_full_purpose = true AND people.prsn_injry_sev_id = 4;
