@@ -49,6 +49,7 @@ select
     cimv.micromobility_sus_serious_injry_count as micromobility_serious_injury_count,
     cimv.other_fatality_count as other_death_count,
     cimv.other_sus_serious_injry_count as other_serious_injury_count,
+    cimv.years_of_life_lost,
     to_char(
         crashes.crash_timestamp, 'YYYY-MM-DD"T"HH24:MI:SS'
     ) as crash_timestamp,
