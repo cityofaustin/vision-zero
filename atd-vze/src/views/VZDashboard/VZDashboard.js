@@ -13,33 +13,21 @@ import bi_logo from "../../assets/img/brand/power_bi_icon_white_on_transparent.p
 
 function VZDashboard() {
   const year = new Date().getFullYear();
-  const yearStart = `${year}-01-01`;
+  const yearStart = `${year}-01-01T00:00:00`;
   // We use the same end date as VZV so VZE widget totals match VZV widgets
-  const yearEnd = format(subDays(new Date(), 14), "yyyy-MM-dd");
+  const yearEnd = format(subDays(new Date(), 14), "yyyy-MM-dd'T'HH:mm:ss");
   const { loading, error, data } = useQuery(GET_CRASHES_YTD, {
     variables: { yearStart, yearEnd },
   });
-
   if (loading) return "Loading...";
   if (error) return `Error! ${error.message}`;
 
-  const {
-    years_of_life_lost: yearsOfLifeLostPrimaryPerson,
-  } = data.primaryPersonFatalities.aggregate.sum;
+  const aggregateData =
+    data.socrata_export_crashes_view_aggregate.aggregate.sum;
 
-  const {
-    years_of_life_lost: yearsOfLifeLostPerson,
-  } = data.personFatalities.aggregate.sum;
-
-  const {
-    sus_serious_injry_cnt: seriousInjuryCount,
-  } = data.seriousInjuriesAndTotal.aggregate.sum;
-  const { atd_fatality_count: deathCount } = data.fatalities.aggregate.sum;
-
-  const yearsOfLifeLostYTD =
-    yearsOfLifeLostPrimaryPerson + yearsOfLifeLostPerson;
-  const fatalitiesYTD = deathCount;
-  const seriousInjuriesYTD = seriousInjuryCount;
+  const yearsOfLifeLostYTD = aggregateData.years_of_life_lost;
+  const fatalitiesYTD = aggregateData.death_cnt;
+  const seriousInjuriesYTD = aggregateData.sus_serious_injry_cnt;
 
   // Widget02 expects a string value, DB returns number or null
   const commaSeparator = number =>
