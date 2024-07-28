@@ -133,6 +133,8 @@ create table public.crashes (
     intrsct_relat_id integer references lookups.intrsct_relat_lkp (id) on update cascade on delete cascade,
     investigat_agency_id integer references lookups.agency_lkp (id) on update cascade on delete cascade,
     investigator_narrative text,
+    is_deleted boolean not null default false,
+    is_temp_record boolean not null default false,
     latitude numeric,
     law_enforcement_fatality_num text,
     light_cond_id integer references lookups.light_cond_lkp (id) on update cascade on delete cascade,
