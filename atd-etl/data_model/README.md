@@ -6,7 +6,7 @@ All data processing is managed by a single script, `cris_import.py` which proces
 
 ## Quick start
 
-Follow these steps to run the ETL locally. All interactions with AWS S3 occur with against a single bucket which has subdirectores for the `dev` and `prod` environments. If you set your `ENV` to `dev` you can safely run this ETL's S3 operations.
+Set your `ENV` to `dev` in order to safely run the S3 operations locally.
 
 1. Start your local Vision Zero cluster (database + Hasura + editor).
 
@@ -77,7 +77,7 @@ $ ./cris_import.py --csv --pdf
 
 ### Un-archive
 
-During local devleopment, you may want to restore testore the zips to the `./inbox` after archiving them. Use the helper script for that. It will prompt you for confirmation before executing this step, since the production bucket archive may contain hundreds of extacts.
+During local development, you may want to restore the zips to the `./inbox` after archiving them. Use the helper script for that. It will prompt you for confirmation before executing this step, since the production bucket archive may contain hundreds of extacts.
 
 ```shell
 $ python _restore_zips_from_archive.py
