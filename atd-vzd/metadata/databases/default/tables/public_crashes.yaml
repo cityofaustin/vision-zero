@@ -206,7 +206,6 @@ select_permissions:
         - surf_type_id
         - traffic_cntl_id
         - wthr_cond_id
-        - cr3_file_metadata
         - latitude
         - longitude
         - rpt_ref_mark_offset_amt
@@ -215,7 +214,6 @@ select_permissions:
         - case_id
         - created_by
         - investigator_narrative
-        - investigator_narrative_ocr
         - law_enforcement_fatality_num
         - location_id
         - record_locator
@@ -234,7 +232,6 @@ select_permissions:
         - rpt_street_pfx
         - rpt_street_sfx
         - updated_by
-        - cr3_ocr_extraction_date
         - crash_timestamp
         - created_at
         - updated_at
@@ -299,7 +296,6 @@ select_permissions:
         - surf_type_id
         - traffic_cntl_id
         - wthr_cond_id
-        - cr3_file_metadata
         - latitude
         - longitude
         - rpt_ref_mark_offset_amt
@@ -308,7 +304,6 @@ select_permissions:
         - case_id
         - created_by
         - investigator_narrative
-        - investigator_narrative_ocr
         - law_enforcement_fatality_num
         - location_id
         - record_locator
@@ -327,7 +322,6 @@ select_permissions:
         - rpt_street_pfx
         - rpt_street_sfx
         - updated_by
-        - cr3_ocr_extraction_date
         - crash_timestamp
         - created_at
         - updated_at
