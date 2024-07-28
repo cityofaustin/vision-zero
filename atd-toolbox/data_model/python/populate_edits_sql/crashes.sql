@@ -22,7 +22,7 @@ create materialized view crash_diffs as with joined_crashes as (
         crash_unified.road_constr_zone_fl as road_constr_zone_fl_unified,
         crash_unified.case_id as case_id_unified,
         crash_unified.intrsct_relat_id as intrsct_relat_id_unified,
-        null as law_enforcement_fatality_num_unified,
+        crash_unified.law_enforcement_fatality_num as law_enforcement_fatality_num_unified,
         crash_unified.id
     from
         crashes as crash_unified
