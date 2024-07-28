@@ -18,4 +18,4 @@ alter table crash_notes
         crash_id
     ) references crashes (id),
     alter column atd_txdot_crashes_crash_id drop not null;
-;
+

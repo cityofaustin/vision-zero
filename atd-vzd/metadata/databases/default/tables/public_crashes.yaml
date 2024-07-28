@@ -85,9 +85,8 @@ select_permissions:
         - at_intrsct_fl
         - case_id
         - council_district
-        - cr3_file_metadata
-        - cr3_ocr_extraction_date
-        - cr3_stored_flag
+        - cr3_processed_at
+        - cr3_stored_fl
         - crash_id
         - crash_speed_limit
         - crash_timestamp
@@ -100,7 +99,6 @@ select_permissions:
         - intrsct_relat_id
         - investigat_agency_id
         - investigator_narrative
-        - investigator_narrative_ocr
         - is_deleted
         - is_temp_record
         - latitude
@@ -155,8 +153,27 @@ select_permissions:
       columns:
         - active_school_zone_fl
         - at_intrsct_fl
-        - cr3_stored_flag
+        - case_id
+        - council_district
+        - cr3_processed_at
+        - cr3_stored_fl
+        - crash_id
+        - crash_speed_limit
+        - crash_timestamp
+        - created_at
+        - created_by
+        - engineering_area
+        - fhe_collsn_id
+        - id
         - in_austin_full_purpose
+        - intrsct_relat_id
+        - investigat_agency_id
+        - investigator_narrative
+        - latitude
+        - law_enforcement_fatality_num
+        - light_cond_id
+        - location_id
+        - longitude
         - is_deleted
         - is_temp_record
         - medical_advisory_fl
@@ -189,7 +206,6 @@ select_permissions:
         - surf_type_id
         - traffic_cntl_id
         - wthr_cond_id
-        - cr3_file_metadata
         - latitude
         - longitude
         - rpt_ref_mark_offset_amt
@@ -198,7 +214,6 @@ select_permissions:
         - case_id
         - created_by
         - investigator_narrative
-        - investigator_narrative_ocr
         - law_enforcement_fatality_num
         - location_id
         - record_locator
@@ -217,7 +232,6 @@ select_permissions:
         - rpt_street_pfx
         - rpt_street_sfx
         - updated_by
-        - cr3_ocr_extraction_date
         - crash_timestamp
         - created_at
         - updated_at
@@ -229,8 +243,27 @@ select_permissions:
       columns:
         - active_school_zone_fl
         - at_intrsct_fl
-        - cr3_stored_flag
+        - case_id
+        - council_district
+        - cr3_processed_at
+        - cr3_stored_fl
+        - crash_id
+        - crash_speed_limit
+        - crash_timestamp
+        - created_at
+        - created_by
+        - engineering_area
+        - fhe_collsn_id
+        - id
         - in_austin_full_purpose
+        - intrsct_relat_id
+        - investigat_agency_id
+        - investigator_narrative
+        - latitude
+        - law_enforcement_fatality_num
+        - light_cond_id
+        - location_id
+        - longitude
         - is_deleted
         - is_temp_record
         - medical_advisory_fl
@@ -263,7 +296,6 @@ select_permissions:
         - surf_type_id
         - traffic_cntl_id
         - wthr_cond_id
-        - cr3_file_metadata
         - latitude
         - longitude
         - rpt_ref_mark_offset_amt
@@ -272,7 +304,6 @@ select_permissions:
         - case_id
         - created_by
         - investigator_narrative
-        - investigator_narrative_ocr
         - law_enforcement_fatality_num
         - location_id
         - record_locator
@@ -291,7 +322,6 @@ select_permissions:
         - rpt_street_pfx
         - rpt_street_sfx
         - updated_by
-        - cr3_ocr_extraction_date
         - crash_timestamp
         - created_at
         - updated_at

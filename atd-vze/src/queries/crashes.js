@@ -44,8 +44,7 @@ export const GET_CRASH = gql`
       toll_road_fl
       law_enforcement_fatality_num
       investigator_narrative
-      cr3_stored_flag
-      cr3_file_metadata
+      cr3_stored_fl
       latitude
       longitude
       location_id
