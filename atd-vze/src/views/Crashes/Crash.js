@@ -35,7 +35,7 @@ import ChargesDetailsCard from "./ChargesDetailsCard";
 
 import "./crash.scss";
 
-import { GET_CRASH_OLD, UPDATE_CRASH, GET_CRASH } from "../../queries/crashes";
+import { UPDATE_CRASH, GET_CRASH } from "../../queries/crashes";
 import {
   INSERT_NOTE,
   UPDATE_NOTE,
@@ -43,10 +43,7 @@ import {
 } from "../../queries/crashNotes";
 
 function Crash(props) {
-  const crashId = props.match.params.id;
-  const { loading, error, data } = useQuery(GET_CRASH_OLD, {
-    variables: { crashId },
-  });
+  const crashId = props.match.params.id.toUpperCase();
   const {
     loading: crashLoading,
     error: crashError,
@@ -63,9 +60,8 @@ function Crash(props) {
   const { getRoles } = useAuth0();
   const roles = getRoles();
 
-  if (loading || crashLoading) return "Loading...";
+  if (crashLoading) return "Loading...";
   if (crashError) return `Error! ${crashError.message}`;
-  if (error) return `Error! ${error.message}`;
 
   const handleInputChange = e => {
     const newFormState = Object.assign(formData, {
@@ -97,10 +93,6 @@ function Crash(props) {
     setEditField("");
   };
 
-  const { temp_record: tempRecord } = !!data?.atd_txdot_crashes[0]
-    ? data?.atd_txdot_crashes[0]
-    : {};
-
   const crashRecord = {
     crash: crashData?.crashes?.[0] || { crash_injury_metrics_view: {} },
   };
@@ -119,6 +111,7 @@ function Crash(props) {
     latitude,
     longitude,
     location_id: locationId,
+    is_temp_record: tempRecord,
   } = crashRecord?.crash;
 
   const isCrashFatal = deathCount > 0 ? true : false;
