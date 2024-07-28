@@ -1,4 +1,6 @@
+
 -- joins people to people to compare dupe values side by side
+-- inclusive of serious and fatal crashes in afp not on private drive only
 WITH unioned_people AS (
     SELECT
         crash_id::text
@@ -97,11 +99,13 @@ joined_dupes AS (
     left join atd_txdot_crashes atc on p1.crash_id = atc.crash_id
 )
 
-
 SELECT * FROM joined_dupes WHERE
     record_id_p2 IS NOT null
     and in_austin_full_purpose = 'Y'
     and (prsn_injry_sev_id_p2 in (1, 4) or prsn_injry_sev_id in (1, 4))
+    -- you can remove this where conditiont to further validate dupes
+    -- but these are the only columns that are checked for edits when we populate
+    -- the VZ edits
     AND (
         prsn_type_id != prsn_type_id_p2
         OR prsn_occpnt_pos_id != prsn_occpnt_pos_id_p2
