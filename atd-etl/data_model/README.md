@@ -77,7 +77,7 @@ $ ./cris_import.py --csv --pdf
 
 ### Un-archive
 
-During local development, you may want to restore the zips to the `./inbox` after archiving them. Use the helper script for that. It will prompt you for confirmation before executing this step, since the production bucket archive may contain hundreds of extacts.
+During local development, you may want to restore the zips to the `./inbox` after archiving them. Use the helper script for that. It will prompt you for confirmation before executing this step, since the production bucket archive may contain hundreds of extracts.
 
 ```shell
 $ python _restore_zips_from_archive.py
