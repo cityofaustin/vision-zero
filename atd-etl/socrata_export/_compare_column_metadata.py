@@ -9,37 +9,59 @@ datasets = [
 ]
 
 
-def compare_col_arrays(list_a, list_b, a_list_name, b_list_name, primary_list="a"):
+def compare_column_lists(source_columns, target_columns, target_dataset_name="prod"):
+    """Compare lists of Socrata column metadata and print the changes that need to be
+    made to the **target** columns to make the dataset match the **source** columns
+
+    Args:
+        source_columns (list): list of columns from the source dataset, usually the staging
+            dataset
+        target_columns (list): lst of columns from the dataset that is desired to be modified
+            to look match teh source dataset, usually prod
+        target_dataset_name (str, optional): the name of the dataset you are targeting,
+            this is only used in the `print` statements. Defaults to 'prod'.
+
+    Returns:
+        list: of plain text "todos" that can be printed as instructions that describe
+            what edits need to be made to the target dataset.
+    """
     todos = []
-    for col in list_a:
+
+    for col in source_columns:
         key = col["fieldName"]
         matching_col = None
         try:
             matching_col = next(
                 col_to_match
-                for col_to_match in list_b
+                for col_to_match in target_columns
                 if col_to_match["fieldName"] == key
             )
         except StopIteration:
-            if (primary_list == "a"):
-                todo = f"- create column `{key}` type `{col['dataTypeName']}` in the {b_list_name} dataset"
-                todos.append(todo)
-            else:
-                todo = f"- delete column `{key}` from the {b_list_name} dataset"
-                todos.append(todo)
+            todo = f"- create column `{key}` type `{col['dataTypeName']}` in the {target_dataset_name} dataset"
+            todos.append(todo)
             continue
         # see if the column type is the same
         a_col_type = col["dataTypeName"]
         b_col_type = matching_col["dataTypeName"]
         if a_col_type != b_col_type:
-            if primary_list == "a":
-                todo = f"- change `{key}` from type `{b_col_type}` to `{a_col_type}` in the {b_list_name} dataset"
-                todos.append(todo)
-            else:
-                # we don't need to print these type mismatches
-                # todo = f"change {key} from type {a_col_type} to {b_col_type}"
-                # todos.append(todo)
-                continue
+            todo = f"- change `{key}` from type `{b_col_type}` to `{a_col_type}` in the {target_dataset_name} dataset"
+            todos.append(todo)
+
+    ## identify any columns in the target that don't exist in the source
+    for col in target_columns:
+        key = col["fieldName"]
+        matching_col = None
+        try:
+            matching_col = next(
+                col_to_match
+                for col_to_match in source_columns
+                if col_to_match["fieldName"] == key
+            )
+        except StopIteration:
+            todo = f"- delete column `{key}` from the {target_dataset_name} dataset"
+            todos.append(todo)
+            continue
+
     return todos
 
 
@@ -49,8 +71,7 @@ def main():
         print(f"\n**** {dataset['name']} dataset changes ****\n")
         cols_staging = socrata_client.get_metadata(dataset["staging"])["columns"]
         cols_prod = socrata_client.get_metadata(dataset["prod"])["columns"]
-        todos = compare_col_arrays(cols_staging, cols_prod, "staging", "prod", primary_list="a")
-        todos += compare_col_arrays(cols_prod, cols_staging, "staging", "prod", primary_list="b")
+        todos = compare_column_lists(cols_staging, cols_prod)
         todos.sort()
         print("\n".join(todos))
 
