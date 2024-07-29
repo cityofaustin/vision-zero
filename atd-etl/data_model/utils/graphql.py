@@ -115,7 +115,8 @@ def make_hasura_request(*, query, variables=None):
         query (str): the graphql query
         variables (dict, optional): the query variables. Defaults to None.
     Raises:
-        HasuraAPIError: If the API the response JSON not contain a top-level `data` property
+        HasuraAPIError: If the API response JSON does not contain a top-level `data`
+            property
     Returns:
         dict: The `data` property of the JSON response
     """
@@ -136,7 +137,7 @@ def make_hasura_request(*, query, variables=None):
 def create_log_entry(
     *, s3_file_key=None, extract_name=None, local_zip_file_path=None, **kwargs
 ):
-    """Insert a new entry in the `cris_import_log` table in theb
+    """Insert a new entry in the `cris_import_log` tracking table.
 
     Args:
         s3_file_key (str, optional): the S3 file key of the extract. Defaults to None.

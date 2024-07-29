@@ -9,6 +9,7 @@ const RelatedRecordsTable = ({
   fieldConfig,
   data,
   sortField,
+  secondSortField,
   tableName,
   keyField,
   lookupOptions,
@@ -120,7 +121,11 @@ const RelatedRecordsTable = ({
         </thead>
         <tbody>
           {data
-            .sort((a, b) => (a[sortField] > b[sortField] ? 1 : -1))
+            .sort(
+              (a, b) =>
+                a[sortField] - b[sortField] ||
+                a[secondSortField] - b[secondSortField]
+            )
             .map(row => {
               return (
                 <tr key={`table-${tableName}-${row[keyField]}`}>

@@ -19,6 +19,14 @@ insert into _column_metadata (column_name, record_type, is_imported_from_cris)
 insert into _column_metadata (column_name, record_type, is_imported_from_cris)
         values ('cris_crash_id', 'charges', true);
 insert into _column_metadata (column_name, record_type, is_imported_from_cris)
+        values ('is_deleted', 'crashes', false);
+insert into _column_metadata (column_name, record_type, is_imported_from_cris)
+        values ('is_deleted', 'units', false);
+insert into _column_metadata (column_name, record_type, is_imported_from_cris)
+        values ('is_deleted', 'people', false);
+insert into _column_metadata (column_name, record_type, is_imported_from_cris)
+        values ('is_temp_record', 'crashes', false);
+insert into _column_metadata (column_name, record_type, is_imported_from_cris)
         values ('person_id', 'charges', false);
 insert into _column_metadata (column_name, record_type, is_imported_from_cris)
         values ('prsn_nbr', 'charges', true);
@@ -156,6 +164,8 @@ insert into _column_metadata (column_name, record_type, is_imported_from_cris)
         values ('toll_road_fl', 'crashes', true);
 insert into _column_metadata (column_name, record_type, is_imported_from_cris)
         values ('txdot_rptable_fl', 'crashes', true);
+insert into _column_metadata (column_name, record_type, is_imported_from_cris)
+        values ('record_locator', 'crashes', false);
 insert into _column_metadata (column_name, record_type, is_imported_from_cris)
         values ('id', 'people', false);
 insert into _column_metadata (column_name, record_type, is_imported_from_cris)

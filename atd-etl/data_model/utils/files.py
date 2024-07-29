@@ -94,7 +94,7 @@ def get_extract_zips_to_download_s3(subdir="inbox"):
                 }
             )
 
-    if not (len(extracts)) and ENV != "dev":
+    if not len(extracts):
         raise IOError("No extract zips found in S3 bucket")
 
     # assumes extract ids are sortable newsest -> oldest
