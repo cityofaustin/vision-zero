@@ -347,13 +347,13 @@ const CreateCrashRecord = ({ client }) => {
                     fade={false}
                   >
                     {/*eslint-disable-next-line*/}
-                    <i className="fa fa-check-circle" /> Successfsully
-                    created crash{" "}
+                    <i className="fa fa-check-circle" /> Successfully created
+                    crash{" "}
                     <Link
                       to={`/crashes/T${successfulNewRecordId}`}
                       className="alert-link"
                     >
-                      #{successfulNewRecordId}
+                      #T{successfulNewRecordId}
                     </Link>
                   </Alert>
                   <Alert
