@@ -39,9 +39,9 @@ def main(cli_args):
             )
         if not cli_args.skip_unzip:
             unzip_extract(extract["local_zip_file_path"], extract_dir)
-        if cli_args.csv or (not cli_args.pdf and not cli_args.csv):
+        if cli_args.csv:
             process_csvs(extract_dir)
-        if cli_args.pdf or (not cli_args.pdf and not cli_args.csv):
+        if cli_args.pdf:
             process_pdfs(extract_dir, cli_args.s3_upload, cli_args.workers)
         if cli_args.s3_download and cli_args.s3_archive and not cli_args.skip_unzip:
             archive_extract_zip(extract["s3_file_key"])
@@ -51,6 +51,8 @@ def main(cli_args):
 if __name__ == "__main__":
     cli_args = get_cli_args()
     logger = init_logger(debug=cli_args.verbose)
+    if (not cli_args.csv and not cli_args.pdf):
+        raise ValueError("Must specify at least one of --csv or --pdf")
     if cli_args.s3_archive and not cli_args.s3_download:
         raise ValueError("--s3-archive has no effect without --s3-download")
     if cli_args.skip_unzip and cli_args.s3_download:
