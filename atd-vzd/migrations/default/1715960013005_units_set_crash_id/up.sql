@@ -9,6 +9,12 @@ as $$
 DECLARE
    crash_record record;
 BEGIN
+    if new.crash_id is not null then
+        -- a user may manually create a unit record through a
+        -- nested Hasura mutation (eg when creating a temp record)
+        -- in which case the unit record will already have a crash_id
+        return new;
+    end if;
     SELECT INTO crash_record *
         FROM public.crashes_cris where crash_id = new.cris_crash_id;
     new.crash_id = crash_record.id;
