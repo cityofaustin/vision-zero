@@ -1,5 +1,6 @@
 import React, { useState, useReducer } from "react";
 import { Link } from "react-router-dom";
+import { useQuery } from "@apollo/react-hooks";
 
 import {
   Alert,
@@ -23,6 +24,7 @@ import { gql } from "apollo-boost";
 import "./CreateCrashRecord.css";
 import UnitsForm from "./UnitsForm";
 import CreateCrashRecordTable from "./CreateCrashRecordTable";
+import { GET_TEMP_RECORDS } from "../../queries/tempRecords";
 import { useAuth0 } from "../../auth/authContext";
 
 // Builds an array of units objects with nested arrays of person objects within them
@@ -71,6 +73,10 @@ function buildNestedObjects(unitFormState, userEmail) {
 }
 
 const CreateCrashRecord = ({ client }) => {
+  const { loading, error, data, refetch } = useQuery(GET_TEMP_RECORDS, {
+    fetchPolicy: "no-cache",
+  });
+
   const { user } = useAuth0();
 
   const userEmail = user.email;
@@ -196,6 +202,7 @@ const CreateCrashRecord = ({ client }) => {
       .then(res => {
         // Re-route to the crash details page for the new temp record on successful creation
         setSuccessfulNewRecordId(res.data.insert_crashes_cris.returning[0].id);
+        refetch();
       })
       .catch(error => {
         setFeedback({ title: "Error", message: String(error) });
@@ -374,7 +381,11 @@ const CreateCrashRecord = ({ client }) => {
       </Row>
       <Row>
         <Col>
-          <CreateCrashRecordTable />
+          <CreateCrashRecordTable
+            crashesData={data.crashes}
+            loading={loading}
+            error={error}
+          />
         </Col>
       </Row>
     </>
