@@ -56,7 +56,6 @@ def crop_and_save_diagram(page, crash_id, is_new_cr3_form, extract_dir):
     """
     bbox = DIAGRAM_BBOX_PIXELS["new"] if is_new_cr3_form else DIAGRAM_BBOX_PIXELS["old"]
     diagram_image = page.crop(bbox)
-    # todo: is it ok to swith to JPEG (as is done here) and save 75% disk space?
     diagram_filename = f"{crash_id}.jpeg"
     diagram_full_path = os.path.join(extract_dir, "crash_diagrams", diagram_filename)
     diagram_image.save(diagram_full_path)
@@ -141,6 +140,10 @@ def process_pdfs(extract_dir, s3_upload, max_workers):
         if filename.endswith(".pdf")
     ]
     pdf_count = len(pdfs)
+
+    if not pdf_count:
+        raise IOError("No PDFs found in extract")
+
     logger.info(f"Found {pdf_count} PDFs to process")
 
     futures = []

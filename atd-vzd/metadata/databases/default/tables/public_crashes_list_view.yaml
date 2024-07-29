@@ -68,6 +68,7 @@ select_permissions:
         - crash_injry_sev_desc
         - crash_time_ct
         - location_id
+        - record_locator
         - rpt_block_num
         - rpt_sec_block_num
         - rpt_sec_street_name
@@ -126,6 +127,7 @@ select_permissions:
         - crash_injry_sev_desc
         - crash_time_ct
         - location_id
+        - record_locator
         - rpt_block_num
         - rpt_sec_block_num
         - rpt_sec_street_name
@@ -184,6 +186,7 @@ select_permissions:
         - crash_injry_sev_desc
         - crash_time_ct
         - location_id
+        - record_locator
         - rpt_block_num
         - rpt_sec_block_num
         - rpt_sec_street_name

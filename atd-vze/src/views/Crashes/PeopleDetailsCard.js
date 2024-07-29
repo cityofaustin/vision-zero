@@ -61,6 +61,7 @@ const PeopleDetailsCard = ({ data, refetch, ...props }) => {
             fieldConfig={primaryPersonDataMap[0]}
             data={primaryPersonData}
             sortField={"unit_nbr"}
+            secondSortField={"id"}
             tableName={"people_list_view"}
             keyField={"id"}
             lookupOptions={lookupSelectOptions}
@@ -74,6 +75,7 @@ const PeopleDetailsCard = ({ data, refetch, ...props }) => {
               fieldConfig={personDataMap[0]}
               data={personData}
               sortField={"unit_nbr"}
+              secondSortField={"id"}
               tableName={"people_list_view"}
               keyField={"id"}
               lookupOptions={lookupSelectOptions}
