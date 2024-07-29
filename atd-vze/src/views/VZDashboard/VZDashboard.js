@@ -5,7 +5,7 @@ import { useQuery } from "@apollo/react-hooks";
 import Widget02 from "../Widgets/Widget02";
 import VZLinksWidget from "../Widgets/VZLinksWidget";
 import VZNoticeWidget from "../Widgets/VZNoticeWidget";
-import { format, subDays } from "date-fns";
+import { subDays } from "date-fns";
 
 import { GET_CRASHES_YTD } from "../../queries/dashboard";
 
@@ -15,7 +15,9 @@ function VZDashboard() {
   const year = new Date().getFullYear();
   const yearStart = `${year}-01-01T00:00:00`;
   // We use the same end date as VZV so VZE widget totals match VZV widgets
-  const yearEnd = format(subDays(new Date(), 14), "yyyy-MM-dd'T'HH:mm:ss");
+  const yearEnd = subDays(new Date(), 14)
+    .toISOString()
+    .substring(0, 19); // to match the ISO string format in the socrata view crash_timestamp column
   const { loading, error, data } = useQuery(GET_CRASHES_YTD, {
     variables: { yearStart, yearEnd },
   });
