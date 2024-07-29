@@ -5,21 +5,16 @@ import { useQuery } from "@apollo/react-hooks";
 import Widget02 from "../Widgets/Widget02";
 import VZLinksWidget from "../Widgets/VZLinksWidget";
 import VZNoticeWidget from "../Widgets/VZNoticeWidget";
-import { subDays } from "date-fns";
 
 import { GET_CRASHES_YTD } from "../../queries/dashboard";
 
 import bi_logo from "../../assets/img/brand/power_bi_icon_white_on_transparent.png";
 
 function VZDashboard() {
-  const year = new Date().getFullYear();
+  const year = new Date().getUTCFullYear();
   const yearStart = `${year}-01-01T00:00:00`;
-  // We use the same end date as VZV so VZE widget totals match VZV widgets
-  const yearEnd = subDays(new Date(), 14)
-    .toISOString()
-    .substring(0, 19); // to match the ISO string format in the socrata view crash_timestamp column
   const { loading, error, data } = useQuery(GET_CRASHES_YTD, {
-    variables: { yearStart, yearEnd },
+    variables: { yearStart },
   });
   if (loading) return "Loading...";
   if (error) return `Error! ${error.message}`;
