@@ -52,7 +52,7 @@ export const crashGridTableColumns = {
     label_table: "Est Comprehensive Cost",
     type: "Currency",
   },
-  "collsn_desc": {
+  collsn_desc: {
     searchable: false,
     sortable: true,
     label_table: "Collision Description",
@@ -65,7 +65,7 @@ export const crashGridTableColumns = {
     type: "String",
     hidden: true,
   },
-  "is_manual_geocode": {
+  is_manual_geocode: {
     searchable: false,
     sortable: true,
     label_table: "Manual geocode",
@@ -209,7 +209,7 @@ export const crashGridTableAdvancedFilters = {
         filter: {
           where: [
             {
-                is_manual_geocode: "_eq: true",
+              is_manual_geocode: "_eq: true",
             },
           ],
         },
@@ -220,7 +220,7 @@ export const crashGridTableAdvancedFilters = {
         filter: {
           where: [
             {
-                has_no_cris_coordinates: "_eq: true",
+              has_no_cris_coordinates: "_eq: true",
             },
           ],
         },
@@ -243,13 +243,13 @@ export const crashGridTableAdvancedFilters = {
     icon: "bicycle",
     label: "Unit Type",
     filters: [
-    {
-      id: "motor_vehicle",
-      label: "Motor Vehicle",
-      filter: {
-        where: [
-          {
-            [`
+      {
+        id: "motor_vehicle",
+        label: "Motor Vehicle",
+        filter: {
+          where: [
+            {
+              [`
               units: {
                 unit_desc_id: {
                   _eq: 1
@@ -258,11 +258,11 @@ export const crashGridTableAdvancedFilters = {
                   _nin: [71, 90]
                 },
               },
-            `]: null
-          },
-        ],
+            `]: null,
+            },
+          ],
+        },
       },
-    },
       {
         id: "motorcycle",
         label: "Motorcycle",
@@ -278,7 +278,7 @@ export const crashGridTableAdvancedFilters = {
                     _in: [71, 90]
                   },
                 },
-              `]: null
+              `]: null,
             },
           ],
         },
@@ -332,7 +332,7 @@ export const crashGridTableAdvancedFilters = {
                     _eq: 177
                   },
                 },
-              `]: null
+              `]: null,
             },
           ],
         },
@@ -357,7 +357,7 @@ export const crashGridTableAdvancedFilters = {
                   },
                 },
               },
-              `]: null
+              `]: null,
             },
           ],
         },
@@ -386,7 +386,7 @@ export const crashGridTableAdvancedFilters = {
         filter: {
           where: [
             {
-              private_dr_fl: '_neq: true',
+              private_dr_fl: "_neq: true",
             },
           ],
         },
