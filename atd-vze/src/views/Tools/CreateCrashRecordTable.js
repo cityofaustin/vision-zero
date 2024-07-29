@@ -23,7 +23,10 @@ import {
 
 const GET_TEMP_RECORDS = gql`
   query getTempRecords {
-    crashes(where: { is_temp_record: { _eq: true } }) {
+    crashes(
+      where: { is_temp_record: { _eq: true } }
+      order_by: { record_locator: asc }
+    ) {
       record_locator
       case_id
       crash_timestamp
