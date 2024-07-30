@@ -42,10 +42,11 @@ DENSE_RANK() OVER (
     ORDER BY crashes.crash_timestamp ASC, crashes.crash_id) 
     AS ytd_fatal_crash,
 crashes.case_id,
-crashes.law_enforcement_fatality_num,
+crashes.law_enforcement_ytd_fatality_num,
 crashes.engineering_area
   from 
     people 
   left join units on people.unit_id = units.id
   left join crashes on units.crash_id = crashes.id
- where crashes.in_austin_full_purpose = true AND people.prsn_injry_sev_id = 4 AND crashes.private_dr_fl = false;
+where crashes.in_austin_full_purpose = true AND people.prsn_injry_sev_id = 4 AND crashes.private_dr_fl = false;
+
