@@ -46,6 +46,13 @@ array_relationships:
         remote_table:
           name: view_location_crashes_by_veh_body_style
           schema: public
+  - name: location_notes
+    using:
+      foreign_key_constraint_on:
+        column: location_id
+        table:
+          name: location_notes
+          schema: public
 select_permissions:
   - role: editor
     permission:

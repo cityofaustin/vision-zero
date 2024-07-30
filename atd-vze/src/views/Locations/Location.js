@@ -15,7 +15,6 @@ import Page404 from "../Pages/Page404/Page404";
 
 import { GET_LOCATION, UPDATE_LOCATION } from "../../queries/locations";
 import {
-  GET_LOCATION_NOTES,
   INSERT_LOCATION_NOTE,
   UPDATE_LOCATION_NOTE,
   DELETE_LOCATION_NOTE,
@@ -108,12 +107,12 @@ function Location(props) {
       <Row>
         <Col>
           <Notes
-            recordId={locationId}
-            tableName={"location_notes"}
-            GET_NOTES={GET_LOCATION_NOTES}
+            parentRecordId={locationId}
+            notes={data?.location?.location_notes}
             INSERT_NOTE={INSERT_LOCATION_NOTE}
             UPDATE_NOTE={UPDATE_LOCATION_NOTE}
             DELETE_NOTE={DELETE_LOCATION_NOTE}
+            refetch={refetch}
           />
         </Col>
       </Row>

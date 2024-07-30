@@ -10,6 +10,15 @@ export const GET_LOCATION = gql`
       latitude
       longitude
       last_update
+      location_notes {
+        id
+        created_at
+        date
+        location_id
+        text
+        updated_at
+        user_email
+      }
       crashes_by_manner_collision(order_by: { count: desc }, limit: 5) {
         collsn_desc
         count
@@ -20,7 +29,7 @@ export const GET_LOCATION = gql`
       }
     }
   }
-`; 
+`;
 
 export const UPDATE_LOCATION = gql`
   mutation update_atd_txdot_locations(
