@@ -43,7 +43,7 @@ select_permissions:
         - crash_date_ct
         - crash_time_ct
         - engineering_area
-        - law_enforcement_fatality_num
+        - law_enforcement_ytd_fatality_num
         - location
         - victim_name
         - year
@@ -63,7 +63,7 @@ select_permissions:
         - crash_date_ct
         - crash_time_ct
         - engineering_area
-        - law_enforcement_fatality_num
+        - law_enforcement_ytd_fatality_num
         - location
         - victim_name
         - year
@@ -83,7 +83,7 @@ select_permissions:
         - crash_date_ct
         - crash_time_ct
         - engineering_area
-        - law_enforcement_fatality_num
+        - law_enforcement_ytd_fatality_num
         - location
         - victim_name
         - year

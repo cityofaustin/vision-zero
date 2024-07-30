@@ -20,7 +20,7 @@ export const fatalityGridTableColumns = {
     label_table: "Case ID",
     type: "Int",
   },
-  law_enforcement_fatality_num: {
+  law_enforcement_ytd_fatality_num: {
     searchable: false,
     sortable: false,
     label_table: "Law Enforcement Number",
@@ -327,7 +327,7 @@ crash_time_ct
 location
 ytd_fatality
 ytd_fatal_crash
-law_enforcement_fatality_num
+law_enforcement_ytd_fatality_num
 case_id
 recommendation { rec_text }
 recommendation { rec_update }

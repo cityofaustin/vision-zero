@@ -42,7 +42,7 @@ DENSE_RANK() OVER (
     ORDER BY crashes.crash_timestamp ASC, crashes.crash_id) 
     AS ytd_fatal_crash,
 crashes.case_id,
-crashes.law_enforcement_fatality_num,
+crashes.law_enforcement_ytd_fatality_num,
 crashes.engineering_area
   from 
     people 
