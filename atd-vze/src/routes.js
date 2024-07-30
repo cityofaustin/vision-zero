@@ -4,10 +4,6 @@ import { isAdmin, isItSupervisor } from "./auth/authContext";
 const VZDashboard = React.lazy(() => import("./views/VZDashboard"));
 
 const Crashes = React.lazy(() => import("./views/Crashes/Crashes"));
-const CrashesChanges = React.lazy(() =>
-  import("./views/Crashes/CrashesChanges")
-);
-const CrashChange = React.lazy(() => import("./views/Crashes/CrashChange"));
 const Crash = React.lazy(() => import("./views/Crashes/Crash"));
 const Profile = React.lazy(() => import("./views/Profile/Profile"));
 const Locations = React.lazy(() => import("./views/Locations/Locations"));
@@ -17,9 +13,6 @@ const Users = React.lazy(() => import("./views/Users/Users"));
 const User = React.lazy(() => import("./views/Users/User"));
 const AddUser = React.lazy(() => import("./views/Users/AddUser"));
 const EditUser = React.lazy(() => import("./views/Users/EditUser"));
-const ReportsInconsistentKSI = React.lazy(() =>
-  import("./views/Reports/ReportsInconsistentKSI")
-);
 const ToolsUploadNonCR3 = React.lazy(() =>
   import("./views/Tools/ToolsUploadNonCR3")
 );
@@ -57,24 +50,6 @@ const routes = roles => [
     exact: true,
     name: "Fatalities",
     component: Fatalities,
-  },
-  (isAdmin(roles) || isItSupervisor(roles)) && {
-    path: "/changes",
-    exact: true,
-    name: "Crash Changes",
-    component: CrashesChanges,
-  },
-  (isAdmin(roles) || isItSupervisor(roles)) && {
-    path: "/changes/:id",
-    exact: true,
-    name: "Crash Change",
-    component: CrashChange,
-  },
-  (isAdmin(roles) || isItSupervisor(roles)) && {
-    path: "/reports/inconsistent_ksi_counts",
-    exact: true,
-    name: "Crashes with Inconsistent KSI Counts",
-    component: ReportsInconsistentKSI,
   },
   (isAdmin(roles) || isItSupervisor(roles)) && {
     path: "/tools/upload_non_cr3",

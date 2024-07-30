@@ -7,7 +7,6 @@ select_permissions:
       columns:
         - is_imported_from_cris
         - id
-        - column_label
         - column_name
         - record_type
       filter: {}
@@ -17,7 +16,6 @@ select_permissions:
       columns:
         - is_imported_from_cris
         - id
-        - column_label
         - column_name
         - record_type
       filter: {}
@@ -27,7 +25,6 @@ select_permissions:
       columns:
         - is_imported_from_cris
         - id
-        - column_label
         - column_name
         - record_type
       filter: {}

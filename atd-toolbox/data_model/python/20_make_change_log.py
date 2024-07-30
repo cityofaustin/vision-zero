@@ -1,4 +1,5 @@
-import csv
+#!/usr/bin/env python
+# import csv
 import io
 from pprint import pprint as print
 

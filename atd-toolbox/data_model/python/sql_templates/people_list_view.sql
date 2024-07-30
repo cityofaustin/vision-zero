@@ -21,5 +21,5 @@ create or replace view people_list_view as (
         on lookups.injry_sev_lkp.id = people.prsn_injry_sev_id
     left join
         lookups.mode_category_lkp
-        on units.unit_desc_id = lookups.mode_category_lkp.id
+        on units.vz_mode_category_id = lookups.mode_category_lkp.id
 );

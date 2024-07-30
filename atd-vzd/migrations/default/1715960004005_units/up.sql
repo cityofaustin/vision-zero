@@ -11,6 +11,7 @@ create table public.units_cris (
     cris_schema_version text not null,
     e_scooter_id integer references lookups.e_scooter_lkp (id) on update cascade on delete cascade,
     first_harm_evt_inv_id integer references lookups.harm_evnt_lkp (id) on update cascade on delete cascade,
+    is_deleted boolean not null default false,
     pbcat_pedalcyclist_id integer references lookups.pbcat_pedalcyclist_lkp (id) on update cascade on delete cascade,
     pbcat_pedestrian_id integer references lookups.pbcat_pedestrian_lkp (id) on update cascade on delete cascade,
     pedalcyclist_action_id integer references lookups.pedalcyclist_action_lkp (id) on update cascade on delete cascade,
@@ -34,7 +35,6 @@ create table public.units_cris (
 
 create table public.units_edits (
     id integer primary key references public.units_cris (id) on update cascade on delete cascade,
-    atd_mode_category integer references lookups.mode_category_lkp (id) on update cascade on delete cascade,
     autonomous_unit_id integer references lookups.autonomous_unit_lkp (id) on update cascade on delete cascade,
     contrib_factr_1_id integer references lookups.contrib_factr_lkp (id) on update cascade on delete cascade,
     contrib_factr_2_id integer references lookups.contrib_factr_lkp (id) on update cascade on delete cascade,
@@ -45,6 +45,7 @@ create table public.units_edits (
     cris_crash_id integer references public.crashes_cris (crash_id) on update cascade on delete cascade,
     e_scooter_id integer references lookups.e_scooter_lkp (id) on update cascade on delete cascade,
     first_harm_evt_inv_id integer references lookups.harm_evnt_lkp (id) on update cascade on delete cascade,
+    is_deleted boolean,
     movement_id integer references lookups.movt_lkp (id) on update cascade on delete cascade,
     pbcat_pedalcyclist_id integer references lookups.pbcat_pedalcyclist_lkp (id) on update cascade on delete cascade,
     pbcat_pedestrian_id integer references lookups.pbcat_pedestrian_lkp (id) on update cascade on delete cascade,
@@ -69,7 +70,6 @@ create table public.units_edits (
 
 create table public.units (
     id integer primary key,
-    atd_mode_category integer references lookups.mode_category_lkp (id) on update cascade on delete cascade,
     autonomous_unit_id integer references lookups.autonomous_unit_lkp (id) on update cascade on delete cascade,
     contrib_factr_1_id integer references lookups.contrib_factr_lkp (id) on update cascade on delete cascade,
     contrib_factr_2_id integer references lookups.contrib_factr_lkp (id) on update cascade on delete cascade,
@@ -80,6 +80,7 @@ create table public.units (
     cris_crash_id integer references public.crashes (crash_id) on update cascade on delete cascade,
     e_scooter_id integer references lookups.e_scooter_lkp (id) on update cascade on delete cascade,
     first_harm_evt_inv_id integer references lookups.harm_evnt_lkp (id) on update cascade on delete cascade,
+    is_deleted boolean not null default false,
     movement_id integer references lookups.movt_lkp (id) on update cascade on delete cascade,
     pbcat_pedalcyclist_id integer references lookups.pbcat_pedalcyclist_lkp (id) on update cascade on delete cascade,
     pbcat_pedestrian_id integer references lookups.pbcat_pedestrian_lkp (id) on update cascade on delete cascade,
@@ -99,5 +100,6 @@ create table public.units (
     veh_mod_id integer references lookups.veh_mod_lkp (id) on update cascade on delete cascade,
     veh_mod_year integer,
     veh_trvl_dir_id integer references lookups.trvl_dir_lkp (id) on update cascade on delete cascade,
-    vin text
+    vin text,
+    vz_mode_category_id integer references lookups.mode_category_lkp (id) on update cascade on delete cascade
 );

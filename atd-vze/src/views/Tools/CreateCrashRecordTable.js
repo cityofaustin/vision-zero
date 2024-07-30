@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
 import { withApollo } from "react-apollo";
 import { gql } from "apollo-boost";
-import { useQuery, useMutation } from "@apollo/react-hooks";
+import { useMutation } from "@apollo/react-hooks";
 
 import {
   Alert,
@@ -13,22 +13,13 @@ import {
   CardHeader,
   FormGroup,
   Input,
-  Label, Modal, ModalBody, ModalFooter, ModalHeader,
-  Table
+  Label,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+  Table,
 } from "reactstrap";
-
-const GET_TEMP_RECORDS = gql`
-  query getTempRecords {
-    atd_txdot_crashes(where: { temp_record: { _eq: true } }) {
-      crash_id
-      case_id
-      crash_date
-      crash_time
-      updated_by
-      last_update
-    }
-  }
-`;
 
 const DELETE_TEMP_RECORD = gql`
   mutation deleteTempRecords($crashId: Int!) {
@@ -47,19 +38,15 @@ const DELETE_TEMP_RECORD = gql`
   }
 `;
 
-const CreateCrashRecordTable = () => {
-
-  const [crashesData, setCrashesData] = useState(null);
+const CreateCrashRecordTable = ({ crashesData, loading, error }) => {
   const [crashSearch, setCrashSearch] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
   const [feedback, setFeedback] = useState(null);
-  const { loading, error, data } = useQuery(GET_TEMP_RECORDS, {fetchPolicy: 'no-cache'});
   const [deleteRecord] = useMutation(DELETE_TEMP_RECORD);
 
-  useEffect(() => {
-    setCrashesData(data);
-  }, [data]);
+  if (loading) return "Loading...";
+  if (error) return `Error! ${error.message}`;
 
   /**
    * Updates the case_id being searched
@@ -69,40 +56,42 @@ const CreateCrashRecordTable = () => {
     setCrashSearch(e.target.value);
   };
 
-  /**
-   * Deletes all the temporary records in the database
-   */
-  const handleDelete = () => {
-    setFeedback(null);
-    deleteRecord({ variables: { crashId: deleteId } }).then(() => {
-      const newData = crashesData["atd_txdot_crashes"].filter((item) => {
-        return item.crash_id !== deleteId;
-      });
-      setDeleteId(null);
-      setFeedback(`Crash ID ${deleteId} has been deleted.`);
-      setCrashesData({"atd_txdot_crashes": newData});
-      toggleModalDelete();
-    }).catch(err => {
-      setFeedback(String(err));
-      setDeleteId(null);
-    });
-  }
+  // /**
+  //  * Deletes all the temporary records in the database
+  //  */
+  // const handleDelete = () => {
+  //   setFeedback(null);
+  //   deleteRecord({ variables: { crashId: deleteId } })
+  //     .then(() => {
+  //       const newData = data["crashes"].filter(item => {
+  //         return item.crash_id !== deleteId;
+  //       });
+  //       setDeleteId(null);
+  //       setFeedback(`Crash ID ${deleteId} has been deleted.`);
+  //       setCrashesData({ atd_txdot_crashes: newData });
+  //       toggleModalDelete();
+  //     })
+  //     .catch(err => {
+  //       setFeedback(String(err));
+  //       setDeleteId(null);
+  //     });
+  // };
 
   /**
    * Opens/Closes the delete modal
    */
   const toggleModalDelete = () => {
     setModalOpen(!modalOpen);
-  }
+  };
 
   /**
    * Commits the crash_id to be deleted to state, and prompts for deletion.
    * @param {int} crashId - The crash id to be deleted.
    */
-  const openModalDelete = (crashId) => {
+  const openModalDelete = crashId => {
     setDeleteId(crashId);
     toggleModalDelete();
-  }
+  };
 
   return (
     <>
@@ -138,38 +127,35 @@ const CreateCrashRecordTable = () => {
                 <tr>
                   <th>Crash ID</th>
                   <th>Case ID</th>
-                  <th>Crash Date</th>
-                  <th>Crash Time</th>
+                  <th>Crash Timestamp</th>
                   <th>Updated By</th>
-                  <th>Last Update</th>
+                  <th>Updated At</th>
                   <th>Action</th>
                 </tr>
               </thead>
               <tbody>
                 {crashesData &&
-                  crashesData["atd_txdot_crashes"] &&
-                  crashesData.atd_txdot_crashes.map((item, index) => {
+                  crashesData.map((item, index) => {
                     if (crashSearch !== "" && item.case_id !== crashSearch)
                       return null;
 
                     return (
                       <tr key={index}>
                         <td>
-                          <Link to={`/crashes/${item.crash_id}`}>
-                            {item.crash_id}
+                          <Link to={`/crashes/${item.record_locator}`}>
+                            {item.record_locator}
                           </Link>
                         </td>
                         <td>{item.case_id}</td>
-                        <td>{item.crash_date}</td>
-                        <td>{item.crash_time}</td>
+                        <td>{item.crash_timestamp}</td>
                         <td>{item.updated_by}</td>
-                        <td>{item.last_update}</td>
+                        <td>{item.updated_at}</td>
                         <td>
                           <Button
                             color="danger"
                             className="btn-pill"
                             size={"sm"}
-                            onClick={() => openModalDelete(item.crash_id)}
+                            onClick={() => openModalDelete(item.record_locator)}
                           >
                             <i className="fa fa-remove"></i>&nbsp;Delete
                           </Button>
@@ -190,11 +176,12 @@ const CreateCrashRecordTable = () => {
         <ModalHeader toggle={toggleModalDelete}>
           Delete this record?
         </ModalHeader>
-        <ModalBody>Are you sure you want to delete crash id <strong>{deleteId}</strong>? This cannot be undone.</ModalBody>
+        <ModalBody>
+          Are you sure you want to delete crash id <strong>{deleteId}</strong>?
+          This cannot be undone.
+        </ModalBody>
         <ModalFooter>
-          <Button color="danger" onClick={handleDelete}>
-            Ok
-          </Button>
+          <Button color="danger">Ok</Button>
           <Button color="secondary" onClick={toggleModalDelete}>
             Cancel
           </Button>

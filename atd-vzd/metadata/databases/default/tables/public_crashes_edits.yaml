@@ -20,9 +20,11 @@ select_permissions:
         - active_school_zone_fl
         - at_intrsct_fl
         - case_id
-        - crash_timestamp
+        - cr3_processed_at
+        - cr3_stored_fl
         - crash_id
         - crash_speed_limit
+        - crash_timestamp
         - created_at
         - created_by
         - fhe_collsn_id
@@ -31,7 +33,7 @@ select_permissions:
         - investigat_agency_id
         - investigator_narrative
         - latitude
-        - law_enforcement_fatality_num
+        - law_enforcement_ytd_fatality_num
         - light_cond_id
         - longitude
         - medical_advisory_fl
@@ -80,9 +82,11 @@ select_permissions:
         - active_school_zone_fl
         - at_intrsct_fl
         - case_id
-        - crash_timestamp
+        - cr3_processed_at
+        - cr3_stored_fl
         - crash_id
         - crash_speed_limit
+        - crash_timestamp
         - created_at
         - created_by
         - fhe_collsn_id
@@ -91,7 +95,7 @@ select_permissions:
         - investigat_agency_id
         - investigator_narrative
         - latitude
-        - law_enforcement_fatality_num
+        - law_enforcement_ytd_fatality_num
         - light_cond_id
         - longitude
         - medical_advisory_fl
@@ -140,9 +144,11 @@ select_permissions:
         - active_school_zone_fl
         - at_intrsct_fl
         - case_id
-        - crash_timestamp
+        - cr3_processed_at
+        - cr3_stored_fl
         - crash_id
         - crash_speed_limit
+        - crash_timestamp
         - created_at
         - created_by
         - fhe_collsn_id
@@ -151,7 +157,7 @@ select_permissions:
         - investigat_agency_id
         - investigator_narrative
         - latitude
-        - law_enforcement_fatality_num
+        - law_enforcement_ytd_fatality_num
         - light_cond_id
         - longitude
         - medical_advisory_fl
@@ -209,7 +215,7 @@ update_permissions:
         - investigat_agency_id
         - investigator_narrative
         - latitude
-        - law_enforcement_fatality_num
+        - law_enforcement_ytd_fatality_num
         - light_cond_id
         - longitude
         - medical_advisory_fl
@@ -266,7 +272,7 @@ update_permissions:
         - investigat_agency_id
         - investigator_narrative
         - latitude
-        - law_enforcement_fatality_num
+        - law_enforcement_ytd_fatality_num
         - light_cond_id
         - longitude
         - medical_advisory_fl
