@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
 import { withApollo } from "react-apollo";
 import { gql } from "apollo-boost";
-import { useQuery, useMutation } from "@apollo/react-hooks";
+import { useMutation } from "@apollo/react-hooks";
 
 import {
   Alert,
@@ -20,18 +20,6 @@ import {
   ModalHeader,
   Table,
 } from "reactstrap";
-
-const GET_TEMP_RECORDS = gql`
-  query getTempRecords {
-    crashes(where: { is_temp_record: { _eq: true } }) {
-      record_locator
-      case_id
-      crash_timestamp
-      updated_by
-      updated_at
-    }
-  }
-`;
 
 const DELETE_TEMP_RECORD = gql`
   mutation deleteTempRecords($crashId: Int!) {
@@ -50,20 +38,15 @@ const DELETE_TEMP_RECORD = gql`
   }
 `;
 
-const CreateCrashRecordTable = () => {
-  const [crashesData, setCrashesData] = useState(null);
+const CreateCrashRecordTable = ({ crashesData, loading, error }) => {
   const [crashSearch, setCrashSearch] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
   const [feedback, setFeedback] = useState(null);
-  const { loading, error, data } = useQuery(GET_TEMP_RECORDS, {
-    fetchPolicy: "no-cache",
-  });
   const [deleteRecord] = useMutation(DELETE_TEMP_RECORD);
 
-  useEffect(() => {
-    setCrashesData(data);
-  }, [data]);
+  if (loading) return "Loading...";
+  if (error) return `Error! ${error.message}`;
 
   /**
    * Updates the case_id being searched
@@ -73,26 +56,26 @@ const CreateCrashRecordTable = () => {
     setCrashSearch(e.target.value);
   };
 
-  /**
-   * Deletes all the temporary records in the database
-   */
-  const handleDelete = () => {
-    setFeedback(null);
-    deleteRecord({ variables: { crashId: deleteId } })
-      .then(() => {
-        const newData = crashesData["crashes"].filter(item => {
-          return item.crash_id !== deleteId;
-        });
-        setDeleteId(null);
-        setFeedback(`Crash ID ${deleteId} has been deleted.`);
-        setCrashesData({ atd_txdot_crashes: newData });
-        toggleModalDelete();
-      })
-      .catch(err => {
-        setFeedback(String(err));
-        setDeleteId(null);
-      });
-  };
+  // /**
+  //  * Deletes all the temporary records in the database
+  //  */
+  // const handleDelete = () => {
+  //   setFeedback(null);
+  //   deleteRecord({ variables: { crashId: deleteId } })
+  //     .then(() => {
+  //       const newData = data["crashes"].filter(item => {
+  //         return item.crash_id !== deleteId;
+  //       });
+  //       setDeleteId(null);
+  //       setFeedback(`Crash ID ${deleteId} has been deleted.`);
+  //       setCrashesData({ atd_txdot_crashes: newData });
+  //       toggleModalDelete();
+  //     })
+  //     .catch(err => {
+  //       setFeedback(String(err));
+  //       setDeleteId(null);
+  //     });
+  // };
 
   /**
    * Opens/Closes the delete modal
@@ -152,8 +135,7 @@ const CreateCrashRecordTable = () => {
               </thead>
               <tbody>
                 {crashesData &&
-                  crashesData["crashes"] &&
-                  crashesData.crashes.map((item, index) => {
+                  crashesData.map((item, index) => {
                     if (crashSearch !== "" && item.case_id !== crashSearch)
                       return null;
 
@@ -199,9 +181,7 @@ const CreateCrashRecordTable = () => {
           This cannot be undone.
         </ModalBody>
         <ModalFooter>
-          <Button color="danger" onClick={handleDelete}>
-            Ok
-          </Button>
+          <Button color="danger">Ok</Button>
           <Button color="secondary" onClick={toggleModalDelete}>
             Cancel
           </Button>
