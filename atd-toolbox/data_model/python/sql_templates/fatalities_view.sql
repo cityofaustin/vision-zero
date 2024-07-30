@@ -2,6 +2,10 @@ drop table if exists fatalities cascade;
 
 drop view if exists fatalities_view cascade;
 
+drop function if exists update_fatality_soft_delete cascade;
+
+drop function if exists fatality_insert cascade;
+
 create or replace view fatalities_view AS
 select 
 people.id as person_id,
