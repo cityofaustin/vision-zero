@@ -299,8 +299,8 @@ create or replace view crash_injury_metrics_view as
         ), 0) as other_sus_serious_injry_count,
         case
             when (sum(person_injury_metrics_view.fatal_injury) > 0) then 4
-            when (sum(person_injury_metrics_view.nonincap_injry) > 0) then 2
             when (sum(person_injury_metrics_view.sus_serious_injry) > 0) then 1
+            when (sum(person_injury_metrics_view.nonincap_injry) > 0) then 2
             when (sum(person_injury_metrics_view.poss_injry) > 0) then 3
             when (sum(person_injury_metrics_view.unkn_injry) > 0) then 0
             when (sum(person_injury_metrics_view.non_injry) > 0) then 5
@@ -335,6 +335,7 @@ create or replace view crashes_list_view as with geocode_status as (
 select
     public.crashes.id,
     public.crashes.crash_id,
+    public.crashes.record_locator,
     public.crashes.case_id,
     public.crashes.crash_timestamp,
     public.crashes.address_primary,

@@ -16,12 +16,12 @@ def get_cli_args():
     parser.add_argument(
         "--csv",
         action="store_true",
-        help="Only process CSV files",
+        help="Process CSV files. At least one of --csv or --pdf is required",
     )
     parser.add_argument(
         "--pdf",
         action="store_true",
-        help="Only process CR3 pdfs",
+        help="Process CR3 pdfs. At least one of --csv or --pdf is required",
     )
     parser.add_argument(
         "--s3-download",

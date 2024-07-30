@@ -41,29 +41,41 @@ def main(args_dict):
 
         logger.info(f"Processing {dataset_name}")
 
-        min_id = 0
+        min_record_id_to_process = 0
         records_processed = 0
+
         while True:
+            """
+            Main loop for upserting records. we fetch and upload records based on the last
+            minimum record ID that was processed. we contune until no records are returned
+            from our Hasura query
+            """
             logger.info(f"Fetching up to {RECORD_BATCH_SIZE} records")
-            variables = {"limit": RECORD_BATCH_SIZE, "minId": min_id}
+            variables = {"limit": RECORD_BATCH_SIZE, "minId": min_record_id_to_process}
             records = make_hasura_request(query=dataset["query"], variables=variables)[
                 dataset["typename"]
             ]
 
-            if min_id == 0:
-                if not records:
-                    raise Exception(
-                        "No records returned from Hasura. This should never happen"
-                    )
-                # we have some records, so it's safe to truncate the Socrata dataset
+            is_first_batch_of_records = min_record_id_to_process == 0
+
+            if is_first_batch_of_records and not records:
+                raise Exception(
+                    "No records returned from Hasura. This should never happen"
+                )
+            elif is_first_batch_of_records and records:
+                """
+                we truncate the existing dataset by replacing it with an empty array
+                we only need to do this during the first bathc of records and all
+                subsequent batches will be upserted/appeneded to the dataset
+                """
                 logger.info(f"Truncating dataset {dataset['dataset_id']}")
                 socrata_client.replace(dataset["dataset_id"], [])
             elif not records:
-                logger.info(f"{records_processed} {dataset_name} records processed")
+                # we're done :)
                 break
 
             logger.info(
-                f"Upserting {len(records)} records IDs: {records[0]['id']} - {records[-1]['id']} (total records: {records_processed})"
+                f"Upserting {len(records)} records IDs: {records[0]['id']} - {records[-1]['id']}"
             )
 
             upload_error_count = 0
@@ -82,7 +94,8 @@ def main(args_dict):
                 # success - break loop
                 break
             records_processed += len(records)
-            min_id = records[-1]["id"] + 1
+            min_record_id_to_process = records[-1]["id"] + 1
+            logger.info(f"{records_processed} {dataset_name} records processed")
     return
 
 
@@ -90,6 +103,8 @@ if __name__ == "__main__":
     args = get_cli_args()
     logger = init_logger()
     if not args.crashes and not args.people:
-        raise ValueError("No dataset(s) specify. At least one of '--crashes' or '--people' is required")
+        raise ValueError(
+            "No dataset(s) specify. At least one of '--crashes' or '--people' is required"
+        )
     args_dict = vars(args)
     main(args_dict)

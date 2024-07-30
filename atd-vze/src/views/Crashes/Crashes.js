@@ -55,7 +55,7 @@ const Crashes = () => {
       minDate={minDate}
       roleSpecificColumns={adminColumns}
       hasSpecificRole={isAdminOrItSupervisor}
-      defaultSearchField="crash_id"
+      defaultSearchField="record_locator"
     />
   );
 };
