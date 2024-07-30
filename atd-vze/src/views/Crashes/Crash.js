@@ -268,8 +268,7 @@ function Crash(props) {
       <Row>
         <Col>
           <Notes
-            crashPk={crashPk}
-            tableName={"crash_notes"}
+            parentRecordId={crashPk}
             notes={crashRecord?.crash?.crash_notes}
             INSERT_NOTE={INSERT_NOTE}
             UPDATE_NOTE={UPDATE_NOTE}
