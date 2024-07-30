@@ -1,4 +1,4 @@
-drop table fatalities cascade;
+drop table if exists fatalities cascade;
 
 drop view if exists fatalities_view cascade;
 
