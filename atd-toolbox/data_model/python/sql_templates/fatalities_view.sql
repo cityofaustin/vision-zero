@@ -48,4 +48,4 @@ crashes.engineering_area
     people 
   left join units on people.unit_id = units.id
   left join crashes on units.crash_id = crashes.id
- where crashes.in_austin_full_purpose = true AND people.prsn_injry_sev_id = 4;
+where crashes.in_austin_full_purpose = true AND people.prsn_injry_sev_id = 4 AND crashes.private_drive_fl = true;
