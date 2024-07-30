@@ -102,7 +102,7 @@ select_permissions:
         - is_deleted
         - is_temp_record
         - latitude
-        - law_enforcement_fatality_num
+        - law_enforcement_ytd_fatality_num
         - light_cond_id
         - location_id
         - longitude
@@ -170,7 +170,7 @@ select_permissions:
         - investigat_agency_id
         - investigator_narrative
         - latitude
-        - law_enforcement_fatality_num
+        - law_enforcement_ytd_fatality_num
         - light_cond_id
         - location_id
         - longitude
@@ -214,7 +214,6 @@ select_permissions:
         - case_id
         - created_by
         - investigator_narrative
-        - law_enforcement_fatality_num
         - location_id
         - record_locator
         - rpt_block_num
@@ -260,7 +259,7 @@ select_permissions:
         - investigat_agency_id
         - investigator_narrative
         - latitude
-        - law_enforcement_fatality_num
+        - law_enforcement_ytd_fatality_num
         - light_cond_id
         - location_id
         - longitude
@@ -304,7 +303,6 @@ select_permissions:
         - case_id
         - created_by
         - investigator_narrative
-        - law_enforcement_fatality_num
         - location_id
         - record_locator
         - rpt_block_num

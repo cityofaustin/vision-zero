@@ -100,13 +100,6 @@ array_relationships:
         table:
           name: crash_notes
           schema: public
-  - name: fatalities
-    using:
-      foreign_key_constraint_on:
-        column: crash_id
-        table:
-          name: fatalities
-          schema: public
   - name: units
     using:
       manual_configuration:

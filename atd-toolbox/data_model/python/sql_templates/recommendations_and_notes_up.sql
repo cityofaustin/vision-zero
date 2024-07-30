@@ -18,3 +18,9 @@ alter table crash_notes
         crash_id
     ) references crashes (id),
     alter column atd_txdot_crashes_crash_id drop not null;
+
+alter table location_notes
+add constraint fk_location_note_location foreign key (
+    location_id
+) references atd_txdot_locations (location_id),
+alter column location_id set not null;

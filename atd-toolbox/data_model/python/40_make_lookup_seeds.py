@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from pprint import pprint as print
 
 from utils import (
@@ -15,8 +16,8 @@ def escape_single_quotes(input_string):
 veh_direction_of_force_lkp_values = """insert into lookups.veh_direction_of_force_lkp (id, label)
     select veh_direction_of_force_id, veh_direction_of_force_desc from atd_txdot__veh_direction_of_force_lkp;"""
 
-mode_category_lkp_values = """insert into lookups.mode_category_lkp (id, label)
-    select  id, atd_mode_category_mode_name from atd__mode_category_lkp;"""
+mode_category_lkp_values = """insert into lookups.mode_category_lkp (id, label, source)
+    select  id, atd_mode_category_mode_name, 'vz' from atd__mode_category_lkp where id != 10;"""
 
 city_id_patch = """insert into lookups.city_lkp (id, label) values (9999, 'UNKNOWN');"""
 
@@ -39,7 +40,7 @@ movt_lkp_custom_values = """insert into lookups.movt_lkp (select *, 'vz' as sour
 
 
 def main():
-    print("downloading metadata from google sheet...")
+    print("loading lookup metadata from column json...")
     schema_name = "lookups"
     data = load_lookups_metadata()
     insert_stmts = []

@@ -12,7 +12,6 @@ select_permissions:
   - role: editor
     permission:
       columns:
-        - charge_cat_id
         - crash_id
         - id
         - person_id
@@ -28,7 +27,6 @@ select_permissions:
   - role: readonly
     permission:
       columns:
-        - charge_cat_id
         - crash_id
         - id
         - person_id
@@ -44,7 +42,6 @@ select_permissions:
   - role: vz-admin
     permission:
       columns:
-        - charge_cat_id
         - crash_id
         - id
         - person_id

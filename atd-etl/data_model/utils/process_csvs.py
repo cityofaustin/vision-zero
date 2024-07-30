@@ -273,6 +273,12 @@ def rename_crash_id(records):
         record["cris_crash_id"] = record.pop("Crash_ID")
 
 
+def remove_non_charges(records):
+    """Remove charges records where the charge = 'NO CHARGES'. we don't use this data, and
+    because it's quite a lot of data we elect to exclude t from the DB entirely"""
+    return [r for r in records if r["charge"] != "NO CHARGES"]
+
+
 def process_csvs(extract_dir):
     """Main function for loading CRIS CSVs into the database. This function handles
     one unzipped CRIS extract, which itself may contain multiple schema years.
@@ -406,6 +412,9 @@ def process_csvs(extract_dir):
                             query=CHARGES_DELETE_MUTATION,
                             variables={"crash_ids": crash_ids},
                         )
+                    # now that we've deleted all charges we can purge the non-charge records
+                    # from our import
+                    records = remove_non_charges(records)
                 else:
                     # set created_by and updated_by audit fields
                     set_default_values(

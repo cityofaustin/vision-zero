@@ -73,8 +73,10 @@ select_permissions:
         - rpt_sec_block_num
         - rpt_sec_street_name
         - rpt_sec_street_pfx
+        - rpt_sec_street_sfx
         - rpt_street_name
         - rpt_street_pfx
+        - rpt_street_sfx
         - crash_timestamp
       filter: {}
       allow_aggregations: true
@@ -130,8 +132,10 @@ select_permissions:
         - rpt_sec_block_num
         - rpt_sec_street_name
         - rpt_sec_street_pfx
+        - rpt_sec_street_sfx
         - rpt_street_name
         - rpt_street_pfx
+        - rpt_street_sfx
         - crash_timestamp
       filter: {}
       allow_aggregations: true
@@ -187,8 +191,10 @@ select_permissions:
         - rpt_sec_block_num
         - rpt_sec_street_name
         - rpt_sec_street_pfx
+        - rpt_sec_street_sfx
         - rpt_street_name
         - rpt_street_pfx
+        - rpt_street_sfx
         - crash_timestamp
       filter: {}
       allow_aggregations: true

@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from pprint import pprint as print
 
 from settings import SCHEMA_NAME

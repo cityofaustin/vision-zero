@@ -42,7 +42,7 @@ export const GET_CRASH = gql`
       rr_relat_fl
       schl_bus_fl
       toll_road_fl
-      law_enforcement_fatality_num
+      law_enforcement_ytd_fatality_num
       investigator_narrative
       cr3_stored_fl
       latitude
@@ -129,7 +129,6 @@ export const GET_CRASH = gql`
         unit_nbr
         prsn_nbr
         citation_nbr
-        charge_cat_id
         charge
       }
       crashes_list_view {
