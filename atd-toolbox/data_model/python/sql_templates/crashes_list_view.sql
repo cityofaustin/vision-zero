@@ -419,6 +419,7 @@ left join
 left join
     lookups.injry_sev_lkp
     on lookups.injry_sev_lkp.id = crash_injury_metrics_view.crash_injry_sev_id
+where crashes.is_deleted = false
 order by id asc;
 
 create view locations_list_view as (
