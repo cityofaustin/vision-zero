@@ -290,3 +290,20 @@ select_permissions:
         - wthr_cond_id
       filter: {}
     comment: ""
+update_permissions:
+  - role: editor
+    permission:
+      columns:
+        - is_deleted
+        - updated_by
+      filter: {}
+      check: {}
+    comment: ""
+  - role: vz-admin
+    permission:
+      columns:
+        - is_deleted
+        - updated_by
+      filter: {}
+      check: {}
+    comment: ""
