@@ -193,6 +193,7 @@ const CreateCrashRecord = ({ client }) => {
             created_by: userEmail,
             cris_schema_version: "2023",
             is_temp_record: true,
+            private_dr_fl: false,
             units_cris: {
               data: unitObjects,
             },
@@ -385,6 +386,7 @@ const CreateCrashRecord = ({ client }) => {
             crashesData={data.crashes}
             loading={loading}
             error={error}
+            refetch={refetch}
           />
         </Col>
       </Row>
