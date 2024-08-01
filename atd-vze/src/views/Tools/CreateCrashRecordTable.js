@@ -50,7 +50,7 @@ const CreateCrashRecordTable = ({
   };
 
   /**
-   * Deletes all the temporary records in the database
+   * Soft deletes all the temporary records in the database
    */
   const handleDelete = () => {
     const unitsData = crashesData.filter(crash => crash.id === deleteId)[0]
