@@ -387,6 +387,7 @@ const CreateCrashRecord = ({ client }) => {
             loading={loading}
             error={error}
             refetch={refetch}
+            userEmail={userEmail}
           />
         </Col>
       </Row>
