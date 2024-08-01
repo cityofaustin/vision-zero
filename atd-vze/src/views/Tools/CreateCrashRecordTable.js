@@ -28,6 +28,7 @@ const CreateCrashRecordTable = ({
   error,
   refetch,
   userEmail,
+  setSuccessfulNewRecordId,
 }) => {
   const [crashSearch, setCrashSearch] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
@@ -54,6 +55,7 @@ const CreateCrashRecordTable = ({
       variables: { recordId: deleteId, updatedBy: userEmail },
     })
       .then(() => {
+        setSuccessfulNewRecordId(null);
         setDeleteId(null);
         setFeedback(`Crash ID ${deleteId} has been deleted.`);
         toggleModalDelete();

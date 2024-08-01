@@ -388,6 +388,7 @@ const CreateCrashRecord = ({ client }) => {
             error={error}
             refetch={refetch}
             userEmail={userEmail}
+            setSuccessfulNewRecordId={setSuccessfulNewRecordId}
           />
         </Col>
       </Row>
