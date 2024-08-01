@@ -2,7 +2,7 @@
 with newdm as (
     select
         id,
-        crash_id,
+        cris_crash_id,
         vz_fatality_count
     from
         crashes_list_view
@@ -15,9 +15,9 @@ with newdm as (
 joined_crashes as (
     select
         old.crash_id,
-        newdm.crash_id as new_crash_id
+        newdm.cris_crash_id as new_crash_id
     from atd_txdot_crashes as old
-    left join newdm on old.crash_id = newdm.crash_id
+    left join newdm on old.crash_id = newdm.cris_crash_id
     where
         old.crash_date >= '2014-01-01'
         and old.crash_date < '2024-01-01'

@@ -1,3 +1,6 @@
+-- identifies unit records missing from the new schema, but not necessarily if the unit
+-- involves a serious or fatal injury. this is helpful to see how some CRIS data has changed
+-- over time but it's not actionable
 WITH joined_units AS (
     SELECT
         old_u.crash_id,

@@ -1,3 +1,4 @@
+-- these statements were run against prod to cleanup dupe person records
 -- done
 delete from atd_txdot_primaryperson
 where

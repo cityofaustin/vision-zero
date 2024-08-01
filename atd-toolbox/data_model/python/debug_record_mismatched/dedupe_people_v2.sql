@@ -1,6 +1,8 @@
 
 -- joins people to people to compare dupe values side by side
 -- inclusive of serious and fatal crashes in afp not on private drive only
+-- the result of this query shows upe person records that need to be address before
+-- we can reliably populate the VZ edits
 WITH unioned_people AS (
     SELECT
         crash_id::text
