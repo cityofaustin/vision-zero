@@ -16,9 +16,6 @@ export const GET_TEMP_RECORDS = gql`
       updated_at
       units {
         id
-        people {
-          id
-        }
       }
     }
   }
