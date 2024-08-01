@@ -19,14 +19,24 @@ import {
   ModalHeader,
   Table,
 } from "reactstrap";
-import { SOFT_DELETE_TEMP_RECORD } from "../../queries/tempRecords";
+import {
+  SOFT_DELETE_TEMP_PEOPLE,
+  SOFT_DELETE_TEMP_UNITS_CRASH,
+} from "../../queries/tempRecords";
 
-const CreateCrashRecordTable = ({ crashesData, loading, error, refetch }) => {
+const CreateCrashRecordTable = ({
+  crashesData,
+  loading,
+  error,
+  refetch,
+  userEmail,
+}) => {
   const [crashSearch, setCrashSearch] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
   const [feedback, setFeedback] = useState(null);
-  const [deleteRecord] = useMutation(SOFT_DELETE_TEMP_RECORD);
+  const [deleteUnitAndCrash] = useMutation(SOFT_DELETE_TEMP_UNITS_CRASH);
+  const [deletePerson] = useMutation(SOFT_DELETE_TEMP_PEOPLE);
 
   if (loading) return "Loading...";
   if (error) return `Error! ${error.message}`;
@@ -43,8 +53,23 @@ const CreateCrashRecordTable = ({ crashesData, loading, error, refetch }) => {
    * Deletes all the temporary records in the database
    */
   const handleDelete = () => {
+    const unitsData = crashesData.filter(crash => crash.id === deleteId)[0]
+      .units;
+    // Loop through an array of units for the crash we are deleting
+    unitsData.forEach(unit => {
+      // Soft delete all the person records associated with that unit id
+      deletePerson({
+        variables: { unitId: unit.id, updatedBy: userEmail },
+      }).catch(err => {
+        setFeedback(String(err));
+        setDeleteId(null);
+      });
+    });
     setFeedback(null);
-    deleteRecord({ variables: { recordId: deleteId } })
+    // Now we can soft delete all the units and the crash associated with the crash id
+    deleteUnitAndCrash({
+      variables: { recordId: deleteId, updatedBy: userEmail },
+    })
       .then(() => {
         setDeleteId(null);
         setFeedback(`Crash ID ${deleteId} has been deleted.`);
