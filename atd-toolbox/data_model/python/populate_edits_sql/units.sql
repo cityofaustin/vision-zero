@@ -8,7 +8,8 @@ create materialized view unit_diffs as with joined_units as (
     select
         unit_unified.id,
         unit_unified.unit_nbr as unit_nbr,
-        unit_unified.crash_id as crash_id,
+        unit_unified.crash_pk as crash_pk,
+        unit_unified.cris_crash_id as cris_crash_id,
         unit_edit.travel_direction as veh_trvl_dir_id_edit,
         unit_edit.movement_id as movement_id_edit,
         unit_edit.unit_desc_id as unit_desc_id_edit,
@@ -28,7 +29,8 @@ computed_diffs as (
     select
         id,
         unit_nbr,
-        crash_id,
+        cris_crash_id,
+        crash_pk,
         case
             when
                 veh_trvl_dir_id_edit is distinct from veh_trvl_dir_id_unified
