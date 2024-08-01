@@ -40,12 +40,13 @@ jobs:
           password: ${{ secrets.DOCKER_TOKEN }}
 
       - name: "Checkout"
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: "Paths filter"
-        uses: dorny/paths-filter@v2
+        uses: dorny/paths-filter@v3
         id: changes
         with:
+          base: ${{ github.ref }}
           filters: |
             afd_ems:
               - 'atd-etl/afd_ems_import/**'
