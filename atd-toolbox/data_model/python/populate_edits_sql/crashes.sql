@@ -12,7 +12,7 @@ create materialized view crash_diffs as with joined_crashes as (
         crash_edit.road_constr_zone_fl ::bool as road_constr_zone_fl_edit,
         crash_edit.case_id as case_id_edit,
         crash_edit.intrsct_relat_id as intrsct_relat_id_edit,
-        crash_edit.law_enforcement_num as law_enforcement_fatality_num_edit,
+        crash_edit.law_enforcement_num as law_enforcement_ytd_fatality_num_edit,
         crash_unified.longitude as longitude_unified,
         crash_unified.latitude as latitude_unified,
         crash_unified.rpt_city_id as rpt_city_id_unified,
@@ -22,11 +22,11 @@ create materialized view crash_diffs as with joined_crashes as (
         crash_unified.road_constr_zone_fl as road_constr_zone_fl_unified,
         crash_unified.case_id as case_id_unified,
         crash_unified.intrsct_relat_id as intrsct_relat_id_unified,
-        crash_unified.law_enforcement_fatality_num as law_enforcement_fatality_num_unified,
+        crash_unified.law_enforcement_ytd_fatality_num as law_enforcement_ytd_fatality_num_unified,
         crash_unified.id
     from
         crashes as crash_unified
-    left join atd_txdot_crashes as crash_edit on crash_unified.crash_id = crash_edit.crash_id
+    left join atd_txdot_crashes as crash_edit on crash_unified.cris_crash_id = crash_edit.crash_id
 ),
 computed_diffs as (
     select
@@ -68,9 +68,9 @@ computed_diffs as (
             and intrsct_relat_id_edit is not null then
             crash.intrsct_relat_id_edit
         end as intrsct_relat_id,
-        case when crash.law_enforcement_fatality_num_edit is distinct from crash.law_enforcement_fatality_num_unified
-            and law_enforcement_fatality_num_edit is not null then
-            crash.law_enforcement_fatality_num_edit
+        case when crash.law_enforcement_ytd_fatality_num_edit is distinct from crash.law_enforcement_ytd_fatality_num_unified
+            and law_enforcement_ytd_fatality_num_edit is not null then
+            crash.law_enforcement_ytd_fatality_num_edit
         end as law_enforcement_fatality_num
     from
         joined_crashes as crash
