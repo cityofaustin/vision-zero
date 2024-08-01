@@ -21,8 +21,14 @@ export const GET_TEMP_RECORDS = gql`
   }
 `;
 
-export const SOFT_DELETE_TEMP_UNITS_CRASH = gql`
-  mutation softDeleteTempRecord($recordId: Int!, $updatedBy: String!) {
+export const SOFT_DELETE_TEMP_RECORDS = gql`
+  mutation softDeleteTempRecords($recordId: Int!, $updatedBy: String!) {
+    update_crashes_cris_by_pk(
+      pk_columns: { id: $recordId }
+      _set: { is_deleted: true, updated_by: $updatedBy }
+    ) {
+      id
+    }
     update_units_cris(
       where: { crash_id: { _eq: $recordId } }
       _set: { is_deleted: true, updated_by: $updatedBy }
@@ -32,19 +38,8 @@ export const SOFT_DELETE_TEMP_UNITS_CRASH = gql`
         crash_id
       }
     }
-    update_crashes_cris_by_pk(
-      pk_columns: { id: $recordId }
-      _set: { is_deleted: true, updated_by: $updatedBy }
-    ) {
-      id
-    }
-  }
-`;
-
-export const SOFT_DELETE_TEMP_PEOPLE = gql`
-  mutation softDeletePersonRecord($unitId: Int!, $updatedBy: String!) {
     update_people_cris(
-      where: { unit_id: { _eq: $unitId } }
+      where: { units_cri: { crash_id: { _eq: $recordId } } }
       _set: { is_deleted: true, updated_by: $updatedBy }
     ) {
       returning {

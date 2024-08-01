@@ -19,10 +19,7 @@ import {
   ModalHeader,
   Table,
 } from "reactstrap";
-import {
-  SOFT_DELETE_TEMP_PEOPLE,
-  SOFT_DELETE_TEMP_UNITS_CRASH,
-} from "../../queries/tempRecords";
+import { SOFT_DELETE_TEMP_RECORDS } from "../../queries/tempRecords";
 import { formatDateTimeString } from "../../helpers/format";
 
 const CreateCrashRecordTable = ({
@@ -36,8 +33,7 @@ const CreateCrashRecordTable = ({
   const [modalOpen, setModalOpen] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
   const [feedback, setFeedback] = useState(null);
-  const [deleteUnitAndCrash] = useMutation(SOFT_DELETE_TEMP_UNITS_CRASH);
-  const [deletePerson] = useMutation(SOFT_DELETE_TEMP_PEOPLE);
+  const [deleteTempRecords] = useMutation(SOFT_DELETE_TEMP_RECORDS);
 
   if (loading) return "Loading...";
   if (error) return `Error! ${error.message}`;
@@ -51,24 +47,10 @@ const CreateCrashRecordTable = ({
   };
 
   /**
-   * Soft deletes all the temporary records in the database
+   * Soft deletes the temporary crash and all its associated unit and people records
    */
   const handleDelete = () => {
-    const unitsData = crashesData.filter(crash => crash.id === deleteId)[0]
-      .units;
-    // Loop through an array of units for the crash we are deleting
-    unitsData.forEach(unit => {
-      // Soft delete all the person records associated with that unit id
-      deletePerson({
-        variables: { unitId: unit.id, updatedBy: userEmail },
-      }).catch(err => {
-        setFeedback(String(err));
-        setDeleteId(null);
-      });
-    });
-    setFeedback(null);
-    // Now we can soft delete all the units and the crash associated with the crash id
-    deleteUnitAndCrash({
+    deleteTempRecords({
       variables: { recordId: deleteId, updatedBy: userEmail },
     })
       .then(() => {
@@ -91,7 +73,7 @@ const CreateCrashRecordTable = ({
   };
 
   /**
-   * Commits the crash_id to be deleted to state, and prompts for deletion.
+   * Commits the crash record id to be deleted to state, and prompts for deletion.
    * @param {int} recordId - The record id to be deleted.
    */
   const openModalDelete = recordId => {
