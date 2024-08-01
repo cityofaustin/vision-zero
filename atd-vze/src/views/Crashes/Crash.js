@@ -35,19 +35,15 @@ import ChargesDetailsCard from "./ChargesDetailsCard";
 
 import "./crash.scss";
 
-import { GET_CRASH_OLD, UPDATE_CRASH, GET_CRASH } from "../../queries/crashes";
+import { UPDATE_CRASH, GET_CRASH } from "../../queries/crashes";
 import {
-  GET_NOTES,
   INSERT_NOTE,
   UPDATE_NOTE,
   DELETE_NOTE,
 } from "../../queries/crashNotes";
 
 function Crash(props) {
-  const crashId = props.match.params.id;
-  const { loading, error, data } = useQuery(GET_CRASH_OLD, {
-    variables: { crashId },
-  });
+  const crashId = props.match.params.id.toUpperCase();
   const {
     loading: crashLoading,
     error: crashError,
@@ -64,14 +60,8 @@ function Crash(props) {
   const { getRoles } = useAuth0();
   const roles = getRoles();
 
-  const isCrashFatal =
-    data?.atd_txdot_crashes?.[0]?.atd_fatality_count > 0 ? true : false;
-  const shouldShowFatalityRecommendations =
-    (isAdmin(roles) || isItSupervisor(roles)) && isCrashFatal;
-
-  if (loading || crashLoading) return "Loading...";
+  if (crashLoading) return "Loading...";
   if (crashError) return `Error! ${crashError.message}`;
-  if (error) return `Error! ${error.message}`;
 
   const handleInputChange = e => {
     const newFormState = Object.assign(formData, {
@@ -103,10 +93,6 @@ function Crash(props) {
     setEditField("");
   };
 
-  const { temp_record: tempRecord } = !!data?.atd_txdot_crashes[0]
-    ? data?.atd_txdot_crashes[0]
-    : {};
-
   const crashRecord = {
     crash: crashData?.crashes?.[0] || { crash_injury_metrics_view: {} },
   };
@@ -120,14 +106,18 @@ function Crash(props) {
     address_secondary: secondaryAddress,
     crash_injury_metrics_view: { years_of_life_lost: yearsOfLifeLost },
     investigator_narrative: investigatorNarrative,
-    cr3_stored_flag: cr3StoredFlag,
-    cr3_file_metadata: cr3FileMetadata,
+    cr3_stored_fl: cr3StoredFlag,
     latitude,
     longitude,
     location_id: locationId,
-  } = crashRecord.crash;
+    is_temp_record: tempRecord,
+  } = crashRecord?.crash;
 
-  const hasLocation = crashRecord.crash["location_id"];
+  const isCrashFatal = deathCount > 0 ? true : false;
+  const shouldShowFatalityRecommendations =
+    (isAdmin(roles) || isItSupervisor(roles)) && isCrashFatal;
+
+  const hasLocation = crashRecord?.crash["location_id"];
   const hasCoordinates = !!latitude && !!longitude;
 
   return !crashData ? (
@@ -237,7 +227,6 @@ function Crash(props) {
             crashId={crashId}
             isCr3Stored={cr3StoredFlag}
             isTempRecord={tempRecord}
-            cr3FileMetadata={cr3FileMetadata}
           />
         </Col>
       </Row>
@@ -253,34 +242,38 @@ function Crash(props) {
       <Row>
         <Col>
           <UnitDetailsCard
-            data={crashRecord.crash.units}
+            data={crashRecord?.crash?.units}
             refetch={crashRefetch}
             {...props}
           />
           <PeopleDetailsCard
-            data={crashRecord.crash.people_list_view}
+            data={crashRecord?.crash?.people_list_view}
             refetch={crashRefetch}
             {...props}
           />
-          <ChargesDetailsCard data={crashRecord.crash.charges_cris} />
+          <ChargesDetailsCard data={crashRecord?.crash?.charges_cris} />
         </Col>
       </Row>
       {shouldShowFatalityRecommendations && (
         <Row>
           <Col>
-            <Recommendations crashId={props.match.params.id} />
+            <Recommendations
+              crashPk={crashPk}
+              recommendation={crashRecord?.crash?.recommendation}
+              refetch={crashRefetch}
+            />
           </Col>
         </Row>
       )}
       <Row>
         <Col>
           <Notes
-            recordId={props.match.params.id}
-            tableName={"crash_notes"}
-            GET_NOTES={GET_NOTES}
+            parentRecordId={crashPk}
+            notes={crashRecord?.crash?.crash_notes}
             INSERT_NOTE={INSERT_NOTE}
             UPDATE_NOTE={UPDATE_NOTE}
             DELETE_NOTE={DELETE_NOTE}
+            refetch={crashRefetch}
           />
         </Col>
       </Row>

@@ -1,128 +1,10 @@
 import { gql } from "apollo-boost";
 
-export const GET_CRASH_OLD = gql`
-  query FindCrash($crashId: Int) {
-    atd_txdot_crashes(where: { crash_id: { _eq: $crashId } }) {
-      active_school_zone_fl
-      address_confirmed_primary
-      address_confirmed_secondary
-      apd_confirmed_fatality
-      apd_confirmed_death_count
-      apd_human_update
-      approval_date
-      approved_by
-      at_intrsct_fl
-      atd_fatality_count
-      case_id
-      city_id
-      cr3_file_metadata
-      cr3_stored_flag
-      crash_date
-      crash_fatal_fl
-      crash_id
-      crash_sev_id
-      crash_speed_limit
-      crash_time
-      day_of_week
-      death_cnt
-      est_comp_cost
-      est_comp_cost_crash_based
-      est_econ_cost
-      fhe_collsn_id
-      geocode_method {
-        name
-      }
-      geocode_date
-      geocode_provider
-      geocode_status
-      geocoded
-      hwy_nbr
-      hwy_sfx
-      hwy_sys
-      hwy_sys_2
-      intrsct_relat_id
-      investigator_narrative_ocr
-      is_retired
-      last_update
-      latitude
-      latitude_primary
-      latitude_geocoded
-      law_enforcement_num
-      light_cond_id
-      longitude
-      longitude_primary
-      longitude_geocoded
-      non_injry_cnt
-      nonincap_injry_cnt
-      obj_struck_id
-      onsys_fl
-      poss_injry_cnt
-      private_dr_fl
-      qa_status
-      road_constr_zone_fl
-      road_type_id
-      rpt_block_num
-      rpt_city_id
-      rpt_hwy_num
-      rpt_latitude
-      rpt_longitude
-      rpt_outside_city_limit_fl
-      rpt_rdwy_sys_id
-      rpt_road_part_id
-      rpt_sec_block_num
-      rpt_sec_hwy_num
-      rpt_sec_hwy_sfx
-      rpt_sec_rdwy_sys_id
-      rpt_sec_road_part_id
-      rpt_sec_street_desc
-      rpt_sec_street_name
-      rpt_sec_street_pfx
-      rpt_sec_street_sfx
-      rpt_street_name
-      rpt_street_pfx
-      rpt_street_sfx
-      rpt_street_desc
-      rr_relat_fl
-      schl_bus_fl
-      speed_mgmt_points
-      street_name
-      street_name_2
-      street_nbr
-      street_nbr_2
-      sus_serious_injry_cnt
-      toll_road_fl
-      tot_injry_cnt
-      traffic_cntl_id
-      unkn_injry_cnt
-      updated_by
-      wthr_cond_id
-      location_id
-      temp_record
-    }
-    atd_txdot_charges(where: { crash_id: { _eq: $crashId } }) {
-      citation_nbr
-      charge_cat_id
-      charge
-    }
-    atd_txdot_change_log(
-      where: { record_type: { _eq: "crashes" }, record_id: { _eq: $crashId } }
-      order_by: { record_type: asc }
-    ) {
-      change_log_id
-      record_id
-      record_crash_id
-      record_json
-      update_timestamp
-      updated_by
-    }
-  }
-`;
-
 export const GET_CRASH = gql`
-  query CrashDetails($crashId: Int!) {
-    crashes(where: { crash_id: { _eq: $crashId } }) {
+  query CrashDetails($crashId: String!) {
+    crashes(where: { record_locator: { _eq: $crashId } }) {
       id
-      crash_id
+      record_locator
       updated_at
       case_id
       crash_timestamp
@@ -160,10 +42,9 @@ export const GET_CRASH = gql`
       rr_relat_fl
       schl_bus_fl
       toll_road_fl
-      law_enforcement_fatality_num
+      law_enforcement_ytd_fatality_num
       investigator_narrative
-      cr3_stored_flag
-      cr3_file_metadata
+      cr3_stored_fl
       latitude
       longitude
       location_id
@@ -216,7 +97,7 @@ export const GET_CRASH = gql`
         }
       }
       people_list_view {
-        crash_id
+        crash_pk
         id
         unit_nbr
         is_primary_person
@@ -248,7 +129,6 @@ export const GET_CRASH = gql`
         unit_nbr
         prsn_nbr
         citation_nbr
-        charge_cat_id
         charge
       }
       crashes_list_view {
@@ -257,13 +137,42 @@ export const GET_CRASH = gql`
       }
       change_logs(order_by: { created_at: desc }) {
         id
-        crash_id
+        crash_pk
         created_at
         created_by
         operation_type
         record_id
         record_type
         record_json
+      }
+      recommendation {
+        id
+        created_at
+        rec_text
+        created_by
+        crash_pk
+        rec_update
+        atd__recommendation_status_lkp {
+          rec_status_desc
+        }
+        recommendations_partners {
+          id
+          partner_id
+          recommendation_id
+          atd__coordination_partners_lkp {
+            id
+            coord_partner_desc
+          }
+        }
+      }
+      crash_notes(order_by: { date: desc }) {
+        id
+        created_at
+        updated_at
+        date
+        text
+        user_email
+        crash_pk
       }
     }
   }
@@ -274,14 +183,14 @@ export const UPDATE_CRASH = gql`
     update_crashes_edits(where: { id: { _eq: $id } }, _set: $changes) {
       affected_rows
       returning {
-        crash_id
+        cris_crash_id
       }
     }
   }
 `;
 
 export const crashQueryExportFields = `
-crash_id
+cris_crash_id
 case_id
 crash_timestamp
 crash_day_of_week

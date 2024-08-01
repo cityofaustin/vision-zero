@@ -14,7 +14,7 @@ import {
 // Our initial query configuration
 let queryConf = {
   table: "crashes_list_view",
-  dateField: "crash_timestamp",
+  dateField: "crash_date_ct",
   single_item: "crashes",
   showDateRange: true,
   columns: crashGridTableColumns,
@@ -55,7 +55,7 @@ const Crashes = () => {
       minDate={minDate}
       roleSpecificColumns={adminColumns}
       hasSpecificRole={isAdminOrItSupervisor}
-      defaultSearchField="crash_id"
+      defaultSearchField="record_locator"
     />
   );
 };

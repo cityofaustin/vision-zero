@@ -23,9 +23,7 @@ const ChargesDetailsCard = ({ data }) => {
         >
           <h5 className="m-0 p-0">
             <i className="fa fa-legal" /> Charges
-            <Badge color="secondary float-right">
-              {data.filter(charge => charge.charge !== "NO CHARGES").length}
-            </Badge>
+            <Badge color="secondary float-right">{data.length}</Badge>
           </h5>
         </Button>
       </CardHeader>
@@ -41,17 +39,14 @@ const ChargesDetailsCard = ({ data }) => {
               </tr>
             </thead>
             <tbody>
-              {data.map(
-                (charge, i) =>
-                  charge.charge !== "NO CHARGES" && (
-                    <tr key={`charges-${i}`}>
-                      <td>{charge.unit_nbr}</td>
-                      <td>{charge.prsn_nbr}</td>
-                      <td>{charge.charge}</td>
-                      <td>{charge.citation_nbr}</td>
-                    </tr>
-                  )
-              )}
+              {data.map((charge, i) => (
+                <tr key={`charges-${i}`}>
+                  <td>{charge.unit_nbr}</td>
+                  <td>{charge.prsn_nbr}</td>
+                  <td>{charge.charge}</td>
+                  <td>{charge.citation_nbr}</td>
+                </tr>
+              ))}
             </tbody>
           </Table>
         </CardBody>

@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from pprint import pprint as print
 
 from settings import SCHEMA_NAME
@@ -61,7 +62,7 @@ def make_column_sql(columns, full_table_name):
             # column name is always the same as the column name
             fk_column_name = column_name
             fk_cascade = "on update cascade on delete cascade"
-        elif column_name == "crash_id":
+        elif column_name == "crash_pk":
             if full_table_name == "units_edits":
                 # make nullable
                 constraint = ""
@@ -90,6 +91,8 @@ def make_column_sql(columns, full_table_name):
             elif full_table_name == "charges":
                 fk_table_name = "people"
             fk_cascade = "on update cascade on delete cascade"
+        elif constraint and "not null default false" in constraint and "_edits" in full_table_name:
+            constraint = ""
 
         sql = f"{column_name} {data_type} {constraint}".strip()
         if fk_table_name:

@@ -2,9 +2,9 @@ table:
   name: charges_cris
   schema: public
 object_relationships:
-  - name: crashes_cri
+  - name: crashes_cris
     using:
-      foreign_key_constraint_on: crash_id
+      foreign_key_constraint_on: crash_pk
   - name: people_cri
     using:
       foreign_key_constraint_on: person_id
@@ -12,8 +12,7 @@ select_permissions:
   - role: editor
     permission:
       columns:
-        - charge_cat_id
-        - crash_id
+        - crash_pk
         - id
         - person_id
         - prsn_nbr
@@ -28,8 +27,7 @@ select_permissions:
   - role: readonly
     permission:
       columns:
-        - charge_cat_id
-        - crash_id
+        - crash_pk
         - id
         - person_id
         - prsn_nbr
@@ -44,8 +42,7 @@ select_permissions:
   - role: vz-admin
     permission:
       columns:
-        - charge_cat_id
-        - crash_id
+        - crash_pk
         - id
         - person_id
         - prsn_nbr
