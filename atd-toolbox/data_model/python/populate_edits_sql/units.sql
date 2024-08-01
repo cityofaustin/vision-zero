@@ -42,6 +42,8 @@ computed_diffs as (
             when
                 movement_id_edit is distinct from movement_id_unified
                 and movement_id_edit is not null
+                -- importantly, this ignores where movement_id = 0 (UNKNOWN) in the old schema
+                -- since it's a default value we don't intend to carry forward
                 and movement_id_edit != 0
                 then
                     movement_id_edit
