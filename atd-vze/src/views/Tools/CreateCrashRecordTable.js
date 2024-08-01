@@ -23,6 +23,7 @@ import {
   SOFT_DELETE_TEMP_PEOPLE,
   SOFT_DELETE_TEMP_UNITS_CRASH,
 } from "../../queries/tempRecords";
+import { formatDateTimeString } from "../../helpers/format";
 
 const CreateCrashRecordTable = ({
   crashesData,
@@ -152,9 +153,9 @@ const CreateCrashRecordTable = ({
                           </Link>
                         </td>
                         <td>{item.case_id}</td>
-                        <td>{item.crash_timestamp}</td>
+                        <td>{formatDateTimeString(item.crash_timestamp)}</td>
                         <td>{item.updated_by}</td>
-                        <td>{item.updated_at}</td>
+                        <td>{formatDateTimeString(item.updated_at)}</td>
                         <td>
                           <Button
                             color="danger"
