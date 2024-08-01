@@ -3,7 +3,7 @@ export const createCrashDataMap = isTempRecord => {
     {
       title: "Details",
       fields: {
-        crash_id: {
+        cris_crash_id: {
           label: "Crash ID",
           editable: false,
         },

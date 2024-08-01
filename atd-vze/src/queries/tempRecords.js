@@ -32,11 +32,11 @@ export const SOFT_DELETE_TEMP_RECORD = gql`
       id
     }
     update_units_cris(
-      where: { crash_id: { _eq: $recordId } }
+      where: { crash_pk: { _eq: $recordId } }
       _set: { is_deleted: true }
     ) {
       id
-      crash_id
+      crash_pk
     }
   }
 `;
