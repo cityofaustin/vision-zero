@@ -17,7 +17,7 @@ update atd_txdot_person set prsn_ethnicity_id = 0 where prsn_ethnicity_id = 94;
 -- create view of all people records which have been edited
 create materialized view people_diffs as with unioned_people_edits as (
     select
-        crash_id,
+        crash_id as cris_crash_id,
         unit_nbr,
         prsn_nbr,
         prsn_type_id,
@@ -34,7 +34,7 @@ create materialized view people_diffs as with unioned_people_edits as (
         atd_txdot_primaryperson
     union all
     select
-        crash_id,
+        crash_id as cris_crash_id,
         unit_nbr,
         prsn_nbr,
         prsn_type_id,
@@ -56,7 +56,7 @@ create materialized view people_diffs as with unioned_people_edits as (
 joined_people as (
     select
         people_unified.id,
-        people_edit.crash_id,
+        people_edit.cris_crash_id,
         units.unit_nbr,
         people_unified.prsn_nbr,
         people_edit.prsn_type_id as prsn_type_id_edit,
@@ -82,8 +82,8 @@ joined_people as (
     from
         people as people_unified
     left join units on people_unified.unit_id = units.id
-    left join crashes on crashes.id = units.crash_id
-    left join unioned_people_edits as people_edit on crashes.crash_id = people_edit.crash_id
+    left join crashes on crashes.id = units.crash_pk
+    left join unioned_people_edits as people_edit on crashes.cris_crash_id = people_edit.cris_crash_id
         and units.unit_nbr = people_edit.unit_nbr
         and people_unified.prsn_nbr = people_edit.prsn_nbr
 ),
@@ -94,7 +94,7 @@ joined_people as (
 computed_diffs as (
     select
         id,
-        crash_id,
+        cris_crash_id,
         unit_nbr,
         prsn_nbr,
         case when prsn_type_id_edit is not null
@@ -180,6 +180,14 @@ from (
         people_diffs) as pd
 where
     pe.id = pd.id;
+
+
+-- refresh da view
+refresh materialized view people_diffs;
+
+-- see if there are remaining diffs, which is the result of dupe person records :/
+-- and there's nothing to be done about this :/
+select * from people_diffs;
 
 -- tear down
 drop materialized view people_diffs;
