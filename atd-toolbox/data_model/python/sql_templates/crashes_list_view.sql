@@ -173,6 +173,7 @@ create or replace view person_injury_metrics_view as (
     left join
         public.crashes as crashes
         on units.crash_id = crashes.id
+    where people.is_deleted = false
 );
 
 create or replace view unit_injury_metrics_view as
@@ -215,6 +216,7 @@ create or replace view unit_injury_metrics_view as
     left join
         person_injury_metrics_view
         on units.id = person_injury_metrics_view.unit_id
+    where units.is_deleted = false
     group by
         units.id
 );
@@ -320,6 +322,7 @@ create or replace view crash_injury_metrics_view as
     left join
         person_injury_metrics_view
         on crashes.id = person_injury_metrics_view.crash_id
+    where crashes.is_deleted = false
     group by
         crashes.id,
         crashes.crash_id
@@ -562,7 +565,7 @@ left join lateral (
 left join
     lookups.collsn_lkp
     on public.crashes.fhe_collsn_id = lookups.collsn_lkp.id
-where crashes.crash_timestamp >= (now() - '5 years'::interval)::date
+where crashes.is_deleted = false and crashes.crash_timestamp >= (now() - '5 years'::interval)::date
 union all
 select
     aab.form_id as crash_id,
