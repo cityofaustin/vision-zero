@@ -48,7 +48,6 @@ select_permissions:
         - in_austin_full_purpose
         - intrsct_relat_id
         - is_manual_geocode
-        - is_temp_record
         - latitude
         - law_enf_fatality_count
         - light_cond_id
@@ -109,7 +108,6 @@ select_permissions:
         - in_austin_full_purpose
         - intrsct_relat_id
         - is_manual_geocode
-        - is_temp_record
         - latitude
         - law_enf_fatality_count
         - light_cond_id
@@ -163,7 +161,6 @@ select_permissions:
         - has_no_cris_coordinates
         - in_austin_full_purpose
         - is_manual_geocode
-        - is_temp_record
         - onsys_fl
         - private_dr_fl
         - road_constr_zone_fl
