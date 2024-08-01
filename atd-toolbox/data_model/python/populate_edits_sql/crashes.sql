@@ -71,7 +71,7 @@ computed_diffs as (
         case when crash.law_enforcement_ytd_fatality_num_edit is distinct from crash.law_enforcement_ytd_fatality_num_unified
             and law_enforcement_ytd_fatality_num_edit is not null then
             crash.law_enforcement_ytd_fatality_num_edit
-        end as law_enforcement_fatality_num
+        end as law_enforcement_ytd_fatality_num
     from
         joined_crashes as crash
 )
@@ -89,7 +89,7 @@ where
     or road_constr_zone_fl is not null
     or case_id is not null
     or intrsct_relat_id is not null
-    or law_enforcement_fatality_num is not null
+    or law_enforcement_ytd_fatality_num is not null
 order by
     id asc;
 
@@ -105,7 +105,7 @@ set
     road_constr_zone_fl = crash_updates.road_constr_zone_fl,
     case_id = crash_updates.case_id,
     intrsct_relat_id = crash_updates.intrsct_relat_id,
-    law_enforcement_fatality_num = crash_updates.law_enforcement_fatality_num,
+    law_enforcement_ytd_fatality_num = crash_updates.law_enforcement_ytd_fatality_num,
     updated_by = 'legacy-vz-user'
 from (
     select
