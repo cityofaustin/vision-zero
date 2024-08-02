@@ -76,7 +76,7 @@ select_permissions:
   - role: vz-admin
     permission:
       columns:
-        - crash_id
+        - crash_pk
         - id
       filter: {}
     comment: ""
