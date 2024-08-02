@@ -11,6 +11,7 @@ select
 people.id as person_id,
 crashes.id as crash_pk,
 crashes.cris_crash_id,
+crashes.record_locator,
 units.id as unit_id,
 CONCAT_WS(' ', people.prsn_first_name, people.prsn_mid_name, people.prsn_last_name) as victim_name,
 TO_CHAR(crashes.crash_timestamp at time zone 'US/Central', 'yyyy') AS year,
@@ -48,5 +49,5 @@ crashes.engineering_area
     people 
   left join units on people.unit_id = units.id
   left join crashes on units.crash_pk = crashes.id
-where crashes.in_austin_full_purpose = true AND people.prsn_injry_sev_id = 4 AND crashes.private_dr_fl = false;
+where crashes.in_austin_full_purpose = true AND people.prsn_injry_sev_id = 4 AND crashes.private_dr_fl = false AND crashes.is_deleted = false;
 

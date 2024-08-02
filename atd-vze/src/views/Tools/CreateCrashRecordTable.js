@@ -19,14 +19,22 @@ import {
   ModalHeader,
   Table,
 } from "reactstrap";
-import { SOFT_DELETE_TEMP_RECORD } from "../../queries/tempRecords";
+import { SOFT_DELETE_TEMP_RECORDS } from "../../queries/tempRecords";
+import { formatDateTimeString } from "../../helpers/format";
 
-const CreateCrashRecordTable = ({ crashesData, loading, error, refetch }) => {
+const CreateCrashRecordTable = ({
+  crashesData,
+  loading,
+  error,
+  refetch,
+  userEmail,
+  setSuccessfulNewRecordId,
+}) => {
   const [crashSearch, setCrashSearch] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
   const [feedback, setFeedback] = useState(null);
-  const [deleteRecord] = useMutation(SOFT_DELETE_TEMP_RECORD);
+  const [deleteTempRecords] = useMutation(SOFT_DELETE_TEMP_RECORDS);
 
   if (loading) return "Loading...";
   if (error) return `Error! ${error.message}`;
@@ -40,12 +48,14 @@ const CreateCrashRecordTable = ({ crashesData, loading, error, refetch }) => {
   };
 
   /**
-   * Deletes all the temporary records in the database
+   * Soft deletes the temporary crash and all its associated unit and people records
    */
   const handleDelete = () => {
-    setFeedback(null);
-    deleteRecord({ variables: { recordId: deleteId } })
+    deleteTempRecords({
+      variables: { recordId: deleteId, updatedBy: userEmail },
+    })
       .then(() => {
+        setSuccessfulNewRecordId(null);
         setDeleteId(null);
         setFeedback(`Crash ID ${deleteId} has been deleted.`);
         toggleModalDelete();
@@ -65,7 +75,7 @@ const CreateCrashRecordTable = ({ crashesData, loading, error, refetch }) => {
   };
 
   /**
-   * Commits the crash_id to be deleted to state, and prompts for deletion.
+   * Commits the crash record id to be deleted to state, and prompts for deletion.
    * @param {int} recordId - The record id to be deleted.
    */
   const openModalDelete = recordId => {
@@ -127,9 +137,9 @@ const CreateCrashRecordTable = ({ crashesData, loading, error, refetch }) => {
                           </Link>
                         </td>
                         <td>{item.case_id}</td>
-                        <td>{item.crash_timestamp}</td>
+                        <td>{formatDateTimeString(item.crash_timestamp)}</td>
                         <td>{item.updated_by}</td>
-                        <td>{item.updated_at}</td>
+                        <td>{formatDateTimeString(item.updated_at)}</td>
                         <td>
                           <Button
                             color="danger"
