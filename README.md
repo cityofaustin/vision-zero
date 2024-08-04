@@ -35,13 +35,18 @@ The helper script, `vision-zero`, makes it easy to spin up your local Vision Zer
 To use the helper, create a new Python environment and install the packages in [requirements.txt](requirements.txt).
 
 
-#### `vision-zero replicate-db`
+#### Start the DB
+
+```shell
+$ vision-zero replicate-db
+```
+
+This command will:
 
 - Download a snapshot of the production database
 - Store the file in `./atd-vzd/snapshots/visionzero-{date}-{with|without}-change-log.sql
 - Drop local `atd_vz_data` database
 - Create and repopulate the database from the snapshot
-
 
 Note: the `-f / --filename` flag can be optionally used to point to a specific data dump .sql file to use to restore.
 
@@ -96,7 +101,6 @@ Staging site: https://visionzero-staging.austinmobility.io/viewer/
 ## atd-toolbox
 
 Collection of utilities related to maintaining data and other resources related to the Vision Zero Data projects.
-
 
 ## License
 
