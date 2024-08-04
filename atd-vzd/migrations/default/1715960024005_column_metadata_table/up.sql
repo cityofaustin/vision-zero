@@ -141,11 +141,15 @@ insert into _column_metadata (column_name, record_type, is_imported_from_cris)
 insert into _column_metadata (column_name, record_type, is_imported_from_cris)
         values ('rpt_hwy_num', 'crashes', true);
 insert into _column_metadata (column_name, record_type, is_imported_from_cris)
+        values ('rpt_hwy_sfx', 'crashes', true);
+insert into _column_metadata (column_name, record_type, is_imported_from_cris)
         values ('rpt_ref_mark_offset_amt', 'crashes', true);
 insert into _column_metadata (column_name, record_type, is_imported_from_cris)
         values ('rpt_sec_block_num', 'crashes', true);
 insert into _column_metadata (column_name, record_type, is_imported_from_cris)
         values ('rpt_sec_hwy_num', 'crashes', true);
+insert into _column_metadata (column_name, record_type, is_imported_from_cris)
+        values ('rpt_sec_hwy_sfx', 'crashes', true);
 insert into _column_metadata (column_name, record_type, is_imported_from_cris)
         values ('rpt_sec_street_desc', 'crashes', true);
 insert into _column_metadata (column_name, record_type, is_imported_from_cris)
