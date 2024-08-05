@@ -93,6 +93,8 @@ insert into _column_metadata (column_name, record_type, is_imported_from_cris)
 insert into _column_metadata (column_name, record_type, is_imported_from_cris)
         values ('rpt_street_sfx', 'crashes', true);
 insert into _column_metadata (column_name, record_type, is_imported_from_cris)
+        values ('rpt_ref_mark_nbr', 'crashes', true);
+insert into _column_metadata (column_name, record_type, is_imported_from_cris)
         values ('rpt_ref_mark_dir', 'crashes', true);
 insert into _column_metadata (column_name, record_type, is_imported_from_cris)
         values ('rpt_ref_mark_dist_uom', 'crashes', true);
