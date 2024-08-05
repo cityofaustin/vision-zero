@@ -680,6 +680,23 @@
     "source": "cris"
   },
   {
+    "column_name": "rpt_ref_mark_nbr",
+    "data_type": "text",
+    "data_type_constraint": "",
+    "foreign_column_cascade": "",
+    "foreign_column_name": "",
+    "foreign_table_name": "",
+    "foreign_table_schema": "",
+    "is_cris_column": true,
+    "is_edits_column": true,
+    "is_existing_foreign_table": false,
+    "is_primary_key": false,
+    "is_unified_column": true,
+    "note": "",
+    "record_type": "crashes",
+    "source": "cris"
+  },
+  {
     "column_name": "rpt_ref_mark_dir",
     "data_type": "text",
     "data_type_constraint": "",
