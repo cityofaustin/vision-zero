@@ -37,14 +37,15 @@ select_permissions:
         - ytd_fatality
         - crash_id
         - cris_crash_id
+        - engineering_area
         - person_id
         - unit_id
         - case_id
         - crash_date_ct
         - crash_time_ct
-        - engineering_area
         - law_enforcement_ytd_fatality_num
         - location
+        - record_locator
         - victim_name
         - year
       filter: {}
@@ -57,14 +58,15 @@ select_permissions:
         - ytd_fatality
         - crash_id
         - cris_crash_id
+        - engineering_area
         - person_id
         - unit_id
         - case_id
         - crash_date_ct
         - crash_time_ct
-        - engineering_area
         - law_enforcement_ytd_fatality_num
         - location
+        - record_locator
         - victim_name
         - year
       filter: {}
@@ -77,14 +79,15 @@ select_permissions:
         - ytd_fatality
         - crash_id
         - cris_crash_id
+        - engineering_area
         - person_id
         - unit_id
         - case_id
         - crash_date_ct
         - crash_time_ct
-        - engineering_area
         - law_enforcement_ytd_fatality_num
         - location
+        - record_locator
         - victim_name
         - year
       filter: {}

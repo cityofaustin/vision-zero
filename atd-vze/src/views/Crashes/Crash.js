@@ -126,15 +126,9 @@ function Crash(props) {
     <div className="animated fadeIn">
       <Row>
         <Col>
-          {primaryAddress && secondaryAddress ? (
-            <h2 className="h2 mb-3">{`${primaryAddress} & ${secondaryAddress}`}</h2>
-          ) : (
-            <h2 className="h2 mb-3">{`${
-              primaryAddress ? primaryAddress : "PRIMARY ADDRESS MISSING"
-            } & ${
-              secondaryAddress ? secondaryAddress : "SECONDARY ADDRESS MISSING"
-            }`}</h2>
-          )}
+          <h2 className="h2 mb-3">{`${primaryAddress ? primaryAddress : ""} ${
+            secondaryAddress ? "& " + secondaryAddress : ""
+          }`}</h2>
         </Col>
       </Row>
       <Row>
