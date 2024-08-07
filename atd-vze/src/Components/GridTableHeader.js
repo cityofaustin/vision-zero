@@ -20,8 +20,9 @@ const GridTableHeader = ({
    * @param {boolean} ascending - true if ordering in ascending mode
    * @returns {object} jsx component
    */
-  const renderLabel = (col, sortable = false, ascending = false) => {
-    if (sortable) {
+  const renderLabel = (col, ascending, isSorting) => {
+    if (isSorting) {
+      // show a sort arrow next to the column that's actively being sorted
       return (
         <StyledArrow>
           <i className={`fa fa-arrow-circle-${ascending ? "up" : "down"}`} />
@@ -61,10 +62,9 @@ const GridTableHeader = ({
                   {renderLabel(
                     // Get a human-readable label string
                     query.getLabel(column, "table"),
-                    // If it is sortable, render as such
-                    query.isSortable(column),
                     // If sort column is defined, use sort order, or false as default
-                    sortColumn === column ? sortOrder === "asc" : false
+                    sortColumn === column ? sortOrder === "asc" : false,
+                    sortColumn === column
                   )}
                 </th>
               )
