@@ -17,4 +17,3 @@ FROM
   crashes
 WHERE
   recommendations.atd_txdot_crashes_crash_id=crashes.cris_crash_id;
-  
