@@ -48,6 +48,7 @@ export const GET_CRASH = gql`
       latitude
       longitude
       location_id
+      is_temp_record
       crash_injury_metrics_view {
         vz_fatality_count
         sus_serious_injry_count
