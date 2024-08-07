@@ -182,10 +182,10 @@ const GridTable = ({
     } else if (sortColumn === col) {
       // Else if the current sortColumn is the same as the new
       // then invert values and repeat sort on column
-      sortOrder === "desc" ? setSortOrder("asc") : setSortOrder("desc");
+      sortOrder === "desc_nulls_last" ? setSortOrder("asc") : setSortOrder("desc_nulls_last");
     } else if (sortColumn !== col) {
       // Sort different column after initial sort, then reset
-      setSortOrder("desc");
+      setSortOrder("desc_nulls_last");
       setSortColumn(col);
     }
   };
