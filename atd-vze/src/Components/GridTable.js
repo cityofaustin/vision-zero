@@ -31,7 +31,7 @@ import GridTableDoughnut from "./GridTableDoughnut";
 import GridTableHorizontalBar from "./GridTableHorizontalBar";
 import GridTableFilterBadges from "./GridTableFilterBadges";
 
-const codeName = "jester";
+const codeName = "asclepias";
 
 const GridTable = ({
   title,
