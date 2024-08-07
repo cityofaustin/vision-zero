@@ -168,7 +168,6 @@ const CreateCrashRecordTable = ({
         </ModalHeader>
         <ModalBody>
           Are you sure you want to delete crash id <strong>T{deleteId}</strong>?
-          This cannot be undone.
         </ModalBody>
         <ModalFooter>
           <Button color="danger" onClick={handleDelete}>

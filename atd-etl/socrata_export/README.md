@@ -1,14 +1,13 @@
 # Open Data Portal (Socrata) Export
 
-This ETL downloads crash and people records from the VZ database and publishes them to the Open Data Portal, formerly known as Socrata. 
+This ETL downloads crash and people records from the VZ database and publishes them to the Open Data Portal, formerly known as Socrata.
 
 Records are pushed to two datasets, a crash-level dataset and a person-level dataset:
 
-| name | dataset staging | dataset prod
-|-|-|-
-|crashes|[`3aut-fhzp`](https://datahub.austintexas.gov/Transportation-and-Mobility/Test-Crash-Report-Data/3aut-fhzp/about_data) | [`y2wy-tgr5`](https://datahub.austintexas.gov/Transportation-and-Mobility/Austin-Crash-Report-Data-Crash-Level-Records/y2wy-tgr5/about_data)
-|people|[`v3x4-fjgm`](https://datahub.austintexas.gov/Transportation-and-Mobility/Test-Austin-Crash-Demographic-Statistics-incomplet/v3x4-fjgm) | [`xecs-rpy9`](https://data.austintexas.gov/Transportation-and-Mobility/Austin-Crash-Report-Data-Crash-Victim-Demographic-/xecs-rpy9/about_data)
-
+| name    | dataset staging                                                                                                                         | dataset prod                                                                                                                                    |
+| ------- | --------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| crashes | [`3aut-fhzp`](https://datahub.austintexas.gov/Transportation-and-Mobility/Test-Crash-Report-Data/3aut-fhzp/about_data)                  | [`y2wy-tgr5`](https://datahub.austintexas.gov/Transportation-and-Mobility/Austin-Crash-Report-Data-Crash-Level-Records/y2wy-tgr5/about_data)    |
+| people  | [`v3x4-fjgm`](https://datahub.austintexas.gov/Transportation-and-Mobility/Test-Austin-Crash-Demographic-Statistics-incomplet/v3x4-fjgm) | [`xecs-rpy9`](https://data.austintexas.gov/Transportation-and-Mobility/Austin-Crash-Report-Data-Crash-Victim-Demographic-/xecs-rpy9/about_data) |
 
 ## Quick start
 
