@@ -400,7 +400,6 @@ const GridTable = ({
 
   // If we have data
   if (data[query.table]) {
-    loading = false;
     totalRecords = data[query.table + "_aggregate"]["aggregate"]["count"];
     totalPages = Math.ceil(totalRecords / limit);
 
@@ -504,17 +503,23 @@ const GridTable = ({
                 />
               </Row>
               <ButtonToolbar className="mb-3 justify-content-between">
-                {hasDateRange && (
-                  <ButtonGroup>
-                    <GridDateRange
-                      setDateRangeFilter={setDateRangeFilter}
-                      initStartDate={dateRangeFilter.startDate}
-                      initEndDate={dateRangeFilter.endDate}
-                      minDate={minDate}
-                    />
-                  </ButtonGroup>
-                )}
-
+                <div>
+                  {hasDateRange && (
+                    <ButtonGroup className="mr-5">
+                      <GridDateRange
+                        setDateRangeFilter={setDateRangeFilter}
+                        initStartDate={dateRangeFilter.startDate}
+                        initEndDate={dateRangeFilter.endDate}
+                        minDate={minDate}
+                      />
+                    </ButtonGroup>
+                  )}
+                  {loading && (
+                    <ButtonGroup>
+                      <Spinner color="primary" />
+                    </ButtonGroup>
+                  )}
+                </div>
                 <ButtonGroup className="mb-2 float-right">
                   <GridTablePagination
                     moveNext={moveNextPage}
@@ -525,7 +530,6 @@ const GridTable = ({
                     totalPages={totalPages}
                     handleRowClick={handleRowClick}
                   />
-
                   {columnsToExport && (
                     <GridExportData
                       query={query}
@@ -537,20 +541,17 @@ const GridTable = ({
                   )}
                 </ButtonGroup>
               </ButtonToolbar>
-              {loading ? (
-                <Spinner className="mt-2" color="primary" />
-              ) : (
-                <Table responsive>
-                  <GridTableHeader
-                    query={query}
-                    handleTableHeaderClick={handleTableHeaderClick}
-                    sortColumn={sortColumn}
-                    sortOrder={sortOrder}
-                    helperText={helperText}
-                  />
-                  <tbody>{data && dataEntries}</tbody>
-                </Table>
-              )}
+
+              <Table responsive>
+                <GridTableHeader
+                  query={query}
+                  handleTableHeaderClick={handleTableHeaderClick}
+                  sortColumn={sortColumn}
+                  sortOrder={sortOrder}
+                  helperText={helperText}
+                />
+                <tbody>{data && dataEntries}</tbody>
+              </Table>
             </CardBody>
           </Card>
         </Col>
