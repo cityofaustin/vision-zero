@@ -5,11 +5,9 @@ select_permissions:
   - role: editor
     permission:
       columns:
-        - crash_count
-        - total_est_comp_cost
+        - cr3_crash_count
+        - non_cr3_crash_count
         - location_id
-        - sus_serious_injry_count
-        - vz_fatality_count
         - description
       filter: {}
       allow_aggregations: true
@@ -17,11 +15,9 @@ select_permissions:
   - role: readonly
     permission:
       columns:
-        - crash_count
-        - total_est_comp_cost
+        - cr3_crash_count
+        - non_cr3_crash_count
         - location_id
-        - sus_serious_injry_count
-        - vz_fatality_count
         - description
       filter: {}
       allow_aggregations: true
@@ -29,11 +25,9 @@ select_permissions:
   - role: vz-admin
     permission:
       columns:
-        - crash_count
-        - total_est_comp_cost
+        - cr3_crash_count
+        - non_cr3_crash_count
         - location_id
-        - sus_serious_injry_count
-        - vz_fatality_count
         - description
       filter: {}
       allow_aggregations: true

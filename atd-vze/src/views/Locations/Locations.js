@@ -27,7 +27,7 @@ let queryConf = {
       label_table: "Location",
       type: "String",
     },
-    crash_count: {
+    cr3_crash_count: {
       searchable: false,
       sortable: true,
       label_search: null,
@@ -35,33 +35,17 @@ let queryConf = {
       default: 0,
       type: "Integer",
     },
-    vz_fatality_count: {
-      searchable: false,
-      sortable: true,
-      label_search: null,
-      label_table: "Total Deaths (CRIS)",
-      default: 0,
-      type: "Integer",
-    },
-    sus_serious_injry_count: {
-      searchable: false,
-      sortable: true,
-      label_search: null,
-      label_table: "Total Suspected Serious Injuries",
-      default: 0,
-      type: "Integer",
-    },
-    total_est_comp_cost: {
-      searchable: false,
-      sortable: true,
-      label_search: null,
-      label_table: "Total Est Comp. Cost", // Both CR3 + Blueform
-      default: 0,
-      type: "Currency",
-    },
+    non_cr3_crash_count: {
+        searchable: false,
+        sortable: true,
+        label_search: null,
+        label_table: "Total Crashes",
+        default: 0,
+        type: "Integer",
+      },
   },
   order_by: {
-    total_est_comp_cost: "desc_nulls_last",
+    cr3_crash_count: "desc_nulls_last",
   },
   where: {},
   limit: 25,
