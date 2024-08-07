@@ -103,4 +103,4 @@ from
     unit_diffs;
 
 -- tear down
-drop materalized view unit_diffs;
+drop materialized view unit_diffs;
