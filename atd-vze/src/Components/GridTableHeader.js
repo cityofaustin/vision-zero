@@ -25,7 +25,7 @@ const GridTableHeader = ({
       // show a sort arrow next to the column that's actively being sorted
       return (
         <StyledArrow>
-          <i className={`fa fa-arrow-circle-${ascending ? "down" : "up"}`} />
+          <i className={`fa fa-arrow-circle-${ascending ? "up" : "down"}`} />
           &nbsp;{col}
         </StyledArrow>
       );
