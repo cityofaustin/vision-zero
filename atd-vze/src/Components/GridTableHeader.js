@@ -58,6 +58,7 @@ const GridTableHeader = ({
                       : null
                   }
                   key={`th-${index}`}
+                  style={{cursor: "pointer"}}
                 >
                   {renderLabel(
                     // Get a human-readable label string
