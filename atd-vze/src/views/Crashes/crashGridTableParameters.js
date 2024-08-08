@@ -37,19 +37,19 @@ export const crashGridTableColumns = {
   sus_serious_injry_count: {
     searchable: false,
     sortable: true,
-    label_table: "Suspected Serious Injury Count",
+    label_table: "Sus Serious Injuries Count",
     type: "Int",
   },
   vz_fatality_count: {
     searchable: false,
     sortable: true,
-    label_table: "VZ Death Count",
+    label_table: "Death Count",
     type: "Date",
   },
   est_comp_cost_crash_based: {
     searchable: false,
     sortable: true,
-    label_table: "Est Comprehensive Cost",
+    label_table: "Est Comp Cost",
     type: "Currency",
   },
   collsn_desc: {
@@ -106,7 +106,7 @@ export const locationCrashGridTableColumns = {
     vz_fatality_count: {
       searchable: false,
       sortable: true,
-      label_table: "VZ Death Count",
+      label_table: "Death Count",
       type: "Date",
     },
     est_comp_cost_crash_based: {
