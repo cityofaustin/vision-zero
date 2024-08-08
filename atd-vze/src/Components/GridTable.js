@@ -49,7 +49,7 @@ const GridTable = ({
 }) => {
   // Load table filters from localStorage by title
   const savedFilterState = JSON.parse(
-    localStorage.getItem(`${codeName}saved${title}Config`)
+    localStorage.getItem(`${codeName}_saved_${title}_config`)
   );
 
   // Return saved filters if they exist
@@ -109,7 +109,7 @@ const GridTable = ({
       dateRangeFilter,
     };
     localStorage.setItem(
-      `${codeName}saved${title}Config`,
+      `${codeName}_saved_${title}_config`,
       JSON.stringify(stateForFilters)
     );
   });
