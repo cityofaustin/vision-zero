@@ -332,8 +332,6 @@ create or replace view crash_injury_metrics_view as
 create or replace view crashes_list_view as with geocode_status as (
     select
         cris.id,
-        cris.latitude is null or cris.longitude is null
-        as has_no_cris_coordinates,
         edits.latitude is not null and edits.longitude is not null
         as is_manual_geocode
     from public.crashes_cris as cris
@@ -392,7 +390,6 @@ select
     lookups.injry_sev_lkp.label as crash_injry_sev_desc,
     lookups.collsn_lkp.label as collsn_desc,
     geocode_status.is_manual_geocode,
-    geocode_status.has_no_cris_coordinates,
     to_char(
         public.crashes.crash_timestamp at time zone 'US/Central', 'YYYY-MM-DD'
     ) as crash_date_ct,
@@ -424,7 +421,7 @@ left join
     lookups.injry_sev_lkp
     on lookups.injry_sev_lkp.id = crash_injury_metrics_view.crash_injry_sev_id
 where crashes.is_deleted = false
-order by id asc;
+order by crash_timestamp desc;
 
 
 drop view locations_list_view;

@@ -58,12 +58,6 @@ export const crashGridTableColumns = {
     label_table: "Collision Description",
     type: "String",
   },
-  is_manual_geocode: {
-    searchable: false,
-    sortable: true,
-    label_table: "Manual geocode",
-    type: "Boolean",
-  },
 };
 
 
@@ -133,12 +127,6 @@ export const locationCrashGridTableColumns = {
       label_table: "Unit Description",
       type: "String",
       hidden: true,
-    },
-    is_manual_geocode: {
-      searchable: false,
-      sortable: true,
-      label_table: "Manual geocode",
-      type: "Boolean",
     },
   };
 
@@ -272,28 +260,6 @@ export const crashGridTableAdvancedFilters = {
     icon: "map-marker",
     label: "Geography",
     filters: [
-      {
-        id: "geo_geocoded",
-        label: "Has Been Geocoded",
-        filter: {
-          where: [
-            {
-              is_manual_geocode: "_eq: true",
-            },
-          ],
-        },
-      },
-      {
-        id: "geo_confirmed_coordinates",
-        label: "No CRIS Coordinates",
-        filter: {
-          where: [
-            {
-              has_no_cris_coordinates: "_eq: true",
-            },
-          ],
-        },
-      },
       {
         id: "geo_afd",
         label: "Include Outside Of Austin Full Purpose",
