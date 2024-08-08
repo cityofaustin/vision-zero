@@ -12,9 +12,7 @@ create index on public.crashes (crash_timestamp);
 create index on public.crashes (record_locator);
 create index on public.crashes (private_dr_fl);
 create index on public.crashes (in_austin_full_purpose);
+create index on public.crashes (is_deleted);
+create index on public.crashes (primary_address);
 create index on public.atd_txdot_locations (council_district);
--- more todo
--- address fields
-
-
 
