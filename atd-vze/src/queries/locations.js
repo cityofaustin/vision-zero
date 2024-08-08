@@ -24,8 +24,9 @@ export const GET_LOCATION = gql`
         count
       }
       locationTotals: locations_list_view {
-        crash_count
-        total_est_comp_cost
+        cr3_crash_count
+        non_cr3_crash_count
+        # total_est_comp_cost
       }
     }
   }
