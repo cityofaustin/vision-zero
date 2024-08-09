@@ -12,7 +12,8 @@ export const mapRequestFields = [
   "sus_serious_injry_cnt",
   "latitude",
   "longitude",
-  "crash_id",
+  "id",
+  "cris_crash_id",
   "units_involved",
   "crash_timestamp_ct",
 ];

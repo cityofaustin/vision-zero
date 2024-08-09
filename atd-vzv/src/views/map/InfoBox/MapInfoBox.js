@@ -37,7 +37,7 @@ const MapInfoBox = React.memo(
         title: "Modes Involved",
         content: info.units_involved.split(" &").join(", "),
       },
-      { title: "Crash ID", content: info.crash_id },
+      { title: "Crash ID", content: info.cris_crash_id || info.id },
     ];
 
     const cardConfig = {
