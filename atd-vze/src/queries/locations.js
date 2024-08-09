@@ -9,7 +9,6 @@ export const GET_LOCATION = gql`
       geometry
       latitude
       longitude
-      last_update
       location_notes {
         id
         created_at

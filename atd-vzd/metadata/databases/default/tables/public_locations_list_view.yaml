@@ -6,9 +6,10 @@ select_permissions:
     permission:
       columns:
         - cr3_crash_count
-        - non_cr3_crash_count
-        - location_id
+        - crash_count
         - description
+        - location_id
+        - non_cr3_crash_count
       filter: {}
       allow_aggregations: true
     comment: ""
@@ -16,9 +17,10 @@ select_permissions:
     permission:
       columns:
         - cr3_crash_count
-        - non_cr3_crash_count
-        - location_id
+        - crash_count
         - description
+        - location_id
+        - non_cr3_crash_count
       filter: {}
       allow_aggregations: true
     comment: ""
@@ -26,9 +28,10 @@ select_permissions:
     permission:
       columns:
         - cr3_crash_count
-        - non_cr3_crash_count
-        - location_id
+        - crash_count
         - description
+        - location_id
+        - non_cr3_crash_count
       filter: {}
       allow_aggregations: true
     comment: ""
