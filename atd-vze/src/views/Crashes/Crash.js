@@ -94,7 +94,10 @@ function Crash(props) {
   };
 
   const crashRecord = {
-    crash: crashData?.crashes?.[0] || { crash_injury_metrics_view: {} },
+    crash: crashData?.crashes?.[0] || {
+      crash_injury_metrics_view: {},
+      crashes_list_view: {},
+    },
   };
   const crashPk = crashRecord?.crash?.id;
 
@@ -120,7 +123,7 @@ function Crash(props) {
   const hasLocation = crashRecord?.crash["location_id"];
   const hasCoordinates = !!latitude && !!longitude;
 
-  return !crashData ? (
+  return !crashData.crashes[0] ? (
     <Page404 />
   ) : (
     <div className="animated fadeIn">
