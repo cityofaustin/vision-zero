@@ -140,11 +140,11 @@ function Crash(props) {
         <Row>
           <Col>
             <Alert color="warning">
-              This crash is not included in Vision Zero statistical reporting
-              because{" "}
+              <i className="fa fa-exclamation-triangle" /> This crash is not
+              included in Vision Zero statistical reporting because{" "}
               {isPrivateDrive
                 ? "it occurred on a private drive"
-                : "it is located outside of Austin Full Purpose"}
+                : "it is located outside of the Austin full purpose jurisdiction"}
             </Alert>
           </Col>
         </Row>
@@ -217,7 +217,7 @@ function Crash(props) {
               {!hasCoordinates && (
                 <Alert color="danger">
                   Crash record is missing latitude and longitude values required
-                  for map display.
+                  for map display
                 </Alert>
               )}
               {!isEditingCoords ? (
