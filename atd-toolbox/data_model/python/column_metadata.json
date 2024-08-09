@@ -597,7 +597,7 @@
   {
     "column_name": "crash_timestamp",
     "data_type": "timestamp with time zone",
-    "data_type_constraint": "",
+    "data_type_constraint": "not null",
     "foreign_column_cascade": "",
     "foreign_column_name": "",
     "foreign_table_name": "",
@@ -1906,7 +1906,7 @@
   {
     "column_name": "unit_nbr",
     "data_type": "integer",
-    "data_type_constraint": "",
+    "data_type_constraint": "not null",
     "foreign_column_cascade": "",
     "foreign_column_name": "",
     "foreign_table_name": "",
@@ -2433,7 +2433,7 @@
   {
     "column_name": "unit_nbr",
     "data_type": "integer",
-    "data_type_constraint": "",
+    "data_type_constraint": "not null",
     "foreign_column_cascade": "",
     "foreign_column_name": "",
     "foreign_table_name": "",

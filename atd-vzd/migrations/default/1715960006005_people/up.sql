@@ -30,7 +30,7 @@ create table public.people_cris (
     prsn_taken_to text,
     prsn_type_id integer references lookups.prsn_type (id) on update cascade on delete cascade,
     unit_id integer not null references public.units_cris (id) on update cascade on delete cascade,
-    unit_nbr integer
+    unit_nbr integer not null
 );
 
 create table public.people_edits (
