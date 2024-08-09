@@ -135,6 +135,7 @@ create table public.crashes (
     cris_crash_id integer unique,
     engineering_area integer references public.engineering_areas (area_id) on update cascade on delete set null,
     fhe_collsn_id integer references lookups.collsn (id) on update cascade on delete cascade,
+    geom GEOMETRY(Point, 4326) GENERATED ALWAYS AS (ST_SetSRID(ST_MakePoint(longitude, latitude), 4326)) STORED,
     in_austin_full_purpose boolean,
     intrsct_relat_id integer references lookups.intrsct_relat (id) on update cascade on delete cascade,
     investigat_agency_id integer references lookups.agency (id) on update cascade on delete cascade,
