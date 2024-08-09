@@ -13,6 +13,7 @@ BEGIN
         cr3_stored_fl,
         crash_speed_limit,
         crash_timestamp,
+        created_by,
         cris_crash_id,
         fhe_collsn_id,
         id,
@@ -62,9 +63,8 @@ BEGIN
         toll_road_fl,
         traffic_cntl_id,
         txdot_rptable_fl,
-        wthr_cond_id,
-        created_by,
-        updated_by
+        updated_by,
+        wthr_cond_id
     ) values (
         new.active_school_zone_fl,
         new.at_intrsct_fl,
@@ -73,6 +73,7 @@ BEGIN
         new.cr3_stored_fl,
         new.crash_speed_limit,
         new.crash_timestamp,
+        new.created_by,
         new.cris_crash_id,
         new.fhe_collsn_id,
         new.id,
@@ -122,9 +123,8 @@ BEGIN
         new.toll_road_fl,
         new.traffic_cntl_id,
         new.txdot_rptable_fl,
-        new.wthr_cond_id,
-        new.created_by,
-        new.updated_by
+        new.updated_by,
+        new.wthr_cond_id
     );
     -- insert new (editable) vz record (only record ID)
     INSERT INTO public.crashes_edits (id) values (new.id);
@@ -155,6 +155,7 @@ BEGIN
         contrib_factr_p1_id,
         contrib_factr_p2_id,
         crash_pk,
+        created_by,
         cris_crash_id,
         e_scooter_id,
         first_harm_evt_inv_id,
@@ -167,6 +168,7 @@ BEGIN
         rpt_autonomous_level_engaged_id,
         unit_desc_id,
         unit_nbr,
+        updated_by,
         veh_body_styl_id,
         veh_damage_description1_id,
         veh_damage_description2_id,
@@ -178,9 +180,7 @@ BEGIN
         veh_mod_id,
         veh_mod_year,
         veh_trvl_dir_id,
-        vin,
-        created_by,
-        updated_by
+        vin
     ) values (
         new.autonomous_unit_id,
         new.contrib_factr_1_id,
@@ -189,6 +189,7 @@ BEGIN
         new.contrib_factr_p1_id,
         new.contrib_factr_p2_id,
         new.crash_pk,
+        new.created_by,
         new.cris_crash_id,
         new.e_scooter_id,
         new.first_harm_evt_inv_id,
@@ -201,6 +202,7 @@ BEGIN
         new.rpt_autonomous_level_engaged_id,
         new.unit_desc_id,
         new.unit_nbr,
+        new.updated_by,
         new.veh_body_styl_id,
         new.veh_damage_description1_id,
         new.veh_damage_description2_id,
@@ -212,9 +214,7 @@ BEGIN
         new.veh_mod_id,
         new.veh_mod_year,
         new.veh_trvl_dir_id,
-        new.vin,
-        new.created_by,
-        new.updated_by
+        new.vin
     );
     -- insert new (editable) vz record (only record ID)
     INSERT INTO public.units_edits (id) values (new.id);
@@ -238,6 +238,7 @@ $$
 BEGIN
     -- insert new combined / official record
     INSERT INTO public.people (
+        created_by,
         drvr_city_name,
         drvr_drg_cat_1_id,
         drvr_zip,
@@ -267,9 +268,9 @@ BEGIN
         prsn_taken_to,
         prsn_type_id,
         unit_id,
-        created_by,
         updated_by
     ) values (
+        new.created_by,
         new.drvr_city_name,
         new.drvr_drg_cat_1_id,
         new.drvr_zip,
@@ -299,7 +300,6 @@ BEGIN
         new.prsn_taken_to,
         new.prsn_type_id,
         new.unit_id,
-        new.created_by,
         new.updated_by
     );
     -- insert new (editable) vz record (only record ID)

@@ -19,6 +19,34 @@ insert into _column_metadata (column_name, record_type, is_imported_from_cris)
 insert into _column_metadata (column_name, record_type, is_imported_from_cris)
         values ('cris_crash_id', 'charges', true);
 insert into _column_metadata (column_name, record_type, is_imported_from_cris)
+        values ('created_at', 'crashes', false);
+insert into _column_metadata (column_name, record_type, is_imported_from_cris)
+        values ('updated_at', 'crashes', false);
+insert into _column_metadata (column_name, record_type, is_imported_from_cris)
+        values ('created_by', 'crashes', false);
+insert into _column_metadata (column_name, record_type, is_imported_from_cris)
+        values ('updated_by', 'crashes', false);
+insert into _column_metadata (column_name, record_type, is_imported_from_cris)
+        values ('created_at', 'units', false);
+insert into _column_metadata (column_name, record_type, is_imported_from_cris)
+        values ('updated_at', 'units', false);
+insert into _column_metadata (column_name, record_type, is_imported_from_cris)
+        values ('created_by', 'units', false);
+insert into _column_metadata (column_name, record_type, is_imported_from_cris)
+        values ('updated_by', 'units', false);
+insert into _column_metadata (column_name, record_type, is_imported_from_cris)
+        values ('created_at', 'people', false);
+insert into _column_metadata (column_name, record_type, is_imported_from_cris)
+        values ('updated_at', 'people', false);
+insert into _column_metadata (column_name, record_type, is_imported_from_cris)
+        values ('created_by', 'people', false);
+insert into _column_metadata (column_name, record_type, is_imported_from_cris)
+        values ('updated_by', 'people', false);
+insert into _column_metadata (column_name, record_type, is_imported_from_cris)
+        values ('created_at', 'charges', false);
+insert into _column_metadata (column_name, record_type, is_imported_from_cris)
+        values ('created_by', 'charges', false);
+insert into _column_metadata (column_name, record_type, is_imported_from_cris)
         values ('is_deleted', 'crashes', false);
 insert into _column_metadata (column_name, record_type, is_imported_from_cris)
         values ('is_deleted', 'units', false);
