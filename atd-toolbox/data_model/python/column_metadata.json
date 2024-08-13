@@ -1601,23 +1601,6 @@
     "source": "cris"
   },
   {
-    "column_name": "geom",
-    "data_type": "GEOMETRY(Point, 4326)",
-    "data_type_constraint": "GENERATED ALWAYS AS (ST_SetSRID(ST_MakePoint(longitude, latitude), 4326)) STORED",
-    "foreign_column_cascade": "",
-    "foreign_column_name": "",
-    "foreign_table_name": "",
-    "foreign_table_schema": "",
-    "is_cris_column": false,
-    "is_edits_column": false,
-    "is_existing_foreign_table": false,
-    "is_primary_key": false,
-    "is_unified_column": true,
-    "note": "",
-    "record_type": "crashes",
-    "source": "cris"
-  },
-  {
     "column_name": "id",
     "data_type": "serial",
     "data_type_constraint": "primary key",

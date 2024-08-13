@@ -201,8 +201,6 @@ insert into _column_metadata (column_name, record_type, is_imported_from_cris)
 insert into _column_metadata (column_name, record_type, is_imported_from_cris)
         values ('record_locator', 'crashes', false);
 insert into _column_metadata (column_name, record_type, is_imported_from_cris)
-        values ('geom', 'crashes', false);
-insert into _column_metadata (column_name, record_type, is_imported_from_cris)
         values ('id', 'people', false);
 insert into _column_metadata (column_name, record_type, is_imported_from_cris)
         values ('prsn_exp_homelessness', 'people', true);
