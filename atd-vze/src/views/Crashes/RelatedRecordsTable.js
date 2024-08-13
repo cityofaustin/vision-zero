@@ -218,7 +218,7 @@ const RelatedRecordsTable = ({
                                     }
                                     type="select"
                                   >
-                                    <option value={""}>NO DATA</option>
+                                    <option value={""}>RESET</option>
                                     {lookupOptions[
                                       fieldConfig.fields[field].lookupOptions
                                     ].map(option => {
