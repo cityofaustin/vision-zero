@@ -311,11 +311,13 @@ create or replace view crash_injury_metrics_view as
         coalesce(
             sum(person_injury_metrics_view.years_of_life_lost), 0
         ) as years_of_life_lost,
+        -- default cr3 crash comp cost is 20k
         coalesce(
-            max(est_comp_cost_crash_based), 0
+            max(est_comp_cost_crash_based), 20000
         ) as est_comp_cost_crash_based,
+        -- default cr3 crash comp cost is 20k
         coalesce(
-            sum(est_comp_cost_crash_based), 0
+            sum(est_comp_cost_crash_based), 20000
         ) as est_total_person_comp_cost
     from
         public.crashes as crashes
@@ -450,7 +452,8 @@ cr3_crash_counts as (
 non_cr3_crash_counts as (
     select
         location_id,
-        count(location_id) as crash_count
+        count(location_id) as crash_count,
+        count(location_id) * 10000 as noncr3_comp_costs_total
     from
         atd_apd_blueform
     where
@@ -463,7 +466,7 @@ non_cr3_crash_counts as (
 select
     locations.location_id,
     locations.description,
-    cr3_comp_costs.cr3_comp_costs_total,
+    coalesce(cr3_comp_costs.cr3_comp_costs_total + non_cr3_crash_counts.noncr3_comp_costs_total, 0) as total_est_comp_cost,
     coalesce(cr3_crash_counts.crash_count, 0) as cr3_crash_count,
     coalesce(non_cr3_crash_counts.crash_count, 0) as non_cr3_crash_count,
     coalesce(cr3_crash_counts.crash_count, 0)

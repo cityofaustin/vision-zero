@@ -10,6 +10,7 @@ select_permissions:
         - description
         - location_id
         - non_cr3_crash_count
+        - total_est_comp_cost
       filter: {}
       allow_aggregations: true
     comment: ""
@@ -21,6 +22,7 @@ select_permissions:
         - description
         - location_id
         - non_cr3_crash_count
+        - total_est_comp_cost
       filter: {}
       allow_aggregations: true
     comment: ""
@@ -32,6 +34,7 @@ select_permissions:
         - description
         - location_id
         - non_cr3_crash_count
+        - total_est_comp_cost
       filter: {}
       allow_aggregations: true
     comment: ""

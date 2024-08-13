@@ -16,12 +16,12 @@ const locationDataMap = [
         relationshipName: "locationTotals",
         editable: false,
       },
-    //   total_est_comp_cost: {
-    //     label: "Total Estimated Comprehensive Cost (Previous 5 years)",
-    //     relationshipName: "locationTotals",
-    //     editable: false,
-    //     format: "dollars",
-    //   },
+      total_est_comp_cost: {
+        label: "Total Estimated Comprehensive Cost (Previous 5 years)",
+        relationshipName: "locationTotals",
+        editable: false,
+        format: "dollars",
+      },
       street_level: {
         label: "ASMP Street Level",
         editable: false,
