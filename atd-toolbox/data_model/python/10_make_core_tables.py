@@ -5,7 +5,6 @@ from settings import SCHEMA_NAME
 
 from utils import (
     make_migration_dir,
-    delete_all_migrations,
     save_file,
     save_empty_down_migration,
     load_column_metadata,
@@ -62,7 +61,7 @@ def make_column_sql(columns, full_table_name):
             # column name is always the same as the column name
             fk_column_name = column_name
             fk_cascade = "on update cascade on delete cascade"
-        elif column_name == "crash_id":
+        elif column_name == "crash_pk":
             if full_table_name == "units_edits":
                 # make nullable
                 constraint = ""
@@ -93,7 +92,8 @@ def make_column_sql(columns, full_table_name):
             fk_cascade = "on update cascade on delete cascade"
         elif constraint and "not null default false" in constraint and "_edits" in full_table_name:
             constraint = ""
-
+        elif constraint == "not null" and column_name in ['unit_nbr', 'crash_timestamp'] and "_edits" in full_table_name:
+            constraint = ""
         sql = f"{column_name} {data_type} {constraint}".strip()
         if fk_table_name:
             sql = f"{sql} references {fk_schema_name}.{fk_table_name} ({fk_column_name}) {fk_cascade}"
@@ -102,7 +102,6 @@ def make_column_sql(columns, full_table_name):
 
 
 def main():
-    delete_all_migrations()
     all_columns = load_column_metadata()
     # init the schema
     migration_path = make_migration_dir("create_schema")

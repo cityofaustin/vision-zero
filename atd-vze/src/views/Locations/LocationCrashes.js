@@ -7,7 +7,7 @@ import gqlAbstract from "../../queries/gqlAbstract";
 import { crashQueryExportFields } from "../../queries/crashes";
 
 import {
-  crashGridTableColumns,
+    locationCrashGridTableColumns,
   crashGridTableAdvancedFilters,
 } from "../Crashes/crashGridTableParameters";
 import { colors } from "../../styles/colors";
@@ -19,7 +19,7 @@ function LocationCrashes(props) {
     dateField: "crash_date_ct",
     single_item: "crashes",
     showDateRange: true,
-    columns: crashGridTableColumns,
+    columns: locationCrashGridTableColumns,
     order_by: {
       est_comp_cost_crash_based: "desc",
     },
@@ -191,7 +191,7 @@ function LocationCrashes(props) {
       table: "crashes_list_view",
       keyName: "units",
       // Using lodash.get(), array is arg that translates to unit.unit_description.veh_unit_desc_desc
-      nestedPath: ["unit_desc_lkp", "label"],
+      nestedPath: ["unit_desc", "label"],
       // Is value of table.nestedKey.nestedPath a single record or array of objects
       isSingleRecord: false,
       // Top n types

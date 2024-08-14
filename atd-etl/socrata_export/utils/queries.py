@@ -10,10 +10,12 @@ query SocrataExportCrashes($limit: Int!, $minId: Int!) {
     crash_timestamp
     crash_timestamp_ct
     crash_fatal_fl
-    crash_id
+    cris_crash_id
     crash_sev_id
     crash_speed_limit
     death_cnt
+    is_deleted
+    is_temp_record
     latitude
     longitude
     point
@@ -47,15 +49,17 @@ query SocrataExportCrashes($limit: Int!, $minId: Int!) {
 
 PEOPLE_QUERY = """
 query SocrataExportPeople($limit: Int!, $minId: Int!) {
-  socrata_export_people_view(order_by: {person_id: asc}, limit: $limit, where: {person_id: {_gte: $minId}}) {
+  socrata_export_people_view(order_by: {id: asc}, limit: $limit, where: {id: {_gte: $minId}}) {
     id
-    crash_id
+    cris_crash_id
+    crash_pk
     crash_timestamp
     crash_timestamp_ct
     is_primary_person
+    is_deleted
+    is_temp_record
     mode_desc
     mode_id
-    person_id
     prsn_age
     prsn_ethnicity_id
     prsn_ethnicity_label
