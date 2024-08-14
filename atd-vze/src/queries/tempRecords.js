@@ -3,6 +3,7 @@ import { gql } from "apollo-boost";
 export const GET_TEMP_RECORDS = gql`
   query getTempRecords {
     crashes(
+      order_by: { record_locator: desc }
       where: {
         is_temp_record: { _eq: true }
         _and: { is_deleted: { _eq: false } }

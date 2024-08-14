@@ -96,7 +96,7 @@ export const createCrashDataMap = isTempRecord => {
           editable: false,
         },
         vz_fatality_count: {
-          label: "ATD Fatality Count",
+          label: "VZ Fatality Count",
           relationshipName: "crash_injury_metrics_view",
           editable: false,
         },
