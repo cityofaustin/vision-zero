@@ -1,4 +1,4 @@
--- all fatal crashes in the old schema that are missing in the new, based purely on the `atd_fatality_count` column
+    -- all fatal crashes in the old schema that are missing in the new, based purely on the `atd_fatality_count` column
 with newdm as (
     select
         id,
@@ -33,7 +33,7 @@ select * from joined_crashes where new_crash_id is NULL;
 with newdm as (
     select
         id,
-        crash_id,
+        cris_crash_id as crash_id,
         crash_injry_sev_id
     from
         crashes_list_view
