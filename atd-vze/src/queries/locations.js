@@ -9,7 +9,6 @@ export const GET_LOCATION = gql`
       geometry
       latitude
       longitude
-      last_update
       location_notes {
         id
         created_at
@@ -24,7 +23,8 @@ export const GET_LOCATION = gql`
         count
       }
       locationTotals: locations_list_view {
-        crash_count
+        cr3_crash_count
+        non_cr3_crash_count
         total_est_comp_cost
       }
     }
@@ -61,8 +61,7 @@ export const UPDATE_LOCATION_POLYGON = gql`
 export const locationQueryExportFields = `
 location_id
 description
-crash_count
-fatalities_count
-serious_injury_count
+cr3_crash_count
+non_cr3_crash_count
 total_est_comp_cost
 `;

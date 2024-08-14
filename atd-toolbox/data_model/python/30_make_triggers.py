@@ -48,13 +48,12 @@ def main():
             if col["is_cris_column"]
             and col["is_unified_column"]
             and col["record_type"] == table_name
+            and col["column_name"] not in ["created_at", "updated_at"]
         ]
         # remove dupes, which was once a concern for persons tables
         columns_unified = list(set(columns_unified))
         # sort columns to keep diffs consistent
         columns_unified.sort()
-        # add audit fields
-        columns_unified.extend(["created_by", "updated_by"])
         pk_column = "id"
         sql = patch_template(insert_template, table_name, pk_column, columns_unified)
         stmts.append(sql)

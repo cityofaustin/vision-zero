@@ -30,10 +30,12 @@ select_permissions:
         - onsys_fl
         - private_dr_fl
         - road_constr_zone_fl
-        - crash_id
+        - cris_crash_id
         - crash_sev_id
         - crash_speed_limit
         - id
+        - is_deleted
+        - is_temp_record
         - latitude
         - longitude
         - address_primary
@@ -77,10 +79,12 @@ select_permissions:
         - onsys_fl
         - private_dr_fl
         - road_constr_zone_fl
-        - crash_id
+        - cris_crash_id
         - crash_sev_id
         - crash_speed_limit
         - id
+        - is_deleted
+        - is_temp_record
         - latitude
         - longitude
         - address_primary
@@ -124,10 +128,12 @@ select_permissions:
         - onsys_fl
         - private_dr_fl
         - road_constr_zone_fl
-        - crash_id
+        - cris_crash_id
         - crash_sev_id
         - crash_speed_limit
         - id
+        - is_deleted
+        - is_temp_record
         - latitude
         - longitude
         - address_primary

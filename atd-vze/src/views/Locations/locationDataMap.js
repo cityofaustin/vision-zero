@@ -6,17 +6,13 @@ const locationDataMap = [
         label: "Location ID",
         editable: false,
       },
-      description: {
-        label: "Description",
+      cr3_crash_count: {
+        label: "Total CR3 Crashes (Previous 5 years)",
+        relationshipName: "locationTotals",
         editable: false,
       },
-      last_update: {
-        label: "Last Update",
-        editable: false,
-        format: "datetime",
-      },
-      crash_count: {
-        label: "Total Crashes (Previous 5 years)",
+      non_cr3_crash_count: {
+        label: "Total Non-CR3 Crashes (Previous 5 years)",
         relationshipName: "locationTotals",
         editable: false,
       },
