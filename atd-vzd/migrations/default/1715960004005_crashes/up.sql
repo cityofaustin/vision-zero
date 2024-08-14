@@ -6,7 +6,9 @@ create table public.crashes_cris (
     cr3_processed_at timestamp with time zone,
     cr3_stored_fl boolean not null default false,
     crash_speed_limit integer,
-    crash_timestamp timestamp with time zone,
+    crash_timestamp timestamp with time zone not null,
+    created_at timestamptz not null default now(),
+    created_by text not null default 'system',
     cris_crash_id integer unique,
     cris_schema_version text not null,
     fhe_collsn_id integer references lookups.collsn (id) on update cascade on delete cascade,
@@ -56,6 +58,8 @@ create table public.crashes_cris (
     toll_road_fl boolean,
     traffic_cntl_id integer references lookups.traffic_cntl (id) on update cascade on delete cascade,
     txdot_rptable_fl boolean,
+    updated_at timestamptz not null default now(),
+    updated_by text not null default 'system',
     wthr_cond_id integer references lookups.wthr_cond (id) on update cascade on delete cascade
 );
 
@@ -68,6 +72,8 @@ create table public.crashes_edits (
     cr3_stored_fl boolean,
     crash_speed_limit integer,
     crash_timestamp timestamp with time zone,
+    created_at timestamptz not null default now(),
+    created_by text not null default 'system',
     cris_crash_id integer unique,
     fhe_collsn_id integer references lookups.collsn (id) on update cascade on delete cascade,
     intrsct_relat_id integer references lookups.intrsct_relat (id) on update cascade on delete cascade,
@@ -117,6 +123,8 @@ create table public.crashes_edits (
     toll_road_fl boolean,
     traffic_cntl_id integer references lookups.traffic_cntl (id) on update cascade on delete cascade,
     txdot_rptable_fl boolean,
+    updated_at timestamptz not null default now(),
+    updated_by text not null default 'system',
     wthr_cond_id integer references lookups.wthr_cond (id) on update cascade on delete cascade
 );
 
@@ -131,7 +139,9 @@ create table public.crashes (
     cr3_processed_at timestamp with time zone,
     cr3_stored_fl boolean not null default false,
     crash_speed_limit integer,
-    crash_timestamp timestamp with time zone,
+    crash_timestamp timestamp with time zone not null,
+    created_at timestamptz not null default now(),
+    created_by text not null default 'system',
     cris_crash_id integer unique,
     engineering_area integer references public.engineering_areas (area_id) on update cascade on delete set null,
     fhe_collsn_id integer references lookups.collsn (id) on update cascade on delete cascade,
@@ -186,5 +196,7 @@ create table public.crashes (
     toll_road_fl boolean,
     traffic_cntl_id integer references lookups.traffic_cntl (id) on update cascade on delete cascade,
     txdot_rptable_fl boolean,
+    updated_at timestamptz not null default now(),
+    updated_by text not null default 'system',
     wthr_cond_id integer references lookups.wthr_cond (id) on update cascade on delete cascade
 );

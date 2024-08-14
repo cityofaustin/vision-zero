@@ -14,10 +14,11 @@ unit_aggregates as (
 
 select
     crashes.id,
-    crashes.cris_crash_id as crash_id,
+    crashes.cris_crash_id,
     crashes.case_id,
     crashes.address_primary,
     crashes.address_secondary,
+    crashes.is_deleted,
     crashes.latitude,
     crashes.longitude,
     crashes.rpt_block_num,
@@ -25,6 +26,7 @@ select
     crashes.rpt_street_sfx,
     crashes.crash_speed_limit,
     crashes.road_constr_zone_fl,
+    crashes.is_temp_record,
     cimv.crash_injry_sev_id as crash_sev_id,
     cimv.sus_serious_injry_count as sus_serious_injry_cnt,
     cimv.nonincap_injry_count as nonincap_injry_cnt,
@@ -86,16 +88,20 @@ left join lateral (
     limit 1
 ) as unit_aggregates on true
 where
-    crashes.in_austin_full_purpose = true and crashes.private_dr_fl = false
+    crashes.is_deleted = false
+    and crashes.in_austin_full_purpose = true
+    and crashes.private_dr_fl = false
     and crashes.crash_timestamp < now() - interval '14 days' order by id asc;
 
 
 create or replace view socrata_export_people_view as (
     select
         people.id as id,
-        people.id as person_id, --this column exists for backwards compatibility
         people.unit_id as unit_id,
-        crashes.cris_crash_id as crash_id,
+        crashes.id as crash_pk,
+        crashes.cris_crash_id,
+        crashes.is_temp_record,
+        people.is_deleted,
         people.is_primary_person,
         people.prsn_age,
         people.prsn_gndr_id as prsn_sex_id,
@@ -125,7 +131,10 @@ create or replace view socrata_export_people_view as (
         lookups.gndr
         on people.prsn_gndr_id = lookups.gndr.id
     where
-        crashes.in_austin_full_purpose = true and crashes.private_dr_fl = false
+        people.is_deleted = false
+        and crashes.in_austin_full_purpose = true
+        and crashes.private_dr_fl = false
+        and crashes.is_deleted = false
         and crashes.crash_timestamp < now() - interval '14 days'
         and (people.prsn_injry_sev_id = 1 or people.prsn_injry_sev_id = 4)
 );

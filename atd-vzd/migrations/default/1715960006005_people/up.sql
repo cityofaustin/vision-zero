@@ -1,5 +1,7 @@
 create table public.people_cris (
     id serial primary key,
+    created_at timestamptz not null default now(),
+    created_by text not null default 'system',
     cris_crash_id integer references public.crashes_cris (cris_crash_id) on delete cascade on update cascade,
     cris_schema_version text not null,
     drvr_city_name text,
@@ -30,11 +32,15 @@ create table public.people_cris (
     prsn_taken_to text,
     prsn_type_id integer references lookups.prsn_type (id) on update cascade on delete cascade,
     unit_id integer not null references public.units_cris (id) on update cascade on delete cascade,
-    unit_nbr integer
+    unit_nbr integer not null,
+    updated_at timestamptz not null default now(),
+    updated_by text not null default 'system'
 );
 
 create table public.people_edits (
     id integer primary key references public.people_cris (id) on update cascade on delete cascade,
+    created_at timestamptz not null default now(),
+    created_by text not null default 'system',
     drvr_city_name text,
     drvr_drg_cat_1_id integer references lookups.substnc_cat (id) on update cascade on delete cascade,
     drvr_zip text,
@@ -63,11 +69,15 @@ create table public.people_edits (
     prsn_taken_by text,
     prsn_taken_to text,
     prsn_type_id integer references lookups.prsn_type (id) on update cascade on delete cascade,
-    unit_id integer references public.units_cris (id) on update cascade on delete cascade
+    unit_id integer references public.units_cris (id) on update cascade on delete cascade,
+    updated_at timestamptz not null default now(),
+    updated_by text not null default 'system'
 );
 
 create table public.people (
     id integer primary key,
+    created_at timestamptz not null default now(),
+    created_by text not null default 'system',
     drvr_city_name text,
     drvr_drg_cat_1_id integer references lookups.substnc_cat (id) on update cascade on delete cascade,
     drvr_zip text,
@@ -98,5 +108,7 @@ create table public.people (
     prsn_taken_to text,
     prsn_type_id integer references lookups.prsn_type (id) on update cascade on delete cascade,
     unit_id integer not null references public.units (id) on update cascade on delete cascade,
+    updated_at timestamptz not null default now(),
+    updated_by text not null default 'system',
     years_of_life_lost integer generated always as (case when prsn_injry_sev_id = 4 then greatest(75 - prsn_age, 0) else 0 end) stored
 );
