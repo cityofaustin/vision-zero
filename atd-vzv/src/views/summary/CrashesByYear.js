@@ -23,8 +23,8 @@ const CrashesByYear = () => {
   const [crashType, setCrashType] = useState(null);
   const [chartType, setChartType] = useState("Monthly");
 
-  const [avgData, setAvgData] = useState([]);
-  const [currentYearData, setCurrentYearData] = useState([]);
+  const [avgData, setAvgData] = useState(null);
+  const [currentYearData, setCurrentYearData] = useState(null);
 
   const url = `${crashEndpointUrl}?$query=`;
 
@@ -113,7 +113,7 @@ const CrashesByYear = () => {
           <hr />
         </Col>
       </Row>
-      {avgData.length > 0 && currentYearData.length > 0 ? (
+      {avgData && currentYearData ? (
         <div>
           <ChartTypeSelector
             chartTypes={chartTypes}
