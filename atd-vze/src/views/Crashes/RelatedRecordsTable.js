@@ -139,7 +139,7 @@ const RelatedRecordsTable = ({
                     .map((field, i) => {
                       // Render victim name cell in victim name column if row is a fatality
                       if (field === "victim_name") {
-                        if (row.injry_sev_lkp.id === 4) {
+                        if (row.injry_sev.id === 4) {
                           return (
                             <VictimNameField
                               key={`${field}-${i}`}
@@ -218,7 +218,7 @@ const RelatedRecordsTable = ({
                                     }
                                     type="select"
                                   >
-                                    <option value={""}>NO DATA</option>
+                                    <option value={""}>RESET</option>
                                     {lookupOptions[
                                       fieldConfig.fields[field].lookupOptions
                                     ].map(option => {
