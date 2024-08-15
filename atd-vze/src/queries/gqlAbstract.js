@@ -27,7 +27,7 @@ gqlAbstractTableName (
     gqlAbstractFilters
 ) {
     gqlAbstractColumns
-}
+  }
 }`;
   }
 
