@@ -9,14 +9,14 @@ export const fatalityGridTableColumns = {
     primary_key: true,
     searchable: true,
     sortable: true,
-    label_search: "Search by Crash ID",
+    label_search: "Crash ID",
     label_table: "Crash ID",
     type: "String",
   },
   case_id: {
     searchable: true,
     sortable: true,
-    label_search: "Search by Case ID",
+    label_search: "Case ID",
     label_table: "Case ID",
     type: "Int",
   },
@@ -47,14 +47,14 @@ export const fatalityGridTableColumns = {
   location: {
     searchable: true,
     sortable: false,
-    label_search: "Search by Location",
+    label_search: "Location",
     label_table: "Location",
     type: "String",
   },
   victim_name: {
     searchable: true,
     sortable: false,
-    label_search: "Search by Victim Name",
+    label_search: "Victim Name",
     label_table: "Victim Name",
     type: "String",
   },
@@ -75,7 +75,7 @@ export const fatalityGridTableColumns = {
     sortable: true,
     label_table: "Current Engineering Area",
     type: "String",
-    label_search: "Search by Current Engineering Area",
+    label_search: "Current Engineering Area",
   },
 };
 

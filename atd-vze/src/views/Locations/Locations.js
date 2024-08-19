@@ -16,14 +16,14 @@ let queryConf = {
       primary_key: true,
       searchable: true,
       sortable: true,
-      label_search: "Search by location id",
+      label_search: "Location ID",
       label_table: "Location ID",
       type: "Integer",
     },
     description: {
       searchable: true,
       sortable: true,
-      label_search: "Search by intersecting street name",
+      label_search: "Intersecting Street Name",
       label_table: "Location",
       type: "String",
     },
@@ -36,13 +36,13 @@ let queryConf = {
       type: "Integer",
     },
     non_cr3_crash_count: {
-        searchable: false,
-        sortable: true,
-        label_search: null,
-        label_table: "Non-CR3 Crashes",
-        default: 0,
-        type: "Integer",
-      },
+      searchable: false,
+      sortable: true,
+      label_search: null,
+      label_table: "Non-CR3 Crashes",
+      default: 0,
+      type: "Integer",
+    },
   },
   order_by: {
     cr3_crash_count: "desc_nulls_last",
@@ -69,6 +69,7 @@ const Locations = () => (
     title={"Locations"}
     columnsToExport={locationQueryExportFields}
     helperText={helperText}
+    defaultSearchField="location_id"
   />
 );
 
