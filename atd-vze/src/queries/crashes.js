@@ -55,6 +55,7 @@ export const GET_CRASH = gql`
         sus_serious_injry_count
         years_of_life_lost
         est_comp_cost_crash_based
+        est_total_person_comp_cost
         crash_injry_sev_id
         nonincap_injry_count
         sus_serious_injry_count
