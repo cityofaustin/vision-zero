@@ -69,6 +69,7 @@ const Locations = () => (
     title={"Locations"}
     columnsToExport={locationQueryExportFields}
     helperText={helperText}
+    defaultSearchField="location_id"
   />
 );
 
