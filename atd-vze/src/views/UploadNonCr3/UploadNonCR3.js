@@ -21,7 +21,7 @@ import {
 import { withApollo } from "react-apollo";
 import { useMutation } from "@apollo/react-hooks";
 
-import "./ToolsUploadNonCR3.css";
+import "./UploadNonCR3.css";
 import "handsontable/dist/handsontable.full.css";
 import { HotTable } from "@handsontable/react";
 import CSVReader from "react-csv-reader";

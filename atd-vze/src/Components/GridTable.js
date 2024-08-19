@@ -182,7 +182,9 @@ const GridTable = ({
     } else if (sortColumn === col) {
       // Else if the current sortColumn is the same as the new
       // then invert values and repeat sort on column
-      sortOrder === "desc_nulls_last" ? setSortOrder("asc") : setSortOrder("desc_nulls_last");
+      sortOrder === "desc_nulls_last"
+        ? setSortOrder("asc")
+        : setSortOrder("desc_nulls_last");
     } else if (sortColumn !== col) {
       // Sort different column after initial sort, then reset
       setSortOrder("desc_nulls_last");
@@ -227,6 +229,7 @@ const GridTable = ({
   const handleRowClick = e => {
     const rowNumber = parseInt(e.target.value);
     setLimit(rowNumber);
+    changePage(1);
   };
 
   /**
@@ -377,7 +380,7 @@ const GridTable = ({
     query.setOrder(sortColumn, sortOrder);
   }
 
-  // Mange LIMIT & OFFSET
+  // Manage LIMIT & OFFSET
   query.limit = limit;
   query.offset = offset;
 
@@ -395,14 +398,9 @@ const GridTable = ({
   if (error) return `Error! ${error.message}`;
 
   let dataEntries = [];
-  let totalRecords = 0;
-  let totalPages = 1;
 
   // If we have data
   if (data[query.table]) {
-    totalRecords = data[query.table + "_aggregate"]["aggregate"]["count"];
-    totalPages = Math.ceil(totalRecords / limit);
-
     // DataEntries: For each item in the data array, generate a row with each column
     data[query.table].map((row, index) =>
       dataEntries.push(
@@ -526,15 +524,13 @@ const GridTable = ({
                     moveBack={moveBackPage}
                     pageNumber={page}
                     limit={limit}
-                    totalRecords={totalRecords}
-                    totalPages={totalPages}
                     handleRowClick={handleRowClick}
+                    recordsCount={dataEntries.length}
                   />
                   {columnsToExport && (
                     <GridExportData
                       query={query}
                       columnsToExport={columnsToExport}
-                      totalRecords={totalRecords}
                       roleSpecificColumns={roleSpecificColumns}
                       hasSpecificRole={hasSpecificRole}
                     />

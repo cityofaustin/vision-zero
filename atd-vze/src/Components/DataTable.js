@@ -221,7 +221,7 @@ const DataTable = ({
                   </tbody>
                 </Table>
               </CardBody>
-              <CardFooter>{downloadGlobal}</CardFooter>
+              {!!downloadGlobal && <CardFooter>{downloadGlobal}</CardFooter>}
             </Card>
           </Col>
         );

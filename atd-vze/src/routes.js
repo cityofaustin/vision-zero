@@ -13,11 +13,11 @@ const Users = React.lazy(() => import("./views/Users/Users"));
 const User = React.lazy(() => import("./views/Users/User"));
 const AddUser = React.lazy(() => import("./views/Users/AddUser"));
 const EditUser = React.lazy(() => import("./views/Users/EditUser"));
-const ToolsUploadNonCR3 = React.lazy(() =>
-  import("./views/Tools/ToolsUploadNonCR3")
+const UploadNonCR3 = React.lazy(() =>
+  import("./views/UploadNonCr3/UploadNonCR3")
 );
 const CreateCrashRecord = React.lazy(() =>
-  import("./views/Tools/CreateCrashRecord")
+  import("./views/CreateCrashRecord/CreateCrashRecord")
 );
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 // Accept roles arg for role-based access to routes
@@ -52,13 +52,13 @@ const routes = roles => [
     component: Fatalities,
   },
   (isAdmin(roles) || isItSupervisor(roles)) && {
-    path: "/tools/upload_non_cr3",
+    path: "/upload_non_cr3",
     exact: true,
     name: "Upload Non-CR3 Crashes",
-    component: ToolsUploadNonCR3,
+    component: UploadNonCR3,
   },
   (isAdmin(roles) || isItSupervisor(roles)) && {
-    path: "/tools/create_crash_record",
+    path: "/create_crash_record",
     exact: true,
     name: "Create Crash Record",
     component: CreateCrashRecord,

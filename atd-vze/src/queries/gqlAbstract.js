@@ -27,13 +27,6 @@ gqlAbstractTableName (
     gqlAbstractFilters
 ) {
     gqlAbstractColumns
-},
-gqlAbstractTableAggregateName (
-    gqlAbstractAggregateFilters
-) {
-    aggregate {
-      count
-    }
   }
 }`;
   }
@@ -462,17 +455,9 @@ gqlAbstractTableAggregateName (
 
     // Replace the name of the table
     query = query.replace("gqlAbstractTableName", this.config["table"]);
-    query = query.replace(
-      "gqlAbstractTableAggregateName",
-      this.config["table"] + "_aggregate"
-    );
 
     // Generate Filters
     query = query.replace("gqlAbstractFilters", this.generateFilters());
-    query = query.replace(
-      "gqlAbstractAggregateFilters",
-      this.generateFilters(true)
-    );
 
     // Generate Columns
     query = query.replace("gqlAbstractColumns", this.generateColumns());
@@ -494,17 +479,9 @@ gqlAbstractTableAggregateName (
 
     // Replace the name of the table
     query = query.replace("gqlAbstractTableName", this.config["table"]);
-    query = query.replace(
-      "gqlAbstractTableAggregateName",
-      this.config["table"] + "_aggregate"
-    );
 
     // Generate Filters
     query = query.replace("gqlAbstractFilters", this.generateFilters());
-    query = query.replace(
-      "gqlAbstractAggregateFilters",
-      this.generateFilters(true)
-    );
 
     // Generate Columns
     query = query.replace("gqlAbstractColumns", string);
