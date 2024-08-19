@@ -104,7 +104,7 @@ const GridTableSearch = ({
               toggle={toggleDropdown}
             >
               <DropdownToggle caret color="secondary">
-                {fieldToSearch === "" ? "Field" : getFieldName(fieldToSearch)}
+                {fieldToSearch === "" ? "Select field..." : getFieldName(fieldToSearch)}
               </DropdownToggle>
               <DropdownMenu>
                 {fieldsToSearch.map((field, i) => (
