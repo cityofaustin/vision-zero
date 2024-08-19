@@ -21,10 +21,9 @@ const GridTablePagination = ({
   moveNext,
   moveBack,
   limit,
-  totalPages,
-  totalRecords,
   pageNumber,
   handleRowClick,
+  recordsCount,
 }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
@@ -46,15 +45,13 @@ const GridTablePagination = ({
             Prev
           </Button>
           <StyledDisableClick>
-            <Button color="light">
-              Page {pageNumber.toLocaleString()}/{totalPages === 0 ? 1 : totalPages.toLocaleString()}
-            </Button>
-            <Button color="light">Results: {totalRecords.toLocaleString()}</Button>
+            <Button color="light">Page {pageNumber.toLocaleString()}</Button>
           </StyledDisableClick>
 
           <Button
             onClick={moveNext}
-            disabled={pageNumber >= totalPages ? true : false}
+            // if record count on the current page is less than the limit or zero, disable next page button
+            disabled={recordsCount < limit || recordsCount === 0 ? true : false}
           >
             Next{" "}
             <StyledDisableClick>
