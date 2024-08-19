@@ -10,7 +10,7 @@ Use this tool to block/unblock VZ's user in bulk via the Auth0 user management A
 
 ## Run the script
 
-This script will block or unblack *all* users of the app. By default it executes as a "dry run", in which no users are actually updated, their email addresses are merely printed. You must use the `--no-dry-run` flag to actually execute the script.
+This script will block or unblock *all* users of the app. By default it executes as a "dry run", in which no users are actually updated, their email addresses are merely printed. You must use the `--no-dry-run` flag to actually execute the script.
 
 The block versus unblock action is controlled with the first position command argument. Use `block` or `unblock`.
 
@@ -25,4 +25,3 @@ Conversely, this command will unblock all users:
 ```shell
 python update_users.py unblock --no-dry-run
 ```
-
