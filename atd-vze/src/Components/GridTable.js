@@ -229,6 +229,7 @@ const GridTable = ({
   const handleRowClick = e => {
     const rowNumber = parseInt(e.target.value);
     setLimit(rowNumber);
+    changePage(1);
   };
 
   /**
