@@ -29,3 +29,7 @@ alter column location_id set not null;
 alter table cris_import_log rename to _cris_import_log;
 alter table _cris_import_log drop column outcome_status;
 alter table _cris_import_log alter column records_processed drop DEFAULT;
+
+-- and squeezing this in here
+drop view if exists view_crashes_inconsistent_numbers;
+drop view if exists atd_txdot_changes_view;
