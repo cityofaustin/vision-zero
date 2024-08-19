@@ -1,5 +1,6 @@
 import argparse
 import os
+import time
 
 import requests
 
@@ -75,6 +76,15 @@ def update_user_status(users, blocked, dry_run):
     for user in users:
         if user["email"] == ADMIN_USER_EMAIL:
             continue
+
+        if blocked and user.get("blocked"):
+            print(f"WARNING: user already blocked: {user['email']}")
+            continue
+
+        elif not blocked and not user.get("blocked"):
+            print(f"WARNING: user already unblocked: {user['email']}")
+            continue
+
         user_id = user["user_id"]
         if not dry_run:
             response = requests.patch(
@@ -82,6 +92,7 @@ def update_user_status(users, blocked, dry_run):
             )
             response.raise_for_status()
         print(f'{user["email"]}: {"blocked" if blocked else "unblocked"}')
+        time.sleep(1)
 
 
 if __name__ == "__main__":
