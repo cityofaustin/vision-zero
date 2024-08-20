@@ -33,7 +33,7 @@ export const createCrashDataMap = isTempRecord => {
           format: "dollars",
         },
         est_total_person_comp_cost: {
-          label: " Total Est. Comprehensive Cost",
+          label: "Total Est. Comprehensive Cost",
           relationshipName: "crash_injury_metrics_view",
           editable: false,
           format: "dollars",
