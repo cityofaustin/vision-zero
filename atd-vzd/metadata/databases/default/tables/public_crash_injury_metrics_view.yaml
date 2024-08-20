@@ -7,17 +7,21 @@ select_permissions:
       columns:
         - bicycle_fatality_count
         - bicycle_sus_serious_injry_count
+        - crash_injry_sev_id
+        - cris_crash_id
         - cris_fatality_count
+        - est_comp_cost_crash_based
+        - est_total_person_comp_cost
         - fatality_count
         - law_enf_fatality_count
         - micromobility_fatality_count
         - micromobility_sus_serious_injry_count
-        - motorcycle_fatality_count
-        - motorcycle_sus_serious_count
         - motor_vehicle_fatality_count
         - motor_vehicle_sus_serious_injry_count
-        - nonincap_injry_count
+        - motorcycle_fatality_count
+        - motorcycle_sus_serious_count
         - non_injry_count
+        - nonincap_injry_count
         - other_fatality_count
         - other_sus_serious_injry_count
         - pedestrian_fatality_count
@@ -27,9 +31,6 @@ select_permissions:
         - unkn_injry_count
         - vz_fatality_count
         - years_of_life_lost
-        - cris_crash_id
-        - crash_injry_sev_id
-        - est_comp_cost_crash_based
       filter: {}
     comment: ""
   - role: readonly
@@ -37,17 +38,21 @@ select_permissions:
       columns:
         - bicycle_fatality_count
         - bicycle_sus_serious_injry_count
+        - crash_injry_sev_id
+        - cris_crash_id
         - cris_fatality_count
+        - est_comp_cost_crash_based
+        - est_total_person_comp_cost
         - fatality_count
         - law_enf_fatality_count
         - micromobility_fatality_count
         - micromobility_sus_serious_injry_count
-        - motorcycle_fatality_count
-        - motorcycle_sus_serious_count
         - motor_vehicle_fatality_count
         - motor_vehicle_sus_serious_injry_count
-        - nonincap_injry_count
+        - motorcycle_fatality_count
+        - motorcycle_sus_serious_count
         - non_injry_count
+        - nonincap_injry_count
         - other_fatality_count
         - other_sus_serious_injry_count
         - pedestrian_fatality_count
@@ -57,9 +62,6 @@ select_permissions:
         - unkn_injry_count
         - vz_fatality_count
         - years_of_life_lost
-        - cris_crash_id
-        - crash_injry_sev_id
-        - est_comp_cost_crash_based
       filter: {}
     comment: ""
   - role: vz-admin
@@ -67,17 +69,21 @@ select_permissions:
       columns:
         - bicycle_fatality_count
         - bicycle_sus_serious_injry_count
+        - crash_injry_sev_id
+        - cris_crash_id
         - cris_fatality_count
+        - est_comp_cost_crash_based
+        - est_total_person_comp_cost
         - fatality_count
         - law_enf_fatality_count
         - micromobility_fatality_count
         - micromobility_sus_serious_injry_count
-        - motorcycle_fatality_count
-        - motorcycle_sus_serious_count
         - motor_vehicle_fatality_count
         - motor_vehicle_sus_serious_injry_count
-        - nonincap_injry_count
+        - motorcycle_fatality_count
+        - motorcycle_sus_serious_count
         - non_injry_count
+        - nonincap_injry_count
         - other_fatality_count
         - other_sus_serious_injry_count
         - pedestrian_fatality_count
@@ -87,8 +93,5 @@ select_permissions:
         - unkn_injry_count
         - vz_fatality_count
         - years_of_life_lost
-        - cris_crash_id
-        - crash_injry_sev_id
-        - est_comp_cost_crash_based
       filter: {}
     comment: ""
