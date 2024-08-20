@@ -61,7 +61,7 @@ jobs:
           platforms: linux/amd64,linux/arm64
           context: atd-etl/afd_ems_import
           push: true
-          tags: atddocker/vz-afd-ems-import:${{ github.ref == 'refs/heads/master' && 'production' || 'latest' }}
+          tags: atddocker/vz-afd-ems-import:${{ github.ref == 'refs/heads/production' && 'production' || 'latest' }}
 
       - name: Build and push CRIS import image
         if: steps.changes.outputs.cris == 'true'
@@ -70,7 +70,7 @@ jobs:
           platforms: linux/amd64,linux/arm64
           context: atd-etl/cris_import
           push: true
-          tags: atddocker/vz-cris-import:${{ github.ref == 'refs/heads/master' && 'production' || 'latest' }}
+          tags: atddocker/vz-cris-import:${{ github.ref == 'refs/heads/production' && 'production' || 'latest' }}
 
       - name: Build and push Socrata export image
         if: steps.changes.outputs.socrata_export == 'true'
