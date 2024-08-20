@@ -56,15 +56,6 @@ object_relationships:
         remote_table:
           name: atd_txdot__obj_struck_lkp
           schema: public
-  - name: recommendation
-    using:
-      manual_configuration:
-        column_mapping:
-          crash_id: crash_id
-        insertion_order: null
-        remote_table:
-          name: recommendations
-          schema: public
   - name: road_type
     using:
       manual_configuration:
@@ -93,20 +84,6 @@ object_relationships:
           name: atd_txdot__wthr_cond_lkp
           schema: public
 array_relationships:
-  - name: crash_notes
-    using:
-      foreign_key_constraint_on:
-        column: crash_id
-        table:
-          name: crash_notes
-          schema: public
-  - name: fatalities
-    using:
-      foreign_key_constraint_on:
-        column: crash_id
-        table:
-          name: fatalities
-          schema: public
   - name: units
     using:
       manual_configuration:
@@ -1721,10 +1698,10 @@ delete_permissions:
       filter:
         temp_record:
           _eq: true
-    comment: "Allow for the deletion of temp records only"
+    comment: Allow for the deletion of temp records only
   - role: vz-admin
     permission:
       filter:
         temp_record:
           _eq: true
-    comment: "Allow for the deletion of temp records only"
+    comment: Allow for the deletion of temp records only

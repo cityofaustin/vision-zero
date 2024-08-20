@@ -29,7 +29,7 @@ const MapInfoBox = React.memo(
     const buildSeriousInjuriesOrFatalitiesConfig = (info) => [
       {
         title: "Date/Time",
-        content: format(new Date(info.crash_date), "MM/dd/yyyy hh:mm a"),
+        content: format(new Date(info.crash_timestamp_ct), "MM/dd/yyyy H:m a"),
       },
       { title: "Fatalities", content: info.death_cnt },
       { title: "Serious Injuries", content: info.sus_serious_injry_cnt },
@@ -37,7 +37,7 @@ const MapInfoBox = React.memo(
         title: "Modes Involved",
         content: info.units_involved.split(" &").join(", "),
       },
-      { title: "Crash ID", content: info.crash_id },
+      { title: "Crash ID", content: info.cris_crash_id || `T${info.id}` },
     ];
 
     const cardConfig = {

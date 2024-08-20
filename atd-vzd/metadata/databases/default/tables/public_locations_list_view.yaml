@@ -1,0 +1,40 @@
+table:
+  name: locations_list_view
+  schema: public
+select_permissions:
+  - role: editor
+    permission:
+      columns:
+        - cr3_crash_count
+        - crash_count
+        - description
+        - location_id
+        - non_cr3_crash_count
+        - total_est_comp_cost
+      filter: {}
+      allow_aggregations: true
+    comment: ""
+  - role: readonly
+    permission:
+      columns:
+        - cr3_crash_count
+        - crash_count
+        - description
+        - location_id
+        - non_cr3_crash_count
+        - total_est_comp_cost
+      filter: {}
+      allow_aggregations: true
+    comment: ""
+  - role: vz-admin
+    permission:
+      columns:
+        - cr3_crash_count
+        - crash_count
+        - description
+        - location_id
+        - non_cr3_crash_count
+        - total_est_comp_cost
+      filter: {}
+      allow_aggregations: true
+    comment: ""
