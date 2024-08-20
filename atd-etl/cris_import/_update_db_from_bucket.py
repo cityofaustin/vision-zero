@@ -13,7 +13,6 @@ from utils.graphql import make_hasura_request
 
 ENV = os.environ["ENV"]
 BUCKET_NAME = os.environ["BUCKET_NAME"]
-EXTRACT_PASSWORD = os.environ["EXTRACT_PASSWORD"]
 
 UPDATE_CRASH_CR3_FIELDS_MANY = """
 mutation UpdateCrashCR3FieldsMany($updates: [crashes_cris_updates!]! ) {
