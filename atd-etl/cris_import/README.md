@@ -6,6 +6,25 @@ It adds one new flag to the etl:
 
 - `--skip-db`: you can process pdfs and upload them to S3 without updating any CR3 metadata in the db. It also skips the import log entry. you cannot use this with `--csv`
 
+For example, you can use this command to process a bunch of local PDFs up into the S3 bucket:
+
+```shell
+$ ./cris_import.py --pdf --skip-unzip --skip-db --s3-upload --workers 30
+```
+
+It also adds a special script, `_update_db_from_bucket.py`, which will update CR3 metadata in the DB based on the PDFs available in the S3 bucket.
+
+Remember to set your env variables first:
+
+- `BUCKET_NAME`: the name of the bucket that will be scanned
+- `ENV`: `prod`, `staging`, or `dev`: which bucket subdir will be sourced for PDF metadata
+- `ENDPOINT`: the hasura graphql endpoint to target for updating the DB
+- `ADMIN_SECRET`: the hasura graphql admin secret to be used when updating the db
+
+```shell
+$ python _update_db_from_bucket.py
+```
+
 
 # CRIS Import ETL
 
