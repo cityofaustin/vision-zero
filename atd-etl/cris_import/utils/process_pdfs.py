@@ -134,11 +134,11 @@ def process_pdfs(extract_dir, s3_upload, max_workers):
     # make the crash_diagram extract directory
     Path(os.path.join(extract_dir, "crash_diagrams")).mkdir(parents=True, exist_ok=True)
 
-    pdfs = [
-        filename
-        for filename in os.listdir(os.path.join(extract_dir, "crashReports"))
-        if filename.endswith(".pdf")
-    ]
+    pdfs_dir = os.path.join(extract_dir, "crashReports")
+    if not os.path.exists(pdfs_dir):
+        return
+
+    pdfs = [filename for filename in os.listdir(pdfs_dir) if filename.endswith(".pdf")]
     pdf_count = len(pdfs)
 
     if not pdf_count:
