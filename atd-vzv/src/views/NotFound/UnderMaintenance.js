@@ -1,12 +1,12 @@
 import React from "react";
 import Footer from "../nav/Footer";
 
-import { Container, Row, Navbar } from "reactstrap";
+import { Container, Row, Navbar, Alert } from "reactstrap";
 import { responsive } from "../../constants/responsive";
 
 const UnderMaintenance = () => {
   return (
-    <div>
+    <div style={{ width: "100%" }}>
       <header role="banner">
         <Navbar
           light
@@ -30,9 +30,13 @@ const UnderMaintenance = () => {
         </Navbar>
       </header>
 
-      <Container style={{ width: "100vw" }}>
-        <Row className="my-5 mx-5">
-          <h3>Sorry, but this page does not exist.</h3>
+      <Container style={{ height: "40vh" }}>
+        <Row className="my-5 mx-auto">
+          <Alert color="info" className="col-8 mb-0">
+            <div className="my-2">
+              This site is currently under maintenance - please check back soon.
+            </div>
+          </Alert>
         </Row>
       </Container>
       <Footer />
