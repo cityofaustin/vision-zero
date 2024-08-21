@@ -5,10 +5,12 @@ select_permissions:
   - role: editor
     permission:
       columns:
+        - council_district
         - cr3_crash_count
         - crash_count
         - description
         - location_id
+        - location_group
         - non_cr3_crash_count
         - total_est_comp_cost
       filter: {}
@@ -17,10 +19,12 @@ select_permissions:
   - role: readonly
     permission:
       columns:
+        - council_district
         - cr3_crash_count
         - crash_count
         - description
         - location_id
+        - location_group
         - non_cr3_crash_count
         - total_est_comp_cost
       filter: {}
@@ -29,10 +33,12 @@ select_permissions:
   - role: vz-admin
     permission:
       columns:
+        - council_district
         - cr3_crash_count
         - crash_count
         - description
         - location_id
+        - location_group
         - non_cr3_crash_count
         - total_est_comp_cost
       filter: {}

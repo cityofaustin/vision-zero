@@ -64,7 +64,7 @@ const DataTable = ({
                       let fieldValue = fieldConfigObject.relationshipName
                         ? data[fieldDataTable][
                             fieldConfigObject.relationshipName
-                          ][field]
+                          ]?.[field]
                         : data[fieldDataTable][field];
 
                       // Handle formatting the field value

@@ -5,6 +5,7 @@ import { format, subYears } from "date-fns";
 import GridTable from "../../Components/GridTable";
 import gqlAbstract from "../../queries/gqlAbstract";
 import { locationQueryExportFields } from "../../queries/locations";
+import { locationsGridTableAdvancedFilters } from "./locationGridTableParameters";
 
 // Our initial query configuration
 let queryConf = {
@@ -66,6 +67,7 @@ let locationsQuery = new gqlAbstract(queryConf);
 const Locations = () => (
   <GridTable
     query={locationsQuery}
+    filters={locationsGridTableAdvancedFilters}
     title={"Locations"}
     columnsToExport={locationQueryExportFields}
     helperText={helperText}
