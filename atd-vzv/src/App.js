@@ -10,7 +10,7 @@ const App = () => {
   const isMeasuresPath = currentPath === "/measures";
   const isUnderMaintenance = !!process.env.REACT_APP_UNDER_MAINTENANCE;
 
-  console.log(isUnderMaintenance);
+  console.log(process.env.REACT_APP_UNDER_MAINTENANCE);
 
   if (isUnderMaintenance) {
     return (
