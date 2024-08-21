@@ -29,18 +29,18 @@ const Content = () => {
     width: calc(100vw - ${responsive.drawerWidth}px);
   `;
 
-  const mainSyles = `
+  const mainStyles = `
     top: ${responsive.headerHeight}px;
   `;
 
-  const mainMobileStilye = `
+  const mainMobileStyle = `
     top: ${responsive.headerHeightMobile}px;
   `;
 
   const StyledContent = styled.div`
     .content {
       position: relative;
-      ${!isMeasuresPath && mainSyles}
+      ${!isMeasuresPath && mainStyles}
       ${isMapPath && mapStyles}
     }
 
@@ -49,7 +49,7 @@ const Content = () => {
       .content {
         width: 100vw;
         height: calc(100% - ${responsive.headerHeightMobile}px);
-        ${!isMeasuresPath && mainMobileStilye}
+        ${!isMeasuresPath && mainMobileStyle}
       }
     }
   `;
