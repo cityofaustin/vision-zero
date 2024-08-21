@@ -64,7 +64,7 @@ const DataTable = ({
                       let fieldValue = fieldConfigObject.relationshipName
                         ? data[fieldDataTable][
                             fieldConfigObject.relationshipName
-                          ][field]
+                          ]?.[field]
                         : data[fieldDataTable][field];
 
                       // Handle formatting the field value
@@ -221,7 +221,7 @@ const DataTable = ({
                   </tbody>
                 </Table>
               </CardBody>
-              <CardFooter>{downloadGlobal}</CardFooter>
+              {!!downloadGlobal && <CardFooter>{downloadGlobal}</CardFooter>}
             </Card>
           </Col>
         );

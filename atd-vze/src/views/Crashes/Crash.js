@@ -94,7 +94,10 @@ function Crash(props) {
   };
 
   const crashRecord = {
-    crash: crashData?.crashes?.[0] || { crash_injury_metrics_view: {} },
+    crash: crashData?.crashes?.[0] || {
+      crash_injury_metrics_view: {},
+      crashes_list_view: {},
+    },
   };
   const crashPk = crashRecord?.crash?.id;
 
@@ -111,6 +114,8 @@ function Crash(props) {
     longitude,
     location_id: locationId,
     is_temp_record: tempRecord,
+    private_dr_fl: isPrivateDrive,
+    in_austin_full_purpose: isInAustinFullPurpose,
   } = crashRecord?.crash;
 
   const isCrashFatal = deathCount > 0 ? true : false;
@@ -120,23 +125,30 @@ function Crash(props) {
   const hasLocation = crashRecord?.crash["location_id"];
   const hasCoordinates = !!latitude && !!longitude;
 
-  return !crashData ? (
+  return !crashData.crashes[0] ? (
     <Page404 />
   ) : (
     <div className="animated fadeIn">
       <Row>
         <Col>
-          {primaryAddress && secondaryAddress ? (
-            <h2 className="h2 mb-3">{`${primaryAddress} & ${secondaryAddress}`}</h2>
-          ) : (
-            <h2 className="h2 mb-3">{`${
-              primaryAddress ? primaryAddress : "PRIMARY ADDRESS MISSING"
-            } & ${
-              secondaryAddress ? secondaryAddress : "SECONDARY ADDRESS MISSING"
-            }`}</h2>
-          )}
+          <h2 className="h2 mb-3">{`${primaryAddress ? primaryAddress : ""} ${
+            secondaryAddress ? "& " + secondaryAddress : ""
+          }`}</h2>
         </Col>
       </Row>
+      {(isPrivateDrive !== false || isInAustinFullPurpose !== true) && (
+        <Row>
+          <Col>
+            <Alert color="warning">
+              <i className="fa fa-exclamation-triangle" /> This crash is not
+              included in Vision Zero statistical reporting because{" "}
+              {isPrivateDrive
+                ? "it occurred on a private drive"
+                : "it is located outside of the Austin full purpose jurisdiction"}
+            </Alert>
+          </Col>
+        </Row>
+      )}
       <Row>
         <Col xs="12" sm="6" md="4">
           <Widget02
@@ -205,7 +217,7 @@ function Crash(props) {
               {!hasCoordinates && (
                 <Alert color="danger">
                   Crash record is missing latitude and longitude values required
-                  for map display.
+                  for map display
                 </Alert>
               )}
               {!isEditingCoords ? (

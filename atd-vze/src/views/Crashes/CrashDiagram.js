@@ -9,6 +9,7 @@ import {
   Col,
   Row,
   UncontrolledTooltip,
+  Alert,
 } from "reactstrap";
 import axios from "axios";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
@@ -150,25 +151,36 @@ const CrashDiagram = ({ crashId, isCr3Stored, isTempRecord }) => {
           </CardFooter>
         </>
       )}
-      {diagramError && (
-        <CardBody>
-          <p>
-            The crash diagram is not available. Typically, this indicates there
-            was an error when processing this crash's CR3 PDF.
-          </p>
-          <p>
-            For additional assistance, you can
-            <a
-              href="https://atd.knack.com/dts#new-service-request/?view_249_vars=%7B%22field_398%22%3A%22Bug%20Report%20%E2%80%94%20Something%20is%20not%20working%22%2C%22field_399%22%3A%22Vision%20Zero%20(Editor)%22%7D"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              &nbsp;report a bug&nbsp;&nbsp; <i class="fa fa-external-link"></i>
-            </a>
-            .
-          </p>
-        </CardBody>
-      )}
+      {diagramError &&
+        (isTempRecord ? (
+          <CardBody>
+            <Alert color="info">
+              <i className="fa fa-info-circle" /> Crash diagrams are not
+              available for user-created crash records
+            </Alert>
+          </CardBody>
+        ) : (
+          <CardBody>
+            <Alert color="danger">
+              <p>
+                The crash diagram is not available. Typically, this indicates
+                there was an error when processing this crash's CR3 PDF.
+              </p>
+              <p>
+                For additional assistance, you can
+                <a
+                  href="https://atd.knack.com/dts#new-service-request/?view_249_vars=%7B%22field_398%22%3A%22Bug%20Report%20%E2%80%94%20Something%20is%20not%20working%22%2C%22field_399%22%3A%22Vision%20Zero%20(Editor)%22%7D"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  &nbsp;report a bug&nbsp;&nbsp;{" "}
+                  <i class="fa fa-external-link"></i>
+                </a>
+                .
+              </p>
+            </Alert>
+          </CardBody>
+        ))}
     </Card>
   );
 };

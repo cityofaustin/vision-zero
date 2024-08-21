@@ -1,14 +1,6 @@
 import React, { useState } from "react";
 import { useMutation } from "@apollo/react-hooks";
-import {
-  Card,
-  CardHeader,
-  CardBody,
-  CardFooter,
-  Table,
-  Input,
-  Button,
-} from "reactstrap";
+import { Card, CardHeader, CardBody, Table, Input, Button } from "reactstrap";
 import ConfirmDeleteButton from "../ConfirmDeleteButton.js";
 import { format, parseISO } from "date-fns";
 import { notesDataMap } from "./notesDataMap.js";
@@ -286,7 +278,6 @@ const Notes = ({
           </tbody>
         </Table>
       </CardBody>
-      <CardFooter></CardFooter>
     </Card>
   );
 };

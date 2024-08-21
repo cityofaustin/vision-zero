@@ -48,11 +48,14 @@ export const GET_CRASH = gql`
       latitude
       longitude
       location_id
+      is_temp_record
+      in_austin_full_purpose
       crash_injury_metrics_view {
         vz_fatality_count
         sus_serious_injry_count
         years_of_life_lost
         est_comp_cost_crash_based
+        est_total_person_comp_cost
         crash_injry_sev_id
         nonincap_injry_count
         sus_serious_injry_count
@@ -63,31 +66,31 @@ export const GET_CRASH = gql`
         id
         unit_nbr
         veh_mod_year
-        unit_desc_lkp {
+        unit_desc {
           id
           label
         }
-        veh_body_styl_lkp {
+        veh_body_styl {
           id
           label
         }
-        veh_make_lkp {
+        veh_make {
           id
           label
         }
-        veh_mod_lkp {
+        veh_mod {
           id
           label
         }
-        trvl_dir_lkp {
+        trvl_dir {
           id
           label
         }
-        movt_lkp {
+        movt {
           id
           label
         }
-        contrib_factr_lkp {
+        contrib_factr {
           id
           label
         }
@@ -97,7 +100,7 @@ export const GET_CRASH = gql`
         }
       }
       people_list_view {
-        crash_id
+        crash_pk
         id
         unit_nbr
         is_primary_person
@@ -108,19 +111,19 @@ export const GET_CRASH = gql`
         prsn_first_name
         prsn_mid_name
         prsn_last_name
-        injry_sev_lkp {
+        injry_sev {
           id
           label
         }
-        prsn_type_lkp {
+        prsn_type {
           id
           label
         }
-        gndr_lkp {
+        gndr {
           id
           label
         }
-        drvr_ethncty_lkp {
+        drvr_ethncty {
           id
           label
         }
@@ -137,7 +140,7 @@ export const GET_CRASH = gql`
       }
       change_logs(order_by: { created_at: desc }) {
         id
-        crash_id
+        crash_pk
         created_at
         created_by
         operation_type
@@ -150,7 +153,7 @@ export const GET_CRASH = gql`
         created_at
         rec_text
         created_by
-        crash_id
+        crash_pk
         rec_update
         atd__recommendation_status_lkp {
           rec_status_desc
@@ -172,7 +175,7 @@ export const GET_CRASH = gql`
         date
         text
         user_email
-        crash_id
+        crash_pk
       }
     }
   }
@@ -183,14 +186,14 @@ export const UPDATE_CRASH = gql`
     update_crashes_edits(where: { id: { _eq: $id } }, _set: $changes) {
       affected_rows
       returning {
-        crash_id
+        cris_crash_id
       }
     }
   }
 `;
 
 export const crashQueryExportFields = `
-crash_id
+cris_crash_id
 case_id
 crash_timestamp
 crash_day_of_week
@@ -210,16 +213,16 @@ unkn_injry_count
 crash_injry_sev_desc
 collsn_desc
 units {
-  trvl_dir_lkp {
+  trvl_dir {
     label
   }
-  movt_lkp {
+  movt {
     label
   }
-  veh_body_styl_lkp {
+  veh_body_styl {
     label
   }
-  unit_desc_lkp {
+  unit_desc {
     label
   }
 }

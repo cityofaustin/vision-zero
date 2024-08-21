@@ -5,18 +5,18 @@ export const fatalityGridTableColumns = {
     label_table: "Year",
     type: "Int",
   },
-  cris_crash_id: {
+  record_locator: {
     primary_key: true,
     searchable: true,
     sortable: true,
-    label_search: "Search by Crash ID",
+    label_search: "Crash ID",
     label_table: "Crash ID",
-    type: "Int",
+    type: "String",
   },
   case_id: {
     searchable: true,
     sortable: true,
-    label_search: "Search by Case ID",
+    label_search: "Case ID",
     label_table: "Case ID",
     type: "Int",
   },
@@ -47,14 +47,14 @@ export const fatalityGridTableColumns = {
   location: {
     searchable: true,
     sortable: false,
-    label_search: "Search by Location",
+    label_search: "Location",
     label_table: "Location",
     type: "String",
   },
   victim_name: {
     searchable: true,
     sortable: false,
-    label_search: "Search by Victim Name",
+    label_search: "Victim Name",
     label_table: "Victim Name",
     type: "String",
   },
@@ -75,7 +75,7 @@ export const fatalityGridTableColumns = {
     sortable: true,
     label_table: "Current Engineering Area",
     type: "String",
-    label_search: "Search by Current Engineering Area",
+    label_search: "Current Engineering Area",
   },
 };
 
@@ -333,8 +333,8 @@ recommendation { rec_text }
 recommendation { rec_update }
 recommendation { atd__recommendation_status_lkp { rec_status_desc } }
 recommendation { recommendations_partners { atd__coordination_partners_lkp { coord_partner_desc } } }
-unit { unit_desc_lkp { label } }
-unit { veh_body_styl_lkp { label } }
+unit { unit_desc { label } }
+unit { veh_body_styl { label } }
 crash { onsys_fl }
 engineering_area
 crash { council_district }

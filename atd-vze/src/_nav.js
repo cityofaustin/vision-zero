@@ -48,21 +48,14 @@ export const navigation = roles => {
       icon: "fa fa-heart-o",
     },
     {
-      name: "Tools",
-      url: "#",
-      icon: "icon-wrench",
-      children: [
-        {
-          name: "Upload Non-CR3",
-          url: "/tools/upload_non_cr3",
-          icon: "icon-cloud-upload",
-        },
-        {
-          name: "Create Crash Record",
-          url: "/tools/create_crash_record",
-          icon: "icon-shield",
-        },
-      ],
+      name: "Upload Non-CR3",
+      url: "/upload_non_cr3",
+      icon: "icon-cloud-upload",
+    },
+    {
+      name: "Create Crash Record",
+      url: "/create_crash_record",
+      icon: "icon-shield",
     },
     {
       name: "Users",

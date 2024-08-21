@@ -1,6 +1,6 @@
 import React from "react";
 import { useQuery, useMutation } from "@apollo/react-hooks";
-import { Card, CardHeader, CardBody, CardFooter } from "reactstrap";
+import { Card, CardHeader, CardBody } from "reactstrap";
 import { recommendationsDataMap } from "./recommendationsDataMap";
 import {
   GET_RECOMMENDATION_LOOKUPS,
@@ -180,7 +180,6 @@ const Recommendations = ({ crashPk, recommendation, refetch }) => {
           </div>
         </div>
       </CardBody>
-      <CardFooter></CardFooter>
     </Card>
   );
 };

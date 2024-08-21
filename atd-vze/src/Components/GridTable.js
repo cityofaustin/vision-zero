@@ -31,7 +31,7 @@ import GridTableDoughnut from "./GridTableDoughnut";
 import GridTableHorizontalBar from "./GridTableHorizontalBar";
 import GridTableFilterBadges from "./GridTableFilterBadges";
 
-const codeName = "jester";
+const codeName = "asclepias";
 
 const GridTable = ({
   title,
@@ -49,7 +49,7 @@ const GridTable = ({
 }) => {
   // Load table filters from localStorage by title
   const savedFilterState = JSON.parse(
-    localStorage.getItem(`${codeName}saved${title}Config`)
+    localStorage.getItem(`${codeName}_saved_${title}_config`)
   );
 
   // Return saved filters if they exist
@@ -109,7 +109,7 @@ const GridTable = ({
       dateRangeFilter,
     };
     localStorage.setItem(
-      `${codeName}saved${title}Config`,
+      `${codeName}_saved_${title}_config`,
       JSON.stringify(stateForFilters)
     );
   });
@@ -182,10 +182,12 @@ const GridTable = ({
     } else if (sortColumn === col) {
       // Else if the current sortColumn is the same as the new
       // then invert values and repeat sort on column
-      sortOrder === "desc" ? setSortOrder("asc") : setSortOrder("desc");
+      sortOrder === "desc_nulls_last"
+        ? setSortOrder("asc")
+        : setSortOrder("desc_nulls_last");
     } else if (sortColumn !== col) {
       // Sort different column after initial sort, then reset
-      setSortOrder("desc");
+      setSortOrder("desc_nulls_last");
       setSortColumn(col);
     }
   };
@@ -227,6 +229,7 @@ const GridTable = ({
   const handleRowClick = e => {
     const rowNumber = parseInt(e.target.value);
     setLimit(rowNumber);
+    changePage(1);
   };
 
   /**
@@ -353,7 +356,7 @@ const GridTable = ({
       query.deleteWhere(column);
     });
 
-    const useEqSearch = ["crash_id", "form_id", "record_id"].includes(
+    const useEqSearch = ["cris_crash_id", "form_id", "record_id"].includes(
       searchParameters["column"]
     );
 
@@ -377,7 +380,7 @@ const GridTable = ({
     query.setOrder(sortColumn, sortOrder);
   }
 
-  // Mange LIMIT & OFFSET
+  // Manage LIMIT & OFFSET
   query.limit = limit;
   query.offset = offset;
 
@@ -395,15 +398,9 @@ const GridTable = ({
   if (error) return `Error! ${error.message}`;
 
   let dataEntries = [];
-  let totalRecords = 0;
-  let totalPages = 1;
 
   // If we have data
   if (data[query.table]) {
-    loading = false;
-    totalRecords = data[query.table + "_aggregate"]["aggregate"]["count"];
-    totalPages = Math.ceil(totalRecords / limit);
-
     // DataEntries: For each item in the data array, generate a row with each column
     data[query.table].map((row, index) =>
       dataEntries.push(
@@ -504,53 +501,53 @@ const GridTable = ({
                 />
               </Row>
               <ButtonToolbar className="mb-3 justify-content-between">
-                {hasDateRange && (
-                  <ButtonGroup>
-                    <GridDateRange
-                      setDateRangeFilter={setDateRangeFilter}
-                      initStartDate={dateRangeFilter.startDate}
-                      initEndDate={dateRangeFilter.endDate}
-                      minDate={minDate}
-                    />
-                  </ButtonGroup>
-                )}
-
+                <div>
+                  {hasDateRange && (
+                    <ButtonGroup className="mr-5">
+                      <GridDateRange
+                        setDateRangeFilter={setDateRangeFilter}
+                        initStartDate={dateRangeFilter.startDate}
+                        initEndDate={dateRangeFilter.endDate}
+                        minDate={minDate}
+                      />
+                    </ButtonGroup>
+                  )}
+                  {loading && (
+                    <ButtonGroup>
+                      <Spinner color="primary" />
+                    </ButtonGroup>
+                  )}
+                </div>
                 <ButtonGroup className="mb-2 float-right">
                   <GridTablePagination
                     moveNext={moveNextPage}
                     moveBack={moveBackPage}
                     pageNumber={page}
                     limit={limit}
-                    totalRecords={totalRecords}
-                    totalPages={totalPages}
                     handleRowClick={handleRowClick}
+                    recordsCount={dataEntries.length}
                   />
-
                   {columnsToExport && (
                     <GridExportData
                       query={query}
                       columnsToExport={columnsToExport}
-                      totalRecords={totalRecords}
                       roleSpecificColumns={roleSpecificColumns}
                       hasSpecificRole={hasSpecificRole}
                     />
                   )}
                 </ButtonGroup>
               </ButtonToolbar>
-              {loading ? (
-                <Spinner className="mt-2" color="primary" />
-              ) : (
-                <Table responsive>
-                  <GridTableHeader
-                    query={query}
-                    handleTableHeaderClick={handleTableHeaderClick}
-                    sortColumn={sortColumn}
-                    sortOrder={sortOrder}
-                    helperText={helperText}
-                  />
-                  <tbody>{data && dataEntries}</tbody>
-                </Table>
-              )}
+
+              <Table responsive>
+                <GridTableHeader
+                  query={query}
+                  handleTableHeaderClick={handleTableHeaderClick}
+                  sortColumn={sortColumn}
+                  sortOrder={sortOrder}
+                  helperText={helperText}
+                />
+                <tbody>{data && dataEntries}</tbody>
+              </Table>
             </CardBody>
           </Card>
         </Col>
