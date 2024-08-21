@@ -6,6 +6,8 @@ import { responsive } from "../../constants/responsive";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 
+// isMeasuresPath is true when the route is '/measures', the view that is serves the widgets on the austintexas.gov drupal site
+// that view should not show the header nor footer, since its an embed in another page
 const UnderMaintenance = ({ isMeasuresPath }) => {
   return (
     <div style={{ width: "100%" }}>
