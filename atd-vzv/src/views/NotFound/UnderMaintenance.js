@@ -3,6 +3,8 @@ import Footer from "../nav/Footer";
 
 import { Container, Row, Navbar, Alert } from "reactstrap";
 import { responsive } from "../../constants/responsive";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 
 const UnderMaintenance = () => {
   return (
@@ -34,6 +36,10 @@ const UnderMaintenance = () => {
         <Row className="my-5 mx-auto">
           <Alert color="info" className="col-8 mb-0">
             <div className="my-2">
+              <FontAwesomeIcon
+                icon={faInfoCircle}
+                style={{ marginRight: "1rem" }}
+              />
               This site is currently under maintenance - please check back soon.
             </div>
           </Alert>
