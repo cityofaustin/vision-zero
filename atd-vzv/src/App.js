@@ -10,12 +10,15 @@ const App = () => {
   const isMeasuresPath = currentPath === "/measures";
   const isUnderMaintenance = process.env.REACT_APP_UNDER_MAINTENANCE === "True";
 
-  console.log("Is under maintenance: ", process.env.REACT_APP_UNDER_MAINTENANCE);
+  console.log(
+    "Is under maintenance: ",
+    process.env.REACT_APP_UNDER_MAINTENANCE
+  );
 
   if (isUnderMaintenance) {
     return (
       <div className="App">
-        <UnderMaintenance isMeasuresPath />
+        <UnderMaintenance isMeasuresPath={isMeasuresPath} />
       </div>
     );
   }
