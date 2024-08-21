@@ -6,31 +6,33 @@ import { responsive } from "../../constants/responsive";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 
-const UnderMaintenance = () => {
+const UnderMaintenance = ({ isMeasuresPath }) => {
   return (
     <div style={{ width: "100%" }}>
-      <header role="banner">
-        <Navbar
-          light
-          className="navbar shadow-sm static-top header-navbar px-0"
-          expand="md"
-          style={{ height: `${responsive.headerHeight}px` }}
-        >
-          <Container fluid className={"px-0"}>
-            <div className="vz-logo-wrapper">
-              <h1 className="sr-only">
-                Vision Zero -- Help Austin reach zero traffic deaths
-              </h1>
-              <img
-                className="vz-logo"
-                style={{ height: "40px" }}
-                src={process.env.PUBLIC_URL + "/vz_logo.png"}
-                alt="Vision Zero Austin Logo"
-              ></img>
-            </div>
-          </Container>
-        </Navbar>
-      </header>
+      {!isMeasuresPath && (
+        <header role="banner">
+          <Navbar
+            light
+            className="navbar shadow-sm static-top header-navbar px-0"
+            expand="md"
+            style={{ height: `${responsive.headerHeight}px` }}
+          >
+            <Container fluid className={"px-0"}>
+              <div className="vz-logo-wrapper">
+                <h1 className="sr-only">
+                  Vision Zero -- Help Austin reach zero traffic deaths
+                </h1>
+                <img
+                  className="vz-logo"
+                  style={{ height: "40px" }}
+                  src={process.env.PUBLIC_URL + "/vz_logo.png"}
+                  alt="Vision Zero Austin Logo"
+                ></img>
+              </div>
+            </Container>
+          </Navbar>
+        </header>
+      )}
 
       <Container style={{ height: "40vh" }}>
         <Row className="my-5 mx-auto">
@@ -40,12 +42,14 @@ const UnderMaintenance = () => {
                 icon={faInfoCircle}
                 style={{ marginRight: "1rem" }}
               />
-              This site is currently under maintenance - please check back soon.
+              {isMeasuresPath
+                ? "Vision Zero is currently under maintenance. "
+                : "This site is currently under maintenance - please check back soon."}
             </div>
           </Alert>
         </Row>
       </Container>
-      <Footer />
+      {!isMeasuresPath && <Footer />}
     </div>
   );
 };

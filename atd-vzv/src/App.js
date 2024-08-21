@@ -15,7 +15,7 @@ const App = () => {
   if (isUnderMaintenance) {
     return (
       <div className="App">
-        <UnderMaintenance />
+        <UnderMaintenance isMeasuresPath />
       </div>
     );
   }
