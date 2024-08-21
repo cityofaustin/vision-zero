@@ -8,7 +8,7 @@ import "./App.css";
 const App = () => {
   const currentPath = usePath();
   const isMeasuresPath = currentPath === "/measures";
-  const isUnderMaintenance = !process.env.UNDER_MAINTENANCE;
+  const isUnderMaintenance = !!process.env.UNDER_MAINTENANCE;
 
   console.log(isUnderMaintenance);
 
