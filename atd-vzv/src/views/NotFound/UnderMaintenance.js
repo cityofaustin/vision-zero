@@ -38,7 +38,7 @@ const UnderMaintenance = ({ isMeasuresPath }) => {
 
       <Container style={{ height: "40vh" }}>
         <Row className="my-5 mx-auto">
-          <Alert color="info" className="col-8 mb-0">
+          <Alert color="info" className="mb-0">
             <div className="my-2">
               <FontAwesomeIcon
                 icon={faInfoCircle}

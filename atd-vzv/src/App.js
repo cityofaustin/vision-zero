@@ -5,15 +5,12 @@ import Content from "./views/content/Content";
 import UnderMaintenance from "./views/NotFound/UnderMaintenance";
 import "./App.css";
 
+const isUnderMaintenance = process.env.REACT_APP_UNDER_MAINTENANCE === "true";
+console.log("Is under maintenance: ", process.env.REACT_APP_UNDER_MAINTENANCE);
+
 const App = () => {
   const currentPath = usePath();
   const isMeasuresPath = currentPath === "/measures";
-  const isUnderMaintenance = process.env.REACT_APP_UNDER_MAINTENANCE === "True";
-
-  console.log(
-    "Is under maintenance: ",
-    process.env.REACT_APP_UNDER_MAINTENANCE
-  );
 
   if (isUnderMaintenance) {
     return (
