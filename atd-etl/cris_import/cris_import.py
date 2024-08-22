@@ -25,8 +25,9 @@ def main(cli_args):
 
     logger.info(f"{len(extracts_todo)} extract(s) to process")
 
-    if not extracts_todo:
-        return
+    if cli_args.s3_download and not extracts_todo:
+        # always short circuit if we find nothing in S3
+        raise Exception("No extracts found in S3 bucket")
 
     for extract in extracts_todo:
         records_processed = {
@@ -49,14 +50,34 @@ def main(cli_args):
         if cli_args.csv:
             csv_records_processed_dict = process_csvs(extract_dir)
             records_processed.update(csv_records_processed_dict)
-        if cli_args.pdf:
+
+        no_crashes_found = (
+            True if cli_args.csv and records_processed["crashes"] == 0 else False
+        )
+
+        if cli_args.pdf and not no_crashes_found:
             pdfs_processed_count = process_pdfs(
                 extract_dir, cli_args.s3_upload, cli_args.workers
             )
             records_processed["pdfs"] = pdfs_processed_count
+        elif cli_args.pdf and no_crashes_found:
+            # we skip PDF processing when there are no CSV crashes, because in those cases
+            # the extract may not contain a `crashReports` directory — and that will
+            # cause an unwanted failure
+            logger.info("Skipping PDF processing because no CSV crashes were processed")
+
+        # if processing CSVs and PDFs, make sure the number of crashes matches the number of PDFs
+        if cli_args.pdf and cli_args.csv:
+            if records_processed["crashes"] != records_processed["pdfs"]:
+                raise Exception(
+                    "Mismatch between # of crashes processed vs PDFs. This should never happen!"
+                )
+
         if cli_args.s3_download and cli_args.s3_archive and not cli_args.skip_unzip:
             archive_extract_zip(extract["s3_file_key"])
-        set_log_entry_complete(log_entry_id=log_entry_id, records_processed=records_processed)
+        set_log_entry_complete(
+            log_entry_id=log_entry_id, records_processed=records_processed
+        )
 
 
 if __name__ == "__main__":

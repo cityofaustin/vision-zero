@@ -139,10 +139,8 @@ def process_pdfs(extract_dir, s3_upload, max_workers):
         for filename in os.listdir(os.path.join(extract_dir, "crashReports"))
         if filename.endswith(".pdf")
     ]
-    pdf_count = len(pdfs)
 
-    if not pdf_count:
-        raise IOError("No PDFs found in extract")
+    pdf_count = len(pdfs)
 
     logger.info(f"Found {pdf_count} PDFs to process")
 
