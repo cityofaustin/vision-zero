@@ -156,7 +156,7 @@ drop table if exists atd_txdot__movt_lkp;
 drop table if exists atd_txdot_primaryperson;
 drop table if exists atd_txdot_person;
 drop table if exists atd_txdot_charges;
-drop view if exists view_location_crashes_by_veh_body_style
+drop view if exists view_location_crashes_by_veh_body_style;
 drop table if exists atd_txdot_units;
 drop table if exists atd_txdot__injry_sev_lkp;
 drop table if exists atd_txdot_crash_locations;
@@ -169,6 +169,7 @@ drop function if exists find_crashes_in_jurisdiction;
 drop table if exists atd_txdot_crashes;
 drop function if exists atd_txdot_charges_updates_audit_log;
 drop function if exists atd_txdot_crashes_updates_audit_log;
+drop trigger if exists atd_txdot_location_audit_log on atd_txdot_locations;
 drop function if exists atd_txdot_locations_updates_audit_log;
 drop function if exists atd_txdot_person_updates_audit_log;
 drop function if exists atd_txdot_primaryperson_updates_audit_log;
