@@ -6,6 +6,10 @@ import { responsive } from "../../constants/responsive";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 
+
+// UnderMaintance is a fallback view that is rendered when the REACT_APP_UNDER_MAINTENANCE environment variable is "true"
+// This variable can be set via the Netlify dashboard under Site Configuration in the section titled Environment variables
+// It can also be toggled in the start script defined in package.json
 // isMeasuresPath is true when the route is '/measures', the view that is serves the widgets on the austintexas.gov drupal site
 // that view should not show the header nor footer, since its an embed in another page
 const UnderMaintenance = ({ isMeasuresPath }) => {
