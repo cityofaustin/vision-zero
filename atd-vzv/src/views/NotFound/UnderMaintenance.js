@@ -45,8 +45,8 @@ const UnderMaintenance = ({ isMeasuresPath }) => {
                 style={{ marginRight: "1rem" }}
               />
               {isMeasuresPath
-                ? "Vision Zero is currently under maintenance. "
-                : "This site is currently under maintenance - please check back soon."}
+                ? "Vision Zero metrics are currently under maintenance. "
+                : "The Vision Zero Viewer is undergoing maintenance and will be unavailable until September 3, 2024"}
             </div>
           </Alert>
         </Row>
