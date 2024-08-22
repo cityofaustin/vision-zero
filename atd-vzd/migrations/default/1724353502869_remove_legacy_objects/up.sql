@@ -186,4 +186,4 @@ drop function if exists get_speed_mgmt_points;
 drop function if exists update_cr3_location;
 drop function if exists update_modified_crash_row;
 drop function if exists find_council_district;
-drop function is_crash_in_austin_full_purpose;
+drop function if exists is_crash_in_austin_full_purpose;
