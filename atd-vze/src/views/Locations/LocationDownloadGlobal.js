@@ -49,7 +49,7 @@ const LocationDownloadGlobal = props => {
 
   const getGlobalCount = gql`
     query getGlobalCount($locationId: String) {
-      view_location_crashes_global_aggregate(
+      location_crashes_view_aggregate(
         where: { location_id: { _eq: $locationId } }
         order_by: {}
       ) {
@@ -67,15 +67,11 @@ const LocationDownloadGlobal = props => {
   return (
     <>
       {data &&
-        Object.keys(data).includes(
-          "view_location_crashes_global_aggregate"
-        ) && (
+        Object.keys(data).includes("location_crashes_view_aggregate") && (
           <GridExportDataButton
             query={crashesQuery}
             columnsToExport={columnsToExport}
-            totalRecords={
-              data.view_location_crashes_global_aggregate.aggregate.count
-            }
+            totalRecords={data.location_crashes_view_aggregate.aggregate.count}
             label={"Download crashes"}
           />
         )}
