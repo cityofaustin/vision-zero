@@ -4,11 +4,12 @@ import { format, subYears } from "date-fns";
 
 import GridTable from "../../Components/GridTable";
 import gqlAbstract from "../../queries/gqlAbstract";
-import { locationQueryExportFields } from "../../queries/Locations";
+import { locationQueryExportFields } from "../../queries/locations";
+import { locationsGridTableAdvancedFilters } from "./locationGridTableParameters";
 
 // Our initial query configuration
 let queryConf = {
-  table: "locations_with_crash_injury_counts",
+  table: "locations_list_view",
   single_item: "locations",
   showDateRange: false,
   columns: {
@@ -16,52 +17,36 @@ let queryConf = {
       primary_key: true,
       searchable: true,
       sortable: true,
-      label_search: "Search by location id",
+      label_search: "Location ID",
       label_table: "Location ID",
       type: "Integer",
     },
     description: {
       searchable: true,
-      sortable: false,
-      label_search: "Search by intersecting street name",
+      sortable: true,
+      label_search: "Intersecting Street Name",
       label_table: "Location",
       type: "String",
     },
-    crash_count: {
+    cr3_crash_count: {
       searchable: false,
       sortable: true,
       label_search: null,
-      label_table: "Total Crashes",
+      label_table: "CR3 Crashes",
       default: 0,
       type: "Integer",
     },
-    fatalities_count: {
+    non_cr3_crash_count: {
       searchable: false,
       sortable: true,
       label_search: null,
-      label_table: "Total Deaths (CRIS)",
+      label_table: "Non-CR3 Crashes",
       default: 0,
       type: "Integer",
-    },
-    serious_injury_count: {
-      searchable: false,
-      sortable: true,
-      label_search: null,
-      label_table: "Total Suspected Serious Injuries",
-      default: 0,
-      type: "Integer",
-    },
-    total_est_comp_cost: {
-      searchable: false,
-      sortable: true,
-      label_search: null,
-      label_table: "Total Est Comp. Cost", // Both CR3 + Blueform
-      default: 0,
-      type: "Currency",
     },
   },
   order_by: {
-    total_est_comp_cost: "desc_nulls_last",
+    cr3_crash_count: "desc_nulls_last",
   },
   where: {},
   limit: 25,
@@ -82,9 +67,11 @@ let locationsQuery = new gqlAbstract(queryConf);
 const Locations = () => (
   <GridTable
     query={locationsQuery}
+    filters={locationsGridTableAdvancedFilters}
     title={"Locations"}
     columnsToExport={locationQueryExportFields}
     helperText={helperText}
+    defaultSearchField="location_id"
   />
 );
 

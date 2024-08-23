@@ -23,32 +23,32 @@ const CrashesByYear = () => {
   const [crashType, setCrashType] = useState(null);
   const [chartType, setChartType] = useState("Monthly");
 
-  const [avgData, setAvgData] = useState([]);
-  const [currentYearData, setCurrentYearData] = useState([]);
+  const [avgData, setAvgData] = useState(null);
+  const [currentYearData, setCurrentYearData] = useState(null);
 
   const url = `${crashEndpointUrl}?$query=`;
 
   // Fetch data for By Month Average and Cumulative visualizations
   useEffect(() => {
-    const avgDateCondition = `crash_date BETWEEN '${fiveYearAvgStartDate}T00:00:00' and '${fiveYearAvgEndDate}T23:59:59'`;
-    const currentYearDateCondition = `crash_date BETWEEN '${summaryCurrentYearStartDate}T00:00:00' and '${summaryCurrentYearEndDate}T23:59:59'`;
+    const avgDateCondition = `crash_timestamp_ct BETWEEN '${fiveYearAvgStartDate}T00:00:00' and '${fiveYearAvgEndDate}T23:59:59'`;
+    const currentYearDateCondition = `crash_timestamp_ct BETWEEN '${summaryCurrentYearStartDate}T00:00:00' and '${summaryCurrentYearEndDate}T23:59:59'`;
     const queryGroupAndOrder = `GROUP BY month ORDER BY month`;
 
     const avgQueries = {
-      fatalities: `SELECT date_extract_m(crash_date) as month, sum(death_cnt) / 5 as avg 
+      fatalities: `SELECT date_extract_m(crash_timestamp_ct) as month, sum(death_cnt) / 5 as avg 
                    WHERE death_cnt > 0 AND ${avgDateCondition} ${queryGroupAndOrder}`,
-      fatalitiesAndSeriousInjuries: `SELECT date_extract_m(crash_date) as month, sum(death_cnt) / 5 + sum(sus_serious_injry_cnt) / 5 as avg 
+      fatalitiesAndSeriousInjuries: `SELECT date_extract_m(crash_timestamp_ct) as month, sum(death_cnt) / 5 + sum(sus_serious_injry_cnt) / 5 as avg 
                                      WHERE (death_cnt > 0 OR sus_serious_injry_cnt > 0) AND ${avgDateCondition} ${queryGroupAndOrder}`,
-      seriousInjuries: `SELECT date_extract_m(crash_date) as month, sum(sus_serious_injry_cnt) / 5 as avg 
+      seriousInjuries: `SELECT date_extract_m(crash_timestamp_ct) as month, sum(sus_serious_injry_cnt) / 5 as avg 
                         WHERE sus_serious_injry_cnt > 0 AND ${avgDateCondition} ${queryGroupAndOrder}`,
     };
 
     const currentYearQueries = {
-      fatalities: `SELECT date_extract_m(crash_date) as month, sum(death_cnt) as total 
+      fatalities: `SELECT date_extract_m(crash_timestamp_ct) as month, sum(death_cnt) as total 
                    WHERE death_cnt > 0 AND ${currentYearDateCondition} ${queryGroupAndOrder}`,
-      fatalitiesAndSeriousInjuries: `SELECT date_extract_m(crash_date) as month, sum(death_cnt) + sum(sus_serious_injry_cnt) as total 
+      fatalitiesAndSeriousInjuries: `SELECT date_extract_m(crash_timestamp_ct) as month, sum(death_cnt) + sum(sus_serious_injry_cnt) as total 
                                      WHERE (death_cnt > 0 OR sus_serious_injry_cnt > 0) AND ${currentYearDateCondition} ${queryGroupAndOrder}`,
-      seriousInjuries: `SELECT date_extract_m(crash_date) as month, sum(sus_serious_injry_cnt) as total 
+      seriousInjuries: `SELECT date_extract_m(crash_timestamp_ct) as month, sum(sus_serious_injry_cnt) as total 
                         WHERE sus_serious_injry_cnt > 0 AND ${currentYearDateCondition} ${queryGroupAndOrder}`,
     };
 
@@ -113,7 +113,7 @@ const CrashesByYear = () => {
           <hr />
         </Col>
       </Row>
-      {avgData.length > 0 && currentYearData.length > 0 ? (
+      {avgData && currentYearData ? (
         <div>
           <ChartTypeSelector
             chartTypes={chartTypes}

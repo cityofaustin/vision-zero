@@ -80,6 +80,8 @@ atd-events/**/*.zip
 atd-events/**/package
 atd-etl/app/**/*.json
 
+# ignore `env` because it may be laying around in legacy ETL directoroes
+env
 
 # vim 
 [._]*.s[a-v][a-z]
