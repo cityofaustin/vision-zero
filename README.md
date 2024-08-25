@@ -4,7 +4,7 @@
 
 The Vision Zero Crash Data System is a suite of tools which support the City of Austin's [Vision Zero program](https://www.austintexas.gov/department/vision-zero), which seeks to reduce people hurt or killed by traffic crashes in Austin, TX.
 
-The system has a primary focus on storing, editing, and analyzing traffic crash data, and comprises following core components:
+The system has a primary focus on storing, editing, and analyzing traffic crash data, and comprises these core components:
 
 - Vision Zero Database (VZD): A postgresql database which stores crash and crash-related records
 - Vision Zero Editor (VZE): A web application which enables City staff to browse and edit crash data
@@ -17,9 +17,12 @@ This repository also holds integration scripts for consuming crash data from ext
 
 You need access to the production VZ database in order to develop locally. There is currently no option to run the Vision Zero stack based on seed data.
 
-### Environment variables
 
-Save a copy of the [environment template (`env_template)](env_template) as `.env`, and populate your read replica credentials.
+The helper script, `vision-zero`, makes it easy to spin up your local Vision Zero stack. See the [local development docs](docs/local_dev.md) for more details.
+
+1. Create a new Python environment and install the packages in [requirements.txt](requirements.txt).
+
+2. Save a copy of the [environment template (`env_template)](env_template) as `.env`, and populate your database read replica credentials.
 
 ```shell
 RR_USERNAME=""
@@ -28,19 +31,11 @@ RR_HOSTNAME=""
 RR_DATABASE=""
 ```
 
-### `vision-zero` helper
-
-The helper script, `vision-zero`, makes it easy to spin up your local Vision Zero stack. See the [local development docs](docs/local_dev.md) for more details.
-
-To use the helper, create a new Python environment and install the packages in [requirements.txt](requirements.txt).
-
-
-#### Start the DB
+3. Start the DB
 
 ```shell
 $ vision-zero replicate-db
 ```
-
 This command will:
 
 - Download a snapshot of the production database
@@ -48,18 +43,15 @@ This command will:
 - Drop local `atd_vz_data` database
 - Create and repopulate the database from the snapshot
 
-Note: the `-f / --filename` flag can be optionally used to point to a specific data dump .sql file to use to restore.
+Note: the `-f / --filename` flag can be optionally used to point to a specific data dump `.sql` file to use to restore. The way the snapshots are dated means that one will only end up downloading one copy of the data per-day, both with and without change log data.
 
-The way the snapshots are dated means that one will only end up downloading
-one copy of the data per-day, both in the with and without change log data.
+4. Start the Vision Zero Editor
 
+```shell
+$ vision-zero vze-up
+```
 
-#### `vision-zero vze-up` & `vision-zero vze-down`
-
-Start and stop the Vision Zero Editor
-
-#### `vision-zero vzv-up` & `vision-zero vzv-down`
-
+## Learn more
 
 ## atd-cr3-api
 
