@@ -65,3 +65,8 @@ hasura metadata apply --envfile .env.local
 ```
 
 Once we see that no errors occur when applying the sequence of migrations locally, we can merge and the CI will apply the new migrations and metadata to the staging database.
+
+
+
+<!-- Production site: http://vzd.austinmobility.io/ -->
+<!-- Staging site: https://vzd-staging.austinmobility.io/ -->

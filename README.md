@@ -53,46 +53,12 @@ $ vision-zero vze-up
 
 ## Learn more
 
-## atd-cr3-api
-
-This folder hosts our API that securely downloads a private file from S3. It is written in Python & Flask. and it is deployed in a Lambda function with Zappa.
-
-[more info](./atd-cr3-api/README.md)
-
-## atd-etl (Extract-Transform-Load)
-
-Our current method for extracting data from the TxDOT C.R.I.S. data system uses a python library called [Splinter](https://splinter.readthedocs.io/en/latest/) to request, download and process data. It is deployed as a Docker container.
-
-For step-by-step details on how to prepare your environment and how to execute this process, please refer to the documentation in the [atd-etl folder.](https://github.com/cityofaustin/atd-vz-data/tree/master/atd-etl)
-
-[more info](./atd-etl/README.md)
-
-## atd-vzd (Vision Zero Database)
-
-VZD is our name for our Hasura GraphQL API server that connects to our Postgres RDS database instances.
-
-[more info](./atd-vzd/README.md)
-
-Production site: http://vzd.austinmobility.io/
-Staging site: https://vzd-staging.austinmobility.io/
-
-## atd-vze (Vision Zero Editor)
-
-[more info](./atd-vze/README.md)
-
-Production site: https://visionzero.austin.gov/editor/
-Staging site: https://visionzero-staging.austinmobility.io/editor/
-
-## atd-vzv (Vision Zero Viewer)
-
-[more info](./atd-vzv/README.md)
-
-Production site: https://visionzero.austin.gov/viewer/
-Staging site: https://visionzero-staging.austinmobility.io/viewer/
-
-## atd-toolbox
-
-Collection of utilities related to maintaining data and other resources related to the Vision Zero Data projects.
+- [Vision Zero Database (VZD)](./atd-vzd/README.md) - the database that powers the Vision Zero suite
+- [Vision Zero Editor (VZE)](./atd-vze/README.md) - web application which enables City staff to browse and edit crash data 
+- [Vision Zero Viewer (VZV)](./atd-vzv/README.md) - public dashboard which provides key metrics and insights about
+- [atd-cr3-api](./atd-cr3-api/README.md) - our API that securely downloads a private file from S3
+- [atd-etl](./atd-etl/README.md) - integration scripts for bringing data in the Vision Zero Database
+- [atd-toolbox](./atd-toolbox/README.md) - Collection of utilities related to maintaining data and other resources related to the Vision Zero Data projects
 
 ## License
 
