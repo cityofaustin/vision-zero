@@ -7,16 +7,20 @@ The Vision Zero Crash Data System is a suite of tools which support the City of 
 The system has a primary focus on storing, editing, and analyzing traffic crash data, and comprises these core components:
 
 - Vision Zero Database (VZD): A postgresql database which stores crash and crash-related records
-- Vision Zero Editor (VZE): A web application which enables City staff to browse and edit crash data
-- Vision Zero Viewer (VZV): A public dashboard which provides key metrics and insights about
+- [Vision Zero Editor](https://visionzero.austin.gov/editor) (VZE): A web application which enables City staff to browse and edit crash data
+- [Vision Zero Viewer](https://visionzero.austin.gov/viewer) (VZV): A public-facing dashboard which provides key metrics and insights about crash injuries and fatalities
 
 This repository also holds integration scripts for consuming crash data from external sources, as well as publishing crash data to the City's Open Data Portal.
 
+## Table of contents
+
+- [Quick start](#quick-start)
+- [Learn more](#learn-more)
+- [License](#license)
 
 ## Quick start
 
 You need access to the production VZ database in order to develop locally. There is currently no option to run the Vision Zero stack based on seed data.
-
 
 The helper script, `vision-zero`, makes it easy to spin up your local Vision Zero stack. See the [local development docs](docs/local_dev.md) for more details.
 
@@ -36,6 +40,7 @@ RR_DATABASE=""
 ```shell
 $ vision-zero replicate-db
 ```
+
 This command will:
 
 - Download a snapshot of the production database
@@ -54,7 +59,7 @@ $ vision-zero vze-up
 ## Learn more
 
 - [Vision Zero Database (VZD)](./atd-vzd/README.md) - the database that powers the Vision Zero suite
-- [Vision Zero Editor (VZE)](./atd-vze/README.md) - web application which enables City staff to browse and edit crash data 
+- [Vision Zero Editor (VZE)](./atd-vze/README.md) - web application which enables City staff to browse and edit crash data
 - [Vision Zero Viewer (VZV)](./atd-vzv/README.md) - public dashboard which provides key metrics and insights about
 - [atd-cr3-api](./atd-cr3-api/README.md) - our API that securely downloads a private file from S3
 - [atd-etl](./atd-etl/README.md) - integration scripts for bringing data in the Vision Zero Database
