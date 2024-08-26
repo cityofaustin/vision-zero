@@ -1,6 +1,6 @@
 # Vision Zero Database (VZD)
 
-The Vision Zero Database (VZD) is a Postgresql database that serves as the central repository Austin's traffic crash data. The database is fronted with a GraphQL API, powered by [Hasura](https://github.com/hasura/graphql-engine), which is also used to manage schema migrations. 
+The Vision Zero Database (VZD) is a Postgresql database that serves as the central repository Austin's traffic crash data. The database is fronted with a GraphQL API, powered by [Hasura](https://github.com/hasura/graphql-engine), which is also used to manage schema migrations.
 
 The database is designed supports a sophisticated editing environment which enables Vision Zero program staff to edit and enrich crash data, while also allowing record updates to flow into the database from upstream sources, such as the TxDOT Crash Information System.
 
@@ -14,23 +14,34 @@ The [TxDOT Crash Record Information System](https://www.txdot.gov/data-maps/cras
 
 CRIS data accounts for the vast majority of records in the database; the [Vision Zero Editor (VZE)](../atd-vze/README.md) is designed primarily as a tool for editing and enriching data received from CRIS, and the [Vision Zero Viewer (VZV)](../atd-vzv/README.md) is powered entirely by enriched CRIS data.
 
+The CRIS data in our database consists of four record types:
+
+- `crashes` - each row is single crash event, with attributes such as the crash timestamp, crash location, and manner of collision
+- `units` - each row describes a unit, or vehicle, involved in a crash. Each unit relates to one crash record.
+- `people` - each row describes a person involved in a crash. Each person relates to one unit.
+- `charges` - each row descibes a legal charge filed by the responding law enforcement agency. Each charge relates to one person
+
 #### Design
 
-The core challenge that the Vision Zero database solves is to store CRIS data in a central repository where it can be reviewed and updated City of Austin staff. The database preserves the integrity of staff members' edits while simultaneously allowing crash record updates flow into the database from CRIS.
+The core challenge that the Vision Zero database solves is to store CRIS data in a central repository where it can be reviewed and updated City of Austin staff. The database preserves the integrity of staff members' edits while simultaneously allowing crash record updates to flow into the database from CRIS.
+
+The editing environment is achieved by managing multiple copies of each of the `crashes`, `units`, and `people` tables, so that CRIS edits and Vision Zero staff edits remain isolated.
+
+For example, the `crashes` records are managed in three tables:
+
+- `crashes_cris`: stores crash records that are created and updated by TxdDOT CRIS through the the [CRIS import ETL](../atd-etl/cris_import/README.md)
+- `crashes_edits`: stores crash record edits created by Visio Zero staff through the Vision Zero Editor web app
+- `crashes`: stores a unified version of each record which combines the values in `crashes_cris` plus any values in `crashes_edits`
 
 ![CRIS editing model](../docs/images/cris_data_model.png)
 
-![DB conceptual model](../docs/images/db_overview.png)
-
-
 #### CRIS data processing
 
-We receive CRIS data from TxDOT on a nightly basis through the CRIS "automated interface", which delivers an encrypted `.zip` file to an S3 bucket on our AWS premise. The `.zip` file contains all crash records *process* in the last 24 hours, and includes both CSV files and crash report PDFs (aka CR3s).
+We receive CRIS data from TxDOT on a nightly basis through the CRIS "automated interface", which delivers an encrypted `.zip` file to an S3 bucket on our AWS premise. The `.zip` file contains all crash records _process_ in the last 24 hours, and includes both CSV files and crash report PDFs (aka CR3s).
 
 At the time of writing, [this guide](https://www.txdot.gov/content/dam/docs/crash-records/cris-guide.pdf) provides an overview of how CRIS data delivery is configured.
 
 For more details on how we ingest CRIS data into our database, see the [CRIS import ETL documentation](../atd-etl/cris_import/README.md).
-
 
 ### Austin Fire Department (AFD) and Travis County Emergency Medical Services (EMS)
 
