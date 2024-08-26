@@ -18,9 +18,19 @@ CRIS data accounts for the vast majority of records in the database; the [Vision
 
 The core challenge that the Vision Zero database solves is to store CRIS data in a central repository where it can be reviewed and updated City of Austin staff. The database preserves the integrity of staff members' edits while simultaneously allowing crash record updates flow into the database from CRIS.
 
+![CRIS editing model](../docs/images/cris_data_model.png)
+
 ![DB conceptual model](../docs/images/db_overview.png)
 
+
 #### CRIS data processing
+
+We receive CRIS data from TxDOT on a nightly basis through the CRIS "automated interface", which delivers an encrypted `.zip` file to an S3 bucket on our AWS premise. The `.zip` file contains all crash records *process* in the last 24 hours, and includes both CSV files and crash report PDFs (aka CR3s).
+
+At the time of writing, [this guide](https://www.txdot.gov/content/dam/docs/crash-records/cris-guide.pdf) provides an overview of how CRIS data delivery is configured.
+
+For more details on how we ingest CRIS data into our database, see the [CRIS import ETL documentation](../atd-etl/cris_import/README.md).
+
 
 ### Austin Fire Department (AFD) and Travis County Emergency Medical Services (EMS)
 
