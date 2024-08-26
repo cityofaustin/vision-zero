@@ -12,7 +12,7 @@ The database is designed supports a sophisticated editing environment which enab
 
 The [TxDOT Crash Record Information System](https://www.txdot.gov/data-maps/crash-reports-records/crash-data-analysis-statistics.html), CRIS, is a statewide, automated database for traffic crashes reports.
 
-CRIS data accounts for the vast majority of records in the database; the [Vision Zero Editor (VZE)](../atd-vze/README.md) is designed primarily as a tool for editing and enriching data received from CRIS, and the [Vision Zero Viewer (VZV)](../atd-vzv/README.md) is powered entirely by enriched CRIS data.
+CRIS data accounts for the vast majority of records in the database: the [Vision Zero Editor (VZE)](../atd-vze/README.md) is designed primarily as a tool for editing and enriching data received from CRIS, and the [Vision Zero Viewer (VZV)](../atd-vzv/README.md) is powered entirely by enriched CRIS data.
 
 The CRIS data in our database consists of four record types:
 
@@ -29,11 +29,21 @@ The editing environment is achieved by managing multiple copies of each of the `
 
 For example, the `crashes` records are managed in three tables:
 
-- `crashes_cris`: stores crash records that are created and updated by TxdDOT CRIS through the the [CRIS import ETL](../atd-etl/cris_import/README.md)
+- `crashes_cris`: stores crash records that are created and updated by TxdDOT CRIS through the [CRIS import ETL](../atd-etl/cris_import/README.md)
 - `crashes_edits`: stores crash record edits created by Visio Zero staff through the Vision Zero Editor web app
 - `crashes`: stores a unified version of each record which combines the values in `crashes_cris` plus any values in `crashes_edits`
 
 ![CRIS editing model](../docs/images/cris_data_model.png)
+_The "layered" editing environment of the Vision Zero Database_
+
+As pictured in the above diagram, the typical data flow for a crash record is as follows:
+
+1. A new record is inserted into the `crashes_cris` table through the [CRIS import ETL](../atd-etl/cris_import/README.md).
+2. On insert into `crashes_cris`, an "empty" copy of the record is inserted into the `crashes_edits` table. The record is inserted into the `crashes_edits` table with null values in every column except the `id`, which has a foreign key constaint referencing the `crashes_cris.id` column.
+3. Also on insert into `crashes_cris` a complete copy of the record is inserted into the `crashes` table.
+4. A Vision Zero Editor user may update a crash records by update rows in the the `crashes_edits` table. When an update is received, a trigger function coalesces each value in the `crashes_edits` table with the corresponding value in the `crashes_cris` table. The resulting record—which contains the original CRIS-provide values plus any edit values made through user edits—is applied as an update to corresponding record in the `crashes` table.
+5. Similarly, when an existing `crashes_cris` record is updated through the CRIS import ETL, the updated record is coalseced against the corresponding row in the `crashes_edits` table, and result is sved in the `crashes` table.
+6. Finally, once a record is updated in the `crashes` table, additional trigger functions apply various business rules and enrich the row with spatial attributes based on it's location. These trigger functions are reserved for values that require heavy computation—additional business rules can be applied through table views.
 
 #### CRIS data processing
 
@@ -54,6 +64,11 @@ For more details on how we ingest CRIS data into our database, see the [CRIS imp
 ### Add a custom column to the database
 
 ### Add a custom lookup value to the database
+
+### Debugging record triggers
+
+
+## Change logs
 
 ## Backups
 
