@@ -56,6 +56,8 @@ Note: the `-f / --filename` flag can be optionally used to point to a specific d
 $ vision-zero vze-up
 ```
 
+See [here](docs/local_dev.md) for in-depth documentation about the  `vision-zero` helper.
+
 ## Learn more
 
 - [Vision Zero Database (VZD)](./atd-vzd/README.md) - the database that powers the Vision Zero suite
@@ -63,7 +65,7 @@ $ vision-zero vze-up
 - [Vision Zero Viewer (VZV)](./atd-vzv/README.md) - public dashboard which provides key metrics and insights about
 - [atd-cr3-api](./atd-cr3-api/README.md) - our API that securely downloads a private file from S3
 - [atd-etl](./atd-etl/README.md) - integration scripts for bringing data in the Vision Zero Database
-- [atd-toolbox](./atd-toolbox/README.md) - Collection of utilities related to maintaining data and other resources related to the Vision Zero Data projects
+- [atd-toolbox](./atd-toolbox/README.md) - collection of utilities and scripts designed for ad-hoc maintenance tasks
 
 ## License
 

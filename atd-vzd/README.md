@@ -1,10 +1,10 @@
 # Vision Zero Database (VZD)
 
-The Vision Zero Database (VZD) is a Postgresql database that serves as the central repository Austin's traffic crash data.
+The Vision Zero Database (VZD) is a Postgresql database that serves as the central repository Austin's traffic crash data. The database is fronted with a GraphQL API, powered by [Hasura](https://github.com/hasura/graphql-engine), which is also used to manage schema migrations. 
 
 The database is designed supports a sophisticated editing environment which enables Vision Zero program staff to edit and enrich crash data, while also allowing record updates to flow into the database from upstream sources, such as the TxDOT Crash Information System.
 
-![DB conceptual model](../docs/images/db_overview.png)
+![vision zero data flow](../docs/images/data_flow.png)
 
 ## Data sources
 
@@ -12,7 +12,19 @@ The database is designed supports a sophisticated editing environment which enab
 
 The [TxDOT Crash Record Information System](https://www.txdot.gov/data-maps/crash-reports-records/crash-data-analysis-statistics.html), CRIS, is a statewide, automated database for traffic crashes reports.
 
-Todo: copy [this diagram](https://docs.google.com/presentation/d/18uuSUExuqksWo2kZAefhIkQ9Q6eyONMiwKAWn7u5wOo/edit?usp=sharing) to excalidraw
+CRIS data accounts for the vast majority of records in the database; the [Vision Zero Editor (VZE)](../atd-vze/README.md) is designed primarily as a tool for editing and enriching data received from CRIS, and the [Vision Zero Viewer (VZV)](../atd-vzv/README.md) is powered entirely by enriched CRIS data.
+
+#### Design
+
+The core challenge that the Vision Zero database solves is to store CRIS data in a central repository where it can be reviewed and updated City of Austin staff. The database preserves the integrity of staff members' edits while simultaneously allowing crash record updates flow into the database from CRIS.
+
+![DB conceptual model](../docs/images/db_overview.png)
+
+#### CRIS data processing
+
+### Austin Fire Department (AFD) and Travis County Emergency Medical Services (EMS)
+
+### Geospatial layers
 
 ## Common maintenance tasks
 
@@ -65,8 +77,6 @@ hasura metadata apply --envfile .env.local
 ```
 
 Once we see that no errors occur when applying the sequence of migrations locally, we can merge and the CI will apply the new migrations and metadata to the staging database.
-
-
 
 <!-- Production site: http://vzd.austinmobility.io/ -->
 <!-- Staging site: https://vzd-staging.austinmobility.io/ -->
