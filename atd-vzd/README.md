@@ -33,10 +33,7 @@ For example, the `crashes` records are managed in three tables:
 - `crashes_edits`: stores crash record edits created by Visio Zero staff through the Vision Zero Editor web app
 - `crashes`: stores a unified version of each record which combines the values in `crashes_cris` plus any values in `crashes_edits`
 
-![CRIS editing model](../docs/images/cris_data_model.png)
-_The "layered" editing environment of the Vision Zero Database_
-
-As pictured in the above diagram, the typical data flow for a crash record is as follows:
+As pictured in the diagram below, the typical data flow for a crash record is as follows:
 
 1. A new record is inserted into the `crashes_cris` table through the [CRIS import ETL](../atd-etl/cris_import/README.md).
 2. On insert into `crashes_cris`, an "empty" copy of the record is inserted into the `crashes_edits` table. The record is inserted into the `crashes_edits` table with null values in every column except the `id`, which has a foreign key constaint referencing the `crashes_cris.id` column.
@@ -44,6 +41,9 @@ As pictured in the above diagram, the typical data flow for a crash record is as
 4. A Vision Zero Editor user may update a crash records by update rows in the the `crashes_edits` table. When an update is received, a trigger function coalesces each value in the `crashes_edits` table with the corresponding value in the `crashes_cris` table. The resulting record—which contains the original CRIS-provide values plus any edit values made through user edits—is applied as an update to corresponding record in the `crashes` table.
 5. Similarly, when an existing `crashes_cris` record is updated through the CRIS import ETL, the updated record is coalseced against the corresponding row in the `crashes_edits` table, and result is sved in the `crashes` table.
 6. Finally, once a record is updated in the `crashes` table, additional trigger functions apply various business rules and enrich the row with spatial attributes based on it's location. These trigger functions are reserved for values that require heavy computation—additional business rules can be applied through table views.
+
+![CRIS editing model](../docs/images/cris_data_model.png)
+_The "layered" editing environment of the Vision Zero Database_
 
 #### CRIS data processing
 
