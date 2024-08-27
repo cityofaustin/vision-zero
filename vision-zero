@@ -17,6 +17,24 @@ if not os.path.exists(".env"):
 
 load_dotenv()
 
+TABLES_TO_IGNORE = [
+    "public.atd_txdot_change_log",
+    "public.polygons",
+    "public.change_log_crashes",
+    "public.change_log_crashes_cris",
+    "public.change_log_units_cris",
+    "public.change_log_people_cris",
+    "public.change_log_people",
+    "public.change_log_units",
+    "public.change_log_people_edits",
+    "public.change_log_units_edits",
+    "public.change_log_crashes_edits",
+    "public.atd_txdot_crashes",
+    "public.atd_txdot_units",
+    "public.atd_txdot_person",
+    "public.atd_txdot_primaryperson",
+]
+
 def checkDockerComposeAvailability():
     docker_compose_stand_alone = False # old docker-compose
     docker_compose_bundled = False # new docker compose
@@ -95,7 +113,6 @@ def removeSnapshots(args):
 def replicateDb(args):
     graphqlEngineDown(args)
 
-    # print(tool_runner_command + replicate_command)
     snapshotFilename = ""
     if(args.filename):
         snapshotFilename = args.filename
@@ -134,8 +151,9 @@ def replicateDb(args):
         #"-t", "atd_txdot_crashes",
     ]
     if not args.include_change_log_data:
-        replicate_command.append("--exclude-table-data")
-        replicate_command.append("atd_txdot_change_log")
+        for t in TABLES_TO_IGNORE:
+            replicate_command.append("--exclude-table-data")
+            replicate_command.append(t)
 
     postgres_db_runner_command = docker_compose_invocation + [
         "-f", "docker-compose.yml", 
