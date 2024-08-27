@@ -21,30 +21,31 @@ logger = get_logger()
 
 def get_cr3_version(page, page_width):
     """Determine the CR3 from version.
-    
+
     The check is conducted by sampling if various pixels are black.
+
+    On August 27, 2024 CRIS started delivering all CR3s using a
+    smaller page size. This function was adapted to handle the
+    legacy large format page and the new smaller page size.
 
     Args:
         page (PIL image): the pdf page as an image
         page_width (int): the width of the PDF in points
 
     Returns:
-        str: 'v1', 'v2_large', or 'v2_small'
+        str: 'v1_small', 'v1_large','v2_large', or 'v2_small'
     """
-    if page_width < 700:
-        # the most recent version is the same layout as v2-large
-        # but it is delivered in a smaller page size
-        # this took effect 27 Aug 2024
-        return "v2_small"
+    page_size = "small" if page_width < 700 else "large"
+    test_pixels = NEW_CR3_FORM_TEST_PIXELS[page_size]
 
-    for pixel in NEW_CR3_FORM_TEST_PIXELS:
+    for pixel in test_pixels:
         rgb_pixel = page.getpixel(pixel)
-        if rgb_pixel[0] != 0 or rgb_pixel[1] != 0 or rgb_pixel[2] != 0:
+        if rgb_pixel[0] > 5 or rgb_pixel[1] > 5 or rgb_pixel[2] > 5:
             # the PDF fails our pixel checks, so assume it's the
             # earliest version
-            return "v1"
+            return f"v1_{page_size}"
 
-    return "v2_large"
+    return f"v2_{page_size}"
 
 
 def get_pdf_width(pdf_path):
