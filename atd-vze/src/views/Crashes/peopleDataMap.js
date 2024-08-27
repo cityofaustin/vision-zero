@@ -44,24 +44,6 @@ export const primaryPersonDataMap = [
         badge: true,
         badgeColor: getInjurySeverityColor,
       },
-      victim_name: {
-        label: "Victim Name",
-        editable: true,
-        format: "text",
-        mutationVariableKey: "personId",
-        shouldRender: shouldRenderVictimName,
-        subfields: {
-          prsn_first_name: {
-            label: "First",
-          },
-          prsn_mid_name: {
-            label: "Middle",
-          },
-          prsn_last_name: {
-            label: "Last",
-          },
-        },
-      },
       prsn_type: {
         label: "Type",
         editable: false,
@@ -105,6 +87,24 @@ export const primaryPersonDataMap = [
         format: "boolean",
         mutationVariableKey: "personId",
       },
+      victim_name: {
+        label: "Victim Name",
+        editable: true,
+        format: "text",
+        mutationVariableKey: "personId",
+        shouldRender: shouldRenderVictimName,
+        subfields: {
+          prsn_first_name: {
+            label: "First",
+          },
+          prsn_mid_name: {
+            label: "Middle",
+          },
+          prsn_last_name: {
+            label: "Last",
+          },
+        },
+      },
     },
   },
 ];
@@ -129,24 +129,6 @@ export const personDataMap = [
         mutationVariableKey: "personId",
         badge: true,
         badgeColor: getInjurySeverityColor,
-      },
-      victim_name: {
-        label: "Victim Name",
-        editable: true,
-        format: "text",
-        mutationVariableKey: "personId",
-        shouldRender: shouldRenderVictimName,
-        subfields: {
-          prsn_first_name: {
-            label: "First",
-          },
-          prsn_mid_name: {
-            label: "Middle",
-          },
-          prsn_last_name: {
-            label: "Last",
-          },
-        },
       },
       prsn_type: {
         label: "Type",
@@ -182,6 +164,24 @@ export const personDataMap = [
         editable: true,
         format: "boolean",
         mutationVariableKey: "personId",
+      },
+      victim_name: {
+        label: "Victim Name",
+        editable: true,
+        format: "text",
+        mutationVariableKey: "personId",
+        shouldRender: shouldRenderVictimName,
+        subfields: {
+          prsn_first_name: {
+            label: "First",
+          },
+          prsn_mid_name: {
+            label: "Middle",
+          },
+          prsn_last_name: {
+            label: "Last",
+          },
+        },
       },
     },
   },
