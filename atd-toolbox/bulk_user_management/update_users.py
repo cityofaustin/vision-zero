@@ -9,7 +9,6 @@ AUTH0_DOMAIN = os.getenv("AUTH0_DOMAIN")
 CLIENT_ID = os.getenv("CLIENT_ID")
 CLIENT_SECRET = os.getenv("CLIENT_SECRET")
 ADMIN_USER_EMAIL = os.getenv("ADMIN_USER_EMAIL")
-TOKEN = None
 
 
 def get_cli_args():
@@ -47,10 +46,10 @@ def get_management_api_token():
     return data["access_token"]
 
 
-def get_all_user_ids():
+def get_all_user_ids(token):
     users = []
     url = f"https://{AUTH0_DOMAIN}/api/v2/users"
-    headers = {"Authorization": f"Bearer {TOKEN}"}
+    headers = {"Authorization": f"Bearer {token}"}
 
     params = {"per_page": 50, "page": 0}  # Adjust as needed
 
@@ -69,9 +68,11 @@ def get_all_user_ids():
     return users
 
 
-def update_user_status(users, blocked, dry_run):
+def update_user_status(blocked, dry_run):
+    token = get_management_api_token()
+    users = get_all_user_ids(token)
     url = f"https://{AUTH0_DOMAIN}/api/v2/users"
-    headers = {"Authorization": f"Bearer {TOKEN}", "Content-Type": "application/json"}
+    headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
 
     for user in users:
         if user["email"] == ADMIN_USER_EMAIL:
@@ -90,15 +91,29 @@ def update_user_status(users, blocked, dry_run):
             response = requests.patch(
                 f"{url}/{user_id}", json={"blocked": blocked}, headers=headers
             )
-            response.raise_for_status()
+            try:
+                response.raise_for_status()
+            except requests.exceptions.HTTPError:
+                # the token has probably expired
+                if response.status_code == 401:
+                    print("Hit 401 error. Fetching new token and trying...")
+                    token = get_management_api_token()
+                    # redo the last attempt
+                    headers = {
+                        "Authorization": f"Bearer {token}",
+                        "Content-Type": "application/json",
+                    }
+                    response = requests.patch(
+                        f"{url}/{user_id}", json={"blocked": blocked}, headers=headers
+                    )
+                    response.raise_for_status()
+
         print(f'{user["email"]}: {"blocked" if blocked else "unblocked"}')
         time.sleep(1)
 
 
 if __name__ == "__main__":
     args = get_cli_args()
-    TOKEN = get_management_api_token()
-    users = get_all_user_ids()
     blocked = args.mode == "block"
     dry_run = args.no_dry_run == False
-    update_user_status(users, blocked=blocked, dry_run=dry_run)
+    update_user_status(blocked, dry_run)

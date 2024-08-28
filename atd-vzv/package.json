@@ -1,6 +1,6 @@
 {
   "name": "atd-vzv",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "homepage": "/viewer",
   "description": "ATD Vision Zero Viewer",
   "author": "ATD Data & Technology Services",
@@ -54,7 +54,7 @@
     "react-dev-utils/chalk/ansi-styles": "https://github.com/codercodingthecode/ansi-styles"
   },
   "scripts": {
-    "start": "REACT_APP_VZV_ENVIRONMENT=STAGING react-scripts start",
+    "start": "REACT_APP_UNDER_MAINTENANCE=false REACT_APP_VZV_ENVIRONMENT=STAGING react-scripts start",
     "build": "CI= react-scripts build && cp _redirects build && cp -r build viewer && mv viewer build",
     "build:staging": "REACT_APP_VZV_ENVIRONMENT=STAGING npm run build",
     "build:production": "REACT_APP_VZV_ENVIRONMENT=PRODUCTION npm run build",
