@@ -20,7 +20,7 @@ logger = get_logger()
 
 
 def get_cr3_version(page, page_width):
-    """Determine the CR3 from version.
+    """Determine the CR3 form version.
 
     The check is conducted by sampling if various pixels are black.
 

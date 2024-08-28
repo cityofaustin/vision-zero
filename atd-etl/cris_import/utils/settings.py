@@ -2,7 +2,7 @@ LOCAL_EXTRACTS_DIR = "extracts"
 
 """This is the bbox used to crop the crash diagram"""
 DIAGRAM_BBOX_PIXELS = {
-    "v1_small": (2589 * 0.263, 3531 * 0.263, 5001 * 0.263, 6048 * 0.263),
+    "v1_small": (681, 928, 1315, 1590),
     "v1_large": (2589, 3531, 5001, 6048),
     "v2_small": (658, 791, 1270, 1430),
     "v2_large": (2496, 3036, 4836, 5464),
