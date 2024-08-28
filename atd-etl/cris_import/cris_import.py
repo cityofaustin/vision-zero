@@ -66,11 +66,13 @@ def main(cli_args):
             # cause an unwanted failure
             logger.info("Skipping PDF processing because no CSV crashes were processed")
 
-        # if processing CSVs and PDFs, make sure the number of crashes matches the number of PDFs
+        # if processing CSVs and PDFs, check the the number of crashes matches the number of PDFs
+        # this used to raise and exception until the CRIS v28 release on August 26, 2024 which 
+        # resulted in some PDFs being excluded from extracts
         if cli_args.pdf and cli_args.csv:
             if records_processed["crashes"] != records_processed["pdfs"]:
-                raise Exception(
-                    "Mismatch between # of crashes processed vs PDFs. This should never happen!"
+                logger.warning(
+                    f"Warning: there was a mismatch between the # of CSV crashes processed ({records_processed['crashes']}) vs the CR3 PDFs processed ({records_processed['pdfs']})."
                 )
 
         if cli_args.s3_download and cli_args.s3_archive and not cli_args.skip_unzip:
