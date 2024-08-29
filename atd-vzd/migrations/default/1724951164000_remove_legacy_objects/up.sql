@@ -148,7 +148,6 @@ drop view if exists view_vzv_by_time_of_day;
 drop view if exists view_vzv_demographics_age_sex_eth;
 drop view if exists view_vzv_header_totals;
 drop table if exists cr3_mainlanes;
-drop table if exists non_cr3_mainlanes;
 drop function if exists get_location_totals;
 drop table if exists atd_location_crash_and_cost_totals;
 drop view if exists view_location_crashes_global;
