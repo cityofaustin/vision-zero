@@ -18,7 +18,7 @@ select
     prsn_drg_rslt_id,
     prsn_drg_spec_type_id,
     prsn_ethnicity_id,
-    peh_fl as prsn_exp_homelessness,
+    case when peh_fl is null then false else peh_fl end as prsn_exp_homelessness,
     prsn_first_name,
     prsn_gndr_id,
     prsn_helmet_id,
