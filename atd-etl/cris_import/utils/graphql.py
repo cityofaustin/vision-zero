@@ -1,4 +1,3 @@
-from datetime import datetime, timezone
 import os
 
 import requests
@@ -167,19 +166,18 @@ def create_log_entry(
     return data["insert__cris_import_log_one"]["id"]
 
 
-def set_log_entry_complete(*, log_entry_id, records_processed):
-    """Set the completed_at timestamp of a cris_activity_log record
+def update_log_entry(*, log_entry_id, payload):
+    """Update a cris_activity_log record
 
     Args:
         log_entry_id (int): the log record ID
-        records_processed (dict): a dict with the number of records processed by table type.
-            E.g.: {"crashes": 0,"units": 0,"persons": 0,"charges": 0,"pdfs": 0}
+        payload (dict): the record values to update. typically a combination of:
+            - completed_at (str): the utc iso timestamp at which the import completed
+            - records_processed (dict): a dict with the number of records processed by table type.
+                E.g.: {"crashes": 0,"units": 0,"persons": 0,"charges": 0,"pdfs": 0}
     """
     variables = {
         "id": log_entry_id,
-        "data": {
-            "completed_at": datetime.now(timezone.utc).isoformat(),
-            "records_processed": records_processed,
-        },
+        "data": payload,
     }
     make_hasura_request(query=CRIS_IMPORT_LOG_UPDATE_MUTATION, variables=variables)

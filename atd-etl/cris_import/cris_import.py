@@ -1,6 +1,8 @@
 #!/usr/bin/env python
+from datetime import datetime, timezone
+
 from utils.cli import get_cli_args
-from utils.graphql import create_log_entry, set_log_entry_complete
+from utils.graphql import create_log_entry, update_log_entry
 from utils.logging import init_logger
 from utils.process_csvs import process_csvs
 from utils.process_pdfs import process_pdfs
@@ -51,6 +53,14 @@ def main(cli_args):
             csv_records_processed_dict = process_csvs(extract_dir)
             records_processed.update(csv_records_processed_dict)
 
+            # update the import log to capture # of csvs processed
+            update_log_entry(
+                log_entry_id=log_entry_id,
+                payload={
+                    "records_processed": records_processed,
+                },
+            )
+
         no_crashes_found = (
             True if cli_args.csv and records_processed["crashes"] == 0 else False
         )
@@ -67,7 +77,7 @@ def main(cli_args):
             logger.info("Skipping PDF processing because no CSV crashes were processed")
 
         # if processing CSVs and PDFs, check the the number of crashes matches the number of PDFs
-        # this used to raise and exception until the CRIS v28 release on August 26, 2024 which 
+        # this used to raise and exception until the CRIS v28 release on August 26, 2024 which
         # resulted in some PDFs being excluded from extracts
         if cli_args.pdf and cli_args.csv:
             if records_processed["crashes"] != records_processed["pdfs"]:
@@ -77,8 +87,14 @@ def main(cli_args):
 
         if cli_args.s3_download and cli_args.s3_archive and not cli_args.skip_unzip:
             archive_extract_zip(extract["s3_file_key"])
-        set_log_entry_complete(
-            log_entry_id=log_entry_id, records_processed=records_processed
+
+        # update the import log entry
+        update_log_entry(
+            log_entry_id=log_entry_id,
+            payload={
+                "records_processed": records_processed,
+                "completed_at": datetime.now(timezone.utc).isoformat(),
+            },
         )
 
 
