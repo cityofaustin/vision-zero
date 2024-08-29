@@ -246,7 +246,6 @@ def chunks(lst, n):
 def set_peh_field(record):
     """Assign the `prsn_exp_homelessness` flag based on reporting conventions used by
     law enforcement crash investigators"""
-    return
     for field in peh_fields:
         record_val = record[field]
         for search_term in ["homeless", "unhoused", "transient"]:
