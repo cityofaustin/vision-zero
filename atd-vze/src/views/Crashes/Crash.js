@@ -93,12 +93,9 @@ function Crash(props) {
     setEditField("");
   };
 
-  // If crash doesnt exist or has been soft deleted, the 404 page should render
-  const isValidCrash = crashData?.crashes?.[0]?.is_deleted === false;
-
   const crashRecord = {
-    // Need to construct empty objects if crash is invalid
-    crash: (isValidCrash && crashData?.crashes?.[0]) || {
+    // Need to construct empty objects if crash doesnt exist
+    crash: crashData?.crashes?.[0] || {
       crash_injury_metrics_view: {},
       crashes_list_view: {},
     },
@@ -130,7 +127,7 @@ function Crash(props) {
   const hasLocation = crashRecord?.crash["location_id"];
   const hasCoordinates = !!latitude && !!longitude;
 
-  return !isValidCrash ? (
+  return !crashData.crashes[0] ? (
     <Page404 />
   ) : (
     <div className="animated fadeIn">
