@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Input, Form, Row, Col, Label } from "reactstrap";
+import { Button, Input, Row, Col, Label } from "reactstrap";
 
 // This component should be role-restricted to users with Admin or IT Supervisor permissions
 // Role check currently happens in the shouldRenderVictimName function of personDataMap
@@ -40,7 +40,7 @@ const VictimNameField = ({
   return (
     <td>
       {isEditing && (
-        <Form>
+        <Col>
           <Row>
             {Object.keys(nameFieldConfig.subfields).map(field => {
               return (
@@ -89,7 +89,7 @@ const VictimNameField = ({
             </Col>
             <Col />
           </Row>
-        </Form>
+        </Col>
       )}
 
       {!isEditing && (
