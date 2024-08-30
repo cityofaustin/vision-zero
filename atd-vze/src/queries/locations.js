@@ -18,10 +18,6 @@ export const GET_LOCATION = gql`
         updated_at
         user_email
       }
-      crashes_by_manner_collision(order_by: { count: desc }, limit: 5) {
-        collsn_desc
-        count
-      }
       locationTotals: locations_list_view {
         cr3_crash_count
         non_cr3_crash_count
