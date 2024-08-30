@@ -94,11 +94,13 @@ function Crash(props) {
   };
 
   const crashRecord = {
+    // Need to construct empty objects if crash doesnt exist
     crash: crashData?.crashes?.[0] || {
       crash_injury_metrics_view: {},
       crashes_list_view: {},
     },
   };
+
   const crashPk = crashRecord?.crash?.id;
 
   const {

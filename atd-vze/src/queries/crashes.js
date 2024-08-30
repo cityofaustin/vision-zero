@@ -2,7 +2,11 @@ import { gql } from "apollo-boost";
 
 export const GET_CRASH = gql`
   query CrashDetails($crashId: String!) {
-    crashes(where: { record_locator: { _eq: $crashId } }) {
+    crashes(
+      where: {
+        _and: { record_locator: { _eq: $crashId }, is_deleted: { _eq: false } }
+      }
+    ) {
       id
       record_locator
       updated_at
