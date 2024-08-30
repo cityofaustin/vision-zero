@@ -5,7 +5,7 @@ from pathlib import Path
 
 import time
 
-from pdf2image import convert_from_path
+from pdf2image import convert_from_path, pdfinfo_from_path
 
 from utils.graphql import UPDATE_CRASH_CR3_FIELDS, make_hasura_request
 from utils.logging import get_logger
@@ -19,27 +19,43 @@ ENV = os.getenv("ENV")
 logger = get_logger()
 
 
-def is_new_cr3_form(page):
-    """Determine if the CR3 is following the older or newer format.
+def get_cr3_version(page, page_width):
+    """Determine the CR3 form version.
 
     The check is conducted by sampling if various pixels are black.
 
+    On August 27, 2024 CRIS started delivering all CR3s using a
+    smaller page size. This function was adapted to handle the
+    legacy large format page and the new smaller page size.
+
     Args:
         page (PIL image): the pdf page as an image
+        page_width (int): the width of the PDF in points
 
     Returns:
-        bool: true if the provided page passes the sampling tests
+        str: 'v1_small', 'v1_large','v2_large', or 'v2_small'
     """
-    new_cr3_form = True
-    for pixel in NEW_CR3_FORM_TEST_PIXELS:
+    page_size = "small" if page_width < 700 else "large"
+    test_pixels = NEW_CR3_FORM_TEST_PIXELS[page_size]
+
+    for pixel in test_pixels:
         rgb_pixel = page.getpixel(pixel)
-        if rgb_pixel[0] != 0 or rgb_pixel[1] != 0 or rgb_pixel[2] != 0:
-            new_cr3_form = False
-            break
-    return new_cr3_form
+        if rgb_pixel[0] > 5 or rgb_pixel[1] > 5 or rgb_pixel[2] > 5:
+            # the PDF fails our pixel checks, so assume it's the
+            # earliest version
+            return f"v1_{page_size}"
+
+    return f"v2_{page_size}"
 
 
-def crop_and_save_diagram(page, cris_crash_id, is_new_cr3_form, extract_dir):
+def get_pdf_width(pdf_path):
+    """Return the width of the pdf in points"""
+    pdf_info = pdfinfo_from_path(pdf_path)
+    # parse width from a string that looks like '612 x 792 pts (letter)'
+    return int(pdf_info["Page size"].split(" ")[0])
+
+
+def crop_and_save_diagram(page, cris_crash_id, bbox, extract_dir):
     """Crop out the crash diagram and save it to the local directory.
 
     The diagram is saved to <extract_dir>/crash_diagrams/<cris_crash_id>.jpeg
@@ -47,14 +63,13 @@ def crop_and_save_diagram(page, cris_crash_id, is_new_cr3_form, extract_dir):
     Args:
         page (PIL image): the CR3 pdf page as an image
         cris_crash_id (int): the CRIS crash ID
-        is_new_cr3_form (bool): if the CR3 is in the 'new' format
+        bbox (tuple[int]): the bounding box pixels to crop
         extract_dir (str): the local directory in which to save the file
 
     Returns:
         str: diagram_full_path - the full path to the saved diagram, including it's name
         str: diagram_filename - the name of diagram file, .e.g 12345678.jpeg
     """
-    bbox = DIAGRAM_BBOX_PIXELS["new"] if is_new_cr3_form else DIAGRAM_BBOX_PIXELS["old"]
     diagram_image = page.crop(bbox)
     diagram_filename = f"{cris_crash_id}.jpeg"
     diagram_full_path = os.path.join(extract_dir, "crash_diagrams", diagram_filename)
@@ -79,7 +94,10 @@ def process_pdf(extract_dir, filename, s3_upload, index):
     logger.info(f"Processing {filename} ({index})")
     cris_crash_id = int(filename.replace(".pdf", ""))
     pdf_path = os.path.join(extract_dir, "crashReports", filename)
+    page_width = get_pdf_width(pdf_path)
+
     logger.debug("Converting PDF to image...")
+
     page = convert_from_path(
         pdf_path,
         fmt="jpeg",  # jpeg is much faster than the default ppm fmt
@@ -88,9 +106,13 @@ def process_pdf(extract_dir, filename, s3_upload, index):
         dpi=150,
     )[0]
 
+    cr3_version = get_cr3_version(page, page_width)
+    bbox = DIAGRAM_BBOX_PIXELS[cr3_version]
+
     logger.debug("Cropping crash diagram...")
+
     diagram_full_path, diagram_filename = crop_and_save_diagram(
-        page, cris_crash_id, is_new_cr3_form(page), extract_dir
+        page, cris_crash_id, bbox, extract_dir
     )
 
     if s3_upload:
