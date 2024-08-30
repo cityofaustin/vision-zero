@@ -6,6 +6,16 @@ The designed supports a sophisticated editing environment which enables Vision Z
 
 ![vision zero data flow](../docs/images/data_flow.png)
 
+- [Data sources](#data-sources)
+  - [TxDOT Crash Records Information System (CRIS)](#txdot-crash-records-information-system-cris)
+  - [Austin Fire Department (AFD) and Travis County Emergency Medical Services (EMS)](#austin-fire-department-afd-and-travis-county-emergency-medical-services-ems)
+  - [Geospatial layers](#geospatial-layers)
+- [Common maintenance tasks](#common-maintenance-tasks)
+- [Audit fields and change logs](#audit-fields-and-change-logs)
+- [Backups](#backups)
+- [Hasura](#hasura)
+- [Development and deployment](#development-and-deployment)
+
 ## Data sources
 
 ### TxDOT Crash Records Information System (CRIS)
@@ -45,9 +55,11 @@ As pictured in the diagram below, the typical data flow for a crash record is as
 ![CRIS editing model](../docs/images/cris_data_model.png)
 _The "layered" editing environment of the Vision Zero Database_
 
-The process for updating `units` and `people` behaves in the same manner as `crashes`. 
+The process for updating `units` and `people` behaves in the same manner as `crashes`.
 
 #### "Temporary" records
+
+### CRIS Extract configuration and accounts
 
 #### CRIS data processing
 
@@ -65,12 +77,25 @@ For more details on how we ingest CRIS data into our database, see the [CRIS imp
 
 ### Add a new CRIS-managed column to the database
 
+Follow these steps to add a new column to the database that will be sourced from CRIS.
+
+1. Remember that all database operations should be deployed through migrations. See the [development and deployment](#development-and-deployment) docs.
+2. Add the new column to all three tables of the given record type. For example, if this is a crash-level column, add the column to the `crashes_cris`, `crashes_edits`, and `crashes` tables.
+3. Modify the trigger function that inserts new rows into the the `_edits` and unified table that corresponds to the record type you are modifiying: either the `crashes_cris_insert_rows()`, `units_cris_insert_rows()`, ot the `people_cris_insert_rows()` function. Locate the part of the function that selects all values from the new `_cris` and inserts into the unified table. This should be obvious because all column names are listed in this function. Add your new column name to accordingly function.
+4. When you're ready to test the trigger behavior, you can enable debug messaging for this trigger by excuting the command `set client_min_messages to debug;`. This will cause the trigger debug messages to log to your SQL client.
+5. Next, you will need to add your new column to the `_column_metadata` table, so that the CRIS import ETL is aware that this column should be included in imports. For example:
+
+```sql
+INSERT INTO into _column_metadata (column_name, record_type, is_imported_from_cris) values ('my_new_column', 'crashes', TRUE);
+```
+
+6. You are now ready to test your new column using the CRIS import ETL. If you need to backfill this new column for old records, you will need to manually request the necessary CRIS extract zip files so that they can be processed by an ad-hoc run of the CRIS import ETL.
+
 ### Add a custom column to the database
 
 ### Add a custom lookup value to the database
 
 ### Debugging record triggers
-
 
 ## Audit fields and change logs
 
@@ -82,7 +107,7 @@ RDS
 
 We deployed a standard Hasura container to work as an API between Postgres and atd-vze. For more information on how it works, please refer to their [website](https://hasura.io) and documentation.
 
-## Pipeline
+## Development and deployment
 
 Changes to the schema and database are handled by CI (GitHub Action workflow) that applies migrations and metadata using the [Hasura CLI](https://hasura.io/docs/latest/hasura-cli/overview/).
 
