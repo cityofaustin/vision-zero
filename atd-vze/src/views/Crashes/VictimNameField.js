@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Input, Row, Col, Label } from "reactstrap";
+import { Button, Input, Row, Col, Label, Form } from "reactstrap";
 
 // This component should be role-restricted to users with Admin or IT Supervisor permissions
 // Role check currently happens in the shouldRenderVictimName function of personDataMap
@@ -40,56 +40,58 @@ const VictimNameField = ({
   return (
     <td>
       {isEditing && (
-        <Col>
-          <Row>
-            {Object.keys(nameFieldConfig.subfields).map(field => {
-              return (
-                <Col key={`$field-${field}${personId}`} className={"m-1 p-0"}>
-                  <Label className={"text-muted m-0 p-0"}>
-                    {nameFieldConfig.subfields[field].label}
-                  </Label>
-                  <Input
-                    defaultValue={row[field]}
-                    onChange={e => handleInputChange(e, field)}
-                    // Make input render in uppercase
-                    style={{ textTransform: "uppercase" }}
-                  ></Input>
-                </Col>
-              );
-            })}
-          </Row>
-          <Row>
-            <Col className={"mx-1 p-0"}>
-              <Button
-                type="submit"
-                block
-                color="primary"
-                size="sm"
-                style={{ minWidth: "50px" }}
-                className="btn-pill mt-2 mr-1"
-                onClick={e =>
-                  handleSubmit(e, mutationVariable, mutation, refetch)
-                }
-              >
-                <i className="fa fa-check edit-toggle" />
-              </Button>
-            </Col>
-            <Col className={"m-0 p-0"}>
-              <Button
-                type="cancel"
-                block
-                color="danger"
-                size="sm"
-                className="btn-pill mt-2"
-                style={{ minWidth: "50px" }}
-                onClick={e => handleCancelClick(e)}
-              >
-                <i className="fa fa-times edit-toggle"></i>
-              </Button>
-            </Col>
-            <Col />
-          </Row>
-        </Col>
+        <Form>
+          <Col>
+            <Row>
+              {Object.keys(nameFieldConfig.subfields).map(field => {
+                return (
+                  <Col key={`$field-${field}${personId}`} className={"m-1 p-0"}>
+                    <Label className={"text-muted m-0 p-0"}>
+                      {nameFieldConfig.subfields[field].label}
+                    </Label>
+                    <Input
+                      defaultValue={row[field]}
+                      onChange={e => handleInputChange(e, field)}
+                      // Make input render in uppercase
+                      style={{ textTransform: "uppercase" }}
+                    ></Input>
+                  </Col>
+                );
+              })}
+            </Row>
+            <Row>
+              <Col className={"mx-1 p-0"}>
+                <Button
+                  type="submit"
+                  block
+                  color="primary"
+                  size="sm"
+                  style={{ minWidth: "50px" }}
+                  className="btn-pill mt-2 mr-1"
+                  onClick={e =>
+                    handleSubmit(e, mutationVariable, mutation, refetch)
+                  }
+                >
+                  <i className="fa fa-check edit-toggle" />
+                </Button>
+              </Col>
+              <Col className={"m-0 p-0"}>
+                <Button
+                  type="cancel"
+                  block
+                  color="danger"
+                  size="sm"
+                  className="btn-pill mt-2"
+                  style={{ minWidth: "50px" }}
+                  onClick={e => handleCancelClick(e)}
+                >
+                  <i className="fa fa-times edit-toggle"></i>
+                </Button>
+              </Col>
+              <Col />
+            </Row>
+          </Col>
+        </Form>
       )}
 
       {!isEditing && (
