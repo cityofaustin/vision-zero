@@ -2,15 +2,6 @@ table:
   name: atd_txdot_locations
   schema: public
 object_relationships:
-  - name: crashes_count_cost_summary
-    using:
-      manual_configuration:
-        column_mapping:
-          location_id: location_id
-        insertion_order: null
-        remote_table:
-          name: view_location_injry_count_cost_summary
-          schema: public
   - name: locations_list_view
     using:
       manual_configuration:
@@ -27,24 +18,6 @@ array_relationships:
         column: location_id
         table:
           name: crashes
-          schema: public
-  - name: crashes_by_manner_collision
-    using:
-      manual_configuration:
-        column_mapping:
-          location_id: location_id
-        insertion_order: null
-        remote_table:
-          name: view_location_crashes_by_manner_collision
-          schema: public
-  - name: crashes_by_veh_body_style
-    using:
-      manual_configuration:
-        column_mapping:
-          location_id: location_id
-        insertion_order: null
-        remote_table:
-          name: view_location_crashes_by_veh_body_style
           schema: public
   - name: location_notes
     using:

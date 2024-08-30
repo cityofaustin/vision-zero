@@ -21,7 +21,11 @@ const Profile = () => {
       <pre>{JSON.stringify(user, null, 2)}</pre>
       <div>
         <p>Token:</p>
-        <textarea style={{ width: "80%", height: "200px" }}>{token}</textarea>
+        <textarea
+          style={{ width: "80%", height: "200px" }}
+          value={token}
+          disabled
+        />
       </div>
     </>
   );
