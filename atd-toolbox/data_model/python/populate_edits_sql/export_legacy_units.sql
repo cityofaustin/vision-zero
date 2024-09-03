@@ -1,0 +1,31 @@
+select
+    atu.crash_id as "Crash_ID",
+    travel_direction as veh_trvl_dir_id,
+    contrib_factr_1_id,
+    contrib_factr_2_id,
+    contrib_factr_3_id,
+    contrib_factr_p1_id,
+    contrib_factr_p2_id,
+    e_scooter_id,
+    first_harm_evt_inv_id,
+    pbcat_pedalcyclist_id,
+    pbcat_pedestrian_id,
+    pedalcyclist_action_id,
+    pedestrian_action_id,
+    rpt_autonomous_level_engaged_id,
+    unit_desc_id,
+    unit_nbr,
+    veh_body_styl_id,
+    veh_damage_description1_id,
+    veh_damage_description2_id,
+    veh_damage_direction_of_force1_id,
+    veh_damage_direction_of_force2_id,
+    veh_damage_severity1_id,
+    veh_damage_severity2_id,
+    veh_make_id,
+    veh_mod_id,
+    veh_mod_year,
+    vin
+from atd_txdot_units as atu
+left join atd_txdot_crashes as atc on atu.crash_id = atc.crash_id
+where crash_date < '2014-01-01';
