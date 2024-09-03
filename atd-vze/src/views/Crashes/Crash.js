@@ -39,7 +39,7 @@ import { UPDATE_CRASH, GET_CRASH } from "../../queries/crashes";
 import {
   INSERT_NOTE,
   UPDATE_NOTE,
-  DELETE_NOTE,
+  SOFT_DELETE_NOTE,
 } from "../../queries/crashNotes";
 
 function Crash(props) {
@@ -286,7 +286,7 @@ function Crash(props) {
             notes={crashRecord?.crash?.crash_notes}
             INSERT_NOTE={INSERT_NOTE}
             UPDATE_NOTE={UPDATE_NOTE}
-            DELETE_NOTE={DELETE_NOTE}
+            SOFT_DELETE_NOTE={SOFT_DELETE_NOTE}
             refetch={crashRefetch}
           />
         </Col>
