@@ -43,14 +43,14 @@ const Recommendations = ({ crashPk, recommendation, refetch }) => {
   const getFieldValue = field => recommendation?.[field] || "";
 
   const onAdd = valuesObject => {
-    const recommendationRecord = {
-      crashPk,
-      userEmail,
-      ...valuesObject,
-    };
-
     addRecommendation({
-      variables: recommendationRecord,
+      variables: {
+        recommendation_data: {
+          crash_pk: crashPk,
+          created_by: userEmail,
+          ...valuesObject,
+        },
+      },
     })
       .then(() => {
         refetch();
@@ -121,6 +121,9 @@ const Recommendations = ({ crashPk, recommendation, refetch }) => {
                     partners={partners}
                     fieldConfig={fieldConfig}
                     field={"partner_id"}
+                    doesRecommendationRecordExist={
+                      doesRecommendationRecordExist
+                    }
                   />
                 </div>
               </div>
@@ -164,20 +167,24 @@ const Recommendations = ({ crashPk, recommendation, refetch }) => {
               />
             </div>
           </div>
-          <div className="row" style={{ paddingTop: "12px" }}>
-            <div className="col-12 pr-0">
-              <RecommendationTextInput
-                label={"Updates"}
-                data={recommendation?.rec_update}
-                placeholder={"Enter updates here..."}
-                existingValue={getFieldValue(fieldConfig.fields.rec_update.key)}
-                field={fieldConfig.fields.rec_update.key}
-                doesRecommendationRecordExist={doesRecommendationRecordExist}
-                onAdd={onAdd}
-                onEdit={onEdit}
-              />
+          {doesRecommendationRecordExist && (
+            <div className="row" style={{ paddingTop: "12px" }}>
+              <div className="col-12 pr-0">
+                <RecommendationTextInput
+                  label={"Updates"}
+                  data={recommendation?.rec_update}
+                  placeholder={"Enter updates here..."}
+                  existingValue={getFieldValue(
+                    fieldConfig.fields.rec_update.key
+                  )}
+                  field={fieldConfig.fields.rec_update.key}
+                  doesRecommendationRecordExist={doesRecommendationRecordExist}
+                  onAdd={onAdd}
+                  onEdit={onEdit}
+                />
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </CardBody>
     </Card>
