@@ -43,13 +43,14 @@ const Recommendations = ({ crashPk, recommendation, refetch }) => {
   const getFieldValue = field => recommendation?.[field] || "";
 
   const onAdd = valuesObject => {
+    const recommendationRecord = {
+      crash_pk: crashPk,
+      created_by: userEmail,
+      ...valuesObject,
+    };
     addRecommendation({
       variables: {
-        recommendation_data: {
-          crash_pk: crashPk,
-          created_by: userEmail,
-          ...valuesObject,
-        },
+        recommendationRecord,
       },
     })
       .then(() => {
@@ -74,7 +75,7 @@ const Recommendations = ({ crashPk, recommendation, refetch }) => {
   const onAddPartner = valuesObject => {
     const recommendationPartnerRecord = {
       recommendationRecordId,
-      ...valuesObject,
+      ...valuesObject.recommendations_partners.data,
     };
     addPartner({
       variables: recommendationPartnerRecord,
@@ -121,9 +122,6 @@ const Recommendations = ({ crashPk, recommendation, refetch }) => {
                     partners={partners}
                     fieldConfig={fieldConfig}
                     field={"partner_id"}
-                    doesRecommendationRecordExist={
-                      doesRecommendationRecordExist
-                    }
                   />
                 </div>
               </div>
