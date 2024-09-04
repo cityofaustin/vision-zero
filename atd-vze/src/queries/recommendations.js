@@ -15,9 +15,9 @@ export const GET_RECOMMENDATION_LOOKUPS = gql`
 
 export const INSERT_RECOMMENDATION = gql`
   mutation InsertRecommendation(
-    $recommendation_data: recommendations_insert_input!
+    $recommendationRecord: recommendations_insert_input!
   ) {
-    insert_recommendations(objects: [$recommendation_data]) {
+    insert_recommendations(objects: [$recommendationRecord]) {
       returning {
         crash_pk
         rec_update
