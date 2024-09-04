@@ -15,23 +15,9 @@ export const GET_RECOMMENDATION_LOOKUPS = gql`
 
 export const INSERT_RECOMMENDATION = gql`
   mutation InsertRecommendation(
-    $text: String
-    $update: String
-    $crashPk: Int
-    $userEmail: String
-    $recommendation_status_id: Int
-    $partner_id: Int
+    $recommendation_data: recommendations_insert_input!
   ) {
-    insert_recommendations(
-      objects: {
-        rec_text: $text
-        rec_update: $update
-        crash_pk: $crashPk
-        created_by: $userEmail
-        recommendation_status_id: $recommendation_status_id
-        recommendations_partners: { data: { partner_id: $partner_id } }
-      }
-    ) {
+    insert_recommendations(objects: [$recommendation_data]) {
       returning {
         crash_pk
         rec_update
