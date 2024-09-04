@@ -9,18 +9,17 @@ const RecommendationMultipleSelectDropdown = ({
   partners,
   fieldConfig,
   field,
-  doesRecommendationRecordExist,
 }) => {
   // Trigger mutation call to add partner upon click
   const handleOptionClick = selectedItem => {
-    // Mutation expect lookup IDs as integers
-    const valuesObject = !doesRecommendationRecordExist
-      ? {
-          recommendations_partners: {
-            data: { [field]: parseInt(selectedItem.id) },
-          },
-        }
-      : { [field]: parseInt(selectedItem.id) };
+    // If the recommendation record doesnt exist yet we need to format the object for a nested insert
+    // to create a new recommendation and a new partner in the same request
+    const valuesObject = {
+      recommendations_partners: {
+        // Mutation expects lookup IDs as integers
+        data: { [field]: parseInt(selectedItem.id) },
+      },
+    };
     onOptionClick(valuesObject);
   };
 
