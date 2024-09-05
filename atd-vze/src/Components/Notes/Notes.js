@@ -154,8 +154,8 @@ const Notes = ({
             {/* display user input row for users with edit permissions*/}
             {!isReadOnly(roles) && (
               <tr>
-                <td></td>
-                <td></td>
+                <td />
+                <td />
                 <td>
                   <Input
                     type="textarea"
@@ -176,7 +176,7 @@ const Notes = ({
                     Add
                   </Button>
                 </td>
-                <td></td>
+                <td />
               </tr>
             )}
             {/* iterate through each row in notes table */}
@@ -222,7 +222,7 @@ const Notes = ({
                       </td>
                     ) : (
                       // else if user has edit permissions and is not editing render empty cell
-                      !isReadOnly(roles) && !isEditing && <td></td>
+                      !isReadOnly(roles) && !isEditing && <td />
                     )}
                     {/* display delete button if row was created by current user,
                   user has edit permissions, and user is not currently editing */}
@@ -234,14 +234,13 @@ const Notes = ({
                           modalBody={
                             <div>
                               Are you sure you want to delete this note?
-                              <p className="mt-2 text-truncate">{row.text}</p>
                             </div>
                           }
                         />
                       </td>
                     ) : (
                       // else if user has edit permissions and is not editing render empty cell
-                      !isReadOnly(roles) && !isEditing && <td></td>
+                      !isReadOnly(roles) && !isEditing && <td />
                     )}
                     {/* display save button if user is editing */}
                     {!isReadOnly(roles) && isEditing && (
