@@ -55,7 +55,8 @@ def main():
     for table_name in vz_lookup_table_names:
         cris_lookup = cris_lookups.get(table_name)
         if not cris_lookup:
-            errors.append(f"Lookup table {table_name} does not exist in CRIS")
+            message = "Lookup table {table_name} does not exist in CRIS"
+            errors.append({"message": message, "migration": None})
             continue
 
         print(f"Gettling lookup values for {table_name}")
@@ -65,25 +66,32 @@ def main():
             try:
                 cris_value = next(x for x in cris_values if x["id"] == vz_value["id"])
             except StopIteration:
-                errors.append(
-                    f"{table_name}: VZ value {vz_value['label']} ({vz_value['id']}) does not exist in CRIS"
+                if table_name == "city" and vz_value["id"] == 9999:
+                    print(
+                        "skipping error for city ID 9999 - this code is still and use and is a known CRIS bug"
+                    )
+                    continue
+                message = f"{table_name}: VZ value {vz_value['label']} ({vz_value['id']}) does not exist in CRIS"
+                migration = (
+                    f"delete from lookups.{table_name} where id = {vz_value['id']};"
                 )
+                errors.append({"message": message, "migration": migration})
                 continue
 
             if cris_value["label"] != vz_value["label"]:
-                errors.append(
-                    f"{table_name}: VZ value {vz_value['label']} ({vz_value['id']}) has a different label in CRIS: {cris_value['label']}"
-                )
+                message = f"{table_name}: VZ value {vz_value['label']} ({vz_value['id']}) has a different label in CRIS: {cris_value['label']}"
+                migration = f'''update lookups.{table_name} set label = '{cris_value['label'].replace("'", "''")}' where id = {cris_value['id']};'''
+                errors.append({"message": message, "migration": migration})
 
         for cris_value in cris_values:
             try:
                 vz_value = next(v for v in vz_values if v["id"] == cris_value["id"])
             except StopIteration:
-                errors.append(
-                    f"{table_name}: CRIS value {cris_value['label']} ({cris_value['id']}) does not exist in VZ"
-                )
+                message = f"{table_name}: CRIS value {cris_value['label']} ({cris_value['id']}) does not exist in VZ"
+                migration = f"""insert into lookups.{table_name} (id, label, source) values ({cris_value['id']}, '{cris_value['label'].replace("'", "''")}', 'cris');"""
+                errors.append({"message": message, "migration": migration})
                 continue
-    print("\n".join(errors))
+    print("\n".join([err["migration"] for err in errors if err["migration"]]))
     return
 
 
