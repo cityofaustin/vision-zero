@@ -29,9 +29,8 @@ const RecommendationTextInput = ({
     const isEmptyString = !inputValue.trim();
     // Save null to database if user entered empty string or only spaces/newlines
     const valuesObject = { [field]: isEmptyString ? null : inputValue };
-    onEdit(valuesObject);
+    onEdit(valuesObject).then(() => setIsEditing(false));
     isEmptyString && setInputValue("");
-    setIsEditing(false);
   };
 
   const handleEditClick = () => {
