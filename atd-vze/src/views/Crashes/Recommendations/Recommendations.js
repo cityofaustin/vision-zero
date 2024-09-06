@@ -148,10 +148,7 @@ const Recommendations = ({ crashPk, recommendation, refetch }) => {
               </div>
             </div>
           </div>
-          <div
-            className="row border-bottom"
-            style={{ paddingTop: "12px", paddingBottom: "12px" }}
-          >
+          <div style={{ paddingTop: "12px", paddingBottom: "12px" }}>
             <div className="col-12 pr-0">
               <RecommendationTextInput
                 label={"Recommendation"}
@@ -165,8 +162,8 @@ const Recommendations = ({ crashPk, recommendation, refetch }) => {
               />
             </div>
           </div>
-          {recommendation?.rec_text && (
-            <div className="row" style={{ paddingTop: "12px" }}>
+          {(recommendation?.rec_text || recommendation?.rec_update) && (
+            <div className="row border-top" style={{ paddingTop: "12px" }}>
               <div className="col-12 pr-0">
                 <RecommendationTextInput
                   label={"Updates"}
