@@ -172,7 +172,10 @@ export const GET_CRASH = gql`
           }
         }
       }
-      crash_notes(order_by: { date: desc }) {
+      crash_notes(
+        where: { is_deleted: { _eq: false } }
+        order_by: { date: desc }
+      ) {
         id
         created_at
         updated_at

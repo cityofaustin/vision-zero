@@ -10,50 +10,55 @@ insert_permissions:
     permission:
       check: {}
       columns:
-        - id
-        - created_at
-        - updated_at
-        - date
-        - text
         - crash_pk
+        - created_at
+        - date
+        - id
+        - is_deleted
+        - text
+        - updated_at
         - user_email
   - role: vz-admin
     permission:
       check: {}
       columns:
-        - id
-        - created_at
-        - updated_at
-        - date
-        - text
         - crash_pk
+        - created_at
+        - date
+        - id
+        - is_deleted
+        - text
+        - updated_at
         - user_email
 select_permissions:
   - role: editor
     permission:
       columns:
         - crash_pk
-        - id
-        - text
-        - user_email
         - created_at
         - date
+        - id
+        - is_deleted
+        - text
         - updated_at
+        - user_email
       filter: {}
   - role: readonly
     permission:
       columns:
         - crash_pk
-        - id
-        - text
-        - user_email
         - created_at
         - date
+        - id
+        - is_deleted
+        - text
         - updated_at
+        - user_email
       filter: {}
   - role: vz-admin
     permission:
       columns:
+        - is_deleted
         - crash_pk
         - id
         - text
@@ -66,6 +71,7 @@ update_permissions:
   - role: editor
     permission:
       columns:
+        - is_deleted
         - crash_pk
         - id
         - text
@@ -79,12 +85,13 @@ update_permissions:
     permission:
       columns:
         - crash_pk
-        - id
-        - text
-        - user_email
         - created_at
         - date
+        - id
+        - is_deleted
+        - text
         - updated_at
+        - user_email
       filter: {}
       check: null
 delete_permissions:
