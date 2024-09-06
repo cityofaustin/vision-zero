@@ -165,7 +165,7 @@ const Recommendations = ({ crashPk, recommendation, refetch }) => {
               />
             </div>
           </div>
-          {doesRecommendationRecordExist && (
+          {recommendation?.rec_text && (
             <div className="row" style={{ paddingTop: "12px" }}>
               <div className="col-12 pr-0">
                 <RecommendationTextInput
