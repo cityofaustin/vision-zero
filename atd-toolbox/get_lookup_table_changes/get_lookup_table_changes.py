@@ -1,5 +1,8 @@
 #!/usr/bin/env python
-"""what about if a foreign key column name changes?"""
+"""
+Helper script which detects changes betwen CRIS lookup values provided in data extract and
+lookup values in the VZ database. See README.md for details.
+"""
 import os
 import xml.etree.ElementTree as ET
 
@@ -48,15 +51,22 @@ def get_cris_lookups_from_file():
     return cris_lookups
 
 
+def save_migration(content, fname):
+    with open(os.path.join("migrations", fname), "w") as fout:
+        fout.write(content)
+
+
 def main():
     cris_lookups = get_cris_lookups_from_file()
     vz_lookup_table_names = get_vz_lookup_table_names()
-    errors = []
+    changes = []
     for table_name in vz_lookup_table_names:
         cris_lookup = cris_lookups.get(table_name)
         if not cris_lookup:
             message = "Lookup table {table_name} does not exist in CRIS"
-            errors.append({"message": message, "migration": None})
+            changes.append(
+                {"message": message, "migration_up": None, "migration_down": None}
+            )
             continue
 
         print(f"Gettling lookup values for {table_name}")
@@ -68,31 +78,71 @@ def main():
             except StopIteration:
                 if table_name == "city" and vz_value["id"] == 9999:
                     print(
-                        "skipping error for city ID 9999 - this code is still and use and is a known CRIS bug"
+                        "Skipping error for city ID 9999 - this code is still in use and is a known CRIS bug"
                     )
                     continue
                 message = f"{table_name}: VZ value {vz_value['label']} ({vz_value['id']}) does not exist in CRIS"
-                migration = (
-                    f"delete from lookups.{table_name} where id = {vz_value['id']};"
+                migration_up = (
+                    f"delete from lookups.{table_name} where id = {vz_value['id']}"
                 )
-                errors.append({"message": message, "migration": migration})
+                migration_down = f"""insert into lookups.{table_name} (id, label, source) values ({vz_value['id']}, '{vz_value['label'].replace("'", "''")}', 'cris')"""
+                changes.append(
+                    {
+                        "message": message,
+                        "migration_up": migration_up,
+                        "migration_down": migration_down,
+                    }
+                )
                 continue
 
             if cris_value["label"] != vz_value["label"]:
                 message = f"{table_name}: VZ value {vz_value['label']} ({vz_value['id']}) has a different label in CRIS: {cris_value['label']}"
-                migration = f'''update lookups.{table_name} set label = '{cris_value['label'].replace("'", "''")}' where id = {cris_value['id']};'''
-                errors.append({"message": message, "migration": migration})
+                migration_up = f"""update lookups.{table_name} set label = '{cris_value['label'].replace("'", "''")}' where id = {cris_value['id']}"""
+                migration_down = f"""update lookups.{table_name} set label = '{vz_value['label'].replace("'", "''")}' where id = {cris_value['id']}"""
+                changes.append(
+                    {
+                        "message": message,
+                        "migration_up": migration_up,
+                        "migration_down": migration_down,
+                    }
+                )
 
         for cris_value in cris_values:
             try:
                 vz_value = next(v for v in vz_values if v["id"] == cris_value["id"])
             except StopIteration:
                 message = f"{table_name}: CRIS value {cris_value['label']} ({cris_value['id']}) does not exist in VZ"
-                migration = f"""insert into lookups.{table_name} (id, label, source) values ({cris_value['id']}, '{cris_value['label'].replace("'", "''")}', 'cris');"""
-                errors.append({"message": message, "migration": migration})
+                migration_up = f"""insert into lookups.{table_name} (id, label, source) values ({cris_value['id']}, '{cris_value['label'].replace("'", "''")}', 'cris')"""
+                migration_down = (
+                    f"delete from lookups.{table_name} where id = {cris_value['id']}"
+                )
+                changes.append(
+                    {
+                        "message": message,
+                        "migration_up": migration_up,
+                        "migration_down": migration_down,
+                    }
+                )
                 continue
-    print("\n".join([err["migration"] for err in errors if err["migration"]]))
-    return
+    migrations_up = [
+        change["migration_up"] + ";\n" for change in changes if change["migration_up"]
+    ]
+    migrations_down = [
+        change["migration_down"] + ";\n"
+        for change in changes
+        if change["migration_down"]
+    ]
+
+    if not migrations_up:
+        print("No changes found ✅")
+        return
+
+    migrations_up.sort()
+    migrations_down.sort()
+
+    print(f"Saving {len(migrations_up)} migrations...")
+    save_migration("".join(migrations_up), "up.sql")
+    save_migration("".join(migrations_down), "down.sql")
 
 
 main()
