@@ -15,6 +15,11 @@ from utils.graphql import (
 CRIS_LOOKUP_FNAME = "lookups.xml"
 
 
+# veh_direction_of_force is referenced by CRIS but no longer provided in the CRIS extract
+# the other tables here are custom
+LOOKUP_TABLES_TO_IGNORE = ["veh_direction_of_force", "mode_category", "movt"]
+
+
 def get_vz_lookup_table_names():
     data = make_hasura_request(query=LOOKUP_TABLE_QUERY)
     vz_lookup_table_names = [
@@ -63,11 +68,12 @@ def main():
     for table_name in vz_lookup_table_names:
         cris_lookup = cris_lookups.get(table_name)
         if not cris_lookup:
-            message = "Lookup table {table_name} does not exist in CRIS"
-            changes.append(
-                {"message": message, "migration_up": None, "migration_down": None}
+            if table_name in LOOKUP_TABLES_TO_IGNORE:
+                continue
+            # if this happens we'll have to figure out how to deal with this situation
+            raise Exception(
+                """It appears a lookup table has been deleted or renames by CRIS. This script cannot handle that case. Aborting."""
             )
-            continue
 
         print(f"Gettling lookup values for {table_name}")
         vz_values = get_vz_lookup_table_values(table_name)
