@@ -26,9 +26,11 @@ const RecommendationTextInput = ({
   };
 
   const handleSaveClick = () => {
-    const valuesObject = { [field]: inputValue };
-
+    const isEmptyString = !inputValue.trim();
+    // Save null to database if user entered empty string or only spaces/newlines
+    const valuesObject = { [field]: isEmptyString ? null : inputValue };
     onEdit(valuesObject);
+    isEmptyString && setInputValue("");
     setIsEditing(false);
   };
 
@@ -42,7 +44,7 @@ const RecommendationTextInput = ({
   };
 
   // Recommendation record does not exist yet, adding a value will create record
-  const isAddingRecommendation =
+  const isCreatingRecord =
     doesRecommendationRecordExist === false && isEditing === false;
   // Recommendation record exists and we can edit the value
   const canEditRecommendation =
@@ -57,9 +59,7 @@ const RecommendationTextInput = ({
         <b>{label}</b>
       </p>
       <div className="d-flex">
-        {(isAddingRecommendation ||
-          isEditingRecommendation ||
-          !isExistingValue) && (
+        {(isCreatingRecord || isEditingRecommendation || !isExistingValue) && (
           <div className="col flex-grow-1 pl-0">
             <Input
               type="textarea"
@@ -75,7 +75,7 @@ const RecommendationTextInput = ({
         {/* First button*/}
         {/* Inline pixel widths and padding are based on lining up button grid with table used in Notes component */}
         <div style={{ width: "121px", padding: "12px 4px 12px 9px" }}>
-          {isAddingRecommendation && (
+          {isCreatingRecord && (
             <Button
               type="submit"
               color="primary"
@@ -83,11 +83,12 @@ const RecommendationTextInput = ({
               className="btn-pill mt-2"
               size="sm"
               style={{ width: "50px" }}
+              disabled={!inputValue.trim()}
             >
-              Add
+              Save
             </Button>
           )}
-          {!isAddingRecommendation && !isExistingValue && (
+          {!isCreatingRecord && !isExistingValue && (
             <Button
               type="submit"
               color="primary"
@@ -95,8 +96,9 @@ const RecommendationTextInput = ({
               className="btn-pill mt-2"
               size="sm"
               style={{ width: "50px" }}
+              disabled={!inputValue.trim()}
             >
-              Add
+              Save
             </Button>
           )}
           {canEditRecommendation && isExistingValue && (
