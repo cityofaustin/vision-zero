@@ -2,8 +2,10 @@ import os
 
 import requests
 
-ENDPOINT = os.getenv("HASURA_GRAPHQL_ENDPOINT", "http://localhost:8084/v1/graphql")
-ADMIN_SECRET = os.getenv("HASURA_GRAPHQL_ADMIN_SECRET", "hasurapassword")
+HASURA_GRAPHQL_ENDPOINT = os.getenv(
+    "HASURA_GRAPHQL_ENDPOINT", "http://localhost:8084/v1/graphql"
+)
+HASURA_GRAPHQL_ADMIN_SECRET = os.getenv("HASURA_GRAPHQL_ADMIN_SECRET", "hasurapassword")
 
 LOOKUP_TABLE_QUERY = """
 query GetLookupTables {
@@ -44,11 +46,16 @@ def make_hasura_request(*, query, variables=None):
     Returns:
         dict: The `data` property of the JSON response
     """
-    if not ENDPOINT:
+    if not HASURA_GRAPHQL_ENDPOINT:
         raise OSError("HASURA_GRAPHQL_ENDPOINT env var is missing/None")
+    if not HASURA_GRAPHQL_ADMIN_SECRET:
+        raise OSError("HASURA_GRAPHQL_ADMIN_SECRET env var is missing/None")
+
     payload = {"query": query, "variables": variables}
     res = requests.post(
-        ENDPOINT, json=payload, headers={"x-hasura-admin-secret": ADMIN_SECRET}
+        HASURA_GRAPHQL_ENDPOINT,
+        json=payload,
+        headers={"x-hasura-admin-secret": HASURA_GRAPHQL_ADMIN_SECRET},
     )
     res.raise_for_status()
     data = res.json()
