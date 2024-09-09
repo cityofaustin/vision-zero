@@ -49,16 +49,6 @@ const makeMultiPoly = (features) => {
   return features;
 };
 
-/**
- * strip out all feature properties except the object id
- */
-const filterAndFormatProperties = (features) =>
-  features.forEach((feature) => {
-    feature.properties = {
-      object_id: feature.properties.OBJECTID,
-    };
-  });
-
 const main = async () => {
   const esriJson = await getRoadwaysJson();
   const areaGeojson = arcgisToGeoJSON(esriJson);
