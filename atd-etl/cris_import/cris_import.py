@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 from datetime import datetime, timezone
+import os
 
 from utils.cli import get_cli_args
 from utils.graphql import create_log_entry, update_log_entry
@@ -66,10 +67,22 @@ def main(cli_args):
         )
 
         if cli_args.pdf and not no_crashes_found:
-            pdfs_processed_count = process_pdfs(
-                extract_dir, cli_args.s3_upload, cli_args.workers
-            )
-            records_processed["pdfs"] = pdfs_processed_count
+            """
+            Make sure the crashReports directory exists. It may be missing if there were no
+            crashes to process. It may also be missing if the extract was not configured
+            to include CR3 PDFs
+            """
+            crash_reports_dir = os.path.join(extract_dir, "crashReports")
+
+            if os.path.exists(crash_reports_dir):
+                records_processed["pdfs"] = process_pdfs(
+                    extract_dir, cli_args.s3_upload, cli_args.workers
+                )
+            else:
+                logger.warning(
+                    f"Warning: No 'crashReports' directory found — no PDFs to process"
+                )
+
         elif cli_args.pdf and no_crashes_found:
             # we skip PDF processing when there are no CSV crashes, because in those cases
             # the extract may not contain a `crashReports` directory — and that will
