@@ -1,4 +1,4 @@
-# Load council districts into Vision Zero
+# Load non-COA roadways into Vision Zero
 
 1. Install dependencies - requires node v18.x
 
