@@ -84,7 +84,7 @@ const RecommendationTextInput = ({
               style={{ width: "50px" }}
               disabled={!inputValue.trim()}
             >
-              Save
+              Add
             </Button>
           )}
           {!isCreatingRecord && !isExistingValue && (
@@ -97,7 +97,7 @@ const RecommendationTextInput = ({
               style={{ width: "50px" }}
               disabled={!inputValue.trim()}
             >
-              Save
+              Add
             </Button>
           )}
           {canEditRecommendation && isExistingValue && (
