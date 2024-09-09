@@ -50,7 +50,7 @@ const makeMultiPoly = (features) => {
 };
 
 /**
- * strip out all feature properties except ATD_ENGINEER_AREAS
+ * strip out all feature properties except the object id
  */
 const filterAndFormatProperties = (features) =>
   features.forEach((feature) => {
