@@ -44,25 +44,13 @@ const Recommendations = ({ crashPk, recommendation, refetch }) => {
 
   const onAdd = valuesObject => {
     const recommendationRecord = {
-      crashPk,
-      userEmail,
+      crash_pk: crashPk,
+      created_by: userEmail,
       ...valuesObject,
     };
-
     addRecommendation({
-      variables: recommendationRecord,
-    })
-      .then(() => {
-        refetch();
-      })
-      .catch(error => console.error(error));
-  };
-
-  const onEdit = changesObject => {
-    editRecommendation({
       variables: {
-        id: recommendationRecordId,
-        changes: changesObject,
+        recommendationRecord,
       },
     })
       .then(() => {
@@ -71,10 +59,20 @@ const Recommendations = ({ crashPk, recommendation, refetch }) => {
       .catch(error => console.error(error));
   };
 
+  const onEdit = changesObject =>
+    editRecommendation({
+      variables: {
+        id: recommendationRecordId,
+        changes: changesObject,
+      },
+    })
+      .then(() => refetch())
+      .catch(error => console.error(error));
+
   const onAddPartner = valuesObject => {
     const recommendationPartnerRecord = {
       recommendationRecordId,
-      ...valuesObject,
+      ...valuesObject.recommendations_partners.data,
     };
     addPartner({
       variables: recommendationPartnerRecord,
@@ -148,7 +146,7 @@ const Recommendations = ({ crashPk, recommendation, refetch }) => {
             </div>
           </div>
           <div
-            className="row border-bottom"
+            className="row"
             style={{ paddingTop: "12px", paddingBottom: "12px" }}
           >
             <div className="col-12 pr-0">
@@ -164,7 +162,7 @@ const Recommendations = ({ crashPk, recommendation, refetch }) => {
               />
             </div>
           </div>
-          <div className="row" style={{ paddingTop: "12px" }}>
+          <div className="row border-top" style={{ paddingTop: "12px" }}>
             <div className="col-12 pr-0">
               <RecommendationTextInput
                 label={"Updates"}
