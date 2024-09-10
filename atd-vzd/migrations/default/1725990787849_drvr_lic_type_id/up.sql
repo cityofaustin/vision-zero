@@ -14,6 +14,8 @@ insert into lookups.drvr_lic_type (id, label) values
 (98, 'OTHER'),
 (99, 'UNKNOWN');
 
+comment on table lookups.drvr_lic_type is 'Lookup table for driver''s license types';
+
 alter table public.people_cris
 add column drvr_lic_type_id integer,
 add constraint people_cris_drvr_lic_type_id_fkey
@@ -31,6 +33,10 @@ add column drvr_lic_type_id integer,
 add constraint people_drvr_lic_type_id_fkey
 foreign key (drvr_lic_type_id)
 references lookups.drvr_lic_type (id);
+
+comment on column public.people_cris.drvr_lic_type_id is 'Driver''s license type';
+comment on column public.people_edits.drvr_lic_type_id is 'Driver''s license type';
+comment on column public.people.drvr_lic_type_id is 'Driver''s license type';
 
 insert into _column_metadata (column_name, record_type, is_imported_from_cris)
 values ('drvr_lic_type_id', 'people', true);
