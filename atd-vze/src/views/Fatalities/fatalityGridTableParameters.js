@@ -70,7 +70,7 @@ export const fatalityGridTableColumns = {
     label_table: "FRB Recommendation",
     type: "String",
   },
-  engineering_area: {
+  "engineering_area { label }": {
     searchable: true,
     sortable: true,
     label_table: "Current Engineering Area",
