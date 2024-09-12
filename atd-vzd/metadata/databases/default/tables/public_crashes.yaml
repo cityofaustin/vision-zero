@@ -92,7 +92,7 @@ select_permissions:
         - crash_timestamp
         - created_at
         - created_by
-        - engineering_area
+        - engineering_area_id
         - fhe_collsn_id
         - id
         - in_austin_full_purpose
@@ -162,7 +162,7 @@ select_permissions:
         - crash_timestamp
         - created_at
         - created_by
-        - engineering_area
+        - engineering_area_id
         - fhe_collsn_id
         - id
         - in_austin_full_purpose
@@ -189,7 +189,7 @@ select_permissions:
         - council_district
         - cris_crash_id
         - crash_speed_limit
-        - engineering_area
+        - engineering_area_id
         - fhe_collsn_id
         - id
         - intrsct_relat_id
@@ -251,7 +251,7 @@ select_permissions:
         - crash_timestamp
         - created_at
         - created_by
-        - engineering_area
+        - engineering_area_id
         - fhe_collsn_id
         - id
         - in_austin_full_purpose
@@ -277,7 +277,7 @@ select_permissions:
         - txdot_rptable_fl
         - council_district
         - crash_speed_limit
-        - engineering_area
+        - engineering_area_id
         - fhe_collsn_id
         - id
         - intrsct_relat_id
