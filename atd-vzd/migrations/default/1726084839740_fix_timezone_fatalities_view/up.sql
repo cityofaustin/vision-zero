@@ -1,4 +1,7 @@
+drop view if exists fatalities_view cascade;
+
 -- fixing a timezone bug in the ytd_fatality and ytd_fatal_crash counts
+-- and updating engineering_area to engineering_area_id
 create or replace view fatalities_view AS
 select 
 people.id as person_id,
@@ -37,7 +40,7 @@ DENSE_RANK() OVER (
     AS ytd_fatal_crash,
 crashes.case_id,
 crashes.law_enforcement_ytd_fatality_num,
-crashes.engineering_area
+crashes.engineering_area_id
   from 
     people 
   left join units on people.unit_id = units.id
