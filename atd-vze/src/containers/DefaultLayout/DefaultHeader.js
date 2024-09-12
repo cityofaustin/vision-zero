@@ -1,5 +1,5 @@
-import React from "react";
-import { NavLink } from "react-router-dom";
+import React, { useState } from "react";
+import { NavLink, useHistory } from "react-router-dom";
 import { useAuth0 } from "../../auth/authContext";
 import Can from "../../auth/Can";
 import {
@@ -10,6 +10,11 @@ import {
   Nav,
   NavItem,
   Alert,
+  Form,
+  Input,
+  InputGroup,
+  InputGroupAddon,
+  Button,
 } from "reactstrap";
 import PropTypes from "prop-types";
 
@@ -43,6 +48,38 @@ const EnvAlertBanner = () => {
       This is a <span style={{ fontWeight: "bold" }}>{env}</span> environment
       for testing purposes.
     </Alert>
+  );
+};
+
+const GlobalSearch = () => {
+  const [crashSearchId, setCrashSearchId] = useState(null);
+  let history = useHistory();
+
+  return (
+    <Form className="mr-2" onSubmit={e => e.preventDefault()}>
+      <InputGroup>
+        <Input
+          size="sm"
+          type="text"
+          name="crash-navigation-search"
+          placeholder={"Go to crash..."}
+          value={crashSearchId}
+          onChange={e => setCrashSearchId(e.target.value.replace(/\W/g, ""))}
+        />
+
+        <InputGroupAddon addonType="append">
+          <Button
+            type="submit"
+            color="secondary"
+            disabled={!crashSearchId}
+            size="sm"
+            onClick={() => history.push(`/crashes/${crashSearchId}`)}
+          >
+            <i className="fa fa-arrow-right" />
+          </Button>
+        </InputGroupAddon>
+      </InputGroup>
+    </Form>
   );
 };
 
@@ -84,7 +121,9 @@ const DefaultHeader = props => {
             )}
           />
         </Nav>
+
         <Nav className="ml-auto" navbar>
+          <GlobalSearch />
           <UncontrolledDropdown nav direction="down">
             <DropdownToggle nav>
               <img
@@ -103,13 +142,7 @@ const DefaultHeader = props => {
               <DropdownItem onClick={logout}>
                 <i className="fa fa-lock" /> Log Out
               </DropdownItem>
-            </DropdownMenu>
-          </UncontrolledDropdown>
-          <UncontrolledDropdown nav direction="down">
-            <DropdownToggle nav>
-              <i className="fa fa-question-circle fa-2x" />
-            </DropdownToggle>
-            <DropdownMenu right>
+
               <DropdownItem header tag="div" className="text-center">
                 <strong>Support</strong>
               </DropdownItem>
