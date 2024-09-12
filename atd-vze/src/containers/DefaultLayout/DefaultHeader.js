@@ -52,7 +52,7 @@ const EnvAlertBanner = () => {
 };
 
 const GlobalSearch = () => {
-  const [crashSearchId, setCrashSearchId] = useState(null);
+  const [crashSearchId, setCrashSearchId] = useState("");
   let history = useHistory();
 
   return (
@@ -73,7 +73,10 @@ const GlobalSearch = () => {
             color="secondary"
             disabled={!crashSearchId}
             size="sm"
-            onClick={() => history.push(`/crashes/${crashSearchId}`)}
+            onClick={() => {
+              history.push(`/crashes/${crashSearchId}`);
+              setCrashSearchId("");
+            }}
           >
             <i className="fa fa-arrow-right" />
           </Button>
