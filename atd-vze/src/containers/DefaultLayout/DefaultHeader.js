@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { NavLink, useHistory } from "react-router-dom";
+import React from "react";
+import { NavLink } from "react-router-dom";
 import { useAuth0 } from "../../auth/authContext";
 import Can from "../../auth/Can";
 import {
@@ -10,15 +10,11 @@ import {
   Nav,
   NavItem,
   Alert,
-  Form,
-  Input,
-  InputGroup,
-  InputGroupAddon,
-  Button,
 } from "reactstrap";
 import PropTypes from "prop-types";
 
 import { AppHeader, AppNavbarBrand, AppSidebarToggler } from "@coreui/react";
+import CrashNavigationSearchForm from "../../Components/CrashNavigationSearchForm";
 import logo from "../../assets/img/brand/visionzerotext.png";
 
 const propTypes = {
@@ -48,41 +44,6 @@ const EnvAlertBanner = () => {
       This is a <span style={{ fontWeight: "bold" }}>{env}</span> environment
       for testing purposes.
     </Alert>
-  );
-};
-
-const GlobalSearch = () => {
-  const [crashSearchId, setCrashSearchId] = useState("");
-  let history = useHistory();
-
-  return (
-    <Form className="mr-2" onSubmit={e => e.preventDefault()}>
-      <InputGroup>
-        <Input
-          size="sm"
-          type="text"
-          name="crash-navigation-search"
-          placeholder={"Go to crash..."}
-          value={crashSearchId}
-          onChange={e => setCrashSearchId(e.target.value.replace(/\W/g, ""))}
-        />
-
-        <InputGroupAddon addonType="append">
-          <Button
-            type="submit"
-            color="secondary"
-            disabled={!crashSearchId}
-            size="sm"
-            onClick={() => {
-              history.push(`/crashes/${crashSearchId}`);
-              setCrashSearchId("");
-            }}
-          >
-            <i className="fa fa-arrow-right" />
-          </Button>
-        </InputGroupAddon>
-      </InputGroup>
-    </Form>
   );
 };
 
@@ -126,7 +87,7 @@ const DefaultHeader = props => {
         </Nav>
 
         <Nav className="ml-auto" navbar>
-          <GlobalSearch />
+          <CrashNavigationSearchForm />
           <UncontrolledDropdown nav direction="down">
             <DropdownToggle nav>
               <img
