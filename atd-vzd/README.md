@@ -30,7 +30,7 @@ The designed supports a sophisticated editing environment which enables Vision Z
 
 ### TxDOT Crash Records Information System (CRIS)
 
-The [TxDOT Crash Record Information System](https://www.txdot.gov/data-maps/crash-reports-records/crash-data-analysis-statistics.html), CRIS, is a statewide, automated database for traffic crashes reports.
+The [TxDOT Crash Record Information System](https://www.txdot.gov/data-maps/crash-reports-records/crash-data-analysis-statistics.html) (CRIS) is a statewide, automated database for traffic crashes reports.
 
 CRIS data accounts for the vast majority of records in the database: the [Vision Zero Editor (VZE)](../atd-vze/README.md) is designed primarily as a tool for editing and enriching data received from CRIS, and the [Vision Zero Viewer (VZV)](../atd-vzv/README.md) is powered entirely by enriched CRIS data.
 
@@ -86,9 +86,52 @@ Lookup tables for `crashes`, `units`, and `people` tables are housed in the `loo
 - The majority of our lookup tables are defined by CRIS and exactly match the CRIS extract schema
 - Some of our lookup tables contain custom lookup values, and we have a mechansim for managing custom values alongside CRIS-provided values
 - Some of our lookup tables are completey custom and do not exit in the CRIS extract
-- Because we enforce foreign key constraints against all of lookup table references, the CRIS import ETL will be break if our lookup tables are not periodically refreshed to ensure they match the latest CRIS schema. We have a helper script to assist with that task.
+- Because we enforce foreign key constraints against all lookup table references, the CRIS import ETL will be break if our lookup tables are not periodically refreshed to ensure they match the latest CRIS schema. We have a helper script to assist with that task.
 
 See the [Common maintenance tasks](#common-maintenance-tasks) section for specific details about creating and updating lookup tables.
+
+##### Lookup table structure and custom lookup table values
+
+All lookup tables follow the same table structure, with the three columns:
+
+- `id` - an integer primary key value that **is not auto-incrementing**. These ID values are defined either by `CRIS` or by our team member who implements a custom lookup value.
+- `label` - the text label descriptor of the lookup value
+- `source` - the entity who is the source the lookup table value definition. should be either `cris` or, for custom values, `vz`.
+
+In addition to the `source` column, constraint checks must be added to tables which use custom values, to ensure that CRIS-provided `id` values do not collide with custom `vz`-sourced values.
+
+For example, consider the `lookups.injry_sev` table, which includes a custom value (`KILLED (NON-ATD)`) which is used by staff to override the CRIS-defined injury severity of a person record:
+
+```
+| id  | label                    | source |
+| --- | ------------------------ | ------ |
+| 0   | UNKNOWN                  | cris   |
+| 1   | SUSPECTED SERIOUS INJURY | cris   |
+| 2   | SUSPECTED MINOR INJURY   | cris   |
+| 3   | POSSIBLE INJURY          | cris   |
+| 4   | FATAL INJURY             | cris   |
+| 5   | NOT INJURED              | cris   |
+| 95  | AUTONOMOUS               | cris   |
+| 99  | KILLED (NON-ATD)         | vz     |
+```
+
+The original migration used to create this table is [here](https://github.com/cityofaustin/atd-vz-data/blob/e56e3c6bc654a21f667142ce53232bad44cff7e5/atd-vzd/migrations/default/1715960018005_lookup_table_seeds/up.sql#L11054-L11056).
+
+Because the table has a custom value, it is configured with a check constraint ([[postgres docs](https://www.postgresql.org/docs/current/ddl-constraints.html#DDL-CONSTRAINTS-CHECK-CONSTRAINTS)]) to ensure that future updates to this lookup table do not result in an ID collision:
+
+```sql
+"injry_sev_owner_check" CHECK (id < 99 AND source = 'cris' OR id >= 99 AND source = 'vz')
+```
+
+Any row inserted into this table must use the source `vz` if the `id` value is greater than or equal to `99`. This ensures that our lookup table helper script (todo: link) will not override our custom lookup values.
+
+Additionally, the `people_cris` table, which references this lookup, is configured with a check constraint that prevents CRIS from using our custom value:
+
+```sql
+ "people_cris_prsn_injry_sev_id_check" CHECK (prsn_injry_sev_id < 99)
+```
+
+See the [Common maintenance tasks](#common-maintenance-tasks) section for more details about creating and updating lookup tables.
 
 #### Charges records
 
@@ -172,7 +215,11 @@ values ('my_generated_column', 'crashes', false);
 
 5. When you're ready to test the trigger behavior, you can enable debug messaging for this trigger by excuting the command `set client_min_messages to debug;`. This will cause the trigger debug messages to log to your SQL client.
 
-### Add a custom lookup value to the database
+### Refreshing lookup tables with the latest CRIS values
+
+See the helper script readme.
+
+### Add a custom lookup value to a CRIS-managed lookup table
 
 ### Debugging record triggers
 
