@@ -29,7 +29,7 @@ The CRIS data in our database consists of four record types:
 - `crashes` - each row is single crash event, with attributes such as the crash timestamp, crash location, and manner of collision
 - `units` - each row describes a unit, or vehicle, involved in a crash. Each unit relates to one crash record.
 - `people` - each row describes a person involved in a crash. Each person relates to one unit.
-- `charges` - each row descibes a legal charge filed by the responding law enforcement agency. Each charge relates to one person
+- `charges` - each row descibes a legal charge filed by the responding law enforcement agency. Each charge relates to one person. Note that charges have special handling and only exist in the `charges_cris`, as described in detail below.
 
 #### Design
 
@@ -73,6 +73,19 @@ For more details on how we ingest CRIS data into our database, see the [CRIS imp
 
 - customization and constraints
 - helper script
+
+#### Charges records
+
+Charges records are provided by CRIS and descibe a legal charge filed by the responding law enforcement agency. These records require special handling in our database because CRIS does not provide a unique primary key column for charges. Here's what you should know about these records:
+
+1. Charge records only exist in the `charges_cris` table and do not have corresponding `charges_edits` or `charges` tables.
+2. During the CRIS import, all charge records are **deleted** from the database for any crash ID present in the CRIS extract. After deletion, the CRIS import ETL inserts all charges records present in the extract.
+3. The CRIS import ETL filters out charge records where the `charge` value is `NO CHARGE`—this reduces the number of charge records in the database by many thousands.
+4. Because charges are subject to deletion, they are not editable through the VZE/graphql API and should be considered read-only.
+
+#### Special insert triggers
+
+- crash_pk setters
 
 ### Austin Fire Department (AFD) and Travis County Emergency Medical Services (EMS)
 
@@ -146,8 +159,6 @@ values ('my_generated_column', 'crashes', false);
 ### Add a custom lookup value to the database
 
 ### Debugging record triggers
-
-### Charges
 
 ## Audit fields and change logs
 
