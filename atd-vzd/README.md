@@ -6,15 +6,27 @@ The designed supports a sophisticated editing environment which enables Vision Z
 
 ![vision zero data flow](../docs/images/data_flow.png)
 
+
 - [Data sources](#data-sources)
   - [TxDOT Crash Records Information System (CRIS)](#txdot-crash-records-information-system-cris)
+    - [Design](#design)
+    - ["Temporary" records](#temporary-records)
+  - [CRIS Extract configuration and accounts](#cris-extract-configuration-and-accounts)
+    - [CRIS data processing](#cris-data-processing)
+    - [Lookup tables](#lookup-tables)
+    - [Charges records](#charges-records)
+    - [Special triggers for CRIS import](#special-triggers-for-cris-import)
   - [Austin Fire Department (AFD) and Travis County Emergency Medical Services (EMS)](#austin-fire-department-afd-and-travis-county-emergency-medical-services-ems)
   - [Geospatial layers](#geospatial-layers)
 - [Common maintenance tasks](#common-maintenance-tasks)
+  - [Add a new CRIS-managed column to `crashes`, `units`, or `people`](#add-a-new-cris-managed-column-to-crashes-units-or-people)
+  - [Add a custom column to `crashes`, `units`, or `people`](#add-a-custom-column-to-crashes-units-or-people)
+  - [Adding a computed or generated field to `crashes`, `units`, or `people`](#adding-a-computed-or-generated-field-to-crashes-units-or-people)
+  - [Add a custom lookup value to the database](#add-a-custom-lookup-value-to-the-database)
+  - [Debugging record triggers](#debugging-record-triggers)
 - [Audit fields and change logs](#audit-fields-and-change-logs)
-- [Backups](#backups)
-- [Hasura](#hasura)
 - [Development and deployment](#development-and-deployment)
+
 
 ## Data sources
 
@@ -83,7 +95,7 @@ Charges records are provided by CRIS and descibe a legal charge filed by the res
 3. The CRIS import ETL filters out charge records where the `charge` value is `NO CHARGE`—this reduces the number of charge records in the database by many thousands.
 4. Because charges are subject to deletion, they are not editable through the VZE/graphql API and should be considered read-only.
 
-#### Special insert triggers
+#### Special triggers for CRIS import
 
 - crash_pk setters
 
