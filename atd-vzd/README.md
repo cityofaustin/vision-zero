@@ -84,9 +84,8 @@ For more details on how we ingest CRIS data into our database, see the [CRIS imp
 Lookup tables for `crashes`, `units`, and `people` tables are housed in the `lookups` schema in the database. Here's what you need to know about them:
 
 - The majority of our lookup tables are defined by CRIS and exactly match the CRIS extract schema
-- Some of our lookup tables contain custom lookup values, and we have a mechansim for managing custom values
+- Some of our lookup tables contain custom lookup values, and we have a mechansim for managing custom values alongside CRIS-provided values
 - Some of our lookup tables are completey custom and do not exit in the CRIS extract
-- Our lookup tables must be periodically refreshed to ensure they match the latest CRIS schema. We have a helper script to assist with that
 - Because we enforce foreign key constraints against all of lookup table references, the CRIS import ETL will be break if our lookup tables are not periodically refreshed to ensure they match the latest CRIS schema. We have a helper script to assist with that task.
 
 See the [Common maintenance tasks](#common-maintenance-tasks) section for specific details about creating and updating lookup tables.
