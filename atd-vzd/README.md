@@ -6,7 +6,6 @@ The designed supports a sophisticated editing environment which enables Vision Z
 
 ![vision zero data flow](../docs/images/data_flow.png)
 
-
 - [Data sources](#data-sources)
   - [TxDOT Crash Records Information System (CRIS)](#txdot-crash-records-information-system-cris)
     - [Design](#design)
@@ -26,7 +25,6 @@ The designed supports a sophisticated editing environment which enables Vision Z
   - [Debugging record triggers](#debugging-record-triggers)
 - [Audit fields and change logs](#audit-fields-and-change-logs)
 - [Development and deployment](#development-and-deployment)
-
 
 ## Data sources
 
@@ -81,10 +79,17 @@ At the time of writing, [this guide](https://www.txdot.gov/content/dam/docs/cras
 
 For more details on how we ingest CRIS data into our database, see the [CRIS import ETL documentation](../atd-etl/cris_import/README.md).
 
-#### Lookup tables
+#### Lookup tables for `crashes`, `units`, and `people`
 
-- customization and constraints
-- helper script
+Lookup tables for `crashes`, `units`, and `people` tables are housed in the `lookups` schema in the database. Here's what you need to know about them:
+
+- The majority of our lookup tables are defined by CRIS and exactly match the CRIS extract schema
+- Some of our lookup tables contain custom lookup values, and we have a mechansim for managing custom values
+- Some of our lookup tables are completey custom and do not exit in the CRIS extract
+- Our lookup tables must be periodically refreshed to ensure they match the latest CRIS schema. We have a helper script to assist with that
+- Because we enforce foreign key constraints against all of lookup table references, the CRIS import ETL will be break if our lookup tables are not periodically refreshed to ensure they match the latest CRIS schema. We have a helper script to assist with that task.
+
+See the [Common maintenance tasks](#common-maintenance-tasks) section for specific details about creating and updating lookup tables.
 
 #### Charges records
 
