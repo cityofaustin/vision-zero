@@ -80,13 +80,13 @@ For more details on how we ingest CRIS data into our database, see the [CRIS imp
 
 ## Common maintenance tasks
 
-### Add a new CRIS-managed column to `crashes`, `units`, `people`
+### Add a new CRIS-managed column to `crashes`, `units`, or `people`
 
-Follow these steps to add a new column to the database that will be sourced from CRIS. For reference, see [PR #1546](https://github.com/cityofaustin/atd-vz-data/pull/1546) as an example.
+Follow these steps to add a new column to the database that will be sourced from CRIS. See [PR #1546](https://github.com/cityofaustin/atd-vz-data/pull/1546) as an example.
 
 1. Remember that all database operations should be deployed through migrations. See the [development and deployment](#development-and-deployment) docs.
 2. Add the new column to all three tables of the given record type. For example, if this is a crash-level column, add the column to the `crashes_cris`, `crashes_edits`, and `crashes` tables.
-3. Modify the trigger function that inserts new rows into the the `_edits` and unified table that corresponds to the record type you are modifiying: either the `crashes_cris_insert_rows()`, `units_cris_insert_rows()`, ot the `people_cris_insert_rows()` function. Locate the part of the function that selects all values from the new `_cris` and inserts into the unified table. This should be obvious because all column names are listed in this function. Add your new column name to accordingly function.
+3. Modify the trigger function that inserts new rows into the the `_edits` and unified table that corresponds to the record type you are modifiying: either the `crashes_cris_insert_rows()`, `units_cris_insert_rows()`, ot the `people_cris_insert_rows()` function. Locate the part of the function that selects all values from the new `_cris` record and inserts into the unified table. This should be obvious, because all column names are listed in this function. Add your new column name to accordingly function.
 4. Next, you will need to add your new column to the `_column_metadata` table, so that the CRIS import ETL is aware that this column should be included in imports. For example:
 
 ```sql
@@ -96,9 +96,16 @@ values ('drvr_lic_type_id', 'people', true);
 
 5. When you're ready to test the trigger behavior, you can enable debug messaging for this trigger by excuting the command `set client_min_messages to debug;`. This will cause the trigger debug messages to log to your SQL client.
 
-6. You are now ready to test your new column using the CRIS import ETL. If you need to backfill this new column for old records, you will need to manually request the necessary CRIS extract zip files so that they can be processed by an ad-hoc run of the CRIS import ETL.
+6. Re-apply hasura metadata to ensure that your new column is known to the graphql API. You do not need to modify the metadata unless you want to add select, insert, and/or update permissions to this column for non-admin users.
 
-### Add a custom column to `crashes`, `units`, `people`
+```shell
+# ./atd-vzd
+$ hasura metadata apply
+```
+
+7. You are now ready to test your new column using the CRIS import ETL. If you need to backfill this new column for old records, you will need to manually request the necessary CRIS extract zip files so that they can be processed by an ad-hoc run of the CRIS import ETL.
+
+### Add a custom column to `crashes`, `units`, or `people`
 
 Follow these steps to add a custom, non-CRIS column to `crashes`, `units`, or `people`.
 
@@ -117,8 +124,24 @@ values ('vz_custom_column', 'crashes', false);
 
 5. When you're ready to test the trigger behavior, you can enable debug messaging for this trigger by excuting the command `set client_min_messages to debug;`. This will cause the trigger debug messages to log to your SQL client.
 
-### Adding a custom computed/calculated field to `crashes`, `units`, `people`
+### Adding a computed or generated field to `crashes`, `units`, or `people`
 
+Follow these steps to add a computed or generated field to `crashes`, `units`, or `people`.
+
+1. Remember that all database operations should be deployed through migrations. See the [development and deployment](#development-and-deployment) docs.
+
+2. Computed or generated fields should be added to the unified record table only. For example, if this is a crash-level column, add the column to the `crashes` tables.
+
+3. If your column will be modified by a trigger function or generated column definition, be sure to inspect the table's existing triggers and generated fields and [understand their execution order](https://www.postgresql.org/docs/current/trigger-definition.html).
+
+4. Lastly, add your new column to the `_column_metadata` table and indcate that it should _not_ be imported by CRIS.
+
+```sql
+insert into _column_metadata (column_name, record_type, is_imported_from_cris)
+values ('my_generated_column', 'crashes', false);
+```
+
+5. When you're ready to test the trigger behavior, you can enable debug messaging for this trigger by excuting the command `set client_min_messages to debug;`. This will cause the trigger debug messages to log to your SQL client.
 
 ### Add a custom lookup value to the database
 
