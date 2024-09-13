@@ -69,33 +69,62 @@ At the time of writing, [this guide](https://www.txdot.gov/content/dam/docs/cras
 
 For more details on how we ingest CRIS data into our database, see the [CRIS import ETL documentation](../atd-etl/cris_import/README.md).
 
+#### Lookup tables
+
+- customization and constraints
+- helper script
+
 ### Austin Fire Department (AFD) and Travis County Emergency Medical Services (EMS)
 
 ### Geospatial layers
 
 ## Common maintenance tasks
 
-### Add a new CRIS-managed column to the database
+### Add a new CRIS-managed column to `crashes`, `units`, `people`
 
-Follow these steps to add a new column to the database that will be sourced from CRIS.
+Follow these steps to add a new column to the database that will be sourced from CRIS. For reference, see [PR #1546](https://github.com/cityofaustin/atd-vz-data/pull/1546) as an example.
 
 1. Remember that all database operations should be deployed through migrations. See the [development and deployment](#development-and-deployment) docs.
 2. Add the new column to all three tables of the given record type. For example, if this is a crash-level column, add the column to the `crashes_cris`, `crashes_edits`, and `crashes` tables.
 3. Modify the trigger function that inserts new rows into the the `_edits` and unified table that corresponds to the record type you are modifiying: either the `crashes_cris_insert_rows()`, `units_cris_insert_rows()`, ot the `people_cris_insert_rows()` function. Locate the part of the function that selects all values from the new `_cris` and inserts into the unified table. This should be obvious because all column names are listed in this function. Add your new column name to accordingly function.
-4. When you're ready to test the trigger behavior, you can enable debug messaging for this trigger by excuting the command `set client_min_messages to debug;`. This will cause the trigger debug messages to log to your SQL client.
-5. Next, you will need to add your new column to the `_column_metadata` table, so that the CRIS import ETL is aware that this column should be included in imports. For example:
+4. Next, you will need to add your new column to the `_column_metadata` table, so that the CRIS import ETL is aware that this column should be included in imports. For example:
 
 ```sql
-INSERT INTO into _column_metadata (column_name, record_type, is_imported_from_cris) values ('my_new_column', 'crashes', TRUE);
+insert into _column_metadata (column_name, record_type, is_imported_from_cris)
+values ('drvr_lic_type_id', 'people', true);
 ```
+
+5. When you're ready to test the trigger behavior, you can enable debug messaging for this trigger by excuting the command `set client_min_messages to debug;`. This will cause the trigger debug messages to log to your SQL client.
 
 6. You are now ready to test your new column using the CRIS import ETL. If you need to backfill this new column for old records, you will need to manually request the necessary CRIS extract zip files so that they can be processed by an ad-hoc run of the CRIS import ETL.
 
-### Add a custom column to the database
+### Add a custom column to `crashes`, `units`, `people`
+
+Follow these steps to add a custom, non-CRIS column to `crashes`, `units`, or `people`.
+
+1. Remember that all database operations should be deployed through migrations. See the [development and deployment](#development-and-deployment) docs.
+
+2. Add your new column to the `_edits` and unified table for the given record type. For example, if this is a crash-level column, add the column to the `crashes_edits` and `crashes` tables.
+
+3. Unlike adding a CRIS-managed column, you do not need to modify any trigger functions, because the `_edits` trigger functions (`crashes_edits_update`, `units_edits_update`, `people_edits_update`) do not rely on hard-coded column names.
+
+4. Next, add your new column to the `_column_metadata` table and indcate that it should _not_ be imported by CRIS.
+
+```sql
+insert into _column_metadata (column_name, record_type, is_imported_from_cris)
+values ('vz_custom_column', 'crashes', false);
+```
+
+5. When you're ready to test the trigger behavior, you can enable debug messaging for this trigger by excuting the command `set client_min_messages to debug;`. This will cause the trigger debug messages to log to your SQL client.
+
+### Adding a custom computed/calculated field to `crashes`, `units`, `people`
+
 
 ### Add a custom lookup value to the database
 
 ### Debugging record triggers
+
+### Charges
 
 ## Audit fields and change logs
 
