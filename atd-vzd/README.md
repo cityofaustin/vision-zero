@@ -79,7 +79,7 @@ At the time of writing, [this guide](https://www.txdot.gov/content/dam/docs/cras
 
 For more details on how we ingest CRIS data into our database, see the [CRIS import ETL documentation](../atd-etl/cris_import/README.md).
 
-#### Lookup tables for `crashes`, `units`, and `people`
+#### Lookup tables
 
 Lookup tables for `crashes`, `units`, and `people` tables are housed in the `lookups` schema in the database. Here's what you need to know about them:
 
