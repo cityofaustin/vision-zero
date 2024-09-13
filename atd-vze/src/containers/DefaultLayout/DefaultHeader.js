@@ -85,7 +85,7 @@ const DefaultHeader = props => {
         </Nav>
         <Nav className="ml-auto" navbar>
           <CrashNavigationSearchForm />
-          <UncontrolledDropdown nav direction="down">
+          <UncontrolledDropdown nav direction="down" className="mr-2">
             <DropdownToggle nav>
               <img
                 src={"./assets/img/avatars/1.png"}
