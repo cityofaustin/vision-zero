@@ -93,6 +93,7 @@ const DefaultHeader = props => {
                 alt="admin@bootstrapmaster.com"
               />
             </DropdownToggle>
+            {/* Account section */}
             <DropdownMenu right>
               <DropdownItem header tag="div" className="text-center">
                 <strong>Account</strong>
@@ -103,7 +104,7 @@ const DefaultHeader = props => {
               <DropdownItem onClick={logout}>
                 <i className="fa fa-lock" /> Log Out
               </DropdownItem>
-
+              {/* Support section */}
               <DropdownItem header tag="div" className="text-center">
                 <strong>Support</strong>
               </DropdownItem>
