@@ -46,7 +46,10 @@ const DataTable = ({
         return (
           <Col key={i} md="6">
             <Card key={section.title}>
-              <CardHeader>{section.title}</CardHeader>
+              <CardHeader>
+                <td>{section.title}</td>
+                {section.button && <section.button></section.button>}
+              </CardHeader>
               <CardBody>
                 <Table responsive striped hover>
                   <tbody>
