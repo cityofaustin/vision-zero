@@ -111,7 +111,7 @@ function Location(props) {
             notes={data?.location?.location_notes}
             INSERT_NOTE={INSERT_LOCATION_NOTE}
             UPDATE_NOTE={UPDATE_LOCATION_NOTE}
-            DELETE_NOTE={DELETE_LOCATION_NOTE}
+            SOFT_DELETE_NOTE={DELETE_LOCATION_NOTE} // TODO actually make location notes use a soft delete
             refetch={refetch}
           />
         </Col>
