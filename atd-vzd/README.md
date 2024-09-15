@@ -39,26 +39,24 @@ The CRIS data in our database consists of four record types:
 - `crashes` - each row is single crash event, with attributes such as the crash timestamp, crash location, and manner of collision
 - `units` - each row describes a unit, or vehicle, involved in a crash. Each unit relates to one crash record.
 - `people` - each row describes a person involved in a crash. Each person relates to one unit.
-- `charges` - each row descibes a legal charge filed by the responding law enforcement agency. Each charge relates to one person. Note that charges have special handling and only exist in the `charges_cris`, as described in detail below.
+- `charges` - each row describes a legal charge filed by the responding law enforcement agency. Each charge relates to one person. Note that charges have special handling and only exist in the `charges_cris`, as described in detail below.
 
 #### Design
 
-The core challenge that the Vision Zero database solves is to store CRIS data in a central repository where it can be reviewed and updated City of Austin staff. The database preserves the integrity of staff members' edits while simultaneously allowing crash record updates to flow into the database from CRIS.
-
-The editing environment is achieved by managing multiple copies of each of the `crashes`, `units`, and `people` tables, so that CRIS edits and Vision Zero staff edits remain isolated.
+The core challenge that the database schema solves is to preserves the integrity of staff members' edits while simultaneously allowing crash record updates to flow into the database from CRIS. The editing environment is achieved by managing multiple copies of each of the `crashes`, `units`, and `people` tables, so that CRIS edits and Vision Zero staff edits remain isolated.
 
 For example, the `crashes` records are managed in three tables:
 
-- `crashes_cris`: stores crash records that are created and updated by TxdDOT CRIS through the [CRIS import ETL](../atd-etl/cris_import/README.md)
-- `crashes_edits`: stores crash record edits created by Visio Zero staff through the Vision Zero Editor web app
-- `crashes`: stores a unified version of each record which combines the values in `crashes_cris` plus any values in `crashes_edits`
+- `crashes_cris`: records that are created and updated by TxdDOT CRIS through the [CRIS import ETL](../atd-etl/cris_import/README.md)
+- `crashes_edits`: record edits created by Visio Zero staff through the Vision Zero Editor web app
+- `crashes`: a unified version of each record which combines the values in `crashes_cris` plus any values in `crashes_edits`
 
 As pictured in the diagram below, the typical data flow for a crash record is as follows:
 
 1. A new record is inserted into the `crashes_cris` table through the [CRIS import ETL](../atd-etl/cris_import/README.md).
 2. On insert into `crashes_cris`, an "empty" copy of the record is inserted into the `crashes_edits` table. The record is inserted into the `crashes_edits` table with null values in every column except the `id`, which has a foreign key constaint referencing the `crashes_cris.id` column.
 3. At the same time, a complete copy of the record is inserted into the `crashes` table.
-4. A Vision Zero Editor user may update a crash records b updating rows in the the `crashes_edits` table. When an update is received, a trigger function coalesces each value in the `crashes_edits` table with the corresponding value in the `crashes_cris` table. The resulting record—which contains the original CRIS-provide values plus any edit values made through user edits—is applied as an update to corresponding record in the `crashes` table.
+4. A Vision Zero Editor user may update a crash records by updating rows in the the `crashes_edits` table. When an update is received, a trigger function coalesces each value in the `crashes_edits` table with the corresponding value in the `crashes_cris` table. The resulting record—which contains the original CRIS-provide values plus any edit values made through user edits—is applied as an update to corresponding record in the `crashes` table.
 5. Similarly, when an existing `crashes_cris` record is updated through the CRIS import ETL, the updated record is coalseced against the corresponding row in the `crashes_edits` table, and result is saved in the `crashes` table.
 6. Finally, once a record is updated in the `crashes` table, additional trigger functions apply various business rules and enrich the row with spatial attributes based on it's location. These trigger functions are reserved for values that require heavy computation—additional business rules can be applied through table views.
 
@@ -67,9 +65,8 @@ _The "layered" editing environment of the Vision Zero Database_
 
 The process for updating `units` and `people` behaves in the same manner as `crashes`.
 
-#### "Temporary" records
 
-### CRIS Extract configuration and accounts
+#### CRIS Extract configuration and accounts
 
 #### CRIS data processing
 
@@ -85,7 +82,7 @@ Lookup tables for `crashes`, `units`, and `people` tables are housed in the `loo
 
 - The majority of our lookup tables are defined by CRIS and exactly match the CRIS extract schema
 - Some of our lookup tables contain custom lookup values, and we have a mechansim for managing custom values alongside CRIS-provided values
-- Some of our lookup tables are completey custom and do not exit in the CRIS extract
+- Some of our lookup tables are completey custom and do not exist in the CRIS extract
 - Because we enforce foreign key constraints against all lookup table references, the CRIS import ETL will be break if our lookup tables are not periodically refreshed to ensure they match the latest CRIS schema. We have a helper script to assist with that task.
 
 See the [Common maintenance tasks](#common-maintenance-tasks) section for specific details about creating and updating lookup tables.
@@ -100,7 +97,7 @@ All lookup tables follow the same table structure, with the three columns:
 
 In addition to the `source` column, constraint checks must be added to tables which use custom values, to ensure that CRIS-provided `id` values do not collide with custom `vz`-sourced values.
 
-For example, consider the `lookups.injry_sev` table, which includes a custom value (`KILLED (NON-ATD)`) which is used by staff to override the CRIS-defined injury severity of a person record:
+For example, consider the `lookups.injry_sev` table, which includes a custom value, `KILLED (NON-ATD)`, which is used by staff to override the CRIS-defined injury severity of a person record:
 
 ```
 | id  | label                    | source |
@@ -115,9 +112,9 @@ For example, consider the `lookups.injry_sev` table, which includes a custom val
 | 99  | KILLED (NON-ATD)         | vz     |
 ```
 
-The original migration used to create this table is [here](https://github.com/cityofaustin/atd-vz-data/blob/e56e3c6bc654a21f667142ce53232bad44cff7e5/atd-vzd/migrations/default/1715960018005_lookup_table_seeds/up.sql#L11054-L11056).
+The original migration for this table is [here](https://github.com/cityofaustin/atd-vz-data/blob/e56e3c6bc654a21f667142ce53232bad44cff7e5/atd-vzd/migrations/default/1715960018005_lookup_table_seeds/up.sql#L11054-L11056).
 
-Because the table has a custom value, it is configured with a check constraint ([[postgres docs](https://www.postgresql.org/docs/current/ddl-constraints.html#DDL-CONSTRAINTS-CHECK-CONSTRAINTS)]) to ensure that future updates to this lookup table do not result in an ID collision:
+Because the table has a custom value, it is configured with a check constraint ([PostgreSQL docs](https://www.postgresql.org/docs/current/ddl-constraints.html#DDL-CONSTRAINTS-CHECK-CONSTRAINTS)) to ensure that future updates to this lookup table do not result in an ID collision:
 
 ```sql
 "injry_sev_owner_check" CHECK (id < 99 AND source = 'cris' OR id >= 99 AND source = 'vz')
@@ -135,7 +132,7 @@ See the [Common maintenance tasks](#common-maintenance-tasks) section for more d
 
 #### Charges records
 
-Charges records are provided by CRIS and descibe a legal charge filed by the responding law enforcement agency. These records require special handling in our database because CRIS does not provide a unique primary key column for charges. Here's what you should know about these records:
+Charges records are provided by CRIS and describe a legal charge filed by the responding law enforcement agency. These records require special handling in our database because CRIS does not provide a unique primary key column for charges. Here's what you should know about these records:
 
 1. Charge records only exist in the `charges_cris` table and do not have corresponding `charges_edits` or `charges` tables.
 2. During the CRIS import, all charge records are **deleted** from the database for any crash ID present in the CRIS extract. After deletion, the CRIS import ETL inserts all charges records present in the extract.
@@ -145,6 +142,9 @@ Charges records are provided by CRIS and descibe a legal charge filed by the res
 #### Special triggers for CRIS import
 
 - crash_pk setters
+
+#### "Temporary" records
+
 
 ### Austin Fire Department (AFD) and Travis County Emergency Medical Services (EMS)
 
