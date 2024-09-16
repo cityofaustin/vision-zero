@@ -2,7 +2,7 @@
 
 Currently the Vision Zero database consists of a Postgres 14 database that mirrors the CRIS public crash data format with added field lookup tables.
 
-CRIS data can be gathered from the [CRIS website], [https://cris.dot.state.tx.us](https://cris.dot.state.tx.us/).
+CRIS data can be gathered from the CRIS website, [https://cris.dot.state.tx.us](https://cris.dot.state.tx.us/).
 
 ## Backups
 
