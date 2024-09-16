@@ -14,6 +14,7 @@ import {
 import PropTypes from "prop-types";
 
 import { AppHeader, AppNavbarBrand, AppSidebarToggler } from "@coreui/react";
+import CrashNavigationSearchForm from "../../Components/CrashNavigationSearchForm";
 import logo from "../../assets/img/brand/visionzerotext.png";
 
 const propTypes = {
@@ -50,7 +51,6 @@ const DefaultHeader = props => {
   const { logout, getRoles } = useAuth0();
   // eslint-disable-next-line
   const { children, ...attributes } = props;
-
   return (
     <div className="sticky-top">
       <EnvAlertBanner />
@@ -65,7 +65,6 @@ const DefaultHeader = props => {
           }}
         />
         <AppSidebarToggler className="d-md-down-none" display="lg" />
-
         <Nav className="d-md-down-none" navbar>
           <NavItem className="px-3">
             <NavLink to="/dashboard" className="nav-link">
@@ -85,7 +84,8 @@ const DefaultHeader = props => {
           />
         </Nav>
         <Nav className="ml-auto" navbar>
-          <UncontrolledDropdown nav direction="down">
+          <CrashNavigationSearchForm />
+          <UncontrolledDropdown nav direction="down" className="mr-2">
             <DropdownToggle nav>
               <img
                 src={"./assets/img/avatars/1.png"}
@@ -93,6 +93,7 @@ const DefaultHeader = props => {
                 alt="admin@bootstrapmaster.com"
               />
             </DropdownToggle>
+            {/* Account section */}
             <DropdownMenu right>
               <DropdownItem header tag="div" className="text-center">
                 <strong>Account</strong>
@@ -103,13 +104,7 @@ const DefaultHeader = props => {
               <DropdownItem onClick={logout}>
                 <i className="fa fa-lock" /> Log Out
               </DropdownItem>
-            </DropdownMenu>
-          </UncontrolledDropdown>
-          <UncontrolledDropdown nav direction="down">
-            <DropdownToggle nav>
-              <i className="fa fa-question-circle fa-2x" />
-            </DropdownToggle>
-            <DropdownMenu right>
+              {/* Support section */}
               <DropdownItem header tag="div" className="text-center">
                 <strong>Support</strong>
               </DropdownItem>
