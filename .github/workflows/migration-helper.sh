@@ -53,7 +53,7 @@ function run_migration() {
 # Controls the migration process
 #
 function run_migration_process() {
-  cd ./atd-vzd;
+  cd ./database;
   echo "Running migration process @ ${PWD}"
   export_hasura_env_vars;
   run_migration;

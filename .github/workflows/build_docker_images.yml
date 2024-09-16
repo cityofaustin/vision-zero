@@ -5,22 +5,22 @@ on:
   # and any updates to the atd-etl scripts
   push:
     branches:
-      - master
+      - main
       - production
     paths:
       - ".github/workflows/build_docker_images.yml"
-      - "atd-etl/afd_ems_import/**"
-      - "atd-etl/cris_import/**"
-      - "atd-etl/socrata_export/**"
+      - "etl/afd_ems_import/**"
+      - "etl/cris_import/**"
+      - "etl/socrata_export/**"
   pull_request:
     branches:
-      - master
+      - main
       - production
     paths:
       - ".github/workflows/build_docker_images.yml"
-      - "atd-etl/afd_ems_import/**"
-      - "atd-etl/cris_import/**"
-      - "atd-etl/socrata_export/**"
+      - "etl/afd_ems_import/**"
+      - "etl/cris_import/**"
+      - "etl/socrata_export/**"
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
@@ -45,11 +45,11 @@ jobs:
           base: ${{ github.ref }}
           filters: |
             afd_ems:
-              - 'atd-etl/afd_ems_import/**'
+              - 'etl/afd_ems_import/**'
             cris:
-              - 'atd-etl/cris_import/**'
+              - 'etl/cris_import/**'
             socrata_export:
-              - 'atd-etl/socrata_export/**'
+              - 'etl/socrata_export/**'
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -59,7 +59,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           platforms: linux/amd64,linux/arm64
-          context: atd-etl/afd_ems_import
+          context: etl/afd_ems_import
           push: true
           tags: atddocker/vz-afd-ems-import:${{ github.ref == 'refs/heads/production' && 'production' || 'latest' }}
 
@@ -68,7 +68,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           platforms: linux/amd64,linux/arm64
-          context: atd-etl/cris_import
+          context: etl/cris_import
           push: true
           tags: atddocker/vz-cris-import:${{ github.ref == 'refs/heads/production' && 'production' || 'latest' }}
 
@@ -77,6 +77,6 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           platforms: linux/amd64,linux/arm64
-          context: atd-etl/socrata_export
+          context: etl/socrata_export
           push: true
           tags: atddocker/vz-socrata-export:${{ github.ref == 'refs/heads/production' && 'production' || 'development' }}
