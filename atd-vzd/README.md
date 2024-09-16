@@ -65,7 +65,6 @@ _The "layered" editing environment of the Vision Zero Database_
 
 The process for updating `units` and `people` behaves in the same manner as `crashes`.
 
-
 #### CRIS Extract configuration and accounts
 
 #### CRIS data processing
@@ -139,12 +138,20 @@ Charges records are provided by CRIS and describe a legal charge filed by the re
 3. The CRIS import ETL filters out charge records where the `charge` value is `NO CHARGE`—this reduces the number of charge records in the database by many thousands.
 4. Because charges are subject to deletion, they are not editable through the VZE/graphql API and should be considered read-only.
 
-#### Special triggers for CRIS import
+#### Database IDs, CRIS record IDs, and primary keys
 
-- crash_pk setters
+Each of the crashes, units, cris, and charges tables uses an auto-incrementing integer column called `id` as its primary key. CRIS provides a separate set of columns which can be used to uniquely identify records, and these columns are used match record updates provided by CRIS to their corresponding record in the database.
+
+This table outlines the primary key columns in the database and how they relate to CRIS-provided identifiers.
+
+| Record type | Primary key column | CRIS row identifer                                   | Parent record type | Parent foreign key column name | Note                                                                                          |
+| ----------- | ------------------ | ---------------------------------------------------- | ------------------ | ------------------------------ | --------------------------------------------------------------------------------------------- |
+| crashes     | `id`               | `cris_crash_id` (aka `crash_id` in the CRIS extract) |                    |                                |                                                                                               |
+| units       | `id`               | (`unit_nbr`, `cris_crash_id`)                        | crashes            | `crash_pk`                     | `crash_pk` set via `units_cris_set_unit_id` [sic] trigger function                            |
+| people      | `id`               | (`prsn_nbr`, `unit_nbr`, `cris_crash_id`)            | units              | `unit_id`                      | `unit_id` is set via `people_cris_set_unit_id` trigger function                               |
+| charges     | `id`               | (`prsn_nbr`, `unit_nbr`, `cris_crash_id`)            | crashes, people    | `crash_pk`, `person_id`        | `crash_pk` and `person_id` set via `charges_cris_set_person_id_and_crash_pk` trigger function |
 
 #### "Temporary" records
-
 
 ### Austin Fire Department (AFD) and Travis County Emergency Medical Services (EMS)
 
