@@ -1,6 +1,6 @@
 # Vision Zero Crash Data System
 
-This repository is home base for a suite of applications that help centralize and streamline the management of ATD's Vision Zero data. As a result of this project, staff will have a standardized interface for reviewing crash data, prioritizing intersection safety improvements, and communicating efforts to the public. Additionally, high quality VZ data will be publicly accessible online.
+This repository is home base for a suite of applications that help centralize and streamline the management of TPW's Vision Zero data. As a result of this project, staff will have a standardized interface for reviewing crash data, prioritizing intersection safety improvements, and communicating efforts to the public. Additionally, high quality VZ data will be publicly accessible online.
 
 ## atd-cr3-api
 
@@ -125,7 +125,7 @@ Technologies, libraries, and languages used for this project include:
 - Docker
 - Hasura
 - PostgreSQL
-- React (Javascript)
+- React (JavaScript)
 - Core UI (HTML & CSS)
 - Python
 
