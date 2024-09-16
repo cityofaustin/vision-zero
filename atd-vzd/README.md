@@ -142,6 +142,8 @@ Charges records are provided by CRIS and describe a legal charge filed by the re
 
 Each of the crashes, units, cris, and charges tables uses an auto-incrementing integer column called `id` as its primary key. CRIS provides a separate set of columns which can be used to uniquely identify records, and these columns are used match record updates provided by CRIS to their corresponding record in the database.
 
+For clarity, the column name `crash_pk` is used on tables which reference the crash `id` column, and the column name `cris_crash_id` is used to reference the CRIS-provided ID column. The `cris_crash_id` column is renamed from  `crash_id` in the CRIS extract data, and, prior to Vision Zero v2.0, the name `crash_id` was used universally in reference to the CRIS crash ID column.
+
 This table outlines the primary key columns in the database and how they relate to CRIS-provided identifiers.
 
 | Record type | Primary key column | CRIS row identifer                                   | Parent record type | Parent foreign key column name | Note                                                                                          |
