@@ -63,7 +63,7 @@ As pictured in the diagram below, the typical data flow for a crash record is as
 ![CRIS editing model](../docs/images/cris_data_model.png)
 _The "layered" editing environment of the Vision Zero Database_
 
-The process for updating `units` and `people` behaves in the same manner as `crashes`.
+The process for updating `units` and `people` behaves in the same manner as `crashes`. Note that, to ensure proper data flow and trigger behavior, **records should never be directly inserted into the `_edits` or unified tables**.
 
 #### CRIS Extract configuration and accounts
 
@@ -142,7 +142,10 @@ Charges records are provided by CRIS and describe a legal charge filed by the re
 
 Each of the crashes, units, cris, and charges tables uses an auto-incrementing integer column called `id` as its primary key. CRIS provides a separate set of columns which can be used to uniquely identify records, and these columns are used match record updates provided by CRIS to their corresponding record in the database.
 
-For clarity, the column name `crash_pk` is used on tables which reference the crash `id` column, and the column name `cris_crash_id` is used to reference the CRIS-provided ID column. The `cris_crash_id` column is renamed from  `crash_id` in the CRIS extract data, and, prior to Vision Zero v2.0, the name `crash_id` was used universally in reference to the CRIS crash ID column.
+For clarity, the column name `crash_pk` is used on tables which reference the crash `id` column, and the column name `cris_crash_id` is used to reference the CRIS-provided ID column.
+
+The `cris_crash_id` column is renamed from `crash_id` in the CRIS extract data, and, prior to Vision Zero v2.0, the name `crash_id` was used universally in reference to the CRIS crash ID column.
+
 
 This table outlines the primary key columns in the database and how they relate to CRIS-provided identifiers.
 
@@ -153,7 +156,13 @@ This table outlines the primary key columns in the database and how they relate 
 | people      | `id`               | (`prsn_nbr`, `unit_nbr`, `cris_crash_id`)            | units              | `unit_id`                      | `unit_id` is set via `people_cris_set_unit_id` trigger function                               |
 | charges     | `id`               | (`prsn_nbr`, `unit_nbr`, `cris_crash_id`)            | crashes, people    | `crash_pk`, `person_id`        | `crash_pk` and `person_id` set via `charges_cris_set_person_id_and_crash_pk` trigger function |
 
-#### "Temporary" records
+#### User-created crash records, aka "temporary" records
+
+Because there can be a lag time of weeks, even months, before law enforcement investigators submit their crash report to TxDOT, the Vision Zero team needs the ability to manually create "temporary" records so that reporting metrics are more timely/accurate.
+
+The VZE makes this possible by allowing users to insert crash, unit, and people records directly into the database. User-created records must be inserted into the `_cris` tables to ensure the proper data flow across the `_edits` and unified tables.
+
+`record_locator`
 
 ### Austin Fire Department (AFD) and Travis County Emergency Medical Services (EMS)
 
