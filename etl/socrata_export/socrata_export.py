@@ -47,7 +47,7 @@ def main(args_dict):
         while True:
             """
             Main loop for upserting records. we fetch and upload records based on the last
-            minimum record ID that was processed. we contune until no records are returned
+            minimum record ID that was processed. we continue until no records are returned
             from our Hasura query
             """
             logger.info(f"Fetching up to {RECORD_BATCH_SIZE} records")
@@ -65,8 +65,8 @@ def main(args_dict):
             elif is_first_batch_of_records and records:
                 """
                 we truncate the existing dataset by replacing it with an empty array
-                we only need to do this during the first bathc of records and all
-                subsequent batches will be upserted/appeneded to the dataset
+                we only need to do this during the first batch of records and all
+                subsequent batches will be upserted/appended to the dataset
                 """
                 logger.info(f"Truncating dataset {dataset['dataset_id']}")
                 socrata_client.replace(dataset["dataset_id"], [])
