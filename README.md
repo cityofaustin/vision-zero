@@ -12,7 +12,7 @@ This folder hosts our API that securely downloads a private file from S3. It is 
 
 Our current method for extracting data from the TxDOT C.R.I.S. data system uses a python library called [Splinter](https://splinter.readthedocs.io/en/latest/) to request, download and process data. It is deployed as a Docker container.
 
-For step-by-step details on how to prepare your environment and how to execute this process, please refer to the documentation in the [etl folder.](https://github.com/cityofaustin/atd-vz-data/tree/master/etl)
+For step-by-step details on how to prepare your environment and how to execute this process, please refer to the documentation in the [etl folder.](https://github.com/cityofaustin/atd-vz-data/tree/main/etl)
 
 [more info](./etl/README.md)
 

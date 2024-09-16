@@ -1,5 +1,5 @@
 # Specific branch context: all deploys from this specific branch will inherit these settings.
-[context.master] # 'master' is a branch name
+[context.main] # 'main' is a branch name
   NODE_ENV = "staging"
   base    = "editor"
   publish = "build"
