@@ -3,7 +3,7 @@ name: "Build & deploy the VZ API"
 on:
   push:
     branches:
-      - master
+      - main
       - production
     paths:
       - ".github/workflows/deploy_vz_api.yml"
