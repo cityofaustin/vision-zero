@@ -22,7 +22,7 @@ In development, this project uses [Prettier](https://prettier.io/) for code form
 
 ## Adding Users
 
-[Here are the docs](https://github.com/cityofaustin/atd-vz-data/blob/master/atd-vze/ADDING_USERS.md) for how to login for the first time and how to set up new users as an admin.
+[Here are the docs](https://github.com/cityofaustin/atd-vz-data/blob/master/editor/ADDING_USERS.md) for how to login for the first time and how to set up new users as an admin.
 
 ## Nearmap API Keys
 

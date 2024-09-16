@@ -28,9 +28,9 @@ services:
     ports:
       - 3000:3000
     hostname: vze
-    build: atd-vze
+    build: editor
     volumes:
-      - ./editor:/root/atd-vze
+      - ./editor:/root/editor
   vzv:
     tty: true
     container_name: visionzero-vzv
