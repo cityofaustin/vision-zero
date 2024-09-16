@@ -301,6 +301,8 @@ function Crash(props) {
           handleInputChange={handleInputChange}
           handleFieldUpdate={handleFieldUpdate}
           data={crashRecord}
+          crashRefetch={crashRefetch}
+          {...props}
         />
         <Col md="12">
           <CrashChangeLog data={crashRecord?.crash?.change_logs} />
