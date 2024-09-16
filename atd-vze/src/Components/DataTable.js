@@ -9,6 +9,7 @@ import {
   CardHeader,
   CardBody,
   CardFooter,
+  Row,
   Col,
   Input,
   Table,
@@ -25,6 +26,8 @@ const DataTable = ({
   handleInputChange,
   handleFieldUpdate,
   downloadGlobal,
+  crashRefetch,
+  ...props
 }) => {
   // Disable edit features if only role is "readonly"
   const { getRoles } = useAuth0();
@@ -47,8 +50,18 @@ const DataTable = ({
           <Col key={i} md="6">
             <Card key={section.title}>
               <CardHeader>
-                <td>{section.title}</td>
-                {section.button && <section.button></section.button>}
+                <Row>
+                  <Col>{section.title}</Col>
+                  {section.button && (
+                    <Col>
+                      <section.button
+                        data={data}
+                        crashRefetch={crashRefetch}
+                        {...props}
+                      ></section.button>
+                    </Col>
+                  )}
+                </Row>
               </CardHeader>
               <CardBody>
                 <Table responsive striped hover>
