@@ -89,7 +89,7 @@ const Footer = () => {
     },
     {
       text: "Code",
-      url: "https://github.com/cityofaustin/atd-vz-data/tree/master/atd-vzv",
+      url: "https://github.com/cityofaustin/atd-vz-data/tree/master/viewer",
     },
     {
       text: "Disclaimer",
