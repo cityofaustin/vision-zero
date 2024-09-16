@@ -10,9 +10,6 @@ on:
       - ".github/workflows/aws-vz-api-helper.sh"
       - "atd-cr3-api/**"
   workflow_dispatch:
-    inputs:
-      description:
-        default: ""
 jobs:
   build:
     name: Build
