@@ -1,4 +1,6 @@
-This folder and the script it contains is for the purpose of getting our lookup tables up to date with the latest lookup export from CRIS. We will probably need to run this after every major CRIS release.
+This helper is for the purpose of getting our lookup tables up to date with the latest lookup export from CRIS. It generates up and down migrations which can be applied to the database in order to bring our database back in sync with the lookup values that CRIS provides in extract files.
+
+This tool should be run after every major CRIS release.
 
 ### Install packages
 
@@ -6,22 +8,65 @@ Create or activate your virtual python environment using [venv](https://docs.pyt
 
 Install packages from the requirements.txt file:
 
-`pip install -r requirements.txt`
+```shell
+$ pip install -r requirements.txt
+```
 
 ### Env file
 
-Rename the env_template to env
+The script requires access to our graphql endpoints via the following environment vairables:
 
-Fill in the values using your credentials for the VZ read replica.
+```shell
+HASURA_GRAPHQL_ENDPOINT=http://localhost:8084/v1/graphql
+HASURA_GRAPHQL_ADMIN_SECRET=hasurapassword
+```
 
-### Running the script
+The above variables are used by default and require zero configuration if running locally. Otherwise, you will need to modify and export these variables into your Python environment before running the script.
 
-In order to run this script you need to have a recent CRIS lookup table export csv and provide the file path as an argument using the `--input` arg like so:
+### CRIS lookup values XML
 
-`python3 get_lookup_table_changes.py --input path_to_extract.csv `
+The script relies on the lookup values file provided in a CRIS extract in XML format. To obtain the latest copy of this file, you will need to login in to the CRIS system and request an extract in XML format. When requesting the extract, you should request the extract based on crash process date covering the last seven days.
 
-Once the script is done, a file will be created in this directory called `up_migrations.sql` that contains all of the sql commands generated from running the script.
+Remember to login to CRIS using our account labeled "(dev/testing extract account)" in our password store. Do not use our production login for this task, because you risk breaking our daily production extract delivery.
 
-**_WARNING_** _- You need to manually validate that the tables proposed to be dropped should actually be dropped. We don't want to accidentally drop a custom lookup table. Same with the deletions from lookup tables, we don't want to delete custom lookup values on accident either. If you need to remove anything, make sure to remove it from the down migration as well._
+The below screenshots show the CRIS extract configuration page at the time of writing:
 
-The contents of the up migrations file can then be used to create a migration in the hasura console so we can track these huge changes. A file called `down_migrations.sql` is also created in this directory which you can use as the down migration.
+![CRIS extract config - page 1](docs/extract_config_1.png) 
+
+![CRIS extract config - page 2](docs/extract_config_2.png) 
+
+![CRIS extract config - page 3](docs/extract_config_3.png)
+
+Once the extract has been delivered, unzip it and, locate the lookup XML file, and save it as `./cris_data/lookups.xml` within this toolbox directory.
+
+Note that the extract may contain multiple lookup files depending on the date range of crashes in your extract. Make sure to use the lookup file with the most recent year in the timestamp.
+
+![file folder with arrow pointing to correct lookup xml file](docs/lookup_file.png)
+
+### Run the script
+
+1. If running locally, start your local instance. 
+   
+2. Run the script. The output migration files will be saves to `./migrations`.
+
+```shell
+$ python get_lookup_table_changes.py
+```
+
+3. To test the migrations, navigate to `./atd-vzd` and create a new migration with the Hasura console.
+
+```shell
+$ hasura migrate create lookup_table_migrations_cris_v28
+```
+
+4. Copy the `up` and `down` migrations that the script generated into the new migration folder, and apply them.
+
+```shell
+hasura migrate apply
+```
+
+5. Finally, re-apply metadata to check for errors. 
+
+```shell
+hasura metadata apply
+```

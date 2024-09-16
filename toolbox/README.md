@@ -2,6 +2,32 @@
 
 This is a collection of scripts which have been written to serve a one-time or infrequent purpose. They are not intended to be run in an automated fashion and commonly would be used from the command line when needed. They will each have different parameters and possible environment variables which need to be set for the script to function as intended.
 
+## Contents
+
+### Bulk user management - `bulk_user_management`
+
+Helper script to disable or enable all VZ users through the Auth0 API.
+
+### Data Model
+
+Various scripts used as part of launching the new data model for VZ v2.0. We want to keep these around for the few months after launch (August 2024) but they can be archived in the near future.
+
+### Engineering Areas and council districts load tools - `engineering_areas_load`, `load_council_districts`
+
+Nodejs tool for importing ArcGIS Online (AGOL) layers into the database
+
+### Lookup table helper - `get_lookup_table_changes`
+
+Script which compares lookup tables between a CRIS extract and the VZ database and generates database migrations. We should run this script after CRIS software releases.
+
+### Read replica proxy server - `read_replica_proxy`
+
+This is the Docker stack used to host the database read replica proxy server, which enables our read-only database users to connect to the read replica instance via the public internet.
+
+## Archive
+
+These toolbox scripts were deleted from the repository. Most of them are incompatible with v2.0 of our database. These deletions were commited at hash `569511cc0d598120be4146920623f55c1a8501a3`.
+
 ##### `s3_restore_cr3_pdfs/`
 
 This contains a Python script will take a JSON file of crash ids, and download and check the CR3 file stored in S3 for each crash. It will verify the type of file using the `libmagic` library will restore the most recent `application/pdf` from the S3 version history of the file.
@@ -48,3 +74,19 @@ To use this toolchain:
 - `find_aux_data.py` can be used to populate auxiliary data from the VZDB into your result scratch table
 - In the implementation shown here, this result set was presented to stakeholders and further criteria were given, as found in the view created in `view_with_stakeholder_feedback_criteria.sql`.
 - This view will include a column called `update_statement` which can be used as a series of updates to execute the data restoration.
+
+#### `fix_cr3_stored_fl`
+
+Gets a list of crash ids we have CR3 PDFs for in our AWS S3 bucket and checks them against crashes in the atd_txdot_crashes table where cr3_stored_flag = 'Y'. Updates cr3_stored_flag to 'N' if those crash IDs aren't in the list of CR3s we have.
+
+#### `insert_needed_lkp_tables`
+
+An iteration of the lookup table helper script. See `get_lookup_table_changes` instead
+
+#### `cris_export_parser`
+
+Tool to inspect CRIS extract CSVs and compare them against the database tables
+
+#### `coordination_partners_migration`
+
+One off script to help migrate recommendation coordination partners to a related table.
