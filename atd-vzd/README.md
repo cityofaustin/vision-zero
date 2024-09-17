@@ -319,7 +319,7 @@ LIMIT 10000;
 
 ## Backups
 
-RDS
+Daily database backups are managed via AWS RDS. Backups are retained for 14 Days.
 
 ## Hasura
 
