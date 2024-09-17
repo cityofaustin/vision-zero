@@ -158,7 +158,7 @@ For clarity, the column name `crash_pk` is used on tables which reference the cr
 
 This table outlines the primary key columns in the database and how they relate to CRIS-provided identifiers.
 
-| Record type | Primary key column | CRIS row identifier                                   | Parent record type | Parent foreign key column name | Note                                                                                          |
+| Record type | Primary key column | CRIS row identifier                                  | Parent record type | Parent foreign key column name | Note                                                                                          |
 | ----------- | ------------------ | ---------------------------------------------------- | ------------------ | ------------------------------ | --------------------------------------------------------------------------------------------- |
 | crashes     | `id`               | `cris_crash_id` (aka `crash_id` in the CRIS extract) |                    |                                |                                                                                               |
 | units       | `id`               | (`unit_nbr`, `cris_crash_id`)                        | crashes            | `crash_pk`                     | `crash_pk` set via `units_cris_set_unit_id` [sic] trigger function                            |
@@ -191,7 +191,7 @@ Each change log table follows the same structure:
 | column_name      | data_type                  | description                                                                        |
 | ---------------- | -------------------------- | ---------------------------------------------------------------------------------- |
 | `id`             | `integer`                  | Auto-incrementing primary key                                                      |
-| `record_id`      | `integer`                  | Foreign key referencing the record's `id` column                                    |
+| `record_id`      | `integer`                  | Foreign key referencing the record's `id` column                                   |
 | `operation_type` | `text`                     | The event that triggered the change: `UPDATE` or `INSERT`                          |
 | `record_json`    | `jsonb`                    | A JSON blob of the record which contains the `old` and `new` version of the record |
 | `created_at`     | `timestamp with time zone` | The timestamp this row was created - default `now()`                               |
@@ -286,7 +286,36 @@ The various record insert and update trigger functions which manage the `_cris` 
 
 ### Parsing change log data
 
-Todo: see https://github.com/cityofaustin/atd-data-tech/issues/18932
+This query will help you parse the change log JSON blobs to inspect what changes have occured. Each row returned is a single column that was updated in a change event. You can replace `crashes_cris` with your table of interest, and you can modify the `where` condition to further filter on a specific record set.
+
+You should always use a `limit` to avoid long-running queries against the change logs.
+
+```sql
+WITH diffs AS (
+    SELECT
+        id AS change_id,
+        record_id,
+        created_at,
+        created_by,
+        column_name,
+        record_json -> 'old' -> column_name AS old_value,
+        record_json -> 'new' -> column_name AS new_value
+    FROM
+        change_log_crashes_cris,
+        LATERAL jsonb_object_keys(record_json -> 'new') AS column_name
+    WHERE (record_json -> 'new' -> column_name) IS DISTINCT FROM (record_json -> 'old' -> column_name)
+    AND operation_type = 'UPDATE'
+ORDER BY
+    id DESC
+)
+SELECT
+    *
+FROM
+    diffs
+WHERE
+    column_name NOT IN('updated_at', 'created_at', 'cr3_stored_fl', 'cr3_processed_at')
+LIMIT 10000;
+```
 
 ## Backups
 
