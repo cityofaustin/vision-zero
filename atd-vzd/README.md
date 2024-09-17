@@ -2,29 +2,35 @@
 
 The Vision Zero Database (VZD) is a Postgresql database that serves as the central repository Austin's traffic crash data. The database is fronted with a GraphQL API, powered by [Hasura](https://github.com/hasura/graphql-engine), which is also used to manage schema migrations.
 
-The designed supports a sophisticated editing environment which enables Vision Zero program staff to edit and enrich crash data, while also allowing record updates to flow into the database from upstream sources, such as the TxDOT Crash Information System (CRIS).
+The design supports an editing environment which enables Vision Zero program staff to edit and enrich crash data, while also allowing record updates to flow into the database from upstream sources, such as the TxDOT Crash Information System (CRIS).
 
 ![vision zero data flow](../docs/images/data_flow.png)
 
 - [Data sources](#data-sources)
   - [TxDOT Crash Records Information System (CRIS)](#txdot-crash-records-information-system-cris)
     - [Design](#design)
-    - ["Temporary" records](#temporary-records)
-  - [CRIS Extract configuration and accounts](#cris-extract-configuration-and-accounts)
+    - [CRIS Extract configuration and accounts](#cris-extract-configuration-and-accounts)
     - [CRIS data processing](#cris-data-processing)
     - [Lookup tables](#lookup-tables)
+      - [Lookup table structure and custom lookup table values](#lookup-table-structure-and-custom-lookup-table-values)
     - [Charges records](#charges-records)
-    - [Special triggers for CRIS import](#special-triggers-for-cris-import)
+    - [Database IDs, CRIS record IDs, and primary keys](#database-ids-cris-record-ids-and-primary-keys)
+    - [User-created crash records, aka "temporary" records](#user-created-crash-records-aka-temporary-records)
   - [Austin Fire Department (AFD) and Travis County Emergency Medical Services (EMS)](#austin-fire-department-afd-and-travis-county-emergency-medical-services-ems)
   - [Geospatial layers](#geospatial-layers)
 - [Common maintenance tasks](#common-maintenance-tasks)
   - [Add a new CRIS-managed column to `crashes`, `units`, or `people`](#add-a-new-cris-managed-column-to-crashes-units-or-people)
   - [Add a custom column to `crashes`, `units`, or `people`](#add-a-custom-column-to-crashes-units-or-people)
   - [Adding a computed or generated field to `crashes`, `units`, or `people`](#adding-a-computed-or-generated-field-to-crashes-units-or-people)
-  - [Add a custom lookup value to the database](#add-a-custom-lookup-value-to-the-database)
+  - [Refreshing lookup tables with the latest CRIS values](#refreshing-lookup-tables-with-the-latest-cris-values)
+  - [Add a custom lookup value to a CRIS-managed lookup table](#add-a-custom-lookup-value-to-a-cris-managed-lookup-table)
   - [Debugging record triggers](#debugging-record-triggers)
 - [Audit fields and change logs](#audit-fields-and-change-logs)
+- [Backups](#backups)
+- [Hasura](#hasura)
 - [Development and deployment](#development-and-deployment)
+  - [Generating migrations and metadata changes](#generating-migrations-and-metadata-changes)
+  - [Merging an approved feature branch](#merging-an-approved-feature-branch)
 
 ## Data sources
 
@@ -39,7 +45,7 @@ The CRIS data in our database consists of four record types:
 - `crashes` - each row is single crash event, with attributes such as the crash timestamp, crash location, and manner of collision
 - `units` - each row describes a unit, or vehicle, involved in a crash. Each unit relates to one crash record.
 - `people` - each row describes a person involved in a crash. Each person relates to one unit.
-- `charges` - each row describes a legal charge filed by the responding law enforcement agency. Each charge relates to one person. Note that charges have special handling and only exist in the `charges_cris`, as described in detail below.
+- `charges` - each row describes a legal charge filed by the responding law enforcement agency. Each charge relates to one person. Charges have special handling and only exist in the `charges_cris`, as described in detail [below](#charges-records).
 
 #### Design
 
@@ -48,7 +54,7 @@ The core challenge that the database schema solves is to preserves the integrity
 For example, the `crashes` records are managed in three tables:
 
 - `crashes_cris`: records that are created and updated by TxdDOT CRIS through the [CRIS import ETL](../atd-etl/cris_import/README.md)
-- `crashes_edits`: record edits created by Visio Zero staff through the Vision Zero Editor web app
+- `crashes_edits`: record edits created by Vision Zero staff through the Vision Zero Editor web app
 - `crashes`: a unified version of each record which combines the values in `crashes_cris` plus any values in `crashes_edits`
 
 As pictured in the diagram below, the typical data flow for a crash record is as follows:
@@ -56,9 +62,9 @@ As pictured in the diagram below, the typical data flow for a crash record is as
 1. A new record is inserted into the `crashes_cris` table through the [CRIS import ETL](../atd-etl/cris_import/README.md).
 2. On insert into `crashes_cris`, an "empty" copy of the record is inserted into the `crashes_edits` table. The record is inserted into the `crashes_edits` table with null values in every column except the `id`, which has a foreign key constaint referencing the `crashes_cris.id` column.
 3. At the same time, a complete copy of the record is inserted into the `crashes` table.
-4. A Vision Zero Editor user may update a crash records by updating rows in the the `crashes_edits` table. When an update is received, a trigger function coalesces each value in the `crashes_edits` table with the corresponding value in the `crashes_cris` table. The resulting record—which contains the original CRIS-provide values plus any edit values made through user edits—is applied as an update to corresponding record in the `crashes` table.
-5. Similarly, when an existing `crashes_cris` record is updated through the CRIS import ETL, the updated record is coalseced against the corresponding row in the `crashes_edits` table, and result is saved in the `crashes` table.
-6. Finally, once a record is updated in the `crashes` table, additional trigger functions apply various business rules and enrich the row with spatial attributes based on it's location. These trigger functions are reserved for values that require heavy computation—additional business rules can be applied through table views.
+4. A Vision Zero Editor user may update a crash records by updating rows in the the `crashes_edits` table. When an update is received, a trigger function coalesces each value in the `crashes_edits` table with the corresponding value in the `crashes_cris` table. The resulting record—which contains the original CRIS-provided values plus any edit values made through user edits—is applied as an update to corresponding record in the `crashes` table.
+5. Similarly, when an existing `crashes_cris` record is updated through the CRIS import ETL, the updated record is coalesced against the corresponding row in the `crashes_edits` table, and result is saved in the `crashes` table.
+6. Finally, once a record is updated in the `crashes` table, additional trigger functions apply various business rules and enrich the row with spatial attributes based on its location. These trigger functions are reserved for values that require heavy computation—additional business rules can be applied through table views.
 
 ![CRIS editing model](../docs/images/cris_data_model.png)
 _The "layered" editing environment of the Vision Zero Database_
@@ -67,9 +73,11 @@ The process for updating `units` and `people` behaves in the same manner as `cra
 
 #### CRIS Extract configuration and accounts
 
+TODO. See https://app.gitbook.com/o/-LzDQOVGhTudbKRDGpUA/s/-M4Ul-hSBiM-3KkOynqS/vision-zero-crash-database/visionzero-sftp-etl#getting-extracts-manually
+
 #### CRIS data processing
 
-We receive CRIS data from TxDOT on a nightly basis through the CRIS "automated interface", which delivers an encrypted `.zip` file to an S3 bucket on our AWS premise. The `.zip` file contains all crash records _process_ in the last 24 hours, and includes both CSV files and crash report PDFs (aka CR3s).
+We receive CRIS data from TxDOT on a nightly basis through the CRIS "automated interface", which delivers an encrypted `.zip` file to an S3 bucket on our AWS premise. The `.zip` file contains all crash records _processed_ in the last 24 hours, and includes both CSV files and crash report PDFs (aka CR3s).
 
 At the time of writing, [this guide](https://www.txdot.gov/content/dam/docs/crash-records/cris-guide.pdf) provides an overview of how CRIS data delivery is configured.
 
@@ -237,6 +245,8 @@ See the helper script readme.
 ### Add a custom lookup value to a CRIS-managed lookup table
 
 ### Debugging record triggers
+
+The various record insert and update trigger functions which manage the `_cris` and `_edits` data flows have debugging statements embedded. Debug messaging can be enabled on a per-client-session basis by excuting the command `set client_min_messages to debug;` in your SQL client. Your SQL client will now log debug messages when you use it to make record inserts and updates.
 
 ## Audit fields and change logs
 
