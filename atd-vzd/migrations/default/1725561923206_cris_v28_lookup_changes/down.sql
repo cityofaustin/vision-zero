@@ -1,17 +1,3 @@
-delete from lookups.agency where id = 10013;
-delete from lookups.agency where id = 10228;
-delete from lookups.agency where id = 10229;
-delete from lookups.agency where id = 10231;
-delete from lookups.agency where id = 10232;
-delete from lookups.agency where id = 3355;
-delete from lookups.agency where id = 3356;
-delete from lookups.agency where id = 3357;
-delete from lookups.agency where id = 3359;
-delete from lookups.agency where id = 3360;
-delete from lookups.agency where id = 3361;
-delete from lookups.agency where id = 3362;
-delete from lookups.agency where id = 3363;
-delete from lookups.agency where id = 3364;
 insert into lookups.agency (id, label, source) values (1167, 'DALLAS CITY MARSHAL''S OFFICE', 'cris');
 insert into lookups.agency (id, label, source) values (1201, 'DIBOLL ISD POLICE DEPARTMENT', 'cris');
 insert into lookups.agency (id, label, source) values (1226, 'EAGLE PASS ISD POLICE DEPARTMENT', 'cris');
@@ -103,3 +89,25 @@ insert into lookups.agency (id, label, source) values (71, 'AUSTIN COLLEGE POLIC
 insert into lookups.agency (id, label, source) values (795, 'FALLS COUNTY CONSTABLE PRECINCT 3', 'cris');
 update lookups.agency set label = 'TEXAS WOMAN''S UNIVERSITY DEPARTMENT OF PUBLIC SAFETY' where id = 2264;
 update lookups.agency set label = 'TRAVIS COUNTY-TNR-TE' where id = 10170;
+
+-- undo: AUSTIN COLLEGE POLICE DEPARTMENT --> AUSTIN COMMUNITY COLLEGE DISTRICT POLICE DEPARTMENT
+update crashes_cris set investigat_agency_id = 71
+where investigat_agency_id = 3362;
+
+-- undo: TRINITY COUNTY CONSTABLE PRECINCT 3 --> UNKNOWN (no corresponding value exists)
+-- cant undo
+
+delete from lookups.agency where id = 10013;
+delete from lookups.agency where id = 10228;
+delete from lookups.agency where id = 10229;
+delete from lookups.agency where id = 10231;
+delete from lookups.agency where id = 10232;
+delete from lookups.agency where id = 3355;
+delete from lookups.agency where id = 3356;
+delete from lookups.agency where id = 3357;
+delete from lookups.agency where id = 3359;
+delete from lookups.agency where id = 3360;
+delete from lookups.agency where id = 3361;
+delete from lookups.agency where id = 3362;
+delete from lookups.agency where id = 3363;
+delete from lookups.agency where id = 3364;

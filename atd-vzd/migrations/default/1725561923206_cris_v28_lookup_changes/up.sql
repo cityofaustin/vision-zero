@@ -1,3 +1,63 @@
+insert into lookups.agency (id, label, source) values (
+    10013,
+    'BURLINGTON NORTHERN SANTA FE RAILROAD COMPANY POLICE DEPARTMENT',
+    'cris'
+);
+insert into lookups.agency (id, label, source) values (
+    10228, 'SMITH COUNTY', 'cris'
+);
+insert into lookups.agency (id, label, source) values (
+    10229, 'HARRIS COUNTY COMMISSIONER PRECINCT 4', 'cris'
+);
+insert into lookups.agency (id, label, source) values (
+    10231, 'COLLIN COUNTY CRIMINAL DISTRICT ATTORNEY''S OFFICE', 'cris'
+);
+insert into lookups.agency (id, label, source) values (
+    10232, 'TRAVIS COUNTY - AUSTIN EMS', 'cris'
+);
+insert into lookups.agency (id, label, source) values (
+    3355, 'KILGORE COLLEGE POLICE DEPARTMENT', 'cris'
+);
+insert into lookups.agency (id, label, source) values (
+    3356, 'COMAL COUNTY CONSTABLE''S OFFICE PCT 4', 'cris'
+);
+insert into lookups.agency (id, label, source) values (
+    3357, 'ANGELINA COLLEGE POLICE DEPARTMENT', 'cris'
+);
+insert into lookups.agency (id, label, source) values (
+    3359, 'COPPER CANYON POLICE DEPARTMENT', 'cris'
+);
+insert into lookups.agency (id, label, source) values (
+    3360, 'WILSON COUNTY CONSTABLE OFFICE PRECINCT 3', 'cris'
+);
+insert into lookups.agency (id, label, source) values (
+    3361, 'JEFFERSON COUNTY SHERIFF''S OFFICE', 'cris'
+);
+insert into lookups.agency (id, label, source) values (
+    3362, 'AUSTIN COMMUNITY COLLEGE DISTRICT POLICE DEPARTMENT', 'cris'
+);
+insert into lookups.agency (id, label, source) values (
+    3363, 'TOWN OF INDIAN LAKE POLICE DEPARTMENT', 'cris'
+);
+insert into lookups.agency (id, label, source) values (
+    3364, 'DODD CITY ISD POLICE DEPARTMENT', 'cris'
+);
+update lookups.agency set label = 'TEXAS WOMAN''S UNIVERSITY POLICE DEPARTMENT'
+where id = 2264;
+update lookups.agency set
+    label
+    = 'TRAVIS COUNTY - TRANSPORTATION AND NATURAL RESOURCES -TRAFFIC ENGINEERING'
+where id = 10170;
+
+-- manual migration of investigat_agency_id on old crashes
+-- AUSTIN COLLEGE POLICE DEPARTMENT --> AUSTIN COMMUNITY COLLEGE DISTRICT POLICE DEPARTMENT
+update crashes_cris set investigat_agency_id = 3362
+where investigat_agency_id = 71;
+
+-- TRINITY COUNTY CONSTABLE PRECINCT 3 --> UNKNOWN (no corresponding value exists)
+update crashes_cris set investigat_agency_id = 9999
+where investigat_agency_id = 2296;
+
 delete from lookups.agency where id = 1167;
 delete from lookups.agency where id = 1201;
 delete from lookups.agency where id = 1226;
@@ -87,19 +147,3 @@ delete from lookups.agency where id = 3335;
 delete from lookups.agency where id = 42;
 delete from lookups.agency where id = 71;
 delete from lookups.agency where id = 795;
-insert into lookups.agency (id, label, source) values (10013, 'BURLINGTON NORTHERN SANTA FE RAILROAD COMPANY POLICE DEPARTMENT', 'cris');
-insert into lookups.agency (id, label, source) values (10228, 'SMITH COUNTY', 'cris');
-insert into lookups.agency (id, label, source) values (10229, 'HARRIS COUNTY COMMISSIONER PRECINCT 4', 'cris');
-insert into lookups.agency (id, label, source) values (10231, 'COLLIN COUNTY CRIMINAL DISTRICT ATTORNEY''S OFFICE', 'cris');
-insert into lookups.agency (id, label, source) values (10232, 'TRAVIS COUNTY - AUSTIN EMS', 'cris');
-insert into lookups.agency (id, label, source) values (3355, 'KILGORE COLLEGE POLICE DEPARTMENT', 'cris');
-insert into lookups.agency (id, label, source) values (3356, 'COMAL COUNTY CONSTABLE''S OFFICE PCT 4', 'cris');
-insert into lookups.agency (id, label, source) values (3357, 'ANGELINA COLLEGE POLICE DEPARTMENT', 'cris');
-insert into lookups.agency (id, label, source) values (3359, 'COPPER CANYON POLICE DEPARTMENT', 'cris');
-insert into lookups.agency (id, label, source) values (3360, 'WILSON COUNTY CONSTABLE OFFICE PRECINCT 3', 'cris');
-insert into lookups.agency (id, label, source) values (3361, 'JEFFERSON COUNTY SHERIFF''S OFFICE', 'cris');
-insert into lookups.agency (id, label, source) values (3362, 'AUSTIN COMMUNITY COLLEGE DISTRICT POLICE DEPARTMENT', 'cris');
-insert into lookups.agency (id, label, source) values (3363, 'TOWN OF INDIAN LAKE POLICE DEPARTMENT', 'cris');
-insert into lookups.agency (id, label, source) values (3364, 'DODD CITY ISD POLICE DEPARTMENT', 'cris');
-update lookups.agency set label = 'TEXAS WOMAN''S UNIVERSITY POLICE DEPARTMENT' where id = 2264;
-update lookups.agency set label = 'TRAVIS COUNTY - TRANSPORTATION AND NATURAL RESOURCES -TRAFFIC ENGINEERING' where id = 10170;
