@@ -44,7 +44,7 @@ const SwapAddressButton = ({ data, crashRefetch, ...props }) => {
   return (
     <td className="float-right">
       <Button color="primary" onClick={toggleModal}>
-        Swap Address
+        Swap Addresses
       </Button>
       <ConfirmModal
         showModal={isConfirmModalOpen}
