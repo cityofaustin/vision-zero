@@ -45,7 +45,7 @@ Note that the extract may contain multiple lookup files depending on the date ra
 
 ### Run the script
 
-1. If running locally, start your local instance. 
+1. Start your local instance with a fresh replica of the production database. 
    
 2. Run the script. The output migration files will be saves to `./migrations`.
 
@@ -65,7 +65,9 @@ $ hasura migrate create lookup_table_migrations_cris_v28
 hasura migrate apply
 ```
 
-5. Finally, re-apply metadata to check for errors. 
+In some cases, the migrations applied by this helper may fail to due to conflicts with historical records. In those cases, you will need to manually create/edit the migrations and use your best judegment as to how to approach the change. PR [#1541](https://github.com/cityofaustin/atd-vz-data/pull/1541) covers an example of this scenario.
+
+1. Finally, re-apply metadata to check for errors. 
 
 ```shell
 hasura metadata apply
