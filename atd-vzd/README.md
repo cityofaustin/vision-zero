@@ -1,6 +1,6 @@
 # Vision Zero Database (VZD)
 
-The Vision Zero Database (VZD) is a Postgresql database that serves as the central repository Austin's traffic crash data. The database is fronted with a GraphQL API, powered by [Hasura](https://github.com/hasura/graphql-engine), which is also used to manage schema migrations.
+The Vision Zero Database (VZD) is a Postgresql database that serves as the central repository of Austin's traffic crash data. The database is fronted with a GraphQL API, powered by [Hasura](https://github.com/hasura/graphql-engine), which is also used to manage schema migrations.
 
 The design supports an editing environment which enables Vision Zero program staff to edit and enrich crash data, while also allowing record updates to flow into the database from upstream sources, such as the TxDOT Crash Information System (CRIS).
 
@@ -64,10 +64,10 @@ For example, the `crashes` records are managed in three tables:
 As pictured in the diagram below, the typical data flow for a crash record is as follows:
 
 1. A new record is inserted into the `crashes_cris` table through the [CRIS import ETL](../atd-etl/cris_import/README.md).
-2. On insert into `crashes_cris`, an "empty" copy of the record is inserted into the `crashes_edits` table. The record is inserted into the `crashes_edits` table with null values in every column except the `id`, which has a foreign key constaint referencing the `crashes_cris.id` column.
+2. On insert into `crashes_cris`, an "empty" copy of the record is inserted into the `crashes_edits` table. The record is inserted into the `crashes_edits` table with null values in every column except the `id`, which has a foreign key constraint referencing the `crashes_cris.id` column.
 3. At the same time, a complete copy of the record is inserted into the `crashes` table.
-4. A Vision Zero Editor user may update a crash records by updating rows in the the `crashes_edits` table. When an update is received, a trigger function coalesces each value in the `crashes_edits` table with the corresponding value in the `crashes_cris` table. The resulting record—which contains the original CRIS-provided values plus any edit values made through user edits—is applied as an update to corresponding record in the `crashes` table.
-5. Similarly, when an existing `crashes_cris` record is updated through the CRIS import ETL, the updated record is coalesced against the corresponding row in the `crashes_edits` table, and result is saved in the `crashes` table.
+4. A Vision Zero Editor user may update crash records by updating rows in the `crashes_edits` table. When an update is received, a trigger function coalesces each value in the `crashes_edits` table with the corresponding value in the `crashes_cris` table. The resulting record—which contains the original CRIS-provided values plus any edit values made through user edits—is applied as an update to the corresponding record in the `crashes` table.
+5. Similarly, when an existing `crashes_cris` record is updated through the CRIS import ETL, the updated record is coalesced against the corresponding row in the `crashes_edits` table, and the result is saved in the `crashes` table.
 6. Finally, once a record is updated in the `crashes` table, additional trigger functions apply various business rules and enrich the row with spatial attributes based on its location. These trigger functions are reserved for values that require heavy computation—additional business rules can be applied through table views.
 
 ![CRIS editing model](../docs/images/cris_data_model.png)
@@ -92,9 +92,9 @@ For more details on how we ingest CRIS data into our database, see the [CRIS imp
 Lookup tables for `crashes`, `units`, and `people` tables are housed in the `lookups` schema in the database. Here's what you need to know about them:
 
 - The majority of our lookup tables are defined by CRIS and exactly match the CRIS extract schema
-- Some of our lookup tables contain custom lookup values, and we have a mechansim for managing custom values alongside CRIS-provided values
-- Some of our lookup tables are completey custom and do not exist in the CRIS extract
-- Because we enforce foreign key constraints against all lookup table references, the CRIS import ETL will be break if our lookup tables are not periodically refreshed to ensure they match the latest CRIS schema. We have a helper script to assist with that task.
+- Some of our lookup tables contain custom lookup values, and we have a mechanism for managing custom values alongside CRIS-provided values
+- Some of our lookup tables are completely custom and do not exist in the CRIS extract
+- Because we enforce foreign key constraints against all lookup table references, the CRIS import ETL will break if our lookup tables are not periodically refreshed to ensure they match the latest CRIS schema. We have a helper script to assist with that task.
 
 See the [Common maintenance tasks](#common-maintenance-tasks) section for specific details about creating and updating lookup tables.
 
@@ -104,7 +104,7 @@ All lookup tables follow the same table structure, with the three columns:
 
 - `id` - an integer primary key value that **is not auto-incrementing**. These ID values are defined either by `CRIS` or by our team member who implements a custom lookup value.
 - `label` - the text label descriptor of the lookup value
-- `source` - the entity who is the source the lookup table value definition. should be either `cris` or, for custom values, `vz`.
+- `source` - the entity who is the source of the lookup table value definition. should be either `cris` or, for custom values, `vz`.
 
 In addition to the `source` column, constraint checks must be added to tables which use custom values, to ensure that CRIS-provided `id` values do not collide with custom `vz`-sourced values.
 
@@ -152,13 +152,13 @@ Charges records are provided by CRIS and describe a legal charge filed by the re
 
 #### Database IDs, CRIS record IDs, and primary keys
 
-Each of the crashes, units, cris, and charges tables uses an auto-incrementing integer column called `id` as its primary key. CRIS provides a separate set of columns which can be used to uniquely identify records, and these columns are used match record updates provided by CRIS to their corresponding record in the database.
+Each of the crashes, units, cris, and charges tables uses an auto-incrementing integer column called `id` as its primary key. CRIS provides a separate set of columns which can be used to uniquely identify records, and these columns are used to match record updates provided by CRIS to their corresponding record in the database.
 
 For clarity, the column name `crash_pk` is used on tables which reference the crash `id` column, and the column name `cris_crash_id` is used to reference the CRIS-provided ID column, `crash_id`. Prior to Vision Zero v2.0, the name `crash_id` was used universally in reference to the CRIS crash ID column.
 
 This table outlines the primary key columns in the database and how they relate to CRIS-provided identifiers.
 
-| Record type | Primary key column | CRIS row identifer                                   | Parent record type | Parent foreign key column name | Note                                                                                          |
+| Record type | Primary key column | CRIS row identifier                                   | Parent record type | Parent foreign key column name | Note                                                                                          |
 | ----------- | ------------------ | ---------------------------------------------------- | ------------------ | ------------------------------ | --------------------------------------------------------------------------------------------- |
 | crashes     | `id`               | `cris_crash_id` (aka `crash_id` in the CRIS extract) |                    |                                |                                                                                               |
 | units       | `id`               | (`unit_nbr`, `cris_crash_id`)                        | crashes            | `crash_pk`                     | `crash_pk` set via `units_cris_set_unit_id` [sic] trigger function                            |
@@ -180,18 +180,18 @@ Audit fields are used through the CRIS record tables and are managed via trigger
 - `created_at`: the creation timestamp of the record. Default `now()`.
 - `updated_at`: the timestamp of the last record update. Default `now()`, set via trigger on row update.
 - `created_by`: the email address of the user who created the record. default `system`.
-- `updated_by`: the email address of the user who updated teh record. default `system`.
+- `updated_by`: the email address of the user who updated the record. default `system`.
 
 #### Change logs
 
-The database includes an extensive change logging system that captures all edits to any of the nine tables that comprise the crash, unit, and people tables. Change log entries are created via trigger that fires _after_ records are modified, and includes a copy of both the `old` and `new` version of each record as a JSON blob.
+The database includes an extensive change logging system that captures all edits to any of the nine tables that comprise the crash, unit, and people tables. Change log entries are created via triggers that fire _after_ records are modified, and includes a copy of both the `old` and `new` version of each record as a JSON blob.
 
 Each change log table follows the same structure:
 
 | column_name      | data_type                  | description                                                                        |
 | ---------------- | -------------------------- | ---------------------------------------------------------------------------------- |
 | `id`             | `integer`                  | Auto-incrementing primary key                                                      |
-| `record_id`      | `integer`                  | Foreign key referncing the record's `id` column                                    |
+| `record_id`      | `integer`                  | Foreign key referencing the record's `id` column                                    |
 | `operation_type` | `text`                     | The event that triggered the change: `UPDATE` or `INSERT`                          |
 | `record_json`    | `jsonb`                    | A JSON blob of the record which contains the `old` and `new` version of the record |
 | `created_at`     | `timestamp with time zone` | The timestamp this row was created - default `now()`                               |
@@ -217,7 +217,7 @@ Follow these steps to add a new column to the database that will be sourced from
 
 1. Remember that all database operations should be deployed through migrations. See the [development and deployment](#development-and-deployment) docs.
 2. Add the new column to all three tables of the given record type. For example, if this is a crash-level column, add the column to the `crashes_cris`, `crashes_edits`, and `crashes` tables.
-3. Modify the trigger function that inserts new rows into the the `_edits` and unified table that corresponds to the record type you are modifiying: either the `crashes_cris_insert_rows()`, `units_cris_insert_rows()`, ot the `people_cris_insert_rows()` function. Locate the part of the function that selects all values from the new `_cris` record and inserts into the unified table. This should be obvious, because all column names are listed in this function. Add your new column name to accordingly function.
+3. Modify the trigger function that inserts new rows into the `_edits` and unified table that corresponds to the record type you are modifying: either the `crashes_cris_insert_rows()`, `units_cris_insert_rows()`, ot the `people_cris_insert_rows()` function. Locate the part of the function that selects all values from the new `_cris` record and inserts into the unified table. This should be obvious, because all column names are listed in this function. Add your new column name to function accordingly.
 4. Next, you will need to add your new column to the `_column_metadata` table, so that the CRIS import ETL is aware that this column should be included in imports. For example:
 
 ```sql
@@ -225,9 +225,9 @@ insert into _column_metadata (column_name, record_type, is_imported_from_cris)
 values ('drvr_lic_type_id', 'people', true);
 ```
 
-5. When you're ready to test the trigger behavior, you can enable debug messaging for this trigger by excuting the command `set client_min_messages to debug;`. This will cause the trigger debug messages to log to your SQL client.
+5. When you're ready to test the trigger behavior, you can enable debug messaging for this trigger by executing the command `set client_min_messages to debug;`. This will cause the trigger debug messages to log to your SQL client.
 
-6. Re-apply hasura metadata to ensure that your new column is known to the graphql API. You do not need to modify the metadata unless you want to add select, insert, and/or update permissions to this column for non-admin users.
+6. Re-apply Hasura metadata to ensure that your new column is known to the graphql API. You do not need to modify the metadata unless you want to add select, insert, and/or update permissions to this column for non-admin users.
 
 ```shell
 # ./atd-vzd
@@ -246,14 +246,14 @@ Follow these steps to add a custom, non-CRIS column to `crashes`, `units`, or `p
 
 3. Unlike adding a CRIS-managed column, you do not need to modify any trigger functions, because the `_edits` trigger functions (`crashes_edits_update`, `units_edits_update`, `people_edits_update`) do not rely on hard-coded column names.
 
-4. Next, add your new column to the `_column_metadata` table and indcate that it should _not_ be imported by CRIS.
+4. Next, add your new column to the `_column_metadata` table and indicate that it should _not_ be imported by CRIS.
 
 ```sql
 insert into _column_metadata (column_name, record_type, is_imported_from_cris)
 values ('vz_custom_column', 'crashes', false);
 ```
 
-5. When you're ready to test the trigger behavior, you can enable debug messaging for this trigger by excuting the command `set client_min_messages to debug;`. This will cause the trigger debug messages to log to your SQL client.
+5. When you're ready to test the trigger behavior, you can enable debug messaging for this trigger by executing the command `set client_min_messages to debug;`. This will cause the trigger debug messages to log to your SQL client.
 
 ### Adding a computed or generated field to `crashes`, `units`, or `people`
 
@@ -265,14 +265,14 @@ Follow these steps to add a computed or generated field to `crashes`, `units`, o
 
 3. If your column will be modified by a trigger function or generated column definition, be sure to inspect the table's existing triggers and generated fields and [understand their execution order](https://www.postgresql.org/docs/current/trigger-definition.html).
 
-4. Lastly, add your new column to the `_column_metadata` table and indcate that it should _not_ be imported by CRIS.
+4. Lastly, add your new column to the `_column_metadata` table and indicate that it should _not_ be imported by CRIS.
 
 ```sql
 insert into _column_metadata (column_name, record_type, is_imported_from_cris)
 values ('my_generated_column', 'crashes', false);
 ```
 
-5. When you're ready to test the trigger behavior, you can enable debug messaging for this trigger by excuting the command `set client_min_messages to debug;`. This will cause the trigger debug messages to log to your SQL client.
+5. When you're ready to test the trigger behavior, you can enable debug messaging for this trigger by executing the command `set client_min_messages to debug;`. This will cause the trigger debug messages to log to your SQL client.
 
 ### Refreshing lookup tables with the latest CRIS values
 
@@ -282,7 +282,7 @@ Todo: see the helper script readme.
 
 ### Debugging record triggers
 
-The various record insert and update trigger functions which manage the `_cris` and `_edits` data flows have debugging statements embedded. Debug messaging can be enabled on a per-client-session basis by excuting the command `set client_min_messages to debug;` in your SQL client. Your SQL client will now log debug messages when you use it to make record inserts and updates.
+The various record insert and update trigger functions which manage the `_cris` and `_edits` data flows have debugging statements embedded. Debug messaging can be enabled on a per-client-session basis by executing the command `set client_min_messages to debug;` in your SQL client. Your SQL client will now log debug messages when you use it to make record inserts and updates.
 
 ### Parsing change log data
 
