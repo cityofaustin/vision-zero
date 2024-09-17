@@ -142,10 +142,7 @@ Charges records are provided by CRIS and describe a legal charge filed by the re
 
 Each of the crashes, units, cris, and charges tables uses an auto-incrementing integer column called `id` as its primary key. CRIS provides a separate set of columns which can be used to uniquely identify records, and these columns are used match record updates provided by CRIS to their corresponding record in the database.
 
-For clarity, the column name `crash_pk` is used on tables which reference the crash `id` column, and the column name `cris_crash_id` is used to reference the CRIS-provided ID column.
-
-The `cris_crash_id` column is renamed from `crash_id` in the CRIS extract data, and, prior to Vision Zero v2.0, the name `crash_id` was used universally in reference to the CRIS crash ID column.
-
+For clarity, the column name `crash_pk` is used on tables which reference the crash `id` column, and the column name `cris_crash_id` is used to reference the CRIS-provided ID column, `crash_id`. Prior to Vision Zero v2.0, the name `crash_id` was used universally in reference to the CRIS crash ID column.
 
 This table outlines the primary key columns in the database and how they relate to CRIS-provided identifiers.
 
@@ -162,7 +159,7 @@ Because there can be a lag time of weeks, even months, before law enforcement in
 
 The VZE makes this possible by allowing users to insert crash, unit, and people records directly into the database. User-created records must be inserted into the `_cris` tables to ensure the proper data flow across the `_edits` and unified tables.
 
-`record_locator`
+User-created records do not have a `cris_crash_id` column. Because `cris_crash_id` is central to the VZE for searching and navigating to crash pages, we use a generated column, `crashes.record_locator`, as a pseudo-crash ID. The `record_locator` column is generated as either `T<crashes.id>` (for temp records) or `<cris_crash_id>` (for CRIS records), and is rendered throughout the VZE.
 
 ### Austin Fire Department (AFD) and Travis County Emergency Medical Services (EMS)
 
