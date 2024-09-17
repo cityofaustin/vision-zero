@@ -16,16 +16,20 @@ The design supports an editing environment which enables Vision Zero program sta
     - [Charges records](#charges-records)
     - [Database IDs, CRIS record IDs, and primary keys](#database-ids-cris-record-ids-and-primary-keys)
     - [User-created crash records, aka "temporary" records](#user-created-crash-records-aka-temporary-records)
+    - [Audit fields](#audit-fields)
+    - [Change logs](#change-logs)
   - [Austin Fire Department (AFD) and Travis County Emergency Medical Services (EMS)](#austin-fire-department-afd-and-travis-county-emergency-medical-services-ems)
   - [Geospatial layers](#geospatial-layers)
 - [Common maintenance tasks](#common-maintenance-tasks)
+
   - [Add a new CRIS-managed column to `crashes`, `units`, or `people`](#add-a-new-cris-managed-column-to-crashes-units-or-people)
   - [Add a custom column to `crashes`, `units`, or `people`](#add-a-custom-column-to-crashes-units-or-people)
   - [Adding a computed or generated field to `crashes`, `units`, or `people`](#adding-a-computed-or-generated-field-to-crashes-units-or-people)
   - [Refreshing lookup tables with the latest CRIS values](#refreshing-lookup-tables-with-the-latest-cris-values)
   - [Add a custom lookup value to a CRIS-managed lookup table](#add-a-custom-lookup-value-to-a-cris-managed-lookup-table)
   - [Debugging record triggers](#debugging-record-triggers)
-- [Audit fields and change logs](#audit-fields-and-change-logs)
+  - [Parsing change log data](#parsing-change-log-data)
+
 - [Backups](#backups)
 - [Hasura](#hasura)
 - [Development and deployment](#development-and-deployment)
@@ -49,7 +53,7 @@ The CRIS data in our database consists of four record types:
 
 #### Design
 
-The core challenge that the database schema solves is to preserves the integrity of staff members' edits while simultaneously allowing crash record updates to flow into the database from CRIS. The editing environment is achieved by managing multiple copies of each of the `crashes`, `units`, and `people` tables, so that CRIS edits and Vision Zero staff edits remain isolated.
+The core challenge that the database schema solves is to preserve the integrity of staff members' edits while simultaneously allowing crash record updates to flow into the database from CRIS. The editing environment is achieved by managing multiple copies of each of the `crashes`, `units`, and `people` tables, so that CRIS edits and Vision Zero staff edits remain isolated.
 
 For example, the `crashes` records are managed in three tables:
 
@@ -69,7 +73,7 @@ As pictured in the diagram below, the typical data flow for a crash record is as
 ![CRIS editing model](../docs/images/cris_data_model.png)
 _The "layered" editing environment of the Vision Zero Database_
 
-The process for updating `units` and `people` behaves in the same manner as `crashes`. Note that, to ensure proper data flow and trigger behavior, **records should never be directly inserted into the `_edits` or unified tables**.
+The process for updating `units` and `people` behaves in the same manner as `crashes`. To ensure proper data flow and trigger behavior, **records should never be directly inserted into the `_edits` or unified tables**.
 
 #### CRIS Extract configuration and accounts
 
@@ -169,9 +173,41 @@ The VZE makes this possible by allowing users to insert crash, unit, and people 
 
 User-created records do not have a `cris_crash_id` column. Because `cris_crash_id` is central to the VZE for searching and navigating to crash pages, we use a generated column, `crashes.record_locator`, as a pseudo-crash ID. The `record_locator` column is generated as either `T<crashes.id>` (for temp records) or `<cris_crash_id>` (for CRIS records), and is rendered throughout the VZE.
 
+#### Audit fields
+
+Audit fields are used through the CRIS record tables and are managed via trigger. Any new tables add to the database should follow the same convention:
+
+- `created_at`: the creation timestamp of the record. Default `now()`.
+- `updated_at`: the timestamp of the last record update. Default `now()`, set via trigger on row update.
+- `created_by`: the email address of the user who created the record. default `system`.
+- `updated_by`: the email address of the user who updated teh record. default `system`.
+
+#### Change logs
+
+The database includes an extensive change logging system that captures all edits to any of the nine tables that comprise the crash, unit, and people tables. Change log entries are created via trigger that fires _after_ records are modified, and includes a copy of both the `old` and `new` version of each record as a JSON blob.
+
+Each change log table follows the same structure:
+
+| column_name      | data_type                  | description                                                                        |
+| ---------------- | -------------------------- | ---------------------------------------------------------------------------------- |
+| `id`             | `integer`                  | Auto-incrementing primary key                                                      |
+| `record_id`      | `integer`                  | Foreign key referncing the record's `id` column                                    |
+| `operation_type` | `text`                     | The event that triggered the change: `UPDATE` or `INSERT`                          |
+| `record_json`    | `jsonb`                    | A JSON blob of the record which contains the `old` and `new` version of the record |
+| `created_at`     | `timestamp with time zone` | The timestamp this row was created - default `now()`                               |
+| `created_by`     | `text`                     | The user who triggered this change - default `system`                              |
+
+The view `crashes_change_log_view` provides a unioned view of the unified table change logs—this view powers the change log UI in the VZE.
+
 ### Austin Fire Department (AFD) and Travis County Emergency Medical Services (EMS)
 
-### Geospatial layers
+### Geospatial layers (todo)
+
+- Council districts
+- Jurisdiction
+- Area Engineer areas
+- Non-COA roadways
+- Location polygons
 
 ## Common maintenance tasks
 
@@ -240,7 +276,7 @@ values ('my_generated_column', 'crashes', false);
 
 ### Refreshing lookup tables with the latest CRIS values
 
-See the helper script readme.
+Todo: see the helper script readme.
 
 ### Add a custom lookup value to a CRIS-managed lookup table
 
@@ -248,7 +284,9 @@ See the helper script readme.
 
 The various record insert and update trigger functions which manage the `_cris` and `_edits` data flows have debugging statements embedded. Debug messaging can be enabled on a per-client-session basis by excuting the command `set client_min_messages to debug;` in your SQL client. Your SQL client will now log debug messages when you use it to make record inserts and updates.
 
-## Audit fields and change logs
+### Parsing change log data
+
+Todo: see https://github.com/cityofaustin/atd-data-tech/issues/18932
 
 ## Backups
 
