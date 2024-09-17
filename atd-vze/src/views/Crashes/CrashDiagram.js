@@ -169,7 +169,7 @@ const CrashDiagram = ({ crashId, isCr3Stored, isTempRecord }) => {
               <p>
                 For additional assistance, you can
                 <a
-                  href="https://atd.knack.com/dts#new-service-request/?view_249_vars=%7B%22field_398%22%3A%22Bug%20Report%20%E2%80%94%20Something%20is%20not%20working%22%2C%22field_399%22%3A%22Vision%20Zero%20(Editor)%22%7D"
+                  href="https://atd.knack.com/dts#new-service-request/?view_249_vars=%7B%22field_398%22%3A%22Bug%20Report%20%E2%80%94%20Something%20is%20not%20working%22%2C%22field_399%22%3A%22Vision%20Zero%20Editor%22%7D"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
