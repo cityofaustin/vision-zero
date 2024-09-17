@@ -3,7 +3,7 @@ import { useHistory } from "react-router-dom";
 import { Form, Input, InputGroup, InputGroupAddon, Button } from "reactstrap";
 
 // captures any non-number except the `t` and `T` (for temp crashes)
-const CRASH_ID_EXCLUDE_CHARACTERS_REGEX = /[^(0-9tT)]*/;
+const CRASH_ID_EXCLUDE_CHARACTERS_REGEX = /[^\dtT]*/g;
 
 const CrashNavigationSearchForm = () => {
   const [crashSearchId, setCrashSearchId] = useState("");
