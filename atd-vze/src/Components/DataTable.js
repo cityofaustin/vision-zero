@@ -50,13 +50,14 @@ const DataTable = ({
             <Card key={section.title}>
               <CardHeader>
                 {section.title}
-                {section.button && (
-                  <section.button
-                    data={data}
-                    crashRefetch={crashRefetch}
-                    {...props}
-                  />
-                )}
+                {section.title === "Primary Street Information" &&
+                  !isReadOnlyUser && (
+                    <section.button
+                      data={data}
+                      crashRefetch={crashRefetch}
+                      {...props}
+                    />
+                  )}
               </CardHeader>
               <CardBody>
                 <Table responsive striped hover>
