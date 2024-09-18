@@ -1,5 +1,3 @@
-import SwapAddressButton from "./SwapAddressButton";
-
 export const createCrashDataMap = isTempRecord => {
   return [
     {
@@ -127,7 +125,6 @@ export const createCrashDataMap = isTempRecord => {
     },
     {
       title: "Primary Street Information",
-      button: SwapAddressButton,
       fields: {
         address_primary: {
           label: "Primary Address",
