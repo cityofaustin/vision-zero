@@ -8,6 +8,17 @@ $ npm install
 
 2. Save `secrets_template.js` as `secrets.js`. Optional add secrets for `staging` or `prod`
 
+3. Get a new AGOL token and replace the token that is hardcoded in the ROADWAYS_URL, you can do this by running the following command:
+
+```shell
+$ curl -X POST \
+  -F "username=$AGOL_USERNAME" \
+  -F "password=$AGOL_PASSWORD" \
+  -F "referer=http://www.arcgis.com" \
+  -F "f=pjson" \
+  https://austin.maps.arcgis.com/sharing/rest/generateToken
+```
+
 3. Download the non coa roadways - they will be saved to data/non_coa_roadways.geojson
 
 ```shell
