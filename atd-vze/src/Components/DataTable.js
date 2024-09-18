@@ -50,18 +50,14 @@ const DataTable = ({
           <Col key={i} md="6">
             <Card key={section.title}>
               <CardHeader>
-                <Row>
-                  <Col>{section.title}</Col>
-                  {section.button && (
-                    <Col>
-                      <section.button
-                        data={data}
-                        crashRefetch={crashRefetch}
-                        {...props}
-                      ></section.button>
-                    </Col>
-                  )}
-                </Row>
+                {section.title}
+                {section.button && (
+                  <section.button
+                    data={data}
+                    crashRefetch={crashRefetch}
+                    {...props}
+                  />
+                )}
               </CardHeader>
               <CardBody>
                 <Table responsive striped hover>
