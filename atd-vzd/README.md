@@ -18,18 +18,16 @@ The design supports an editing environment which enables Vision Zero program sta
     - [User-created crash records, aka "temporary" records](#user-created-crash-records-aka-temporary-records)
     - [Audit fields](#audit-fields)
     - [Change logs](#change-logs)
-  - [Austin Fire Department (AFD) and Travis County Emergency Medical Services (EMS)](#austin-fire-department-afd-and-travis-county-emergency-medical-services-ems)
-  - [Geospatial layers](#geospatial-layers)
+  - [Austin Fire Department (AFD) and Travis County Emergency Medical Services (EMS) (todo)](#austin-fire-department-afd-and-travis-county-emergency-medical-services-ems-todo)
+  - [Geospatial layers (todo)](#geospatial-layers-todo)
 - [Common maintenance tasks](#common-maintenance-tasks)
-
   - [Add a new CRIS-managed column to `crashes`, `units`, or `people`](#add-a-new-cris-managed-column-to-crashes-units-or-people)
   - [Add a custom column to `crashes`, `units`, or `people`](#add-a-custom-column-to-crashes-units-or-people)
   - [Adding a computed or generated field to `crashes`, `units`, or `people`](#adding-a-computed-or-generated-field-to-crashes-units-or-people)
   - [Refreshing lookup tables with the latest CRIS values](#refreshing-lookup-tables-with-the-latest-cris-values)
-  - [Add a custom lookup value to a CRIS-managed lookup table](#add-a-custom-lookup-value-to-a-cris-managed-lookup-table)
+  - [Add a custom lookup value to a CRIS-managed lookup table (todo)](#add-a-custom-lookup-value-to-a-cris-managed-lookup-table-todo)
   - [Debugging record triggers](#debugging-record-triggers)
   - [Parsing change log data](#parsing-change-log-data)
-
 - [Backups](#backups)
 - [Hasura](#hasura)
 - [Development and deployment](#development-and-deployment)
@@ -199,7 +197,7 @@ Each change log table follows the same structure:
 
 The view `crashes_change_log_view` provides a unioned view of the unified table change logs—this view powers the change log UI in the VZE.
 
-### Austin Fire Department (AFD) and Travis County Emergency Medical Services (EMS)
+### Austin Fire Department (AFD) and Travis County Emergency Medical Services (EMS) (todo)
 
 ### Geospatial layers (todo)
 
@@ -278,7 +276,7 @@ values ('my_generated_column', 'crashes', false);
 
 Todo: see the helper script readme.
 
-### Add a custom lookup value to a CRIS-managed lookup table
+### Add a custom lookup value to a CRIS-managed lookup table (todo)
 
 ### Debugging record triggers
 
@@ -360,6 +358,3 @@ hasura metadata apply --envfile .env.local
 ```
 
 Once we see that no errors occur when applying the sequence of migrations locally, we can merge and the CI will apply the new migrations and metadata to the staging database.
-
-<!-- Production site: http://vzd.austinmobility.io/ -->
-<!-- Staging site: https://vzd-staging.austinmobility.io/ -->
