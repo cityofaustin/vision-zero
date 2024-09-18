@@ -19,13 +19,13 @@ $ curl -X POST \
   https://austin.maps.arcgis.com/sharing/rest/generateToken
 ```
 
-3. Download the non coa roadways - they will be saved to data/non_coa_roadways.geojson
+4. Download the non coa roadways - they will be saved to data/non_coa_roadways.geojson
 
 ```shell
 $ node process_roadways.js
 ```
 
-4. Upload to Hasura (requires local instance running)
+5. Upload to Hasura (requires local instance running)
 
 ```shell
 $ node insert_roadways.js local
