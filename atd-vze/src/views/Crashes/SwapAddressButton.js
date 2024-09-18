@@ -55,7 +55,7 @@ const SwapAddressButton = ({ data, crashRefetch, ...props }) => {
           "Are you sure you want to swap the primary and secondary address?"
         }
         confirmClick={onConfirm}
-      ></ConfirmModal>
+      />
     </div>
   );
 };
