@@ -42,7 +42,7 @@ const SwapAddressButton = ({ data, crashRefetch, ...props }) => {
   };
 
   return (
-    <td className="float-right">
+    <div className="float-right">
       <Button color="primary" onClick={toggleModal} size="sm">
         Swap Addresses
         <i className="ml-2 fa fa-refresh" />
@@ -56,7 +56,7 @@ const SwapAddressButton = ({ data, crashRefetch, ...props }) => {
         }
         confirmClick={onConfirm}
       ></ConfirmModal>
-    </td>
+    </div>
   );
 };
 
