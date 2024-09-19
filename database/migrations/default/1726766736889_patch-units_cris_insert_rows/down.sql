@@ -69,16 +69,10 @@ BEGIN
         new.veh_damage_direction_of_force2_id,
         new.veh_damage_severity1_id,
         new.veh_damage_severity2_id,
-        new.veh_hnr_fl,
         new.veh_make_id,
+        new.veh_hnr_fl,
         new.veh_mod_id,
         new.veh_mod_year,
         new.veh_trvl_dir_id,
         new.vin
     );
-    -- insert new (editable) vz record (only record ID)
-    INSERT INTO public.units_edits (id) values (new.id);
-
-    RETURN NULL;
-END;
-$function$;
