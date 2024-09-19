@@ -72,10 +72,10 @@ def main():
                 continue
             # if this happens we'll have to figure out how to deal with this situation
             raise Exception(
-                """It appears a lookup table has been deleted or renames by CRIS. This script cannot handle that case. Aborting."""
+                """It appears a lookup table has been deleted or renamed by CRIS. This script cannot handle that case. Aborting."""
             )
 
-        print(f"Gettling lookup values for {table_name}")
+        print(f"Getting lookup values for {table_name}")
         vz_values = get_vz_lookup_table_values(table_name)
         cris_values = cris_lookup["values"]
         for vz_value in vz_values:
