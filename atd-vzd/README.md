@@ -55,7 +55,7 @@ The core challenge that the database schema solves is to preserve the integrity 
 
 For example, the `crashes` records are managed in three tables:
 
-- `crashes_cris`: records that are created and updated by TxdDOT CRIS through the [CRIS import ETL](../atd-etl/cris_import/README.md)
+- `crashes_cris`: records that are created and updated by TxDOT CRIS through the [CRIS import ETL](../atd-etl/cris_import/README.md)
 - `crashes_edits`: record edits created by Vision Zero staff through the Vision Zero Editor web app
 - `crashes`: a unified version of each record which combines the values in `crashes_cris` plus any values in `crashes_edits`
 
