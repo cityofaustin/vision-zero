@@ -284,7 +284,7 @@ The various record insert and update trigger functions which manage the `_cris` 
 
 ### Parsing change log data
 
-This query will help you parse the change log JSON blobs to inspect what changes have occured. Each row returned is a single column that was updated in a change event. You can replace `crashes_cris` with your table of interest, and you can modify the `where` condition to further filter on a specific record set.
+This query will help you parse the change log JSON blobs to inspect what changes have occurred. Each row returned is a single column that was updated in a change event. You can replace `crashes_cris` with your table of interest, and you can modify the `where` condition to further filter on a specific record set.
 
 You should always use a `limit` to avoid long-running queries against the change logs.
 
