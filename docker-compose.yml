@@ -2,7 +2,7 @@ services:
   graphql-engine:
     image: hasura/graphql-engine:v2.40.2
     volumes:
-      - ./atd-vzd/graphql-engine-metadata:/metadata
+      - ./viewer/graphql-engine-metadata:/metadata
     container_name: visionzero-graphql-engine
     ports:
       - 8084:8080
@@ -14,13 +14,13 @@ services:
     container_name: visionzero_download_db_data
     logging:
       driver: none
-    build: atd-toolbox/download-db-data
+    build: toolbox/download-db-data
     command: tail -f /dev/null
     hostname: db-tools
     env_file:
       - .env
     volumes:
-      - ./atd-vzd/snapshots:/snapshots
+      - ./database/snapshots:/snapshots
   vze:
     tty: true
     container_name: visionzero-vze
@@ -28,9 +28,9 @@ services:
     ports:
       - 3000:3000
     hostname: vze
-    build: atd-vze
+    build: editor
     volumes:
-      - ./atd-vze:/root/atd-vze
+      - ./editor:/root/editor
   vzv:
     tty: true
     container_name: visionzero-vzv
@@ -38,6 +38,6 @@ services:
     ports:
       - 3001:3000
     hostname: vzv
-    build: atd-vzv
+    build: viewer
     volumes:
-      - ./atd-vzv:/root/atd-vzv
+      - ./viewer:/root/viewer

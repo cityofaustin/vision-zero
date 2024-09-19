@@ -1,7 +1,7 @@
 # Specific branch context: all deploys from this specific branch will inherit these settings.
-[context.master] # 'master' is a branch name
+[context.main] # 'main' is a branch name
   NODE_ENV = "staging"
-  base    = "atd-vze"
+  base    = "editor"
   publish = "build"
   command = "npm run build:staging"
 
@@ -9,8 +9,8 @@
 # deploy contexts will inherit these settings.
 [context.production]
   NODE_ENV = "production"
-  base    = "atd-vze"
-  publish = "atd-vze/build"
+  base    = "editor"
+  publish = "editor/build"
   command = "npm run build:production"
 
 
@@ -18,7 +18,7 @@
 # deploy contexts will inherit these settings.
 [context.83-sg-crashediff]
   NODE_ENV = "staging"
-  base    = "atd-vze"
+  base    = "editor"
   publish = "build"
   command = "npm run build:staging"
 

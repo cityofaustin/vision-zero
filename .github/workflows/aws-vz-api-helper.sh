@@ -6,7 +6,7 @@ case "${BRANCH_NAME}" in
     export WORKING_STAGE="production";
   ;;
 
-  "master")
+  "main")
     export WORKING_STAGE="staging";
   ;;
 

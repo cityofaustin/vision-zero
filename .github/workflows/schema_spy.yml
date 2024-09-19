@@ -1,0 +1,52 @@
+#
+# Builds schema spy db docs
+#
+name: "Build & Publish DB Documentation"
+
+on:
+  push:
+    branches:
+      - main
+      - production
+    paths:
+      - "database/**"
+      - ".github/workflows/schema_spy.yml"
+
+jobs:
+  build:
+    name: "Build SchemaSpy Documentation"
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/setup-python@v4
+        name: "Install setup-python@v4"
+        with:
+          python-version: "3.10"
+          architecture: "x64"
+      # Get the code first
+      - name: "Checkout Code"
+        uses: actions/checkout@v3
+      # Then install the AWC CLI tools & boto3
+      - name: "Install Python Requirements"
+        run: |
+          sudo apt-get install -y python3-setuptools
+          pip3 install awscli boto3 virtualenv requests
+          curl -L https://github.com/hasura/graphql-engine/raw/stable/cli/get.sh | sh
+      # Run the shell commands using the AWS environment variables
+      - name: "Build & Publish Database Documentation"
+        env:
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          export BRANCH_NAME=${GITHUB_REF##*/}
+          echo "SHA: ${GITHUB_SHA}"
+          echo "ACTION/BRANCH_NAME: ${BRANCH_NAME}"
+          echo "GR: ${GITHUB_REF}"
+          echo "PWD: $(pwd)"
+          cd ./database;
+          # ./hasura-cluster setenv local;
+          # ./hasura-cluster start;
+          # cd ./schemaspy;
+          # ./document.sh;
+          # cd ..;
+          # ./hasura-cluster stop;

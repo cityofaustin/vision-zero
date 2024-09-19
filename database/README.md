@@ -284,7 +284,7 @@ The various record insert and update trigger functions which manage the `_cris` 
 
 ### Parsing change log data
 
-This query will help you parse the change log JSON blobs to inspect what changes have occured. Each row returned is a single column that was updated in a change event. You can replace `crashes_cris` with your table of interest, and you can modify the `where` condition to further filter on a specific record set.
+This query will help you parse the change log JSON blobs to inspect what changes have occurred. Each row returned is a single column that was updated in a change event. You can replace `crashes_cris` with your table of interest, and you can modify the `where` condition to further filter on a specific record set.
 
 You should always use a `limit` to avoid long-running queries against the change logs.
 
@@ -329,7 +329,7 @@ Changes to the schema and database are handled by CI (GitHub Action workflow) th
 
 ### Generating migrations and metadata changes
 
-- Merge the latest code from the `master` branch into your feature branch to make sure you have the latest migrations that are applied to the staging database
+- Merge the latest code from the `main` branch into your feature branch to make sure you have the latest migrations that are applied to the staging database
 - Start up the local database and Hasura engine and replicate using the latest production data dump
 - To make sure your local database is up to date with the current changes in `master` branch, run:
 
@@ -342,7 +342,9 @@ hasura metadata apply --envfile .env.local
 
 ### Merging an approved feature branch
 
-We need to check the order of migrations against those in the `master` branch **before merging a feature branch** so that we can make updates to the migration version order if needed. The version refers to the timestamp in the migration folder name.
+We need to check the order of migrations against those in the `main` branch **before merging a feature branch** so that we can make updates to the migration version order if needed. The version refers to the timestamp in the migration folder name.
+
+To check migrations for any conflicts with the latest migrations in the `main` branch:
 
 To check migrations for any conflicts with the latest migrations in the `master` branch:
 

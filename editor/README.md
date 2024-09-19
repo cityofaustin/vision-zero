@@ -3,9 +3,9 @@
 Production site: https://visionzero.austin.gov/editor/
 Staging site: https://visionzero-staging.austinmobility.io/editor/
 
-This project seeks to centralize and streamline the management of ATD's Vision Zero (VZ) data. As a result of this project, staff will have a standardized interface for reviewing crash data, prioritizing intersection safety improvements, and communicating efforts to the public. Additionally, high quality VZ data will be publicly accessible online.
+This project seeks to centralize and streamline the management of TPW's Vision Zero (VZ) data. As a result of this project, staff will have a standardized interface for reviewing crash data, prioritizing intersection safety improvements, and communicating efforts to the public. Additionally, high quality VZ data will be publicly accessible online.
 
-Data is sourced from TxDOT's Crash Records Information System (CRIS) database. An editing interface provides tools for enriching data with more attributes and correct erronous or missing data.
+Data is sourced from TxDOT's Crash Records Information System (CRIS) database. An editing interface provides tools for enriching data with more attributes and correct erroneous or missing data.
 
 For resources and updates, see the [Vision Zero Crash Data System](https://github.com/cityofaustin/atd-data-tech/issues/255) project index.
 
@@ -25,7 +25,7 @@ In development, this project uses [Prettier](https://prettier.io/) for code form
 
 ## Adding Users
 
-[Here are the docs](https://github.com/cityofaustin/atd-vz-data/blob/master/atd-vze/ADDING_USERS.md) for how to login for the first time and how to set up new users as an admin.
+[Here are the docs](https://github.com/cityofaustin/atd-vz-data/blob/main/editor/ADDING_USERS.md) for how to login for the first time and how to set up new users as an admin.
 
 ## Nearmap API Keys
 

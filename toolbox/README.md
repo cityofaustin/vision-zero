@@ -1,4 +1,4 @@
-# ATD - Toolbox
+# Toolbox
 
 This is a collection of scripts which have been written to serve a one-time or infrequent purpose. They are not intended to be run in an automated fashion and commonly would be used from the command line when needed. They will each have different parameters and possible environment variables which need to be set for the script to function as intended.
 
@@ -26,7 +26,7 @@ This is the Docker stack used to host the database read replica proxy server, wh
 
 ## Archive
 
-These toolbox scripts were deleted from the repository. Most of them are incompatible with v2.0 of our database. These deletions were commited at hash `569511cc0d598120be4146920623f55c1a8501a3`.
+These toolbox scripts were deleted from the repository. Most of them are incompatible with v2.0 of our database. These deletions were committed at hash `569511cc0d598120be4146920623f55c1a8501a3`.
 
 ##### `s3_restore_cr3_pdfs/`
 
