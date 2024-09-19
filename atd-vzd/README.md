@@ -40,7 +40,7 @@ The design supports an editing environment which enables Vision Zero program sta
 
 The [TxDOT Crash Record Information System](https://www.txdot.gov/data-maps/crash-reports-records/crash-data-analysis-statistics.html) (CRIS) is a statewide, automated database for traffic crashes reports.
 
-CRIS data accounts for the vast majority of records in the database: the [Vision Zero Editor (VZE)](../atd-vze/README.md) is designed primarily as a tool for editing and enriching data received from CRIS, and the [Vision Zero Viewer (VZV)](../atd-vzv/README.md) is powered entirely by enriched CRIS data.
+CRIS data accounts for the vast majority of records in the database: the [Vision Zero Editor (VZE)](../editor/README.md) is designed primarily as a tool for editing and enriching data received from CRIS, and the [Vision Zero Viewer (VZV)](../viewer/README.md) is powered entirely by enriched CRIS data.
 
 The CRIS data in our database consists of four record types:
 
@@ -55,13 +55,13 @@ The core challenge that the database schema solves is to preserve the integrity 
 
 For example, the `crashes` records are managed in three tables:
 
-- `crashes_cris`: records that are created and updated by TxDOT CRIS through the [CRIS import ETL](../atd-etl/cris_import/README.md)
+- `crashes_cris`: records that are created and updated by TxDOT CRIS through the [CRIS import ETL](../etl/cris_import/README.md)
 - `crashes_edits`: record edits created by Vision Zero staff through the Vision Zero Editor web app
 - `crashes`: a unified version of each record which combines the values in `crashes_cris` plus any values in `crashes_edits`
 
 As pictured in the diagram below, the typical data flow for a crash record is as follows:
 
-1. A new record is inserted into the `crashes_cris` table through the [CRIS import ETL](../atd-etl/cris_import/README.md).
+1. A new record is inserted into the `crashes_cris` table through the [CRIS import ETL](../etl/cris_import/README.md).
 2. On insert into `crashes_cris`, an "empty" copy of the record is inserted into the `crashes_edits` table. The record is inserted into the `crashes_edits` table with null values in every column except the `id`, which has a foreign key constraint referencing the `crashes_cris.id` column.
 3. At the same time, a complete copy of the record is inserted into the `crashes` table.
 4. A Vision Zero Editor user may update crash records by updating rows in the `crashes_edits` table. When an update is received, a trigger function coalesces each value in the `crashes_edits` table with the corresponding value in the `crashes_cris` table. The resulting record—which contains the original CRIS-provided values plus any edit values made through user edits—is applied as an update to the corresponding record in the `crashes` table.
@@ -83,7 +83,7 @@ We receive CRIS data from TxDOT on a nightly basis through the CRIS "automated i
 
 At the time of writing, [this guide](https://www.txdot.gov/content/dam/docs/crash-records/cris-guide.pdf) provides an overview of how CRIS data delivery is configured.
 
-For more details on how we ingest CRIS data into our database, see the [CRIS import ETL documentation](../atd-etl/cris_import/README.md).
+For more details on how we ingest CRIS data into our database, see the [CRIS import ETL documentation](../etl/cris_import/README.md).
 
 #### Lookup tables
 
@@ -121,7 +121,7 @@ For example, consider the `lookups.injry_sev` table, which includes a custom val
 | 99  | KILLED (NON-ATD)         | vz     |
 ```
 
-The original migration for this table is [here](https://github.com/cityofaustin/atd-vz-data/blob/e56e3c6bc654a21f667142ce53232bad44cff7e5/atd-vzd/migrations/default/1715960018005_lookup_table_seeds/up.sql#L11054-L11056).
+The original migration for this table is [here](https://github.com/cityofaustin/atd-vz-data/blob/e56e3c6bc654a21f667142ce53232bad44cff7e5/database/migrations/default/1715960018005_lookup_table_seeds/up.sql#L11054-L11056).
 
 Because the table has a custom value, it is configured with a check constraint ([PostgreSQL docs](https://www.postgresql.org/docs/current/ddl-constraints.html#DDL-CONSTRAINTS-CHECK-CONSTRAINTS)) to ensure that future updates to this lookup table do not result in an ID collision:
 
@@ -228,7 +228,7 @@ values ('drvr_lic_type_id', 'people', true);
 6. Re-apply Hasura metadata to ensure that your new column is known to the graphql API. You do not need to modify the metadata unless you want to add select, insert, and/or update permissions to this column for non-admin users.
 
 ```shell
-# ./atd-vzd
+# ./database
 $ hasura metadata apply
 ```
 
@@ -321,7 +321,7 @@ Daily database backups are managed via AWS RDS. Backups are retained for 14 Days
 
 ## Hasura
 
-We deployed a standard Hasura container to work as an API between Postgres and atd-vze. For more information on how it works, please refer to their [website](https://hasura.io) and documentation.
+We deployed a standard Hasura container to work as an API between Postgres and the VZE. For more information on how it works, please refer to their [website](https://hasura.io) and documentation.
 
 ## Development and deployment
 
