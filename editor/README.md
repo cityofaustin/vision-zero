@@ -3,7 +3,7 @@
 Production site: https://visionzero.austin.gov/editor/
 Staging site: https://visionzero-staging.austinmobility.io/editor/
 
-This project seeks to centralize and streamline the management of ATD's Vision Zero (VZ) data. As a result of this project, staff will have a standardized interface for reviewing crash data, prioritizing intersection safety improvements, and communicating efforts to the public. Additionally, high quality VZ data will be publicly accessible online.
+This project seeks to centralize and streamline the management of TPW's Vision Zero (VZ) data. As a result of this project, staff will have a standardized interface for reviewing crash data, prioritizing intersection safety improvements, and communicating efforts to the public. Additionally, high quality VZ data will be publicly accessible online.
 
 Data is sourced from TxDOT's Crash Records Information System (CRIS) database. An editing interface provides tools for enriching data with more attributes and correct erroneous or missing data.
 
