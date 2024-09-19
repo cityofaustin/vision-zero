@@ -1,0 +1,104 @@
+table:
+  name: fatalities_view
+  schema: public
+object_relationships:
+  - name: crash
+    using:
+      manual_configuration:
+        column_mapping:
+          crash_pk: id
+        insertion_order: null
+        remote_table:
+          name: crashes
+          schema: public
+  - name: engineering_area
+    using:
+      manual_configuration:
+        column_mapping:
+          engineering_area_id: area_id
+        insertion_order: null
+        remote_table:
+          name: engineering_areas
+          schema: public
+  - name: recommendation
+    using:
+      manual_configuration:
+        column_mapping:
+          crash_pk: crash_pk
+        insertion_order: null
+        remote_table:
+          name: recommendations
+          schema: public
+  - name: unit
+    using:
+      manual_configuration:
+        column_mapping:
+          unit_id: id
+        insertion_order: null
+        remote_table:
+          name: units
+          schema: public
+select_permissions:
+  - role: editor
+    permission:
+      columns:
+        - ytd_fatal_crash
+        - ytd_fatality
+        - crash_pk
+        - cris_crash_id
+        - engineering_area_id
+        - person_id
+        - unit_id
+        - case_id
+        - crash_date_ct
+        - crash_time_ct
+        - law_enforcement_ytd_fatality_num
+        - location
+        - record_locator
+        - victim_name
+        - year
+      filter: {}
+      allow_aggregations: true
+    comment: ""
+  - role: readonly
+    permission:
+      columns:
+        - ytd_fatal_crash
+        - ytd_fatality
+        - crash_pk
+        - cris_crash_id
+        - engineering_area_id
+        - person_id
+        - unit_id
+        - case_id
+        - crash_date_ct
+        - crash_time_ct
+        - law_enforcement_ytd_fatality_num
+        - location
+        - record_locator
+        - victim_name
+        - year
+      filter: {}
+      allow_aggregations: true
+    comment: ""
+  - role: vz-admin
+    permission:
+      columns:
+        - ytd_fatal_crash
+        - ytd_fatality
+        - crash_pk
+        - cris_crash_id
+        - engineering_area_id
+        - person_id
+        - unit_id
+        - case_id
+        - crash_date_ct
+        - crash_time_ct
+        - law_enforcement_ytd_fatality_num
+        - location
+        - record_locator
+        - victim_name
+        - year
+      filter: {}
+      allow_aggregations: true
+    comment: ""

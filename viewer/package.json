@@ -1,0 +1,99 @@
+{
+  "name": "viewer",
+  "version": "2.1.0",
+  "homepage": "/viewer",
+  "description": "Vision Zero Viewer",
+  "author": "Austin Transportation & Public Works - Data & Technology Services",
+  "license": "MIT",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:cityofaustin/atd-vz-data.git"
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^1.2.26",
+    "@fortawesome/free-regular-svg-icons": "^5.14.0",
+    "@fortawesome/free-solid-svg-icons": "^5.12.0",
+    "@fortawesome/react-fontawesome": "^0.1.8",
+    "@mapbox/mapbox-gl-draw": "^1.4.1",
+    "@material-ui/core": "^4.7.1",
+    "@terraformer/arcgis": "^2.1.2",
+    "@tippyjs/react": "^4.0.2",
+    "@turf/difference": "6.0.1",
+    "aphrodite": "^2.4.0",
+    "axios": "^0.21.2",
+    "bootstrap": "^4.3.1",
+    "chart.js": "^2.9.3",
+    "chartjs-plugin-stacked100": "^0.7.1",
+    "date-fns": "^2.30.0",
+    "events-polyfill": "^2.1.2",
+    "hookrouter": "^1.2.3",
+    "lodash.clonedeep": "^4.5.0",
+    "moment": "^2.29.4",
+    "patch-package": "^6.2.2",
+    "react": "^16.10.2",
+    "react-app-polyfill": "^1.0.6",
+    "react-chartjs-2": "^2.9.0",
+    "react-dates": "^21.8.0",
+    "react-dom": "^16.10.2",
+    "react-ga": "^2.7.0",
+    "react-helmet": "^6.1.0",
+    "react-map-gl": "^5.1.3",
+    "react-map-gl-draw": "^0.16.0",
+    "react-map-gl-geocoder": "^2.2.0",
+    "react-scripts": "^3.3.0",
+    "react-use": "^14.1.1",
+    "react-with-styles-interface-aphrodite": "^6.0.1",
+    "reactstrap": "^8.1.1",
+    "reaviz": "^8.1.0",
+    "serialize-javascript": ">=2.1.1",
+    "styled-components": "^4.4.0",
+    "wellknown": "^0.5.0"
+  },
+  "resolutions": {
+    "react-dev-utils/chalk/ansi-styles": "https://github.com/codercodingthecode/ansi-styles"
+  },
+  "scripts": {
+    "start": "REACT_APP_UNDER_MAINTENANCE=false REACT_APP_VZV_ENVIRONMENT=STAGING react-scripts start",
+    "build": "CI= react-scripts build && cp _redirects build && cp -r build viewer && mv viewer build",
+    "build:staging": "REACT_APP_VZV_ENVIRONMENT=STAGING npm run build",
+    "build:production": "REACT_APP_VZV_ENVIRONMENT=PRODUCTION npm run build",
+    "build:preview": "REACT_APP_VZV_ENVIRONMENT=PREVIEW npm run build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "postinstall": "patch-package"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "bugs": {
+    "url": "https://github.com/cityofaustin/atd-vz-data/issues"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all",
+      "ie 11"
+    ],
+    "preview": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all",
+      "ie 11"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version",
+      "ie 11"
+    ]
+  },
+  "engines": {
+    "node": ">=8.10",
+    "npm": ">=6"
+  },
+  "devDependencies": {
+    "react-axe": "^3.5.3"
+  }
+}

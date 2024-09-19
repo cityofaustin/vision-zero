@@ -1,21 +1,18 @@
 #
-# Applies database migrations to staging (master) and production
+# Applies database migrations to staging (main) and production
 #
 name: "Applies the migrations to the database"
 
 on:
   push:
     branches:
-      - master
+      - main
       - production
     paths:
-      - "atd-vzd/**"
+      - "database/**"
       - ".github/workflows/apply_db_migrations_and_metadata.yml" 
       - ".github/workflows/migration-helper.sh"
   workflow_dispatch:
-    inputs:
-      description:
-        default: ""
 
 jobs:
   apply:

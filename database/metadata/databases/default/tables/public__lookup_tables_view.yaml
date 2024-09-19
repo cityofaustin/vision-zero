@@ -1,0 +1,3 @@
+table:
+  name: _lookup_tables_view
+  schema: public

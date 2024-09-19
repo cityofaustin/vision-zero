@@ -1,0 +1,31 @@
+table:
+  name: engineering_areas
+  schema: public
+select_permissions:
+  - role: editor
+    permission:
+      columns:
+        - area_id
+        - label
+        - updated_at
+        - geometry
+      filter: {}
+    comment: ""
+  - role: readonly
+    permission:
+      columns:
+        - area_id
+        - label
+        - updated_at
+        - geometry
+      filter: {}
+    comment: ""
+  - role: vz-admin
+    permission:
+      columns:
+        - area_id
+        - label
+        - updated_at
+        - geometry
+      filter: {}
+    comment: ""
