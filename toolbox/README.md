@@ -26,7 +26,7 @@ This is the Docker stack used to host the database read replica proxy server, wh
 
 ## Archive
 
-These toolbox scripts were deleted from the repository. Most of them are incompatible with v2.0 of our database. These deletions were commited at hash `569511cc0d598120be4146920623f55c1a8501a3`.
+These toolbox scripts were deleted from the repository. Most of them are incompatible with v2.0 of our database. These deletions were committed at hash `569511cc0d598120be4146920623f55c1a8501a3`.
 
 ##### `s3_restore_cr3_pdfs/`
 
