@@ -11,6 +11,15 @@ object_relationships:
         remote_table:
           name: crashes
           schema: public
+  - name: engineering_area
+    using:
+      manual_configuration:
+        column_mapping:
+          engineering_area_id: area_id
+        insertion_order: null
+        remote_table:
+          name: engineering_areas
+          schema: public
   - name: recommendation
     using:
       manual_configuration:
@@ -37,7 +46,7 @@ select_permissions:
         - ytd_fatality
         - crash_pk
         - cris_crash_id
-        - engineering_area
+        - engineering_area_id
         - person_id
         - unit_id
         - case_id
@@ -58,7 +67,7 @@ select_permissions:
         - ytd_fatality
         - crash_pk
         - cris_crash_id
-        - engineering_area
+        - engineering_area_id
         - person_id
         - unit_id
         - case_id
@@ -79,7 +88,7 @@ select_permissions:
         - ytd_fatality
         - crash_pk
         - cris_crash_id
-        - engineering_area
+        - engineering_area_id
         - person_id
         - unit_id
         - case_id
