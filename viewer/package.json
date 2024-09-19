@@ -2,8 +2,8 @@
   "name": "viewer",
   "version": "2.1.0",
   "homepage": "/viewer",
-  "description": "ATD Vision Zero Viewer",
-  "author": "ATD Data & Technology Services",
+  "description": "Vision Zero Viewer",
+  "author": "Austin Transportation & Public Works - Data & Technology Services",
   "license": "MIT",
   "private": true,
   "repository": {
