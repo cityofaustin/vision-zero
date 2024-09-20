@@ -20,6 +20,7 @@ import { GET_LOOKUPS } from "../queries/lookups";
 const DataTable = ({
   dataMap,
   dataTable,
+  formData,
   setEditField,
   editField,
   data,
@@ -42,6 +43,8 @@ const DataTable = ({
 
     setEditField("");
   };
+
+  console.log(formData);
 
   return (
     <>
@@ -177,7 +180,7 @@ const DataTable = ({
                                         name={field}
                                         id={field}
                                         type="text"
-                                        defaultValue={fieldValue}
+                                        value={formData.field.toUpperCase()}
                                         onChange={e => handleInputChange(e)}
                                         autoComplete="off"
                                         // disable 1password autofill
