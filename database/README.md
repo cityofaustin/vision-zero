@@ -88,28 +88,31 @@ Additional information about CRIS access can be found on the [TxDOT website](htt
 To configure a new extract delivery, login with the appropriate account and follow these steps.
 
 1. Login to CRIS using the appropriate account (see above): https://cris.dot.state.tx.us/
-2. 
 
-![CRIS extract config - page 1](../docs/images/extract_config_1.png)
-
-![CRIS extract config - page 2](../docs/images/extract_config_2.png)
-
-![CRIS extract config - page 3](../docs/images/extract_config_3.png)
+2. From the **My Extract Requests** page, click **Add**, and follow the extract request wizard
 
 - **Extract Type**: Standard
 - **Extract Format**: CSV
 - **Include CR-3 Crash Report files in Extract**: Yes
+
+![CRIS extract config - page 1](../docs/images/extract_config_1.png)
+
 - **Include Crash Reports From**: Specific Counties: `Hays`, `Travis`, and `Williamson`
+
+![CRIS extract config - page 2](../docs/images/extract_config_2.png)
+
 - **Include Crash Reports From**: Process Date range
   - If you are backfilling, include a day before your target day as a buffer.
   - If you request a process date of today, the extract will not deliver until the next day.
-  - To set up a recurring request, add a range of dates that ends in the future. 
+  - To set up a recurring request, add a range of dates that ends in the future.
 
 Any part of the range that falls in the past will be delivered in single zip that is separate from the zips that will deliver in the future. The includes - all records with process dates available including today.
 
 Any part of the range that is in the future will create daily zips that include each day available going forward. For example, on 4/19/2024, you make a request for Process Begin Date = 01/01/2024 and Process End Date = 12/31/2024 The would receive two zips: One containing all records with process date from 01/01/2024 to 04/18/2024, and one containing all records with process date from 04/19/2024 to 04/19/2024. Going forward, you will receive one zip per day for each process date that passes
 
-- **Extract password**:  the password called CRIS Archive Extract Password which is found in the entry called Vision Zero CRIS Import
+![CRIS extract config - page 3](../docs/images/extract_config_3.png)
+
+- **Extract password**: the password called CRIS Archive Extract Password which is found in the entry called Vision Zero CRIS Import
 - **Delivery**: How you want to receive it. Typically you would use the pre-configured AWS option, specifiyng the `dev`, `staging`, or `prod` inbox subdirectory. See the CRIS import ETL readme for more details.
 
 #### CRIS data processing
