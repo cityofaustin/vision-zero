@@ -44,7 +44,7 @@ $ vision-zero replicate-db
 This command will:
 
 - Download a snapshot of the production database
-- Store the file in `./atd-vzd/snapshots/visionzero-{date}-{with|without}-change-log.sql
+- Store the file in `./database/snapshots/visionzero-{date}-{with|without}-change-log.sql
 - Drop local `atd_vz_data` database
 - Create and repopulate the database from the snapshot
 
@@ -64,8 +64,8 @@ See [here](docs/local_dev.md) for in-depth documentation about the `vision-zero`
 - [Vision Zero Editor (VZE)](./editor/README.md) - web application which enables City staff to browse and edit crash data
 - [Vision Zero Viewer (VZV)](./viewer/README.md) - public dashboard which provides key metrics and insights about
 - [atd-cr3-api](./atd-cr3-api/README.md) - our API that securely downloads a private file from S3
-- [atd-etl](./etl/README.md) - integration scripts for bringing data in the Vision Zero Database
-- [atd-toolbox](./toolbox/README.md) - collection of utilities and scripts designed for ad-hoc maintenance tasks
+- [etl](./etl/README.md) - integration scripts for bringing data in the Vision Zero Database
+- [toolbox](./toolbox/README.md) - collection of utilities and scripts designed for ad-hoc maintenance tasks
 
 ## License
 
