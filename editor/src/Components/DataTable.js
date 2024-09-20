@@ -2,6 +2,7 @@ import React from "react";
 import { useQuery } from "@apollo/react-hooks";
 import { useAuth0, isReadOnly } from "../auth/authContext";
 import { formatCostToDollars, formatDateTimeString } from "../helpers/format";
+import SwapAddressButton from "../views/Crashes/SwapAddressButton";
 
 import {
   Button,
@@ -52,7 +53,7 @@ const DataTable = ({
                 {section.title}
                 {section.title === "Primary Street Information" &&
                   !isReadOnlyUser && (
-                    <section.button
+                    <SwapAddressButton
                       data={data}
                       crashRefetch={crashRefetch}
                       {...props}
