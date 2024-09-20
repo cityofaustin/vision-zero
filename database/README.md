@@ -19,7 +19,7 @@ The design supports an editing environment which enables Vision Zero program sta
     - [Audit fields](#audit-fields)
     - [Change logs](#change-logs)
   - [Austin Fire Department (AFD) and Travis County Emergency Medical Services (EMS) (todo)](#austin-fire-department-afd-and-travis-county-emergency-medical-services-ems-todo)
-  - [Geospatial layers (todo)](#geospatial-layers-todo)
+  - [Geospatial layers (todo)](#geospatial-layers)
 - [Common maintenance tasks](#common-maintenance-tasks)
   - [Add a new CRIS-managed column to `crashes`, `units`, or `people`](#add-a-new-cris-managed-column-to-crashes-units-or-people)
   - [Add a custom column to `crashes`, `units`, or `people`](#add-a-custom-column-to-crashes-units-or-people)
@@ -99,7 +99,7 @@ To configure a new extract delivery, login with the appropriate account and foll
 
 - **Include Crash Reports From**: Specific Counties: `Hays`, `Travis`, and `Williamson`
 
-![CRIS extract config - page 2](../docs/images/extract_config_2.png)
+![CRIS extract config - page 2](../docs/images/extract_config_2_todo.png)
 
 - **Include Crash Reports From**: Process Date range
   - If you are backfilling, include a day before your target day as a buffer.
@@ -237,13 +237,17 @@ The view `crashes_change_log_view` provides a unioned view of the unified table 
 
 ### Austin Fire Department (AFD) and Travis County Emergency Medical Services (EMS) (todo)
 
-### Geospatial layers (todo)
+### Geospatial layers
 
-- Council districts
-- Jurisdiction
-- Area Engineer areas
-- Non-COA roadways
-- Location polygons
+We have a number of tables which function as geospatial layers which are referenced by crashes and various other records. At the Vision Zero team's request, our team is actively working to expand the number of layers available in the database as well as add new attribute columns to crash records which will be populated based on their intersection with these layers.
+
+| Table                 | Geometry type | description                                                                                               | owner/source                                                         |
+| --------------------- | ------------- | --------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| `council_districts`   | polgyon       | City of Austin council districts                                                                          | ArcGIS Online authoritative layer owned by CTM GIS                   |
+| `atd_jurisdictions`   | polgyon       | City of Austin jurisdictions                                                                              | ArcGIS Online authoritative layer owned by CTM GIS                   |
+| `engineering_areas`   | polgyon       | TPW traffic engineering areas                                                                             | ArcGIS Online authoritative layer owned by DTS GIS                   |
+| `non_coa_roadways`    | polgyon       | Polygon layer covering roadways which are not maintained by the City of Austin                            | ArcGIS Online authoritative layer maintained by Vision Zero GIS team |
+| `atd_txdot_locations` | polgyon       | Aka, "location polygons", these shapes are used to group crashes based on an intersection or road segment | ArcGIS Online authoritative layer maintained by Vision Zero GIS team |
 
 ## Common maintenance tasks
 
