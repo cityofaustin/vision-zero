@@ -63,7 +63,8 @@ build-iPhoneSimulator/
 .idea/
 .vscode/
 # node_modules
-/atd-vze/node_modules
+/viewer/node_modules
+/editor/node_modules
 
 
 .DS_Store
@@ -78,7 +79,7 @@ build-iPhoneSimulator/
 atd-events/**/*.json
 atd-events/**/*.zip
 atd-events/**/package
-atd-etl/app/**/*.json
+etl/app/**/*.json
 
 # ignore `env` because it may be laying around in legacy ETL directoroes
 env

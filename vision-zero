@@ -35,16 +35,17 @@ TABLES_TO_IGNORE = [
     "public.atd_txdot_primaryperson",
 ]
 
+
 def checkDockerComposeAvailability():
-    docker_compose_stand_alone = False # old docker-compose
-    docker_compose_bundled = False # new docker compose
+    docker_compose_stand_alone = False  # old docker-compose
+    docker_compose_bundled = False  # new docker compose
     try:
         docker_compose_stand_alone = shutil.which("docker-compose")
     except:
         pass
 
     try:
-        subprocess.check_output("docker compose", stderr=subprocess.STDOUT, shell = True)
+        subprocess.check_output("docker compose", stderr=subprocess.STDOUT, shell=True)
         docker_compose_bundled = True
     except:
         pass
@@ -103,27 +104,35 @@ def doCommand(args):
 ## function to list the files in a directory and delete them
 def removeSnapshots(args):
     print("🗑️  Removing snapshots")
-    for f in os.listdir("atd-vzd/snapshots/"):
+    for f in os.listdir("database/snapshots/"):
         if not f.endswith(".sql"):
             continue
-        print ("Removing " + f)
-        os.remove("atd-vzd/snapshots/" + f)
+        print("Removing " + f)
+        os.remove("database/snapshots/" + f)
+
 
 # def replicateDb(includeChangeLogData=False):
 def replicateDb(args):
     graphqlEngineDown(args)
 
     snapshotFilename = ""
-    if(args.filename):
+    if args.filename:
         snapshotFilename = args.filename
     else:
         today = date.today().strftime("%Y-%m-%d")
         snapshotFilename = (
-            "visionzero_" + today + "_" + (
-                "with-change-log" if args.include_change_log_data else "without-change-log") + ".sql"
+            "visionzero_"
+            + today
+            + "_"
+            + (
+                "with-change-log"
+                if args.include_change_log_data
+                else "without-change-log"
+            )
+            + ".sql"
         )
-    
-    snapshotFQP = "atd-vzd/snapshots/" + snapshotFilename
+
+    snapshotFQP = "database/snapshots/" + snapshotFilename
 
     # fmt: off
     replicate_runner_command = docker_compose_invocation + [
@@ -205,7 +214,9 @@ def replicateDb(args):
     populate_command = [
         "bash",
         "-c",
-        "cat /snapshots/" + snapshotFilename + " | \
+        "cat /snapshots/"
+        + snapshotFilename
+        + " | \
         perl -pe 's/^(SELECT pg_catalog\.set_config)/-- $1/g' | \
         psql -v ON_ERROR_STOP=1",
     ]
@@ -216,20 +227,30 @@ def replicateDb(args):
 
     graphqlEngineUp(args)
 
+
 def dumpLocalDb(args):
     print("️Dumping local database")
     today = datetime.now().strftime("%Y-%m-%d-%H-%M:%S")
 
     dump_runner_command = docker_compose_invocation + [
-        "-f", "docker-compose.yml", 
         "-f",
-        "docker-compose-ram-disk.yml" if args.ram_disk else "docker-compose-docker-volume.yml",
+        "docker-compose.yml",
+        "-f",
+        (
+            "docker-compose-ram-disk.yml"
+            if args.ram_disk
+            else "docker-compose-docker-volume.yml"
+        ),
         "run",
         "--rm",
-        "-e", "PGHOST=" + 'postgis',
-        "-e", "PGUSER=" + os.environ["POSTGRES_USER"],
-        "-e", "PGPASSWORD=" + os.environ["POSTGRES_PASSWORD"],
-        "-e", "PGDATABASE=" + os.environ["POSTGRES_DB"],
+        "-e",
+        "PGHOST=" + "postgis",
+        "-e",
+        "PGUSER=" + os.environ["POSTGRES_USER"],
+        "-e",
+        "PGPASSWORD=" + os.environ["POSTGRES_PASSWORD"],
+        "-e",
+        "PGDATABASE=" + os.environ["POSTGRES_DB"],
         "db-tools",
     ]
 
@@ -242,9 +263,10 @@ def dumpLocalDb(args):
         "--if-exists",
     ]
 
-    dump = open("atd-vzd/dumps/visionzero_" + today + ".sql", "w")
+    dump = open("database/dumps/visionzero_" + today + ".sql", "w")
     subprocess.run(dump_runner_command + dump_command, stdout=dump)
     dump.close()
+
 
 def psql(args):
     # fmt: off
@@ -268,98 +290,199 @@ def psql(args):
 
 def buildTools(args):
     print("🛠️  Rebuilding images with --no-cache -q")
-    subprocess.run(docker_compose_invocation + [
-        "-f", "docker-compose.yml", 
-        "-f",
-        "docker-compose-ram-disk.yml" if args.ram_disk else "docker-compose-docker-volume.yml",
-        "build", "--no-cache"])
+    subprocess.run(
+        docker_compose_invocation
+        + [
+            "-f",
+            "docker-compose.yml",
+            "-f",
+            (
+                "docker-compose-ram-disk.yml"
+                if args.ram_disk
+                else "docker-compose-docker-volume.yml"
+            ),
+            "build",
+            "--no-cache",
+        ]
+    )
 
 
 def dbUp(args):
     print("🛢️  Starting database")
-    subprocess.run(docker_compose_invocation + [
-        "-f", "docker-compose.yml", 
-        "-f",
-        "docker-compose-ram-disk.yml" if args.ram_disk else "docker-compose-docker-volume.yml",
-        "up", "-d", "postgis"])
+    subprocess.run(
+        docker_compose_invocation
+        + [
+            "-f",
+            "docker-compose.yml",
+            "-f",
+            (
+                "docker-compose-ram-disk.yml"
+                if args.ram_disk
+                else "docker-compose-docker-volume.yml"
+            ),
+            "up",
+            "-d",
+            "postgis",
+        ]
+    )
     subprocess.run(["docker", "ps"])
     time.sleep(5)
+
 
 def dbDown(args):
     graphqlEngineDown(args)
     print("🛢️  Stopping database")
-    subprocess.run(docker_compose_invocation + [
-        "-f", "docker-compose.yml", 
-        "-f",
-        "docker-compose-ram-disk.yml" if args.ram_disk else "docker-compose-docker-volume.yml",
-        "stop", "postgis"])
+    subprocess.run(
+        docker_compose_invocation
+        + [
+            "-f",
+            "docker-compose.yml",
+            "-f",
+            (
+                "docker-compose-ram-disk.yml"
+                if args.ram_disk
+                else "docker-compose-docker-volume.yml"
+            ),
+            "stop",
+            "postgis",
+        ]
+    )
     subprocess.run(["docker", "ps"])
     time.sleep(5)
 
 
 def graphqlEngineUp(args):
     print("🚀  Starting GraphQL Engine")
-    subprocess.run(docker_compose_invocation + [
-        "-f", "docker-compose.yml", 
-        "-f",
-        "docker-compose-ram-disk.yml" if args.ram_disk else "docker-compose-docker-volume.yml",
-        "up", "-d", "graphql-engine"])
+    subprocess.run(
+        docker_compose_invocation
+        + [
+            "-f",
+            "docker-compose.yml",
+            "-f",
+            (
+                "docker-compose-ram-disk.yml"
+                if args.ram_disk
+                else "docker-compose-docker-volume.yml"
+            ),
+            "up",
+            "-d",
+            "graphql-engine",
+        ]
+    )
     subprocess.run(["docker", "ps"])
     print("🚀  GraphQL Engine started.")
     print("You can run './vision-zero hasura-console' to open the console.")
 
+
 def hasuraConsole(args):
     print("🚀  Opening Hasura console")
     try:
-        subprocess.call(["hasura", "console"], cwd="./atd-vzd")
+        subprocess.call(["hasura", "console"], cwd="./database")
     except KeyboardInterrupt:
-        print('Exited Hasura console')
+        print("Exited Hasura console")
 
 
 def graphqlEngineDown(args):
     print("🚀  Stopping GraphQL Engine")
-    subprocess.run(docker_compose_invocation + [
-        "-f", "docker-compose.yml", 
-        "-f",
-        "docker-compose-ram-disk.yml" if args.ram_disk else "docker-compose-docker-volume.yml",
-        "stop", "graphql-engine"])
+    subprocess.run(
+        docker_compose_invocation
+        + [
+            "-f",
+            "docker-compose.yml",
+            "-f",
+            (
+                "docker-compose-ram-disk.yml"
+                if args.ram_disk
+                else "docker-compose-docker-volume.yml"
+            ),
+            "stop",
+            "graphql-engine",
+        ]
+    )
     subprocess.run(["docker", "ps"])
+
 
 def vzeUp(args):
     print("📝  Starting Vision Zero Editor")
-    subprocess.run(docker_compose_invocation + [
-        "-f", "docker-compose.yml", 
-        "-f",
-        "docker-compose-ram-disk.yml" if args.ram_disk else "docker-compose-docker-volume.yml",
-        "up", "-d", "vze"])
+    subprocess.run(
+        docker_compose_invocation
+        + [
+            "-f",
+            "docker-compose.yml",
+            "-f",
+            (
+                "docker-compose-ram-disk.yml"
+                if args.ram_disk
+                else "docker-compose-docker-volume.yml"
+            ),
+            "up",
+            "-d",
+            "vze",
+        ]
+    )
     subprocess.run(["docker", "ps"])
+
 
 def vzeDown(args):
     print("📝  Stopping Vision Zero Editor")
-    subprocess.run(docker_compose_invocation + [
-        "-f", "docker-compose.yml", 
-        "-f",
-        "docker-compose-ram-disk.yml" if args.ram_disk else "docker-compose-docker-volume.yml",
-        "stop", "vze"])
+    subprocess.run(
+        docker_compose_invocation
+        + [
+            "-f",
+            "docker-compose.yml",
+            "-f",
+            (
+                "docker-compose-ram-disk.yml"
+                if args.ram_disk
+                else "docker-compose-docker-volume.yml"
+            ),
+            "stop",
+            "vze",
+        ]
+    )
     subprocess.run(["docker", "ps"])
+
 
 def vzvUp(args):
     print("👀 Starting Vision Zero Viewer")
-    subprocess.run(docker_compose_invocation + [
-        "-f", "docker-compose.yml", 
-        "-f",
-        "docker-compose-ram-disk.yml" if args.ram_disk else "docker-compose-docker-volume.yml",
-        "up", "-d", "vzv"])
+    subprocess.run(
+        docker_compose_invocation
+        + [
+            "-f",
+            "docker-compose.yml",
+            "-f",
+            (
+                "docker-compose-ram-disk.yml"
+                if args.ram_disk
+                else "docker-compose-docker-volume.yml"
+            ),
+            "up",
+            "-d",
+            "vzv",
+        ]
+    )
     subprocess.run(["docker", "ps"])
+
 
 def vzvDown(args):
     print("👀 Stopping Vision Zero Viewer")
-    subprocess.run(docker_compose_invocation + [
-        "-f", "docker-compose.yml", 
-        "-f",
-        "docker-compose-ram-disk.yml" if args.ram_disk else "docker-compose-docker-volume.yml",
-        "stop", "vzv"])
+    subprocess.run(
+        docker_compose_invocation
+        + [
+            "-f",
+            "docker-compose.yml",
+            "-f",
+            (
+                "docker-compose-ram-disk.yml"
+                if args.ram_disk
+                else "docker-compose-docker-volume.yml"
+            ),
+            "stop",
+            "vzv",
+        ]
+    )
     subprocess.run(["docker", "ps"])
+
 
 def toolsShell(args):
     print("🐚  Starting tools shell")
@@ -385,19 +508,28 @@ def toolsShell(args):
 
 def stop(args):
     print("🛑  Stopping containers")
-    subprocess.run(docker_compose_invocation + [
-        "-f", "docker-compose.yml", 
-        "-f",
-        "docker-compose-ram-disk.yml" if args.ram_disk else "docker-compose-docker-volume.yml",
-        "stop"])
+    subprocess.run(
+        docker_compose_invocation
+        + [
+            "-f",
+            "docker-compose.yml",
+            "-f",
+            (
+                "docker-compose-ram-disk.yml"
+                if args.ram_disk
+                else "docker-compose-docker-volume.yml"
+            ),
+            "stop",
+        ]
+    )
 
 
 def get_main_parser():
     parser = argparse.ArgumentParser(prog="vision-zero")
     # 🪄 generate a autocompletion script for the shell
     shtab.add_argument_to(parser, ["-s", "--print-completion"])
-    parser.add_argument("-c", "--include-change-log-data", action='store_true')
-    parser.add_argument("-r", "--ram-disk", action='store_true')
+    parser.add_argument("-c", "--include-change-log-data", action="store_true")
+    parser.add_argument("-r", "--ram-disk", action="store_true")
     parser.add_argument(
         "command",
         choices=[
@@ -416,7 +548,7 @@ def get_main_parser():
             "replicate-db",
             "dump-local-db",
             "remove-snapshots",
-            "hasura-console"
+            "hasura-console",
         ],
     )
     parser.add_argument("-f", "--filename", required=False)
@@ -426,5 +558,5 @@ def get_main_parser():
 if __name__ == "__main__":
     parser = get_main_parser()
     args = parser.parse_args()
-    docker_compose_invocation = checkDockerComposeAvailability() # global .. 👎
+    docker_compose_invocation = checkDockerComposeAvailability()  # global .. 👎
     doCommand(args)

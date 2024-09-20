@@ -1,7 +1,7 @@
 services:
   postgis:
     container_name: visionzero-postgis
-    build: atd-vzd
+    build: database
     env_file:
       - .env
     tmpfs:
