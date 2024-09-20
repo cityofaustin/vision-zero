@@ -2,7 +2,7 @@
 
 The Vision Zero Database (VZD) is a Postgresql database that serves as the central repository of Austin's traffic crash data. The database is fronted with a GraphQL API, powered by [Hasura](https://github.com/hasura/graphql-engine), which is also used to manage schema migrations.
 
-The design supports an editing environment which enables Vision Zero program staff to edit and enrich crash data, while also allowing record updates to flow into the database from upstream sources, such as the TxDOT Crash Information System (CRIS).
+The design supports an editing environment which enables Vision Zero program staff to edit and enrich crash data, while also allowing record updates to flow into the database from upstream sources, such as the TxDOT Crash Records Information System (CRIS).
 
 ![vision zero data flow](../docs/images/data_flow.png)
 
@@ -75,7 +75,42 @@ The process for updating `units` and `people` behaves in the same manner as `cra
 
 #### CRIS Extract configuration and accounts
 
-TODO. See https://app.gitbook.com/o/-LzDQOVGhTudbKRDGpUA/s/-M4Ul-hSBiM-3KkOynqS/vision-zero-crash-database/visionzero-sftp-etl#getting-extracts-manually
+The team maintains multiple CRIS login accounts to manage the deliver of CRIS data to our AWS S3 ingest bucket. See the [CRIS import ETL documentation](../etl/cris_import/README.md) for more information on how CRIS data is delivered to S3 and imported into our database.
+
+The credentials for our CRIS logins are in the password store, including a note in the title indicating each login's purpose:
+
+- **Production extract account**: this is the account which is configured for daily delivery of extracts to S3 production.
+- **Dev/testing extract account**: this accound should be used for requesting ad-hoc CRIS extracts for delivery via S3 or manual download.
+- **Query & analyze account**: this account can be used for the CRIS query interface, that enables querying and access to individual crash records.
+
+Additional information about CRIS access can be found on the [TxDOT website](https://www.txdot.gov/data-maps/crash-reports-records/crash-data-analysis-statistics.html).
+
+To configure a new extract delivery, login with the appropriate account and follow these steps.
+
+1. Login to CRIS using the appropriate account (see above): https://cris.dot.state.tx.us/
+2. 
+
+![CRIS extract config - page 1](../docs/images/extract_config_1.png)
+
+![CRIS extract config - page 2](../docs/images/extract_config_2.png)
+
+![CRIS extract config - page 3](../docs/images/extract_config_3.png)
+
+- **Extract Type**: Standard
+- **Extract Format**: CSV
+- **Include CR-3 Crash Report files in Extract**: Yes
+- **Include Crash Reports From**: Specific Counties: `Hays`, `Travis`, and `Williamson`
+- **Include Crash Reports From**: Process Date range
+  - If you are backfilling, include a day before your target day as a buffer.
+  - If you request a process date of today, the extract will not deliver until the next day.
+  - To set up a recurring request, add a range of dates that ends in the future. 
+
+Any part of the range that falls in the past will be delivered in single zip that is separate from the zips that will deliver in the future. The includes - all records with process dates available including today.
+
+Any part of the range that is in the future will create daily zips that include each day available going forward. For example, on 4/19/2024, you make a request for Process Begin Date = 01/01/2024 and Process End Date = 12/31/2024 The would receive two zips: One containing all records with process date from 01/01/2024 to 04/18/2024, and one containing all records with process date from 04/19/2024 to 04/19/2024. Going forward, you will receive one zip per day for each process date that passes
+
+- **Extract password**:  the password called CRIS Archive Extract Password which is found in the entry called Vision Zero CRIS Import
+- **Delivery**: How you want to receive it. Typically you would use the pre-configured AWS option, specifiyng the `dev`, `staging`, or `prod` inbox subdirectory. See the CRIS import ETL readme for more details.
 
 #### CRIS data processing
 
