@@ -192,9 +192,11 @@ const DataTable = ({
                                         name={field}
                                         id={field}
                                         type="text"
-                                        value={editValue
-                                          .toString()
-                                          .toUpperCase()}
+                                        value={
+                                          editValue
+                                            ? editValue.toString().toUpperCase()
+                                            : null
+                                        }
                                         onChange={e =>
                                           setEditValue(e.target.value)
                                         }
