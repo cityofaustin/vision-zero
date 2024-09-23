@@ -3,12 +3,14 @@ import { Button } from "reactstrap";
 import ConfirmModal from "../../Components/ConfirmModal";
 import { UPDATE_CRASH } from "../../queries/crashes";
 
-const SwapAddressButton = ({ data, crashRefetch, ...props }) => {
+const SwapAddressButton = ({ data, crashRefetch, setEditField, ...props }) => {
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
 
   const crash = data?.crash;
 
   const toggleModal = () => {
+    // make sure we are not in edit mode on a field
+    setEditField("");
     setIsConfirmModalOpen(!isConfirmModalOpen);
   };
 
