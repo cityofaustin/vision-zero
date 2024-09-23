@@ -85,7 +85,7 @@ The credentials for our CRIS logins are in the password store, including a note 
 
 Additional information about CRIS access can be found on the [TxDOT website](https://www.txdot.gov/data-maps/crash-reports-records/crash-data-analysis-statistics.html).
 
-To configure a new extract delivery, login with the appropriate account and follow these steps.
+Follow these steps too configure a new extract delivery:
 
 1. Login to CRIS using the appropriate account (see above): https://cris.dot.state.tx.us/
 
@@ -93,13 +93,11 @@ To configure a new extract delivery, login with the appropriate account and foll
 
 - **Extract Type**: Standard
 - **Extract Format**: CSV
-- **Include CR-3 Crash Report files in Extract**: Yes
+- **Include CR-3 Crash Report files in Extract**: Yes (checked)
 
 ![CRIS extract config - page 1](../docs/images/extract_config_1.png)
 
 - **Include Crash Reports From**: Specific Counties: `Hays`, `Travis`, and `Williamson`
-
-![CRIS extract config - page 2](../docs/images/extract_config_2_todo.png)
 
 - **Include Crash Reports From**: Process Date range
   - If you are backfilling, include a day before your target day as a buffer.
@@ -110,9 +108,7 @@ Any part of the range that falls in the past will be delivered in single zip tha
 
 Any part of the range that is in the future will create daily zips that include each day available going forward. For example, on 4/19/2024, you make a request for Process Begin Date = 01/01/2024 and Process End Date = 12/31/2024 The would receive two zips: One containing all records with process date from 01/01/2024 to 04/18/2024, and one containing all records with process date from 04/19/2024 to 04/19/2024. Going forward, you will receive one zip per day for each process date that passes
 
-![CRIS extract config - page 3](../docs/images/extract_config_3.png)
-
-- **Extract password**: the password called CRIS Archive Extract Password which is found in the entry called Vision Zero CRIS Import
+- **Extract password**: the password called `EXTRACT_PASSWORD` from Vision Zero CRIS Import 1Password item
 - **Delivery**: How you want to receive it. Typically you would use the pre-configured AWS option, specifiyng the `dev`, `staging`, or `prod` inbox subdirectory. See the CRIS import ETL readme for more details.
 
 #### CRIS data processing
