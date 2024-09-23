@@ -19,7 +19,7 @@ The design supports an editing environment which enables Vision Zero program sta
     - [Audit fields](#audit-fields)
     - [Change logs](#change-logs)
   - [Austin Fire Department (AFD) and Travis County Emergency Medical Services (EMS) (todo)](#austin-fire-department-afd-and-travis-county-emergency-medical-services-ems-todo)
-  - [Geospatial layers (todo)](#geospatial-layers)
+  - [Geospatial layers](#geospatial-layers)
 - [Common maintenance tasks](#common-maintenance-tasks)
   - [Add a new CRIS-managed column to `crashes`, `units`, or `people`](#add-a-new-cris-managed-column-to-crashes-units-or-people)
   - [Add a custom column to `crashes`, `units`, or `people`](#add-a-custom-column-to-crashes-units-or-people)
