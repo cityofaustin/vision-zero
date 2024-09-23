@@ -61,7 +61,7 @@ Stop the stack
 #### `vision-zero replicate-db`
 
 - Download a snapshot of the production database
-- Store the file in `./atd-vzd/snapshots/visionzero-{date}-{with|without}-change-log.sql`
+- Store the file in `./database/snapshots/visionzero-{date}-{with|without}-change-log.sql`
 - Drop local `atd_vz_data` database
 - Create and repopulate the database from the snapshot
 
@@ -74,7 +74,7 @@ one copy of the data per-day, both in the with and without change log data.
 #### `vision-zero dump-local-db`
 
 - pg_dump the current local database
-- Stores the file in `./atd-vzd/dumps/visionzero-{date}-{time}.sql
+- Stores the file in `./database/dumps/visionzero-{date}-{time}.sql
 
 #### `vision-zero remove-snapshots`
 
