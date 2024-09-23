@@ -121,7 +121,7 @@ For example, consider the `lookups.injry_sev` table, which includes a custom val
 | 99  | KILLED (NON-ATD)         | vz     |
 ```
 
-The original migration for this table is [here](https://github.com/cityofaustin/atd-vz-data/blob/e56e3c6bc654a21f667142ce53232bad44cff7e5/database/migrations/default/1715960018005_lookup_table_seeds/up.sql#L11054-L11056).
+The original migration for this table is [here](https://github.com/cityofaustin/vision-zero/blob/e56e3c6bc654a21f667142ce53232bad44cff7e5/database/migrations/default/1715960018005_lookup_table_seeds/up.sql#L11054-L11056).
 
 Because the table has a custom value, it is configured with a check constraint ([PostgreSQL docs](https://www.postgresql.org/docs/current/ddl-constraints.html#DDL-CONSTRAINTS-CHECK-CONSTRAINTS)) to ensure that future updates to this lookup table do not result in an ID collision:
 
@@ -211,7 +211,7 @@ The view `crashes_change_log_view` provides a unioned view of the unified table 
 
 ### Add a new CRIS-managed column to `crashes`, `units`, or `people`
 
-Follow these steps to add a new column to the database that will be sourced from CRIS. See [PR #1546](https://github.com/cityofaustin/atd-vz-data/pull/1546) as an example.
+Follow these steps to add a new column to the database that will be sourced from CRIS. See [PR #1546](https://github.com/cityofaustin/vision-zero/pull/1546) as an example.
 
 1. Remember that all database operations should be deployed through migrations. See the [development and deployment](#development-and-deployment) docs.
 2. Add the new column to all three tables of the given record type. For example, if this is a crash-level column, add the column to the `crashes_cris`, `crashes_edits`, and `crashes` tables.
