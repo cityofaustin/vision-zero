@@ -59,9 +59,14 @@ async function getAllUsers(pageCount, perPage, totalUsers, setAllUsers, token) {
 // Copy all user emails to the clipboard
 const getUserEmails = (userArray, setCopyUserEmailsClicked) => {
   let userEmails = "";
-  userArray.forEach(user => {
-    userEmails += `${user.email}; `;
-  });
+  userArray
+    // exclude test accounts
+    .filter(
+      user => !user.email.toLowerCase().startsWith("transportation.data+")
+    )
+    .forEach(user => {
+      userEmails += `${user.email}; `;
+    });
   // timeout determines how long the status popover displays
   const popOverTime = 2000;
   setTimeout(() => setCopyUserEmailsClicked(false), popOverTime);
