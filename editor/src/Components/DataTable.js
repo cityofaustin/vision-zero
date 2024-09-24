@@ -35,7 +35,7 @@ const DataTable = ({
   const roles = getRoles();
   const isReadOnlyUser = isReadOnly(roles);
 
-  // Sets the state of the value for the current edit field
+  // Sets the state of the value for the current field being edited
   const [editValue, setEditValue] = useState();
 
   // Import Lookup tables and aggregate an object of uiType= "select" options
@@ -224,7 +224,7 @@ const DataTable = ({
                                       size="sm"
                                       className="btn-pill mr-1"
                                       onClick={e =>
-                                        handleInputChange(editValue, e)
+                                        handleInputChange(editValue)
                                       }
                                     >
                                       <i className="fa fa-check edit-toggle" />
