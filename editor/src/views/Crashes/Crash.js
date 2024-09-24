@@ -65,7 +65,7 @@ function Crash(props) {
 
   const handleInputChange = editValue => {
     const newFormState = Object.assign(formData, {
-      [editField]: editValue,
+      [editField]: editValue ? editValue.toUpperCase() : null,
       updated_by: localStorage.getItem("hasura_user_email"),
     });
     setFormData(newFormState);
@@ -91,6 +91,7 @@ function Crash(props) {
       .then(res => crashRefetch());
 
     setEditField("");
+    setFormData({});
   };
 
   const crashRecord = {

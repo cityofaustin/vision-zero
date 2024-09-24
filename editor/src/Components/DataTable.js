@@ -192,13 +192,11 @@ const DataTable = ({
                                         name={field}
                                         id={field}
                                         type="text"
-                                        value={
-                                          editValue
-                                            ? editValue.toString().toUpperCase()
-                                            : null
-                                        }
+                                        value={editValue}
                                         onChange={e =>
-                                          setEditValue(e.target.value)
+                                          setEditValue(
+                                            e.target.value.toUpperCase()
+                                          )
                                         }
                                         autoComplete="off"
                                         // disable 1password autofill
