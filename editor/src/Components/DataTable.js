@@ -75,6 +75,7 @@ const DataTable = ({
                 <Table responsive striped hover>
                   <tbody>
                     {Object.keys(section.fields).map((field, i) => {
+                      console.log(field, "field");
                       const isEditing = field === editField;
                       const fieldConfigObject = section.fields[field];
 
