@@ -27,7 +27,6 @@ const DataTable = ({
   handleFieldUpdate,
   downloadGlobal,
   crashRefetch,
-  ...props
 }) => {
   // Disable edit features if only role is "readonly"
   const { getRoles } = useAuth0();
