@@ -8,6 +8,7 @@ const ConfirmModal = ({
   confirmClick,
   toggleModal,
   showModal,
+  fade,
 }) => {
   // Hide modal and call button click handler on confirm
   const handleConfirm = e => {
@@ -16,13 +17,18 @@ const ConfirmModal = ({
   };
 
   return (
-    <Modal isOpen={showModal} toggle={toggleModal} className={"modal-danger"}>
+    <Modal
+      isOpen={showModal}
+      toggle={toggleModal}
+      className={"modal-danger"}
+      fade={fade}
+    >
       <ModalHeader toggle={toggleModal}>{modalHeader}</ModalHeader>
       <ModalBody>{modalBody}</ModalBody>
       <ModalFooter>
         <Button color="danger" onClick={handleConfirm}>
           Confirm
-        </Button>{" "}
+        </Button>
         <Button color="secondary" onClick={toggleModal}>
           Cancel
         </Button>

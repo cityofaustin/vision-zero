@@ -28,7 +28,6 @@ const DataTable = ({
   handleFieldUpdate,
   downloadGlobal,
   crashRefetch,
-  ...props
 }) => {
   // Disable edit features if only role is "readonly"
   const { getRoles } = useAuth0();
@@ -64,10 +63,9 @@ const DataTable = ({
                 {section.title === "Primary Street Information" &&
                   !isReadOnlyUser && (
                     <SwapAddressButton
-                      data={data}
+                      crash={data?.crash}
                       crashRefetch={crashRefetch}
                       setEditField={setEditField}
-                      {...props}
                     />
                   )}
               </CardHeader>
