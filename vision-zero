@@ -145,7 +145,7 @@ def replicateDb(args):
         "-e", "PGDATABASE=" + os.environ["RR_DATABASE"],
         "-e", "PGUSER=" + os.environ["RR_USERNAME"],
         "-e", "PGPASSWORD=" + os.environ["RR_PASSWORD"],
-        "db-tools",
+        "postgis",
     ]
 
     replicate_command = [
@@ -174,7 +174,7 @@ def replicateDb(args):
         "-e", "PGUSER=" + os.environ["POSTGRES_USER"],
         "-e", "PGPASSWORD=" + os.environ["POSTGRES_PASSWORD"],
         "-e", "PGDATABASE=postgres",
-        "db-tools",
+        "postgis",
     ]
     
     populate_runner_command = docker_compose_invocation + [
@@ -187,7 +187,7 @@ def replicateDb(args):
         "-e", "PGUSER=" + os.environ["POSTGRES_USER"],
         "-e", "PGPASSWORD=" + os.environ["POSTGRES_PASSWORD"],
         "-e", "PGDATABASE=postgres",
-        "db-tools",
+        "postgis",
     ]
     # fmt: on
 
@@ -251,7 +251,7 @@ def dumpLocalDb(args):
         "PGPASSWORD=" + os.environ["POSTGRES_PASSWORD"],
         "-e",
         "PGDATABASE=" + os.environ["POSTGRES_DB"],
-        "db-tools",
+        "postgis",
     ]
 
     dump_command = [
@@ -280,7 +280,7 @@ def psql(args):
         "-e", "PGDATABASE=" + os.environ["POSTGRES_DB"],
         "-e", "PGUSER=" + os.environ["POSTGRES_USER"],
         "-e", "PGPASSWORD=" + os.environ["POSTGRES_PASSWORD"],
-        "db-tools",
+        "postgis",
     ]
     # fmt: on
 
@@ -498,7 +498,7 @@ def toolsShell(args):
         "-e", "PGUSER=" + os.environ["POSTGRES_USER"],
         "-e", "PGPASSWORD=" + os.environ["POSTGRES_PASSWORD"],
         "-e", "PGDATABASE=" + os.environ["POSTGRES_DB"],
-        "db-tools",
+        "postgis",
     ]
     # fmt: on
 
