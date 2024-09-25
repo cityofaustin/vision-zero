@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import { Button } from "reactstrap";
 import ConfirmModal from "../../Components/ConfirmModal";
+import { useMutation } from "@apollo/react-hooks";
 import { UPDATE_CRASH } from "../../queries/crashes";
 
-const SwapAddressButton = ({ data, crashRefetch, ...props }) => {
+const SwapAddressButton = ({ crash, crashRefetch }) => {
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
 
-  const crash = data?.crash;
+  const [updateCrash] = useMutation(UPDATE_CRASH);
 
   const toggleModal = () => {
     setIsConfirmModalOpen(!isConfirmModalOpen);
@@ -35,12 +36,10 @@ const SwapAddressButton = ({ data, crashRefetch, ...props }) => {
   };
 
   const onConfirm = () => {
-    props.client
-      .mutate({
-        mutation: UPDATE_CRASH,
-        variables: mutationVariables,
-      })
-      .then(res => crashRefetch());
+    updateCrash({
+      mutation: UPDATE_CRASH,
+      variables: mutationVariables,
+    }).then(res => crashRefetch());
   };
 
   return (
@@ -57,6 +56,7 @@ const SwapAddressButton = ({ data, crashRefetch, ...props }) => {
           "Are you sure you want to swap the primary and secondary address?"
         }
         confirmClick={onConfirm}
+        fade={false}
       />
     </div>
   );
