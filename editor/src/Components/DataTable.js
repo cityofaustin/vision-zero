@@ -54,9 +54,8 @@ const DataTable = ({
                 {section.title === "Primary Street Information" &&
                   !isReadOnlyUser && (
                     <SwapAddressButton
-                      data={data}
+                      crash={data?.crash}
                       crashRefetch={crashRefetch}
-                      {...props}
                     />
                   )}
               </CardHeader>
