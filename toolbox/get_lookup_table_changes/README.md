@@ -53,7 +53,7 @@ Note that the extract may contain multiple lookup files depending on the date ra
 $ python get_lookup_table_changes.py
 ```
 
-3. To test the migrations, navigate to `./atd-vzd` and create a new migration with the Hasura console.
+1. To test the migrations, navigate to `./database` and create a new migration with the Hasura console.
 
 ```shell
 $ hasura migrate create lookup_table_migrations_cris_v28
@@ -65,7 +65,7 @@ $ hasura migrate create lookup_table_migrations_cris_v28
 hasura migrate apply
 ```
 
-In some cases, the migrations applied by this helper may fail to due to conflicts with historical records. In those cases, you will need to manually create/edit the migrations and use your best judgement as to how to approach the change. PR [#1541](https://github.com/cityofaustin/atd-vz-data/pull/1541) covers an example of this scenario.
+In some cases, the migrations applied by this helper may fail to due to conflicts with historical records. In those cases, you will need to manually create/edit the migrations and use your best judgement as to how to approach the change. PR [#1541](https://github.com/cityofaustin/vision-zero/pull/1541) covers an example of this scenario.
 
 1. Finally, re-apply metadata to check for errors. 
 
