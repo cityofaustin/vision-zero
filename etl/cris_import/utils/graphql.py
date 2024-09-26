@@ -107,15 +107,7 @@ UPSERT_RECORD_MUTATIONS = {
 
 NARRATIVES_TODO_QUERY = """
   query GetNarrativesToOCR {
-    crashes(
-      limit: 1000,
-      where: {_and: [
-        {cr3_stored_fl: {_eq: true}},
-        {investigator_narrative: {_is_null: true}}
-        { investigator_narrative_ocr_processed_at: { _is_null: true }}
-    ]},
-    order_by: {updated_at: asc, id: asc}
-    ) {
+    view_crash_narratives_ocr_todo(limit: 1000) {
       id,
       cris_crash_id
     }

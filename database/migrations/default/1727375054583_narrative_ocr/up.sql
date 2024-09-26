@@ -14,19 +14,20 @@ timestamp at which the OCR process attempted to extract the investigator narrati
 indicates that the OCR narrative extract has never been attempted. This value should be set
 via ETL process on the crashes_edits table.';
 
--- create or replace function public.reset_investigator_narrative_ocr_processed_at()
--- returns trigger
--- language plpgsql
--- as $function$
--- BEGIN
---     update crashes_edits set investigator_narrative_ocr_processed_at = null where id = NEW.id;
--- END;
--- $function$;
+create or replace view view_crash_narratives_ocr_todo as (
+SELECT
+    id,
+    cris_crash_id
+FROM
+    crashes
+WHERE
+    cr3_stored_fl = TRUE
+    AND investigator_narrative IS NULL
+    and(investigator_narrative_ocr_processed_at IS NULL
+        OR cr3_processed_at >= investigator_narrative_ocr_processed_at)
+ORDER BY
+    cr3_processed_at ASC,
+    id ASC);
 
--- create or replace trigger reset_investigator_narrative_ocr_processed_at_on_update
--- after update on public.crashes_cris
--- for each row
--- when (
---     new.cr3_processed_at is distinct from old.cr3_processed_at
--- )
--- execute procedure public.reset_investigator_narrative_ocr_processed_at();
+comment on view view_crash_narratives_ocr_todo is 'View which lists crashes which need to 
+be processed by the OCR narrative extraction ETL'
