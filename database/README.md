@@ -121,7 +121,7 @@ For example, consider the `lookups.injry_sev` table, which includes a custom val
 | 99  | KILLED (NON-ATD)         | vz     |
 ```
 
-The original migration for this table is [here](https://github.com/cityofaustin/vision-zero/blob/e56e3c6bc654a21f667142ce53232bad44cff7e5/database/migrations/default/1715960018005_lookup_table_seeds/up.sql#L11054-L11056).
+The original migration for this table is [here](https://github.com/cityofaustin/vision-zero/blob/e56e3c6bc654a21f667142ce53232bad44cff7e5/atd-vzd/migrations/default/1715960018005_lookup_table_seeds/up.sql#L11054-L11056).
 
 Because the table has a custom value, it is configured with a check constraint ([PostgreSQL docs](https://www.postgresql.org/docs/current/ddl-constraints.html#DDL-CONSTRAINTS-CHECK-CONSTRAINTS)) to ensure that future updates to this lookup table do not result in an ID collision:
 
