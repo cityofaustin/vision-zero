@@ -75,17 +75,17 @@ The process for updating `units` and `people` behaves in the same manner as `cra
 
 #### CRIS Extract configuration and accounts
 
-The team maintains multiple CRIS login accounts to manage the deliver of CRIS data to our AWS S3 ingest bucket. See the [CRIS import ETL documentation](../etl/cris_import/README.md) for more information on how CRIS data is delivered to S3 and imported into our database.
+The team maintains multiple CRIS login accounts to manage the delivery of CRIS data to our AWS S3 ingest bucket. See the [CRIS import ETL documentation](../etl/cris_import/README.md) for more information on how CRIS data is delivered to S3 and imported into our database.
 
 The credentials for our CRIS logins are in the password store, including a note in the title indicating each login's purpose:
 
 - **Production extract account**: this is the account which is configured for daily delivery of extracts to S3 production.
-- **Dev/testing extract account**: this accound should be used for requesting ad-hoc CRIS extracts for delivery via S3 or manual download.
+- **Dev/testing extract account**: this account should be used for requesting ad-hoc CRIS extracts for delivery via S3 or manual download.
 - **Query & analyze account**: this account can be used for the CRIS query interface, that enables querying and access to individual crash records.
 
 Additional information about CRIS access can be found on the [TxDOT website](https://www.txdot.gov/data-maps/crash-reports-records/crash-data-analysis-statistics.html).
 
-Follow these steps too configure a new extract delivery:
+Follow these steps to configure a new extract delivery:
 
 1. Login to CRIS using the appropriate account (see above): https://cris.dot.state.tx.us/
 
@@ -239,11 +239,11 @@ We have a number of tables which function as geospatial layers which are referen
 
 | Table                 | Geometry type | description                                                                                               | owner/source                                                         |
 | --------------------- | ------------- | --------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
-| `council_districts`   | polgyon       | City of Austin council districts                                                                          | ArcGIS Online authoritative layer owned by CTM GIS                   |
-| `atd_jurisdictions`   | polgyon       | City of Austin jurisdictions                                                                              | ArcGIS Online authoritative layer owned by CTM GIS                   |
-| `engineering_areas`   | polgyon       | TPW traffic engineering areas                                                                             | ArcGIS Online authoritative layer owned by DTS GIS                   |
-| `non_coa_roadways`    | polgyon       | Polygon layer covering roadways which are not maintained by the City of Austin                            | ArcGIS Online authoritative layer maintained by Vision Zero GIS team |
-| `atd_txdot_locations` | polgyon       | Aka, "location polygons", these shapes are used to group crashes based on an intersection or road segment | ArcGIS Online authoritative layer maintained by Vision Zero GIS team |
+| `council_districts`   | polygon       | City of Austin council districts                                                                          | ArcGIS Online authoritative layer owned by CTM GIS                   |
+| `atd_jurisdictions`   | polygon       | City of Austin jurisdictions                                                                              | ArcGIS Online authoritative layer owned by CTM GIS                   |
+| `engineering_areas`   | polygon       | TPW traffic engineering areas                                                                             | ArcGIS Online authoritative layer owned by DTS GIS                   |
+| `non_coa_roadways`    | polygon       | Polygon layer covering roadways which are not maintained by the City of Austin                            | ArcGIS Online authoritative layer maintained by Vision Zero GIS team |
+| `atd_txdot_locations` | polygon       | Aka, "location polygons", these shapes are used to group crashes based on an intersection or road segment | ArcGIS Online authoritative layer maintained by Vision Zero GIS team |
 
 ## Common maintenance tasks
 
