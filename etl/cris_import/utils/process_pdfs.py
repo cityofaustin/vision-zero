@@ -5,7 +5,7 @@ from pathlib import Path
 
 import time
 
-from pdf2image import convert_from_path, pdfinfo_from_path
+from pdf2image import convert_from_path, pdfinfo_from_path, pdfinfo_from_bytes
 
 from utils.graphql import UPDATE_CRASH_CR3_FIELDS, make_hasura_request
 from utils.logging import get_logger
@@ -48,9 +48,16 @@ def get_cr3_version(page, page_width):
     return f"v2_{page_size}"
 
 
-def get_pdf_width(pdf_path):
+def get_pdf_width_from_path(pdf_path):
     """Return the width of the pdf in points"""
     pdf_info = pdfinfo_from_path(pdf_path)
+    # parse width from a string that looks like '612 x 792 pts (letter)'
+    return int(pdf_info["Page size"].split(" ")[0])
+
+
+def get_pdf_width_from_bytes(pdf):
+    """Return the width of the pdf in points"""
+    pdf_info = pdfinfo_from_bytes(pdf)
     # parse width from a string that looks like '612 x 792 pts (letter)'
     return int(pdf_info["Page size"].split(" ")[0])
 
@@ -94,7 +101,7 @@ def process_pdf(extract_dir, filename, s3_upload, index):
     logger.info(f"Processing {filename} ({index})")
     cris_crash_id = int(filename.replace(".pdf", ""))
     pdf_path = os.path.join(extract_dir, "crashReports", filename)
-    page_width = get_pdf_width(pdf_path)
+    page_width = get_pdf_width_from_path(pdf_path)
 
     logger.debug("Converting PDF to image...")
 

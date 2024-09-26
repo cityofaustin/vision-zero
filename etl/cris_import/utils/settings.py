@@ -8,6 +8,14 @@ DIAGRAM_BBOX_PIXELS = {
     "v2_large": (2496, 3036, 4836, 5464),
 }
 
+"""This is the bbox used to crop the crash narrative"""
+NARRATIVE_BBOX_PIXELS = {
+    "v1_small": (),
+    "v1_large": (296, 3683, 2580, 5749),
+    "v2_small": (),
+    "v2_large": (90, 3026, 2496, 5466),
+}
+
 """If all four of these pixels are black, it is a 'new' CR3 pdf"""
 NEW_CR3_FORM_TEST_PIXELS = {
     "small": [
