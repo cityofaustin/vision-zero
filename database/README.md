@@ -267,7 +267,7 @@ values ('drvr_lic_type_id', 'people', true);
 
 ```shell
 # ./database
-$ hasura metadata apply
+hasura metadata apply
 ```
 
 7. You are now ready to test your new column using the CRIS import ETL. If you need to backfill this new column for old records, you will need to manually request the necessary CRIS extract zip files so that they can be processed by an ad-hoc run of the CRIS import ETL.
