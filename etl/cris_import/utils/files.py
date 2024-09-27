@@ -147,17 +147,18 @@ def get_extract_dir(extract_name):
 def upload_file_to_s3(file_path, object_key):
     s3_client.upload_file(file_path, BUCKET_NAME, object_key)
 
+
 def download_cr3_pdf(cris_crash_id):
     pdf = BytesIO()
+    ENV = "prod"
     object_key = f"{ENV}/cr3s/pdfs/{cris_crash_id}.pdf"
-    logger.info(f"Downloading PDF: {object_key}")
+    logger.debug(f"Downloading PDF: {object_key}")
     try:
         s3_client.download_fileobj(BUCKET_NAME, object_key, pdf)
-        pdf.seek(0)
-        return pdf.read()
     except ClientError as e:
         if e.response["Error"]["Code"] == "404":
             raise Exception(f"'{object_key}' not found in bucket '{BUCKET_NAME}'")
         else:
             raise e
-
+    pdf.seek(0)
+    return pdf.read()
