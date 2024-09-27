@@ -33,13 +33,16 @@ def extract_narrative_pdf(cris_crash_id, crash_pk, index):
     cr3_version = get_cr3_version(page)
     logger.debug(f"CR3 version: {cr3_version}")
 
-    page.save(f"temp/{cris_crash_id}_page_{cr3_version}.jpeg")
+    # uncomment to save a copy of the pdf page image page conversion
+    # page.save(f"temp/{cris_crash_id}_page_{cr3_version}.jpeg")
 
     bbox = NARRATIVE_BBOX_PIXELS[cr3_version]
 
     logger.debug("Cropping narrative from PDF...")
     narrative_image = page.crop(bbox)
-    narrative_image.save(f"temp/{cris_crash_id}_narrative_{cr3_version}.jpeg")
+
+    # uncomment to save a copy of the cropped narrative image
+    # narrative_image.save(f"temp/{cris_crash_id}_narrative_{cr3_version}.jpeg")
 
     logger.debug("Extracting narrative text...")
     narrative = None
