@@ -27,6 +27,9 @@ create or replace view view_crash_narratives_ocr_todo as (
             investigator_narrative_ocr_processed_at is NULL
             or cr3_processed_at >= investigator_narrative_ocr_processed_at
         )
+        -- this issue started in Sep 2024
+        -- we do not OCR very old crashes
+        and updated_at > '2024-09-01'
     order by
         cr3_processed_at asc,
         id asc
