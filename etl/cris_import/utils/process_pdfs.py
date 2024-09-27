@@ -57,20 +57,6 @@ def get_cr3_version(page):
     return f"v1_{page_size}"
 
 
-def get_pdf_width_from_path(pdf_path):
-    """Return the width of the pdf in points"""
-    pdf_info = pdfinfo_from_path(pdf_path)
-    # parse width from a string that looks like '612 x 792 pts (letter)'
-    return int(pdf_info["Page size"].split(" ")[0])
-
-
-def get_pdf_width_from_bytes(pdf):
-    """Return the width of the pdf in points"""
-    pdf_info = pdfinfo_from_bytes(pdf)
-    # parse width from a string that looks like '612 x 792 pts (letter)'
-    return int(pdf_info["Page size"].split(" ")[0])
-
-
 def crop_and_save_diagram(page, cris_crash_id, bbox, extract_dir):
     """Crop out the crash diagram and save it to the local directory.
 
@@ -110,7 +96,6 @@ def process_pdf(extract_dir, filename, s3_upload, index):
     logger.info(f"Processing {filename} ({index})")
     cris_crash_id = int(filename.replace(".pdf", ""))
     pdf_path = os.path.join(extract_dir, "crashReports", filename)
-    # page_width = get_pdf_width_from_path(pdf_path)
 
     logger.debug("Converting PDF to image...")
 
