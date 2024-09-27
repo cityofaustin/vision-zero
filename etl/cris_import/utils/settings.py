@@ -10,14 +10,14 @@ DIAGRAM_BBOX_PIXELS = {
 
 """This is the bbox used to crop the crash narrative"""
 NARRATIVE_BBOX_PIXELS = {
-    "v1_small": (),
+    "v1_small": (30, 928, 681, 1590),
     "v1_large": (296, 3683, 2580, 5749),
-    "v2_small": (),
+    "v2_small": (30, 791, 650, 1430),
     "v2_large": (90, 3026, 2496, 5466),
 }
 
 """If all four of these pixels are black, it is a 'new' CR3 pdf"""
-NEW_CR3_FORM_TEST_PIXELS = {
+CR3_FORM_V2_TEST_PIXELS = {
     "small": [
         (115, 670),
         (300, 670),
@@ -31,6 +31,18 @@ NEW_CR3_FORM_TEST_PIXELS = {
         (4834, 279),
     ],
 }
+
+CR3_FORM_V0_TEST_PIXELS = {
+    "large": [
+        # (1791, 310),
+        # (1791, 325),
+        # (1791, 350),
+        (4500, 6020),
+        (4500, 6040),
+        (4500, 6060),
+    ]
+}
+
 
 CSV_UPLOAD_BATCH_SIZE = 1000
 
