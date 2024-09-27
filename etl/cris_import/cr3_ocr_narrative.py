@@ -16,10 +16,14 @@ from utils.settings import NARRATIVE_BBOX_PIXELS
 
 
 def main(cli_args):
-    raise Exception("Remember you need to first run the check to restore nullified narratives")
-    # get crashes where narrative is null, pdf is not null, narrative_ocr_date is null
-    # investigator_narrative_ocr
+    logger.info("Downloading crashes todo...")
     todos = make_hasura_request(query=NARRATIVES_TODO_QUERY)["crashes"]
+
+    logger.info(f"{len(todos)} to process")
+
+    if not todos:
+        return
+
     for crash in todos:
         cris_crash_id = crash["cris_crash_id"]
         pdf = download_cr3_pdf(cris_crash_id)
@@ -33,15 +37,17 @@ def main(cli_args):
             dpi=150,
         )[0]
 
-        logger.info("Cropping narrative from PDF...")
         page_width = get_pdf_width_from_bytes(pdf)
         cr3_version = get_cr3_version(page, page_width)
+        logger.debug(f"CR3 version: {cr3_version}")
+
         bbox = NARRATIVE_BBOX_PIXELS[cr3_version]
 
+        # todo: remove this temporary block
         if not bbox:
             continue
 
-        print(cr3_version)
+        logger.info("Cropping narrative from PDF...")
         narrative_image = page.crop(bbox)
         narrative_image.save("narrative_crop.jpeg")
 
@@ -49,6 +55,7 @@ def main(cli_args):
         narrative = None
         narrative = image_to_string(narrative_image)
 
+        logger.debug(f"Extracted narrative: {narrative}")
         breakpoint()
         variables = {
             "id": crash["id"],
@@ -61,10 +68,10 @@ def main(cli_args):
             },
         }
 
+        logger.info("Updating crash record...")
         # make_hasura_request(
         #     query=UPDATE_CRASH_NARRATIVE_OCR_MUTATION, variables=variables
         # )
-
 
 
 if __name__ == "__main__":
