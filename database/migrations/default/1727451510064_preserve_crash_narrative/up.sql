@@ -22,26 +22,29 @@ trigger function addresses a known CRIS bug in which updated crash records are
 missing the invesitgator narrative. It is tracked via DTS issue 
 https://github.com/cityofaustin/atd-data-tech/issues/18971 and CRIS ticket #854366';
 
+--
 -- backfill narratives which have been erased
-update
-    crashes_cris
-set
-    investigator_narrative = updates_todo.investigator_narrative_old
-from (select
-    record_id as crash_pk,
-    crashes.investigator_narrative as investigator_narrative_new,
-    record_json -> 'old' ->> 'investigator_narrative' as investigator_narrative_old
-from
-    change_log_crashes_cris as changes
-    left join crashes on changes.record_id = crashes.id
-where
-    record_json -> 'old' ->> 'investigator_narrative' is not null
-    and record_json -> 'new' ->> 'investigator_narrative' is null
-    and operation_type = 'update'
-    and changes.created_at > '2024-09-09'
-    and changes.created_by = 'cris'
-order by
-    changes.id asc) as updates_todo
-where
-    crashes_cris.id = updates_todo.crash_pk;
+-- run this manually to prevent migration timeout
+--
 
+-- update
+--     crashes_cris
+-- set
+--     investigator_narrative = updates_todo.investigator_narrative_old
+-- from (select
+--     record_id as crash_pk,
+--     crashes.investigator_narrative as investigator_narrative_new,
+--     record_json -> 'old' ->> 'investigator_narrative' as investigator_narrative_old
+-- from
+--     change_log_crashes_cris as changes
+--     left join crashes on changes.record_id = crashes.id
+-- where
+--     record_json -> 'old' ->> 'investigator_narrative' is not null
+--     and record_json -> 'new' ->> 'investigator_narrative' is null
+--     and operation_type = 'UPDATE'
+--     and changes.created_at > '2024-09-09'
+--     and changes.created_by = 'cris'
+-- order by
+--     changes.id asc) as updates_todo
+-- where
+--     crashes_cris.id = updates_todo.crash_pk;
