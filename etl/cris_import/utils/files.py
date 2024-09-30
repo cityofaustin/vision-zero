@@ -9,7 +9,7 @@ from utils.logging import get_logger
 
 from utils.settings import LOCAL_EXTRACTS_DIR
 
-ENV = os.environ["ENV"]
+ENV = os.environ["BUCKET_ENV"]
 BUCKET_NAME = os.environ["BUCKET_NAME"]
 EXTRACT_PASSWORD = os.environ["EXTRACT_PASSWORD"]
 
@@ -149,6 +149,18 @@ def upload_file_to_s3(file_path, object_key):
 
 
 def download_cr3_pdf(cris_crash_id):
+    """Download a CR3 PDF from S3
+
+    Args:
+        cris_crash_id (int): The CRIS crash ID
+
+    Raises:
+        Exception: When the requested PDF file is not found
+        in the bucket
+
+    Returns:
+        bytes: The downloaded file
+    """
     pdf = BytesIO()
     ENV = "prod"
     object_key = f"{ENV}/cr3s/pdfs/{cris_crash_id}.pdf"
