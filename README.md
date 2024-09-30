@@ -38,7 +38,7 @@ RR_DATABASE=""
 3. Start the DB
 
 ```shell
-$ vision-zero replicate-db
+./vision-zero replicate-db
 ```
 
 This command will:
@@ -53,7 +53,7 @@ Note: the `-f / --filename` flag can be optionally used to point to a specific d
 4. Start the Vision Zero Editor
 
 ```shell
-$ vision-zero vze-up
+vision-zero vze-up
 ```
 
 See [here](docs/local_dev.md) for in-depth documentation about the `vision-zero` helper.
