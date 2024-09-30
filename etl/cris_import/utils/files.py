@@ -155,7 +155,7 @@ def download_cr3_pdf(cris_crash_id):
         cris_crash_id (int): The CRIS crash ID
 
     Raises:
-        Exception: When the requested PDF file is not found
+        FileNotFoundError: When the requested PDF file is not found
         in the bucket
 
     Returns:
@@ -169,7 +169,10 @@ def download_cr3_pdf(cris_crash_id):
         s3_client.download_fileobj(BUCKET_NAME, object_key, pdf)
     except ClientError as e:
         if e.response["Error"]["Code"] == "404":
-            raise Exception(f"'{object_key}' not found in bucket '{BUCKET_NAME}'")
+            raise FileNotFoundError(
+                f"'{object_key}' not found in bucket '{BUCKET_NAME}'"
+            )
+
         else:
             raise e
     pdf.seek(0)
