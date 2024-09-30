@@ -18,7 +18,15 @@ from utils.settings import NARRATIVE_BBOX_PIXELS
 
 
 def extract_narrative_pdf(cris_crash_id, crash_pk, index):
-    """Handles narrative extraction of one PDF"""
+    """Handles narrative extraction of one PDF
+
+    Args:
+        cris_crash_id (int): the CRIS crash ID
+        crash_pk (int): the crash ID in the VZ database
+        index (int): a unique id which captures the position of this
+            item in the list of narratives being processed by the 
+            script. it enables better error logging during concurrency
+    """
     logger.info(f"Processing cris crash ID {cris_crash_id} ({index})")
     pdf = download_cr3_pdf(cris_crash_id)
 
@@ -67,7 +75,7 @@ def extract_narrative_pdf(cris_crash_id, crash_pk, index):
         query=UPDATE_CRASH_NARRATIVE_OCR_MUTATION, variables=variables
     )
 
-def main():
+def main(cli_args):
     logger.info("Downloading crashes todo...")
     todos = make_hasura_request(query=NARRATIVES_TODO_QUERY)[
         "view_crash_narratives_ocr_todo"
@@ -104,4 +112,4 @@ def main():
 if __name__ == "__main__":
     cli_args = get_cli_args()
     logger = init_logger(debug=cli_args.verbose)
-    main()
+    main(cli_args)
