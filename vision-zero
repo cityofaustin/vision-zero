@@ -18,8 +18,6 @@ if not os.path.exists(".env"):
 load_dotenv()
 
 TABLES_TO_IGNORE = [
-    "public.atd_txdot_change_log",
-    "public.polygons",
     "public.change_log_crashes",
     "public.change_log_crashes_cris",
     "public.change_log_units_cris",
@@ -29,10 +27,6 @@ TABLES_TO_IGNORE = [
     "public.change_log_people_edits",
     "public.change_log_units_edits",
     "public.change_log_crashes_edits",
-    "public.atd_txdot_crashes",
-    "public.atd_txdot_units",
-    "public.atd_txdot_person",
-    "public.atd_txdot_primaryperson",
 ]
 
 
