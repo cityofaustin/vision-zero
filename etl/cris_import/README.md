@@ -32,7 +32,7 @@ $ ./cris_import.py --s3-download --s3-upload --csv --pdf
 
 Create your environment by saving a copy of the `env_template` file as `.env`. The template includes default values for local development. See the password store for more details.
 
-All interactions with AWS S3 occur with against a single bucket which has subdirectores for the `dev` and `prod` environments. If you set your `BUCKET_ENV` to `dev` you can safely run this ETL's S3 operations.
+All interactions with AWS S3 occur against a single bucket which has subdirectores for the `dev` and `prod` environments. If you set your `BUCKET_ENV` to `dev` you can safely run this ETL's S3 operations.
 
 ```
 BUCKET_ENV=dev
@@ -52,7 +52,7 @@ This is the primary data import script which processes both CSV files and CR3 PD
   --csv              Process CSV files. At least one of --csv or --pdf is required.
   --pdf              Process CR3 pdfs. At least one of --csv or --pdf is required.
   --s3-download      Source zip extracts from S3 bucket
-  --s3-upload        Upload cr3 pdfs and digrams to S3 bucket
+  --s3-upload        Upload cr3 pdfs and diagrams to S3 bucket
   --s3-archive       If using --s3-download, move the processed extracts from ./inbox to ./archive when done
   --skip-unzip       Only process files that are already unzipped in the local directory
   --verbose, -v      Sets logging level to DEBUG mode
@@ -72,7 +72,7 @@ $ ./cris_import.py --s3-download --s3-upload --s3-archive --csv --pdf --workers 
 
 ### Local import
 
-Process any extract zips in your local `./extracts` directory. CSVs will be loaded ino the db, and crash diagrams will be extracted but not uploaded to S3.
+Process any extract zips in your local `./extracts` directory. CSVs will be loaded into the db, and crash diagrams will be extracted but not uploaded to S3.
 
 ```shell
 $ ./cris_import.py --csv --pdf
@@ -98,6 +98,6 @@ $ ./cris_import.py --pdf --skip-unzip --s3-upload --workers 8 --verbose
 
 ## CR3 Narrative Extraction - `cr3_ocr_narrative.py`
 
-This utility script extracts crash narrative data from CR3 PDFs using Optical Character Recognition (OCR). Although CRIS provides an `investigator_narrative` column, it is often blank due to an unknown CRIS issues tracked [here](https://github.com/cityofaustin/atd-data-tech/issues/18971).
+This utility script extracts crash narrative data from CR3 PDFs using Optical Character Recognition (OCR). Although CRIS provides an `investigator_narrative` column, it is often blank due to an unknown CRIS issue tracked [here](https://github.com/cityofaustin/atd-data-tech/issues/18971).
 
 
