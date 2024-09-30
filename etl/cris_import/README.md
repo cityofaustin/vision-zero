@@ -99,5 +99,3 @@ $ ./cris_import.py --pdf --skip-unzip --s3-upload --workers 8 --verbose
 ## CR3 Narrative Extraction - `cr3_ocr_narrative.py`
 
 This utility script extracts crash narrative data from CR3 PDFs using Optical Character Recognition (OCR). Although CRIS provides an `investigator_narrative` column, it is often blank due to an unknown CRIS issue tracked [here](https://github.com/cityofaustin/atd-data-tech/issues/18971).
-
-
