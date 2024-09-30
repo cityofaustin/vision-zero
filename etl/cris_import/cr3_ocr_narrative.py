@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from datetime import datetime, timezone
 from concurrent.futures import ProcessPoolExecutor
 
@@ -33,7 +34,7 @@ def extract_narrative_pdf(cris_crash_id, crash_pk, index):
     cr3_version = get_cr3_version(page)
     logger.debug(f"CR3 version: {cr3_version}")
 
-    # uncomment to save a copy of the pdf page image page conversion
+    # uncomment to save a copy of the pdf page image
     # page.save(f"temp/{cris_crash_id}_page_{cr3_version}.jpeg")
 
     bbox = NARRATIVE_BBOX_PIXELS[cr3_version]
