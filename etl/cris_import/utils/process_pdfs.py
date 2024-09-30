@@ -16,7 +16,7 @@ from utils.settings import (
     CR3_FORM_V0_TEST_PIXELS,
 )
 
-ENV = os.getenv("ENV")
+ENV = os.getenv("BUCKET_ENV")
 logger = get_logger()
 
 

@@ -2,21 +2,23 @@
 
 This ETL manages the processing and importing of TxDOT CRIS data into the Vision Zero database.
 
-All data processing is managed by a single script, `cris_import.py` which processes both CSV files and CR3 PDF crash reports. The script supports a number of CLI arguments to handle a number of data processing scenarios.
+The following scripts are available:
 
-## Quick start
+- **`cris_import.py`**: the primary data import script which processes both CSV files and CR3 PDF crash reports.
+- **`cr3_ocr_narrative.py`**: a utility script which extracts crash narrative data from CR3 PDFs using Optical Character Recognition (OCR)
+- **`_restore_zips_from_archive.py`**: a development helper script that moves CRIS extract zips from `./archive` to `./inbox` in the S3 bucket.
 
-Set your `ENV` to `dev` in order to safely run the S3 operations locally.
+## Quick start - CRIS import
 
 1. Start your local Vision Zero cluster (database + Hasura + editor).
 
-2. Save a copy of the `env_template` file as `.env`, and fill in the details.
+2. Save a copy of the `env_template` file as `.env`, and fill in the details. Set the `BUCKET_ENV` variable to `dev` in order to safely run the S3 operations locally.
 
 3. Build and run the docker image. This will drop you into the docker image's shell:
 
 ```shell
-$ docker compose build # <- only need to do this once
-$ docker compose run cris_import
+docker compose build # <- do this once, and when dependencies change
+docker compose run cris_import
 ```
 
 4. Run the CRIS import script. This will download any extracts available in S3, load the CSV crash records into the database, crop crash diagrams out of the CR3 PDFs, and upload the CR3 pdfs and crash diagrams to the s3 bucket.
@@ -30,20 +32,21 @@ $ ./cris_import.py --s3-download --s3-upload --csv --pdf
 
 Create your environment by saving a copy of the `env_template` file as `.env`. The template includes default values for local development. See the password store for more details.
 
-All interactions with AWS S3 occur with against a single bucket which has subdirectores for the `dev` and `prod` environments. If you set your `ENV` to `dev` you can safely run this ETL's S3 operations.
+All interactions with AWS S3 occur with against a single bucket which has subdirectores for the `dev` and `prod` environments. If you set your `BUCKET_ENV` to `dev` you can safely run this ETL's S3 operations.
 
 ```
-ENV=dev
-HASURA_GRAPHQL_ENDPOINT="http://localhost:8084/v1/graphql"
+BUCKET_ENV=dev
+HASURA_GRAPHQL_ENDPOINT=http://localhost:8084/v1/graphql
+HASURA_GRAPHQL_ADMIN_SECRET=hasurapassword
 AWS_ACCESS_KEY_ID=
 AWS_SECRET_ACCESS_KEY=
 BUCKET_NAME=
 EXTRACT_PASSWORD=
 ```
 
-## Usage examples
+## CRIS Import - `cris_import.py`
 
-The only script that should be run directly is `cris_import.py`. It supports the following CLI args:
+This is the primary data import script which processes both CSV files and CR3 PDF crash reports. It supports a number of CLI args, with usage examples described below.
 
 ```shell
   --csv              Process CSV files. At least one of --csv or --pdf is required.
@@ -92,3 +95,9 @@ $ ./cris_import.py --skip-unzip --csv
 # process pdfs with more workers and in debug mode
 $ ./cris_import.py --pdf --skip-unzip --s3-upload --workers 8 --verbose
 ```
+
+## CR3 Narrative Extraction - `cr3_ocr_narrative.py`
+
+This utility script extracts crash narrative data from CR3 PDFs using Optical Character Recognition (OCR). Although CRIS provides an `investigator_narrative` column, it is often blank due to an unknown CRIS issues tracked [here](https://github.com/cityofaustin/atd-data-tech/issues/18971).
+
+
