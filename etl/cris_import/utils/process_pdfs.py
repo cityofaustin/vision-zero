@@ -13,7 +13,6 @@ from utils.files import upload_file_to_s3
 from utils.settings import (
     DIAGRAM_BBOX_PIXELS,
     CR3_FORM_V2_TEST_PIXELS,
-    CR3_FORM_V0_TEST_PIXELS,
 )
 
 ENV = os.getenv("BUCKET_ENV")

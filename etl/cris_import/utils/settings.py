@@ -32,17 +32,6 @@ CR3_FORM_V2_TEST_PIXELS = {
     ],
 }
 
-CR3_FORM_V0_TEST_PIXELS = {
-    "large": [
-        # (1791, 310),
-        # (1791, 325),
-        # (1791, 350),
-        (4500, 6020),
-        (4500, 6040),
-        (4500, 6060),
-    ]
-}
-
 
 CSV_UPLOAD_BATCH_SIZE = 1000
 
