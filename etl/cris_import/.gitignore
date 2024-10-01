@@ -1,3 +1,4 @@
 extracts/*
 !extracts/*.md
 *.zip
+*.jpeg
