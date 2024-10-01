@@ -2,6 +2,7 @@ import React from "react";
 import { useQuery } from "@apollo/react-hooks";
 import { useAuth0, isReadOnly } from "../auth/authContext";
 import { formatCostToDollars, formatDateTimeString } from "../helpers/format";
+import SwapAddressButton from "../views/Crashes/SwapAddressButton";
 
 import {
   Button,
@@ -25,6 +26,7 @@ const DataTable = ({
   handleInputChange,
   handleFieldUpdate,
   downloadGlobal,
+  crashRefetch,
 }) => {
   // Disable edit features if only role is "readonly"
   const { getRoles } = useAuth0();
@@ -46,7 +48,16 @@ const DataTable = ({
         return (
           <Col key={i} md="6">
             <Card key={section.title}>
-              <CardHeader>{section.title}</CardHeader>
+              <CardHeader>
+                {section.title}
+                {section.title === "Primary Street Information" &&
+                  !isReadOnlyUser && (
+                    <SwapAddressButton
+                      crash={data?.crash}
+                      crashRefetch={crashRefetch}
+                    />
+                  )}
+              </CardHeader>
               <CardBody>
                 <Table responsive striped hover>
                   <tbody>
