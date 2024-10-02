@@ -41,3 +41,17 @@ services:
     build: viewer
     volumes:
       - ./viewer:/root/viewer
+
+  postgis:
+    container_name: visionzero-postgis
+    build: database
+    env_file:
+      - .env
+    volumes:
+      - visionzero_postgis_pgdata:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+
+volumes:
+  visionzero_postgis_pgdata:
+    name: visionzero_postgis_pgdata
