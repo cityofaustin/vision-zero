@@ -39,9 +39,9 @@ jobs:
           pip3 install awscli boto3 virtualenv requests
       
 
-
-
-      #     curl -L https://github.com/hasura/graphql-engine/raw/stable/cli/get.sh | sh
+      - name: "Install the graphql-engine CLI"
+        run: |
+          curl -L https://github.com/hasura/graphql-engine/raw/stable/cli/get.sh | sh
 
       # # Run the shell commands using the AWS environment variables
       # - name: "Build & Publish Database Documentation"
