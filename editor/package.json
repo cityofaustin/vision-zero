@@ -1,6 +1,6 @@
 {
-  "name": "atd-vz-data",
-  "version": "2.0.2",
+  "name": "vision-zero-editor",
+  "version": "2.1.0",
   "homepage": "./",
   "description": "ATD Vision Zero Editor",
   "author": "ATD Data & Technology Services",
@@ -8,7 +8,7 @@
   "private": true,
   "repository": {
     "type": "git",
-    "url": "git@github.com:cityofaustin/atd-vz-data.git"
+    "url": "git@github.com:cityofaustin/vision-zero.git"
   },
   "dependencies": {
     "@apollo/react-hooks": "^3.0.0",
@@ -76,7 +76,7 @@
     "eject": "react-scripts eject"
   },
   "bugs": {
-    "url": "https://github.com/cityofaustin/atd-vz-data/issues"
+    "url": "https://github.com/cityofaustin/vision-zero/issues"
   },
   "eslintConfig": {
     "extends": "react-app"
