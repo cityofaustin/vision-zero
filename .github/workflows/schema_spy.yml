@@ -41,7 +41,7 @@ jobs:
 
       - name: "Install the graphql-engine CLI"
         run: |
-          curl -L https://github.com/hasura/graphql-engine/raw/stable/cli/get.sh | sh
+          curl -L https://github.com/hasura/graphql-engine/raw/stable/cli/get.sh | /bin/bash
 
       # # Run the shell commands using the AWS environment variables
       # - name: "Build & Publish Database Documentation"
