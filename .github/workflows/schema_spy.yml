@@ -56,3 +56,5 @@ jobs:
           echo "GR: ${GITHUB_REF}"
           echo "PWD: $(pwd)"
           cd ./database;
+          ./hasura-cluster setenv local;
+          ./hasura-cluster start;
