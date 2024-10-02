@@ -38,21 +38,21 @@ jobs:
           sudo apt-get install -y python3-setuptools
           pip3 install awscli boto3 virtualenv requests
       
-
+      # Install the graphql-engine CLI
       - name: "Install the graphql-engine CLI"
         run: |
           curl -L https://github.com/hasura/graphql-engine/raw/stable/cli/get.sh | /bin/bash
 
-      # # Run the shell commands using the AWS environment variables
-      # - name: "Build & Publish Database Documentation"
-      #   env:
-      #     AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-      #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      #   run: |
-      #     export BRANCH_NAME=${GITHUB_REF##*/}
-      #     echo "SHA: ${GITHUB_SHA}"
-      #     echo "ACTION/BRANCH_NAME: ${BRANCH_NAME}"
-      #     echo "GR: ${GITHUB_REF}"
-      #     echo "PWD: $(pwd)"
-      #     cd ./database;
+      # Run the shell commands using the AWS environment variables
+      - name: "Build & Publish Database Documentation"
+        env:
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          export BRANCH_NAME=${GITHUB_REF##*/}
+          echo "SHA: ${GITHUB_SHA}"
+          echo "ACTION/BRANCH_NAME: ${BRANCH_NAME}"
+          echo "GR: ${GITHUB_REF}"
+          echo "PWD: $(pwd)"
+          cd ./database;
