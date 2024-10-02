@@ -177,7 +177,10 @@ const DataTable = ({
                                         type="select"
                                       >
                                         {selectOptions.map(option => (
-                                          <option value={option[`id`]}>
+                                          <option
+                                            value={option[`id`]}
+                                            key={option["id"]}
+                                          >
                                             {option[`label`]}
                                           </option>
                                         ))}
