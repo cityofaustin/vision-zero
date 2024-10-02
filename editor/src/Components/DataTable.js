@@ -20,7 +20,6 @@ import { GET_LOOKUPS } from "../queries/lookups";
 const DataTable = ({
   dataMap,
   dataTable,
-  formData,
   setEditField,
   editField,
   data,
