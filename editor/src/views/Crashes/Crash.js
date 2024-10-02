@@ -88,10 +88,11 @@ function Crash(props) {
           changes: { ...formData, ...secondaryFormData },
         },
       })
-      .then(res => crashRefetch());
-
-    setEditField("");
-    setFormData({});
+      .then(res => crashRefetch())
+      .then(res => {
+        setEditField("");
+        setFormData({});
+      });
   };
 
   const crashRecord = {
