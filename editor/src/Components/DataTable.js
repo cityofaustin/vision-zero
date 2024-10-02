@@ -35,7 +35,7 @@ const DataTable = ({
   const isReadOnlyUser = isReadOnly(roles);
 
   // Sets the state of the value for the current field being edited
-  const [editValue, setEditValue] = useState();
+  const [editValue, setEditValue] = useState("");
 
   // Import Lookup tables and aggregate an object of uiType= "select" options
   const { data: lookupSelectOptions } = useQuery(GET_LOOKUPS);
@@ -49,7 +49,7 @@ const DataTable = ({
     e.preventDefault();
 
     setEditField("");
-    setEditValue();
+    setEditValue("");
   };
 
   return (
