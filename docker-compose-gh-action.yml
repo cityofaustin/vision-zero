@@ -46,7 +46,7 @@ services:
     container_name: visionzero-postgis
     build: database
     env_file:
-      - .env
+      - .env_gh_action
     volumes:
       - visionzero_postgis_pgdata:/var/lib/postgresql/data
     ports:

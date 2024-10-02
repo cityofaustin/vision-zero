@@ -55,4 +55,4 @@ jobs:
           echo "ACTION/BRANCH_NAME: ${BRANCH_NAME}"
           echo "GR: ${GITHUB_REF}"
           echo "PWD: $(pwd)"
-          docker compose -f docker-compose.yml -f docker-compose-docker-volume.yml up -d postgis
+          docker compose -f docker-compose-gh-action.yml  up -d postgis
