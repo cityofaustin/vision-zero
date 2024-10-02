@@ -36,7 +36,7 @@ jobs:
       - name: "Install Python Libraries"
         run: |
           sudo apt-get install -y python3-setuptools
-          pip3 install awscli boto3 virtualenv requests
+          pip3 install awscli boto3 virtualenv requests shtab python-dotenv --break-system-packages
       
       # Install the graphql-engine CLI
       - name: "Install the graphql-engine CLI"
@@ -55,6 +55,4 @@ jobs:
           echo "ACTION/BRANCH_NAME: ${BRANCH_NAME}"
           echo "GR: ${GITHUB_REF}"
           echo "PWD: $(pwd)"
-          cd ./database;
-          ./hasura-cluster setenv local;
-          ./hasura-cluster start;
+          docker compose -f docker-compose.yml -f docker-compose-docker-volume.yml up -d postgis
