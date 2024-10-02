@@ -20,21 +20,27 @@ jobs:
     runs-on: ubuntu-24.04
     # Setup Python
     steps:
+
+      # Checkout our code
+      - name: "Checkout Code"
+        uses: actions/checkout@v4
+
+      # Get python installed
       - uses: actions/setup-python@v5
         name: "Install setup-python@v5"
         with:
           python-version: "3.10"
           # architecture: "x64"
 
-      # Checkout our code
-      - name: "Checkout Code"
-        uses: actions/checkout@v4
+      # Install python libraries
+      - name: "Install Python Libraries"
+        run: |
+          sudo apt-get install -y python3-setuptools
+          pip3 install awscli boto3 virtualenv requests
+      
 
-      # # Then install the AWC CLI tools & boto3
-      # - name: "Install Python Libraries & graphql-engine CLI"
-      #   run: |
-      #     sudo apt-get install -y python3-setuptools
-      #     pip3 install awscli boto3 virtualenv requests
+
+
       #     curl -L https://github.com/hasura/graphql-engine/raw/stable/cli/get.sh | sh
 
       # # Run the shell commands using the AWS environment variables
