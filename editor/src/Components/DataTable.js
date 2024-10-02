@@ -41,7 +41,7 @@ const DataTable = ({
 
   const handleEditClick = (field, fieldValue) => {
     setEditField(field);
-    setEditValue(fieldValue ? fieldValue : "");
+    setEditValue(fieldValue != null ? fieldValue : "");
   };
 
   const handleCancelClick = e => {
