@@ -66,4 +66,4 @@ jobs:
           docker compose logs;
           echo "Logs complete"
           cd database;
-          hasura migrate apply --database-name=atd_vz_data;
+          hasura --skip-update-check migrate apply;
