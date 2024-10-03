@@ -53,6 +53,7 @@ jobs:
           echo "GR: ${GITHUB_REF}";
           echo "PWD: $(pwd)";
           docker compose -f docker-compose-gh-action.yml up -d postgis graphql-engine;
-          cd database;
           sleep 10;
+          docker compose logs;
+          cd database;
           hasura migrate apply;
