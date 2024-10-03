@@ -47,11 +47,11 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: |
-          export BRANCH_NAME=${GITHUB_REF##*/}
-          echo "SHA: ${GITHUB_SHA}"
-          echo "ACTION/BRANCH_NAME: ${BRANCH_NAME}"
-          echo "GR: ${GITHUB_REF}"
-          echo "PWD: $(pwd)"
-          docker compose -f docker-compose-gh-action.yml up -d postgis graphql-engine
-          ls
-          hasura migrate apply
+          export BRANCH_NAME=${GITHUB_REF##*/};
+          echo "SHA: ${GITHUB_SHA}";
+          echo "ACTION/BRANCH_NAME: ${BRANCH_NAME}";
+          echo "GR: ${GITHUB_REF}";
+          echo "PWD: $(pwd)";
+          docker compose -f docker-compose-gh-action.yml up -d postgis graphql-engine;
+          cd database;
+          hasura migrate apply;
