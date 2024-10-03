@@ -54,4 +54,5 @@ jobs:
           echo "PWD: $(pwd)";
           docker compose -f docker-compose-gh-action.yml up -d postgis graphql-engine;
           cd database;
+          sleep 10;
           hasura migrate apply;
