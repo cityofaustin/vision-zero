@@ -60,10 +60,9 @@ jobs:
 
           docker compose -f docker-compose-gh-action.yml up -d postgis;
           sleep 10;
+          docker compose logs postgis;
           docker compose -f docker-compose-gh-action.yml up -d graphql-engine;
           sleep 10;
-          echo "Logs:";
-          docker compose logs;
-          echo "Logs complete"
+          docker compose logs graphql-engine;
           cd database;
-          hasura --skip-update-check --database-name=atd_vz_data migrate apply;
+          # hasura --skip-update-check --database-name=atd_vz_data migrate apply;
