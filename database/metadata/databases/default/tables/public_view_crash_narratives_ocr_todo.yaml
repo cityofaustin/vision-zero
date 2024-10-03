@@ -1,0 +1,3 @@
+table:
+  name: view_crash_narratives_ocr_todo
+  schema: public
