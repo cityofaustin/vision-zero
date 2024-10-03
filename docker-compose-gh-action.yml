@@ -10,11 +10,16 @@ services:
       HASURA_GRAPHQL_DATABASE_URL: postgres://visionzero:visionzero@postgis:5432/atd_vz_data
       HASURA_GRAPHQL_ENABLE_CONSOLE: "true"
       HASURA_GRAPHQL_CONSOLE_ASSETS_DIR: /srv/console-assets
+
   postgis:
     container_name: visionzero-postgis
     build: database
-    env_file:
-      - .env_gh_action
+    environment:
+      POSTGRES_PASSWORD: "visionzero"
+      POSTGRES_USER: "visionzero"
+      POSTGRES_DB: "atd_vz_data"
+      POSTGRES_HOST_AUTH_METHOD: "trust"
+      PGDATA: "/var/lib/postgresql/data/pgdata"
     volumes:
       - visionzero_postgis_pgdata:/var/lib/postgresql/data
     ports:
