@@ -1,6 +1,3 @@
-#
-# Builds schema spy db docs
-#
 name: "Build & Publish DB Documentation"
 
 on:
