@@ -65,4 +65,4 @@ jobs:
           sleep 10;
           docker compose logs graphql-engine;
           cd database;
-          # hasura --skip-update-check --database-name=atd_vz_data migrate apply;
+          hasura --skip-update-check --database-name=default migrate apply;
