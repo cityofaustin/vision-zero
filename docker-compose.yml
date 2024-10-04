@@ -38,6 +38,7 @@ services:
       - .env
     volumes:
       - visionzero_postgis_pgdata:/var/lib/postgresql/data
+      - ./database/snapshots:/snapshots
     ports:
       - 5432:5432
 
