@@ -63,9 +63,9 @@ function Crash(props) {
   if (crashLoading) return "Loading...";
   if (crashError) return `Error! ${crashError.message}`;
 
-  const handleInputChange = e => {
+  const handleInputChange = editValue => {
     const newFormState = Object.assign(formData, {
-      [editField]: e.target.value,
+      [editField]: editValue ? editValue.toString().toUpperCase() : null,
       updated_by: localStorage.getItem("hasura_user_email"),
     });
     setFormData(newFormState);
@@ -88,9 +88,11 @@ function Crash(props) {
           changes: { ...formData, ...secondaryFormData },
         },
       })
-      .then(res => crashRefetch());
-
-    setEditField("");
+      .then(res => crashRefetch())
+      .then(res => {
+        setEditField("");
+        setFormData({});
+      });
   };
 
   const crashRecord = {

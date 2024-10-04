@@ -105,6 +105,24 @@ UPSERT_RECORD_MUTATIONS = {
 }
 
 
+NARRATIVES_TODO_QUERY = """
+  query GetNarrativesToOCR {
+    view_crash_narratives_ocr_todo(limit: 1000) {
+      id,
+      cris_crash_id
+    }
+  }
+"""
+
+UPDATE_CRASH_NARRATIVE_OCR_MUTATION = """
+mutation UpdateCrashNarrativeOCR($updates: crashes_edits_set_input!, $id: Int!) {
+  update_crashes_edits_by_pk(pk_columns: {id: $id}, _set: $updates) {
+    id
+  }
+}
+"""
+
+
 def make_hasura_request(*, query, variables=None):
     """Make a POST request to the graphql API.
 

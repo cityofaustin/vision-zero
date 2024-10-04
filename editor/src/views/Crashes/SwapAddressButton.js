@@ -4,12 +4,14 @@ import ConfirmModal from "../../Components/ConfirmModal";
 import { useMutation } from "@apollo/react-hooks";
 import { UPDATE_CRASH } from "../../queries/crashes";
 
-const SwapAddressButton = ({ crash, crashRefetch }) => {
+const SwapAddressButton = ({ crash, crashRefetch, setEditField }) => {
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
 
   const [updateCrash] = useMutation(UPDATE_CRASH);
 
   const toggleModal = () => {
+    // make sure we are not in edit mode on a field
+    setEditField("");
     setIsConfirmModalOpen(!isConfirmModalOpen);
   };
 

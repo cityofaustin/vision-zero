@@ -1,13 +1,15 @@
+from io import BytesIO
 import os
 import subprocess
 
 from boto3 import client, resource
+from botocore.exceptions import ClientError
 
 from utils.logging import get_logger
 
 from utils.settings import LOCAL_EXTRACTS_DIR
 
-ENV = os.environ["ENV"]
+ENV = os.environ["BUCKET_ENV"]
 BUCKET_NAME = os.environ["BUCKET_NAME"]
 EXTRACT_PASSWORD = os.environ["EXTRACT_PASSWORD"]
 
@@ -144,3 +146,34 @@ def get_extract_dir(extract_name):
 
 def upload_file_to_s3(file_path, object_key):
     s3_client.upload_file(file_path, BUCKET_NAME, object_key)
+
+
+def download_cr3_pdf(cris_crash_id):
+    """Download a CR3 PDF from S3
+
+    Args:
+        cris_crash_id (int): The CRIS crash ID
+
+    Raises:
+        FileNotFoundError: When the requested PDF file is not found
+        in the bucket
+
+    Returns:
+        bytes: The downloaded file
+    """
+    pdf = BytesIO()
+    ENV = "prod"
+    object_key = f"{ENV}/cr3s/pdfs/{cris_crash_id}.pdf"
+    logger.debug(f"Downloading PDF: {object_key}")
+    try:
+        s3_client.download_fileobj(BUCKET_NAME, object_key, pdf)
+    except ClientError as e:
+        if e.response["Error"]["Code"] == "404":
+            raise FileNotFoundError(
+                f"'{object_key}' not found in bucket '{BUCKET_NAME}'"
+            )
+
+        else:
+            raise e
+    pdf.seek(0)
+    return pdf.read()
