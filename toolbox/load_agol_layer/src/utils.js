@@ -100,7 +100,7 @@ function recursiveCoordinateHandler(coords) {
   }
 }
 
-const reduceMultiPolyGeometryPrecision = (features) => {
+const reduceGeomPrecision = (features) => {
   features.forEach(({ geometry }) => {
     recursiveCoordinateHandler(geometry.coordinates);
   });
@@ -145,5 +145,5 @@ module.exports = {
   makeUniformMultiPoly,
   handleFields,
   makeHasuraRequest,
-  reduceMultiPolyGeometryPrecision,
+  reduceGeomPrecision,
 };

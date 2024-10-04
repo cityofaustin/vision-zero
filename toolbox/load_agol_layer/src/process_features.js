@@ -9,7 +9,7 @@ const {
   handleFields,
   makeUniformMultiPoly,
   makeHasuraRequest,
-  reduceMultiPolyGeometryPrecision,
+  reduceGeomPrecision,
 } = require("./utils");
 const { LAYERS } = require("./settings");
 
@@ -42,7 +42,7 @@ const main = async ({ layer: layerName }) => {
 
   handleFields(geojson.features, layerConfig.fields);
 
-  reduceMultiPolyGeometryPrecision(geojson.features);
+  reduceGeomPrecision(geojson.features);
 
   if (layerConfig.shouldTruncateFirst) {
     throw "Not implemented";
