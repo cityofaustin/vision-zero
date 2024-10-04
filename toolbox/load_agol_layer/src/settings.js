@@ -13,12 +13,36 @@ const LAYERS = {
     layer_id: 0,
     query_params: { ...DEFAULT_QUERY_PARAMS },
     fields: [],
+    shouldTruncateFirst: true,
+    truncateRowsMutation: `
+      mutation DeleteNonCoaRoadways {
+        delete_non_coa_roadways(where: { geometry: { _is_null: false } }) {
+          affected_rows
+        }
+      }
+    `,
   },
   signal_engineer_areas: {
     service_name: "TRANSPORTATION_signal_engineer_areas",
     layer_id: 0,
     query_params: { ...DEFAULT_QUERY_PARAMS },
     fields: ["SIGNAL_ENG_AREA", "SIGNAL_ENGINEER_AREA_ID"],
+    shouldTruncateFirst: false,
+    upsertMutation: `
+      mutation UpsertSignalEngineerAreas(
+        $objects: [signal_engineer_areas_insert_input!]!
+      ) {
+        insert_signal_engineer_areas(
+          objects: $objects
+          on_conflict: {
+            constraint: signal_engineer_areas_signal_engineer_area_id_key
+            update_columns: [signal_eng_area, geometry]
+          }
+        ) {
+          affected_rows
+        }
+      }
+    `,
   },
 };
 

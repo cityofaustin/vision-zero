@@ -1,3 +1,4 @@
+//  node --env-file=local.env src/process_features.js -l signal_engineer_areas
 const fs = require("fs");
 const { program, Option } = require("commander");
 const { arcgisToGeoJSON } = require("@terraformer/arcgis");
@@ -7,9 +8,14 @@ const {
   getEsriJson,
   handleFields,
   makeUniformMultiPoly,
+  makeHasuraRequest,
+  reduceMultiPolyGeometryPrecision,
 } = require("./utils");
 const { LAYERS } = require("./settings");
-// construct CLI
+
+/**
+ * CLI
+ */
 program.addOption(
   new Option("-l, --layer <name>", "layer name")
     .choices(Object.keys(LAYERS))
@@ -18,6 +24,9 @@ program.addOption(
 program.parse();
 const args = program.opts();
 
+/**
+ * Main function upsert an AGOL layer into the DB
+ */
 const main = async ({ layer: layerName }) => {
   console.log(`Processing ${layerName}`);
   const layerConfig = LAYERS[layerName];
@@ -30,13 +39,24 @@ const main = async ({ layer: layerName }) => {
   if (esriJson.geometryType.toLowerCase().includes("polygon")) {
     makeUniformMultiPoly(geojson.features);
   }
-  handleFields(geojson.features, layerConfig.fields);
-  console.log(geojson.features);
 
-  //   saveJsonFile(GEOJSON_FILENAME, {
-  //     type: "FeatureCollection",
-  //     features: features,
-  //   });
+  handleFields(geojson.features, layerConfig.fields);
+
+  reduceMultiPolyGeometryPrecision(geojson.features);
+
+  if (layerConfig.shouldTruncateFirst) {
+    throw "Not implemented";
+  }
+
+  const objects = geojson.features.map(({ properties, geometry }) => ({
+    ...properties,
+    geometry,
+  }));
+  const result = await makeHasuraRequest({
+    query: layerConfig.upsertMutation,
+    variables: { objects },
+  });
+  console.log(result);
 };
 
 main(args);

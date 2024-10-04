@@ -1,8 +1,12 @@
+const { error } = require("console");
 const fs = require("fs");
 
 const AGOL_USERNAME = process.env.AGOL_USERNAME;
 const AGOL_PASSWORD = process.env.AGOL_PASSWORD;
 const AGOL_ORG_BASE_URL = "https://austin.maps.arcgis.com";
+
+const COORDINATE_DECIMAL_PLACES = 6;
+const coordPrecisionMultiplier = Math.pow(10, COORDINATE_DECIMAL_PLACES);
 
 const getEsriLayerUrl = ({ service_name, layer_id, query_params }) => {
   const queryString = new URLSearchParams(query_params).toString();
@@ -83,6 +87,56 @@ const handleFields = (features, fields) => {
   });
 };
 
+function recursiveCoordinateHandler(coords) {
+  if (coords.some((value) => typeof value === "number")) {
+    // reduce precision of coordinates
+    return coords.forEach((value, i) => {
+      coords[i] =
+        Math.round(value * coordPrecisionMultiplier) / coordPrecisionMultiplier;
+    });
+  } else if (coords.some((value) => Array.isArray(value))) {
+    // keep searching for coordinates
+    return coords.forEach((coords) => recursiveCoordinateHandler(coords));
+  }
+}
+
+const reduceMultiPolyGeometryPrecision = (features) => {
+  features.forEach(({ geometry }) => {
+    recursiveCoordinateHandler(geometry.coordinates);
+  });
+};
+
+const makeHasuraRequest = async ({ query, variables }) => {
+  const body = JSON.stringify({
+    query,
+    variables,
+  });
+
+  const url = process.env.HASURA_GRAPHQL_ENDPOINT;
+  try {
+    const response = await fetch(url, {
+      body,
+      method: "POST",
+      headers: {
+        "X-Hasura-Admin-Secret": process.env.HASURA_GRAPHQL_ADMIN_SECRET,
+        "content-type": "application/json",
+      },
+    });
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP error: ${response.status} - ${errorText}`);
+    }
+    const responseData = await response.json();
+
+    if (responseData?.errors) {
+      throw JSON.stringify(responseData.errors);
+    }
+    return responseData;
+  } catch (error) {
+    throw error;
+  }
+};
+
 module.exports = {
   getEsriLayerUrl,
   getEsriToken,
@@ -90,4 +144,6 @@ module.exports = {
   getEsriJson,
   makeUniformMultiPoly,
   handleFields,
+  makeHasuraRequest,
+  reduceMultiPolyGeometryPrecision,
 };
