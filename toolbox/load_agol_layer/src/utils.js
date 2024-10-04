@@ -24,7 +24,11 @@ const getEsriJson = async (layerUrl) => {
       const errorText = await response.text();
       throw new Error(`HTTP error: ${response.status} - ${errorText}`);
     }
-    return await response.json();
+    const data = await response.json();
+    if (data?.error) {
+      throw JSON.stringify(data.error);
+    }
+    return data;
   } catch (error) {
     console.error("Failed to fetch Esri JSON:", error);
     throw error;

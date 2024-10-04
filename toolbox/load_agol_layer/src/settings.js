@@ -9,14 +9,23 @@ const DEFAULT_QUERY_PARAMS = {
 
 const LAYERS = {
   non_coa_roadways: {
-    service_name: "f",
+    service_name: "On_System_Polygon_Feature",
     layer_id: 0,
     query_params: { ...DEFAULT_QUERY_PARAMS },
     fields: [],
     shouldTruncateFirst: true,
-    truncateRowsMutation: `
+    truncateMutation: `
       mutation DeleteNonCoaRoadways {
         delete_non_coa_roadways(where: { geometry: { _is_null: false } }) {
+          affected_rows
+        }
+      }
+    `,
+    upsertMutation: `
+      mutation InsertNonCoaRoadways(
+        $objects: [non_coa_roadways_insert_input!]!
+      ) {
+        insert_non_coa_roadways(objects: $objects) {
           affected_rows
         }
       }

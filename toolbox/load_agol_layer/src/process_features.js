@@ -45,7 +45,7 @@ const main = async ({ layer: layerName }) => {
   reduceGeomPrecision(geojson.features);
 
   if (layerConfig.shouldTruncateFirst) {
-    throw "Not implemented";
+    await makeHasuraRequest({ query: layerConfig.truncateMutation });
   }
 
   const objects = geojson.features.map(({ properties, geometry }) => ({
