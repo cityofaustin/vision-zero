@@ -25,7 +25,7 @@ program.parse();
 const args = program.opts();
 
 /**
- * Main function upsert an AGOL layer into the DB
+ * Main function to upsert an AGOL layer into the DB
  */
 const main = async ({ layer: layerName }) => {
   console.log(`Processing ${layerName}`);
