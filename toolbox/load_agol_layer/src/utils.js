@@ -7,31 +7,12 @@ const AGOL_ORG_BASE_URL = "https://austin.maps.arcgis.com";
 const COORDINATE_DECIMAL_PLACES = 6;
 const coordPrecisionMultiplier = Math.pow(10, COORDINATE_DECIMAL_PLACES);
 
+/**
+ * Construct a URL to an AGOL service
+ */
 const getEsriLayerUrl = ({ service_name, layer_id, query_params }) => {
   const queryString = new URLSearchParams(query_params).toString();
   return `https://services.arcgis.com/0L95CJ0VTaxqcmED/arcgis/rest/services/${service_name}/FeatureServer/${layer_id}/query?${queryString}`;
-};
-
-const saveJsonFile = (name, data) => {
-  fs.writeFileSync(name, JSON.stringify(data));
-};
-
-const getEsriJson = async (layerUrl) => {
-  try {
-    const response = await fetch(layerUrl);
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`HTTP error: ${response.status} - ${errorText}`);
-    }
-    const data = await response.json();
-    if (data?.error) {
-      throw JSON.stringify(data.error);
-    }
-    return data;
-  } catch (error) {
-    console.error("Failed to fetch Esri JSON:", error);
-    throw error;
-  }
 };
 
 /**
@@ -55,42 +36,6 @@ const makeUniformMultiPoly = (features) => {
 };
 
 /**
- * Get a token that can be used to authenticate with the ArcGIS REST API
- * @returns {{ token: string }} An object containing a `token` property with the token string
- */
-async function getEsriToken() {
-  const url = `${AGOL_ORG_BASE_URL}/sharing/rest/generateToken`;
-  const data = {
-    username: AGOL_USERNAME,
-    password: AGOL_PASSWORD,
-    referer: "http://www.arcgis.com",
-    f: "pjson",
-  };
-
-  const body = new URLSearchParams(data);
-  try {
-    const response = await fetch(url, {
-      method: "POST",
-      body,
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-    });
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`HTTP error: ${response.status} - ${errorText}`);
-    }
-    return await response.json();
-  } catch (error) {
-    throw new Error(
-      `Unable to get token: ${
-        error.response ? error.response.data : error.message
-      }`
-    );
-  }
-}
-
-/**
  * Processes GeoJSON features by reducing their properties to a specified set of fields
  * and also lowercasing each field name.
  *
@@ -110,13 +55,13 @@ const handleFields = (features, fields) => {
 };
 
 /**
- * Recursively handles GeoJSON coordinates by reducing precision of coordinate decimals
+ * Recursively handles GeoJSON coordinates by reducing precision of decimal places.
  *
  * @param {number[] | Array<number[]>} coords - A GeoJSON coordinate array or a number array.
  * If `coords` is an array of numbers, their precision is reduced.
  * If `coords` contains arrays, the function will recurse until it finds the numbers.
  *
- * @returns {void} This function modifies the input array in place.
+ * @returns {void} Coordinates are updated in-place.
  */
 function recursiveCoordinateHandler(coords) {
   if (coords.some((value) => typeof value === "number")) {
@@ -131,27 +76,27 @@ function recursiveCoordinateHandler(coords) {
   }
 }
 
+/**
+ * Given an array of geojson features, reduce the decimal precision of each
+ * coordiante to the number of places defined by COORDINATE_DECIMAL_PLACES.
+ * @param {Object[]} features - Array of GeoJSON features
+ *
+ * @returns {void} Updates features in-places
+ */
 const reduceGeomPrecision = (features) => {
   features.forEach(({ geometry }) => {
     recursiveCoordinateHandler(geometry.coordinates);
   });
 };
 
-const makeHasuraRequest = async ({ query, variables }) => {
-  const body = JSON.stringify({
-    query,
-    variables,
-  });
-
-  const url = process.env.HASURA_GRAPHQL_ENDPOINT;
+/**
+ * Fetch wrapper that handles error handling and json parsing
+ */
+const genericJSONFetch = async ({ url, method, ...options }) => {
   try {
     const response = await fetch(url, {
-      body,
-      method: "POST",
-      headers: {
-        "X-Hasura-Admin-Secret": process.env.HASURA_GRAPHQL_ADMIN_SECRET,
-        "content-type": "application/json",
-      },
+      method,
+      ...options,
     });
     if (!response.ok) {
       const errorText = await response.text();
@@ -168,10 +113,51 @@ const makeHasuraRequest = async ({ query, variables }) => {
   }
 };
 
+/**
+ * Get a token that can be used to authenticate with the ArcGIS REST API
+ * @returns {{ token: string }} An object containing a `token` property with the token string
+ */
+async function getEsriToken() {
+  const url = `${AGOL_ORG_BASE_URL}/sharing/rest/generateToken`;
+  const data = {
+    username: AGOL_USERNAME,
+    password: AGOL_PASSWORD,
+    referer: "http://www.arcgis.com",
+    f: "pjson",
+  };
+  const body = new URLSearchParams(data);
+  const headers = { "Content-Type": "application/x-www-form-urlencoded" };
+  return genericJSONFetch({ url, method: "POST", body, headers });
+}
+
+const getEsriJson = async (url) => {
+  return genericJSONFetch({ url, method: "GET" });
+};
+
+/**
+ * Sends a request to the Hasura GraphQL API.
+ *
+ * @param {Object} params - The request parameters.
+ * @param {string} params.query - The GraphQL query string.
+ * @param {Object} [params.variables] - The variables for the GraphQL query.
+ * @returns {Object} The JSON response from the Hasura API.
+ */
+const makeHasuraRequest = async ({ query, variables }) => {
+  const body = JSON.stringify({
+    query,
+    variables,
+  });
+  const url = process.env.HASURA_GRAPHQL_ENDPOINT;
+  const headers = {
+    "X-Hasura-Admin-Secret": process.env.HASURA_GRAPHQL_ADMIN_SECRET,
+    "content-type": "application/json",
+  };
+  return genericJSONFetch({ url, method: "POST", body, headers });
+};
+
 module.exports = {
   getEsriLayerUrl,
   getEsriToken,
-  saveJsonFile,
   getEsriJson,
   makeUniformMultiPoly,
   handleFields,
