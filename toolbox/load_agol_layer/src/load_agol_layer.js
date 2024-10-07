@@ -1,4 +1,3 @@
-//  node --env-file=local.env src/process_features.js -l signal_engineer_areas
 const fs = require("fs");
 const { program, Option } = require("commander");
 const { arcgisToGeoJSON } = require("@terraformer/arcgis");
@@ -34,6 +33,15 @@ const main = async ({ layer: layerName }) => {
   layerConfig.query_params.token = token;
   const layerUrl = getEsriLayerUrl(layerConfig);
   const esriJson = await getEsriJson(layerUrl);
+
+  /**
+   * Although the ArcGIS REST API can return geojson directly, the resulting geometries
+   * are malformed. For this reason, we use terraformer package, which is an Esri
+   * product.
+   * 
+   * The issue is discussed in the Esri community, here:
+   * https://community.esri.com/t5/arcgis-online-questions/agol-export-to-geojson-holes-not-represented-as/td-p/1008140
+   */
   let geojson = arcgisToGeoJSON(esriJson);
 
   if (esriJson.geometryType.toLowerCase().includes("polygon")) {

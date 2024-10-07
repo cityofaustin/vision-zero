@@ -31,7 +31,7 @@ node --env-file=local.env src/load_agol_layer.js --layer signal_engineer_areas
 
 ### JS configuration
 
-Each layer must be configured in `LAYERS` object in [`settings.js`](/toolbox/load_agol_layer/src/settings.js). See the docstring in the settings file for specifics.
+Each layer must be configured in the `LAYERS` object in [`settings.js`](/toolbox/load_agol_layer/src/settings.js). See the docstring in the settings file for specifics.
 
 ### DB configuration
 
