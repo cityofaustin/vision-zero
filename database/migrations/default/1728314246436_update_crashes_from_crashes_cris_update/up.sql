@@ -15,13 +15,13 @@ as $$
 declare
     new_cris_jb jsonb := to_jsonb (new);
     old_cris_jb jsonb := to_jsonb (old);
-    edit_record_jb jsonb;
+    unified_record_jb jsonb;
     column_name text;
     updates_todo text [] := '{}';
     update_stmt text := 'update public.crashes set ';
 begin
     -- get corresponding the VZ record as jsonb
-    SELECT to_jsonb(crashes) INTO edit_record_jb from public.crashes where public.crashes.id = new.id;
+    SELECT to_jsonb(crashes) INTO unified_record_jb from public.crashes where public.crashes.id = new.id;
 
     -- for every key in the cris json object
     for column_name in select jsonb_object_keys(new_cris_jb) loop
@@ -29,8 +29,8 @@ begin
         continue when column_name in ('created_at', 'updated_at', 'created_by', 'updated_by');
         -- if the new cris value doesn't match the old cris value
         if(new_cris_jb -> column_name <> old_cris_jb -> column_name) then
-            -- see if the vz record has the same value as the old cris value
-            if (edit_record_jb -> column_name = old_cris_jb -> column_name) then
+            -- see if the unified record has the same value as the old cris value
+            if (unified_record_jb -> column_name = old_cris_jb -> column_name) then
                 -- this value is not overridden by VZ
                 -- so update the unified record with this new value
                 updates_todo := updates_todo || format('%I = $1.%I', column_name, column_name);
