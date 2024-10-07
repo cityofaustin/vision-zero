@@ -1,14 +1,3 @@
-create table public.change_log_crashes_edits (
-    id serial primary key,
-    record_id integer not null references public.crashes_edits (id) on delete cascade on update cascade,
-    operation_type text not null,
-    record_json jsonb not null,
-    created_at timestamp with time zone default now(),
-    created_by text not null
-);
-
-create index on public.change_log_crashes_edits (record_id);
-
 create table public.crashes_edits (
     id integer primary key references public.crashes_cris (id) on update cascade on delete cascade,
     active_school_zone_fl boolean,
@@ -73,6 +62,17 @@ create table public.crashes_edits (
     updated_by text not null default 'system',
     wthr_cond_id integer references lookups.wthr_cond (id) on update cascade on delete cascade
 );
+
+create table public.change_log_crashes_edits (
+    id serial primary key,
+    record_id integer not null references public.crashes_edits (id) on delete cascade on update cascade,
+    operation_type text not null,
+    record_json jsonb not null,
+    created_at timestamp with time zone default now(),
+    created_by text not null
+);
+
+create index on public.change_log_crashes_edits (record_id);
 
 drop trigger if exists insert_new_crashes_cris on public.crashes_cris;
 
