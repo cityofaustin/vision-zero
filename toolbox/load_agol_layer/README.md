@@ -1,6 +1,6 @@
 # ArcGIS Online Layer Helper
 
-This tool is used to load an ArcGIS Online (AGOL) layer into the Vision Zero database. It supports inserting, upserting, or replacing features in a database table with data sourced directly from AGOl.
+This tool is used to load an ArcGIS Online (AGOL) layer into the Vision Zero database. It supports inserting, upserting, or replacing features in a database table with data sourced directly from AGOL.
 
 ## Quick start
 
@@ -29,5 +29,25 @@ node --env-file=local.env src/load_agol_layer.js --layer signal_engineer_areas
 
 ## Configuration
 
-Each layer must be configured in `LAYERS` object in [`settings.js`](/src/settings.js). See the docstring in the settings file for specifics.
+### JS configuration
 
+Each layer must be configured in `LAYERS` object in [`settings.js`](/toolbox/load_agol_layer/src/settings.js). See the docstring in the settings file for specifics.
+
+### DB configuration
+
+- geometry type: use multipolygon
+- unique ID
+- what else?
+
+## CLI
+
+The `-l/--layer` arg is required to specify which layer will be processed. You can use the `--help` flag to see which layer options are available.
+
+```shell
+❯ node src/load_agol_layer.js --help
+Usage: load_agol_layer [options]
+
+Options:
+  -l, --layer <name>  layer name (choices: "non_coa_roadways", "signal_engineer_areas")
+  -h, --help          display help for comma
+```
