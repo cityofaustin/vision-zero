@@ -16,7 +16,12 @@ const getEsriLayerUrl = ({ service_name, layer_id, query_params }) => {
 };
 
 /**
- * Convert Polygon features to MultiPolygon. All other feature types are ignored.
+ * Convert Polygon features to MultiPolygon. Whereas AGOL may hold poly and multi poly
+ * geometries in the same layer, postGIS does not support this. We can easily convert
+ * polygons to multipolygons by wrapping their geometry in an outer array.
+ *
+ * Alternatively we could use a DB trigger that applies `ST_Multi` to the geometry
+ * before inserting it.
  *
  * Todo: is this even necessary?
  * @param {Object[]} features - Array of GeoJSON features
