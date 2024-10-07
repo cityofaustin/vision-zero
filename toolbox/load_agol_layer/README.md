@@ -27,17 +27,13 @@ nvm use
 node --env-file=local.env src/load_agol_layer.js --layer signal_engineer_areas
 ```
 
-## Configuration
-
-### JS configuration
+## Layer configuration
 
 Each layer must be configured in the `LAYERS` object in [`settings.js`](/toolbox/load_agol_layer/src/settings.js). See the docstring in the settings file for specifics.
 
-### DB configuration
+When creating a new database table to hold feature data, polygon geometries should always be stored in a `Multipolygon` column type to avoid future issues. As well, any columns that will be populated with AGOL feature attribute data should exactly match the column names used in AGOL, except they should be lowercase.
 
-- geometry type: use multipolygon
-- unique ID
-- what else?
+See the [database documentation](/database#geospatial-layers) about geospatial layers for additional details.
 
 ## CLI
 
