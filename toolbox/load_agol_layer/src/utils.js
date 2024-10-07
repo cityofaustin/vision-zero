@@ -1,4 +1,3 @@
-const { error } = require("console");
 const fs = require("fs");
 
 const AGOL_USERNAME = process.env.AGOL_USERNAME;
@@ -36,7 +35,12 @@ const getEsriJson = async (layerUrl) => {
 };
 
 /**
- * PostGIS requires that our feature geographies are uniformly MultiPolygon
+ * Convert Polygon features to MultiPolygon. All other feature types are ignored.
+ *
+ * Todo: is this even necessary?
+ * @param {Object[]} features - Array of GeoJSON features
+ *
+ * @returns {void} Updates the `geometry` of each feature in-place
  */
 const makeUniformMultiPoly = (features) => {
   features.forEach((feature) => {
@@ -50,6 +54,10 @@ const makeUniformMultiPoly = (features) => {
   });
 };
 
+/**
+ * Get a token that can be used to authenticate with the ArcGIS REST API
+ * @returns {{ token: string }} An object containing a `token` property with the token string
+ */
 async function getEsriToken() {
   const url = `${AGOL_ORG_BASE_URL}/sharing/rest/generateToken`;
   const data = {
@@ -82,6 +90,16 @@ async function getEsriToken() {
   }
 }
 
+/**
+ * Processes GeoJSON features by reducing their properties to a specified set of fields
+ * and also lowercasing each field name.
+ *
+ * @param {Object[]} features - Array of GeoJSON features. Each feature should have a `properties` object.
+ * @param {string[]} fields - Array of fields names to retain from the feature's properties.
+ * The field names are converted to lowercase in the resulting properties.
+ *
+ * @returns {void} Updates each feature's properties in-place.
+ */
 const handleFields = (features, fields) => {
   features.forEach((f) => {
     f.properties = fields.reduce((newProperties, field) => {
@@ -91,6 +109,15 @@ const handleFields = (features, fields) => {
   });
 };
 
+/**
+ * Recursively handles GeoJSON coordinates by reducing precision of coordinate decimals
+ *
+ * @param {number[] | Array<number[]>} coords - A GeoJSON coordinate array or a number array.
+ * If `coords` is an array of numbers, their precision is reduced.
+ * If `coords` contains arrays, the function will recurse until it finds the numbers.
+ *
+ * @returns {void} This function modifies the input array in place.
+ */
 function recursiveCoordinateHandler(coords) {
   if (coords.some((value) => typeof value === "number")) {
     // reduce precision of coordinates
