@@ -23,7 +23,8 @@ const DEFAULT_ESRI_QUERY_PARAMS = {
  * @property {string} truncateMutation - The GraphQL mutation for truncating the target database table.
  *  Required if shouldTruncateFirst is true and otherwise ignored.
  * @property {string} upsertMutation - The GraphQL mutation used for writing new features to the
- *   database table.
+ *   database table. The mutation should either insert features (if truncating first) or upsert using 
+ *   the `on_conflict` clause
  */
 
 const LAYERS = {
