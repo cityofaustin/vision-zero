@@ -119,6 +119,28 @@ const LAYERS = {
       }
     `,
   },
+  zipcodes: {
+    service_name: "Austin_Travis_County_ZIP_Codes",
+    layer_id: 6,
+    query_params: { ...DEFAULT_ESRI_QUERY_PARAMS },
+    fields: ["ZIPCODE"],
+    shouldTruncateFirst: false,
+    upsertMutation: `
+      mutation UpsertZipCodes(
+        $objects: [zip_codes_insert_input!]!
+      ) {
+        insert_zip_codes(
+          objects: $objects
+          on_conflict: {
+            constraint: zip_codes_pkey
+            update_columns: [zipcode, geometry]
+          }
+        ) {
+          affected_rows
+        }
+      }
+    `,
+  },
 };
 
 module.exports = {
