@@ -8,6 +8,17 @@ const COORDINATE_DECIMAL_PLACES = 6;
 const coordPrecisionMultiplier = Math.pow(10, COORDINATE_DECIMAL_PLACES);
 
 /**
+ * Save a JSON object to file
+ */
+const saveJsonFile = (name, data, plainText) => {
+  if (plainText) {
+    fs.writeFileSync(name, data);
+    return;
+  }
+  fs.writeFileSync(name, JSON.stringify(data));
+};
+
+/**
  * Construct a URL to an AGOL service
  */
 const getEsriLayerUrl = ({ service_name, layer_id, query_params }) => {
@@ -161,11 +172,12 @@ const makeHasuraRequest = async ({ query, variables }) => {
 };
 
 module.exports = {
+  getEsriJson,
   getEsriLayerUrl,
   getEsriToken,
-  getEsriJson,
-  makeUniformMultiPoly,
   handleFields,
   makeHasuraRequest,
+  makeUniformMultiPoly,
   reduceGeomPrecision,
+  saveJsonFile,
 };

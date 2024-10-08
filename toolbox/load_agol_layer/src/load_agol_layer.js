@@ -1,14 +1,15 @@
-const fs = require("fs");
 const { program, Option } = require("commander");
 const { arcgisToGeoJSON } = require("@terraformer/arcgis");
+const mapshaper = require("mapshaper");
 const {
-  getEsriToken,
-  getEsriLayerUrl,
   getEsriJson,
+  getEsriLayerUrl,
+  getEsriToken,
   handleFields,
-  makeUniformMultiPoly,
   makeHasuraRequest,
+  makeUniformMultiPoly,
   reduceGeomPrecision,
+  saveJsonFile,
 } = require("./utils");
 const { LAYERS } = require("./settings");
 
@@ -20,13 +21,19 @@ program.addOption(
     .choices(Object.keys(LAYERS))
     .makeOptionMandatory()
 );
+program.addOption(
+  new Option(
+    "-s, --save",
+    "save a copy of the geojson output to './data/<layer-name>.geojson'"
+  )
+);
 program.parse();
 const args = program.opts();
 
 /**
  * Main function to upsert an AGOL layer into the DB
  */
-const main = async ({ layer: layerName }) => {
+const main = async ({ layer: layerName, save }) => {
   console.log(`Processing ${layerName}`);
   const layerConfig = LAYERS[layerName];
   const { token } = await getEsriToken();
@@ -38,7 +45,7 @@ const main = async ({ layer: layerName }) => {
    * Although the ArcGIS REST API can return geojson directly, the resulting geometries
    * are malformed. For this reason, we use terraformer package, which is an Esri
    * product.
-   * 
+   *
    * The issue is discussed in the Esri community, here:
    * https://community.esri.com/t5/arcgis-online-questions/agol-export-to-geojson-holes-not-represented-as/td-p/1008140
    */
@@ -60,11 +67,28 @@ const main = async ({ layer: layerName }) => {
     ...properties,
     geometry,
   }));
-  const result = await makeHasuraRequest({
-    query: layerConfig.upsertMutation,
-    variables: { objects },
-  });
-  console.log(result);
+
+  if (save) {
+    saveJsonFile(`./data/${layerName}.geojson`, geojson);
+
+    const data = mapshaper.runCommands([
+      "data/signal_engineer_areas.geojson",
+      "-simplify",
+      "dp",
+      "20%",
+      "-o",
+      "precision=0.00001",
+      "-",
+    ]);
+
+    console.log(data);
+  }
+
+  //   const result = await makeHasuraRequest({
+  //     query: layerConfig.upsertMutation,
+  //     variables: { objects },
+  //   });
+  //   console.log(result);
 };
 
 main(args);

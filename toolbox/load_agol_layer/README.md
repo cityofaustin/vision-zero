@@ -37,13 +37,16 @@ See the [database documentation](/database#geospatial-layers) about geospatial l
 
 ## CLI
 
-The `-l/--layer` arg is required to specify which layer will be processed. You can use the `--help` flag to see which layer options are available.
+- The `-l/--layer` arg is required to specify which layer will be processed.
+- Use `-s/--save` to save a copy of the post-processed geojson to `./data/<layer-name>.geojson`
+- Use the `--help` flag to see which layer options are available.
 
 ```shell
-❯ node src/load_agol_layer.js --help
+$ node src/load_agol_layer.js --help
 Usage: load_agol_layer [options]
 
 Options:
   -l, --layer <name>  layer name (choices: "non_coa_roadways", "signal_engineer_areas")
-  -h, --help          display help for comma
+  -s, --save          save a copy of the geojson output to './data/<layer-name>.geojson'
+  -h, --help          display help for command
 ```
