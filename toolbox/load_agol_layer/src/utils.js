@@ -10,12 +10,15 @@ const coordPrecisionMultiplier = Math.pow(10, COORDINATE_DECIMAL_PLACES);
 /**
  * Save a JSON object to file
  */
-const saveJsonFile = (name, data, plainText) => {
-  if (plainText) {
-    fs.writeFileSync(name, data);
-    return;
-  }
+const saveJSONFile = (name, data) => {
   fs.writeFileSync(name, JSON.stringify(data));
+};
+
+/**
+ * Read a JSON file into memory
+ */
+const loadJSONFile = (name) => {
+  return JSON.parse(fs.readFileSync(name));
 };
 
 /**
@@ -176,8 +179,9 @@ module.exports = {
   getEsriLayerUrl,
   getEsriToken,
   handleFields,
+  loadJSONFile,
   makeHasuraRequest,
   makeUniformMultiPoly,
   reduceGeomPrecision,
-  saveJsonFile,
+  saveJSONFile,
 };

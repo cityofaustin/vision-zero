@@ -7,14 +7,13 @@ const DEFAULT_ESRI_QUERY_PARAMS = {
   outSR: "4326", // out spatial reference as WGS1984
 };
 
-
 /**
  * @typedef {Object} Layer
  * @property {string} service_name - The unique name of the service in the City of Austin AGOL org.
  *  This can be found by inspecting the layer's service definition on AGOL.
  * @property {number} layer_id - The AGOL ID of the layer in the service. This can be found by
  *  inspecting the layer's service definition on AGOL.
- * @property {Object} query_params - ArcGIS REST API query parameters to include when querying 
+ * @property {Object} query_params - ArcGIS REST API query parameters to include when querying
  *   the layer data from AGOL. See DEFAULT_ESRI_QUERY_PARAMS.
  * @property {string[]} fields - List of field names which will be translated from feature properties
  *   to database column values. All fieldnames will be converted to lowercase.
@@ -23,7 +22,7 @@ const DEFAULT_ESRI_QUERY_PARAMS = {
  * @property {string} truncateMutation - The GraphQL mutation for truncating the target database table.
  *  Required if shouldTruncateFirst is true and otherwise ignored.
  * @property {string} upsertMutation - The GraphQL mutation used for writing new features to the
- *   database table. The mutation should either insert features (if truncating first) or upsert using 
+ *   database table. The mutation should either insert features (if truncating first) or upsert using
  *   the `on_conflict` clause
  */
 
@@ -66,6 +65,28 @@ const LAYERS = {
           on_conflict: {
             constraint: signal_engineer_areas_signal_engineer_area_id_key
             update_columns: [signal_eng_area, geometry]
+          }
+        ) {
+          affected_rows
+        }
+      }
+    `,
+  },
+  engineering_areas: {
+    service_name: "TRANSPORTATION_engineering_service_areas",
+    layer_id: 0,
+    query_params: { ...DEFAULT_ESRI_QUERY_PARAMS },
+    fields: ["ENGINEERING_AREA_ID", "ATD_ENGINEER_AREAS"],
+    shouldTruncateFirst: false,
+    upsertMutation: `
+      mutation UpsertSignalEngineerAreas(
+        $objects: [engineering_areas_insert_input!]!
+      ) {
+        insert_engineering_areas(
+          objects: $objects
+          on_conflict: {
+            constraint: engineering_areas_pkey
+            update_columns: [atd_engineer_areas, geometry]
           }
         ) {
           affected_rows

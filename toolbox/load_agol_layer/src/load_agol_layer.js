@@ -6,10 +6,11 @@ const {
   getEsriLayerUrl,
   getEsriToken,
   handleFields,
+  loadJSONFile,
   makeHasuraRequest,
   makeUniformMultiPoly,
   reduceGeomPrecision,
-  saveJsonFile,
+  saveJSONFile,
 } = require("./utils");
 const { LAYERS } = require("./settings");
 
@@ -62,33 +63,35 @@ const main = async ({ layer: layerName, save }) => {
   if (layerConfig.shouldTruncateFirst) {
     await makeHasuraRequest({ query: layerConfig.truncateMutation });
   }
+  
+  if (false) {
+    saveJSONFile(`./data/${layerName}.geojson`, geojson);
 
-  const objects = geojson.features.map(({ properties, geometry }) => ({
-    ...properties,
-    geometry,
-  }));
-
-  if (save) {
-    saveJsonFile(`./data/${layerName}.geojson`, geojson);
-
-    const data = mapshaper.runCommands([
-      "data/signal_engineer_areas.geojson",
+    await mapshaper.runCommands([
+      `./data/${layerName}.geojson`,
       "-simplify",
       "dp",
       "20%",
       "-o",
       "precision=0.00001",
-      "-",
+      `./data/${layerName}_simp.geojson`,
     ]);
-
-    console.log(data);
+    geojson = loadJSONFile(`./data/${layerName}_simp.geojson`);
+    makeUniformMultiPoly(geojson.features);
   }
 
-  //   const result = await makeHasuraRequest({
-  //     query: layerConfig.upsertMutation,
-  //     variables: { objects },
-  //   });
-  //   console.log(result);
+  let objects = geojson.features.map(({ properties, geometry }) => ({
+    ...properties,
+    geometry,
+  }));
+
+  //   console.dir(objects, { depth: null });
+
+  const result = await makeHasuraRequest({
+    query: layerConfig.upsertMutation,
+    variables: { objects },
+  });
+  console.log(result);
 };
 
 main(args);
