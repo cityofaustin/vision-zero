@@ -60,10 +60,10 @@ const main = async ({ layer: layerName, save }) => {
 
   reduceGeomPrecision(geojson.features);
 
-  if (layerConfig.shouldTruncateFirst) {
-    await makeHasuraRequest({ query: layerConfig.truncateMutation });
+  if (layerConfig.transformer) {
+    layerConfig.transformer(geojson);
   }
-  
+
   if (save) {
     saveJSONFile(`./data/${layerName}.geojson`, geojson);
 
@@ -86,6 +86,10 @@ const main = async ({ layer: layerName, save }) => {
   }));
 
   //   console.dir(objects, { depth: null });
+
+  if (layerConfig.shouldTruncateFirst) {
+    await makeHasuraRequest({ query: layerConfig.truncateMutation });
+  }
 
   const result = await makeHasuraRequest({
     query: layerConfig.upsertMutation,

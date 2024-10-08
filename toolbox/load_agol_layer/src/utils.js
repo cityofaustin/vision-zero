@@ -174,7 +174,36 @@ const makeHasuraRequest = async ({ query, variables }) => {
   return genericJSONFetch({ url, method: "POST", body, headers });
 };
 
+/**
+ * The COA council layer has two district 10 features.
+ * This helper combines their geometries into a single feature. Alternatively
+ * we could restructure the VZ database to use this layer's official primary
+ * key column, which is called `single_member_districts_id`
+ * @param {Object} geojson - the geojson feature collection to be processed
+ *
+ * @returns {void} Updates the geojson
+ */
+const combineDistrictTenFeatures = (geojson) => {
+  let combinedDistrictTenFeature;
+  geojson.features
+    .filter((feature) => feature.properties.council_district === 10)
+    .forEach((feature) => {
+      if (!combinedDistrictTenFeature) {
+        combinedDistrictTenFeature = feature;
+        return;
+      }
+      combinedDistrictTenFeature.geometry.coordinates[0].concat(
+        feature.geometry.coordinates[0]
+      );
+    });
+  geojson.features = geojson.features.filter(
+    (feature) => feature.properties.council_district !== 10
+  );
+  geojson.features.push(combinedDistrictTenFeature);
+};
+
 module.exports = {
+  combineDistrictTenFeatures,
   getEsriJson,
   getEsriLayerUrl,
   getEsriToken,
