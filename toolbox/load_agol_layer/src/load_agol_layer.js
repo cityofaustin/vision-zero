@@ -1,6 +1,6 @@
 const { program, Option } = require("commander");
 const { arcgisToGeoJSON } = require("@terraformer/arcgis");
-const mapshaper = require("mapshaper");
+// const mapshaper = require("mapshaper");
 const {
   getEsriJson,
   getEsriLayerUrl,
@@ -64,20 +64,20 @@ const main = async ({ layer: layerName, save }) => {
     await makeHasuraRequest({ query: layerConfig.truncateMutation });
   }
   
-  if (false) {
+  if (save) {
     saveJSONFile(`./data/${layerName}.geojson`, geojson);
 
-    await mapshaper.runCommands([
-      `./data/${layerName}.geojson`,
-      "-simplify",
-      "dp",
-      "20%",
-      "-o",
-      "precision=0.00001",
-      `./data/${layerName}_simp.geojson`,
-    ]);
-    geojson = loadJSONFile(`./data/${layerName}_simp.geojson`);
-    makeUniformMultiPoly(geojson.features);
+    // await mapshaper.runCommands([
+    //   `./data/${layerName}.geojson`,
+    //   "-simplify",
+    //   "dp",
+    //   "20%",
+    //   "-o",
+    //   "precision=0.00001",
+    //   `./data/${layerName}_simp.geojson`,
+    // ]);
+    // geojson = loadJSONFile(`./data/${layerName}_simp.geojson`);
+    // makeUniformMultiPoly(geojson.features);
   }
 
   let objects = geojson.features.map(({ properties, geometry }) => ({
