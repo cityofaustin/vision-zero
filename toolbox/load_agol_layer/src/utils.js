@@ -16,26 +16,26 @@ const getEsriLayerUrl = ({ service_name, layer_id, query_params }) => {
 };
 
 /**
- * Convert Polygon features to MultiPolygon. Whereas AGOL may hold poly and multi poly
- * geometries in the same layer, postGIS does not support this. We can easily convert
- * polygons to multipolygons by wrapping their geometry in an outer array.
+ * Convert Polygon features to MultiPolygon. Non-polygon geometry types are ignored.
+ * 
+ * Whereas AGOL may hold poly and multi poly geometries in the same layer, postGIS
+ * does not support this. We can easily convert polygons to multipolygons by
+ * wrapping their geometry in an outer array.
  *
  * Alternatively we could use a DB trigger that applies `ST_Multi` to the geometry
  * before inserting it.
  *
- * Todo: is this even necessary?
  * @param {Object[]} features - Array of GeoJSON features
  *
  * @returns {void} Updates the `geometry` of each feature in-place
  */
 const makeUniformMultiPoly = (features) => {
   features.forEach((feature) => {
+    /** Ignore geojson geometry types except Polygon  */
     if (feature.geometry.type === "Polygon") {
       feature.geometry.type = "MultiPolygon";
       feature.geometry.coordinates = [feature.geometry.coordinates];
-      console.log(
-        `Converted non coa roadway ${feature.properties.OBJECTID} to MultiPolygon`
-      );
+      console.log(`Converted Polygon to MultiPolygon`);
     }
   });
 };
@@ -83,7 +83,7 @@ function recursiveCoordinateHandler(coords) {
 
 /**
  * Given an array of geojson features, reduce the decimal precision of each
- * coordiante to the number of places defined by COORDINATE_DECIMAL_PLACES.
+ * coordinate to the number of places defined by COORDINATE_DECIMAL_PLACES.
  * @param {Object[]} features - Array of GeoJSON features
  *
  * @returns {void} Updates features in-places

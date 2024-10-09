@@ -18,7 +18,7 @@ Nodejs tool for importing ArcGIS Online (AGOL) layers into the database
 
 ### ArcGIS Online Layer Helper - `load_agol_layer`
 
-Nodejs to to help load ArcGIS Online (AGOL) layers into the Vision Zero database.
+Nodejs tool load ArcGIS Online (AGOL) layers into the Vision Zero database.
 
 ### Lookup table helper - `get_lookup_table_changes`
 
