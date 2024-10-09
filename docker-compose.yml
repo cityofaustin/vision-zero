@@ -35,7 +35,6 @@ services:
       - ./viewer:/root/viewer
 
   postgis:
-    container_name: visionzero-postgis
     build: database
     env_file:
       - .env
