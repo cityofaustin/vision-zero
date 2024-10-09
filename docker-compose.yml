@@ -39,11 +39,6 @@ services:
     env_file:
       - .env
     volumes:
-      - visionzero_postgis_pgdata:/var/lib/postgresql/data
       - ./database/snapshots:/snapshots
     ports:
       - 5432:5432
-
-volumes:
-  visionzero_postgis_pgdata:
-    name: visionzero_postgis_pgdata
