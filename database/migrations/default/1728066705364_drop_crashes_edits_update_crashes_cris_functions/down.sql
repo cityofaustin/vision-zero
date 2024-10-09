@@ -1,26 +1,4 @@
 --
--- PostgreSQL database dump
---
-
--- Dumped from database version 14.6 (Debian 14.6-1.pgdg110+1)
--- Dumped by pg_dump version 14.6 (Debian 14.6-1.pgdg110+1)
-
-SET statement_timeout = 0;
-SET lock_timeout = 0;
-SET idle_in_transaction_session_timeout = 0;
-SET client_encoding = 'UTF8';
-SET standard_conforming_strings = on;
-SELECT pg_catalog.set_config('search_path', '', false);
-SET check_function_bodies = false;
-SET xmloption = content;
-SET client_min_messages = warning;
-SET row_security = off;
-
-SET default_tablespace = '';
-
-SET default_table_access_method = heap;
-
---
 -- Name: change_log_crashes_edits; Type: TABLE; Schema: public; Owner: visionzero
 --
 
@@ -33,9 +11,6 @@ CREATE TABLE public.change_log_crashes_edits (
     created_by text NOT NULL
 );
 
-
-ALTER TABLE public.change_log_crashes_edits OWNER TO visionzero;
-
 --
 -- Name: change_log_crashes_edits_id_seq; Type: SEQUENCE; Schema: public; Owner: visionzero
 --
@@ -47,9 +22,6 @@ CREATE SEQUENCE public.change_log_crashes_edits_id_seq
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
-
-
-ALTER TABLE public.change_log_crashes_edits_id_seq OWNER TO visionzero;
 
 --
 -- Name: change_log_crashes_edits_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: visionzero
@@ -127,9 +99,6 @@ CREATE TABLE public.crashes_edits (
     wthr_cond_id integer,
     investigator_narrative_ocr_processed_at timestamp with time zone
 );
-
-
-ALTER TABLE public.crashes_edits OWNER TO visionzero;
 
 --
 -- Name: COLUMN crashes_edits.investigator_narrative_ocr_processed_at; Type: COMMENT; Schema: public; Owner: visionzero
