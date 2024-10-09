@@ -3,7 +3,6 @@ services:
     image: hasura/graphql-engine:v2.43.0
     volumes:
       - ./viewer/graphql-engine-metadata:/metadata
-    container_name: visionzero-graphql-engine
     ports:
       - 8084:8080
     environment:
