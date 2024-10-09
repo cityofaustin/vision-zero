@@ -3,9 +3,8 @@ drop table if exists public.change_log_crashes_edits cascade;
 drop table if exists public.crashes_edits cascade;
 
 -- recreating cris crash insert function and removing part about inserting into crash edits row
-drop trigger if exists insert_new_crashes_cris on public.crashes_cris;
 
-drop function if exists public.crashes_cris_insert_rows;
+drop function if exists public.crashes_cris_insert_rows cascade;
 
 create or replace function public.crashes_cris_insert_rows()
 returns trigger
@@ -147,9 +146,7 @@ execute procedure public.crashes_cris_insert_rows();
 
 -- recreating the crashes_cris_update function to use just the crashes unified layer
 -- to check if VZ has edited a value and remove the crashes_edits part
-drop trigger if exists update_crashes_from_crashes_cris_update on public.crashes_cris;
-
-drop function if exists public.crashes_cris_update;
+drop function if exists public.crashes_cris_update cascade;
 
 --
 -- handle a cris crashes update by updating the

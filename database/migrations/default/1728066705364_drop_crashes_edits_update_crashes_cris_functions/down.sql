@@ -1,5 +1,69 @@
-create table public.crashes_edits (
-    id integer primary key references public.crashes_cris (id) on update cascade on delete cascade,
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 14.6 (Debian 14.6-1.pgdg110+1)
+-- Dumped by pg_dump version 14.6 (Debian 14.6-1.pgdg110+1)
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- Name: change_log_crashes_edits; Type: TABLE; Schema: public; Owner: visionzero
+--
+
+CREATE TABLE public.change_log_crashes_edits (
+    id integer NOT NULL,
+    record_id integer NOT NULL,
+    operation_type text NOT NULL,
+    record_json jsonb NOT NULL,
+    created_at timestamp with time zone DEFAULT now(),
+    created_by text NOT NULL
+);
+
+
+ALTER TABLE public.change_log_crashes_edits OWNER TO visionzero;
+
+--
+-- Name: change_log_crashes_edits_id_seq; Type: SEQUENCE; Schema: public; Owner: visionzero
+--
+
+CREATE SEQUENCE public.change_log_crashes_edits_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.change_log_crashes_edits_id_seq OWNER TO visionzero;
+
+--
+-- Name: change_log_crashes_edits_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: visionzero
+--
+
+ALTER SEQUENCE public.change_log_crashes_edits_id_seq OWNED BY public.change_log_crashes_edits.id;
+
+
+--
+-- Name: crashes_edits; Type: TABLE; Schema: public; Owner: visionzero
+--
+
+CREATE TABLE public.crashes_edits (
+    id integer NOT NULL,
     active_school_zone_fl boolean,
     at_intrsct_fl boolean,
     case_id text,
@@ -7,41 +71,41 @@ create table public.crashes_edits (
     cr3_stored_fl boolean,
     crash_speed_limit integer,
     crash_timestamp timestamp with time zone,
-    created_at timestamptz not null default now(),
-    created_by text not null default 'system',
-    cris_crash_id integer unique,
-    fhe_collsn_id integer references lookups.collsn (id) on update cascade on delete cascade,
-    intrsct_relat_id integer references lookups.intrsct_relat (id) on update cascade on delete cascade,
-    investigat_agency_id integer references lookups.agency (id) on update cascade on delete cascade,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    created_by text DEFAULT 'system'::text NOT NULL,
+    cris_crash_id integer,
+    fhe_collsn_id integer,
+    intrsct_relat_id integer,
+    investigat_agency_id integer,
     investigator_narrative text,
     is_deleted boolean,
     is_temp_record boolean,
     latitude numeric,
     law_enforcement_ytd_fatality_num text,
-    light_cond_id integer references lookups.light_cond (id) on update cascade on delete cascade,
+    light_cond_id integer,
     longitude numeric,
     medical_advisory_fl boolean,
-    obj_struck_id integer references lookups.obj_struck (id) on update cascade on delete cascade,
+    obj_struck_id integer,
     onsys_fl boolean,
     private_dr_fl boolean,
     road_constr_zone_fl boolean,
     road_constr_zone_wrkr_fl boolean,
     rpt_block_num text,
-    rpt_city_id integer references lookups.city (id) on update cascade on delete cascade,
-    rpt_cris_cnty_id integer references lookups.cnty (id) on update cascade on delete cascade,
+    rpt_city_id integer,
+    rpt_cris_cnty_id integer,
     rpt_hwy_num text,
     rpt_hwy_sfx text,
-    rpt_rdwy_sys_id integer references lookups.rwy_sys (id) on update cascade on delete cascade,
+    rpt_rdwy_sys_id integer,
     rpt_ref_mark_dir text,
     rpt_ref_mark_dist_uom text,
     rpt_ref_mark_nbr text,
     rpt_ref_mark_offset_amt numeric,
-    rpt_road_part_id integer references lookups.road_part (id) on update cascade on delete cascade,
+    rpt_road_part_id integer,
     rpt_sec_block_num text,
     rpt_sec_hwy_num text,
     rpt_sec_hwy_sfx text,
-    rpt_sec_rdwy_sys_id integer references lookups.rwy_sys (id) on update cascade on delete cascade,
-    rpt_sec_road_part_id integer references lookups.road_part (id) on update cascade on delete cascade,
+    rpt_sec_rdwy_sys_id integer,
+    rpt_sec_road_part_id integer,
     rpt_sec_street_desc text,
     rpt_sec_street_name text,
     rpt_sec_street_pfx text,
@@ -52,37 +116,88 @@ create table public.crashes_edits (
     rpt_street_sfx text,
     rr_relat_fl boolean,
     schl_bus_fl boolean,
-    surf_cond_id integer references lookups.surf_cond (id) on update cascade on delete cascade,
-    surf_type_id integer references lookups.surf_type (id) on update cascade on delete cascade,
+    surf_cond_id integer,
+    surf_type_id integer,
     thousand_damage_fl boolean,
     toll_road_fl boolean,
-    traffic_cntl_id integer references lookups.traffic_cntl (id) on update cascade on delete cascade,
+    traffic_cntl_id integer,
     txdot_rptable_fl boolean,
-    updated_at timestamptz not null default now(),
-    updated_by text not null default 'system',
-    wthr_cond_id integer references lookups.wthr_cond (id) on update cascade on delete cascade
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_by text DEFAULT 'system'::text NOT NULL,
+    wthr_cond_id integer,
+    investigator_narrative_ocr_processed_at timestamp with time zone
 );
 
-create table public.change_log_crashes_edits (
-    id serial primary key,
-    record_id integer not null references public.crashes_edits (id) on delete cascade on update cascade,
-    operation_type text not null,
-    record_json jsonb not null,
-    created_at timestamp with time zone default now(),
-    created_by text not null
-);
 
-create index on public.change_log_crashes_edits (record_id);
+ALTER TABLE public.crashes_edits OWNER TO visionzero;
 
-drop trigger if exists insert_new_crashes_cris on public.crashes_cris;
+--
+-- Name: COLUMN crashes_edits.investigator_narrative_ocr_processed_at; Type: COMMENT; Schema: public; Owner: visionzero
+--
 
-drop function if exists public.crashes_cris_insert_rows;
+COMMENT ON COLUMN public.crashes_edits.investigator_narrative_ocr_processed_at IS 'The most recent
+timestamp at which the OCR process attempted to extract the investigator narrative. If null, 
+indicates that the OCR narrative extract has never been attempted. This value should be set
+via ETL process.';
 
-create or replace function public.crashes_cris_insert_rows()
-returns trigger
-language plpgsql
-as
-$$
+
+--
+-- Name: change_log_crashes_edits id; Type: DEFAULT; Schema: public; Owner: visionzero
+--
+
+ALTER TABLE ONLY public.change_log_crashes_edits ALTER COLUMN id SET DEFAULT nextval('public.change_log_crashes_edits_id_seq'::regclass);
+
+
+--
+-- Name: change_log_crashes_edits change_log_crashes_edits_pkey; Type: CONSTRAINT; Schema: public; Owner: visionzero
+--
+
+ALTER TABLE ONLY public.change_log_crashes_edits
+    ADD CONSTRAINT change_log_crashes_edits_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: crashes_edits crashes_edits_cris_crash_id_key; Type: CONSTRAINT; Schema: public; Owner: visionzero
+--
+
+ALTER TABLE ONLY public.crashes_edits
+    ADD CONSTRAINT crashes_edits_cris_crash_id_key UNIQUE (cris_crash_id);
+
+
+--
+-- Name: crashes_edits crashes_edits_pkey; Type: CONSTRAINT; Schema: public; Owner: visionzero
+--
+
+ALTER TABLE ONLY public.crashes_edits
+    ADD CONSTRAINT crashes_edits_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: change_log_crashes_edits_record_id_idx; Type: INDEX; Schema: public; Owner: visionzero
+--
+
+CREATE INDEX change_log_crashes_edits_record_id_idx ON public.change_log_crashes_edits USING btree (record_id);
+
+
+--
+-- Name: crashes_edits insert_change_log_crashes_edits; Type: TRIGGER; Schema: public; Owner: visionzero
+--
+
+CREATE TRIGGER insert_change_log_crashes_edits AFTER INSERT OR UPDATE ON public.crashes_edits FOR EACH ROW EXECUTE FUNCTION public.insert_change_log();
+
+
+--
+-- Name: crashes_edits set_updated_at_timestamp_crashes_edits; Type: TRIGGER; Schema: public; Owner: visionzero
+--
+
+CREATE TRIGGER set_updated_at_timestamp_crashes_edits BEFORE UPDATE ON public.crashes_edits FOR EACH ROW EXECUTE FUNCTION public.set_updated_at_timestamp();
+
+-- Have to recreate this function
+drop function if exists public.crashes_cris_insert_rows cascade;
+
+CREATE FUNCTION public.crashes_cris_insert_rows() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
 BEGIN
     -- insert new combined / official record
     INSERT INTO public.crashes (
@@ -213,23 +328,18 @@ BEGIN
 END;
 $$;
 
+-- Have to recreate this trigger
 create or replace trigger insert_new_crashes_cris
 after insert on public.crashes_cris
 for each row
 execute procedure public.crashes_cris_insert_rows();
 
-drop trigger if exists update_crashes_from_crashes_cris_update on public.crashes_cris;
+-- Have to recreate this function
+drop function if exists public.crashes_cris_update cascade;
 
-drop function if exists public.crashes_cris_update;
-
---
--- handle a cris crashes update by updating the
--- unified crashes record from cris + vz values
---
-create or replace function public.crashes_cris_update()
-returns trigger
-language plpgsql
-as $$
+CREATE FUNCTION public.crashes_cris_update() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $_$
 declare
     new_cris_jb jsonb := to_jsonb (new);
     old_cris_jb jsonb := to_jsonb (old);
@@ -269,8 +379,158 @@ begin
     end if;
     return null;
 end;
-$$;
+$_$;
 
+
+-- Adding this trigger back
 create trigger update_crashes_from_crashes_cris_update
 after update on public.crashes_cris for each row
 execute procedure public.crashes_cris_update();
+
+--
+-- Name: crashes_edits update_crashes_from_crashes_edits_update; Type: TRIGGER; Schema: public; Owner: visionzero
+--
+
+CREATE TRIGGER update_crashes_from_crashes_edits_update AFTER UPDATE ON public.crashes_edits FOR EACH ROW EXECUTE FUNCTION public.crashes_edits_update();
+
+
+--
+-- Name: change_log_crashes_edits change_log_crashes_edits_record_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: visionzero
+--
+
+ALTER TABLE ONLY public.change_log_crashes_edits
+    ADD CONSTRAINT change_log_crashes_edits_record_id_fkey FOREIGN KEY (record_id) REFERENCES public.crashes_edits(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: crashes_edits crashes_edits_fhe_collsn_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: visionzero
+--
+
+ALTER TABLE ONLY public.crashes_edits
+    ADD CONSTRAINT crashes_edits_fhe_collsn_id_fkey FOREIGN KEY (fhe_collsn_id) REFERENCES lookups.collsn(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
+-- Name: crashes_edits crashes_edits_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: visionzero
+--
+
+ALTER TABLE ONLY public.crashes_edits
+    ADD CONSTRAINT crashes_edits_id_fkey FOREIGN KEY (id) REFERENCES public.crashes_cris(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: crashes_edits crashes_edits_intrsct_relat_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: visionzero
+--
+
+ALTER TABLE ONLY public.crashes_edits
+    ADD CONSTRAINT crashes_edits_intrsct_relat_id_fkey FOREIGN KEY (intrsct_relat_id) REFERENCES lookups.intrsct_relat(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
+-- Name: crashes_edits crashes_edits_investigat_agency_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: visionzero
+--
+
+ALTER TABLE ONLY public.crashes_edits
+    ADD CONSTRAINT crashes_edits_investigat_agency_id_fkey FOREIGN KEY (investigat_agency_id) REFERENCES lookups.agency(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
+-- Name: crashes_edits crashes_edits_light_cond_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: visionzero
+--
+
+ALTER TABLE ONLY public.crashes_edits
+    ADD CONSTRAINT crashes_edits_light_cond_id_fkey FOREIGN KEY (light_cond_id) REFERENCES lookups.light_cond(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
+-- Name: crashes_edits crashes_edits_obj_struck_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: visionzero
+--
+
+ALTER TABLE ONLY public.crashes_edits
+    ADD CONSTRAINT crashes_edits_obj_struck_id_fkey FOREIGN KEY (obj_struck_id) REFERENCES lookups.obj_struck(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
+-- Name: crashes_edits crashes_edits_rpt_city_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: visionzero
+--
+
+ALTER TABLE ONLY public.crashes_edits
+    ADD CONSTRAINT crashes_edits_rpt_city_id_fkey FOREIGN KEY (rpt_city_id) REFERENCES lookups.city(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
+-- Name: crashes_edits crashes_edits_rpt_cris_cnty_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: visionzero
+--
+
+ALTER TABLE ONLY public.crashes_edits
+    ADD CONSTRAINT crashes_edits_rpt_cris_cnty_id_fkey FOREIGN KEY (rpt_cris_cnty_id) REFERENCES lookups.cnty(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
+-- Name: crashes_edits crashes_edits_rpt_rdwy_sys_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: visionzero
+--
+
+ALTER TABLE ONLY public.crashes_edits
+    ADD CONSTRAINT crashes_edits_rpt_rdwy_sys_id_fkey FOREIGN KEY (rpt_rdwy_sys_id) REFERENCES lookups.rwy_sys(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
+-- Name: crashes_edits crashes_edits_rpt_road_part_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: visionzero
+--
+
+ALTER TABLE ONLY public.crashes_edits
+    ADD CONSTRAINT crashes_edits_rpt_road_part_id_fkey FOREIGN KEY (rpt_road_part_id) REFERENCES lookups.road_part(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
+-- Name: crashes_edits crashes_edits_rpt_sec_rdwy_sys_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: visionzero
+--
+
+ALTER TABLE ONLY public.crashes_edits
+    ADD CONSTRAINT crashes_edits_rpt_sec_rdwy_sys_id_fkey FOREIGN KEY (rpt_sec_rdwy_sys_id) REFERENCES lookups.rwy_sys(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
+-- Name: crashes_edits crashes_edits_rpt_sec_road_part_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: visionzero
+--
+
+ALTER TABLE ONLY public.crashes_edits
+    ADD CONSTRAINT crashes_edits_rpt_sec_road_part_id_fkey FOREIGN KEY (rpt_sec_road_part_id) REFERENCES lookups.road_part(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
+-- Name: crashes_edits crashes_edits_surf_cond_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: visionzero
+--
+
+ALTER TABLE ONLY public.crashes_edits
+    ADD CONSTRAINT crashes_edits_surf_cond_id_fkey FOREIGN KEY (surf_cond_id) REFERENCES lookups.surf_cond(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
+-- Name: crashes_edits crashes_edits_surf_type_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: visionzero
+--
+
+ALTER TABLE ONLY public.crashes_edits
+    ADD CONSTRAINT crashes_edits_surf_type_id_fkey FOREIGN KEY (surf_type_id) REFERENCES lookups.surf_type(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
+-- Name: crashes_edits crashes_edits_traffic_cntl_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: visionzero
+--
+
+ALTER TABLE ONLY public.crashes_edits
+    ADD CONSTRAINT crashes_edits_traffic_cntl_id_fkey FOREIGN KEY (traffic_cntl_id) REFERENCES lookups.traffic_cntl(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
+-- Name: crashes_edits crashes_edits_wthr_cond_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: visionzero
+--
+
+ALTER TABLE ONLY public.crashes_edits
+    ADD CONSTRAINT crashes_edits_wthr_cond_id_fkey FOREIGN KEY (wthr_cond_id) REFERENCES lookups.wthr_cond(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
+-- PostgreSQL database dump complete
+--
+
