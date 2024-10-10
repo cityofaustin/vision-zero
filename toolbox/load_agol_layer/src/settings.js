@@ -21,6 +21,8 @@ const DEFAULT_ESRI_QUERY_PARAMS = {
  *   to database column values. All fieldnames will be converted to lowercase.
  * @property {boolean} shouldTruncateFirst - Whether the target database table should be truncated
  *  before new features are inserted. If true, `truncateMutation` is required.
+ * @property {Function} transformer - An optional transform function which should accept a geosjon
+ * feature collection as the sole input param and modify the geojson in-place.
  * @property {string} truncateMutation - The GraphQL mutation for truncating the target database table.
  *  Required if shouldTruncateFirst is true and otherwise ignored.
  * @property {string} upsertMutation - The GraphQL mutation used for writing new features to the
