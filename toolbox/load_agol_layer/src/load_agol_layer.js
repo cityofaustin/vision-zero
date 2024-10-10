@@ -66,12 +66,10 @@ const main = async ({ layer: layerName, save }) => {
     saveJSONFile(`./data/${layerName}.geojson`, geojson);
   }
 
-  let objects = geojson.features.map(({ properties, geometry }) => ({
+  objects = geojson.features.map(({ properties, geometry }) => ({
     ...properties,
     geometry,
   }));
-
-  //   console.dir(objects, { depth: null });
 
   if (layerConfig.shouldTruncateFirst) {
     await makeHasuraRequest({ query: layerConfig.truncateMutation });
