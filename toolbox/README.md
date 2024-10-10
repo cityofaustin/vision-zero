@@ -14,7 +14,7 @@ Various scripts used as part of launching the new data model for VZ v2.0. We wan
 
 ### ArcGIS Online Layer Helper - `load_agol_layer`
 
-Nodejs to to help load ArcGIS Online (AGOL) layers into the Vision Zero database.
+Nodejs tool load ArcGIS Online (AGOL) layers into the Vision Zero database.
 
 ### Lookup table helper - `get_lookup_table_changes`
 

@@ -4,7 +4,7 @@ This tool is used to load an ArcGIS Online (AGOL) layer into the Vision Zero dat
 
 ## Quick start
 
-1. Configure your envrionment by copying `env_template` as `local.env` and populating it accordingly.
+1. Configure your environment by copying `env_template` as `local.env` and populating it accordingly.
 
 ```
 HASURA_GRAPHQL_ENDPOINT=http://localhost:8084/v1/graphql
