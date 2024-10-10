@@ -29,6 +29,40 @@ const DEFAULT_ESRI_QUERY_PARAMS = {
  */
 
 const LAYERS = {
+  apd_sectors: {
+    service_name: "BOUNDARIES_apd_districts",
+    layer_id: 0,
+    query_params: { ...DEFAULT_ESRI_QUERY_PARAMS },
+    fields: [
+      "PRIMARY_KEY",
+      "DISTRICT_NAME",
+      "BATTALION_CODE",
+      "SECTOR_NAME",
+      "BUREAU_NAME",
+      "PATROL_AREA",
+    ],
+    shouldTruncateFirst: false,
+    upsertMutation: `
+      mutation UpsertApdSectors($objects: [apd_sectors_insert_input!]!) {
+        insert_apd_sectors(
+          objects: $objects
+          on_conflict: {
+            constraint: apd_sectors_pkey
+            update_columns: [
+              district_name
+              battalion_code
+              sector_name
+              bureau_name
+              patrol_area
+              geometry
+            ]
+          }
+        ) {
+          affected_rows
+        }
+      }
+    `,
+  },
   council_districts: {
     service_name: "BOUNDARIES_single_member_districts",
     layer_id: 0,
