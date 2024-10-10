@@ -120,8 +120,8 @@ const LAYERS = {
     `,
   },
   zipcodes: {
-    service_name: "Austin_Travis_County_ZIP_Codes",
-    layer_id: 6,
+    service_name: "TPW_ZIPCodes_VZ",
+    layer_id: 0,
     query_params: { ...DEFAULT_ESRI_QUERY_PARAMS },
     fields: ["ZIPCODE"],
     shouldTruncateFirst: false,
