@@ -9,8 +9,8 @@ This tool is used to load an ArcGIS Online (AGOL) layer into the Vision Zero dat
 ```
 HASURA_GRAPHQL_ENDPOINT=http://localhost:8084/v1/graphql
 HASURA_GRAPHQL_ADMIN_SECRET=hasurapassword
-AGOL_USERNAME=
-AGOL_PASSWORD=
+AGOL_USERNAME=<use AGOL Scripts Publisher item in 1pass>
+AGOL_PASSWORD=<use AGOL Scripts Publisher item in 1pass>
 ```
 
 2. Start your local Vision Zero stack ([docs](https://github.com/cityofaustin/vision-zero?tab=readme-ov-file#quick-start))
