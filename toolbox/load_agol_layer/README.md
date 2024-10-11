@@ -1,6 +1,6 @@
 # ArcGIS Online Layer Helper
 
-This tool is used to load an ArcGIS Online (AGOL) layer into the Vision Zero database. It supports inserting, upserting, or replacing features in a database table with data sourced directly from AGOL.
+This tool is used to load an ArcGIS Online (AGOL) layer into the Vision Zero database. It completely replaces all rows in the target database table with data downloaded from AGOL.
 
 ## Quick start
 

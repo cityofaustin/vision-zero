@@ -4,6 +4,8 @@ const {
   getEsriJson,
   getEsriLayerUrl,
   getEsriToken,
+  getInsertMutation,
+  getTruncateMutation,
   handleFields,
   makeHasuraRequest,
   makeUniformMultiPoly,
@@ -30,13 +32,17 @@ program.parse();
 const args = program.opts();
 
 /**
- * Main function to upsert an AGOL layer into the DB
+ * Main function to load an AGOL layer into the DB
  */
 const main = async ({ layer: layerName, save }) => {
   console.log(`Processing ${layerName}`);
   const layerConfig = LAYERS[layerName];
+
+  console.log("Getting AGOL token...");
   const { token } = await getEsriToken();
   layerConfig.query_params.token = token;
+
+  console.log("Downloading layer...");
   const layerUrl = getEsriLayerUrl(layerConfig);
   const esriJson = await getEsriJson(layerUrl);
 
@@ -71,12 +77,14 @@ const main = async ({ layer: layerName, save }) => {
     geometry,
   }));
 
-  if (layerConfig.shouldTruncateFirst) {
-    await makeHasuraRequest({ query: layerConfig.truncateMutation });
-  }
+  console.log(`Truncating ${layerConfig.tableName} table...`);
+  const truncateMutation = getTruncateMutation(layerConfig.tableName);
+  await makeHasuraRequest({ query: truncateMutation });
 
+  console.log("Inserting new features...");
+  const insertMutation = getInsertMutation(layerConfig.tableName);
   const result = await makeHasuraRequest({
-    query: layerConfig.upsertMutation,
+    query: insertMutation,
     variables: { objects },
   });
   console.log(result);
