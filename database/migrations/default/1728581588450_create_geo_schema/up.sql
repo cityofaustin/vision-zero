@@ -1,6 +1,3 @@
--- delete this legacy function that was overlooked during v2.0
-drop function find_crash_jurisdictions cascade;
-
 create schema if not exists geo;
 alter table public.engineering_areas set schema geo;
 alter table public.signal_engineer_areas set schema geo;
@@ -91,7 +88,7 @@ begin
     end if;
     return new;
 end;
-$function$
+$function$;
 
 
 CREATE OR REPLACE FUNCTION public.afd_incidents_trigger()
@@ -124,7 +121,7 @@ BEGIN
     where afd__incidents.id = new.id;
 RETURN NEW;
 END;
-$function$
+$function$;
 
 CREATE OR REPLACE FUNCTION public.ems_incidents_trigger()
  RETURNS trigger
@@ -151,4 +148,4 @@ BEGIN
     where ems__incidents.id = new.id;
 RETURN NEW;
 END;
-$function$
+$function$;

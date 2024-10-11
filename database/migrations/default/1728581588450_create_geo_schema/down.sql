@@ -87,7 +87,7 @@ begin
     end if;
     return new;
 end;
-$function$
+$function$;
 
 CREATE OR REPLACE FUNCTION public.afd_incidents_trigger()
  RETURNS trigger
@@ -119,7 +119,7 @@ BEGIN
     where afd__incidents.id = new.id;
 RETURN NEW;
 END;
-$function$
+$function$;
 
 CREATE OR REPLACE FUNCTION public.ems_incidents_trigger()
  RETURNS trigger
@@ -146,7 +146,7 @@ BEGIN
     where ems__incidents.id = new.id;
 RETURN NEW;
 END;
-$function$
+$function$;
 
 
 drop schema if exists geo;
