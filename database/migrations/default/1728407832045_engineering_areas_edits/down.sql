@@ -1,6 +1,8 @@
-drop trigger is exists set_updated_at_engineering_areas;
-alter table engineering_areas drop column created_at;
+--revert to name updated_at
+alter table engineering_areas rename column created_at to updated_at;
+--revert time to timestamp with out time zone
 alter table engineering_areas alter column updated_at set data type timestamp using updated_at::timestamp;
+-- rever other col names
 alter table engineering_areas rename column engineering_area_id to area_id;
 alter table engineering_areas rename column atd_engineer_areas to label;
 
