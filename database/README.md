@@ -365,7 +365,7 @@ When creating a new database table to hold feature data, polygon geometries shou
 
 As a best practice, tables should always be configured with `created_at` of type `timestamptz` with default `now()`. Layers should make use of the [ArcGIS Online Layer Helper](/toolbox/load_agol_layer) tool so that they can be easily refreshed.
 
-Typically, any foreign key contstraint that references the later should use the `ON UPDATE SET NULL` directive to ensure that the rows in the layer table can be deleted and re-inserted without being blocked by foreign references.
+Typically, any foreign key contstraint that references the layer should use the `ON UPDATE SET NULL` directive to ensure that the rows in the layer table can be deleted and re-inserted without being blocked by foreign references.
 
 ## Backups
 
