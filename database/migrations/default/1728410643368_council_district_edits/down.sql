@@ -1,6 +1,5 @@
--- delete created_at column
-alter table council_districts drop column created_at;
--- revert updated_at data type
+-- revert updated_at name change and data type
+alter table council_districts rename column created_at to updated_at;
 alter table council_districts alter column updated_at set data type timestamp using updated_at::timestamp;
 -- remove council district foreign key
 alter table crashes drop constraint crashes_council_district_fkey;

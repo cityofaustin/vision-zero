@@ -31,7 +31,7 @@ const getEsriLayerUrl = ({ service_name, layer_id, query_params }) => {
 
 /**
  * Convert Polygon features to MultiPolygon. Non-polygon geometry types are ignored.
- * 
+ *
  * Whereas AGOL may hold poly and multi poly geometries in the same layer, postGIS
  * does not support this. We can easily convert polygons to multipolygons by
  * wrapping their geometry in an outer array.
@@ -153,6 +153,22 @@ const getEsriJson = async (url) => {
   return genericJSONFetch({ url, method: "GET" });
 };
 
+const getTruncateMutation = (tableName) => `
+  mutation Delete${tableName} {
+    delete_${tableName}(where: {}) {
+      affected_rows
+    }
+  }
+`;
+
+const getInsertMutation = (tableName) => `
+  mutation Insert${tableName}($objects: [${tableName}_insert_input!]!) {
+    insert_${tableName}(objects: $objects) {
+      affected_rows
+    }
+  }
+`;
+
 /**
  * Sends a request to the Hasura GraphQL API.
  *
@@ -207,6 +223,8 @@ module.exports = {
   getEsriJson,
   getEsriLayerUrl,
   getEsriToken,
+  getInsertMutation,
+  getTruncateMutation,
   handleFields,
   loadJSONFile,
   makeHasuraRequest,
