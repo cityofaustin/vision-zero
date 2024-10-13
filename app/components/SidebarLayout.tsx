@@ -16,13 +16,11 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
     <Container fluid style={{ height: "100vh", overflow: "hidden" }}>
       <Row className="h-100">
         {/* Sidebar */}
-        <Col
-          xs={collapsed ? "auto" : 2}
-          className="bg-dark text-white p-0"
-          style={{
-            height: "100vh",
-            overflowY: "auto",
-          }}
+        <div
+          //   xs={collapsed ? "auto" : 2}
+          className={`bg-dark text-white p-0 app-sidebar app-sidebar-${
+            collapsed ? "collapsed" : "expanded"
+          }`}
         >
           <div className="d-flex flex-column h-100">
             <Button onClick={toggleSidebar} variant="dark">
@@ -60,7 +58,7 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
               </ListGroup>
             )}
           </div>
-        </Col>
+        </div>
         {/* Main content */}
 
         <Col

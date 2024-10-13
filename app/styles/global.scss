@@ -1,6 +1,20 @@
 /* see https://github.com/twbs/examples/blob/main/react-nextjs/src/styles/styles.scss */
 @import "bootstrap/scss/bootstrap.scss";
 
+.app-sidebar {
+  height: 100vh;
+  overflow-y: auto;
+  transition: width 0.1s ease-in-out;
+}
+
+.app-sidebar-expanded {
+  width: 300px !important;
+}
+
+.app-sidebar-collapsed {
+  width: 50px !important;
+}
+
 .mapboxgl-map {
   border-radius: 0.375rem;
 }
