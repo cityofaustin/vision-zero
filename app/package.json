@@ -10,13 +10,16 @@
   },
   "dependencies": {
     "@auth0/auth0-react": "^2.2.4",
+    "@types/mapbox-gl": "^3.4.0",
     "bootstrap": "^5.3.3",
     "graphql": "^16.9.0",
     "graphql-request": "^7.1.0",
+    "mapbox-gl": "^3.7.0",
     "next": "14.2.13",
     "react": "^18",
     "react-bootstrap": "^2.10.4",
     "react-dom": "^18",
+    "react-map-gl": "^7.1.7",
     "swr": "^2.2.5"
   },
   "devDependencies": {

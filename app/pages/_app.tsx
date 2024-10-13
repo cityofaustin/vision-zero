@@ -1,5 +1,6 @@
 import type { AppProps } from "next/app";
 import { Auth0Provider } from "@auth0/auth0-react";
+import SidebarLayout from "@/components/SidebarLayout";
 import "@/styles/global.scss";
 
 const DOMAIN = process.env.NEXT_PUBLIC_AUTH0_DOMAIN!;
@@ -18,7 +19,9 @@ export default function App({ Component, pageProps }: AppProps) {
       useRefreshTokens={true}
       cacheLocation="localstorage"
     >
-      <Component {...pageProps} />
+      <SidebarLayout>
+        <Component {...pageProps} />
+      </SidebarLayout>
     </Auth0Provider>
   );
 }

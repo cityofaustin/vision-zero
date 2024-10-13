@@ -1,2 +1,11 @@
 /* see https://github.com/twbs/examples/blob/main/react-nextjs/src/styles/styles.scss */
 @import "bootstrap/scss/bootstrap.scss";
+
+.mapboxgl-map {
+  border-radius: 0.375rem;
+}
+
+.crash-header-card-body {
+  height: 400px;
+  overflow: "auto";
+}
