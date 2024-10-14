@@ -95,26 +95,25 @@ jobs:
           SOURCE_DIR: 'database/schemaspy_docs'
           DEST_DIR: ${{ steps.s3-dest-dir.outputs.dest_dir }}
 
-      - name: "Invalidate CloudFront"
-        env:
-          AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        run: |
-          export BRANCH_NAME=${GITHUB_REF##*/};
-          echo "SHA: ${GITHUB_SHA}";
-          echo "ACTION/BRANCH_NAME: ${BRANCH_NAME}";
-          echo "GR: ${GITHUB_REF}";
-          echo "PWD: $(pwd)";
+      # - name: "Invalidate CloudFront"
+      #   env:
+      #     AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      #   run: |
+      #     export BRANCH_NAME=${GITHUB_REF##*/};
+      #     echo "SHA: ${GITHUB_SHA}";
+      #     echo "ACTION/BRANCH_NAME: ${BRANCH_NAME}";
+      #     echo "GR: ${GITHUB_REF}";
+      #     echo "PWD: $(pwd)";
           
-          if [ "$BRANCH_NAME" = "production" ]; then
-            INVALIDATION_PATH="/vision-zero-production/*";
-          else
-            INVALIDATION_PATH="/vision-zero-staging/*";
-          fi
+      #     if [ "$BRANCH_NAME" = "production" ]; then
+      #       INVALIDATION_PATH="/vision-zero-production/*";
+      #     else
+      #       INVALIDATION_PATH="/vision-zero-staging/*";
+      #     fi
 
-          aws cloudfront create-invalidation --distribution-id E1QMRCYLR76UOL --paths "$INVALIDATION_PATH"
-
+      #     aws cloudfront create-invalidation --distribution-id E1QMRCYLR76UOL --paths "$INVALIDATION_PATH"
 
       - name: "Build dbdocs.io documentation"
         env:
