@@ -1,5 +1,16 @@
 import { gql } from "graphql-request";
 
+export const CRASHES_LIST_VIEW_QUERY = gql`
+  query {
+    crashes_list_view(limit: 100) {
+      id
+      cris_crash_id
+      address_primary
+      record_locator
+    }
+  }
+`;
+
 export const CRASH_QUERY = gql`
   query CrashDetails($recordLocator: String!) {
     crashes(

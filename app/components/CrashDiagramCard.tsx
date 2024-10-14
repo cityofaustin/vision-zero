@@ -1,5 +1,7 @@
 import React, { useState } from "react";
-import { Card, Image, Alert } from "react-bootstrap";
+import Alert from "react-bootstrap/Alert";
+import Card from "react-bootstrap/Card";
+import Image from "react-bootstrap/Image";
 import { Crash } from "@/types/types";
 
 // import axios from "axios";
@@ -39,7 +41,7 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
           <Alert variant="danger">
             <p>
               The crash diagram is not available. Typically, this indicates
-              there was an error when processing this crash's CR3 PDF.
+              there was an error when processing this crash&aposs CR3 PDF.
             </p>
             <p>
               For additional assistance, you can&nbsp;

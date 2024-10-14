@@ -4,15 +4,15 @@
 .app-sidebar {
   height: 100vh;
   overflow-y: auto;
-  transition: width 0.1s ease-in-out;
+  transition: width 0.2s ease-out;
 }
 
 .app-sidebar-expanded {
-  width: 300px !important;
+  width: 10rem !important;
 }
 
 .app-sidebar-collapsed {
-  width: 50px !important;
+  width: 3rem !important;
 }
 
 .mapboxgl-map {
@@ -23,3 +23,13 @@
   height: 400px;
   overflow-y: auto;
 }
+
+.sidebar-toggle-open {
+  transform: rotate(180deg);
+  transition: transform .2s ease-out; /* Optional: Smooth transition */
+}
+
+.sidebar-toggle-closed {
+    transform: rotate(360deg);
+    transition: transform .2s ease-out; /* Optional: Smooth transition */
+  }

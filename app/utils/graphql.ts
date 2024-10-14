@@ -2,37 +2,40 @@ import useSWR, { SWRConfiguration } from "swr";
 import { request, RequestDocument, Variables } from "graphql-request";
 import { useAuth0 } from "@auth0/auth0-react";
 
-const url = process.env.NEXT_PUBLIC_HASURA_ENDPOINT!;
+const ENDPOINT = process.env.NEXT_PUBLIC_HASURA_ENDPOINT!;
 
-const DEFAULT_OPTIONS: SWRConfiguration = {
+const DEFAULT_SWR_OPTIONS: SWRConfiguration = {
   revalidateOnFocus: false,
   revalidateOnReconnect: false,
 };
 
-// SWR fetcher using graphql-request
+/**
+ * Fetcher which interacts with our GraphQL API
+ */
 const fetcher = <T>([query, variables, token]: [
   RequestDocument,
   Variables,
   string
 ]): Promise<T> =>
   request({
-    url,
+    url: ENDPOINT,
     document: query,
     variables,
     requestHeaders: { Authorization: `Bearer ${token}` },
   });
 
-interface UseGraphQLProps<T> {
-  query: RequestDocument;
-  variables?: Variables;
-}
-
-export const useGraphQL = <T = any>({
+/**
+ * Hook which wraps `useSWR` and provides auth
+ */
+export const useGraphQL = <T>({
   query,
   variables,
-}: UseGraphQLProps<T>) => {
+}: {
+  query: RequestDocument;
+  variables?: Variables;
+}) => {
   // todo: we need to use an auth context
-  const { getAccessTokenSilently, isAuthenticated } = useAuth0();
+  const { getAccessTokenSilently } = useAuth0();
 
   const fetchWithAuth = async ([query, variables]: [
     RequestDocument,
@@ -46,7 +49,7 @@ export const useGraphQL = <T = any>({
   const { data, error, isLoading } = useSWR<T>(
     [query, variables],
     fetchWithAuth,
-    DEFAULT_OPTIONS
+    DEFAULT_SWR_OPTIONS
   );
 
   return {

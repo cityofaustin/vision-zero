@@ -9,7 +9,7 @@ export default function Table<T>({ rows, columns }: TableProps<T>) {
   if (!rows) return <p>Loading or error...</p>;
 
   return (
-    <BsTable striped responsive>
+    <BsTable striped responsive size="sm">
       <thead>
         <tr>
           {columns.map((col) => (
