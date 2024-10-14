@@ -85,7 +85,7 @@ jobs:
     #aws s3 sync --delete --acl public-read database/schemaspy_docs/ s3://db-docs.austinmobility.io/vision-zero-staging/
       - uses: jakejarvis/s3-sync-action@master
         with:
-          args: --acl public-read --follow-symlinks --delete
+          args: --delete
         env:
           AWS_S3_BUCKET: db-docs.austinmobility.io
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
