@@ -1,3 +1,5 @@
 .env.staging
 .env.production
 .env.ldm-staging
+schemaspy_docs/*
+!schemaspy_docs/README.md
