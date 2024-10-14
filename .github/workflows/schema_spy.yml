@@ -71,5 +71,6 @@ jobs:
           cd database;
           hasura --skip-update-check --database-name=default migrate apply;
           cd ..;
+          sleep 10;
           docker compose -f docker-compose-github-schema-spy-action.yml run schemaspy;
 
