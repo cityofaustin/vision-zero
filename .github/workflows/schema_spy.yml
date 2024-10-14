@@ -60,10 +60,8 @@ jobs:
 
           docker compose -f docker-compose-github-schema-spy-action.yml up -d postgis;
           sleep 10;
-          # docker compose logs postgis;
           docker compose -f docker-compose-github-schema-spy-action.yml up -d graphql-engine;
           sleep 10;
-          # docker compose logs graphql-engine;
           cd database;
           hasura --skip-update-check --database-name=default migrate apply;
           cd ..;
