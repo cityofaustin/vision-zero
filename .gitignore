@@ -91,5 +91,5 @@ env
 # Zappa API deployment secrets
 zappa_settings.json
 
-databasae.dbml
+database.dbml
 package*json
