@@ -13,6 +13,8 @@ services:
 
   postgis:
     image: frankinaustin/postgis-multiarch:14-3.3
+    ports:
+      - 5432:5432
     environment:
       POSTGRES_PASSWORD: "visionzero"
       POSTGRES_USER: "visionzero"
