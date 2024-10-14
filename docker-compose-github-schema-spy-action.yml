@@ -18,3 +18,8 @@ services:
       POSTGRES_USER: "visionzero"
       POSTGRES_DB: "atd_vz_data"
       POSTGRES_HOST_AUTH_METHOD: "trust"
+
+  schemaspy:
+    image: schemaspy/schemaspy:latest
+    volumes:
+      - ./database/docs:/output
