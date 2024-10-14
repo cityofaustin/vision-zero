@@ -81,6 +81,7 @@ jobs:
           sleep 10;
           chmod a+rwX database/schemaspy_docs;
           docker compose -f docker-compose-github-schema-spy-action.yml run schemaspy --debug;
+          aws cloudfront create-invalidation --distribution-id E1QMRCYLR76UOL --paths "/vision-zero-staging/*"
 
       - uses: jakejarvis/s3-sync-action@master
         with:
@@ -91,8 +92,6 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           SOURCE_DIR: 'database/schemaspy_docs'
           DEST_DIR: 'vision-zero-staging'
-
-
 
       - name: "Build dbdocs.io documentation"
         env:
