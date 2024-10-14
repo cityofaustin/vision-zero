@@ -58,11 +58,14 @@ jobs:
           echo "POSTGRES_DB=atd_vz_data" >> .env;
           echo "POSTGRES_HOST_AUTH_METHOD=trust" >> .env;
 
-          docker compose --quiet-pull -f docker-compose-github-schema-spy-action.yml up -d postgis;
+          docker compose -f docker-compose-github-schema-spy-action.yml up -d postgis;
           sleep 10;
           # docker compose logs postgis;
-          docker compose --quiet-pull -f docker-compose-github-schema-spy-action.yml up -d graphql-engine;
+          docker compose -f docker-compose-github-schema-spy-action.yml up -d graphql-engine;
           sleep 10;
           # docker compose logs graphql-engine;
           cd database;
           hasura --skip-update-check --database-name=default migrate apply;
+          cd ..;
+          docker compose -f docker-compose-github-schema-spy-action.yml run schemaspy;
+
