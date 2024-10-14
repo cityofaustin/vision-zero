@@ -82,7 +82,6 @@ jobs:
           chmod a+rwX database/schemaspy_docs;
           docker compose -f docker-compose-github-schema-spy-action.yml run schemaspy --debug;
 
-    #aws s3 sync --delete --acl public-read database/schemaspy_docs/ s3://db-docs.austinmobility.io/vision-zero-staging/
       - uses: jakejarvis/s3-sync-action@master
         with:
           args: --delete
@@ -92,3 +91,19 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           SOURCE_DIR: 'database/schemaspy_docs'
           DEST_DIR: 'vision-zero-staging'
+
+
+
+      - name: "Build dbdocs.io documentation"
+        env:
+          DBDOCS_TOKEN: ${{ secrets.DBDOCS_TOKEN }}
+
+        run: |
+          export BRANCH_NAME=${GITHUB_REF##*/};
+          echo "SHA: ${GITHUB_SHA}";
+          echo "ACTION/BRANCH_NAME: ${BRANCH_NAME}";
+          echo "GR: ${GITHUB_REF}";
+          echo "PWD: $(pwd)";
+
+          npm install dbdocs -g;
+          dbdocs db2dbml postgres postgres://visionzero:visionzero@localhost:5432/atd_vz_data -o database.dbml
