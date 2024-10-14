@@ -105,8 +105,8 @@ jobs:
           echo "GR: ${GITHUB_REF}";
           echo "PWD: $(pwd)";
           echo "DB Docs Token: ${DBDOCS_TOKEN}";
-  
+
 
           npm install dbdocs -g;
           dbdocs db2dbml postgres postgres://visionzero:visionzero@localhost:5432/atd_vz_data -o database.dbml
-          dbdocs build ./database.dbml
+          dbdocs build ./database.dbml --project="Vision Zero" --public 
