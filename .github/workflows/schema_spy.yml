@@ -128,7 +128,12 @@ jobs:
           echo "PWD: $(pwd)";
           echo "DB Docs Token: ${DBDOCS_TOKEN}";
 
+          if [ "$BRANCH_NAME" = "production" ]; then
+            PROJECT_NAME="Vision Zero Production";
+          else
+            PROJECT_NAME="Vision Zero Staging";
+          fi
 
           npm install dbdocs -g;
           dbdocs db2dbml postgres postgres://visionzero:visionzero@localhost:5432/atd_vz_data -o database.dbml
-          dbdocs build ./database.dbml --project="Vision Zero" --public 
+          dbdocs build ./database.dbml --project="$PROJECT_NAME" --public 
