@@ -22,5 +22,5 @@ services:
   schemaspy:
     image: schemaspy/schemaspy:latest
     volumes:
-      - ./database/schemaspy_docs/:/output/
+      # - ./database/schemaspy_docs/:/output/
       - ./database/schema_spy.cfg:/schemaspy.properties
