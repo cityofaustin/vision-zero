@@ -107,3 +107,4 @@ jobs:
 
           npm install dbdocs -g;
           dbdocs db2dbml postgres postgres://visionzero:visionzero@localhost:5432/atd_vz_data -o database.dbml
+          dbdocs build ./database.dbml
