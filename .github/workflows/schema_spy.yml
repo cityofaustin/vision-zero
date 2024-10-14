@@ -40,13 +40,6 @@ jobs:
         run: |
           curl -L https://github.com/hasura/graphql-engine/raw/stable/cli/get.sh | /bin/bash
 
-      # - name: AWS CLI Setup
-      #   uses: aws-actions/configure-aws-credentials@v1
-      #   env:
-      #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      #     aws-region: us-east-1
-
       - name: Login to DockerHub
         uses: docker/login-action@v2
         with:
@@ -81,7 +74,16 @@ jobs:
           sleep 10;
           chmod a+rwX database/schemaspy_docs;
           docker compose -f docker-compose-github-schema-spy-action.yml run schemaspy --debug;
-          aws cloudfront create-invalidation --distribution-id E1QMRCYLR76UOL --paths "/vision-zero-staging/*"
+
+      - name: "Determine S3 Destination Directory"
+        id: s3-dest-dir
+        run: |
+          export BRANCH_NAME=${GITHUB_REF##*/};
+          if [ "$BRANCH_NAME" = "production" ]; then
+            echo "::set-output name=dest_dir::vision-zero-production";
+          else
+            echo "::set-output name=dest_dir::vision-zero-staging";
+          fi
 
       - uses: jakejarvis/s3-sync-action@master
         with:
@@ -91,7 +93,28 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           SOURCE_DIR: 'database/schemaspy_docs'
-          DEST_DIR: 'vision-zero-staging'
+          DEST_DIR: ${{ steps.s3-dest-dir.outputs.dest_dir }}
+
+      - name: "Invalidate CloudFront"
+        env:
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          export BRANCH_NAME=${GITHUB_REF##*/};
+          echo "SHA: ${GITHUB_SHA}";
+          echo "ACTION/BRANCH_NAME: ${BRANCH_NAME}";
+          echo "GR: ${GITHUB_REF}";
+          echo "PWD: $(pwd)";
+          
+          if [ "$BRANCH_NAME" = "production" ]; then
+            INVALIDATION_PATH="/vision-zero-production/*";
+          else
+            INVALIDATION_PATH="/vision-zero-staging/*";
+          fi
+
+          aws cloudfront create-invalidation --distribution-id E1QMRCYLR76UOL --paths "$INVALIDATION_PATH"
+
 
       - name: "Build dbdocs.io documentation"
         env:
