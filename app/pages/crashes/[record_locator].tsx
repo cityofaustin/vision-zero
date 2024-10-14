@@ -10,7 +10,7 @@ import CrashHeader from "@/components/CrashHeader";
 import CrashDiagramCard from "@/components/CrashDiagramCard";
 import CrashDataCard from "@/components/CrashDataCard";
 import { crashDataCardColumns } from "@/configs/crashDataCard";
-import { Crash, TableColumn } from "@/types/types";
+import { Crash } from "@/types/types";
 
 export default function CrashDetailsPage() {
   const router = useRouter();
