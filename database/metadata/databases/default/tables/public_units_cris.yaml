@@ -5,13 +5,6 @@ object_relationships:
   - name: crashes_cris
     using:
       foreign_key_constraint_on: crash_pk
-  - name: units_edit
-    using:
-      foreign_key_constraint_on:
-        column: id
-        table:
-          name: units_edits
-          schema: public
 array_relationships:
   - name: change_log_units_cris
     using:
@@ -26,13 +19,6 @@ array_relationships:
         column: unit_id
         table:
           name: people_cris
-          schema: public
-  - name: people_edits
-    using:
-      foreign_key_constraint_on:
-        column: unit_id
-        table:
-          name: people_edits
           schema: public
 insert_permissions:
   - role: vz-admin
