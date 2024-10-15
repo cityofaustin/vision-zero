@@ -37,7 +37,9 @@ const QUERY_BY_CASE_ID = gql`
 `;
 
 const CrashNavigationSearchForm = () => {
+  // Stores the search input that will be passed to the crash query
   const [searchTerm, setSearchTerm] = useState("");
+  // Setting that controls if we are searching by `record_locator` or `case_id`
   const [globalSearchField, setGlobalSearchField] = useState(
     localStorage.getItem(localStorageKey) || DEFAULT_GLOBAL_SEARCH_FIELD
   );
@@ -51,6 +53,9 @@ const CrashNavigationSearchForm = () => {
   const history = useHistory();
 
   const changeSearchField = useCallback(() => {
+    /**
+     * Control the search field name and keep it in sync with local storage
+     */
     setGlobalSearchField(prevState => {
       const newGlobalSearchField =
         prevState === "record_locator" ? "case_id" : "record_locator";
@@ -59,17 +64,29 @@ const CrashNavigationSearchForm = () => {
     });
   }, []);
 
+  /**
+   * Hook that redirects to crash page once we have found a
+   * cras record
+   */
   useEffect(() => {
     const recordLocator = data?.crashes?.[0]?.record_locator;
     if (recordLocator) {
+      // we have a crash record - so navigate to it
       history.push(`/crashes/${recordLocator}`);
       setSearchTerm("");
     }
-    console.log("EFFECTFIRE")
   }, [data, history]);
 
+  /**
+   * We can determine that a crash was not found when:
+   * - we have a search term
+   * - the graphql query is not loading
+   * - we have data from the graphql query
+   * - there are no items in the data array
+   */
   const crashValidationError =
     searchTerm && !loading && data && !data.crashes?.length > 0;
+
   return (
     <Form className="mr-2" onSubmit={e => e.preventDefault()}>
       <InputGroup>
