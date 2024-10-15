@@ -50,7 +50,6 @@
     "react-map-gl": "^7.1.7",
     "react-router-config": "^5.0.1",
     "react-router-dom": "^5.1.2",
-    "react-select": "^5.8.1",
     "react-test-renderer": "^16.8.6",
     "react-zoom-pan-pinch": "^1.6.1",
     "reactstrap": "^8.0.0",

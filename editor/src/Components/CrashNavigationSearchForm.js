@@ -1,36 +1,26 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { useHistory } from "react-router-dom";
-import { useLazyQuery, useQuery } from "@apollo/react-hooks";
+import { useLazyQuery } from "@apollo/react-hooks";
 import { gql } from "apollo-boost";
 import {
   Form,
+  FormFeedback,
   Input,
   InputGroup,
   InputGroupAddon,
   Button,
   InputGroupButtonDropdown,
-  DropdownItem,
-  DropdownMenu,
   DropdownToggle,
+  Spinner,
 } from "reactstrap";
 import { appCodeName } from "../helpers/environment";
-import Select from "react-select";
-
-const options = [
-  { value: "chocolate", label: "Chocolate" },
-  { value: "strawberry", label: "Strawberry" },
-  { value: "vanilla", label: "Vanilla" },
-];
-
-// captures any non-number except the `t` and `T` (for temp crashes)
-const CRASH_ID_EXCLUDE_CHARACTERS_REGEX = /[^\dtT]*/g;
 
 const DEFAULT_GLOBAL_SEARCH_FIELD = "record_locator";
 const localStorageKey = `${appCodeName}_global_search_field`;
 
 const QUERY_BY_RECORD_LOCATOR = gql`
   query GlobalRecordLocatorSearch($searchTerm: String!) {
-    crashes(limit: 5, where: { record_locator: { _eq: $searchTerm } }) {
+    crashes(limit: 1, where: { record_locator: { _eq: $searchTerm } }) {
       id
       record_locator
     }
@@ -39,7 +29,7 @@ const QUERY_BY_RECORD_LOCATOR = gql`
 
 const QUERY_BY_CASE_ID = gql`
   query GlobalRecordLocatorSearch($searchTerm: String!) {
-    crashes(limit: 5, where: { case_id: { _eq: $searchTerm } }) {
+    crashes(limit: 1, where: { case_id: { _eq: $searchTerm } }) {
       id
       record_locator
     }
@@ -47,36 +37,39 @@ const QUERY_BY_CASE_ID = gql`
 `;
 
 const CrashNavigationSearchForm = () => {
-  const [crashSearchId, setCrashSearchId] = useState("");
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [searchResults, setSearchResults] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
   const [globalSearchField, setGlobalSearchField] = useState(
     localStorage.getItem(localStorageKey) || DEFAULT_GLOBAL_SEARCH_FIELD
   );
 
-  const { loading, data, error } = useQuery(
+  const [searchForCrash, { loading, data }] = useLazyQuery(
     globalSearchField === "record_locator"
       ? QUERY_BY_RECORD_LOCATOR
-      : QUERY_BY_CASE_ID,
-    { variables: { searchTerm: crashSearchId } }
+      : QUERY_BY_CASE_ID
   );
 
   const history = useHistory();
 
-  const toggleDropdown = useCallback(
-    () => setIsDropdownOpen(prevState => !prevState),
-    []
-  );
+  const changeSearchField = useCallback(() => {
+    setGlobalSearchField(prevState => {
+      const newGlobalSearchField =
+        prevState === "record_locator" ? "case_id" : "record_locator";
+      localStorage.setItem(localStorageKey, newGlobalSearchField);
+      return newGlobalSearchField;
+    });
+  }, []);
 
   useEffect(() => {
-    const options = data?.crashes?.map(crash => ({
-      value: crash.record_locator,
-      label: crash.record_locator,
-    }));
-    setSearchResults(options || []);
-  }, [data]);
+    const recordLocator = data?.crashes?.[0]?.record_locator;
+    if (recordLocator) {
+      history.push(`/crashes/${recordLocator}`);
+      setSearchTerm("");
+    }
+    console.log("EFFECTFIRE")
+  }, [data, history]);
 
-  console.log("LDE", loading, error, data);
+  const crashValidationError =
+    searchTerm && !loading && data && !data.crashes?.length > 0;
   return (
     <Form className="mr-2" onSubmit={e => e.preventDefault()}>
       <InputGroup>
@@ -84,83 +77,40 @@ const CrashNavigationSearchForm = () => {
           size="sm"
           addonType="prepend"
           isOpen={false}
-          toggle={() => {
-            const newGlobalSearchField =
-              globalSearchField === "record_locator"
-                ? "case_id"
-                : "record_locator";
-            setGlobalSearchField(newGlobalSearchField);
-            localStorage.setItem(localStorageKey, newGlobalSearchField);
-          }}
+          toggle={changeSearchField}
         >
           <DropdownToggle color="secondary">
             {globalSearchField === "record_locator" ? "Crash ID" : "Case ID"}
           </DropdownToggle>
         </InputGroupButtonDropdown>
-        <Select
-          value={crashSearchId}
-          inputValue={crashSearchId}
-          onInputChange={(value, action) => {
-            if (action.action === "input-change") {
-              setCrashSearchId(value);
-            }
-          }}
-          placeholder="Go to..."
-          options={searchResults}
-          noOptionsMessage={() =>
-            globalSearchField === "record_locator"
-              ? "Crash ID not found"
-              : "Case ID not found"
-          }
-          isLoading={loading}
-          closeMenuOnSelect={false}
-          onBlur={() => null}
-          styles={{
-            container: base => ({ ...base, width: "200px" }),
-            control: (base, state) => ({
-              ...base,
-              borderColor: state.isFocused ? "#80bdff" : "#ced4da",
-              //   boxShadow: state.isFocused
-              //     ? "0 0 0 0.2rem rgba(0,123,255,.25)"
-              //     : "none",
-              //   "&:hover": {
-              //     borderColor: "#80bdff",
-              //   },
-              height: "31px",
-              fontSize: "0.875rem",
-              borderRadius: "0",
-            }),
-          }}
-        />
-        {/* <Input
-          size="sm"
-          type="text"
+        <Input
+          invalid={!!crashValidationError}
+          bsSize="sm"
+          //   type="text"
           name="crash-navigation-search"
           placeholder="Search..."
-          value={crashSearchId}
-          onChange={e =>
-            globalSearchField === "record_locator"
-              ? setCrashSearchId(
-                  e.target.value.replace(CRASH_ID_EXCLUDE_CHARACTERS_REGEX, "")
-                )
-              : setCrashSearchId(e.target.value.trim())
-          }
-        /> */}
-        {/* <InputGroupAddon addonType="append">
+          value={searchTerm}
+          onChange={e => setSearchTerm(e.target.value.trim())}
+        />
+        <FormFeedback tooltip>
+          {globalSearchField === "record_locator"
+            ? "Crash not found"
+            : "Case not found"}
+        </FormFeedback>
+        <InputGroupAddon addonType="append">
           <Button
             type="submit"
-            color={crashSearchId ? "primary" : "secondary"}
-            disabled={!crashSearchId}
+            color={searchTerm ? "primary" : "secondary"}
+            disabled={!searchTerm}
             size="sm"
             onClick={() => {
-              //   history.push(`/crashes/${crashSearchId}`);
-              //   setCrashSearchId("");
-              //   searchForCrash({ variables: { searchTerm: crashSearchId } });
+              searchForCrash({ variables: { searchTerm: searchTerm } });
             }}
           >
-            <i className="fa fa-search" />
+            {!loading && <i className="fa fa-search" />}
+            {loading && <Spinner style={{ height: "1rem", width: "1rem" }} />}
           </Button>
-        </InputGroupAddon> */}
+        </InputGroupAddon>
       </InputGroup>
     </Form>
   );
