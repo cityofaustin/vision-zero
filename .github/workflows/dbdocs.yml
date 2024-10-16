@@ -52,6 +52,7 @@ jobs:
           cd database;
           hasura --skip-update-check --database-name=default migrate apply;
           cd ..;
+
           if [ "$BRANCH_NAME" = "production" ]; then
             PROJECT_NAME="Vision Zero Production";
           else
