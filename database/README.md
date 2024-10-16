@@ -415,3 +415,7 @@ The documentation can be found at:
 
 - Staging: https://dbdocs.io/transportation.data/Vision-Zero-Staging
 - Production: https://dbdocs.io/transportation.data/Vision-Zero-Production
+
+The integration with https://dbdocs.io requires a token be generated after logging
+into the service locally with the `dbdocs` CLI tool. The token is stored in 1Password
+under the entry named 'DB Docs (dbdocs.io).'
