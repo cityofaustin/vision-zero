@@ -1,4 +1,4 @@
-name: "Build & Publish DB Documentation"
+name: "Build & Publish Database Documentation"
 
 on:
   push:
