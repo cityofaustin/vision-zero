@@ -72,7 +72,6 @@ jobs:
           DOCS_URL: ${{ env.docs_url }}
         with:
           script: |
-            const { context } = require('@actions/github');
             await github.repos.createCommitStatus({
               owner: context.repo.owner,
               repo: context.repo.repo,
