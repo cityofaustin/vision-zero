@@ -249,7 +249,7 @@ See also the guidance for creating a new geospatial layer in the common maintanc
 | `atd_txdot_locations`   | `MultiPolygon` | Aka, "location polygons", these shapes are used to group crashes based on an intersection or road segment        | ArcGIS Online authoritative layer maintained by Vision Zero GIS team |
 | `signal_engineer_areas` | `MultiPolygon` | Polygon zones assigned to traffic signal engineers                                                               | ArcGIS Online authoritative layer owned by DTS GIS                   |
 | `zip_codes`             | `MultiPolygon` | Polygons which represent the Zone Improvement Plan (ZIP) postal code areas in the Austin metro area              | ArcGIS Online authoritative layer owned by DTS GIS                   |
-| `apd_sectors`           | `MultiPolygon` | Polygons which reprerest Austin Police Department (APD) sectors and districts used for dispatching and reporting | ArcGIS Online authoritative layer owned by APD                       |
+| `apd_sectors`           | `MultiPolygon` | Polygons which represent Austin Police Department (APD) sectors and districts used for dispatching and reporting | ArcGIS Online authoritative layer owned by APD                       |
 
 ## Common maintenance tasks
 
@@ -365,7 +365,7 @@ When creating a new database table to hold feature data, polygon geometries shou
 
 As a best practice, tables should always be configured with `created_at` of type `timestamptz` with default `now()`. Layers should make use of the [ArcGIS Online Layer Helper](/toolbox/load_agol_layer) tool so that they can be easily refreshed.
 
-Typically, any foreign key contstraint that references the layer should use the `ON UPDATE SET NULL` directive to ensure that the rows in the layer table can be deleted and re-inserted without being blocked by foreign references.
+Typically, any foreign key constraint that references the layer should use the `ON UPDATE SET NULL` directive to ensure that the rows in the layer table can be deleted and re-inserted without being blocked by foreign references.
 
 ## Backups
 
