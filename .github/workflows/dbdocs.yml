@@ -63,3 +63,17 @@ jobs:
           npm install dbdocs -g;
           dbdocs db2dbml postgres postgres://visionzero:visionzero@localhost:5432/atd_vz_data -o database.dbml;
           dbdocs build ./database.dbml --project="$PROJECT_NAME" --public;
+
+          DOCS_URL="https://dbdocs.io/transportation.data/${PROJECT_NAME// /-}"
+          echo "Documentation URL: ${DOCS_URL}"
+          echo "docs_url=${DOCS_URL}" >> $GITHUB_ENV
+
+      # Output as job summary
+      - name: "Add documentation link to job summary"
+        uses: actions/github-script@v3
+        with:
+          script: |
+            const docsUrl = process.env.DOCS_URL;
+            core.summary.addHeading('Database Documentation')
+                       .addLink('View Documentation', docsUrl)
+                       .write();
