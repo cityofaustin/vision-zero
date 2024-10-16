@@ -3,8 +3,6 @@ name: "Build & Publish Database Documentation"
 on:
   push:
     branches:
-      #- main
-      #- production
       - add-schema-spy-github-action
 
     paths:
@@ -17,7 +15,6 @@ jobs:
   build:
     name: "Build SchemaSpy Documentation"
     runs-on: ubuntu-24.04
-    # Setup Python
     steps:
 
       # Checkout our code
@@ -29,7 +26,7 @@ jobs:
         run: |
           curl -L https://github.com/hasura/graphql-engine/raw/stable/cli/get.sh | /bin/bash
 
-      # Run the shell commands using the AWS environment variables
+      # Build & Publish Database Documentation
       - name: "Build & Publish Database Documentation"
         env:
           AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -68,12 +65,36 @@ jobs:
           echo "Documentation URL: ${DOCS_URL}"
           echo "docs_url=${DOCS_URL}" >> $GITHUB_ENV
 
-      # Output as job summary
-      - name: "Add documentation link to job summary"
-        uses: actions/github-script@v3
+      # Update the check run details_url with the documentation URL
+      - name: "Update check run details_url"
+        uses: actions/github-script@v6
+        env:
+          DOCS_URL: ${{ env.docs_url }}
         with:
           script: |
-            const docsUrl = process.env.DOCS_URL;
-            core.summary.addHeading('Database Documentation')
-                       .addLink('View Documentation', docsUrl)
-                       .write();
+            const DOCS_URL = process.env.DOCS_URL;
+            const { owner, repo } = context.repo;
+            const jobName = context.job;
+
+            // List all check runs for the current commit
+            const checkRunsResponse = await github.rest.checks.listForRef({
+              owner,
+              repo,
+              ref: context.sha,
+            });
+
+            // Find the check run that matches the current job name
+            const checkRun = checkRunsResponse.data.check_runs.find(cr => cr.name === jobName);
+
+            if (checkRun) {
+              // Update the check run with the documentation URL
+              await github.rest.checks.update({
+                owner,
+                repo,
+                check_run_id: checkRun.id,
+                details_url: DOCS_URL,
+              });
+              console.log(`Check run updated with details_url: ${DOCS_URL}`);
+            } else {
+              console.log(`Check run with name ${jobName} not found.`);
+            }
