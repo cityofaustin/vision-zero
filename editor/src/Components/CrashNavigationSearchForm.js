@@ -69,8 +69,11 @@ const CrashNavigationSearchForm = () => {
    */
   useEffect(() => {
     if (retrievedRecordLocator) {
+      // navigate to crash
       history.push(`/crashes/${retrievedRecordLocator}`);
+      // reset form state
       setSearchTerm("");
+      setHasSearchedTerm(false);
     }
   }, [retrievedRecordLocator, history]);
 
