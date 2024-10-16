@@ -22,29 +22,29 @@ jobs:
       - name: "Checkout Code"
         uses: actions/checkout@v4
 
-      # Get python installed
-      - uses: actions/setup-python@v5
-        name: "Install setup-python@v5"
-        with:
-          python-version: "3.10"
-          # architecture: "x64"
+      # # Get python installed
+      # - uses: actions/setup-python@v5
+      #   name: "Install setup-python@v5"
+      #   with:
+      #     python-version: "3.10"
+      #     # architecture: "x64"
 
-      # Install python libraries
-      - name: "Install Python Libraries"
-        run: |
-          sudo apt-get install -y python3-setuptools
-          pip3 install awscli boto3 virtualenv requests shtab python-dotenv --break-system-packages
+      # # Install python libraries
+      # - name: "Install Python Libraries"
+      #   run: |
+      #     sudo apt-get install -y python3-setuptools
+      #     pip3 install awscli boto3 virtualenv requests shtab python-dotenv --break-system-packages
       
       # Install the graphql-engine CLI
       - name: "Install the graphql-engine CLI"
         run: |
           curl -L https://github.com/hasura/graphql-engine/raw/stable/cli/get.sh | /bin/bash
 
-      - name: Login to DockerHub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_TOKEN }}
+      # - name: Login to DockerHub
+      #   uses: docker/login-action@v2
+      #   with:
+      #     username: ${{ secrets.DOCKER_USERNAME }}
+      #     password: ${{ secrets.DOCKER_TOKEN }}
 
       # Run the shell commands using the AWS environment variables
       - name: "Build & Publish Database Documentation"
@@ -71,25 +71,11 @@ jobs:
           cd database;
           hasura --skip-update-check --database-name=default migrate apply;
           cd ..;
-
-      - name: "Build dbdocs.io documentation"
-        env:
-          DBDOCS_TOKEN: ${{ secrets.DBDOCS_TOKEN }}
-
-        run: |
-          export BRANCH_NAME=${GITHUB_REF##*/};
-          echo "SHA: ${GITHUB_SHA}";
-          echo "ACTION/BRANCH_NAME: ${BRANCH_NAME}";
-          echo "GR: ${GITHUB_REF}";
-          echo "PWD: $(pwd)";
-          echo "DB Docs Token: ${DBDOCS_TOKEN}";
-
           if [ "$BRANCH_NAME" = "production" ]; then
             PROJECT_NAME="Vision Zero Production";
           else
             PROJECT_NAME="Vision Zero Staging";
           fi
-
           npm install dbdocs -g;
           dbdocs db2dbml postgres postgres://visionzero:visionzero@localhost:5432/atd_vz_data -o database.dbml;
           dbdocs build ./database.dbml --project="$PROJECT_NAME" --public;
