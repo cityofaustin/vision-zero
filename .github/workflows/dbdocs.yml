@@ -9,7 +9,7 @@ on:
 
     paths:
       - "database/**"
-      - ".github/workflows/schema_spy.yml"
+      - ".github/workflows/dbdocs.yml"
 
 jobs:
   build:
