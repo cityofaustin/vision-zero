@@ -75,7 +75,7 @@ const CrashNavigationSearchForm = () => {
       setSearchTerm("");
       setHasSearchedTerm(false);
     }
-  }, [retrievedRecordLocator, history]);
+  }, [retrievedRecordLocator, history, data]);
 
   /**
    * We can determine that a crash was not found when:
