@@ -11,4 +11,4 @@ create table public.apd_sectors (
 
 create index on apd_sectors using gist (geometry);
 
-comment on table public.apd_sectors is 'Polygons which reprerest Austin Police Department (APD) sectors and districts used for dispatching and reporting';
+comment on table public.apd_sectors is 'Polygons which represent Austin Police Department (APD) sectors and districts used for dispatching and reporting';
