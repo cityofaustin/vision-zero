@@ -1,14 +1,16 @@
-const fs = require("fs");
 const { program, Option } = require("commander");
 const { arcgisToGeoJSON } = require("@terraformer/arcgis");
 const {
-  getEsriToken,
-  getEsriLayerUrl,
   getEsriJson,
+  getEsriLayerUrl,
+  getEsriToken,
+  getInsertMutation,
+  getTruncateMutation,
   handleFields,
-  makeUniformMultiPoly,
   makeHasuraRequest,
+  makeUniformMultiPoly,
   reduceGeomPrecision,
+  saveJSONFile,
 } = require("./utils");
 const { LAYERS } = require("./settings");
 
@@ -20,17 +22,27 @@ program.addOption(
     .choices(Object.keys(LAYERS))
     .makeOptionMandatory()
 );
+program.addOption(
+  new Option(
+    "-s, --save",
+    "save a copy of the geojson output to './data/<layer-name>.geojson'"
+  )
+);
 program.parse();
 const args = program.opts();
 
 /**
- * Main function to upsert an AGOL layer into the DB
+ * Main function to load an AGOL layer into the DB
  */
-const main = async ({ layer: layerName }) => {
+const main = async ({ layer: layerName, save }) => {
   console.log(`Processing ${layerName}`);
   const layerConfig = LAYERS[layerName];
+
+  console.log("Getting AGOL token...");
   const { token } = await getEsriToken();
   layerConfig.query_params.token = token;
+
+  console.log("Downloading layer...");
   const layerUrl = getEsriLayerUrl(layerConfig);
   const esriJson = await getEsriJson(layerUrl);
 
@@ -38,7 +50,7 @@ const main = async ({ layer: layerName }) => {
    * Although the ArcGIS REST API can return geojson directly, the resulting geometries
    * are malformed. For this reason, we use terraformer package, which is an Esri
    * product.
-   * 
+   *
    * The issue is discussed in the Esri community, here:
    * https://community.esri.com/t5/arcgis-online-questions/agol-export-to-geojson-holes-not-represented-as/td-p/1008140
    */
@@ -52,16 +64,27 @@ const main = async ({ layer: layerName }) => {
 
   reduceGeomPrecision(geojson.features);
 
-  if (layerConfig.shouldTruncateFirst) {
-    await makeHasuraRequest({ query: layerConfig.truncateMutation });
+  if (layerConfig.transformer) {
+    layerConfig.transformer(geojson);
   }
 
-  const objects = geojson.features.map(({ properties, geometry }) => ({
+  if (save) {
+    saveJSONFile(`./data/${layerName}.geojson`, geojson);
+  }
+
+  objects = geojson.features.map(({ properties, geometry }) => ({
     ...properties,
     geometry,
   }));
+
+  console.log(`Truncating ${layerConfig.tableName} table...`);
+  const truncateMutation = getTruncateMutation(layerConfig.tableName);
+  await makeHasuraRequest({ query: truncateMutation });
+
+  console.log("Inserting new features...");
+  const insertMutation = getInsertMutation(layerConfig.tableName);
   const result = await makeHasuraRequest({
-    query: layerConfig.upsertMutation,
+    query: insertMutation,
     variables: { objects },
   });
   console.log(result);
