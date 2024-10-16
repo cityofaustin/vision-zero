@@ -72,29 +72,11 @@ jobs:
           DOCS_URL: ${{ env.docs_url }}
         with:
           script: |
-            const DOCS_URL = process.env.DOCS_URL;
-            const { owner, repo } = context.repo;
-            const jobName = context.job;
-
-            // List all check runs for the current commit
-            const checkRunsResponse = await github.rest.checks.listForRef({
-              owner,
-              repo,
-              ref: context.sha,
+            const { context } = require('@actions/github');
+            await github.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: context.sha,
+              state: 'success',
+              target_url: DOCS_URL,
             });
-
-            // Find the check run that matches the current job name
-            const checkRun = checkRunsResponse.data.check_runs.find(cr => cr.name === jobName);
-
-            if (checkRun) {
-              // Update the check run with the documentation URL
-              await github.rest.checks.update({
-                owner,
-                repo,
-                check_run_id: checkRun.id,
-                details_url: DOCS_URL,
-              });
-              console.log(`Check run updated with details_url: ${DOCS_URL}`);
-            } else {
-              console.log(`Check run with name ${jobName} not found.`);
-            }
