@@ -64,18 +64,3 @@ jobs:
           DOCS_URL="https://dbdocs.io/transportation.data/${PROJECT_NAME// /-}"
           echo "Documentation URL: ${DOCS_URL}"
           echo "docs_url=${DOCS_URL}" >> $GITHUB_ENV
-
-      # Update the check run details_url with the documentation URL
-      - name: "Update check run details_url"
-        uses: actions/github-script@v6
-        env:
-          DOCS_URL: ${{ env.docs_url }}
-        with:
-          script: |
-            await github.repos.createCommitStatus({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              sha: context.sha,
-              state: 'success',
-              target_url: DOCS_URL,
-            });
