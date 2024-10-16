@@ -18,18 +18,16 @@ import { appCodeName } from "../helpers/environment";
 const DEFAULT_GLOBAL_SEARCH_FIELD = "record_locator";
 const localStorageKey = `${appCodeName}_global_search_field`;
 
-const QUERY_BY_RECORD_LOCATOR = gql`
-  query GlobalRecordLocatorSearch($searchTerm: String!) {
-    crashes(limit: 1, where: { record_locator: { _eq: $searchTerm } }) {
+const CRASH_QUERY = gql`
+  query CrashNavigationSearch($searchTerm: String!) {
+    record_locator: crashes(
+      limit: 1
+      where: { record_locator: { _eq: $searchTerm } }
+    ) {
       id
       record_locator
     }
-  }
-`;
-
-const QUERY_BY_CASE_ID = gql`
-  query GlobalRecordLocatorSearch($searchTerm: String!) {
-    crashes(limit: 1, where: { case_id: { _eq: $searchTerm } }) {
+    case_id: crashes(limit: 1, where: { case_id: { _eq: $searchTerm } }) {
       id
       record_locator
     }
@@ -39,16 +37,14 @@ const QUERY_BY_CASE_ID = gql`
 const CrashNavigationSearchForm = () => {
   // Stores the search input that will be passed to the crash query
   const [searchTerm, setSearchTerm] = useState("");
+  // Keeps track of if we have searched the current search term
+  const [hasSearchedTerm, setHasSearchedTerm] = useState(false);
   // Setting that controls if we are searching by `record_locator` or `case_id`
   const [globalSearchField, setGlobalSearchField] = useState(
     localStorage.getItem(localStorageKey) || DEFAULT_GLOBAL_SEARCH_FIELD
   );
 
-  const [searchForCrash, { loading, data }] = useLazyQuery(
-    globalSearchField === "record_locator"
-      ? QUERY_BY_RECORD_LOCATOR
-      : QUERY_BY_CASE_ID
-  );
+  const [searchForCrash, { loading, data }] = useLazyQuery(CRASH_QUERY);
 
   const history = useHistory();
 
@@ -62,30 +58,34 @@ const CrashNavigationSearchForm = () => {
       localStorage.setItem(localStorageKey, newGlobalSearchField);
       return newGlobalSearchField;
     });
+    setHasSearchedTerm(false);
   }, []);
+
+  const retrievedRecordLocator = data?.[globalSearchField]?.[0]?.record_locator;
 
   /**
    * Hook that redirects to crash page once we have found a
-   * cras record
+   * crash record
    */
   useEffect(() => {
-    const recordLocator = data?.crashes?.[0]?.record_locator;
-    if (recordLocator) {
-      // we have a crash record - so navigate to it
-      history.push(`/crashes/${recordLocator}`);
+    if (retrievedRecordLocator) {
+      history.push(`/crashes/${retrievedRecordLocator}`);
       setSearchTerm("");
     }
-  }, [data, history]);
+  }, [retrievedRecordLocator, history]);
 
   /**
    * We can determine that a crash was not found when:
-   * - we have a search term
+   * - we have searched for the input
    * - the graphql query is not loading
    * - we have data from the graphql query
    * - there are no items in the data array
    */
   const crashValidationError =
-    searchTerm && !loading && data && !data.crashes?.length > 0;
+    hasSearchedTerm &&
+    !loading &&
+    data &&
+    !data?.[globalSearchField]?.length > 0;
 
   return (
     <Form className="mr-2" onSubmit={e => e.preventDefault()}>
@@ -103,11 +103,14 @@ const CrashNavigationSearchForm = () => {
         <Input
           invalid={!!crashValidationError}
           bsSize="sm"
-          //   type="text"
+          type="text"
           name="crash-navigation-search"
           placeholder="Search..."
           value={searchTerm}
-          onChange={e => setSearchTerm(e.target.value.trim())}
+          onChange={e => {
+            setSearchTerm(e.target.value.trim());
+            setHasSearchedTerm(false);
+          }}
         />
         <FormFeedback tooltip>
           {globalSearchField === "record_locator"
@@ -122,6 +125,7 @@ const CrashNavigationSearchForm = () => {
             size="sm"
             onClick={() => {
               searchForCrash({ variables: { searchTerm: searchTerm } });
+              setHasSearchedTerm(true);
             }}
           >
             {!loading && <i className="fa fa-search" />}
