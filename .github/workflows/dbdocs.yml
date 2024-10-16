@@ -11,6 +11,8 @@ on:
       - "database/**"
       - ".github/workflows/dbdocs.yml"
 
+  workflow_dispatch:
+
 jobs:
   build:
     name: "Build SchemaSpy Documentation"
