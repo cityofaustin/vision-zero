@@ -22,12 +22,18 @@ const CRASH_QUERY = gql`
   query CrashNavigationSearch($searchTerm: String!) {
     record_locator: crashes(
       limit: 1
-      where: { record_locator: { _eq: $searchTerm } }
+      where: {
+        record_locator: { _eq: $searchTerm }
+        is_deleted: { _eq: false }
+      }
     ) {
       id
       record_locator
     }
-    case_id: crashes(limit: 1, where: { case_id: { _eq: $searchTerm } }) {
+    case_id: crashes(
+      limit: 1
+      where: { case_id: { _eq: $searchTerm }, is_deleted: { _eq: false } }
+    ) {
       id
       record_locator
     }
