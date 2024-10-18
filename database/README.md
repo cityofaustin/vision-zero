@@ -409,7 +409,7 @@ The CI is performed by a GitHub action which does the following:
 2. Spin up a postgres database which is initially empty.
 3. Use the `hasura` CLI to deploy migrations, which build up the VZ DB
 4. Install and use the `dbdocs` npm tool to generate a DBML file for the DB
-5. Use teh `dbdocs` tool again to upload the documentation to https://dbdocs.io.
+5. Use the `dbdocs` tool again to upload the documentation to https://dbdocs.io.
 
 The documentation can be found at:
 
