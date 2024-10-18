@@ -94,7 +94,7 @@ const GridTableSearch = ({
               type="text"
               id={`input1-group2-${query.table}`}
               name={`input1-group2-${query.table}`}
-              placeholder={"Enter Search Here..."}
+              placeholder={"Search..."}
               value={searchFieldValue}
               onChange={e => setSearchFieldValue(e.target.value)}
             />
