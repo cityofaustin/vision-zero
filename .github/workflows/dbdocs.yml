@@ -1,0 +1,68 @@
+name: "Build & Publish Database Documentation"
+
+on:
+  push:
+    branches:
+      - main
+      - production
+
+    paths:
+      - "database/**"
+      - ".github/workflows/dbdocs.yml"
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: "Build SchemaSpy Documentation"
+    runs-on: ubuntu-24.04
+    steps:
+
+      # Checkout our code
+      - name: "Checkout Code"
+        uses: actions/checkout@v4
+
+      # Install the graphql-engine CLI
+      - name: "Install the graphql-engine CLI"
+        run: |
+          curl -L https://github.com/hasura/graphql-engine/raw/stable/cli/get.sh | /bin/bash
+
+      # Build & Publish Database Documentation
+      - name: "Build & Publish Database Documentation"
+        env:
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          DBDOCS_TOKEN: ${{ secrets.DBDOCS_TOKEN }}
+        run: |
+          export BRANCH_NAME=${GITHUB_REF##*/};
+          echo "SHA: ${GITHUB_SHA}";
+          echo "ACTION/BRANCH_NAME: ${BRANCH_NAME}";
+          echo "GR: ${GITHUB_REF}";
+          echo "PWD: $(pwd)";
+
+          echo "POSTGRES_PASSWORD=visionzero" > .env;
+          echo "POSTGRES_USER=visionzero" >> .env;
+          echo "POSTGRES_DB=atd_vz_data" >> .env;
+          echo "POSTGRES_HOST_AUTH_METHOD=trust" >> .env;
+
+          docker compose -f docker-compose-github-dbdocs-action.yml up -d postgis;
+          sleep 10;
+          docker compose -f docker-compose-github-dbdocs-action.yml up -d graphql-engine;
+          sleep 10;
+          cd database;
+          hasura --skip-update-check --database-name=default migrate apply;
+          cd ..;
+
+          if [ "$BRANCH_NAME" = "production" ]; then
+            PROJECT_NAME="Vision Zero Production";
+          else
+            PROJECT_NAME="Vision Zero Staging";
+          fi
+          npm install dbdocs -g;
+          dbdocs db2dbml postgres postgres://visionzero:visionzero@localhost:5432/atd_vz_data -o database.dbml;
+          dbdocs build ./database.dbml --project="$PROJECT_NAME" --public;
+
+          DOCS_URL="https://dbdocs.io/transportation.data/${PROJECT_NAME// /-}"
+          echo "Documentation URL: ${DOCS_URL}"
+          echo "docs_url=${DOCS_URL}" >> $GITHUB_ENV
