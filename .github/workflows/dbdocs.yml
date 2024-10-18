@@ -3,7 +3,8 @@ name: "Build & Publish Database Documentation"
 on:
   push:
     branches:
-      - add-schema-spy-github-action
+      - main
+      - production
 
     paths:
       - "database/**"
