@@ -1,6 +1,6 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback } from "react";
 import { useHistory } from "react-router-dom";
-import { useLazyQuery } from "@apollo/react-hooks";
+import { useApolloClient } from "@apollo/react-hooks";
 import { gql } from "apollo-boost";
 import {
   Form,
@@ -21,7 +21,7 @@ const localStorageKey = `${appCodeName}_global_search_field`;
 const CRASH_QUERY = gql`
   query CrashNavigationSearch($searchTerm: String!) {
     record_locator: crashes(
-      limit: 1
+      limit: 2
       where: {
         record_locator: { _eq: $searchTerm }
         is_deleted: { _eq: false }
@@ -31,7 +31,7 @@ const CRASH_QUERY = gql`
       record_locator
     }
     case_id: crashes(
-      limit: 1
+      limit: 2
       where: { case_id: { _eq: $searchTerm }, is_deleted: { _eq: false } }
     ) {
       id
@@ -43,58 +43,64 @@ const CRASH_QUERY = gql`
 const CrashNavigationSearchForm = () => {
   // Stores the search input that will be passed to the crash query
   const [searchTerm, setSearchTerm] = useState("");
-  // Keeps track of if we have searched the current search term
-  const [hasSearchedTerm, setHasSearchedTerm] = useState(false);
-  // Setting that controls if we are searching by `record_locator` or `case_id`
-  const [globalSearchField, setGlobalSearchField] = useState(
+  // Controls if we are searching by `record_locator` or `case_id`
+  const [searchField, setSearchField] = useState(
     localStorage.getItem(localStorageKey) || DEFAULT_GLOBAL_SEARCH_FIELD
   );
-
-  const [searchForCrash, { loading, data }] = useLazyQuery(CRASH_QUERY);
-
+  // Stores error validation message when no crashes or multiple crashes are found
+  const [searchError, setSearchError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const client = useApolloClient();
   const history = useHistory();
 
+  /**
+   * Controls the search field name and keep it in sync with local storage
+   */
   const changeSearchField = useCallback(() => {
-    /**
-     * Control the search field name and keep it in sync with local storage
-     */
-    setGlobalSearchField(prevState => {
-      const newGlobalSearchField =
+    setSearchField(prevState => {
+      const newSearchField =
         prevState === "record_locator" ? "case_id" : "record_locator";
-      localStorage.setItem(localStorageKey, newGlobalSearchField);
-      return newGlobalSearchField;
+      localStorage.setItem(localStorageKey, newSearchField);
+      return newSearchField;
     });
-    setHasSearchedTerm(false);
+    setSearchError(null);
   }, []);
 
-  const retrievedRecordLocator = data?.[globalSearchField]?.[0]?.record_locator;
-
   /**
-   * Hook that redirects to crash page once we have found a
-   * crash record
+   * Function which queries for crashes and redirects if found
    */
-  useEffect(() => {
-    if (retrievedRecordLocator) {
-      // navigate to crash
-      history.push(`/crashes/${retrievedRecordLocator}`);
-      // reset form state
-      setSearchTerm("");
-      setHasSearchedTerm(false);
-    }
-  }, [retrievedRecordLocator, history, data]);
+  const onSearch = useCallback(() => {
+    setIsLoading(true);
+    client
+      .query({
+        query: CRASH_QUERY,
+        variables: { searchTerm: searchTerm },
+      })
+      .then(json => {
+        const results = json.data?.[searchField];
+        setIsLoading(false);
+        if (results.length === 1) {
+          const recordLocator = results[0].record_locator;
+          // navigate to crash
+          history.push(`/crashes/${recordLocator}`);
+          // reset form state
+          setSearchTerm("");
+          setSearchError(null);
+        } else {
+          let searchError;
 
-  /**
-   * We can determine that a crash was not found when:
-   * - we have searched for the input
-   * - the graphql query is not loading
-   * - we have data from the graphql query
-   * - there are no items in the data array
-   */
-  const crashValidationError =
-    hasSearchedTerm &&
-    !loading &&
-    data &&
-    !data?.[globalSearchField]?.length > 0;
+          if (results.length === 0) {
+            searchError =
+              searchField === "record_locator"
+                ? "Crash not found"
+                : "Case not found";
+          } else {
+            searchError = "Multiple results found";
+          }
+          setSearchError(searchError);
+        }
+      });
+  }, [searchTerm, history, client, searchField]);
 
   return (
     <Form className="mr-2" onSubmit={e => e.preventDefault()}>
@@ -106,11 +112,11 @@ const CrashNavigationSearchForm = () => {
           toggle={changeSearchField}
         >
           <DropdownToggle color="secondary">
-            {globalSearchField === "record_locator" ? "Crash ID" : "Case ID"}
+            {searchField === "record_locator" ? "Crash ID" : "Case ID"}
           </DropdownToggle>
         </InputGroupButtonDropdown>
         <Input
-          invalid={!!crashValidationError}
+          invalid={!!searchError}
           bsSize="sm"
           type="text"
           name="crash-navigation-search"
@@ -118,27 +124,22 @@ const CrashNavigationSearchForm = () => {
           value={searchTerm}
           onChange={e => {
             setSearchTerm(e.target.value.trim());
-            setHasSearchedTerm(false);
+            if (searchError) {
+              setSearchError(null);
+            }
           }}
         />
-        <FormFeedback tooltip>
-          {globalSearchField === "record_locator"
-            ? "Crash not found"
-            : "Case not found"}
-        </FormFeedback>
+        <FormFeedback tooltip>{searchError}</FormFeedback>
         <InputGroupAddon addonType="append">
           <Button
             type="submit"
             color={searchTerm ? "primary" : "secondary"}
             disabled={!searchTerm}
             size="sm"
-            onClick={() => {
-              searchForCrash({ variables: { searchTerm: searchTerm } });
-              setHasSearchedTerm(true);
-            }}
+            onClick={onSearch}
           >
-            {!loading && <i className="fa fa-search" />}
-            {loading && <Spinner style={{ height: "1rem", width: "1rem" }} />}
+            {!isLoading && <i className="fa fa-search" />}
+            {isLoading && <Spinner style={{ height: "1rem", width: "1rem" }} />}
           </Button>
         </InputGroupAddon>
       </InputGroup>
