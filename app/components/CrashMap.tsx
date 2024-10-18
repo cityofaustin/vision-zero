@@ -44,8 +44,6 @@ const LAYERS: Layers = {
     id: "simple-tiles",
     type: "raster",
     source: "raster-tiles",
-    minzoom: 0,
-    maxzoom: 22,
   },
   streetLabels: {
     // borrowed from mapbox mapbox streets v11 style
@@ -169,6 +167,7 @@ export const CrashMap = ({ latitude, longitude }: CrashMapProps) => {
       cooperativeGestures={true}
       // Resize the map canvas when parent row expands to fit crash
       onLoad={(e) => e.target.resize()}
+      maxZoom={21}
     >
       <FullscreenControl position="top-left" />
       <NavigationControl position="top-left" showCompass={false} />
