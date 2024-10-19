@@ -1,26 +1,36 @@
+import { useState } from "react";
 import { useRouter } from "next/router";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 import { CrashMap } from "@/components/CrashMap";
-import { CRASH_QUERY } from "@/queries/crash";
-import { useGraphQL } from "@/utils/graphql";
+import { GET_CRASH, UPDATE_CRASH } from "@/queries/crash";
+import { useQuery, useMutation } from "@/utils/graphql";
 import CrashHeader from "@/components/CrashHeader";
 import CrashDiagramCard from "@/components/CrashDiagramCard";
 import CrashDataCard from "@/components/CrashDataCard";
 import { crashDataCardColumns } from "@/configs/crashDataCard";
-import { Crash } from "@/types/types";
+import { Crash, LatLon } from "@/types/types";
 
 export default function CrashDetailsPage() {
+  const [isEditingCoordinates, setIsEditingCoordinates] = useState(false);
+  const [editCoordinates, setEditCoordinates] = useState<LatLon>({
+    latitude: 0,
+    longitude: 0,
+  });
   const router = useRouter();
   const recordLocator = router.query.record_locator;
 
   // todo: handle when router isn't ready to prevent gql error
-  const { data } = useGraphQL<{ crashes: Crash[] }>({
-    query: CRASH_QUERY,
+  const { data, refetch, isLoading, isValidating } = useQuery<{
+    crashes: Crash[];
+  }>({
+    query: GET_CRASH,
     variables: { recordLocator },
   });
+
+  const { mutate, loading: isMutating } = useMutation(UPDATE_CRASH);
 
   if (!data || !data?.crashes?.[0]) {
     return;
@@ -28,22 +38,62 @@ export default function CrashDetailsPage() {
 
   const crash = data.crashes[0];
 
+  // todo: this won't scale
+  const isLoadingAnything = isLoading || isMutating || isValidating;
+
   return (
     <>
       <CrashHeader crash={crash} />
       <Row>
-        <Col sm={12} md={6} lg={4} className="mb-3">
+        <Col sm={12} md={6} lg={5} className="mb-3">
           <Card>
             <Card.Header>Location</Card.Header>
             <Card.Body className="p-1 crash-header-card-body">
-              <CrashMap latitude={crash.latitude} longitude={crash.longitude} />
+              <CrashMap
+                savedLatitude={crash.latitude}
+                savedLongitude={crash.longitude}
+                isEditing={isEditingCoordinates}
+                editCoordinates={editCoordinates}
+                setEditCoordinates={setEditCoordinates}
+              />
             </Card.Body>
             <Card.Footer>
               <div className="d-flex justify-content-between">
-                <span>Geocode provider</span>
-                <Button size="sm" variant="primary">
-                  Edit coordinates
-                </Button>
+                <div>
+                  <span>Geocode provider</span>
+                </div>
+                <div>
+                  <Button
+                    size="sm"
+                    variant="primary"
+                    disabled={isLoadingAnything}
+                    onClick={async () => {
+                      if (!isEditingCoordinates) {
+                        setIsEditingCoordinates(true);
+                      } else {
+                        await mutate({
+                          id: crash.id,
+                          updates: { ...editCoordinates },
+                        });
+                        await refetch();
+                        setIsEditingCoordinates(false);
+                      }
+                    }}
+                  >
+                    {isEditingCoordinates ? "Save location" : "Edit"}
+                  </Button>
+                  {isEditingCoordinates && (
+                    <Button
+                      className="ms-1"
+                      size="sm"
+                      variant="danger"
+                      onClick={() => setIsEditingCoordinates(false)}
+                      disabled={isLoadingAnything}
+                    >
+                      Cancel
+                    </Button>
+                  )}
+                </div>
               </div>
             </Card.Footer>
           </Card>
@@ -51,7 +101,7 @@ export default function CrashDetailsPage() {
         <Col sm={12} md={6} lg={4}>
           <CrashDiagramCard crash={crash} />
         </Col>
-        <Col sm={12} md={6} lg={4}>
+        <Col sm={12} md={6} lg={3}>
           <Card>
             <Card.Header>Narrative</Card.Header>
             <Card.Body className="crash-header-card-body">
@@ -66,6 +116,7 @@ export default function CrashDetailsPage() {
             crash={crash}
             title="Summary"
             columns={crashDataCardColumns}
+            refetch={refetch}
           />
         </Col>
       </Row>

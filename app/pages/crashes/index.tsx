@@ -1,7 +1,7 @@
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import { useAuth0 } from "@auth0/auth0-react";
-import { useGraphQL } from "@/utils/graphql";
+import { useQuery } from "@/utils/graphql";
 import Table from "@/components/Table";
 import { crashesListViewColumns } from "@/configs/crashesListView";
 import { CrashListCrash } from "@/types/types";
@@ -15,7 +15,7 @@ export default function Crashes() {
     loginWithRedirect,
   } = useAuth0();
 
-  const { data } = useGraphQL<{
+  const { data } = useQuery<{
     crashes_list_view: CrashListCrash[];
   }>({
     query: CRASHES_LIST_VIEW_QUERY,

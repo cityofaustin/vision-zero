@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import { Variables } from "graphql-request";
 
 export interface CrashListCrash {
   id: number;
@@ -20,6 +21,9 @@ export interface Crash {
   investigator_narrative: string | null;
   is_temp_record: boolean;
   rpt_street_name: string | null;
+  updated_by: string | null;
+  updated_at: string | null;
+  crash_speed_limit: number | null;
 }
 
 export type TableColumn<T> = {
@@ -29,3 +33,18 @@ export type TableColumn<T> = {
   renderer?: (row: T) => ReactNode;
   editable?: boolean;
 };
+
+interface MutationUpdates {
+  [key: string]: any;
+  updated_by?: string;
+}
+
+export interface MutationVariables extends Variables {
+  [key: string]: any;
+  updates?: MutationUpdates;
+}
+
+export interface LatLon {
+  latitude: number | null;
+  longitude: number | null;
+}

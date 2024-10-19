@@ -14,4 +14,9 @@ export const crashDataCardColumns: TableColumn<Crash>[] = [
     label: "Street name",
     editable: true,
   },
+  {
+    key: "crash_speed_limit",
+    label: "Speed limit",
+    editable: true,
+  },
 ];

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import Alert from "react-bootstrap/Alert";
 import Card from "react-bootstrap/Card";
 import Image from "react-bootstrap/Image";
@@ -14,7 +14,7 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
 
   return (
     <Card>
-      <Card.Header>Crash Diagram</Card.Header>
+      <Card.Header>Diagram</Card.Header>
       <Card.Body className="crash-header-card-body text-center">
         {!diagramError && (
           <Image

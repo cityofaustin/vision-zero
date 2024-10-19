@@ -3,6 +3,8 @@ import Card from "react-bootstrap/Card";
 import Table from "react-bootstrap/Table";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
+import { useMutation } from "@/utils/graphql";
+import { UPDATE_CRASH } from "@/queries/crash";
 import { Crash, TableColumn } from "@/types/types";
 
 type FormInputValue = string | number | boolean | null | undefined;
@@ -10,37 +12,43 @@ type FormInputValue = string | number | boolean | null | undefined;
 const InlineFormInput = ({
   initialValue,
   onSave,
+  onCancel,
 }: {
   initialValue: FormInputValue;
-  onSave: () => void;
+  onSave: (value: any) => Promise<any>;
+  onCancel: () => void;
 }) => {
   const [editValue, setEditValue] = useState<FormInputValue>(initialValue);
+
   return (
-    <div>
+    <Form
+      onSubmit={async (e) => {
+        e.preventDefault();
+        await onSave(editValue);
+      }}
+    >
       <div className="mb-2">
-        <Form>
-          <Form.Control
-            autoFocus
-            size="sm"
-            type="text"
-            value={String(editValue || "")}
-            onChange={(e) => setEditValue(e.target.value)}
-          />
-        </Form>
+        <Form.Control
+          autoFocus
+          size="sm"
+          type="text"
+          value={String(editValue || "")}
+          onChange={(e) => setEditValue(e.target.value)}
+        />
       </div>
       <div className="text-end">
         <span className="me-2">
-          <Button size="sm" onClick={onSave}>
+          <Button size="sm" type="submit">
             Save
           </Button>
         </span>
         <span>
-          <Button size="sm" onClick={onSave} variant="danger">
+          <Button size="sm" onClick={onCancel} variant="danger">
             Cancel
           </Button>
         </span>
       </div>
-    </div>
+    </Form>
   );
 };
 
@@ -48,13 +56,28 @@ export default function CrashDataCard({
   crash,
   columns,
   title,
+  refetch,
 }: {
   crash: Crash;
   columns: TableColumn<Crash>[];
   title: string;
+  refetch: () => void;
 }) {
+  // todo: loading state, error state
   const [editColumn, setEditColumn] = useState<TableColumn<Crash> | null>(null);
-  const onSave = () => setEditColumn(null);
+  const { mutate, loading: isMutating } = useMutation(UPDATE_CRASH);
+
+  const onSave = async (value: any) => {
+    await mutate({
+      id: crash.id,
+      updates: { [editColumn?.key as string]: value },
+    });
+    await refetch();
+    setEditColumn(null);
+  };
+
+  const onCancel = () => setEditColumn(null);
+
   return (
     <Card>
       <Card.Header>{title}</Card.Header>
@@ -83,6 +106,7 @@ export default function CrashDataCard({
                       <InlineFormInput
                         initialValue={crash[col.key]}
                         onSave={onSave}
+                        onCancel={onCancel}
                       />
                     </td>
                   )}

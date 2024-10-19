@@ -11,7 +11,7 @@ export const CRASHES_LIST_VIEW_QUERY = gql`
   }
 `;
 
-export const CRASH_QUERY = gql`
+export const GET_CRASH = gql`
   query CrashDetails($recordLocator: String!) {
     crashes(
       where: {
@@ -24,6 +24,7 @@ export const CRASH_QUERY = gql`
       id
       record_locator
       updated_at
+      updated_by
       case_id
       crash_timestamp
       fhe_collsn_id
@@ -197,6 +198,17 @@ export const CRASH_QUERY = gql`
         text
         user_email
         crash_pk
+      }
+    }
+  }
+`;
+
+export const UPDATE_CRASH = gql`
+  mutation update_crashes_edits($id: Int!, $updates: crashes_edits_set_input) {
+    update_crashes_edits(where: { id: { _eq: $id } }, _set: $updates) {
+      affected_rows
+      returning {
+        cris_crash_id
       }
     }
   }

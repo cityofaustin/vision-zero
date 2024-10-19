@@ -1,4 +1,10 @@
-import React from "react";
+import {
+  useCallback,
+  useRef,
+  useEffect,
+  Dispatch,
+  SetStateAction,
+} from "react";
 import MapGL, {
   Source,
   Layer,
@@ -6,9 +12,12 @@ import MapGL, {
   NavigationControl,
   Marker,
   LngLatBoundsLike,
+  ViewStateChangeEvent,
+  MapRef,
 } from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { SymbolLayerSpecification, RasterLayerSpecification } from "mapbox-gl";
+import { LatLon } from "@/types/types";
 
 const TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
 // This API key is managed by CTM. Contact help desk for maintenance and troubleshooting.
@@ -151,28 +160,63 @@ export const LabeledAerialSourceAndLayer = ({
 };
 
 interface CrashMapProps {
-  latitude: number | null;
-  longitude: number | null;
+  savedLatitude: number | null;
+  savedLongitude: number | null;
+  isEditing: boolean;
+  editCoordinates: LatLon;
+  setEditCoordinates: Dispatch<SetStateAction<LatLon>>;
 }
 
-export const CrashMap = ({ latitude, longitude }: CrashMapProps) => {
+export const CrashMap = ({
+  savedLatitude,
+  savedLongitude,
+  isEditing,
+  editCoordinates,
+  setEditCoordinates,
+}: CrashMapProps) => {
+  const mapRef = useRef<MapRef | null>(null);
+
+  const onDrag = useCallback((e: ViewStateChangeEvent) => {
+    const latitude = e.viewState.latitude;
+    const longitude = e.viewState.longitude;
+    setEditCoordinates({ latitude, longitude });
+  }, []);
+
+  useEffect(() => {
+    if (!isEditing) {
+      // reset marker coords
+      setEditCoordinates({
+        latitude: savedLatitude,
+        longitude: savedLongitude,
+      });
+    }
+  }, [isEditing, setEditCoordinates, savedLatitude, savedLongitude]);
   return (
     <MapGL
+      ref={mapRef}
       initialViewState={{
-        latitude: latitude || defaultInitialState.latitude,
-        longitude: longitude || defaultInitialState.longitude,
+        latitude: savedLatitude || defaultInitialState.latitude,
+        longitude: savedLongitude || defaultInitialState.longitude,
         zoom: defaultInitialState.zoom,
       }}
       {...mapParameters}
       cooperativeGestures={true}
       // Resize the map canvas when parent row expands to fit crash
       onLoad={(e) => e.target.resize()}
+      onDrag={isEditing ? onDrag : undefined}
       maxZoom={21}
     >
       <FullscreenControl position="top-left" />
       <NavigationControl position="top-left" showCompass={false} />
-      {latitude && longitude && (
-        <Marker latitude={latitude} longitude={longitude}>
+      {savedLatitude && savedLongitude && !isEditing && (
+        <Marker latitude={savedLatitude} longitude={savedLongitude}></Marker>
+      )}
+      {isEditing && (
+        <Marker
+          latitude={editCoordinates.latitude || 0}
+          longitude={editCoordinates.longitude || 0}
+          color={isEditing ? "red" : undefined}
+        >
           {/* <Pin size={40} color={"warning"} /> */}
         </Marker>
       )}
