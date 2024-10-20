@@ -37,9 +37,11 @@ const fetcher = <T>([query, variables, token]: [
 export const useQuery = <T>({
   query,
   variables,
+  options,
 }: {
-  query: RequestDocument;
+  query?: RequestDocument;
   variables?: Variables;
+  options?: SWRConfiguration;
 }) => {
   // todo: we need to use an auth context?
   const { getAccessTokenSilently } = useAuth0();
@@ -53,10 +55,11 @@ export const useQuery = <T>({
     return fetcher<T>([query, variables, token]);
   };
 
+  // todo: document undefined query handling
   const { data, error, isLoading, mutate, isValidating } = useSWR<T>(
-    [query, variables],
+    query ? [query, variables] : null,
     fetchWithAuth,
-    DEFAULT_SWR_OPTIONS
+    { ...DEFAULT_SWR_OPTIONS, ...(options || {}) }
   );
 
   return {

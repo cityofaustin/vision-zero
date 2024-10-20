@@ -24,14 +24,35 @@ export interface Crash {
   updated_by: string | null;
   updated_at: string | null;
   crash_speed_limit: number | null;
+  fhe_collsn_id: number | null;
+}
+
+export interface LookupTableDef {
+  tableSchema: "public" | "lookups";
+  tableName: string;
+}
+
+export interface LookupTableOption {
+  id: number;
+  label: string;
+}
+
+export type InputType = "text" | "number" | "select";
+
+export type FormInputValue = string | number | boolean | null | undefined;
+
+export interface HasuraLookupTableData{
+    [key: string]: LookupTableOption[]
 }
 
 export type TableColumn<T> = {
   key: keyof T;
   label: string;
   relationshipName?: string;
-  renderer?: (row: T) => ReactNode;
   editable?: boolean;
+  inputType?: InputType;
+  lookupTable?: LookupTableDef;
+  renderer?: (row: T) => ReactNode;
 };
 
 interface MutationUpdates {

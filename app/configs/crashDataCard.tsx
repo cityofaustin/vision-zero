@@ -13,10 +13,22 @@ export const crashDataCardColumns: TableColumn<Crash>[] = [
     key: "rpt_street_name",
     label: "Street name",
     editable: true,
+    inputType: "text",
   },
   {
     key: "crash_speed_limit",
     label: "Speed limit",
     editable: true,
+    inputType: "number",
+  },
+  {
+    key: "fhe_collsn_id",
+    label: "Collision type",
+    editable: true,
+    inputType: "select",
+    lookupTable: {
+      tableSchema: "lookups",
+      tableName: "collsn",
+    },
   },
 ];
