@@ -79,9 +79,6 @@ export default function CrashChangeLog({ logs }: { logs: ChangeLogEntry[] }) {
     useState<ChangeLogEntryEnriched | null>(null);
 
   const changes = useChangeLogData(logs);
-  if (changes.length === 0) {
-    return <p>No change history found</p>;
-  }
 
   return (
     <Card>
@@ -98,6 +95,14 @@ export default function CrashChangeLog({ logs }: { logs: ChangeLogEntry[] }) {
             </tr>
           </thead>
           <tbody className="font-monospace">
+            {changes.length === 0 && (
+              // this should only happen in local dev where change log is not downloaded from replica
+              <tr>
+                <td colSpan={5} className="text-center">
+                  No changes found
+                </td>
+              </tr>
+            )}
             {changes.map((change) => (
               <tr
                 key={change.id}
