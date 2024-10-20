@@ -161,7 +161,7 @@ export default function CrashDetailsPage() {
           />
         </Col>
       </Row>
-      <Row>
+      <Row className="mb-5">
         <Col>{crash && <CrashChangeLog logs={crash.change_logs} />}</Col>
       </Row>
     </>
