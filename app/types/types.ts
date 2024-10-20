@@ -1,6 +1,49 @@
 import { ReactNode } from "react";
 import { Variables } from "graphql-request";
 
+export interface LookupTableDef {
+  tableSchema: "public" | "lookups";
+  tableName: string;
+}
+
+export interface LookupTableOption {
+  id: number;
+  label: string;
+}
+
+export type InputType = "text" | "number" | "yes_no" | "select";
+
+export type FormInputValue = string | number | boolean | null | undefined;
+
+export interface HasuraLookupTableData {
+  [key: string]: LookupTableOption[];
+}
+
+export type TableColumn<T> = {
+  key: keyof T;
+  label: string;
+  editable?: boolean;
+  inputType?: InputType;
+  lookupTable?: LookupTableDef;
+  relationshipName?: keyof T;
+  renderer?: (row: T) => ReactNode;
+};
+
+interface MutationUpdates {
+  [key: string]: any;
+  updated_by?: string;
+}
+
+export interface MutationVariables extends Variables {
+  [key: string]: any;
+  updates?: MutationUpdates;
+}
+
+export interface LatLon {
+  latitude: number | null;
+  longitude: number | null;
+}
+
 export interface CrashListCrash {
   id: number;
   cris_crash_id: number | null;
@@ -25,47 +68,6 @@ export interface Crash {
   updated_at: string | null;
   crash_speed_limit: number | null;
   fhe_collsn_id: number | null;
-}
-
-export interface LookupTableDef {
-  tableSchema: "public" | "lookups";
-  tableName: string;
-}
-
-export interface LookupTableOption {
-  id: number;
-  label: string;
-}
-
-export type InputType = "text" | "number" | "select";
-
-export type FormInputValue = string | number | boolean | null | undefined;
-
-export interface HasuraLookupTableData{
-    [key: string]: LookupTableOption[]
-}
-
-export type TableColumn<T> = {
-  key: keyof T;
-  label: string;
-  relationshipName?: string;
-  editable?: boolean;
-  inputType?: InputType;
-  lookupTable?: LookupTableDef;
-  renderer?: (row: T) => ReactNode;
-};
-
-interface MutationUpdates {
-  [key: string]: any;
-  updated_by?: string;
-}
-
-export interface MutationVariables extends Variables {
-  [key: string]: any;
-  updates?: MutationUpdates;
-}
-
-export interface LatLon {
-  latitude: number | null;
-  longitude: number | null;
+  collsn: LookupTableOption;
+  at_intrsct_fl: boolean | null;
 }

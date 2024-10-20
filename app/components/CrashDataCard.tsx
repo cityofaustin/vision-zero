@@ -1,25 +1,31 @@
 import { useMemo, useState } from "react";
-import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
-import Form from "react-bootstrap/Form";
 import Spinner from "react-bootstrap/Spinner";
 import Table from "react-bootstrap/Table";
+import CrashDataCardInput from "./CrashDataCardInput";
 import { useMutation, useQuery } from "@/utils/graphql";
 import { gql } from "graphql-request";
 import { UPDATE_CRASH } from "@/queries/crash";
 import {
   Crash,
+  InputType,
   TableColumn,
   LookupTableDef,
   LookupTableOption,
-  InputType,
-  FormInputValue,
   HasuraLookupTableData,
+  FormInputValue,
 } from "@/types/types";
 
-const handleValue = (value: any) => {
+const handleValue = (value: any, inputType?: InputType) => {
   let newValue = value;
   if (typeof value === "string") {
+    // handle yes/no
+    if (inputType === "yes_no") {
+      if (value) {
+        return value === "true";
+      }
+      return null;
+    }
     // trim strings and cooerce empty to null
     newValue = newValue.trim();
     newValue = newValue || null;
@@ -54,66 +60,37 @@ const useLookupQuery = (lookupTableDef: LookupTableDef | undefined) =>
     ];
   }, [lookupTableDef]);
 
-const InlineFormInput = ({
-  initialValue,
-  inputType,
-  selectOptions,
-  onSave,
-  onCancel,
-}: {
-  initialValue: FormInputValue;
-  inputType?: InputType;
-  selectOptions?: LookupTableOption[];
-  onSave: (value: any) => Promise<any>;
-  onCancel: () => void;
-}) => {
-  // todo: input validation; input type = number
-  const [editValue, setEditValue] = useState<FormInputValue>(initialValue);
+/**
+ * Render a field value
+ * -- todo: this will be used by the table component as well
+ */
+const renderValue = (crash: Crash, col: TableColumn<Crash>) => {
+  if (col.relationshipName) {
+    const relatedObject = crash[col.relationshipName] as LookupTableOption;
+    return relatedObject?.label;
+  }
+  if (col.inputType === "yes_no") {
+    const value = crash[col.key];
+    if (value === null) return "";
+    return value ? "Yes" : "No";
+  }
+  return col.renderer ? col.renderer(crash) : String(crash[col.key] || "");
+};
 
-  return (
-    <Form
-      onSubmit={async (e) => {
-        e.preventDefault();
-        await onSave(editValue);
-      }}
-    >
-      <div className="mb-2">
-        {(inputType === "text" || inputType === "number") && (
-          <Form.Control
-            autoFocus
-            size="sm"
-            type="text"
-            value={String(editValue || "")}
-            onChange={(e) => setEditValue(e.target.value)}
-          />
-        )}
-        {inputType === "select" && selectOptions && (
-          <Form.Select
-            autoFocus
-            size="sm"
-            value={String(editValue || "")}
-            onChange={(e) => setEditValue(e.target.value)}
-          >
-            {selectOptions.map((option) => (
-              <option value={option.id}>{option.label}</option>
-            ))}
-          </Form.Select>
-        )}
-      </div>
-      <div className="text-end">
-        <span className="me-2">
-          <Button size="sm" type="submit">
-            Save
-          </Button>
-        </span>
-        <span>
-          <Button size="sm" onClick={onCancel} variant="danger">
-            Cancel
-          </Button>
-        </span>
-      </div>
-    </Form>
-  );
+/**
+ * Get the raw value for a field, using the relationship if needed
+ */
+const getValue = (crash: Crash, col: TableColumn<Crash>): FormInputValue => {
+  if (col.relationshipName) {
+    const relatedObject = crash[col.relationshipName] as LookupTableOption;
+    return relatedObject?.id;
+  }
+  if (col.inputType === "yes_no") {
+    const value = crash[col.key];
+    if (value === null) return "";
+    return value ? "true" : "false";
+  }
+  return String(crash[col.key] || "");
 };
 
 export default function CrashDataCard({
@@ -144,7 +121,9 @@ export default function CrashDataCard({
   const onSave = async (value: any) => {
     await mutate({
       id: crash.id,
-      updates: { [editColumn?.key as string]: handleValue(value) },
+      updates: {
+        [editColumn?.key as string]: handleValue(value, editColumn?.inputType),
+      },
     });
     await refetch();
     setEditColumn(null);
@@ -174,13 +153,13 @@ export default function CrashDataCard({
                   }}
                 >
                   <td style={{ textWrap: "nowrap" }}>{col.label}</td>
-                  {!isEditingThisColumn && <td>{crash[col.key]}</td>}
+                  {!isEditingThisColumn && <td>{renderValue(crash, col)}</td>}
                   {isEditingThisColumn && (
                     <td>
                       {isLoadingLookups && <Spinner size="sm" />}
                       {!isLoadingLookups && (
-                        <InlineFormInput
-                          initialValue={crash[col.key]}
+                        <CrashDataCardInput
+                          initialValue={getValue(crash, col)}
                           onSave={onSave}
                           onCancel={onCancel}
                           inputType={col.inputType}

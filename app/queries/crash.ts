@@ -27,7 +27,10 @@ export const GET_CRASH = gql`
       updated_by
       case_id
       crash_timestamp
-      fhe_collsn_id
+      collsn {
+        id
+        label
+      }
       rpt_city_id
       light_cond_id
       wthr_cond_id

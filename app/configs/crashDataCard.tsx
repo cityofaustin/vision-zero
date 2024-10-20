@@ -26,9 +26,16 @@ export const crashDataCardColumns: TableColumn<Crash>[] = [
     label: "Collision type",
     editable: true,
     inputType: "select",
+    relationshipName: "collsn",
     lookupTable: {
       tableSchema: "lookups",
       tableName: "collsn",
     },
   },
+  {
+    key: "at_intrsct_fl",
+    label: "At intersection",
+    editable: true,
+    inputType: "yes_no"
+  }
 ];
