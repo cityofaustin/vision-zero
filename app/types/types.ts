@@ -13,7 +13,7 @@ export interface LookupTableOption {
 
 export type InputType = "text" | "number" | "yes_no" | "select";
 
-export type FormInputValue = string | number | boolean | null | undefined;
+export type FormInputValue = string | number;
 
 export interface HasuraLookupTableData {
   [key: string]: LookupTableOption[];
@@ -53,21 +53,53 @@ export interface CrashListCrash {
 }
 
 export interface Crash {
-  id: number;
-  cris_crash_id: number | null;
-  crash_timestamp: string | null;
-  record_locator: string;
+  active_school_zone_fl: number | null;
   address_primary: string | null;
   address_secondary: string | null;
-  latitude: number | null;
-  longitude: number | null;
-  investigator_narrative: string | null;
-  is_temp_record: boolean;
-  rpt_street_name: string | null;
-  updated_by: string | null;
-  updated_at: string | null;
-  crash_speed_limit: number | null;
-  fhe_collsn_id: number | null;
-  collsn: LookupTableOption;
   at_intrsct_fl: boolean | null;
+  case_id: string | null;
+  collsn: LookupTableOption;
+  cr3_stored_fl: boolean | null;
+  crash_speed_limit: number | null;
+  crash_timestamp: string | null;
+  cris_crash_id: number | null;
+  fhe_collsn_id: number | null;
+  id: number;
+  in_austin_full_purpose: boolean;
+  investigator_narrative: string | null;
+  is_temp_record: boolean | null;
+  latitude: number | null;
+  law_enforcement_ytd_fatality_num: string | null;
+  light_cond_id: number | null;
+  location_id: string | null;
+  longitude: number | null;
+  obj_struck_id: number | null;
+  onsys_fl: boolean | null;
+  private_dr_fl: boolean | null;
+  record_locator: string;
+  road_constr_zone_fl: boolean | null;
+  rpt_block_num: string | null;
+  rpt_city_id: number | null;
+  rpt_hwy_num: string | null;
+  rpt_rdwy_sys_id: number | null;
+  rpt_road_part_id: number | null;
+  rpt_sec_block_num: string | null;
+  rpt_sec_hwy_num: string | null;
+  rpt_sec_rdwy_sys_id: number | null;
+  rpt_sec_road_part_id: number | null;
+  rpt_sec_street_desc: string | null;
+  rpt_sec_street_name: string | null;
+  rpt_sec_street_pfx: string | null;
+  rpt_sec_street_sfx: string | null;
+  rpt_street_desc: string | null;
+  rpt_street_name: string | null;
+  rpt_street_pfx: string | null;
+  rpt_street_sfx: string | null;
+  rr_relat_fl: boolean | null;
+  schl_bus_fl: boolean | null;
+  toll_road_fl: boolean | null;
+  traffic_cntl_id: number | null;
+  updated_at: string | null;
+  updated_by: string | null;
+  wthr_cond_id: number | null;
 }

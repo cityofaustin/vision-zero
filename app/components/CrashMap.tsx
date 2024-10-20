@@ -176,11 +176,14 @@ export const CrashMap = ({
 }: CrashMapProps) => {
   const mapRef = useRef<MapRef | null>(null);
 
-  const onDrag = useCallback((e: ViewStateChangeEvent) => {
-    const latitude = e.viewState.latitude;
-    const longitude = e.viewState.longitude;
-    setEditCoordinates({ latitude, longitude });
-  }, []);
+  const onDrag = useCallback(
+    (e: ViewStateChangeEvent) => {
+      const latitude = e.viewState.latitude;
+      const longitude = e.viewState.longitude;
+      setEditCoordinates({ latitude, longitude });
+    },
+    [setEditCoordinates]
+  );
 
   useEffect(() => {
     if (!isEditing) {

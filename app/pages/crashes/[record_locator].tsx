@@ -10,7 +10,7 @@ import { useQuery, useMutation } from "@/utils/graphql";
 import CrashHeader from "@/components/CrashHeader";
 import CrashDiagramCard from "@/components/CrashDiagramCard";
 import CrashDataCard from "@/components/CrashDataCard";
-import { crashDataCardColumns } from "@/configs/crashDataCard";
+import { crashDataCards } from "@/configs/crashDataCard";
 import { Crash, LatLon } from "@/types/types";
 
 export default function CrashDetailsPage() {
@@ -22,30 +22,31 @@ export default function CrashDetailsPage() {
   const router = useRouter();
   const recordLocator = router.query.record_locator;
 
-  // todo: handle when router isn't ready to prevent gql error
   const { data, refetch, isLoading, isValidating } = useQuery<{
     crashes: Crash[];
   }>({
-    query: GET_CRASH,
+    // todo: is the router ever not ready - ie do we need this ternary?
+    query: recordLocator ? GET_CRASH : undefined,
     variables: { recordLocator },
   });
 
   const { mutate, loading: isMutating } = useMutation(UPDATE_CRASH);
 
   if (!data || !data?.crashes?.[0]) {
+    // todo: 404 page
     return;
   }
 
   const crash = data.crashes[0];
 
-  // todo: this won't scale
+  // todo: this won't scale?
   const isLoadingAnything = isLoading || isMutating || isValidating;
 
   return (
     <>
       <CrashHeader crash={crash} />
       <Row>
-        <Col sm={12} md={6} lg={5} className="mb-3">
+        <Col sm={12} md={6} lg={4} className="mb-3">
           <Card>
             <Card.Header>Location</Card.Header>
             <Card.Body className="p-1 crash-header-card-body">
@@ -98,10 +99,10 @@ export default function CrashDetailsPage() {
             </Card.Footer>
           </Card>
         </Col>
-        <Col sm={12} md={6} lg={4}>
+        <Col sm={12} md={6} lg={4} className="mb-3">
           <CrashDiagramCard crash={crash} />
         </Col>
-        <Col sm={12} md={6} lg={3}>
+        <Col sm={12} md={6} lg={4} className="mb-3">
           <Card>
             <Card.Header>Narrative</Card.Header>
             <Card.Body className="crash-header-card-body">
@@ -111,11 +112,50 @@ export default function CrashDetailsPage() {
         </Col>
       </Row>
       <Row>
-        <Col sm={12} md={6} lg={4}>
+        <Col sm={12} md={6} lg={4} className="mb-3">
           <CrashDataCard
             crash={crash}
+            isValidating={isValidating}
             title="Summary"
-            columns={crashDataCardColumns}
+            columns={crashDataCards.summary}
+            refetch={refetch}
+          />
+        </Col>
+        <Col sm={12} md={6} lg={4} className="mb-3">
+          <CrashDataCard
+            crash={crash}
+            isValidating={isValidating}
+            title="Flags"
+            columns={crashDataCards.flags}
+            refetch={refetch}
+          />
+        </Col>
+        <Col sm={12} md={6} lg={4} className="mb-3">
+          <CrashDataCard
+            crash={crash}
+            isValidating={isValidating}
+            title="Other"
+            columns={crashDataCards.other}
+            refetch={refetch}
+          />
+        </Col>
+      </Row>
+      <Row>
+        <Col sm={12} md={6} lg={4} className="mb-3">
+          <CrashDataCard
+            crash={crash}
+            isValidating={isValidating}
+            title="Address"
+            columns={crashDataCards.address}
+            refetch={refetch}
+          />
+        </Col>
+        <Col sm={12} md={6} lg={4} className="mb-3">
+          <CrashDataCard
+            crash={crash}
+            isValidating={isValidating}
+            title="Address"
+            columns={crashDataCards.address_secondary}
             refetch={refetch}
           />
         </Col>

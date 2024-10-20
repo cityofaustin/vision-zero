@@ -6,6 +6,7 @@ import CrashDataCardInput from "./CrashDataCardInput";
 import { useMutation, useQuery } from "@/utils/graphql";
 import { gql } from "graphql-request";
 import { UPDATE_CRASH } from "@/queries/crash";
+import { KeyedMutator } from "swr";
 import {
   Crash,
   InputType,
@@ -16,8 +17,10 @@ import {
   FormInputValue,
 } from "@/types/types";
 
-const handleValue = (value: any, inputType?: InputType) => {
-  let newValue = value;
+const handleValue = (
+  value: FormInputValue,
+  inputType?: InputType
+): FormInputValue | null | boolean => {
   if (typeof value === "string") {
     // handle yes/no
     if (inputType === "yes_no") {
@@ -27,10 +30,9 @@ const handleValue = (value: any, inputType?: InputType) => {
       return null;
     }
     // trim strings and cooerce empty to null
-    newValue = newValue.trim();
-    newValue = newValue || null;
+    return value.trim() || null;
   }
-  return newValue;
+  return value;
 };
 
 const useLookupQuery = (lookupTableDef: LookupTableDef | undefined) =>
@@ -96,13 +98,15 @@ const getValue = (crash: Crash, col: TableColumn<Crash>): FormInputValue => {
 export default function CrashDataCard({
   crash,
   columns,
+  isValidating,
   title,
   refetch,
 }: {
   crash: Crash;
   columns: TableColumn<Crash>[];
+  isValidating: boolean;
   title: string;
-  refetch: () => void;
+  refetch: KeyedMutator<{ crashes: Crash[] }>;
 }) {
   // todo: loading state, error state
   // todo: handling of null/undefined values in select input
@@ -118,7 +122,7 @@ export default function CrashDataCard({
 
   const selectOptions = lookupData?.[typeName];
 
-  const onSave = async (value: any) => {
+  const onSave = async (value: FormInputValue) => {
     await mutate({
       id: crash.id,
       updates: {
@@ -135,7 +139,7 @@ export default function CrashDataCard({
     <Card>
       <Card.Header>{title}</Card.Header>
       <Card.Body>
-        <Table striped hover size="sm">
+        <Table striped hover>
           <tbody>
             {columns.map((col) => {
               const isEditingThisColumn = col.key === editColumn?.key;
@@ -152,7 +156,9 @@ export default function CrashDataCard({
                     }
                   }}
                 >
-                  <td style={{ textWrap: "nowrap" }}>{col.label}</td>
+                  <td style={{ textWrap: "nowrap" }} className="fw-bold">
+                    {col.label}
+                  </td>
                   {!isEditingThisColumn && <td>{renderValue(crash, col)}</td>}
                   {isEditingThisColumn && (
                     <td>
@@ -164,6 +170,7 @@ export default function CrashDataCard({
                           onCancel={onCancel}
                           inputType={col.inputType}
                           selectOptions={selectOptions}
+                          isMutating={isMutating || isValidating}
                         />
                       )}
                     </td>

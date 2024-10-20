@@ -6,18 +6,22 @@ import { LookupTableOption, InputType, FormInputValue } from "@/types/types";
 const CrashDataCardInput = ({
   initialValue,
   inputType,
+  isMutating,
   selectOptions,
   onSave,
   onCancel,
 }: {
   initialValue: FormInputValue;
+  isMutating: boolean;
   inputType?: InputType;
   selectOptions?: LookupTableOption[];
-  onSave: (value: any) => Promise<any>;
+  onSave: (value: FormInputValue) => Promise<void>;
   onCancel: () => void;
 }) => {
   // todo: input validation; input type = number
   const [editValue, setEditValue] = useState<FormInputValue>(initialValue);
+
+  const isDirty = editValue !== initialValue;
 
   return (
     <Form
@@ -66,12 +70,17 @@ const CrashDataCardInput = ({
       </div>
       <div className="text-end">
         <span className="me-2">
-          <Button size="sm" type="submit">
+          <Button size="sm" type="submit" disabled={isMutating || !isDirty}>
             Save
           </Button>
         </span>
         <span>
-          <Button size="sm" onClick={onCancel} variant="danger">
+          <Button
+            size="sm"
+            onClick={onCancel}
+            disabled={isMutating}
+            variant="danger"
+          >
             Cancel
           </Button>
         </span>
