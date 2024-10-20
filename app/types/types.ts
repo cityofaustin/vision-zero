@@ -52,6 +52,28 @@ export interface CrashListCrash {
   address_secondary: string | null;
 }
 
+export type ChangeLogDiff = {
+  field: string;
+  old: unknown;
+  new: unknown;
+};
+
+export interface ChangeLogEntry {
+  id: number;
+  crash_pk: number;
+  created_at: string;
+  created_by: string;
+  operation_type: "create" | "update";
+  record_id: number;
+  record_type: string;
+  record_json: { old: Record<string, unknown>; new: Record<string, unknown> };
+}
+
+export interface ChangeLogEntryEnriched extends ChangeLogEntry {
+  diffs: ChangeLogDiff[];
+  affected_fields: string[];
+}
+
 export interface Crash {
   active_school_zone_fl: number | null;
   address_primary: string | null;
@@ -102,4 +124,5 @@ export interface Crash {
   updated_at: string | null;
   updated_by: string | null;
   wthr_cond_id: number | null;
+  change_logs: ChangeLogEntry[];
 }

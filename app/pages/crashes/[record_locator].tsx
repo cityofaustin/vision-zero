@@ -10,6 +10,7 @@ import { useQuery, useMutation } from "@/utils/graphql";
 import CrashHeader from "@/components/CrashHeader";
 import CrashDiagramCard from "@/components/CrashDiagramCard";
 import CrashDataCard from "@/components/CrashDataCard";
+import CrashChangeLog from "@/components/CrashChangeLog";
 import { crashDataCards } from "@/configs/crashDataCard";
 import { Crash, LatLon } from "@/types/types";
 
@@ -145,7 +146,7 @@ export default function CrashDetailsPage() {
           <CrashDataCard
             crash={crash}
             isValidating={isValidating}
-            title="Address"
+            title="Primary address"
             columns={crashDataCards.address}
             refetch={refetch}
           />
@@ -154,11 +155,14 @@ export default function CrashDetailsPage() {
           <CrashDataCard
             crash={crash}
             isValidating={isValidating}
-            title="Address"
+            title="Secondary address"
             columns={crashDataCards.address_secondary}
             refetch={refetch}
           />
         </Col>
+      </Row>
+      <Row>
+        <Col>{crash && <CrashChangeLog logs={crash.change_logs} />}</Col>
       </Row>
     </>
   );
