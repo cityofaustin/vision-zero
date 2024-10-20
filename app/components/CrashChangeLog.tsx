@@ -45,11 +45,7 @@ const formatUserName = (userName: string) =>
   userName === "cris" ? "TxDOT CRIS" : userName;
 
 /**
- * Hook that returns an array with one entry per row in the
- * the change log view for the given crash. It adds two properties to the data
- * returned from the change log view:
- * - diffs: an array of old/new values for each field that has changed
- * - affected_fields: an array of the field names that have changed
+ * Hook that adds `diffs` and `affected_fields` to the each ChangeLogEntry
  */
 const useChangeLogData = (logs: ChangeLogEntry[]): ChangeLogEntryEnriched[] =>
   useMemo(() => {
@@ -78,7 +74,6 @@ const isNewRecordEvent = (change: ChangeLogEntryEnriched) =>
 /**
  * The primary UI component which renders the change log with clickable rows
  */
-
 export default function CrashChangeLog({ logs }: { logs: ChangeLogEntry[] }) {
   const [selectedChange, setSelectedChange] =
     useState<ChangeLogEntryEnriched | null>(null);

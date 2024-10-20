@@ -17,15 +17,13 @@ const ChangeSummary = ({
   selectedChange: ChangeLogEntryEnriched;
 }) => {
   return (
-    <>
-      <small>
-        {`${selectedChange.record_type}`} ID{" "}
-        <span>{selectedChange.record_id}</span> edited by{" "}
-        {selectedChange.created_by}
-        {" - "}
-        {formatDateTime(selectedChange.created_at)}
-      </small>
-    </>
+    <div>
+      <span className="font-monospace fw-bold">{`${selectedChange.record_type}`}</span>{" "}
+      <span>{selectedChange.operation_type}</span>
+      {" | "} <span>{selectedChange.created_by}</span>
+      {" | "}
+      {formatDateTime(selectedChange.created_at)}
+    </div>
   );
 };
 
@@ -51,9 +49,9 @@ const CrashChangeLogDetails = ({
       <Modal.Body>
         <Table responsive striped hover>
           <thead>
-            <td>Field</td>
-            {!isNewRecordEvent(selectedChange) && <td>Previous value</td>}
-            <td>New value</td>
+            <th>Field</th>
+            {!isNewRecordEvent(selectedChange) && <th>Previous value</th>}
+            <th>New value</th>
           </thead>
           <tbody className="text-monospace">
             {selectedChange.diffs.map((diff) => (
