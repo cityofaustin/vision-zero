@@ -10,7 +10,7 @@ interface Crumb {
 
 const useCrumbs = (path: string): Crumb[] =>
   useMemo(() => {
-    const [_, ...parts] = path.split("/");
+    const [, ...parts] = path.split("/");
 
     const crumbs: Crumb[] = [];
     if (parts.length === 0) {

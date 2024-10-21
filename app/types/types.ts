@@ -13,8 +13,6 @@ export interface LookupTableOption {
 
 export type InputType = "text" | "number" | "yes_no" | "select";
 
-export type FormInputValue = string | number;
-
 export interface HasuraLookupTableData {
   [key: string]: LookupTableOption[];
 }
@@ -26,17 +24,20 @@ export type TableColumn<T> = {
   inputType?: InputType;
   lookupTable?: LookupTableDef;
   relationshipName?: keyof T;
-  renderer?: (row: T) => ReactNode;
+  renderer?: (record: T) => ReactNode;
+  inputValueHander?: (value: unknown) => string | undefined;
 };
 
-interface MutationUpdates {
-  [key: string]: any;
-  updated_by?: string;
+export interface TableColumnIndex<T> {
+  [key: string]: TableColumn<T>;
 }
 
 export interface MutationVariables extends Variables {
   [key: string]: any;
-  updates?: MutationUpdates;
+  updates?: {
+    [key: string]: any;
+    updated_by?: string;
+  };
 }
 
 export interface LatLon {

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
-import { LookupTableOption, InputType, FormInputValue } from "@/types/types";
+import { LookupTableOption, InputType } from "@/types/types";
 
 const CrashDataCardInput = ({
   initialValue,
@@ -11,15 +11,15 @@ const CrashDataCardInput = ({
   onSave,
   onCancel,
 }: {
-  initialValue: FormInputValue;
+  initialValue: string;
   isMutating: boolean;
   inputType?: InputType;
   selectOptions?: LookupTableOption[];
-  onSave: (value: FormInputValue) => Promise<void>;
+  onSave: (value: string) => Promise<void>;
   onCancel: () => void;
 }) => {
   // todo: input validation; input type = number
-  const [editValue, setEditValue] = useState<FormInputValue>(initialValue);
+  const [editValue, setEditValue] = useState<string>(initialValue);
 
   const isDirty = editValue !== initialValue;
 
@@ -36,7 +36,7 @@ const CrashDataCardInput = ({
             autoFocus
             size="sm"
             type="text"
-            value={String(editValue || "")}
+            value={editValue}
             onChange={(e) => setEditValue(e.target.value)}
             inputMode={inputType === "number" ? "numeric" : undefined}
           />
@@ -45,12 +45,10 @@ const CrashDataCardInput = ({
           <Form.Select
             autoFocus
             size="sm"
-            value={String(editValue || "")}
+            value={editValue}
             onChange={(e) => setEditValue(e.target.value)}
           >
-             <option >
-                Select...
-              </option>
+            <option>Select...</option>
             {selectOptions.map((option) => (
               <option key={option.id} value={String(option.id)}>
                 {option.label}
@@ -62,7 +60,7 @@ const CrashDataCardInput = ({
           <Form.Select
             autoFocus
             size="sm"
-            value={String(editValue || "")}
+            value={editValue}
             onChange={(e) => setEditValue(e.target.value)}
           >
             <option>Select...</option>

@@ -34,6 +34,10 @@ export const GET_CRASH = gql`
       rpt_city_id
       light_cond_id
       wthr_cond_id
+      obj_struck {
+        id
+        label
+      }
       obj_struck_id
       crash_speed_limit
       traffic_cntl_id

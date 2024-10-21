@@ -6,6 +6,13 @@ import CrashDataCardInput from "./CrashDataCardInput";
 import { useMutation, useQuery } from "@/utils/graphql";
 import { gql } from "graphql-request";
 import { UPDATE_CRASH } from "@/queries/crash";
+import {
+  getRecordValue,
+  valueToString,
+  stringToBoolNullable,
+  trimStringNullable,
+  stringToNumberNullable,
+} from "@/utils/formatters";
 import { KeyedMutator } from "swr";
 import {
   Crash,
@@ -14,32 +21,27 @@ import {
   LookupTableDef,
   LookupTableOption,
   HasuraLookupTableData,
-  FormInputValue,
 } from "@/types/types";
 
 /**
  * Function which transforms form input value into value that
  * will be sent in mutation payload
+ *
+ * todo: wrap this in a try/catch and use validation erro
  */
 const handleValue = (
-  value: FormInputValue,
+  value: string,
+  isLookup: boolean,
   inputType?: InputType
-): FormInputValue | null | boolean => {
-  throw `OK just set db type on field config? i dunno what to do here.
-  and everything else is a hack
-    `;
-  if (typeof value === "string") {
-    // handle yes/no
-    if (inputType === "yes_no") {
-      if (value) {
-        return value === "true";
-      }
-      return null;
-    }
-    // trim strings and cooerce empty to null
-    return value.trim() || null;
+): unknown | null | boolean => {
+  if (inputType === "yes_no") {
+    return stringToBoolNullable(value);
   }
-  return value;
+  if (inputType === "number" || (inputType === "select" && isLookup)) {
+    return stringToNumberNullable(value);
+  }
+  // handle everything else as a nulllable string
+  return trimStringNullable(value);
 };
 
 const useLookupQuery = (lookupTableDef: LookupTableDef | undefined) =>
@@ -89,19 +91,6 @@ const renderValue = (crash: Crash, col: TableColumn<Crash>) => {
 /**
  * Transforms the db value into the form input initial value
  */
-const getValue = (crash: Crash, col: TableColumn<Crash>): FormInputValue => {
-  if (col.relationshipName) {
-    const relatedObject = crash[col.relationshipName] as LookupTableOption;
-    return String(relatedObject?.id);
-  }
-  if (col.inputType === "yes_no") {
-    const value = crash[col.key];
-    if (value === null) return "";
-    return value ? "true" : "false";
-  }
-
-  return String(crash[col.key] || "");
-};
 
 export default function CrashDataCard({
   crash,
@@ -130,11 +119,11 @@ export default function CrashDataCard({
 
   const selectOptions = lookupData?.[typeName];
 
-  const onSave = async (value: FormInputValue) => {
+  const onSave = async (value: unknown) => {
     await mutate({
       id: crash.id,
       updates: {
-        [editColumn?.key as string]: handleValue(value, editColumn?.inputType),
+        [editColumn?.key as string]: value,
       },
     });
     await refetch();
@@ -173,8 +162,19 @@ export default function CrashDataCard({
                       {isLoadingLookups && <Spinner size="sm" />}
                       {!isLoadingLookups && (
                         <CrashDataCardInput
-                          initialValue={getValue(crash, col)}
-                          onSave={onSave}
+                          initialValue={valueToString(
+                            getRecordValue(crash, col),
+                            col
+                          )}
+                          onSave={(value: string) =>
+                            onSave(
+                              handleValue(
+                                value,
+                                !!col.lookupTable,
+                                col.inputType
+                              )
+                            )
+                          }
                           onCancel={onCancel}
                           inputType={col.inputType}
                           selectOptions={selectOptions}
