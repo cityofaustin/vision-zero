@@ -449,7 +449,6 @@ def get_main_parser():
     # 🪄 generate a autocompletion script for the shell
     shtab.add_argument_to(parser, ["-s", "--print-completion"])
     parser.add_argument("-c", "--include-change-log-data", action="store_true")
-    parser.add_argument("-r", "--ram-disk", action="store_true")
     parser.add_argument(
         "command",
         choices=[
