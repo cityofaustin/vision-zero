@@ -5,6 +5,9 @@ object_relationships:
   - name: atd_txdot_location
     using:
       foreign_key_constraint_on: location_id
+  - name: collsn
+    using:
+      foreign_key_constraint_on: fhe_collsn_id
   - name: crash_injury_metrics_view
     using:
       manual_configuration:
