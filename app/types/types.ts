@@ -80,11 +80,12 @@ export interface Crash {
   address_secondary: string | null;
   at_intrsct_fl: boolean | null;
   case_id: string | null;
-  collsn: LookupTableOption;
   cr3_stored_fl: boolean | null;
   crash_speed_limit: number | null;
   crash_timestamp: string | null;
   cris_crash_id: number | null;
+  // todo: notice how collsn and fhe_collsn_id are required types to support the lookup table :/
+  collsn: LookupTableOption;
   fhe_collsn_id: number | null;
   id: number;
   in_austin_full_purpose: boolean;
@@ -96,6 +97,7 @@ export interface Crash {
   location_id: string | null;
   longitude: number | null;
   obj_struck_id: number | null;
+  obj_struck: LookupTableOption;
   onsys_fl: boolean | null;
   private_dr_fl: boolean | null;
   record_locator: string;

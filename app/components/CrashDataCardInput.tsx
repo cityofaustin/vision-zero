@@ -48,6 +48,9 @@ const CrashDataCardInput = ({
             value={String(editValue || "")}
             onChange={(e) => setEditValue(e.target.value)}
           >
+             <option >
+                Select...
+              </option>
             {selectOptions.map((option) => (
               <option key={option.id} value={String(option.id)}>
                 {option.label}

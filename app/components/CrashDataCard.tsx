@@ -17,10 +17,17 @@ import {
   FormInputValue,
 } from "@/types/types";
 
+/**
+ * Function which transforms form input value into value that
+ * will be sent in mutation payload
+ */
 const handleValue = (
   value: FormInputValue,
   inputType?: InputType
 ): FormInputValue | null | boolean => {
+  throw `OK just set db type on field config? i dunno what to do here.
+  and everything else is a hack
+    `;
   if (typeof value === "string") {
     // handle yes/no
     if (inputType === "yes_no") {
@@ -63,7 +70,7 @@ const useLookupQuery = (lookupTableDef: LookupTableDef | undefined) =>
   }, [lookupTableDef]);
 
 /**
- * Render a field value
+ * Render a static field value (e.g., in a table cell)
  * -- todo: this will be used by the table component as well
  */
 const renderValue = (crash: Crash, col: TableColumn<Crash>) => {
@@ -80,7 +87,7 @@ const renderValue = (crash: Crash, col: TableColumn<Crash>) => {
 };
 
 /**
- * Get the raw value for a field, using the relationship if needed
+ * Transforms the db value into the form input initial value
  */
 const getValue = (crash: Crash, col: TableColumn<Crash>): FormInputValue => {
   if (col.relationshipName) {

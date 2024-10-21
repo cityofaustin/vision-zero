@@ -88,7 +88,12 @@ const ALL_CRASH_COLUMNS: TableColumnIndex<Crash> = {
     key: "obj_struck_id",
     label: "Object struck",
     editable: true,
-    inputType: "number",
+    inputType: "select",
+    relationshipName: "obj_struck",
+    lookupTable: {
+      tableSchema: "lookups",
+      tableName: "obj_struck",
+    },
   },
   onsys_fl: {
     key: "onsys_fl",
