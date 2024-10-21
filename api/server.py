@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #
 # ATD - CR3 Download API
 #
@@ -14,7 +15,7 @@ from os import environ as env
 from functools import wraps
 from six.moves.urllib.request import urlopen
 
-from flask import Flask, request, redirect, jsonify, _request_ctx_stack, abort
+from flask import Flask, request, jsonify, _request_ctx_stack, abort
 from flask_cors import cross_origin
 from werkzeug.local import LocalProxy
 from jose import jwt
