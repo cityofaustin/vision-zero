@@ -33,7 +33,7 @@ API_CLIENT_ID = os.getenv("API_CLIENT_ID", "")
 API_CLIENT_SECRET = os.getenv("API_CLIENT_SECRET", "")
 
 # AWS Configuration
-AWS_DEFALUT_REGION = os.getenv("AWS_DEFALUT_REGION", "us-east-1")
+AWS_DEFAULT_REGION = os.getenv("AWS_DEFAULT_REGION", "us-east-1")
 AWS_S3_KEY = os.getenv("AWS_S3_KEY", "")
 AWS_S3_SECRET = os.getenv("AWS_S3_SECRET", "")
 AWS_S3_CR3_LOCATION = os.getenv("AWS_S3_CR3_LOCATION", "")
@@ -253,7 +253,7 @@ def download_crash_id(crash_id):
 
     s3 = boto3.client(
         "s3",
-        region_name=AWS_DEFALUT_REGION,
+        region_name=AWS_DEFAULT_REGION,
         aws_access_key_id=AWS_S3_KEY,
         aws_secret_access_key=AWS_S3_SECRET,
     )
