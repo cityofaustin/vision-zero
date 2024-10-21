@@ -2,7 +2,7 @@
 
 The Vision Zero Database (VZD) is a Postgresql database that serves as the central repository of Austin's traffic crash data. The database is fronted with a GraphQL API, powered by [Hasura](https://github.com/hasura/graphql-engine), which is also used to manage schema migrations.
 
-The design supports an editing environment which enables Vision Zero program staff to edit and enrich crash data, while also allowing record updates to flow into the database from upstream sources, such as the TxDOT Crash Information System (CRIS).
+The design supports an editing environment which enables Vision Zero program staff to edit and enrich crash data, while also allowing record updates to flow into the database from upstream sources, such as the TxDOT Crash Records Information System (CRIS).
 
 ![vision zero data flow](../docs/images/data_flow.png)
 
@@ -19,7 +19,7 @@ The design supports an editing environment which enables Vision Zero program sta
     - [Audit fields](#audit-fields)
     - [Change logs](#change-logs)
   - [Austin Fire Department (AFD) and Travis County Emergency Medical Services (EMS) (todo)](#austin-fire-department-afd-and-travis-county-emergency-medical-services-ems-todo)
-  - [Geospatial layers (todo)](#geospatial-layers-todo)
+  - [Geospatial layers](#geospatial-layers)
 - [Common maintenance tasks](#common-maintenance-tasks)
   - [Add a new CRIS-managed column to `crashes`, `units`, or `people`](#add-a-new-cris-managed-column-to-crashes-units-or-people)
   - [Add a custom column to `crashes`, `units`, or `people`](#add-a-custom-column-to-crashes-units-or-people)
@@ -75,7 +75,41 @@ The process for updating `units` and `people` behaves in the same manner as `cra
 
 #### CRIS Extract configuration and accounts
 
-TODO. See https://app.gitbook.com/o/-LzDQOVGhTudbKRDGpUA/s/-M4Ul-hSBiM-3KkOynqS/vision-zero-crash-database/visionzero-sftp-etl#getting-extracts-manually
+The team maintains multiple CRIS login accounts to manage the delivery of CRIS data to our AWS S3 ingest bucket. See the [CRIS import ETL documentation](../etl/cris_import/README.md) for more information on how CRIS data is delivered to S3 and imported into our database.
+
+The credentials for our CRIS logins are in the password store, including a note in the title indicating each login's purpose:
+
+- **Production extract account**: this is the account which is configured for daily delivery of extracts to S3 production.
+- **Dev/testing extract account**: this account should be used for requesting ad-hoc CRIS extracts for delivery via S3 or manual download.
+- **Query & analyze account**: this account can be used for the CRIS query interface, that enables querying and access to individual crash records.
+
+Additional information about CRIS access can be found on the [TxDOT website](https://www.txdot.gov/data-maps/crash-reports-records/crash-data-analysis-statistics.html).
+
+Follow these steps to configure a new extract delivery:
+
+1. Login to CRIS using the appropriate account (see above): https://cris.dot.state.tx.us/
+
+2. From the **My Extract Requests** page, click **Add**, and follow the extract request wizard
+
+- **Extract Type**: Standard
+- **Extract Format**: CSV
+- **Include CR-3 Crash Report files in Extract**: Yes (checked)
+
+![CRIS extract config - page 1](../docs/images/extract_config_1.png)
+
+- **Include Crash Reports From**: Specific Counties: `Hays`, `Travis`, and `Williamson`
+
+- **Include Crash Reports From**: Process Date range
+  - If you are backfilling, include a day before your target day as a buffer.
+  - If you request a process date of today, the extract will not deliver until the next day.
+  - To set up a recurring request, add a range of dates that ends in the future.
+
+Any part of the range that falls in the past will be delivered in single zip that is separate from the zips that will deliver in the future. The includes - all records with process dates available including today.
+
+Any part of the range that is in the future will create daily zips that include each day available going forward. For example, on 4/19/2024, you make a request for Process Begin Date = 01/01/2024 and Process End Date = 12/31/2024 The would receive two zips: One containing all records with process date from 01/01/2024 to 04/18/2024, and one containing all records with process date from 04/19/2024 to 04/19/2024. Going forward, you will receive one zip per day for each process date that passes
+
+- **Extract password**: the password called `EXTRACT_PASSWORD` from Vision Zero CRIS Import 1Password item
+- **Delivery**: How you want to receive it. Typically you would use the pre-configured AWS option, specifiyng the `dev`, `staging`, or `prod` inbox subdirectory. See the CRIS import ETL readme for more details.
 
 #### CRIS data processing
 
@@ -121,7 +155,7 @@ For example, consider the `lookups.injry_sev` table, which includes a custom val
 | 99  | KILLED (NON-ATD)         | vz     |
 ```
 
-The original migration for this table is [here](https://github.com/cityofaustin/atd-vz-data/blob/e56e3c6bc654a21f667142ce53232bad44cff7e5/atd-vzd/migrations/default/1715960018005_lookup_table_seeds/up.sql#L11054-L11056).
+The original migration for this table is [here](https://github.com/cityofaustin/vision-zero/blob/e56e3c6bc654a21f667142ce53232bad44cff7e5/atd-vzd/migrations/default/1715960018005_lookup_table_seeds/up.sql#L11054-L11056).
 
 Because the table has a custom value, it is configured with a check constraint ([PostgreSQL docs](https://www.postgresql.org/docs/current/ddl-constraints.html#DDL-CONSTRAINTS-CHECK-CONSTRAINTS)) to ensure that future updates to this lookup table do not result in an ID collision:
 
@@ -199,19 +233,23 @@ The view `crashes_change_log_view` provides a unioned view of the unified table 
 
 ### Austin Fire Department (AFD) and Travis County Emergency Medical Services (EMS) (todo)
 
-### Geospatial layers (todo)
+### Geospatial layers
 
-- Council districts
-- Jurisdiction
-- Area Engineer areas
-- Non-COA roadways
-- Location polygons
+We have a number of tables which function as geospatial layers which are referenced by crashes and various other records. At the Vision Zero team's request, our team is actively working to expand the number of layers available in the database as well as add new attribute columns to crash records which will be populated based on their intersection with these layers.
+
+| Table                 | Geometry type | description                                                                                               | owner/source                                                         |
+| --------------------- | ------------- | --------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| `council_districts`   | polygon       | City of Austin council districts                                                                          | ArcGIS Online authoritative layer owned by CTM GIS                   |
+| `atd_jurisdictions`   | polygon       | City of Austin jurisdictions                                                                              | ArcGIS Online authoritative layer owned by CTM GIS                   |
+| `engineering_areas`   | polygon       | TPW traffic engineering areas                                                                             | ArcGIS Online authoritative layer owned by DTS GIS                   |
+| `non_coa_roadways`    | polygon       | Polygon layer covering roadways which are not maintained by the City of Austin                            | ArcGIS Online authoritative layer maintained by Vision Zero GIS team |
+| `atd_txdot_locations` | polygon       | Aka, "location polygons", these shapes are used to group crashes based on an intersection or road segment | ArcGIS Online authoritative layer maintained by Vision Zero GIS team |
 
 ## Common maintenance tasks
 
 ### Add a new CRIS-managed column to `crashes`, `units`, or `people`
 
-Follow these steps to add a new column to the database that will be sourced from CRIS. See [PR #1546](https://github.com/cityofaustin/atd-vz-data/pull/1546) as an example.
+Follow these steps to add a new column to the database that will be sourced from CRIS. See [PR #1546](https://github.com/cityofaustin/vision-zero/pull/1546) as an example.
 
 1. Remember that all database operations should be deployed through migrations. See the [development and deployment](#development-and-deployment) docs.
 2. Add the new column to all three tables of the given record type. For example, if this is a crash-level column, add the column to the `crashes_cris`, `crashes_edits`, and `crashes` tables.
@@ -229,7 +267,7 @@ values ('drvr_lic_type_id', 'people', true);
 
 ```shell
 # ./database
-$ hasura metadata apply
+hasura metadata apply
 ```
 
 7. You are now ready to test your new column using the CRIS import ETL. If you need to backfill this new column for old records, you will need to manually request the necessary CRIS extract zip files so that they can be processed by an ad-hoc run of the CRIS import ETL.

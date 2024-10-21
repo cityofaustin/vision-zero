@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { useQuery } from "@apollo/react-hooks";
 import { useAuth0, isReadOnly } from "../auth/authContext";
 import { formatCostToDollars, formatDateTimeString } from "../helpers/format";
+import SwapAddressButton from "../views/Crashes/SwapAddressButton";
 
 import {
   Button,
@@ -25,19 +26,29 @@ const DataTable = ({
   handleInputChange,
   handleFieldUpdate,
   downloadGlobal,
+  crashRefetch,
 }) => {
   // Disable edit features if only role is "readonly"
   const { getRoles } = useAuth0();
   const roles = getRoles();
   const isReadOnlyUser = isReadOnly(roles);
 
+  // Sets the state of the value for the current field being edited
+  const [editValue, setEditValue] = useState("");
+
   // Import Lookup tables and aggregate an object of uiType= "select" options
   const { data: lookupSelectOptions } = useQuery(GET_LOOKUPS);
+
+  const handleEditClick = (field, fieldValue) => {
+    setEditField(field);
+    setEditValue(fieldValue != null ? fieldValue : "");
+  };
 
   const handleCancelClick = e => {
     e.preventDefault();
 
     setEditField("");
+    setEditValue("");
   };
 
   return (
@@ -46,7 +57,17 @@ const DataTable = ({
         return (
           <Col key={i} md="6">
             <Card key={section.title}>
-              <CardHeader>{section.title}</CardHeader>
+              <CardHeader>
+                {section.title}
+                {section.title === "Primary Street Information" &&
+                  !isReadOnlyUser && (
+                    <SwapAddressButton
+                      crash={data?.crash}
+                      crashRefetch={crashRefetch}
+                      setEditField={setEditField}
+                    />
+                  )}
+              </CardHeader>
               <CardBody>
                 <Table responsive striped hover>
                   <tbody>
@@ -125,7 +146,9 @@ const DataTable = ({
                       return (
                         <tr
                           key={i}
-                          onClick={() => canClickToEdit && setEditField(field)}
+                          onClick={() =>
+                            canClickToEdit && handleEditClick(field, fieldValue)
+                          }
                           style={{
                             cursor: canClickToEdit ? "pointer" : "auto",
                           }}
@@ -147,12 +170,17 @@ const DataTable = ({
                                         autoFocus
                                         name={field}
                                         id={field}
-                                        onChange={e => handleInputChange(e)}
-                                        defaultValue={fieldValue}
+                                        onChange={e =>
+                                          setEditValue(e.target.value)
+                                        }
+                                        value={editValue}
                                         type="select"
                                       >
                                         {selectOptions.map(option => (
-                                          <option value={option[`id`]}>
+                                          <option
+                                            value={option[`id`]}
+                                            key={option["id"]}
+                                          >
                                             {option[`label`]}
                                           </option>
                                         ))}
@@ -164,8 +192,12 @@ const DataTable = ({
                                         name={field}
                                         id={field}
                                         type="text"
-                                        defaultValue={fieldValue}
-                                        onChange={e => handleInputChange(e)}
+                                        value={editValue}
+                                        onChange={e =>
+                                          setEditValue(
+                                            e.target.value.toUpperCase()
+                                          )
+                                        }
                                         autoComplete="off"
                                         // disable 1password autofill
                                         data-1p-ignore
@@ -174,9 +206,11 @@ const DataTable = ({
                                     {fieldUiType === "boolean" && (
                                       <Input
                                         autoFocus
-                                        defaultValue={fieldValue}
+                                        value={editValue}
                                         type="select"
-                                        onChange={e => handleInputChange(e)}
+                                        onChange={e =>
+                                          setEditValue(e.target.value)
+                                        }
                                       >
                                         <option value={true}>YES</option>
                                         <option value={false}>NO</option>
@@ -189,6 +223,9 @@ const DataTable = ({
                                       color="primary"
                                       size="sm"
                                       className="btn-pill mr-1"
+                                      onClick={e =>
+                                        handleInputChange(editValue)
+                                      }
                                     >
                                       <i className="fa fa-check edit-toggle" />
                                     </Button>

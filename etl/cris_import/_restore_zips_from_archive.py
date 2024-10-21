@@ -13,7 +13,7 @@ from utils.files import (
 )
 
 BUCKET_NAME = os.environ["BUCKET_NAME"]
-ENV = os.environ["ENV"]
+ENV = os.environ["BUCKET_ENV"]
 
 
 def main():

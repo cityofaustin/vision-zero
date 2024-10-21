@@ -5,21 +5,33 @@ from pathlib import Path
 
 import time
 
-from pdf2image import convert_from_path, pdfinfo_from_path
+from pdf2image import convert_from_path, pdfinfo_from_path, pdfinfo_from_bytes
 
 from utils.graphql import UPDATE_CRASH_CR3_FIELDS, make_hasura_request
 from utils.logging import get_logger
 from utils.files import upload_file_to_s3
 from utils.settings import (
     DIAGRAM_BBOX_PIXELS,
-    NEW_CR3_FORM_TEST_PIXELS,
+    CR3_FORM_V2_TEST_PIXELS,
 )
 
-ENV = os.getenv("ENV")
+ENV = os.getenv("BUCKET_ENV")
 logger = get_logger()
 
 
-def get_cr3_version(page, page_width):
+def are_all_pixels_black(page, test_pixels, threshold=5):
+    for pixel in test_pixels:
+        rgb_pixel = page.getpixel(pixel)
+        if (
+            rgb_pixel[0] > threshold
+            or rgb_pixel[1] > threshold
+            or rgb_pixel[2] > threshold
+        ):
+            return False
+    return True
+
+
+def get_cr3_version(page):
     """Determine the CR3 form version.
 
     The check is conducted by sampling if various pixels are black.
@@ -35,24 +47,13 @@ def get_cr3_version(page, page_width):
     Returns:
         str: 'v1_small', 'v1_large','v2_large', or 'v2_small'
     """
-    page_size = "small" if page_width < 700 else "large"
-    test_pixels = NEW_CR3_FORM_TEST_PIXELS[page_size]
+    width, height = page.size
+    page_size = "small" if width < 2000 else "large"
 
-    for pixel in test_pixels:
-        rgb_pixel = page.getpixel(pixel)
-        if rgb_pixel[0] > 5 or rgb_pixel[1] > 5 or rgb_pixel[2] > 5:
-            # the PDF fails our pixel checks, so assume it's the
-            # earliest version
-            return f"v1_{page_size}"
+    if are_all_pixels_black(page, CR3_FORM_V2_TEST_PIXELS[page_size]):
+        return f"v2_{page_size}"
 
-    return f"v2_{page_size}"
-
-
-def get_pdf_width(pdf_path):
-    """Return the width of the pdf in points"""
-    pdf_info = pdfinfo_from_path(pdf_path)
-    # parse width from a string that looks like '612 x 792 pts (letter)'
-    return int(pdf_info["Page size"].split(" ")[0])
+    return f"v1_{page_size}"
 
 
 def crop_and_save_diagram(page, cris_crash_id, bbox, extract_dir):
@@ -94,7 +95,6 @@ def process_pdf(extract_dir, filename, s3_upload, index):
     logger.info(f"Processing {filename} ({index})")
     cris_crash_id = int(filename.replace(".pdf", ""))
     pdf_path = os.path.join(extract_dir, "crashReports", filename)
-    page_width = get_pdf_width(pdf_path)
 
     logger.debug("Converting PDF to image...")
 
@@ -106,7 +106,7 @@ def process_pdf(extract_dir, filename, s3_upload, index):
         dpi=150,
     )[0]
 
-    cr3_version = get_cr3_version(page, page_width)
+    cr3_version = get_cr3_version(page)
     bbox = DIAGRAM_BBOX_PIXELS[cr3_version]
 
     logger.debug("Cropping crash diagram...")
