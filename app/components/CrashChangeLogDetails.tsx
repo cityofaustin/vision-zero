@@ -53,7 +53,7 @@ const CrashChangeLogDetails = ({
             {!isNewRecordEvent(selectedChange) && <th>Previous value</th>}
             <th>New value</th>
           </thead>
-          <tbody className="text-monospace">
+          <tbody className="font-monospace">
             {selectedChange.diffs.map((diff) => (
               <tr key={diff.field}>
                 <td>{diff.field}</td>

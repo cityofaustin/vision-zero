@@ -85,13 +85,14 @@ const renderValue = (crash: Crash, col: TableColumn<Crash>) => {
 const getValue = (crash: Crash, col: TableColumn<Crash>): FormInputValue => {
   if (col.relationshipName) {
     const relatedObject = crash[col.relationshipName] as LookupTableOption;
-    return relatedObject?.id;
+    return String(relatedObject?.id);
   }
   if (col.inputType === "yes_no") {
     const value = crash[col.key];
     if (value === null) return "";
     return value ? "true" : "false";
   }
+
   return String(crash[col.key] || "");
 };
 

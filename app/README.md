@@ -1,5 +1,17 @@
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
+## Todo
+
+- permission checks
+- gridtable
+  - search
+  - export
+- locations
+- location details
+- create crash record
+- upload records
+- 
+
 ## Getting Started
 
 First, run the development server:

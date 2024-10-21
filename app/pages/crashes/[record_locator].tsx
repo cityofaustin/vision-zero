@@ -7,6 +7,7 @@ import Card from "react-bootstrap/Card";
 import { CrashMap } from "@/components/CrashMap";
 import { GET_CRASH, UPDATE_CRASH } from "@/queries/crash";
 import { useQuery, useMutation } from "@/utils/graphql";
+import AppBreadCrumb from "@/components/AppBreadCrumb";
 import CrashHeader from "@/components/CrashHeader";
 import CrashDiagramCard from "@/components/CrashDiagramCard";
 import CrashDataCard from "@/components/CrashDataCard";
@@ -45,6 +46,7 @@ export default function CrashDetailsPage() {
 
   return (
     <>
+      <AppBreadCrumb />
       <CrashHeader crash={crash} />
       <Row>
         <Col sm={12} md={6} lg={4} className="mb-3">
