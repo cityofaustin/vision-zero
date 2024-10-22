@@ -149,10 +149,19 @@ async function getEsriToken() {
   return genericJSONFetch({ url, method: "POST", body, headers });
 }
 
+/**
+ * Just a wrapper which makes a GET request to any endpoint
+ * @param {string} url - The ArcGIS REST API endpoint
+ * @returns JSON object
+ */
 const getEsriJson = async (url) => {
   return genericJSONFetch({ url, method: "GET" });
 };
 
+/**
+ * Get a Hasura graphql mutation that will delete
+ * all rows in the table
+ */
 const getTruncateMutation = (tableName) => `
   mutation Delete${tableName} {
     delete_geo_${tableName}(where: {}) {
@@ -161,6 +170,10 @@ const getTruncateMutation = (tableName) => `
   }
 `;
 
+/**
+ * Get a generic Hasura graphql mutation that will insert
+ * an array of objects
+ */
 const getInsertMutation = (tableName) => `
   mutation Insert${tableName}($objects: [${tableName}_insert_input!]!) {
     insert_geo_${tableName}(objects: $objects) {
