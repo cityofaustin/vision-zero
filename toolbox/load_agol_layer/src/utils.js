@@ -175,7 +175,7 @@ const getTruncateMutation = (tableName) => `
  * an array of objects
  */
 const getInsertMutation = (tableName) => `
-  mutation Insert${tableName}($objects: [${tableName}_insert_input!]!) {
+  mutation Insert${tableName}($objects: [geo_${tableName}_insert_input!]!) {
     insert_geo_${tableName}(objects: $objects) {
       affected_rows
     }
