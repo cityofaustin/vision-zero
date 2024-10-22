@@ -8,11 +8,11 @@ import { gql } from "graphql-request";
 import { UPDATE_CRASH } from "@/queries/crash";
 import {
   getRecordValue,
-  valueToString,
   stringToBoolNullable,
   trimStringNullable,
   stringToNumberNullable,
-} from "@/utils/formatters";
+  valueToString,
+} from "@/utils/formHelpers";
 import { KeyedMutator } from "swr";
 import {
   Crash,
@@ -24,8 +24,8 @@ import {
 } from "@/types/types";
 
 /**
- * Function which transforms form input value into value that
- * will be sent in mutation payload
+ * Function which transforms form input string into the value
+ * that will be sent in the the db mutation
  *
  * todo: wrap this in a try/catch and use validation erro
  */
@@ -61,7 +61,7 @@ const useLookupQuery = (lookupTableDef: LookupTableDef | undefined) =>
     return [
       gql`
       query LookupTableQuery {
-        ${typeName} {
+        ${typeName}(order_by: {id: asc}) {
           id
           label
         }
@@ -74,6 +74,9 @@ const useLookupQuery = (lookupTableDef: LookupTableDef | undefined) =>
 /**
  * Render a static field value (e.g., in a table cell)
  * -- todo: this will be used by the table component as well
+ * -- todo: this needs to be updated + reconsidered based
+ * on formatters that are avail. also see getRecordValue
+ * and of course col.renderer
  */
 const renderValue = (crash: Crash, col: TableColumn<Crash>) => {
   if (col.relationshipName) {
@@ -85,7 +88,9 @@ const renderValue = (crash: Crash, col: TableColumn<Crash>) => {
     if (value === null) return "";
     return value ? "Yes" : "No";
   }
-  return col.renderer ? col.renderer(crash) : String(crash[col.key] || "");
+  return col.formatter
+    ? col.formatter(getRecordValue(crash, col))
+    : String(crash[col.key] || "");
 };
 
 /**

@@ -9,7 +9,7 @@ export const crashesListViewColumns: TableColumn<CrashListCrash>[] = [
   {
     key: "record_locator",
     label: "Crash ID",
-    renderer: (row: CrashListCrash) => (
+    formatter: (row: CrashListCrash) => (
       <Link href={`/crashes/${row.record_locator}`}>{row.record_locator}</Link>
     ),
   },

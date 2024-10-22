@@ -35,7 +35,7 @@ export const ALL_CRASH_COLUMNS: TableColumnIndex<Crash> = {
   crash_timestamp: {
     key: "crash_timestamp",
     label: "Crash date",
-    renderer: (crash: Crash) => formatDateTime(crash.crash_timestamp),
+    formatter: formatDateTime,
   },
   fhe_collsn_id: {
     key: "fhe_collsn_id",

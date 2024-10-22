@@ -24,8 +24,7 @@ export type TableColumn<T> = {
   inputType?: InputType;
   lookupTable?: LookupTableDef;
   relationshipName?: keyof T;
-  renderer?: (record: T) => ReactNode;
-  inputValueHander?: (value: unknown) => string | undefined;
+  formatter?: (value: unknown) => ReactNode;
 };
 
 export interface TableColumnIndex<T> {

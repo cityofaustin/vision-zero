@@ -1,6 +1,6 @@
 import BsTable from "react-bootstrap/Table";
 import { TableColumn } from "@/types/types";
-
+import { getRecordValue } from "@/utils/formHelpers";
 interface TableProps<T> {
   rows: T[];
   columns: TableColumn<T>[];
@@ -22,7 +22,9 @@ export default function Table<T>({ rows, columns }: TableProps<T>) {
           <tr key={i}>
             {columns.map((col) => (
               <td key={String(col.key)}>
-                {col?.renderer ? col.renderer(row) : String(row[col.key])}
+                {col?.formatter
+                  ? col.formatter(getRecordValue(row, col))
+                  : String(getRecordValue(row, col))}
               </td>
             ))}
           </tr>
