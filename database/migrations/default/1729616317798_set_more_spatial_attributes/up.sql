@@ -100,6 +100,13 @@ begin
                 st_contains(geometry, new.position)
             limit 1);
         raise debug 'apd_sector_id: % compared to previous: %', new.apd_sector_id, old.apd_sector_id;
+        --
+        -- check if is_non_coa_roadway
+        --
+        if (new.in_austin_full_purpose or new.rpt_city_id = 22) then
+            new.is_non_coa_roadway = st_contains((select geometry from geo.non_coa_roadways), new.position);
+            raise debug 'is_non_coa_roadway: % compared to previous: %', new.is_non_coa_roadway, old.is_non_coa_roadway;
+        end if;
         else
             raise debug 'setting location id and council district to null';
             -- nullify position column
