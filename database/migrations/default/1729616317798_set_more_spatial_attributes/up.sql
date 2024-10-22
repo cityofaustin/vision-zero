@@ -108,7 +108,7 @@ begin
             raise debug 'is_non_coa_roadway: % compared to previous: %', new.is_non_coa_roadway, old.is_non_coa_roadway;
         end if;
         else
-            raise debug 'setting location id and council district to null';
+            raise debug 'reseting spatial attributes due to null latitude and/or longitude values';
             -- nullify position column
             new.position = null;
             -- reset location id
@@ -120,6 +120,14 @@ begin
             new.council_district = null;
             -- reset engineering area
             new.engineering_area_id = null;
+            -- reset signal eng area
+            new.signal_engineer_area_id = null;
+            -- reset zip code
+            new.zipcode = null;
+            -- reset apd_sector
+            new.apd_sector_id = null;
+            -- reset is_non_coa_roadway
+            new.is_non_coa_roadway = true;
     end if;
     return new;
 end;
