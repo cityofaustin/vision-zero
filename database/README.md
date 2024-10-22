@@ -398,3 +398,24 @@ hasura metadata apply --envfile .env.local
 ```
 
 Once we see that no errors occur when applying the sequence of migrations locally, we can merge and the CI will apply the new migrations and metadata to the staging database.
+
+## Database Schema Documentation
+
+CI exists to automatically generate a database schema documentation file. This occurs
+when a PR is created and subsequently when a commit is pushed onto a PR'd branch.
+The CI is performed by a GitHub action which does the following:
+
+1. Install the Hasura CLI for `graphql-engine`.
+2. Spin up a postgres database which is initially empty.
+3. Use the `hasura` CLI to deploy migrations, which build up the VZ DB
+4. Install and use the `dbdocs` npm tool to generate a DBML file for the DB
+5. Use the `dbdocs` tool again to upload the documentation to https://dbdocs.io.
+
+The documentation can be found at:
+
+- Staging: https://dbdocs.io/transportation.data/Vision-Zero-Staging
+- Production: https://dbdocs.io/transportation.data/Vision-Zero-Production
+
+The integration with https://dbdocs.io requires a token be generated after logging
+into the service locally with the `dbdocs` CLI tool. The token is stored in 1Password
+under the entry named 'DB Docs (dbdocs.io).'
