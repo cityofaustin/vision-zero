@@ -3,7 +3,7 @@
 CREATE OR REPLACE VIEW public.crashes_list_view
 AS WITH geocode_status AS (
          SELECT cris.id,
-            unified.latitude IS NOT NULL OR unified.longitude IS NOT NULL AS is_manual_geocode
+            unified.latitude <> cris.latitude OR unified.longitude <> cris.longitude AS is_manual_geocode
            FROM crashes_cris cris
              LEFT JOIN crashes unified ON cris.id = unified.id
         )
