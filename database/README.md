@@ -63,8 +63,8 @@ As pictured in the diagram below, the typical data flow for a crash record is as
 1. A new record is inserted into the `crashes_cris` table through the [CRIS import ETL](../etl/cris_import/README.md).
 2. On insert into `crashes_cris`, a complete copy of the record is inserted into the `crashes` table.
 3. A Vision Zero Editor user may update crash records by updating rows in the `crashes` table.
-4. When an existing `crashes_cris` record is updated through the CRIS import ETL, a trigger function compares the current value in the `crashes_cris` table to the value in the unified `crashes` table and if they are the same, meaning there have been no Vision Zero staff edits, the `crashes` value is updated as well as the `crashes_cris` value. If there has been a Vision Zero staff edit, only the `crashes_cris` table is updated.
-5. Finally, once a record is updated in the `crashes` table, additional trigger functions apply various business rules and enrich the row with spatial attributes based on its location. These trigger functions are reserved for values that require heavy computation—additional business rules can be applied through table views.
+4. When an existing `crashes_cris` record is updated through the CRIS import ETL, a trigger function compares the old value in the `crashes_cris` table to the value in the unified `crashes` table and if they are the same, meaning there have been no VZ edits, the `crashes` value is also updated with the new value. If there has been a VZ edit, only the `crashes_cris` table is updated.
+5. Once a record is updated in the `crashes` table, additional trigger functions apply various business rules and enrich the row with spatial attributes based on its location. These trigger functions are reserved for values that require heavy computation—additional business rules can be applied through table views.
 
 ![CRIS editing model](../docs/images/cris_data_model.png)
 _The "layered" editing environment of the Vision Zero Database_
