@@ -17,6 +17,15 @@ object_relationships:
   - name: crashes_cri
     using:
       foreign_key_constraint_on: id
+  - name: crashes_list_view
+    using:
+      manual_configuration:
+        column_mapping:
+          id: id
+        insertion_order: null
+        remote_table:
+          name: crashes_list_view
+          schema: public
   - name: recommendation
     using:
       foreign_key_constraint_on:
@@ -324,15 +333,12 @@ update_permissions:
         - at_intrsct_fl
         - case_id
         - council_district
-        - cr3_processed_at
-        - cr3_stored_fl
         - crash_speed_limit
         - crash_timestamp
         - created_by
         - cris_crash_id
         - engineering_area_id
         - fhe_collsn_id
-        - in_austin_full_purpose
         - intrsct_relat_id
         - investigat_agency_id
         - investigator_narrative
@@ -392,13 +398,10 @@ update_permissions:
         - at_intrsct_fl
         - case_id
         - council_district
-        - cr3_processed_at
-        - cr3_stored_fl
         - crash_speed_limit
         - crash_timestamp
         - engineering_area_id
         - fhe_collsn_id
-        - in_austin_full_purpose
         - intrsct_relat_id
         - investigat_agency_id
         - investigator_narrative
