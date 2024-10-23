@@ -174,7 +174,7 @@ const CrashDiagram = ({ crashId, isCr3Stored, isTempRecord }) => {
                   rel="noopener noreferrer"
                 >
                   &nbsp;report a bug&nbsp;&nbsp;{" "}
-                  <i class="fa fa-external-link"></i>
+                  <i className="fa fa-external-link"></i>
                 </a>
                 .
               </p>
