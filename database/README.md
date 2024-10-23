@@ -67,7 +67,7 @@ As pictured in the diagram below, the typical data flow for a crash record is as
 5. Once a record is updated in the `crashes` table, additional trigger functions apply various business rules and enrich the row with spatial attributes based on its location. These trigger functions are reserved for values that require heavy computation—additional business rules can be applied through table views.
 
 ![CRIS editing model](../docs/images/cris_data_model.png)
-_The "layered" editing environment of the Vision Zero Database_
+_The "two layer" editing environment of the Vision Zero Database_
 
 The process for updating `units` and `people` behaves in the same manner as `crashes`. To ensure proper data flow and trigger behavior, **records should never be directly inserted into the unified tables**.
 
