@@ -11,11 +11,12 @@ object_relationships:
         remote_table:
           name: recommendations
           schema: public
+array_relationships:
   - name: units
     using:
       manual_configuration:
         column_mapping:
-          cris_crash_id: cris_crash_id
+          id: crash_pk
         insertion_order: null
         remote_table:
           name: units
@@ -197,4 +198,5 @@ select_permissions:
         - rpt_street_sfx
         - crash_timestamp
       filter: {}
+      allow_aggregations: true
     comment: ""
