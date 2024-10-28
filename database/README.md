@@ -66,7 +66,7 @@ As pictured in the diagram below, the typical data flow for a crash record is as
 4. When an existing `crashes_cris` record is updated through the CRIS import ETL, a trigger function compares the old value in the `crashes_cris` table to the value in the unified `crashes` table and if they are the same, meaning there have been no user edits, the `crashes` value is also updated with the new value. If there has been a user edit, the updates to the `crashes_cris` table do not propagate to the `crashes` table.
 5. Once a record is updated in the `crashes` table, additional trigger functions apply various business rules and enrich the row with spatial attributes based on its location. These trigger functions are reserved for values that require heavy computation—additional business rules can be applied through table views.
 
-![CRIS editing model](../docs/images/cris_data_model.png)
+![CRIS editing model](../docs/images/data_model.png)
 _The "layered" editing environment of the Vision Zero Database_
 
 The process for updating `units` and `people` behaves in the same manner as `crashes`. To ensure proper data flow and trigger behavior, **records should never be directly inserted into the unified tables**.
