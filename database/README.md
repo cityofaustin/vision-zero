@@ -56,7 +56,7 @@ The core challenge that the database schema solves is to preserve the integrity 
 For example, the `crashes` records are managed in two tables:
 
 - `crashes_cris`: records that are created and updated by TxDOT CRIS through the [CRIS import ETL](../etl/cris_import/README.md)
-- `crashes`: a unified version of each record which combines the values in `crashes_cris` plus any edits created by Vision zero staff through the Vision Zero Editor web app. This table functions as the final source of truth, where user edits take precedence over CRIS values.`
+- `crashes`: a unified version of each record which combines the values in `crashes_cris` plus any edits created by Vision zero staff through the Vision Zero Editor web app. This table functions as the final source of truth, where user edits take precedence over CRIS values.
 
 As pictured in the diagram below, the typical data flow for a crash record is as follows:
 
