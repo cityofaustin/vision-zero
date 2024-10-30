@@ -15,3 +15,9 @@ alter table crashes
         references geo.apd_sectors (primary_key)
         on update cascade on delete set null,
     add column is_non_coa_roadway boolean not null default true;
+
+
+COMMENT ON COLUMN public.crashes.signal_engineer_area_id IS 'The traffic signal engineer area which intersects with this crash. Set via trigger function.';
+COMMENT ON COLUMN public.crashes.zipcode IS 'The postal ZIP coda which intersects with this crash. Set via trigger function.';
+COMMENT ON COLUMN public.crashes.apd_sector_id IS 'The Austin Police Dept response area which intersects with this crash. Set via trigger function.';
+COMMENT ON COLUMN public.crashes.is_non_coa_roadway IS 'If the crash has a occured on a roadway that is not maintained by the City of Austin. Defaults to true, and is false if the crash does not intersects with the non_coa_roadways layer and the crash occured in the Austin Full Purpose Jursidiction. Set via trigger function.';
