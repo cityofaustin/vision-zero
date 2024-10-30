@@ -55,7 +55,7 @@ export const useQuery = <T>({
     return fetcher<T>([query, variables, token]);
   };
 
-  // todo: document undefined query handling
+  // todo: document falsey query handling
   const { data, error, isLoading, mutate, isValidating } = useSWR<T>(
     query ? [query, variables] : null,
     fetchWithAuth,
