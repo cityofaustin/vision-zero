@@ -14,4 +14,4 @@ alter table crashes
         foreign key (apd_sector_id)  
         references geo.apd_sectors (primary_key)
         on update cascade on delete set null,
-    add column is_non_coa_roadway boolean not null default true;
+    add column is_coa_roadway boolean not null default false;

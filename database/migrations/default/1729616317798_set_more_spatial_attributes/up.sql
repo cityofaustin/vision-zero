@@ -101,11 +101,11 @@ begin
             limit 1);
         raise debug 'apd_sector_id: % compared to previous: %', new.apd_sector_id, old.apd_sector_id;
         --
-        -- check if is_non_coa_roadway
+        -- check if is_coa_roadway if the crash is in austin
         --
         if (new.in_austin_full_purpose or new.rpt_city_id = 22) then
-            new.is_non_coa_roadway = st_contains((select geometry from geo.non_coa_roadways), new.position);
-            raise debug 'is_non_coa_roadway: % compared to previous: %', new.is_non_coa_roadway, old.is_non_coa_roadway;
+            new.is_coa_roadway = not st_contains((select geometry from geo.non_coa_roadways), new.position);
+            raise debug 'is_coa_roadway: % compared to previous: %', new.is_coa_roadway, old.is_coa_roadway;
         end if;
         else
             raise debug 'reseting spatial attributes due to null latitude and/or longitude values';
@@ -126,8 +126,8 @@ begin
             new.zipcode = null;
             -- reset apd_sector
             new.apd_sector_id = null;
-            -- reset is_non_coa_roadway
-            new.is_non_coa_roadway = true;
+            -- reset is_coa_roadway
+            new.is_coa_roadway = false;
     end if;
     return new;
 end;
