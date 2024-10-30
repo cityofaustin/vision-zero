@@ -19,13 +19,15 @@ const useCrumbs = (path: string): Crumb[] =>
     }
 
     crumbs.push({
-      label: parts[0],
+      // if we don't remove the query string, nextjs can hit a server/client mismatch on login
+      // todo: this can't be the right way to fix this
+      label: parts[0].split("?")[0],
       type: "page",
     });
 
     if (parts.length > 1) {
       crumbs.push({
-        label: parts[1],
+        label: parts[1].split("?")[0],
         type: "id",
       });
     }
