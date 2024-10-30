@@ -1,4 +1,4 @@
--- revwer to 1728581588450_create_geo_schema
+-- revert to 1728581588450_create_geo_schema
 create or replace function public.crashes_set_spatial_attributes()
 returns trigger
 language plpgsql
