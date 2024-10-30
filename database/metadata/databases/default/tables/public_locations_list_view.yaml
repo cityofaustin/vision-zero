@@ -14,6 +14,7 @@ select_permissions:
         - location_group
         - description
       filter: {}
+      allow_aggregations: true
     comment: ""
   - role: readonly
     permission:
@@ -27,6 +28,7 @@ select_permissions:
         - location_group
         - description
       filter: {}
+      allow_aggregations: true
     comment: ""
   - role: vz-admin
     permission:
@@ -40,4 +42,5 @@ select_permissions:
         - location_group
         - description
       filter: {}
+      allow_aggregations: true
     comment: ""
