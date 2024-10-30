@@ -1,9 +1,10 @@
 import { ReactNode, useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/router";
+import { useAuth0 } from "@auth0/auth0-react";
+import Button from "react-bootstrap/Button";
+import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
-import Button from "react-bootstrap/Button";
 import ListGroup from "react-bootstrap/ListGroup";
 import {
   FaShieldHeart,
@@ -18,6 +19,14 @@ const localStorageKey = "sidebarCollapsed";
 export default function SidebarLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
   const [isCollapsed, setIsCollapsed] = useState(false);
+
+  const {
+    isLoading: isLoadingAuth,
+    error: errorAuth,
+    user,
+    loginWithRedirect,
+    logout,
+  } = useAuth0();
 
   const toggleSidebar = useCallback(
     () =>
@@ -49,7 +58,9 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
               <Button
                 onClick={toggleSidebar}
                 variant="dark"
-                className={`text-secondary sidebar-toggle-${isCollapsed ? "closed" : "open"}`}
+                className={`text-secondary sidebar-toggle-${
+                  isCollapsed ? "closed" : "open"
+                }`}
               >
                 <FaAngleRight />
               </Button>
@@ -77,6 +88,10 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
                 label="Locations"
                 href="/locations"
               />
+              {!isLoadingAuth && !errorAuth && !user && (
+                <Button onClick={() => loginWithRedirect()}>Log in</Button>
+              )}
+              {user && <Button onClick={() => logout()}>Log out</Button>}
             </ListGroup>
           </div>
         </div>
