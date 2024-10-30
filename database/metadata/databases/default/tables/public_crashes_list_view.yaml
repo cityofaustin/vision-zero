@@ -80,6 +80,7 @@ select_permissions:
         - rpt_street_sfx
         - crash_timestamp
       filter: {}
+      allow_aggregations: true
     comment: ""
   - role: readonly
     permission:
@@ -139,6 +140,7 @@ select_permissions:
         - rpt_street_sfx
         - crash_timestamp
       filter: {}
+      allow_aggregations: true
     comment: ""
   - role: vz-admin
     permission:
