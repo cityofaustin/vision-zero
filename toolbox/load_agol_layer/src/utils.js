@@ -164,7 +164,7 @@ const getEsriJson = async (url) => {
  */
 const getTruncateMutation = (tableName) => `
   mutation Delete${tableName} {
-    delete_${tableName}(where: {}) {
+    delete_geo_${tableName}(where: {}) {
       affected_rows
     }
   }
@@ -175,8 +175,8 @@ const getTruncateMutation = (tableName) => `
  * an array of objects
  */
 const getInsertMutation = (tableName) => `
-  mutation Insert${tableName}($objects: [${tableName}_insert_input!]!) {
-    insert_${tableName}(objects: $objects) {
+  mutation Insert${tableName}($objects: [geo_${tableName}_insert_input!]!) {
+    insert_geo_${tableName}(objects: $objects) {
       affected_rows
     }
   }
