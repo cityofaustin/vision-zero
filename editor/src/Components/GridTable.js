@@ -30,8 +30,8 @@ import GridExportData from "./GridExportData";
 import GridTableDoughnut from "./GridTableDoughnut";
 import GridTableHorizontalBar from "./GridTableHorizontalBar";
 import GridTableFilterBadges from "./GridTableFilterBadges";
+import { appCodeName } from "../helpers/environment";
 
-const codeName = "asclepias";
 
 const GridTable = ({
   title,
@@ -49,7 +49,7 @@ const GridTable = ({
 }) => {
   // Load table filters from localStorage by title
   const savedFilterState = JSON.parse(
-    localStorage.getItem(`${codeName}_saved_${title}_config`)
+    localStorage.getItem(`${appCodeName}_saved_${title}_config`)
   );
 
   // Return saved filters if they exist
@@ -109,7 +109,7 @@ const GridTable = ({
       dateRangeFilter,
     };
     localStorage.setItem(
-      `${codeName}_saved_${title}_config`,
+      `${appCodeName}_saved_${title}_config`,
       JSON.stringify(stateForFilters)
     );
   });
