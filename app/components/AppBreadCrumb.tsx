@@ -1,5 +1,6 @@
 import { useMemo, Fragment } from "react";
 import { useRouter } from "next/router";
+import Link from "next/link";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 
@@ -47,7 +48,7 @@ export default function AppBreadCrumb() {
             return (
               <Fragment key={crumb.label}>
                 <span className="fw-light">
-                  <a href={`/${crumb.label}`}>{crumb.label}</a>
+                  <Link href={`/${crumb.label}`}>{crumb.label}</Link>
                 </span>
                 <span className="mx-2 fw-light">{"/"}</span>
               </Fragment>
