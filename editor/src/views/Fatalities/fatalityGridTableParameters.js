@@ -336,6 +336,6 @@ recommendation { recommendations_partners { atd__coordination_partners_lkp { coo
 unit { unit_desc { label } }
 unit { veh_body_styl { label } }
 crash { onsys_fl }
-engineering_area
+engineering_area { label }
 crash { council_district }
 `;
