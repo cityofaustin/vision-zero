@@ -115,8 +115,8 @@ NARRATIVES_TODO_QUERY = """
 """
 
 UPDATE_CRASH_NARRATIVE_OCR_MUTATION = """
-mutation UpdateCrashNarrativeOCR($updates: crashes_edits_set_input!, $id: Int!) {
-  update_crashes_edits_by_pk(pk_columns: {id: $id}, _set: $updates) {
+mutation UpdateCrashNarrativeOCR($updates: crashes_set_input!, $id: Int!) {
+  update_crashes_by_pk(pk_columns: {id: $id}, _set: $updates) {
     id
   }
 }

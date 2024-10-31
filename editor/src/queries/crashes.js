@@ -189,8 +189,8 @@ export const GET_CRASH = gql`
 `;
 
 export const UPDATE_CRASH = gql`
-  mutation update_crashes_edits($id: Int!, $changes: crashes_edits_set_input) {
-    update_crashes_edits(where: { id: { _eq: $id } }, _set: $changes) {
+  mutation update_crashes($id: Int!, $changes: crashes_set_input) {
+    update_crashes(where: { id: { _eq: $id } }, _set: $changes) {
       affected_rows
       returning {
         cris_crash_id

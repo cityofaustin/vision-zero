@@ -16,13 +16,6 @@ array_relationships:
         table:
           name: units_cris
           schema: public
-  - name: units_edits
-    using:
-      foreign_key_constraint_on:
-        column: veh_mod_id
-        table:
-          name: units_edits
-          schema: public
 select_permissions:
   - role: editor
     permission:
