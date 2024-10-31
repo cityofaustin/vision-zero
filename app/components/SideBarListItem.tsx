@@ -19,7 +19,7 @@ export default function SideBarListItem({
 }: SideBarListItemProps) {
   return (
     <ListGroup.Item
-      className={`me-2 bg-dark ${
+      className={`mx-2 bg-dark fs-5 my-1 ${
         isCurrentPage ? "text-info" : "text-white"
       }`}
       style={{ cursor: "pointer", whiteSpace: "nowrap", border: "none" }}
