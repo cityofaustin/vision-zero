@@ -52,27 +52,25 @@ The CRIS data in our database consists of four record types:
 
 #### Design
 
-The core challenge that the database schema solves is to preserve the integrity of staff members' edits while simultaneously allowing crash record updates to flow into the database from CRIS. The editing environment is achieved by managing multiple copies of each of the `crashes`, `units`, and `people` tables, so that CRIS edits and Vision Zero staff edits remain isolated.
+The core challenge that the database schema solves is to preserve the integrity of staff members' edits while simultaneously allowing crash record updates to flow into the database from CRIS. The editing environment is achieved by managing two copies of each of the `crashes`, `units`, and `people` tables, so that CRIS edits can have their own table and thus be isolated from Vision Zero staff edits.
 
-For example, the `crashes` records are managed in three tables:
+For example, the `crashes` records are managed in two tables:
 
 - `crashes_cris`: records that are created and updated by TxDOT CRIS through the [CRIS import ETL](../etl/cris_import/README.md)
-- `crashes_edits`: record edits created by Vision Zero staff through the Vision Zero Editor web app
-- `crashes`: a unified version of each record which combines the values in `crashes_cris` plus any values in `crashes_edits`
+- `crashes`: a unified version of each record which combines the values in `crashes_cris` plus any edits created by Vision zero staff through the Vision Zero Editor web app. This table functions as the final source of truth, where user edits take precedence over CRIS values.
 
 As pictured in the diagram below, the typical data flow for a crash record is as follows:
 
 1. A new record is inserted into the `crashes_cris` table through the [CRIS import ETL](../etl/cris_import/README.md).
-2. On insert into `crashes_cris`, an "empty" copy of the record is inserted into the `crashes_edits` table. The record is inserted into the `crashes_edits` table with null values in every column except the `id`, which has a foreign key constraint referencing the `crashes_cris.id` column.
-3. At the same time, a complete copy of the record is inserted into the `crashes` table.
-4. A Vision Zero Editor user may update crash records by updating rows in the `crashes_edits` table. When an update is received, a trigger function coalesces each value in the `crashes_edits` table with the corresponding value in the `crashes_cris` table. The resulting record—which contains the original CRIS-provided values plus any edit values made through user edits—is applied as an update to the corresponding record in the `crashes` table.
-5. Similarly, when an existing `crashes_cris` record is updated through the CRIS import ETL, the updated record is coalesced against the corresponding row in the `crashes_edits` table, and the result is saved in the `crashes` table.
-6. Finally, once a record is updated in the `crashes` table, additional trigger functions apply various business rules and enrich the row with spatial attributes based on its location. These trigger functions are reserved for values that require heavy computation—additional business rules can be applied through table views.
+2. On insert into `crashes_cris`, a complete copy of the record is inserted into the `crashes` table.
+3. A Vision Zero Editor user may update crash records by updating rows in the `crashes` table.
+4. When an existing `crashes_cris` record is updated through the CRIS import ETL, a trigger function compares the old value in the `crashes_cris` table to the value in the unified `crashes` table and if they are the same, meaning there have been no user edits, the `crashes` value is also updated with the new value. If there has been a user edit, the updates to the `crashes_cris` table do not propagate to the `crashes` table.
+5. Once a record is updated in the `crashes` table, additional trigger functions apply various business rules and enrich the row with spatial attributes based on its location. These trigger functions are reserved for values that require heavy computation—additional business rules can be applied through table views.
 
-![CRIS editing model](../docs/images/cris_data_model.png)
+![CRIS editing model](../docs/images/data_model.png)
 _The "layered" editing environment of the Vision Zero Database_
 
-The process for updating `units` and `people` behaves in the same manner as `crashes`. To ensure proper data flow and trigger behavior, **records should never be directly inserted into the `_edits` or unified tables**.
+The process for updating `units` and `people` behaves in the same manner as `crashes`. To ensure proper data flow and trigger behavior, **records should never be directly inserted into the unified tables**.
 
 #### CRIS Extract configuration and accounts
 
@@ -178,7 +176,7 @@ See the [Common maintenance tasks](#common-maintenance-tasks) section for more d
 
 Charges records are provided by CRIS and describe a legal charge filed by the responding law enforcement agency. These records require special handling in our database because CRIS does not provide a unique primary key column for charges. Here's what you should know about these records:
 
-1. Charge records only exist in the `charges_cris` table and do not have corresponding `charges_edits` or `charges` tables.
+1. Charge records only exist in the `charges_cris` table and do not have a corresponding `charges` table.
 2. During the CRIS import, all charge records are **deleted** from the database for any crash ID present in the CRIS extract. After deletion, the CRIS import ETL inserts all charges records present in the extract.
 3. The CRIS import ETL filters out charge records where the `charge` value is `NO CHARGE`—this reduces the number of charge records in the database by many thousands.
 4. Because charges are subject to deletion, they are not editable through the VZE/graphql API and should be considered read-only.
@@ -202,7 +200,7 @@ This table outlines the primary key columns in the database and how they relate 
 
 Because there can be a lag time of weeks, even months, before law enforcement investigators submit their crash report to TxDOT, the Vision Zero team needs the ability to manually create "temporary" records so that reporting metrics are more timely/accurate.
 
-The VZE makes this possible by allowing users to insert crash, unit, and people records directly into the database. User-created records must be inserted into the `_cris` tables to ensure the proper data flow across the `_edits` and unified tables.
+The VZE makes this possible by allowing users to insert crash, unit, and people records directly into the database. User-created records must be inserted into the `_cris` tables to ensure proper data flow into the unified tables, as the database expects that every single record that exists in the unified tables exists in the `_cris` tables and vice versa.
 
 User-created records do not have a `cris_crash_id` column. Because `cris_crash_id` is central to the VZE for searching and navigating to crash pages, we use a generated column, `crashes.record_locator`, as a pseudo-crash ID. The `record_locator` column is generated as either `T<crashes.id>` (for temp records) or `<cris_crash_id>` (for CRIS records), and is rendered throughout the VZE.
 
@@ -258,8 +256,8 @@ See also the guidance for creating a new geospatial layer in the common maintanc
 Follow these steps to add a new column to the database that will be sourced from CRIS. See [PR #1546](https://github.com/cityofaustin/vision-zero/pull/1546) as an example.
 
 1. Remember that all database operations should be deployed through migrations. See the [development and deployment](#development-and-deployment) docs.
-2. Add the new column to all three tables of the given record type. For example, if this is a crash-level column, add the column to the `crashes_cris`, `crashes_edits`, and `crashes` tables.
-3. Modify the trigger function that inserts new rows into the `_edits` and unified table that corresponds to the record type you are modifying: either the `crashes_cris_insert_rows()`, `units_cris_insert_rows()`, ot the `people_cris_insert_rows()` function. Locate the part of the function that selects all values from the new `_cris` record and inserts into the unified table. This should be obvious, because all column names are listed in this function. Add your new column name to function accordingly.
+2. Add the new column to both tables of the given record type. For example, if this is a crash-level column, add the column to the `crashes_cris` and `crashes` tables.
+3. Modify the trigger function that inserts new rows into the unified table that corresponds to the record type you are modifying: either the `crashes_cris_insert_rows()`, `units_cris_insert_rows()`, or the `people_cris_insert_rows()` function. Locate the part of the function that inserts into the unified table and add your column name to end of it, then locate the part that selects all values from the new `_cris` record and do the same. **Make sure that the order of the columns in the insert and select parts of the function match up**
 4. Next, you will need to add your new column to the `_column_metadata` table, so that the CRIS import ETL is aware that this column should be included in imports. For example:
 
 ```sql
@@ -284,9 +282,9 @@ Follow these steps to add a custom, non-CRIS column to `crashes`, `units`, or `p
 
 1. Remember that all database operations should be deployed through migrations. See the [development and deployment](#development-and-deployment) docs.
 
-2. Add your new column to the `_edits` and unified table for the given record type. For example, if this is a crash-level column, add the column to the `crashes_edits` and `crashes` tables.
+2. Add your new column to the unified table for the given record type. For example, if this is a crash-level column, add the column to the `crashes` table.
 
-3. Unlike adding a CRIS-managed column, you do not need to modify any trigger functions, because the `_edits` trigger functions (`crashes_edits_update`, `units_edits_update`, `people_edits_update`) do not rely on hard-coded column names.
+3. Unlike adding a CRIS-managed column, you do not need to modify any trigger functions.
 
 4. Next, add your new column to the `_column_metadata` table and indicate that it should _not_ be imported by CRIS.
 
@@ -324,7 +322,7 @@ Todo: see the helper script readme.
 
 ### Debugging record triggers
 
-The various record insert and update trigger functions which manage the `_cris` and `_edits` data flows have debugging statements embedded. Debug messaging can be enabled on a per-client-session basis by executing the command `set client_min_messages to debug;` in your SQL client. Your SQL client will now log debug messages when you use it to make record inserts and updates.
+The various record insert and update trigger functions which manage the `_cris` to unified table data flows have debugging statements embedded. Debug messaging can be enabled on a per-client-session basis by executing the command `set client_min_messages to debug;` in your SQL client. Your SQL client will now log debug messages when you use it to make record inserts and updates.
 
 ### Parsing change log data
 
