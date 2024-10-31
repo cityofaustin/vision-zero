@@ -11,6 +11,8 @@ import {
   FaGaugeHigh,
   FaMap,
   FaAngleRight,
+  FaRightToBracket,
+  FaRightFromBracket,
 } from "react-icons/fa6";
 import SideBarListItem from "./SideBarListItem";
 
@@ -88,10 +90,41 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
                 label="Locations"
                 href="/locations"
               />
-              {!isLoadingAuth && !errorAuth && !user && (
-                <Button onClick={() => loginWithRedirect()}>Log in</Button>
-              )}
-              {user && <Button onClick={() => logout()}>Log out</Button>}
+
+              {/* login / logout button  */}
+              <ListGroup.Item
+                className={`mx-1 bg-dark fs-5 my-1`}
+                style={{
+                  whiteSpace: "nowrap",
+                  border: "none",
+                }}
+                action
+              >
+                {!isLoadingAuth && !errorAuth && !user && (
+                  <Button
+                    variant="outline-primary"
+                    size="sm"
+                    onClick={() => loginWithRedirect()}
+                  >
+                    <span>
+                      <FaRightToBracket />
+                    </span>
+                    {!isCollapsed && <span className="ms-2">Sign in</span>}
+                  </Button>
+                )}
+                {user && (
+                  <Button
+                    variant="outline-primary"
+                    size="sm"
+                    onClick={() => logout()}
+                  >
+                    <span>
+                      <FaRightFromBracket />
+                    </span>
+                    {!isCollapsed && <span className="ms-2">Sign out</span>}
+                  </Button>
+                )}
+              </ListGroup.Item>
             </ListGroup>
           </div>
         </div>
