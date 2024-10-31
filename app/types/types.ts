@@ -13,22 +13,29 @@ export interface LookupTableOption {
 
 export type InputType = "text" | "number" | "yes_no" | "select";
 
-export interface HasuraLookupTableData {
-  [key: string]: LookupTableOption[];
-}
-
-export type TableColumn<T> = {
-  key: keyof T;
+/**
+ * The base definition of a database column referenced by our app — where
+ * <T> should be one of our core record types (Crash, Person, etc)
+ */
+export type ColBaseDef<T> = {
+  /**
+   * the column name in the database
+   */
+  name: keyof T;
+  /**
+   * label which will be rendered wherever this value is displayed in the app
+   */
   label: string;
+};
+
+export interface ColDataCardDef<T> extends ColBaseDef<T> {
   editable?: boolean;
   inputType?: InputType;
   lookupTable?: LookupTableDef;
   relationshipName?: keyof T;
-  formatter?: (value: unknown) => ReactNode;
-};
-
-export interface TableColumnIndex<T> {
-  [key: string]: TableColumn<T>;
+  valueGetter?: (record: T, column: ColDataCardDef<T>) => any;
+  valueFormatter?: (value: any, record: T, column: ColDataCardDef<T>) => string;
+  valueRenderer?: (record: T, column: ColDataCardDef<T>) => ReactNode;
 }
 
 export interface MutationVariables extends Variables {

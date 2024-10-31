@@ -17,10 +17,9 @@ import { KeyedMutator } from "swr";
 import {
   Crash,
   InputType,
-  TableColumn,
+  ColDataCardDef,
   LookupTableDef,
   LookupTableOption,
-  HasuraLookupTableData,
 } from "@/types/types";
 
 /**
@@ -72,25 +71,32 @@ const useLookupQuery = (lookupTableDef: LookupTableDef | undefined) =>
   }, [lookupTableDef]);
 
 /**
- * Render a static field value (e.g., in a table cell)
- * -- todo: this will be used by the table component as well
- * -- todo: this needs to be updated + reconsidered based
- * on formatters that are avail. also see getRecordValue
- * and of course col.renderer
+ * Render a static column value (e.g., in a table cell)
+ * 
+ * Todo: this should be moved to a util
  */
-const renderValue = (crash: Crash, col: TableColumn<Crash>) => {
-  if (col.relationshipName) {
-    const relatedObject = crash[col.relationshipName] as LookupTableOption;
+const renderValue = <T extends {}>(record: T, column: ColDataCardDef<T>) => {
+  if (column.valueRenderer) {
+    return column.valueRenderer(record, column);
+  }
+  // todo: these should probably be valueFormatter's? 😵‍💫
+  if (column.relationshipName) {
+    const relatedObject = record[column.relationshipName] as LookupTableOption;
     return relatedObject?.label;
   }
-  if (col.inputType === "yes_no") {
-    const value = crash[col.key];
+  if (column.inputType === "yes_no") {
+    const value = record[column.name];
     if (value === null) return "";
     return value ? "Yes" : "No";
   }
-  return col.formatter
-    ? col.formatter(getRecordValue(crash, col))
-    : String(crash[col.key] || "");
+  if (column.valueFormatter) {
+    return column.valueFormatter(
+      getRecordValue(record, column),
+      record,
+      column
+    );
+  }
+  return String(record[column.name] || "");
 };
 
 /**
@@ -105,22 +111,25 @@ export default function CrashDataCard({
   refetch,
 }: {
   crash: Crash;
-  columns: TableColumn<Crash>[];
+  columns: ColDataCardDef<Crash>[];
   isValidating: boolean;
   title: string;
   refetch: KeyedMutator<{ crashes: Crash[] }>;
 }) {
   // todo: loading state, error state
   // todo: handling of null/undefined values in select input
-  const [editColumn, setEditColumn] = useState<TableColumn<Crash> | null>(null);
+  const [editColumn, setEditColumn] = useState<ColDataCardDef<Crash> | null>(
+    null
+  );
   const { mutate, loading: isMutating } = useMutation(UPDATE_CRASH);
   const [query, typeName] = useLookupQuery(editColumn?.lookupTable);
-  const { data: lookupData, isLoading: isLoadingLookups } =
-    useQuery<HasuraLookupTableData>({
-      query,
-      // we don't need to refetch lookup table options
-      options: { revalidateIfStale: false },
-    });
+  const { data: lookupData, isLoading: isLoadingLookups } = useQuery<{
+    [key: string]: LookupTableOption[];
+  }>({
+    query,
+    // we don't need to refetch lookup table options
+    options: { revalidateIfStale: false },
+  });
 
   const selectOptions = lookupData?.[typeName];
 
@@ -128,7 +137,7 @@ export default function CrashDataCard({
     await mutate({
       id: crash.id,
       updates: {
-        [editColumn?.key as string]: value,
+        [editColumn?.name as string]: value,
       },
     });
     await refetch();
@@ -144,10 +153,10 @@ export default function CrashDataCard({
         <Table striped hover>
           <tbody>
             {columns.map((col) => {
-              const isEditingThisColumn = col.key === editColumn?.key;
+              const isEditingThisColumn = col.name === editColumn?.name;
               return (
                 <tr
-                  key={col.key}
+                  key={col.name}
                   style={{ cursor: col.editable ? "pointer" : "auto" }}
                   onClick={() => {
                     if (!col.editable) {

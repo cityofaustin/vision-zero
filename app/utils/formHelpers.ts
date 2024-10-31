@@ -1,4 +1,4 @@
-import { TableColumn, LookupTableOption } from "@/types/types";
+import { ColDataCardDef, LookupTableOption } from "@/types/types";
 
 /**
  * Convert a record value to a string so that it can be used as the initial value
@@ -6,7 +6,7 @@ import { TableColumn, LookupTableOption } from "@/types/types";
  */
 export const valueToString = (
   value: unknown,
-  col: TableColumn<any>
+  col: ColDataCardDef<any>
 ): string => {
   if (col.inputType === "yes_no") {
     return valueToBoolString(value);
@@ -68,14 +68,22 @@ const renderYesNoString = (value: unknown): string => {
 const renderString = (value: unknown) => String(value || "");
 
 /**
- * Generic accessor function that returns a record property or it's related value
+ * Generic accessor function that returns a record property. It uses the
+ * column's valueGetter (if present) otherwise record[column.name];
  */
-export const getRecordValue = <T>(record: T, col: TableColumn<T>): unknown => {
-  if (col.relationshipName) {
-    const relatedObject = record[col.relationshipName] as LookupTableOption;
-    return relatedObject?.id;
+export const getRecordValue = <T>(
+  record: T,
+  column: ColDataCardDef<T>
+): unknown => {
+  if (column.valueGetter) {
+    return column.valueGetter(record, column);
   }
-  return record[col.key];
+  // todo: this should be predefined valuegetter
+  //   if (column.relationshipName) {
+  //     const relatedObject = record[column.relationshipName] as LookupTableOption;
+  //     return relatedObject?.id;
+  //   }
+  return record[column.name];
 };
 
 /**
@@ -85,7 +93,7 @@ export const getRecordValue = <T>(record: T, col: TableColumn<T>): unknown => {
  * on formatters that are avail. also see getRecordValue
  * and of course col.renderer
  */
-// export const renderValue = (value: unknown, col: TableColumn<any>) => {
+// export const renderValue = (value: unknown, col: ColDataCardDef<any>) => {
 //   throw `agh this is messed uppp`;
 //   if (col.inputType === "yes_no") {
 //     return renderYesNoString(value);

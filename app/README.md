@@ -40,3 +40,18 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 - location details
 - create crash record
 - upload records
+
+
+## mirror MUI datagrid
+
+https://mui.com/x/react-data-grid/column-definition/#rendering-cells
+
+Rendering cells
+
+By default, the Data Grid renders the value as a string in the cell. It resolves the rendered output in the following order:
+
+renderCell() => ReactElement
+valueFormatter() => string
+valueGetter() => string
+row[field]
+

@@ -1,4 +1,3 @@
-import { TableColumn } from "@/types/types";
 import { ALL_CRASH_COLUMNS } from "./crashColumns";
 
 /** Construct card-specific arrays of columns */
