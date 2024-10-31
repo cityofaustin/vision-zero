@@ -16,13 +16,6 @@ array_relationships:
         table:
           name: units_cris
           schema: public
-  - name: unitsEditsByVehDamageSeverity2Id
-    using:
-      foreign_key_constraint_on:
-        column: veh_damage_severity2_id
-        table:
-          name: units_edits
-          schema: public
   - name: unitsUnifiedsByVehDamageSeverity2Id
     using:
       foreign_key_constraint_on:
@@ -36,11 +29,4 @@ array_relationships:
         column: veh_damage_severity1_id
         table:
           name: units_cris
-          schema: public
-  - name: units_edits
-    using:
-      foreign_key_constraint_on:
-        column: veh_damage_severity1_id
-        table:
-          name: units_edits
           schema: public
