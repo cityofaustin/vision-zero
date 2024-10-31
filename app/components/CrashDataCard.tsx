@@ -8,6 +8,7 @@ import { gql } from "graphql-request";
 import { UPDATE_CRASH } from "@/queries/crash";
 import {
   getRecordValue,
+  renderValue,
   stringToBoolNullable,
   trimStringNullable,
   stringToNumberNullable,
@@ -69,35 +70,6 @@ const useLookupQuery = (lookupTableDef: LookupTableDef | undefined) =>
       typeName,
     ];
   }, [lookupTableDef]);
-
-/**
- * Render a static column value (e.g., in a table cell)
- * 
- * Todo: this should be moved to a util
- */
-const renderValue = <T extends {}>(record: T, column: ColDataCardDef<T>) => {
-  if (column.valueRenderer) {
-    return column.valueRenderer(record, column);
-  }
-  // todo: these should probably be valueFormatter's? 😵‍💫
-  if (column.relationshipName) {
-    const relatedObject = record[column.relationshipName] as LookupTableOption;
-    return relatedObject?.label;
-  }
-  if (column.inputType === "yes_no") {
-    const value = record[column.name];
-    if (value === null) return "";
-    return value ? "Yes" : "No";
-  }
-  if (column.valueFormatter) {
-    return column.valueFormatter(
-      getRecordValue(record, column),
-      record,
-      column
-    );
-  }
-  return String(record[column.name] || "");
-};
 
 /**
  * Transforms the db value into the form input initial value

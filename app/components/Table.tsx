@@ -1,11 +1,14 @@
 import BsTable from "react-bootstrap/Table";
 import { ColDataCardDef } from "@/types/types";
-import { getRecordValue } from "@/utils/formHelpers";
-interface TableProps<T> {
+import { renderValue } from "@/utils/formHelpers";
+
+export default function Table<T extends Record<string, unknown>>({
+  rows,
+  columns,
+}: {
   rows: T[];
   columns: ColDataCardDef<T>[];
-}
-export default function Table<T>({ rows, columns }: TableProps<T>) {
+}) {
   if (!rows) return <p>Loading or error...</p>;
 
   return (
@@ -21,11 +24,7 @@ export default function Table<T>({ rows, columns }: TableProps<T>) {
         {rows.map((row, i) => (
           <tr key={i}>
             {columns.map((col) => (
-              <td key={String(col.name)}>
-                {col?.formatter
-                  ? col.formatter(getRecordValue(row, col))
-                  : String(getRecordValue(row, col))}
-              </td>
+              <td key={String(col.name)}>{renderValue(row, col)}</td>
             ))}
           </tr>
         ))}

@@ -17,7 +17,7 @@ export type InputType = "text" | "number" | "yes_no" | "select";
  * The base definition of a database column referenced by our app — where
  * <T> should be one of our core record types (Crash, Person, etc)
  */
-export type ColBaseDef<T> = {
+export type ColBaseDef<T extends Record<string, unknown>> = {
   /**
    * the column name in the database
    */
@@ -28,7 +28,8 @@ export type ColBaseDef<T> = {
   label: string;
 };
 
-export interface ColDataCardDef<T> extends ColBaseDef<T> {
+export interface ColDataCardDef<T extends Record<string, unknown>>
+  extends ColBaseDef<T> {
   editable?: boolean;
   inputType?: InputType;
   lookupTable?: LookupTableDef;
@@ -51,7 +52,7 @@ export interface LatLon {
   longitude: number | null;
 }
 
-export interface CrashListCrash {
+export interface CrashListCrash extends Record<string, unknown> {
   id: number;
   cris_crash_id: number | null;
   record_locator: string;
@@ -81,7 +82,7 @@ export interface ChangeLogEntryEnriched extends ChangeLogEntry {
   affected_fields: string[];
 }
 
-export interface Crash {
+export interface Crash extends Record<string, unknown> {
   active_school_zone_fl: number | null;
   address_primary: string | null;
   address_secondary: string | null;

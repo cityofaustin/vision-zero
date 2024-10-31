@@ -71,7 +71,7 @@ const renderString = (value: unknown) => String(value || "");
  * Generic accessor function that returns a record property. It uses the
  * column's valueGetter (if present) otherwise record[column.name];
  */
-export const getRecordValue = <T>(
+export const getRecordValue = <T extends Record<string, unknown>>(
   record: T,
   column: ColDataCardDef<T>
 ): unknown => {
@@ -87,16 +87,35 @@ export const getRecordValue = <T>(
 };
 
 /**
- * Render a static field value (e.g., in a table cell)
- * -- todo: this will be used by the table component as well
- * -- todo: this needs to be updated + reconsidered based
- * on formatters that are avail. also see getRecordValue
- * and of course col.renderer
+ * Render a static column value (e.g., in a table cell)
+ *
+ * Todo: this should be moved to a util
  */
-// export const renderValue = (value: unknown, col: ColDataCardDef<any>) => {
-//   throw `agh this is messed uppp`;
-//   if (col.inputType === "yes_no") {
-//     return renderYesNoString(value);
-//   }
-//   return col.renderer ? col.renderer(value) : String(value || "");
-// };
+export const renderValue = <T extends {}>(
+  record: T,
+  column: ColDataCardDef<T>
+) => {
+  if (column.valueRenderer) {
+    return column.valueRenderer(record, column);
+  }
+  if (column.valueFormatter) {
+    return column.valueFormatter(
+      getRecordValue(record, column),
+      record,
+      column
+    );
+  }
+  // todo: these should probably be valueFormatter's? 😵‍💫
+  if (column.relationshipName) {
+    const relatedObject = record[column.relationshipName] as LookupTableOption;
+    return relatedObject?.label;
+  }
+
+  if (column.inputType === "yes_no") {
+    const value = record[column.name];
+    if (value === null) return "";
+    return value ? "Yes" : "No";
+  }
+
+  return String(record[column.name] || "");
+};
