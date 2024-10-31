@@ -138,13 +138,9 @@ export const LOCATION_MAP_CONFIG = {
   layers: LAYERS,
 };
 
-/** Source and layer to display NearMap aerials with street labels on top.
- * Localhost and deploy preview URLs are not on the NearMap tile API key allow list.
- * To test locally, this returns a mock layer to test the layer ordering.
- * Adjust the opacity in the mockPolygonDataLayer paint object for further testing.
- * @param {string} beforeId - layer id to place these layers before
+/**
+ * Source and layer to display NearMap aerials with street labels on top
  */
-
 export const LabeledAerialSourceAndLayer = ({
   beforeId,
 }: {
@@ -219,9 +215,7 @@ export const CrashMap = ({
           latitude={editCoordinates.latitude || 0}
           longitude={editCoordinates.longitude || 0}
           color={isEditing ? "red" : undefined}
-        >
-          {/* <Pin size={40} color={"warning"} /> */}
-        </Marker>
+        />
       )}
       {/* add nearmap raster source and style */}
       <LabeledAerialSourceAndLayer />
