@@ -1,5 +1,6 @@
 import { ALL_CRASH_COLUMNS } from "./crashColumns";
 
+
 /** Construct card-specific arrays of columns */
 export const crashDataCards = {
   summary: [

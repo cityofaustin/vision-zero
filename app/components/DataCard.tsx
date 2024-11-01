@@ -8,7 +8,7 @@ import { gql } from "graphql-request";
 import { UPDATE_CRASH } from "@/queries/crash";
 import {
   getRecordValue,
-  renderValue,
+  renderColumnValue,
   stringToBoolNullable,
   trimStringNullable,
   stringToNumberNullable,
@@ -16,7 +16,6 @@ import {
 } from "@/utils/formHelpers";
 import { KeyedMutator } from "swr";
 import {
-  Crash,
   InputType,
   ColDataCardDef,
   LookupTableDef,
@@ -71,28 +70,27 @@ const useLookupQuery = (lookupTableDef: LookupTableDef | undefined) =>
     ];
   }, [lookupTableDef]);
 
-/**
- * Transforms the db value into the form input initial value
- */
+interface DataCardProps<T extends Record<string, unknown>> {
+  record: T;
+  columns: ColDataCardDef<T>[];
+  isValidating: boolean;
+  title: string;
+  onSaveCallback: () => Promise<void>;
+}
 
-export default function CrashDataCard({
-  crash,
+/**
+ * Generic component which renders editable fields in a Card
+ */
+export default function DataCard<T extends Record<string, unknown>>({
+  record,
   columns,
   isValidating,
   title,
-  refetch,
-}: {
-  crash: Crash;
-  columns: ColDataCardDef<Crash>[];
-  isValidating: boolean;
-  title: string;
-  refetch: KeyedMutator<{ crashes: Crash[] }>;
-}) {
+  onSaveCallback,
+}: DataCardProps<T>) {
   // todo: loading state, error state
   // todo: handling of null/undefined values in select input
-  const [editColumn, setEditColumn] = useState<ColDataCardDef<Crash> | null>(
-    null
-  );
+  const [editColumn, setEditColumn] = useState<ColDataCardDef<T> | null>(null);
   const { mutate, loading: isMutating } = useMutation(UPDATE_CRASH);
   const [query, typeName] = useLookupQuery(editColumn?.lookupTable);
   const { data: lookupData, isLoading: isLoadingLookups } = useQuery<{
@@ -107,12 +105,12 @@ export default function CrashDataCard({
 
   const onSave = async (value: unknown) => {
     await mutate({
-      id: crash.id,
+      id: record.id,
       updates: {
         [editColumn?.name as string]: value,
       },
     });
-    await refetch();
+    await onSaveCallback();
     setEditColumn(null);
   };
 
@@ -128,7 +126,7 @@ export default function CrashDataCard({
               const isEditingThisColumn = col.name === editColumn?.name;
               return (
                 <tr
-                  key={col.name}
+                  key={String(col.name)}
                   style={{ cursor: col.editable ? "pointer" : "auto" }}
                   onClick={() => {
                     if (!col.editable) {
@@ -142,14 +140,16 @@ export default function CrashDataCard({
                   <td style={{ textWrap: "nowrap" }} className="fw-bold">
                     {col.label}
                   </td>
-                  {!isEditingThisColumn && <td>{renderValue(crash, col)}</td>}
+                  {!isEditingThisColumn && (
+                    <td>{renderColumnValue(record, col)}</td>
+                  )}
                   {isEditingThisColumn && (
                     <td>
                       {isLoadingLookups && <Spinner size="sm" />}
                       {!isLoadingLookups && (
                         <CrashDataCardInput
                           initialValue={valueToString(
-                            getRecordValue(crash, col),
+                            getRecordValue(record, col),
                             col
                           )}
                           onSave={(value: string) =>

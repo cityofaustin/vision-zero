@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useRouter } from "next/router";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
@@ -10,7 +10,7 @@ import { useQuery, useMutation } from "@/utils/graphql";
 import AppBreadCrumb from "@/components/AppBreadCrumb";
 import CrashHeader from "@/components/CrashHeader";
 import CrashDiagramCard from "@/components/CrashDiagramCard";
-import CrashDataCard from "@/components/CrashDataCard";
+import DataCard from "@/components/DataCard";
 import CrashChangeLog from "@/components/CrashChangeLog";
 import { crashDataCards } from "@/configs/crashDataCard";
 import { Crash, LatLon } from "@/types/types";
@@ -33,6 +33,10 @@ export default function CrashDetailsPage() {
   });
 
   const { mutate, loading: isMutating } = useMutation(UPDATE_CRASH);
+
+  const onSaveCallback = useCallback(async () => {
+    await refetch();
+  }, [refetch]);
 
   if (!data || !data?.crashes?.[0]) {
     // todo: 404 page
@@ -116,50 +120,50 @@ export default function CrashDetailsPage() {
       </Row>
       <Row>
         <Col sm={12} md={6} lg={4} className="mb-3">
-          <CrashDataCard
-            crash={crash}
+          <DataCard<Crash>
+            record={crash}
             isValidating={isValidating}
             title="Summary"
             columns={crashDataCards.summary}
-            refetch={refetch}
+            onSaveCallback={onSaveCallback}
           />
         </Col>
         <Col sm={12} md={6} lg={4} className="mb-3">
-          <CrashDataCard
-            crash={crash}
+          <DataCard<Crash>
+            record={crash}
             isValidating={isValidating}
             title="Flags"
             columns={crashDataCards.flags}
-            refetch={refetch}
+            onSaveCallback={onSaveCallback}
           />
         </Col>
         <Col sm={12} md={6} lg={4} className="mb-3">
-          <CrashDataCard
-            crash={crash}
+          <DataCard<Crash>
+            record={crash}
             isValidating={isValidating}
             title="Other"
             columns={crashDataCards.other}
-            refetch={refetch}
+            onSaveCallback={onSaveCallback}
           />
         </Col>
       </Row>
       <Row>
         <Col sm={12} md={6} lg={4} className="mb-3">
-          <CrashDataCard
-            crash={crash}
+          <DataCard<Crash>
+            record={crash}
             isValidating={isValidating}
             title="Primary address"
             columns={crashDataCards.address}
-            refetch={refetch}
+            onSaveCallback={onSaveCallback}
           />
         </Col>
         <Col sm={12} md={6} lg={4} className="mb-3">
-          <CrashDataCard
-            crash={crash}
+          <DataCard<Crash>
+            record={crash}
             isValidating={isValidating}
             title="Secondary address"
             columns={crashDataCards.address_secondary}
-            refetch={refetch}
+            onSaveCallback={onSaveCallback}
           />
         </Col>
       </Row>

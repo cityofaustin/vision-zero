@@ -22,7 +22,7 @@ export const stringToBoolNullable = (value: string): boolean | null =>
   value ? value === "true" : null;
 
 /**
- * Convert null to an empty string and anything else to "true" or "false.
+ * Convert null to an empty string and anything else to "true" or "false".
  *
  * Use this as the input value handler for yes/no select inputs
  */
@@ -63,9 +63,18 @@ const renderYesNoString = (value: unknown): string => {
 };
 
 /**
- * Render any value as a string, coercing falsey values to ""
+ * Return the `label` column from a related lookup table
  */
-const renderString = (value: unknown) => String(value || "");
+export const renderLookupLabel = <T extends Record<string, unknown>>(
+  record: T,
+  column: ColDataCardDef<T>
+): string => {
+  if (column.relationshipName) {
+    const relatedObject = record[column.relationshipName] as LookupTableOption;
+    return relatedObject?.label;
+  }
+  return "";
+};
 
 /**
  * Generic accessor function that returns a record property. It uses the
@@ -78,20 +87,20 @@ export const getRecordValue = <T extends Record<string, unknown>>(
   if (column.valueGetter) {
     return column.valueGetter(record, column);
   }
-  // todo: this should be predefined valuegetter
-  //   if (column.relationshipName) {
-  //     const relatedObject = record[column.relationshipName] as LookupTableOption;
-  //     return relatedObject?.id;
-  //   }
   return record[column.name];
 };
 
 /**
- * Render a static column value (e.g., in a table cell)
+ * Render a column's value (e.g., in a table cell).
  *
- * Todo: this should be moved to a util
+ * The rendered output resolves in the following order:
+ *
+ * column.valueRenderer() => ReactElement
+ * column.valueFormatter() => string
+ * column.valueGetter() => string
+ * record[column.name]
  */
-export const renderValue = <T extends {}>(
+export const renderColumnValue = <T extends Record<string, unknown>>(
   record: T,
   column: ColDataCardDef<T>
 ) => {
@@ -107,15 +116,12 @@ export const renderValue = <T extends {}>(
   }
   // todo: these should probably be valueFormatter's? 😵‍💫
   if (column.relationshipName) {
-    const relatedObject = record[column.relationshipName] as LookupTableOption;
-    return relatedObject?.label;
+    return renderLookupLabel(record, column);
   }
 
   if (column.inputType === "yes_no") {
-    const value = record[column.name];
-    if (value === null) return "";
-    return value ? "Yes" : "No";
+    return renderYesNoString(record[column.name]);
   }
 
-  return String(record[column.name] || "");
+  return String(getRecordValue(record, column) || "");
 };

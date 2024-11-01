@@ -13,6 +13,7 @@ export interface LookupTableOption {
 
 export type InputType = "text" | "number" | "yes_no" | "select";
 
+
 /**
  * The base definition of a database column referenced by our app — where
  * <T> should be one of our core record types (Crash, Person, etc)
@@ -81,6 +82,8 @@ export interface ChangeLogEntryEnriched extends ChangeLogEntry {
   diffs: ChangeLogDiff[];
   affected_fields: string[];
 }
+
+
 
 export interface Crash extends Record<string, unknown> {
   active_school_zone_fl: number | null;

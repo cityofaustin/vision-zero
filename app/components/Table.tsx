@@ -1,6 +1,6 @@
 import BsTable from "react-bootstrap/Table";
 import { ColDataCardDef } from "@/types/types";
-import { renderValue } from "@/utils/formHelpers";
+import { renderColumnValue } from "@/utils/formHelpers";
 
 export default function Table<T extends Record<string, unknown>>({
   rows,
@@ -24,7 +24,7 @@ export default function Table<T extends Record<string, unknown>>({
         {rows.map((row, i) => (
           <tr key={i}>
             {columns.map((col) => (
-              <td key={String(col.name)}>{renderValue(row, col)}</td>
+              <td key={String(col.name)}>{renderColumnValue(row, col)}</td>
             ))}
           </tr>
         ))}
