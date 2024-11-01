@@ -89,7 +89,7 @@ export const GET_CRASH = gql`
         cris_fatality_count
         law_enf_fatality_count
       }
-      units {
+      units(order_by: { unit_nbr: asc }) {
         id
         unit_nbr
         veh_mod_year
