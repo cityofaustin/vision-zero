@@ -1,5 +1,6 @@
 -- public.crashes_list_view source
 
+-- recreating this view to correct the is manual geocode column
 CREATE OR REPLACE VIEW public.crashes_list_view
 AS WITH geocode_status AS (
          SELECT cris.id,
