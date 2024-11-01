@@ -2,13 +2,12 @@
 
 -- recreating this view to correct the is manual geocode column
 CREATE OR REPLACE VIEW public.crashes_list_view
-AS WITH geocode_status AS (
-         SELECT cris.id,
-            unified.latitude IS NOT NULL AND unified.latitude IS DISTINCT FROM cris.latitude OR unified.longitude IS NOT NULL AND unified.longitude IS DISTINCT FROM cris.longitude AS is_manual_geocode
+AS WITH geocode_status AS (SELECT cris.id,
+(unified.latitude IS NOT NULL AND unified.latitude IS DISTINCT FROM cris.latitude) OR (unified.longitude IS NOT NULL AND unified.longitude IS DISTINCT FROM cris.longitude) AS is_manual_geocode
            FROM crashes_cris cris
              LEFT JOIN crashes unified ON cris.id = unified.id
         )
- SELECT crashes.id,
+SELECT crashes.id,
     crashes.cris_crash_id,
     crashes.record_locator,
     crashes.case_id,
