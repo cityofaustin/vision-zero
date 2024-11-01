@@ -31,12 +31,12 @@ npm run dev
 
 6. Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-## This app vs VZE
+## This app vs the old VZE
 
-- Create-React-App -> NextJS
-- Javascript -> Typescript
-- CoreUI + reactstrap -> react-bootstrap
-- Apollo Client -> SWR + graphql-request
+- Create-React-App ➡️ NextJS
+- Javascript ➡️ Typescript
+- CoreUI + reactstrap ➡️ react-bootstrap
+- Apollo Client ➡️ SWR + graphql-request
 
 ## Todo
 
