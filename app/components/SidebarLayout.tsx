@@ -11,6 +11,7 @@ import {
   FaGaugeHigh,
   FaMap,
   FaAngleRight,
+  FaAngleLeft,
   FaRightToBracket,
   FaRightFromBracket,
 } from "react-icons/fa6";
@@ -56,15 +57,17 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
           }`}
         >
           <div className="d-flex flex-column h-100">
-            <div className="d-flex justify-content-end">
+            <div>
               <Button
                 onClick={toggleSidebar}
                 variant="dark"
-                className={`text-secondary sidebar-toggle-${
-                  isCollapsed ? "closed" : "open"
-                }`}
+                className="w-100 text-secondary"
               >
-                <FaAngleRight />
+                <FaAngleRight
+                  className={`sidebar-toggle-${
+                    isCollapsed ? "closed" : "open"
+                  }`}
+                />
               </Button>
             </div>
 
@@ -93,12 +96,11 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
 
               {/* login / logout button  */}
               <ListGroup.Item
-                className={`mx-1 bg-dark fs-5 my-1`}
+                className="mx-1 bg-dark fs-5 my-1"
                 style={{
                   whiteSpace: "nowrap",
                   border: "none",
                 }}
-                action
               >
                 {!isLoadingAuth && !errorAuth && !user && (
                   <Button

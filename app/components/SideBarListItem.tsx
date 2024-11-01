@@ -20,7 +20,7 @@ export default function SideBarListItem({
   return (
     <ListGroup.Item
       className={`mx-2 bg-dark fs-5 my-1 ${
-        isCurrentPage ? "text-info" : "text-white"
+        isCurrentPage ? "text-white" : "text-secondary"
       }`}
       style={{ cursor: "pointer", whiteSpace: "nowrap", border: "none" }}
       action
