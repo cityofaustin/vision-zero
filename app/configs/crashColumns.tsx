@@ -1,7 +1,9 @@
 import { Crash, ColDataCardDef } from "@/types/types";
 import { formatDateTime } from "@/utils/formatters";
 
-export const ALL_CRASH_COLUMNS: { [name: string]: ColDataCardDef<Crash> } = {
+export const ALL_CRASH_COLUMNS: {
+  [name: string]: ColDataCardDef<Crash>;
+} = {
   active_school_zone_fl: {
     name: "active_school_zone_fl",
     label: "Active school zone",

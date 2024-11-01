@@ -13,7 +13,6 @@ export interface LookupTableOption {
 
 export type InputType = "text" | "number" | "yes_no" | "select";
 
-
 /**
  * The base definition of a database column referenced by our app — where
  * <T> should be one of our core record types (Crash, Person, etc)
@@ -83,8 +82,13 @@ export interface ChangeLogEntryEnriched extends ChangeLogEntry {
   affected_fields: string[];
 }
 
-
-
+/**
+ * Primary interface for crash records
+ *
+ * todo: make all non-required props optional
+ * todo: add type guards for non-nullable fields (e.g. with Zod)?
+ * todo: use graphql-codegen for these?
+ */
 export interface Crash extends Record<string, unknown> {
   active_school_zone_fl: number | null;
   address_primary: string | null;
@@ -138,4 +142,29 @@ export interface Crash extends Record<string, unknown> {
   updated_by: string | null;
   wthr_cond_id: number | null;
   change_logs: ChangeLogEntry[];
+  units: Unit[];
+}
+
+/**
+ * Primary interface for unit records
+ *
+ */
+export interface Unit extends Record<string, unknown> {
+  id: number;
+  contrib_factr: LookupTableOption;
+  contrib_factr_1_id: number | null;
+  unit_nbr: number | null;
+  veh_body_styl: LookupTableOption;
+  veh_body_styl_id: number | null;
+  veh_make: LookupTableOption;
+  veh_make_id: number | null;
+  veh_mod: LookupTableOption;
+  veh_mod_id: number | null;
+  veh_mod_year: number | null;
+  unit_desc: LookupTableOption;
+  unit_desc_id: number | null;
+  trvl_dir: LookupTableOption;
+  veh_trvl_dir_id: number | null;
+  movt: LookupTableOption;
+  movement_id: number | null;
 }

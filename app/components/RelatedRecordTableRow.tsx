@@ -1,0 +1,111 @@
+import { useState } from "react";
+import Spinner from "react-bootstrap/Spinner";
+import CrashDataCardInput from "./DataCardInput";
+import { useMutation, useQuery, useLookupQuery } from "@/utils/graphql";
+import {
+  getRecordValue,
+  renderColumnValue,
+  valueToString,
+  handleFormValueOutput,
+} from "@/utils/formHelpers";
+import { ColDataCardDef, LookupTableOption } from "@/types/types";
+
+interface RelatedRecordTableRowProps<T extends Record<string, unknown>> {
+  record: T;
+  columns: ColDataCardDef<T>[];
+  mutation: string;
+  isValidating: boolean;
+  onSaveCallback: () => Promise<void>;
+}
+
+/**
+ * Generic component which renders editable fields in a Card
+ */
+export default function RelatedRecordTableRow<
+  T extends Record<string, unknown>
+>({
+  record,
+  columns,
+  mutation,
+  isValidating,
+  onSaveCallback,
+}: RelatedRecordTableRowProps<T>) {
+  // todo: loading state, error state
+  // todo: handling of null/undefined values in select input
+  const [editColumn, setEditColumn] = useState<ColDataCardDef<T> | null>(null);
+  const { mutate, loading: isMutating } = useMutation(mutation);
+  const [query, typeName] = useLookupQuery(editColumn?.lookupTable);
+  const { data: lookupData, isLoading: isLoadingLookups } = useQuery<{
+    [key: string]: LookupTableOption[];
+  }>({
+    query,
+    // we don't need to refetch lookup table options
+    options: { revalidateIfStale: false },
+  });
+
+  const selectOptions = lookupData?.[typeName];
+
+  const onSave = async (recordId: number, value: unknown) => {
+    await mutate({
+      id: recordId,
+      updates: {
+        [editColumn?.name as string]: value,
+      },
+    });
+    await onSaveCallback();
+    setEditColumn(null);
+  };
+
+  const onCancel = () => setEditColumn(null);
+
+  return (
+    <tr>
+      {columns.map((col) => {
+        const isEditingThisColumn = col.name === editColumn?.name;
+        return (
+          <td
+            key={String(col.name)}
+            style={{ cursor: col.editable ? "pointer" : "auto" }}
+            onClick={() => {
+              if (!col.editable) {
+                return;
+              }
+              if (!isEditingThisColumn) {
+                setEditColumn(col);
+              }
+            }}
+          >
+            {!isEditingThisColumn && renderColumnValue(record, col)}
+            {isEditingThisColumn && (
+              <>
+                {isLoadingLookups && <Spinner size="sm" />}
+                {!isLoadingLookups && (
+                  <CrashDataCardInput
+                    initialValue={valueToString(
+                      getRecordValue(record, col),
+                      col
+                    )}
+                    onSave={(value: string) =>
+                      onSave(
+                        Number(record.id),
+                        handleFormValueOutput(
+                          value,
+                          !!col.lookupTable,
+                          col.inputType
+                        )
+                      )
+                    }
+                    onCancel={onCancel}
+                    inputType={col.inputType}
+                    selectOptions={selectOptions}
+                    isMutating={isMutating || isValidating}
+                  />
+                )}
+              </>
+            )}
+          </td>
+        );
+      })}
+    </tr>
+  );
+}

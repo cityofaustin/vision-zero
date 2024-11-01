@@ -6,13 +6,16 @@ import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 import { CrashMap } from "@/components/CrashMap";
 import { GET_CRASH, UPDATE_CRASH } from "@/queries/crash";
+import { UPDATE_UNIT } from "@/queries/unit";
 import { useQuery, useMutation } from "@/utils/graphql";
 import AppBreadCrumb from "@/components/AppBreadCrumb";
 import CrashHeader from "@/components/CrashHeader";
 import CrashDiagramCard from "@/components/CrashDiagramCard";
 import DataCard from "@/components/DataCard";
+import RelatedRecordTable from "@/components/RelatedRecordTable";
 import CrashChangeLog from "@/components/CrashChangeLog";
 import { crashDataCards } from "@/configs/crashDataCard";
+import { unitRelatedRecordCols } from "@/configs/unitRelatedRecordTable";
 import { Crash, LatLon } from "@/types/types";
 
 export default function CrashDetailsPage() {
@@ -32,7 +35,7 @@ export default function CrashDetailsPage() {
     variables: { recordLocator },
   });
 
-  const { mutate, loading: isMutating } = useMutation(UPDATE_CRASH);
+  const { mutate: mutateCrash, loading: isMutatingCrash } = useMutation(UPDATE_CRASH);
 
   const onSaveCallback = useCallback(async () => {
     await refetch();
@@ -46,7 +49,7 @@ export default function CrashDetailsPage() {
   const crash = data.crashes[0];
 
   // todo: this won't scale?
-  const isLoadingAnything = isLoading || isMutating || isValidating;
+  const isLoadingAnything = isLoading || isMutatingCrash || isValidating;
 
   return (
     <>
@@ -79,7 +82,7 @@ export default function CrashDetailsPage() {
                       if (!isEditingCoordinates) {
                         setIsEditingCoordinates(true);
                       } else {
-                        await mutate({
+                        await mutateCrash({
                           id: crash.id,
                           updates: { ...editCoordinates },
                         });
@@ -125,6 +128,7 @@ export default function CrashDetailsPage() {
             isValidating={isValidating}
             title="Summary"
             columns={crashDataCards.summary}
+            mutation={UPDATE_CRASH}
             onSaveCallback={onSaveCallback}
           />
         </Col>
@@ -134,6 +138,7 @@ export default function CrashDetailsPage() {
             isValidating={isValidating}
             title="Flags"
             columns={crashDataCards.flags}
+            mutation={UPDATE_CRASH}
             onSaveCallback={onSaveCallback}
           />
         </Col>
@@ -143,6 +148,7 @@ export default function CrashDetailsPage() {
             isValidating={isValidating}
             title="Other"
             columns={crashDataCards.other}
+            mutation={UPDATE_CRASH}
             onSaveCallback={onSaveCallback}
           />
         </Col>
@@ -154,6 +160,7 @@ export default function CrashDetailsPage() {
             isValidating={isValidating}
             title="Primary address"
             columns={crashDataCards.address}
+            mutation={UPDATE_CRASH}
             onSaveCallback={onSaveCallback}
           />
         </Col>
@@ -163,6 +170,19 @@ export default function CrashDetailsPage() {
             isValidating={isValidating}
             title="Secondary address"
             columns={crashDataCards.address_secondary}
+            mutation={UPDATE_CRASH}
+            onSaveCallback={onSaveCallback}
+          />
+        </Col>
+      </Row>
+      <Row>
+        <Col sm={12} className="mb-3">
+          <RelatedRecordTable
+            records={crash.units}
+            isValidating={isValidating}
+            title="Units"
+            columns={unitRelatedRecordCols}
+            mutation={UPDATE_UNIT}
             onSaveCallback={onSaveCallback}
           />
         </Col>

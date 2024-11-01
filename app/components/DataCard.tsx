@@ -2,9 +2,8 @@ import { useState } from "react";
 import Card from "react-bootstrap/Card";
 import Spinner from "react-bootstrap/Spinner";
 import Table from "react-bootstrap/Table";
-import CrashDataCardInput from "./CrashDataCardInput";
+import DataCardInput from "./DataCardInput";
 import { useMutation, useQuery, useLookupQuery } from "@/utils/graphql";
-import { UPDATE_CRASH } from "@/queries/crash";
 import {
   getRecordValue,
   renderColumnValue,
@@ -16,6 +15,7 @@ import { ColDataCardDef, LookupTableOption } from "@/types/types";
 interface DataCardProps<T extends Record<string, unknown>> {
   record: T;
   columns: ColDataCardDef<T>[];
+  mutation: string;
   isValidating: boolean;
   title: string;
   onSaveCallback: () => Promise<void>;
@@ -27,6 +27,7 @@ interface DataCardProps<T extends Record<string, unknown>> {
 export default function DataCard<T extends Record<string, unknown>>({
   record,
   columns,
+  mutation,
   isValidating,
   title,
   onSaveCallback,
@@ -34,7 +35,7 @@ export default function DataCard<T extends Record<string, unknown>>({
   // todo: loading state, error state
   // todo: handling of null/undefined values in select input
   const [editColumn, setEditColumn] = useState<ColDataCardDef<T> | null>(null);
-  const { mutate, loading: isMutating } = useMutation(UPDATE_CRASH);
+  const { mutate, loading: isMutating } = useMutation(mutation);
   const [query, typeName] = useLookupQuery(editColumn?.lookupTable);
   const { data: lookupData, isLoading: isLoadingLookups } = useQuery<{
     [key: string]: LookupTableOption[];
@@ -59,6 +60,7 @@ export default function DataCard<T extends Record<string, unknown>>({
 
   const onCancel = () => setEditColumn(null);
 
+  console.log("RECORD", record);
   return (
     <Card>
       <Card.Header>{title}</Card.Header>
@@ -90,7 +92,7 @@ export default function DataCard<T extends Record<string, unknown>>({
                     <td>
                       {isLoadingLookups && <Spinner size="sm" />}
                       {!isLoadingLookups && (
-                        <CrashDataCardInput
+                        <DataCardInput
                           initialValue={valueToString(
                             getRecordValue(record, col),
                             col

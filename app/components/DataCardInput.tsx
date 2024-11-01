@@ -3,7 +3,7 @@ import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import { LookupTableOption, InputType } from "@/types/types";
 
-const CrashDataCardInput = ({
+const DataCardInput = ({
   initialValue,
   inputType,
   isMutating,
@@ -90,4 +90,4 @@ const CrashDataCardInput = ({
   );
 };
 
-export default CrashDataCardInput;
+export default DataCardInput;

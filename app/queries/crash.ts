@@ -27,6 +27,7 @@ export const GET_CRASH = gql`
       updated_by
       case_id
       crash_timestamp
+      fhe_collsn_id
       collsn {
         id
         label
@@ -92,30 +93,37 @@ export const GET_CRASH = gql`
         id
         unit_nbr
         veh_mod_year
+        unit_desc_id
         unit_desc {
           id
           label
         }
+        veh_body_styl_id
         veh_body_styl {
           id
           label
         }
+        veh_make_id
         veh_make {
           id
           label
         }
+        veh_mod_id
         veh_mod {
           id
           label
         }
+        veh_trvl_dir_id
         trvl_dir {
           id
           label
         }
+        movement_id
         movt {
           id
           label
         }
+        contrib_factr_1_id
         contrib_factr {
           id
           label
