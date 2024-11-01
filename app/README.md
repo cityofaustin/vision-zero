@@ -2,26 +2,34 @@
 
 ## Quick start
 
-Use the `env_template` to configure the local environment variables. These can be copied from your existing VZE `.env` file, by replacing `REACT_APP_` with `NEXT_PUBLIC_` in the variable name:
+1. Start your database and graphql engine
+
+2. Use the `env_template` to configure the local environment variables. These can be copied from your existing VZE `.env` file, by replacing `REACT_APP_` with `NEXT_PUBLIC_` in the variable name:
 
 ```shell
 # run this cmd and then edit .env.local as needed
 cp -n env_template .env.local
 ```
 
-Start your `node` environment:
+3. Activate your `node` environment (`v20` is required):
 
 ```shell
 nvm use
 ```
 
-Run the development server:
+4. Install node packages
+
+```
+npm install
+```
+
+5. Start the development server
 
 ```shell
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+6. Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 ## This app vs VZE
 
@@ -40,18 +48,3 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 - location details
 - create crash record
 - upload records
-
-
-## mirror MUI datagrid
-
-https://mui.com/x/react-data-grid/column-definition/#rendering-cells
-
-Rendering cells
-
-By default, the Data Grid renders the value as a string in the cell. It resolves the rendered output in the following order:
-
-renderCell() => ReactElement
-valueFormatter() => string
-valueGetter() => string
-row[field]
-
