@@ -11,7 +11,6 @@ import {
   FaGaugeHigh,
   FaMap,
   FaAngleRight,
-  FaAngleLeft,
   FaRightToBracket,
   FaRightFromBracket,
 } from "react-icons/fa6";
