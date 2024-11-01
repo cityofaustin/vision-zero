@@ -1,12 +1,13 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import useSWR, { SWRConfiguration } from "swr";
 import {
+    gql,
   GraphQLClient,
   request,
   RequestDocument,
   Variables,
 } from "graphql-request";
-import { MutationVariables } from "@/types/types";
+import { MutationVariables, LookupTableDef } from "@/types/types";
 import { useAuth0 } from "@auth0/auth0-react";
 
 const ENDPOINT = process.env.NEXT_PUBLIC_HASURA_ENDPOINT!;
@@ -119,3 +120,30 @@ export const useMutation = (mutation: RequestDocument) => {
 
   return { mutate, loading, error };
 };
+
+export const useLookupQuery = (lookupTableDef: LookupTableDef | undefined) =>
+  useMemo(() => {
+    if (!lookupTableDef) {
+      return [];
+    }
+    // construct the Hasura typename, which is prefixed with the schema name
+    // if schema is not public
+    const prefix =
+      lookupTableDef.tableSchema === "public"
+        ? ""
+        : lookupTableDef.tableSchema + "_";
+
+    const typeName = `${prefix}${lookupTableDef.tableName}`;
+
+    return [
+      gql`
+        query LookupTableQuery {
+          ${typeName}(order_by: {id: asc}) {
+            id
+            label
+          }
+        }
+      `,
+      typeName,
+    ];
+  }, [lookupTableDef]);

@@ -1,4 +1,4 @@
-import { ColDataCardDef, LookupTableOption } from "@/types/types";
+import { ColDataCardDef, LookupTableOption, InputType } from "@/types/types";
 
 /**
  * Convert a record value to a string so that it can be used as the initial value
@@ -18,7 +18,7 @@ export const valueToString = (
  * Convert "true" to `true`, any other non-empty string to `false`
  * and anything falsey to `null`
  */
-export const stringToBoolNullable = (value: string): boolean | null =>
+const stringToBoolNullable = (value: string): boolean | null =>
   value ? value === "true" : null;
 
 /**
@@ -32,7 +32,7 @@ const valueToBoolString = (value: unknown): "true" | "false" | "" =>
 /**
  * Trim string and coerce falsey values to `null`
  */
-export const trimStringNullable = (value: string): string | null => {
+const trimStringNullable = (value: string): string | null => {
   return value.trim() || null;
 };
 
@@ -40,7 +40,7 @@ export const trimStringNullable = (value: string): string | null => {
  * Convert strings to numbers and coerce non-zero falsey values to `null`.
  * Invalid (NaN) numbers are also converted to null.
  */
-export const stringToNumberNullable = (value: string): number | null => {
+const stringToNumberNullable = (value: string): number | null => {
   if (value.trim() === "") {
     return null;
   }
@@ -124,4 +124,25 @@ export const renderColumnValue = <T extends Record<string, unknown>>(
   }
 
   return String(getRecordValue(record, column) || "");
+};
+
+/**
+ * Function which transforms form input string into the value
+ * that will be sent in the the db mutation
+ *
+ * todo: wrap this in a try/catch and use form validation
+ */
+export const handleFormValueOutput = (
+  value: string,
+  isLookup: boolean,
+  inputType?: InputType
+): unknown | null | boolean => {
+  if (inputType === "yes_no") {
+    return stringToBoolNullable(value);
+  }
+  if (inputType === "number" || (inputType === "select" && isLookup)) {
+    return stringToNumberNullable(value);
+  }
+  // handle everything else as a nulllable string
+  return trimStringNullable(value);
 };

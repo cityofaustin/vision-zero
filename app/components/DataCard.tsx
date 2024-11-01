@@ -1,73 +1,17 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import Card from "react-bootstrap/Card";
 import Spinner from "react-bootstrap/Spinner";
 import Table from "react-bootstrap/Table";
 import CrashDataCardInput from "./CrashDataCardInput";
-import { useMutation, useQuery } from "@/utils/graphql";
-import { gql } from "graphql-request";
+import { useMutation, useQuery, useLookupQuery } from "@/utils/graphql";
 import { UPDATE_CRASH } from "@/queries/crash";
 import {
   getRecordValue,
   renderColumnValue,
-  stringToBoolNullable,
-  trimStringNullable,
-  stringToNumberNullable,
   valueToString,
+  handleFormValueOutput,
 } from "@/utils/formHelpers";
-import {
-  InputType,
-  ColDataCardDef,
-  LookupTableDef,
-  LookupTableOption,
-} from "@/types/types";
-
-/**
- * Function which transforms form input string into the value
- * that will be sent in the the db mutation
- *
- * todo: wrap this in a try/catch and use validation erro
- */
-const handleValue = (
-  value: string,
-  isLookup: boolean,
-  inputType?: InputType
-): unknown | null | boolean => {
-  if (inputType === "yes_no") {
-    return stringToBoolNullable(value);
-  }
-  if (inputType === "number" || (inputType === "select" && isLookup)) {
-    return stringToNumberNullable(value);
-  }
-  // handle everything else as a nulllable string
-  return trimStringNullable(value);
-};
-
-const useLookupQuery = (lookupTableDef: LookupTableDef | undefined) =>
-  useMemo(() => {
-    if (!lookupTableDef) {
-      return [];
-    }
-    // construct the Hasura typename, which is prefixed with the schema name
-    // if schema is not public
-    const prefix =
-      lookupTableDef.tableSchema === "public"
-        ? ""
-        : lookupTableDef.tableSchema + "_";
-
-    const typeName = `${prefix}${lookupTableDef.tableName}`;
-
-    return [
-      gql`
-      query LookupTableQuery {
-        ${typeName}(order_by: {id: asc}) {
-          id
-          label
-        }
-      }
-    `,
-      typeName,
-    ];
-  }, [lookupTableDef]);
+import { ColDataCardDef, LookupTableOption } from "@/types/types";
 
 interface DataCardProps<T extends Record<string, unknown>> {
   record: T;
@@ -153,7 +97,7 @@ export default function DataCard<T extends Record<string, unknown>>({
                           )}
                           onSave={(value: string) =>
                             onSave(
-                              handleValue(
+                              handleFormValueOutput(
                                 value,
                                 !!col.lookupTable,
                                 col.inputType
