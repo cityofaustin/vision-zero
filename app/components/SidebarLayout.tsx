@@ -80,14 +80,14 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
               />
               <SideBarListItem
                 isCollapsed={isCollapsed}
-                isCurrentPage={router?.route === "/crashes"}
+                isCurrentPage={router?.route.startsWith("/crashes")}
                 Icon={FaShieldHeart}
                 label="Crashes"
                 href="/crashes"
               />
               <SideBarListItem
                 isCollapsed={isCollapsed}
-                isCurrentPage={router?.route === "/locations"}
+                isCurrentPage={router?.route.startsWith("/locations")}
                 Icon={FaMap}
                 label="Locations"
                 href="/locations"
