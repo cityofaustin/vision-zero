@@ -41,10 +41,23 @@ npm run dev
 ## Todo
 
 - permission checks
+- crash details
+  - crash injury widgets
+  - people table
+    - name edit component
+  - notes
+  - recommendations
+  - misc column editing + placement
 - gridtable
-  - search
+  - advanced filters
   - export
 - locations
 - location details
 - create crash record
-- upload records
+- upload non-cr3
+- dashboard
+- users
+  - user list
+  - add/edit/delete uers
+  - copy user emails
+- navigration crash search
