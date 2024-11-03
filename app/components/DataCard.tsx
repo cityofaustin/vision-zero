@@ -60,7 +60,6 @@ export default function DataCard<T extends Record<string, unknown>>({
 
   const onCancel = () => setEditColumn(null);
 
-  console.log("RECORD", record);
   return (
     <Card>
       <Card.Header>{title}</Card.Header>
@@ -72,7 +71,10 @@ export default function DataCard<T extends Record<string, unknown>>({
               return (
                 <tr
                   key={String(col.name)}
-                  style={{ cursor: col.editable ? "pointer" : "auto" }}
+                  style={{
+                    cursor:
+                      col.editable && !isEditingThisColumn ? "pointer" : "auto",
+                  }}
                   onClick={() => {
                     if (!col.editable) {
                       return;
