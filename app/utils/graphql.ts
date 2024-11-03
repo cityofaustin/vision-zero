@@ -138,7 +138,7 @@ export const useLookupQuery = (lookupTableDef: LookupTableDef | undefined) =>
     return [
       gql`
         query LookupTableQuery {
-          ${typeName}(order_by: {id: asc}) {
+          ${typeName}(order_by: {label: asc}) {
             id
             label
           }

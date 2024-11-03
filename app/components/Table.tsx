@@ -1,22 +1,60 @@
+import { Dispatch, SetStateAction } from "react";
 import BsTable from "react-bootstrap/Table";
+import Spinner from "react-bootstrap/Spinner";
 import { ColDataCardDef } from "@/types/types";
 import { renderColumnValue } from "@/utils/formHelpers";
+import { QueryConfig } from "@/utils/queryBuilder";
+import { FaSortDown, FaSortUp } from "react-icons/fa6";
 
 export default function Table<T extends Record<string, unknown>>({
   rows,
   columns,
+  isLoading,
+  queryConfig,
+  setQueryConfig,
 }: {
   rows: T[];
   columns: ColDataCardDef<T>[];
+  isLoading: boolean;
+  queryConfig: QueryConfig;
+  setQueryConfig: Dispatch<SetStateAction<QueryConfig>>;
 }) {
-  if (!rows) return <p>Loading or error...</p>;
+  if (isLoading)
+    return (
+      <div>
+        <Spinner size="sm" />
+      </div>
+    );
+
+  const SortIcon = queryConfig.sortAsc ? FaSortUp : FaSortDown;
 
   return (
-    <BsTable striped responsive size="sm">
+    <BsTable striped responsive hover>
       <thead>
         <tr>
           {columns.map((col) => (
-            <th key={String(col.name)}>{col.label}</th>
+            <th
+              key={String(col.name)}
+              style={{ cursor: col.sortable ? "pointer" : "auto" }}
+              onClick={() => {
+                if (col.sortable) {
+                  const newFilters = { ...queryConfig };
+                  if (col.name === queryConfig.sortColName) {
+                    // already sorting on this column, so switch order
+                    newFilters.sortAsc = !newFilters.sortAsc;
+                  } else {
+                    // change sort column and leave order as-is
+                    newFilters.sortColName = String(col.name);
+                  }
+                  setQueryConfig(newFilters);
+                }
+              }}
+            >
+              {col.label}
+              {col.name === queryConfig.sortColName && (
+                <SortIcon className="ms-1 my-1" />
+              )}
+            </th>
           ))}
         </tr>
       </thead>

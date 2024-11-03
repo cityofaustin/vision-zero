@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import { Variables } from "graphql-request";
+import { boolean } from "zod";
 
 export interface LookupTableDef {
   tableSchema: "public" | "lookups";
@@ -34,6 +35,7 @@ export interface ColDataCardDef<T extends Record<string, unknown>>
   inputType?: InputType;
   lookupTable?: LookupTableDef;
   relationshipName?: keyof T;
+  sortable?: boolean;
   valueGetter?: (record: T, column: ColDataCardDef<T>) => any;
   valueFormatter?: (value: any, record: T, column: ColDataCardDef<T>) => string;
   valueRenderer?: (record: T, column: ColDataCardDef<T>) => ReactNode;

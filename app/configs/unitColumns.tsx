@@ -27,7 +27,6 @@ export const ALL_UNIT_COLUMNS: { [name: string]: ColDataCardDef<Unit> } = {
       tableName: "veh_body_styl",
     },
   },
-
   veh_mod_year: {
     name: "veh_mod_year",
     label: "Year",
@@ -35,25 +34,16 @@ export const ALL_UNIT_COLUMNS: { [name: string]: ColDataCardDef<Unit> } = {
   veh_make_id: {
     name: "veh_make_id",
     label: "Make",
-    editable: true,
+    editable: false,
     inputType: "select",
     relationshipName: "veh_make",
-    lookupTable: {
-      tableSchema: "lookups",
-      tableName: "veh_make",
-    },
   },
-
   veh_mod_id: {
     name: "veh_mod_id",
     label: "Model",
-    editable: true,
+    editable: false,
     inputType: "select",
     relationshipName: "veh_mod",
-    lookupTable: {
-      tableSchema: "lookups",
-      tableName: "veh_mod",
-    },
   },
 
   veh_trvl_dir_id: {
