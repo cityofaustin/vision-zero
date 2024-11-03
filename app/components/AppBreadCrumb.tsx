@@ -37,30 +37,33 @@ const useCrumbs = (path: string): Crumb[] =>
   }, [path]);
 
 export default function AppBreadCrumb() {
+  // todo: this is not thought at much at all
   const router = useRouter();
   const crumbs = useCrumbs(router.asPath);
-  // todo: this is not thought at much at all
+  const isDetailsPage = crumbs?.length > 1;
+
   return (
     <Row className="mt-2 mb-3">
       <Col>
-        {crumbs?.map((crumb, i) => {
-          if (i < crumbs.length - 1) {
-            return (
-              <Fragment key={crumb.label}>
-                <span className="fw-light">
-                  <Link href={`/${crumb.label}`}>{crumb.label}</Link>
+        {isDetailsPage &&
+          crumbs?.map((crumb, i) => {
+            if (i < crumbs.length - 1) {
+              return (
+                <Fragment key={crumb.label}>
+                  <span className="fw-light">
+                    <Link href={`/${crumb.label}`}>{crumb.label}</Link>
+                  </span>
+                  <span className="mx-2 fw-light">{"/"}</span>
+                </Fragment>
+              );
+            } else {
+              return (
+                <span key={crumb.label} className="fw-bold">
+                  {crumb.label}
                 </span>
-                <span className="mx-2 fw-light">{"/"}</span>
-              </Fragment>
-            );
-          } else {
-            return (
-              <span key={crumb.label} className="fw-bold">
-                {crumb.label}
-              </span>
-            );
-          }
-        })}
+              );
+            }
+          })}
       </Col>
     </Row>
   );
