@@ -19,24 +19,30 @@ const buttons: DateSelectButton[] = [
   { label: "Custom", value: "custom" },
 ];
 
-// todo: these are shared props export the interface from elsewhere
-interface TableSearchProps {
-  queryConfig: QueryConfig;
-  setQueryConfig: Dispatch<SetStateAction<QueryConfig>>;
-}
-
+/**
+ * Get an array of timestamp isostrings in the format of
+ * [<first day of year>, now] - in local time
+ */
 export const getYtdDateRange = (): [string, string] => {
   const now = new Date();
   const yearStart = new Date(now.getFullYear(), 0, 1, 0, 0, 0);
   return [yearStart.toISOString(), now.toISOString()];
 };
 
+/**
+ * Get an array of timestamp isostrings in the format of
+ * [now - numYears, now] - in local time
+ */
 const getYearRange = (numYears: number): [string, string] => {
   const targetStartDate = new Date();
   targetStartDate.setFullYear(targetStartDate.getFullYear() - numYears);
   return [targetStartDate.toISOString(), new Date().toISOString()];
 };
 
+/**
+ * Returns an array of DateFilters constructed from
+ * two dates
+ */
 export const makeDateFilters = (
   column: string,
   dates: [string, string]
@@ -49,15 +55,15 @@ export const makeDateFilters = (
   }));
 };
 
-// const useInitialDateFilters = (queryConfig: QueryConfig) => {
-//   // if (queryConfig.dateFilter)
-// };
-
+// todo: these are shared props export the interface from elsewhere
+interface TableSearchProps {
+  queryConfig: QueryConfig;
+  setQueryConfig: Dispatch<SetStateAction<QueryConfig>>;
+}
 export default function TableDateSelector({
   queryConfig,
   setQueryConfig,
 }: TableSearchProps) {
-
   const filter = queryConfig.dateFilter;
   if (!filter) return;
 
