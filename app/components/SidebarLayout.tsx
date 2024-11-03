@@ -20,15 +20,9 @@ const localStorageKey = "sidebarCollapsed";
 
 export default function SidebarLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(true);
 
-  const {
-    isLoading: isLoadingAuth,
-    error: errorAuth,
-    user,
-    loginWithRedirect,
-    logout,
-  } = useAuth0();
+  const { user, loginWithRedirect, logout } = useAuth0();
 
   const toggleSidebar = useCallback(
     () =>
@@ -45,6 +39,9 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
       localStorage.getItem(localStorageKey) === "true";
     setIsCollapsed(collapsedFromStorage);
   }, []);
+
+  const SignInOutIcon = user ? FaRightFromBracket : FaRightToBracket;
+  const signInOutText = user ? "Sign out" : "Sign in";
 
   return (
     <Container fluid style={{ height: "100vh", overflow: "hidden" }}>
@@ -96,36 +93,18 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
 
               {/* login / logout button  */}
               <ListGroup.Item
-                className="mx-1 bg-dark fs-5 my-1"
+                className="bg-dark fs-5 my-1 text-primary"
                 style={{
                   whiteSpace: "nowrap",
                   border: "none",
                 }}
+                action
+                onClick={() => (user ? logout() : loginWithRedirect())}
               >
-                {!isLoadingAuth && !errorAuth && !user && (
-                  <Button
-                    variant="outline-primary"
-                    size="sm"
-                    onClick={() => loginWithRedirect()}
-                  >
-                    <span>
-                      <FaRightToBracket />
-                    </span>
-                    {!isCollapsed && <span className="ms-2">Sign in</span>}
-                  </Button>
-                )}
-                {user && (
-                  <Button
-                    variant="outline-primary"
-                    size="sm"
-                    onClick={() => logout()}
-                  >
-                    <span>
-                      <FaRightFromBracket />
-                    </span>
-                    {!isCollapsed && <span className="ms-2">Sign out</span>}
-                  </Button>
-                )}
+                <span>
+                  <SignInOutIcon className="me-3" />
+                  {isCollapsed ? null : signInOutText}
+                </span>
               </ListGroup.Item>
             </ListGroup>
           </div>
