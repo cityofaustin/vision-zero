@@ -65,7 +65,7 @@ export default function RelatedRecordTableRow<
         return (
           <td
             key={String(col.name)}
-            style={{ cursor: col.editable ? "pointer" : "auto" }}
+            style={{ cursor: col.editable && !isEditingThisColumn ? "pointer" : "auto" }}
             onClick={() => {
               if (!col.editable) {
                 return;
