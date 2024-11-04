@@ -1,6 +1,6 @@
 // Return true if person record is a fatality
 const shouldRenderVictimName = data => {
-  return data.some(person => person.injry_sev.id === 4);
+  return data.some(person => person?.injry_sev?.id === 4);
 };
 
 const getInjurySeverityColor = personRecord => {

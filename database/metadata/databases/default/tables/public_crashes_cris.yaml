@@ -9,13 +9,6 @@ object_relationships:
         table:
           name: crashes
           schema: public
-  - name: crashes_edit
-    using:
-      foreign_key_constraint_on:
-        column: id
-        table:
-          name: crashes_edits
-          schema: public
 array_relationships:
   - name: change_log_crashes_cris
     using:
@@ -44,13 +37,6 @@ array_relationships:
         column: crash_pk
         table:
           name: units_cris
-          schema: public
-  - name: units_edits
-    using:
-      foreign_key_constraint_on:
-        column: crash_pk
-        table:
-          name: units_edits
           schema: public
 insert_permissions:
   - role: vz-admin

@@ -1,0 +1,31 @@
+table:
+  name: engineering_areas
+  schema: geo
+select_permissions:
+  - role: editor
+    permission:
+      columns:
+        - engineering_area_id
+        - atd_engineer_areas
+        - created_at
+        - geometry
+      filter: {}
+    comment: ""
+  - role: readonly
+    permission:
+      columns:
+        - engineering_area_id
+        - atd_engineer_areas
+        - created_at
+        - geometry
+      filter: {}
+    comment: ""
+  - role: vz-admin
+    permission:
+      columns:
+        - engineering_area_id
+        - atd_engineer_areas
+        - created_at
+        - geometry
+      filter: {}
+    comment: ""
