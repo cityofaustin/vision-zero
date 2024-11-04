@@ -43,12 +43,16 @@ npm run dev
 - permission checks
 - crash details
   - crash injury widgets
+  - swap addresses
   - people table
     - name edit component
   - notes
   - recommendations
   - misc column editing + placement
 - gridtable
+  - wrap in an outer Table component that manages the filter components layout?
+  - Custom date range
+  - local storage / persist settings
   - advanced filters
   - export
 - locations
