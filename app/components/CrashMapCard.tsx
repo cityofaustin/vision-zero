@@ -3,7 +3,7 @@ import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 import { CrashMap } from "@/components/CrashMap";
 import { useMutation } from "@/utils/graphql";
-import { LatLon } from "@/types/types";
+import { LatLon } from "@/components/CrashMap";
 
 interface CrashMapCardProps {
   savedLatitude: number | null;
