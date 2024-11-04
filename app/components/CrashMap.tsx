@@ -6,48 +6,44 @@ import {
   SetStateAction,
 } from "react";
 import MapGL, {
-  Source,
-  Layer,
   FullscreenControl,
   NavigationControl,
   Marker,
   ViewStateChangeEvent,
   MapRef,
 } from "react-map-gl";
-import {
-  DEFAULT_MAP_PAN_ZOOM,
-  DEFAULT_MAP_PARAMS,
-  LOCATION_MAP_CONFIG,
-} from "@/configs/map";
-
-import { LatLon } from "@/types/types";
+import { DEFAULT_MAP_PAN_ZOOM, DEFAULT_MAP_PARAMS } from "@/configs/map";
 import "mapbox-gl/dist/mapbox-gl.css";
+import { MapAerialSourceAndLayer } from "./MapAerialSourceAndLayer";
 
-/**
- * Source and layer to display NearMap aerials with street labels on top
- */
-export const LabeledAerialSourceAndLayer = ({
-  beforeId,
-}: {
-  beforeId?: string;
-}) => {
-  return (
-    <>
-      <Source {...LOCATION_MAP_CONFIG.sources.aerials} />
-      <Layer beforeId={beforeId} {...LOCATION_MAP_CONFIG.layers.streetLabels} />
-      <Layer beforeId="street-labels" {...LOCATION_MAP_CONFIG.layers.aerials} />
-    </>
-  );
-};
+export interface LatLon {
+  latitude: number | null;
+  longitude: number | null;
+}
 
 interface CrashMapProps {
+  /**
+   * The initial latitude - used when not editing
+   */
   savedLatitude: number | null;
+  /**
+   * The initial longitude - used when not editing
+   */
   savedLongitude: number | null;
+  /**
+   * If the map is in edit mode
+   */
   isEditing: boolean;
+  /**
+   * The lat/lon coordinates that are saved while editing
+   */
   editCoordinates: LatLon;
   setEditCoordinates: Dispatch<SetStateAction<LatLon>>;
 }
 
+/**
+ * Map component which renders an editable point marker
+ */
 export const CrashMap = ({
   savedLatitude,
   savedLongitude,
@@ -103,7 +99,7 @@ export const CrashMap = ({
         />
       )}
       {/* add nearmap raster source and style */}
-      <LabeledAerialSourceAndLayer />
+      <MapAerialSourceAndLayer />
     </MapGL>
   );
 };

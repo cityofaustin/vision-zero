@@ -49,11 +49,6 @@ export interface MutationVariables extends Variables {
   };
 }
 
-export interface LatLon {
-  latitude: number | null;
-  longitude: number | null;
-}
-
 export interface CrashListCrash extends Record<string, unknown> {
   id: number;
   cris_crash_id: number | null;
