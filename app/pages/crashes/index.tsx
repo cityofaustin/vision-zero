@@ -2,6 +2,7 @@ import { useState } from "react";
 import Card from "react-bootstrap/Card";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
+import Spinner from "react-bootstrap/Spinner";
 import Table from "@/components/Table";
 import AppBreadCrumb from "@/components/AppBreadCrumb";
 import TableSearch from "@/components/TableSearch";
@@ -72,25 +73,25 @@ export default function Crashes() {
                   setQueryConfig={setQueryConfig}
                 />
               </Col>
-              <Col xs={12} sm={6}>
+              <Col xs={12} sm="auto">
                 <TableDateSelector
                   queryConfig={queryConfig}
                   setQueryConfig={setQueryConfig}
                 />
               </Col>
+              <Col xs={12} sm="auto">
+                {isLoading && <Spinner variant="primary" />}
+              </Col>
             </Row>
           </form>
           <Row>
             <Col>
-              <div>
-                <Table
-                  rows={data?.crashes_list_view || []}
-                  columns={crashesListViewColumns}
-                  isLoading={isLoading}
-                  queryConfig={queryConfig}
-                  setQueryConfig={setQueryConfig}
-                />
-              </div>
+              <Table
+                rows={data?.crashes_list_view || []}
+                columns={crashesListViewColumns}
+                queryConfig={queryConfig}
+                setQueryConfig={setQueryConfig}
+              />
             </Col>
           </Row>
         </Card.Body>

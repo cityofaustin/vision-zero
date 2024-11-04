@@ -1,6 +1,5 @@
 import { Dispatch, SetStateAction } from "react";
 import BsTable from "react-bootstrap/Table";
-import Spinner from "react-bootstrap/Spinner";
 import { ColDataCardDef } from "@/types/types";
 import { renderColumnValue } from "@/utils/formHelpers";
 import { QueryConfig } from "@/utils/queryBuilder";
@@ -9,23 +8,14 @@ import { FaSortDown, FaSortUp } from "react-icons/fa6";
 export default function Table<T extends Record<string, unknown>>({
   rows,
   columns,
-  isLoading,
   queryConfig,
   setQueryConfig,
 }: {
   rows: T[];
   columns: ColDataCardDef<T>[];
-  isLoading: boolean;
   queryConfig: QueryConfig;
   setQueryConfig: Dispatch<SetStateAction<QueryConfig>>;
 }) {
-  if (isLoading)
-    return (
-      <div>
-        <Spinner size="sm" />
-      </div>
-    );
-
   const SortIcon = queryConfig.sortAsc ? FaSortUp : FaSortDown;
 
   return (
