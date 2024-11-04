@@ -200,20 +200,19 @@ def requires_auth(f):
                 raise AuthError(
                     {"code": "token_expired", "description": "token is expired"}, 401
                 )
-            except jwt.JWTClaimsError:
+            except jwt.JWTClaimsError as e:
                 raise AuthError(
                     {
                         "code": "invalid_claims",
-                        "description": "incorrect claims,"
-                        " please check the audience and issuer",
+                        "description": "incorrect claims, please check the audience and issuer",
                     },
                     401,
                 )
-            except Exception:
+            except Exception as e:
                 raise AuthError(
                     {
                         "code": "invalid_header",
-                        "description": "Unable to parse authentication" " token.",
+                        "description": "Unable to parse authentication token.",
                     },
                     401,
                 )
