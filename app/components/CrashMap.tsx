@@ -11,132 +11,17 @@ import MapGL, {
   FullscreenControl,
   NavigationControl,
   Marker,
-  LngLatBoundsLike,
   ViewStateChangeEvent,
   MapRef,
 } from "react-map-gl";
-import "mapbox-gl/dist/mapbox-gl.css";
-import { SymbolLayerSpecification, RasterLayerSpecification } from "mapbox-gl";
+import {
+  DEFAULT_MAP_PAN_ZOOM,
+  DEFAULT_MAP_PARAMS,
+  LOCATION_MAP_CONFIG,
+} from "@/configs/map";
+
 import { LatLon } from "@/types/types";
-
-const TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
-// This API key is managed by CTM. Contact help desk for maintenance and troubleshooting.
-const NEARMAP_KEY = process.env.NEXT_PUBLIC_NEARMAP_KEY;
-
-export const defaultInitialState = {
-  latitude: 30.2747,
-  longitude: -97.7406,
-  zoom: 17,
-};
-
-const maxBounds: LngLatBoundsLike = [
-  [-99, 29],
-  [-96, 32],
-];
-
-export const mapParameters = {
-  touchPitch: false,
-  dragRotate: false,
-  boxZoom: false,
-  mapboxAccessToken: TOKEN,
-  maxBounds,
-  mapStyle: "mapbox://styles/mapbox/satellite-streets-v11",
-};
-
-interface Layers {
-  aerials: RasterLayerSpecification;
-  streetLabels: SymbolLayerSpecification;
-}
-
-const LAYERS: Layers = {
-  aerials: {
-    id: "simple-tiles",
-    type: "raster",
-    source: "raster-tiles",
-  },
-  streetLabels: {
-    // borrowed from mapbox mapbox streets v11 style
-    id: "street-labels",
-    type: "symbol",
-    metadata: {
-      "mapbox:featureComponent": "road-network",
-      "mapbox:group": "Road network, road-labels",
-    },
-    source: "composite",
-    "source-layer": "road",
-    minzoom: 12,
-    filter: [
-      "all",
-      ["has", "name"],
-      [
-        "match",
-        ["get", "class"],
-        [
-          "motorway",
-          "trunk",
-          "primary",
-          "secondary",
-          "tertiary",
-          "street",
-          "street_limited",
-        ],
-        true,
-        false,
-      ],
-    ],
-    layout: {
-      "text-size": [
-        "interpolate",
-        ["linear"],
-        ["zoom"],
-        10,
-        [
-          "match",
-          ["get", "class"],
-          ["motorway", "trunk", "primary", "secondary", "tertiary"],
-          10,
-          9,
-        ],
-        18,
-        [
-          "match",
-          ["get", "class"],
-          ["motorway", "trunk", "primary", "secondary", "tertiary"],
-          16,
-          14,
-        ],
-      ],
-      "text-max-angle": 30,
-      "text-font": ["DIN Pro Regular", "Arial Unicode MS Regular"],
-      "symbol-placement": "line",
-      "text-padding": 1,
-      "text-rotation-alignment": "map",
-      "text-pitch-alignment": "viewport",
-      "text-field": ["coalesce", ["get", "name_en"], ["get", "name"]],
-      "text-letter-spacing": 0.01,
-    },
-    paint: {
-      "text-color": "#fff",
-      "text-halo-color": "#000",
-      "text-halo-width": 1,
-    },
-  },
-};
-
-export const LOCATION_MAP_CONFIG = {
-  mapStyle: "mapbox://styles/mapbox/satellite-streets-v11",
-  sources: {
-    aerials: {
-      id: "raster-tiles",
-      type: "raster",
-      tiles: [
-        `https://api.nearmap.com/tiles/v3/Vert/{z}/{x}/{y}.jpg?apikey=${NEARMAP_KEY}`,
-      ],
-      tileSize: 256,
-    },
-  },
-  layers: LAYERS,
-};
+import "mapbox-gl/dist/mapbox-gl.css";
 
 /**
  * Source and layer to display NearMap aerials with street labels on top
@@ -194,11 +79,11 @@ export const CrashMap = ({
     <MapGL
       ref={mapRef}
       initialViewState={{
-        latitude: savedLatitude || defaultInitialState.latitude,
-        longitude: savedLongitude || defaultInitialState.longitude,
-        zoom: defaultInitialState.zoom,
+        latitude: savedLatitude || DEFAULT_MAP_PAN_ZOOM.latitude,
+        longitude: savedLongitude || DEFAULT_MAP_PAN_ZOOM.longitude,
+        zoom: DEFAULT_MAP_PAN_ZOOM.zoom,
       }}
-      {...mapParameters}
+      {...DEFAULT_MAP_PARAMS}
       cooperativeGestures={true}
       // Resize the map canvas when parent row expands to fit crash
       onLoad={(e) => e.target.resize()}

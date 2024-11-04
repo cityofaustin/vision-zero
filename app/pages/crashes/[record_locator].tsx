@@ -1,13 +1,12 @@
-import { useState, useCallback } from "react";
+import { useCallback } from "react";
 import { useRouter } from "next/router";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
-import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
-import { CrashMap } from "@/components/CrashMap";
+import CrashMapCard from "@/components/CrashMapCard";
 import { GET_CRASH, UPDATE_CRASH } from "@/queries/crash";
 import { UPDATE_UNIT } from "@/queries/unit";
-import { useQuery, useMutation } from "@/utils/graphql";
+import { useQuery } from "@/utils/graphql";
 import AppBreadCrumb from "@/components/AppBreadCrumb";
 import CrashHeader from "@/components/CrashHeader";
 import CrashDiagramCard from "@/components/CrashDiagramCard";
@@ -16,18 +15,13 @@ import RelatedRecordTable from "@/components/RelatedRecordTable";
 import CrashChangeLog from "@/components/CrashChangeLog";
 import { crashDataCards } from "@/configs/crashDataCard";
 import { unitRelatedRecordCols } from "@/configs/unitRelatedRecordTable";
-import { Crash, LatLon } from "@/types/types";
+import { Crash } from "@/types/types";
 
 export default function CrashDetailsPage() {
-  const [isEditingCoordinates, setIsEditingCoordinates] = useState(false);
-  const [editCoordinates, setEditCoordinates] = useState<LatLon>({
-    latitude: 0,
-    longitude: 0,
-  });
   const router = useRouter();
   const recordLocator = router.query.record_locator;
 
-  const { data, refetch, isLoading, isValidating } = useQuery<{
+  const { data, refetch, isValidating } = useQuery<{
     crashes: Crash[];
   }>({
     // todo: is the router ever not ready - ie do we need this ternary?
@@ -35,21 +29,17 @@ export default function CrashDetailsPage() {
     variables: { recordLocator },
   });
 
-  const { mutate: mutateCrash, loading: isMutatingCrash } = useMutation(UPDATE_CRASH);
-
   const onSaveCallback = useCallback(async () => {
     await refetch();
   }, [refetch]);
 
   if (!data || !data?.crashes?.[0]) {
     // todo: 404 page
+    // todo: loading spinner (would be nice to use a spinner inside cards)
     return;
   }
 
   const crash = data.crashes[0];
-
-  // todo: this won't scale?
-  const isLoadingAnything = isLoading || isMutatingCrash || isValidating;
 
   return (
     <>
@@ -57,57 +47,13 @@ export default function CrashDetailsPage() {
       <CrashHeader crash={crash} />
       <Row>
         <Col sm={12} md={6} lg={4} className="mb-3">
-          <Card>
-            <Card.Header>Location</Card.Header>
-            <Card.Body className="p-1 crash-header-card-body">
-              <CrashMap
-                savedLatitude={crash.latitude}
-                savedLongitude={crash.longitude}
-                isEditing={isEditingCoordinates}
-                editCoordinates={editCoordinates}
-                setEditCoordinates={setEditCoordinates}
-              />
-            </Card.Body>
-            <Card.Footer>
-              <div className="d-flex justify-content-between">
-                <div>
-                  <span>Geocode provider</span>
-                </div>
-                <div>
-                  <Button
-                    size="sm"
-                    variant="primary"
-                    disabled={isLoadingAnything}
-                    onClick={async () => {
-                      if (!isEditingCoordinates) {
-                        setIsEditingCoordinates(true);
-                      } else {
-                        await mutateCrash({
-                          id: crash.id,
-                          updates: { ...editCoordinates },
-                        });
-                        await refetch();
-                        setIsEditingCoordinates(false);
-                      }
-                    }}
-                  >
-                    {isEditingCoordinates ? "Save location" : "Edit"}
-                  </Button>
-                  {isEditingCoordinates && (
-                    <Button
-                      className="ms-1"
-                      size="sm"
-                      variant="danger"
-                      onClick={() => setIsEditingCoordinates(false)}
-                      disabled={isLoadingAnything}
-                    >
-                      Cancel
-                    </Button>
-                  )}
-                </div>
-              </div>
-            </Card.Footer>
-          </Card>
+          <CrashMapCard
+            savedLatitude={crash.latitude}
+            savedLongitude={crash.longitude}
+            crashId={crash.id}
+            onSaveCallback={onSaveCallback}
+            mutation={UPDATE_CRASH}
+          />
         </Col>
         <Col sm={12} md={6} lg={4} className="mb-3">
           <CrashDiagramCard crash={crash} />
