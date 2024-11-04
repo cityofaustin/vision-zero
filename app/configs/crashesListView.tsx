@@ -31,7 +31,7 @@ export const crashesListViewColumns: ColDataCardDef<CrashListCrash>[] = [
   {
     name: "address_primary",
     label: "Address",
-    sortable: false,
+    sortable: true,
   },
   {
     name: "collsn_desc",
