@@ -58,6 +58,11 @@ interface FilterGroup {
   filters: (DateFilter | StringFilter)[];
 }
 
+/**
+ * Used by the date selector component to keep shorthand
+ * `mode` buttons (YTD, 1Y, etc) in sync with the actual
+ * DateFilter[] array
+ */
 export type DateFilterMode = "ytd" | "all" | "5y" | "1y" | "custom";
 
 /**
@@ -192,14 +197,15 @@ const filterToWhereExp = (filter: StringFilter | DateFilter): string => {
  * within each group are accumulated by the `groupOperator`
  */
 const getWhereExp = (filterGroups: FilterGroup[]): string => {
-  // todo: exclude filters when value is empty? e.g. don't send search string filter always?
+  // todo: exclude filters when value is empty. e.g. don't send search string filter always?
+  // not sure this is possible ☝️ since we need to handle the search resetting
   const andExps = filterGroups
     .filter((group) => group.filters.length > 0)
     .map((group) => {
-      const orExps = group.filters
+      const groupExps = group.filters
         .map((filter) => filterToWhereExp(filter))
         .filter((x) => !!x);
-      return `{ ${group.groupOperator}: [ ${orExps.join("\n")} ] }`;
+      return `{ ${group.groupOperator}: [ ${groupExps.join("\n")} ] }`;
     });
 
   const whereExp = `{ _and: [ ${andExps.join("\n")} ]}`;
