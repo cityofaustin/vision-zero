@@ -2,62 +2,43 @@ import { Dispatch, SetStateAction } from "react";
 import Form from "react-bootstrap/Form";
 import { QueryConfig } from "@/utils/queryBuilder";
 
+const fields = [
+  { label: "Crash ID", value: "record_locator" },
+  { label: "Case ID", value: "case_id" },
+  { label: "Address", value: "address_primary" },
+];
+
 interface TableSearchProps {
-    queryConfig: QueryConfig;
-    setQueryConfig: Dispatch<SetStateAction<QueryConfig>>;
-  }
+  queryConfig: QueryConfig;
+  setQueryConfig: Dispatch<SetStateAction<QueryConfig>>;
+}
 
 export default function TableSearchFieldSelector({
-    queryConfig,
-    setQueryConfig,
+  queryConfig,
+  setQueryConfig,
 }: TableSearchProps) {
   return (
     <div className="d-flex mb-1">
-      <Form.Check
-        inline
-        label="Crash ID"
-        type="radio"
-        checked={queryConfig.searchFilter.column === "record_locator"}
-        onChange={() => {
-          const newQueryConfig = { ...queryConfig };
-          newQueryConfig.searchFilter = {
-            ...newQueryConfig.searchFilter,
-            column: "record_locator",
-          };
-          setQueryConfig(newQueryConfig);
-        }}
-        id="crash_id"
-      />
-      <Form.Check
-        inline
-        label="Case ID"
-        type="radio"
-        checked={queryConfig.searchFilter.column === "case_id"}
-        onChange={() => {
-          const newQueryConfig = { ...queryConfig };
-          newQueryConfig.searchFilter = {
-            ...newQueryConfig.searchFilter,
-            column: "case_id",
-          };
-          setQueryConfig(newQueryConfig);
-        }}
-        id="case_id"
-      />
-      <Form.Check
-        inline
-        label="Address"
-        type="radio"
-        checked={queryConfig.searchFilter.column === "address_primary"}
-        onChange={() => {
-          const newQueryConfig = { ...queryConfig };
-          newQueryConfig.searchFilter = {
-            ...newQueryConfig.searchFilter,
-            column: "address_primary",
-          };
-          setQueryConfig(newQueryConfig);
-        }}
-        id="address_primary"
-      />
+      {fields.map((field) => {
+        return (
+          <Form.Check
+            key={field.value}
+            inline
+            label={field.label}
+            type="radio"
+            checked={queryConfig.searchFilter.column === field.value}
+            onChange={() => {
+              const newQueryConfig = { ...queryConfig };
+              newQueryConfig.searchFilter = {
+                ...newQueryConfig.searchFilter,
+                column: field.value,
+              };
+              setQueryConfig(newQueryConfig);
+            }}
+            id={field.value}
+          />
+        );
+      })}
     </div>
   );
 }
