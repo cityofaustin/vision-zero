@@ -197,8 +197,6 @@ const filterToWhereExp = (filter: StringFilter | DateFilter): string => {
  * within each group are accumulated by the `groupOperator`
  */
 const getWhereExp = (filterGroups: FilterGroup[]): string => {
-  // todo: exclude filters when value is empty. e.g. don't send search string filter always?
-  // not sure this is possible ☝️ since we need to handle the search resetting
   const andExps = filterGroups
     .filter((group) => group.filters.length > 0)
     .map((group) => {
@@ -243,16 +241,20 @@ const buildQuery = ({
 }: QueryConfig): string => {
   const columnString = columns.join("\n");
 
-  // convert the search filter to a FilterGroup
-  // and add to all filters
-  const allFilterGroups: FilterGroup[] = [
-    ...(filterGroups || []),
-    { id: "search", filters: [searchFilter], groupOperator: "_and" },
-  ];
+  const allFilterGroups: FilterGroup[] = [...(filterGroups || [])];
 
-  // convert the date filters to a FilterGroup
-  // and add to all filters
-  if (dateFilter) {
+  if (searchFilter.value !== "") {
+    // if the search filter is being used,
+    // shape it like a FilterGroup and add to all filters
+    allFilterGroups.push({
+      id: "search",
+      filters: [searchFilter],
+      groupOperator: "_and",
+    });
+  }
+
+  if (dateFilter && dateFilter.mode !== "all") {
+    // shape the date filters into a FilterGroup and add to all filters
     allFilterGroups.push({
       id: "date_filters",
       filters: dateFilter.filters,

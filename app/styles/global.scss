@@ -26,10 +26,14 @@
 
 .sidebar-toggle-open {
   transform: rotate(180deg);
-  transition: transform .2s ease-out; /* Optional: Smooth transition */
+  transition: transform 0.2s ease-out; /* Optional: Smooth transition */
 }
 
 .sidebar-toggle-closed {
-    transform: rotate(360deg);
-    transition: transform .2s ease-out; /* Optional: Smooth transition */
-  }
+  transform: rotate(360deg);
+  transition: transform 0.2s ease-out; /* Optional: Smooth transition */
+}
+
+.react-datepicker__calendar-icon {
+  margin-top: 0.2rem;
+}

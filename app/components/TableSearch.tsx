@@ -10,6 +10,24 @@ interface TableSearchProps {
   setQueryConfig: Dispatch<SetStateAction<QueryConfig>>;
 }
 
+/**
+ * Update the queryConfig with a new search string
+ */
+const updateQueryConfigSearch = (
+  searchString: string,
+  queryConfig: QueryConfig
+) => {
+  const newQueryConfig = { ...queryConfig };
+  newQueryConfig.searchFilter = {
+    ...newQueryConfig.searchFilter,
+    value: searchString,
+  };
+  return newQueryConfig;
+};
+
+/**
+ * Record search component that plugs into the query builder
+ */
 export default function TableSearch({
   queryConfig,
   setQueryConfig,
@@ -26,18 +44,26 @@ export default function TableSearch({
         placeholder="Find a crash..."
         aria-label="Crash search"
         aria-describedby="search-icon"
-        onChange={(e) => setSearchString(e.target.value)}
+        onChange={(e) => {
+          if (e.target.value === "") {
+            /** triggers a new query to be built when the search input is cleared
+             * otherwise user would need to click "submit" again
+             */
+            const newQueryConfig = updateQueryConfigSearch("", queryConfig);
+            setQueryConfig(newQueryConfig);
+          }
+          setSearchString(e.target.value);
+        }}
         value={searchString}
         type="search"
       />
       <Button
         onClick={() => {
           const newSearchString = searchString.trim();
-          const newQueryConfig = { ...queryConfig };
-          newQueryConfig.searchFilter = {
-            ...newQueryConfig.searchFilter,
-            value: newSearchString,
-          };
+          const newQueryConfig = updateQueryConfigSearch(
+            newSearchString,
+            queryConfig
+          );
           // save new filter state
           setQueryConfig(newQueryConfig);
           // keep search component in sync with filters
