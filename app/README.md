@@ -54,10 +54,12 @@ npm run dev
   - misc column editing + placement
 - gridtable
   - ability to reset search
+  - pagination
   - local storage / persist settings
   - advanced filters
   - export
   - wrap in an outer Table component that manages the filter components layout?
+  
 - Top nav component
   - app logo
   - navigration crash search
