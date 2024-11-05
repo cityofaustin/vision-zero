@@ -67,13 +67,13 @@ export default function Crashes() {
               </Col>
             </Row>
             <Row className="mb-3">
-              <Col xs={12} md={6}>
+              <Col xs={12} md={5}>
                 <TableSearch
                   queryConfig={queryConfig}
                   setQueryConfig={setQueryConfig}
                 />
               </Col>
-              <Col xs={12} md={6} className="mt-sm-3 mt-md-0">
+              <Col xs={12} md="auto" className="mt-sm-3 mt-md-0">
                 <TableDateSelector
                   queryConfig={queryConfig}
                   setQueryConfig={setQueryConfig}
