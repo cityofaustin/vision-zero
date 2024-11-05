@@ -11,7 +11,7 @@ import TableDateSelector, {
   makeDateFilters,
 } from "@/components/TableDateSelector";
 import TableSearchFieldSelector from "@/components/TableSearchFieldSelector";
-import { useQuery } from "@/utils/graphql";
+import { useQuery, useDataCache } from "@/utils/graphql";
 import { crashesListViewColumns } from "@/configs/crashesListView";
 import { CrashListCrash } from "@/types/types";
 import { useQueryBuilder, QueryConfig } from "@/utils/queryBuilder";
@@ -51,6 +51,8 @@ export default function Crashes() {
     query,
   });
 
+  const cachedData = useDataCache(data);
+
   return (
     <>
       <AppBreadCrumb />
@@ -87,7 +89,7 @@ export default function Crashes() {
           <Row>
             <Col>
               <Table
-                rows={data?.crashes_list_view || []}
+                rows={cachedData?.crashes_list_view || []}
                 columns={crashesListViewColumns}
                 queryConfig={queryConfig}
                 setQueryConfig={setQueryConfig}

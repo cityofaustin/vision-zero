@@ -1,7 +1,7 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
 import useSWR, { SWRConfiguration } from "swr";
 import {
-    gql,
+  gql,
   GraphQLClient,
   request,
   RequestDocument,
@@ -121,6 +121,9 @@ export const useMutation = (mutation: RequestDocument) => {
   return { mutate, loading, error };
 };
 
+/**
+ * Hook which constructs a graphql query string to fetch data from a lookup table
+ */
 export const useLookupQuery = (lookupTableDef: LookupTableDef | undefined) =>
   useMemo(() => {
     if (!lookupTableDef) {
@@ -147,3 +150,18 @@ export const useLookupQuery = (lookupTableDef: LookupTableDef | undefined) =>
       typeName,
     ];
   }, [lookupTableDef]);
+
+/**
+ * Hook that persists queried data while new data is being fetched / revalidated.
+ * this works as a complement to SWR by persisting data when fetch args
+ * have changed
+ **/
+export const useDataCache = <T>(currentData: T | null) => {
+  const [cachedData, setCachedData] = useState<T | null>(currentData);
+  useEffect(() => {
+    if (currentData) {
+      setCachedData(currentData);
+    }
+  }, [currentData]);
+  return cachedData;
+};
