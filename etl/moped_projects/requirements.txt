@@ -1,0 +1,5 @@
+pandas==2.1.*
+# pyproj
+geopandas==0.14.*
+shapely==2.0.*
+requests==2.31.*
