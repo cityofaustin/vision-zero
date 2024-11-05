@@ -34,30 +34,30 @@ export const crashGridTableColumns = {
     label_table: "Secondary Address",
     type: "String",
   },
-  sus_serious_injry_count: {
+  "crash_injury_metrics_view {sus_serious_injry_count} ": {
     searchable: false,
     sortable: true,
     label_table: "Sus Serious Injuries Count",
     type: "Int",
   },
-  vz_fatality_count: {
+   "crash_injury_metrics_view {vz_fatality_count} ": {
     searchable: false,
     sortable: true,
     label_table: "Death Count",
     type: "Date",
   },
-  est_comp_cost_crash_based: {
+  "crash_injury_metrics_view {est_comp_cost_crash_based} ": {
     searchable: false,
     sortable: true,
     label_table: "Est Comp Cost",
     type: "Currency",
   },
-  collsn_desc: {
-    searchable: false,
-    sortable: true,
-    label_table: "Collision Description",
-    type: "String",
-  },
+  // "crash_injury_metrics_view {collsn_desc} ": {
+  //   searchable: false,
+  //   sortable: true,
+  //   label_table: "Collision Description",
+  //   type: "String",
+  // },
 };
 
 export const locationCrashGridTableColumns = {
@@ -194,9 +194,7 @@ export const crashGridTableAdvancedFilters = {
         filter: {
           where: [
             {
-              or: {
-                vz_fatality_count: "_gt: 0",
-              },
+                "crash_injury_metrics_view: { vz_fatality_count: { _gt: 0 } } ": null,
             },
           ],
         },
@@ -207,9 +205,7 @@ export const crashGridTableAdvancedFilters = {
         filter: {
           where: [
             {
-              or: {
-                cris_fatality_count: "_gt: 0",
-              },
+                "crash_injury_metrics_view: { cris_fatality_count: { _gt: 0 } } ": null,
             },
           ],
         },
@@ -220,9 +216,7 @@ export const crashGridTableAdvancedFilters = {
         filter: {
           where: [
             {
-              or: {
-                law_enf_fatality_count: "_gt: 0",
-              },
+                "crash_injury_metrics_view: { law_enf_fatality_count: { _gt: 0 } } ": null,
             },
           ],
         },
@@ -233,9 +227,7 @@ export const crashGridTableAdvancedFilters = {
         filter: {
           where: [
             {
-              or: {
-                sus_serious_injry_count: "_gt: 0",
-              },
+                "crash_injury_metrics_view: { sus_serious_injry_count: { _gt: 0 } } ": null,
             },
           ],
         },
@@ -246,9 +238,7 @@ export const crashGridTableAdvancedFilters = {
         filter: {
           where: [
             {
-              or: {
-                nonincap_injry_count: "_gt: 0",
-              },
+                "crash_injury_metrics_view: { nonincap_injry_count: { _gt: 0 } } ": null,
             },
           ],
         },
