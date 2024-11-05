@@ -40,7 +40,10 @@ npm run dev
 
 ## Todo
 
-- permission checks
+- permissions-based features:
+  - side nav
+  - field editing
+  - etc. see <Can/> component from VZE
 - crash details
   - crash injury widgets
   - swap addresses
@@ -50,11 +53,15 @@ npm run dev
   - recommendations
   - misc column editing + placement
 - gridtable
-  - wrap in an outer Table component that manages the filter components layout?
-  - Custom date range
+  - ability to reset search
   - local storage / persist settings
   - advanced filters
   - export
+  - wrap in an outer Table component that manages the filter components layout?
+- Top nav component
+  - app logo
+  - navigration crash search
+  - profile menu with signout
 - locations
 - location details
 - create crash record
@@ -64,4 +71,4 @@ npm run dev
   - user list
   - add/edit/delete uers
   - copy user emails
-- navigration crash search
+- Login page
