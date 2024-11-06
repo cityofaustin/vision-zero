@@ -94,7 +94,7 @@ jobs:
 
 
       - name: AWS CLI
-        uses: ItsKarma/aws-cli@v1.70.0
+        uses: imehedi/actions-awscli-v2@latest
         with:
           args: ecs update-service --cluster atd-vz-data-cluster-production --service arn:aws:ecs:us-east-1:295525487728:service/atd-vz-data-cluster-production/cr3-and-user-mgmt-api  --force-new-deployment
         env:
