@@ -90,7 +90,7 @@ jobs:
           platforms: linux/amd64,linux/arm64
           context: api
           push: true
-          tags: atddocker/vz-user-cr3-api:${{ github.ref == 'refs/heads/production' && 'production' || 'development' }}
+          tags: atddocker/vz-user-cr3-api:${{ github.ref == 'refs/heads/production' && 'production' || 'latest' }}
 
 
       - name: Set environment for ECS update
