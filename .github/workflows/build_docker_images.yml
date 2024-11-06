@@ -14,9 +14,10 @@ on:
       - "etl/socrata_export/**"
       - "api/**"
   pull_request:
-    # branches:
-    #   - main
-    #   - production
+    branches:
+      - main
+      - production
+      - dockerize-api
     paths:
       - ".github/workflows/build_docker_images.yml"
       - "etl/afd_ems_import/**"
