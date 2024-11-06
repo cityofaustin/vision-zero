@@ -93,11 +93,28 @@ jobs:
           tags: atddocker/vz-user-cr3-api:${{ github.ref == 'refs/heads/production' && 'production' || 'development' }}
 
 
-      - name: AWS CLI
-        uses: imehedi/actions-awscli-v2@latest
-        with:
-          args: ecs update-service --cluster atd-vz-data-cluster-production --service arn:aws:ecs:us-east-1:295525487728:service/atd-vz-data-cluster-production/cr3-and-user-mgmt-api  --force-new-deployment
+      - name: Set environment for ECS update
+        if: steps.changes.outputs.user_cr3_api == 'true'
+        run: |
+          if [ "${{ github.ref }}" == "refs/heads/production" ]; then
+            echo "ECS_CLUSTER=atd-vz-data-cluster-production" >> $GITHUB_ENV
+            echo "ECS_SERVICE=arn:aws:ecs:us-east-1:295525487728:service/atd-vz-data-cluster-production/cr3-and-user-mgmt-api" >> $GITHUB_ENV
+          else
+            echo "ECS_CLUSTER=atd-vz-data-cluster-development" >> $GITHUB_ENV
+            echo "ECS_SERVICE=arn:aws:ecs:us-east-1:295525487728:service/atd-vz-data-cluster-development/cr3-and-user-mgmt-api" >> $GITHUB_ENV
+          fi
+
+      - name: Restart ECS service
+        if: steps.changes.outputs.user_cr3_api == 'true'
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_ECS_CONTROL }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_ID_ECS_CONTROL }}
           AWS_DEFAULT_REGION: "us-east-1"
+          ECS_CLUSTER: ${{ env.ECS_CLUSTER }}
+          ECS_SERVICE: ${{ env.ECS_SERVICE }}
+        run: |
+          sleep 30
+          aws ecs update-service \
+            --cluster $ECS_CLUSTER \
+            --service $ECS_SERVICE \
+            --force-new-deployment
