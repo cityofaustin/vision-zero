@@ -1,8 +1,6 @@
 name: "Build Docker images and push to DockerHub"
 
 on:
-  # Triggers the workflow on push or pull request events but only for the main and production branches
-  # and any updates to the etl scripts
   push:
     branches:
       - main
@@ -24,7 +22,6 @@ on:
       - "etl/cris_import/**"
       - "etl/socrata_export/**"
       - "api/**"
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
 jobs:
@@ -94,3 +91,15 @@ jobs:
           context: api
           push: true
           tags: atddocker/vz-user-cr3-api:${{ github.ref == 'refs/heads/production' && 'production' || 'development' }}
+
+      - name: Restart ECS service
+        if: steps.changes.outputs.user_cr3_api == 'true'
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          sleep 30
+          aws ecs update-service \
+            --cluster atd-vz-data-cluster-staging \
+            --service arn:aws:ecs:us-east-1:295525487728:service/atd-vz-data-cluster-staging/cr3-and-user-mgmt-api \
+            --force-new-deployment
