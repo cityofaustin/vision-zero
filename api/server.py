@@ -68,6 +68,46 @@ ALGORITHMS = ["RS256"]
 APP = Flask(__name__)
 
 
+# Add the appropriate security headers to all responses
+@APP.after_request
+def add_custom_headers(response):
+    # Cache-Control to manage caching behavior
+    response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+
+    # Content-Security-Policy to prevent XSS and other attacks
+    response.headers["Content-Security-Policy"] = (
+        "default-src 'self'; script-src 'self'; object-src 'none'"
+    )
+
+    # Strict-Transport-Security to enforce HTTPS
+    response.headers["Strict-Transport-Security"] = (
+        "max-age=31536000; includeSubDomains; preload"
+    )
+
+    # X-Content-Type-Options to prevent MIME type sniffing
+    response.headers["X-Content-Type-Options"] = "nosniff"
+
+    # X-Frame-Options to prevent clickjacking
+    response.headers["X-Frame-Options"] = "SAMEORIGIN"
+
+    # Referrer-Policy to control referrer information
+    response.headers["Referrer-Policy"] = "no-referrer-when-downgrade"
+
+    # Permissions-Policy to restrict browser feature access
+    response.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()"
+
+    # X-XSS-Protection to prevent reflected XSS attacks (deprecated in modern browsers)
+    response.headers["X-XSS-Protection"] = "1; mode=block"
+
+    # Expect-CT to enforce Certificate Transparency
+    response.headers["Expect-CT"] = "max-age=86400, enforce"
+
+    # Access-Control-Allow-Origin for CORS
+    response.headers["Access-Control-Allow-Origin"] = "https://trusted-origin.com"
+
+    return response
+
+
 # Format error response and append status code.
 class AuthError(Exception):
     def __init__(self, error, status_code):
@@ -231,17 +271,10 @@ current_user = LocalProxy(lambda: getattr(g, "current_user", None))
 
 
 # Controllers API
-@APP.before_request
-def add_custom_headers():
-    @APP.after_request
-    def apply_headers(response):
-        response.headers["Custom-Header"] = "CustomValue"
-        return response
 
 
 @APP.route("/")
 @cross_origin(headers=["Content-Type", "Authorization"])
-@add_custom_headers()
 def healthcheck():
     """No access token required to access this route"""
     now = datetime.datetime.now()
