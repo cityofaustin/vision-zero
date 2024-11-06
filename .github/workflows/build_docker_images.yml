@@ -98,6 +98,6 @@ jobs:
         with:
           args: ecs update-service --cluster atd-vz-data-cluster-production --service arn:aws:ecs:us-east-1:295525487728:service/atd-vz-data-cluster-production/cr3-and-user-mgmt-api  --force-new-deployment
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_ECS_CONTROL }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_ID_ECS_CONTROL }}
           AWS_DEFAULT_REGION: "us-east-1"
