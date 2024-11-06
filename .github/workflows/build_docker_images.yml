@@ -100,7 +100,7 @@ jobs:
             echo "ECS_CLUSTER=atd-vz-data-cluster-production" >> $GITHUB_ENV
             echo "ECS_SERVICE=arn:aws:ecs:us-east-1:295525487728:service/atd-vz-data-cluster-production/cr3-and-user-mgmt-api" >> $GITHUB_ENV
           else
-            echo "ECS_CLUSTER=atd-vz-data-cluster-staging
+            echo "ECS_CLUSTER=atd-vz-data-cluster-staging" >> $GITHUB_ENV
             echo "ECS_SERVICE=arn:aws:ecs:us-east-1:295525487728:service/atd-vz-data-cluster-staging/cr3-and-user-mgmt-api" >> $GITHUB_ENV
           fi
 
