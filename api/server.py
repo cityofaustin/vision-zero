@@ -231,10 +231,17 @@ current_user = LocalProxy(lambda: getattr(g, "current_user", None))
 
 
 # Controllers API
+@APP.before_request
+def add_custom_headers():
+    @APP.after_request
+    def apply_headers(response):
+        response.headers["Custom-Header"] = "CustomValue"
+        return response
 
 
 @APP.route("/")
 @cross_origin(headers=["Content-Type", "Authorization"])
+@add_custom_headers()
 def healthcheck():
     """No access token required to access this route"""
     now = datetime.datetime.now()
@@ -300,14 +307,6 @@ def isValidUser(user_dict):
         return False
 
     return True
-
-
-@APP.before_request
-def add_custom_headers():
-    @APP.after_request
-    def apply_headers(response):
-        response.headers["Custom-Header"] = "CustomValue"
-        return response
 
 
 def hasUserRole(role, user_dict):
