@@ -147,7 +147,7 @@ export interface QueryConfig {
 }
 
 /**
- * Wrap a value in `%` if it is a string and wildcard is true
+ * Wrap a string in `%`
  */
 const wildCardValue = (value: string): string => {
   return `%${value}%`;
@@ -155,17 +155,19 @@ const wildCardValue = (value: string): string => {
 
 /**
  * Wrap strings in quotes and escape double quotes
+ * todo: do we need to escape anything else?
  */
 const quoteWrapAndEscape = (value: string): FilterValue =>
   `"${value.replace('"', '\\"')}"`;
 
 /**
  * Create a string representation of an array of numbers
- * `[1, 2]`  => `"[1, 2]"`
+ * [1, 2]  => "[1, 2]"
  */
 const arrayToStringRep = (arr: number[]): string => {
   return `[${arr}]`;
 };
+
 /**
  * Get the order_by graphql expression, e.g. `{ case_id: desc }`
  */
@@ -174,8 +176,8 @@ const getOrderByExp = (sortColName: string, sortAsc: boolean): string => {
 };
 
 /**
- * Helper function to stringify a filter value so that it can
- * by embedded in a graphql query string.
+ * Stringify a filter value so that it can by embedded in
+ * a graphql query string.
  */
 const stringifyFilterValue = (value: FilterValue, wildcard?: boolean) => {
   if (typeof value === "string") {
@@ -187,7 +189,8 @@ const stringifyFilterValue = (value: FilterValue, wildcard?: boolean) => {
 };
 
 /**
- * Convert a filter into a Hasura graphql `where` expression.
+ * Convert a Filter object into a Hasura graphql `where`
+ * expression string
  *
  * E.g.: `{ record_locator: { _ilike: "%elm st%" } }`
  */
@@ -203,15 +206,17 @@ const filterToWhereExp = (filter: StringFilter | DateFilter): string => {
   return exp;
 };
 
+/**
+ * Return a graphql where expression string that aggregates
+ * multiple filters — this function is recursive
+ */
 const filterGroupToWhereExp = (
   filterGroup: FilterGroup | null
 ): string | null => {
   if (!filterGroup) {
     return null;
   }
-
   let groupExp: (string | null)[] = [];
-
   if (filterGroup.filters) {
     groupExp = filterGroup.filters
       // create a where exp for each filter
@@ -321,85 +326,3 @@ export const useQueryBuilder = (queryConfig: QueryConfig): string =>
   useMemo(() => {
     return buildQuery(queryConfig);
   }, [queryConfig]);
-
-gql`
-  query BuildQuery_crashes_list_view {
-    crashes_list_view(
-      limit: 50
-      order_by: { crash_timestamp: desc }
-      where: {
-        _and: [
-          {
-            # units_filter_card
-            _or: [
-              {
-                # motorcycle
-                _and: [
-                  {
-                    units: {
-                      # unit_description
-                      unit_desc_id: { _eq: 1 }
-                    }
-                  }
-                  {
-                    units: {
-                      # vehicle_body_style
-                      veh_body_styl_id: { _in: [71, 90] }
-                    }
-                  }
-                ]
-              }
-            ]
-          }
-          {
-            # injuries_filter_card
-            _or: [
-              {
-                # vz_fatality_crashes
-                _and: [
-                  {
-                    # vz_fatality_crashes
-                    vz_fatality_count: { _gt: 0 }
-                  }
-                ]
-              }
-            ]
-          }
-          {
-            # geography_filter_card
-            _or: [
-              {
-                # in_austin_full_purpose
-                _and: [
-                  {
-                    # in_austin_full_purpose
-                    in_austin_full_purpose: { _eq: true }
-                  }
-                ]
-              }
-            ]
-          }
-          {
-            # date_filters
-            _and: [
-              {
-                # start_date
-                crash_timestamp: { _gte: "2024-01-01T05:00:00.000Z" }
-              }
-              {
-                # end_date
-                crash_timestamp: { _lte: "2024-11-06T22:12:12.727Z" }
-              }
-            ]
-          }
-        ]
-      }
-    ) {
-      record_locator
-      case_id
-      crash_timestamp
-      address_primary
-      collsn_desc
-    }
-  }
-`;
