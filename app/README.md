@@ -49,17 +49,19 @@ npm run dev
   - swap addresses
   - people table
     - name edit component
+  - charges table
   - notes
   - recommendations
   - misc column editing + placement
 - gridtable
+  - default 'yes'/inverted filters, e.g. afp?
   - ability to reset search
   - pagination
   - local storage / persist settings
-  - advanced filters
+  - advanced filters: test them and add "Other" unit type filter
   - export
   - wrap in an outer Table component that manages the filter components layout?
-  
+  - record counts
 - Top nav component
   - app logo
   - navigration crash search
@@ -74,3 +76,4 @@ npm run dev
   - add/edit/delete uers
   - copy user emails
 - Login page
+- versioned localstorage
