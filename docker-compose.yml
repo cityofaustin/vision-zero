@@ -48,6 +48,6 @@ services:
     env_file:
       - api/.env
     ports:
-      - 3005:5000
+      - 8085:5000
     volumes:
       - ./api:/usr/src/app
