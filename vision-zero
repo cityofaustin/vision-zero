@@ -55,6 +55,14 @@ def checkDockerComposeAvailability():
 def doCommand(args):
     if args.command == "build":
         buildTools(args)
+    elif args.command == "local-stack-up":
+        dbUp(args)
+        graphqlEngineUp(args)
+        cr3UserApiUp(args)
+    elif args.command == "local-stack-down":
+        cr3UserApiDown(args)
+        graphqlEngineDown(args)
+        dbDown(args)
     elif args.command == "db-up":
         dbUp(args)
     elif args.command == "db-down":
@@ -65,8 +73,6 @@ def doCommand(args):
     elif args.command == "graphql-engine-down":
         graphqlEngineDown(args)
     elif args.command == "cr3-user-api-up":
-        dbUp(args)
-        graphqlEngineUp(args)
         cr3UserApiUp(args)
     elif args.command == "cr3-user-api-down":
         cr3UserApiDown(args)
@@ -487,6 +493,8 @@ def get_main_parser():
         "command",
         choices=[
             "build",
+            "local-stack-up",
+            "local-stack-down",
             "db-up",
             "db-down",
             "cr3-user-api-up",
