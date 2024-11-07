@@ -5,13 +5,6 @@ object_relationships:
   - name: crashes_cri
     using:
       foreign_key_constraint_on: cris_crash_id
-  - name: people_edit
-    using:
-      foreign_key_constraint_on:
-        column: id
-        table:
-          name: people_edits
-          schema: public
   - name: units_cris
     using:
       foreign_key_constraint_on: unit_id
