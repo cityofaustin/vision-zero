@@ -67,6 +67,12 @@ def doCommand(args):
         graphqlEngineUp(args)
     elif args.command == "graphql-engine-down":
         graphqlEngineDown(args)
+    elif args.command == "cr3-user-api-up":
+        dbUp(args)
+        graphqlEngineUp(args)
+        cr3UserApiUp(args)
+    elif args.command == "cr3-user-api-down":
+        cr3UserApiDown(args)
     elif args.command == "hasura-console":
         hasuraConsole(args)
     elif args.command == "vze-up":
@@ -332,6 +338,37 @@ def graphqlEngineUp(args):
     print("You can run './vision-zero hasura-console' to open the console.")
 
 
+def cr3UserApiUp(args):
+    print("🚀  Starting Flask API")
+    subprocess.run(
+        docker_compose_invocation
+        + [
+            "-f",
+            "docker-compose.yml",
+            "up",
+            "-d",
+            "cr3-user-api",
+        ]
+    )
+    subprocess.run(["docker", "ps"])
+    print("🚀  CR3 / User flask API started.")
+
+
+def cr3UserApiDown(args):
+    print("🛑 Stopping Flask API")
+    subprocess.run(
+        docker_compose_invocation
+        + [
+            "-f",
+            "docker-compose.yml",
+            "stop",
+            "cr3-user-api",
+        ]
+    )
+    subprocess.run(["docker", "ps"])
+    print("🚀  CR3 / User flask API stopped.")
+
+
 def hasuraConsole(args):
     print("🚀  Opening Hasura console")
     try:
@@ -455,6 +492,8 @@ def get_main_parser():
             "build",
             "db-up",
             "db-down",
+            "cr3-user-api-up",
+            "cr3-user-api-down",
             "graphql-engine-up",
             "graphql-engine-down",
             "vze-up",
