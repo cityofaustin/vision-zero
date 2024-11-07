@@ -1,6 +1,7 @@
 alter table crashes rename column is_non_coa_roadway to is_coa_roadway;
 alter table crashes alter column is_coa_roadway set default false;
 
+COMMENT ON COLUMN public.crashes.is_coa_roadway IS 'If the crash location occured within the City of Austin, not on a private drive, and not intersecting with the non_coa_roadways layer. Set via trigger.';
 
 CREATE OR REPLACE FUNCTION public.crashes_set_spatial_attributes()
  RETURNS trigger
