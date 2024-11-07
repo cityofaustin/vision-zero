@@ -34,6 +34,8 @@ export default function TableSearchFieldSelector({
                 ...newQueryConfig.searchFilter,
                 column: field.value,
               };
+              // reset offset / pagination
+              newQueryConfig.offset = 0;
               setQueryConfig(newQueryConfig);
             }}
             id={field.value}

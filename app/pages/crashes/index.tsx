@@ -18,11 +18,14 @@ import { useQueryBuilder, QueryConfig } from "@/utils/queryBuilder";
 import { DEFAULT_QUERY_LIMIT } from "@/utils/constants";
 import TableAdvancedSearchFilterMenu from "@/components/TableAdvancedSearchFilterMenu";
 import TableAdvancedSearchFilterToggle from "@/components/TableAdvancedSearchFilterToggle";
-import TableResetFiltersToggle from "@/components/TableResetFiltersToggle";
+import TablePaginationControls from "@/components/TablePaginationControls";
 import {
   getDefaultFilterGroups,
   getActiveSwitchFilterCount,
 } from "@/components/TableAdvancedSearchFilterMenu";
+
+// todo: filter reset button
+// import TableResetFiltersToggle from "@/components/TableResetFiltersToggle";
 
 // todo: move all this stuff elsewhere
 const localStorageKey = "crashesListViewQueryConfig";
@@ -33,6 +36,7 @@ const initialQueryConfig: QueryConfig = {
   columns: LIST_VIEW_COLUMNS,
   tableName: "crashes_list_view",
   limit: DEFAULT_QUERY_LIMIT,
+  offset: 0,
   sortColName: "crash_timestamp",
   sortAsc: false,
   searchFilter: {
@@ -114,7 +118,7 @@ export default function Crashes() {
               </Col>
             </Row>
             <Row className="mb-3">
-              <Col xs={12} md={6} className="d-flex">
+              <Col xs={12} md={6} className="d-flex justify-content-between">
                 <TableSearch
                   queryConfig={queryConfig}
                   setQueryConfig={setQueryConfig}
@@ -125,13 +129,21 @@ export default function Crashes() {
                     queryConfig.filterGroups
                   )}
                 />
+              </Col>
+              <Col xs={12} sm="auto">
+                {isLoading && <Spinner variant="primary" />}
+              </Col>
+              <Col className="d-flex justify-content-end">
+                <TablePaginationControls
+                  queryConfig={queryConfig}
+                  setQueryConfig={setQueryConfig}
+                  recordCount={cachedData?.crashes_list_view?.length || 0}
+                />
+
                 {/* <TableResetFiltersToggle
                   queryConfig={initialQueryConfig}
                   setQueryConfig={setQueryConfig}
                 /> */}
-              </Col>
-              <Col xs={12} sm="auto">
-                {isLoading && <Spinner variant="primary" />}
               </Col>
             </Row>
           </form>

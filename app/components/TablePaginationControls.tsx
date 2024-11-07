@@ -1,0 +1,73 @@
+import { Dispatch, SetStateAction } from "react";
+import { produce } from "immer";
+import Button from "react-bootstrap/Button";
+import ButtonGroup from "react-bootstrap/ButtonGroup";
+import ButtonToolbar from "react-bootstrap/ButtonToolbar";
+import { QueryConfig } from "@/utils/queryBuilder";
+import "react-datepicker/dist/react-datepicker.css";
+import { FaCircleArrowRight, FaCircleArrowLeft } from "react-icons/fa6";
+
+interface PaginationControlProps {
+  queryConfig: QueryConfig;
+  setQueryConfig: Dispatch<SetStateAction<QueryConfig>>;
+  recordCount: number;
+}
+
+const getCurrentPageNumber = (offset: number, limit: number): number =>
+  offset / limit + 1;
+
+export default function TablePaginationControls({
+  queryConfig,
+  setQueryConfig,
+  recordCount,
+}: PaginationControlProps) {
+  const currentPageNum = getCurrentPageNumber(
+    queryConfig.offset,
+    queryConfig.limit
+  );
+
+  return (
+    <ButtonToolbar>
+      <ButtonGroup className="me-2" aria-label="Date filter preset buttons">
+        <Button
+          variant="outline-primary"
+          disabled={recordCount === 0 || queryConfig.offset === 0}
+          onClick={() => {
+            const newQueryConfig = produce(queryConfig, (newQueryConfig) => {
+              newQueryConfig.offset =
+                newQueryConfig.offset - newQueryConfig.limit;
+              if (newQueryConfig.offset < 0) {
+                // shouldn't be possible, but ok
+                newQueryConfig.offset = 0;
+              }
+              return newQueryConfig;
+            });
+            setQueryConfig(newQueryConfig);
+          }}
+        >
+          <FaCircleArrowLeft />
+          <span className="ms-2">Prev</span>
+        </Button>
+        {/* todo: the middle button 'disabled' style doesn't look right */}
+        <Button variant="outline-primary" disabled>
+          <span className="mx-2">{`Page ${currentPageNum}`}</span>
+        </Button>
+        <Button
+          variant="outline-primary"
+          disabled={recordCount < queryConfig.limit}
+          onClick={() => {
+            const newQueryConfig = produce(queryConfig, (newQueryConfig) => {
+              newQueryConfig.offset =
+                newQueryConfig.offset + newQueryConfig.limit;
+              return newQueryConfig;
+            });
+            setQueryConfig(newQueryConfig);
+          }}
+        >
+          <span className="me-2">Next</span>
+          <FaCircleArrowRight />
+        </Button>
+      </ButtonGroup>
+    </ButtonToolbar>
+  );
+}

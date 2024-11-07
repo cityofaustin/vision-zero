@@ -5,7 +5,7 @@ import { gql } from "graphql-request";
 
 const BASE_QUERY_STRING = `
     query $queryName {
-        $tableName(limit: $limit, order_by: $orderBy where: $where) {
+        $tableName(limit: $limit, offset: $offset, order_by: $orderBy where: $where) {
             $columns
         }
     }`;
@@ -111,6 +111,10 @@ export interface QueryConfig {
    * The record limit
    */
   limit: number;
+  /**
+   * The query offset (for pagination)
+   */
+  offset: number;
   /**
    * The column name to be used in the `order_by` directive
    */
@@ -274,6 +278,7 @@ const buildQuery = ({
   columns,
   tableName,
   limit,
+  offset,
   sortColName,
   sortAsc,
   filterGroups,
@@ -310,6 +315,7 @@ const buildQuery = ({
   )
     .replace("$tableName", tableName)
     .replace("$limit", String(limit))
+    .replace("$offset", String(offset))
     .replace("$orderBy", getOrderByExp(sortColName, sortAsc))
     .replace("$columns", columnString)
     .replace("$where", where);

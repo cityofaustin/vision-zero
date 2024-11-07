@@ -382,6 +382,9 @@ export default function TableAdvancedSearchFilterMenu({
                           const newQueryConfig = produce(
                             queryConfig,
                             (newQueryConfig) => {
+                              // reset offset/pagination
+                              newQueryConfig.offset = 0;
+                              // add or remove filters
                               if (!isChecked) {
                                 return addFilters(
                                   newQueryConfig,

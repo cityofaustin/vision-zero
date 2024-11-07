@@ -50,6 +50,8 @@ export default function TableSearch({
              * otherwise user would need to click "submit" again
              */
             const newQueryConfig = updateQueryConfigSearch("", queryConfig);
+            // reset offset / pagination
+            newQueryConfig.offset = 0;
             setQueryConfig(newQueryConfig);
           }
           setSearchString(e.target.value);
@@ -64,6 +66,8 @@ export default function TableSearch({
             newSearchString,
             queryConfig
           );
+          // reset offset / pagination
+          newQueryConfig.offset = 0;
           // save new filter state
           setQueryConfig(newQueryConfig);
           // keep search component in sync with filters

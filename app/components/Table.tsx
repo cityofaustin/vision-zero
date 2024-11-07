@@ -28,15 +28,17 @@ export default function Table<T extends Record<string, unknown>>({
               style={{ cursor: col.sortable ? "pointer" : "auto" }}
               onClick={() => {
                 if (col.sortable) {
-                  const newFilters = { ...queryConfig };
+                  const newQueryConfig = { ...queryConfig };
                   if (col.name === queryConfig.sortColName) {
                     // already sorting on this column, so switch order
-                    newFilters.sortAsc = !newFilters.sortAsc;
+                    newQueryConfig.sortAsc = !newQueryConfig.sortAsc;
                   } else {
                     // change sort column and leave order as-is
-                    newFilters.sortColName = String(col.name);
+                    newQueryConfig.sortColName = String(col.name);
                   }
-                  setQueryConfig(newFilters);
+                  // reset offset/pagination
+                  newQueryConfig.offset = 0;
+                  setQueryConfig(newQueryConfig);
                 }
               }}
             >

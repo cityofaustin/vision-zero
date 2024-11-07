@@ -2,11 +2,9 @@ import { Dispatch, SetStateAction, useState } from "react";
 import Button from "react-bootstrap/Button";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
 import ButtonToolbar from "react-bootstrap/ButtonToolbar";
-import Form from "react-bootstrap/Form";
 import DatePicker from "react-datepicker";
 import { QueryConfig, DateFilter, DateFilterMode } from "@/utils/queryBuilder";
 import "react-datepicker/dist/react-datepicker.css";
-import { FaCalendar } from "react-icons/fa6";
 
 interface DateSelectButton {
   label: string;
@@ -136,6 +134,8 @@ export default function TableDateSelector({
                   filters: newFilters,
                 };
                 newQueryConfig.dateFilter = newDateFilter;
+                // reset offset / pagination
+                newQueryConfig.offset = 0;
                 setQueryConfig(newQueryConfig);
               }}
             >
@@ -183,6 +183,8 @@ export default function TableDateSelector({
                   filters: newFilters,
                 };
                 newQueryConfig.dateFilter = newDateFilter;
+                // reset offset / pagination
+                newQueryConfig.offset = 0;
                 setQueryConfig(newQueryConfig);
               }}
             >
