@@ -42,3 +42,12 @@ services:
       - ./database/snapshots:/snapshots
     ports:
       - 5432:5432
+
+  cr3-user-api:
+    build: api
+    env_file:
+      - api/.env
+    ports:
+      - 3005:5000
+    volumes:
+      - ./api:/usr/src/app
