@@ -2,9 +2,11 @@ import { Dispatch, SetStateAction, useState } from "react";
 import Button from "react-bootstrap/Button";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
 import ButtonToolbar from "react-bootstrap/ButtonToolbar";
+import Form from "react-bootstrap/Form";
 import DatePicker from "react-datepicker";
 import { QueryConfig, DateFilter, DateFilterMode } from "@/utils/queryBuilder";
 import "react-datepicker/dist/react-datepicker.css";
+import { FaCalendar } from "react-icons/fa6";
 
 interface DateSelectButton {
   label: string;
@@ -96,7 +98,8 @@ export default function TableDateSelector({
     queryConfig.dateFilter?.filters[1]?.value !== customDateRange[1];
 
   return (
-    <div className="d-flex justify-content-between">
+    <div className="d-flex justify-content-between align-items-center">
+      <span className="fw-bold me-2">Date range</span>
       <ButtonToolbar>
         <ButtonGroup className="me-2" aria-label="Date filter preset buttons">
           {buttons.map((button) => (

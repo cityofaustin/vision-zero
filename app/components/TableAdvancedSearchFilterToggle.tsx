@@ -15,7 +15,7 @@ export default function TableAdvancedSearchFilterToggle({
 }) {
   return (
     <Button
-      className="me-2"
+      className="ms-2"
       variant="outline-primary"
       onClick={() =>
         setIsFilterOpen((prevState) => {

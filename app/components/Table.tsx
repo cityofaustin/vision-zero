@@ -19,7 +19,7 @@ export default function Table<T extends Record<string, unknown>>({
   const SortIcon = queryConfig.sortAsc ? FaSortUp : FaSortDown;
 
   return (
-    <BsTable striped responsive hover>
+    <BsTable responsive hover>
       <thead>
         <tr>
           {columns.map((col) => (

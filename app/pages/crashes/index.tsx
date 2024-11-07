@@ -18,6 +18,7 @@ import { useQueryBuilder, QueryConfig } from "@/utils/queryBuilder";
 import { DEFAULT_QUERY_LIMIT } from "@/utils/constants";
 import TableAdvancedSearchFilterMenu from "@/components/TableAdvancedSearchFilterMenu";
 import TableAdvancedSearchFilterToggle from "@/components/TableAdvancedSearchFilterToggle";
+import TableResetFiltersToggle from "@/components/TableResetFiltersToggle";
 import {
   getDefaultFilterGroups,
   getActiveSwitchFilterCount,
@@ -92,23 +93,9 @@ export default function Crashes() {
         <Card.Header className="fs-5 fw-bold">Crashes</Card.Header>
         <Card.Body>
           <form>
-            <Row className="mt-3 mb-1">
-              <Col xs={12} md={6}>
+            <Row className="mt-3 mb-2">
+              <Col xs={12} md="auto" className="d-flex align-items-center">
                 <TableSearchFieldSelector
-                  queryConfig={queryConfig}
-                  setQueryConfig={setQueryConfig}
-                />
-              </Col>
-            </Row>
-            <Row className="mb-3">
-              <Col xs={12} md={5} className="d-flex">
-                <TableAdvancedSearchFilterToggle
-                  setIsFilterOpen={setIsFilterOpen}
-                  filterCount={getActiveSwitchFilterCount(
-                    queryConfig.filterGroups
-                  )}
-                />
-                <TableSearch
                   queryConfig={queryConfig}
                   setQueryConfig={setQueryConfig}
                 />
@@ -118,6 +105,24 @@ export default function Crashes() {
                   queryConfig={queryConfig}
                   setQueryConfig={setQueryConfig}
                 />
+              </Col>
+            </Row>
+            <Row className="mb-3">
+              <Col xs={12} md={6} className="d-flex">
+                <TableSearch
+                  queryConfig={queryConfig}
+                  setQueryConfig={setQueryConfig}
+                />
+                <TableAdvancedSearchFilterToggle
+                  setIsFilterOpen={setIsFilterOpen}
+                  filterCount={getActiveSwitchFilterCount(
+                    queryConfig.filterGroups
+                  )}
+                />
+                {/* <TableResetFiltersToggle
+                  queryConfig={initialQueryConfig}
+                  setQueryConfig={setQueryConfig}
+                /> */}
               </Col>
               <Col xs={12} sm="auto">
                 {isLoading && <Spinner variant="primary" />}

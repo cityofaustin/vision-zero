@@ -279,6 +279,9 @@ const findSwitchFilterGroup = (
     );
 };
 
+/**
+ * Switch on a filter by adding its group to the query config
+ */
 const addFilters = (
   queryConfig: QueryConfig,
   switchFilterGroup: FilterGroup,
@@ -305,6 +308,10 @@ const addFilters = (
   return queryConfig;
 };
 
+/**
+ * Switch off a filter by removing its group from the query config
+ * @returns
+ */
 const removeFilters = (
   queryConfig: QueryConfig,
   switchFilterGroupId: string,
@@ -338,7 +345,7 @@ const removeFilters = (
 };
 
 /**
- * Table component that controls advanced search filters
+ * Component that controls advanced search filter switches
  */
 export default function TableAdvancedSearchFilterMenu({
   queryConfig,
@@ -390,7 +397,6 @@ export default function TableAdvancedSearchFilterMenu({
                               }
                             }
                           );
-
                           setQueryConfig(newQueryConfig);
                         }}
                       />

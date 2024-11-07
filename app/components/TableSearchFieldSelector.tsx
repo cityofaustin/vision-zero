@@ -18,7 +18,8 @@ export default function TableSearchFieldSelector({
   setQueryConfig,
 }: TableSearchProps) {
   return (
-    <div className="d-flex mb-1">
+    <>
+      <Form.Label className="fw-bold me-2">Search by </Form.Label>
       {fields.map((field) => {
         return (
           <Form.Check
@@ -39,6 +40,6 @@ export default function TableSearchFieldSelector({
           />
         );
       })}
-    </div>
+    </>
   );
 }
