@@ -48,8 +48,7 @@ export default function TablePaginationControls({
           <FaCircleArrowLeft />
           <span className="ms-2">Prev</span>
         </Button>
-        {/* todo: the middle button 'disabled' style doesn't look right */}
-        <Button variant="outline-primary" disabled>
+        <Button variant="outline-primary" active style={{ cursor: "default" }}>
           <span className="mx-2">{`Page ${currentPageNum}`}</span>
         </Button>
         <Button
