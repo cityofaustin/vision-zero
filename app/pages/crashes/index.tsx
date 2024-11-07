@@ -66,6 +66,9 @@ export default function Crashes() {
 
   const cachedData = useDataCache(data);
 
+  /**
+   * Load query config from local storage
+   */
   useEffect(() => {
     const configFromStorageString = localStorage.getItem(localStorageKey) || "";
     try {
@@ -80,6 +83,9 @@ export default function Crashes() {
     }
   }, []);
 
+  /**
+   * Keep changes to query config in sync with localstorage
+   */
   useEffect(() => {
     if (isLocalStorageLoaded) {
       localStorage.setItem(localStorageKey, JSON.stringify(queryConfig));
