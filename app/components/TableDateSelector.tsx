@@ -144,7 +144,6 @@ export default function TableDateSelector({
       {filter.mode === "custom" && (
         <div className="d-flex">
           <DatePicker
-            autoFocus
             toggleCalendarOnIconClick
             className="form-control"
             onChange={(date) => {

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Card from "react-bootstrap/Card";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
@@ -16,6 +16,15 @@ import { crashesListViewColumns } from "@/configs/crashesListView";
 import { CrashListCrash } from "@/types/types";
 import { useQueryBuilder, QueryConfig } from "@/utils/queryBuilder";
 import { DEFAULT_QUERY_LIMIT } from "@/utils/constants";
+import TableAdvancedSearchFilterMenu from "@/components/TableAdvancedSearchFilterMenu";
+import TableAdvancedSearchFilterToggle from "@/components/TableAdvancedSearchFilterToggle";
+import {
+  getDefaultFilterGroups,
+  getActiveSwitchFilterCount,
+} from "@/components/TableAdvancedSearchFilterMenu";
+
+// todo: move all this stuff elsewhere
+const localStorageKey = "crashesListViewQueryConfig";
 
 const LIST_VIEW_COLUMNS = crashesListViewColumns.map((col) => String(col.name));
 
@@ -37,10 +46,13 @@ const initialQueryConfig: QueryConfig = {
     column: "crash_timestamp",
     filters: makeDateFilters("crash_timestamp", getYtdDateRange()),
   },
-  filterGroups: [],
+  filterGroups: getDefaultFilterGroups(),
 };
 
 export default function Crashes() {
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [isLocalStorageLoaded, setIsLocalStorageLoaded] = useState(false);
+
   const [queryConfig, setQueryConfig] =
     useState<QueryConfig>(initialQueryConfig);
   const query = useQueryBuilder(queryConfig);
@@ -48,10 +60,30 @@ export default function Crashes() {
   const { data, isLoading } = useQuery<{
     crashes_list_view: CrashListCrash[];
   }>({
-    query,
+    query: isLocalStorageLoaded ? query : undefined,
   });
 
   const cachedData = useDataCache(data);
+
+  useEffect(() => {
+    const configFromStorageString = localStorage.getItem(localStorageKey) || "";
+    try {
+      const queryConfigFromStorage = JSON.parse(
+        configFromStorageString
+      ) as QueryConfig;
+      // todo: validate with Zod
+      setIsLocalStorageLoaded(true);
+      setQueryConfig(queryConfigFromStorage);
+    } catch {
+      setIsLocalStorageLoaded(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isLocalStorageLoaded) {
+      localStorage.setItem(localStorageKey, JSON.stringify(queryConfig));
+    }
+  }, [isLocalStorageLoaded, queryConfig]);
 
   return (
     <>
@@ -69,7 +101,13 @@ export default function Crashes() {
               </Col>
             </Row>
             <Row className="mb-3">
-              <Col xs={12} md={5}>
+              <Col xs={12} md={5} className="d-flex">
+                <TableAdvancedSearchFilterToggle
+                  setIsFilterOpen={setIsFilterOpen}
+                  filterCount={getActiveSwitchFilterCount(
+                    queryConfig.filterGroups
+                  )}
+                />
                 <TableSearch
                   queryConfig={queryConfig}
                   setQueryConfig={setQueryConfig}
@@ -86,6 +124,20 @@ export default function Crashes() {
               </Col>
             </Row>
           </form>
+          <Row
+            className={
+              isFilterOpen
+                ? "special-filter special-filter-open"
+                : " special-filter"
+            }
+          >
+            <Col>
+              <TableAdvancedSearchFilterMenu
+                queryConfig={queryConfig}
+                setQueryConfig={setQueryConfig}
+              />
+            </Col>
+          </Row>
           <Row>
             <Col>
               <Table

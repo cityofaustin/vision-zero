@@ -37,3 +37,14 @@
 .react-datepicker__calendar-icon {
   margin-top: 0.2rem;
 }
+
+.special-filter {
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.2s ease-out;
+}
+
+.special-filter-open {
+  /* Adjust to be just above content height */
+  max-height: 25rem;
+}

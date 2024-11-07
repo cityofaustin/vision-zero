@@ -11,6 +11,12 @@ const BASE_QUERY_STRING = `
     }`;
 
 /**
+ * The types we currently support as filter values
+ *
+ */
+type FilterValue = string | number | boolean | number[];
+
+/**
  * Interface for a single filter that can be
  * converted into a graphql `where` expression
  */
@@ -23,15 +29,28 @@ interface FilterBase {
   /**
    * Hasura comparison operator, e.g. _eq, _gte
    */
-  operator: string;
+  operator:
+    | "_gte"
+    | "_lte"
+    | "_gt"
+    | "_eq"
+    | "_neq"
+    | "_is_null"
+    | "_ilike"
+    | "_in"
+    | "_nin";
   /**
    * The filter value
    */
-  value: string | number;
+  value: FilterValue;
   /**
    * The db column name to filter on
    */
   column: string;
+  /**
+   * The optional name of a relationship to use when constructing the filter string
+   */
+  relationshipName?: string;
   /**
    * If the filter should be wrapped with `%`
    * --should only be used with string types
@@ -40,23 +59,33 @@ interface FilterBase {
 }
 
 export interface StringFilter extends FilterBase {
-  operator: "_ilike";
   value: string;
 }
 
-export interface DateFilter extends FilterBase {
-  operator: "_gte" | "_lte";
-}
+export interface DateFilter extends FilterBase {}
 
-interface FilterGroup {
+interface FilterGroupBase {
   /**
    * The arbitrary ID must uniquely identifier of this group amongst
    * all other filter groups
    */
   id: string;
+  label?: string;
   groupOperator: "_and" | "_or";
-  filters: (DateFilter | StringFilter)[];
 }
+
+interface FilterGroupWithFilters extends FilterGroupBase {
+  filters: (DateFilter | StringFilter)[];
+  filterGroups?: never;
+}
+
+interface FilterGroupWithFilterGroups extends FilterGroupBase {
+  filters?: never;
+  filterGroups: FilterGroup[];
+}
+
+// todo: more documentation here
+export type FilterGroup = FilterGroupWithFilterGroups | FilterGroupWithFilters;
 
 /**
  * Used by the date selector component to keep shorthand
@@ -114,63 +143,29 @@ export interface QueryConfig {
    * Any additional optional filters. Advanced filter switches
    * would go here, for example.
    */
-  filterGroups?: FilterGroup[];
+  filterGroups: FilterGroup[];
 }
-
-/**
- * Utility function to extract a filter by ID
- *
- * todo: not in use anywhere
- */
-export const getFilterById = (
-  queryConfig: QueryConfig,
-  groupId: string,
-  filterId: string
-): {
-  groupIdx: number;
-  filterIdx: number;
-  filter: StringFilter | DateFilter | undefined;
-} => {
-  if (!queryConfig.filterGroups) {
-    return { groupIdx: -1, filterIdx: -1, filter: undefined };
-  }
-  const groupIdx = queryConfig.filterGroups.findIndex(
-    (group) => group.id === groupId
-  );
-  const group = groupIdx > -1 ? queryConfig.filterGroups[groupIdx] : undefined;
-
-  if (!group) {
-    return { groupIdx: -1, filterIdx: -1, filter: undefined };
-  }
-
-  const filterIdx = group
-    ? group.filters.findIndex((f) => f.id === filterId)
-    : -1;
-
-  const filter = filterIdx > -1 ? group.filters[filterIdx] : undefined;
-
-  return { groupIdx, filterIdx, filter };
-};
 
 /**
  * Wrap a value in `%` if it is a string and wildcard is true
  */
-const maybeWildCardValue = (
-  value: string | number,
-  wildcard: boolean
-): string | number => {
-  if (!wildcard || typeof value !== "string") {
-    return value;
-  }
+const wildCardValue = (value: string): string => {
   return `%${value}%`;
 };
 
 /**
- * Escape double quotes in a value by first testing if it is a string
+ * Wrap strings in quotes and escape double quotes
  */
-const maybeQuoteEscapeValue = (value: string | number) =>
-  typeof value === "string" ? `"${value.replace('"', '\\"')}"` : String(value);
+const quoteWrapAndEscape = (value: string): FilterValue =>
+  `"${value.replace('"', '\\"')}"`;
 
+/**
+ * Create a string representation of an array of numbers
+ * `[1, 2]`  => `"[1, 2]"`
+ */
+const arrayToStringRep = (arr: number[]): string => {
+  return `[${arr}]`;
+};
 /**
  * Get the order_by graphql expression, e.g. `{ case_id: desc }`
  */
@@ -179,36 +174,77 @@ const getOrderByExp = (sortColName: string, sortAsc: boolean): string => {
 };
 
 /**
+ * Helper function to stringify a filter value so that it can
+ * by embedded in a graphql query string.
+ */
+const stringifyFilterValue = (value: FilterValue, wildcard?: boolean) => {
+  if (typeof value === "string") {
+    return quoteWrapAndEscape(wildcard ? wildCardValue(value) : value);
+  } else if (Array.isArray(value)) {
+    return arrayToStringRep(value);
+  }
+  return `${value}`;
+};
+
+/**
  * Convert a filter into a Hasura graphql `where` expression.
  *
  * E.g.: `{ record_locator: { _ilike: "%elm st%" } }`
  */
 const filterToWhereExp = (filter: StringFilter | DateFilter): string => {
-  return `{ ${filter.column}: { ${filter.operator}: ${maybeQuoteEscapeValue(
-    maybeWildCardValue(filter.value, !!filter.wildcard)
-  )}}
-      }`;
+  const comment = `\n # ${filter.id} \n`;
+  const exp = `{ ${comment} ${filter.column}: { ${
+    filter.operator
+  }: ${stringifyFilterValue(filter.value, !!filter.wildcard)} } }`;
+  if (filter.relationshipName) {
+    // wrap filter string in relationship
+    return `{ ${filter.relationshipName}:  ${exp} }`;
+  }
+  return exp;
+};
+
+const filterGroupToWhereExp = (
+  filterGroup: FilterGroup | null
+): string | null => {
+  if (!filterGroup) {
+    return null;
+  }
+
+  let groupExp: (string | null)[] = [];
+
+  if (filterGroup.filters) {
+    groupExp = filterGroup.filters
+      // create a where exp for each filter
+      .map((filter) => filterToWhereExp(filter));
+  } else if (filterGroup.filterGroups) {
+    groupExp = filterGroup.filterGroups.map((nestedFilterGroup) =>
+      filterGroupToWhereExp(nestedFilterGroup)
+    );
+  }
+  const comment = `\n # ${filterGroup.id} \n`;
+
+  if (groupExp.length === 0) {
+    // this filter group was empty
+    // return null
+    return null;
+  }
+  return `{ ${comment} ${filterGroup.groupOperator}: [ ${groupExp.join(
+    "\n"
+  )} ] }`;
 };
 
 /**
  * Compile all filters into a single graphql `where` expression.
  *
- * Each group is accumulated by `_and` condition, while filters
- * within each group are accumulated by the `groupOperator`
+ * Each group is accumulated by `_and` condition, while filters and
+ * nested FilterGroups are accumulated by the `groupOperator`
  */
 const getWhereExp = (filterGroups: FilterGroup[]): string => {
   const andExps = filterGroups
-    .filter((group) => group.filters.length > 0)
-    .map((group) => {
-      const groupExps = group.filters
-        .map((filter) => filterToWhereExp(filter))
-        .filter((x) => !!x);
-      return `{ ${group.groupOperator}: [ ${groupExps.join("\n")} ] }`;
-    });
-
-  const whereExp = `{ _and: [ ${andExps.join("\n")} ]}`;
-
-  return whereExp;
+    .map((filterGroup) => filterGroupToWhereExp(filterGroup))
+    // remove any null values, which are returned when a fitler group is empty
+    .filter((x) => !!x);
+  return andExps.length > 0 ? `{ _and: [ ${andExps.join("\n")} ]}` : "";
 };
 
 /**
@@ -285,3 +321,85 @@ export const useQueryBuilder = (queryConfig: QueryConfig): string =>
   useMemo(() => {
     return buildQuery(queryConfig);
   }, [queryConfig]);
+
+gql`
+  query BuildQuery_crashes_list_view {
+    crashes_list_view(
+      limit: 50
+      order_by: { crash_timestamp: desc }
+      where: {
+        _and: [
+          {
+            # units_filter_card
+            _or: [
+              {
+                # motorcycle
+                _and: [
+                  {
+                    units: {
+                      # unit_description
+                      unit_desc_id: { _eq: 1 }
+                    }
+                  }
+                  {
+                    units: {
+                      # vehicle_body_style
+                      veh_body_styl_id: { _in: [71, 90] }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+          {
+            # injuries_filter_card
+            _or: [
+              {
+                # vz_fatality_crashes
+                _and: [
+                  {
+                    # vz_fatality_crashes
+                    vz_fatality_count: { _gt: 0 }
+                  }
+                ]
+              }
+            ]
+          }
+          {
+            # geography_filter_card
+            _or: [
+              {
+                # in_austin_full_purpose
+                _and: [
+                  {
+                    # in_austin_full_purpose
+                    in_austin_full_purpose: { _eq: true }
+                  }
+                ]
+              }
+            ]
+          }
+          {
+            # date_filters
+            _and: [
+              {
+                # start_date
+                crash_timestamp: { _gte: "2024-01-01T05:00:00.000Z" }
+              }
+              {
+                # end_date
+                crash_timestamp: { _lte: "2024-11-06T22:12:12.727Z" }
+              }
+            ]
+          }
+        ]
+      }
+    ) {
+      record_locator
+      case_id
+      crash_timestamp
+      address_primary
+      collsn_desc
+    }
+  }
+`;
