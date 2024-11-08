@@ -3,7 +3,7 @@ import Button from "react-bootstrap/Button";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
 import ButtonToolbar from "react-bootstrap/ButtonToolbar";
 import DatePicker from "react-datepicker";
-import { QueryConfig, DateFilter, DateFilterMode } from "@/utils/queryBuilder";
+import { QueryConfig, DateFilterMode, Filter } from "@/utils/queryBuilder";
 import "react-datepicker/dist/react-datepicker.css";
 
 interface DateSelectButton {
@@ -48,7 +48,7 @@ const getYearRange = (numYears: number): [string, string] => {
 export const makeDateFilters = (
   column: string,
   dates: [] | [string, string]
-): DateFilter[] => {
+): Filter[] => {
   return dates.map((dateString, i) => ({
     id: i === 0 ? "start_date" : "end_date",
     operator: i === 0 ? "_gte" : "_lte",

@@ -33,7 +33,7 @@ export default function TableSearch({
   setQueryConfig,
 }: TableSearchProps) {
   const [searchString, setSearchString] = useState<string>(
-    queryConfig.searchFilter.value || ""
+    String(queryConfig.searchFilter.value || "")
   );
   return (
     <InputGroup>

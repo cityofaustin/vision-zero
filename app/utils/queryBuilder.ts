@@ -20,7 +20,7 @@ type FilterValue = string | number | boolean | number[];
  * Interface for a single filter that can be
  * converted into a graphql `where` expression
  */
-interface FilterBase {
+export interface Filter {
   /**
    * Arbitrary but must uniquely identify the filter by name amongst all
    * other filters in the same group
@@ -58,12 +58,6 @@ interface FilterBase {
   wildcard?: boolean;
 }
 
-export interface StringFilter extends FilterBase {
-  value: string;
-}
-
-export interface DateFilter extends FilterBase {}
-
 interface FilterGroupBase {
   /**
    * The arbitrary ID must uniquely identifier of this group amongst
@@ -75,7 +69,7 @@ interface FilterGroupBase {
 }
 
 interface FilterGroupWithFilters extends FilterGroupBase {
-  filters: (DateFilter | StringFilter)[];
+  filters: Filter[];
   filterGroups?: never;
 }
 
@@ -85,6 +79,7 @@ interface FilterGroupWithFilterGroups extends FilterGroupBase {
 }
 
 // todo: more documentation here
+// todo: actually, make filters a union of FilterGroup[] or Filter[]? seems easier to grok
 export type FilterGroup = FilterGroupWithFilterGroups | FilterGroupWithFilters;
 
 /**
@@ -128,7 +123,7 @@ export interface QueryConfig {
    * The query buildler has special handling to include this
    * filter as any other filter group
    */
-  searchFilter: StringFilter;
+  searchFilter: Filter;
   /**
    * The filter settings for filtering by date. Designed to
    * be compatible with the DateSeletor component which uses
@@ -141,7 +136,7 @@ export interface QueryConfig {
      * are constructed by the UI component
      */
     column: string;
-    filters: DateFilter[];
+    filters: Filter[];
   };
   /**
    * Any additional optional filters. Advanced filter switches
@@ -198,7 +193,7 @@ const stringifyFilterValue = (value: FilterValue, wildcard?: boolean) => {
  *
  * E.g.: `{ record_locator: { _ilike: "%elm st%" } }`
  */
-const filterToWhereExp = (filter: StringFilter | DateFilter): string => {
+const filterToWhereExp = (filter: Filter): string => {
   const comment = `\n # ${filter.id} \n`;
   const exp = `{ ${comment} ${filter.column}: { ${
     filter.operator
