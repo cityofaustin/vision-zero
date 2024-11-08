@@ -1,10 +1,16 @@
-# Gets the ID and location of every record in the crashes table
+# Gets the ID and location of crashes
 query_vz = """
     {
-        crashes(where: { position: { _is_null: false } }) {
-            id,
-            position,
+      crashes(
+        where: {
+          position: { _is_null: false },
+          is_deleted: { _eq: false },
+          is_temp_record: { _eq: false }
         }
+      ) {
+        id,
+        position
+      }
     }
 """
 
