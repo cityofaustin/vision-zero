@@ -40,11 +40,10 @@ export const useQuery = <T>({
   variables,
   options,
 }: {
-  query?: RequestDocument;
+  query: RequestDocument | null;
   variables?: Variables;
   options?: SWRConfiguration;
 }) => {
-  // todo: we need to use an auth context?
   const { getAccessTokenSilently } = useAuth0();
 
   const fetchWithAuth = async ([query, variables]: [
@@ -53,6 +52,7 @@ export const useQuery = <T>({
   ]) => {
     // todo: what if token not returned?
     const token = await getAccessTokenSilently();
+    // todo: <T> passed here is assigned to query results without validation - we need to use a schema validator
     return fetcher<T>([query, variables, token]);
   };
 
