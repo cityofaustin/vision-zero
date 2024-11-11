@@ -2,7 +2,7 @@
 
 This ETL downloads crash and people records from the VZ database and publishes them to the Open Data Portal, formerly known as Socrata. It also publishes a crash <> moped project component lookup table.
 
-Records are pushed to three datasets, a crash-level dataset and a person-level dataset:
+Records are pushed to three datasets, a crash-level dataset, a person-level dataset, and a dataset that holds crash-moped relationships:
 
 | name             | dataset staging                                                                                                                         | dataset prod                                                                                                                                    |
 | ---------------- | --------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
