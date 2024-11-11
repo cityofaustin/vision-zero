@@ -119,9 +119,9 @@ export interface QueryConfig {
    */
   sortAsc: boolean;
   /**
-   * The filter to be managed by a search input component.
-   * The query buildler has special handling to include this
-   * filter as any other filter group
+   * The filter to be managed by the search component.
+   * The query buildler has special handling to apply this
+   * filter when its value is not an empty string
    */
   searchFilter: Filter;
   /**
