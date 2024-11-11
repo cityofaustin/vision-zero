@@ -71,16 +71,24 @@ const isNewRecordEvent = change => change.operation_type === "create";
 
 /**
  * The primary UI component which renders the change log with clickable rows
- * can be collapsed
+ * The Card defaults to being "collapsed", the open/closed state is stored in localStorage
  */
 export default function CrashChangeLog({ data }) {
   const [selectedChange, setSelectedChange] = useState(null);
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(
+    localStorage.getItem("showHistory") === "true"
+  );
 
   const changes = useChangeLogData(data);
   if (changes.length === 0) {
     return <p>No change history found</p>;
   }
+
+  const toggleCollapseHistory = () => {
+    const nextIsOpen = !isOpen;
+    setIsOpen(nextIsOpen);
+    localStorage.setItem("showHistory", nextIsOpen);
+  };
 
   return (
     <Card>
@@ -89,7 +97,7 @@ export default function CrashChangeLog({ data }) {
           block
           color="link"
           className="text-left m-0 p-0"
-          onClick={() => setIsOpen(!isOpen)}
+          onClick={toggleCollapseHistory}
         >
           Record history
           <Badge color="secondary float-right">{changes.length}</Badge>
