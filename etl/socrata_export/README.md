@@ -1,13 +1,14 @@
 # Open Data Portal (Socrata) Export
 
-This ETL downloads crash and people records from the VZ database and publishes them to the Open Data Portal, formerly known as Socrata.
+This ETL downloads crash and people records from the VZ database and publishes them to the Open Data Portal, formerly known as Socrata. It also publishes a crash <> moped project component lookup table.
 
-Records are pushed to two datasets, a crash-level dataset and a person-level dataset:
+Records are pushed to three datasets, a crash-level dataset and a person-level dataset:
 
-| name    | dataset staging                                                                                                                         | dataset prod                                                                                                                                    |
-| ------- | --------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| crashes | [`3aut-fhzp`](https://datahub.austintexas.gov/Transportation-and-Mobility/Test-Crash-Report-Data/3aut-fhzp/about_data)                  | [`y2wy-tgr5`](https://datahub.austintexas.gov/Transportation-and-Mobility/Austin-Crash-Report-Data-Crash-Level-Records/y2wy-tgr5/about_data)    |
-| people  | [`v3x4-fjgm`](https://datahub.austintexas.gov/Transportation-and-Mobility/Test-Austin-Crash-Demographic-Statistics-incomplet/v3x4-fjgm) | [`xecs-rpy9`](https://data.austintexas.gov/Transportation-and-Mobility/Austin-Crash-Report-Data-Crash-Victim-Demographic-/xecs-rpy9/about_data) |
+| name             | dataset staging                                                                                                                         | dataset prod                                                                                                                                    |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| crashes          | [`3aut-fhzp`](https://datahub.austintexas.gov/Transportation-and-Mobility/Test-Crash-Report-Data/3aut-fhzp/about_data)                  | [`y2wy-tgr5`](https://datahub.austintexas.gov/Transportation-and-Mobility/Austin-Crash-Report-Data-Crash-Level-Records/y2wy-tgr5/about_data)    |
+| people           | [`v3x4-fjgm`](https://datahub.austintexas.gov/Transportation-and-Mobility/Test-Austin-Crash-Demographic-Statistics-incomplet/v3x4-fjgm) | [`xecs-rpy9`](https://data.austintexas.gov/Transportation-and-Mobility/Austin-Crash-Report-Data-Crash-Victim-Demographic-/xecs-rpy9/about_data) |
+| crash-components | [`gb78-y2pd`](https://datahub.austintexas.gov/Transportation-and-Mobility/Vision-Zero-Crash-mobility-project-lookup-table/gb78-y2pd)    |                                                                                                                                                 |
 
 ## Quick start
 
@@ -23,12 +24,12 @@ $ docker compose run socrata_export
 
 ```shell
 # from the socrata_export container's shell
-$ ./socrata_export.py --crashes --people
+$ ./socrata_export.py --crashes --people --crash-components
 ```
 
 ## CLI
 
-The CLI args `--crashes` and `--people` control which dataset(s) will be processed. At least one must be specified.
+The CLI args `--crashes` and `--people` and `--crash-components` control which dataset(s) will be processed. At least one must be specified.
 
 ```shell
 $ ./socrata_export.py --people
