@@ -3,6 +3,7 @@ import { produce } from "immer";
 import Button from "react-bootstrap/Button";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
 import ButtonToolbar from "react-bootstrap/ButtonToolbar";
+import Spinner from "react-bootstrap/Spinner";
 import { QueryConfig } from "@/utils/queryBuilder";
 import "react-datepicker/dist/react-datepicker.css";
 import { FaCircleArrowRight, FaCircleArrowLeft } from "react-icons/fa6";
@@ -11,6 +12,7 @@ interface PaginationControlProps {
   queryConfig: QueryConfig;
   setQueryConfig: Dispatch<SetStateAction<QueryConfig>>;
   recordCount: number;
+  isLoading: boolean;
 }
 
 const getCurrentPageNumber = (offset: number, limit: number): number =>
@@ -20,6 +22,7 @@ export default function TablePaginationControls({
   queryConfig,
   setQueryConfig,
   recordCount,
+  isLoading,
 }: PaginationControlProps) {
   const currentPageNum = getCurrentPageNumber(
     queryConfig.offset,
@@ -31,7 +34,7 @@ export default function TablePaginationControls({
       <ButtonGroup className="me-2" aria-label="Date filter preset buttons">
         <Button
           variant="outline-primary"
-          disabled={recordCount === 0 || queryConfig.offset === 0}
+          disabled={recordCount === 0 || queryConfig.offset === 0 || isLoading}
           onClick={() => {
             const newQueryConfig = produce(queryConfig, (newQueryConfig) => {
               newQueryConfig.offset =
@@ -45,15 +48,20 @@ export default function TablePaginationControls({
             setQueryConfig(newQueryConfig);
           }}
         >
-          <FaCircleArrowLeft />
-          <span className="ms-2">Prev</span>
+          <span className="text-nowrap d-flex align-items-center">
+            <FaCircleArrowLeft />
+            <span className="ms-2">Prev</span>
+          </span>
         </Button>
-        <Button variant="outline-primary" active style={{ cursor: "default" }}>
-          <span className="mx-2">{`Page ${currentPageNum}`}</span>
+        <Button variant="outline-primary" style={{ pointerEvents: "none" }}>
+          {!isLoading && (
+            <span className="mx-2">{`Page ${currentPageNum}`}</span>
+          )}
+          {isLoading && <Spinner size="sm" variant="primary" />}
         </Button>
         <Button
           variant="outline-primary"
-          disabled={recordCount < queryConfig.limit}
+          disabled={recordCount < queryConfig.limit || isLoading}
           onClick={() => {
             const newQueryConfig = produce(queryConfig, (newQueryConfig) => {
               newQueryConfig.offset =
@@ -63,8 +71,10 @@ export default function TablePaginationControls({
             setQueryConfig(newQueryConfig);
           }}
         >
-          <span className="me-2">Next</span>
-          <FaCircleArrowRight />
+          <span className="text-nowrap d-flex align-items-center">
+            <span className="me-2">Next</span>
+            <FaCircleArrowRight />
+          </span>
         </Button>
       </ButtonGroup>
     </ButtonToolbar>

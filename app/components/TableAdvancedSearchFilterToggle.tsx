@@ -15,7 +15,7 @@ export default function TableAdvancedSearchFilterToggle({
 }) {
   return (
     <Button
-      className="ms-2"
+      className="mx-2"
       variant="outline-primary"
       onClick={() =>
         setIsFilterOpen((prevState) => {
@@ -23,7 +23,7 @@ export default function TableAdvancedSearchFilterToggle({
         })
       }
     >
-      <span className="text-nowrap">
+      <span className="text-nowrap d-flex align-items-center">
         <FaFilter />
         <span className="mx-2">Filters</span>
         {filterCount > 0 && <Badge bg="primary">{filterCount}</Badge>}

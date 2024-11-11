@@ -1,29 +1,22 @@
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction } from "react";
+import { produce } from "immer";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
 import { FaMagnifyingGlass } from "react-icons/fa6";
 import { QueryConfig } from "@/utils/queryBuilder";
 
-interface TableSearchProps {
+export interface TableSearchProps {
   queryConfig: QueryConfig;
   setQueryConfig: Dispatch<SetStateAction<QueryConfig>>;
+  searchSettings: SearchSettings;
+  setSearchSettings: Dispatch<SetStateAction<SearchSettings>>;
 }
 
-/**
- * Update the queryConfig with a new search string
- */
-const updateQueryConfigSearch = (
-  searchString: string,
-  queryConfig: QueryConfig
-) => {
-  const newQueryConfig = { ...queryConfig };
-  newQueryConfig.searchFilter = {
-    ...newQueryConfig.searchFilter,
-    value: searchString,
-  };
-  return newQueryConfig;
-};
+export interface SearchSettings {
+  searchString: string;
+  searchColumn: string;
+}
 
 /**
  * Record search component that plugs into the query builder
@@ -31,10 +24,9 @@ const updateQueryConfigSearch = (
 export default function TableSearch({
   queryConfig,
   setQueryConfig,
+  searchSettings,
+  setSearchSettings,
 }: TableSearchProps) {
-  const [searchString, setSearchString] = useState<string>(
-    String(queryConfig.searchFilter.value || "")
-  );
   return (
     <InputGroup>
       <InputGroup.Text id="search-icon">
@@ -46,35 +38,48 @@ export default function TableSearch({
         aria-describedby="search-icon"
         onChange={(e) => {
           if (e.target.value === "") {
-            /** triggers a new query to be built when the search input is cleared
+            /**
+             * trigger a new query to be built when the search input is cleared
              * otherwise user would need to click "submit" again
              */
-            const newQueryConfig = updateQueryConfigSearch("", queryConfig);
-            // reset offset / pagination
-            newQueryConfig.offset = 0;
+            const newQueryConfig = produce(queryConfig, (newQueryConfig) => {
+              newQueryConfig.searchFilter.value = "";
+              newQueryConfig.searchFilter.column = searchSettings.searchColumn;
+              // reset offset / pagination
+              newQueryConfig.offset = 0;
+              return newQueryConfig;
+            });
             setQueryConfig(newQueryConfig);
+          } else {
+            searchSettings.searchString = e.target.value;
+            setSearchSettings({ ...searchSettings });
           }
-          setSearchString(e.target.value);
         }}
-        value={searchString}
+        value={searchSettings.searchString}
         type="search"
       />
       <Button
+        disabled={
+          (queryConfig.searchFilter.value === searchSettings.searchString &&
+            queryConfig.searchFilter.column === searchSettings.searchColumn) ||
+          // this second case keeps the search button disabled when switching search columns
+          // when the input is empty
+          (queryConfig.searchFilter.value === searchSettings.searchString &&
+            searchSettings.searchString === "")
+        }
         onClick={() => {
-          const newSearchString = searchString.trim();
-          const newQueryConfig = updateQueryConfigSearch(
-            newSearchString,
-            queryConfig
-          );
-          // reset offset / pagination
-          newQueryConfig.offset = 0;
+          const newSearchString = searchSettings.searchString.trim();
+          const newQueryConfig = produce(queryConfig, (newQueryConfig) => {
+            newQueryConfig.searchFilter.value = newSearchString;
+            newQueryConfig.searchFilter.column = searchSettings.searchColumn;
+            // reset offset / pagination
+            newQueryConfig.offset = 0;
+            return newQueryConfig;
+          });
           // save new filter state
           setQueryConfig(newQueryConfig);
-          // keep search component in sync with filters
-          // (we don't want to trim the search value until submit,
-          // otherwise the user cannot input a whitespace character)
-          setSearchString(newSearchString);
         }}
+        type="submit"
       >
         Search
       </Button>

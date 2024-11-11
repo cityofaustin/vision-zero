@@ -1,25 +1,21 @@
-import { Dispatch, SetStateAction } from "react";
 import Form from "react-bootstrap/Form";
-import { QueryConfig } from "@/utils/queryBuilder";
+import { TableSearchProps } from "./TableSearch";
 
+// todo: move to prop
 const fields = [
   { label: "Crash ID", value: "record_locator" },
   { label: "Case ID", value: "case_id" },
   { label: "Address", value: "address_primary" },
 ];
 
-interface TableSearchProps {
-  queryConfig: QueryConfig;
-  setQueryConfig: Dispatch<SetStateAction<QueryConfig>>;
-}
-
 export default function TableSearchFieldSelector({
-  queryConfig,
-  setQueryConfig,
+  searchSettings,
+  setSearchSettings,
 }: TableSearchProps) {
+  // todo: bug here where changing the search field clears the search input if it hasn't been searched
   return (
     <>
-      <Form.Label className="fw-bold me-2">Search by </Form.Label>
+      <Form.Label className="fw-bold me-2 mb-0">Search by </Form.Label>
       {fields.map((field) => {
         return (
           <Form.Check
@@ -27,16 +23,19 @@ export default function TableSearchFieldSelector({
             inline
             label={field.label}
             type="radio"
-            checked={queryConfig.searchFilter.column === field.value}
+            checked={searchSettings.searchColumn === field.value}
             onChange={() => {
-              const newQueryConfig = { ...queryConfig };
-              newQueryConfig.searchFilter = {
-                ...newQueryConfig.searchFilter,
-                column: field.value,
-              };
-              // reset offset / pagination
-              newQueryConfig.offset = 0;
-              setQueryConfig(newQueryConfig);
+              //   const newQueryConfig = { ...queryConfig };
+              //   newQueryConfig.searchFilter = {
+              //     ...newQueryConfig.searchFilter,
+              //     column: field.value,
+              //     value: searchSettings.searchString,
+              //   };
+              //   // reset offset / pagination
+              //   newQueryConfig.offset = 0;
+              const newSearchSettings = { ...searchSettings };
+              newSearchSettings.searchColumn = field.value;
+              setSearchSettings(newSearchSettings);
             }}
             id={field.value}
           />

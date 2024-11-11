@@ -1,10 +1,15 @@
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
 import ButtonToolbar from "react-bootstrap/ButtonToolbar";
 import DatePicker from "react-datepicker";
 import { QueryConfig, DateFilterMode, Filter } from "@/utils/queryBuilder";
 import "react-datepicker/dist/react-datepicker.css";
+
+type DateRange = {
+  start: Date | null;
+  end: Date | null;
+};
 
 interface DateSelectButton {
   label: string;
@@ -25,20 +30,20 @@ const buttons: DateSelectButton[] = [
  * Get an array of timestamp isostrings in the format of
  * [<first day of year>, now] - in local time
  */
-export const getYtdDateRange = (): [string, string] => {
+export const getStartOfYearDate = (): Date => {
   const now = new Date();
   const yearStart = new Date(now.getFullYear(), 0, 1, 0, 0, 0);
-  return [yearStart.toISOString(), now.toISOString()];
+  return yearStart;
 };
 
 /**
- * Get an array of timestamp isostrings in the format of
- * [now - numYears, now] - in local time
+ * Get start/end DateRange for x years ago
+ * [now - numYears, null] - in local time
  */
-const getYearRange = (numYears: number): [string, string] => {
+const getYearsAgoDate = (numYears: number): Date => {
   const targetStartDate = new Date();
   targetStartDate.setFullYear(targetStartDate.getFullYear() - numYears);
-  return [targetStartDate.toISOString(), new Date().toISOString()];
+  return targetStartDate;
 };
 
 /**
@@ -47,14 +52,26 @@ const getYearRange = (numYears: number): [string, string] => {
  */
 export const makeDateFilters = (
   column: string,
-  dates: [] | [string, string]
+  { start, end }: DateRange
 ): Filter[] => {
-  return dates.map((dateString, i) => ({
-    id: i === 0 ? "start_date" : "end_date",
-    operator: i === 0 ? "_gte" : "_lte",
-    value: dateString,
-    column: column,
-  }));
+  const filters: Filter[] = [];
+  if (start) {
+    filters.push({
+      id: "date_start",
+      operator: "_gte",
+      value: start.toISOString(),
+      column: column,
+    });
+  }
+  if (end) {
+    filters.push({
+      id: "date_end",
+      operator: "_lte",
+      value: end.toISOString(),
+      column: column,
+    });
+  }
+  return filters;
 };
 
 // todo: these are shared props export the interface from elsewhere
@@ -64,36 +81,86 @@ interface TableSearchProps {
 }
 
 /**
- * Extract the start/end dates from a date filter
- * if exactly two filters are not found, return an array of [now, now]
+ * Construct a DateRange from a quey Filter
  */
-const getDateRangeFromDateFilter = (
-  queryConfig: QueryConfig
-): [string, string] => {
-  const filterValues = queryConfig.dateFilter?.filters.map((filter) =>
-    String(filter.value)
-  );
-  if (filterValues && filterValues.length === 2) {
-    return [filterValues[0], filterValues[1]];
+const getDateRangeFromDateFilter = (queryConfig: QueryConfig): DateRange => {
+  const filters = queryConfig.dateFilter?.filters || [];
+  if (queryConfig.dateFilter?.mode === "all") {
+    // build a range 2010 to present - this is to translate `all` mode
+    // to `custom` range mode
+    return {
+      start: new Date(2010, 0, 1, 0, 0, 0),
+      end: null,
+    };
+  } else if (["1y", "5y", "ytd"].includes(queryConfig.dateFilter?.mode || "")) {
+    // start date with no end date
+    const start = new Date(String(filters[0].value || ""));
+    return { start, end: null };
+  } else if (queryConfig.dateFilter?.mode === "custom") {
+    return {
+      // expect to be handling start/end strings
+      start:
+        typeof filters[0]?.value === "string"
+          ? new Date(filters[0].value)
+          : null,
+      end:
+        typeof filters[1]?.value === "string"
+          ? new Date(filters[1].value)
+          : null,
+    };
   } else {
-    const nowString = new Date().toISOString();
-    return [nowString, nowString];
+    // not possible - return now, now
+    const now = new Date();
+    return { start: now, end: now };
   }
 };
 
+/**
+ * Get a date range or an empty array. A date
+ * range being [<isostring>, <isosting>]
+ */
+const getDateRange = (
+  mode: DateFilterMode,
+  queryConfig: QueryConfig
+): DateRange => {
+  const dateRange: DateRange = { start: null, end: null };
+  if (mode === "all") {
+    //  no filters needed
+    return dateRange;
+  } else if (mode === "ytd") {
+    dateRange.start = getStartOfYearDate();
+  } else if (mode === "1y") {
+    dateRange.start = getYearsAgoDate(1);
+  } else if (mode === "5y") {
+    dateRange.start = getYearsAgoDate(5);
+  } else if (mode === "custom") {
+    // use any filters in queryConfig
+    return getDateRangeFromDateFilter(queryConfig);
+  }
+  return dateRange;
+};
+
+// todo: bugs lurking here when used with storage: the ytd/1y/5y filters get stale
+// we should compute the date range values in the query builder?
 export default function TableDateSelector({
   queryConfig,
   setQueryConfig,
 }: TableSearchProps) {
-  const [customDateRange, setCustomDateRange] = useState<[string, string]>(
-    getDateRangeFromDateFilter(queryConfig)
-  );
-  const filter = queryConfig.dateFilter;
-  if (!filter) return;
+  const [customDateRange, setCustomDateRange] = useState<DateRange>({
+    start: null,
+    end: null,
+  });
+  const [isDatePickerDirty, setIsDatePickerDirty] = useState(false);
 
-  const isDatePickerDirty =
-    queryConfig.dateFilter?.filters[0]?.value !== customDateRange[0] ||
-    queryConfig.dateFilter?.filters[1]?.value !== customDateRange[1];
+  const filter = queryConfig.dateFilter;
+
+  useEffect(() => {
+    // keep custom range form in sync with queryConfig
+    setCustomDateRange(getDateRangeFromDateFilter(queryConfig));
+    setIsDatePickerDirty(false);
+  }, [filter, queryConfig]);
+
+  if (!filter) return;
 
   return (
     <div className="d-flex justify-content-between align-items-center">
@@ -110,19 +177,8 @@ export default function TableDateSelector({
                   // nothing todo
                   return;
                 }
-                let dateRange: [] | [string, string] = [];
-                if (button.value === "ytd") {
-                  dateRange = getYtdDateRange();
-                } else if (button.value === "1y") {
-                  dateRange = getYearRange(1);
-                } else if (button.value === "5y") {
-                  dateRange = getYearRange(5);
-                } else if (button.value === "all") {
-                  //  no filters needed
-                  dateRange = [];
-                } else {
-                  // do anything here for "custom" filter ?
-                }
+                const dateRange = getDateRange(button.value, queryConfig);
+
                 const newFilters = makeDateFilters(
                   filter.column || "",
                   dateRange
@@ -146,26 +202,39 @@ export default function TableDateSelector({
       </ButtonToolbar>
       {filter.mode === "custom" && (
         <div className="d-flex">
+          {/* Date range start */}
           <DatePicker
             toggleCalendarOnIconClick
             className="form-control"
             onChange={(date) => {
               if (date) {
-                setCustomDateRange([date.toISOString(), customDateRange[1]]);
+                setCustomDateRange({
+                  start: date,
+                  end: customDateRange.end,
+                });
+                setIsDatePickerDirty(true);
               }
             }}
-            selected={new Date(customDateRange[0])}
+            selected={
+              customDateRange.start ? customDateRange.start : new Date()
+            }
             showIcon
           />
+          {/* Date range end */}
           <DatePicker
             toggleCalendarOnIconClick
             className="form-control"
             onChange={(date) => {
               if (date) {
-                setCustomDateRange([customDateRange[0], date.toISOString()]);
+                setCustomDateRange({
+                  start: customDateRange.start,
+                  end: date,
+                });
+                setIsDatePickerDirty(true);
               }
             }}
-            selected={new Date(customDateRange[1])}
+            // todo: use a hook to keep these Date objects memoized?
+            selected={customDateRange.end ? customDateRange.end : new Date()}
             showIcon
           />
           {isDatePickerDirty && (
@@ -186,6 +255,7 @@ export default function TableDateSelector({
                 // reset offset / pagination
                 newQueryConfig.offset = 0;
                 setQueryConfig(newQueryConfig);
+                setIsDatePickerDirty(false);
               }}
             >
               Apply

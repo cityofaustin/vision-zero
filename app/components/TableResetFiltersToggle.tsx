@@ -20,9 +20,9 @@ export default function TableResetFiltersToggle({
       variant="outline-danger"
       onClick={() => setQueryConfig(queryConfig)}
     >
-      <span className="text-nowrap">
+      <span className="text-nowrap d-flex align-items-center">
         <FaXmark className="me-2" />
-        Reset
+        Reset filters
       </span>
     </Button>
   );
