@@ -51,7 +51,7 @@ export default function DataCard<T extends Record<string, unknown>>({
     await mutate({
       id: record.id,
       updates: {
-        [editColumn?.name as string]: value,
+        [String(editColumn?.name)]: value,
       },
     });
     await onSaveCallback();
