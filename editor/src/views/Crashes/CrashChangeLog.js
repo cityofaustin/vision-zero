@@ -1,5 +1,13 @@
 import React, { useMemo, useState } from "react";
-import { Card, CardBody, CardHeader, Table } from "reactstrap";
+import {
+  Badge,
+  Button,
+  Card,
+  CardBody,
+  CardHeader,
+  Table,
+  Collapse,
+} from "reactstrap";
 import { formatDateTimeString } from "../../helpers/format";
 import ChangeDetailsModal from "./CrashChangeLogDetails";
 
@@ -63,9 +71,11 @@ const isNewRecordEvent = change => change.operation_type === "create";
 
 /**
  * The primary UI component which renders the change log with clickable rows
+ * can be collapsed
  */
 export default function CrashChangeLog({ data }) {
   const [selectedChange, setSelectedChange] = useState(null);
+  const [isOpen, setIsOpen] = useState(false);
 
   const changes = useChangeLogData(data);
   if (changes.length === 0) {
@@ -74,46 +84,58 @@ export default function CrashChangeLog({ data }) {
 
   return (
     <Card>
-      <CardHeader>Record history</CardHeader>
-      <CardBody>
-        <Table responsive striped hover>
-          <thead>
-            <tr>
-              <th>Record type</th>
-              <th>Event</th>
-              <th>Affected fields</th>
-              <th>Edited by</th>
-              <th>Date</th>
-            </tr>
-          </thead>
-          <tbody className="text-monospace">
-            {changes.map(change => (
-              <tr
-                key={change.id}
-                onClick={() => setSelectedChange(change)}
-                style={{ cursor: "pointer" }}
-              >
-                <td>{change.record_type}</td>
-                <td>{change.operation_type}</td>
-                <td>
-                  {isNewRecordEvent(change)
-                    ? ""
-                    : change.affected_fields.join(", ")}
-                </td>
-                <td>{change.created_by}</td>
-                <td>{formatDateTimeString(change.created_at)}</td>
+      <CardHeader>
+        <Button
+          block
+          color="link"
+          className="text-left m-0 p-0"
+          onClick={() => setIsOpen(!isOpen)}
+        >
+          Record history
+          <Badge color="secondary float-right">{changes.length}</Badge>
+        </Button>
+      </CardHeader>
+      <Collapse isOpen={isOpen}>
+        <CardBody>
+          <Table responsive striped hover>
+            <thead>
+              <tr>
+                <th>Record type</th>
+                <th>Event</th>
+                <th>Affected fields</th>
+                <th>Edited by</th>
+                <th>Date</th>
               </tr>
-            ))}
-          </tbody>
-        </Table>
-        {/* Modal with change details table */}
-        {selectedChange && (
-          <ChangeDetailsModal
-            selectedChange={selectedChange}
-            setSelectedChange={setSelectedChange}
-          />
-        )}
-      </CardBody>
+            </thead>
+            <tbody className="text-monospace">
+              {changes.map(change => (
+                <tr
+                  key={change.id}
+                  onClick={() => setSelectedChange(change)}
+                  style={{ cursor: "pointer" }}
+                >
+                  <td>{change.record_type}</td>
+                  <td>{change.operation_type}</td>
+                  <td>
+                    {isNewRecordEvent(change)
+                      ? ""
+                      : change.affected_fields.join(", ")}
+                  </td>
+                  <td>{change.created_by}</td>
+                  <td>{formatDateTimeString(change.created_at)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+          {/* Modal with change details table */}
+          {selectedChange && (
+            <ChangeDetailsModal
+              selectedChange={selectedChange}
+              setSelectedChange={setSelectedChange}
+            />
+          )}
+        </CardBody>
+      </Collapse>
     </Card>
   );
 }
