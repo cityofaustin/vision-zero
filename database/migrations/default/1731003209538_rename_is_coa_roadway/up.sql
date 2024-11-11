@@ -1,12 +1,12 @@
 alter table crashes rename column is_non_coa_roadway to is_coa_roadway;
 alter table crashes alter column is_coa_roadway set default false;
 
-COMMENT ON COLUMN public.crashes.is_coa_roadway IS 'If the crash location occured within the City of Austin, not on a private drive, and not intersecting with the non_coa_roadways layer. Set via trigger.';
+comment on column public.crashes.is_coa_roadway is 'If the crash location occured within the City of Austin, not on a private drive, and not intersecting with the non_coa_roadways layer. Set via trigger.';
 
-CREATE OR REPLACE FUNCTION public.crashes_set_spatial_attributes()
- RETURNS trigger
- LANGUAGE plpgsql
-AS $function$
+create or replace function public.crashes_set_spatial_attributes()
+returns trigger
+language plpgsql
+as $function$
 begin
     if (new.latitude is not null and new.longitude is not null) then
         -- save lat/lon into geometry col
@@ -110,6 +110,8 @@ begin
         if ((new.in_austin_full_purpose or new.rpt_city_id = 22) and not new.private_dr_fl) then
             new.is_coa_roadway = not st_contains((select geometry from geo.non_coa_roadways), new.position);
             raise debug 'is_coa_roadway: % compared to previous: %', new.is_coa_roadway, old.is_coa_roadway;
+        else
+            new.is_coa_roadway = false;
         end if;
         else
             raise debug 'reseting spatial attributes due to null latitude and/or longitude values';
