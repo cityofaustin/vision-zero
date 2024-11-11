@@ -22,7 +22,7 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
   const [isCollapsed, setIsCollapsed] = useState(true);
 
-  const { user, loginWithRedirect, logout } = useAuth0();
+  const { loginWithRedirect, logout, isAuthenticated } = useAuth0();
 
   const toggleSidebar = useCallback(
     () =>
@@ -40,9 +40,27 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
     setIsCollapsed(collapsedFromStorage);
   }, []);
 
-  const SignInOutIcon = user ? FaRightFromBracket : FaRightToBracket;
-  const signInOutText = user ? "Sign out" : "Sign in";
-
+  if (!isAuthenticated) {
+    return (
+      <Container
+        fluid
+        style={{ height: "100vh", overflow: "hidden" }}
+        className="bg-dark"
+      >
+        <div className="d-flex justify-content-center align-content-center h-100">
+          <div className="align-self-center p-5 bg-white rounded text-center">
+            <h1 className="mb-5">Vision Zero Editor</h1>
+            <Button onClick={() => loginWithRedirect()}>
+              <span>
+                <FaRightToBracket className="me-3" />
+                Sign In
+              </span>
+            </Button>
+          </div>
+        </div>
+      </Container>
+    );
+  }
   return (
     <Container fluid style={{ height: "100vh", overflow: "hidden" }}>
       <Row className="h-100">
@@ -99,11 +117,11 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
                   border: "none",
                 }}
                 action
-                onClick={() => (user ? logout() : loginWithRedirect())}
+                onClick={() => logout()}
               >
                 <span>
-                  <SignInOutIcon className="me-3" />
-                  {isCollapsed ? null : signInOutText}
+                  <FaRightFromBracket className="me-3" />
+                  {isCollapsed ? null : "Sign out"}
                 </span>
               </ListGroup.Item>
             </ListGroup>
