@@ -39,7 +39,7 @@ npm run dev
 - Apollo Client ➡️ SWR + graphql-request
 
 ## Todo
-
+    
 - permissions-based features:
   - side nav
   - field editing
@@ -55,12 +55,8 @@ npm run dev
   - misc column editing + placement
 - gridtable
   - default 'yes'/inverted filters, e.g. afp?
-  - ability to reset search
-  - pagination
-  - local storage / persist settings
   - advanced filters: test them and add "Other" unit type filter
   - export
-  - wrap in an outer Table component that manages the filter components layout?
   - record counts
 - Top nav component
   - app logo
@@ -75,5 +71,5 @@ npm run dev
   - user list
   - add/edit/delete uers
   - copy user emails
-- Login page
+- Make login page look nice
 - versioned localstorage
