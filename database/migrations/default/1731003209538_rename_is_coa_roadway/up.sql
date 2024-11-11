@@ -149,5 +149,6 @@ create trigger crashes_set_spatial_attributes_on_update before update on crashes
     or new.rpt_road_part_id is distinct from old.rpt_road_part_id
     or new.rpt_hwy_num is distinct from old.rpt_hwy_num
     or new.private_dr_fl is distinct from old.private_dr_fl
+    or new.rpt_city_id is distinct from old.rpt_city_id
 )
 execute function crashes_set_spatial_attributes();
