@@ -13,7 +13,13 @@ import { useAuth0 } from "@auth0/auth0-react";
 const ENDPOINT = process.env.NEXT_PUBLIC_HASURA_ENDPOINT!;
 
 const DEFAULT_SWR_OPTIONS: SWRConfiguration = {
+  /**
+   * Dont refetch when the page/tab is refocused
+   */
   revalidateOnFocus: false,
+  /**
+   * Dont refetch on network recon
+   */
   revalidateOnReconnect: false,
 };
 
@@ -50,7 +56,6 @@ export const useQuery = <T>({
     RequestDocument,
     Variables
   ]) => {
-    // todo: what if token not returned?
     const token = await getAccessTokenSilently();
     // todo: <T> passed here is assigned to query results without validation - we need to use a schema validator
     return fetcher<T>([query, variables, token]);
