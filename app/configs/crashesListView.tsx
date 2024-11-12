@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { CrashListCrash, ColDataCardDef } from "@/types/types";
-import { formatDateTime } from "@/utils/formatters";
+import { formatDate } from "@/utils/formatters";
 
 export const crashesListViewColumns: ColDataCardDef<CrashListCrash>[] = [
   //   {
@@ -26,7 +26,7 @@ export const crashesListViewColumns: ColDataCardDef<CrashListCrash>[] = [
     name: "crash_timestamp",
     label: "Date",
     sortable: true,
-    valueFormatter: formatDateTime,
+    valueFormatter: formatDate,
   },
   {
     name: "address_primary",

@@ -54,7 +54,10 @@ export default function Table<T extends Record<string, unknown>>({
         {rows.map((row, i) => (
           <tr key={i}>
             {columns.map((col) => (
-              <td key={String(col.name)}>{renderColumnValue(row, col)}</td>
+              // todo: is no-wrap / side-scrolling ok?
+              <td key={String(col.name)} style={{ whiteSpace: "nowrap" }}>
+                {renderColumnValue(row, col)}
+              </td>
             ))}
           </tr>
         ))}
