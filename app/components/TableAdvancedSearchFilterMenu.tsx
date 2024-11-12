@@ -21,6 +21,7 @@ const DEFAULT_SWITCHES_ENABLED = [
   { cardId: "geography_filter_card", filterId: "in_austin_full_purpose" },
 ];
 
+// todo: obv these are crash-specific advanced filters
 const filterCards: FilterCardConfig[] = [
   {
     cardId: "injuries_filter_card",
@@ -267,6 +268,9 @@ export const getDefaultFilterGroups = (): FilterGroup[] => {
   return filterGroups;
 };
 
+/**
+ * Find a group of filters by id
+ */
 const findSwitchFilterGroup = (
   queryConfig: QueryConfig,
   cardId: string,

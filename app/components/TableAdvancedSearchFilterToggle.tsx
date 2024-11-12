@@ -5,6 +5,7 @@ import { FaFilter } from "react-icons/fa6";
 
 /**
  * Table component that controls advanced search filters
+ *
  */
 export default function TableAdvancedSearchFilterToggle({
   setIsFilterOpen,
@@ -15,7 +16,7 @@ export default function TableAdvancedSearchFilterToggle({
 }) {
   return (
     <Button
-      className="mx-2"
+      className="me-2"
       variant="outline-primary"
       onClick={() =>
         setIsFilterOpen((prevState) => {
