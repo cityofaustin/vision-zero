@@ -39,7 +39,7 @@ npm run dev
 - Apollo Client ➡️ SWR + graphql-request
 
 ## Todo
-    
+
 - permissions-based features:
   - side nav
   - field editing
@@ -71,5 +71,8 @@ npm run dev
   - user list
   - add/edit/delete uers
   - copy user emails
-- Make login page look nice
+- login page: make it look nice - also it flashes on the screen on every page load
 - versioned localstorage
+- error boundary (see Moped's for reference)
+- map geocoder (technically an enhancement vis a vis current state)
+
