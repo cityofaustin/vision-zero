@@ -1,5 +1,7 @@
+import { useCallback } from "react";
 import type { AppProps } from "next/app";
-import { Auth0Provider } from "@auth0/auth0-react";
+import { useRouter } from "next/router";
+import { Auth0Provider, AppState } from "@auth0/auth0-react";
 import SidebarLayout from "@/components/SidebarLayout";
 import "@/styles/global.scss";
 
@@ -8,9 +10,22 @@ const CLIENT_ID = process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID!;
 let redirect_uri: string | undefined;
 
 export default function App({ Component, pageProps }: AppProps) {
+  const router = useRouter();
+
   if (typeof window !== "undefined") {
+    // sets the default base redirect URI. we add routing
+    // when we call loginWithRedirect()
     redirect_uri = window.location.origin;
   }
+
+  const onRedirectCallback = useCallback(
+    (appState: AppState | undefined) => {
+      router.push(appState?.returnTo || "/");
+      return;
+    },
+    [router]
+  );
+
   return (
     <Auth0Provider
       domain={DOMAIN}
@@ -26,6 +41,7 @@ export default function App({ Component, pageProps }: AppProps) {
       }}
       useRefreshTokens={true}
       cacheLocation="localstorage"
+      onRedirectCallback={onRedirectCallback}
     >
       <SidebarLayout>
         <Component {...pageProps} />

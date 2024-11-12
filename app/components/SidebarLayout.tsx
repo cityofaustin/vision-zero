@@ -11,7 +11,6 @@ import {
   FaGaugeHigh,
   FaMap,
   FaAngleRight,
-  FaRightToBracket,
   FaRightFromBracket,
 } from "react-icons/fa6";
 import SideBarListItem from "./SideBarListItem";
@@ -22,7 +21,8 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
   const [isCollapsed, setIsCollapsed] = useState(true);
 
-  const { loginWithRedirect, logout, isAuthenticated } = useAuth0();
+  const { loginWithRedirect, logout, isAuthenticated, isLoading, user } =
+    useAuth0();
 
   const toggleSidebar = useCallback(
     () =>
@@ -40,7 +40,17 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
     setIsCollapsed(collapsedFromStorage);
   }, []);
 
-  if (!isAuthenticated) {
+  if (isLoading) {
+    /**
+     * We don't want to render anything before initial auth check resolves
+     * otherwise we end up with dom elements flashing on the screen,
+     * and weird side effects can happen if we load pages without
+     * being logged in. e.g. the graphql query hook can get hung up
+     */
+    return null;
+  }
+
+  if (!isAuthenticated && !isLoading) {
     return (
       <Container
         fluid
@@ -50,17 +60,24 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
         <div className="d-flex justify-content-center align-content-center h-100">
           <div className="align-self-center p-5 bg-white rounded text-center">
             <h1 className="mb-5">Vision Zero Editor</h1>
-            <Button onClick={() => loginWithRedirect()}>
-              <span>
-                <FaRightToBracket className="me-3" />
-                Sign In
-              </span>
+            <Button
+              onClick={() =>
+                loginWithRedirect({
+                  appState: {
+                    returnTo: router.asPath,
+                  },
+                })
+              }
+              size="lg"
+            >
+              <span>Sign In</span>
             </Button>
           </div>
         </div>
       </Container>
     );
   }
+
   return (
     <Container fluid style={{ height: "100vh", overflow: "hidden" }}>
       <Row className="h-100">
@@ -85,7 +102,6 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
                 />
               </Button>
             </div>
-
             <ListGroup variant="flush">
               <SideBarListItem
                 isCollapsed={isCollapsed}
@@ -128,7 +144,6 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
           </div>
         </div>
         {/* Main content */}
-
         <Col
           style={{
             height: "100vh",
