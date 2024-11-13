@@ -64,10 +64,10 @@ export const useQuery = <T>({
     const hasuraRoleName = getHasuraRoleName(user);
     /**
      * todo: our Auth0 app is configured to return idTokens, which are
-     * "opaque" proprietary Auth0 tokens, seemingly because this enames us
+     * "opaque" proprietary Auth0 tokens, seemingly because this enables us
      * to interact with the User Management API. as a result, we must
      * use idToken.__raw to grab the actual JWT. it seems like our setup
-     * may be misconfigured, because accessing .__raw seems likle hack :/
+     * may be misconfigured, because accessing .__raw seems like a hack :/
      *
      * the typical setup would enable use to use the getAccessTokenSilently()
      * method, but that doesn't work with the opaque tokens.
