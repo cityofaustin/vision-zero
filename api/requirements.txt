@@ -1,8 +1,9 @@
-# pinning of major versions, allowing patch and minor updates
+# pinning of major versions, allowing patch and minor updates.
+# For example, for boto3, the ~= operator is equivalent to >=1.35.47, <1.36.0.
 
-boto3~=1.35
-Flask~=3.0
-python-dotenv~=1.0
-requests~=2.32
-python-jose~=3.0
-Flask-Cors~=3.0
+boto3~=1.35.47
+Flask~=3.0.3
+python-dotenv~=1.0.1
+requests~=2.32.3
+python-jose~=3.3.0
+Flask-Cors~=3.0.10
