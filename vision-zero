@@ -72,9 +72,9 @@ def doCommand(args):
         graphqlEngineUp(args)
     elif args.command == "graphql-engine-down":
         graphqlEngineDown(args)
-    elif args.command == "cr3-user-api-up":
+    elif args.command == "api-up":
         cr3UserApiUp(args)
-    elif args.command == "cr3-user-api-down":
+    elif args.command == "api-down":
         cr3UserApiDown(args)
     elif args.command == "hasura-console":
         hasuraConsole(args)
@@ -497,8 +497,8 @@ def get_main_parser():
             "local-stack-down",
             "db-up",
             "db-down",
-            "cr3-user-api-up",
-            "cr3-user-api-down",
+            "api-up",
+            "api-down",
             "graphql-engine-up",
             "graphql-engine-down",
             "vze-up",
