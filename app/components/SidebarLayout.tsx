@@ -21,7 +21,7 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
   const [isCollapsed, setIsCollapsed] = useState(true);
 
-  const { loginWithRedirect, logout, isAuthenticated, isLoading, user } =
+  const { loginWithRedirect, logout, isAuthenticated, isLoading } =
     useAuth0();
 
   const toggleSidebar = useCallback(
