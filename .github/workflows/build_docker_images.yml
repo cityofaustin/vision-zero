@@ -11,16 +11,6 @@ on:
       - "etl/cris_import/**"
       - "etl/socrata_export/**"
       - "api/**"
-  pull_request:
-    branches:
-      - main
-      - production
-    paths:
-      - ".github/workflows/build_docker_images.yml"
-      - "etl/afd_ems_import/**"
-      - "etl/cris_import/**"
-      - "etl/socrata_export/**"
-      - "api/**"
   workflow_dispatch:
 
 jobs:
