@@ -33,11 +33,6 @@ export default function App({ Component, pageProps }: AppProps) {
       authorizationParams={{
         redirect_uri: redirect_uri,
         scope: "openid profile email",
-        // our audience ID is the same as our client ID
-        // i think this might be because we intially configured
-        // this Auth0 app with an SPA GUI wizard
-        // -- because this is not normal as far as i can tell
-        // audience: CLIENT_ID,
       }}
       useRefreshTokens={true}
       cacheLocation="localstorage"
