@@ -9,9 +9,11 @@ import {
   Collapse,
 } from "reactstrap";
 import { formatDateTimeString } from "../../helpers/format";
+import { appCodeName } from "../../helpers/environment";
 import ChangeDetailsModal from "./CrashChangeLogDetails";
 
 const KEYS_TO_IGNORE = ["updated_at", "updated_by", "position"];
+const localStorageKey = `${appCodeName}_show_crash_history`;
 
 /**
  * Return an array of values that are different between the `old` object and `new` object
@@ -76,7 +78,7 @@ const isNewRecordEvent = change => change.operation_type === "create";
 export default function CrashChangeLog({ data }) {
   const [selectedChange, setSelectedChange] = useState(null);
   const [isOpen, setIsOpen] = useState(
-    localStorage.getItem("showHistory") === "true"
+    localStorage.getItem(localStorageKey) === "true"
   );
 
   const changes = useChangeLogData(data);
@@ -87,7 +89,7 @@ export default function CrashChangeLog({ data }) {
   const toggleCollapseHistory = () => {
     const nextIsOpen = !isOpen;
     setIsOpen(nextIsOpen);
-    localStorage.setItem("showHistory", nextIsOpen);
+    localStorage.setItem(localStorageKey, nextIsOpen);
   };
 
   return (
