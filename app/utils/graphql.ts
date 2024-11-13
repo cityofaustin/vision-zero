@@ -7,6 +7,7 @@ import {
   RequestDocument,
   Variables,
 } from "graphql-request";
+import { getHasuraRoleName } from "./auth";
 import { MutationVariables, LookupTableDef } from "@/types/types";
 import { useAuth0 } from "@auth0/auth0-react";
 
@@ -26,16 +27,20 @@ const DEFAULT_SWR_OPTIONS: SWRConfiguration = {
 /**
  * Fetcher which interacts with our GraphQL API
  */
-const fetcher = <T>([query, variables, token]: [
+const fetcher = <T>([query, variables, token, hasuraRoleName]: [
   RequestDocument,
   Variables,
+  string,
   string
 ]): Promise<T> =>
   request({
     url: ENDPOINT,
     document: query,
     variables,
-    requestHeaders: { Authorization: `Bearer ${token}` },
+    requestHeaders: {
+      Authorization: `Bearer ${token}`,
+      "x-hasura-role": hasuraRoleName,
+    },
   });
 
 /**
@@ -50,15 +55,30 @@ export const useQuery = <T>({
   variables?: Variables;
   options?: SWRConfiguration;
 }) => {
-  const { getAccessTokenSilently } = useAuth0();
+  const { getIdTokenClaims, user } = useAuth0();
 
   const fetchWithAuth = async ([query, variables]: [
     RequestDocument,
     Variables
   ]) => {
-    const token = await getAccessTokenSilently();
+    const hasuraRoleName = getHasuraRoleName(user);
+    /**
+     * todo: our Auth0 app is configured to return idTokens, which are
+     * "opaque" proprietary Auth0 tokens, seemingly because this enames us
+     * to interact with the User Management API. as a result, we must
+     * use idToken.__raw to grab the actual JWT. it seems like our setup
+     * may be misconfigured, because accessing .__raw seems likle hack :/
+     *
+     * the typical setup would enable use to use the getAccessTokenSilently()
+     * method, but that doesn't work with the opaque tokens.
+     *
+     * dicussion here: https://community.auth0.com/t/getting-the-jwt-id-token-from-auth0-spa-js/28281/3
+     */
+    const idToken = await getIdTokenClaims();
+    const token = idToken?.__raw || "";
+
     // todo: <T> passed here is assigned to query results without validation - we need to use a schema validator
-    return fetcher<T>([query, variables, token]);
+    return fetcher<T>([query, variables, token, hasuraRoleName]);
   };
 
   // todo: document falsey query handling
@@ -85,7 +105,7 @@ interface MutationOptions {
  * Custom mutation hook that provides auth and manages `updated_by` column
  */
 export const useMutation = (mutation: RequestDocument) => {
-  const { getAccessTokenSilently, user } = useAuth0();
+  const { getIdTokenClaims, user } = useAuth0();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
@@ -104,10 +124,12 @@ export const useMutation = (mutation: RequestDocument) => {
         variables.updates.updated_by = user.email;
       }
       try {
-        const token = await getAccessTokenSilently();
+        const hasuraRole = getHasuraRoleName(user);
+        const idToken = await getIdTokenClaims();
         const client = new GraphQLClient(ENDPOINT, {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${idToken?.__raw}`,
+            "x-hasura-role": hasuraRole,
           },
         });
         const data = await client.request<T>(mutation, variables);
@@ -120,7 +142,7 @@ export const useMutation = (mutation: RequestDocument) => {
         setLoading(false);
       }
     },
-    [getAccessTokenSilently, mutation]
+    [getIdTokenClaims, mutation]
   );
 
   return { mutate, loading, error };
