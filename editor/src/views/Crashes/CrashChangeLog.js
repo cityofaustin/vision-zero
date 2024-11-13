@@ -99,8 +99,10 @@ export default function CrashChangeLog({ data }) {
           className="text-left m-0 p-0"
           onClick={toggleCollapseHistory}
         >
-          Record history
-          <Badge color="secondary float-right">{changes.length}</Badge>
+          <h5 className="m-0 p-0">
+            <i className="fa fa-history" /> Record history
+            <Badge color="secondary float-right">{changes.length}</Badge>
+          </h5>
         </Button>
       </CardHeader>
       <Collapse isOpen={isOpen}>
