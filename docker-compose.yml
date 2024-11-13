@@ -45,6 +45,7 @@ services:
 
   cr3-user-api:
     build: api
+    # image: atddocker/vz-user-cr3-api
     env_file:
       - api/.env
     ports:
