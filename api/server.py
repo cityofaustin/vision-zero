@@ -281,8 +281,35 @@ current_user = LocalProxy(lambda: getattr(g, "current_user", None))
 def healthcheck():
     """No access token required to access this route"""
     now = datetime.datetime.now()
-    response = "CR3 Download API - Health Check - Available @ %s" % now.strftime(
-        "%Y-%m-%d %H:%M:%S"
+
+    # Read the system uptime from /proc/uptime
+    with open("/proc/uptime", "r") as f:
+        uptime_seconds = float(f.readline().split()[0])
+        uptime_str = str(datetime.timedelta(seconds=uptime_seconds)).split(".")[
+            0
+        ]  # Remove microseconds for a terse format
+
+    # Get the process start time
+    pid = os.getpid()
+    with open(f"/proc/{pid}/stat", "r") as f:
+        proc_start_time_ticks = int(f.readline().split()[21])
+        proc_start_time_seconds = proc_start_time_ticks / os.sysconf(
+            os.sysconf_names["SC_CLK_TCK"]
+        )
+        proc_uptime_seconds = uptime_seconds - proc_start_time_seconds
+        proc_uptime_str = str(datetime.timedelta(seconds=proc_uptime_seconds)).split(
+            "."
+        )[
+            0
+        ]  # Remove microseconds for a terse format
+
+    response = (
+        "CR3 Download API - Health Check - Available @ %s - System Uptime: %s - Process Uptime: %s"
+        % (
+            now.strftime("%Y-%m-%d %H:%M:%S"),
+            uptime_str,
+            proc_uptime_str,
+        )
     )
     return jsonify(message=response)
 
