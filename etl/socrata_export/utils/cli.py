@@ -21,4 +21,9 @@ def get_cli_args():
         action="store_true",
         help="Export the crashes",
     )
+    parser.add_argument(
+        "--crash-components",
+        action="store_true",
+        help="Export the crash-components table",
+    )
     return parser.parse_args()
