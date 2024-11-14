@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #
 # ATD - CR3 Download API
 #
@@ -14,7 +15,7 @@ from os import environ as env
 from functools import wraps
 from six.moves.urllib.request import urlopen
 
-from flask import Flask, request, redirect, jsonify, _request_ctx_stack, abort
+from flask import Flask, request, jsonify, abort, g
 from flask_cors import cross_origin
 from werkzeug.local import LocalProxy
 from jose import jwt
@@ -33,7 +34,7 @@ API_CLIENT_ID = os.getenv("API_CLIENT_ID", "")
 API_CLIENT_SECRET = os.getenv("API_CLIENT_SECRET", "")
 
 # AWS Configuration
-AWS_DEFALUT_REGION = os.getenv("AWS_DEFALUT_REGION", "us-east-1")
+AWS_DEFAULT_REGION = os.getenv("AWS_DEFAULT_REGION", "us-east-1")
 AWS_S3_KEY = os.getenv("AWS_S3_KEY", "")
 AWS_S3_SECRET = os.getenv("AWS_S3_SECRET", "")
 AWS_S3_CR3_LOCATION = os.getenv("AWS_S3_CR3_LOCATION", "")
@@ -65,6 +66,49 @@ def get_api_token():
 CORS_URL = "*"
 ALGORITHMS = ["RS256"]
 APP = Flask(__name__)
+
+
+# Add the appropriate security headers to all responses
+@APP.after_request
+def add_custom_headers(response):
+    # Cache-Control to manage caching behavior
+    response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+
+    # Content-Security-Policy to prevent XSS and other attacks
+    response.headers["Content-Security-Policy"] = (
+        "default-src 'self'; script-src 'self'; object-src 'none'"
+    )
+
+    # Strict-Transport-Security to enforce HTTPS
+    response.headers["Strict-Transport-Security"] = (
+        "max-age=31536000; includeSubDomains; preload"
+    )
+
+    # X-Content-Type-Options to prevent MIME type sniffing
+    response.headers["X-Content-Type-Options"] = "nosniff"
+
+    # X-Frame-Options to prevent clickjacking
+    response.headers["X-Frame-Options"] = "SAMEORIGIN"
+
+    # Referrer-Policy to control referrer information
+    response.headers["Referrer-Policy"] = "no-referrer-when-downgrade"
+
+    # Permissions-Policy to restrict browser feature access
+    response.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()"
+
+    # X-XSS-Protection to prevent reflected XSS attacks (deprecated in modern browsers)
+    response.headers["X-XSS-Protection"] = "1; mode=block"
+
+    # Expect-CT to enforce Certificate Transparency
+    response.headers["Expect-CT"] = "max-age=86400, enforce"
+
+    # Access-Control-Allow-Origin for CORS
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+    response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
+    response.headers["Access-Control-Allow-Credentials"] = "true"
+
+    return response
 
 
 # Format error response and append status code.
@@ -199,24 +243,24 @@ def requires_auth(f):
                 raise AuthError(
                     {"code": "token_expired", "description": "token is expired"}, 401
                 )
-            except jwt.JWTClaimsError:
+            except jwt.JWTClaimsError as e:
                 raise AuthError(
                     {
                         "code": "invalid_claims",
-                        "description": "incorrect claims,"
-                        " please check the audience and issuer",
+                        "description": "incorrect claims, please check the audience and issuer",
                     },
                     401,
                 )
-            except Exception:
+            except Exception as e:
                 raise AuthError(
                     {
                         "code": "invalid_header",
-                        "description": "Unable to parse authentication" " token.",
+                        "description": f"{e}: Unable to parse authentication token.",
                     },
                     401,
                 )
-            _request_ctx_stack.top.current_user = payload
+            g.current_user = payload
+
             return f(*args, **kwargs)
         raise AuthError(
             {"code": "invalid_header", "description": "Unable to find appropriate key"},
@@ -226,7 +270,8 @@ def requires_auth(f):
     return decorated
 
 
-current_user = LocalProxy(lambda: getattr(_request_ctx_stack.top, "current_user", None))
+current_user = LocalProxy(lambda: getattr(g, "current_user", None))
+
 
 # Controllers API
 
@@ -236,8 +281,35 @@ current_user = LocalProxy(lambda: getattr(_request_ctx_stack.top, "current_user"
 def healthcheck():
     """No access token required to access this route"""
     now = datetime.datetime.now()
-    response = "CR3 Download API - Health Check - Available @ %s" % now.strftime(
-        "%Y-%m-%d %H:%M:%S"
+
+    # Read the system uptime from /proc/uptime
+    with open("/proc/uptime", "r") as f:
+        uptime_seconds = float(f.readline().split()[0])
+        uptime_str = str(datetime.timedelta(seconds=uptime_seconds)).split(".")[
+            0
+        ]  # Remove microseconds for a terse format
+
+    # Get the process start time
+    pid = os.getpid()
+    with open(f"/proc/{pid}/stat", "r") as f:
+        proc_start_time_ticks = int(f.readline().split()[21])
+        proc_start_time_seconds = proc_start_time_ticks / os.sysconf(
+            os.sysconf_names["SC_CLK_TCK"]
+        )
+        proc_uptime_seconds = uptime_seconds - proc_start_time_seconds
+        proc_uptime_str = str(datetime.timedelta(seconds=proc_uptime_seconds)).split(
+            "."
+        )[
+            0
+        ]  # Remove microseconds for a terse format
+
+    response = (
+        "CR3 Download API - Health Check - Available @ %s - System Uptime: %s - Process Uptime: %s"
+        % (
+            now.strftime("%Y-%m-%d %H:%M:%S"),
+            uptime_str,
+            proc_uptime_str,
+        )
     )
     return jsonify(message=response)
 
@@ -253,7 +325,7 @@ def download_crash_id(crash_id):
 
     s3 = boto3.client(
         "s3",
-        region_name=AWS_DEFALUT_REGION,
+        region_name=AWS_DEFAULT_REGION,
         aws_access_key_id=AWS_S3_KEY,
         aws_secret_access_key=AWS_S3_SECRET,
     )

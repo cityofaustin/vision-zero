@@ -38,6 +38,14 @@ Start and stop the postgres database
 
 Start and stop the Hasura graphql-engine software
 
+### `vision-zero api-up` & `vision-zero api-down`
+
+Start and stop the Vision Zero CR3 / User API
+
+### `vision-zero local-stack-up` & `vision-zero local-stack-down`
+
+Start and stop the DB, `graphql-engine`, and the API at once
+
 #### `vision-zero vze-up` & `vision-zero vze-down`
 
 Start and stop the Vision Zero Editor
