@@ -8,7 +8,7 @@ on:
     paths:
       - ".github/workflows/deploy_vz_api.yml"
       - ".github/workflows/aws-vz-api-helper.sh"
-      - "atd-cr3-api/**"
+      - "api/**"
   workflow_dispatch:
 jobs:
   build:

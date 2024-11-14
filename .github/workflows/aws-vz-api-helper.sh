@@ -33,7 +33,7 @@ function deploy_aws_lambda {
     fi;
 
     # Check ATD CR3 API
-    cd "atd-cr3-api";
+    cd "api";
 
     python3 -m venv venv;
     source venv/bin/activate;
