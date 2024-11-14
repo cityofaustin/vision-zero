@@ -19,6 +19,10 @@ You can start the API using either the project wide `docker compose` file with `
 
 The API requires certain environment variables to be set. Copy the `.env.example` file in the `api` directory to `.env` and fill in the values.
 
+## Secrets
+
+Please see the entry "Vision Zero (VZ) User & CR3 API Secrets" in the developers vault in 1PW for information about the secret values.
+
 ## Testing the API / Is this thing on?
 
 Where ever you have the API running, you can hit it at the root of the domain `/` and you should get a health message that includes both the current time, but also the age of the process serving the API. This is helpful in confirming a restart has occurred, or that the API is up and running.
