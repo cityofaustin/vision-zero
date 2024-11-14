@@ -74,6 +74,13 @@ const LAYERS = {
     fields: ["ZIPCODE"],
     tableName: "zip_codes",
   },
+  equity_action_zones: {
+    service_name: "Equity_Analysis_Zones_2021",
+    layer_id: 0,
+    query_params: { ...DEFAULT_ESRI_QUERY_PARAMS },
+    fields: ["GEOID", "indxd_v", "EAZ_Type"],
+    tableName: "equity_action_zones",
+  },
 };
 
 module.exports = {

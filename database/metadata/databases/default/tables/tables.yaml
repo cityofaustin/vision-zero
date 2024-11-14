@@ -2,6 +2,7 @@
 - "!include geo_atd_jurisdictions.yaml"
 - "!include geo_council_districts.yaml"
 - "!include geo_engineering_areas.yaml"
+- "!include geo_equity_action_zones.yaml"
 - "!include geo_non_coa_roadways.yaml"
 - "!include geo_signal_engineer_areas.yaml"
 - "!include geo_zip_codes.yaml"
