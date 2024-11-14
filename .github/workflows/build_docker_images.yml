@@ -1,8 +1,6 @@
 name: "Build Docker images and push to DockerHub"
 
 on:
-  # Triggers the workflow on push or pull request events but only for the main and production branches
-  # and any updates to the etl scripts
   push:
     branches:
       - main
@@ -12,16 +10,7 @@ on:
       - "etl/afd_ems_import/**"
       - "etl/cris_import/**"
       - "etl/socrata_export/**"
-  pull_request:
-    branches:
-      - main
-      - production
-    paths:
-      - ".github/workflows/build_docker_images.yml"
-      - "etl/afd_ems_import/**"
-      - "etl/cris_import/**"
-      - "etl/socrata_export/**"
-  # Allows you to run this workflow manually from the Actions tab
+      - "api/**"
   workflow_dispatch:
 
 jobs:
@@ -50,6 +39,8 @@ jobs:
               - 'etl/cris_import/**'
             socrata_export:
               - 'etl/socrata_export/**'
+            user_cr3_api:
+              - 'api/**'
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -80,3 +71,39 @@ jobs:
           context: etl/socrata_export
           push: true
           tags: atddocker/vz-socrata-export:${{ github.ref == 'refs/heads/production' && 'production' || 'development' }}
+
+      - name: Build and push VZ User & CR3 API image
+        if: steps.changes.outputs.user_cr3_api == 'true'
+        uses: docker/build-push-action@v4
+        with:
+          platforms: linux/amd64,linux/arm64
+          context: api
+          push: true
+          tags: atddocker/vz-user-cr3-api:${{ github.ref == 'refs/heads/production' && 'production' || 'latest' }}
+
+
+      - name: Set environment for ECS update
+        if: steps.changes.outputs.user_cr3_api == 'true'
+        run: |
+          if [ "${{ github.ref }}" == "refs/heads/production" ]; then
+            echo "ECS_CLUSTER=atd-vz-data-cluster-production" >> $GITHUB_ENV
+            echo "ECS_SERVICE=arn:aws:ecs:us-east-1:295525487728:service/atd-vz-data-cluster-production/cr3-and-user-mgmt-api" >> $GITHUB_ENV
+          else
+            echo "ECS_CLUSTER=atd-vz-data-cluster-staging" >> $GITHUB_ENV
+            echo "ECS_SERVICE=arn:aws:ecs:us-east-1:295525487728:service/atd-vz-data-cluster-staging/cr3-and-user-mgmt-api" >> $GITHUB_ENV
+          fi
+
+      - name: Restart ECS service
+        if: steps.changes.outputs.user_cr3_api == 'true'
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_ECS_CONTROL }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_ID_ECS_CONTROL }}
+          AWS_DEFAULT_REGION: "us-east-1"
+          ECS_CLUSTER: ${{ env.ECS_CLUSTER }}
+          ECS_SERVICE: ${{ env.ECS_SERVICE }}
+        run: |
+          sleep 30
+          aws ecs update-service \
+            --cluster $ECS_CLUSTER \
+            --service $ECS_SERVICE \
+            --force-new-deployment
