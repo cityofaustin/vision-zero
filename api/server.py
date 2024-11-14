@@ -255,7 +255,7 @@ def requires_auth(f):
                 raise AuthError(
                     {
                         "code": "invalid_header",
-                        "description": "Unable to parse authentication token.",
+                        "description": f"{e}: Unable to parse authentication token.",
                     },
                     401,
                 )
