@@ -107,7 +107,7 @@ begin
         --
         -- check if is_coa_roadway
         --
-        if ((new.in_austin_full_purpose or new.rpt_city_id = 22) and not new.private_dr_fl) then
+        if (new.in_austin_full_purpose and not new.private_dr_fl) then
             new.is_coa_roadway = not st_contains((select geometry from geo.non_coa_roadways), new.position);
             raise debug 'is_coa_roadway: % compared to previous: %', new.is_coa_roadway, old.is_coa_roadway;
         else
