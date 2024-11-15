@@ -18,6 +18,10 @@ interface PaginationControlProps {
 const getCurrentPageNumber = (offset: number, limit: number): number =>
   offset / limit + 1;
 
+/**
+ * UI component that controls pagination by setting the
+ * QueryConfig offset
+ */
 export default function TablePaginationControls({
   queryConfig,
   setQueryConfig,

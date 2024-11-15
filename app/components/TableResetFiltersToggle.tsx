@@ -9,7 +9,8 @@ interface Props {
 }
 
 /**
- * Table component that controls advanced search filters
+ * UI component that resets the filter state by
+ * setting the queryConfig to its initial value
  */
 export default function TableResetFiltersToggle({
   queryConfig,
