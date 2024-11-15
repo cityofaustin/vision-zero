@@ -64,7 +64,28 @@ interface FilterGroupBase {
    * all other filter groups
    */
   id: string;
+  /**
+   * Optional label that can be used to label the filter cards
+   */
   label?: string;
+  /**
+   * Applies to FilterCard's filter groups only—aka switches - it enables
+   * switch filtegroups to be present in the config and ignored
+   * by the queryBuilder until they are enabled. So this setting
+   * is also used to control the switch UI component state
+   */
+  enabled?: boolean;
+  /**
+   *  Applies to FilterCard's filter groups only—aka switches—and causes
+   * the switch behavior to render as checked/on when disabled and
+   * unchecked/off when enabled. The main use case atm is to apply
+   * the in_austin_full_purpose by default
+   */
+  inverted?: boolean;
+  /**
+   * The and/or operator that will be applied to this group of filters
+   * when constructing the `where` expression
+   */
   groupOperator: "_and" | "_or";
 }
 
@@ -139,10 +160,10 @@ export interface QueryConfig {
     filters: Filter[];
   };
   /**
-   * Any additional optional filters. Advanced filter switches
-   * would go here, for example.
+   * Groups of filter card configs, which are meant to hold the filters
+   * managed by the advanced filter component
    */
-  filterGroups: FilterGroup[];
+  filterCards: FilterGroup[];
 }
 
 /**
@@ -276,17 +297,22 @@ const buildQuery = ({
   offset,
   sortColName,
   sortAsc,
-  filterGroups,
+  filterCards,
   dateFilter,
   searchFilter,
 }: QueryConfig): string => {
   const columnString = columns.join("\n");
 
-  const allFilterGroups: FilterGroup[] = [...(filterGroups || [])];
+  /**
+   * Collect all filters into one big FilterGroup
+   */
+  const allFilterGroups: FilterGroup[] = [];
 
+  /**
+   * Shape search filter like a FilterGroup and add
+   * to all filters
+   */
   if (searchFilter.value !== "") {
-    // if the search filter is being used,
-    // shape it like a FilterGroup and add to all filters
     allFilterGroups.push({
       id: "search",
       filters: [searchFilter],
@@ -294,13 +320,36 @@ const buildQuery = ({
     });
   }
 
+  /**
+   * Shape date filters like a FilterGroup and add
+   * to all filters
+   */
   if (dateFilter && dateFilter.mode !== "all") {
-    // shape the date filters into a FilterGroup and add to all filters
     allFilterGroups.push({
       id: "date_filters",
       filters: dateFilter.filters,
       groupOperator: "_and",
     });
+  }
+
+  /**
+   * Add enabled switch filters to the filter group
+   */
+  if (filterCards) {
+    const filterCardsWithActiveFilters: FilterGroup[] = [];
+    filterCards.forEach((filterCard) => {
+      // extract any enabled switches from this card
+      const enabledSwitchFilters: FilterGroup[] | undefined =
+        filterCard.filterGroups?.filter((switchFilter) => switchFilter.enabled);
+
+      if (enabledSwitchFilters && enabledSwitchFilters.length > 0) {
+        // construct a new filter group with only the enabled switches
+        const newFilterCard = { ...filterCard };
+        newFilterCard.filterGroups = enabledSwitchFilters;
+        filterCardsWithActiveFilters.push(newFilterCard);
+      }
+    });
+    allFilterGroups.push(...filterCardsWithActiveFilters);
   }
 
   const where = getWhereExp(allFilterGroups);

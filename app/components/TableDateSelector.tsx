@@ -140,8 +140,6 @@ const getDateRange = (
   return dateRange;
 };
 
-// todo: bugs lurking here when used with storage: the ytd/1y/5y filters get stale
-// we should compute the date range values in the query builder?
 export default function TableDateSelector({
   queryConfig,
   setQueryConfig,

@@ -12,7 +12,7 @@ import { ColDataCardDef } from "@/types/types";
 import TableAdvancedSearchFilterMenu from "@/components/TableAdvancedSearchFilterMenu";
 import TableAdvancedSearchFilterToggle from "@/components/TableAdvancedSearchFilterToggle";
 import TablePaginationControls from "@/components/TablePaginationControls";
-import { getActiveSwitchFilterCount } from "@/components/TableAdvancedSearchFilterMenu";
+import { useActiveSwitchFilterCount } from "@/components/TableAdvancedSearchFilterToggle";
 import TableResetFiltersToggle from "@/components/TableResetFiltersToggle";
 
 interface TableProps<T extends Record<string, unknown>> {
@@ -50,6 +50,8 @@ export default function TableWrapper<T extends Record<string, unknown>>({
     query: isLocalStorageLoaded ? query : null,
   });
 
+  const activeFilterCount = useActiveSwitchFilterCount(queryConfig);
+
   const cachedData = useDataCache(data);
   const rows = cachedData?.[tableName] || [];
 
@@ -63,6 +65,7 @@ export default function TableWrapper<T extends Record<string, unknown>>({
         configFromStorageString
       ) as QueryConfig;
       // todo: validate with Zod
+      // todo: bugs lurking here because the ytd/1y/5y filters need to be refreshed
       setIsLocalStorageLoaded(true);
       setQueryConfig(queryConfigFromStorage);
     } catch {
@@ -134,7 +137,7 @@ export default function TableWrapper<T extends Record<string, unknown>>({
           <Col xs={12} md={6} className="d-flex justify-content-between">
             <TableAdvancedSearchFilterToggle
               setIsFilterOpen={setIsFilterOpen}
-              filterCount={getActiveSwitchFilterCount(queryConfig.filterGroups)}
+              activeFilterCount={activeFilterCount}
             />
             <TableSearch
               queryConfig={queryConfig}
