@@ -55,6 +55,14 @@ def checkDockerComposeAvailability():
 def doCommand(args):
     if args.command == "build":
         buildTools(args)
+    elif args.command == "local-stack-up":
+        dbUp(args)
+        graphqlEngineUp(args)
+        cr3UserApiUp(args)
+    elif args.command == "local-stack-down":
+        cr3UserApiDown(args)
+        graphqlEngineDown(args)
+        dbDown(args)
     elif args.command == "db-up":
         dbUp(args)
     elif args.command == "db-down":
@@ -64,6 +72,10 @@ def doCommand(args):
         graphqlEngineUp(args)
     elif args.command == "graphql-engine-down":
         graphqlEngineDown(args)
+    elif args.command == "api-up":
+        cr3UserApiUp(args)
+    elif args.command == "api-down":
+        cr3UserApiDown(args)
     elif args.command == "hasura-console":
         hasuraConsole(args)
     elif args.command == "vze-up":
@@ -329,6 +341,37 @@ def graphqlEngineUp(args):
     print("You can run './vision-zero hasura-console' to open the console.")
 
 
+def cr3UserApiUp(args):
+    print("🚀  Starting Flask API")
+    subprocess.run(
+        docker_compose_invocation
+        + [
+            "-f",
+            "docker-compose.yml",
+            "up",
+            "-d",
+            "cr3-user-api",
+        ]
+    )
+    subprocess.run(["docker", "ps"])
+    print("🚀  CR3 / User flask API started.")
+
+
+def cr3UserApiDown(args):
+    print("🛑 Stopping Flask API")
+    subprocess.run(
+        docker_compose_invocation
+        + [
+            "-f",
+            "docker-compose.yml",
+            "stop",
+            "cr3-user-api",
+        ]
+    )
+    subprocess.run(["docker", "ps"])
+    print("🚀  CR3 / User flask API stopped.")
+
+
 def hasuraConsole(args):
     print("🚀  Opening Hasura console")
     try:
@@ -450,8 +493,12 @@ def get_main_parser():
         "command",
         choices=[
             "build",
+            "local-stack-up",
+            "local-stack-down",
             "db-up",
             "db-down",
+            "api-up",
+            "api-down",
             "graphql-engine-up",
             "graphql-engine-down",
             "vze-up",

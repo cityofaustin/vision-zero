@@ -63,7 +63,7 @@ See [here](docs/local_dev.md) for in-depth documentation about the `vision-zero`
 - [Vision Zero Database (VZD)](./database/README.md) - the database that powers the Vision Zero suite
 - [Vision Zero Editor (VZE)](./editor/README.md) - web application which enables City staff to browse and edit crash data
 - [Vision Zero Viewer (VZV)](./viewer/README.md) - public dashboard which provides key metrics and insights about
-- [atd-cr3-api](./atd-cr3-api/README.md) - our API that securely downloads a private file from S3
+- [api](./api/README.md) - our API that securely downloads a private file from S3
 - [etl](./etl/README.md) - integration scripts for bringing data in the Vision Zero Database
 - [toolbox](./toolbox/README.md) - collection of utilities and scripts designed for ad-hoc maintenance tasks
 

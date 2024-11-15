@@ -89,3 +89,5 @@ env
 
 # Zappa API deployment secrets
 zappa_settings.json
+
+env_file

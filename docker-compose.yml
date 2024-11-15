@@ -1,6 +1,6 @@
 services:
   graphql-engine:
-    image: hasura/graphql-engine:v2.43.0
+    image: hasura/graphql-engine:v2.44.0
     volumes:
       - ./viewer/graphql-engine-metadata:/metadata
     ports:
@@ -42,3 +42,13 @@ services:
       - ./database/snapshots:/snapshots
     ports:
       - 5432:5432
+
+  cr3-user-api:
+    build: api
+    # image: atddocker/vz-user-cr3-api
+    env_file:
+      - api/.env
+    ports:
+      - 8085:5000
+    volumes:
+      - ./api:/usr/src/app
