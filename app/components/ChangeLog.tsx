@@ -17,14 +17,15 @@ const KEYS_TO_IGNORE = ["updated_at", "updated_by", "position"];
  * { field: <property name>, old: <old value>, new: <new value> }
  */
 const getDiffArray = <T extends Record<string, unknown>>(
-  old: T,
-  new_: T
+  new_: T,
+  old: T | null
 ): ChangeLogDiff[] => {
+
   const diffArray = Object.keys(new_).reduce<ChangeLogDiff[]>((diffs, key) => {
-    if (new_[key] !== old[key] && !KEYS_TO_IGNORE.includes(key)) {
+    if (new_[key] !== old?.[key] && !KEYS_TO_IGNORE.includes(key)) {
       diffs.push({
         field: key,
-        old: old[key],
+        old: old?.[key] || null,
         new: new_[key],
       });
     }
@@ -59,8 +60,8 @@ const useChangeLogData = (logs: ChangeLogEntry[]): ChangeLogEntryEnriched[] =>
         affected_fields: [],
       };
       newChange.diffs = getDiffArray(
+        change.record_json.new,
         change.record_json.old,
-        change.record_json.new
       );
       newChange.affected_fields = newChange.diffs.map((diff) => diff.field);
       change.created_by = formatUserName(change.created_by);

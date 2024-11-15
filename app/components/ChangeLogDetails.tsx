@@ -30,9 +30,11 @@ const ChangeLogDetails = ({
       <Modal.Body>
         <Table responsive striped hover>
           <thead>
-            <th>Field</th>
-            {!isNewRecordEvent(selectedChange) && <th>Previous value</th>}
-            <th>New value</th>
+            <tr>
+              <th>Field</th>
+              {!isNewRecordEvent(selectedChange) && <th>Previous value</th>}
+              <th>New value</th>
+            </tr>
           </thead>
           <tbody className="font-monospace">
             {selectedChange.diffs.map((diff) => (
