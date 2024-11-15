@@ -41,7 +41,7 @@ const getDiffArray = <T extends Record<string, unknown>>(
 /**
  * Prettify the user name if it is `cris`
  */
-const formatUserName = (userName: string) =>
+const formatUserName = (userName: string): string =>
   userName === "cris" ? "TxDOT CRIS" : userName;
 
 /**
