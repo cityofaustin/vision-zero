@@ -4,6 +4,9 @@ import { Auth0Provider } from "@auth0/auth0-react";
 const DOMAIN = process.env.NEXT_PUBLIC_AUTH0_DOMAIN!;
 const CLIENT_ID = process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID!;
 
+/**
+ * Client-side wrapper for the Auth0Provider
+ */
 export default function AuthProvider({
   children,
 }: {
