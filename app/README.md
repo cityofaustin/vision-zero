@@ -38,6 +38,40 @@ npm run dev
 - CoreUI + reactstrap ➡️ react-bootstrap
 - Apollo Client ➡️ SWR + graphql-request
 
+## Working features
+
+- Crashes list
+  - filter by preset date range
+  - filter by custom date range
+  - filter using search input and selecting a field to search on
+  - reset filters
+  - filters are preserved (in local storage) when refreshing the page or navigating back to it
+  - advanced search filter menu toggle shows a badge with how many fitlers are applied
+  - expandable filter toggle menu with working filter switch groups
+  - paginate through search results
+  - loading spinner apperas in pagination controls when fetching data
+  - sortable table columns with icon indicating sort direction
+- Crash details page
+  - Crash map: crash map displays crash location with nearmap aerials
+  - Crash map: ability to edit crash location  
+  - Crash diagram: diagrams render
+  - Crash diagram: no pan/twist/zoom controls (yet)
+  - Crash narrative: loads normally and is scrollable for long narratives
+  - Crash data card: click field to edit
+  - Crash data card: cannot save unless field is edited
+  - Crash data card: use cancel button to exit edit mode and restore initial value
+  - Crash data card: edit a field with lookup values
+  - Crash data card: edit a text input
+  - Crash data card: edit a number input
+  - Crash data card: nullify a value (e.g. street name) by clearing its input and saving it
+  - Related records - units: click field to edit it
+  - Related records - people: todo
+  - Related records - chargs: todo
+  - Change log: change log works normally with details modal. But it is not collapseable (yet).
+- Sidebar
+  - is exapandable and open/closed state is preserved in localstorage
+
+
 ## Todo
 
 - permissions-based features:
@@ -53,8 +87,10 @@ npm run dev
   - notes
   - recommendations
   - misc column editing + placement
-- gridtable
-  - default 'yes'/inverted filters, e.g. afp?
+  - Crash map: show coordinates and enable editing by tying into input
+  - crash diagram: zoom/tilt control
+  - Change log: collapseable
+- table
   - advanced filters: test them and add "Other" unit type filter
   - export
   - record counts
@@ -75,4 +111,3 @@ npm run dev
 - versioned localstorage
 - error boundary (see Moped's for reference)
 - map geocoder (technically an enhancement vis a vis current state)
-
