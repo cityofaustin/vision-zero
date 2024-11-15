@@ -27,7 +27,6 @@ export default function CrashDetailsPage({
   const { data, refetch, isValidating } = useQuery<{
     crashes: Crash[];
   }>({
-    // todo: is the router ever not ready - ie do we need this ternary?
     query: recordLocator ? GET_CRASH : null,
     variables: { recordLocator },
   });
