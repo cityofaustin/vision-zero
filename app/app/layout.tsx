@@ -1,6 +1,6 @@
 import "../styles/global.scss";
 import AuthProvider from "@/contexts/Auth";
-import SidebarLayout from "@/components/SideBarLayout";
+import SidebarLayout from "@/components/SidebarLayout";
 
 /**
  * The root layout for the whole app
