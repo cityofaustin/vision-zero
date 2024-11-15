@@ -1,17 +1,18 @@
 /**
- * Example of incorporating zod for schema validation
+ * Example of incorporating zod for type generation.
  *
- * not convinced we get a huge benefit from this, considering that
- * that vast majority of db columns are nullable
+ * This is a pattern we might follow if we want to wrap our
+ * Hasura api calls in schema validation.
+ *
+ * Basically, we define our core types (crashes, units, etc)
+ * in zod terms, and let zod generate (infer) the
+ * the types for us.
+ * 
+ * At runtime, we would use the zod schema to validate api calls,
+ * and during development we have typechecking in sync with
+ * what zod is validating.
  */
 import { z } from "zod";
-
-// Define column type statically
-interface ColumnDefinition<T> {
-  name: keyof T;
-  type: "number" | "string";
-  nullable: boolean;
-}
 
 // Manually create Zod schema with helper functions
 const authorSchema = z.object({
@@ -20,6 +21,13 @@ const authorSchema = z.object({
 });
 
 type Author = z.infer<typeof authorSchema>;
+
+// Define column type statically
+interface ColumnDefinition<T> {
+  name: keyof T;
+  type: "number" | "string";
+  nullable: boolean;
+}
 
 // define columns with their reference Type
 const columns: ColumnDefinition<Author>[] = [
