@@ -15,9 +15,6 @@ interface PaginationControlProps {
   isLoading: boolean;
 }
 
-const getCurrentPageNumber = (offset: number, limit: number): number =>
-  offset / limit + 1;
-
 /**
  * UI component that controls pagination by setting the
  * QueryConfig offset
@@ -28,11 +25,7 @@ export default function TablePaginationControls({
   recordCount,
   isLoading,
 }: PaginationControlProps) {
-  const currentPageNum = getCurrentPageNumber(
-    queryConfig.offset,
-    queryConfig.limit
-  );
-
+  const currentPageNum = queryConfig.offset / queryConfig.limit + 1;
   return (
     <ButtonToolbar>
       <ButtonGroup className="me-2" aria-label="Date filter preset buttons">

@@ -1,8 +1,8 @@
 "use client";
 import Card from "react-bootstrap/Card";
 import AppBreadCrumb from "@/components/AppBreadCrumb";
-import { crashesListViewColumns } from "@/configs/crashesListView";
-import { crashesTableQueryConfig } from "@/configs/crashesTable";
+import { crashesListViewColumns } from "@/configs/crashesListViewColumns";
+import { crashesListViewQueryConfig } from "@/configs/crashesListViewTable";
 import TableWrapper from "@/components/TableWrapper";
 const localStorageKey = "crashesListViewQueryConfig";
 
@@ -15,7 +15,7 @@ export default function Crashes() {
         <Card.Body>
           <TableWrapper
             columns={crashesListViewColumns}
-            initialQueryConfig={crashesTableQueryConfig}
+            initialQueryConfig={crashesListViewQueryConfig}
             localStorageKey={localStorageKey}
           />
         </Card.Body>

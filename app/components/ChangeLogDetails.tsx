@@ -5,7 +5,7 @@ import Table from "react-bootstrap/Table";
 import ChangeDetailHeader from "./ChangeDetailHeader";
 import { ChangeLogEntryEnriched } from "@/types/types";
 
-const isNewRecordEvent = (change: ChangeLogEntryEnriched) =>
+const isNewRecordEvent = (change: ChangeLogEntryEnriched): boolean =>
   change.operation_type === "create";
 
 /**

@@ -275,7 +275,7 @@ const findSwitchFilterGroup = (
   queryConfig: QueryConfig,
   cardId: string,
   switchConfigId: string
-) => {
+): FilterGroup | undefined => {
   return queryConfig.filterGroups
     ?.find((filterGroup) => filterGroup.id === cardId)
     ?.filterGroups?.find(
@@ -320,7 +320,7 @@ const removeFilters = (
   queryConfig: QueryConfig,
   switchFilterGroupId: string,
   cardId: string
-) => {
+): QueryConfig => {
   // get the index of this filter card
   const filterGroupIdx = queryConfig.filterGroups.findIndex(
     (filterGroup) => filterGroup.id === cardId
