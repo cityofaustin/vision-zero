@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import Card from "react-bootstrap/Card";
 import Table from "react-bootstrap/Table";
 import { formatDateTime } from "@/utils/formatters";
-import CrashChangeLogDetails from "./CrashChangeLogDetails";
+import ChangeLogDetails from "./ChangeLogDetails";
 import {
   ChangeLogEntry,
   ChangeLogDiff,
@@ -72,9 +72,9 @@ const isNewRecordEvent = (change: ChangeLogEntryEnriched) =>
   change.operation_type === "create";
 
 /**
- * The primary UI component which renders the change log with clickable rows
+ * Primary UI component which renders the change log with clickable rows
  */
-export default function CrashChangeLog({ logs }: { logs: ChangeLogEntry[] }) {
+export default function ChangeLog({ logs }: { logs: ChangeLogEntry[] }) {
   const [selectedChange, setSelectedChange] =
     useState<ChangeLogEntryEnriched | null>(null);
 
@@ -124,7 +124,7 @@ export default function CrashChangeLog({ logs }: { logs: ChangeLogEntry[] }) {
         </Table>
         {/* Modal with change details table */}
         {selectedChange && (
-          <CrashChangeLogDetails
+          <ChangeLogDetails
             selectedChange={selectedChange}
             setSelectedChange={setSelectedChange}
           />

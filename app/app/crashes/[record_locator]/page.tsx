@@ -1,5 +1,5 @@
+"use client";
 import { useCallback } from "react";
-import { useRouter } from "next/router";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Card from "react-bootstrap/Card";
@@ -12,14 +12,17 @@ import CrashHeader from "@/components/CrashHeader";
 import CrashDiagramCard from "@/components/CrashDiagramCard";
 import DataCard from "@/components/DataCard";
 import RelatedRecordTable from "@/components/RelatedRecordTable";
-import CrashChangeLog from "@/components/CrashChangeLog";
+import ChangeLog from "@/components/ChangeLog";
 import { crashDataCards } from "@/configs/crashDataCard";
 import { unitRelatedRecordCols } from "@/configs/unitRelatedRecordTable";
 import { Crash } from "@/types/types";
 
-export default function CrashDetailsPage() {
-  const router = useRouter();
-  const recordLocator = router.query.record_locator;
+export default function CrashDetailsPage({
+  params,
+}: {
+  params: { record_locator: string };
+}) {
+  const recordLocator = params.record_locator;
 
   const { data, refetch, isValidating } = useQuery<{
     crashes: Crash[];
@@ -134,7 +137,7 @@ export default function CrashDetailsPage() {
         </Col>
       </Row>
       <Row className="mb-5">
-        <Col>{crash && <CrashChangeLog logs={crash.change_logs} />}</Col>
+        <Col>{crash && <ChangeLog logs={crash.change_logs} />}</Col>
       </Row>
     </>
   );

@@ -1,5 +1,6 @@
+"use client";
 import { ReactNode, useState, useCallback, useEffect } from "react";
-import { useRouter } from "next/router";
+import { usePathname, useSelectedLayoutSegments } from "next/navigation";
 import { useAuth0 } from "@auth0/auth0-react";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
@@ -18,11 +19,10 @@ import SideBarListItem from "./SideBarListItem";
 const localStorageKey = "sidebarCollapsed";
 
 export default function SidebarLayout({ children }: { children: ReactNode }) {
-  const router = useRouter();
   const [isCollapsed, setIsCollapsed] = useState(true);
-
-  const { loginWithRedirect, logout, isAuthenticated, isLoading } =
-    useAuth0();
+  const { loginWithRedirect, logout, isAuthenticated, isLoading } = useAuth0();
+  const pathName = usePathname();
+  const segments = useSelectedLayoutSegments();
 
   const toggleSidebar = useCallback(
     () =>
@@ -64,7 +64,7 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
               onClick={() =>
                 loginWithRedirect({
                   appState: {
-                    returnTo: router.asPath,
+                    returnTo: pathName,
                   },
                 })
               }
@@ -105,21 +105,21 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
             <ListGroup variant="flush">
               <SideBarListItem
                 isCollapsed={isCollapsed}
-                isCurrentPage={router?.route === "/"}
+                isCurrentPage={segments.includes("dashboard")}
                 Icon={FaGaugeHigh}
                 label="Dashboard"
-                href="/"
+                href="/dashboard"
               />
               <SideBarListItem
                 isCollapsed={isCollapsed}
-                isCurrentPage={router?.route.startsWith("/crashes")}
+                isCurrentPage={segments.includes("crashes")}
                 Icon={FaShieldHeart}
                 label="Crashes"
                 href="/crashes"
               />
               <SideBarListItem
                 isCollapsed={isCollapsed}
-                isCurrentPage={router?.route.startsWith("/locations")}
+                isCurrentPage={segments.includes("locations")}
                 Icon={FaMap}
                 label="Locations"
                 href="/locations"

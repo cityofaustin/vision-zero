@@ -1,3 +1,4 @@
+"use client";
 import Card from "react-bootstrap/Card";
 import AppBreadCrumb from "@/components/AppBreadCrumb";
 import { crashesListViewColumns } from "@/configs/crashesListView";
