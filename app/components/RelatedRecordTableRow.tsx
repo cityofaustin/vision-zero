@@ -20,7 +20,7 @@ interface RelatedRecordTableRowProps<T extends Record<string, unknown>> {
 
 /**
  * Generic component which renders editable fields in a table row
- * 
+ *
  * // todo: there is much shared code between this component and
  * the DataCard component. Essenetially the only diff between the
  * two is row vs column layout 🤔
@@ -69,7 +69,9 @@ export default function RelatedRecordTableRow<
         return (
           <td
             key={String(col.name)}
-            style={{ cursor: col.editable && !isEditingThisColumn ? "pointer" : "auto" }}
+            style={{
+              cursor: col.editable && !isEditingThisColumn ? "pointer" : "auto",
+            }}
             onClick={() => {
               if (!col.editable) {
                 return;

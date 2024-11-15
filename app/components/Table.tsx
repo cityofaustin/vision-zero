@@ -5,6 +5,9 @@ import { renderColumnValue } from "@/utils/formHelpers";
 import { QueryConfig } from "@/utils/queryBuilder";
 import { FaSortDown, FaSortUp } from "react-icons/fa6";
 
+/**
+ * The actual <table> component of our fancy table component
+ */
 export default function Table<T extends Record<string, unknown>>({
   rows,
   columns,

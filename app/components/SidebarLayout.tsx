@@ -15,9 +15,13 @@ import {
   FaRightFromBracket,
 } from "react-icons/fa6";
 import SideBarListItem from "./SideBarListItem";
+import LoginContainer from "./LoginCotainer";
 
 const localStorageKey = "sidebarCollapsed";
 
+/**
+ * The app sidebar component
+ */
 export default function SidebarLayout({ children }: { children: ReactNode }) {
   const [isCollapsed, setIsCollapsed] = useState(true);
   const { loginWithRedirect, logout, isAuthenticated, isLoading } = useAuth0();
@@ -52,29 +56,15 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
 
   if (!isAuthenticated && !isLoading) {
     return (
-      <Container
-        fluid
-        style={{ height: "100vh", overflow: "hidden" }}
-        className="bg-dark"
-      >
-        <div className="d-flex justify-content-center align-content-center h-100">
-          <div className="align-self-center p-5 bg-white rounded text-center">
-            <h1 className="mb-5">Vision Zero Editor</h1>
-            <Button
-              onClick={() =>
-                loginWithRedirect({
-                  appState: {
-                    returnTo: pathName,
-                  },
-                })
-              }
-              size="lg"
-            >
-              <span>Sign In</span>
-            </Button>
-          </div>
-        </div>
-      </Container>
+      <LoginContainer
+        onLogin={() =>
+          loginWithRedirect({
+            appState: {
+              returnTo: pathName,
+            },
+          })
+        }
+      />
     );
   }
 

@@ -5,6 +5,9 @@ interface CrashHeaderProps {
   crash: Crash;
 }
 
+/**
+ * Crash details page header
+ */
 export default function CrashHeader({ crash }: CrashHeaderProps) {
   return (
     <div className="d-flex justify-content-between mb-3">

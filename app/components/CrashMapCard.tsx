@@ -13,6 +13,9 @@ interface CrashMapCardProps {
   mutation: string;
 }
 
+/**
+ * Card component that renders the crash map and edit controls
+ */
 export default function CrashMapCard({
   crashId,
   savedLatitude,

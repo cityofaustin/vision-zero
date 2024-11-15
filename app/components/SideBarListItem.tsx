@@ -10,6 +10,9 @@ interface SideBarListItemProps {
   isCurrentPage: boolean;
 }
 
+/**
+ * A list item that renders in our app's sidebar 👍
+ */
 export default function SideBarListItem({
   Icon,
   label,

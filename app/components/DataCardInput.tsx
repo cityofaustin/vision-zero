@@ -3,6 +3,39 @@ import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import { LookupTableOption, InputType } from "@/types/types";
 
+interface DataCardInputProps {
+  /**
+   * The initial value to populate the input
+   */
+  initialValue: string;
+  /**
+   * If the input is in the process of mutating via API call
+   */
+  isMutating: boolean;
+  /**
+   * Controls the type of input to be rendered
+   */
+  inputType?: InputType;
+  /**
+   * Array of lookup table options that will populate a <select> input
+   */
+  selectOptions?: LookupTableOption[];
+  /**
+   * The function to call on save button click, which is expected to mutate the field
+   * with the current `editValue`
+   */
+  onSave: (value: string) => Promise<void>;
+  /**
+   * The function to call on cancel button click, which is expected
+   * to set control the parent component's edit state
+   */
+  onCancel: () => void;
+}
+
+/**
+ * Component that manages the form UI for a single
+ * editable field
+ */
 const DataCardInput = ({
   initialValue,
   inputType,
@@ -10,14 +43,7 @@ const DataCardInput = ({
   selectOptions,
   onSave,
   onCancel,
-}: {
-  initialValue: string;
-  isMutating: boolean;
-  inputType?: InputType;
-  selectOptions?: LookupTableOption[];
-  onSave: (value: string) => Promise<void>;
-  onCancel: () => void;
-}) => {
+}: DataCardInputProps) => {
   // todo: input validation; input type = number
   const [editValue, setEditValue] = useState<string>(initialValue);
 
