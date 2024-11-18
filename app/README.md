@@ -60,6 +60,7 @@ npm run dev
   - Crash data card: click field to edit
   - Crash data card: cannot save unless field is edited
   - Crash data card: use cancel button to exit edit mode and restore initial value
+  - Crash data card: use `enter` key to save edits
   - Crash data card: edit a field with lookup values
   - Crash data card: edit a text input
   - Crash data card: edit a number input
