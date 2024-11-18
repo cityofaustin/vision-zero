@@ -48,3 +48,8 @@
   /* Adjust to be just above content height */
   max-height: 25rem;
 }
+
+.card-header,
+.card-footer {
+  border: none;
+}
