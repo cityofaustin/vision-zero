@@ -180,12 +180,12 @@ const crashesListViewfilterCards: FilterGroup[] = [
   },
   {
     id: "geography_filter_card",
-    label: "Geography",
+    label: "Jurisdiction",
     groupOperator: "_or",
     filterGroups: [
       {
         id: "in_austin_full_purpose",
-        label: "Outside Austin Full Purpose jurisdiction",
+        label: "Include outside Austin Full Purpose",
         groupOperator: "_and",
         enabled: true,
         inverted: true,
@@ -207,14 +207,15 @@ const crashesListViewfilterCards: FilterGroup[] = [
     filterGroups: [
       {
         id: "private_drive",
-        label: "Private drive crashes",
+        label: "Include private drive crashes",
         groupOperator: "_and",
-        enabled: false,
+        enabled: true,
+        inverted: true,
         filters: [
           {
             id: "private_drive",
             column: "private_dr_fl",
-            operator: "_eq",
+            operator: "_neq",
             value: true,
           },
         ],
