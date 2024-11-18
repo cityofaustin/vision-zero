@@ -10,6 +10,7 @@ on:
       - "etl/afd_ems_import/**"
       - "etl/cris_import/**"
       - "etl/socrata_export/**"
+      - "etl/moped_projects/**"
       - "api/**"
   workflow_dispatch:
 
