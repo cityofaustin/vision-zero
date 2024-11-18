@@ -78,7 +78,7 @@ jobs:
         if: steps.changes.outputs.moped_projects == 'true'
         uses: docker/build-push-action@v4
         with:
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
           context: etl/moped_projects
           push: true
           tags: atddocker/vz-moped-join:${{ github.ref == 'refs/heads/production' && 'production' || 'development' }}
