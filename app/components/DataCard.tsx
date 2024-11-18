@@ -64,7 +64,7 @@ export default function DataCard<T extends Record<string, unknown>>({
     <Card>
       <Card.Header>{title}</Card.Header>
       <Card.Body>
-        <Table striped hover>
+        <Table responsive hover>
           <tbody>
             {columns.map((col) => {
               const isEditingThisColumn = col.name === editColumn?.name;
