@@ -1,7 +1,6 @@
 # Moped Project Components Spatial Join
 
-This ETL generates a lookup table of [Moped](https://github.com/cityofaustin/atd-moped/) mobility project components (such as bike lanes, traffic signals, sidewalks) and crashes. This is used to evaluate the impact of Austin's
-mobility projects and crashes.
+This ETL generates a lookup table of [Moped](https://github.com/cityofaustin/atd-moped/) mobility project components (such as bike lanes, traffic signals, sidewalks) and crashes. This is used to evaluate the impact of Austin's mobility projects and crashes.
 
 `moped_project_components_spatial_join.py` buffers the project geometry (points and lines) to a distance of 40 feet
 then spatially joins the crashes that are inside of that polygon.
