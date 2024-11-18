@@ -8,7 +8,7 @@ Records are pushed to three datasets, a crash-level dataset, a person-level data
 | ---------------- | --------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
 | crashes          | [`3aut-fhzp`](https://datahub.austintexas.gov/Transportation-and-Mobility/Test-Crash-Report-Data/3aut-fhzp/about_data)                  | [`y2wy-tgr5`](https://datahub.austintexas.gov/Transportation-and-Mobility/Austin-Crash-Report-Data-Crash-Level-Records/y2wy-tgr5/about_data)    |
 | people           | [`v3x4-fjgm`](https://datahub.austintexas.gov/Transportation-and-Mobility/Test-Austin-Crash-Demographic-Statistics-incomplet/v3x4-fjgm) | [`xecs-rpy9`](https://data.austintexas.gov/Transportation-and-Mobility/Austin-Crash-Report-Data-Crash-Victim-Demographic-/xecs-rpy9/about_data) |
-| crash-components | [`gb78-y2pd`](https://datahub.austintexas.gov/Transportation-and-Mobility/Vision-Zero-Crash-mobility-project-lookup-table/gb78-y2pd)    |                                                                                                                                                 |
+| crash-components | [`gb78-y2pd`](https://datahub.austintexas.gov/Transportation-and-Mobility/Vision-Zero-Crash-mobility-project-lookup-table/gb78-y2pd)    | [`usmd-qtb9`](https://datahub.austintexas.gov/Transportation-and-Mobility/Vision-Zero-Crash-mobility-project-lookup-table/usmd-qtb9/about_data) |
 
 ## Quick start
 
