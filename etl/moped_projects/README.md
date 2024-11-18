@@ -18,6 +18,6 @@ docker build . -t atddocker/vz-moped-join
 ```
 
 ```
-docker run -it --env-file env_file atddocker/vz-moped-join /bin/bash
+docker run -it --rm --network host --env-file env_file atddocker/vz-moped-join /bin/bash
 python moped_project_components_spatial_join.py
 ```
