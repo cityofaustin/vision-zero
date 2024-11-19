@@ -1,5 +1,6 @@
 "use client";
 import { useCallback } from "react";
+import { notFound } from "next/navigation";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Card from "react-bootstrap/Card";
@@ -35,10 +36,14 @@ export default function CrashDetailsPage({
     await refetch();
   }, [refetch]);
 
-  if (!data || !data?.crashes?.[0]) {
-    // todo: 404 page
+  if (!data) {
     // todo: loading spinner (would be nice to use a spinner inside cards)
     return;
+  }
+
+  if (!data?.crashes?.[0]) {
+    // 404
+    notFound();
   }
 
   const crash = data.crashes[0];

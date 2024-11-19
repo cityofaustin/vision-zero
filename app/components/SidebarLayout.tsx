@@ -140,7 +140,7 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
             overflowY: "auto",
           }}
         >
-          <main>{children}</main>
+          <main className="h-100">{children}</main>
         </Col>
       </Row>
     </Container>
