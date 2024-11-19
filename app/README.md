@@ -55,7 +55,8 @@ npm run dev
   - Crash map: crash map displays crash location with nearmap aerials
   - Crash map: ability to edit crash location  
   - Crash diagram: diagrams render
-  - Crash diagram: no pan/twist/zoom controls (yet)
+  - Crash diagram: info alert shows when no diagram is available and is temp record
+  - Crash diagram: danger alert shows when no diagram is available and is not temp record
   - Crash narrative: loads normally and is scrollable for long narratives
   - Crash data card: click field to edit
   - Crash data card: cannot save unless field is edited
@@ -104,11 +105,12 @@ npm run dev
 - create crash record
 - upload non-cr3
 - dashboard
+
 - users
   - user list
   - add/edit/delete uers
   - copy user emails
-- login page: make it look nice - also it flashes on the screen on every page load
+- login page: make it look nice
 - versioned localstorage
 - error boundary (see Moped's for reference)
 - map geocoder (technically an enhancement vis a vis current state)
