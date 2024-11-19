@@ -178,7 +178,7 @@ const wildCardValue = (value: string): string => {
  * todo: do we need to escape anything else?
  */
 const quoteWrapAndEscape = (value: string): FilterValue =>
-  `"${value.replace('"', '\\"')}"`;
+  `"${value.replaceAll('"', '\\"')}"`;
 
 /**
  * Create a string representation of an array of numbers
