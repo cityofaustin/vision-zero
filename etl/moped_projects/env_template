@@ -4,4 +4,4 @@ MOPED_HASURA_ENDPOINT=
 
 # Vision Zero Hasura
 VZ_HASURA_ADMIN_SECRET=hasurapassword
-VZ_HASURA_ENDPOINT=http://localhost:8084/v1/graphql
+VZ_HASURA_ENDPOINT=http://host.docker.internal:8084/v1/graphql
