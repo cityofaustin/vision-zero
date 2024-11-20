@@ -15,7 +15,7 @@ const InjuryBadge = ({
       <span className="me-1">{label}</span>
       {/* todo: decided if/how we want to assign colors to these badges */}
       <Badge bg={`${value ? "primary" : "dark"}`} pill>
-        {value}
+        {value || 0}
       </Badge>
     </span>
   );
