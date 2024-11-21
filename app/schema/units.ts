@@ -17,7 +17,7 @@ export const unitSchema = z.object({
   unit_desc_id: z.number().nullable(),
   trvl_dir: lookupOptionSchema,
   veh_trvl_dir_id: z.number().nullable(),
-  movt: lookupOptionSchema,
+  movt: lookupOptionSchema.nullable(),
   movement_id: z.number().nullable(),
 });
 

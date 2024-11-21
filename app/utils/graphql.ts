@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useMemo } from "react";
-import useSWR, { SWRConfiguration } from "swr";
+import useSWR, { SWRConfiguration, KeyedMutator } from "swr";
 import {
   gql,
   GraphQLClient,
@@ -7,6 +7,7 @@ import {
   RequestDocument,
   Variables,
 } from "graphql-request";
+import { z, ZodSchema } from "zod";
 import { getHasuraRoleName } from "./auth";
 import { MutationVariables } from "@/types/types";
 import { LookupTableDef } from "@/types/lookupTables";
@@ -28,13 +29,14 @@ const DEFAULT_SWR_OPTIONS: SWRConfiguration = {
 /**
  * Fetcher which interacts with our GraphQL API
  */
-const fetcher = <T>([query, variables, token, hasuraRoleName]: [
+const fetcher = <T>([query, variables, token, hasuraRoleName, schema]: [
   RequestDocument,
   Variables,
   string,
-  string
+  string,
+  ZodSchema<T>
 ]): Promise<T> =>
-  request({
+  request<T>({
     url: ENDPOINT,
     document: query,
     variables,
@@ -42,26 +44,59 @@ const fetcher = <T>([query, variables, token, hasuraRoleName]: [
       Authorization: `Bearer ${token}`,
       "x-hasura-role": hasuraRoleName,
     },
+  }).then((data) => {
+    return schema.parseAsync(data);
   });
 
 /**
- * Hook which wraps `useSWR` and provides auth
+ * Hook which wraps our data schema in an outer object that
+ * matches what Hasura will return. e.g., it shapes a Crash
+ * object schema into a shape like
+ * { crashes: <Crash[]> }
  */
-export const useQuery = <T>({
+const useApiResponseSchema = <T extends Record<string, unknown>>(
+  schema: ZodSchema<T>,
+  typename: string
+): ZodSchema<{ [key in typeof typename]: T[] }> =>
+  useMemo(() => {
+    return z.object({ [typename]: z.array(schema) });
+  }, [schema, typename]);
+
+interface UseQueryResponse<T> {
+  data?: T[];
+  error: any;
+  isLoading: boolean;
+  isError: boolean;
+  refetch: () => Promise<any>;
+  isValidating: boolean;
+}
+/**
+ * Hook which wraps `useSWR` and provides auth
+ *
+ * This hook is limited to querying just one type per query as
+ * will be defined by the typename
+ */
+export const useQuery = <T extends Record<string, unknown>>({
   query,
   variables,
   options,
+  schema,
+  typename,
 }: {
   query: RequestDocument | null;
   variables?: Variables;
   options?: SWRConfiguration;
-}) => {
+  typename: string;
+  schema: ZodSchema<T>;
+}): UseQueryResponse<T> => {
   const { getIdTokenClaims, user } = useAuth0();
+
+  const responseSchema = useApiResponseSchema(schema, typename);
 
   const fetchWithAuth = async ([query, variables]: [
     RequestDocument,
     Variables
-  ]) => {
+  ]): Promise<z.infer<typeof responseSchema>> => {
     const hasuraRoleName = getHasuraRoleName(user);
     /**
      * todo: our Auth0 app is configured to return idTokens, which are
@@ -78,19 +113,19 @@ export const useQuery = <T>({
     const idToken = await getIdTokenClaims();
     const token = idToken?.__raw || "";
 
-    // todo: <T> passed here is assigned to query results without validation - we need to use a schema validator
-    return fetcher<T>([query, variables, token, hasuraRoleName]);
+    return fetcher([query, variables, token, hasuraRoleName, responseSchema]);
   };
 
   // todo: document falsey query handling
-  const { data, error, isLoading, mutate, isValidating } = useSWR<T>(
-    query ? [query, variables] : null,
-    fetchWithAuth,
-    { ...DEFAULT_SWR_OPTIONS, ...(options || {}) }
-  );
+  const { data, error, isLoading, mutate, isValidating } = useSWR<
+    z.infer<typeof responseSchema>
+  >(query ? [query, variables] : null, fetchWithAuth, {
+    ...DEFAULT_SWR_OPTIONS,
+    ...(options || {}),
+  });
 
   return {
-    data,
+    data: data ? data[typename] : data,
     error,
     isLoading,
     isError: !!error,
@@ -164,18 +199,18 @@ export const useLookupQuery = (lookupTableDef: LookupTableDef | undefined) =>
         ? ""
         : lookupTableDef.tableSchema + "_";
 
-    const typeName = `${prefix}${lookupTableDef.tableName}`;
+    const typename = `${prefix}${lookupTableDef.tableName}`;
 
     return [
       gql`
         query LookupTableQuery {
-          ${typeName}(order_by: {label: asc}) {
+          ${typename}(order_by: {label: asc}) {
             id
             label
           }
         }
       `,
-      typeName,
+      typename,
     ];
   }, [lookupTableDef]);
 

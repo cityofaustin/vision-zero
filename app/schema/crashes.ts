@@ -4,7 +4,7 @@ import { unitSchema } from "./units";
 import { changeLogEntrySchema } from "./changeLog";
 
 export const crashSchema = z.object({
-  active_school_zone_fl: z.number().nullable(),
+  active_school_zone_fl: z.boolean().nullable(),
   address_primary: z.string().nullable(),
   address_secondary: z.string().nullable(),
   at_intrsct_fl: z.boolean().nullable(),
@@ -55,5 +55,5 @@ export const crashSchema = z.object({
   updated_by: z.string().nullable(),
   wthr_cond_id: z.number().nullable(),
   change_logs: z.array(changeLogEntrySchema),
-  units: z.array(unitSchema),
+  units: z.array(unitSchema).nullable(),
 });

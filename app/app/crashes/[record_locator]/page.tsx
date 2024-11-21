@@ -14,8 +14,11 @@ import DataCard from "@/components/DataCard";
 import RelatedRecordTable from "@/components/RelatedRecordTable";
 import ChangeLog from "@/components/ChangeLog";
 import { crashDataCards } from "@/configs/crashDataCard";
-import { unitRelatedRecordCols } from "@/configs/unitRelatedRecordTable";;
+import { unitRelatedRecordCols } from "@/configs/unitRelatedRecordTable";
+import { crashSchema } from "@/schema/crashes";
 import { Crash } from "@/types/crashes";
+
+const typename = "crashes";
 
 export default function CrashDetailsPage({
   params,
@@ -24,24 +27,28 @@ export default function CrashDetailsPage({
 }) {
   const recordLocator = params.record_locator;
 
-  const { data, refetch, isValidating } = useQuery<{
-    crashes: Crash[];
-  }>({
+  const { data, error, refetch, isValidating } = useQuery({
     query: recordLocator ? GET_CRASH : null,
     variables: { recordLocator },
+    schema: crashSchema,
+    typename,
   });
+
+  if (error) {
+    console.error(error);
+  }
 
   const onSaveCallback = useCallback(async () => {
     await refetch();
   }, [refetch]);
 
-  if (!data || !data?.crashes?.[0]) {
+  if (!data || data.length === 0) {
     // todo: 404 page
     // todo: loading spinner (would be nice to use a spinner inside cards)
     return;
   }
 
-  const crash = data.crashes[0];
+  const crash = data[0];
 
   return (
     <>
@@ -126,7 +133,7 @@ export default function CrashDetailsPage({
       <Row>
         <Col sm={12} className="mb-3">
           <RelatedRecordTable
-            records={crash.units}
+            records={crash.units || []}
             isValidating={isValidating}
             title="Units"
             columns={unitRelatedRecordCols}

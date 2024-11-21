@@ -1,16 +1,5 @@
 import { gql } from "graphql-request";
 
-// export const CRASHES_LIST_VIEW_QUERY = gql`
-//   query {
-//     crashes_list_view(limit: 100) {
-//       id
-//       cris_crash_id
-//       address_primary
-//       record_locator
-//     }
-//   }
-// `;
-
 export const GET_CRASH = gql`
   query CrashDetails($recordLocator: String!) {
     crashes(
@@ -22,6 +11,7 @@ export const GET_CRASH = gql`
       }
     ) {
       id
+      cris_crash_id
       record_locator
       updated_at
       updated_by
@@ -223,7 +213,7 @@ export const UPDATE_CRASH = gql`
     update_crashes(where: { id: { _eq: $id } }, _set: $updates) {
       affected_rows
       returning {
-        cris_crash_id
+        id
       }
     }
   }

@@ -4,10 +4,6 @@ import { ColDataCardDef } from "@/types/types";
 import { CrashesListCrash } from "@/types/crashesList";
 
 export const crashesListViewColumns: ColDataCardDef<CrashesListCrash>[] = [
-  //   {
-  //     name: "id",
-  //     label: "ID",
-  //   },
   {
     name: "record_locator",
     label: "Crash ID",
