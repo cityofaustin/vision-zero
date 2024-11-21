@@ -7,7 +7,7 @@ import {
   ChangeLogEntry,
   ChangeLogDiff,
   ChangeLogEntryEnriched,
-} from "@/types/types";
+} from "@/types/changeLog";
 
 const KEYS_TO_IGNORE = ["updated_at", "updated_by", "position"];
 
@@ -20,7 +20,6 @@ const getDiffArray = <T extends Record<string, unknown>>(
   new_: T,
   old: T | null
 ): ChangeLogDiff[] => {
-
   const diffArray = Object.keys(new_).reduce<ChangeLogDiff[]>((diffs, key) => {
     if (new_[key] !== old?.[key] && !KEYS_TO_IGNORE.includes(key)) {
       diffs.push({
@@ -61,7 +60,7 @@ const useChangeLogData = (logs: ChangeLogEntry[]): ChangeLogEntryEnriched[] =>
       };
       newChange.diffs = getDiffArray(
         change.record_json.new,
-        change.record_json.old,
+        change.record_json.old
       );
       newChange.affected_fields = newChange.diffs.map((diff) => diff.field);
       change.created_by = formatUserName(change.created_by);

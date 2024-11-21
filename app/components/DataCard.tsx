@@ -10,7 +10,8 @@ import {
   valueToString,
   handleFormValueOutput,
 } from "@/utils/formHelpers";
-import { ColDataCardDef, LookupTableOption } from "@/types/types";
+import { ColDataCardDef } from "@/types/types";
+import { LookupTableOption } from "@/types/lookupTables";
 
 interface DataCardProps<T extends Record<string, unknown>> {
   record: T;

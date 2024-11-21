@@ -8,7 +8,8 @@ import {
   Variables,
 } from "graphql-request";
 import { getHasuraRoleName } from "./auth";
-import { MutationVariables, LookupTableDef } from "@/types/types";
+import { MutationVariables } from "@/types/types";
+import { LookupTableDef } from "@/types/lookupTables";
 import { useAuth0 } from "@auth0/auth0-react";
 
 const ENDPOINT = process.env.NEXT_PUBLIC_HASURA_ENDPOINT!;

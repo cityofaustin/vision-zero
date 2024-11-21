@@ -1,5 +1,5 @@
 import { formatDateTime } from "@/utils/formatters";
-import { Crash } from "@/types/types";
+import { Crash } from "@/types/crashes";
 
 interface CrashHeaderProps {
   crash: Crash;

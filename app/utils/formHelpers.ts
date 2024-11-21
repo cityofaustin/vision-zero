@@ -1,4 +1,5 @@
-import { ColDataCardDef, LookupTableOption, InputType } from "@/types/types";
+import { ColDataCardDef, InputType } from "@/types/types";
+import { LookupTableOption } from "@/types/lookupTables";
 
 /**
  * Convert a record value to a string so that it can be used as the initial value

@@ -14,8 +14,8 @@ import DataCard from "@/components/DataCard";
 import RelatedRecordTable from "@/components/RelatedRecordTable";
 import ChangeLog from "@/components/ChangeLog";
 import { crashDataCards } from "@/configs/crashDataCard";
-import { unitRelatedRecordCols } from "@/configs/unitRelatedRecordTable";
-import { Crash } from "@/types/types";
+import { unitRelatedRecordCols } from "@/configs/unitRelatedRecordTable";;
+import { Crash } from "@/types/crashes";
 
 export default function CrashDetailsPage({
   params,
