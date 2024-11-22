@@ -10,7 +10,7 @@ export const unitSchema = z.object({
   veh_body_styl_id: z.number().nullable(),
   veh_make: lookupOptionSchema.nullable(),
   veh_make_id: z.number().nullable(),
-  veh_mod: lookupOptionSchema,
+  veh_mod: lookupOptionSchema.nullable(),
   veh_mod_id: z.number().nullable(),
   veh_mod_year: z.number().nullable(),
   unit_desc: lookupOptionSchema.nullable(),
