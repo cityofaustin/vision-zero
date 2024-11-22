@@ -71,7 +71,19 @@ query SocrataExportPeople($limit: Int!, $minId: Int!) {
 }
 """
 
+CRASH_COMPONENTS_QUERY = """
+query SocrataExportCrashComponents($limit: Int!, $minId: bigint!)  {
+  moped_component_crashes(order_by: {id: asc}, limit: $limit, where: {id: {_gte: $minId}}) {
+    id
+    crash_pk
+    mopd_proj_component_id
+  }
+}
+"""
+
+
 QUERIES = {
     "people": PEOPLE_QUERY,
     "crashes": CRASHES_QUERY,
+    "crash_components": CRASH_COMPONENTS_QUERY,
 }
