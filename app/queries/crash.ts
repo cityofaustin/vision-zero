@@ -70,12 +70,14 @@ export const GET_CRASH = gql`
       crash_injury_metrics_view {
         vz_fatality_count
         sus_serious_injry_count
+        nonincap_injry_count
+        poss_injry_count
+        unkn_injry_count
+        tot_injry_count
         years_of_life_lost
         est_comp_cost_crash_based
         est_total_person_comp_cost
         crash_injry_sev_id
-        nonincap_injry_count
-        sus_serious_injry_count
         cris_fatality_count
         law_enf_fatality_count
       }

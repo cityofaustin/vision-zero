@@ -2,6 +2,7 @@ import { z } from "zod";
 import { lookupOptionSchema } from "./lookupTable";
 import { unitSchema } from "./units";
 import { changeLogEntrySchema } from "./changeLog";
+import { crashInjuryMetricsSchema } from "./crashInjuryMetrics";
 
 export const crashSchema = z.object({
   active_school_zone_fl: z.boolean().nullable(),
@@ -9,6 +10,7 @@ export const crashSchema = z.object({
   address_secondary: z.string().nullable(),
   at_intrsct_fl: z.boolean().nullable(),
   case_id: z.string().nullable(),
+  crash_injury_metrics_view: crashInjuryMetricsSchema.nullable(),
   cr3_stored_fl: z.boolean().nullable(),
   crash_speed_limit: z.number().nullable(),
   crash_timestamp: z.string().nullable(),
