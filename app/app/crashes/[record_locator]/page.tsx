@@ -143,7 +143,7 @@ export default function CrashDetailsPage({
         </Col>
       </Row>
       <Row className="mb-5">
-        <Col>{crash && <ChangeLog logs={crash.change_logs} />}</Col>
+        <Col>{crash && <ChangeLog logs={crash.change_logs || []} />}</Col>
       </Row>
     </>
   );

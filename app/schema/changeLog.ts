@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const changeLogEntrySchema = z.object({
-  id: z.number(),
+  id: z.string(),
   crash_pk: z.number(),
   created_at: z.string(),
   created_by: z.string(),
