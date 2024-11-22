@@ -104,6 +104,14 @@ interface FilterGroupWithFilterGroups extends FilterGroupBase {
 export type FilterGroup = FilterGroupWithFilterGroups | FilterGroupWithFilters;
 
 /**
+ * Defines the fields available to be selected from the search field selector
+ */
+export interface SearchFilterField {
+  label: string;
+  value: string;
+}
+
+/**
  * Used by the date selector component to keep shorthand
  * `mode` buttons (YTD, 1Y, etc) in sync with the actual
  * DateFilter[] array
@@ -145,6 +153,10 @@ export interface QueryConfig {
    * filter when its value is not an empty string
    */
   searchFilter: Filter;
+  /**
+   * The search fields that are available to select from when searching
+   */
+  searchFields: SearchFilterField[];
   /**
    * The filter settings for filtering by date. Designed to
    * be compatible with the DateSeletor component which uses
@@ -269,7 +281,7 @@ const getWhereExp = (filterGroups: FilterGroup[]): string => {
     .map((filterGroup) => filterGroupToWhereExp(filterGroup))
     // remove any null values, which are returned when a fitler group is empty
     .filter((x) => !!x);
-  return andExps.length > 0 ? `{ _and: [ ${andExps.join("\n")} ]}` : "";
+  return andExps.length > 0 ? `{ _and: [ ${andExps.join("\n")} ]}` : "{}";
 };
 
 /**
@@ -353,6 +365,7 @@ const buildQuery = ({
   }
 
   const where = getWhereExp(allFilterGroups);
+
   const queryString = BASE_QUERY_STRING.replace(
     "$queryName",
     "BuildQuery_" + tableName
