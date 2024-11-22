@@ -142,10 +142,12 @@ export default function TableWrapper<T extends Record<string, unknown>>({
         </Row>
         <Row className="mb-3">
           <Col xs={12} md={6} className="d-flex justify-content-between">
-            <TableAdvancedSearchFilterToggle
-              setIsFilterOpen={setIsFilterOpen}
-              activeFilterCount={activeFilterCount}
-            />
+            {queryConfig.filterCards?.length > 0 && (
+              <TableAdvancedSearchFilterToggle
+                setIsFilterOpen={setIsFilterOpen}
+                activeFilterCount={activeFilterCount}
+              />
+            )}
             <TableSearch
               queryConfig={queryConfig}
               setQueryConfig={setQueryConfig}
