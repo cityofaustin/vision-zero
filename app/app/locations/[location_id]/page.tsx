@@ -1,23 +1,14 @@
 "use client";
-import { useCallback } from "react";
 import { notFound } from "next/navigation";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
-import Card from "react-bootstrap/Card";
-import CrashMapCard from "@/components/CrashMapCard";
-import { GET_LOCATION } from "@/queries/location";
-import { UPDATE_CRASH } from "@/queries/crash";
-import { useQuery } from "@/utils/graphql";
 import AppBreadCrumb from "@/components/AppBreadCrumb";
-import CrashHeader from "@/components/CrashHeader";
-import CrashDiagramCard from "@/components/CrashDiagramCard";
 import DataCard from "@/components/DataCard";
-import RelatedRecordTable from "@/components/RelatedRecordTable";
-import ChangeLog from "@/components/ChangeLog";
-import { crashDataCards } from "@/configs/crashDataCard";
-import { unitRelatedRecordCols } from "@/configs/unitRelatedRecordTable";
+import LocationMapCard from "@/components/LocationMapCard";
+import { useQuery } from "@/utils/graphql";
+import { GET_LOCATION } from "@/queries/location";
 import { locationSchema } from "@/schema/locationSchema";
-import { Crash } from "@/types/crashes";
+import { locationColumns } from "@/configs/locationColumns";
 
 const typename = "atd_txdot_locations";
 
@@ -39,10 +30,6 @@ export default function LocationDetailsPage({
     console.error(error);
   }
 
-  const onSaveCallback = useCallback(async () => {
-    await refetch();
-  }, [refetch]);
-
   if (!data) {
     // todo: loading spinner (would be nice to use a spinner inside cards)
     return;
@@ -60,14 +47,17 @@ export default function LocationDetailsPage({
       <AppBreadCrumb />
       <span className="fs-2">{location.description}</span>
       <Row>
-        <Col sm={12} md={6} lg={4} className="mb-3">
-          <CrashMapCard
-            savedLatitude={location.latitude}
-            savedLongitude={location.longitude}
-            // todo: this is fake just to make a map render
-            crashId={1}
-            onSaveCallback={onSaveCallback}
-            mutation={UPDATE_CRASH}
+        <Col sm={12} md={8} className="mb-3">
+          <LocationMapCard location={location} />
+        </Col>
+        <Col sm={12} md={4} className="mb-3">
+          <DataCard
+            columns={locationColumns}
+            isValidating={false}
+            mutation=""
+            title="Details"
+            onSaveCallback={() => Promise.resolve()}
+            record={location}
           />
         </Col>
       </Row>
