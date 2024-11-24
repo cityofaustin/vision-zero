@@ -1,32 +1,64 @@
-import { useRef } from "react";
+import { useRef, useMemo } from "react";
 import MapGL, {
   FullscreenControl,
   NavigationControl,
   MapRef,
-  Marker,
+  Source,
+  Layer,
 } from "react-map-gl";
+import { center } from "@turf/center";
 import { DEFAULT_MAP_PAN_ZOOM, DEFAULT_MAP_PARAMS } from "@/configs/map";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { MapAerialSourceAndLayer } from "./MapAerialSourceAndLayer";
 import { MultiPolygon } from "@/types/geojson";
+import { LineLayerSpecification } from "mapbox-gl";
 
 interface LocationMapProps {
   polygon: MultiPolygon;
+  locationId: string;
 }
+
+const polygonLayer: LineLayerSpecification = {
+  id: "location-polygon",
+  source: "location-polygon",
+  type: "line",
+  paint: {
+    "line-color": "orange",
+    "line-width": 4,
+  },
+};
+
+const usePolygonFeature = (polygon: MultiPolygon, locationId: string) =>
+  useMemo(
+    () => [
+      {
+        type: "Feature",
+        properties: {
+          id: locationId,
+        },
+        geometry: polygon,
+      },
+      center(polygon),
+    ],
+    [polygon, locationId]
+  );
 
 /**
  * Map component which renders an editable point marker
  */
-export const LocationMap = ({ polygon }: LocationMapProps) => {
+export const LocationMap = ({ polygon, locationId }: LocationMapProps) => {
   const mapRef = useRef<MapRef | null>(null);
+  const [polygonFeature, centerFeature] = usePolygonFeature(
+    polygon,
+    locationId
+  );
 
-  console.log("REF", mapRef);
   return (
     <MapGL
       ref={mapRef}
       initialViewState={{
-        latitude: DEFAULT_MAP_PAN_ZOOM.latitude,
-        longitude: DEFAULT_MAP_PAN_ZOOM.longitude,
+        latitude: Number(centerFeature.geometry.coordinates[1]),
+        longitude: Number(centerFeature.geometry.coordinates[0]),
         zoom: DEFAULT_MAP_PAN_ZOOM.zoom,
       }}
       {...DEFAULT_MAP_PARAMS}
@@ -37,6 +69,9 @@ export const LocationMap = ({ polygon }: LocationMapProps) => {
     >
       <FullscreenControl position="top-left" />
       <NavigationControl position="top-left" showCompass={false} />
+      <Source type="geojson" data={polygonFeature} id="location-polygon">
+        <Layer {...polygonLayer} />
+      </Source>
       {/* add nearmap raster source and style */}
       <MapAerialSourceAndLayer />
     </MapGL>
