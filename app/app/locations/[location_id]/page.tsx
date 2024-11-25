@@ -8,7 +8,7 @@ import LocationMapCard from "@/components/LocationMapCard";
 import { useQuery } from "@/utils/graphql";
 import { GET_LOCATION } from "@/queries/location";
 import { locationSchema } from "@/schema/locationSchema";
-import { locationColumns } from "@/configs/locationColumns";
+import { locationCardColumns } from "@/configs/locationDataCard";
 
 const typename = "atd_txdot_locations";
 
@@ -19,7 +19,7 @@ export default function LocationDetailsPage({
 }) {
   const locationId = params.location_id;
 
-  const { data, error, refetch, isValidating } = useQuery({
+  const { data, error } = useQuery({
     query: locationId ? GET_LOCATION : null,
     variables: { locationId },
     schema: locationSchema,
@@ -52,7 +52,7 @@ export default function LocationDetailsPage({
         </Col>
         <Col sm={12} md={4} className="mb-3">
           <DataCard
-            columns={locationColumns}
+            columns={locationCardColumns}
             isValidating={false}
             mutation=""
             title="Details"
