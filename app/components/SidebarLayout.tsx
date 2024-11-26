@@ -44,8 +44,6 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
     setIsCollapsed(collapsedFromStorage);
   }, []);
 
-  console.log("USER", !!user, "auth'd", isAuthenticated, "loading", isLoading);
-
   if (isLoading) {
     /**
      * We don't want to render anything before initial auth check resolves
