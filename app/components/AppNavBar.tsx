@@ -19,6 +19,9 @@ type NavBarProps = {
   logout: () => void;
 };
 
+/**
+ * App navbar with branding and a right-aligned dropdown menu
+ */
 export default function AppNavBar({ user, logout }: NavBarProps) {
   return (
     <Navbar expand="lg" className="pe-3">
