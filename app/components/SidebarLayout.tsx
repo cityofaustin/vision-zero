@@ -12,6 +12,7 @@ import {
   FaGaugeHigh,
   FaLocationDot,
   FaAngleRight,
+  FaUserGroup,
 } from "react-icons/fa6";
 import AppNavBar from "./AppNavBar";
 import SideBarListItem from "./SideBarListItem";
@@ -113,6 +114,13 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
                 Icon={FaLocationDot}
                 label="Locations"
                 href="/locations"
+              />
+              <SideBarListItem
+                isCollapsed={isCollapsed}
+                isCurrentPage={segments.includes("users")}
+                Icon={FaUserGroup}
+                label="Users"
+                href="/users"
               />
             </ListGroup>
           </div>
