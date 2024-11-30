@@ -18,6 +18,18 @@ async function getUserPage(page: number, perPage: number, token: string) {
 }
 
 /**
+ * Get a user from the get_user api
+ */
+export async function getUser(userId: string, token: string) {
+  const endpoint = `${process.env.NEXT_PUBLIC_CR3_API_DOMAIN}/user/get_user/${userId}`;
+  return fetch(endpoint, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }).then((response) => response.json());
+}
+
+/**
  * Hook which retrieves the user's bearer
  * token from the IdToken claims
  */
