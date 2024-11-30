@@ -15,4 +15,6 @@ export type User = {
   logins_count?: number;
   name: string;
   user_id: string;
+  last_ip?: string;
+  updated_at?: string;
 };
