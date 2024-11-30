@@ -14,7 +14,6 @@ export default function Users() {
   const token = useToken();
   const router = useRouter();
   const [users, isLoading, error] = useUsers(token);
-
   return (
     <>
       <AppBreadCrumb />
