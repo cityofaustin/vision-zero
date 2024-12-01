@@ -13,20 +13,24 @@ interface CustomUser extends User {
 }
 
 /**
+ * Get the allowed roles array from a user object
+ * */
+export const getRolesArray = (user: CustomUser | undefined) =>
+  user?.["https://hasura.io/jwt/claims"]?.["x-hasura-allowed-roles"];
+
+/**
  * Get a user's hasura role name from their allowed roles
  */
-export const getHasuraRoleName = (user: CustomUser | undefined): string => {
-  const roles =
-    user?.["https://hasura.io/jwt/claims"]?.["x-hasura-allowed-roles"];
-
+export const getHasuraRoleName = (roles?: string[]): string => {
   if (!roles) {
     return "";
   } else if (roles.includes("vz-admin")) {
     // todo
     // If user has more than one role, it is because they have `itSupervisor` and `vz-admin`
-    // `vz-admin` is the Hasura rolename, `itSupervisor` is some legacy name from back when
-    // we used the hasura `admin` role instead of a named role for admins. John is pretty sure
-    // sure we stop using `itSupervisor`
+    // `vz-admin` is the Hasura rolename, `itSupervisor` is a legacy role that was previously
+    // used to enable a user to create and edit other admins. this app will do away with
+    // that behavior: any admin can create and modify other admins. A follow-up task is
+    // to clean up the Auth0 user database that references `itSupervisor`
     return "vz-admin";
   } else {
     return roles[0] || "";

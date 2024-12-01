@@ -8,7 +8,7 @@ import {
   Variables,
 } from "graphql-request";
 import { z, ZodSchema } from "zod";
-import { getHasuraRoleName, useToken } from "./auth";
+import { getRolesArray, getHasuraRoleName, useToken } from "./auth";
 import { MutationVariables } from "@/types/types";
 import { LookupTableDef } from "@/types/lookupTables";
 import { useAuth0 } from "@auth0/auth0-react";
@@ -101,7 +101,7 @@ export const useQuery = <T extends Record<string, unknown>>({
     RequestDocument,
     Variables
   ]): Promise<z.infer<typeof responseSchema>> => {
-    const hasuraRoleName = getHasuraRoleName(user);
+    const hasuraRoleName = getHasuraRoleName(getRolesArray(user));
     return fetcher([query, variables, token, hasuraRoleName, responseSchema]);
   };
 
@@ -150,7 +150,7 @@ export const useMutation = (mutation: RequestDocument) => {
         variables.updates.updated_by = user.email;
       }
       try {
-        const hasuraRole = getHasuraRoleName(user);
+        const hasuraRole = getHasuraRoleName(getRolesArray(user));
         const client = new GraphQLClient(ENDPOINT, {
           headers: {
             Authorization: `Bearer ${token}`,
