@@ -24,6 +24,10 @@ const DEFAULT_SWR_OPTIONS: SWRConfiguration = {
    * Dont refetch on network recon
    */
   revalidateOnReconnect: false,
+  /**
+   * keep the previoius data while refetching
+   */
+  keepPreviousData: true,
 };
 
 /**
@@ -213,18 +217,3 @@ export const useLookupQuery = (lookupTableDef: LookupTableDef | undefined) =>
       typename,
     ];
   }, [lookupTableDef]);
-
-/**
- * Hook that persists queried data while new data is being fetched / revalidated.
- * this works as a complement to SWR by persisting data when fetch args
- * have changed
- **/
-export const useDataCache = <T>(currentData: T | null) => {
-  const [cachedData, setCachedData] = useState<T | null>(currentData);
-  useEffect(() => {
-    if (currentData) {
-      setCachedData(currentData);
-    }
-  }, [currentData]);
-  return cachedData;
-};
