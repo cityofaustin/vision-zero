@@ -1,8 +1,8 @@
 "use client";
 import useSWRInfinite from "swr/infinite";
-import { useEffect, useState, useMemo } from "react";
-import { useAuth0 } from "@auth0/auth0-react";
-import { ListUsersPage } from "@/types/users";
+import { useMemo } from "react";
+import { ListUsersPage, User } from "@/types/users";
+import useSWR from "swr";
 
 const PAGE_SIZE = 50;
 const INITIAL_PAGE_LIMIT = 10;
@@ -39,6 +39,7 @@ export function useUsersInfinite(token: string) {
     getKey,
     (url) => fetcher(url, token),
     {
+      revalidateOnReconnect: false,
       revalidateOnFocus: false,
       // initial size ensures that we fetch up to 10 pages of data. if the user base
       // grows beyond <INITIAL_PAGE_LIMIT> * <PAGE_SIZE> not all users will be loaded
@@ -46,6 +47,10 @@ export function useUsersInfinite(token: string) {
     }
   );
   // build up our user array from each page, sort it, and memoize it for good measure
+  //
+  // todo: we can return the sorting we want from the Auth0 API by modifing the
+  // request we make in our our API wrapper. See:
+  // https://auth0.com/docs/api/management/v2/users/get-users
   const users = useMemo(
     () =>
       pages
@@ -63,33 +68,18 @@ export function useUsersInfinite(token: string) {
 }
 
 /**
- * Get a single user by ID
+ * Hook to fetch a single user.
+ *
+ * Will not fetch until userId and token are truthy
  */
-export async function getUser(userId: string, token: string) {
-  const endpoint = `${process.env.NEXT_PUBLIC_CR3_API_DOMAIN}/user/get_user/${userId}`;
-  return fetch(endpoint, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  }).then((response) => response.json());
-}
-
-/**
- * Hook which retrieves the user's bearer
- * token from the IdToken claims
- */
-export const useToken = () => {
-  const [token, setToken] = useState<string>("");
-  const { getIdTokenClaims } = useAuth0();
-  /**
-   * Get the user token - just one time
-   */
-  useEffect(() => {
-    if (!token) {
-      getIdTokenClaims().then((idToken) => {
-        setToken(idToken?.__raw || "");
-      });
+export function useUser(userId?: string, token?: string) {
+  const url = `${process.env.NEXT_PUBLIC_CR3_API_DOMAIN}/user/get_user/${userId}`;
+  return useSWR<User>(
+    token && userId ? url : null,
+    (url) => fetcher(url, token || ""),
+    {
+      revalidateOnReconnect: false,
+      revalidateOnFocus: false,
     }
-  }, [token, getIdTokenClaims]);
-  return token;
-};
+  );
+}

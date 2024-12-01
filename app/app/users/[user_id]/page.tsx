@@ -1,12 +1,12 @@
 "use client";
-import { useEffect, useState } from "react";
 import Card from "react-bootstrap/Card";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import Spinner from "react-bootstrap/Spinner";
 import Table from "react-bootstrap/Table";
 import AppBreadCrumb from "@/components/AppBreadCrumb";
-import { getUser, useToken } from "@/utils/users";
+import { useToken } from "@/utils/auth";
+import { useUser } from "@/utils/users";
 import { User } from "@/types/users";
 import { formatDateTime } from "@/utils/formatters";
 
@@ -50,17 +50,8 @@ export default function UserDetails({
   params: { user_id: string };
 }) {
   const token = useToken();
-  const [user, setUser] = useState<User | null>(null);
-
   const userId = params.user_id;
-  useEffect(() => {
-    if (!userId || !token) {
-      return;
-    }
-    getUser(userId, token).then((user) => {
-      setUser(user);
-    });
-  }, [token, userId]);
+  const { data: user } = useUser(userId, token);
 
   return (
     <>
@@ -75,7 +66,7 @@ export default function UserDetails({
                 <Table responsive hover>
                   <tbody>
                     {COLUMNS.map((col) => (
-                      <tr>
+                      <tr key={col.name}>
                         <td>{col.label}</td>
                         <td>
                           {col.renderer
