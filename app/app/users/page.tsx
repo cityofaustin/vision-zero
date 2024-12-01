@@ -6,7 +6,8 @@ import Card from "react-bootstrap/Card";
 import Spinner from "react-bootstrap/Spinner";
 import Table from "react-bootstrap/Table";
 import AppBreadCrumb from "@/components/AppBreadCrumb";
-import { useToken, useUsersInfinite } from "@/utils/users";
+import { useUsersInfinite } from "@/utils/users";
+import { useToken } from "@/utils/auth";
 import AlignedLabel from "@/components/AlignedLabel";
 import { FaUserPlus, FaCopy } from "react-icons/fa6";
 
