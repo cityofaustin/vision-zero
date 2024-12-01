@@ -9,7 +9,7 @@ export const changeLogEntrySchema = z.object({
   record_id: z.number(),
   record_type: z.string(),
   record_json: z.object({
-    old: z.record(z.string(), z.unknown()),
+    old: z.record(z.string(), z.unknown()).nullable(),
     new: z.record(z.string(), z.unknown()),
   }),
 });
