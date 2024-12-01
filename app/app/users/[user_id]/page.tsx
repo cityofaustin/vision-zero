@@ -1,6 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
 import Card from "react-bootstrap/Card";
+import Col from "react-bootstrap/Col";
+import Row from "react-bootstrap/Row";
 import Spinner from "react-bootstrap/Spinner";
 import Table from "react-bootstrap/Table";
 import AppBreadCrumb from "@/components/AppBreadCrumb";
@@ -63,28 +65,32 @@ export default function UserDetails({
   return (
     <>
       <AppBreadCrumb />
-      <Card>
-        <Card.Header className="fs-5 fw-bold">User Details</Card.Header>
-        <Card.Body>
-          {!user && <Spinner variant="primary" />}
-          {user && (
-            <Table responsive hover>
-              <tbody>
-                {COLUMNS.map((col) => (
-                  <tr>
-                    <td>{col.label}</td>
-                    <td>
-                      {col.renderer
-                        ? col.renderer(user)
-                        : String(user[col.name])}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </Table>
-          )}
-        </Card.Body>
-      </Card>
+      <Row>
+        <Col md={6} lg={4}>
+          <Card>
+            <Card.Header className="fs-5 fw-bold">User Details</Card.Header>
+            <Card.Body>
+              {!user && <Spinner variant="primary" />}
+              {user && (
+                <Table responsive hover>
+                  <tbody>
+                    {COLUMNS.map((col) => (
+                      <tr>
+                        <td>{col.label}</td>
+                        <td>
+                          {col.renderer
+                            ? col.renderer(user)
+                            : String(user[col.name])}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
+              )}
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
     </>
   );
 }

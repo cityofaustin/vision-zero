@@ -6,26 +6,24 @@ import Card from "react-bootstrap/Card";
 import Spinner from "react-bootstrap/Spinner";
 import Table from "react-bootstrap/Table";
 import AppBreadCrumb from "@/components/AppBreadCrumb";
-import { useUsers, useToken } from "@/utils/users";
+import { useToken, useUsersInfinite } from "@/utils/users";
 import AlignedLabel from "@/components/AlignedLabel";
 import { FaUserPlus, FaCopy } from "react-icons/fa6";
 
+// todo: while testing this i noticed that my token is not auto-refreshing
+// the user API bounced because my toke was expired 🤔
 export default function Users() {
   const token = useToken();
   const router = useRouter();
-  const [users, isLoading, error] = useUsers(token);
+  const { users, isLoading } = useUsersInfinite(token);
+
   return (
     <>
       <AppBreadCrumb />
       <Card>
         <Card.Header className="fs-5 fw-bold">Users</Card.Header>
         <Card.Body>
-          <div className="d-flex justify-content-end mb-3">
-            {isLoading && (
-              <AlignedLabel>
-                <Spinner variant="primary" />
-              </AlignedLabel>
-            )}
+          <div className="mb-3">
             {!isLoading && (
               <>
                 <Button className="me-2">
@@ -43,9 +41,6 @@ export default function Users() {
               </>
             )}
           </div>
-          {Boolean(error) && (
-            <Alert variant="danger">Something went wrong</Alert>
-          )}
           <Table responsive hover>
             <thead>
               <tr>
@@ -58,6 +53,13 @@ export default function Users() {
               </tr>
             </thead>
             <tbody>
+              {isLoading && (
+                <tr>
+                  <td colSpan={6} className="text-center">
+                    <Spinner variant="primary" />
+                  </td>
+                </tr>
+              )}
               {users.map((user) => {
                 return (
                   <tr

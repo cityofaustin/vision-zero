@@ -18,3 +18,14 @@ export type User = {
   last_ip?: string;
   updated_at?: string;
 };
+
+/**
+ * Returned by the list_users API
+ */
+export type ListUsersPage = {
+  length: number;
+  limit: number;
+  start: number;
+  total: number;
+  users: User[];
+};

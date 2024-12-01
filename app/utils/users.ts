@@ -1,24 +1,68 @@
 "use client";
+import useSWRInfinite from "swr/infinite";
 import { useEffect, useState, useMemo } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
-import { User } from "@/types/users";
+import { ListUsersPage } from "@/types/users";
 
 const PAGE_SIZE = 50;
+const INITIAL_PAGE_LIMIT = 10;
 
 /**
- * Fetch a page of users from list_users API
+ * Basic fetch wrapper that uses a bearer token and
+ * throws an error if something goes wrong
  */
-async function getUserPage(page: number, perPage: number, token: string) {
-  const endpoint = `${process.env.NEXT_PUBLIC_CR3_API_DOMAIN}/user/list_users?page=${page}&per_page=${perPage}`;
-  return fetch(endpoint, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+const fetcher = async (url: string, token: string) =>
+  fetch(url, {
+    headers: { Authorization: `Bearer ${token}` },
+  }).then((res) => {
+    if (!res.ok) throw new Error("Failed to fetch");
+    return res.json();
   });
+
+/**
+ * SWR hook that fetches all users up to the first
+ * <INITIAL_PAGE_LIMIT> * <PAGE_SIZE> users
+ */
+export function useUsersInfinite(token: string) {
+  const getKey = (pageIndex: number, previousPageData: ListUsersPage) => {
+    if (!token) {
+      return null;
+    }
+    if (previousPageData && previousPageData.users.length < PAGE_SIZE) {
+      // end of data - stop trying to fetch
+      return null;
+    }
+    // return the next URL to fetch
+    return `${process.env.NEXT_PUBLIC_CR3_API_DOMAIN}/user/list_users?page=${pageIndex}&per_page=${PAGE_SIZE}`;
+  };
+
+  const { data: pages, isLoading } = useSWRInfinite<ListUsersPage>(
+    getKey,
+    (url) => fetcher(url, token),
+    {
+      revalidateOnFocus: false,
+      initialSize: INITIAL_PAGE_LIMIT, // initial size ensures that we fetch up to 10 pages of data, currently we just 3
+    }
+  );
+  // build up our user array from each page, sort it, and memoize it for good measure
+  const users = useMemo(
+    () =>
+      pages
+        ?.flatMap((page) => page.users)
+        .sort((a, b) => {
+          // sort by last_login, which is undefined if a user has never logged in
+          if (!a.last_login) return 1;
+          if (!b.last_login) return -1;
+          return b.last_login > a.last_login ? 1 : -1;
+        }) || [],
+    [pages]
+  );
+
+  return { users, isLoading };
 }
 
 /**
- * Get a user from the get_user api
+ * Get a single user by ID
  */
 export async function getUser(userId: string, token: string) {
   const endpoint = `${process.env.NEXT_PUBLIC_CR3_API_DOMAIN}/user/get_user/${userId}`;
@@ -47,57 +91,4 @@ export const useToken = () => {
     }
   }, [token, getIdTokenClaims]);
   return token;
-};
-
-/**
- * Hook which fetches users from the list_users API
- * in batches until all have bee retrieved
- */
-export const useUsers = (token: string): [User[], boolean, unknown] => {
-  const [users, setUsers] = useState<User[]>([]);
-  const [error, setError] = useState<unknown>(null);
-  const [currentPage, setCurrentPage] = useState(0);
-  const [allUsersFetched, setAllUsersFetched] = useState(false);
-  const [isFetching, setIsFetching] = useState(false);
-  /**
-   * Retrieve user data from CR3/User API
-   */
-  useEffect(() => {
-    if (!token || allUsersFetched || isFetching || error) {
-      return;
-    }
-    /**
-     * isFetching state ensures requests are not duplicated -
-     * we set it to `true` when a new request is initiated
-     * and `false` when it resolves and we have updated
-     * all of the other states
-     */
-    setIsFetching(true);
-    try {
-      getUserPage(currentPage, PAGE_SIZE, token)
-        .then((response) => response.json())
-        .then((data) => {
-          if (data.users.length < PAGE_SIZE) {
-            setAllUsersFetched(true);
-          }
-          const updatedUserList = [...users, ...data.users];
-          // sort by last_login
-          // todo: enable sortable table columns
-          updatedUserList.sort((a, b) => {
-            // last_login is undfined if a user has never logged in
-            if (a.last_login === undefined) return 1;
-            if (b.last_login === undefined) return -1;
-            return b.last_login > a.last_login ? 1 : -1;
-          });
-          setUsers(updatedUserList);
-          setCurrentPage(currentPage + 1);
-          setIsFetching(false);
-        });
-    } catch (err) {
-      console.error(err);
-      setError(err);
-    }
-  }, [token, users, currentPage, allUsersFetched, error]);
-
-  return [users, !allUsersFetched, error];
 };
