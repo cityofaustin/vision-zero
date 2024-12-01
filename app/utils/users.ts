@@ -21,7 +21,7 @@ const fetcher = async (url: string, token: string) =>
 
 /**
  * SWR hook that fetches all users up to the first
- * <INITIAL_PAGE_LIMIT> * <PAGE_SIZE> users
+ * <INITIAL_PAGE_LIMIT> * <PAGE_SIZE>
  */
 export function useUsersInfinite(token: string) {
   const getKey = (pageIndex: number, previousPageData: ListUsersPage) => {
@@ -35,13 +35,14 @@ export function useUsersInfinite(token: string) {
     // return the next URL to fetch
     return `${process.env.NEXT_PUBLIC_CR3_API_DOMAIN}/user/list_users?page=${pageIndex}&per_page=${PAGE_SIZE}`;
   };
-
   const { data: pages, isLoading } = useSWRInfinite<ListUsersPage>(
     getKey,
     (url) => fetcher(url, token),
     {
       revalidateOnFocus: false,
-      initialSize: INITIAL_PAGE_LIMIT, // initial size ensures that we fetch up to 10 pages of data, currently we just 3
+      // initial size ensures that we fetch up to 10 pages of data. if the user base
+      // grows beyond <INITIAL_PAGE_LIMIT> * <PAGE_SIZE> not all users will be loaded
+      initialSize: INITIAL_PAGE_LIMIT,
     }
   );
   // build up our user array from each page, sort it, and memoize it for good measure
