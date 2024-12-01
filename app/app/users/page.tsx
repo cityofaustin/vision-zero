@@ -1,13 +1,15 @@
 "use client";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 import Spinner from "react-bootstrap/Spinner";
 import Table from "react-bootstrap/Table";
+import AlignedLabel from "@/components/AlignedLabel";
 import AppBreadCrumb from "@/components/AppBreadCrumb";
+import NewUserModal from "@/components/NewUserModal";
 import { useUsersInfinite } from "@/utils/users";
 import { useToken } from "@/utils/auth";
-import AlignedLabel from "@/components/AlignedLabel";
 import { FaUserPlus, FaCopy } from "react-icons/fa6";
 
 // todo: while testing this i noticed that my token is not auto-refreshing
@@ -16,7 +18,8 @@ export default function Users() {
   const token = useToken();
   const router = useRouter();
   const { users, isLoading } = useUsersInfinite(token);
-
+  const [showNewUserModal, setShowNewUserModal] = useState(false);
+  const onCloseModal = () => setShowNewUserModal(false);
   return (
     <>
       <AppBreadCrumb />
@@ -26,7 +29,10 @@ export default function Users() {
           <div className="mb-3">
             {!isLoading && (
               <>
-                <Button className="me-2">
+                <Button
+                  className="me-2"
+                  onClick={() => setShowNewUserModal(true)}
+                >
                   <AlignedLabel>
                     <FaUserPlus className="me-2" />
                     <span>Add user</span>
@@ -84,6 +90,7 @@ export default function Users() {
           </Table>
         </Card.Body>
       </Card>
+      {showNewUserModal && <NewUserModal onClose={onCloseModal} />}
     </>
   );
 }
