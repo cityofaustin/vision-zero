@@ -1,14 +1,16 @@
+import { useToken } from "@/utils/auth";
 import Form from "react-bootstrap/Form";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
 
 type NewUserInputs = {
   name: string;
   email: string;
-  password: string;
+  //   password: string;
   role: string;
 };
 
 export default function NewUserForm() {
+  const token = useToken();
   const {
     register,
     handleSubmit,
@@ -18,11 +20,33 @@ export default function NewUserForm() {
     defaultValues: {
       name: undefined,
       email: undefined,
-      password: undefined,
       role: "readonly",
+      //   password: undefined,
     },
   });
-  const onSubmit: SubmitHandler<NewUserInputs> = (data) => console.log(data);
+
+  const onSubmit: SubmitHandler<NewUserInputs> = (data) => {
+    const { role, ...payload } = data;
+    payload.app_metadata = { roles: [role] };
+    // todo:: definitely need to set these in our flask API instead
+    payload.connection = "Username-Password-Authentication";
+    payload.verify_email = true;
+    payload.email_verified = false;
+    const url = `${process.env.NEXT_PUBLIC_CR3_API_DOMAIN}/user/create_user`;
+    fetch(url, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      method: "post",
+      body: JSON.stringify(payload),
+    })
+      .then((response) => response.json())
+      .then((whatever) => {
+        console.log("WHATEVER", whatever);
+      });
+  };
+
   return (
     <Form onSubmit={handleSubmit(onSubmit)} id="newUserForm">
       <Form.Group className="mb-3">
@@ -32,27 +56,39 @@ export default function NewUserForm() {
           autoComplete="off"
           data-1p-ignore
           placeholder="Name"
+          isInvalid={Boolean(errors.name)}
           autoFocus
         />
+        <Form.Control.Feedback type="invalid">
+          Name is required
+        </Form.Control.Feedback>
       </Form.Group>
       <Form.Group className="mb-3" controlId="userEmail">
         <Form.Label>Email</Form.Label>
         <Form.Control
-          {...register("email")}
+          {...register("email", { required: true })}
           autoComplete="off"
           placeholder="Email"
+          isInvalid={Boolean(errors.email)}
           data-1p-ignore
         />
+        <Form.Control.Feedback type="invalid">
+          Email is required
+        </Form.Control.Feedback>
       </Form.Group>
-      <Form.Group className="mb-3" controlId="userPassword">
+      {/* <Form.Group className="mb-3" controlId="userPassword">
         <Form.Label>Password</Form.Label>
         <Form.Control
-          {...register("password")}
+          {...register("password", { required: true })}
           type="password"
           placeholder="Password"
           autoComplete="new-password"
+          isInvalid={Boolean(errors.password)}
         />
-      </Form.Group>
+        <Form.Control.Feedback type="invalid">
+          Password is required
+        </Form.Control.Feedback>
+      </Form.Group> */}
       <Form.Group className="mb-3" controlId="userRole">
         <Form.Label>Role</Form.Label>
         <div>
