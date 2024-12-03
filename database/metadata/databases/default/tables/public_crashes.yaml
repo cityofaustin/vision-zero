@@ -5,6 +5,12 @@ object_relationships:
   - name: atd_txdot_location
     using:
       foreign_key_constraint_on: location_id
+  - name: city
+    using:
+      foreign_key_constraint_on: rpt_city_id
+  - name: collsn
+    using:
+      foreign_key_constraint_on: fhe_collsn_id
   - name: crash_injury_metrics_view
     using:
       manual_configuration:
@@ -26,6 +32,12 @@ object_relationships:
         remote_table:
           name: crashes_list_view
           schema: public
+  - name: light_cond
+    using:
+      foreign_key_constraint_on: light_cond_id
+  - name: obj_struck
+    using:
+      foreign_key_constraint_on: obj_struck_id
   - name: recommendation
     using:
       foreign_key_constraint_on:
@@ -33,6 +45,12 @@ object_relationships:
         table:
           name: recommendations
           schema: public
+  - name: traffic_cntl
+    using:
+      foreign_key_constraint_on: traffic_cntl_id
+  - name: wthr_cond
+    using:
+      foreign_key_constraint_on: wthr_cond_id
 array_relationships:
   - name: change_logs
     using:
