@@ -1,6 +1,9 @@
 import Alert from "react-bootstrap/Alert";
 
 interface CrashLocationBannerProps {
+  /**
+   * If the crash occurred on a private drive
+   */
   privateDriveFlag: boolean | null;
 }
 
