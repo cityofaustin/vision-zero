@@ -16,7 +16,9 @@ export default function Users() {
   const router = useRouter();
   const { users, isLoading, error } = useUsersInfinite(token);
 
-  Boolean(error) && console.error(error);
+  if (error) {
+    console.error(error);
+  }
 
   return (
     <>
