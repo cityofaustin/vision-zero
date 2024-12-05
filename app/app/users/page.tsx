@@ -11,8 +11,6 @@ import { useToken } from "@/utils/auth";
 import AlignedLabel from "@/components/AlignedLabel";
 import { FaUserPlus, FaCopy } from "react-icons/fa6";
 
-// todo: while testing this i noticed that my token is not auto-refreshing
-// the user API bounced because my token was expired 🤔
 export default function Users() {
   const token = useToken();
   const router = useRouter();
