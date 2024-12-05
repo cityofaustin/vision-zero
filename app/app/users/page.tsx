@@ -1,5 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
+import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 import Spinner from "react-bootstrap/Spinner";
@@ -15,7 +16,9 @@ import { FaUserPlus, FaCopy } from "react-icons/fa6";
 export default function Users() {
   const token = useToken();
   const router = useRouter();
-  const { users, isLoading } = useUsersInfinite(token);
+  const { users, isLoading, error } = useUsersInfinite(token);
+
+  Boolean(error) && console.error(error);
 
   return (
     <>
@@ -41,6 +44,10 @@ export default function Users() {
               </>
             )}
           </div>
+          {/* todo: standardize the way we show error messages and use error boundary */}
+          {Boolean(error) && (
+            <Alert variant="dange">Something went wrong</Alert>
+          )}
           <Table responsive hover>
             <thead>
               <tr>
