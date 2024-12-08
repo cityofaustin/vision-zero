@@ -3,6 +3,7 @@ import { Auth0Provider } from "@auth0/auth0-react";
 
 const DOMAIN = process.env.NEXT_PUBLIC_AUTH0_DOMAIN!;
 const CLIENT_ID = process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID!;
+const AUDIENCE = process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID!;
 
 /**
  * Client-side wrapper for the Auth0Provider
@@ -21,7 +22,14 @@ export default function AuthProvider({
       clientId={CLIENT_ID}
       authorizationParams={{
         redirect_uri: redirect_uri || "",
-        scope: "openid profile email",
+        /**
+         * Note that offline_access is requried for refresh tokens -
+         * the alternative is to use a custom hook that occasionally
+         * calls getAccessTokenSilently(), which will manually refresh
+         * the token
+         */
+        scope: "openid profile email offline_access",
+        audience: AUDIENCE,
       }}
       useRefreshTokens={true}
       cacheLocation="localstorage"
