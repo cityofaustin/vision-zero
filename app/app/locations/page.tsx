@@ -1,4 +1,28 @@
+"use client";
+import Card from "react-bootstrap/Card";
+import AppBreadCrumb from "@/components/AppBreadCrumb";
+import { locationsListViewColumns } from "@/configs/locationsListViewColumns";
+import { locationsListViewQueryConfig } from "@/configs/locationsListViewTable";
+import TableWrapper from "@/components/TableWrapper";
+import { locationsListSchema } from "@/schema/locationsList";
+
+const localStorageKey = "locationsListViewQueryConfig";
+
 export default function Locations() {
-    return <h1>This is the locations page</h1>;
-  }
-  
+  return (
+    <>
+      <AppBreadCrumb />
+      <Card className="mx-3 mb-3">
+        <Card.Header className="fs-5 fw-bold">Locations</Card.Header>
+        <Card.Body>
+          <TableWrapper
+            columns={locationsListViewColumns}
+            initialQueryConfig={locationsListViewQueryConfig}
+            localStorageKey={localStorageKey}
+            schema={locationsListSchema}
+          />
+        </Card.Body>
+      </Card>
+    </>
+  );
+}

@@ -55,6 +55,17 @@ const stringToNumberNullable = (value: string): number | null => {
 };
 
 /**
+ *
+ * Stringify a number and coerce nulls to empty strings
+ */
+export const renderNumber = (value: number | null): string => {
+  if (value === null) {
+    return "";
+  }
+  return String(value);
+};
+
+/**
  * Convert truthy values to 'Yes', `null` and `undefined` to "", and
  * any other falsey value to "No"
  */

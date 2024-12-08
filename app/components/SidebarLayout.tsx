@@ -10,7 +10,7 @@ import ListGroup from "react-bootstrap/ListGroup";
 import {
   FaShieldHeart,
   FaGaugeHigh,
-  FaMap,
+  FaLocationDot,
   FaAngleRight,
   FaRightFromBracket,
 } from "react-icons/fa6";
@@ -110,7 +110,7 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
               <SideBarListItem
                 isCollapsed={isCollapsed}
                 isCurrentPage={segments.includes("locations")}
-                Icon={FaMap}
+                Icon={FaLocationDot}
                 label="Locations"
                 href="/locations"
               />

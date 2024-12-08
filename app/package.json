@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@auth0/auth0-react": "^2.2.4",
+    "@turf/center": "^7.1.0",
     "@types/lodash": "^4.17.13",
     "@types/mapbox-gl": "^3.4.0",
     "bootstrap": "^5.3.3",
