@@ -11,7 +11,7 @@ export default function Crashes() {
   return (
     <>
       <AppBreadCrumb />
-      <Card className="mx-3 mb-3">
+      <Card>
         <Card.Header className="fs-5 fw-bold">Crashes</Card.Header>
         <Card.Body>
           <TableWrapper
