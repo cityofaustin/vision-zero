@@ -79,6 +79,12 @@ npm run dev
 - Location details page
   - Location polygon map
   - Location data card displays the location ID
+- Navabar:
+  - Vision Zero logo displays on left side
+  - Avatar image displays on right side with dropdown items
+    - email address (disabled/not clickable)
+    - sighout link
+    - external links to report a bug, request enhancement, and TxDOT's CR3 codesheet
 
 ## Todo
 
@@ -103,9 +109,7 @@ npm run dev
   - export
   - record counts
 - Top nav component
-  - app logo
   - navigration crash search
-  - profile menu with signout
 - locations
   - export records
 - location details

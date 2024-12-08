@@ -12,11 +12,10 @@ import {
   FaGaugeHigh,
   FaLocationDot,
   FaAngleRight,
-  FaRightFromBracket,
 } from "react-icons/fa6";
+import AppNavBar from "./AppNavBar";
 import SideBarListItem from "./SideBarListItem";
 import LoginContainer from "./LoginCotainer";
-
 const localStorageKey = "sidebarCollapsed";
 
 /**
@@ -24,7 +23,8 @@ const localStorageKey = "sidebarCollapsed";
  */
 export default function SidebarLayout({ children }: { children: ReactNode }) {
   const [isCollapsed, setIsCollapsed] = useState(true);
-  const { loginWithRedirect, logout, isAuthenticated, isLoading } = useAuth0();
+  const { loginWithRedirect, logout, isAuthenticated, isLoading, user } =
+    useAuth0();
   const pathName = usePathname();
   const segments = useSelectedLayoutSegments();
 
@@ -54,7 +54,7 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
     return null;
   }
 
-  if (!isAuthenticated && !isLoading) {
+  if (!isAuthenticated || !user) {
     return (
       <LoginContainer
         onLogin={() =>
@@ -79,7 +79,7 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
           style={{ overflowX: "hidden" }}
         >
           <div className="d-flex flex-column h-100">
-            <div>
+            <div className="p-2">
               <Button
                 onClick={toggleSidebar}
                 variant="dark"
@@ -114,22 +114,6 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
                 label="Locations"
                 href="/locations"
               />
-
-              {/* login / logout button  */}
-              <ListGroup.Item
-                className="bg-dark fs-5 my-1 text-primary"
-                style={{
-                  whiteSpace: "nowrap",
-                  border: "none",
-                }}
-                action
-                onClick={() => logout()}
-              >
-                <span>
-                  <FaRightFromBracket className="me-3" />
-                  {isCollapsed ? null : "Sign out"}
-                </span>
-              </ListGroup.Item>
             </ListGroup>
           </div>
         </div>
@@ -139,8 +123,10 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
             height: "100vh",
             overflowY: "auto",
           }}
+          className="p-0"
         >
-          <main className="h-100">{children}</main>
+          <AppNavBar user={user} logout={logout} />
+          <main className="px-3">{children}</main>
         </Col>
       </Row>
     </Container>

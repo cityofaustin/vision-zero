@@ -1,6 +1,7 @@
 import { Dispatch, SetStateAction } from "react";
 import Button from "react-bootstrap/Button";
 import { FaXmark } from "react-icons/fa6";
+import AlignedLabel from "./AlignedLabel";
 import { QueryConfig } from "@/utils/queryBuilder";
 
 interface Props {
@@ -21,10 +22,10 @@ export default function TableResetFiltersToggle({
       variant="outline-danger"
       onClick={() => setQueryConfig(queryConfig)}
     >
-      <span className="text-nowrap d-flex align-items-center">
+      <AlignedLabel>
         <FaXmark className="me-2" />
         Reset filters
-      </span>
+      </AlignedLabel>
     </Button>
   );
 }
