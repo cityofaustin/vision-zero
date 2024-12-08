@@ -1,4 +1,4 @@
-import { Crash } from "@/types/types";
+import { Crash } from "@/types/crashes";
 import CrashInjuryIndicators from "./CrashInjuryIndicators";
 
 interface CrashHeaderProps {
@@ -14,7 +14,9 @@ export default function CrashHeader({ crash }: CrashHeaderProps) {
       <span className="fs-3 fw-bold text-uppercase">
         {crash.address_primary}
       </span>
-      <CrashInjuryIndicators injuries={crash.crash_injury_metrics_view} />
+      {crash.crash_injury_metrics_view && (
+        <CrashInjuryIndicators injuries={crash.crash_injury_metrics_view} />
+      )}
     </div>
   );
 }

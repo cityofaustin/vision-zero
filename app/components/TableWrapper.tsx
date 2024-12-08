@@ -14,11 +14,13 @@ import TableAdvancedSearchFilterToggle from "@/components/TableAdvancedSearchFil
 import TablePaginationControls from "@/components/TablePaginationControls";
 import { useActiveSwitchFilterCount } from "@/components/TableAdvancedSearchFilterToggle";
 import TableResetFiltersToggle from "@/components/TableResetFiltersToggle";
+import { ZodSchema } from "zod";
 
 interface TableProps<T extends Record<string, unknown>> {
   columns: ColDataCardDef<T>[];
   initialQueryConfig: QueryConfig;
   localStorageKey: string;
+  schema: ZodSchema<T>;
 }
 
 /**
@@ -29,6 +31,7 @@ export default function TableWrapper<T extends Record<string, unknown>>({
   initialQueryConfig,
   columns,
   localStorageKey,
+  schema,
 }: TableProps<T>) {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [areFiltersDirty, setAreFiltersDirty] = useState(false);
@@ -43,17 +46,21 @@ export default function TableWrapper<T extends Record<string, unknown>>({
 
   const query = useQueryBuilder(queryConfig);
 
-  const { tableName } = queryConfig;
-
-  const { data, isLoading } = useQuery<Record<typeof tableName, T[]>>({
+  const { data, isLoading, error } = useQuery({
     // dont fire first query until localstorage is loaded
     query: isLocalStorageLoaded ? query : null,
+    schema,
+    typename: queryConfig.tableName,
   });
+
+  if (error) {
+    console.error(error);
+  }
 
   const activeFilterCount = useActiveSwitchFilterCount(queryConfig);
 
   const cachedData = useDataCache(data);
-  const rows = cachedData?.[tableName] || [];
+  const rows = cachedData || [];
 
   /**
    * Load query config from local storage
@@ -135,10 +142,12 @@ export default function TableWrapper<T extends Record<string, unknown>>({
         </Row>
         <Row className="mb-3">
           <Col xs={12} md={6} className="d-flex justify-content-between">
-            <TableAdvancedSearchFilterToggle
-              setIsFilterOpen={setIsFilterOpen}
-              activeFilterCount={activeFilterCount}
-            />
+            {queryConfig.filterCards?.length > 0 && (
+              <TableAdvancedSearchFilterToggle
+                setIsFilterOpen={setIsFilterOpen}
+                activeFilterCount={activeFilterCount}
+              />
+            )}
             <TableSearch
               queryConfig={queryConfig}
               setQueryConfig={setQueryConfig}

@@ -1,4 +1,4 @@
-import { CrashInjuryMetrics } from "@/types/types";
+import { CrashInjuryMetrics } from "@/types/crashInjuryMetrics";
 import Badge from "react-bootstrap/Badge";
 
 const InjuryBadge = ({

@@ -72,7 +72,13 @@ npm run dev
   - Change log: change log works normally with details modal. But it is not collapseable (yet).
 - Sidebar
   - is exapandable and open/closed state is preserved in localstorage
-
+- Locations list
+  - filter using search input and selecting a field to search on
+  - reset filters
+  - filters are preserved (in local storage) when refreshing the page or navigating back to it
+- Location details page
+  - Location polygon map
+  - Location data card displays the location ID
 
 ## Todo
 
@@ -101,7 +107,12 @@ npm run dev
   - navigration crash search
   - profile menu with signout
 - locations
+  - export records
 - location details
+  - data card: crash counts and comp costs
+  - cr3 crashes list
+  - noncr3 crashes list
+  - crash charts and widgets
 - create crash record
 - upload non-cr3
 - dashboard

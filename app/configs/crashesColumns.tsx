@@ -1,4 +1,5 @@
-import { Crash, ColDataCardDef } from "@/types/types";
+import { ColDataCardDef } from "@/types/types";
+import { Crash } from "@/types/crashes";
 import { formatDateTime } from "@/utils/formatters";
 
 export const crashesColumns: {
@@ -11,11 +12,11 @@ export const crashesColumns: {
     inputType: "yes_no",
   },
   address_primary: {
-    name: "Primary address",
+    name: "address_primary",
     label: "Address",
   },
   address_secondary: {
-    name: "Secondary address",
+    name: "address_secondary",
     label: "Secondary address",
   },
   at_intrsct_fl: {

@@ -1,4 +1,5 @@
-import { ColDataCardDef, LookupTableOption, InputType } from "@/types/types";
+import { ColDataCardDef, InputType } from "@/types/types";
+import { LookupTableOption } from "@/types/lookupTables";
 
 /**
  * Convert a record value to a string so that it can be used as the initial value
@@ -51,6 +52,17 @@ const stringToNumberNullable = (value: string): number | null => {
     return null;
   }
   return num;
+};
+
+/**
+ *
+ * Stringify a number and coerce nulls to empty strings
+ */
+export const renderNumber = (value: number | null): string => {
+  if (value === null) {
+    return "";
+  }
+  return String(value);
 };
 
 /**

@@ -1,4 +1,4 @@
-import { ChangeLogEntryEnriched } from "@/types/types";
+import { ChangeLogEntryEnriched } from "@/types/changeLog";
 import { formatDateTime } from "@/utils/formatters";
 
 /**

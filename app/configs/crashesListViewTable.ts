@@ -238,6 +238,11 @@ export const crashesListViewQueryConfig: QueryConfig = {
     operator: "_ilike",
     wildcard: true,
   },
+  searchFields: [
+    { label: "Crash ID", value: "record_locator" },
+    { label: "Case ID", value: "case_id" },
+    { label: "Address", value: "address_primary" },
+  ],
   dateFilter: {
     mode: "ytd",
     column: "crash_timestamp",

@@ -2,7 +2,7 @@ import { useState } from "react";
 import Alert from "react-bootstrap/Alert";
 import Card from "react-bootstrap/Card";
 import Image from "react-bootstrap/Image";
-import { Crash } from "@/types/types";
+import { Crash } from "@/types/crashes";
 
 // import axios from "axios";
 // import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
