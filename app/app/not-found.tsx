@@ -16,7 +16,7 @@ export default function NotFound() {
         <Col className="text-center">
           <h1>Page Not Found</h1>
           <h4 className="text-muted">
-            Sorry, we couldn't find the page you were looking for.
+            Sorry, we couldn&apos;t find the page you were looking for.
           </h4>
           <div className="my-3">
             <Link href="/" passHref>
