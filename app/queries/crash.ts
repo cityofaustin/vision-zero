@@ -1,16 +1,5 @@
 import { gql } from "graphql-request";
 
-// export const CRASHES_LIST_VIEW_QUERY = gql`
-//   query {
-//     crashes_list_view(limit: 100) {
-//       id
-//       cris_crash_id
-//       address_primary
-//       record_locator
-//     }
-//   }
-// `;
-
 export const GET_CRASH = gql`
   query CrashDetails($recordLocator: String!) {
     crashes(
@@ -22,6 +11,7 @@ export const GET_CRASH = gql`
       }
     ) {
       id
+      cris_crash_id
       record_locator
       updated_at
       updated_by
@@ -80,12 +70,14 @@ export const GET_CRASH = gql`
       crash_injury_metrics_view {
         vz_fatality_count
         sus_serious_injry_count
+        nonincap_injry_count
+        poss_injry_count
+        unkn_injry_count
+        tot_injry_count
         years_of_life_lost
         est_comp_cost_crash_based
         est_total_person_comp_cost
         crash_injry_sev_id
-        nonincap_injry_count
-        sus_serious_injry_count
         cris_fatality_count
         law_enf_fatality_count
       }
@@ -223,7 +215,7 @@ export const UPDATE_CRASH = gql`
     update_crashes(where: { id: { _eq: $id } }, _set: $updates) {
       affected_rows
       returning {
-        cris_crash_id
+        id
       }
     }
   }

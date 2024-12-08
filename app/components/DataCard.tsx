@@ -10,7 +10,8 @@ import {
   valueToString,
   handleFormValueOutput,
 } from "@/utils/formHelpers";
-import { ColDataCardDef, LookupTableOption } from "@/types/types";
+import { ColDataCardDef } from "@/types/types";
+import { lookupOptionSchema } from "@/schema/lookupTable";
 
 interface DataCardProps<T extends Record<string, unknown>> {
   record: T;
@@ -36,16 +37,14 @@ export default function DataCard<T extends Record<string, unknown>>({
   // todo: handling of null/undefined values in select input
   const [editColumn, setEditColumn] = useState<ColDataCardDef<T> | null>(null);
   const { mutate, loading: isMutating } = useMutation(mutation);
-  const [query, typeName] = useLookupQuery(editColumn?.lookupTable);
-  const { data: lookupData, isLoading: isLoadingLookups } = useQuery<{
-    [key: string]: LookupTableOption[];
-  }>({
+  const [query, typename] = useLookupQuery(editColumn?.lookupTable);
+  const { data: selectOptions, isLoading: isLoadingLookups } = useQuery({
     query,
     // we don't need to refetch lookup table options
     options: { revalidateIfStale: false },
+    schema: lookupOptionSchema,
+    typename,
   });
-
-  const selectOptions = lookupData?.[typeName];
 
   const onSave = async (value: unknown) => {
     await mutate({

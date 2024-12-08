@@ -3,7 +3,7 @@ import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import Table from "react-bootstrap/Table";
 import ChangeDetailHeader from "./ChangeDetailHeader";
-import { ChangeLogEntryEnriched } from "@/types/types";
+import { ChangeLogEntryEnriched } from "@/types/changeLog";
 
 const isNewRecordEvent = (change: ChangeLogEntryEnriched): boolean =>
   change.operation_type === "create";
