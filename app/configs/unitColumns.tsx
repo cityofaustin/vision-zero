@@ -1,4 +1,5 @@
-import { Unit, ColDataCardDef } from "@/types/types";
+import { ColDataCardDef } from "@/types/types";
+import { Unit } from "@/schema/units";
 
 export const ALL_UNIT_COLUMNS: { [name: string]: ColDataCardDef<Unit> } = {
   unit_nbr: {

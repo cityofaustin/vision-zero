@@ -10,6 +10,7 @@ on:
       - "etl/afd_ems_import/**"
       - "etl/cris_import/**"
       - "etl/socrata_export/**"
+      - "etl/moped_projects/**"
       - "api/**"
   workflow_dispatch:
 
@@ -41,6 +42,8 @@ jobs:
               - 'etl/socrata_export/**'
             user_cr3_api:
               - 'api/**'
+            moped_projects:
+              - 'etl/moped_projects/**'
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -72,6 +75,15 @@ jobs:
           push: true
           tags: atddocker/vz-socrata-export:${{ github.ref == 'refs/heads/production' && 'production' || 'development' }}
 
+      - name: Build and push VZ-Moped projects ETL image
+        if: steps.changes.outputs.moped_projects == 'true'
+        uses: docker/build-push-action@v4
+        with:
+          platforms: linux/amd64
+          context: etl/moped_projects
+          push: true
+          tags: atddocker/vz-moped-join:${{ github.ref == 'refs/heads/production' && 'production' || 'development' }}
+
       - name: Build and push VZ User & CR3 API image
         if: steps.changes.outputs.user_cr3_api == 'true'
         uses: docker/build-push-action@v4
@@ -80,7 +92,6 @@ jobs:
           context: api
           push: true
           tags: atddocker/vz-user-cr3-api:${{ github.ref == 'refs/heads/production' && 'production' || 'latest' }}
-
 
       - name: Set environment for ECS update
         if: steps.changes.outputs.user_cr3_api == 'true'

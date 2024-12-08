@@ -1,17 +1,14 @@
 import Link from "next/link";
-import { CrashListCrash, ColDataCardDef } from "@/types/types";
 import { formatDate } from "@/utils/formatters";
+import { ColDataCardDef } from "@/types/types";
+import { CrashesListCrash } from "@/types/crashesList";
 
-export const crashesListViewColumns: ColDataCardDef<CrashListCrash>[] = [
-  //   {
-  //     name: "id",
-  //     label: "ID",
-  //   },
+export const crashesListViewColumns: ColDataCardDef<CrashesListCrash>[] = [
   {
     name: "record_locator",
     label: "Crash ID",
     sortable: true,
-    valueRenderer: (record: CrashListCrash) => (
+    valueRenderer: (record: CrashesListCrash) => (
       <Link href={`/crashes/${record.record_locator}`}>
         {record.record_locator}
       </Link>

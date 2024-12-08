@@ -9,9 +9,10 @@ from utils.socrata import get_socrata_client
 
 SOCRATA_DATASET_CRASHES = os.getenv("SOCRATA_DATASET_CRASHES")
 SOCRATA_DATASET_PEOPLE = os.getenv("SOCRATA_DATASET_PEOPLE")
+SOCRATA_DATASET_CRASH_COMPONENTS = os.getenv("SOCRATA_DATASET_CRASH_COMPONENTS") or "gb78-y2pd"
 
 # number of records to download from Hasura and upload to Socrata
-RECORD_BATCH_SIZE = 1000
+DEFAULT_RECORD_BATCH_SIZE = 1000
 # number of times to try a single socrata upload
 MAX_UPLOAD_RETRIES = 1
 
@@ -21,12 +22,21 @@ datasets = [
         "typename": "socrata_export_crashes_view",
         "dataset_id": SOCRATA_DATASET_CRASHES,
         "query": QUERIES["crashes"],
+        "batch_size": DEFAULT_RECORD_BATCH_SIZE,
     },
     {
         "name": "people",
         "typename": "socrata_export_people_view",
         "dataset_id": SOCRATA_DATASET_PEOPLE,
         "query": QUERIES["people"],
+        "batch_size": DEFAULT_RECORD_BATCH_SIZE,
+    },
+    {
+        "name": "crash_components",
+        "typename": "moped_component_crashes",
+        "dataset_id": SOCRATA_DATASET_CRASH_COMPONENTS,
+        "query": QUERIES["crash_components"],
+        "batch_size": 10000,
     },
 ]
 
@@ -43,6 +53,7 @@ def main(args_dict):
 
         min_record_id_to_process = 0
         records_processed = 0
+        batch_size = dataset["batch_size"]
 
         while True:
             """
@@ -50,8 +61,8 @@ def main(args_dict):
             minimum record ID that was processed. we continue until no records are returned
             from our Hasura query
             """
-            logger.info(f"Fetching up to {RECORD_BATCH_SIZE} records")
-            variables = {"limit": RECORD_BATCH_SIZE, "minId": min_record_id_to_process}
+            logger.info(f"Fetching up to {batch_size} records")
+            variables = {"limit": batch_size, "minId": min_record_id_to_process}
             records = make_hasura_request(query=dataset["query"], variables=variables)[
                 dataset["typename"]
             ]
@@ -102,9 +113,9 @@ def main(args_dict):
 if __name__ == "__main__":
     args = get_cli_args()
     logger = init_logger()
-    if not args.crashes and not args.people:
+    if not args.crashes and not args.people and not args.crash_components:
         raise ValueError(
-            "No dataset(s) specify. At least one of '--crashes' or '--people' is required"
+            "No dataset(s) specify. At least one '--crashes', '--people', or '--crash-components' is required"
         )
     args_dict = vars(args)
     main(args_dict)
