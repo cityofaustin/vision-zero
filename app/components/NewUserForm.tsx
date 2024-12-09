@@ -5,7 +5,7 @@ import { useForm, SubmitHandler, Controller } from "react-hook-form";
 type NewUserInputs = {
   name: string;
   email: string;
-  role: string;
+  app_metadata: { roles: string[] };
 };
 
 export default function NewUserForm() {
@@ -19,13 +19,11 @@ export default function NewUserForm() {
     defaultValues: {
       name: undefined,
       email: undefined,
-      role: "readonly",
+      app_metadata: { roles: ["readonly"] },
     },
   });
 
   const onSubmit: SubmitHandler<NewUserInputs> = (data) => {
-    const { role, ...payload } = data;
-    payload.app_metadata = { roles: [role] };
     const url = `${process.env.NEXT_PUBLIC_CR3_API_DOMAIN}/user/create_user`;
     fetch(url, {
       headers: {
@@ -33,7 +31,7 @@ export default function NewUserForm() {
         "Content-Type": "application/json",
       },
       method: "post",
-      body: JSON.stringify(payload),
+      body: JSON.stringify(data),
     })
       .then((response) => response.json())
       .then((whatever) => {
@@ -70,24 +68,11 @@ export default function NewUserForm() {
           Email is required
         </Form.Control.Feedback>
       </Form.Group>
-      {/* <Form.Group className="mb-3" controlId="userPassword">
-        <Form.Label>Password</Form.Label>
-        <Form.Control
-          {...register("password", { required: true })}
-          type="password"
-          placeholder="Password"
-          autoComplete="new-password"
-          isInvalid={Boolean(errors.password)}
-        />
-        <Form.Control.Feedback type="invalid">
-          Password is required
-        </Form.Control.Feedback>
-      </Form.Group> */}
       <Form.Group className="mb-3" controlId="userRole">
         <Form.Label>Role</Form.Label>
         <div>
           <Controller
-            name="role"
+            name="app_metadata.roles.0"
             control={control}
             render={({ field }) => (
               <>
