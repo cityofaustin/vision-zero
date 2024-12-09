@@ -5,7 +5,6 @@ import { useForm, SubmitHandler, Controller } from "react-hook-form";
 type NewUserInputs = {
   name: string;
   email: string;
-  //   password: string;
   role: string;
 };
 
@@ -21,17 +20,12 @@ export default function NewUserForm() {
       name: undefined,
       email: undefined,
       role: "readonly",
-      //   password: undefined,
     },
   });
 
   const onSubmit: SubmitHandler<NewUserInputs> = (data) => {
     const { role, ...payload } = data;
     payload.app_metadata = { roles: [role] };
-    // todo:: definitely need to set these in our flask API instead
-    payload.connection = "Username-Password-Authentication";
-    payload.verify_email = true;
-    payload.email_verified = false;
     const url = `${process.env.NEXT_PUBLIC_CR3_API_DOMAIN}/user/create_user`;
     fetch(url, {
       headers: {
