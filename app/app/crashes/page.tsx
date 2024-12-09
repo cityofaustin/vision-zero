@@ -5,7 +5,6 @@ import { crashesListViewColumns } from "@/configs/crashesListViewColumns";
 import { crashesListViewQueryConfig } from "@/configs/crashesListViewTable";
 import TableWrapper from "@/components/TableWrapper";
 const localStorageKey = "crashesListViewQueryConfig";
-import { crashesListSchema } from "@/schema/crashesList";
 
 export default function Crashes() {
   return (
@@ -18,7 +17,6 @@ export default function Crashes() {
             columns={crashesListViewColumns}
             initialQueryConfig={crashesListViewQueryConfig}
             localStorageKey={localStorageKey}
-            schema={crashesListSchema}
           />
         </Card.Body>
       </Card>

@@ -1,4 +1,7 @@
-import { z } from "zod";
-import { crashesListSchema } from "@/schema/crashesList";
-
-export type CrashesListCrash = z.infer<typeof crashesListSchema>;
+export type CrashesListRow = {
+  address_primary: string | null;
+  case_id: string | null;
+  collsn_desc: string | null;
+  crash_timestamp: string;
+  record_locator: string;
+};
