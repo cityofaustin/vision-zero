@@ -29,7 +29,7 @@ const useCrumbs = (path: string): Crumb[] =>
     });
     if (parts.length > 1) {
       crumbs.push({
-        label: parts[1].split("?")[0],
+        label: decodeURI(parts[1].split("?")[0]),
         type: "id",
       });
     }

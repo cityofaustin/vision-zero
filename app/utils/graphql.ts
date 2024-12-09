@@ -8,7 +8,7 @@ import {
   Variables,
 } from "graphql-request";
 import { z, ZodSchema } from "zod";
-import { getHasuraRoleName } from "./auth";
+import { getRolesArray, getHasuraRoleName, useToken } from "./auth";
 import { MutationVariables } from "@/types/types";
 import { LookupTableDef } from "@/types/lookupTables";
 import { useAuth0 } from "@auth0/auth0-react";
@@ -24,6 +24,10 @@ const DEFAULT_SWR_OPTIONS: SWRConfiguration = {
    * Dont refetch on network recon
    */
   revalidateOnReconnect: false,
+  /**
+   * keep the previous data while refetching
+   */
+  keepPreviousData: true,
 };
 
 /**
@@ -89,37 +93,22 @@ export const useQuery = <T extends Record<string, unknown>>({
   typename: string;
   schema: ZodSchema<T>;
 }): UseQueryResponse<T> => {
-  const { getIdTokenClaims, user } = useAuth0();
-
+  const { user } = useAuth0();
+  const token = useToken();
   const responseSchema = useApiResponseSchema(schema, typename);
 
   const fetchWithAuth = async ([query, variables]: [
     RequestDocument,
     Variables
   ]): Promise<z.infer<typeof responseSchema>> => {
-    const hasuraRoleName = getHasuraRoleName(user);
-    /**
-     * todo: our Auth0 app is configured to return idTokens, which are
-     * "opaque" proprietary Auth0 tokens, seemingly because this enables us
-     * to interact with the User Management API. as a result, we must
-     * use idToken.__raw to grab the actual JWT. it seems like our setup
-     * may be misconfigured, because accessing .__raw seems like a hack :/
-     *
-     * the typical setup would enable use to use the getAccessTokenSilently()
-     * method, but that doesn't work with the opaque tokens.
-     *
-     * dicussion here: https://community.auth0.com/t/getting-the-jwt-id-token-from-auth0-spa-js/28281/3
-     */
-    const idToken = await getIdTokenClaims();
-    const token = idToken?.__raw || "";
-
+    const hasuraRoleName = getHasuraRoleName(getRolesArray(user));
     return fetcher([query, variables, token, hasuraRoleName, responseSchema]);
   };
 
   // todo: document falsey query handling
   const { data, error, isLoading, mutate, isValidating } = useSWR<
     z.infer<typeof responseSchema>
-  >(query ? [query, variables] : null, fetchWithAuth, {
+  >(token && query ? [query, variables] : null, fetchWithAuth, {
     ...DEFAULT_SWR_OPTIONS,
     ...(options || {}),
   });
@@ -141,7 +130,8 @@ interface MutationOptions {
  * Custom mutation hook that provides auth and manages `updated_by` column
  */
 export const useMutation = (mutation: RequestDocument) => {
-  const { getIdTokenClaims, user } = useAuth0();
+  const { user } = useAuth0();
+  const token = useToken();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
@@ -160,11 +150,10 @@ export const useMutation = (mutation: RequestDocument) => {
         variables.updates.updated_by = user.email;
       }
       try {
-        const hasuraRole = getHasuraRoleName(user);
-        const idToken = await getIdTokenClaims();
+        const hasuraRole = getHasuraRoleName(getRolesArray(user));
         const client = new GraphQLClient(ENDPOINT, {
           headers: {
-            Authorization: `Bearer ${idToken?.__raw}`,
+            Authorization: `Bearer ${token}`,
             "x-hasura-role": hasuraRole,
           },
         });
@@ -178,7 +167,7 @@ export const useMutation = (mutation: RequestDocument) => {
         setLoading(false);
       }
     },
-    [getIdTokenClaims, mutation]
+    [token, mutation, user]
   );
 
   return { mutate, loading, error };
@@ -213,18 +202,3 @@ export const useLookupQuery = (lookupTableDef: LookupTableDef | undefined) =>
       typename,
     ];
   }, [lookupTableDef]);
-
-/**
- * Hook that persists queried data while new data is being fetched / revalidated.
- * this works as a complement to SWR by persisting data when fetch args
- * have changed
- **/
-export const useDataCache = <T>(currentData: T | null) => {
-  const [cachedData, setCachedData] = useState<T | null>(currentData);
-  useEffect(() => {
-    if (currentData) {
-      setCachedData(currentData);
-    }
-  }, [currentData]);
-  return cachedData;
-};

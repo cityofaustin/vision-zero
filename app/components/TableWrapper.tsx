@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import isEqual from "lodash/isEqual";
-import { useQuery, useDataCache } from "@/utils/graphql";
+import { useQuery } from "@/utils/graphql";
 import Table from "@/components/Table";
 import TableSearch, { SearchSettings } from "@/components/TableSearch";
 import TableDateSelector from "@/components/TableDateSelector";
@@ -59,8 +59,7 @@ export default function TableWrapper<T extends Record<string, unknown>>({
 
   const activeFilterCount = useActiveSwitchFilterCount(queryConfig);
 
-  const cachedData = useDataCache(data);
-  const rows = cachedData || [];
+  const rows = data || [];
 
   /**
    * Load query config from local storage
