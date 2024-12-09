@@ -17,11 +17,11 @@ const ENDPOINT = process.env.NEXT_PUBLIC_HASURA_ENDPOINT!;
 
 const DEFAULT_SWR_OPTIONS: SWRConfiguration = {
   /**
-   * Dont refetch when the page/tab is refocused
+   * Don't refetch when the page/tab is refocused
    */
   revalidateOnFocus: false,
   /**
-   * Dont refetch on network recon
+   * Don't refetch on network recon
    */
   revalidateOnReconnect: false,
 };
