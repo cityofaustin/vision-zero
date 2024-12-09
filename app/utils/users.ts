@@ -35,7 +35,7 @@ export function useUsersInfinite(token: string) {
     // return the next URL to fetch
     return `${process.env.NEXT_PUBLIC_CR3_API_DOMAIN}/user/list_users?page=${pageIndex}&per_page=${PAGE_SIZE}`;
   };
-  const { data: pages, isLoading } = useSWRInfinite<ListUsersPage>(
+  const { data: pages, isLoading, error } = useSWRInfinite<ListUsersPage>(
     getKey,
     (url) => fetcher(url, token),
     {
@@ -64,7 +64,7 @@ export function useUsersInfinite(token: string) {
     [pages]
   );
 
-  return { users, isLoading };
+  return { users, isLoading, error };
 }
 
 /**

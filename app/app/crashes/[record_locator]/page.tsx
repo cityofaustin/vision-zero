@@ -10,13 +10,13 @@ import { UPDATE_UNIT } from "@/queries/unit";
 import { useQuery } from "@/utils/graphql";
 import AppBreadCrumb from "@/components/AppBreadCrumb";
 import CrashHeader from "@/components/CrashHeader";
+import CrashLocationBanner from "@/components/CrashLocationBanner";
 import CrashDiagramCard from "@/components/CrashDiagramCard";
 import DataCard from "@/components/DataCard";
 import RelatedRecordTable from "@/components/RelatedRecordTable";
 import ChangeLog from "@/components/ChangeLog";
 import { crashDataCards } from "@/configs/crashDataCard";
 import { unitRelatedRecordCols } from "@/configs/unitRelatedRecordTable";
-import { crashSchema } from "@/schema/crashes";
 import { Crash } from "@/types/crashes";
 
 const typename = "crashes";
@@ -28,10 +28,9 @@ export default function CrashDetailsPage({
 }) {
   const recordLocator = params.record_locator;
 
-  const { data, error, refetch, isValidating } = useQuery({
+  const { data, error, refetch, isValidating } = useQuery<Crash>({
     query: recordLocator ? GET_CRASH : null,
     variables: { recordLocator },
-    schema: crashSchema,
     typename,
   });
 
@@ -59,6 +58,12 @@ export default function CrashDetailsPage({
     <>
       <AppBreadCrumb />
       <CrashHeader crash={crash} />
+      {
+        // show alert if crash on private drive or outside of Austin full purpose
+        (crash.private_dr_fl || !crash.in_austin_full_purpose) && (
+          <CrashLocationBanner privateDriveFlag={crash.private_dr_fl} />
+        )
+      }
       <Row>
         <Col sm={12} md={6} lg={4} className="mb-3">
           <CrashMapCard

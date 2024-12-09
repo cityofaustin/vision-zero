@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 import Spinner from "react-bootstrap/Spinner";
@@ -12,14 +13,17 @@ import { useUsersInfinite } from "@/utils/users";
 import { useToken } from "@/utils/auth";
 import { FaUserPlus, FaCopy } from "react-icons/fa6";
 
-// todo: while testing this i noticed that my token is not auto-refreshing
-// the user API bounced because my token was expired 🤔
 export default function Users() {
   const token = useToken();
   const router = useRouter();
-  const { users, isLoading } = useUsersInfinite(token);
+  const { users, isLoading, error } = useUsersInfinite(token);
   const [showNewUserModal, setShowNewUserModal] = useState(false);
   const onCloseModal = () => setShowNewUserModal(false);
+
+  if (error) {
+    console.error(error);
+  }
+
   return (
     <>
       <AppBreadCrumb />
@@ -39,14 +43,19 @@ export default function Users() {
                   </AlignedLabel>
                 </Button>
                 <Button>
+                  {/* todo: https://github.com/cityofaustin/atd-data-tech/issues/20121 */}
                   <AlignedLabel>
                     <FaCopy className="me-2" />
-                    <span>Copy user emails</span>
+                    <span>Copy user emails - todo</span>
                   </AlignedLabel>
                 </Button>
               </>
             )}
           </div>
+          {/* todo: standardize the way we show error messages and use error boundary */}
+          {Boolean(error) && (
+            <Alert variant="dange">Something went wrong</Alert>
+          )}
           <Table responsive hover>
             <thead>
               <tr>
