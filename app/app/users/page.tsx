@@ -36,9 +36,10 @@ export default function Users() {
                   </AlignedLabel>
                 </Button>
                 <Button>
+                  {/* todo: https://github.com/cityofaustin/atd-data-tech/issues/20121 */}
                   <AlignedLabel>
                     <FaCopy className="me-2" />
-                    <span>Copy user emails</span>
+                    <span>Copy user emails - todo</span>
                   </AlignedLabel>
                 </Button>
               </>
