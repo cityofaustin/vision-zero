@@ -8,6 +8,11 @@ const BASE_QUERY_STRING = `
         $tableName(limit: $limit, offset: $offset, order_by: $orderBy where: $where) {
             $columns
         }
+        $tableName_aggregate(where: $where) {
+            aggregate {
+                count
+            }
+        }
     }`;
 
 /**
@@ -370,12 +375,12 @@ const buildQuery = ({
     "$queryName",
     "BuildQuery_" + tableName
   )
-    .replace("$tableName", tableName)
+    .replaceAll("$tableName", tableName)
     .replace("$limit", String(limit))
     .replace("$offset", String(offset))
     .replace("$orderBy", getOrderByExp(sortColName, sortAsc))
     .replace("$columns", columnString)
-    .replace("$where", where);
+    .replaceAll("$where", where);
   return gql`
     ${queryString}
   `;
