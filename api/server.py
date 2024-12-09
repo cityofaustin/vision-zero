@@ -3,11 +3,14 @@
 # ATD - CR3 Download API
 #
 
-import json
-import re
 import datetime
-import boto3
+import json
 import os
+import re
+import secrets
+import string
+
+import boto3
 import requests
 
 from dotenv import load_dotenv, find_dotenv
@@ -41,6 +44,28 @@ AWS_S3_CR3_LOCATION = os.getenv("AWS_S3_CR3_LOCATION", "")
 AWS_S3_BUCKET = os.getenv("AWS_S3_BUCKET", "")
 
 ADMIN_ROLE_NAME = "vz-admin"
+
+
+def get_secure_password(num_chars=16):
+    """Generate a secure random password with at least one lowercase character,
+    uppercase character, special character, and digit:
+    https://docs.python.org/3/library/secrets.html#recipes-and-best-practices
+
+    Args:
+        num_chars (int, optional): Defaults to 16.
+    """
+    special_chars = "!@#$%^&*"
+    alphabet = string.ascii_letters + string.digits + special_chars
+    while True:
+        password = "".join(secrets.choice(alphabet) for i in range(num_chars))
+        if (
+            any(c.islower() for c in password)
+            and any(c.isupper() for c in password)
+            and any(c.isdigit() for c in password)
+            and any(c in special_chars for c in password)
+        ):
+            break
+    return password
 
 
 def get_api_token():
@@ -366,7 +391,7 @@ def isValidUser(user_dict):
         return False
 
     # Check email for austintexas.gov
-    if str(user_email).endswith("@austintexas.gov") is False:
+    if not str(user_email).endswith("@austintexas.gov"):
         return False
 
     return True
@@ -439,6 +464,12 @@ def user_create_user():
     user_dict = current_user._get_current_object()
     if isValidUser(user_dict) and hasUserRole(ADMIN_ROLE_NAME, user_dict):
         json_data = request.json
+        # set the user's password - user will have to reset it for access
+        json_data["password"] = get_secure_password()
+        # set additional user properties
+        json_data["connection"] = "Username-Password-Authentication"
+        json_data["verify_email"] = True
+        json_data["email_verified"] = False
         endpoint = f"https://{AUTH0_DOMAIN}/api/v2/users"
         headers = {"Authorization": f"Bearer {get_api_token()}"}
         response = requests.post(endpoint, headers=headers, json=json_data).json()
