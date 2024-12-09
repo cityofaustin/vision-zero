@@ -116,7 +116,7 @@ export const useQuery = <T extends Record<string, unknown>>({
     return fetcher([query, variables, token, hasuraRoleName, responseSchema]);
   };
 
-  // todo: document falsey query handling
+  // todo: document falsy query handling
   const { data, error, isLoading, mutate, isValidating } = useSWR<
     z.infer<typeof responseSchema>
   >(query ? [query, variables] : null, fetchWithAuth, {
