@@ -7,7 +7,6 @@ import {
   RequestDocument,
   Variables,
 } from "graphql-request";
-import { z, ZodSchema } from "zod";
 import { getRolesArray, getHasuraRoleName, useToken } from "./auth";
 import { MutationVariables } from "@/types/types";
 import { LookupTableDef } from "@/types/lookupTables";
@@ -33,12 +32,11 @@ const DEFAULT_SWR_OPTIONS: SWRConfiguration = {
 /**
  * Fetcher which interacts with our GraphQL API
  */
-const fetcher = <T>([query, variables, token, hasuraRoleName, schema]: [
+const fetcher = <T>([query, variables, token, hasuraRoleName]: [
   RequestDocument,
   Variables,
   string,
-  string,
-  ZodSchema<T>
+  string
 ]): Promise<T> =>
   request<T>({
     url: ENDPOINT,
@@ -48,23 +46,7 @@ const fetcher = <T>([query, variables, token, hasuraRoleName, schema]: [
       Authorization: `Bearer ${token}`,
       "x-hasura-role": hasuraRoleName,
     },
-  }).then((data) => {
-    return schema.parseAsync(data);
   });
-
-/**
- * Hook which wraps our data schema in an outer object that
- * matches what Hasura will return. e.g., it shapes a Crash
- * object schema into a shape like
- * { crashes: <Crash[]> }
- */
-const useApiResponseSchema = <T extends Record<string, unknown>>(
-  schema: ZodSchema<T>,
-  typename: string
-): ZodSchema<{ [key in typeof typename]: T[] }> =>
-  useMemo(() => {
-    return z.object({ [typename]: z.array(schema) });
-  }, [schema, typename]);
 
 interface UseQueryResponse<T> {
   data?: T[];
@@ -84,31 +66,28 @@ export const useQuery = <T extends Record<string, unknown>>({
   query,
   variables,
   options,
-  schema,
   typename,
 }: {
   query: RequestDocument | null;
   variables?: Variables;
   options?: SWRConfiguration;
   typename: string;
-  schema: ZodSchema<T>;
 }): UseQueryResponse<T> => {
   const { user } = useAuth0();
   const token = useToken();
-  const responseSchema = useApiResponseSchema(schema, typename);
 
   const fetchWithAuth = async ([query, variables]: [
     RequestDocument,
     Variables
-  ]): Promise<z.infer<typeof responseSchema>> => {
+  ]): Promise<{ [K in typeof typename]: T[] }> => {
     const hasuraRoleName = getHasuraRoleName(getRolesArray(user));
-    return fetcher([query, variables, token, hasuraRoleName, responseSchema]);
+    return fetcher([query, variables, token, hasuraRoleName]);
   };
 
   // todo: document falsey query handling
-  const { data, error, isLoading, mutate, isValidating } = useSWR<
-    z.infer<typeof responseSchema>
-  >(token && query ? [query, variables] : null, fetchWithAuth, {
+  const { data, error, isLoading, mutate, isValidating } = useSWR<{
+    [K in typeof typename]: T[];
+  }>(token && query ? [query, variables] : null, fetchWithAuth, {
     ...DEFAULT_SWR_OPTIONS,
     ...(options || {}),
   });

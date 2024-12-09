@@ -1,15 +1,15 @@
 import Link from "next/link";
 import { ColDataCardDef } from "@/types/types";
-import { LocationsListLocation } from "@/types/locationsList";
+import { LocationsListRow } from "@/types/locationsList";
 import { renderNumber } from "@/utils/formHelpers";
 
-export const locationsListViewColumns: ColDataCardDef<LocationsListLocation>[] =
+export const locationsListViewColumns: ColDataCardDef<LocationsListRow>[] =
   [
     {
       name: "location_id",
       label: "Location ID",
       sortable: true,
-      valueRenderer: (record: LocationsListLocation) => (
+      valueRenderer: (record: LocationsListRow) => (
         <Link href={`/locations/${record.location_id}`}>
           {record.location_id}
         </Link>

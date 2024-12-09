@@ -1,4 +1,12 @@
-import { z } from "zod";
-import { locationSchema } from "@/schema/locationSchema";
+import { MultiPolygon } from "./geojson";
+import { LocationsListRow } from "./locationsList";
 
-export type Location = z.infer<typeof locationSchema>;
+export type Location = {
+  location_id: string;
+  description: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  geometry: MultiPolygon | null;
+  street_level: string | null;
+  locations_list_view: LocationsListRow | null;
+};
