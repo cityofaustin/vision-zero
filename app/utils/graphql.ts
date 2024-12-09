@@ -108,7 +108,7 @@ export const useQuery = <T extends Record<string, unknown>>({
      * the typical setup would enable use to use the getAccessTokenSilently()
      * method, but that doesn't work with the opaque tokens.
      *
-     * dicussion here: https://community.auth0.com/t/getting-the-jwt-id-token-from-auth0-spa-js/28281/3
+     * discussion here: https://community.auth0.com/t/getting-the-jwt-id-token-from-auth0-spa-js/28281/3
      */
     const idToken = await getIdTokenClaims();
     const token = idToken?.__raw || "";
