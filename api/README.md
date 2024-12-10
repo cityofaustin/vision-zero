@@ -14,9 +14,16 @@ These flask apps are deployed as long-running tasks in ECS and are reverse proxy
 
 ## Local usage
 
+Update your VZE environment (`/app/.env.local`) to use the local API:
+
+```
+NEXT_PUBLIC_CR3_API_DOMAIN=http://localhost:8085
+```
+
 You can start the API using either the project wide `docker compose` file with `docker compose up cr3-user-api` or if you prefer, you can use the `docker compose` stack that is concerned only with part of the stack as found in the `api` directory. Use whichever is best for your development needs. 
 
 Both docker compose files enable local development by:
+
 - mounting your local `/api` directory into the container
 - use the `--debug` command so that the web server restarts when it detetcs code changes
 
