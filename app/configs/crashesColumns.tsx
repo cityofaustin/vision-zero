@@ -119,7 +119,7 @@ export const crashesColumns: {
     label: "City",
     editable: true,
     inputType: "select",
-    relationshipName: "rpt_city_id",
+    relationshipName: "city",
     lookupTable: {
       tableSchema: "lookups",
       tableName: "city",
