@@ -10,7 +10,6 @@ import { FaUserPlus, FaCopy } from "react-icons/fa6";
 import AlignedLabel from "@/components/AlignedLabel";
 import AppBreadCrumb from "@/components/AppBreadCrumb";
 import UserModal from "@/components/UserModal";
-import UserForm from "@/components/UserForm";
 import { useUsersInfinite } from "@/utils/users";
 import { useToken } from "@/utils/auth";
 import { User } from "@/types/users";
@@ -27,8 +26,8 @@ export default function Users() {
   }
 
   const onSaveUserCallback = useCallback(
-    (user: User) => {
-      // refetch the entire user list in the background
+    async (user: User) => {
+      // refetch the entire user list in the background (do not await)
       mutate();
       // navigate to the user details pagee
       router.push(`/users/${user.user_id}`);
@@ -111,9 +110,11 @@ export default function Users() {
           </Table>
         </Card.Body>
       </Card>
-      <UserModal onClose={onCloseModal} show={showNewUserModal} mode="create">
-        <UserForm onSubmitCallback={onSaveUserCallback} />
-      </UserModal>
+      <UserModal
+        onClose={onCloseModal}
+        show={showNewUserModal}
+        onSubmitCallback={onSaveUserCallback}
+      />
     </>
   );
 }

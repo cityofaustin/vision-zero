@@ -15,7 +15,6 @@ import { useToken } from "@/utils/auth";
 import { useUser } from "@/utils/users";
 import { User } from "@/types/users";
 import { formatDateTime } from "@/utils/formatters";
-import UserForm from "@/components/UserForm";
 
 type UserColumn = {
   name: keyof User;
@@ -62,13 +61,11 @@ export default function UserDetails({
   const [showNewUserModal, setShowNewUserModal] = useState(false);
   const onCloseModal = () => setShowNewUserModal(false);
 
-  const onUpdateUsercallback = useCallback(
-    (user: User) => {
-      // refetch the user details
-      mutate();
-    },
-    [mutate]
-  );
+  const onUpdateUsercallback = useCallback(async () => {
+    // refetch the user details and close
+    await mutate();
+    setShowNewUserModal(false);
+  }, [mutate]);
 
   if (user && "error" in user) {
     // 404
@@ -126,9 +123,14 @@ export default function UserDetails({
           </Card>
         </Col>
       </Row>
-      <UserModal onClose={onCloseModal} show={showNewUserModal} mode="update">
-        <UserForm onSubmitCallback={onUpdateUsercallback} user={user} />
-      </UserModal>
+      {user && (
+        <UserModal
+          onClose={onCloseModal}
+          show={showNewUserModal}
+          onSubmitCallback={onUpdateUsercallback}
+          user={user}
+        ></UserModal>
+      )}
     </>
   );
 }
