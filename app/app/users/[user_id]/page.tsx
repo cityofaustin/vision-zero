@@ -76,9 +76,9 @@ export default function UserDetails({
     <>
       <AppBreadCrumb />
       <Row>
-        <Col md={6} lg={4}>
+        <Col md={12} lg={6}>
           <Card>
-            <Card.Header className="fs-5 fw-bold">User Details</Card.Header>
+            <Card.Header className="fs-5 fw-bold">User details</Card.Header>
             <Card.Body>
               {!user && <Spinner variant="primary" />}
               <div className="mb-3">
@@ -93,11 +93,11 @@ export default function UserDetails({
                         <span>Edit</span>
                       </AlignedLabel>
                     </Button>
-                    <Button variant="danger">
+                    <Button variant="danger" disabled>
                       {/* todo */}
                       <AlignedLabel>
                         <FaUserAltSlash className="me-2" />
-                        <span>Delete - todo</span>
+                        <span>Delete</span>
                       </AlignedLabel>
                     </Button>
                   </>

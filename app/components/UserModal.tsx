@@ -40,7 +40,7 @@ export default function UserModal({
     register,
     handleSubmit,
     control,
-    formState: { errors },
+    formState: { errors, isDirty },
   } = useForm<UserInputs>({
     defaultValues: user
       ? { name: user.name, email: user.email, app_metadata: user.app_metadata }
@@ -85,7 +85,7 @@ export default function UserModal({
   return (
     <Modal show={show} onHide={onClose} animation={false} backdrop="static">
       <Modal.Header closeButton>
-        <Modal.Title>{user ? "Update user" : "New user"}</Modal.Title>
+        <Modal.Title>{user ? "Edit user" : "New user"}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form onSubmit={handleSubmit(onSubmit)} id="userForm">
@@ -169,10 +169,10 @@ export default function UserModal({
           variant="primary"
           type="submit"
           form="userForm"
-          disabled={isSubmitting}
+          disabled={isSubmitting || !isDirty}
         >
           {isSubmitting && <Spinner size="sm" />}
-          {!isSubmitting && <span>{user ? "Update user" : "Create user"}</span>}
+          {!isSubmitting && <span>{user ? "Save" : "Create user"}</span>}
         </Button>
       </Modal.Footer>
     </Modal>
