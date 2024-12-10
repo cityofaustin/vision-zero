@@ -17,11 +17,11 @@ const ENDPOINT = process.env.NEXT_PUBLIC_HASURA_ENDPOINT!;
 
 const DEFAULT_SWR_OPTIONS: SWRConfiguration = {
   /**
-   * Dont refetch when the page/tab is refocused
+   * Don't refetch when the page/tab is refocused
    */
   revalidateOnFocus: false,
   /**
-   * Dont refetch on network recon
+   * Don't refetch on network recon
    */
   revalidateOnReconnect: false,
 };
@@ -108,7 +108,7 @@ export const useQuery = <T extends Record<string, unknown>>({
      * the typical setup would enable use to use the getAccessTokenSilently()
      * method, but that doesn't work with the opaque tokens.
      *
-     * dicussion here: https://community.auth0.com/t/getting-the-jwt-id-token-from-auth0-spa-js/28281/3
+     * discussion here: https://community.auth0.com/t/getting-the-jwt-id-token-from-auth0-spa-js/28281/3
      */
     const idToken = await getIdTokenClaims();
     const token = idToken?.__raw || "";
@@ -116,7 +116,7 @@ export const useQuery = <T extends Record<string, unknown>>({
     return fetcher([query, variables, token, hasuraRoleName, responseSchema]);
   };
 
-  // todo: document falsey query handling
+  // todo: document falsy query handling
   const { data, error, isLoading, mutate, isValidating } = useSWR<
     z.infer<typeof responseSchema>
   >(query ? [query, variables] : null, fetchWithAuth, {
