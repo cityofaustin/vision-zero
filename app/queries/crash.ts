@@ -23,6 +23,10 @@ export const GET_CRASH = gql`
         label
       }
       rpt_city_id
+      city {
+        id
+        label
+      }
       light_cond_id
       wthr_cond_id
       obj_struck {

@@ -33,6 +33,7 @@ export type Crash = {
   road_constr_zone_fl: boolean | null;
   rpt_block_num: string | null;
   rpt_city_id: number | null;
+  city: LookupTableOption | null;
   rpt_hwy_num: string | null;
   rpt_rdwy_sys_id: number | null;
   rpt_road_part_id: number | null;
