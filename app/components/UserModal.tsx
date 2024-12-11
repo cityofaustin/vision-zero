@@ -9,9 +9,23 @@ import { User, UserAPIError } from "@/types/users";
 import { useToken } from "@/utils/auth";
 
 interface UserModalProps {
+  /**
+   * A callback fired when either the modal backdrop is clicked, or the
+   * escape key is pressed
+   */
   onClose: () => void;
+  /**
+   * An async callback fired after the user form is successfully submitted
+   */
   onSubmitCallback: (user: User) => Promise<void>;
+  /**
+   * If the modal should be visible or hidden
+   */
   show: boolean;
+  /**
+   * An optional User object to be edited by this component. If not defined, a new user
+   * will be created on submit
+   */
   user?: User;
 }
 
@@ -27,6 +41,9 @@ const USER_DEFAULTS = {
   app_metadata: { roles: ["readonly"] },
 };
 
+/**
+ * Modal form component used for creating or editing a user
+ */
 export default function UserModal({
   onClose,
   onSubmitCallback,
