@@ -24,8 +24,14 @@ const localStorageKey = "sidebarCollapsed";
  */
 export default function SidebarLayout({ children }: { children: ReactNode }) {
   const [isCollapsed, setIsCollapsed] = useState(true);
-  const { loginWithRedirect, logout, isAuthenticated, isLoading, user } =
-    useAuth0();
+  const {
+    getAccessTokenSilently,
+    loginWithRedirect,
+    logout,
+    isAuthenticated,
+    isLoading,
+    user,
+  } = useAuth0();
   const pathName = usePathname();
   const segments = useSelectedLayoutSegments();
 
@@ -44,6 +50,42 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
       localStorage.getItem(localStorageKey) === "true";
     setIsCollapsed(collapsedFromStorage);
   }, []);
+
+  /**
+   * Hook which keeps refreshes the user's token in localstorage and redirects to the
+   * Auth0 login page if the token is expired
+   */
+  useEffect(() => {
+    const refreshToken = async () => {
+      /**
+       * No reason to do this if the user is not authenticated, since the login
+       * page will render anyway
+       */
+      if (isAuthenticated) {
+        try {
+          /**
+           * getAccessTokenSilently will fetch a fresh token if current token is still valid,
+           * otherwise it will throw and the user will be redirected to the Auth0
+           * login page
+           */
+          await getAccessTokenSilently();
+        } catch (error) {
+          console.error("Failed to refresh token:", error);
+          loginWithRedirect({
+            appState: {
+              returnTo: pathName,
+            },
+          });
+        }
+      }
+    };
+
+    refreshToken();
+
+    const intervalId = setInterval(refreshToken, 60 * 5 * 1000); // Every 5 minutes
+    // Cleanup on unmount
+    return () => clearInterval(intervalId);
+  }, [getAccessTokenSilently, loginWithRedirect, isAuthenticated, pathName]);
 
   if (isLoading) {
     /**
