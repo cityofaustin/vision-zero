@@ -574,7 +574,7 @@ def user_delete_user(id):
         endpoint = f"https://{AUTH0_DOMAIN}/api/v2/users/" + id
         headers = {"Authorization": f"Bearer {get_api_token()}"}
         response = requests.delete(endpoint, headers=headers)
-        return f"{response.status_code}"
+        return jsonify(response.json()), response.status_code
     else:
         return notAuthorizedError()
 
