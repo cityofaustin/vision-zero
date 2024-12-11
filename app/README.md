@@ -88,6 +88,8 @@ npm run dev
 - Users
   - user list view
   - user details card
+  - add a new user
+  - edit a user
 
 ## Todo
 
@@ -124,7 +126,7 @@ npm run dev
 - upload non-cr3
 - dashboard
 - users
-  - add/edit/delete users
+  - delete users
   - copy user emails
 - login page: make it look nice
 - versioned localstorage

@@ -29,3 +29,15 @@ export type ListUsersPage = {
   total: number;
   users: User[];
 };
+
+/**
+ * Error JSON returned from the Auth0 user management API - this schema
+ * does not appear to be documented
+ * See: https://auth0.com/docs/api/management/v2
+ */
+export type UserAPIError = {
+  error: string;
+  errorCode: string;
+  message: string;
+  statusCode: number;
+};
