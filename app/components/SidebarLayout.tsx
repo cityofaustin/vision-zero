@@ -86,11 +86,10 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
         }
       }
     };
-
     refreshToken();
-
-    const intervalId = setInterval(refreshToken, 60 * 5 * 1000); // Every 5 minutes
-    // Cleanup on unmount
+    // refresh token every 5 minutes
+    const intervalId = setInterval(refreshToken, 60 * 5 * 1000);
+    // cleanup on loop unmount
     return () => clearInterval(intervalId);
   }, [getAccessTokenSilently, loginWithRedirect, isAuthenticated, pathName]);
 
