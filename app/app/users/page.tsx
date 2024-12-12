@@ -65,7 +65,15 @@ export default function Users() {
           </div>
           {/* todo: standardize the way we show error messages and use error boundary */}
           {Boolean(error) && (
-            <Alert variant="dange">Something went wrong</Alert>
+            <Alert variant="dange">
+              <p>Something went wrong</p>
+              <p>
+                <details>
+                  <summary>Error</summary>
+                  {String(error)}
+                </details>
+              </p>
+            </Alert>
           )}
           <Table responsive hover>
             <thead>
