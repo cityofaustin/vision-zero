@@ -7,7 +7,7 @@ import Spinner from "react-bootstrap/Spinner";
 import Table from "react-bootstrap/Table";
 import AppBreadCrumb from "@/components/AppBreadCrumb";
 import { useUsersInfinite } from "@/utils/users";
-import { useToken } from "@/utils/auth";
+import { useToken, formatRoleName } from "@/utils/auth";
 import AlignedLabel from "@/components/AlignedLabel";
 import { FaUserPlus, FaCopy } from "react-icons/fa6";
 
@@ -84,7 +84,7 @@ export default function Users() {
                         : ""}
                     </td>
                     <td>{user.logins_count}</td>
-                    <td>{user.app_metadata.roles[0]}</td>
+                    <td>{formatRoleName(user.app_metadata.roles[0])}</td>
                   </tr>
                 );
               })}
