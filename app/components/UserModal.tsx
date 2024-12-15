@@ -58,6 +58,7 @@ export default function UserModal({
     handleSubmit,
     control,
     formState: { errors, isDirty },
+    setError,
   } = useForm<UserInputs>({
     defaultValues: user
       ? { name: user.name, email: user.email, app_metadata: user.app_metadata }
@@ -84,13 +85,42 @@ export default function UserModal({
         body: JSON.stringify(data),
       });
       const responseJson: User | UserAPIError = await response.json();
-      if ("user_id" in responseJson) {
-        await onSubmitCallback(responseJson);
-      } else if ("message" in responseJson) {
-        setErrorMessage(responseJson.message);
+
+      if (!response.ok) {
+        if ("message" in responseJson) {
+          if (
+            responseJson.message.includes("validation") &&
+            responseJson.message.includes("email")
+          ) {
+            // handle ivalid email address error
+            setErrorMessage(
+              "Invalid email address - please check the format of the user's email"
+            );
+            // update react-hook-form state
+            setError(
+              "email",
+              {
+                type: "custom",
+                message: "Invalid email address",
+              },
+              { shouldFocus: true }
+            );
+          } else {
+            // we don't know what this message is, but we can display it to the user
+            setErrorMessage(responseJson.message);
+          }
+        } else {
+          console.error(responseJson);
+          setErrorMessage("An unknown error has occured");
+        }
       } else {
-        console.error(responseJson);
-        setErrorMessage("An unknown error has occured");
+        if ("user_id" in responseJson) {
+          await onSubmitCallback(responseJson);
+        } else {
+          // we recieve a 200 response but now `user_id` - should never happen
+          console.error(responseJson);
+          setErrorMessage("An unknown error has occured");
+        }
       }
     } catch (err) {
       console.error(err);
@@ -130,7 +160,7 @@ export default function UserModal({
               data-1p-ignore
             />
             <Form.Control.Feedback type="invalid">
-              Email is required
+              {errors.email?.message || "Email is required"}
             </Form.Control.Feedback>
           </Form.Group>
           <Form.Group className="mb-3" controlId="userRole">
