@@ -107,6 +107,7 @@ def notAuthorizedError():
 
 
 # Add the appropriate security headers to all responses
+# These headers may be overwritten in prod and staging by the API gateway!
 @APP.after_request
 def add_custom_headers(response):
     # Cache-Control to manage caching behavior
@@ -141,6 +142,7 @@ def add_custom_headers(response):
     response.headers["Expect-CT"] = "max-age=86400, enforce"
 
     # Access-Control-Allow-Origin for CORS
+    # These headers may be overwritten in prod and staging by the API gateway!
     response.headers["Access-Control-Allow-Origin"] = "*"
     response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, OPTIONS"
     response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
