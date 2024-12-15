@@ -29,7 +29,7 @@ You can start the API using either the project wide `docker compose` file with `
 Both docker compose files enable local development by:
 
 - mounting your local `/api` directory into the container
-- use the `--debug` command so that the web server restarts when it detetcs code changes
+- use the `--debug` command so that the web server restarts when it detects code changes
 
 Additionally, you can use the `vision-zero` orchestration tool to `vision-zero api-up` and `vision-zero api-down` to start and stop the API.
 
