@@ -1,6 +1,6 @@
 "use client";
 import { useState, useCallback } from "react";
-import { notFound } from "next/navigation";
+import { notFound, useRouter } from "next/navigation";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 import Col from "react-bootstrap/Col";
@@ -55,17 +55,54 @@ export default function UserDetails({
 }: {
   params: { user_id: string };
 }) {
+  const router = useRouter();
   const token = useToken();
   const userId = params.user_id;
   const { data: user, mutate } = useUser(userId, token);
-  const [showNewUserModal, setShowNewUserModal] = useState(false);
-  const onCloseModal = () => setShowNewUserModal(false);
+  const [showEditUserModal, setShowEditUserModal] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const onCloseModal = () => setShowEditUserModal(false);
 
   const onUpdateUserCallback = useCallback(async () => {
     // refetch the user details and close
     await mutate();
-    setShowNewUserModal(false);
+    setShowEditUserModal(false);
   }, [mutate]);
+
+  const onDeleteUser = useCallback(async () => {
+    setIsDeleting(true);
+
+    const url = `${
+      process.env.NEXT_PUBLIC_CR3_API_DOMAIN
+    }/user/delete_user/${encodeURIComponent(userId)}`;
+
+    const method = "DELETE";
+    try {
+      const response = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        method,
+      });
+
+      if (!response.ok) {
+        // the API may not return JSON for this endpoint — unclear from Auth0 docs
+        // auth0 api docs: https://auth0.com/docs/api/management/v2/users/delete-users-by-id
+        // very low priority todo: implement better error handling
+        const responseText = await response.text();
+        console.error(responseText);
+        window.alert(`Failed to delete user: ${String(responseText)}`);
+      } else {
+        console.log("Success");
+        router.push(`/users`);
+      }
+    } catch (err) {
+      console.error(err);
+      window.alert(`Failed to delete user: An unknown error has occured`);
+    }
+    setIsDeleting(false);
+  }, [router, token, userId]);
 
   if (user && "error" in user) {
     // 404
@@ -86,19 +123,33 @@ export default function UserDetails({
                   <>
                     <Button
                       className="me-2"
-                      onClick={() => setShowNewUserModal(true)}
+                      onClick={() => setShowEditUserModal(true)}
                     >
                       <AlignedLabel>
                         <FaUserEdit className="me-2" />
                         <span>Edit</span>
                       </AlignedLabel>
                     </Button>
-                    <Button variant="danger" disabled>
-                      {/* todo */}
-                      <AlignedLabel>
-                        <FaUserAltSlash className="me-2" />
-                        <span>Delete</span>
-                      </AlignedLabel>
+                    <Button
+                      variant="danger"
+                      disabled={isDeleting}
+                      onClick={() => {
+                        if (
+                          window.confirm(
+                            "Are you user you want to delete this user?"
+                          )
+                        ) {
+                          onDeleteUser();
+                        }
+                      }}
+                    >
+                      {isDeleting && <Spinner variant="dange" size="sm" />}
+                      {!isDeleting && (
+                        <AlignedLabel>
+                          <FaUserAltSlash className="me-2" />
+                          <span>Delete</span>
+                        </AlignedLabel>
+                      )}
                     </Button>
                   </>
                 )}
@@ -126,10 +177,10 @@ export default function UserDetails({
       {user && (
         <UserModal
           onClose={onCloseModal}
-          show={showNewUserModal}
+          show={showEditUserModal}
           onSubmitCallback={onUpdateUserCallback}
           user={user}
-        ></UserModal>
+        />
       )}
     </>
   );
