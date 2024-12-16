@@ -71,11 +71,9 @@ export default function UserDetails({
 
   const onDeleteUser = useCallback(async () => {
     setIsDeleting(true);
-
     const url = `${
       process.env.NEXT_PUBLIC_CR3_API_DOMAIN
     }/user/delete_user/${encodeURIComponent(userId)}`;
-
     const method = "DELETE";
     try {
       const response = await fetch(url, {
@@ -85,7 +83,6 @@ export default function UserDetails({
         },
         method,
       });
-
       if (!response.ok) {
         // the API may not return JSON for this endpoint — unclear from Auth0 docs
         // auth0 api docs: https://auth0.com/docs/api/management/v2/users/delete-users-by-id
@@ -94,7 +91,6 @@ export default function UserDetails({
         console.error(responseText);
         window.alert(`Failed to delete user: ${String(responseText)}`);
       } else {
-        console.log("Success");
         router.push(`/users`);
       }
     } catch (err) {
