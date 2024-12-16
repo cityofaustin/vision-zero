@@ -33,7 +33,7 @@ export default function TableSearch({
         <FaMagnifyingGlass />
       </InputGroup.Text>
       <Form.Control
-        placeholder="Find a crash..."
+        placeholder="Search..."
         aria-label="Crash search"
         aria-describedby="search-icon"
         onChange={(e) => {
@@ -50,10 +50,9 @@ export default function TableSearch({
               return newQueryConfig;
             });
             setQueryConfig(newQueryConfig);
-          } else {
-            searchSettings.searchString = e.target.value;
-            setSearchSettings({ ...searchSettings });
           }
+          searchSettings.searchString = e.target.value;
+          setSearchSettings({ ...searchSettings });
         }}
         value={searchSettings.searchString}
         type="search"
