@@ -160,7 +160,7 @@ export default function CrashDetailsPage({
             isValidating={isValidating}
             title="Charges"
             columns={chargeRelatedRecordCols}
-            mutation={UPDATE_UNIT} // update -- or should this be a different component? one with no mutation?
+            mutation={""}
             onSaveCallback={onSaveCallback}
           />
         </Col>
