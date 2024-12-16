@@ -17,7 +17,8 @@ import { useToken, formatRoleName } from "@/utils/auth";
 export default function Users() {
   const token = useToken();
   const router = useRouter();
-  const { users, isLoading, error, mutate } = useUsersInfinite(token);
+  const { users, isLoading, isValidating, error, mutate } =
+    useUsersInfinite(token);
   const [showNewUserModal, setShowNewUserModal] = useState(false);
   const onCloseModal = () => setShowNewUserModal(false);
 
@@ -41,7 +42,7 @@ export default function Users() {
       <Card>
         <Card.Header className="fs-5 fw-bold">Users</Card.Header>
         <Card.Body>
-          <div className="mb-3">
+          <div className="mb-3 d-flex align-items-center">
             {!isLoading && (
               <>
                 <Button
@@ -60,6 +61,13 @@ export default function Users() {
                     <span>Copy user emails - todo</span>
                   </AlignedLabel>
                 </Button>
+                {/* show the spinner when revalidating - this is important user feedback after a 
+                user has been deleted and the user list is being refetched */}
+                {isValidating && (
+                  <span className="ms-2">
+                    <Spinner variant="primary" />
+                  </span>
+                )}
               </>
             )}
           </div>
