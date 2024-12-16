@@ -118,7 +118,12 @@ export const crashesColumns: {
     name: "rpt_city_id",
     label: "City",
     editable: true,
-    inputType: "number",
+    inputType: "select",
+    relationshipName: "city",
+    lookupTable: {
+      tableSchema: "lookups",
+      tableName: "city",
+    },
   },
   rpt_hwy_num: {
     name: "rpt_hwy_num",
