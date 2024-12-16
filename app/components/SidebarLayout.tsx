@@ -16,7 +16,7 @@ import {
 } from "react-icons/fa6";
 import AppNavBar from "./AppNavBar";
 import SideBarListItem from "./SideBarListItem";
-import LoginContainer from "./LoginCotainer";
+import LoginContainer from "./LoginContainer";
 const localStorageKey = "sidebarCollapsed";
 
 /**
