@@ -12,6 +12,10 @@ Production: https://vision-zero-cr3-user-api.austinmobility.io/
 
 These flask apps are deployed as long-running tasks in ECS and are reverse proxy'd out to the internet by an AWS API gateway via a namespace / VPC link configuration. Specific deployment instructions for the COA deployment are contained in our internal documentation repositories.
 
+## Configuration
+
+The API requires certain environment variables to be set. Copy the `.env.example` file in the `api` directory to `.env` and fill in the values.
+
 ## Local usage
 
 Update your VZE environment (`/app/.env.local`) to use the local API:
@@ -20,18 +24,14 @@ Update your VZE environment (`/app/.env.local`) to use the local API:
 NEXT_PUBLIC_CR3_API_DOMAIN=http://localhost:8085
 ```
 
-You can start the API using either the project wide `docker compose` file with `docker compose up cr3-user-api` or if you prefer, you can use the `docker compose` stack that is concerned only with part of the stack as found in the `api` directory. Use whichever is best for your development needs. 
+You can start the API using either the project wide `docker compose` file with `docker compose up cr3-user-api` or if you prefer, you can use the `docker compose` stack that is concerned only with part of the stack as found in the `api` directory. Use whichever is best for your development needs.
 
 Both docker compose files enable local development by:
 
 - mounting your local `/api` directory into the container
-- use the `--debug` command so that the web server restarts when it detetcs code changes
+- use the `--debug` command so that the web server restarts when it detects code changes
 
 Additionally, you can use the `vision-zero` orchestration tool to `vision-zero api-up` and `vision-zero api-down` to start and stop the API.
-
-## Configuration
-
-The API requires certain environment variables to be set. Copy the `.env.example` file in the `api` directory to `.env` and fill in the values.
 
 ## Secrets
 

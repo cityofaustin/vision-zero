@@ -61,7 +61,7 @@ export default function UserDetails({
   const [showNewUserModal, setShowNewUserModal] = useState(false);
   const onCloseModal = () => setShowNewUserModal(false);
 
-  const onUpdateUsercallback = useCallback(async () => {
+  const onUpdateUserCallback = useCallback(async () => {
     // refetch the user details and close
     await mutate();
     setShowNewUserModal(false);
@@ -127,7 +127,7 @@ export default function UserDetails({
         <UserModal
           onClose={onCloseModal}
           show={showNewUserModal}
-          onSubmitCallback={onUpdateUsercallback}
+          onSubmitCallback={onUpdateUserCallback}
           user={user}
         ></UserModal>
       )}
