@@ -27,13 +27,28 @@ export const getHasuraRoleName = (roles?: string[]): string => {
   } else if (roles.includes("vz-admin")) {
     // todo
     // If user has more than one role, it is because they have `itSupervisor` and `vz-admin`
-    // `vz-admin` is the Hasura rolename, `itSupervisor` is a legacy role that was previously
+    // `vz-admin` is the Hasura role name, `itSupervisor` is a legacy role that was previously
     // used to enable a user to create and edit other admins. this app will do away with
     // that behavior: any admin can create and modify other admins. A follow-up task is
     // to clean up the Auth0 user database that references `itSupervisor`
     return "vz-admin";
   } else {
     return roles[0] || "";
+  }
+};
+
+export const formatRoleName = (role: string): string => {
+  switch (role) {
+    case "readonly":
+      return "Read-only";
+    case "editor":
+      return "Editor";
+    case "vz-admin":
+      return "Admin";
+    case "itSupervisor":
+      return "IT Supervisor";
+    default:
+      return role;
   }
 };
 
@@ -50,7 +65,7 @@ export const getHasuraRoleName = (roles?: string[]): string => {
  * the typical setup would enable use to use the getAccessTokenSilently()
  * method, but that doesn't work with the opaque tokens.
  *
- * dicussion here: https://community.auth0.com/t/getting-the-jwt-id-token-from-auth0-spa-js/28281/3
+ * discussion here: https://community.auth0.com/t/getting-the-jwt-id-token-from-auth0-spa-js/28281/3
  */
 export const useToken = () => {
   const [token, setToken] = useState<string>("");
