@@ -11,7 +11,7 @@ import { FaUserEdit, FaUserAltSlash } from "react-icons/fa";
 import AlignedLabel from "@/components/AlignedLabel";
 import AppBreadCrumb from "@/components/AppBreadCrumb";
 import UserModal from "@/components/UserModal";
-import { useToken } from "@/utils/auth";
+import { useToken, formatRoleName } from "@/utils/auth";
 import { useUser } from "@/utils/users";
 import { User } from "@/types/users";
 import { formatDateTime } from "@/utils/formatters";
@@ -27,7 +27,7 @@ const COLUMNS: UserColumn[] = [
   {
     name: "app_metadata",
     label: "Role",
-    renderer: (user) => user.app_metadata.roles[0] || "",
+    renderer: (user) => formatRoleName(user.app_metadata.roles[0]) || "",
   },
   { name: "name", label: "Name" },
   { name: "email", label: "Email" },

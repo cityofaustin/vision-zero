@@ -11,8 +11,8 @@ import AlignedLabel from "@/components/AlignedLabel";
 import AppBreadCrumb from "@/components/AppBreadCrumb";
 import UserModal from "@/components/UserModal";
 import { useUsersInfinite } from "@/utils/users";
-import { useToken } from "@/utils/auth";
 import { User } from "@/types/users";
+import { useToken, formatRoleName } from "@/utils/auth";
 
 export default function Users() {
   const token = useToken();
@@ -65,7 +65,7 @@ export default function Users() {
           </div>
           {/* todo: standardize the way we show error messages and use error boundary */}
           {Boolean(error) && (
-            <Alert variant="dange">Something went wrong</Alert>
+            <Alert variant="danger">Something went wrong</Alert>
           )}
           <Table responsive hover>
             <thead>
@@ -102,7 +102,7 @@ export default function Users() {
                         : ""}
                     </td>
                     <td>{user.logins_count || "0"}</td>
-                    <td>{user.app_metadata.roles[0]}</td>
+                    <td>{formatRoleName(user.app_metadata.roles[0])}</td>
                   </tr>
                 );
               })}
