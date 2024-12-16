@@ -23,7 +23,7 @@ export default function AuthProvider({
       authorizationParams={{
         redirect_uri: redirect_uri || "",
         /**
-         * Note that offline_access is requried for refresh tokens -
+         * Note that offline_access is required for refresh tokens -
          * the alternative is to use a custom hook that occasionally
          * calls getAccessTokenSilently(), which will manually refresh
          * the token
