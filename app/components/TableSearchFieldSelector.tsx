@@ -9,7 +9,7 @@ export default function TableSearchFieldSelector({
   // todo: bug here where changing the search field clears the search input if it hasn't been searched
   return (
     <>
-      <Form.Label className="fw-bold me-2 mb-0">Search by </Form.Label>
+      <Form.Label className="fw-bold me-2 my-0">Search by </Form.Label>
       {queryConfig.searchFields.map((field) => {
         return (
           <Form.Check
