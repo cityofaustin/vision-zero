@@ -1,5 +1,30 @@
+import { ReactNode } from "react";
 import { ColDataCardDef, InputType } from "@/types/types";
 import { LookupTableOption } from "@/types/lookupTables";
+import { Path } from "@/types/utils";
+
+/**
+ * Retrieve a value from an object from a given path using dot notation
+ *
+ * todo: is this actually typesafe lol
+ */
+export const getFromPath = <T extends Record<string, unknown>>(
+  obj: T,
+  path: Path<T>
+): unknown => {
+  // todo: what about nulls/undefined?
+  return path.split(".").reduce((previousValue: unknown, pathPart: string) => {
+    if (
+      previousValue &&
+      typeof previousValue === "object" &&
+      pathPart in previousValue
+    ) {
+      return previousValue[pathPart as keyof typeof previousValue];
+    }
+    // todo: should never reach here - not sure how to handle since returning undefined
+    return undefined;
+  }, obj);
+};
 
 /**
  * Convert a record value to a string so that it can be used as the initial value
@@ -55,11 +80,25 @@ const stringToNumberNullable = (value: string): number | null => {
 };
 
 /**
+ * Stringify an unknown value and coerce null and undefined to empty string
  *
- * Stringify a number and coerce nulls to empty strings
+ * @example
+ * // returns "a"
+ * renderValueToString("a")
+ *
+ * // returns "0"
+ * renderValueToString(0)
+ *
+ * @example
+ * // returns "false"
+ * renderValueToString(false)
+ *
+ * @example
+ * // returns "[object Object]"
+ * renderValueToString({ a: "1"})
  */
-export const renderNumber = (value: number | null): string => {
-  if (value === null) {
+const renderValueToString = (value: unknown): string => {
+  if (value === null || value === undefined) {
     return "";
   }
   return String(value);
@@ -89,17 +128,22 @@ export const renderLookupLabel = <T extends Record<string, unknown>>(
 };
 
 /**
- * Generic accessor function that returns a record property. It uses the
- * column's valueGetter (if present) otherwise record[column.name];
+ * Get a value from a record given its column. Uses the column's valueGetter (if present),
+ * otherwise column.path is used.
  */
 export const getRecordValue = <T extends Record<string, unknown>>(
   record: T,
   column: ColDataCardDef<T>
 ): unknown => {
+  // todo: valueGetter not in use anywhere - can remove?
   if (column.valueGetter) {
     return column.valueGetter(record, column);
+  } else if (!column.path.includes(".")) {
+    // simple object accessor
+    return record[column.path];
   }
-  return record[column.name];
+  // handle dot notation
+  return getFromPath(record, column.path);
 };
 
 /**
@@ -107,15 +151,17 @@ export const getRecordValue = <T extends Record<string, unknown>>(
  *
  * The rendered output resolves in the following order:
  *
- * column.valueRenderer() => ReactElement
- * column.valueFormatter() => string
- * column.valueGetter() => string
- * record[column.name]
+ * ```
+ * column.valueRenderer()
+ * column.valueFormatter()
+ * column.valueGetter()
+ * record[column.path]
+ * ```
  */
 export const renderColumnValue = <T extends Record<string, unknown>>(
   record: T,
   column: ColDataCardDef<T>
-) => {
+): ReactNode => {
   if (column.valueRenderer) {
     return column.valueRenderer(record, column);
   }
@@ -132,10 +178,10 @@ export const renderColumnValue = <T extends Record<string, unknown>>(
   }
 
   if (column.inputType === "yes_no") {
-    return renderYesNoString(record[column.name]);
+    return renderYesNoString(record[column.path]);
   }
 
-  return String(getRecordValue(record, column) || "");
+  return renderValueToString(getRecordValue(record, column));
 };
 
 /**

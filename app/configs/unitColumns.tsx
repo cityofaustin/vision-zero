@@ -3,11 +3,11 @@ import { Unit } from "@/types/unit";
 
 export const ALL_UNIT_COLUMNS: { [name: string]: ColDataCardDef<Unit> } = {
   unit_nbr: {
-    name: "unit_nbr",
+    path: "unit_nbr",
     label: "Unit",
   },
   unit_desc_id: {
-    name: "unit_desc_id",
+    path: "unit_desc_id",
     label: "Type",
     editable: true,
     inputType: "select",
@@ -18,7 +18,7 @@ export const ALL_UNIT_COLUMNS: { [name: string]: ColDataCardDef<Unit> } = {
     },
   },
   veh_body_styl_id: {
-    name: "veh_body_styl_id",
+    path: "veh_body_styl_id",
     label: "Body style",
     editable: true,
     inputType: "select",
@@ -29,18 +29,18 @@ export const ALL_UNIT_COLUMNS: { [name: string]: ColDataCardDef<Unit> } = {
     },
   },
   veh_mod_year: {
-    name: "veh_mod_year",
+    path: "veh_mod_year",
     label: "Year",
   },
   veh_make_id: {
-    name: "veh_make_id",
+    path: "veh_make_id",
     label: "Make",
     editable: false,
     inputType: "select",
     relationshipName: "veh_make",
   },
   veh_mod_id: {
-    name: "veh_mod_id",
+    path: "veh_mod_id",
     label: "Model",
     editable: false,
     inputType: "select",
@@ -48,7 +48,7 @@ export const ALL_UNIT_COLUMNS: { [name: string]: ColDataCardDef<Unit> } = {
   },
 
   veh_trvl_dir_id: {
-    name: "veh_trvl_dir_id",
+    path: "veh_trvl_dir_id",
     label: "Direction",
     editable: true,
     inputType: "select",
@@ -60,7 +60,7 @@ export const ALL_UNIT_COLUMNS: { [name: string]: ColDataCardDef<Unit> } = {
   },
 
   movement_id: {
-    name: "movement_id",
+    path: "movement_id",
     label: "Movement",
     editable: true,
     inputType: "select",
@@ -71,7 +71,7 @@ export const ALL_UNIT_COLUMNS: { [name: string]: ColDataCardDef<Unit> } = {
     },
   },
   contrib_factr_1_id: {
-    name: "contrib_factr_1_id",
+    path: "contrib_factr_1_id",
     label: "Primary contrib factor",
     editable: true,
     inputType: "select",
