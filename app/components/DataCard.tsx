@@ -50,7 +50,7 @@ export default function DataCard<T extends Record<string, unknown>>({
     await mutate({
       id: record.id,
       updates: {
-        [String(editColumn?.name)]: value,
+        [String(editColumn?.path)]: value,
       },
     });
     await onSaveCallback();
@@ -66,10 +66,10 @@ export default function DataCard<T extends Record<string, unknown>>({
         <Table responsive hover>
           <tbody>
             {columns.map((col) => {
-              const isEditingThisColumn = col.name === editColumn?.name;
+              const isEditingThisColumn = col.path === editColumn?.path;
               return (
                 <tr
-                  key={String(col.name)}
+                  key={String(col.path)}
                   style={{
                     cursor:
                       col.editable && !isEditingThisColumn ? "pointer" : "auto",

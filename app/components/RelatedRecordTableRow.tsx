@@ -52,7 +52,7 @@ export default function RelatedRecordTableRow<
     await mutate({
       id: recordId,
       updates: {
-        [String(editColumn?.name)]: value,
+        [String(editColumn?.path)]: value,
       },
     });
     await onSaveCallback();
@@ -64,10 +64,10 @@ export default function RelatedRecordTableRow<
   return (
     <tr>
       {columns.map((col) => {
-        const isEditingThisColumn = col.name === editColumn?.name;
+        const isEditingThisColumn = col.path === editColumn?.path;
         return (
           <td
-            key={String(col.name)}
+            key={String(col.path)}
             style={{
               cursor: col.editable && !isEditingThisColumn ? "pointer" : "auto",
             }}

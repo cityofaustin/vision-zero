@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import { Variables } from "graphql-request";
 import { LookupTableDef } from "./lookupTables";
+import { Path } from "./utils";
 
 export type InputType = "text" | "number" | "yes_no" | "select";
 
@@ -10,15 +11,19 @@ export type InputType = "text" | "number" | "yes_no" | "select";
  */
 export type ColBaseDef<T extends Record<string, unknown>> = {
   /**
-   * the column name in the database
+   * the dot-notated string path to accessing the property on the given type
    */
-  name: keyof T;
+  path: Path<T>;
   /**
    * label which will be rendered wherever this value is displayed in the app
    */
   label: string;
 };
 
+/**
+ * Type which defines metadata for a single property of a record so that it can be
+ * accessed, rendered, and edited in various UI components
+ */
 export interface ColDataCardDef<T extends Record<string, unknown>>
   extends ColBaseDef<T> {
   editable?: boolean;
@@ -26,8 +31,12 @@ export interface ColDataCardDef<T extends Record<string, unknown>>
   lookupTable?: LookupTableDef;
   relationshipName?: keyof T;
   sortable?: boolean;
-  valueGetter?: (record: T, column: ColDataCardDef<T>) => any;
-  valueFormatter?: (value: any, record: T, column: ColDataCardDef<T>) => string;
+  valueGetter?: (record: T, column: ColDataCardDef<T>) => unknown;
+  valueFormatter?: (
+    value: unknown,
+    record: T,
+    column: ColDataCardDef<T>
+  ) => string;
   valueRenderer?: (record: T, column: ColDataCardDef<T>) => ReactNode;
 }
 
