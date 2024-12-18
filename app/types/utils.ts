@@ -1,4 +1,3 @@
-
 /**
  * Provides type safety for dot-notated paths to nested Record properties.
  *
