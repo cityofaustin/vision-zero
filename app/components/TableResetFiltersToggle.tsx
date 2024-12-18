@@ -19,12 +19,12 @@ export default function TableResetFiltersToggle({
 }: Props) {
   return (
     <Button
-      variant="outline-danger"
+      variant="outline-secondary"
       onClick={() => setQueryConfig(queryConfig)}
     >
       <AlignedLabel>
         <FaXmark className="me-2" />
-        Reset filters
+        Reset
       </AlignedLabel>
     </Button>
   );
