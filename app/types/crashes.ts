@@ -2,6 +2,7 @@ import { CrashInjuryMetric } from "./crashInjuryMetrics";
 import { LookupTableOption } from "./lookupTables";
 import { ChangeLogEntry } from "./changeLog";
 import { Unit } from "./unit";
+import { Charge } from "./charge"
 
 export type Crash = {
   active_school_zone_fl: boolean | null;
@@ -58,4 +59,5 @@ export type Crash = {
   wthr_cond_id: number | null;
   change_logs: ChangeLogEntry[] | null;
   units: Unit[] | null;
+  charges_cris: Charge[] | null;
 };
