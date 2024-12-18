@@ -1,24 +1,39 @@
 "use client";
+import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 import Spinner from "react-bootstrap/Spinner";
 import Table from "react-bootstrap/Table";
-import AppBreadCrumb from "@/components/AppBreadCrumb";
-import { useUsersInfinite } from "@/utils/users";
-import { useToken, formatRoleName } from "@/utils/auth";
-import AlignedLabel from "@/components/AlignedLabel";
 import { FaUserPlus, FaCopy } from "react-icons/fa6";
+import AlignedLabel from "@/components/AlignedLabel";
+import AppBreadCrumb from "@/components/AppBreadCrumb";
+import UserModal from "@/components/UserModal";
+import { useUsersInfinite } from "@/utils/users";
+import { User } from "@/types/users";
+import { useToken, formatRoleName } from "@/utils/auth";
 
 export default function Users() {
   const token = useToken();
   const router = useRouter();
-  const { users, isLoading, error } = useUsersInfinite(token);
+  const { users, isLoading, error, mutate } = useUsersInfinite(token);
+  const [showNewUserModal, setShowNewUserModal] = useState(false);
+  const onCloseModal = () => setShowNewUserModal(false);
 
   if (error) {
     console.error(error);
   }
+
+  const onSaveUserCallback = useCallback(
+    async (user: User) => {
+      // refetch the entire user list in the background (do not await)
+      mutate();
+      // navigate to the user details pagee
+      router.push(`/users/${user.user_id}`);
+    },
+    [router, mutate]
+  );
 
   return (
     <>
@@ -29,7 +44,10 @@ export default function Users() {
           <div className="mb-3">
             {!isLoading && (
               <>
-                <Button className="me-2">
+                <Button
+                  className="me-2"
+                  onClick={() => setShowNewUserModal(true)}
+                >
                   <AlignedLabel>
                     <FaUserPlus className="me-2" />
                     <span>Add user</span>
@@ -83,7 +101,7 @@ export default function Users() {
                         ? new Date(user.last_login).toLocaleDateString()
                         : ""}
                     </td>
-                    <td>{user.logins_count}</td>
+                    <td>{user.logins_count || "0"}</td>
                     <td>{formatRoleName(user.app_metadata.roles[0])}</td>
                   </tr>
                 );
@@ -92,6 +110,11 @@ export default function Users() {
           </Table>
         </Card.Body>
       </Card>
+      <UserModal
+        onClose={onCloseModal}
+        show={showNewUserModal}
+        onSubmitCallback={onSaveUserCallback}
+      />
     </>
   );
 }
