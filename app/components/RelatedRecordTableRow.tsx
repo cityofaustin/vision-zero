@@ -9,7 +9,7 @@ import {
   handleFormValueOutput,
 } from "@/utils/formHelpers";
 import { ColDataCardDef } from "@/types/types";
-import { lookupOptionSchema } from "@/schema/lookupTable";
+import { LookupTableOption } from "@/types/lookupTables";
 
 interface RelatedRecordTableRowProps<T extends Record<string, unknown>> {
   record: T;
@@ -40,13 +40,13 @@ export default function RelatedRecordTableRow<
   const [editColumn, setEditColumn] = useState<ColDataCardDef<T> | null>(null);
   const { mutate, loading: isMutating } = useMutation(mutation);
   const [query, typename] = useLookupQuery(editColumn?.lookupTable);
-  const { data: selectOptions, isLoading: isLoadingLookups } = useQuery({
-    query,
-    // we don't need to refetch lookup table options
-    options: { revalidateIfStale: false },
-    schema: lookupOptionSchema,
-    typename,
-  });
+  const { data: selectOptions, isLoading: isLoadingLookups } =
+    useQuery<LookupTableOption>({
+      query,
+      // we don't need to refetch lookup table options
+      options: { revalidateIfStale: false },
+      typename,
+    });
 
   const onSave = async (recordId: number, value: unknown) => {
     await mutate({

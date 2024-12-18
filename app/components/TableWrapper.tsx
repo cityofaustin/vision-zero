@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import isEqual from "lodash/isEqual";
-import { useQuery, useDataCache } from "@/utils/graphql";
+import { useQuery } from "@/utils/graphql";
 import Table from "@/components/Table";
 import TableSearch, { SearchSettings } from "@/components/TableSearch";
 import TableDateSelector from "@/components/TableDateSelector";
@@ -14,13 +14,11 @@ import TableAdvancedSearchFilterToggle from "@/components/TableAdvancedSearchFil
 import TablePaginationControls from "@/components/TablePaginationControls";
 import { useActiveSwitchFilterCount } from "@/components/TableAdvancedSearchFilterToggle";
 import TableResetFiltersToggle from "@/components/TableResetFiltersToggle";
-import { ZodSchema } from "zod";
 
 interface TableProps<T extends Record<string, unknown>> {
   columns: ColDataCardDef<T>[];
   initialQueryConfig: QueryConfig;
   localStorageKey: string;
-  schema: ZodSchema<T>;
 }
 
 /**
@@ -31,7 +29,6 @@ export default function TableWrapper<T extends Record<string, unknown>>({
   initialQueryConfig,
   columns,
   localStorageKey,
-  schema,
 }: TableProps<T>) {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [areFiltersDirty, setAreFiltersDirty] = useState(false);
@@ -46,10 +43,9 @@ export default function TableWrapper<T extends Record<string, unknown>>({
 
   const query = useQueryBuilder(queryConfig);
 
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, error } = useQuery<T>({
     // dont fire first query until localstorage is loaded
     query: isLocalStorageLoaded ? query : null,
-    schema,
     typename: queryConfig.tableName,
   });
 
@@ -59,8 +55,7 @@ export default function TableWrapper<T extends Record<string, unknown>>({
 
   const activeFilterCount = useActiveSwitchFilterCount(queryConfig);
 
-  const cachedData = useDataCache(data);
-  const rows = cachedData || [];
+  const rows = data || [];
 
   /**
    * Load query config from local storage
@@ -71,7 +66,6 @@ export default function TableWrapper<T extends Record<string, unknown>>({
       const queryConfigFromStorage = JSON.parse(
         configFromStorageString
       ) as QueryConfig;
-      // todo: validate with Zod
       // todo: bugs lurking here because the ytd/1y/5y filters need to be refreshed
       setIsLocalStorageLoaded(true);
       setQueryConfig(queryConfigFromStorage);

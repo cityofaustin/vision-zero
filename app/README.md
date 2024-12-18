@@ -85,6 +85,11 @@ npm run dev
     - email address (disabled/not clickable)
     - sighout link
     - external links to report a bug, request enhancement, and TxDOT's CR3 codesheet
+- Users
+  - user list view
+  - user details card
+  - add a new user
+  - edit a user
 
 ## Todo
 
@@ -120,10 +125,8 @@ npm run dev
 - create crash record
 - upload non-cr3
 - dashboard
-
 - users
-  - user list
-  - add/edit/delete uers
+  - delete users
   - copy user emails
 - login page: make it look nice
 - versioned localstorage

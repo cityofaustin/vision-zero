@@ -1,4 +1,4 @@
-import { CrashInjuryMetrics } from "@/types/crashInjuryMetrics";
+import { CrashInjuryMetric } from "@/types/crashInjuryMetrics";
 import Badge from "react-bootstrap/Badge";
 
 const InjuryBadge = ({
@@ -28,7 +28,7 @@ const InjuryBadge = ({
 const CrashInjuryIndicators = ({
   injuries,
 }: {
-  injuries: CrashInjuryMetrics;
+  injuries: CrashInjuryMetric;
 }) => {
   return (
     <div className="fs-6 d-flex align-items-center bg-light rounded-3 px-3">
