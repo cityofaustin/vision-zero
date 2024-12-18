@@ -2,6 +2,7 @@ import { CrashInjuryMetric } from "./crashInjuryMetrics";
 import { LookupTableOption } from "./lookupTables";
 import { ChangeLogEntry } from "./changeLog";
 import { Unit } from "./unit";
+import { Charge } from "./charge"
 
 export type Crash = {
   active_school_zone_fl: boolean | null;
@@ -33,6 +34,7 @@ export type Crash = {
   road_constr_zone_fl: boolean | null;
   rpt_block_num: string | null;
   rpt_city_id: number | null;
+  city: LookupTableOption | null;
   rpt_hwy_num: string | null;
   rpt_rdwy_sys_id: number | null;
   rpt_road_part_id: number | null;
@@ -57,4 +59,5 @@ export type Crash = {
   wthr_cond_id: number | null;
   change_logs: ChangeLogEntry[] | null;
   units: Unit[] | null;
+  charges_cris: Charge[] | null;
 };
