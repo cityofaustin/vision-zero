@@ -13,6 +13,7 @@ select_permissions:
         - est_comp_cost_crash_based
         - est_total_person_comp_cost
         - fatality_count
+        - id
         - law_enf_fatality_count
         - micromobility_fatality_count
         - micromobility_sus_serious_injry_count
@@ -28,6 +29,7 @@ select_permissions:
         - pedestrian_sus_serious_injry_count
         - poss_injry_count
         - sus_serious_injry_count
+        - tot_injry_count
         - unkn_injry_count
         - vz_fatality_count
         - years_of_life_lost
@@ -44,6 +46,7 @@ select_permissions:
         - est_comp_cost_crash_based
         - est_total_person_comp_cost
         - fatality_count
+        - id
         - law_enf_fatality_count
         - micromobility_fatality_count
         - micromobility_sus_serious_injry_count
@@ -59,6 +62,7 @@ select_permissions:
         - pedestrian_sus_serious_injry_count
         - poss_injry_count
         - sus_serious_injry_count
+        - tot_injry_count
         - unkn_injry_count
         - vz_fatality_count
         - years_of_life_lost
@@ -75,6 +79,7 @@ select_permissions:
         - est_comp_cost_crash_based
         - est_total_person_comp_cost
         - fatality_count
+        - id
         - law_enf_fatality_count
         - micromobility_fatality_count
         - micromobility_sus_serious_injry_count
@@ -90,6 +95,7 @@ select_permissions:
         - pedestrian_sus_serious_injry_count
         - poss_injry_count
         - sus_serious_injry_count
+        - tot_injry_count
         - unkn_injry_count
         - vz_fatality_count
         - years_of_life_lost
